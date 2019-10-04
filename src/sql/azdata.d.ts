@@ -2721,6 +2721,13 @@ declare module 'azdata' {
 
 	}
 
+	export type AlignItemsType = 'normal' | 'stretch' | 'center' | 'start' | 'end' | 'flex-start' | 'flex-end' | 'baseline' | 'first baseline' | 'last baseline' | 'safe center' | 'unsafe center' | 'inherit' | 'initial' | 'unset';
+	export type JustifyContentType = 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around' | 'initial' | 'inherit';
+	export type AlignContentType = 'stretch' | 'center' | 'flex-start' | 'flex-end' | 'space-between' | 'space-around' | 'initial' | 'inherit';
+	export type FlexWrapType = 'nowrap' | 'wrap' | 'wrap-reverse';
+	export type TextAlignType = 'left' | 'right' | 'center' | 'justify' | 'initial' | 'inherit';
+	export type PositionType = 'static' | 'absolute' | 'fixed' | 'relative' | 'sticky' | 'initial' | 'inherit';
+
 	/**
 	 * The config for a FlexBox-based container. This supports easy
 	 * addition of content to a container with a flexible layout
@@ -2736,19 +2743,19 @@ declare module 'azdata' {
 		/**
 		 * Matches the justify-content CSS property.
 		 */
-		justifyContent?: string;
+		justifyContent?: JustifyContentType;
 		/**
 		 * Matches the align-items CSS property.
 		 */
-		alignItems?: string;
+		alignItems?: AlignItemsType;
 		/**
 		 * Matches the align-content CSS property.
 		 */
-		alignContent?: string;
+		alignContent?: AlignContentType;
 		/**
 		 *  Matches the flex-wrap CSS property.
 		 */
-		flexWrap?: string;
+		flexWrap?: FlexWrapType;
 		/**
 		 * Container Height
 		 */
@@ -2762,7 +2769,7 @@ declare module 'azdata' {
 		/**
 		 *
 		 */
-		textAlign?: string;
+		textAlign?: TextAlignType;
 
 		/**
 		 * The position CSS property. Empty by default.
@@ -2771,7 +2778,7 @@ declare module 'azdata' {
 		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
 		 * Without this the component will fail to correctly size itself.
 		 */
-		position?: string;
+		position?: PositionType;
 	}
 
 	export interface SplitViewLayout extends FlexLayout {
@@ -2959,7 +2966,7 @@ declare module 'azdata' {
 		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
 		 * Without this the component will fail to correctly size itself
 		 */
-		position?: string;
+		position?: PositionType;
 		/**
 		 * Matches the CSS style key and its available values.
 		 */
@@ -3038,7 +3045,7 @@ declare module 'azdata' {
 		ownerUri: string;
 	}
 
-	export interface CheckBoxProperties {
+	export interface CheckBoxProperties extends ComponentProperties {
 		checked?: boolean;
 		label?: string;
 	}
@@ -4529,6 +4536,7 @@ declare module 'azdata' {
 		export interface INotebookMetadata {
 			kernelspec: IKernelInfo;
 			language_info?: ILanguageInfo;
+			tags?: string[];
 		}
 
 		export interface IKernelInfo {
@@ -4560,6 +4568,7 @@ declare module 'azdata' {
 			source: string | string[];
 			metadata?: {
 				language?: string;
+				tags?: string[];
 				azdata_cell_guid?: string;
 			};
 			execution_count?: number;

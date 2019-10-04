@@ -45,6 +45,10 @@
         "title": "%mssqlCluster.copyPath%"
       },
       {
+        "command": "mssqlCluster.manageAccess",
+        "title": "%mssqlCluster.manageAccess%"
+      },
+      {
         "command": "mssqlCluster.task.newNotebook",
         "title": "%notebook.command.new%",
         "icon": {
@@ -222,6 +226,10 @@
           "when": "false"
         },
         {
+          "command": "mssqlCluster.manageAccess",
+          "when": "false"
+        },
+        {
           "command": "mssqlCluster.task.newNotebook",
           "when": "false"
         },
@@ -245,12 +253,12 @@
       "objectExplorer/item/context": [
         {
           "command": "mssqlCluster.uploadFiles",
-          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:message && nodeType != mssqlCluster:file",
+          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:message && nodeType != mssqlCluster:file && nodeSubType=~/^(?!:mount).*$/",
           "group": "1mssqlCluster@1"
         },
         {
           "command": "mssqlCluster.mkdir",
-          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:message && nodeType != mssqlCluster:file",
+          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:message && nodeType != mssqlCluster:file && nodeSubType=~/^(?!:mount).*$/",
           "group": "1mssqlCluster@1"
         },
         {
@@ -270,7 +278,7 @@
         },
         {
           "command": "mssqlCluster.deleteFiles",
-          "when": "nodeType=~/^mssqlCluster/ && viewItem != mssqlCluster:connection && nodeType != mssqlCluster:message",
+          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:hdfs && nodeType != mssqlCluster:connection && viewItem != mssqlCluster:connection && nodeType != mssqlCluster:message && nodeSubType=~/^(?!:mount).*$/",
           "group": "1mssqlCluster@4"
         },
         {
@@ -280,7 +288,7 @@
         },
         {
           "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
-          "when": "nodeType == mssqlCluster:file && nodeSubType == mssqlCluster:spark",
+          "when": "nodeType == mssqlCluster:file && nodeSubType =~/:spark:/",
           "group": "1mssqlCluster@6"
         }
       ]

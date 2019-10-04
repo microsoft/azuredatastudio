@@ -153,7 +153,7 @@ export class DeployClusterWizardModel extends Model {
 			statements.push('os.environ["KUBECONFIG"] = mssql_kube_config_path');
 		}
 		statements.push(`mssql_cluster_name = '${this.getStringValue(VariableNames.ClusterName_VariableName)}'`);
-		statements.push(`mssql_controller_username = '${this.getStringValue(VariableNames.AdminUserName_VariableName)}'`);
+		statements.push(`mssql_username = '${this.getStringValue(VariableNames.AdminUserName_VariableName)}'`);
 		statements.push(`bdc_json = '${profile.getBdcJson(false)}'`);
 		statements.push(`control_json = '${profile.getControlJson(false)}'`);
 		statements.push(`print('Variables have been set successfully.')`);

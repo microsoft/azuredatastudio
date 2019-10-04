@@ -39,11 +39,12 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
-					label: localize('deployCluster.ControllerUsername', "Controller username"),
+					label: localize('deployCluster.AdminUsername', "Admin username"),
 					required: true,
 					variableName: VariableNames.AdminUserName_VariableName,
 					defaultValue: 'admin',
-					useCustomValidator: true
+					useCustomValidator: true,
+					description: localize('deployCluster.AdminUsernameDescription', "You can use this username to access the controller and SQL Server, username for the gateway is root.")
 				}, {
 					type: FieldType.Password,
 					label: localize('deployCluster.AdminPassword', "Password"),
@@ -51,7 +52,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.AdminPassword_VariableName,
 					defaultValue: '',
 					useCustomValidator: true,
-					description: localize('deployCluster.AdminPasswordDescription', "You can also use this password to access SQL Server and gateway.")
+					description: localize('deployCluster.AdminPasswordDescription', "You can use this password to access the controller, SQL Server and gateway.")
 				}, {
 					type: FieldType.Password,
 					label: localize('deployCluster.ConfirmPassword', "Confirm password"),

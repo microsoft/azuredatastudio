@@ -32,7 +32,7 @@ import * as notebookUtils from 'sql/workbench/parts/notebook/browser/models/note
 import { Deferred } from 'sql/base/common/promise';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, RunAllCellsAction, ClearAllOutputsAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
+import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -427,6 +427,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted');
 		this._trustedAction.enabled = false;
 
+		let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells');
+
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
 		this._actionBar.context = this;
@@ -437,7 +439,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			{ element: attachToContainer },
 			{ action: this._trustedAction },
 			{ action: this._runAllCellsAction },
-			{ action: clearResultsButton }
+			{ action: clearResultsButton },
+			{ action: collapseCellsAction }
 		]);
 	}
 
