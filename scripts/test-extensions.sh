@@ -48,7 +48,7 @@ echo **************************
 echo *****************************
 echo *** starting dacpac tests ***
 echo *****************************
-./scripts/code.sh --extensionDevelopmentPath=$ROOT/extensions/dacpac --extensionTestsPath=$ROOT/extensions/dacpac/out/test --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR
+./scripts/code.sh --nogpu --extensionDevelopmentPath=$ROOT/extensions/dacpac --extensionTestsPath=$ROOT/extensions/dacpac/out/test --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR
 
 echo *************************************
 echo *** starting schema compare tests ***
