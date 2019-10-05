@@ -165,7 +165,7 @@ export class DeployClusterWizardModel extends Model {
 	}
 
 	private escapeForNotebookCodeCell(original: string): string {
-		// Escape the \ character
+		// Escape the \ character for the code cell string value
 		return original && original.replace(/\\/g, '\\\\');
 	}
 }

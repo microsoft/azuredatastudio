@@ -312,6 +312,7 @@ export class BigDataClusterDeploymentProfile {
 				serviceType: 'NodePort',
 				port: port
 			};
+			// for newly added endpoint, we cannot have blank value for the dnsName, only set it if it is not empty
 			if (dnsName) {
 				newEndpoint.dnsName = dnsName;
 			}
