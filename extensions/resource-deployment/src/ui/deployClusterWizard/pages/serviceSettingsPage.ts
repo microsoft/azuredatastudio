@@ -32,6 +32,12 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 	private gatewayDNSInput!: azdata.InputBoxComponent;
 	private gatewayPortInput!: azdata.InputBoxComponent;
 	private gatewayEndpointRow!: azdata.FlexContainer;
+	private serviceProxyDNSInput!: azdata.InputBoxComponent;
+	private serviceProxyPortInput!: azdata.InputBoxComponent;
+	private serviceProxyEndpointRow!: azdata.FlexContainer;
+	private appServiceProxyDNSInput!: azdata.InputBoxComponent;
+	private appServiceProxyPortInput!: azdata.InputBoxComponent;
+	private appServiceProxyEndpointRow!: azdata.FlexContainer;
 	private readableSecondaryDNSInput!: azdata.InputBoxComponent;
 	private readableSecondaryPortInput!: azdata.InputBoxComponent;
 	private readableSecondaryEndpointRow!: azdata.FlexContainer;
@@ -39,6 +45,8 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 	private controllerNameLabel!: azdata.TextComponent;
 	private SqlServerNameLabel!: azdata.TextComponent;
 	private gatewayNameLabel!: azdata.TextComponent;
+	private serviceProxyNameLabel!: azdata.TextComponent;
+	private appServiceProxyNameLabel!: azdata.TextComponent;
 	private readableSecondaryNameLabel!: azdata.TextComponent;
 
 	constructor(wizard: DeployClusterWizard) {
@@ -419,6 +427,20 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.inputComponents[VariableNames.GatewayDNSName_VariableName] = this.gatewayDNSInput;
 		this.inputComponents[VariableNames.GateWayPort_VariableName] = this.gatewayPortInput;
 
+		this.serviceProxyNameLabel = createLabel(view, { text: localize('deployCluster.ServiceProxyText', "Management proxy"), width: labelWidth, required: true });
+		this.serviceProxyDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.ServiceProxyDNSName', "Management proxy DNS name"), required: false, width: inputWidth });
+		this.serviceProxyPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ServiceProxyPortName', "Management proxy port"), required: true, width: PortInputWidth, min: 1 });
+		this.serviceProxyEndpointRow = createFlexContainer(view, [this.serviceProxyNameLabel, this.serviceProxyDNSInput, this.serviceProxyPortInput]);
+		this.inputComponents[VariableNames.ServiceProxyDNSName_VariableName] = this.serviceProxyDNSInput;
+		this.inputComponents[VariableNames.ServiceProxyPort_VariableName] = this.serviceProxyPortInput;
+
+		this.appServiceProxyNameLabel = createLabel(view, { text: localize('deployCluster.AppServiceProxyText', "Application proxy"), width: labelWidth, required: true });
+		this.appServiceProxyDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.AppServiceProxyDNSName', "Application proxy DNS name"), required: false, width: inputWidth });
+		this.appServiceProxyPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.AppServiceProxyPortName', "Application proxy port"), required: true, width: PortInputWidth, min: 1 });
+		this.appServiceProxyEndpointRow = createFlexContainer(view, [this.appServiceProxyNameLabel, this.appServiceProxyDNSInput, this.appServiceProxyPortInput]);
+		this.inputComponents[VariableNames.AppServiceProxyDNSName_VariableName] = this.appServiceProxyDNSInput;
+		this.inputComponents[VariableNames.AppServiceProxyPort_VariableName] = this.appServiceProxyPortInput;
+
 		this.readableSecondaryNameLabel = createLabel(view, { text: localize('deployCluster.ReadableSecondaryText', "Readable secondary"), width: labelWidth, required: true });
 		this.readableSecondaryDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.ReadableSecondaryDNSName', "Readable secondary DNS name"), required: false, width: inputWidth });
 		this.readableSecondaryPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ReadableSecondaryPortName', "Readable secondary port"), required: false, width: PortInputWidth, min: 1 });
@@ -426,7 +448,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.inputComponents[VariableNames.ReadableSecondaryDNSName_VariableName] = this.readableSecondaryDNSInput;
 		this.inputComponents[VariableNames.ReadableSecondaryPort_VariableName] = this.readableSecondaryPortInput;
 
-		return createGroupContainer(view, [this.endpointHeaderRow, this.controllerEndpointRow, this.sqlServerEndpointRow, this.gatewayEndpointRow, this.readableSecondaryEndpointRow], {
+		return createGroupContainer(view, [this.endpointHeaderRow, this.controllerEndpointRow, this.sqlServerEndpointRow, this.gatewayEndpointRow, this.serviceProxyEndpointRow, this.appServiceProxyEndpointRow, this.readableSecondaryEndpointRow], {
 			header: localize('deployCluster.EndpointSettings', "Endpoint settings"),
 			collapsible: true
 		});
@@ -447,6 +469,8 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.setInputBoxValue(VariableNames.ControllerPort_VariableName);
 		this.setInputBoxValue(VariableNames.SQLServerPort_VariableName);
 		this.setInputBoxValue(VariableNames.GateWayPort_VariableName);
+		this.setInputBoxValue(VariableNames.ServiceProxyPort_VariableName);
+		this.setInputBoxValue(VariableNames.AppServiceProxyPort_VariableName);
 		this.setInputBoxValue(VariableNames.ReadableSecondaryPort_VariableName);
 
 		this.setInputBoxValue(VariableNames.ControllerDataStorageClassName_VariableName);
@@ -461,6 +485,10 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.loadEndpointRow(this.controllerEndpointRow, this.controllerNameLabel, this.controllerDNSInput, this.controllerPortInput);
 		this.loadEndpointRow(this.gatewayEndpointRow, this.gatewayNameLabel, this.gatewayDNSInput, this.gatewayPortInput);
 		this.loadEndpointRow(this.sqlServerEndpointRow, this.SqlServerNameLabel, this.sqlServerDNSInput, this.sqlServerPortInput);
+		this.loadEndpointRow(this.appServiceProxyEndpointRow, this.appServiceProxyNameLabel, this.appServiceProxyDNSInput, this.appServiceProxyPortInput);
+		this.loadEndpointRow(this.serviceProxyEndpointRow, this.serviceProxyNameLabel, this.serviceProxyDNSInput, this.serviceProxyPortInput);
+
+
 		this.updateReadableSecondaryEndpointComponents(this.wizard.model.hadrEnabled);
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };
@@ -479,12 +507,16 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ControllerPort_VariableName, this.inputComponents))
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.SQLServerPort_VariableName, this.inputComponents))
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.GateWayPort_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AppServiceProxyPort_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ServiceProxyPort_VariableName, this.inputComponents))
 					&& (!getCheckboxComponent(VariableNames.EnableHADR_VariableName, this.inputComponents).checked
 						|| !isInputBoxEmpty(this.readableSecondaryPortInput))
 					&& (this.wizard.model.authenticationMode !== AuthenticationMode.ActiveDirectory
 						|| (!isInputBoxEmpty(this.gatewayDNSInput)
 							&& !isInputBoxEmpty(this.controllerDNSInput)
 							&& !isInputBoxEmpty(this.sqlServerDNSInput)
+							&& !isInputBoxEmpty(this.appServiceProxyDNSInput)
+							&& !isInputBoxEmpty(this.serviceProxyDNSInput)
 							&& !isInputBoxEmpty(this.readableSecondaryDNSInput)
 						));
 				if (!isValid) {

@@ -113,12 +113,27 @@ export class DeployClusterWizardModel extends Model {
 		targetDeploymentProfile.includeSpark = this.getBooleanValue(VariableNames.IncludeSpark_VariableName);
 		targetDeploymentProfile.hadrEnabled = this.getBooleanValue(VariableNames.EnableHADR_VariableName);
 
-		// port settings
-		targetDeploymentProfile.gatewayPort = this.getIntegerValue(VariableNames.GateWayPort_VariableName);
-		targetDeploymentProfile.sqlServerPort = this.getIntegerValue(VariableNames.SQLServerPort_VariableName);
-		targetDeploymentProfile.controllerPort = this.getIntegerValue(VariableNames.ControllerPort_VariableName);
-		targetDeploymentProfile.sqlServerReadableSecondaryPort = this.getIntegerValue(VariableNames.ReadableSecondaryPort_VariableName);
+		// endpoint settings
+		targetDeploymentProfile.setGatewayEndpoint(this.getIntegerValue(VariableNames.GateWayPort_VariableName), this.getStringValue(VariableNames.GatewayDNSName_VariableName));
+		targetDeploymentProfile.setSqlServerEndpoint(this.getIntegerValue(VariableNames.SQLServerPort_VariableName), this.getStringValue(VariableNames.SQLServerDNSName_VariableName));
+		targetDeploymentProfile.setControllerEndpoint(this.getIntegerValue(VariableNames.ControllerPort_VariableName), this.getStringValue(VariableNames.ControllerDNSName_VariableName));
+		targetDeploymentProfile.setSqlServerReadableSecondaryEndpoint(this.getIntegerValue(VariableNames.ReadableSecondaryPort_VariableName), this.getStringValue(VariableNames.ReadableSecondaryDNSName_VariableName));
+		targetDeploymentProfile.setServiceProxyEndpoint(this.getIntegerValue(VariableNames.ServiceProxyPort_VariableName), this.getStringValue(VariableNames.ServiceProxyDNSName_VariableName));
+		targetDeploymentProfile.setAppServiceProxyEndpoint(this.getIntegerValue(VariableNames.AppServiceProxyPort_VariableName), this.getStringValue(VariableNames.AppServiceProxyDNSName_VariableName));
 
+		targetDeploymentProfile.setAuthenticationMode(this.authenticationMode!);
+		if (this.authenticationMode === AuthenticationMode.ActiveDirectory) {
+			targetDeploymentProfile.setActiveDirectorySettings({
+				organizationalUnit: this.getStringValue(VariableNames.OrganizationalUnitDistinguishedName_VariableName)!,
+				domainControllerFQDNs: this.getStringValue(VariableNames.DomainControllerFQDNs_VariableName)!,
+				domainDNSName: this.getStringValue(VariableNames.DomainDNSName_VariableName)!,
+				dnsIPAddresses: this.getStringValue(VariableNames.DomainDNSIPAddresses_VariableName)!,
+				clusterAdmins: this.getStringValue(VariableNames.ClusterAdmins_VariableName)!,
+				clusterUsers: this.getStringValue(VariableNames.ClusterUsers_VariableName)!,
+				appOwners: this.getStringValue(VariableNames.AppOwners_VariableName),
+				appReaders: this.getStringValue(VariableNames.AppReaders_VariableName)
+			});
+		}
 		return targetDeploymentProfile;
 	}
 
@@ -133,16 +148,25 @@ export class DeployClusterWizardModel extends Model {
 			statements.push(`azure_vm_count = '${this.getStringValue(VariableNames.VMCount_VariableName)}'`);
 			statements.push(`aks_cluster_name = '${this.getStringValue(VariableNames.AksName_VariableName)}'`);
 		} else if (this.deploymentTarget === BdcDeploymentType.ExistingAKS || this.deploymentTarget === BdcDeploymentType.ExistingKubeAdm) {
-			statements.push(`mssql_kube_config_path = '${this.getStringValue(VariableNames.KubeConfigPath_VariableName)}'`);
+			statements.push(`mssql_kube_config_path = '${this.escapeForNotebookCodeCell(this.getStringValue(VariableNames.KubeConfigPath_VariableName)!)}'`);
 			statements.push(`mssql_cluster_context = '${this.getStringValue(VariableNames.ClusterContext_VariableName)}'`);
 			statements.push('os.environ["KUBECONFIG"] = mssql_kube_config_path');
 		}
+		if (this.authenticationMode === AuthenticationMode.ActiveDirectory) {
+			statements.push(`mssql_domain_service_account_username = '${this.escapeForNotebookCodeCell(this.getStringValue(VariableNames.DomainServiceAccountUserName_VariableName)!)}'`);
+		}
 		statements.push(`mssql_cluster_name = '${this.getStringValue(VariableNames.ClusterName_VariableName)}'`);
 		statements.push(`mssql_username = '${this.getStringValue(VariableNames.AdminUserName_VariableName)}'`);
+		statements.push(`mssql_auth_mode = '${this.authenticationMode}'`);
 		statements.push(`bdc_json = '${profile.getBdcJson(false)}'`);
 		statements.push(`control_json = '${profile.getControlJson(false)}'`);
 		statements.push(`print('Variables have been set successfully.')`);
 		return statements.join(EOL);
+	}
+
+	private escapeForNotebookCodeCell(original: string): string {
+		// Escape the \ character for the code cell string value
+		return original && original.replace(/\\/g, '\\\\');
 	}
 }
 

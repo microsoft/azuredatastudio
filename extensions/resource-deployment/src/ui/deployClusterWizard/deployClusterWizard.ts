@@ -18,7 +18,7 @@ import { IKubeService } from '../../services/kubeService';
 import { IAzdataService } from '../../services/azdataService';
 import { DeploymentProfilePage } from './pages/deploymentProfilePage';
 import { INotebookService } from '../../services/notebookService';
-import { DeployClusterWizardModel } from './deployClusterWizardModel';
+import { DeployClusterWizardModel, AuthenticationMode } from './deployClusterWizardModel';
 import * as VariableNames from './constants';
 const localize = nls.loadMessageBundle();
 
@@ -55,12 +55,16 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 
 	protected onOk(): void {
 		process.env[VariableNames.AdminPassword_VariableName] = this.model.getStringValue(VariableNames.AdminPassword_VariableName);
+		if (this.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
+			process.env[VariableNames.DomainServiceAccountPassword_VariableName] = this.model.getStringValue(VariableNames.DomainServiceAccountPassword_VariableName);
+		}
 		this.notebookService.launchNotebook(this.wizardInfo.notebook).then((notebook: azdata.nb.NotebookEditor) => {
 			notebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
+				// 5 is the position after the 'Set variables' cell in the deployment notebooks
 				editBuilder.insertCell({
 					cell_type: 'code',
 					source: this.model.getCodeCellContentForNotebook()
-				}, 7);
+				}, 5);
 			});
 		}, (error) => {
 			vscode.window.showErrorMessage(error);

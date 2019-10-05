@@ -7,7 +7,7 @@ import { IPlatformService } from './platformService';
 import { BigDataClusterDeploymentProfile } from './bigDataClusterDeploymentProfile';
 
 interface BdcConfigListOutput {
-	stdout: string[];
+	result: string[];
 }
 
 export interface IAzdataService {
@@ -29,17 +29,16 @@ export class AzdataService implements IAzdataService {
 		// azdata requires this environment variables to be set
 		env['ACCEPT_EULA'] = 'yes';
 		const cmd = 'azdata bdc config list -o json';
-		// Run the command twice to workaround the issue:
-		// First time use of the azdata will have extra EULA related string in the output
-		// there is no easy and reliable way to filter out the profile names from it.
-		await this.platformService.runCommand(cmd, { additionalEnvironmentVariables: env });
-		const stdout = await this.platformService.runCommand(cmd);
+		const stdout = await this.platformService.runCommand(cmd, { additionalEnvironmentVariables: env });
 		const output = <BdcConfigListOutput>JSON.parse(stdout);
-		return output.stdout;
+		return output.result;
 	}
 
 	private async getDeploymentProfileInfo(profileName: string): Promise<BigDataClusterDeploymentProfile> {
-		await this.platformService.runCommand(`azdata bdc config init --source ${profileName} --target ${profileName} --force`, { workingDirectory: this.platformService.storagePath() });
+		const env: NodeJS.ProcessEnv = {};
+		// azdata requires this environment variables to be set
+		env['ACCEPT_EULA'] = 'yes';
+		await this.platformService.runCommand(`azdata bdc config init --source ${profileName} --target ${profileName} --force`, { workingDirectory: this.platformService.storagePath(), additionalEnvironmentVariables: env });
 		const configObjects = await Promise.all([
 			this.getJsonObjectFromFile(path.join(this.platformService.storagePath(), profileName, 'bdc.json')),
 			this.getJsonObjectFromFile(path.join(this.platformService.storagePath(), profileName, 'control.json'))
