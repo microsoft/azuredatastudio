@@ -130,7 +130,18 @@ export class ManageAccessDialog {
 				rootContainer.addItem(typeContainer, { flex: '0 0 auto' });
 				const addUserOrGroupInputRow = modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
 
-				this.addUserOrGroupInput = modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({ inputType: 'text', placeHolder: enterNamePlaceholder, width: 250 }).component();
+				this.addUserOrGroupInput = modelView.modelBuilder.inputBox()
+					.withProperties<azdata.InputBoxProperties>(
+						{
+							inputType: 'text',
+							placeHolder:
+								enterNamePlaceholder, width: 250,
+							stopEnterPropagation: true
+						}).component();
+				this.addUserOrGroupInput.onInputEntered((value: string) => {
+					this.hdfsModel.createAndAddAclEntry(value, this.addUserOrGroupSelectedType);
+					this.addUserOrGroupInput.value = '';
+				});
 				const addUserOrGroupButton = modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: addLabel, width: 75 }).component();
 				addUserOrGroupButton.onDidClick(() => {
 					this.hdfsModel.createAndAddAclEntry(this.addUserOrGroupInput.value, this.addUserOrGroupSelectedType);
