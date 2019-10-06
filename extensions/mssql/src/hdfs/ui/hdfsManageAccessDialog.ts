@@ -134,8 +134,8 @@ export class ManageAccessDialog {
 					.withProperties<azdata.InputBoxProperties>(
 						{
 							inputType: 'text',
-							placeHolder:
-								enterNamePlaceholder, width: 250,
+							placeHolder: enterNamePlaceholder,
+							width: 250,
 							stopEnterPropagation: true
 						}).component();
 				this.addUserOrGroupInput.onInputEntered((value: string) => {
