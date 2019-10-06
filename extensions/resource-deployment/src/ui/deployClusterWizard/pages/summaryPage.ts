@@ -4,24 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import * as vscode from 'vscode';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { SectionInfo, FieldType, LabelPosition, BdcDeploymentType, FontWeight } from '../../../interfaces';
 import { createSection, createGroupContainer, createFlexContainer, createLabel } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
-import * as os from 'os';
-import { join } from 'path';
-import * as fs from 'fs';
 import { AuthenticationMode } from '../deployClusterWizardModel';
-import { BigDataClusterDeploymentProfile } from '../../../services/bigDataClusterDeploymentProfile';
 const localize = nls.loadMessageBundle();
 
 export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 	private formItems: azdata.FormComponent[] = [];
 	private form!: azdata.FormBuilder;
 	private view!: azdata.ModelView;
-	private targetDeploymentProfile!: BigDataClusterDeploymentProfile;
 
 	constructor(wizard: DeployClusterWizard) {
 		super(localize('deployCluster.summaryPageTitle', "Summary"), '', wizard);
@@ -30,30 +24,13 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 	public initialize(): void {
 		this.pageObject.registerContent((view: azdata.ModelView) => {
 			this.view = view;
-			const deploymentJsonSection = createGroupContainer(view, [
-				view.modelBuilder.flexContainer().withItems([
-					this.createSaveJsonButton(localize('deployCluster.SaveBdcJson', "Save bdc.json"), 'bdc.json', () => { return this.targetDeploymentProfile.getBdcJson(); }),
-					this.createSaveJsonButton(localize('deployCluster.SaveControlJson', "Save control.json"), 'control.json', () => { return this.targetDeploymentProfile.getControlJson(); })
-				], {
-					CSSStyles: { 'margin-right': '10px' }
-				}).withLayout({ flexFlow: 'row', alignItems: 'center' }).component()
-			], {
-				header: localize('deployCluster.DeploymentJSON', "Deployment JSON files"),
-				collapsible: true
-			});
-
-			this.form = view.modelBuilder.formContainer().withFormItems([
-				{
-					title: '',
-					component: deploymentJsonSection
-				}
-			]);
+			this.form = view.modelBuilder.formContainer();
 			return view.initializeModel(this.form!.withLayout({ width: '100%' }).component());
 		});
 	}
 
 	public onEnter() {
-		this.targetDeploymentProfile = this.wizard.model.createTargetProfile();
+		this.wizard.saveConfigButton.hidden = false;
 		this.formItems.forEach(item => {
 			this.form!.removeFormItem(item);
 		});
@@ -326,6 +303,10 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 		this.form.addFormItems(this.formItems);
 	}
 
+	public onLeave() {
+		this.wizard.saveConfigButton.hidden = true;
+	}
+
 	private getStorageSettingValue(propertyName: string, defaultValuePropertyName: string): string | undefined {
 		const value = this.wizard.model.getStringValue(propertyName);
 		return (value === undefined || value === '') ? this.wizard.model.getStringValue(defaultValuePropertyName) : value;
@@ -422,37 +403,5 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			text: this.wizard.model.getStringValue(portVariableName)!, width: '100px'
 		}));
 		return createFlexContainer(this.view, items);
-	}
-
-	private createSaveJsonButton(label: string, fileName: string, getContent: () => string): azdata.ButtonComponent {
-		const button = this.view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			title: label,
-			label: fileName,
-			ariaLabel: label,
-			width: '150px'
-		}).component();
-		this.wizard.registerDisposable(button.onDidClick(() => {
-			vscode.window.showSaveDialog({
-				defaultUri: vscode.Uri.file(join(os.homedir(), fileName)),
-				filters: {
-					'JSON': ['json']
-				}
-			}).then((path) => {
-				if (path) {
-					fs.promises.writeFile(path.fsPath, getContent()).then(() => {
-						this.wizard.wizardObject.message = {
-							text: localize('deployCluster.SaveJsonFileMessage', "File saved: {0}", path.fsPath),
-							level: azdata.window.MessageLevel.Information
-						};
-					}).catch((error) => {
-						this.wizard.wizardObject.message = {
-							text: error.message,
-							level: azdata.window.MessageLevel.Error
-						};
-					});
-				}
-			});
-		}));
-		return button;
 	}
 }

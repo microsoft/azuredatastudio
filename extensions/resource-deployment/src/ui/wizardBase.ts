@@ -12,6 +12,7 @@ const localize = nls.loadMessageBundle();
 
 export abstract class WizardBase<T, M extends Model> {
 	private customButtons: azdata.window.Button[] = [];
+	private leftSideButtons: azdata.window.Button[] = [];
 	private pages: WizardPageBase<T>[] = [];
 
 	public wizardObject: azdata.window.Wizard;
@@ -27,6 +28,7 @@ export abstract class WizardBase<T, M extends Model> {
 	public open(): Thenable<void> {
 		this.initialize();
 		this.wizardObject.customButtons = this.customButtons;
+		this.wizardObject.leftSideButtons = this.leftSideButtons;
 		this.toDispose.push(this.wizardObject.onPageChanged((e) => {
 			let previousPage = this.pages[e.lastPage];
 			let newPage = this.pages[e.newPage];
@@ -55,8 +57,12 @@ export abstract class WizardBase<T, M extends Model> {
 	protected abstract onOk(): void;
 	protected abstract onCancel(): void;
 
-	public addButton(button: azdata.window.Button) {
-		this.customButtons.push(button);
+	public addButton(button: azdata.window.Button, position?: 'left' | 'right') {
+		if (position && position === 'right') {
+			this.customButtons.push(button);
+		} else {
+			this.leftSideButtons.push(button);
+		}
 	}
 
 	protected setPages(pages: WizardPageBase<T>[]) {

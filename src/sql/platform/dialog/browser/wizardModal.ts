@@ -81,6 +81,13 @@ export class WizardModal extends Modal {
 			});
 		}
 
+		if (this._wizard.leftSideButtons) {
+			this._wizard.leftSideButtons.forEach(button => {
+				let buttonElement = this.addDialogButton(button, undefined, true, false, 'left');
+				this.updateButtonElement(buttonElement, button);
+			});
+		}
+
 		this._previousButton = this.addDialogButton(this._wizard.backButton, () => this.showPage(this._wizard.currentPage - 1));
 		this._nextButton = this.addDialogButton(this._wizard.nextButton, () => this.showPage(this._wizard.currentPage + 1, true, true), true, true);
 		this._generateScriptButton = this.addDialogButton(this._wizard.generateScriptButton, () => undefined);
@@ -101,8 +108,8 @@ export class WizardModal extends Modal {
 		this._wizard.onMessageChange(message => messageChangeHandler(message));
 	}
 
-	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true, requirePageValid: boolean = false): Button {
-		let buttonElement = this.addFooterButton(button.label, onSelect);
+	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true, requirePageValid: boolean = false, position: 'left' | 'right' = 'right'): Button {
+		let buttonElement = this.addFooterButton(button.label, onSelect, position);
 		buttonElement.enabled = button.enabled;
 		if (registerClickEvent) {
 			button.registerClickEvent(buttonElement.onDidClick);

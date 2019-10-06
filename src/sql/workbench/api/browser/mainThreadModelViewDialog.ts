@@ -184,6 +184,9 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		if (details.customButtons !== undefined) {
 			wizard.customButtons = details.customButtons.map(buttonHandle => this.getButton(buttonHandle));
 		}
+		if (details.leftSideButtons !== undefined) {
+			wizard.leftSideButtons = details.leftSideButtons.map(buttonHandle => this.getButton(buttonHandle));
+		}
 		wizard.message = details.message;
 
 		return Promise.resolve();

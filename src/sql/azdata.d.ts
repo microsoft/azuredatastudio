@@ -3748,6 +3748,11 @@ declare module 'azdata' {
 			customButtons: Button[];
 
 			/**
+			 * Any additional buttons that should be displayed for all pages on the left side of dialog footer.
+			 */
+			leftSideButtons: Button[];
+
+			/**
 			 * When set to false page titles and descriptions will not be displayed at the top
 			 * of each wizard page. The default is true.
 			 */

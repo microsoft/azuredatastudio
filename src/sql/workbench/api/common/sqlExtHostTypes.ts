@@ -272,6 +272,7 @@ export interface IModelViewWizardDetails {
 	nextButton: number;
 	backButton: number;
 	customButtons: number[];
+	leftSideButtons: number[];
 	message: DialogMessage;
 	displayPageTitles: boolean;
 }

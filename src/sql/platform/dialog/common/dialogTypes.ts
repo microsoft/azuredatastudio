@@ -177,6 +177,7 @@ export class Wizard {
 	public doneButton: DialogButton;
 	public cancelButton: DialogButton;
 	public customButtons: DialogButton[];
+	public leftSideButtons: DialogButton[];
 	private _currentPage: number;
 	private _pageChangedEmitter = new Emitter<azdata.window.WizardPageChangeInfo>();
 	public readonly onPageChanged = this._pageChangedEmitter.event;
