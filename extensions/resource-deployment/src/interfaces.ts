@@ -161,6 +161,7 @@ export interface FieldInfo {
 	useCustomValidator?: boolean;
 	labelPosition?: LabelPosition; // overwrite the labelPosition of SectionInfo.
 	fontStyle?: FontStyle;
+	labelFontWeight?: FontWeight;
 }
 
 export enum LabelPosition {
@@ -171,6 +172,11 @@ export enum LabelPosition {
 export enum FontStyle {
 	Normal = 'normal',
 	Italic = 'italic'
+}
+
+export enum FontWeight {
+	Normal = 'normal',
+	Bold = 'bold'
 }
 
 export enum FieldType {

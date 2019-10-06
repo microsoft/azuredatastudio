@@ -1,9 +1,7 @@
 {
 	"extension-displayName": "SQL Server Deployment extension for Azure Data Studio",
 	"extension-description": "Provides a notebook-based experience to deploy Microsoft SQL Server",
-	"deploy-sql-image-command-name": "Deploy SQL Server on Docker…",
-	"deploy-sql-bdc-command-name": "Deploy SQL Server Big Data Cluster…",
-	"deploy-resource-command-name": "More deployment options…",
+	"deploy-resource-command-name": "Deploy SQL Server…",
 	"deploy-resource-command-category": "Deployment",
 	"resource-type-sql-image-display-name": "SQL Server container image",
 	"resource-type-sql-image-description": "Run SQL Server container image with Docker",
@@ -14,7 +12,7 @@
 	"sql-2019-display-name": "SQL Server 2019 RC",
 	"sql-2017-docker-notebook": "./notebooks/docker/2017/deploy-sql2017-image.ipynb",
 	"sql-2019-docker-notebook": "./notebooks/docker/2019/deploy-sql2019-image.ipynb",
-	"bdc-2019-display-name": "SQL Server 2019 RC Big Data Cluster",
+	"bdc-2019-display-name": "SQL Server 2019 RC",
 	"bdc-deployment-target": "Deployment target",
 	"bdc-deployment-target-new-aks": "New Azure Kubernetes Service Cluster",
 	"bdc-deployment-target-existing-aks": "Existing Azure Kubernetes Service Cluster",
@@ -52,5 +50,5 @@
 	"bdc-agreement": "I accept {0}, {1} and {2}.",
 	"bdc-agreement-privacy-statement":"Microsoft Privacy Statement",
 	"bdc-agreement-azdata-eula":"azdata License Terms",
-	"bdc-agreement-bdc-eula":"SQL Server Big Data Cluster License Terms"
+	"bdc-agreement-bdc-eula":"SQL Server License Terms"
 }

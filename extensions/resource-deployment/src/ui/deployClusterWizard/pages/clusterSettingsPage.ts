@@ -246,14 +246,15 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					messages.push(MissingRequiredInformationErrorMessage);
 				}
 
-				if (!isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminPassword_VariableName, this.inputComponents))
+				if (!isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminUserName_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminPassword_VariableName, this.inputComponents))
 					&& !isInputBoxEmpty(getInputBoxComponent(ConfirmPasswordName, this.inputComponents))) {
 					const password = getInputBoxComponent(VariableNames.AdminPassword_VariableName, this.inputComponents).value!;
 					const confirmPassword = getInputBoxComponent(ConfirmPasswordName, this.inputComponents).value!;
 					if (password !== confirmPassword) {
 						messages.push(getPasswordMismatchMessage(localize('deployCluster.AdminPasswordField', "Password")));
 					}
-					if (!isValidSQLPassword(password)) {
+					if (!isValidSQLPassword(password, getInputBoxComponent(VariableNames.AdminUserName_VariableName, this.inputComponents).value!)) {
 						messages.push(getInvalidSQLPasswordMessage(localize('deployCluster.AdminPasswordField', "Password")));
 					}
 				}

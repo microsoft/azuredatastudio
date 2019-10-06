@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DialogInfoBase, FieldType, FieldInfo, SectionInfo, LabelPosition } from '../interfaces';
+import { DialogInfoBase, FieldType, FieldInfo, SectionInfo, LabelPosition, FontWeight, FontStyle } from '../interfaces';
 import { Model } from './model';
 
 const localize = nls.loadMessageBundle();
@@ -70,12 +70,12 @@ export function createTextInput(view: azdata.ModelView, inputInfo: { defaultValu
 	}).component();
 }
 
-export function createLabel(view: azdata.ModelView, info: { text: string, description?: string, required?: boolean, width?: string, fontStyle?: string }): azdata.TextComponent {
+export function createLabel(view: azdata.ModelView, info: { text: string, description?: string, required?: boolean, width?: string, fontStyle?: FontStyle, fontWeight?: FontWeight }): azdata.TextComponent {
 	const text = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 		value: info.text,
 		description: info.description,
 		requiredIndicator: info.required,
-		CSSStyles: { 'font-style': info.fontStyle || 'normal' }
+		CSSStyles: { 'font-style': info.fontStyle || 'normal', 'font-weight': info.fontWeight || 'normal' }
 	}).component();
 	text.width = info.width;
 	return text;
@@ -263,7 +263,7 @@ function processField(context: FieldContext): void {
 }
 
 function processOptionsTypeField(context: FieldContext): void {
-	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth });
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
 	const dropdown = createDropdown(context.view, {
 		values: context.fieldInfo.options,
 		defaultValue: context.fieldInfo.defaultValue,
@@ -274,7 +274,7 @@ function processOptionsTypeField(context: FieldContext): void {
 }
 
 function processDateTimeTextField(context: FieldContext): void {
-	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth });
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
 	const defaultValue = context.fieldInfo.defaultValue + new Date().toISOString().slice(0, 19).replace(/[^0-9]/g, ''); // Take the date time information and only leaving the numbers
 	const input = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		value: defaultValue,
@@ -289,7 +289,7 @@ function processDateTimeTextField(context: FieldContext): void {
 }
 
 function processNumberField(context: FieldContext): void {
-	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth });
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
 	const input = createNumberInput(context.view, {
 		defaultValue: context.fieldInfo.defaultValue,
 		ariaLabel: context.fieldInfo.label,
@@ -304,7 +304,7 @@ function processNumberField(context: FieldContext): void {
 }
 
 function processTextField(context: FieldContext): void {
-	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth });
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
 	const input = createTextInput(context.view, {
 		defaultValue: context.fieldInfo.defaultValue,
 		ariaLabel: context.fieldInfo.label,
@@ -317,7 +317,7 @@ function processTextField(context: FieldContext): void {
 }
 
 function processPasswordField(context: FieldContext): void {
-	const passwordLabel = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth });
+	const passwordLabel = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
 	const passwordInput = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		ariaLabel: context.fieldInfo.label,
 		inputType: 'password',
@@ -343,7 +343,7 @@ function processPasswordField(context: FieldContext): void {
 
 	if (context.fieldInfo.confirmationRequired) {
 		const passwordNotMatchMessage = getPasswordMismatchMessage(context.fieldInfo.label);
-		const confirmPasswordLabel = createLabel(context.view, { text: context.fieldInfo.confirmationLabel!, required: true, width: context.fieldInfo.labelWidth });
+		const confirmPasswordLabel = createLabel(context.view, { text: context.fieldInfo.confirmationLabel!, required: true, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
 		const confirmPasswordInput = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: context.fieldInfo.confirmationLabel,
 			inputType: 'password',
@@ -373,7 +373,7 @@ function processPasswordField(context: FieldContext): void {
 }
 
 function processReadonlyTextField(context: FieldContext): void {
-	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth });
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
 	const text = createLabel(context.view, { text: context.fieldInfo.defaultValue!, description: '', required: false, width: context.fieldInfo.inputWidth, fontStyle: context.fieldInfo.fontStyle });
 	addLabelInputPairToContainer(context.view, context.components, label, text, context.fieldInfo.labelPosition);
 }

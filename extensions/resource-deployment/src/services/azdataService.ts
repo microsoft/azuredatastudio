@@ -5,23 +5,36 @@
 import * as path from 'path';
 import { IPlatformService } from './platformService';
 import { BigDataClusterDeploymentProfile } from './bigDataClusterDeploymentProfile';
+import { BdcDeploymentType } from '../interfaces';
 
 interface BdcConfigListOutput {
 	result: string[];
 }
 
 export interface IAzdataService {
-	getDeploymentProfiles(): Promise<BigDataClusterDeploymentProfile[]>;
+	getDeploymentProfiles(deploymentType: BdcDeploymentType): Promise<BigDataClusterDeploymentProfile[]>;
 }
 
 export class AzdataService implements IAzdataService {
 	constructor(private platformService: IPlatformService) {
 	}
 
-	public async getDeploymentProfiles(): Promise<BigDataClusterDeploymentProfile[]> {
+	public async getDeploymentProfiles(deploymentType: BdcDeploymentType): Promise<BigDataClusterDeploymentProfile[]> {
+		let profilePrefix: string;
+		switch (deploymentType) {
+			case BdcDeploymentType.NewAKS:
+			case BdcDeploymentType.ExistingAKS:
+				profilePrefix = 'aks';
+				break;
+			case BdcDeploymentType.ExistingKubeAdm:
+				profilePrefix = 'kubeadm';
+				break;
+			default:
+				throw new Error(`Unknown deployment type: ${deploymentType}`);
+		}
 		await this.ensureWorkingDirectoryExists();
 		const profileNames = await this.getDeploymentProfileNames();
-		return await Promise.all(profileNames.map(profile => this.getDeploymentProfileInfo(profile)));
+		return await Promise.all(profileNames.filter(profile => profile.startsWith(profilePrefix)).map(profile => this.getDeploymentProfileInfo(profile)));
 	}
 
 	private async getDeploymentProfileNames(): Promise<string[]> {

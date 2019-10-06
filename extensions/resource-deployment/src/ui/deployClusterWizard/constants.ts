@@ -64,4 +64,3 @@ export const ServiceProxyDNSName_VariableName = 'AZDATA_NB_VAR_BDC_SERVICEPROXY_
 export const ServiceProxyPort_VariableName = 'AZDATA_NB_VAR_BDC_SERVICEPROXY_PORT';
 export const AppServiceProxyDNSName_VariableName = 'AZDATA_NB_VAR_BDC_APPSERVICEPROXY_DNS';
 export const AppServiceProxyPort_VariableName = 'AZDATA_NB_VAR_BDC_APPSERVICEPROXY_PORT';
-export const EnableHADR_VariableName = 'AZDATA_NB_VAR_BDC_ENABLE_HADR';

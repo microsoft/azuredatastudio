@@ -6,7 +6,7 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import { DeployClusterWizard } from '../deployClusterWizard';
-import { SectionInfo, FieldType, LabelPosition, FontStyle, BdcDeploymentType } from '../../../interfaces';
+import { SectionInfo, FieldType, LabelPosition, BdcDeploymentType, FontWeight } from '../../../interfaces';
 import { createSection, createGroupContainer, createFlexContainer, createLabel } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
@@ -71,13 +71,13 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 							type: FieldType.ReadonlyText,
 							label: localize('deployCluster.Kubeconfig', "Kube config"),
 							defaultValue: this.wizard.model.getStringValue(VariableNames.KubeConfigPath_VariableName),
-							fontStyle: FontStyle.Italic
+							labelFontWeight: FontWeight.Bold
 						},
 						{
 							type: FieldType.ReadonlyText,
 							label: localize('deployCluster.ClusterContext', "Cluster context"),
 							defaultValue: this.wizard.model.getStringValue(VariableNames.ClusterContext_VariableName),
-							fontStyle: FontStyle.Italic
+							labelFontWeight: FontWeight.Bold
 						}]
 				}
 			]
@@ -96,13 +96,13 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 							type: FieldType.ReadonlyText,
 							label: localize('deployCluster.DeploymentProfile', "Deployment profile"),
 							defaultValue: this.wizard.model.getStringValue(VariableNames.DeploymentProfile_VariableName),
-							fontStyle: FontStyle.Italic
+							labelFontWeight: FontWeight.Bold
 						},
 						{
 							type: FieldType.ReadonlyText,
 							label: localize('deployCluster.ClusterName', "Cluster name"),
 							defaultValue: this.wizard.model.getStringValue(VariableNames.ClusterName_VariableName),
-							fontStyle: FontStyle.Italic
+							labelFontWeight: FontWeight.Bold
 						}]
 				}, {
 					fields: [
@@ -110,14 +110,14 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 							type: FieldType.ReadonlyText,
 							label: localize('deployCluster.ControllerUsername', "Controller username"),
 							defaultValue: this.wizard.model.getStringValue(VariableNames.AdminUserName_VariableName),
-							fontStyle: FontStyle.Italic
+							labelFontWeight: FontWeight.Bold
 						}, {
 							type: FieldType.ReadonlyText,
 							label: localize('deployCluster.AuthenticationMode', "Authentication mode"),
 							defaultValue: this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory ?
 								localize('deployCluster.AuthenticationMode.ActiveDirectory', "Active Directory") :
 								localize('deployCluster.AuthenticationMode.Basic', "Basic"),
-							fontStyle: FontStyle.Italic
+							labelFontWeight: FontWeight.Bold
 						}
 					]
 				}
@@ -131,13 +131,13 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.OuDistinguishedName', "Organizational unit"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.OrganizationalUnitDistinguishedName_VariableName),
-						fontStyle: FontStyle.Italic
+						labelFontWeight: FontWeight.Bold
 					},
 					{
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.DomainControllerFQDNs', "Domain controller FQDNs"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.DomainControllerFQDNs_VariableName),
-						fontStyle: FontStyle.Italic
+						labelFontWeight: FontWeight.Bold
 					}]
 			});
 			clusterSectionInfo.rows!.push({
@@ -146,13 +146,13 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.DomainDNSIPAddresses', "Domain DNS IP addresses"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.DomainDNSIPAddresses_VariableName),
-						fontStyle: FontStyle.Italic
+						labelFontWeight: FontWeight.Bold
 					},
 					{
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.DomainDNSName', "Domain DNS name"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.DomainDNSName_VariableName),
-						fontStyle: FontStyle.Italic
+						labelFontWeight: FontWeight.Bold
 					}]
 			});
 			clusterSectionInfo.rows!.push({
@@ -161,13 +161,13 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.ClusterAdmins', "Cluster admin group"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.ClusterAdmins_VariableName),
-						fontStyle: FontStyle.Italic
+						labelFontWeight: FontWeight.Bold
 					},
 					{
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.ClusterUsers', "Cluster users"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.ClusterUsers_VariableName),
-						fontStyle: FontStyle.Italic
+						labelFontWeight: FontWeight.Bold
 					}]
 			});
 			clusterSectionInfo.rows!.push({
@@ -176,13 +176,13 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.AppOwers', "App owners"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.AppOwners_VariableName),
-						fontStyle: FontStyle.Italic
+						labelFontWeight: FontWeight.Bold
 					},
 					{
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.AppReaders', "App readers"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.AppReaders_VariableName),
-						fontStyle: FontStyle.Italic
+						labelFontWeight: FontWeight.Bold
 					}]
 			});
 			clusterSectionInfo.rows!.push({
@@ -191,7 +191,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.DomainServiceAccountUserName', "Domain service account username"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.DomainServiceAccountUserName_VariableName),
-						fontStyle: FontStyle.Italic
+						labelFontWeight: FontWeight.Bold
 					}]
 			});
 		}
@@ -207,12 +207,12 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.SubscriptionId', "Subscription id"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.SubscriptionId_VariableName) || localize('deployCluster.DefaultSubscription', "Default Azure Subscription"),
-						fontStyle: FontStyle.Italic
+						labelFontWeight: FontWeight.Bold
 					}, {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.ResourceGroup', "Resource group"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.ResourceGroup_VariableName),
-						fontStyle: FontStyle.Italic
+						labelFontWeight: FontWeight.Bold
 					}
 				]
 			}, {
@@ -221,12 +221,12 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.Region', "Region"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.DeploymentProfile_VariableName),
-						fontStyle: FontStyle.Italic
+						labelFontWeight: FontWeight.Bold
 					}, {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.AksClusterName', "AKS cluster name"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.AksName_VariableName),
-						fontStyle: FontStyle.Italic
+						labelFontWeight: FontWeight.Bold
 					}
 				]
 			}, {
@@ -235,12 +235,12 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.VMSize', "VM size"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.VMSize_VariableName),
-						fontStyle: FontStyle.Italic
+						labelFontWeight: FontWeight.Bold
 					}, {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.VMCount', "VM count"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.VMCount_VariableName),
-						fontStyle: FontStyle.Italic
+						labelFontWeight: FontWeight.Bold
 					}
 				]
 			}
@@ -256,68 +256,34 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 				{
 					fields: [{
 						type: FieldType.ReadonlyText,
-						label: localize('deployCluster.ComputeText', "Compute"),
-						defaultValue: this.wizard.model.getStringValue(VariableNames.ComputePoolScale_VariableName),
-						fontStyle: FontStyle.Italic
+						label: localize('deployCluster.MasterSqlServerInstances', "SQL Server master instances"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.SQLServerScale_VariableName),
+						labelFontWeight: FontWeight.Bold
 					}, {
 						type: FieldType.ReadonlyText,
-						label: localize('deployCluster.DataText', "Data"),
+						label: localize('deployCluster.ComputePoolInstances', "Compute pool instances"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.ComputePoolScale_VariableName),
+						labelFontWeight: FontWeight.Bold
+					}]
+				}, {
+					fields: [{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.DataPoolInstances', "Data pool instances"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.DataPoolScale_VariableName),
-						fontStyle: FontStyle.Italic
-					}
-					]
+						labelFontWeight: FontWeight.Bold
+					}, {
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.SparkPoolInstances', "Spark pool instances"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.SparkPoolScale_VariableName),
+						labelFontWeight: FontWeight.Bold
+					}]
 				}, {
-					fields: [
-						{
-							type: FieldType.ReadonlyText,
-							label: localize('deployCluster.HDFSText', "HDFS"),
-							defaultValue: `${this.wizard.model.getStringValue(VariableNames.HDFSPoolScale_VariableName)} ${this.wizard.model.getBooleanValue(VariableNames.IncludeSpark_VariableName) ? localize('deployCluster.WithSpark', "(Spark included)") : ''}`,
-							fontStyle: FontStyle.Italic
-						}, {
-							type: FieldType.ReadonlyText,
-							label: localize('deployCluster.SparkText', "Spark"),
-							defaultValue: this.wizard.model.getStringValue(VariableNames.SparkPoolScale_VariableName),
-							fontStyle: FontStyle.Italic
-						}
-					]
-				}
-			]
-		};
-
-		const hadrSectionInfo: SectionInfo = {
-			labelPosition: LabelPosition.Left,
-			labelWidth: '150px',
-			inputWidth: '200px',
-			title: localize('deployCluster.HadrSection', "High availability settings"),
-			rows: [
-				{
-					fields: [
-						{
-							type: FieldType.ReadonlyText,
-							label: localize('deployCluster.SqlServerText', "SQL Server Master"),
-							defaultValue: `${this.wizard.model.getStringValue(VariableNames.SQLServerScale_VariableName)} ${this.wizard.model.hadrEnabled ? localize('deployCluster.WithHADR', "(Availability Groups Enabled)") : ''}`,
-							fontStyle: FontStyle.Italic
-						}, {
-							type: FieldType.ReadonlyText,
-							label: localize('deployCluster.HDFSNameNodeText', "HDFS name node"),
-							defaultValue: this.wizard.model.getStringValue(VariableNames.HDFSNameNodeScale_VariableName),
-							fontStyle: FontStyle.Italic
-						}
-					]
-				}, {
-					fields: [
-						{
-							type: FieldType.ReadonlyText,
-							label: localize('deployCluster.ZooKeeperText', "ZooKeeper"),
-							defaultValue: this.wizard.model.getStringValue(VariableNames.ZooKeeperScale_VariableName),
-							fontStyle: FontStyle.Italic
-						}, {
-							type: FieldType.ReadonlyText,
-							label: localize('deployCluster.SparkHeadText', "SparkHead"),
-							defaultValue: this.wizard.model.getStringValue(VariableNames.SparkHeadScale_VariableName),
-							fontStyle: FontStyle.Italic
-						}
-					]
+					fields: [{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.HDFSText', "HDFS"),
+						defaultValue: `${this.wizard.model.getStringValue(VariableNames.HDFSPoolScale_VariableName)} ${this.wizard.model.getBooleanValue(VariableNames.IncludeSpark_VariableName) ? localize('deployCluster.WithSpark', "(Spark included)") : ''}`,
+						labelFontWeight: FontWeight.Bold
+					}]
 				}
 			]
 		};
@@ -343,7 +309,6 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 
 		const clusterSection = createSectionFunc(clusterSectionInfo);
 		const scaleSection = createSectionFunc(scaleSectionInfo);
-		const hadrSection = createSectionFunc(hadrSectionInfo);
 		const endpointSection = {
 			title: '',
 			component: this.createEndpointSection()
@@ -357,7 +322,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			this.formItems.push(azureSection);
 		}
 
-		this.formItems.push(clusterSection, scaleSection, hadrSection, endpointSection, storageSection);
+		this.formItems.push(clusterSection, scaleSection, endpointSection, storageSection);
 		this.form.addFormItems(this.formItems);
 	}
 
@@ -434,7 +399,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			this.createEndpointRow(localize('deployCluster.ServiceProxyText', "Management proxy"), VariableNames.ServiceProxyDNSName_VariableName, VariableNames.ServiceProxyPort_VariableName)
 		];
 
-		if (this.wizard.model.hadrEnabled) {
+		if (this.wizard.model.getIntegerValue(VariableNames.SQLServerScale_VariableName) > 1) {
 			endpointRows.push(
 				this.createEndpointRow(localize('deployCluster.ReadableSecondaryText', "Readable secondary"), VariableNames.ReadableSecondaryDNSName_VariableName, VariableNames.ReadableSecondaryPort_VariableName)
 			);
@@ -447,11 +412,15 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 
 	private createEndpointRow(name: string, dnsVariableName: string, portVariableName: string): azdata.FlexContainer {
 		const items = [];
-		items.push(createLabel(this.view, { text: name, width: '150px' }));
+		items.push(createLabel(this.view, { text: name, width: '150px', fontWeight: FontWeight.Bold }));
 		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
-			items.push(createLabel(this.view, { text: this.wizard.model.getStringValue(dnsVariableName)!, width: '200px', fontStyle: FontStyle.Italic }));
+			items.push(createLabel(this.view, {
+				text: this.wizard.model.getStringValue(dnsVariableName)!, width: '200px'
+			}));
 		}
-		items.push(createLabel(this.view, { text: this.wizard.model.getStringValue(portVariableName)!, width: '100px', fontStyle: FontStyle.Italic }));
+		items.push(createLabel(this.view, {
+			text: this.wizard.model.getStringValue(portVariableName)!, width: '100px'
+		}));
 		return createFlexContainer(this.view, items);
 	}
 

@@ -27,16 +27,6 @@
   "contributes": {
     "commands": [
       {
-        "command": "azdata.resource.sql-image.deploy",
-        "title": "%deploy-sql-image-command-name%",
-        "category": "%deploy-resource-command-category%"
-      },
-      {
-        "command": "azdata.resource.sql-bdc.deploy",
-        "title": "%deploy-sql-bdc-command-name%",
-        "category": "%deploy-resource-command-category%"
-      },
-      {
         "command": "azdata.resource.deploy",
         "title": "%deploy-resource-command-name%",
         "category": "%deploy-resource-command-category%"
@@ -55,14 +45,6 @@
         }
       ],
       "dataExplorer/action": [
-        {
-          "command": "azdata.resource.sql-image.deploy",
-          "group": "secondary"
-        },
-        {
-          "command": "azdata.resource.sql-bdc.deploy",
-          "group": "secondary"
-        },
         {
           "command": "azdata.resource.deploy",
           "group": "secondary"
