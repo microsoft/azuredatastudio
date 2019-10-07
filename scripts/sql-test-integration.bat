@@ -7,6 +7,7 @@ set VSCODEEXTENSIONSDIR=%TMP%\adsext-%RANDOM%-%TIME:~6,5%
 echo VSCODEUSERDATADIR=%VSCODEUSERDATADIR%
 echo VSCODEEXTENSIONSDIR=%VSCODEEXTENSIONSDIR%
 
+:: Default to only running stable tests if test grep isn't set
 if "%ADS_TEST_GREP%" == "" (
 	echo Running stable tests only
 	set ADS_TEST_GREP=@UNSTABLE@
