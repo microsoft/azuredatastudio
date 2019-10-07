@@ -87,6 +87,9 @@ export class JupyterServerInstallation {
 		}, {
 			name: 'sparkmagic',
 			version: '0.12.9'
+		}, {
+			name: 'pykerberos',
+			version: '1.2.1'
 		}
 	];
 
