@@ -473,10 +473,8 @@ export class JupyterServerInstallation {
 				default: true
 			});
 			if (doUpgrade) {
-				await Promise.all([
-					this.installCondaPackages(condaPackagesToInstall),
-					this.installPipPackages(pipPackagesToInstall)
-				]);
+				await this.installCondaPackages(condaPackagesToInstall);
+				await this.installPipPackages(pipPackagesToInstall);
 			}
 		}
 	}
