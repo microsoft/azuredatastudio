@@ -54,6 +54,7 @@
     "resourceDeploymentTypes": [
       {
         "name": "sql-image",
+        "displayIndex": 2,
         "displayName": "%resource-type-sql-image-display-name%",
         "description": "%resource-type-sql-image-description%",
         "platforms": "*",
@@ -184,6 +185,7 @@
       },
       {
         "name": "sql-bdc",
+        "displayIndex": 3,
         "displayName": "%resource-type-sql-bdc-display-name%",
         "description": "%resource-type-sql-bdc-description%",
         "platforms": "*",
@@ -291,6 +293,7 @@
       },
       {
         "name": "sql-windows-setup",
+        "displayIndex": 1,
         "displayName": "%resource-type-sql-windows-setup-display-name%",
         "description": "%resource-type-sql-windows-setup-description%",
         "platforms": [
