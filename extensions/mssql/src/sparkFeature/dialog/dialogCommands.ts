@@ -77,7 +77,7 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 			selectedHost = await vscode.window.showQuickPick(displayList, {
 				placeHolder:
 					localize('sparkJobSubmission_PleaseSelectSqlWithCluster',
-						"Please select SQL Server with big data cluster.")
+						"Please select SQL Server with Big Data Cluster.")
 			});
 			if (selectedHost === selectConnectionMsg) {
 				showConnectionDialog = true;
@@ -107,7 +107,7 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 
 		let sqlClusterConnection = await SqlClusterLookUp.getSqlClusterConnection(sqlConnection);
 		if (!sqlClusterConnection) {
-			throw new Error(localize('errorNotSqlBigDataCluster', "The selected server does not belong to a SQL Server big data cluster"));
+			throw new Error(localize('errorNotSqlBigDataCluster', "The selected server does not belong to a SQL Server Big Data Cluster"));
 		}
 
 		return new SqlClusterConnection(sqlClusterConnection);

@@ -2991,6 +2991,11 @@ declare module 'azdata' {
 		columns?: number;
 		min?: number;
 		max?: number;
+		/**
+		 * Whether to stop key event propagation when enter is pressed in the input box. Leaving this as false
+		 * means the event will propagate up to any parents that have handlers (such as validate on Dialogs)
+		 */
+		stopEnterPropagation?: boolean;
 	}
 
 	export interface TableColumn {
@@ -3235,6 +3240,10 @@ declare module 'azdata' {
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
 		onTextChanged: vscode.Event<any>;
+		/**
+		 * Event that's fired whenever enter is pressed within the input box
+		 */
+		onEnterKeyPressed: vscode.Event<string>;
 	}
 
 	export interface RadioButtonComponent extends Component, RadioButtonProperties {

@@ -6,13 +6,31 @@
 const path = require('path');
 const testRunner = require('vscode/lib/testrunner');
 
-const suite = 'Resource Deployment Unit Tests';
+const suite = 'resource-deployment Extension Tests';
 
 const testOptions: any = {
 	ui: 'tdd',
 	useColors: true,
 	timeout: 60000
 };
+
+// set relevant mocha options from the environment
+if (process.env.ADS_TEST_GREP) {
+	testOptions.grep = process.env.ADS_TEST_GREP;
+	console.log(`setting options.grep to: ${testOptions.grep}`);
+}
+if (process.env.ADS_TEST_INVERT_GREP) {
+	testOptions.invert = parseInt(process.env.ADS_TEST_INVERT_GREP);
+	console.log(`setting options.invert to: ${testOptions.invert}`);
+}
+if (process.env.ADS_TEST_TIMEOUT) {
+	testOptions.timeout = parseInt(process.env.ADS_TEST_TIMEOUT);
+	console.log(`setting options.timeout to: ${testOptions.timeout}`);
+}
+if (process.env.ADS_TEST_RETRIES) {
+	testOptions.retries = parseInt(process.env.ADS_TEST_RETRIES);
+	console.log(`setting options.retries to: ${testOptions.retries}`);
+}
 
 if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 	testOptions.reporter = 'mocha-multi-reporters';

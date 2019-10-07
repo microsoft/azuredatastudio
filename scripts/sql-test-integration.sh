@@ -12,6 +12,7 @@ else
 	VSCODEEXTDIR=`mktemp -d 2>/dev/null`
 fi
 
+# Default to only running stable tests if test grep isn't set
 if [[ "$ADS_TEST_GREP" == "" ]]; then
 	echo Running stable tests only
 	export ADS_TEST_GREP=@UNSTABLE@

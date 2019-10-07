@@ -76,7 +76,7 @@ export class HdfsProvider implements vscode.TreeDataProvider<TreeNode>, ITreeCha
 }
 
 export abstract class HdfsFileSourceNode extends TreeNode {
-	constructor(protected context: TreeDataContext, protected _path: string, public readonly fileSource: IFileSource) {
+	constructor(protected context: TreeDataContext, protected _path: string, public readonly fileSource: IFileSource, protected mountStatus?: MountStatus) {
 		super();
 	}
 
@@ -86,6 +86,11 @@ export abstract class HdfsFileSourceNode extends TreeNode {
 
 	public get nodePathValue(): string {
 		return this.getDisplayName();
+	}
+
+
+	protected isMounted(): boolean {
+		return this.mountStatus === MountStatus.Mount || this.mountStatus === MountStatus.Mount_Child;
 	}
 
 	getDisplayName(): string {
@@ -104,8 +109,8 @@ export abstract class HdfsFileSourceNode extends TreeNode {
 export class FolderNode extends HdfsFileSourceNode {
 	private children: TreeNode[];
 	protected _nodeType: string;
-	constructor(context: TreeDataContext, path: string, fileSource: IFileSource, nodeType?: string, private mountStatus?: MountStatus) {
-		super(context, path, fileSource);
+	constructor(context: TreeDataContext, path: string, fileSource: IFileSource, nodeType?: string, mountStatus?: MountStatus) {
+		super(context, path, fileSource, mountStatus);
 		this._nodeType = nodeType ? nodeType : Constants.MssqlClusterItems.Folder;
 	}
 
@@ -177,10 +182,6 @@ export class FolderNode extends HdfsFileSourceNode {
 			iconType: this.isMounted() ? 'Folder_mounted' : 'Folder'
 		};
 		return nodeInfo;
-	}
-
-	private isMounted(): boolean {
-		return this.mountStatus === MountStatus.Mount || this.mountStatus === MountStatus.Mount_Child;
 	}
 
 	private getSubType(): string | undefined {
@@ -269,8 +270,8 @@ export class ConnectionNode extends FolderNode {
 
 export class FileNode extends HdfsFileSourceNode implements IFileNode {
 
-	constructor(context: TreeDataContext, path: string, fileSource: IFileSource, private mountStatus?: MountStatus) {
-		super(context, path, fileSource);
+	constructor(context: TreeDataContext, path: string, fileSource: IFileSource, mountStatus?: MountStatus) {
+		super(context, path, fileSource, mountStatus);
 	}
 
 	public onChildRemoved(): void {
@@ -303,7 +304,7 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 			nodeStatus: undefined,
 			nodeType: Constants.MssqlClusterItems.File,
 			nodeSubType: this.getSubType(),
-			iconType: 'FileGroupFile'
+			iconType: this.isMounted() ? 'FileGroupFile_mounted' : 'FileGroupFile'
 		};
 		return nodeInfo;
 	}
