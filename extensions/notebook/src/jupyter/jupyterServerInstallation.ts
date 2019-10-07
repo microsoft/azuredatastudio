@@ -384,7 +384,12 @@ export class JupyterServerInstallation {
 	 * Prompts user to upgrade certain python packages if they're below the minimum expected version.
 	 */
 	public async promptForPackageUpgrade(): Promise<void> {
-		let installedPackages = await this.getInstalledPipPackages();
+		let installedPackages: PythonPkgDetails[];
+		if (this._usingConda) {
+			installedPackages = await this.getInstalledCondaPackages();
+		} else {
+			installedPackages = await this.getInstalledPipPackages();
+		}
 		let pkgVersionMap = new Map<string, string>();
 		installedPackages.forEach(pkg => pkgVersionMap.set(pkg.name, pkg.version));
 
@@ -403,7 +408,11 @@ export class JupyterServerInstallation {
 				default: true
 			});
 			if (doUpgrade) {
-				return this.installPipPackages(packagesToInstall);
+				if (this._usingConda) {
+					return this.installCondaPackages(packagesToInstall);
+				} else {
+					return this.installPipPackages(packagesToInstall);
+				}
 			}
 		}
 
@@ -451,9 +460,10 @@ export class JupyterServerInstallation {
 		return [];
 	}
 
-	public installCondaPackage(packageName: string, version: string): Promise<void> {
+	public installCondaPackages(packages: PythonPkgDetails[]): Promise<void> {
+		let packagesStr = packages.map(pkg => `${pkg.name}==${pkg.version}`).join(' ');
 		let condaExe = this.getCondaExePath();
-		let cmd = `"${condaExe}" install -y ${packageName}==${version}`;
+		let cmd = `"${condaExe}" install -y ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
 

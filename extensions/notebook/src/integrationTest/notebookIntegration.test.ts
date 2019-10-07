@@ -111,7 +111,7 @@ describe('Notebook Extension Python Installation', function () {
 
 		should(install.getInstalledCondaPackages()).be.rejected();
 
-		should(install.installCondaPackage('pandas', '0.24.2')).be.rejected();
+		should(install.installCondaPackages([{ name: 'pandas', version: '0.24.2' }])).be.rejected();
 
 		should(install.uninstallCondaPackages([{ name: 'pandas', version: '0.24.2' }])).be.rejected();
 	});
