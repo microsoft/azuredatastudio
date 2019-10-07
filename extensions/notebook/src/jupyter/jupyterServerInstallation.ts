@@ -58,7 +58,7 @@ export class JupyterServerInstallation {
 	public static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
 
 	private _prompter: IPrompter;
-	private readonly _expectedPackages: PythonPkgDetails[] = [
+	private readonly _expectedPythonPackages: PythonPkgDetails[] = [
 		{
 			name: 'jupyter',
 			version: '1.0.0'
@@ -69,6 +69,29 @@ export class JupyterServerInstallation {
 			name: 'sparkmagic',
 			version: '0.12.9'
 		}, {
+			name: 'prose-codeaccelerator',
+			version: '1.3.0'
+		}, {
+			name: 'powershell-kernel',
+			version: '0.1.0'
+		}
+	];
+
+	private readonly _expectedCondaPackages: PythonPkgDetails[] = [
+		{
+			name: 'jupyter',
+			version: '1.0.0'
+		}, {
+			name: 'pandas',
+			version: '0.24.2'
+		}, {
+			name: 'sparkmagic',
+			version: '0.12.9'
+		}
+	];
+
+	private readonly _expectedCondaPipPackages: PythonPkgDetails[] = [
+		{
 			name: 'prose-codeaccelerator',
 			version: '1.3.0'
 		}, {
@@ -383,18 +406,21 @@ export class JupyterServerInstallation {
 	/**
 	 * Prompts user to upgrade certain python packages if they're below the minimum expected version.
 	 */
-	public async promptForPackageUpgrade(): Promise<void> {
-		let installedPackages: PythonPkgDetails[];
+	public promptForPackageUpgrade(): Promise<void> {
 		if (this._usingConda) {
-			installedPackages = await this.getInstalledCondaPackages();
+			return this.doCondaPackageUpgrade();
 		} else {
-			installedPackages = await this.getInstalledPipPackages();
+			return this.doPythonPackageUpgrade();
 		}
+	}
+
+	private async doPythonPackageUpgrade(): Promise<void> {
+		let installedPackages = await this.getInstalledPipPackages();
 		let pkgVersionMap = new Map<string, string>();
 		installedPackages.forEach(pkg => pkgVersionMap.set(pkg.name, pkg.version));
 
 		let packagesToInstall: PythonPkgDetails[] = [];
-		this._expectedPackages.forEach(expectedPkg => {
+		this._expectedPythonPackages.forEach(expectedPkg => {
 			let installedPkgVersion = pkgVersionMap.get(expectedPkg.name);
 			if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
 				packagesToInstall.push(expectedPkg);
@@ -408,15 +434,51 @@ export class JupyterServerInstallation {
 				default: true
 			});
 			if (doUpgrade) {
-				if (this._usingConda) {
-					return this.installCondaPackages(packagesToInstall);
-				} else {
-					return this.installPipPackages(packagesToInstall);
-				}
+				await this.installPipPackages(packagesToInstall);
 			}
 		}
+	}
 
-		return Promise.resolve();
+	private async doCondaPackageUpgrade(): Promise<void> {
+		// Conda packages
+		let installedCondaPackages = await this.getInstalledCondaPackages();
+		let condaVersionMap = new Map<string, string>();
+		installedCondaPackages.forEach(pkg => condaVersionMap.set(pkg.name, pkg.version));
+
+		let condaPackagesToInstall: PythonPkgDetails[] = [];
+		this._expectedCondaPackages.forEach(expectedPkg => {
+			let installedPkgVersion = condaVersionMap.get(expectedPkg.name);
+			if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
+				condaPackagesToInstall.push(expectedPkg);
+			}
+		});
+
+		// Pip packages
+		let installedPipPackages = await this.getInstalledPipPackages();
+		let pipVersionMap = new Map<string, string>();
+		installedPipPackages.forEach(pkg => pipVersionMap.set(pkg.name, pkg.version));
+
+		let pipPackagesToInstall: PythonPkgDetails[] = [];
+		this._expectedCondaPipPackages.forEach(expectedPkg => {
+			let installedPkgVersion = pipVersionMap.get(expectedPkg.name);
+			if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
+				pipPackagesToInstall.push(expectedPkg);
+			}
+		});
+
+		if (condaPackagesToInstall.length > 0 || pipPackagesToInstall.length > 0) {
+			let doUpgrade = await this._prompter.promptSingle<boolean>(<IQuestion>{
+				type: QuestionTypes.confirm,
+				message: localize('confirmCondaUpgrade', 'Some installed conda & pip packages need to be upgraded. Would you like to upgrade them now?'),
+				default: true
+			});
+			if (doUpgrade) {
+				await Promise.all([
+					this.installCondaPackages(condaPackagesToInstall),
+					this.installPipPackages(pipPackagesToInstall)
+				]);
+			}
+		}
 	}
 
 	public async getInstalledPipPackages(): Promise<PythonPkgDetails[]> {
@@ -431,6 +493,10 @@ export class JupyterServerInstallation {
 	}
 
 	public installPipPackages(packages: PythonPkgDetails[]): Promise<void> {
+		if (!packages || packages.length === 0) {
+			return Promise.resolve();
+		}
+
 		let packagesStr = packages.map(pkg => `${pkg.name}==${pkg.version}`).join(' ');
 		// Force reinstall in case some dependencies are split across multiple locations
 		let cmdOptions = this._usingExistingPython ? '--user --force-reinstall' : '--force-reinstall';
@@ -461,6 +527,10 @@ export class JupyterServerInstallation {
 	}
 
 	public installCondaPackages(packages: PythonPkgDetails[]): Promise<void> {
+		if (!packages || packages.length === 0) {
+			return Promise.resolve();
+		}
+
 		let packagesStr = packages.map(pkg => `${pkg.name}==${pkg.version}`).join(' ');
 		let condaExe = this.getCondaExePath();
 		let cmd = `"${condaExe}" install -y ${packagesStr}`;
