@@ -519,13 +519,13 @@ export class JupyterServerInstallation {
 		this.outputChannel.show(true);
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 
-		let installCommand = `"${this.getCondaExePath()}" install -y jupyter>=1.0.0 pandas>=0.24.2`;
+		let installCommand = `"${this.getCondaExePath()}" install -y jupyter>=1.0.0 pandas>=0.24.2 sparkmagic>=0.12.9`;
 		if (process.platform !== constants.winPlatform) {
 			installCommand = `${installCommand} pykerberos>=1.2.1`;
 		}
 		await this.executeStreamedCommand(installCommand);
 
-		let pipPackages = 'sparkmagic>=0.12.9 prose-codeaccelerator>=1.3.0 powershell_kernel>=0.1.0';
+		let pipPackages = 'prose-codeaccelerator>=1.3.0 powershell_kernel>=0.1.0';
 		let cmdOptions = this._usingExistingPython ? '--user' : '';
 		if (this._forceInstall) {
 			cmdOptions = `${cmdOptions} --force-reinstall`;
