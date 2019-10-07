@@ -439,11 +439,12 @@ export class JupyterServerInstallation {
 		this.outputChannel.show(true);
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 
+		let packages = 'jupyter>=1.0.0 pandas>=0.24.2 sparkmagic>=0.12.9 prose-codeaccelerator>=1.3.0 powershell_kernel>=0.1.0';
 		let cmdOptions = this._usingExistingPython ? '--user' : '';
-		let installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} jupyter>=1.0.0 pandas>=0.24.2 sparkmagic>=0.12.9`;
-		await this.executeStreamedCommand(installCommand);
-
-		installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} prose-codeaccelerator>=1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
+		if (this._forceInstall) {
+			cmdOptions = `${cmdOptions} --force-reinstall`;
+		}
+		let installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} ${packages} --extra-index-url https://prose-python-packages.azurewebsites.net`;
 		await this.executeStreamedCommand(installCommand);
 
 		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
@@ -459,8 +460,12 @@ export class JupyterServerInstallation {
 		}
 		await this.executeStreamedCommand(installCommand);
 
+		let pipPackages = 'sparkmagic>=0.12.9 prose-codeaccelerator>=1.3.0 powershell_kernel>=0.1.0';
 		let cmdOptions = this._usingExistingPython ? '--user' : '';
-		installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} sparkmagic>=0.12.9 prose-codeaccelerator>=1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
+		if (this._forceInstall) {
+			cmdOptions = `${cmdOptions} --force-reinstall`;
+		}
+		installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} ${pipPackages} --extra-index-url https://prose-python-packages.azurewebsites.net`;
 		await this.executeStreamedCommand(installCommand);
 
 		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));

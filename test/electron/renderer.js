@@ -13,7 +13,7 @@ const util = require('util');
 const bootstrap = require('../../src/bootstrap');
 const coverage = require('../coverage');
 
-require('../../src/sql/setup'); // {{SQL CARBON EDIT}}
+require('reflect-metadata'); // {{SQL CARBON EDIT}}
 
 // Disabled custom inspect. See #38847
 if (util.inspect && util.inspect['defaultOptions']) {
@@ -206,7 +206,10 @@ function runTests(opts) {
 	return loadTests(opts).then(() => {
 
 		if (opts.grep) {
-			mocha.grep(opts.grep);
+			mocha.grep(new RegExp(opts.grep));
+			if (opts.invert) {
+				mocha.invert();
+			}
 		}
 
 		if (!opts.debug) {

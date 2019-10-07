@@ -36,7 +36,9 @@ export class CellToggleMoreActions {
 			instantiationService.createInstance(AddCellFromContextAction, 'markdownAfter', localize('markdownAfter', "Insert Text After"), CellTypes.Markdown, true),
 			instantiationService.createInstance(RunCellsAction, 'runAllBefore', localize('runAllBefore', "Run Cells Before"), false),
 			instantiationService.createInstance(RunCellsAction, 'runAllAfter', localize('runAllAfter', "Run Cells After"), true),
-			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', "Clear Output"))
+			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', "Clear Output")),
+			instantiationService.createInstance(CollapseCellAction, 'collapseCell', localize('collapseCell', "Collapse Cell"), true),
+			instantiationService.createInstance(CollapseCellAction, 'expandCell', localize('expandCell', "Expand Cell"), false)
 		);
 	}
 
@@ -169,6 +171,44 @@ export class RunCellsAction extends CellActionBase {
 						await editor.runAllCells(cell, undefined);
 					} else {
 						await editor.runAllCells(undefined, cell);
+					}
+				}
+			}
+		} catch (error) {
+			let message = getErrorMessage(error);
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: message
+			});
+		}
+		return Promise.resolve();
+	}
+}
+
+export class CollapseCellAction extends CellActionBase {
+	constructor(id: string,
+		label: string,
+		private collapseCell: boolean,
+		@INotificationService notificationService: INotificationService
+	) {
+		super(id, label, undefined, notificationService);
+	}
+
+	public canRun(context: CellContext): boolean {
+		return context.cell && context.cell.cellType === CellTypes.Code;
+	}
+
+	async doRun(context: CellContext): Promise<void> {
+		try {
+			let cell = context.cell || context.model.activeCell;
+			if (cell) {
+				if (this.collapseCell) {
+					if (!cell.isCollapsed) {
+						cell.isCollapsed = true;
+					}
+				} else {
+					if (cell.isCollapsed) {
+						cell.isCollapsed = false;
 					}
 				}
 			}

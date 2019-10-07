@@ -15,9 +15,24 @@ set CODE=".build\electron\%NAMESHORT%"
 node build\lib\electron.js
 if %errorlevel% neq 0 node .\node_modules\gulp\bin\gulp.js electron
 
+:: Default to only running stable tests if test grep isn't set
+if "%ADS_TEST_GREP%" == "" (
+	echo Running stable tests only
+	set ADS_TEST_GREP=@UNSTABLE@
+	set ADS_TEST_INVERT_GREP=1
+)
+
+set CODE_ARGS=--grep %ADS_TEST_GREP%
+
+if "%ADS_TEST_INVERT_GREP%" == "1" (
+	set CODE_ARGS=%CODE_ARGS% --invert
+) else if "%ADS_TEST_INVERT_GREP%" == "true" (
+	set CODE_ARGS=%CODE_ARGS% --invert
+)
+
 :: Run tests
 set ELECTRON_ENABLE_LOGGING=1
-%CODE% .\test\electron\index.js %*
+%CODE% .\test\electron\index.js %CODE_ARGS% %*
 
 popd
 
