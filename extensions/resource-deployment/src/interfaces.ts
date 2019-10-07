@@ -16,6 +16,7 @@ export interface ResourceType {
 	options: ResourceTypeOption[];
 	providers: DeploymentProvider[];
 	agreement?: AgreementInfo;
+	displayIndex?: number;
 	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
 }
 
