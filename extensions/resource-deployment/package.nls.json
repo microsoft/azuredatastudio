@@ -3,7 +3,7 @@
 	"extension-description": "Provides a notebook-based experience to deploy Microsoft SQL Server",
 	"deploy-sql-image-command-name": "Deploy SQL Server on Docker…",
 	"deploy-sql-bdc-command-name": "Deploy SQL Server Big Data Cluster…",
-	"deploy-resource-command-name": "Open SQL Server deployment dialog",
+	"deploy-resource-command-name": "More deployment options…",
 	"deploy-resource-command-category": "Deployment",
 	"resource-type-sql-image-display-name": "SQL Server container image",
 	"resource-type-sql-image-description": "Run SQL Server container image with Docker",

@@ -9,7 +9,7 @@
 		<code-component [cellModel]="cellModel" [model]="model" [activeCellId]="activeCellId"></code-component>
 	</div>
 	<div style="flex: 0 0 auto; width: 100%; height: 100%; display: block">
-		<output-area-component *ngIf="cellModel.outputs && cellModel.outputs.length > 0" [cellModel]="cellModel" [activeCellId]="activeCellId">
+		<output-area-component *ngIf="cellModel.outputs && cellModel.outputs.length > 0 && !cellModel.isCollapsed" [cellModel]="cellModel" [activeCellId]="activeCellId">
 		</output-area-component>
 		<stdin-component *ngIf="isStdInVisible" [onSendInput]="inputDeferred" [stdIn]="stdIn" [cellModel]="cellModel"></stdin-component>
 	</div>

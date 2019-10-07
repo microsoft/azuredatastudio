@@ -11,7 +11,8 @@ fi
 cd $ROOT
 
 export ADS_TEST_GREP=@UNSTABLE@
+export ADS_TEST_INVERT_GREP=
 
-echo Running unstable tests
+echo Running UNSTABLE ADS Extension Integration tests
 
 ./scripts/sql-test-integration.sh

@@ -39,11 +39,20 @@ const CONTEXT_UPDATE_STATE = new RawContextKey<string>('updateState', StateType.
 let releaseNotesManager: ReleaseNotesManager | undefined = undefined;
 
 function showReleaseNotes(instantiationService: IInstantiationService, version: string) {
+	/* // {{SQL CARBON EDIT}} just open release notes in browser until we can get ADS release notes from the web
 	if (!releaseNotesManager) {
 		releaseNotesManager = instantiationService.createInstance(ReleaseNotesManager);
 	}
 
 	return instantiationService.invokeFunction(accessor => releaseNotesManager!.show(accessor, version));
+	*/
+
+	// {{SQL CARBON EDIT}} Open release notes in browser until we can get ADS notes from web
+	return instantiationService.invokeFunction(async accessor => {
+		const action = accessor.get(IInstantiationService).createInstance(OpenLatestReleaseNotesInBrowserAction);
+		await action.run();
+	});
+
 }
 
 export class OpenLatestReleaseNotesInBrowserAction extends Action {
@@ -138,22 +147,24 @@ export class ProductContribution implements IWorkbenchContribution {
 
 		// was there an update? if so, open release notes
 		const releaseNotesUrl = productService.releaseNotesUrl;
-		if (shouldShowReleaseNotes && !environmentService.skipReleaseNotes && releaseNotesUrl && lastVersion && productService.version !== lastVersion) {
+		if (shouldShowReleaseNotes && !environmentService.skipReleaseNotes && releaseNotesUrl && lastVersion && productService.version !== lastVersion && productService.quality === 'stable') { // {{SQL CARBON EDIT}} Only show release notes for stable build
+			/* // {{SQL CARBON EDIT}} Prompt user to open release notes in browser until we can get ADS release notes from the web
 			showReleaseNotes(instantiationService, productService.version)
 				.then(undefined, () => {
-					notificationService.prompt(
-						severity.Info,
-						nls.localize('read the release notes', "Welcome to {0} v{1}! Would you like to read the Release Notes?", productService.nameLong, productService.version),
-						[{
-							label: nls.localize('releaseNotes', "Release Notes"),
-							run: () => {
-								const uri = URI.parse(releaseNotesUrl);
-								openerService.open(uri);
-							}
-						}],
-						{ sticky: true }
-					);
-				});
+			*/
+			notificationService.prompt(
+				severity.Info,
+				nls.localize('read the release notes', "Welcome to {0} v{1}! Would you like to read the Release Notes?", productService.nameLong, productService.version),
+				[{
+					label: nls.localize('releaseNotes', "Release Notes"),
+					run: () => {
+						const uri = URI.parse(releaseNotesUrl);
+						openerService.open(uri);
+					}
+				}],
+				{ sticky: true }
+			);
+			// }); // {{SQL CARBON EDIT}}
 		}
 
 		// should we show the new license?

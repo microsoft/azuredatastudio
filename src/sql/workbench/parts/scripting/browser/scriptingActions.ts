@@ -14,7 +14,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { IProgressService } from 'vs/platform/progress/common/progress';
 import { BaseActionContext } from 'sql/workbench/browser/actions';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ScriptCreateAction, ScriptDeleteAction, ScriptSelectAction, ScriptExecuteAction, ScriptAlterAction, EditDataAction } from 'sql/workbench/electron-browser/scriptingActions';
+import { ScriptCreateAction, ScriptDeleteAction, ScriptSelectAction, ScriptExecuteAction, ScriptAlterAction, EditDataAction } from 'sql/workbench/browser/scriptingActions';
 import { ObjectExplorerActionsContext, getTreeNode } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
