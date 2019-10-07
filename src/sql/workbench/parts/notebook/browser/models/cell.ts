@@ -333,7 +333,6 @@ export class CellModel implements ICellModel {
 						code: content,
 						stop_on_error: true
 					}, false);
-					await future.done;
 					this.setFuture(future as FutureInternal);
 					this.fireExecutionStateChanged();
 					// For now, await future completion. Later we should just track and handle cancellation based on model notifications
