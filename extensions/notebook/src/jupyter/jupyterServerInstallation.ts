@@ -469,7 +469,7 @@ export class JupyterServerInstallation {
 		if (condaPackagesToInstall.length > 0 || pipPackagesToInstall.length > 0) {
 			let doUpgrade = await this._prompter.promptSingle<boolean>(<IQuestion>{
 				type: QuestionTypes.confirm,
-				message: localize('confirmCondaUpgrade', 'Some installed conda & pip packages need to be upgraded. Would you like to upgrade them now?'),
+				message: localize('confirmCondaUpgrade', 'Some installed conda and pip packages need to be upgraded. Would you like to upgrade them now?'),
 				default: true
 			});
 			if (doUpgrade) {
