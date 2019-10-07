@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 1.12.1
+* Release date: October 7, 2019
+* Release status: General Availability
+* Hotfix release: `Notebooks: Ensure quotes and backslashes are escaped properly in text editor model` https://github.com/microsoft/azuredatastudio/pull/7540
+
 ## Version 1.12.0
 * Release date: October 2, 2019
 * Release status: General Availability
