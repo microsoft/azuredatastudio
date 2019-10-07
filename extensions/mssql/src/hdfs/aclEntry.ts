@@ -236,29 +236,34 @@ export function parseAclEntry(aclString: string): AclEntry {
 }
 
 /**
- * Parses an octal in the form ### into a set of @see AclEntryPermission. Each digit in the octal corresponds
- * to a particular user type - owner, group and other respectively.
- * Each digit is then expected to be a value between 0 and 7 inclusive, which is a bitwise OR the permission flags
+ * Parses an octal in the form ### into a combination of an optional sticky bit and a set
+ * of @see AclEntryPermission. Each digit in the octal corresponds to the sticky bit or a
+ * particular user type - owner, group and other respectively.
+ * If the sticky bit exists and its value is 1 then the sticky bit value is set to true.
+ * Each permission digit is then expected to be a value between 0 and 7 inclusive, which is a bitwise OR the permission flags
  * for the file.
  * 	4 - Read
  * 	2 - Write
  * 	1 - Execute
- * So an octal of 730 would map to :
+ * So an octal of 1730 would map to :
+ * 	- sticky === true
  * 	- The owner with rwx permissions
  * 	- The group with -wx permissions
  * 	- All others with --- permissions
  * @param octal The octal string to parse
  */
-export function parseAclPermissionFromOctal(octal: string): { owner: AclEntryPermission, group: AclEntryPermission, other: AclEntryPermission } {
-	if (!octal || octal.length !== 3) {
-		throw new Error(`Invalid octal ${octal} - it must be a 3 digit string`);
+export function parseAclPermissionFromOctal(octal: string): { sticky: boolean, owner: AclEntryPermission, group: AclEntryPermission, other: AclEntryPermission } {
+	if (!octal || (octal.length !== 3 && octal.length !== 4)) {
+		throw new Error(`Invalid octal ${octal} - it must be a 3 or 4 digit string`);
 	}
 
-	const ownerPermissionDigit = parseInt(octal[0]);
-	const groupPermissionDigit = parseInt(octal[1]);
-	const otherPermissionDigit = parseInt(octal[2]);
+	const sticky = octal.length === 4 ? octal[0] === '1' : false;
+	const ownerPermissionDigit = parseInt(octal[octal.length - 3]);
+	const groupPermissionDigit = parseInt(octal[octal.length - 2]);
+	const otherPermissionDigit = parseInt(octal[octal.length - 1]);
 
 	return {
+		sticky: sticky,
 		owner: new AclEntryPermission((ownerPermissionDigit & 4) === 4, (ownerPermissionDigit & 2) === 2, (ownerPermissionDigit & 1) === 1),
 		group: new AclEntryPermission((groupPermissionDigit & 4) === 4, (groupPermissionDigit & 2) === 2, (groupPermissionDigit & 1) === 1),
 		other: new AclEntryPermission((otherPermissionDigit & 4) === 4, (otherPermissionDigit & 2) === 2, (otherPermissionDigit & 1) === 1)
