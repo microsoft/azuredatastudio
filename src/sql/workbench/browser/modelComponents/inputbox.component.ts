@@ -75,7 +75,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 			this.onkeydown(this._input.inputElement, (e: StandardKeyboardEvent) => {
 				if (e.keyCode === KeyCode.Enter) {
 					this.fireEvent({
-						eventType: ComponentEventType.onInputEntered,
+						eventType: ComponentEventType.onEnterKeyPressed,
 						args: this._input.value
 					});
 					if (this.stopEnterPropagation) {
@@ -94,7 +94,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 				}
 				if (e.keyCode === KeyCode.Enter) {
 					this.fireEvent({
-						eventType: ComponentEventType.onInputEntered,
+						eventType: ComponentEventType.onEnterKeyPressed,
 						args: this._textAreaInput.value
 					});
 					if (this.stopEnterPropagation) {

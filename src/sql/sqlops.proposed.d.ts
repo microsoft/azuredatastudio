@@ -711,7 +711,7 @@ declare module 'sqlops' {
 		/**
 		 * Event that's fired whenever enter is pressed within the input box
 		 */
-		onInputEntered: vscode.Event<string>;
+		onEnterKeyPressed: vscode.Event<string>;
 	}
 
 	export interface RadioButtonComponent extends Component, RadioButtonProperties {

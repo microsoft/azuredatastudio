@@ -769,7 +769,7 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		super(proxy, handle, ModelComponentTypes.InputBox, id);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onInputEntered, new Emitter<string>());
+		this._emitterMap.set(ComponentEventType.onEnterKeyPressed, new Emitter<string>());
 	}
 
 	public get value(): string {
@@ -854,8 +854,8 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		return emitter && emitter.event;
 	}
 
-	public get onInputEntered(): vscode.Event<string> {
-		const emitter = this._emitterMap.get(ComponentEventType.onInputEntered);
+	public get onEnterKeyPressed(): vscode.Event<string> {
+		const emitter = this._emitterMap.get(ComponentEventType.onEnterKeyPressed);
 		return emitter && emitter.event;
 	}
 }

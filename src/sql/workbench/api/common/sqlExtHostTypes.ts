@@ -225,7 +225,7 @@ export enum ComponentEventType {
 	onSelectedRowChanged,
 	onComponentCreated,
 	onCellAction,
-	onInputEntered
+	onEnterKeyPressed
 }
 
 export interface IComponentEventArgs {

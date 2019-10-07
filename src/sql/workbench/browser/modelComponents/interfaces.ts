@@ -69,7 +69,7 @@ export enum ComponentEventType {
 	onSelectedRowChanged,
 	onComponentCreated,
 	onCellAction,
-	onInputEntered
+	onEnterKeyPressed
 }
 
 export interface IModelStore {

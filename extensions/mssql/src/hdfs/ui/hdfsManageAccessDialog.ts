@@ -138,7 +138,7 @@ export class ManageAccessDialog {
 							width: 250,
 							stopEnterPropagation: true
 						}).component();
-				this.addUserOrGroupInput.onInputEntered((value: string) => {
+				this.addUserOrGroupInput.onEnterKeyPressed((value: string) => {
 					this.hdfsModel.createAndAddAclEntry(value, this.addUserOrGroupSelectedType);
 					this.addUserOrGroupInput.value = '';
 				});
