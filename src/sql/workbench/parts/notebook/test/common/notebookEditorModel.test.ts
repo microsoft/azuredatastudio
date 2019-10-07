@@ -11,8 +11,8 @@ import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/t
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { CellModel } from 'sql/workbench/parts/notebook/common/models/cell';
 import { CellTypes, NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
-import { ModelFactory } from 'sql/workbench/parts/notebook/browser/models/modelFactory';
-import { INotebookModelOptions, NotebookContentChange, ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { ModelFactory } from 'sql/workbench/parts/notebook/common/models/modelFactory';
+import { INotebookModelOptions, NotebookContentChange, ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { NotebookEditorModel } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
 import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebookModel';
 import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
