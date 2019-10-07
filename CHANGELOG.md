@@ -215,7 +215,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 
 ## What's new in this version
 * Announcing the SQL Server 2019 Preview extension.
-  * Support for SQL Server 2019 preview features including big data cluster support.
+  * Support for SQL Server 2019 preview features including Big Data Cluster support.
   * Azure Data Studio Notebooks
   * The Azure Resource Explorer viewlets you browse data-related endpoints for your Azure accounts and create connections to them in Object Explorer. In this release Azure SQL Databases and servers are supported.
   * SQL Server Polybase Create External Table Wizard
