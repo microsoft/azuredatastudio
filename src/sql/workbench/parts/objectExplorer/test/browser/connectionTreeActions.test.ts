@@ -17,7 +17,7 @@ import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/t
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
 import * as  LocalizedConstants from 'sql/workbench/parts/connection/common/localizedConstants';
-import { ObjectExplorerService, ObjectExplorerNodeEventArgs } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { ObjectExplorerService, ObjectExplorerNodeEventArgs } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
@@ -107,7 +107,7 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 
 		const viewsService = new class implements IViewsService {
-			_serviceBrand: ServiceIdentifier<any>;
+			_serviceBrand: undefined;
 			openView(id: string, focus?: boolean): Promise<IView> {
 				return Promise.resolve({
 					id: '',

@@ -593,15 +593,15 @@ class ComponentWrapper implements azdata.Component {
 	public addItem(item: azdata.Component, itemLayout?: any, index?: number): void {
 		let itemImpl = item as ComponentWrapper;
 		if (!itemImpl) {
-			throw new Error(nls.localize('unknownComponentType', "Unkown component type. Must use ModelBuilder to create objects"));
+			throw new Error(nls.localize('unknownComponentType', "Unknown component type. Must use ModelBuilder to create objects"));
 		}
 		let config = new InternalItemConfig(itemImpl, itemLayout);
-		if (index !== undefined && index >= 0 && index < this.items.length) {
+		if (index !== undefined && index >= 0 && index <= this.items.length) {
 			this.itemConfigs.splice(index, 0, config);
 		} else if (!index) {
 			this.itemConfigs.push(config);
 		} else {
-			throw new Error(nls.localize('invalidIndex', "The index is invalid."));
+			throw new Error(nls.localize('invalidIndex', "The index {0} is invalid.", index));
 		}
 		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig(), index).then(undefined, (err) => this.handleError(err));
 	}
@@ -769,6 +769,7 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		super(proxy, handle, ModelComponentTypes.InputBox, id);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onEnterKeyPressed, new Emitter<string>());
 	}
 
 	public get value(): string {
@@ -841,8 +842,20 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		this.setProperty('inputType', v);
 	}
 
+	public get stopEnterPropagation(): boolean {
+		return this.properties['stopEnterPropagation'];
+	}
+	public set stopEnterPropagation(v: boolean) {
+		this.setProperty('stopEnterPropagation', v);
+	}
+
 	public get onTextChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+
+	public get onEnterKeyPressed(): vscode.Event<string> {
+		const emitter = this._emitterMap.get(ComponentEventType.onEnterKeyPressed);
 		return emitter && emitter.event;
 	}
 }
@@ -1117,6 +1130,13 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	}
 	public set value(v: string) {
 		this.setProperty('value', v);
+	}
+
+	public get title(): string {
+		return this.properties['title'];
+	}
+	public set title(title: string) {
+		this.setProperty('title', title);
 	}
 
 	public get onDidClick(): vscode.Event<any> {

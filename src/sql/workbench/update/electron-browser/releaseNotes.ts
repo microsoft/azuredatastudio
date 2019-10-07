@@ -5,13 +5,12 @@
 
 import nls = require('vs/nls');
 import { Action } from 'vs/base/common/actions';
-import pkg from 'vs/platform/product/node/package';
-import product from 'vs/platform/product/node/product';
+import product from 'vs/platform/product/common/product';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
-import { AbstractShowReleaseNotesAction } from 'vs/workbench/contrib/update/electron-browser/update';
+import { AbstractShowReleaseNotesAction } from 'vs/workbench/contrib/update/browser/update';
 
 export class OpenGettingStartedInBrowserAction extends Action {
 
@@ -37,7 +36,7 @@ export class ShowCurrentReleaseNotesAction extends AbstractShowReleaseNotesActio
 		label = ShowCurrentReleaseNotesAction.LABEL,
 		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		super(id, label, pkg.version, instantiationService);
+		super(id, label, product.version, instantiationService);
 	}
 }
 

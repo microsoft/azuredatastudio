@@ -87,9 +87,9 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 		this.generalTab = azdata.window.createTab(GeneralTabText);
 		this.initializeGeneralTab();
 		this.dialog.content = [this.generalTab];
-		this.dialog.registerCloseValidator(() => {
+		this.dialog.registerCloseValidator(async () => {
 			this.updateModel();
-			let validationResult = this.model.validate();
+			let validationResult = await this.model.validate();
 			if (!validationResult.valid) {
 				// TODO: Show Error Messages
 				this.dialog.message = { text: validationResult.errorMessages[0] };
@@ -301,7 +301,6 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 	private createRowContainer(view: azdata.ModelView): azdata.FlexBuilder {
 		return view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
-			alignItems: 'left',
 			justifyContent: 'space-between'
 		});
 	}

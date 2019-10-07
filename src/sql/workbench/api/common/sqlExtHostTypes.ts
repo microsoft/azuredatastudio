@@ -225,6 +225,7 @@ export enum ComponentEventType {
 	onSelectedRowChanged,
 	onComponentCreated,
 	onCellAction,
+	onEnterKeyPressed
 }
 
 export interface IComponentEventArgs {
@@ -301,10 +302,15 @@ export interface CardProperties {
 	label: string;
 	value?: string;
 	actions?: ActionDescriptor[];
-	descriptions?: string[];
+	descriptions?: CardDescriptionItem[];
 	status?: StatusIndicator;
 	selected?: boolean;
 	cardType: CardType;
+}
+
+export interface CardDescriptionItem {
+	label: string;
+	value?: string;
 }
 
 export interface ActionDescriptor {
@@ -564,25 +570,116 @@ export interface ISingleNotebookEditOperation {
 }
 
 export class ConnectionProfile {
+	get providerId(): string {
+		return this.options['providerId'];
+	}
 
-	providerId: string;
-	connectionId: string;
-	connectionName: string;
-	serverName: string;
-	databaseName: string;
-	userName: string;
-	password: string;
-	authenticationType: string;
-	savePassword: boolean;
-	groupFullName: string;
-	groupId: string;
-	saveProfile: boolean;
-	azureTenantId?: string;
-	options: { [name: string]: any };
+	set providerId(value: string) {
+		this.options['providerId'] = value;
+	}
 
-	static createFrom(options: any[]): ConnectionProfile {
-		// create from options
-		return undefined;
+	get connectionId(): string {
+		return this.options['connectionId'];
+	}
+
+	set connectionId(value: string) {
+		this.options['connectionId'] = value;
+	}
+
+	get connectionName(): string {
+		return this.options['connectionName'];
+	}
+
+	set connectionName(value: string) {
+		this.options['connectionName'] = value;
+	}
+
+	get serverName(): string {
+		return this.options['serverName'];
+	}
+
+	set serverName(value: string) {
+		this.options['serverName'] = value;
+	}
+
+	get databaseName(): string {
+		return this.options['databaseName'];
+	}
+
+	set databaseName(value: string) {
+		this.options['databaseName'] = value;
+	}
+
+	get userName(): string {
+		return this.options['userName'];
+	}
+
+	set userName(value: string) {
+		this.options['userName'] = value;
+	}
+
+	get password(): string {
+		return this.options['password'];
+	}
+
+	set password(value: string) {
+		this.options['password'] = value;
+	}
+
+	get authenticationType(): string {
+		return this.options['authenticationType'];
+	}
+
+	set authenticationType(value: string) {
+		this.options['authenticationType'] = value;
+	}
+
+	get savePassword(): boolean {
+		return this.options['savePassword'];
+	}
+
+	set savePassword(value: boolean) {
+		this.options['savePassword'] = value;
+	}
+
+	get groupFullName(): string {
+		return this.options['groupFullName'];
+	}
+
+	set groupFullName(value: string) {
+		this.options['groupFullName'] = value;
+	}
+
+	get groupId(): string {
+		return this.options['groupId'];
+	}
+
+	set groupId(value: string) {
+		this.options['groupId'] = value;
+	}
+
+	get saveProfile(): boolean {
+		return this.options['groupId'];
+	}
+
+	set saveProfile(value: boolean) {
+		this.options['groupId'] = value;
+	}
+
+	get azureTenantId(): string {
+		return this.options['azureTenantId'];
+	}
+
+	set azureTenantId(value: string) {
+		this.options['azureTenantId'] = value;
+	}
+
+	options: Map<string, any> = new Map<string, any>();
+
+	static createFrom(options: Map<string, any>): ConnectionProfile {
+		let profile = new ConnectionProfile();
+		profile.options = options;
+		return profile;
 	}
 }
 

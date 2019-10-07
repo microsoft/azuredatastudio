@@ -22,7 +22,7 @@ function defaultSort<T extends { [key: string]: any }>(args: Slick.OnSortEventAr
 	const sign = args.sortAsc ? 1 : -1;
 	let comparer: (a: T, b: T) => number;
 	if (types.isString(data[0][field])) {
-		if (Number(data[0][field]) !== NaN) {
+		if (!isNaN(Number(data[0][field]))) {
 			comparer = (a: T, b: T) => {
 				let anum = Number(a[field]);
 				let bnum = Number(b[field]);

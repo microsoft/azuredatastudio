@@ -12,6 +12,7 @@
 		"Programming Languages"
 	],
 	"activationEvents": [
+		"onLanguage:sql",
 		"onLanguage:xml"
 	],
 	"scripts": {

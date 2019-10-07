@@ -6,6 +6,9 @@ import { localize } from 'vs/nls';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { escape } from 'sql/base/common/strings';
+import { addDisposableListener } from 'vs/base/browser/dom';
+import { DisposableStore } from 'vs/base/common/lifecycle';
+import { withNullAsUndefined } from 'vs/base/common/types';
 
 interface IExtendedColumn<T> extends Slick.Column<T> {
 	filterValues?: Array<string>;
@@ -27,6 +30,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private columnDef: IExtendedColumn<T>;
 	private buttonStyles: IButtonStyles;
 
+	private disposableStore = new DisposableStore();
+
 	public init(grid: Slick.Grid<T>): void {
 		this.grid = grid;
 		this.handler.subscribe(this.grid.onHeaderCellRendered, (e: Event, args: Slick.OnHeaderCellRenderedEventArgs<T>) => this.handleHeaderCellRendered(e, args))
@@ -36,17 +41,16 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			.subscribe(this.grid.onKeyDown, (e: KeyboardEvent) => this.handleKeyDown(e));
 		this.grid.setColumns(this.grid.getColumns());
 
-		jQuery(document.body).bind('mousedown', this.handleBodyMouseDown);
-		jQuery(document.body).bind('keydown', this.handleKeyDown);
+		this.disposableStore.add(addDisposableListener(document.body, 'mousedown', e => this.handleBodyMouseDown(e)));
+		this.disposableStore.add(addDisposableListener(document.body, 'keydown', e => this.handleKeyDown(e)));
 	}
 
 	public destroy() {
 		this.handler.unsubscribeAll();
-		jQuery(document.body).unbind('mousedown', this.handleBodyMouseDown);
-		jQuery(document.body).unbind('keydown', this.handleKeyDown);
+		this.disposableStore.dispose();
 	}
 
-	private handleKeyDown(e: KeyboardEvent | JQuery.Event<HTMLElement, null>): void {
+	private handleKeyDown(e: KeyboardEvent): void {
 		if (this.$menu && (e.key === 'Escape' || e.keyCode === 27)) {
 			this.hideMenu();
 			e.preventDefault();
@@ -54,7 +58,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		}
 	}
 
-	private handleBodyMouseDown(e: MouseEvent | JQuery.Event<HTMLElement, null>): void {
+	private handleBodyMouseDown(e: MouseEvent): void {
 		if (this.$menu && this.$menu[0] !== e.target && !jQuery.contains(this.$menu[0], e.target as Element)) {
 			this.hideMenu();
 			e.preventDefault();
@@ -78,8 +82,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			.addClass('slick-header-menubutton')
 			.data('column', column);
 
-		$el.bind('click', (e) => this.showFilter(e)).appendTo(args.node);
-		$el.bind('keydown', (e) => {
+		$el.bind('click', (e: KeyboardEvent) => this.showFilter(e)).appendTo(args.node);
+		$el.bind('keydown', (e: KeyboardEvent) => {
 			if (e.key === 'Enter' || e.keyCode === 13) {
 				this.showFilter(e);
 			}
@@ -146,8 +150,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		});
 	}
 
-	private showFilter(e: JQuery.Event<HTMLElement, null>) {
-		const $menuButton = jQuery(e.target);
+	private showFilter(e: KeyboardEvent) {
+		const target = withNullAsUndefined(e.target);
+		const $menuButton = jQuery(target);
 		this.columnDef = $menuButton.data('column');
 
 		this.columnDef.filterValues = this.columnDef.filterValues || [];
@@ -222,16 +227,16 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		this.applyStyles();
 
 		jQuery(':checkbox', $filter).bind('click', (e) => {
-			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, jQuery(e.target));
+			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, jQuery(target));
 		});
 
-		const offset = jQuery(e.target).offset();
-		const left = offset.left - this.$menu.width() + jQuery(e.target).width() - 8;
+		const offset = jQuery(target).offset();
+		const left = offset.left - this.$menu.width() + jQuery(target).width() - 8;
 
-		let menutop = offset.top + jQuery(e.target).height();
+		let menutop = offset.top + jQuery(target).height();
 
 		if (menutop + offset.top > jQuery(window).height()) {
-			menutop -= (this.$menu.height() + jQuery(e.target).height() + 8);
+			menutop -= (this.$menu.height() + jQuery(target).height() + 8);
 		}
 		this.$menu.css('top', menutop)
 			.css('left', (left > 0 ? left : 0));

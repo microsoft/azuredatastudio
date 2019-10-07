@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IConnectionManagementService, ConnectionType, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -80,6 +80,31 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 
 	public $getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
 		return Promise.resolve(this._connectionManagementService.getConnections(activeConnectionsOnly).map(profile => this.convertToConnectionProfile(profile)));
+	}
+
+	public $getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile> {
+		let profile = this._connectionManagementService.getConnection(uri);
+		if (!profile) {
+			return Promise.resolve(undefined);
+		}
+
+		let connection: azdata.connection.ConnectionProfile = {
+			providerId: profile.providerName,
+			connectionId: profile.id,
+			connectionName: profile.connectionName,
+			serverName: profile.serverName,
+			databaseName: profile.databaseName,
+			userName: profile.userName,
+			password: profile.password,
+			authenticationType: profile.authenticationType,
+			savePassword: profile.savePassword,
+			groupFullName: profile.groupFullName,
+			groupId: profile.groupId,
+			saveProfile: profile.savePassword,
+			azureTenantId: profile.azureTenantId,
+			options: profile.options
+		};
+		return Promise.resolve(connection);
 	}
 
 	public $getActiveConnections(): Thenable<azdata.connection.Connection[]> {

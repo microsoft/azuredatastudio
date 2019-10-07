@@ -12,6 +12,7 @@ import { QueryHistoryView } from 'sql/workbench/parts/queryHistory/browser/query
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { Panel } from 'vs/workbench/browser/panel';
 import { QUERY_HISTORY_PANEL_ID } from 'sql/workbench/parts/queryHistory/common/constants';
+import { IAction } from 'vs/base/common/actions';
 
 export class QueryHistoryPanel extends Panel {
 
@@ -39,5 +40,9 @@ export class QueryHistoryPanel extends Panel {
 
 	public layout({ height }: Dimension): void {
 		this._queryHistoryView.layout(height);
+	}
+
+	getActions(): IAction[] {
+		return this._queryHistoryView.getActions();
 	}
 }

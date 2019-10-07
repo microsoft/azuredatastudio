@@ -17,7 +17,7 @@ import * as strings from 'vs/base/common/strings';
 import { invalidProvider } from 'sql/base/common/errors';
 
 export class FileBrowserService implements IFileBrowserService {
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 	private _providers: { [handle: string]: azdata.FileBrowserProvider; } = Object.create(null);
 	private _onAddFileTree = new Emitter<FileBrowserTree>();
 	private _onExpandFolder = new Emitter<FileNode>();
@@ -46,7 +46,7 @@ export class FileBrowserService implements IFileBrowserService {
 		return this._onPathValidate.event;
 	}
 
-	public openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean> {
+	public openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Promise<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
 			const provider = this.getProvider(ownerUri);
 			if (provider) {
@@ -67,7 +67,7 @@ export class FileBrowserService implements IFileBrowserService {
 			&& fileBrowserOpenedParams.fileTree.rootNode
 			&& fileBrowserOpenedParams.fileTree.selectedNode
 		) {
-			let fileTree = this.convertFileTree(null, fileBrowserOpenedParams.fileTree.rootNode, fileBrowserOpenedParams.fileTree.selectedNode.fullPath, fileBrowserOpenedParams.ownerUri);
+			let fileTree = this.convertFileTree(undefined, fileBrowserOpenedParams.fileTree.rootNode, fileBrowserOpenedParams.fileTree.selectedNode.fullPath, fileBrowserOpenedParams.ownerUri);
 			this._onAddFileTree.fire({ rootNode: fileTree.rootNode, selectedNode: fileTree.selectedNode, expandedNodes: fileTree.expandedNodes });
 		} else {
 			let genericErrorMessage = localize('fileBrowserErrorMessage', "An error occured while loading the file browser.");
@@ -77,7 +77,7 @@ export class FileBrowserService implements IFileBrowserService {
 		}
 	}
 
-	public expandFolderNode(fileNode: FileNode): Thenable<FileNode[]> {
+	public expandFolderNode(fileNode: FileNode): Promise<FileNode[]> {
 		this._pathToFileNodeMap[fileNode.fullPath] = fileNode;
 		let self = this;
 		return new Promise<FileNode[]>((resolve, reject) => {
@@ -117,7 +117,7 @@ export class FileBrowserService implements IFileBrowserService {
 		}
 	}
 
-	public validateFilePaths(ownerUri: string, serviceType: string, selectedFiles: string[]): Thenable<boolean> {
+	public validateFilePaths(ownerUri: string, serviceType: string, selectedFiles: string[]): Promise<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
 			const provider = this.getProvider(ownerUri);
 			if (provider) {
@@ -136,10 +136,10 @@ export class FileBrowserService implements IFileBrowserService {
 		this._onPathValidate.fire(fileBrowserValidatedParams);
 	}
 
-	public closeFileBrowser(ownerUri: string): Thenable<azdata.FileBrowserCloseResponse> {
+	public closeFileBrowser(ownerUri: string): Promise<azdata.FileBrowserCloseResponse | undefined> {
 		let provider = this.getProvider(ownerUri);
 		if (provider) {
-			return provider.closeFileBrowser(ownerUri);
+			return Promise.resolve(provider.closeFileBrowser(ownerUri));
 		}
 		return Promise.resolve(undefined);
 	}
@@ -147,7 +147,8 @@ export class FileBrowserService implements IFileBrowserService {
 	private generateResolveMapKey(ownerUri: string, expandPath: string): string {
 		return ownerUri + ':' + expandPath;
 	}
-	private getProvider(connectionUri: string): azdata.FileBrowserProvider {
+
+	private getProvider(connectionUri: string): azdata.FileBrowserProvider | undefined {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			return this._providers[providerId];
@@ -156,10 +157,10 @@ export class FileBrowserService implements IFileBrowserService {
 		}
 	}
 
-	private convertFileTree(parentNode: FileNode, fileTreeNode: azdata.FileTreeNode, expandPath: string, ownerUri: string): FileBrowserTree {
+	private convertFileTree(parentNode: FileNode | undefined, fileTreeNode: azdata.FileTreeNode, expandPath: string, ownerUri: string): FileBrowserTree {
 		FileBrowserService.fileNodeId += 1;
 		let expandedNodes: FileNode[] = [];
-		let selectedNode: FileNode;
+		let selectedNode: FileNode | undefined;
 		let fileNode = new FileNode(FileBrowserService.fileNodeId.toString(),
 			fileTreeNode.name,
 			fileTreeNode.fullPath,

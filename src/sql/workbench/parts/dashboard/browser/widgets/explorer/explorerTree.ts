@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { MetadataType } from 'sql/platform/connection/common/connectionManagement';
 import { SingleConnectionManagementService, CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
-import { ManageActionContext, BaseActionContext } from 'sql/workbench/common/actions';
+import { ManageActionContext, BaseActionContext } from 'sql/workbench/browser/actions';
 
 import * as tree from 'vs/base/parts/tree/browser/tree';
 import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
@@ -220,7 +220,7 @@ export class ExplorerRenderer implements tree.IRenderer {
 					templateData.icon.className = 'icon scalarvaluedfunction';
 					break;
 				case MetadataType.SProc:
-					templateData.icon.className = 'icon stored-procedure';
+					templateData.icon.className = 'icon storedprocedure';
 					break;
 				case MetadataType.Table:
 					templateData.icon.className = 'icon table';

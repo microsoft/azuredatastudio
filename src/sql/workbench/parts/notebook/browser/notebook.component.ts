@@ -23,24 +23,24 @@ import * as DOM from 'vs/base/browser/dom';
 
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { CellTypes, CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
-import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider } from 'sql/workbench/services/notebook/common/notebookService';
-import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebookModel';
-import { ModelFactory } from 'sql/workbench/parts/notebook/common/models/modelFactory';
-import * as notebookUtils from 'sql/workbench/parts/notebook/common/models/notebookUtils';
+import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
+import { ModelFactory } from 'sql/workbench/parts/notebook/browser/models/modelFactory';
+import * as notebookUtils from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
 import { Deferred } from 'sql/base/common/promise';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, RunAllCellsAction, ClearAllOutputsAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { CellMagicMapper } from 'sql/workbench/parts/notebook/common/models/cellMagicMapper';
+import { CellMagicMapper } from 'sql/workbench/parts/notebook/browser/models/cellMagicMapper';
 import { IExtensionsViewlet, VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
-import { CellModel } from 'sql/workbench/parts/notebook/common/models/cell';
+import { CellModel } from 'sql/workbench/parts/notebook/browser/models/cell';
 import { FileOperationError, FileOperationResult } from 'vs/platform/files/common/files';
 import { isValidBasename } from 'vs/base/common/extpath';
 import { basename } from 'vs/base/common/resources';
@@ -427,6 +427,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted');
 		this._trustedAction.enabled = false;
 
+		let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells');
+
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
 		this._actionBar.context = this;
@@ -437,7 +439,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			{ element: attachToContainer },
 			{ action: this._trustedAction },
 			{ action: this._runAllCellsAction },
-			{ action: clearResultsButton }
+			{ action: clearResultsButton },
+			{ action: collapseCellsAction }
 		]);
 	}
 

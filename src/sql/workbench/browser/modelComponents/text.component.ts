@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/radioButton';
+import 'vs/css!./media/text';
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
 	OnDestroy, AfterViewInit, ElementRef, SecurityContext
@@ -11,16 +11,25 @@ import {
 
 import * as azdata from 'azdata';
 
-import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
+import { TitledComponent } from 'sql/workbench/browser/modelComponents/titledComponent';
 
 @Component({
 	selector: 'modelview-text',
 	template: `
-		<p [style.width]="getWidth()" [innerHTML]="getValue()" [ngStyle]="this.CSSStyles" (click)="onClick()"></p>`
+		<div *ngIf="showDiv;else noDiv" style="display:flex;flex-flow:row;align-items:center;" [style.width]="getWidth()">
+		<p [innerHTML]="getValue()" [title]="title" [ngStyle]="this.CSSStyles" (click)="onClick()"></p>
+		<p  *ngIf="requiredIndicator" style="color:red;margin-left:5px;">*</p>
+		<div *ngIf="description" tabindex="0" class="modelview-text-tooltip" [attr.aria-label]="description">
+			<div class="modelview-text-tooltip-content" [innerHTML]="description"></div>
+		</div>
+	</div>
+	<ng-template #noDiv>
+		<p [style.width]="getWidth()" [innerHTML]="getValue()" [ngStyle]="this.CSSStyles" (click)="onClick()"></p>
+	</ng-template>`
 })
-export default class TextComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class TextComponent extends TitledComponent implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
@@ -57,17 +66,37 @@ export default class TextComponent extends ComponentBase implements IComponent, 
 		return this.getPropertyOrDefault<azdata.TextComponentProperties, string>((props) => props.value, '');
 	}
 
+	public set description(newValue: string) {
+		this.setPropertyFromUI<azdata.TextComponentProperties, string>((properties, value) => { properties.description = value; }, newValue);
+	}
+
+	public get description(): string {
+		return this.getPropertyOrDefault<azdata.TextComponentProperties, string>((props) => props.description, '');
+	}
+
+	public set requiredIndicator(newValue: boolean) {
+		this.setPropertyFromUI<azdata.TextComponentProperties, boolean>((properties, value) => { properties.requiredIndicator = value; }, newValue);
+	}
+
+	public get requiredIndicator(): boolean {
+		return this.getPropertyOrDefault<azdata.TextComponentProperties, boolean>((props) => props.requiredIndicator, false);
+	}
+
 	public getValue(): SafeHtml {
 		let links = this.getPropertyOrDefault<azdata.TextComponentProperties, azdata.LinkArea[]>((props) => props.links, []);
 		let text = this._domSanitizer.sanitize(SecurityContext.HTML, this.value);
 		if (links.length !== 0) {
 			for (let i: number = 0; i < links.length; i++) {
 				let link = links[i];
-				let linkTag = `<a href="${this._domSanitizer.sanitize(SecurityContext.URL, link.url)}" tabIndex="0" target="blank">${this._domSanitizer.sanitize(SecurityContext.HTML, link.text)}</a>`;
+				let linkTag = `<a class="modelview-text-link" href="${this._domSanitizer.sanitize(SecurityContext.URL, link.url)}" tabIndex="0" target="blank">${this._domSanitizer.sanitize(SecurityContext.HTML, link.text)}</a>`;
 				text = text.replace(`{${i}}`, linkTag);
 			}
 		}
 		return text;
+	}
+
+	public get showDiv(): boolean {
+		return this.requiredIndicator || !!this.description;
 	}
 
 	private onClick() {

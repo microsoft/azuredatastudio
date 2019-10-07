@@ -23,7 +23,6 @@ export const groupIdPropName = 'groupId';
 export const defaultKnoxPort = 30443;
 export const groupIdName = 'groupId';
 export const sqlProviderName = 'MSSQL';
-export const dataService = 'Data Services';
 
 export const UNTITLED_SCHEMA = 'untitled';
 
@@ -57,7 +56,9 @@ export enum MssqlClusterItems {
 }
 
 export enum MssqlClusterItemsSubType {
-	Spark = 'mssqlCluster:spark'
+	Mount = ':mount:',
+	MountChild = ':mountChild:',
+	Spark = ':spark:'
 }
 
 // SPARK JOB SUBMISSION //////////////////////////////////////////////////////////

@@ -32,7 +32,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	private initializeSchemaCompareDialog(): void {
-		azdata.tasks.registerTask('schemaCompare.start', (profile: azdata.IConnectionProfile) => new SchemaCompareMainWindow().start(profile));
+		azdata.tasks.registerTask('schemaCompare.start', (profile: azdata.IConnectionProfile) => new SchemaCompareMainWindow(null, this.extensionContext).start(profile));
 	}
 
 	public dispose(): void {

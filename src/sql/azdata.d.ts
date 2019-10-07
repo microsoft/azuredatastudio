@@ -33,7 +33,7 @@ declare module 'azdata' {
 
 		export function registerMetadataProvider(provider: MetadataProvider): vscode.Disposable;
 
-		export function registerQueryProvider(provider: QueryProvider): vscode.Disposable;
+		export function registerQueryProvider(provider: QueryProvider, isLiveShare?: boolean): vscode.Disposable;
 
 		export function registerAdminServicesProvider(provider: AdminServicesProvider): vscode.Disposable;
 
@@ -93,7 +93,7 @@ declare module 'azdata' {
 			azureTenantId?: string;
 			options: { [name: string]: any };
 
-			static createFrom(options: any[]): ConnectionProfile;
+			static createFrom(options: Map<string, any>): ConnectionProfile;
 		}
 
 		/**
@@ -2721,6 +2721,13 @@ declare module 'azdata' {
 
 	}
 
+	export type AlignItemsType = 'normal' | 'stretch' | 'center' | 'start' | 'end' | 'flex-start' | 'flex-end' | 'baseline' | 'first baseline' | 'last baseline' | 'safe center' | 'unsafe center' | 'inherit' | 'initial' | 'unset';
+	export type JustifyContentType = 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around' | 'initial' | 'inherit';
+	export type AlignContentType = 'stretch' | 'center' | 'flex-start' | 'flex-end' | 'space-between' | 'space-around' | 'initial' | 'inherit';
+	export type FlexWrapType = 'nowrap' | 'wrap' | 'wrap-reverse';
+	export type TextAlignType = 'left' | 'right' | 'center' | 'justify' | 'initial' | 'inherit';
+	export type PositionType = 'static' | 'absolute' | 'fixed' | 'relative' | 'sticky' | 'initial' | 'inherit';
+
 	/**
 	 * The config for a FlexBox-based container. This supports easy
 	 * addition of content to a container with a flexible layout
@@ -2736,16 +2743,19 @@ declare module 'azdata' {
 		/**
 		 * Matches the justify-content CSS property.
 		 */
-		justifyContent?: string;
+		justifyContent?: JustifyContentType;
 		/**
 		 * Matches the align-items CSS property.
 		 */
-		alignItems?: string;
+		alignItems?: AlignItemsType;
 		/**
 		 * Matches the align-content CSS property.
 		 */
-		alignContent?: string;
-
+		alignContent?: AlignContentType;
+		/**
+		 *  Matches the flex-wrap CSS property.
+		 */
+		flexWrap?: FlexWrapType;
 		/**
 		 * Container Height
 		 */
@@ -2759,7 +2769,7 @@ declare module 'azdata' {
 		/**
 		 *
 		 */
-		textAlign?: string;
+		textAlign?: TextAlignType;
 
 		/**
 		 * The position CSS property. Empty by default.
@@ -2768,7 +2778,7 @@ declare module 'azdata' {
 		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
 		 * Without this the component will fail to correctly size itself.
 		 */
-		position?: string;
+		position?: PositionType;
 	}
 
 	export interface SplitViewLayout extends FlexLayout {
@@ -2919,11 +2929,11 @@ declare module 'azdata' {
 	 * Properties representing the card component, can be used
 	 * when using ModelBuilder to create the component
 	 */
-	export interface CardProperties extends ComponentWithIcon {
+	export interface CardProperties extends ComponentProperties, ComponentWithIcon {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
-		descriptions?: string[];
+		descriptions?: CardDescriptionItem[];
 		status?: StatusIndicator;
 
 		/**
@@ -2935,6 +2945,13 @@ declare module 'azdata' {
 		 * Card Type, default: Details
 		 */
 		cardType?: CardType;
+	}
+
+	export interface CardDescriptionItem {
+		label: string;
+		value?: string;
+		tooltip?: string;
+		fontWeight?: 'normal' | 'bold';
 	}
 
 	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
@@ -2949,7 +2966,7 @@ declare module 'azdata' {
 		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
 		 * Without this the component will fail to correctly size itself
 		 */
-		position?: string;
+		position?: PositionType;
 		/**
 		 * Matches the CSS style key and its available values.
 		 */
@@ -2974,6 +2991,11 @@ declare module 'azdata' {
 		columns?: number;
 		min?: number;
 		max?: number;
+		/**
+		 * Whether to stop key event propagation when enter is pressed in the input box. Leaving this as false
+		 * means the event will propagate up to any parents that have handlers (such as validate on Dialogs)
+		 */
+		stopEnterPropagation?: boolean;
 	}
 
 	export interface TableColumn {
@@ -3028,7 +3050,7 @@ declare module 'azdata' {
 		ownerUri: string;
 	}
 
-	export interface CheckBoxProperties {
+	export interface CheckBoxProperties extends ComponentProperties {
 		checked?: boolean;
 		label?: string;
 	}
@@ -3052,10 +3074,11 @@ declare module 'azdata' {
 		focused?: boolean;
 	}
 
-	export interface TextComponentProperties {
+	export interface TextComponentProperties extends ComponentProperties, TitledComponentProperties {
 		value?: string;
 		links?: LinkArea[];
-		CSSStyles?: { [key: string]: string };
+		description?: string;
+		requiredIndicator?: boolean;
 	}
 
 	export interface ImageComponentProperties {
@@ -3069,7 +3092,7 @@ declare module 'azdata' {
 		url: string;
 	}
 
-	export interface HyperlinkComponentProperties extends ComponentProperties {
+	export interface HyperlinkComponentProperties extends ComponentProperties, TitledComponentProperties {
 		label: string;
 		url: string;
 	}
@@ -3186,6 +3209,13 @@ declare module 'azdata' {
 		clickable?: boolean;
 	}
 
+	export interface TitledComponentProperties {
+		/**
+		 * The title for the component. This title will show when hovered over
+		 */
+		title?: string;
+	}
+
 	export interface CardComponent extends Component, CardProperties {
 		onDidActionClick: vscode.Event<ActionDescriptor>;
 		onCardSelectedChanged: vscode.Event<any>;
@@ -3195,8 +3225,7 @@ declare module 'azdata' {
 
 	}
 
-	export interface TextComponent extends Component, ComponentProperties {
-		value: string;
+	export interface TextComponent extends Component, TextComponentProperties {
 		/**
 		 * An event called when the text is clicked
 		 */
@@ -3211,6 +3240,10 @@ declare module 'azdata' {
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
 		onTextChanged: vscode.Event<any>;
+		/**
+		 * Event that's fired whenever enter is pressed within the input box
+		 */
+		onEnterKeyPressed: vscode.Event<string>;
 	}
 
 	export interface RadioButtonComponent extends Component, RadioButtonProperties {
@@ -3220,9 +3253,7 @@ declare module 'azdata' {
 		onDidClick: vscode.Event<any>;
 	}
 
-	export interface CheckBoxComponent extends Component {
-		checked: boolean;
-		label: string;
+	export interface CheckBoxComponent extends Component, CheckBoxProperties {
 		onChanged: vscode.Event<any>;
 	}
 
@@ -3825,6 +3856,9 @@ declare module 'azdata' {
 			// tab content is build using the modelview UI builder APIs
 			// probably should rename DialogTab class since it is useful outside dialogs
 			createQueryTab(tab: window.DialogTab): void;
+
+			// connect the query document using the given connection profile
+			connect(connectionProfile: connection.ConnectionProfile): Thenable<void>;
 		}
 
 		/**
@@ -4511,6 +4545,7 @@ declare module 'azdata' {
 		export interface INotebookMetadata {
 			kernelspec: IKernelInfo;
 			language_info?: ILanguageInfo;
+			tags?: string[];
 		}
 
 		export interface IKernelInfo {
@@ -4542,6 +4577,7 @@ declare module 'azdata' {
 			source: string | string[];
 			metadata?: {
 				language?: string;
+				tags?: string[];
 				azdata_cell_guid?: string;
 			};
 			execution_count?: number;

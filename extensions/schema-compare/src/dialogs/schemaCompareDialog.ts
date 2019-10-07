@@ -9,10 +9,9 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
-import { isNullOrUndefined } from 'util';
-import { existsSync } from 'fs';
+import { promises as fs } from 'fs';
 import { Telemetry } from '../telemetry';
-import { getEndpointName } from '../utils';
+import { getEndpointName, getRootPath } from '../utils';
 import * as mssql from '../../../mssql';
 
 const localize = nls.loadMessageBundle();
@@ -34,6 +33,15 @@ const differentSourceTargetMessage: string = localize('schemaCompareDialog.diffe
 const YesButtonText: string = localize('schemaCompareDialog.Yes', 'Yes');
 const NoButtonText: string = localize('schemaCompareDialog.No', 'No');
 const titleFontSize: number = 13;
+
+async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
+	}
+}
 
 export class SchemaCompareDialog {
 	public dialog: azdata.window.Dialog;
@@ -60,7 +68,7 @@ export class SchemaCompareDialog {
 	private targetIsDacpac: boolean;
 	private connectionId: string;
 	private sourceDbEditable: string;
-	private taregtDbEditable: string;
+	private targetDbEditable: string;
 	private previousSource: mssql.SchemaCompareEndpointInfo;
 	private previousTarget: mssql.SchemaCompareEndpointInfo;
 
@@ -194,8 +202,8 @@ export class SchemaCompareDialog {
 				ariaLabel: localize('schemaCompareDialog.sourceTextBox', "Source file")
 			}).component();
 
-			this.sourceTextBox.onTextChanged((e) => {
-				this.dialog.okButton.enabled = this.shouldEnableOkayButton();
+			this.sourceTextBox.onTextChanged(async (e) => {
+				this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 			});
 
 			this.targetTextBox = view.modelBuilder.inputBox().withProperties({
@@ -204,8 +212,8 @@ export class SchemaCompareDialog {
 				ariaLabel: localize('schemaCompareDialog.targetTextBox', "Target file")
 			}).component();
 
-			this.targetTextBox.onTextChanged(() => {
-				this.dialog.okButton.enabled = this.shouldEnableOkayButton();
+			this.targetTextBox.onTextChanged(async () => {
+				this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 			});
 
 			this.sourceServerComponent = await this.createSourceServerDropdown(view);
@@ -273,9 +281,9 @@ export class SchemaCompareDialog {
 						components: targetComponents
 					}
 				], {
-						horizontal: true,
-						titleFontSize: titleFontSize
-					})
+					horizontal: true,
+					titleFontSize: titleFontSize
+				})
 				.withLayout({
 					width: '100%',
 					padding: '10px 10px 0 30px'
@@ -306,8 +314,8 @@ export class SchemaCompareDialog {
 
 		currentButton.onDidClick(async (click) => {
 			// file browser should open where the current dacpac is or the appropriate default folder
-			let rootPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].name : os.homedir();
-			let defaultUri = endpoint && endpoint.packageFilePath && existsSync(endpoint.packageFilePath) ? endpoint.packageFilePath : rootPath;
+			let rootPath = getRootPath();
+			let defaultUri = endpoint && endpoint.packageFilePath && await exists(endpoint.packageFilePath) ? endpoint.packageFilePath : rootPath;
 
 			let fileUris = await vscode.window.showOpenDialog(
 				{
@@ -351,17 +359,17 @@ export class SchemaCompareDialog {
 			}).component();
 
 		// show dacpac file browser
-		dacpacRadioButton.onDidClick(() => {
+		dacpacRadioButton.onDidClick(async () => {
 			this.sourceIsDacpac = true;
 			this.formBuilder.removeFormItem(this.sourceNoActiveConnectionsText);
 			this.formBuilder.removeFormItem(this.sourceServerComponent);
 			this.formBuilder.removeFormItem(this.sourceDatabaseComponent);
 			this.formBuilder.insertFormItem(this.sourceDacpacComponent, 2, { horizontal: true, titleFontSize: titleFontSize });
-			this.dialog.okButton.enabled = this.shouldEnableOkayButton();
+			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
 		// show server and db dropdowns or 'No active connections' text
-		databaseRadioButton.onDidClick(() => {
+		databaseRadioButton.onDidClick(async () => {
 			this.sourceIsDacpac = false;
 			if ((this.sourceServerDropdown.value as ConnectionDropdownValue)) {
 				this.formBuilder.insertFormItem(this.sourceServerComponent, 2, { horizontal: true, titleFontSize: titleFontSize });
@@ -370,7 +378,7 @@ export class SchemaCompareDialog {
 				this.formBuilder.insertFormItem(this.sourceNoActiveConnectionsText, 2, { horizontal: true, titleFontSize: titleFontSize });
 			}
 			this.formBuilder.removeFormItem(this.sourceDacpacComponent);
-			this.dialog.okButton.enabled = this.shouldEnableOkayButton();
+			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
 		// if source is currently a db, show it in the server and db dropdowns
@@ -408,17 +416,17 @@ export class SchemaCompareDialog {
 			}).component();
 
 		// show dacpac file browser
-		dacpacRadioButton.onDidClick(() => {
+		dacpacRadioButton.onDidClick(async () => {
 			this.targetIsDacpac = true;
 			this.formBuilder.removeFormItem(this.targetNoActiveConnectionsText);
 			this.formBuilder.removeFormItem(this.targetServerComponent);
 			this.formBuilder.removeFormItem(this.targetDatabaseComponent);
 			this.formBuilder.addFormItem(this.targetDacpacComponent, { horizontal: true, titleFontSize: titleFontSize });
-			this.dialog.okButton.enabled = this.shouldEnableOkayButton();
+			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
 		// show server and db dropdowns or 'No active connections' text
-		databaseRadioButton.onDidClick(() => {
+		databaseRadioButton.onDidClick(async () => {
 			this.targetIsDacpac = false;
 			this.formBuilder.removeFormItem(this.targetDacpacComponent);
 			if ((this.targetServerDropdown.value as ConnectionDropdownValue)) {
@@ -427,7 +435,7 @@ export class SchemaCompareDialog {
 			} else {
 				this.formBuilder.addFormItem(this.targetNoActiveConnectionsText, { horizontal: true, titleFontSize: titleFontSize });
 			}
-			this.dialog.okButton.enabled = this.shouldEnableOkayButton();
+			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
 		// if target is currently a db, show it in the server and db dropdowns
@@ -450,18 +458,18 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	private shouldEnableOkayButton(): boolean {
+	private async shouldEnableOkayButton(): Promise<boolean> {
 
-		let sourcefilled = (this.sourceIsDacpac && this.existsDacpac(this.sourceTextBox.value))
+		let sourcefilled = (this.sourceIsDacpac && await this.existsDacpac(this.sourceTextBox.value))
 			|| (!this.sourceIsDacpac && !isNullOrUndefined(this.sourceDatabaseDropdown.value) && this.sourceDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.sourceDbEditable)) !== -1);
-		let targetfilled = (this.targetIsDacpac && this.existsDacpac(this.targetTextBox.value))
-			|| (!this.targetIsDacpac && !isNullOrUndefined(this.targetDatabaseDropdown.value) && this.targetDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.taregtDbEditable)) !== -1);
+		let targetfilled = (this.targetIsDacpac && await this.existsDacpac(this.targetTextBox.value))
+			|| (!this.targetIsDacpac && !isNullOrUndefined(this.targetDatabaseDropdown.value) && this.targetDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.targetDbEditable)) !== -1);
 
 		return sourcefilled && targetfilled;
 	}
 
-	private existsDacpac(filename: string): boolean {
-		return !isNullOrUndefined(filename) && existsSync(filename) && (filename.toLocaleLowerCase().endsWith('.dacpac'));
+	private async existsDacpac(filename: string): Promise<boolean> {
+		return !isNullOrUndefined(filename) && await exists(filename) && (filename.toLocaleLowerCase().endsWith('.dacpac'));
 	}
 
 	protected async createSourceServerDropdown(view: azdata.ModelView): Promise<azdata.FormComponent> {
@@ -596,9 +604,9 @@ export class SchemaCompareDialog {
 				ariaLabel: localize('schemaCompareDialog.sourceDatabaseDropdown', "Source Database")
 			}
 		).component();
-		this.sourceDatabaseDropdown.onValueChanged((value) => {
+		this.sourceDatabaseDropdown.onValueChanged(async (value) => {
 			this.sourceDbEditable = value;
-			this.dialog.okButton.enabled = this.shouldEnableOkayButton();
+			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
 		return {
@@ -615,9 +623,9 @@ export class SchemaCompareDialog {
 				ariaLabel: localize('schemaCompareDialog.targetDatabaseDropdown', "Target Database")
 			}
 		).component();
-		this.targetDatabaseDropdown.onValueChanged((value) => {
-			this.taregtDbEditable = value;
-			this.dialog.okButton.enabled = this.shouldEnableOkayButton();
+		this.targetDatabaseDropdown.onValueChanged(async (value) => {
+			this.targetDbEditable = value;
+			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
 		return {
@@ -683,4 +691,8 @@ export class SchemaCompareDialog {
 
 interface ConnectionDropdownValue extends azdata.CategoryValue {
 	connection: azdata.connection.ConnectionProfile;
+}
+
+function isNullOrUndefined(val: any): boolean {
+	return val === null || val === undefined;
 }

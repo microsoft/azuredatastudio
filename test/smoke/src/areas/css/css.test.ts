@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Application } from '../../application';
-import { ProblemSeverity, Problems } from '../problems/problems';
+import { Application, ProblemSeverity, Problems } from '../../../../automation';
 
 export function setup() {
 	describe('CSS', () => {

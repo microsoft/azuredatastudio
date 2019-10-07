@@ -9,7 +9,7 @@
 //    - open Azure Data Studio
 //    - run the command "Install 'azuredatastudio' command in PATH"
 {
-	"version": "0.2.0",
+    "version": "0.2.0",
     "configurations": [
 
         {
@@ -21,33 +21,33 @@
                 "--extensionDevelopmentPath=${workspaceFolder}"
             ]
         },
-		{
-			"type": "node",
-			"request": "attach",
-			"name": "Attach to Ops Studio",
-			"protocol": "inspector",
-			"port": 5870,
-			"restart": true,
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach to Azure Data Studio",
+            "protocol": "inspector",
+            "port": 5870,
+            "restart": true,
             "sourceMaps": true,
-			"outFiles": [
-				"${workspaceRoot}/out/**/*.js"
-			],
+            "outFiles": [
+                "${workspaceRoot}/out/**/*.js"
+            ],
             "preLaunchTask": "",
             "timeout": 25000
-		},
+        },
         {
             "name": "Debug in enlistment",
-            "type": "sqlopsExtensionHost",
+            "type": "azuredatastudioExtensionHost",
             "request": "launch",
-			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/../../scripts/sql.bat"
-			},
-			"osx": {
-				"runtimeExecutable": "${workspaceFolder}/../../scripts/sql.sh"
-			},
-			"linux": {
-				"runtimeExecutable": "${workspaceFolder}/../../scripts/sql.sh"
-			},
+            "windows": {
+                "runtimeExecutable": "${workspaceFolder}/../../scripts/sql.bat"
+            },
+            "osx": {
+                "runtimeExecutable": "${workspaceFolder}/../../scripts/sql.sh"
+            },
+            "linux": {
+                "runtimeExecutable": "${workspaceFolder}/../../scripts/sql.sh"
+            },
             "args": [
                 "--extensionDevelopmentPath=${workspaceFolder}"
             ],

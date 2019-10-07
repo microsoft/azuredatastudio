@@ -1,0 +1,48 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.modelview-text-tooltip {
+	background-size: 12px 12px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+	width: 12px;
+	height: 12px;
+	margin-left: 5px;
+}
+
+.vs .modelview-text-tooltip {
+	background-image: url('info.svg')
+}
+
+.vs-dark .modelview-text-tooltip, .hc-black .modelview-text-tooltip {
+	background-image: url('info_inverse.svg')
+}
+
+.modelview-text-tooltip .modelview-text-tooltip-content {
+	visibility: hidden;
+	text-align: left;
+	border-radius: 5px;
+	width: 200px;
+	padding: 5px;
+	position: absolute;
+	z-index: 1;
+	margin-left: 14px;
+}
+
+.vs .modelview-text-tooltip .modelview-text-tooltip-content {
+	background-color: #f5f5f5;
+}
+
+.vs-dark .modelview-text-tooltip .modelview-text-tooltip-content, .hc-black .modelview-text-tooltip .modelview-text-tooltip-content {
+	background-color: #050505;
+}
+
+.modelview-text-tooltip:focus .modelview-text-tooltip-content, .modelview-text-tooltip:hover .modelview-text-tooltip-content {
+	visibility: visible;
+}
+
+.modelview-text-link {
+	text-decoration: underline !important;
+}

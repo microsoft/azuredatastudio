@@ -139,6 +139,14 @@
         "command": "books.sqlserver2019",
         "title": "%title.SQL19PreviewBook%",
         "category": "%books-preview-category%"
+      },
+      {
+        "command": "notebook.command.saveBook",
+        "title": "%title.saveJupyterBook%",
+        "icon": {
+          "dark": "resources/dark/save_inverse.svg",
+          "light": "resources/light/save.svg"
+        }
       }
     ],
     "languages": [
@@ -151,6 +159,13 @@
           "Notebook"
         ],
         "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "notebook",
+        "scopeName": "source.notebook",
+        "path": "./syntaxes/notebook.tmLanguage.json"
       }
     ],
     "menus": {
@@ -244,6 +259,13 @@
           "group": "1notebook@1"
         }
       ],
+      "view/item/context": [
+        {
+          "command": "notebook.command.saveBook",
+          "when": "view == untitledBookTreeView && viewItem == untitledBook && untitledBooks && notebookQuality != stable",
+          "group": "inline"
+        }
+      ],
       "notebook/toolbar": [
         {
           "command": "jupyter.cmd.managePackages",
@@ -311,14 +333,6 @@
       ],
       "standardKernels": [
         {
-          "name": "pyspark3kernel",
-          "displayName": "PySpark3",
-          "connectionProviderIds": [
-            "HADOOP_KNOX",
-            "MSSQL"
-          ]
-        },
-        {
           "name": "pysparkkernel",
           "displayName": "PySpark",
           "connectionProviderIds": [
@@ -346,6 +360,11 @@
           "name": "python3",
           "displayName": "Python 3",
           "connectionProviderIds": []
+        },
+        {
+          "name": "powershell",
+          "displayName": "PowerShell",
+          "connectionProviderIds": []
         }
       ]
     },
@@ -362,8 +381,11 @@
       "books-explorer": [
         {
           "id": "bookTreeView",
-          "name": "Books",
-          "when": "notebookQuality != stable"
+          "name": "%title.SavedBooks%"
+        },
+        {
+          "id": "untitledBookTreeView",
+          "name": "%title.UntitledBooks%"
         }
       ]
     }

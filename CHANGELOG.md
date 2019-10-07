@@ -1,5 +1,16 @@
 # Change Log
 
+## Version 1.12.0
+* Release date: October 2, 2019
+* Release status: General Availability
+
+## What's new in this version
+* Announcing the Query History panel
+* Improved Query Results Grid copy selection support
+* TempDB page added to Server Reports extension
+* PowerShell extension update
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/42?closed=1).
+
 ## Version 1.11.0
 * Release date: September 10, 2019
 * Release status: General Availability
@@ -204,7 +215,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 
 ## What's new in this version
 * Announcing the SQL Server 2019 Preview extension.
-  * Support for SQL Server 2019 preview features including big data cluster support.
+  * Support for SQL Server 2019 preview features including Big Data Cluster support.
   * Azure Data Studio Notebooks
   * The Azure Resource Explorer viewlets you browse data-related endpoints for your Azure accounts and create connections to them in Object Explorer. In this release Azure SQL Databases and servers are supported.
   * SQL Server Polybase Create External Table Wizard

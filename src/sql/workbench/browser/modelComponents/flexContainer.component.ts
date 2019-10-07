@@ -21,7 +21,7 @@ export class FlexItem {
 @Component({
 	template: `
 		<div *ngIf="items" class="flexContainer" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent" [style.position]="position"
-				[style.alignItems]="alignItems" [style.alignContent]="alignContent" [style.height]="height" [style.width]="width">
+				[style.alignItems]="alignItems" [style.alignContent]="alignContent" [style.height]="height" [style.width]="width" [style.flex-wrap]="flexWrap">
 			<div *ngFor="let item of items" [style.flex]="getItemFlex(item)" [style.textAlign]="textAlign" [style.order]="getItemOrder(item)" [ngStyle]="getItemStyles(item)">
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
@@ -40,6 +40,7 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 	private _height: string;
 	private _width: string;
 	private _position: string;
+	private _flexWrap: string;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -70,6 +71,7 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 		this._position = layout.position ? layout.position : '';
 		this._height = this.convertSize(layout.height);
 		this._width = this.convertSize(layout.width);
+		this._flexWrap = layout.flexWrap ? layout.flexWrap : '';
 
 		this.layout();
 	}
@@ -105,6 +107,10 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 
 	public get position(): string {
 		return this._position;
+	}
+
+	public get flexWrap(): string {
+		return this._flexWrap;
 	}
 
 	private getItemFlex(item: FlexItem): string {

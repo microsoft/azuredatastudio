@@ -14,7 +14,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
