@@ -500,7 +500,7 @@ export class JupyterServerInstallation {
 		let packagesStr = packages.map(pkg => `${pkg.name}==${pkg.version}`).join(' ');
 		// Force reinstall in case some dependencies are split across multiple locations
 		let cmdOptions = this._usingExistingPython ? '--user --force-reinstall' : '--force-reinstall';
-		let cmd = `"${this.pythonExecutable}" -m pip install ${cmdOptions} ${packagesStr}`;
+		let cmd = `"${this.pythonExecutable}" -m pip install ${cmdOptions} ${packagesStr} --extra-index-url https://prose-python-packages.azurewebsites.net`;
 		return this.executeStreamedCommand(cmd);
 	}
 
@@ -533,7 +533,7 @@ export class JupyterServerInstallation {
 
 		let packagesStr = packages.map(pkg => `${pkg.name}==${pkg.version}`).join(' ');
 		let condaExe = this.getCondaExePath();
-		let cmd = `"${condaExe}" install -y ${packagesStr}`;
+		let cmd = `"${condaExe}" install -y --force-reinstall ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
 
