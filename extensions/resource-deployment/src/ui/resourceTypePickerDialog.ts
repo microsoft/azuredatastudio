@@ -35,9 +35,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 		super(localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
 		this._selectedResourceType = resourceType;
 		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Select');
-		const button1 = azdata.window.createButton('xx', 'left');
-		const button2 = azdata.window.createButton('right', 'right');
-		this._dialogObject.customButtons = [button1, button2];
 	}
 
 	initialize() {
