@@ -166,7 +166,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 				fields: [
 					{
 						type: FieldType.ReadonlyText,
-						label: localize('deployCluster.DomainServiceAccountUserName', "Domain service account username"),
+						label: localize('deployCluster.DomainServiceAccountUserName', "Service account username"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.DomainServiceAccountUserName_VariableName),
 						labelFontWeight: FontWeight.Bold
 					}]

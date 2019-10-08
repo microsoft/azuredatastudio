@@ -48,6 +48,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 	private serviceProxyNameLabel!: azdata.TextComponent;
 	private appServiceProxyNameLabel!: azdata.TextComponent;
 	private readableSecondaryNameLabel!: azdata.TextComponent;
+	private endpointSection!: azdata.GroupContainer;
 
 	constructor(wizard: DeployClusterWizard) {
 		super(localize('deployCluster.ServiceSettingsPageTitle', "Service settings"), '', wizard);
@@ -100,7 +101,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				fields: [
 					{
 						type: FieldType.Number,
-						label: localize('deployCluster.HDFSText', "HDFS"),
+						label: localize('deployCluster.StoragePoolInstances', "Storage pool (HDFS) instances"),
 						min: 1,
 						max: 100,
 						defaultValue: '1',
@@ -109,7 +110,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						variableName: VariableNames.HDFSPoolScale_VariableName
 					}, {
 						type: FieldType.Checkbox,
-						label: localize('deployCluster.includeSparkInHDFSPool', "Include Spark"),
+						label: localize('deployCluster.IncludeSparkInStoragePool', "Include Spark in storage pool"),
 						defaultValue: 'true',
 						variableName: VariableNames.IncludeSpark_VariableName,
 						required: false
@@ -199,7 +200,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				fields: [
 					{
 						type: FieldType.Text,
-						label: localize('deployCluster.HDFSText', "HDFS"),
+						label: localize('deployCluster.StoragePool', "Storage pool (HDFS)"),
 						required: false,
 						variableName: VariableNames.HDFSDataStorageClassName_VariableName,
 						placeHolder: hintTextForStorageFields,
@@ -230,7 +231,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				fields: [
 					{
 						type: FieldType.Text,
-						label: localize('deployCluster.DataText', "Data"),
+						label: localize('deployCluster.DataPool', "Data pool"),
 						required: false,
 						variableName: VariableNames.DataPoolDataStorageClassName_VariableName,
 						labelWidth: labelWidth,
@@ -308,7 +309,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				});
 			};
 			const scaleSection = createSectionFunc(scaleSectionInfo);
-			const endpointSection = this.createEndpointSection(view);
+			this.endpointSection = this.createEndpointSection(view);
 			const storageSection = createSectionFunc(storageSectionInfo);
 			const advancedStorageSection = createSectionFunc(advancedStorageSectionInfo);
 			const storageContainer = createGroupContainer(view, [storageSection, advancedStorageSection], {
@@ -321,7 +322,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					component: scaleSection
 				}, {
 					title: '',
-					component: endpointSection
+					component: this.endpointSection
 				}, {
 					title: '',
 					component: storageContainer
@@ -397,13 +398,12 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.setInputBoxValue(VariableNames.ServiceProxyPort_VariableName);
 		this.setInputBoxValue(VariableNames.AppServiceProxyPort_VariableName);
 		this.setInputBoxValue(VariableNames.ReadableSecondaryPort_VariableName);
-
 		this.setInputBoxValue(VariableNames.ControllerDataStorageClassName_VariableName);
 		this.setInputBoxValue(VariableNames.ControllerDataStorageSize_VariableName);
 		this.setInputBoxValue(VariableNames.ControllerLogsStorageClassName_VariableName);
 		this.setInputBoxValue(VariableNames.ControllerLogsStorageSize_VariableName);
-
 		this.endpointHeaderRow.clearItems();
+		this.endpointSection.collapsed = this.wizard.model.authenticationMode !== AuthenticationMode.ActiveDirectory;
 		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
 			this.endpointHeaderRow.addItems([this.endpointNameColumnHeader, this.dnsColumnHeader, this.portColumnHeader]);
 		}
@@ -456,7 +456,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				if (!allInputFilled) {
 					errorMessage = MissingRequiredInformationErrorMessage;
 				} else if (!sparkEnabled) {
-					errorMessage = localize('deployCluster.SparkMustBeIncluded', "Invalid Spark configuration, you must check the 'Include Spark' checkbox or set the 'Spark pool instances' to at least 1.");
+					errorMessage = localize('deployCluster.SparkMustBeIncluded', "Invalid Spark configuration, You must check the 'Include Spark' checkbox or set the 'Spark pool instances' to at least 1.");
 				}
 				if (errorMessage) {
 					this.wizard.wizardObject.message = {
