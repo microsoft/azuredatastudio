@@ -295,9 +295,6 @@ export class CellModel implements ICellModel {
 				this.notebookModel.updateActiveCell(this);
 				this.active = true;
 			}
-			if (this.isCollapsed) {
-				this.isCollapsed = false;
-			}
 
 			if (connectionManagementService) {
 				this._connectionManagementService = connectionManagementService;
