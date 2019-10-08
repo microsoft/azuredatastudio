@@ -435,7 +435,7 @@ export class JupyterServerInstallation {
 			if (promptForUpgrade) {
 				doUpgrade = await this._prompter.promptSingle<boolean>(<IQuestion>{
 					type: QuestionTypes.confirm,
-					message: localize('confirmPipUpgrade', 'Some installed pip packages need to be upgraded. Would you like to upgrade them now?'),
+					message: localize('confirmPipUpgrade', "Some installed pip packages need to be upgraded. Would you like to upgrade them now?"),
 					default: true
 				});
 			} else {
@@ -479,7 +479,7 @@ export class JupyterServerInstallation {
 			if (promptForUpgrade) {
 				doUpgrade = await this._prompter.promptSingle<boolean>(<IQuestion>{
 					type: QuestionTypes.confirm,
-					message: localize('confirmCondaUpgrade', 'Some installed conda and pip packages need to be upgraded. Would you like to upgrade them now?'),
+					message: localize('confirmCondaUpgrade', "Some installed conda and pip packages need to be upgraded. Would you like to upgrade them now?"),
 					default: true
 				});
 			} else {
