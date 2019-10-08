@@ -189,7 +189,9 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 		}
 
 		//Ensure that the focus stays correct
-		this._grid.getActiveCellNode().focus();
+		if(this._grid.getActiveCellNode()) {
+			this._grid.getActiveCellNode().focus();
+		}
 	}
 
 	private handleHeaderClick(e: Event, args: Slick.OnHeaderClickEventArgs<T>): void {

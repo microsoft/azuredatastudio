@@ -105,12 +105,12 @@ export class SchemaCompareMainWindow {
 				title: localize('schemaCompare.differencesTableTitle', "Comparison between Source and Target")
 			}).component();
 
-			// this.diffEditor = view.modelBuilder.diffeditor().withProperties({
-			// 	contentLeft: os.EOL,
-			// 	contentRight: os.EOL,
-			// 	height: 500,
-			// 	title: diffEditorTitle
-			// }).component();
+			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
+				contentLeft: os.EOL,
+				contentRight: os.EOL,
+				height: 500,
+				title: diffEditorTitle
+			}).component();
 
 			this.splitView = view.modelBuilder.splitViewContainer().component();
 
@@ -398,9 +398,15 @@ export class SchemaCompareMainWindow {
 
 					// add and remove table to refresh the checkbox
 					// TODO: need to figure out a better way to do this. For big tables, this will refresh the table and show it from the beginning after
-					this.flexModel.removeItem(this.differencesTable);
-					this.flexModel.addItem(this.differencesTable);
+					this.flexModel.removeItem(this.splitView);
+					this.splitView.addItem(this.differencesTable);
+					this.splitView.addItem(this.diffEditor);
+					this.splitView.setLayout({
+						orientation: 'vertical',
+						splitViewHeight: 800
+					});
 				}
+				this.flexModel.addItem(this.splitView);
 			}
 		}));
 	}
