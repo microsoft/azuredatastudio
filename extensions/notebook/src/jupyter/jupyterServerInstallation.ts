@@ -58,7 +58,8 @@ export class JupyterServerInstallation {
 	public static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
 
 	private _prompter: IPrompter;
-	private readonly _expectedPythonPackages: PythonPkgDetails[] = [
+
+	private readonly _commonPackages: PythonPkgDetails[] = [
 		{
 			name: 'jupyter',
 			version: '1.0.0'
@@ -68,32 +69,10 @@ export class JupyterServerInstallation {
 		}, {
 			name: 'sparkmagic',
 			version: '0.12.9'
-		}, {
-			name: 'prose-codeaccelerator',
-			version: '1.3.0'
-		}, {
-			name: 'powershell-kernel',
-			version: '0.1.0'
 		}
 	];
 
-	private readonly _expectedCondaPackages: PythonPkgDetails[] = [
-		{
-			name: 'jupyter',
-			version: '1.0.0'
-		}, {
-			name: 'pandas',
-			version: '0.24.2'
-		}, {
-			name: 'sparkmagic',
-			version: '0.12.9'
-		}, {
-			name: 'pykerberos',
-			version: '1.2.1'
-		}
-	];
-
-	private readonly _expectedCondaPipPackages: PythonPkgDetails[] = [
+	private readonly _commonPipPackages: PythonPkgDetails[] = [
 		{
 			name: 'prose-codeaccelerator',
 			version: '1.3.0'
@@ -102,6 +81,12 @@ export class JupyterServerInstallation {
 			version: '0.1.0'
 		}
 	];
+
+	private readonly _expectedPythonPackages = this._commonPackages.concat(this._commonPipPackages);
+
+	private readonly _expectedCondaPackages = this._commonPackages.concat([{ name: 'pykerberos', version: '1.2.1' }]);
+
+	private readonly _expectedCondaPipPackages = this._commonPipPackages;
 
 	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
 		this.extensionPath = extensionPath;
@@ -422,13 +407,18 @@ export class JupyterServerInstallation {
 		let pkgVersionMap = new Map<string, string>();
 		installedPackages.forEach(pkg => pkgVersionMap.set(pkg.name, pkg.version));
 
-		let packagesToInstall: PythonPkgDetails[] = [];
-		this._expectedPythonPackages.forEach(expectedPkg => {
-			let installedPkgVersion = pkgVersionMap.get(expectedPkg.name);
-			if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
-				packagesToInstall.push(expectedPkg);
-			}
-		});
+		let packagesToInstall: PythonPkgDetails[];
+		if (this._forceInstall) {
+			packagesToInstall = this._expectedPythonPackages;
+		} else {
+			packagesToInstall = [];
+			this._expectedPythonPackages.forEach(expectedPkg => {
+				let installedPkgVersion = pkgVersionMap.get(expectedPkg.name);
+				if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
+					packagesToInstall.push(expectedPkg);
+				}
+			});
+		}
 
 		if (packagesToInstall.length > 0) {
 			let doUpgrade: boolean;
@@ -448,31 +438,40 @@ export class JupyterServerInstallation {
 	}
 
 	private async upgradeCondaPackages(promptForUpgrade: boolean): Promise<void> {
-		// Conda packages
-		let installedCondaPackages = await this.getInstalledCondaPackages();
-		let condaVersionMap = new Map<string, string>();
-		installedCondaPackages.forEach(pkg => condaVersionMap.set(pkg.name, pkg.version));
-
 		let condaPackagesToInstall: PythonPkgDetails[] = [];
-		this._expectedCondaPackages.forEach(expectedPkg => {
-			let installedPkgVersion = condaVersionMap.get(expectedPkg.name);
-			if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
-				condaPackagesToInstall.push(expectedPkg);
-			}
-		});
-
-		// Pip packages
-		let installedPipPackages = await this.getInstalledPipPackages();
-		let pipVersionMap = new Map<string, string>();
-		installedPipPackages.forEach(pkg => pipVersionMap.set(pkg.name, pkg.version));
-
 		let pipPackagesToInstall: PythonPkgDetails[] = [];
-		this._expectedCondaPipPackages.forEach(expectedPkg => {
-			let installedPkgVersion = pipVersionMap.get(expectedPkg.name);
-			if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
-				pipPackagesToInstall.push(expectedPkg);
-			}
-		});
+
+		if (this._forceInstall) {
+			condaPackagesToInstall = this._expectedCondaPackages;
+			pipPackagesToInstall = this._expectedCondaPipPackages;
+		} else {
+			condaPackagesToInstall = [];
+			pipPackagesToInstall = [];
+
+			// Conda packages
+			let installedCondaPackages = await this.getInstalledCondaPackages();
+			let condaVersionMap = new Map<string, string>();
+			installedCondaPackages.forEach(pkg => condaVersionMap.set(pkg.name, pkg.version));
+
+			this._expectedCondaPackages.forEach(expectedPkg => {
+				let installedPkgVersion = condaVersionMap.get(expectedPkg.name);
+				if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
+					condaPackagesToInstall.push(expectedPkg);
+				}
+			});
+
+			// Pip packages
+			let installedPipPackages = await this.getInstalledPipPackages();
+			let pipVersionMap = new Map<string, string>();
+			installedPipPackages.forEach(pkg => pipVersionMap.set(pkg.name, pkg.version));
+
+			this._expectedCondaPipPackages.forEach(expectedPkg => {
+				let installedPkgVersion = pipVersionMap.get(expectedPkg.name);
+				if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
+					pipPackagesToInstall.push(expectedPkg);
+				}
+			});
+		}
 
 		if (condaPackagesToInstall.length > 0 || pipPackagesToInstall.length > 0) {
 			let doUpgrade: boolean;
