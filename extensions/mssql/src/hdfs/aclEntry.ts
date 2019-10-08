@@ -236,7 +236,7 @@ export function parseAclEntry(aclString: string): AclEntry {
 }
 
 /**
- * Parses an octal in the form ### into a combination of an optional sticky bit and a set
+ * Parses an octal in the form [#]### into a combination of an optional sticky bit and a set
  * of @see AclEntryPermission. Each digit in the octal corresponds to the sticky bit or a
  * particular user type - owner, group and other respectively.
  * If the sticky bit exists and its value is 1 then the sticky bit value is set to true.
