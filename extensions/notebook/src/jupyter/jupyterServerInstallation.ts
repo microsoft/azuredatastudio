@@ -508,16 +508,16 @@ export class JupyterServerInstallation {
 			return Promise.resolve();
 		}
 
-		let packagesStr = packages.map(pkg => `${pkg.name}==${pkg.version}`).join(' ');
+		let packagesStr = packages.map(pkg => `"${pkg.name}==${pkg.version}"`).join(' ');
 		// Force reinstall in case some dependencies are split across multiple locations
 		let cmdOptions = this._usingExistingPython ? '--user --force-reinstall' : '--force-reinstall';
-		let cmd = `"${this.pythonExecutable}" -m pip install ${cmdOptions} "${packagesStr}" --extra-index-url https://prose-python-packages.azurewebsites.net`;
+		let cmd = `"${this.pythonExecutable}" -m pip install ${cmdOptions} ${packagesStr} --extra-index-url https://prose-python-packages.azurewebsites.net`;
 		return this.executeStreamedCommand(cmd);
 	}
 
 	public uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void> {
-		let packagesStr = packages.map(pkg => `${pkg.name}==${pkg.version}`).join(' ');
-		let cmd = `"${this.pythonExecutable}" -m pip uninstall -y "${packagesStr}"`;
+		let packagesStr = packages.map(pkg => `"${pkg.name}==${pkg.version}"`).join(' ');
+		let cmd = `"${this.pythonExecutable}" -m pip uninstall -y ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
 
@@ -542,16 +542,16 @@ export class JupyterServerInstallation {
 			return Promise.resolve();
 		}
 
-		let packagesStr = packages.map(pkg => `${pkg.name}==${pkg.version}`).join(' ');
+		let packagesStr = packages.map(pkg => `"${pkg.name}==${pkg.version}"`).join(' ');
 		let condaExe = this.getCondaExePath();
-		let cmd = `"${condaExe}" install -y --force-reinstall "${packagesStr}"`;
+		let cmd = `"${condaExe}" install -y --force-reinstall ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
 
 	public uninstallCondaPackages(packages: PythonPkgDetails[]): Promise<void> {
 		let condaExe = this.getCondaExePath();
-		let packagesStr = packages.map(pkg => `${pkg.name}==${pkg.version}`).join(' ');
-		let cmd = `"${condaExe}" uninstall -y "${packagesStr}"`;
+		let packagesStr = packages.map(pkg => `"${pkg.name}==${pkg.version}"`).join(' ');
+		let cmd = `"${condaExe}" uninstall -y ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
 
