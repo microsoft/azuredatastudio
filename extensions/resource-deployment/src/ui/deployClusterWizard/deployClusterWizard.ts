@@ -46,9 +46,9 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 
 	constructor(private wizardInfo: WizardInfo, private _kubeService: IKubeService, private _azdataService: IAzdataService, private _notebookService: INotebookService) {
 		super(DeployClusterWizard.getTitle(wizardInfo.type), new DeployClusterWizardModel(wizardInfo.type));
-		this._saveConfigButton = azdata.window.createButton(localize('deployCluster.SaveConfigFiles', "Save config files"));
+		this._saveConfigButton = azdata.window.createButton(localize('deployCluster.SaveConfigFiles', "Save config files"), 'left');
 		this._saveConfigButton.hidden = true;
-		this.addButton(this._saveConfigButton, 'left');
+		this.addButton(this._saveConfigButton);
 		this.registerDisposable(this._saveConfigButton.onClick(() => this.saveConfigFiles()));
 	}
 

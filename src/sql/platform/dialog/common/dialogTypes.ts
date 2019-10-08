@@ -84,6 +84,7 @@ export class DialogButton implements azdata.window.Button {
 	private _enabled: boolean;
 	private _hidden: boolean;
 	private _focused: boolean;
+	private _position?: azdata.window.DialogButtonPosition;
 	private _onClick: Emitter<void> = new Emitter<void>();
 	public readonly onClick: Event<void> = this._onClick.event;
 	private _onUpdate: Emitter<void> = new Emitter<void>();
@@ -128,6 +129,15 @@ export class DialogButton implements azdata.window.Button {
 
 	public set focused(focused: boolean) {
 		this._focused = focused;
+		this._onUpdate.fire();
+	}
+
+	public get position(): azdata.window.DialogButtonPosition | undefined {
+		return this._position;
+	}
+
+	public set position(value: azdata.window.DialogButtonPosition | undefined) {
+		this._position = value;
 		this._onUpdate.fire();
 	}
 
@@ -177,7 +187,6 @@ export class Wizard {
 	public doneButton: DialogButton;
 	public cancelButton: DialogButton;
 	public customButtons: DialogButton[];
-	public leftSideButtons: DialogButton[];
 	private _currentPage: number;
 	private _pageChangedEmitter = new Emitter<azdata.window.WizardPageChangeInfo>();
 	public readonly onPageChanged = this._pageChangedEmitter.event;

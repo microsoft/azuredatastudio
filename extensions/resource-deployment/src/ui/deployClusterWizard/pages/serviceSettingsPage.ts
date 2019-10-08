@@ -456,7 +456,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				if (!allInputFilled) {
 					errorMessage = MissingRequiredInformationErrorMessage;
 				} else if (!sparkEnabled) {
-					errorMessage = localize('deployCluster.SparkMustBeIncluded', "Invalid Spark configuration, You must check the 'Include Spark' checkbox or set the 'Spark pool instances' to at least 1.");
+					errorMessage = localize('deployCluster.SparkMustBeIncluded', "Invalid Spark configuration, you must check the 'Include Spark' checkbox or set the 'Spark pool instances' to at least 1.");
 				}
 				if (errorMessage) {
 					this.wizard.wizardObject.message = {

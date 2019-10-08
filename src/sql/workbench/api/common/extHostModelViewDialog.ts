@@ -208,6 +208,7 @@ class ButtonImpl implements azdata.window.Button {
 	private _enabled: boolean;
 	private _hidden: boolean;
 	private _focused: boolean;
+	private _position: azdata.window.DialogButtonPosition;
 
 	private _onClick = new Emitter<void>();
 	public onClick = this._onClick.event;
@@ -215,6 +216,7 @@ class ButtonImpl implements azdata.window.Button {
 	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog) {
 		this._enabled = true;
 		this._hidden = false;
+		this._position = 'right';
 	}
 
 	public get label(): string {
@@ -241,6 +243,15 @@ class ButtonImpl implements azdata.window.Button {
 
 	public set hidden(hidden: boolean) {
 		this._hidden = hidden;
+		this._extHostModelViewDialog.updateButton(this);
+	}
+
+	public get position(): azdata.window.DialogButtonPosition {
+		return this._position;
+	}
+
+	public set position(value: azdata.window.DialogButtonPosition) {
+		this._position = value;
 		this._extHostModelViewDialog.updateButton(this);
 	}
 
@@ -354,7 +365,6 @@ class WizardImpl implements azdata.window.Wizard {
 	public nextButton: azdata.window.Button;
 	public backButton: azdata.window.Button;
 	public customButtons: azdata.window.Button[];
-	public leftSideButtons: azdata.window.Button[];
 	private _pageChangedEmitter = new Emitter<azdata.window.WizardPageChangeInfo>();
 	public readonly onPageChanged = this._pageChangedEmitter.event;
 	private _navigationValidator: (info: azdata.window.WizardPageChangeInfo) => boolean | Thenable<boolean>;
@@ -588,7 +598,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			label: button.label,
 			enabled: button.enabled,
 			hidden: button.hidden,
-			focused: button.focused
+			focused: button.focused,
+			position: button.position
 		});
 	}
 
@@ -615,11 +626,12 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return tab;
 	}
 
-	public createButton(label: string): azdata.window.Button {
+	public createButton(label: string, position: azdata.window.DialogButtonPosition = 'right'): azdata.window.Button {
 		let button = new ButtonImpl(this);
 		this.getHandle(button);
 		this.registerOnClickCallback(button, button.getOnClickCallback());
 		button.label = label;
+		button.position = position;
 		return button;
 	}
 
@@ -675,9 +687,6 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		if (wizard.customButtons) {
 			wizard.customButtons.forEach(button => this.updateButton(button));
 		}
-		if (wizard.leftSideButtons) {
-			wizard.leftSideButtons.forEach(button => this.updateButton(button));
-		}
 		return this._proxy.$setWizardDetails(handle, {
 			title: wizard.title,
 			pages: wizard.pages.map(page => this.getHandle(page)),
@@ -688,7 +697,6 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			doneButton: this.getHandle(wizard.doneButton),
 			nextButton: this.getHandle(wizard.nextButton),
 			customButtons: wizard.customButtons ? wizard.customButtons.map(button => this.getHandle(button)) : undefined,
-			leftSideButtons: wizard.leftSideButtons ? wizard.leftSideButtons.map(button => this.getHandle(button)) : undefined,
 			message: wizard.message,
 			displayPageTitles: wizard.displayPageTitles
 		});

@@ -252,6 +252,7 @@ export interface IModelViewButtonDetails {
 	enabled: boolean;
 	hidden: boolean;
 	focused?: boolean;
+	position?: 'left' | 'right';
 }
 
 export interface IModelViewWizardPageDetails {
@@ -272,7 +273,6 @@ export interface IModelViewWizardDetails {
 	nextButton: number;
 	backButton: number;
 	customButtons: number[];
-	leftSideButtons: number[];
 	message: DialogMessage;
 	displayPageTitles: boolean;
 }

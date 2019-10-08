@@ -3491,7 +3491,7 @@ declare module 'azdata' {
 		 * Create a button which can be included in a dialog
 		 * @param label The label of the button
 		 */
-		export function createButton(label: string): Button;
+		export function createButton(label: string, position?: DialogButtonPosition): Button;
 
 		/**
 		 * Opens the given dialog if it is not already open
@@ -3655,7 +3655,14 @@ declare module 'azdata' {
 			 * Raised when the button is clicked
 			 */
 			readonly onClick: vscode.Event<void>;
+
+			/**
+			 * Position of the button on the dialog footer
+			 */
+			position?: DialogButtonPosition;
 		}
+
+		export type DialogButtonPosition = 'left' | 'right';
 
 		export interface WizardPageChangeInfo {
 			/**
@@ -3746,11 +3753,6 @@ declare module 'azdata' {
 			 * property on each page.
 			 */
 			customButtons: Button[];
-
-			/**
-			 * Any additional buttons that should be displayed for all pages on the left side of dialog footer.
-			 */
-			leftSideButtons: Button[];
 
 			/**
 			 * When set to false page titles and descriptions will not be displayed at the top

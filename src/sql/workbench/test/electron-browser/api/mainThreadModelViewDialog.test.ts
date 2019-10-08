@@ -158,7 +158,6 @@ suite('MainThreadModelViewDialog Tests', () => {
 			currentPage: undefined,
 			title: 'wizard_title',
 			customButtons: [],
-			leftSideButtons: [],
 			pages: [page1Handle, page2Handle],
 			message: undefined,
 			displayPageTitles: false
