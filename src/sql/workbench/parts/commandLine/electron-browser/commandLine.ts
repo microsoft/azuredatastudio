@@ -134,7 +134,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 			// we want to connect the given profile to to it.
 			// If more than one file was passed, only show the connection dialog error on one of them.
 			if (args._ && args._.length > 0) {
-				await args._.forEach((f, i) => this.processFile(URI.file(f).toString(), profile, i === 0));
+				await Promise.all(args._.map((f, i) => this.processFile(URI.file(f).toString(), profile, i === 0)));
 			}
 			else {
 				// Default to showing new query

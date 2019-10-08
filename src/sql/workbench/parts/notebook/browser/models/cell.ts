@@ -329,7 +329,7 @@ export class CellModel implements ICellModel {
 				if ((Array.isArray(content) && content.length > 0) || (!Array.isArray(content) && content)) {
 					// requestExecute expects a string for the code parameter
 					content = Array.isArray(content) ? content.join('') : content;
-					let future = await kernel.requestExecute({
+					const future = kernel.requestExecute({
 						code: content,
 						stop_on_error: true
 					}, false);
