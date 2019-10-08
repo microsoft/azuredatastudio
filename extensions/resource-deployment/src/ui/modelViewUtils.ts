@@ -40,7 +40,6 @@ export interface WizardPageContext extends CreateContext {
 	container: azdata.window.Wizard;
 }
 
-
 export interface SectionContext extends CreateContext {
 	sectionInfo: SectionInfo;
 	view: azdata.ModelView;
@@ -232,7 +231,6 @@ function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata
 	}
 }
 
-
 function processField(context: FieldContext): void {
 	switch (context.fieldInfo.type) {
 		case FieldType.Options:
@@ -275,7 +273,7 @@ function processOptionsTypeField(context: FieldContext): void {
 
 function processDateTimeTextField(context: FieldContext): void {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
-	const defaultValue = context.fieldInfo.defaultValue + new Date().toISOString().slice(0, 19).replace(/[^0-9]/g, ''); // Take the date time information and only leaving the numbers
+	const defaultValue = context.fieldInfo.defaultValue + getDateTimeString();
 	const input = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		value: defaultValue,
 		ariaLabel: context.fieldInfo.label,
@@ -286,6 +284,10 @@ function processDateTimeTextField(context: FieldContext): void {
 	input.width = context.fieldInfo.inputWidth;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelPosition);
+}
+
+export function getDateTimeString(): string {
+	return new Date().toISOString().slice(0, 19).replace(/[^0-9]/g, ''); // Take the date time information and only leaving the numbers
 }
 
 function processNumberField(context: FieldContext): void {
