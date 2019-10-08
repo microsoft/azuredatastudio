@@ -3,13 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NgModuleRef, PlatformRef, Provider } from '@angular/core';
+import { NgModuleRef, PlatformRef, Provider, enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { IInstantiationService, _util } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorInput } from 'vs/workbench/common/editor';
 import { Trace } from 'vs/platform/instantiation/common/instantiationService';
 import { values } from 'vs/base/common/map';
 import { IModuleFactory, IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 const selectorCounter = new Map<string, number>();
 
@@ -39,6 +40,13 @@ function createUniqueSelector(selector: string): string {
 let platform: PlatformRef;
 
 export function bootstrapAngular<T>(service: IInstantiationService, moduleType: IModuleFactory<T>, container: HTMLElement, selectorString: string, params: IBootstrapParams, input?: IEditorInput, callbackSetModule?: (value: NgModuleRef<T>) => void): string {
+	service.invokeFunction((accessor) => {
+		const environmentService = accessor.get(IEnvironmentService);
+		if (environmentService.isBuilt) {
+			enableProdMode();
+		}
+	});
+
 	// Create the uniqueSelectorString
 	let uniqueSelectorString = createUniqueSelector(selectorString);
 	let selector = document.createElement(uniqueSelectorString);
