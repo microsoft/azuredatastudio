@@ -15,6 +15,8 @@ import { AddControllerDialogModel, AddControllerDialog } from './bigDataCluster/
 import { ControllerNode } from './bigDataCluster/tree/controllerTreeNode';
 import { BdcDashboard } from './bigDataCluster/dialog/bdcDashboard';
 import { BdcDashboardModel } from './bigDataCluster/dialog/bdcDashboardModel';
+import { MountHdfsDialogModel, MountHdfsProperties, MountHdfsDialog } from './bigDataCluster/dialog/mountHdfsDialog';
+import { getControllerEndpoint } from './bigDataCluster/utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -23,8 +25,8 @@ const DeleteControllerCommand = 'bigDataClusters.command.deleteController';
 const RefreshControllerCommand = 'bigDataClusters.command.refreshController';
 const ManageControllerCommand = 'bigDataClusters.command.manageController';
 const MountHdfsCommand = 'bigDataClusters.command.mount';
-const RefreshMountCommand = 'bigDataClusters.command.refresh';
-const UnmountHdfsCommand = 'bigDataClusters.command.unmount';
+
+const endpointNotFoundError = localize('mount.error.endpointNotFound', "Controller endpoint information was not found");
 
 let throttleTimers: { [key: string]: any } = {};
 
@@ -64,10 +66,51 @@ function registerCommands(context: vscode.ExtensionContext, treeDataProvider: Co
 		dashboard.showDashboard();
 	});
 
-	vscode.commands.registerCommand(MountHdfsCommand, (explorerContext: azdata.ObjectExplorerContext) => {
+	vscode.commands.registerCommand(MountHdfsCommand, e => mountHdfs(e).catch(error => {
+		vscode.window.showErrorMessage(error instanceof Error ? error.message : error);
+	}));
+}
 
-	});
+async function mountHdfs(explorerContext?: azdata.ObjectExplorerContext): Promise<void> {
+	let endpoint = await lookupController(explorerContext);
+	if (!endpoint) {
+		vscode.window.showErrorMessage(endpointNotFoundError);
+		return;
+	}
+	let profile = explorerContext.connectionProfile;
+	let mountProps: MountHdfsProperties = {
+		url: endpoint,
+		auth: profile.authenticationType === 'SqlLogin' ? 'basic' : 'integrated',
+		username: profile.userName,
+		password: profile.password,
+		hdfsPath: getHdsfPath(explorerContext.nodeInfo.nodePath)
+	};
+	let dialog = new MountHdfsDialog(new MountHdfsDialogModel(mountProps));
+	dialog.showDialog();
+}
 
+function getHdsfPath(nodePath: string): string {
+	const hdfsNodeLabel = '/HDFS';
+	let index = nodePath.indexOf(hdfsNodeLabel);
+	if (index >= 0) {
+		let subPath = nodePath.substring(index + hdfsNodeLabel.length);
+		return subPath.length > 0 ? subPath : '/';
+	}
+	// Use the root
+	return '/';
+}
+
+async function lookupController(explorerContext?: azdata.ObjectExplorerContext): Promise<string | undefined> {
+	if (!explorerContext) {
+		return undefined;
+	}
+
+	let serverInfo = await azdata.connection.getServerInfo(explorerContext.connectionProfile.id);
+	if (!serverInfo || !serverInfo.options) {
+		vscode.window.showErrorMessage(endpointNotFoundError);
+		return undefined;
+	}
+	return getControllerEndpoint(serverInfo);
 }
 
 function addBdcController(treeDataProvider: ControllerTreeDataProvider, node?: TreeNode): void {

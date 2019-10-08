@@ -5,11 +5,10 @@
 
 'use strict';
 
+import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { ClusterController, ControllerError } from '../controller/clusterControllerApi';
-import { ControllerTreeDataProvider } from '../tree/controllerTreeDataProvider';
-import { TreeNode } from '../tree/treeNode';
 import { AuthType } from '../constants';
 
 const localize = nls.loadMessageBundle();
@@ -24,26 +23,68 @@ function getAuthCategory(name: AuthType): azdata.CategoryValue {
 	return { name: name, displayName: integratedAuthDisplay };
 }
 
-interface DialogProperties {
+/**
+ * Converts a comma-delimited set of key value pair credentials to a JSON object.
+ * This code is taken from the azdata implementation written in Python
+ */
+function convertCredsToJson(creds: string): {} {
+	if (!creds) {
+		return undefined;
+	}
+	// TBD: can we use something other than negative lookup?
+	let credObj = { credentials: {} };
+	let pairs = creds.split(',');
+	// handle escaped commas in a browser-agnostic way by pushing to the next
+	let validPairs: string[] = [];
+	for (let i = 0; i < pairs.length; i++) {
+		if (i < (pairs.length - 1) && pairs[i].match(/(?!\\).*\\$/)) {
+			// Since this was meant to be an escaped comma, restore it
+			pairs[i + 1] = `${pairs[i]},${pairs[i + 1]}`;
+		} else {
+			validPairs.push(pairs[i]);
+		}
+	}
+
+	validPairs.forEach(pair => {
+		const formattingErr = localize('mount.err.formatting', "Bad formatting of credentials at {0}", pair);
+		try {
+			// # remove escaped characters for ,
+			pair = pair.replace('\\,', ',').trim();
+			let firstEquals = pair.indexOf('=');
+			if (firstEquals <= 0 || firstEquals >= pair.length) {
+				throw new Error(formattingErr);
+			}
+			let key = pair.substring(0, firstEquals);
+			let value = pair.substring(firstEquals + 1);
+			credObj.credentials[key] = value;
+		} catch (err) {
+			throw new Error(formattingErr);
+		}
+	});
+	return credObj;
+}
+
+export interface DialogProperties {
 	url?: string;
 	auth?: AuthType;
 	username?: string;
 	password?: string;
 }
 
-interface HdfsDialogProperties extends DialogProperties {
-	hdfsPath: string;
+export interface MountHdfsProperties extends DialogProperties {
+	hdfsPath?: string;
+	remoteUri?: string;
+	credentials?: string;
 }
 
 abstract class HdfsDialogModelBase<T extends DialogProperties> {
-	private _canceled = false;
+	protected _canceled = false;
 	private _authTypes: azdata.CategoryValue[];
 	constructor(
 		public props: T
 	) {
 		if (!props.auth) {
-			let auth: AuthType = 'basic';
-			this.props.auth = getAuthCategory(auth);
+			this.props.auth = 'basic';
 		}
 	}
 
@@ -52,6 +93,10 @@ abstract class HdfsDialogModelBase<T extends DialogProperties> {
 			this._authTypes = [getAuthCategory('basic'), getAuthCategory('integrated')];
 		}
 		return this._authTypes;
+	}
+
+	public get authCategory(): azdata.CategoryValue {
+		return getAuthCategory(this.props.auth);
 	}
 
 	public async onComplete(props: T): Promise<void> {
@@ -77,47 +122,79 @@ abstract class HdfsDialogModelBase<T extends DialogProperties> {
 		this._canceled = true;
 	}
 
+	protected createController(): ClusterController {
+		return new ClusterController(this.props.url, this.props.auth, this.props.username, this.props.password, true);
+	}
+
 }
 
-export class MountHdfsDialogModel extends HdfsDialogModelBase<HdfsDialogProperties> {
+export class MountHdfsDialogModel extends HdfsDialogModelBase<MountHdfsProperties> {
+	private credentials: {};
 
-	constructor(props: HdfsDialogProperties) {
+	constructor(props: MountHdfsProperties) {
 		super(props);
 	}
 
-	protected handleCompleted(): Promise<void> {
+	protected async handleCompleted(): Promise<void> {
 		if (this.props.auth === 'basic') {
 			// Verify username and password as we can't make them required in the UI
-			if (!username) {
+			if (!this.props.username) {
 				throw new Error(localize('err.controller.username.required', "Username is required"));
-			} else if (!password) {
+			} else if (!this.props.password) {
 				throw new Error(localize('err.controller.password.required', "Password is required"));
 			}
 		}
+		// Validate credentials
+		this.credentials = convertCredsToJson(this.props.credentials);
+
 		// We pre-fetch the endpoints here to verify that the information entered is correct (the user is able to connect)
-		let controller = new ClusterController(url, auth, username, password, true);
+		let controller = this.createController();
 		let response = await controller.getEndPoints();
 		if (response && response.endPoints) {
 			if (this._canceled) {
 				return;
 			}
-			this.treeDataProvider.addController(url, auth, username, password, rememberPassword);
-			await this.treeDataProvider.saveControllers();
+			//
+			azdata.tasks.startBackgroundOperation(
+				{
+					connection: undefined,
+					displayName: localize('mount.task.name', "Mounting HDFS folder on path {0}", this.props.hdfsPath),
+					description: '',
+					isCancelable: false,
+					operation: op => {
+						this.onSubmit(controller, op);
+					}
+				}
+			);
+		}
+	}
+
+	private async onSubmit(controller: ClusterController, op: azdata.BackgroundOperation): Promise<void> {
+		try {
+			let mountResponse = await controller.mountHdfs(this.props.hdfsPath, this.props.remoteUri, this.credentials);
+			// TODO: should we wait on mount to be created, or add other status updates?
+			// TODO: also should we refresh the nodes automatically?
+			// let statusResponse = await controller.getMountStatus();
+			op.updateStatus(azdata.TaskStatus.Succeeded, localize('mount.task.complete', "Mounting HFDS folder is complete"));
+		} catch (error) {
+			const errMsg = localize('mount.task.error', "Error mounting folder: {0}", (error instanceof Error ? error.message : error));
+			vscode.window.showErrorMessage(errMsg);
+			op.updateStatus(azdata.TaskStatus.Failed, errMsg);
 		}
 	}
 }
 
-export class MountHdfsDialog {
+abstract class HdfsDialogBase<T extends DialogProperties> {
 
-	private dialog: azdata.window.Dialog;
-	private uiModelBuilder: azdata.ModelBuilder;
+	protected dialog: azdata.window.Dialog;
+	protected uiModelBuilder: azdata.ModelBuilder;
 
-	private urlInputBox: azdata.InputBoxComponent;
-	private authDropdown: azdata.DropDownComponent;
-	private usernameInputBox: azdata.InputBoxComponent;
-	private passwordInputBox: azdata.InputBoxComponent;
+	protected urlInputBox: azdata.InputBoxComponent;
+	protected authDropdown: azdata.DropDownComponent;
+	protected usernameInputBox: azdata.InputBoxComponent;
+	protected passwordInputBox: azdata.InputBoxComponent;
 
-	constructor(private model: MountHdfsDialogModel) {
+	constructor(private title: string, protected model: HdfsDialogModelBase<T>) {
 	}
 
 	public showDialog(): void {
@@ -126,69 +203,77 @@ export class MountHdfsDialog {
 	}
 
 	private createDialog(): void {
-		this.dialog = azdata.window.createModelViewDialog(localize('textAddNewController', 'Add New Controller'));
+		this.dialog = azdata.window.createModelViewDialog(this.title);
 		this.dialog.registerContent(async view => {
 			this.uiModelBuilder = view.modelBuilder;
 
 			this.urlInputBox = this.uiModelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
 					placeHolder: localize('textUrlLower', 'url'),
-					value: this.model.prefilledUrl,
+					value: this.model.props.url,
 				}).component();
 			this.urlInputBox.enabled = false;
 
 			this.authDropdown = this.uiModelBuilder.dropDown().withProperties({
 				values: this.model.authCategories,
-				value: this.model.prefilledAuth,
+				value: this.model.authCategory,
 				editable: false,
 			}).component();
 			this.authDropdown.onValueChanged(e => this.onAuthChanged());
 			this.usernameInputBox = this.uiModelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
 					placeHolder: localize('textUsernameLower', 'username'),
-					value: this.model.prefilledUsername
+					value: this.model.props.username
 				}).component();
 			this.passwordInputBox = this.uiModelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
 					placeHolder: localize('textPasswordLower', 'password'),
 					inputType: 'password',
-					value: this.model.prefilledPassword
+					value: this.model.props.password
 				})
 				.component();
+
+			let connectionSection: azdata.FormComponentGroup = {
+				components: [
+					{
+						component: this.urlInputBox,
+						title: localize('textUrlCapital', 'URL'),
+						required: true
+					}, {
+						component: this.authDropdown,
+						title: localize('textAuthCapital', 'Authentication type'),
+						required: true
+					}, {
+						component: this.usernameInputBox,
+						title: localize('textUsernameCapital', 'Username'),
+						required: false
+					}, {
+						component: this.passwordInputBox,
+						title: localize('textPasswordCapital', 'Password'),
+						required: false
+					}
+				],
+				title: localize('hdsf.dialog.connection.section', "Cluster Connection")
+			};
 			let formModel = this.uiModelBuilder.formContainer()
-				.withFormItems([{
-					components: [
-						{
-							component: this.urlInputBox,
-							title: localize('textUrlCapital', 'URL'),
-							required: true
-						}, {
-							component: this.authDropdown,
-							title: localize('textAuthCapital', 'Authentication type'),
-							required: true
-						}, {
-							component: this.usernameInputBox,
-							title: localize('textUsernameCapital', 'Username'),
-							required: false
-						}, {
-							component: this.passwordInputBox,
-							title: localize('textPasswordCapital', 'Password'),
-							required: false
-						}
-					],
-					title: ''
-				}]).withLayout({ width: '100%' }).component();
+				.withFormItems([
+					this.getMainSection(),
+					connectionSection
+				]).withLayout({ width: '100%' }).component();
+			this.onAuthChanged();
 
 			await view.initializeModel(formModel);
 		});
 
 		this.dialog.registerCloseValidator(async () => await this.validate());
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
-		this.dialog.okButton.label = localize('textAdd', 'Add');
-		this.dialog.cancelButton.label = localize('textCancel', 'Cancel');
+		this.dialog.okButton.label = localize('hdfs.dialog.ok', "OK");
+		this.dialog.cancelButton.label = localize('hdfs.dialog.cancel', "Cancel");
 	}
 
-	private get authValue(): AuthType {
+	protected abstract getMainSection(): azdata.FormComponentGroup;
+
+	protected get authValue(): AuthType {
 		return (<azdata.CategoryValue>this.authDropdown.value).name as AuthType;
 	}
 
@@ -202,14 +287,71 @@ export class MountHdfsDialog {
 		}
 	}
 
-	private async validate(): Promise<boolean> {
-		let url = this.urlInputBox && this.urlInputBox.value;
-		let auth = this.authValue;
-		let username = this.usernameInputBox && this.usernameInputBox.value;
-		let password = this.passwordInputBox && this.passwordInputBox.value;
+	protected abstract validate(): Promise<boolean>;
 
+	private async cancel(): Promise<void> {
+		if (this.model && this.model.onCancel) {
+			await this.model.onCancel();
+		}
+	}
+}
+export class MountHdfsDialog extends HdfsDialogBase<MountHdfsProperties> {
+	private pathInputBox: azdata.InputBoxComponent;
+	private remoteUriInputBox: azdata.InputBoxComponent;
+	private credentialsInputBox: azdata.InputBoxComponent;
+
+	constructor(model: MountHdfsDialogModel) {
+		super(localize('mount.dialog.title', "Mount HDFS Folder"), model);
+	}
+
+	protected getMainSection(): azdata.FormComponentGroup {
+		this.pathInputBox = this.uiModelBuilder.inputBox()
+			.withProperties<azdata.InputBoxProperties>({
+				value: this.model.props.hdfsPath
+			}).component();
+		this.remoteUriInputBox = this.uiModelBuilder.inputBox()
+			.withProperties<azdata.InputBoxProperties>({
+				value: this.model.props.remoteUri
+			})
+			.component();
+		this.credentialsInputBox = this.uiModelBuilder.inputBox()
+			.withProperties<azdata.InputBoxProperties>({
+				inputType: 'password',
+				value: this.model.props.credentials
+			})
+			.component();
+
+		return {
+			components: [
+				{
+					component: this.pathInputBox,
+					title: localize('mount.hdfsPath', "HDFS Path"),
+					required: true
+				}, {
+					component: this.remoteUriInputBox,
+					title: localize('mount.remoteUri', "Remote URI"),
+					required: true
+				}, {
+					component: this.credentialsInputBox,
+					title: localize('mount.credentials', "Credentials"),
+					required: false
+				}
+			],
+			title: localize('mount.main.section', "Mount Configuration")
+		};
+	}
+
+	protected async validate(): Promise<boolean> {
 		try {
-			await this.model.onComplete(url, auth, username, password);
+			await this.model.onComplete({
+				url: this.urlInputBox && this.urlInputBox.value,
+				auth: this.authValue,
+				username: this.usernameInputBox && this.usernameInputBox.value,
+				password: this.passwordInputBox && this.passwordInputBox.value,
+				hdfsPath: this.pathInputBox && this.pathInputBox.value,
+				remoteUri: this.remoteUriInputBox && this.remoteUriInputBox.value,
+				credentials: this.credentialsInputBox && this.credentialsInputBox.value
+			});
 			return true;
 		} catch (error) {
 			this.dialog.message = {
@@ -220,12 +362,6 @@ export class MountHdfsDialog {
 				await this.model.onError(error as ControllerError);
 			}
 			return false;
-		}
-	}
-
-	private async cancel(): Promise<void> {
-		if (this.model && this.model.onCancel) {
-			await this.model.onCancel();
 		}
 	}
 }

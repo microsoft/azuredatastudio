@@ -4,8 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as request from 'request';
+
 import { authenticateKerberos, getHostAndPortFromEndpoint } from '../auth';
-import { BdcRouterApi, Authentication, EndpointModel, BdcStatusModel } from './apiGenerated';
+import { BdcRouterApi, Authentication, EndpointModel, BdcStatusModel, DefaultApi } from './apiGenerated';
 import { TokenRouterApi } from './clusterApiGenerated2';
 import { AuthType } from '../constants';
 import * as nls from 'vscode-nls';
@@ -64,6 +65,16 @@ export class OAuthWithSsl extends SslAuth implements Authentication {
 }
 
 class BdcApiWrapper extends BdcRouterApi {
+	constructor(basePathOrUsername: string, password: string, basePath: string, auth: Authentication) {
+		if (password) {
+			super(basePathOrUsername, password, basePath);
+		} else {
+			super(basePath, undefined, undefined);
+		}
+		this.authentications.default = auth;
+	}
+}
+class DefaultApiWrapper extends DefaultApi {
 	constructor(basePathOrUsername: string, password: string, basePath: string, auth: Authentication) {
 		if (password) {
 			super(basePathOrUsername, password, basePath);
@@ -171,6 +182,38 @@ export class ClusterController {
 		}
 	}
 
+	public async mountHdfs(mountPath: string, remoteUri: string, credentials: {}): Promise<IMountResponse> {
+		let auth = await this.authPromise;
+		const api = new DefaultApiWrapper(this.username, this.password, this._url, auth);
+
+		try {
+			const mountStatus = await api.createMount('', '', remoteUri, mountPath, credentials);
+			return {
+				response: mountStatus.response,
+				mount: mountStatus.body
+			};
+		} catch (error) {
+			// TODO handle 401 by reauthenticating
+			throw new ControllerError(error, localize('bdc.error.mountHdfs', "Error creating mount"));
+		}
+	}
+
+	public async getMountStatus(mountPath?: string): Promise<IMountResponse> {
+		let auth = await this.authPromise;
+		const api = new DefaultApiWrapper(this.username, this.password, this._url, auth);
+
+		try {
+			const mountStatus = await api.listMounts('', '', mountPath);
+			return {
+				response: mountStatus.response,
+				mount: mountStatus.body
+			};
+		} catch (error) {
+			// TODO handle 401 by reauthenticating
+			throw new ControllerError(error, localize('bdc.error.mountHdfs', "Error creating mount"));
+		}
+	}
+
 }
 /**
  * Fixes missing protocol and wrong character for port entered by user
@@ -202,6 +245,10 @@ export interface IEndPointsResponse {
 export interface IBdcStatusResponse {
 	response: IHttpResponse;
 	bdcStatus: BdcStatusModel;
+}
+export interface IMountResponse {
+	response: IHttpResponse;
+	mount: any;
 }
 
 export interface IHttpResponse {

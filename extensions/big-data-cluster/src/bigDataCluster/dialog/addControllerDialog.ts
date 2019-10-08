@@ -176,7 +176,7 @@ export class AddControllerDialog {
 					],
 					title: ''
 				}]).withLayout({ width: '100%' }).component();
-
+			this.onAuthChanged();
 			await view.initializeModel(formModel);
 		});
 
