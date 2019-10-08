@@ -46,8 +46,8 @@ export function bootstrapAngular<T>(service: IInstantiationService, moduleType: 
 			if (environmentService.isBuilt) {
 				enableProdMode();
 			}
-			platform = platformBrowserDynamic();
 
+			platform = platformBrowserDynamic();
 		});
 	}
 
