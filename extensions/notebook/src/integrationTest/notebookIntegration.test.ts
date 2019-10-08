@@ -116,7 +116,7 @@ describe('Notebook Extension Python Installation', function () {
 		should(install.uninstallCondaPackages([{ name: 'pandas', version: '0.24.2' }])).be.rejected();
 	});
 
-	it('Manage Packages Dialog: New Package Test', async function () {
+	it('Manage Packages Dialog: Sort Versions Test', async function () {
 		let testVersions = ['1.0.0', '1.1', '0.0.0.9', '0.0.5', '100', '0.3', '3'];
 		let ascendingVersions = ['0.0.0.9', '0.0.5', '0.3', '1.0.0', '1.1', '3', '100'];
 		let descendingVersions = ['100', '3', '1.1', '1.0.0', '0.3', '0.0.5', '0.0.0.9'];
