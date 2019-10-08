@@ -51,8 +51,6 @@ export class JupyterServerInstallation {
 	private _usingExistingPython: boolean;
 	private _usingConda: boolean;
 
-	// Allows dependencies to be installed even if an existing installation is already present
-	private _forceInstall: boolean;
 	private _installInProgress: boolean;
 
 	public static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
@@ -93,7 +91,6 @@ export class JupyterServerInstallation {
 		this.outputChannel = outputChannel;
 		this.apiWrapper = apiWrapper;
 		this._pythonInstallationPath = pythonInstallationPath || JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
-		this._forceInstall = false;
 		this._usingConda = false;
 		this._installInProgress = false;
 		this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
@@ -101,8 +98,8 @@ export class JupyterServerInstallation {
 		this._prompter = new CodeAdapter();
 	}
 
-	private async installDependencies(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
-		if (!(await utils.exists(this._pythonExecutable)) || this._forceInstall || this._usingExistingPython) {
+	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean): Promise<void> {
+		if (!(await utils.exists(this._pythonExecutable)) || forceInstall || this._usingExistingPython) {
 			window.showInformationMessage(msgInstallPkgStart);
 
 			this.outputChannel.show(true);
@@ -113,9 +110,9 @@ export class JupyterServerInstallation {
 				await this.installPythonPackage(backgroundOperation);
 
 				if (this._usingConda) {
-					await this.upgradeCondaPackages(false);
+					await this.upgradeCondaPackages(false, forceInstall);
 				} else if (this._usingExistingPython) {
-					await this.upgradePythonPackages(false);
+					await this.upgradePythonPackages(false, forceInstall);
 				} else {
 					await this.installOfflinePipDependencies();
 				}
@@ -336,7 +333,6 @@ export class JupyterServerInstallation {
 		}
 		this._installInProgress = true;
 
-		this._forceInstall = forceInstall;
 		if (installSettings) {
 			this._pythonInstallationPath = installSettings.installPath;
 			this._usingExistingPython = installSettings.existingPython;
@@ -350,13 +346,13 @@ export class JupyterServerInstallation {
 			await this.configurePackagePaths();
 		};
 		let installReady = new Deferred<void>();
-		if (!(await utils.exists(this._pythonExecutable)) || this._forceInstall || this._usingExistingPython) {
+		if (!(await utils.exists(this._pythonExecutable)) || forceInstall || this._usingExistingPython) {
 			this.apiWrapper.startBackgroundOperation({
 				displayName: msgTaskName,
 				description: msgTaskName,
 				isCancelable: false,
 				operation: op => {
-					this.installDependencies(op)
+					this.installDependencies(op, forceInstall)
 						.then(async () => {
 							await updateConfig();
 							installReady.resolve();
@@ -396,19 +392,19 @@ export class JupyterServerInstallation {
 	 */
 	public promptForPackageUpgrade(): Promise<void> {
 		if (this._usingConda) {
-			return this.upgradeCondaPackages(true);
+			return this.upgradeCondaPackages(true, false);
 		} else {
-			return this.upgradePythonPackages(true);
+			return this.upgradePythonPackages(true, false);
 		}
 	}
 
-	private async upgradePythonPackages(promptForUpgrade: boolean): Promise<void> {
+	private async upgradePythonPackages(promptForUpgrade: boolean, forceInstall: boolean): Promise<void> {
 		let installedPackages = await this.getInstalledPipPackages();
 		let pkgVersionMap = new Map<string, string>();
 		installedPackages.forEach(pkg => pkgVersionMap.set(pkg.name, pkg.version));
 
 		let packagesToInstall: PythonPkgDetails[];
-		if (this._forceInstall) {
+		if (forceInstall) {
 			packagesToInstall = this._expectedPythonPackages;
 		} else {
 			packagesToInstall = [];
@@ -437,11 +433,11 @@ export class JupyterServerInstallation {
 		}
 	}
 
-	private async upgradeCondaPackages(promptForUpgrade: boolean): Promise<void> {
+	private async upgradeCondaPackages(promptForUpgrade: boolean, forceInstall: boolean): Promise<void> {
 		let condaPackagesToInstall: PythonPkgDetails[] = [];
 		let pipPackagesToInstall: PythonPkgDetails[] = [];
 
-		if (this._forceInstall) {
+		if (forceInstall) {
 			condaPackagesToInstall = this._expectedCondaPackages;
 			pipPackagesToInstall = this._expectedCondaPipPackages;
 		} else {
