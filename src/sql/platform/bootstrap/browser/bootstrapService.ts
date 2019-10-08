@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NgModuleRef, PlatformRef, Provider, enableProdMode } from '@angular/core';
+import { NgModuleRef, PlatformRef, Provider, enableProdMode, isDevMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { IInstantiationService, _util } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorInput } from 'vs/workbench/common/editor';
@@ -40,22 +40,21 @@ function createUniqueSelector(selector: string): string {
 let platform: PlatformRef;
 
 export function bootstrapAngular<T>(service: IInstantiationService, moduleType: IModuleFactory<T>, container: HTMLElement, selectorString: string, params: IBootstrapParams, input?: IEditorInput, callbackSetModule?: (value: NgModuleRef<T>) => void): string {
-	service.invokeFunction((accessor) => {
-		const environmentService = accessor.get(IEnvironmentService);
-		if (environmentService.isBuilt) {
-			enableProdMode();
-		}
-	});
+	if (!platform) {
+		service.invokeFunction((accessor) => {
+			const environmentService = accessor.get(IEnvironmentService);
+			if (environmentService.isBuilt) {
+				enableProdMode();
+			}
+			platform = platformBrowserDynamic();
+
+		});
+	}
 
 	// Create the uniqueSelectorString
 	let uniqueSelectorString = createUniqueSelector(selectorString);
 	let selector = document.createElement(uniqueSelectorString);
 	container.appendChild(selector);
-
-	if (!platform) {
-		platform = platformBrowserDynamic();
-	}
-
 	platform.bootstrapModule(moduleType(params, uniqueSelectorString, service)).then(moduleRef => {
 		if (input) {
 			input.onDispose(() => {
