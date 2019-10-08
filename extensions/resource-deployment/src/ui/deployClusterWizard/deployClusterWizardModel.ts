@@ -133,7 +133,7 @@ export class DeployClusterWizardModel extends Model {
 		const statements: string[] = [];
 		if (this.deploymentTarget === BdcDeploymentType.NewAKS) {
 			statements.push(`azure_subscription_id = '${this.getStringValue(VariableNames.SubscriptionId_VariableName, '')}'`);
-			statements.push(`azure_region = '${this.getStringValue(VariableNames.Region_VariableName)}'`);
+			statements.push(`azure_region = '${this.getStringValue(VariableNames.Location_VariableName)}'`);
 			statements.push(`azure_resource_group = '${this.getStringValue(VariableNames.ResourceGroup_VariableName)}'`);
 			statements.push(`azure_vm_size = '${this.getStringValue(VariableNames.VMSize_VariableName)}'`);
 			statements.push(`azure_vm_count = '${this.getStringValue(VariableNames.VMCount_VariableName)}'`);
