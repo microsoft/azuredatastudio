@@ -89,7 +89,7 @@ describe('Notebook Extension Python Installation', function () {
 		let testPkgVersion = '0.24.2';
 		let expectedPkg: PythonPkgDetails = { name: testPkg, version: testPkgVersion };
 
-		await install.installPipPackages([{ name: testPkg, version: testPkgVersion}]);
+		await install.installPipPackages([{ name: testPkg, version: testPkgVersion}], false);
 		let packages = await install.getInstalledPipPackages();
 		should(packages).containEql(expectedPkg);
 
@@ -97,7 +97,7 @@ describe('Notebook Extension Python Installation', function () {
 		packages = await install.getInstalledPipPackages();
 		should(packages).not.containEql(expectedPkg);
 
-		await install.installPipPackages([{ name: testPkg, version: testPkgVersion}]);
+		await install.installPipPackages([{ name: testPkg, version: testPkgVersion}], false);
 		packages = await install.getInstalledPipPackages();
 		should(packages).containEql(expectedPkg);
 	});
@@ -111,7 +111,7 @@ describe('Notebook Extension Python Installation', function () {
 
 		should(install.getInstalledCondaPackages()).be.rejected();
 
-		should(install.installCondaPackages([{ name: 'pandas', version: '0.24.2' }])).be.rejected();
+		should(install.installCondaPackages([{ name: 'pandas', version: '0.24.2' }], false)).be.rejected();
 
 		should(install.uninstallCondaPackages([{ name: 'pandas', version: '0.24.2' }])).be.rejected();
 	});

@@ -279,9 +279,9 @@ export class AddNewPackageTab {
 			operation: op => {
 				let installPromise: Promise<void>;
 				if (this.dialog.currentPkgType === PythonPkgType.Anaconda) {
-					installPromise = this.jupyterInstallation.installCondaPackages([{ name: packageName, version: packageVersion }]);
+					installPromise = this.jupyterInstallation.installCondaPackages([{ name: packageName, version: packageVersion }], false);
 				} else {
-					installPromise = this.jupyterInstallation.installPipPackages([{ name: packageName, version: packageVersion }]);
+					installPromise = this.jupyterInstallation.installPipPackages([{ name: packageName, version: packageVersion }], false);
 				}
 				installPromise
 					.then(async () => {

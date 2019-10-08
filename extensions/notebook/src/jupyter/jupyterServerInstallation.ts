@@ -417,7 +417,7 @@ export class JupyterServerInstallation {
 		}
 	}
 
-	private async upgradePythonPackages(promptForInstall: boolean): Promise<void> {
+	private async upgradePythonPackages(promptForUpgrade: boolean): Promise<void> {
 		let installedPackages = await this.getInstalledPipPackages();
 		let pkgVersionMap = new Map<string, string>();
 		installedPackages.forEach(pkg => pkgVersionMap.set(pkg.name, pkg.version));
@@ -432,7 +432,7 @@ export class JupyterServerInstallation {
 
 		if (packagesToInstall.length > 0) {
 			let doUpgrade: boolean;
-			if (promptForInstall) {
+			if (promptForUpgrade) {
 				doUpgrade = await this._prompter.promptSingle<boolean>(<IQuestion>{
 					type: QuestionTypes.confirm,
 					message: localize('confirmPipUpgrade', 'Some installed pip packages need to be upgraded. Would you like to upgrade them now?'),
@@ -442,12 +442,12 @@ export class JupyterServerInstallation {
 				doUpgrade = true;
 			}
 			if (doUpgrade) {
-				await this.installPipPackages(packagesToInstall);
+				await this.installPipPackages(packagesToInstall, true);
 			}
 		}
 	}
 
-	private async upgradeCondaPackages(promptForInstall: boolean): Promise<void> {
+	private async upgradeCondaPackages(promptForUpgrade: boolean): Promise<void> {
 		// Conda packages
 		let installedCondaPackages = await this.getInstalledCondaPackages();
 		let condaVersionMap = new Map<string, string>();
@@ -476,7 +476,7 @@ export class JupyterServerInstallation {
 
 		if (condaPackagesToInstall.length > 0 || pipPackagesToInstall.length > 0) {
 			let doUpgrade: boolean;
-			if (promptForInstall) {
+			if (promptForUpgrade) {
 				doUpgrade = await this._prompter.promptSingle<boolean>(<IQuestion>{
 					type: QuestionTypes.confirm,
 					message: localize('confirmCondaUpgrade', 'Some installed conda and pip packages need to be upgraded. Would you like to upgrade them now?'),
@@ -486,8 +486,8 @@ export class JupyterServerInstallation {
 				doUpgrade = true;
 			}
 			if (doUpgrade) {
-				await this.installCondaPackages(condaPackagesToInstall);
-				await this.installPipPackages(pipPackagesToInstall);
+				await this.installCondaPackages(condaPackagesToInstall, true);
+				await this.installPipPackages(pipPackagesToInstall, true);
 			}
 		}
 	}
@@ -503,12 +503,13 @@ export class JupyterServerInstallation {
 		return packagesResult;
 	}
 
-	public installPipPackages(packages: PythonPkgDetails[]): Promise<void> {
+	public installPipPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void> {
 		if (!packages || packages.length === 0) {
 			return Promise.resolve();
 		}
 
-		let packagesStr = packages.map(pkg => `"${pkg.name}==${pkg.version}"`).join(' ');
+		let versionSpecifier = useMinVersion ? '>=' : '==';
+		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
 		// Force reinstall in case some dependencies are split across multiple locations
 		let cmdOptions = this._usingExistingPython ? '--user --force-reinstall' : '--force-reinstall';
 		let cmd = `"${this.pythonExecutable}" -m pip install ${cmdOptions} ${packagesStr} --extra-index-url https://prose-python-packages.azurewebsites.net`;
@@ -537,12 +538,13 @@ export class JupyterServerInstallation {
 		return [];
 	}
 
-	public installCondaPackages(packages: PythonPkgDetails[]): Promise<void> {
+	public installCondaPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void> {
 		if (!packages || packages.length === 0) {
 			return Promise.resolve();
 		}
 
-		let packagesStr = packages.map(pkg => `"${pkg.name}==${pkg.version}"`).join(' ');
+		let versionSpecifier = useMinVersion ? '>=' : '==';
+		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
 		let condaExe = this.getCondaExePath();
 		let cmd = `"${condaExe}" install -y --force-reinstall ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
