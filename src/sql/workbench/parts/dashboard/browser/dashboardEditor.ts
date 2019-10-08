@@ -77,7 +77,7 @@ export class DashboardEditor extends BaseEditor {
 		this._dashboardService.layout(dimension);
 	}
 
-	public setInput(input: DashboardInput, options: EditorOptions): Promise<void> {
+	public async setInput(input: DashboardInput, options: EditorOptions): Promise<void> {
 		if (this.input && this.input.matches(input)) {
 			return Promise.resolve(undefined);
 		}
@@ -93,17 +93,17 @@ export class DashboardEditor extends BaseEditor {
 			container.style.height = '100%';
 			this._dashboardContainer = DOM.append(parentElement, container);
 			this.input.container = this._dashboardContainer;
-			return Promise.resolve(input.initializedPromise.then(() => this.bootstrapAngular(input)));
+			await input.initializedPromise;
+			await this.bootstrapAngular(input);
 		} else {
 			this._dashboardContainer = DOM.append(parentElement, this.input.container);
-			return Promise.resolve(null);
 		}
 	}
 
 	/**
 	 * Load the angular components and record for this input that we have done so
 	 */
-	private bootstrapAngular(input: DashboardInput): void {
+	private async bootstrapAngular(input: DashboardInput): Promise<void> {
 		// Get the bootstrap params and perform the bootstrap
 		let profile: IConnectionProfile;
 		if (input.connectionProfile instanceof ConnectionProfile) {
@@ -126,7 +126,7 @@ export class DashboardEditor extends BaseEditor {
 
 		input.hasBootstrapped = true;
 
-		const uniqueSelector = bootstrapAngular(this.instantiationService,
+		const uniqueSelector = await bootstrapAngular(this.instantiationService,
 			DashboardModule,
 			this._dashboardContainer,
 			DASHBOARD_SELECTOR,

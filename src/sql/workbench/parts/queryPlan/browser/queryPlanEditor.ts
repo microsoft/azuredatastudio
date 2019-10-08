@@ -66,7 +66,7 @@ export class QueryPlanEditor extends BaseEditor {
 		}
 		await input.resolve();
 		if (!input.hasInitialized) {
-			this.bootstrapAngular(input);
+			await this.bootstrapAngular(input);
 		}
 		this.revealElementWithTagName(input.uniqueSelector, this.getContainer());
 
@@ -96,13 +96,13 @@ export class QueryPlanEditor extends BaseEditor {
 	/**
 	 * Load the angular components and record for this input that we have done so
 	 */
-	private bootstrapAngular(input: QueryPlanInput): void {
+	private async bootstrapAngular(input: QueryPlanInput): Promise<void> {
 		// Get the bootstrap params and perform the bootstrap
 		let params: IQueryPlanParams = {
 			planXml: input.planXml
 		};
 
-		let uniqueSelector = bootstrapAngular(this.instantiationService,
+		let uniqueSelector = await bootstrapAngular(this.instantiationService,
 			QueryPlanModule,
 			this.getContainer(),
 			QUERYPLAN_SELECTOR,

@@ -77,12 +77,11 @@ export class QueryModelViewTabView implements IPanelView {
 	/**
 	 * Load the angular components and record for this input that we have done so
 	 */
-	private bootstrapAngular(container: HTMLElement): string {
-		let uniqueSelector = bootstrapAngular(this._instantiationService,
+	private async bootstrapAngular(container: HTMLElement): Promise<string> {
+		return bootstrapAngular(this._instantiationService,
 			QueryModelViewTabModule,
 			container,
 			'querytab-modelview-container',
 			{ modelViewId: this.state.componentId });
-		return uniqueSelector;
 	}
 }

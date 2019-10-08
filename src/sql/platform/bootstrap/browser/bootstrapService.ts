@@ -39,32 +39,40 @@ function createUniqueSelector(selector: string): string {
 
 let platform: PlatformRef;
 
-export function bootstrapAngular<T>(service: IInstantiationService, moduleType: IModuleFactory<T>, container: HTMLElement, selectorString: string, params: IBootstrapParams, input?: IEditorInput, callbackSetModule?: (value: NgModuleRef<T>) => void): string {
-	if (!platform) {
-		service.invokeFunction((accessor) => {
-			const environmentService = accessor.get(IEnvironmentService);
-			if (environmentService.isBuilt) {
-				enableProdMode();
+export function bootstrapAngular<T>(service: IInstantiationService, moduleType: IModuleFactory<T>, container: HTMLElement, selectorString: string, params: IBootstrapParams, input?: IEditorInput, callbackSetModule?: (value: NgModuleRef<T>) => void): Promise<string> {
+	const doBootstrap = ((platform: PlatformRef): string => {
+		// Create the uniqueSelectorString
+		let uniqueSelectorString = createUniqueSelector(selectorString);
+		let selector = document.createElement(uniqueSelectorString);
+		container.appendChild(selector);
+		platform.bootstrapModule(moduleType(params, uniqueSelectorString, service)).then(moduleRef => {
+			if (input) {
+				input.onDispose(() => {
+					moduleRef.destroy();
+				});
 			}
-
-			platform = platformBrowserDynamic();
+			if (callbackSetModule) {
+				callbackSetModule(moduleRef);
+			}
 		});
-	}
 
-	// Create the uniqueSelectorString
-	let uniqueSelectorString = createUniqueSelector(selectorString);
-	let selector = document.createElement(uniqueSelectorString);
-	container.appendChild(selector);
-	platform.bootstrapModule(moduleType(params, uniqueSelectorString, service)).then(moduleRef => {
-		if (input) {
-			input.onDispose(() => {
-				moduleRef.destroy();
-			});
-		}
-		if (callbackSetModule) {
-			callbackSetModule(moduleRef);
-		}
+		return uniqueSelectorString;
 	});
 
-	return uniqueSelectorString;
+	return new Promise((resolve) => {
+		// First time this function is being called
+		if (!platform) {
+			service.invokeFunction((accessor) => {
+				const environmentService = accessor.get(IEnvironmentService);
+				if (environmentService.isBuilt) {
+					enableProdMode();
+				}
+
+				platform = platformBrowserDynamic();
+				resolve(doBootstrap(platform));
+			});
+		} else {
+			resolve(doBootstrap(platform));
+		}
+	});
 }
