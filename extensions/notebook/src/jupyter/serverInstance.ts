@@ -59,8 +59,8 @@ export class ServerInstanceUtils {
 	public pathExists(dirPath: string): Promise<boolean> {
 		return fs.pathExists(dirPath);
 	}
-	public copy(src: string, dest: string, options?: fs.CopyOptions): Promise<void> {
-		return fs.copy(src, dest, options);
+	public copy(src: string, dest: string): Promise<void> {
+		return fs.copy(src, dest);
 	}
 	public async exists(path: string): Promise<boolean> {
 		try {
