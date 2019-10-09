@@ -2874,8 +2874,7 @@ declare module 'azdata' {
 	export interface FormContainer extends Container<FormLayout, FormItemLayout> {
 	}
 
-	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout> {
-		collapsed: boolean;
+	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout>, GroupContainerProperties {
 	}
 
 

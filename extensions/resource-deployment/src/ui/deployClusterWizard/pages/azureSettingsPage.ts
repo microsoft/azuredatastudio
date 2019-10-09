@@ -70,7 +70,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					links: [
 						{
 							text: localize('deployCluster.AzureLocationHelpLink', "View available Azure locations"),
-							url: 'https://azure.microsoft.com/en-us/global-infrastructure/services/?products=kubernetes-service'
+							url: 'https://azure.microsoft.com/global-infrastructure/services/?products=kubernetes-service'
 						}
 					]
 				}]
@@ -109,7 +109,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					links: [
 						{
 							text: localize('deployCluster.VMSizeHelpLink', "View available VM sizes"),
-							url: 'https://docs.microsoft.com/en-us/azure/virtual-machines/linux/sizes'
+							url: 'https://docs.microsoft.com/azure/virtual-machines/linux/sizes'
 						}
 					]
 				}]
