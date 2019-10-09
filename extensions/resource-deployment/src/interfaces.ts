@@ -163,6 +163,7 @@ export interface FieldInfo {
 	labelPosition?: LabelPosition; // overwrite the labelPosition of SectionInfo.
 	fontStyle?: FontStyle;
 	labelFontWeight?: FontWeight;
+	links?: azdata.LinkArea[];
 }
 
 export enum LabelPosition {
