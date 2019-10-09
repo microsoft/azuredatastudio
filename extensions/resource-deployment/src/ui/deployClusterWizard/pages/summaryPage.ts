@@ -257,7 +257,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 				}, {
 					fields: [{
 						type: FieldType.ReadonlyText,
-						label: localize('deployCluster.HDFSText', "HDFS"),
+						label: localize('deployCluster.StoragePoolInstances', "Storage pool (HDFS) instances"),
 						defaultValue: `${this.wizard.model.getStringValue(VariableNames.HDFSPoolScale_VariableName)} ${this.wizard.model.getBooleanValue(VariableNames.IncludeSpark_VariableName) ? localize('deployCluster.WithSpark', "(Spark included)") : ''}`,
 						labelFontWeight: FontWeight.Bold
 					}]
@@ -342,7 +342,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 					this.wizard.model.getStringValue(VariableNames.ControllerLogsStorageClassName_VariableName),
 					this.wizard.model.getStringValue(VariableNames.ControllerLogsStorageSize_VariableName)],
 				[
-					localize('deployCluster.HDFSText', "HDFS"),
+					localize('deployCluster.StoragePool', "Storage pool (HDFS)"),
 					this.getStorageSettingValue(VariableNames.HDFSDataStorageClassName_VariableName, VariableNames.ControllerDataStorageClassName_VariableName),
 					this.getStorageSettingValue(VariableNames.HDFSDataStorageSize_VariableName, VariableNames.ControllerDataStorageSize_VariableName),
 					this.getStorageSettingValue(VariableNames.HDFSLogsStorageClassName_VariableName, VariableNames.ControllerLogsStorageClassName_VariableName),
