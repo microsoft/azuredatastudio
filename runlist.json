@@ -1,0 +1,12 @@
+{
+	"setup": [
+		"setup integration tests",
+		"setup extension tests"
+	],
+	"pr": [
+		"dacpac.*"
+	],
+	"windows": [
+		"bds.*"
+	]
+}
