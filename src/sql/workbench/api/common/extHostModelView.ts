@@ -539,6 +539,13 @@ class ComponentWrapper implements azdata.Component {
 		this.setProperty('required', v);
 	}
 
+	public get display(): azdata.DisplayType {
+		return this.properties['display'];
+	}
+	public set display(v: azdata.DisplayType) {
+		this.setProperty('display', v);
+	}
+
 	public get CSSStyles(): { [key: string]: string } {
 		return this.properties['CSSStyles'];
 	}
