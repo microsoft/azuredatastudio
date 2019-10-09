@@ -38,7 +38,7 @@ export class ManageAccessDialog {
 	private namedUsersAndGroupsPermissionsContainer: azdata.FlexContainer;
 	private addUserOrGroupInput: azdata.InputBoxComponent;
 	private dialog: azdata.window.Dialog;
-
+	private applyRecursivelyButton: azdata.window.Button;
 	private defaultSectionComponents: azdata.Component[] = [];
 
 	private addUserOrGroupSelectedType: AclType;
@@ -53,15 +53,16 @@ export class ManageAccessDialog {
 			this.dialog = this.apiWrapper.createDialog(loc.manageAccessTitle, 'HdfsManageAccess', true);
 			this.dialog.okButton.label = loc.applyText;
 
-			const applyRecursivelyButton = azdata.window.createButton(loc.applyRecursivelyText);
-			applyRecursivelyButton.onClick(async () => {
+			this.applyRecursivelyButton = azdata.window.createButton(loc.applyRecursivelyText);
+			this.applyRecursivelyButton.onClick(async () => {
 				try {
+					azdata.window.closeDialog(this.dialog);
 					await this.hdfsModel.apply(true);
 				} catch (err) {
 					this.apiWrapper.showErrorMessage(loc.errorApplyingAclChanges(err instanceof HdfsError ? err.message : err));
 				}
 			});
-			this.dialog.customButtons = [applyRecursivelyButton];
+			this.dialog.customButtons = [this.applyRecursivelyButton];
 			this.dialog.registerCloseValidator(async (): Promise<boolean> => {
 				try {
 					await this.hdfsModel.apply();
@@ -220,6 +221,7 @@ export class ManageAccessDialog {
 			this.dialog.content = [tab];
 		}
 
+		this.applyRecursivelyButton.hidden = true; // Always hide the button until we get the status back saying whether this is a directory or not
 		azdata.window.openDialog(this.dialog);
 	}
 
@@ -230,6 +232,7 @@ export class ManageAccessDialog {
 
 		// Update display status for headers for the Default section - you can't set Default ACLs for non-directories so we just hide that column
 		this.defaultSectionComponents.forEach(component => component.display = this.hdfsModel.fileStatus.type === HdfsFileType.Directory ? '' : 'none');
+		this.applyRecursivelyButton.hidden = this.hdfsModel.fileStatus.type !== HdfsFileType.Directory;
 
 		// Owners
 		const ownerPermissionsRow = this.createOwnerPermissionsRow(this.modelBuilder, permissionStatus);
@@ -423,10 +426,6 @@ export class ManageAccessDialog {
 
 		// Table headers
 		const headerRowContainer = modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
-
-		// Icon (spacer, no text)
-		const typeIconCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ CSSStyles: { 'width': `${permissionsTypeIconColumnWidth}px`, 'min-width': `${permissionsTypeIconColumnWidth}px` } }).component();
-		headerRowContainer.addItem(typeIconCell, { flex: '0 0 auto' });
 
 		// Name
 		const nameCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: nameColumnText }).component();

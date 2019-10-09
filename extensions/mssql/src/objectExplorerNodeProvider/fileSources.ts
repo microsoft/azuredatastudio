@@ -17,7 +17,7 @@ import * as constants from '../constants';
 import { WebHDFS, HdfsError } from '../hdfs/webhdfs';
 import { AclEntry, PermissionStatus } from '../hdfs/aclEntry';
 import { Mount, MountStatus } from '../hdfs/mount';
-import { FileStatus } from '../hdfs/fileStatus';
+import { FileStatus, HdfsFileType } from '../hdfs/fileStatus';
 
 const localize = nls.loadMessageBundle();
 
@@ -120,11 +120,6 @@ export interface IRequestParams {
 	headers?: {};
 }
 
-export interface IHdfsFileStatus {
-	type: 'FILE' | 'DIRECTORY';
-	pathSuffix: string;
-}
-
 export class FileSourceFactory {
 	private static _instance: FileSourceFactory;
 
@@ -181,7 +176,7 @@ export class HdfsFileSource implements IFileSource {
 		if (!this.mounts || refresh) {
 			await this.loadMounts();
 		}
-		return this.readdir(path);
+		return this.listStatus(path);
 	}
 
 	private loadMounts(): Promise<void> {
@@ -196,16 +191,15 @@ export class HdfsFileSource implements IFileSource {
 		});
 	}
 
-	private readdir(path: string): Promise<IFile[]> {
+	private listStatus(path: string): Promise<IFile[]> {
 		return new Promise((resolve, reject) => {
-			this.client.readdir(path, (error, files) => {
+			this.client.listStatus(path, (error, fileStatuses) => {
 				if (error) {
 					reject(error);
 				}
 				else {
-					let hdfsFiles: IFile[] = files.map(fileStat => {
-						let hdfsFile = <IHdfsFileStatus>fileStat;
-						let file = new File(File.createPath(path, hdfsFile.pathSuffix), hdfsFile.type === 'DIRECTORY');
+					let hdfsFiles: IFile[] = fileStatuses.map(fileStatus => {
+						let file = new File(File.createPath(path, fileStatus.pathSuffix), fileStatus.type === HdfsFileType.Directory);
 						if (this.mounts && this.mounts.has(file.path)) {
 							file.mountStatus = MountStatus.Mount;
 						}

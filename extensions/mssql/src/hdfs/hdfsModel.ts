@@ -3,10 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { IFileSource } from '../objectExplorerNodeProvider/fileSources';
 import { PermissionStatus, AclEntry, AclEntryScope, AclType, AclEntryPermission } from './aclEntry';
 import { FileStatus } from './fileStatus';
+import * as nls from 'vscode-nls';
+
+const localize = nls.loadMessageBundle();
 
 /**
  * Model for storing the state of a specified file/folder in HDFS
@@ -29,7 +33,7 @@ export class HdfsModel {
 	 */
 	public fileStatus: FileStatus;
 
-	constructor(private fileSource: IFileSource, private path: string) {
+	constructor(private readonly fileSource: IFileSource, private readonly path: string) {
 		this.refresh();
 	}
 
@@ -79,10 +83,55 @@ export class HdfsModel {
 	 * permissions that shouldn't change need to still exist and have the same values.
 	 * @param recursive Whether to apply the changes recursively (to all sub-folders and files)
 	 */
-	public apply(recursive: boolean = false): Promise<any> {
-		// TODO Apply recursive
+	public async apply(recursive: boolean = false): Promise<void> {
+		await this.applyAclChanges(this.path);
+		if (recursive) {
+			azdata.tasks.startBackgroundOperation(
+				{
+					connection: undefined,
+					displayName: localize('mssql.recursivePermissionOpStarted', "Applying permission changes recursively under '{0}'", this.path),
+					description: '',
+					isCancelable: false,
+					operation: async op => {
+						await this.applyRecursive(op, this.path);
+						op.updateStatus(azdata.TaskStatus.Succeeded, localize('mssql.recursivePermissionOpSucceeded', "Permission changes applied successfully."));
+					}
+				}
+			);
+		}
+	}
+
+	/**
+	 *
+	 * @param op Background operation used to track status of the task
+	 * @param path The path
+	 */
+	private async applyRecursive(op: azdata.BackgroundOperation, path: string): Promise<void> {
+		try {
+			op.updateStatus(azdata.TaskStatus.InProgress, localize('mssql.recursivePermissionOpProgress', "Applying permission changes to '{0}'.", path));
+			const files = await this.fileSource.enumerateFiles(path, true);
+			// Apply changes to all children of this path and then recursively apply to children of any directories
+			await Promise.all(
+				[
+					files.map(file => this.applyAclChanges(file.path)),
+					files.filter(f => f.isDirectory).map(d => this.applyRecursive(op, d.path))
+				]);
+		} catch (error) {
+			const errMsg = localize('mssql.recursivePermissionOpError', "Error applying permission changes: {0}", (error instanceof Error ? error.message : error));
+			vscode.window.showErrorMessage(errMsg);
+			op.updateStatus(azdata.TaskStatus.Failed, errMsg);
+		}
+	}
+
+	/**
+	 * Applies the current set of Permissions/ACLs to the specified path
+	 * @param path The path to apply the changes to
+	 */
+	private async applyAclChanges(path: string): Promise<[void, void]> {
 		return Promise.all([
-			this.fileSource.setAcl(this.path, this.permissionStatus.owner, this.permissionStatus.group, this.permissionStatus.other, this.permissionStatus.aclEntries),
-			this.fileSource.setPermission(this.path, this.permissionStatus)]);
+			this.fileSource.setAcl(path, this.permissionStatus.owner, this.permissionStatus.group, this.permissionStatus.other, this.permissionStatus.aclEntries),
+			this.fileSource.setPermission(path, this.permissionStatus)]);
 	}
 }
+
+

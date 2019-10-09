@@ -340,11 +340,11 @@ export class WebHDFS {
 	}
 
 	/**
-	 * Read directory contents
+	 * List the status of a path
 	 *
 	 * @returns void
 	 */
-	public readdir(path: string, callback: (error: HdfsError, files: any[]) => void): void {
+	public listStatus(path: string, callback: (error: HdfsError, files: FileStatus[]) => void): void {
 		this.checkArgDefined('path', path);
 
 		let endpoint = this.getOperationEndpoint('liststatus', path);
@@ -356,7 +356,21 @@ export class WebHDFS {
 				callback(error, undefined);
 			} else if (response.body.hasOwnProperty('FileStatuses')
 				&& response.body.FileStatuses.hasOwnProperty('FileStatus')) {
-				files = response.body.FileStatuses.FileStatus;
+				files = (<any[]>response.body.FileStatuses.FileStatus).map(fs => {
+					return new FileStatus(
+						fs.accessTime || '',
+						fs.blockSize || '',
+						fs.group || '',
+						fs.length || '',
+						fs.modificationTime || '',
+						fs.owner || '',
+						fs.pathSuffix || '',
+						fs.permission || '',
+						fs.replication || '',
+						fs.snapshotEnabled || '',
+						parseHdfsFileType(fs.type)
+					);
+				});
 				callback(undefined, files);
 			} else {
 				callback(new HdfsError(ErrorMessageInvalidDataStructure), undefined);
@@ -397,26 +411,6 @@ export class WebHDFS {
 		this.sendRequest('PUT', endpoint, undefined, (error) => {
 			if (callback) {
 				callback(error);
-			}
-		});
-	}
-
-	/**
-	 * Get file status for given path
-	 * @returns void
-	 */
-	public stat(path: string, callback: (error: HdfsError, fileStatus: any) => void): void {
-		this.checkArgDefined('path', path);
-
-		let endpoint = this.getOperationEndpoint('getfilestatus', path);
-		this.sendRequest('GET', endpoint, undefined, (error, response) => {
-			if (!callback) { return; }
-			if (error) {
-				callback(error, undefined);
-			} else if (response.body.hasOwnProperty('FileStatus')) {
-				callback(undefined, response.body.FileStatus);
-			} else {
-				callback(new HdfsError(ErrorMessageInvalidDataStructure), undefined);
 			}
 		});
 	}
@@ -556,7 +550,7 @@ export class WebHDFS {
 	public exists(path: string, callback: (error: HdfsError, exists: boolean) => void): void {
 		this.checkArgDefined('path', path);
 
-		this.stat(path, (error, fileStatus) => {
+		this.listStatus(path, (error, fileStatus) => {
 			let exists = !fileStatus ? false : true;
 			callback(error, exists);
 		});
