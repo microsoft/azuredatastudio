@@ -59,8 +59,8 @@ export class ServerInstanceUtils {
 	public pathExists(dirPath: string): Promise<boolean> {
 		return fs.pathExists(dirPath);
 	}
-	public copy(src: string, dest: string, options?: fs.CopyOptions): Promise<void> {
-		return fs.copy(src, dest, options);
+	public copy(src: string, dest: string): Promise<void> {
+		return fs.copy(src, dest);
 	}
 	public async exists(path: string): Promise<boolean> {
 		try {
@@ -69,9 +69,6 @@ export class ServerInstanceUtils {
 		} catch (e) {
 			return false;
 		}
-	}
-	public async readDir(path: string): Promise<string[]> {
-		return fs.readdir(path);
 	}
 	public generateUuid(): string {
 		return UUID.generateUuid();
@@ -210,36 +207,12 @@ export class PerNotebookServerInstance implements IServerInstance {
 	}
 
 	private async copyKernelsToSystemJupyterDirs(): Promise<void> {
-		const DarwinPostfix = '_darwin';
-		const LinuxPostfix = '_linux';
-		const Win32Postfix = '_win32';
 		let kernelsExtensionSource = path.join(this.options.install.extensionPath, 'kernels');
 		this._systemJupyterDir = path.join(this.getSystemJupyterHomeDir(), 'kernels');
 		if (!(await this.utils.exists(this._systemJupyterDir))) {
 			await this.utils.mkDir(this._systemJupyterDir, this.options.install.outputChannel);
 		}
-		let platform = process.platform;
-		let subFolders = await this.utils.readDir(kernelsExtensionSource);
-		if (platform === 'win32') {
-			subFolders = subFolders.filter(folder => !folder.includes(DarwinPostfix) && !folder.includes(LinuxPostfix));
-		} else if (platform === 'darwin') {
-			subFolders = subFolders.filter(folder => !folder.includes(LinuxPostfix) && !folder.includes(Win32Postfix));
-		} else {
-			subFolders = subFolders.filter(folder => !folder.includes(DarwinPostfix) && !folder.includes(Win32Postfix));
-		}
-		for (let i = 0; i < subFolders.length; i++) {
-			let realFolder = subFolders[i];
-			// Ignore any system files
-			if (!realFolder.startsWith('.')) {
-				if (realFolder.includes(process.platform)) {
-					let splitFolder = realFolder.split('_' + process.platform);
-					if (splitFolder && splitFolder.length > 0) {
-						realFolder = splitFolder[0];
-					}
-				}
-				await this.utils.copy(path.join(kernelsExtensionSource, subFolders[i]), path.join(this._systemJupyterDir, realFolder));
-			}
-		}
+		await this.utils.copy(kernelsExtensionSource, this._systemJupyterDir);
 	}
 
 	private getSystemJupyterHomeDir(): string {
