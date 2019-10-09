@@ -61,40 +61,7 @@ export class SelectBox extends vsSelectBox {
 	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
 			/*Option must be mapped to something else besides text in order to provide user friendly names, need a data structure with original names
 			mapped to alt names, originally {text :option };*/
-		super(options.map(option => {
-				if(option.localeCompare('horizontalBar') === 0){
-					return {text : 'Horizontal Bar'};
-				}
-				if(option.localeCompare('bar') === 0){
-					return {text : 'Bar'};
-				}
-				if(option.localeCompare('line') === 0){
-					return {text : 'Line'};
-				}
-				if(option.localeCompare('pie') === 0){
-					return {text : 'Pie'};
-				}
-				if(option.localeCompare('scatter') === 0){
-					return {text : 'Scatter'};
-				}
-				if(option.localeCompare('timeSeries') === 0){
-					return {text : 'Time Series'};
-				}
-				if(option.localeCompare('image') === 0){
-					return {text : 'Image'};
-				}
-				if(option.localeCompare('count') === 0){
-					return {text : 'Count'};
-				}
-				if(option.localeCompare('table') === 0){
-					return {text : 'Table'};
-				}
-				if(option.localeCompare('doughnut') === 0){
-					return {text : 'Doughnut'};
-				}
-				return {text : option};
-
-		}), 0, contextViewProvider, undefined, selectBoxOptions);
+		super(options.map(option => {return {text : SelectBox.parseName(option)}; }), 0, contextViewProvider, undefined, selectBoxOptions);
 
 		this._optionsDictionary = new Map<string, number>();
 		for (let i = 0; i < options.length; i++) {
@@ -128,7 +95,39 @@ export class SelectBox extends vsSelectBox {
 		this._register(focusTracker.onDidFocus(() => this._showMessage()));
 	}
 
-
+	private static parseName(oldName: string): string {
+		if(oldName.localeCompare('horizontalBar') === 0){
+			return 'Horizontal Bar';
+		}
+		if(oldName.localeCompare('bar') === 0){
+			return 'Bar';
+		}
+		if(oldName.localeCompare('line') === 0){
+			return 'Line';
+		}
+		if(oldName.localeCompare('pie') === 0){
+			return 'Pie';
+		}
+		if(oldName.localeCompare('scatter') === 0){
+			return 'Scatter';
+		}
+		if(oldName.localeCompare('timeSeries') === 0){
+			return 'Time Series';
+		}
+		if(oldName.localeCompare('image') === 0){
+			return 'Image';
+		}
+		if(oldName.localeCompare('count') === 0){
+			return 'Count';
+		}
+		if(oldName.localeCompare('table') === 0){
+			return 'Table';
+		}
+		if(oldName.localeCompare('doughnut') === 0){
+			return 'Doughnut';
+		}
+		return oldName;
+	}
 
 	public style(styles: ISelectBoxStyles): void {
 		super.style(styles);
