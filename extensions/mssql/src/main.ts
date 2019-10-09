@@ -29,6 +29,7 @@ import { createMssqlApi } from './mssqlApiFactory';
 
 import { SqlToolsServer } from './sqlToolsServer';
 import { promises as fs } from 'fs';
+import { IconPathHelper } from './iconHelper';
 import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
@@ -47,6 +48,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	if (!(await Utils.exists(context.logPath))) {
 		await fs.mkdir(context.logPath);
 	}
+
+	IconPathHelper.setExtensionContext(context);
 
 	let prompter: IPrompter = new CodeAdapter();
 	let appContext = new AppContext(context, new ApiWrapper());
