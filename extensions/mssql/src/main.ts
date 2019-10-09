@@ -29,6 +29,7 @@ import { createMssqlApi } from './mssqlApiFactory';
 import { localize } from './localize';
 import { SqlToolsServer } from './sqlToolsServer';
 import { promises as fs } from 'fs';
+import { IconPathHelper } from './iconHelper';
 
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
 
@@ -46,6 +47,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	if (!(await Utils.exists(context.logPath))) {
 		await fs.mkdir(context.logPath);
 	}
+
+	IconPathHelper.setExtensionContext(context);
 
 	let prompter: IPrompter = new CodeAdapter();
 	let appContext = new AppContext(context, new ApiWrapper());

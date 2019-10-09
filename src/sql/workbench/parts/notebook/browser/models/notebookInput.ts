@@ -28,6 +28,7 @@ import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/c
 import { Deferred } from 'sql/base/common/promise';
 import { NotebookTextFileModel } from 'sql/workbench/parts/notebook/browser/models/notebookTextFileModel';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -38,7 +39,7 @@ export class NotebookEditorModel extends EditorModel {
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
 	private _lastEditFullReplacement: boolean;
 	constructor(public readonly notebookUri: URI,
-		private textEditorModel: TextFileEditorModel | UntitledEditorModel,
+		private textEditorModel: TextFileEditorModel | UntitledEditorModel | ResourceEditorModel,
 		@INotebookService private notebookService: INotebookService,
 		@ITextFileService private textFileService: ITextFileService,
 		@ITextResourcePropertiesService private textResourcePropertiesService: ITextResourcePropertiesService
@@ -63,18 +64,23 @@ export class NotebookEditorModel extends EditorModel {
 				}, err => undefined);
 			}
 		}));
-
 		if (this.textEditorModel instanceof UntitledEditorModel) {
-			this._register(this.textEditorModel.onDidChangeDirty(e => this.setDirty(this.textEditorModel.isDirty())));
-		} else {
-			this._register(this.textEditorModel.onDidStateChange(change => {
-				this.setDirty(this.textEditorModel.isDirty());
-				if (change === StateChange.SAVED) {
-					this.sendNotebookSerializationStateChange();
-				}
+			this._register(this.textEditorModel.onDidChangeDirty(e => {
+				let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
+				this.setDirty(dirty);
 			}));
+		} else {
+			if (this.textEditorModel instanceof TextFileEditorModel) {
+				this._register(this.textEditorModel.onDidStateChange(change => {
+					let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
+					this.setDirty(dirty);
+					if (change === StateChange.SAVED) {
+						this.sendNotebookSerializationStateChange();
+					}
+				}));
+			}
 		}
-		this._dirty = this.textEditorModel.isDirty();
+		this._dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
 	}
 
 	public get contentString(): string {
@@ -87,7 +93,7 @@ export class NotebookEditorModel extends EditorModel {
 	}
 
 	isDirty(): boolean {
-		return this.textEditorModel.isDirty();
+		return this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
 	}
 
 	public setDirty(dirty: boolean): void {
@@ -354,7 +360,7 @@ export class NotebookInput extends EditorInput {
 				textEditorModelReference.object.textEditorModel.onBeforeAttached();
 				textOrUntitledEditorModel = await textEditorModelReference.object.load();
 			}
-			this._model = this.instantiationService.createInstance(NotebookEditorModel, this.resource, textOrUntitledEditorModel);
+			this._model = this._register(this.instantiationService.createInstance(NotebookEditorModel, this.resource, textOrUntitledEditorModel));
 			this.hookDirtyListener(this._model.onDidChangeDirty, () => this._onDidChangeDirty.fire());
 			this._modelResolved.resolve();
 			return this._model;

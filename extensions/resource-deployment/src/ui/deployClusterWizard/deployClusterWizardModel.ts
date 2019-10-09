@@ -85,7 +85,7 @@ export class DeployClusterWizardModel extends Model {
 			Number.parseInt(this.getStorageSettingValue(VariableNames.DataPoolLogsStorageSize_VariableName, VariableNames.ControllerLogsStorageSize_VariableName)!)
 		);
 		targetDeploymentProfile.setResourceStorage(SqlServerMasterResource,
-			this.getStorageSettingValue(VariableNames.SQLServerDNSName_VariableName, VariableNames.ControllerDataStorageClassName_VariableName)!,
+			this.getStorageSettingValue(VariableNames.SQLServerDataStorageClassName_VariableName, VariableNames.ControllerDataStorageClassName_VariableName)!,
 			Number.parseInt(this.getStorageSettingValue(VariableNames.SQLServerDataStorageSize_VariableName, VariableNames.ControllerDataStorageSize_VariableName)!),
 			this.getStorageSettingValue(VariableNames.SQLServerLogsStorageClassName_VariableName, VariableNames.ControllerLogsStorageClassName_VariableName)!,
 			Number.parseInt(this.getStorageSettingValue(VariableNames.SQLServerLogsStorageSize_VariableName, VariableNames.ControllerLogsStorageSize_VariableName)!)
