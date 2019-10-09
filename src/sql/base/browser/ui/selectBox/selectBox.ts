@@ -62,7 +62,7 @@ export class SelectBox extends vsSelectBox {
 			/*Option must be mapped to something else besides text in order to provide user friendly names, originally {text :option };*/
 		super(options.map(option => {
 			//if(optionsaltname !== undefined){
-				if(options.indexOf(option) === 0){
+				if(option.localeCompare('horizontalBar')){
 					return {text : 'Horizontal Bar'};
 				}
 			//}
