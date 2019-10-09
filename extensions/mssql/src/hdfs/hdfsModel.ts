@@ -5,23 +5,29 @@
 
 import * as vscode from 'vscode';
 import { IFileSource } from '../objectExplorerNodeProvider/fileSources';
-import { IAclStatus, AclEntry, AclEntryScope, AclEntryType, AclEntryPermission } from './aclEntry';
+import { PermissionStatus, AclEntry, AclEntryScope, AclType, AclEntryPermission } from './aclEntry';
+import { FileStatus } from './fileStatus';
 
 /**
  * Model for storing the state of a specified file/folder in HDFS
  */
 export class HdfsModel {
 
-	private readonly _onAclStatusUpdated = new vscode.EventEmitter<IAclStatus>();
+	private readonly _onPermissionStatusUpdated = new vscode.EventEmitter<PermissionStatus>();
 	/**
-	 * Event that's fired anytime changes are made by the model to the ACLStatus
+	 * Event that's fired anytime changes are made by the model to the @see PermissionStatus
 	 */
-	public onAclStatusUpdated = this._onAclStatusUpdated.event;
+	public onPermissionStatusUpdated = this._onPermissionStatusUpdated.event;
 
 	/**
-	 * The ACL status of the file/folder
+	 * The @see PermissionStatus of the file/folder
 	 */
-	public aclStatus: IAclStatus;
+	public permissionStatus: PermissionStatus;
+
+	/**
+	 * The @see FileStatus of the file/folder
+	 */
+	public fileStatus: FileStatus;
 
 	constructor(private fileSource: IFileSource, private path: string) {
 		this.refresh();
@@ -31,8 +37,10 @@ export class HdfsModel {
 	 * Refresh the ACL status with the current values on HDFS
 	 */
 	public async refresh(): Promise<void> {
-		this.aclStatus = await this.fileSource.getAclStatus(this.path);
-		this._onAclStatusUpdated.fire(this.aclStatus);
+		[this.permissionStatus, this.fileStatus] = await Promise.all([
+			this.fileSource.getAclStatus(this.path),
+			this.fileSource.getFileStatus(this.path)]);
+		this._onPermissionStatusUpdated.fire(this.permissionStatus);
 	}
 
 	/**
@@ -41,18 +49,18 @@ export class HdfsModel {
 	 * @param name The name of the ACL Entry
 	 * @param type The type of ACL to create
 	 */
-	public createAndAddAclEntry(name: string, type: AclEntryType): void {
-		if (!this.aclStatus) {
+	public createAndAddAclEntry(name: string, type: AclType): void {
+		if (!this.permissionStatus) {
 			return;
 		}
 		const newEntry = new AclEntry(AclEntryScope.access, type, name, name, new AclEntryPermission(true, true, true));
 		// Don't add duplicates. This also checks the owner, group and other items
-		if ([this.aclStatus.owner, this.aclStatus.group, this.aclStatus.other].concat(this.aclStatus.entries).find(entry => entry.isEqual(newEntry))) {
+		if ([this.permissionStatus.owner, this.permissionStatus.group, this.permissionStatus.other].concat(this.permissionStatus.aclEntries).find(entry => entry.isEqual(newEntry))) {
 			return;
 		}
 
-		this.aclStatus.entries.push(newEntry);
-		this._onAclStatusUpdated.fire(this.aclStatus);
+		this.permissionStatus.aclEntries.push(newEntry);
+		this._onPermissionStatusUpdated.fire(this.permissionStatus);
 	}
 
 	/**
@@ -60,8 +68,8 @@ export class HdfsModel {
 	 * @param entryToDelete The entry to delete
 	 */
 	public deleteAclEntry(entryToDelete: AclEntry): void {
-		this.aclStatus.entries = this.aclStatus.entries.filter(entry => !entry.isEqual(entryToDelete));
-		this._onAclStatusUpdated.fire(this.aclStatus);
+		this.permissionStatus.aclEntries = this.permissionStatus.aclEntries.filter(entry => !entry.isEqual(entryToDelete));
+		this._onPermissionStatusUpdated.fire(this.permissionStatus);
 	}
 
 
@@ -70,8 +78,10 @@ export class HdfsModel {
 	 * permissions that shouldn't change need to still exist and have the same values.
 	 * @param recursive Whether to apply the changes recursively (to all sub-folders and files)
 	 */
-	public apply(recursive: boolean = false): Promise<void> {
+	public apply(recursive: boolean = false): Promise<any> {
 		// TODO Apply recursive
-		return this.fileSource.setAcl(this.path, this.aclStatus.owner, this.aclStatus.group, this.aclStatus.other, this.aclStatus.entries);
+		return Promise.all([
+			this.fileSource.setAcl(this.path, this.permissionStatus.owner, this.permissionStatus.group, this.permissionStatus.other, this.permissionStatus.aclEntries),
+			this.fileSource.setPermission(this.path, this.permissionStatus)]);
 	}
 }

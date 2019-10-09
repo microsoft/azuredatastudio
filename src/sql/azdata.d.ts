@@ -3081,12 +3081,10 @@ declare module 'azdata' {
 		requiredIndicator?: boolean;
 	}
 
-	export interface ImageComponentProperties {
-		src: string;
-		alt?: string;
-		height?: number | string;
-		width?: number | string;
+	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIcon {
+
 	}
+
 	export interface LinkArea {
 		text: string;
 		url: string;

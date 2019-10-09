@@ -26,6 +26,7 @@ declare module 'sqlops' {
 		webView(): ComponentBuilder<WebViewComponent>;
 		editor(): ComponentBuilder<EditorComponent>;
 		text(): ComponentBuilder<TextComponent>;
+		image(): ComponentBuilder<ImageComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
 		tree<T>(): ComponentBuilder<TreeComponent<T>>;
@@ -567,6 +568,10 @@ declare module 'sqlops' {
 		links?: LinkArea[];
 	}
 
+	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIcon {
+
+	}
+
 	export interface LinkArea {
 		text: string;
 		url: string;
@@ -701,6 +706,10 @@ declare module 'sqlops' {
 		 * An event called when the text is clicked
 		 */
 		onDidClick: vscode.Event<any>;
+	}
+
+	export interface ImageComponent extends Component, ImageComponentProperties {
+
 	}
 
 	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
