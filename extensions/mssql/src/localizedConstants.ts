@@ -12,6 +12,7 @@ export const msgMissingNodeContext = localize('msgMissingNodeContext', 'Node Com
 // HDFS Manage Access Dialog Constants ////////////////////////////////////
 
 export const manageAccessTitle = localize('mssql.manageAccessTitle', "Manage Access");
+export const locationTitle = localize('mssql.locationTitle', "Location : ");
 export const permissionsHeader = localize('mssql.permissionsTitle', "Permissions");
 export const ownersHeader = localize('mssql.ownersHeader', "Owners");
 export const allOthersHeader = localize('mssql.allOthersHeader', "All Others");
@@ -20,6 +21,7 @@ export const userLabel = localize('mssql.userLabel', "User");
 export const groupLabel = localize('mssql.groupLabel', "Group");
 export const accessHeader = localize('mssql.accessHeader', "Access");
 export const defaultHeader = localize('mssql.defaultHeader', "Default");
+export const deleteTitle = localize('mssql.delete', "Delete");
 export const stickyHeader = localize('mssql.stickyHeader', "Sticky");
 export const readHeader = localize('mssql.readHeader', "Read");
 export const writeHeader = localize('mssql.writeHeader', "Write");
@@ -46,4 +48,4 @@ export function sparkJobSubmissionYarnUIMessage(yarnUIURL: string): string { ret
 export function sparkJobSubmissionSparkHistoryLinkMessage(sparkHistoryLink: string): string { return localize('sparkJobSubmission_SparkHistoryLinkMessage', 'Spark History Url: {0} ', sparkHistoryLink); }
 export function sparkJobSubmissionGetApplicationIdFailed(err: string): string { return localize('sparkJobSubmission_GetApplicationIdFailed', 'Get Application Id Failed. {0}', err); }
 export function sparkJobSubmissionLocalFileNotExisted(path: string): string { return localize('sparkJobSubmission_LocalFileNotExisted', 'Local file {0} does not existed. ', path); }
-export const sparkJobSubmissionNoSqlBigDataClusterFound = localize('sparkJobSubmission_NoSqlBigDataClusterFound', 'No Sql Server big data cluster found.');
+export const sparkJobSubmissionNoSqlBigDataClusterFound = localize('sparkJobSubmission_NoSqlBigDataClusterFound', 'No SQL Server Big Data Cluster found.');

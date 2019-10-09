@@ -29,7 +29,6 @@ export class BdcDashboard {
 	private dashboard: azdata.workspace.ModelViewEditor;
 
 	private initialized: boolean = false;
-	private serviceTabsCreated: boolean = false;
 
 	private modelView: azdata.ModelView;
 	private mainAreaContainer: azdata.FlexContainer;
@@ -38,7 +37,7 @@ export class BdcDashboard {
 	private currentTab: NavTab;
 	private currentPage: azdata.FlexContainer;
 
-	private serviceTabPageMapping: { [key: string]: { navTab: NavTab, servicePage: azdata.FlexContainer } } = {};
+	private serviceTabPageMapping = new Map<string, { navTab: NavTab, servicePage: azdata.FlexContainer }>();
 
 	constructor(private title: string, private model: BdcDashboardModel) {
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.handleBdcStatusUpdate(bdcStatus));
@@ -161,7 +160,7 @@ export class BdcDashboard {
 			return;
 		}
 
-		this.createServiceNavTabs(bdcStatus.services);
+		this.updateServiceNavTabs(bdcStatus.services);
 	}
 
 	/**
@@ -184,21 +183,27 @@ export class BdcDashboard {
 	}
 
 	/**
-	 * Helper to create the navigation tabs for the services once the status has been loaded
+	 * Helper to update the navigation tabs for the services when we get a status update
 	 */
-	private createServiceNavTabs(services: ServiceStatusModel[]): void {
-		if (this.initialized && !this.serviceTabsCreated && services) {
+	private updateServiceNavTabs(services?: ServiceStatusModel[]): void {
+		if (this.initialized && services) {
 			// Add a nav item for each service
 			services.forEach(s => {
-				const navItem = createServiceNavTab(this.modelView.modelBuilder, s);
-				const serviceStatusPage = new BdcServiceStatusPage(s.serviceName, this.model, this.modelView).container;
-				this.serviceTabPageMapping[s.serviceName] = { navTab: navItem, servicePage: serviceStatusPage };
-				navItem.div.onDidClick(() => {
-					this.switchToServiceTab(s.serviceName);
-				});
-				this.navContainer.addItem(navItem.div, { flex: '0 0 auto' });
+				const existingTabPage = this.serviceTabPageMapping[s.serviceName];
+				if (existingTabPage) {
+					// We've already created the tab and page for this service, just update the tab health status dot
+					existingTabPage.navTab.dot.value = getHealthStatusDot(s.healthStatus);
+				} else {
+					// New service - create the page and tab
+					const navItem = createServiceNavTab(this.modelView.modelBuilder, s);
+					const serviceStatusPage = new BdcServiceStatusPage(s.serviceName, this.model, this.modelView).container;
+					this.serviceTabPageMapping[s.serviceName] = { navTab: navItem, servicePage: serviceStatusPage };
+					navItem.div.onDidClick(() => {
+						this.switchToServiceTab(s.serviceName);
+					});
+					this.navContainer.addItem(navItem.div, { flex: '0 0 auto' });
+				}
 			});
-			this.serviceTabsCreated = true;
 		}
 	}
 }

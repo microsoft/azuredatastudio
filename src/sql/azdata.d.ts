@@ -2619,6 +2619,12 @@ declare module 'azdata' {
 		updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void>;
 
 		enabled: boolean;
+
+		/**
+		 * Corresponds to the display CSS property for the element
+		 */
+		display: DisplayType;
+
 		/**
 		 * Event fired to notify that the component's validity has changed
 		 */
@@ -2721,12 +2727,34 @@ declare module 'azdata' {
 
 	}
 
+	/**
+	 * Valid values for the align-items CSS property
+	 */
 	export type AlignItemsType = 'normal' | 'stretch' | 'center' | 'start' | 'end' | 'flex-start' | 'flex-end' | 'baseline' | 'first baseline' | 'last baseline' | 'safe center' | 'unsafe center' | 'inherit' | 'initial' | 'unset';
+	/**
+	 * Valid values for the justify-content CSS property
+	 */
 	export type JustifyContentType = 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around' | 'initial' | 'inherit';
+	/**
+	 * Valid values for the align-content CSS property
+	 */
 	export type AlignContentType = 'stretch' | 'center' | 'flex-start' | 'flex-end' | 'space-between' | 'space-around' | 'initial' | 'inherit';
+	/**
+	 * Valid values for flex-wrap CSS property
+	 */
 	export type FlexWrapType = 'nowrap' | 'wrap' | 'wrap-reverse';
+	/**
+	 * Valid values for the text-align CSS property
+	 */
 	export type TextAlignType = 'left' | 'right' | 'center' | 'justify' | 'initial' | 'inherit';
+	/**
+	 * Valid values for the position CSS property
+	 */
 	export type PositionType = 'static' | 'absolute' | 'fixed' | 'relative' | 'sticky' | 'initial' | 'inherit';
+	/**
+	 * Valid values for the display CSS property
+	 */
+	export type DisplayType = 'inline' | 'block' | 'contents' | 'flex' | 'grid' | 'inline-block' | 'inline-flex' | 'inline-grid' | 'inline-table' | 'list-item' | 'run-in' | 'table' | 'table-caption' | ' table-column-group' | 'table-header-group' | 'table-footer-group' | 'table-row-group' | 'table-cell' | 'table-column' | 'table-row' | 'none' | 'initial' | 'inherit' | '';
 
 	/**
 	 * The config for a FlexBox-based container. This supports easy
@@ -2991,6 +3019,11 @@ declare module 'azdata' {
 		columns?: number;
 		min?: number;
 		max?: number;
+		/**
+		 * Whether to stop key event propagation when enter is pressed in the input box. Leaving this as false
+		 * means the event will propagate up to any parents that have handlers (such as validate on Dialogs)
+		 */
+		stopEnterPropagation?: boolean;
 	}
 
 	export interface TableColumn {
@@ -3240,6 +3273,10 @@ declare module 'azdata' {
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
 		onTextChanged: vscode.Event<any>;
+		/**
+		 * Event that's fired whenever enter is pressed within the input box
+		 */
+		onEnterKeyPressed: vscode.Event<string>;
 	}
 
 	export interface RadioButtonComponent extends Component, RadioButtonProperties {

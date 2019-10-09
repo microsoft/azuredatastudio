@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 1.12.1
+* Release date: October 7, 2019
+* Release status: General Availability
+* Hotfix release: `Notebooks: Ensure quotes and backslashes are escaped properly in text editor model` https://github.com/microsoft/azuredatastudio/pull/7540
+
 ## Version 1.12.0
 * Release date: October 2, 2019
 * Release status: General Availability
@@ -215,7 +220,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 
 ## What's new in this version
 * Announcing the SQL Server 2019 Preview extension.
-  * Support for SQL Server 2019 preview features including big data cluster support.
+  * Support for SQL Server 2019 preview features including Big Data Cluster support.
   * Azure Data Studio Notebooks
   * The Azure Resource Explorer viewlets you browse data-related endpoints for your Azure accounts and create connections to them in Object Explorer. In this release Azure SQL Databases and servers are supported.
   * SQL Server Polybase Create External Table Wizard
