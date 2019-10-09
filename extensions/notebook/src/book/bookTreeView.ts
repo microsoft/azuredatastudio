@@ -45,16 +45,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	}
 
-	private async initialize(bookPaths: string[]): Promise<any> {
+	private async initialize(bookPaths: string[]): Promise<void> {
 		await vscode.commands.executeCommand('setContext', 'untitledBooks', this._openAsUntitled);
-		return Promise.all(bookPaths.map(async (bookPath) => {
+		await Promise.all(bookPaths.map(async (bookPath) => {
 			let book: BookModel = new BookModel(bookPath, this._openAsUntitled, this._extensionContext);
 			await book.initializeContents();
 			this.books.push(book);
 			if (!this.currentBook) {
 				this.currentBook = book;
 			}
-		})).then(() => this._initializeDeferred.resolve());
+		}));
+		this._initializeDeferred.resolve();
 	}
 
 	public get onReadAllTOCFiles(): vscode.Event<void> {
