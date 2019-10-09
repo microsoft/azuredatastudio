@@ -11,7 +11,6 @@ export const NameNodeResource = 'nmnode-0';
 export const SparkHeadResource = 'sparkhead';
 export const ZooKeeperResource = 'zookeeper';
 export const SparkResource = 'spark-0';
-export const HadrEnabledSetting = 'hadr.enabled';
 
 interface ServiceEndpoint {
 	port: number;
@@ -117,15 +116,6 @@ export class BigDataClusterDeploymentProfile {
 
 	public get sparkReplicas(): number {
 		return this._bdcConfig.spec.resources[SparkResource] ? this.getReplicas(SparkResource) : 0;
-	}
-
-	public get hadrEnabled(): boolean {
-		const value = this._bdcConfig.spec.resources[SqlServerMasterResource].spec.settings.sql[HadrEnabledSetting];
-		return value === true || value === 'true';
-	}
-
-	public set hadrEnabled(value: boolean) {
-		this._bdcConfig.spec.resources[SqlServerMasterResource].spec.settings.sql[HadrEnabledSetting] = value;
 	}
 
 	public get includeSpark(): boolean {

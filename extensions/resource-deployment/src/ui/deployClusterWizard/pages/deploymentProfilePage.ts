@@ -81,6 +81,10 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 		}, {
 			label: '' // line separator
 		}, {
+			label: localize('deployCluster.storage', "Storage"),
+			value: localize('deployCluster.SizeLabel', "Size"),
+			fontWeight: 'bold'
+		}, {
 			label: localize('deployCluster.defaultDataStorage', "Data storage size (GB)"),
 			value: profile.controllerDataStorageSize.toString()
 		}, {
@@ -88,24 +92,21 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 			value: profile.controllerLogsStorageSize.toString()
 		}, {
 			label: '' // line separator
-		}
-		];
+		}, {
+			label: localize('deployCluster.basicAuthentication', "Basic authentication"),
+			value: ''
+		}];
 		if (profile.activeDirectorySupported) {
 			descriptions.push({
 				label: localize('deployCluster.activeDirectoryAuthentication', "Active Directory authentication"),
-				value: '✅'
-			});
-		} else {
-			descriptions.push({
-				label: localize('deployCluster.basicAuthentication', "Basic authentication"),
-				value: '✅'
+				value: ''
 			});
 		}
 
-		if (profile.hadrEnabled) {
+		if (profile.sqlServerReplicas > 1) {
 			descriptions.push({
 				label: localize('deployCluster.hadr', "High Availability"),
-				value: '✅'
+				value: ''
 			});
 		}
 
@@ -150,7 +151,6 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 		this.wizard.model.setPropertyValue(VariableNames.ZooKeeperScale_VariableName, selectedProfile.zooKeeperReplicas);
 		this.wizard.model.setPropertyValue(VariableNames.ControllerDataStorageSize_VariableName, selectedProfile.controllerDataStorageSize);
 		this.wizard.model.setPropertyValue(VariableNames.ControllerLogsStorageSize_VariableName, selectedProfile.controllerLogsStorageSize);
-		this.wizard.model.setPropertyValue(VariableNames.EnableHADR_VariableName, selectedProfile.hadrEnabled);
 		this.wizard.model.setPropertyValue(VariableNames.SQLServerPort_VariableName, selectedProfile.sqlServerPort);
 		this.wizard.model.setPropertyValue(VariableNames.GateWayPort_VariableName, selectedProfile.gatewayPort);
 		this.wizard.model.setPropertyValue(VariableNames.ControllerPort_VariableName, selectedProfile.controllerPort);
@@ -165,7 +165,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 	}
 
 	private loadCards(): Promise<void> {
-		return this.wizard.azdataService.getDeploymentProfiles().then((profiles: BigDataClusterDeploymentProfile[]) => {
+		return this.wizard.azdataService.getDeploymentProfiles(this.wizard.deploymentType).then((profiles: BigDataClusterDeploymentProfile[]) => {
 			const defaultProfile: string = this.getDefaultProfile();
 
 			profiles.forEach(profile => {

@@ -16,6 +16,7 @@ export interface ResourceType {
 	options: ResourceTypeOption[];
 	providers: DeploymentProvider[];
 	agreement?: AgreementInfo;
+	displayIndex?: number;
 	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
 }
 
@@ -161,6 +162,8 @@ export interface FieldInfo {
 	useCustomValidator?: boolean;
 	labelPosition?: LabelPosition; // overwrite the labelPosition of SectionInfo.
 	fontStyle?: FontStyle;
+	labelFontWeight?: FontWeight;
+	links?: azdata.LinkArea[];
 }
 
 export enum LabelPosition {
@@ -171,6 +174,11 @@ export enum LabelPosition {
 export enum FontStyle {
 	Normal = 'normal',
 	Italic = 'italic'
+}
+
+export enum FontWeight {
+	Normal = 'normal',
+	Bold = 'bold'
 }
 
 export enum FieldType {

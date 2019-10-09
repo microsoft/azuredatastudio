@@ -15,14 +15,6 @@ export class DeployClusterWizardModel extends Model {
 	}
 	public adAuthSupported: boolean = false;
 
-	public get hadrEnabled(): boolean {
-		return this.getBooleanValue(VariableNames.EnableHADR_VariableName);
-	}
-
-	public set hadrEnabled(value: boolean) {
-		this.setPropertyValue(VariableNames.EnableHADR_VariableName, value);
-	}
-
 	public get authenticationMode(): string | undefined {
 		return this.getStringValue(VariableNames.AuthenticationMode_VariableName);
 	}
@@ -111,7 +103,6 @@ export class DeployClusterWizardModel extends Model {
 		}
 
 		targetDeploymentProfile.includeSpark = this.getBooleanValue(VariableNames.IncludeSpark_VariableName);
-		targetDeploymentProfile.hadrEnabled = this.getBooleanValue(VariableNames.EnableHADR_VariableName);
 
 		// endpoint settings
 		targetDeploymentProfile.setGatewayEndpoint(this.getIntegerValue(VariableNames.GateWayPort_VariableName), this.getStringValue(VariableNames.GatewayDNSName_VariableName));
@@ -142,7 +133,7 @@ export class DeployClusterWizardModel extends Model {
 		const statements: string[] = [];
 		if (this.deploymentTarget === BdcDeploymentType.NewAKS) {
 			statements.push(`azure_subscription_id = '${this.getStringValue(VariableNames.SubscriptionId_VariableName, '')}'`);
-			statements.push(`azure_region = '${this.getStringValue(VariableNames.Region_VariableName)}'`);
+			statements.push(`azure_region = '${this.getStringValue(VariableNames.Location_VariableName)}'`);
 			statements.push(`azure_resource_group = '${this.getStringValue(VariableNames.ResourceGroup_VariableName)}'`);
 			statements.push(`azure_vm_size = '${this.getStringValue(VariableNames.VMSize_VariableName)}'`);
 			statements.push(`azure_vm_count = '${this.getStringValue(VariableNames.VMCount_VariableName)}'`);

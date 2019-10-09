@@ -2902,7 +2902,7 @@ declare module 'azdata' {
 	export interface FormContainer extends Container<FormLayout, FormItemLayout> {
 	}
 
-	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout> {
+	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout>, GroupContainerProperties {
 	}
 
 
@@ -3115,6 +3115,11 @@ declare module 'azdata' {
 		height?: number | string;
 		width?: number | string;
 	}
+
+	export interface GroupContainerProperties {
+		collapsed: boolean;
+	}
+
 	export interface LinkArea {
 		text: string;
 		url: string;
@@ -3528,7 +3533,7 @@ declare module 'azdata' {
 		 * Create a button which can be included in a dialog
 		 * @param label The label of the button
 		 */
-		export function createButton(label: string): Button;
+		export function createButton(label: string, position?: DialogButtonPosition): Button;
 
 		/**
 		 * Opens the given dialog if it is not already open
@@ -3692,7 +3697,14 @@ declare module 'azdata' {
 			 * Raised when the button is clicked
 			 */
 			readonly onClick: vscode.Event<void>;
+
+			/**
+			 * Position of the button on the dialog footer
+			 */
+			position?: DialogButtonPosition;
 		}
+
+		export type DialogButtonPosition = 'left' | 'right';
 
 		export interface WizardPageChangeInfo {
 			/**

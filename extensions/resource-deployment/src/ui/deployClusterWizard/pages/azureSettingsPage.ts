@@ -10,7 +10,7 @@ import { DeployClusterWizard } from '../deployClusterWizard';
 import { SectionInfo, FieldType, LabelPosition } from '../../../interfaces';
 import { WizardPageBase } from '../../wizardPageBase';
 import { createSection, InputComponents, setModelValues, Validator } from '../../modelViewUtils';
-import { SubscriptionId_VariableName, ResourceGroup_VariableName, Region_VariableName, AksName_VariableName, VMCount_VariableName, VMSize_VariableName } from '../constants';
+import { SubscriptionId_VariableName, ResourceGroup_VariableName, Location_VariableName, AksName_VariableName, VMCount_VariableName, VMSize_VariableName } from '../constants';
 const localize = nls.loadMessageBundle();
 
 export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
@@ -26,8 +26,9 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		const azureSection: SectionInfo = {
 			title: '',
 			labelPosition: LabelPosition.Left,
-			fields: [
-				{
+			spaceBetweenFields: '5px',
+			rows: [{
+				fields: [{
 					type: FieldType.Text,
 					label: localize('deployCluster.SubscriptionField', "Subscription id"),
 					required: false,
@@ -35,39 +36,84 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					placeHolder: localize('deployCluster.SubscriptionPlaceholder', "Use my default Azure subscription"),
 					description: localize('deployCluster.SubscriptionDescription', "The default subscription will be used if you leave this field blank.")
 				}, {
+					type: FieldType.ReadonlyText,
+					label: '',
+					labelWidth: '0px',
+					defaultValue: localize('deployCluster.SubscriptionHelpText', "{0}"),
+					links: [
+						{
+							text: localize('deployCluster.SubscriptionHelpLink', "View available Azure subscriptions"),
+							url: 'https://portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade'
+						}
+					]
+				}]
+			}, {
+				fields: [{
 					type: FieldType.DateTimeText,
 					label: localize('deployCluster.ResourceGroupName', "New resource group name"),
 					required: true,
 					variableName: ResourceGroup_VariableName,
 					defaultValue: 'mssql-'
-				}, {
+				}]
+			}, {
+				fields: [{
 					type: FieldType.Text,
-					label: localize('deployCluster.Region', "Region"),
+					label: localize('deployCluster.Location', "Location"),
 					required: true,
-					variableName: Region_VariableName,
+					variableName: Location_VariableName,
 					defaultValue: 'eastus'
 				}, {
+					type: FieldType.ReadonlyText,
+					label: '',
+					labelWidth: '0px',
+					defaultValue: localize('deployCluster.LocationHelpText', "{0}"),
+					links: [
+						{
+							text: localize('deployCluster.AzureLocationHelpLink', "View available Azure locations"),
+							url: 'https://azure.microsoft.com/global-infrastructure/services/?products=kubernetes-service'
+						}
+					]
+				}]
+			}, {
+				fields: [{
 					type: FieldType.DateTimeText,
 					label: localize('deployCluster.AksName', "AKS cluster name"),
 					required: true,
 					variableName: AksName_VariableName,
 					defaultValue: 'mssql-',
-				}, {
-					type: FieldType.Number,
-					label: localize('deployCluster.VMCount', "VM count"),
-					required: true,
-					variableName: VMCount_VariableName,
-					defaultValue: '5',
-					min: 1,
-					max: 999
-				}, {
+				}]
+			}, {
+				fields: [
+					{
+						type: FieldType.Number,
+						label: localize('deployCluster.VMCount', "VM count"),
+						required: true,
+						variableName: VMCount_VariableName,
+						defaultValue: '5',
+						min: 1,
+						max: 999
+					}
+				]
+			}, {
+				fields: [{
 					type: FieldType.Text,
 					label: localize('deployCluster.VMSize', "VM size"),
 					required: true,
 					variableName: VMSize_VariableName,
 					defaultValue: 'Standard_E4s_v3'
-				}
-			]
+				}, {
+					type: FieldType.ReadonlyText,
+					label: '',
+					labelWidth: '0px',
+					defaultValue: localize('deployCluster.VMSizeHelpText', "{0}"),
+					links: [
+						{
+							text: localize('deployCluster.VMSizeHelpLink', "View available VM sizes"),
+							url: 'https://docs.microsoft.com/azure/virtual-machines/linux/sizes'
+						}
+					]
+				}]
+			}]
 		};
 		this.pageObject.registerContent((view: azdata.ModelView) => {
 
