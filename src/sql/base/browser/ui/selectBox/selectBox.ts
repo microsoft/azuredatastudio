@@ -58,16 +58,42 @@ export class SelectBox extends vsSelectBox {
 
 
 
-	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions, optionsaltname?: string[]) {
-			/*Option must be mapped to something else besides text in order to provide user friendly names, originally {text :option };*/
+	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
+			/*Option must be mapped to something else besides text in order to provide user friendly names, need a data structure with original names
+			mapped to alt names, originally {text :option };*/
 		super(options.map(option => {
-			//if(optionsaltname !== undefined){
-				if(option.localeCompare('horizontalBar')){
+				if(option.localeCompare('horizontalBar') === 0){
 					return {text : 'Horizontal Bar'};
 				}
-			//}
+				if(option.localeCompare('bar') === 0){
+					return {text : 'Bar'};
+				}
+				if(option.localeCompare('line') === 0){
+					return {text : 'Line'};
+				}
+				if(option.localeCompare('pie') === 0){
+					return {text : 'Pie'};
+				}
+				if(option.localeCompare('scatter') === 0){
+					return {text : 'Scatter'};
+				}
+				if(option.localeCompare('timeSeries') === 0){
+					return {text : 'Time Series'};
+				}
+				if(option.localeCompare('image') === 0){
+					return {text : 'Image'};
+				}
+				if(option.localeCompare('count') === 0){
+					return {text : 'Count'};
+				}
+				if(option.localeCompare('table') === 0){
+					return {text : 'Table'};
+				}
+				if(option.localeCompare('doughnut') === 0){
+					return {text : 'Doughnut'};
+				}
+				return {text : option};
 
-			return {text : option};
 		}), 0, contextViewProvider, undefined, selectBoxOptions);
 
 		this._optionsDictionary = new Map<string, number>();
@@ -101,7 +127,6 @@ export class SelectBox extends vsSelectBox {
 		this._register(focusTracker.onDidBlur(() => this._hideMessage()));
 		this._register(focusTracker.onDidFocus(() => this._showMessage()));
 	}
-
 
 
 
