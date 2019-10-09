@@ -139,7 +139,7 @@ export class BigDataClusterDeploymentProfile {
 	}
 
 	public set controllerDataStorageSize(value: number) {
-		this._controlConfig.spec.storage.data.size = value;
+		this._controlConfig.spec.storage.data.size = `${value}Gi`;
 	}
 
 	public get controllerLogsStorageClass(): string {
@@ -155,7 +155,7 @@ export class BigDataClusterDeploymentProfile {
 	}
 
 	public set controllerLogsStorageSize(value: number) {
-		this._controlConfig.spec.storage.logs.size = value;
+		this._controlConfig.spec.storage.logs.size = `${value}Gi`;
 	}
 
 	public setResourceStorage(resourceName: 'data-0' | 'master' | 'storage-0', dataStorageClass: string, dataStorageSize: number, logsStorageClass: string, logsStorageSize: number) {
