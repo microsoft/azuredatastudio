@@ -18,6 +18,8 @@ const localize = nls.loadMessageBundle();
 const ConfirmPasswordName = 'ConfirmPassword';
 export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 	private inputComponents: InputComponents = {};
+	private activeDirectorySection!: azdata.FormComponent;
+	private formBuilder!: azdata.FormBuilder;
 
 	constructor(wizard: DeployClusterWizard) {
 		super(localize('deployCluster.ClusterSettingsPageTitle', "Cluster settings"),
@@ -131,14 +133,14 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					description: localize('deployCluster.ClusterUsersDescription', "The Active Directory users/groups with cluster users role, use comma to separate them if there are multiple users/groups.")
 				}, {
 					type: FieldType.Text,
-					label: localize('deployCluster.DomainServiceAccountUserName', "Domain service account username"),
+					label: localize('deployCluster.DomainServiceAccountUserName', "Service account username"),
 					required: true,
 					variableName: VariableNames.DomainServiceAccountUserName_VariableName,
 					useCustomValidator: true,
 					description: localize('deployCluster.DomainServiceAccountUserNameDescription', "Domain service account for Big Data Cluster")
 				}, {
 					type: FieldType.Password,
-					label: localize('deployCluster.DomainServiceAccountPassword', "Domain service account password"),
+					label: localize('deployCluster.DomainServiceAccountPassword', "Service account password"),
 					required: true,
 					variableName: VariableNames.DomainServiceAccountPassword_VariableName,
 					useCustomValidator: true
@@ -191,9 +193,9 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				}
 			});
 			const basicSettingsFormItem = { title: '', component: basicSettingsGroup };
-			const activeDirectoryFormItem = { title: '', component: activeDirectorySettingsGroup };
+			this.activeDirectorySection = { title: '', component: activeDirectorySettingsGroup };
 			const authModeDropdown = <azdata.DropDownComponent>this.inputComponents[VariableNames.AuthenticationMode_VariableName];
-			const formBuilder = view.modelBuilder.formContainer().withFormItems(
+			this.formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[basicSettingsFormItem],
 				{
 					horizontal: false,
@@ -203,12 +205,12 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			this.wizard.registerDisposable(authModeDropdown.onValueChanged(() => {
 				const isBasicAuthMode = (<azdata.CategoryValue>authModeDropdown.value).name === 'basic';
 				if (isBasicAuthMode) {
-					formBuilder.removeFormItem(activeDirectoryFormItem);
+					this.formBuilder.removeFormItem(this.activeDirectorySection);
 				} else {
-					formBuilder.insertFormItem(activeDirectoryFormItem);
+					this.formBuilder.insertFormItem(this.activeDirectorySection);
 				}
 			}));
-			const form = formBuilder.withLayout({ width: '100%' }).component();
+			const form = this.formBuilder.withLayout({ width: '100%' }).component();
 			return view.initializeModel(form);
 		});
 	}
@@ -224,51 +226,59 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		const authModeDropdown = <azdata.DropDownComponent>this.inputComponents[VariableNames.AuthenticationMode_VariableName];
 		if (authModeDropdown) {
 			authModeDropdown.enabled = this.wizard.model.adAuthSupported;
-		}
-
-		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
-			this.wizard.wizardObject.message = { text: '' };
-			if (pcInfo.newPage > pcInfo.lastPage) {
-				const messages: string[] = [];
-				const authMode = typeof authModeDropdown.value === 'string' ? authModeDropdown.value : authModeDropdown.value!.name;
-				const requiredFieldsFilled: boolean = !isInputBoxEmpty(getInputBoxComponent(VariableNames.ClusterName_VariableName, this.inputComponents))
-					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminUserName_VariableName, this.inputComponents))
-					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminPassword_VariableName, this.inputComponents))
-					&& !isInputBoxEmpty(getInputBoxComponent(ConfirmPasswordName, this.inputComponents))
-					&& (!(authMode === AuthenticationMode.ActiveDirectory) || (
-						!isInputBoxEmpty(getInputBoxComponent(VariableNames.OrganizationalUnitDistinguishedName_VariableName, this.inputComponents))
-						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.DomainControllerFQDNs_VariableName, this.inputComponents))
-						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ClusterAdmins_VariableName, this.inputComponents))
-						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ClusterUsers_VariableName, this.inputComponents))
-						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.DomainDNSIPAddresses_VariableName, this.inputComponents))
-						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.DomainDNSName_VariableName, this.inputComponents))));
-				if (!requiredFieldsFilled) {
-					messages.push(MissingRequiredInformationErrorMessage);
-				}
-
-				if (!isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminUserName_VariableName, this.inputComponents))
-					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminPassword_VariableName, this.inputComponents))
-					&& !isInputBoxEmpty(getInputBoxComponent(ConfirmPasswordName, this.inputComponents))) {
-					const password = getInputBoxComponent(VariableNames.AdminPassword_VariableName, this.inputComponents).value!;
-					const confirmPassword = getInputBoxComponent(ConfirmPasswordName, this.inputComponents).value!;
-					if (password !== confirmPassword) {
-						messages.push(getPasswordMismatchMessage(localize('deployCluster.AdminPasswordField', "Password")));
-					}
-					if (!isValidSQLPassword(password, getInputBoxComponent(VariableNames.AdminUserName_VariableName, this.inputComponents).value!)) {
-						messages.push(getInvalidSQLPasswordMessage(localize('deployCluster.AdminPasswordField', "Password")));
-					}
-				}
-
-				if (messages.length > 0) {
-					this.wizard.wizardObject.message = {
-						text: messages.length === 1 ? messages[0] : localize('deployCluster.ValidationError', "There are some errors on this page, click 'Show Details' to view the errors."),
-						description: messages.length === 1 ? undefined : messages.join(EOL),
-						level: azdata.window.MessageLevel.Error
-					};
-				}
-				return messages.length === 0;
+			const adAuthSelected = (<azdata.CategoryValue>authModeDropdown.value).name === 'ad';
+			if (!this.wizard.model.adAuthSupported && adAuthSelected) {
+				this.formBuilder.removeFormItem(this.activeDirectorySection);
+				authModeDropdown.value = {
+					name: AuthenticationMode.Basic,
+					displayName: localize('deployCluster.AuthenticationMode.Basic', "Basic")
+				};
 			}
-			return true;
-		});
+
+			this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+				this.wizard.wizardObject.message = { text: '' };
+				if (pcInfo.newPage > pcInfo.lastPage) {
+					const messages: string[] = [];
+					const authMode = typeof authModeDropdown.value === 'string' ? authModeDropdown.value : authModeDropdown.value!.name;
+					const requiredFieldsFilled: boolean = !isInputBoxEmpty(getInputBoxComponent(VariableNames.ClusterName_VariableName, this.inputComponents))
+						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminUserName_VariableName, this.inputComponents))
+						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminPassword_VariableName, this.inputComponents))
+						&& !isInputBoxEmpty(getInputBoxComponent(ConfirmPasswordName, this.inputComponents))
+						&& (!(authMode === AuthenticationMode.ActiveDirectory) || (
+							!isInputBoxEmpty(getInputBoxComponent(VariableNames.OrganizationalUnitDistinguishedName_VariableName, this.inputComponents))
+							&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.DomainControllerFQDNs_VariableName, this.inputComponents))
+							&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ClusterAdmins_VariableName, this.inputComponents))
+							&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ClusterUsers_VariableName, this.inputComponents))
+							&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.DomainDNSIPAddresses_VariableName, this.inputComponents))
+							&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.DomainDNSName_VariableName, this.inputComponents))));
+					if (!requiredFieldsFilled) {
+						messages.push(MissingRequiredInformationErrorMessage);
+					}
+
+					if (!isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminUserName_VariableName, this.inputComponents))
+						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminPassword_VariableName, this.inputComponents))
+						&& !isInputBoxEmpty(getInputBoxComponent(ConfirmPasswordName, this.inputComponents))) {
+						const password = getInputBoxComponent(VariableNames.AdminPassword_VariableName, this.inputComponents).value!;
+						const confirmPassword = getInputBoxComponent(ConfirmPasswordName, this.inputComponents).value!;
+						if (password !== confirmPassword) {
+							messages.push(getPasswordMismatchMessage(localize('deployCluster.AdminPasswordField', "Password")));
+						}
+						if (!isValidSQLPassword(password, getInputBoxComponent(VariableNames.AdminUserName_VariableName, this.inputComponents).value!)) {
+							messages.push(getInvalidSQLPasswordMessage(localize('deployCluster.AdminPasswordField', "Password")));
+						}
+					}
+
+					if (messages.length > 0) {
+						this.wizard.wizardObject.message = {
+							text: messages.length === 1 ? messages[0] : localize('deployCluster.ValidationError', "There are some errors on this page, click 'Show Details' to view the errors."),
+							description: messages.length === 1 ? undefined : messages.join(EOL),
+							level: azdata.window.MessageLevel.Error
+						};
+					}
+					return messages.length === 0;
+				}
+				return true;
+			});
+		}
 	}
 }

@@ -40,7 +40,6 @@ export interface WizardPageContext extends CreateContext {
 	container: azdata.window.Wizard;
 }
 
-
 export interface SectionContext extends CreateContext {
 	sectionInfo: SectionInfo;
 	view: azdata.ModelView;
@@ -70,12 +69,13 @@ export function createTextInput(view: azdata.ModelView, inputInfo: { defaultValu
 	}).component();
 }
 
-export function createLabel(view: azdata.ModelView, info: { text: string, description?: string, required?: boolean, width?: string, fontStyle?: FontStyle, fontWeight?: FontWeight }): azdata.TextComponent {
+export function createLabel(view: azdata.ModelView, info: { text: string, description?: string, required?: boolean, width?: string, fontStyle?: FontStyle, fontWeight?: FontWeight, links?: azdata.LinkArea[] }): azdata.TextComponent {
 	const text = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 		value: info.text,
 		description: info.description,
 		requiredIndicator: info.required,
-		CSSStyles: { 'font-style': info.fontStyle || 'normal', 'font-weight': info.fontWeight || 'normal' }
+		CSSStyles: { 'font-style': info.fontStyle || 'normal', 'font-weight': info.fontWeight || 'normal' },
+		links: info.links
 	}).component();
 	text.width = info.width;
 	return text;
@@ -232,7 +232,6 @@ function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata
 	}
 }
 
-
 function processField(context: FieldContext): void {
 	switch (context.fieldInfo.type) {
 		case FieldType.Options:
@@ -275,7 +274,7 @@ function processOptionsTypeField(context: FieldContext): void {
 
 function processDateTimeTextField(context: FieldContext): void {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
-	const defaultValue = context.fieldInfo.defaultValue + new Date().toISOString().slice(0, 19).replace(/[^0-9]/g, ''); // Take the date time information and only leaving the numbers
+	const defaultValue = context.fieldInfo.defaultValue + getDateTimeString();
 	const input = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		value: defaultValue,
 		ariaLabel: context.fieldInfo.label,
@@ -286,6 +285,10 @@ function processDateTimeTextField(context: FieldContext): void {
 	input.width = context.fieldInfo.inputWidth;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelPosition);
+}
+
+export function getDateTimeString(): string {
+	return new Date().toISOString().slice(0, 19).replace(/[^0-9]/g, ''); // Take the date time information and only leaving the numbers
 }
 
 function processNumberField(context: FieldContext): void {
@@ -374,7 +377,7 @@ function processPasswordField(context: FieldContext): void {
 
 function processReadonlyTextField(context: FieldContext): void {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
-	const text = createLabel(context.view, { text: context.fieldInfo.defaultValue!, description: '', required: false, width: context.fieldInfo.inputWidth, fontStyle: context.fieldInfo.fontStyle });
+	const text = createLabel(context.view, { text: context.fieldInfo.defaultValue!, description: '', required: false, width: context.fieldInfo.inputWidth, fontStyle: context.fieldInfo.fontStyle, links: context.fieldInfo.links });
 	addLabelInputPairToContainer(context.view, context.components, label, text, context.fieldInfo.labelPosition);
 }
 

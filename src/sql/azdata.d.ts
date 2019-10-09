@@ -2874,7 +2874,7 @@ declare module 'azdata' {
 	export interface FormContainer extends Container<FormLayout, FormItemLayout> {
 	}
 
-	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout> {
+	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout>, GroupContainerProperties {
 	}
 
 
@@ -3082,6 +3082,11 @@ declare module 'azdata' {
 		height?: number | string;
 		width?: number | string;
 	}
+
+	export interface GroupContainerProperties {
+		collapsed: boolean;
+	}
+
 	export interface LinkArea {
 		text: string;
 		url: string;
