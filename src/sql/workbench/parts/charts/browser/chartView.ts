@@ -25,7 +25,6 @@ import { CreateInsightAction, CopyAction, SaveImageAction, IChartActionContext }
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { ChartState, IInsightOptions, ChartType } from 'sql/workbench/parts/charts/common/interfaces';
-import { parseNumAsTimeString } from 'sql/platform/connection/common/utils';
 
 declare class Proxy {
 	constructor(object, handler);
