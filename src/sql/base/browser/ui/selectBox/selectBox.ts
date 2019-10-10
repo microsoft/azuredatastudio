@@ -95,19 +95,6 @@ export class SelectBox extends vsSelectBox {
 		this._register(focusTracker.onDidFocus(() => this._showMessage()));
 	}
 
-<<<<<<< HEAD
-
-=======
-	//static method that is used to replace original names of options into user-friendly ones for display.
-	private static parseName(oldName: string): string {
-		if (altNameHash[oldName] !== undefined) {
-			return altNameHash[oldName];
-		}
-		else {
-			return oldName;
-		}
-	}
->>>>>>> f1cdfb768d13a145525967b85b1fdf63617f648e
 
 	public style(styles: ISelectBoxStyles): void {
 		super.style(styles);
