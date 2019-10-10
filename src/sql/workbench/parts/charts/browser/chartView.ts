@@ -34,6 +34,7 @@ const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribu
 
 //Map used to store names and alternative names for chart types.
 //This is mainly used for comparison when options are parsed into the constructor.
+//Need to be localized eventually
 const altNameHash: { [oldName: string]: string } = {
 	'horizontalBar': 'Horziontal Bar',
 	'bar': 'Bar',
@@ -143,11 +144,12 @@ export class ChartView extends Disposable implements IPanelView {
 
 	}
 
-	// method that is used to generate array of user-friendly ones for display.
+	/**
+	 * Function used to generate list of alternative names for use with SelectBox
+	 * @param option - the original option names.
+	 */
 	private changeToAltNames(option: string[]): string[] {
-		let newArray: string[] = option.slice();
-		newArray.forEach(function (value, index) { if (altNameHash[value] !== undefined) { newArray[index] = altNameHash[value]; } });
-		return newArray;
+		return option.map(o => altNameHash[o] || o);
 	}
 
 	public dispose() {
