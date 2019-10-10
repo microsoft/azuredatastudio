@@ -40,10 +40,10 @@ const altNameHash: { [oldName: string]: string } = {
 	'bar': nls.localize('barAltName', 'Bar'),
 	'line': nls.localize('lineAltName', 'Line'),
 	'pie': nls.localize('pieAltName', "Pie"),
-	'scatter': nls.localize('scatterAltName','Scatter'),
-	'timeSeries': nls.localize('timeSeriesAltName','Time Series'),
-	'image': nls.localize('imageAltName','Image'),
-	'count': nls.localize('countAltName','Count'),
+	'scatter': nls.localize('scatterAltName', 'Scatter'),
+	'timeSeries': nls.localize('timeSeriesAltName', 'Time Series'),
+	'image': nls.localize('imageAltName', 'Image'),
+	'count': nls.localize('countAltName', 'Count'),
 	'table': nls.localize('tableAltName', 'Table'),
 	'doughnut': nls.localize('doughnutAltName', 'Doughnut')
 };
