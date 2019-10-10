@@ -8,7 +8,7 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { ClusterController, ControllerError } from '../controller/clusterControllerApi';
+import { ClusterController, ControllerError, MountInfo, MountState } from '../controller/clusterControllerApi';
 import { AuthType } from '../constants';
 
 const localize = nls.loadMessageBundle();
@@ -171,16 +171,52 @@ export class MountHdfsDialogModel extends HdfsDialogModelBase<MountHdfsPropertie
 
 	private async onSubmit(controller: ClusterController, op: azdata.BackgroundOperation): Promise<void> {
 		try {
-			let mountResponse = await controller.mountHdfs(this.props.hdfsPath, this.props.remoteUri, this.credentials);
-			// TODO: should we wait on mount to be created, or add other status updates?
-			// TODO: also should we refresh the nodes automatically?
-			// let statusResponse = await controller.getMountStatus();
-			op.updateStatus(azdata.TaskStatus.Succeeded, localize('mount.task.complete', "Mounting HFDS folder is complete"));
+			await controller.mountHdfs(this.props.hdfsPath, this.props.remoteUri, this.credentials);
+			op.updateStatus(azdata.TaskStatus.InProgress, localize('mount.task.submitted', "Mount creation has started"));
+
+			// Wait until status has changed or some sensible time expired. If it goes over 2 minutes we assume it's "working"
+			// as there's no other API that'll give us this for now
+			let result = await this.waitOnMountStatusChange(controller);
+			let msg = result.state === MountState.Ready ? localize('mount.task.complete', "Mounting HDFS folder is complete")
+				: localize('mount.task.inprogress', "Mounting is likely to complete, check back later to verify");
+			op.updateStatus(azdata.TaskStatus.Succeeded, msg);
 		} catch (error) {
 			const errMsg = localize('mount.task.error', "Error mounting folder: {0}", (error instanceof Error ? error.message : error));
 			vscode.window.showErrorMessage(errMsg);
 			op.updateStatus(azdata.TaskStatus.Failed, errMsg);
 		}
+	}
+
+	private waitOnMountStatusChange(controller: ClusterController): Promise<MountInfo> {
+		return new Promise<MountInfo>((resolve, reject) => {
+			const waitTime = 5 * 1000; // 5 seconds
+			const maxRetries = 24;	// 5 x 24 = 120 seconds. After this time, can assume things are "working"
+			let waitOnChange = async (retries: number) => {
+				try {
+					let mountInfo = await this.getMountStatus(controller, this.props.hdfsPath);
+					if (mountInfo && mountInfo.error || mountInfo.state === MountState.Error) {
+						reject(new Error(mountInfo.error ? mountInfo.error : localize('mount.error.unknown', "Unknown error occurred during the mount process")));
+					} else if (mountInfo.state === MountState.Ready || retries <= 0) {
+						resolve(mountInfo);
+					} else {
+						setTimeout(() => {
+							waitOnChange(retries - 1).catch(e => reject(e));
+						}, waitTime);
+					}
+				} catch (err) {
+					reject(err);
+				}
+			};
+			waitOnChange(maxRetries);
+		});
+	}
+
+	private async getMountStatus(controller: ClusterController, path: string): Promise<MountInfo> {
+		let statusResponse = await controller.getMountStatus(path);
+		if (statusResponse.mount) {
+			return Array.isArray(statusResponse.mount) ? statusResponse.mount[0] : statusResponse.mount;
+		}
+		return undefined;
 	}
 }
 

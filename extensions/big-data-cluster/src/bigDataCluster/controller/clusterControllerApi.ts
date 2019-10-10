@@ -182,7 +182,7 @@ export class ClusterController {
 		}
 	}
 
-	public async mountHdfs(mountPath: string, remoteUri: string, credentials: {}): Promise<IMountResponse> {
+	public async mountHdfs(mountPath: string, remoteUri: string, credentials: {}): Promise<MountResponse> {
 		let auth = await this.authPromise;
 		const api = new DefaultApiWrapper(this.username, this.password, this._url, auth);
 
@@ -190,7 +190,7 @@ export class ClusterController {
 			const mountStatus = await api.createMount('', '', remoteUri, mountPath, credentials);
 			return {
 				response: mountStatus.response,
-				mount: mountStatus.body
+				status: mountStatus.body
 			};
 		} catch (error) {
 			// TODO handle 401 by reauthenticating
@@ -198,7 +198,7 @@ export class ClusterController {
 		}
 	}
 
-	public async getMountStatus(mountPath?: string): Promise<IMountResponse> {
+	public async getMountStatus(mountPath?: string): Promise<MountStatusResponse> {
 		let auth = await this.authPromise;
 		const api = new DefaultApiWrapper(this.username, this.password, this._url, auth);
 
@@ -206,7 +206,7 @@ export class ClusterController {
 			const mountStatus = await api.listMounts('', '', mountPath);
 			return {
 				response: mountStatus.response,
-				mount: mountStatus.body
+				mount: mountStatus.body ? JSON.parse(mountStatus.body) : undefined
 			};
 		} catch (error) {
 			// TODO handle 401 by reauthenticating
@@ -246,9 +246,27 @@ export interface IBdcStatusResponse {
 	response: IHttpResponse;
 	bdcStatus: BdcStatusModel;
 }
-export interface IMountResponse {
+
+export enum MountState {
+	Creating = 'Creating',
+	Ready = 'Ready',
+	Error = 'Error'
+}
+
+export interface MountInfo {
+	mount: string;
+	remote: string;
+	state: MountState;
+	error?: string;
+}
+
+export interface MountResponse {
 	response: IHttpResponse;
-	mount: any;
+	status: any;
+}
+export interface MountStatusResponse {
+	response: IHttpResponse;
+	mount: MountInfo[];
 }
 
 export interface IHttpResponse {
