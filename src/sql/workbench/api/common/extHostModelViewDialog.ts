@@ -482,10 +482,10 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return handle;
 	}
 
-	private getHandle(item: azdata.window.Button | azdata.window.Dialog | azdata.window.DialogTab
-		| azdata.window.ModelViewPanel | azdata.window.Wizard | azdata.window.WizardPage | azdata.workspace.ModelViewEditor) {
+	public getHandle(item: azdata.window.Button | azdata.window.Dialog | azdata.window.DialogTab
+		| azdata.window.ModelViewPanel | azdata.window.Wizard | azdata.window.WizardPage | azdata.workspace.ModelViewEditor, createIfNotFound: boolean = true) {
 		let handle = this._objectHandles.get(item);
-		if (handle === undefined) {
+		if (createIfNotFound && handle === undefined) {
 			handle = ExtHostModelViewDialog.getNewHandle();
 			this._objectHandles.set(item, handle);
 			this._objectsByHandle.set(handle, item);
