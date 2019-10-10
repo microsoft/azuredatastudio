@@ -1297,7 +1297,7 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 
 	public get value(): string | azdata.CategoryValue {
 		let val = this.properties['value'];
-		if (!val && this.values && this.values.length > 0) {
+		if (!this.editable && !val && this.values && this.values.length > 0) {
 			val = this.values[0];
 		}
 		return val;

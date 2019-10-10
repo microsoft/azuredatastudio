@@ -164,6 +164,7 @@ export interface FieldInfo {
 	fontStyle?: FontStyle;
 	labelFontWeight?: FontWeight;
 	links?: azdata.LinkArea[];
+	editable?: boolean; // for editable dropdown
 }
 
 export enum LabelPosition {

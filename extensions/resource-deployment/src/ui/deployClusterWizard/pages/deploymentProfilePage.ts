@@ -81,17 +81,21 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 		}, {
 			label: '' // line separator
 		}, {
-			label: localize('deployCluster.storage', "Storage"),
-			value: localize('deployCluster.SizeLabel', "Size"),
+			label: localize('deployCluster.storageSize', "Storage size"),
+			value: localize('deployCluster.gbPerInstance', "GB per Instance"),
 			fontWeight: 'bold'
 		}, {
-			label: localize('deployCluster.defaultDataStorage', "Data storage size (GB)"),
+			label: localize('deployCluster.defaultDataStorage', "Data storage"),
 			value: profile.controllerDataStorageSize.toString()
 		}, {
-			label: localize('deployCluster.defaultLogStorage', "Log storage size (GB)"),
+			label: localize('deployCluster.defaultLogStorage', "Log storage"),
 			value: profile.controllerLogsStorageSize.toString()
 		}, {
 			label: '' // line separator
+		}, {
+			label: localize('deployCluster.features', "Features"),
+			value: '',
+			fontWeight: 'bold'
 		}, {
 			label: localize('deployCluster.basicAuthentication', "Basic authentication"),
 			value: ''
@@ -115,7 +119,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 			label: profile.profileName,
 			descriptions: descriptions,
 			width: '240px',
-			height: '300px',
+			height: '320px',
 		}).component();
 		this._cards.push(card);
 		this.wizard.registerDisposable(card.onCardSelectedChanged(() => {
