@@ -79,19 +79,19 @@ export abstract class DacFxConfigPage extends BasePage {
 		return true;
 	}
 
-	protected async createDatabaseTextBox(): Promise<azdata.FormComponent> {
+	protected async createDatabaseTextBox(title: string): Promise<azdata.FormComponent> {
 		this.databaseTextBox = this.view.modelBuilder.inputBox().withProperties({
 			required: true
 		}).component();
 
-		this.databaseTextBox.ariaLabel = localize('dacfx.databaseAriaLabel', "Database");
+		this.databaseTextBox.ariaLabel = title;
 		this.databaseTextBox.onTextChanged(async () => {
 			this.model.database = this.databaseTextBox.value;
 		});
 
 		return {
 			component: this.databaseTextBox,
-			title: localize('dacFx.databaseNameTextBox', 'Target Database')
+			title: title
 		};
 	}
 
