@@ -15,8 +15,9 @@ import * as nls from 'vscode-nls';
 
 import * as constants from '../constants';
 import { WebHDFS, HdfsError } from '../hdfs/webhdfs';
-import { AclEntry, IAclStatus } from '../hdfs/aclEntry';
+import { AclEntry, PermissionStatus } from '../hdfs/aclEntry';
 import { Mount, MountStatus } from '../hdfs/mount';
+import { FileStatus } from '../hdfs/fileStatus';
 
 const localize = nls.loadMessageBundle();
 
@@ -69,10 +70,14 @@ export interface IFileSource {
 	writeFile(localFile: IFile, remoteDir: string): Promise<string>;
 	delete(path: string, recursive?: boolean): Promise<void>;
 	/**
+	 * Retrieves the file status for the specified path (may be a file or directory)
+	 */
+	getFileStatus(path: string): Promise<FileStatus>;
+	/**
 	 * Get ACL status for given path
 	 * @param path The path to the file/folder to get the status of
 	 */
-	getAclStatus(path: string): Promise<IAclStatus>;
+	getAclStatus(path: string): Promise<PermissionStatus>;
 	/**
 	 * Sets the ACL status for given path
 	 * @param path The path to the file/folder to set the ACL on
@@ -82,6 +87,12 @@ export interface IFileSource {
 	 * @param aclEntries The ACL entries to set
 	 */
 	setAcl(path: string, ownerEntry: AclEntry, groupEntry: AclEntry, otherEntry: AclEntry, aclEntries: AclEntry[]): Promise<void>;
+	/**
+	 * Sets the permission octal (sticky, owner, group & other) for a file/folder
+	 * @param path The path to the file/folder to set the permission of
+	 * @param aclStatus The status containing the permission to set
+	 */
+	setPermission(path: string, aclStatus: PermissionStatus): Promise<void>;
 	exists(path: string): Promise<boolean>;
 }
 
@@ -344,17 +355,29 @@ export class HdfsFileSource implements IFileSource {
 		});
 	}
 
+	public getFileStatus(path: string): Promise<FileStatus> {
+		return new Promise((resolve, reject) => {
+			this.client.getFileStatus(path, (error: HdfsError, fileStatus: FileStatus) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve(fileStatus);
+				}
+			});
+		});
+	}
+
 	/**
 	 * Get ACL status for given path
 	 * @param path The path to the file/folder to get the status of
 	 */
-	public getAclStatus(path: string): Promise<IAclStatus> {
+	public getAclStatus(path: string): Promise<PermissionStatus> {
 		return new Promise((resolve, reject) => {
-			this.client.getAclStatus(path, (error: HdfsError, aclStatus: IAclStatus) => {
+			this.client.getAclStatus(path, (error: HdfsError, permissionStatus: PermissionStatus) => {
 				if (error) {
 					reject(error);
 				} else {
-					resolve(aclStatus);
+					resolve(permissionStatus);
 				}
 			});
 		});
@@ -371,6 +394,23 @@ export class HdfsFileSource implements IFileSource {
 	public setAcl(path: string, ownerEntry: AclEntry, groupEntry: AclEntry, otherEntry: AclEntry, aclEntries: AclEntry[]): Promise<void> {
 		return new Promise((resolve, reject) => {
 			this.client.setAcl(path, ownerEntry, groupEntry, otherEntry, aclEntries, (error: HdfsError) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve();
+				}
+			});
+		});
+	}
+
+	/**
+	 * Sets the permission octal (sticky, owner, group & other) for a file/folder
+	 * @param path The path to the file/folder to set the permission of
+	 * @param aclStatus The status containing the permission to set
+	 */
+	public setPermission(path: string, aclStatus: PermissionStatus): Promise<void> {
+		return new Promise((resolve, reject) => {
+			this.client.setPermission(path, aclStatus, (error: HdfsError) => {
 				if (error) {
 					reject(error);
 				} else {

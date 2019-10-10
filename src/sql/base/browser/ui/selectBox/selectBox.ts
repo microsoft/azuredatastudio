@@ -17,7 +17,6 @@ import { renderFormattedText, renderText, FormattedTextRenderOptions } from 'vs/
 const $ = dom.$;
 
 
-
 export interface ISelectBoxStyles extends vsISelectBoxStyles {
 	disabledSelectBackground?: Color;
 	disabledSelectForeground?: Color;
@@ -63,6 +62,7 @@ export class SelectBox extends vsSelectBox {
 	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
 		super(options.map(option => {return {text : option}; }), 0, contextViewProvider, undefined, selectBoxOptions);
 
+
 		this._optionsDictionary = new Map<string, number>();
 		for (let i = 0; i < options.length; i++) {
 			this._optionsDictionary.set(options[i], i);
@@ -95,7 +95,19 @@ export class SelectBox extends vsSelectBox {
 		this._register(focusTracker.onDidFocus(() => this._showMessage()));
 	}
 
+<<<<<<< HEAD
 
+=======
+	//static method that is used to replace original names of options into user-friendly ones for display.
+	private static parseName(oldName: string): string {
+		if (altNameHash[oldName] !== undefined) {
+			return altNameHash[oldName];
+		}
+		else {
+			return oldName;
+		}
+	}
+>>>>>>> f1cdfb768d13a145525967b85b1fdf63617f648e
 
 	public style(styles: ISelectBoxStyles): void {
 		super.style(styles);
