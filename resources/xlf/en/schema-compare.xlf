@@ -11,7 +11,7 @@
       <source xml:lang="en">Schema Compare</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/schema-compare/out/dialogs/schemaCompareOptionsDialog" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/schema-compare/out/dialogs/schemaCompareMainWindow" source-language="en" datatype="plaintext"><body>
     <trans-unit id="SchemaCompareOptionsDialog.Ok">
       <source xml:lang="en">Ok</source>
     </trans-unit>
