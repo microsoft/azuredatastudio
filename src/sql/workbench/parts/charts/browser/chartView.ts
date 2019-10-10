@@ -81,9 +81,6 @@ export class ChartView extends Disposable implements IPanelView {
 	private optionDisposables: IDisposable[] = [];
 	private optionMap: { [x: string]: { element: HTMLElement; set: (val) => void } } = {};
 
-
-
-
 	constructor(
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IThemeService private _themeService: IThemeService,
@@ -145,15 +142,12 @@ export class ChartView extends Disposable implements IPanelView {
 
 	}
 
-
 	// method that is used to generate array of user-friendly ones for display.
 	private changeToAltNames(option:string[]): string[] {
 		let newArray:string[] = option.slice();
 		newArray.forEach(function(value, index){if (altNameHash[value] !== undefined){newArray[index] =altNameHash[value];}});
 		return newArray;
 	}
-
-
 
 	public dispose() {
 		dispose(this.optionDisposables);
