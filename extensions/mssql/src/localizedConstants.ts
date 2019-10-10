@@ -23,6 +23,7 @@ export const accessHeader = localize('mssql.accessHeader', "Access");
 export const defaultHeader = localize('mssql.defaultHeader', "Default");
 export const deleteTitle = localize('mssql.delete', "Delete");
 export const stickyHeader = localize('mssql.stickyHeader', "Sticky");
+export const inheritHeader = localize('mssql.inheritHeader', "Inherit?");
 export const readHeader = localize('mssql.readHeader', "Read");
 export const writeHeader = localize('mssql.writeHeader', "Write");
 export const executeHeader = localize('mssql.executeHeader', "Execute");

@@ -466,10 +466,16 @@ export class WebHDFS {
 				callback(error, undefined);
 			} else if (response.body.hasOwnProperty('AclStatus')) {
 				const permissions = parseAclPermissionFromOctal(response.body.AclStatus.permission);
+				const ownerEntry = new AclEntry(PermissionType.owner, '', response.body.AclStatus.owner || '');
+				ownerEntry.addPermission(AclEntryScope.access, permissions.owner);
+				const groupEntry = new AclEntry(PermissionType.group, '', response.body.AclStatus.group || '');
+				groupEntry.addPermission(AclEntryScope.access, permissions.group);
+				const otherEntry = new AclEntry(PermissionType.other, '', everyoneName);
+				otherEntry.addPermission(AclEntryScope.access, permissions.other);
 				const permissionStatus = new PermissionStatus(
-					new AclEntry(AclEntryScope.access, PermissionType.owner, '', response.body.AclStatus.owner || '', permissions.owner),
-					new AclEntry(AclEntryScope.access, PermissionType.group, '', response.body.AclStatus.group || '', permissions.group),
-					new AclEntry(AclEntryScope.access, PermissionType.other, '', everyoneName, permissions.other),
+					ownerEntry,
+					groupEntry,
+					otherEntry,
 					!!response.body.AclStatus.stickyBit,
 					// We filter out empty names here since those are already added by the permission bits - WebHDFS creates an extra ACL
 					// entry for the owning group whenever another ACL is added.
@@ -499,7 +505,7 @@ export class WebHDFS {
 		this.checkArgDefined('groupEntry', groupEntry);
 		this.checkArgDefined('otherEntry', otherEntry);
 		this.checkArgDefined('aclEntries', aclEntries);
-		const aclSpec = [ownerEntry, groupEntry, otherEntry].concat(aclEntries).map(entry => entry.toAclString()).join(',');
+		const aclSpec = [ownerEntry, groupEntry, otherEntry].concat(aclEntries).reduce((acc, entry) => acc.concat(entry.toAclStrings()), []).join(',');
 		let endpoint = this.getOperationEndpoint('setacl', path, { aclspec: aclSpec });
 		this.sendRequest('PUT', endpoint, undefined, (error) => {
 			return callback && callback(error);

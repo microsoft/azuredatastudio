@@ -53,7 +53,8 @@ export class HdfsModel {
 		if (!this.permissionStatus) {
 			return;
 		}
-		const newEntry = new AclEntry(AclEntryScope.access, type, name, name, new AclEntryPermission(true, true, true));
+		const newEntry = new AclEntry(type, name, name);
+		newEntry.addPermission(AclEntryScope.access, new AclEntryPermission(true, true, true));
 		// Don't add duplicates. This also checks the owner, group and other items
 		if ([this.permissionStatus.owner, this.permissionStatus.group, this.permissionStatus.other].concat(this.permissionStatus.aclEntries).find(entry => entry.isEqual(newEntry))) {
 			return;

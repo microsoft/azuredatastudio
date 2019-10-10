@@ -32,7 +32,8 @@ export class PermissionStatus {
 	 *	@see AclEntryPermission for more information on the permission digits
 	 */
 	public get permissionOctal(): string {
-		return `${this.stickyBit ? '1' : ''}${this.owner.permissionDigit}${this.group.permissionDigit}${this.other.permissionDigit}`;
+		// Always use the access scope for the permission octal - it doesn't have a concept of other scopes
+		return `${this.stickyBit ? '1' : ''}${this.owner.getPermissionDigit(AclEntryScope.access)}${this.group.getPermissionDigit(AclEntryScope.access)}${this.other.getPermissionDigit(AclEntryScope.access)}`;
 	}
 }
 
@@ -135,23 +136,30 @@ function parseAclPermission(permissionString: string): AclEntryPermission {
  *  permission - The permission set for this ACL. @see AclPermission
  */
 export class AclEntry {
+	public readonly permissions = new Map<AclEntryScope, AclEntryPermission>();
+
 	constructor(
-		public readonly scope: AclEntryScope,
 		public readonly type: AclType | PermissionType,
 		public readonly name: string,
 		public readonly displayName: string,
-		public readonly permission: AclEntryPermission,
 	) { }
 
-	/**
-	 * Gets the octal number representing the permission for this entry. This digit is a value
-	 * between 0 and 7 inclusive, which is a bitwise OR the permission flags (r/w/x).
-	 */
-	public get permissionDigit(): number {
-		return this.permission.permissionDigit;
+	public addPermission(scope: AclEntryScope, permission: AclEntryPermission) {
+		this.permissions.set(scope, permission);
 	}
+
 	/**
-	 * Returns the string representation of the ACL Entry in the form [SCOPE:]TYPE:NAME:PERMISSION.
+	 * Gets the octal number representing the permission for the specified scope of
+	 * this entry. This will either be a number between 0 and 7 inclusive (which is
+	 * a bitwise OR the permission flags rwx) or undefined if the scope doesn't exist
+	 * for this entry.
+	 */
+	public getPermissionDigit(scope: AclEntryScope): number | undefined {
+		return this.permissions.has(scope) ? this.permissions.get(scope).permissionDigit : undefined;
+	}
+
+	/**
+	 * Returns the string representation of each ACL Entry in the form [SCOPE:]TYPE:NAME:PERMISSION.
 	 * Note that SCOPE is only displayed if it's default - access is implied if there is no scope
 	 * specified.
 	 * The name is optional and so may be empty.
@@ -161,8 +169,10 @@ export class AclEntry {
 	 *		user::r-x
 	 *		default:group::r--
 	 */
-	toAclString(): string {
-		return `${this.scope === AclEntryScope.default ? 'default:' : ''}${getAclEntryType(this.type)}:${this.name}:${this.permission.toString()}`;
+	toAclStrings(): string[] {
+		return Array.from(this.permissions.entries()).map((entry: [AclEntryScope, AclEntryPermission]) => {
+			return `${entry[0] === AclEntryScope.default ? 'default:' : ''}${getAclEntryType(this.type)}:${this.name}:${entry[1].toString()}`;
+		});
 	}
 
 	/**
@@ -174,8 +184,7 @@ export class AclEntry {
 		if (!other) {
 			return false;
 		}
-		return this.scope === other.scope &&
-			this.type === other.type &&
+		return this.type === other.type &&
 			this.name === other.name;
 	}
 }
@@ -253,7 +262,9 @@ export function parseAclEntry(aclString: string): AclEntry {
 	}
 	const name = parts[i++];
 	const permission = parseAclPermission(parts[i++]);
-	return new AclEntry(scope, type, name, name, permission);
+	const entry = new AclEntry(type, name, name);
+	entry.addPermission(scope, permission);
+	return entry;
 }
 
 /**

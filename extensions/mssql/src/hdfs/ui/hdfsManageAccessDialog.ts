@@ -6,17 +6,19 @@
 import * as azdata from 'azdata';
 import { HdfsModel } from '../hdfsModel';
 import { IFileSource } from '../../objectExplorerNodeProvider/fileSources';
-import { PermissionStatus, AclEntry, AclType, getImageForType } from '../../hdfs/aclEntry';
+import { PermissionStatus, AclEntry, AclType, getImageForType, AclEntryScope } from '../../hdfs/aclEntry';
 import { cssStyles } from './uiConstants';
 import * as loc from '../../localizedConstants';
 import { HdfsError } from '../webhdfs';
 import { ApiWrapper } from '../../apiWrapper';
 import { IconPathHelper } from '../../iconHelper';
 import { HdfsFileType } from '../fileStatus';
+import { isUndefined } from '../../types';
 
 const permissionsTypeIconColumnWidth = 35;
 const permissionsNameColumnWidth = 250;
 const permissionsStickyColumnWidth = 50;
+const permissionsInheritColumnWidth = 50;
 const permissionsReadColumnWidth = 50;
 const permissionsWriteColumnWidth = 50;
 const permissionsExecuteColumnWidth = 50;
@@ -261,7 +263,7 @@ export class ManageAccessDialog {
 
 	private createOwnerPermissionsRow(builder: azdata.ModelBuilder, permissionStatus: PermissionStatus): azdata.FlexContainer {
 		const row = this.createPermissionsRow(builder, permissionStatus.owner, false);
-		const stickyComponents = createCheckbox(builder, permissionStatus.stickyBit, permissionsReadColumnWidth, permissionsRowHeight);
+		const stickyComponents = createCheckbox(builder, permissionStatus.stickyBit, true, permissionsReadColumnWidth, permissionsRowHeight);
 		stickyComponents.checkbox.onChanged(() => {
 			permissionStatus.stickyBit = stickyComponents.checkbox.checked;
 		});
@@ -290,47 +292,61 @@ export class ManageAccessDialog {
 		rowContainer.addItem(nameCell);
 
 		// Access - Read
-		const accessReadComponents = createCheckbox(builder, entry.permission.read, permissionsReadColumnWidth, permissionsRowHeight);
+		const accessReadComponents = createCheckbox(builder, entry.permissions.get(AclEntryScope.access).read, true, permissionsReadColumnWidth, permissionsRowHeight);
 		rowContainer.addItem(accessReadComponents.container, { flex: '0 0 auto' });
 		accessReadComponents.checkbox.onChanged(() => {
-			entry.permission.read = accessReadComponents.checkbox.checked;
+			entry.permissions.get(AclEntryScope.access).read = accessReadComponents.checkbox.checked;
 		});
 
 		// Access - Write
-		const accessWriteComponents = createCheckbox(builder, entry.permission.write, permissionsWriteColumnWidth, permissionsRowHeight);
+		const accessWriteComponents = createCheckbox(builder, entry.permissions.get(AclEntryScope.access).write, true, permissionsWriteColumnWidth, permissionsRowHeight);
 		rowContainer.addItem(accessWriteComponents.container, { flex: '0 0 auto' });
 		accessWriteComponents.checkbox.onChanged(() => {
-			entry.permission.write = accessWriteComponents.checkbox.checked;
+			entry.permissions.get(AclEntryScope.access).write = accessWriteComponents.checkbox.checked;
 		});
 
 		// Access - Execute
-		const accessExecuteComponents = createCheckbox(builder, entry.permission.execute, permissionsExecuteColumnWidth, permissionsRowHeight);
+		const accessExecuteComponents = createCheckbox(builder, entry.permissions.get(AclEntryScope.access).execute, true, permissionsExecuteColumnWidth, permissionsRowHeight);
 		rowContainer.addItem(accessExecuteComponents.container, { flex: '0 0 auto', CSSStyles: { 'border-right': this.hdfsModel.fileStatus.type === HdfsFileType.Directory ? cssStyles.tableBorderCss : '' } });
 		accessExecuteComponents.checkbox.onChanged(() => {
-			entry.permission.execute = accessExecuteComponents.checkbox.checked;
+			entry.permissions.get(AclEntryScope.access).execute = accessExecuteComponents.checkbox.checked;
 		});
 
 		// Only directories can set ACL defaults so we hide the column for non-directories
 		if (this.hdfsModel.fileStatus.type === HdfsFileType.Directory) {
+
+			const defaultPermission = entry.permissions.get(AclEntryScope.default);
+
+			// Default - Inherit
+			const defaultInheritComponents = createCheckbox(builder, !defaultPermission, true, permissionsInheritColumnWidth, permissionsRowHeight);
+			rowContainer.addItem(defaultInheritComponents.container, { flex: '0 0 auto' });
+
 			// Default - Read
-			const defaultReadComponents = createCheckbox(builder, false, permissionsReadColumnWidth, permissionsRowHeight);
+			const defaultReadComponents = createCheckbox(builder, defaultPermission && defaultPermission.read, !!defaultPermission, permissionsReadColumnWidth, permissionsRowHeight);
 			rowContainer.addItem(defaultReadComponents.container, { flex: '0 0 auto' });
 			defaultReadComponents.checkbox.onChanged(() => {
+				defaultInheritComponents.checkbox.enabled = !defaultInheritComponents.checkbox.enabled;
 				// entry.permission.read = defaultReadComponents.checkbox.checked; TODO hook up default logic
 			});
 
 			// Default - Write
-			const defaultWriteComponents = createCheckbox(builder, false, permissionsWriteColumnWidth, permissionsRowHeight);
+			const defaultWriteComponents = createCheckbox(builder, defaultPermission && defaultPermission.write, !!defaultPermission, permissionsWriteColumnWidth, permissionsRowHeight);
 			rowContainer.addItem(defaultWriteComponents.container, { flex: '0 0 auto' });
 			accessReadComponents.checkbox.onChanged(() => {
 				// entry.permission.write = accessReadComponents.checkbox.checked; TODO hook up default logic
 			});
 
 			// Default - Execute
-			const defaultExecuteComponents = createCheckbox(builder, false, permissionsExecuteColumnWidth, permissionsRowHeight);
+			const defaultExecuteComponents = createCheckbox(builder, defaultPermission && defaultPermission.execute, !!defaultPermission, permissionsExecuteColumnWidth, permissionsRowHeight);
 			rowContainer.addItem(defaultExecuteComponents.container, { flex: '0 0 auto' });
 			accessReadComponents.checkbox.onChanged(() => {
 				// entry.permission.execute = accessReadComponents.checkbox.checked; TODO hook up default logic
+			});
+
+			defaultInheritComponents.checkbox.onChanged(() => {
+				defaultReadComponents.checkbox.enabled = !defaultInheritComponents.checkbox.checked;
+				defaultWriteComponents.checkbox.enabled = !defaultInheritComponents.checkbox.checked;
+				defaultExecuteComponents.checkbox.enabled = !defaultInheritComponents.checkbox.checked;
 			});
 		}
 
@@ -368,6 +384,8 @@ export class ManageAccessDialog {
 
 		// Section Headers
 		const sectionHeaderContainer = modelBuilder.flexContainer().withLayout({ flexFlow: 'row', justifyContent: 'flex-end' }).component();
+
+		// Access
 		const accessSectionHeader = modelBuilder.text()
 			.withProperties<azdata.TextComponentProperties>({
 				value: loc.accessHeader,
@@ -378,8 +396,13 @@ export class ManageAccessDialog {
 				}
 			})
 			.component();
-
 		sectionHeaderContainer.addItem(accessSectionHeader, { flex: '0 0 auto' });
+
+		// Inherit - just used as a space
+		const inheritSectionHeader = modelBuilder.text().component();
+		sectionHeaderContainer.addItem(inheritSectionHeader, { CSSStyles: { 'width': `${permissionsInheritColumnWidth}px`, 'min-width': `${permissionsInheritColumnWidth}px` } });
+
+		// Default
 		const defaultSectionHeader = modelBuilder.text()
 			.withProperties<azdata.TextComponentProperties>({
 				value: loc.defaultHeader,
@@ -392,6 +415,7 @@ export class ManageAccessDialog {
 			.component();
 		sectionHeaderContainer.addItem(defaultSectionHeader, { flex: '0 0 auto' });
 		this.defaultSectionComponents.push(defaultSectionHeader);
+
 		// Delete - just used as a spacer
 		const deleteSectionHeader = modelBuilder.text().component();
 		sectionHeaderContainer.addItem(deleteSectionHeader, { CSSStyles: { 'width': `${permissionsDeleteColumnWidth}px`, 'min-width': `${permissionsDeleteColumnWidth}px` } });
@@ -422,6 +446,8 @@ export class ManageAccessDialog {
 		headerRowContainer.addItem(accessExecuteCell, { CSSStyles: { 'width': `${permissionsExecuteColumnWidth}px`, 'min-width': `${permissionsExecuteColumnWidth}px`, 'margin-right': '5px' } });
 		// Default Permissions Group
 		const defaultPermissionsHeadersContainer = modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
+		const inheritCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.inheritHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
+		defaultPermissionsHeadersContainer.addItem(inheritCell, { CSSStyles: { 'width': `${permissionsInheritColumnWidth}px`, 'min-width': `${permissionsInheritColumnWidth}px` } });
 		const defaultReadCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.readHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
 		defaultPermissionsHeadersContainer.addItem(defaultReadCell, { CSSStyles: { 'width': `${permissionsReadColumnWidth}px`, 'min-width': `${permissionsReadColumnWidth}px` } });
 		const defaultWriteCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.writeHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
@@ -441,9 +467,9 @@ export class ManageAccessDialog {
 	}
 }
 
-function createCheckbox(builder: azdata.ModelBuilder, checked: boolean, containerWidth: number, containerHeight: number): { container: azdata.FlexContainer, checkbox: azdata.CheckBoxComponent } {
+function createCheckbox(builder: azdata.ModelBuilder, checked: boolean, enabled: boolean, containerWidth: number, containerHeight: number): { container: azdata.FlexContainer, checkbox: azdata.CheckBoxComponent } {
 	const checkbox = builder.checkBox()
-		.withProperties<azdata.CheckBoxProperties>({ checked: checked, height: 20, width: 20 }).component();
+		.withProperties<azdata.CheckBoxProperties>({ checked: checked, enabled: enabled, height: 20, width: 20 }).component();
 	const container = builder.flexContainer()
 		.withLayout({ width: containerWidth, height: containerHeight })
 		.component();
