@@ -163,17 +163,17 @@ export interface FieldInfo {
 	fontStyle?: FontStyle;
 }
 
-export enum LabelPosition {
+export const enum LabelPosition {
 	Top = 'top',
 	Left = 'left'
 }
 
-export enum FontStyle {
+export const enum FontStyle {
 	Normal = 'normal',
 	Italic = 'italic'
 }
 
-export enum FieldType {
+export const enum FieldType {
 	Text = 'text',
 	Number = 'number',
 	DateTimeText = 'datetime_text',
@@ -188,6 +188,17 @@ export interface NotebookInfo {
 	win32: string;
 	darwin: string;
 	linux: string;
+}
+
+export enum OsType {
+	win32 = 1, // Keep this 1 based, so that only falsy values are the ones that are undefined (OsType["unknown"] returns undefined) so easy to map to others.
+	darwin,
+	linux,
+	aix,
+	freebsd,
+	openbsd,
+	sunos,
+	others
 }
 
 export interface ToolRequirementInfo {
@@ -216,8 +227,17 @@ export interface ITool {
 	install(): Promise<void>;
 }
 
-export enum BdcDeploymentType {
+export const enum BdcDeploymentType {
 	NewAKS = 'new-aks',
 	ExistingAKS = 'existing-aks',
 	ExistingKubeAdm = 'existing-kubeadm'
+}
+
+
+export interface Command {
+	command: string;
+	sudo?: boolean;
+	comment?: string;
+	workingDirectory?: string;
+	additionalEnvironmentVariables?: NodeJS.ProcessEnv;
 }

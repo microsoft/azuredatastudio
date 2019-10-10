@@ -7,3 +7,7 @@
 /// <reference path='../../../../src/sql/azdata.d.ts'/>
 /// <reference path='../../../../src/sql/azdata.proposed.d.ts'/>
 /// <reference types='@types/node'/>
+declare module "sudo-prompt" {
+
+	export function exec(cmd: string, options: { name?: string, icns?: string }, callback: (error: string, stdout: string, stderr: string) => void): any;
+}

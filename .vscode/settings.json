@@ -60,5 +60,21 @@
 	"remote.extensionKind": {
 		"msjsdiag.debugger-for-chrome": "workspace"
 	},
-	"files.insertFinalNewline": true
+	"files.insertFinalNewline": true,
+	"cSpell.words": [
+		"SDKs",
+		"azcli",
+		"azurecli",
+		"datetime",
+		"dearmor",
+		"freebsd",
+		"gnupg",
+		"kube",
+		"kubeadm",
+		"kubectl",
+		"msiexec",
+		"openbsd",
+		"sunos",
+		"typemoq"
+	]
 }

@@ -2,14 +2,13 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 import * as azdata from 'azdata';
+import { EOL } from 'os';
 import * as nls from 'vscode-nls';
-import { DialogBase } from './dialogBase';
-import { ResourceType, AgreementInfo, DeploymentProvider } from '../interfaces';
+import { AgreementInfo, DeploymentProvider, ITool, ResourceType } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
-import { EOL } from 'os';
+import { DialogBase } from './dialogBase';
 import { createFlexContainer } from './modelViewUtils';
 
 const localize = nls.loadMessageBundle();
@@ -28,6 +27,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _agreementContainer!: azdata.DivContainer;
 	private _agreementCheckboxChecked: boolean = false;
 	private _installToolButton: azdata.window.Button;
+	private _tools: ITool[] = [];
 
 	constructor(
 		private toolsService: IToolsService,
@@ -253,6 +253,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				}
 				this._toolsLoadingComponent.loading = false;
 			});
+			this._tools = tools;
 		}
 	}
 
@@ -285,12 +286,18 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this.resourceTypeService.startDeployment(this.getCurrentProvider());
 	}
 
-	private installTools(): void {
+	private async installTools(): Promise<void> {
 		this._dialogObject.message = {
 			level: azdata.window.MessageLevel.Information,
 			text: localize('deploymentDialog.InstallingTools', "Required tools are being installed now.")
 		};
 		this._installToolButton.enabled = false;
 		// TODO
+		for (let i: number = 0; i < this._tools.length; i++) {
+			if (!this._tools[i].isInstalled) {
+				await this._tools[i].install();
+			}
+		}
+		this.updateTools();
 	}
 }

@@ -3,11 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ToolType, ITool } from '../../interfaces';
+import { Command, ToolType, ITool, OsType } from '../../interfaces';
 import { SemVer } from 'semver';
 import { IPlatformService } from '../platformService';
 import * as nls from 'vscode-nls';
 import { EOL } from 'os';
+import { delimiter } from 'path';
 const localize = nls.loadMessageBundle();
 
 export abstract class ToolBase implements ITool {
@@ -19,12 +20,43 @@ export abstract class ToolBase implements ITool {
 	abstract type: ToolType;
 	abstract homePage: string;
 	abstract autoInstallSupported: boolean;
-	public abstract install(): Promise<void>;
+	abstract installationCommands: Command[];
 	protected abstract getVersionFromOutput(output: string): SemVer | undefined;
-	protected abstract readonly versionCommand: string;
+	protected abstract readonly versionCommand: Command;
+
+	protected get installationPath(): Promise<string | null> {
+		return new Promise<string | null>((resolve, _reject) => {
+			resolve(null);
+		});
+	}
+
+	protected get installationSearchPaths(): (string | null)[] {
+		return [this.storagePath];
+	}
+
+	protected get downloadPath(): string {
+		return this.storagePath;
+	}
+
+	public get storagePath(): string {
+		return this._platformService.storagePath();
+	}
+
+	public get osType(): OsType {
+		return this._osType;
+	}
 
 	public get version(): SemVer | undefined {
 		return this._version;
+	}
+
+	public get fullVersion(): string | undefined {
+		if (this._version !== undefined) {
+			return this._version && this._version.version;
+		} else {
+			return undefined;
+		}
+
 	}
 
 	public get isInstalled(): boolean {
@@ -35,7 +67,73 @@ export abstract class ToolBase implements ITool {
 		return this._statusDescription;
 	}
 
-	public loadInformation(): Promise<void> {
+	protected async getPip3InstallLocation(packageName: string): Promise<string> {
+		const command = `pip3 show ${packageName}`;
+		const pip3ShowOutput: string = (await this._platformService.runCommand(command));
+		const installLocation = /^Location\: (.*)$/gim.exec(pip3ShowOutput);
+		let retValue = installLocation && installLocation[1];
+		if (retValue === undefined || retValue === null) {
+			this.logToOutputChannel(`   >${command}`);
+			this.logToOutputChannel(`   Could not find 'Location' in the output:`);
+			this.logToOutputChannel(pip3ShowOutput, `   output:`);
+			return '';
+		} else {
+			return retValue;
+		}
+	}
+
+	protected logToOutputChannel(data: string | Buffer, header?: string): void {
+		this._platformService.logToOutputChannel(data, header);
+	}
+
+	public async install(): Promise<void> {
+		await this.installCore();
+		await this.postInstall();
+	}
+
+	protected async installCore() {
+		const installationCommands: Command[] = this.installationCommands;
+		if (!installationCommands || installationCommands.length === 0) {
+			throw new Error(`Cannot install tool:${this.displayName}::${this.description} as installation commands are unknown`);
+		}
+		for (let i: number = 0; i < installationCommands.length; i++) {
+			await this._platformService.runCommand(installationCommands[i].command,
+				{
+					workingDirectory: installationCommands[i].workingDirectory || this.downloadPath,
+					additionalEnvironmentVariables: installationCommands[i].additionalEnvironmentVariables
+				},
+				installationCommands[i].sudo,
+				installationCommands[i].comment
+			);
+		}
+	}
+
+	protected async postInstall() {
+		await this.loadInformation();
+	}
+
+	protected async addInstallationSearchPathsToSystemPath(): Promise<void> {
+		const installationPath = await this.installationPath;
+		return new Promise<void>((resolve, _reject) => {
+			const searchPaths = [installationPath, ...this.installationSearchPaths];
+			console.log(`installationSearchPaths for tool:${this.displayName}: ${JSON.stringify(searchPaths, undefined, '\t')}`);
+			searchPaths.forEach(installationSearchPath => {
+				if (installationSearchPath) {
+					if (process.env.PATH) {
+						if (!`${delimiter}${process.env.PATH}${delimiter}`.includes(`${delimiter}${installationSearchPath}${delimiter}`)) {
+							process.env.PATH += `${delimiter}${installationSearchPath}`;
+							console.log(`Appending to Path -> ${delimiter}${installationSearchPath}`);
+						}
+					} else {
+						process.env.PATH = installationSearchPath;
+						console.log(`Appending to Path -> '${delimiter}${installationSearchPath}':${delimiter}${installationSearchPath}`);
+					}
+				}
+			});
+			resolve();
+		});
+	}
+	public async loadInformation(): Promise<void> {
 		if (this._isInstalled) {
 			return Promise.resolve();
 		}
@@ -43,7 +141,14 @@ export abstract class ToolBase implements ITool {
 		this._statusDescription = undefined;
 		this._version = undefined;
 		this._versionOutput = undefined;
-		return this._platformService.runCommand(this.versionCommand).then((stdout) => {
+		this._osType = this._platformService.osType();
+		await this.addInstallationSearchPathsToSystemPath();
+		return this._platformService.runCommand(this.versionCommand.command,
+			{
+				workingDirectory: this.versionCommand.workingDirectory,
+				additionalEnvironmentVariables: this.versionCommand.additionalEnvironmentVariables
+			}
+		).then((stdout) => {
 			this._versionOutput = stdout;
 			this._version = this.getVersionFromOutput(stdout);
 			if (this._version) {
@@ -59,6 +164,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	private _isInstalled: boolean = false;
+	private _osType: OsType = OsType.others;
 	private _version?: SemVer;
 	private _statusDescription?: string;
 	private _versionOutput?: string;
