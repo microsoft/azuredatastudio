@@ -110,7 +110,7 @@ export class JupyterServerInstallation {
 				await this.installPythonPackage(backgroundOperation);
 
 				if (this._usingConda || this._usingExistingPython) {
-					await this.upgradePythonPackages(false, forceInstall);
+					await this.upgradePythonPackages(forceInstall);
 				} else {
 					await this.installOfflinePipDependencies();
 				}
@@ -388,11 +388,38 @@ export class JupyterServerInstallation {
 	/**
 	 * Prompts user to upgrade certain python packages if they're below the minimum expected version.
 	 */
-	public promptForPackageUpgrade(): Promise<void> {
-		return this.upgradePythonPackages(true, false);
+	public async promptForPackageUpgrade(): Promise<void> {
+		let doUpgrade = await this._prompter.promptSingle<boolean>(<IQuestion>{
+			type: QuestionTypes.confirm,
+			message: localize('confirmPackageUpgrade', "Some installed python packages need to be upgraded. Would you like to upgrade them now?"),
+			default: true
+		});
+
+		if (doUpgrade) {
+			let taskName = localize('upgradePythonPackages', "Upgrading python packages");
+			let upgradeComplete = new Deferred<void>();
+			this.apiWrapper.startBackgroundOperation({
+				displayName: taskName,
+				description: taskName,
+				isCancelable: false,
+				operation: async op => {
+					try {
+						await this.upgradePythonPackages(false);
+
+						op.updateStatus(azdata.TaskStatus.Succeeded);
+						upgradeComplete.resolve();
+					} catch (err) {
+						let errorMsg = utils.getErrorMessage(err);
+						op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
+						upgradeComplete.reject(errorMsg);
+					}
+				}
+			});
+			await upgradeComplete.promise;
+		}
 	}
 
-	private async upgradePythonPackages(promptForUpgrade: boolean, forceInstall: boolean): Promise<void> {
+	private async upgradePythonPackages(forceInstall: boolean): Promise<void> {
 		let expectedCondaPackages: PythonPkgDetails[];
 		let expectedPipPackages: PythonPkgDetails[];
 		if (this._usingConda) {
@@ -442,48 +469,10 @@ export class JupyterServerInstallation {
 		}
 
 		if (condaPackagesToInstall.length > 0 || pipPackagesToInstall.length > 0) {
-			let doUpgrade: boolean;
-			if (promptForUpgrade) {
-				doUpgrade = await this._prompter.promptSingle<boolean>(<IQuestion>{
-					type: QuestionTypes.confirm,
-					message: localize('confirmPackageUpgrade', "Some installed python packages need to be upgraded. Would you like to upgrade them now?"),
-					default: true
-				});
-			} else {
-				doUpgrade = true;
+			if (this._usingConda) {
+				await this.installCondaPackages(condaPackagesToInstall, true);
 			}
-
-			if (doUpgrade) {
-				let packagesStr = condaPackagesToInstall.concat(pipPackagesToInstall).map(pkg => {
-					return `${pkg.name}>=${pkg.version}`;
-				}).join(' ');
-				let taskName = localize('upgradePackages.pipInstall',
-					"Installing {0}",
-					packagesStr);
-
-				let upgradeComplete = new Deferred<void>();
-				this.apiWrapper.startBackgroundOperation({
-					displayName: taskName,
-					description: taskName,
-					isCancelable: false,
-					operation: async op => {
-						try {
-							if (this._usingConda) {
-								await this.installCondaPackages(condaPackagesToInstall, true);
-							}
-							await this.installPipPackages(pipPackagesToInstall, true);
-
-							op.updateStatus(azdata.TaskStatus.Succeeded);
-							upgradeComplete.resolve();
-						} catch (err) {
-							let errorMsg = utils.getErrorMessage(err);
-							op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
-							upgradeComplete.reject(errorMsg);
-						}
-					}
-				});
-				await upgradeComplete;
-			}
+			await this.installPipPackages(pipPackagesToInstall, true);
 		}
 	}
 
