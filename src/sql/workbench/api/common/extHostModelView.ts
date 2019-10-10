@@ -699,6 +699,34 @@ class ComponentWrapper implements azdata.Component {
 	}
 }
 
+class ComponentWithIconWrapper extends ComponentWrapper {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(proxy, handle, type, id);
+	}
+
+	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
+		return this.properties['iconPath'];
+	}
+	public set iconPath(v: string | URI | { light: string | URI; dark: string | URI }) {
+		this.setProperty('iconPath', v);
+	}
+
+	public get iconHeight(): string | number {
+		return this.properties['iconHeight'];
+	}
+	public set iconHeight(v: string | number) {
+		this.setProperty('iconHeight', v);
+	}
+
+	public get iconWidth(): string | number {
+		return this.properties['iconWidth'];
+	}
+	public set iconWidth(v: string | number) {
+		this.setProperty('iconWidth', v);
+	}
+}
+
 class ContainerWrapper<T, U> extends ComponentWrapper implements azdata.Container<T, U> {
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
@@ -1158,39 +1186,11 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	}
 }
 
-class ImageComponentWrapper extends ComponentWrapper implements azdata.ImageComponentProperties {
+class ImageComponentWrapper extends ComponentWithIconWrapper implements azdata.ImageComponentProperties {
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Image, id);
 		this.properties = {};
-	}
-
-	public get src(): string {
-		return this.properties['src'];
-	}
-	public set src(v: string) {
-		this.setProperty('src', v);
-	}
-
-	public get alt(): string {
-		return this.properties['alt'];
-	}
-	public set alt(v: string) {
-		this.setProperty('alt', v);
-	}
-
-	public get height(): number | string {
-		return this.properties['height'];
-	}
-	public set height(v: number | string) {
-		this.setProperty('height', v);
-	}
-
-	public get width(): number | string {
-		return this.properties['width'];
-	}
-	public set width(v: number | string) {
-		this.setProperty('width', v);
 	}
 }
 
@@ -1397,7 +1397,7 @@ class ListBoxWrapper extends ComponentWrapper implements azdata.ListBoxComponent
 	}
 }
 
-class ButtonWrapper extends ComponentWrapper implements azdata.ButtonComponent {
+class ButtonWrapper extends ComponentWithIconWrapper implements azdata.ButtonComponent {
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Button, id);
@@ -1410,27 +1410,6 @@ class ButtonWrapper extends ComponentWrapper implements azdata.ButtonComponent {
 	}
 	public set label(v: string) {
 		this.setProperty('label', v);
-	}
-
-	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
-		return this.properties['iconPath'];
-	}
-	public set iconPath(v: string | URI | { light: string | URI; dark: string | URI }) {
-		this.setProperty('iconPath', v);
-	}
-
-	public get iconHeight(): string | number {
-		return this.properties['iconHeight'];
-	}
-	public set iconHeight(v: string | number) {
-		this.setProperty('iconHeight', v);
-	}
-
-	public get iconWidth(): string | number {
-		return this.properties['iconWidth'];
-	}
-	public set iconWidth(v: string | number) {
-		this.setProperty('iconWidth', v);
 	}
 
 	public get title(): string {

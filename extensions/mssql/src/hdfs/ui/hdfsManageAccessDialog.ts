@@ -6,13 +6,15 @@
 import * as azdata from 'azdata';
 import { HdfsModel } from '../hdfsModel';
 import { IFileSource } from '../../objectExplorerNodeProvider/fileSources';
-import { IAclStatus, AclEntry, AclEntryType } from '../../hdfs/aclEntry';
+import { PermissionStatus, AclEntry, AclType, getImageForType } from '../../hdfs/aclEntry';
 import { cssStyles } from './uiConstants';
 import * as loc from '../../localizedConstants';
 import { HdfsError } from '../webhdfs';
 import { ApiWrapper } from '../../apiWrapper';
 import { IconPathHelper } from '../../iconHelper';
+import { HdfsFileType } from '../fileStatus';
 
+const permissionsTypeIconColumnWidth = 35;
 const permissionsNameColumnWidth = 250;
 const permissionsStickyColumnWidth = 50;
 const permissionsReadColumnWidth = 50;
@@ -36,11 +38,13 @@ export class ManageAccessDialog {
 	private addUserOrGroupInput: azdata.InputBoxComponent;
 	private dialog: azdata.window.Dialog;
 
-	private addUserOrGroupSelectedType: AclEntryType;
+	private defaultSectionComponents: azdata.Component[] = [];
+
+	private addUserOrGroupSelectedType: AclType;
 
 	constructor(private hdfsPath: string, private fileSource: IFileSource, private readonly apiWrapper: ApiWrapper) {
 		this.hdfsModel = new HdfsModel(this.fileSource, this.hdfsPath);
-		this.hdfsModel.onAclStatusUpdated(aclStatus => this.handleAclStatusUpdated(aclStatus));
+		this.hdfsModel.onPermissionStatusUpdated(permissionStatus => this.handlePermissionStatusUpdated(permissionStatus));
 	}
 
 	public openDialog(): void {
@@ -123,7 +127,7 @@ export class ManageAccessDialog {
 				// = Owners permissions section =
 				// ==============================
 
-				const ownersPermissionsHeaderRow = createPermissionsHeaderRow(modelView.modelBuilder, loc.ownersHeader, true);
+				const ownersPermissionsHeaderRow = this.createPermissionsHeaderRow(modelView.modelBuilder, loc.ownersHeader, true);
 				contentContainer.addItem(ownersPermissionsHeaderRow, { CSSStyles: { ...cssStyles.tableHeaderLayoutCss } });
 
 				// Empty initially - this is going to eventually be populated with the owner/owning group permissions
@@ -155,10 +159,10 @@ export class ManageAccessDialog {
 
 				const typeContainer = modelView.modelBuilder.flexContainer().withProperties({ flexFlow: 'row' }).component();
 				const aclEntryTypeGroup = 'aclEntryType';
-				const userTypeButton = this.createRadioButton(modelView.modelBuilder, loc.userLabel, aclEntryTypeGroup, AclEntryType.user);
-				const groupTypeButton = this.createRadioButton(modelView.modelBuilder, loc.groupLabel, aclEntryTypeGroup, AclEntryType.group);
+				const userTypeButton = this.createRadioButton(modelView.modelBuilder, loc.userLabel, aclEntryTypeGroup, AclType.user);
+				const groupTypeButton = this.createRadioButton(modelView.modelBuilder, loc.groupLabel, aclEntryTypeGroup, AclType.group);
 				userTypeButton.checked = true;
-				this.addUserOrGroupSelectedType = AclEntryType.user;
+				this.addUserOrGroupSelectedType = AclType.user;
 
 				typeContainer.addItems([userTypeButton, groupTypeButton], { flex: '0 0 auto' });
 				contentContainer.addItem(typeContainer, { flex: '0 0 auto' });
@@ -199,7 +203,7 @@ export class ManageAccessDialog {
 				// = Named Users and Groups permissions header row =
 				// =================================================
 
-				const namedUsersAndGroupsPermissionsHeaderRow = createPermissionsHeaderRow(modelView.modelBuilder, loc.namedUsersAndGroupsHeader, false);
+				const namedUsersAndGroupsPermissionsHeaderRow = this.createPermissionsHeaderRow(modelView.modelBuilder, loc.namedUsersAndGroupsHeader, false);
 				contentContainer.addItem(namedUsersAndGroupsPermissionsHeaderRow, { CSSStyles: { ...cssStyles.tableHeaderLayoutCss } });
 
 				// Empty initially - this is eventually going to be populated with the ACL entries set for this path
@@ -209,7 +213,7 @@ export class ManageAccessDialog {
 				contentContainer.addItem(this.namedUsersAndGroupsPermissionsContainer, { flex: '1', CSSStyles: { 'overflow': 'scroll', 'min-height': '200px' } });
 
 				this.viewInitialized = true;
-				this.handleAclStatusUpdated(this.hdfsModel.aclStatus);
+				this.handlePermissionStatusUpdated(this.hdfsModel.permissionStatus);
 				await modelView.initializeModel(this.rootLoadingComponent);
 			});
 			this.dialog.content = [tab];
@@ -218,25 +222,28 @@ export class ManageAccessDialog {
 		azdata.window.openDialog(this.dialog);
 	}
 
-	private handleAclStatusUpdated(aclStatus: IAclStatus): void {
-		if (!aclStatus || !this.viewInitialized) {
+	private handlePermissionStatusUpdated(permissionStatus: PermissionStatus): void {
+		if (!permissionStatus || !this.viewInitialized) {
 			return;
 		}
 
+		// Update display status for headers for the Default section - you can't set Default ACLs for non-directories so we just hide that column
+		this.defaultSectionComponents.forEach(component => component.display = this.hdfsModel.fileStatus.type === HdfsFileType.Directory ? '' : 'none');
+
 		// Owners
-		const ownerPermissionsRow = this.createOwnerPermissionsRow(this.modelBuilder, aclStatus.stickyBit, aclStatus.owner);
-		const owningGroupPermissionsRow = this.createPermissionsRow(this.modelBuilder, aclStatus.group, false);
+		const ownerPermissionsRow = this.createOwnerPermissionsRow(this.modelBuilder, permissionStatus);
+		const owningGroupPermissionsRow = this.createPermissionsRow(this.modelBuilder, permissionStatus.group, /*includeDelete*/false);
 		this.ownersPermissionsContainer.clearItems();
 		this.ownersPermissionsContainer.addItems([ownerPermissionsRow, owningGroupPermissionsRow], { CSSStyles: { 'border-bottom': cssStyles.tableBorderCss, 'border-top': cssStyles.tableBorderCss, 'margin-right': '14px' } });
 
 		// Others
-		const otherPermissionsRow = this.createPermissionsRow(this.modelBuilder, aclStatus.other, false);
+		const otherPermissionsRow = this.createPermissionsRow(this.modelBuilder, permissionStatus.other, false);
 		this.othersPermissionsContainer.clearItems();
 		this.othersPermissionsContainer.addItem(otherPermissionsRow, { CSSStyles: { 'border-bottom': cssStyles.tableBorderCss, 'border-top': cssStyles.tableBorderCss, 'margin-right': '14px' } });
 
 		this.namedUsersAndGroupsPermissionsContainer.clearItems();
 		// Named users and groups
-		aclStatus.entries.forEach(entry => {
+		permissionStatus.aclEntries.forEach(entry => {
 			const namedEntryRow = this.createPermissionsRow(this.modelBuilder, entry, true);
 			this.namedUsersAndGroupsPermissionsContainer.addItem(namedEntryRow, { CSSStyles: { 'border-bottom': cssStyles.tableBorderCss, 'border-top': cssStyles.tableBorderCss } });
 		});
@@ -244,7 +251,7 @@ export class ManageAccessDialog {
 		this.rootLoadingComponent.loading = false;
 	}
 
-	private createRadioButton(modelBuilder: azdata.ModelBuilder, label: string, name: string, aclEntryType: AclEntryType): azdata.RadioButtonComponent {
+	private createRadioButton(modelBuilder: azdata.ModelBuilder, label: string, name: string, aclEntryType: AclType): azdata.RadioButtonComponent {
 		const button = modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({ label: label, name: name }).component();
 		button.onDidClick(() => {
 			this.addUserOrGroupSelectedType = aclEntryType;
@@ -252,16 +259,33 @@ export class ManageAccessDialog {
 		return button;
 	}
 
-	private createOwnerPermissionsRow(builder: azdata.ModelBuilder, sticky: boolean, entry: AclEntry): azdata.FlexContainer {
-		const row = this.createPermissionsRow(builder, entry, false);
-		const stickyComponents = createCheckbox(builder, sticky, permissionsReadColumnWidth, permissionsRowHeight);
+	private createOwnerPermissionsRow(builder: azdata.ModelBuilder, permissionStatus: PermissionStatus): azdata.FlexContainer {
+		const row = this.createPermissionsRow(builder, permissionStatus.owner, false);
+		const stickyComponents = createCheckbox(builder, permissionStatus.stickyBit, permissionsReadColumnWidth, permissionsRowHeight);
+		stickyComponents.checkbox.onChanged(() => {
+			permissionStatus.stickyBit = stickyComponents.checkbox.checked;
+		});
 		// Insert after name item but before other checkboxes
-		row.insertItem(stickyComponents.container, 1, { flex: '0 0 auto' });
+		row.insertItem(stickyComponents.container, 2, { flex: '0 0 auto' });
 		return row;
 	}
 
 	private createPermissionsRow(builder: azdata.ModelBuilder, entry: AclEntry, includeDelete: boolean): azdata.FlexContainer {
 		const rowContainer = builder.flexContainer().withLayout({ flexFlow: 'row', height: permissionsRowHeight }).component();
+
+		// Icon
+		const iconCell = builder.image()
+			.withProperties<azdata.ImageComponentProperties>({
+				iconPath: getImageForType(entry.type),
+				width: permissionsTypeIconColumnWidth,
+				height: permissionsRowHeight,
+				iconWidth: 20,
+				iconHeight: 20
+			})
+			.component();
+		rowContainer.addItem(iconCell, { flex: '0 0 auto' });
+
+		// Name
 		const nameCell = builder.text().withProperties({ value: entry.displayName }).component();
 		rowContainer.addItem(nameCell);
 
@@ -281,31 +305,35 @@ export class ManageAccessDialog {
 
 		// Access - Execute
 		const accessExecuteComponents = createCheckbox(builder, entry.permission.execute, permissionsExecuteColumnWidth, permissionsRowHeight);
-		rowContainer.addItem(accessExecuteComponents.container, { flex: '0 0 auto', CSSStyles: { 'border-right': cssStyles.tableBorderCss } });
+		rowContainer.addItem(accessExecuteComponents.container, { flex: '0 0 auto', CSSStyles: { 'border-right': this.hdfsModel.fileStatus.type === HdfsFileType.Directory ? cssStyles.tableBorderCss : '' } });
 		accessExecuteComponents.checkbox.onChanged(() => {
 			entry.permission.execute = accessExecuteComponents.checkbox.checked;
 		});
 
-		// Default - Read
-		const defaultReadComponents = createCheckbox(builder, false, permissionsReadColumnWidth, permissionsRowHeight);
-		rowContainer.addItem(defaultReadComponents.container, { flex: '0 0 auto' });
-		defaultReadComponents.checkbox.onChanged(() => {
-			// entry.permission.read = defaultReadComponents.checkbox.checked; TODO hook up default logic
-		});
+		// Only directories can set ACL defaults so we hide the column for non-directories
+		if (this.hdfsModel.fileStatus.type === HdfsFileType.Directory) {
+			// Default - Read
+			const defaultReadComponents = createCheckbox(builder, false, permissionsReadColumnWidth, permissionsRowHeight);
+			rowContainer.addItem(defaultReadComponents.container, { flex: '0 0 auto' });
+			defaultReadComponents.checkbox.onChanged(() => {
+				// entry.permission.read = defaultReadComponents.checkbox.checked; TODO hook up default logic
+			});
 
-		// Default - Write
-		const defaultWriteComponents = createCheckbox(builder, false, permissionsWriteColumnWidth, permissionsRowHeight);
-		rowContainer.addItem(defaultWriteComponents.container, { flex: '0 0 auto' });
-		accessReadComponents.checkbox.onChanged(() => {
-			// entry.permission.write = accessReadComponents.checkbox.checked; TODO hook up default logic
-		});
+			// Default - Write
+			const defaultWriteComponents = createCheckbox(builder, false, permissionsWriteColumnWidth, permissionsRowHeight);
+			rowContainer.addItem(defaultWriteComponents.container, { flex: '0 0 auto' });
+			accessReadComponents.checkbox.onChanged(() => {
+				// entry.permission.write = accessReadComponents.checkbox.checked; TODO hook up default logic
+			});
 
-		// Default - Execute
-		const defaultExecuteComponents = createCheckbox(builder, false, permissionsExecuteColumnWidth, permissionsRowHeight);
-		rowContainer.addItem(defaultExecuteComponents.container, { flex: '0 0 auto' });
-		accessReadComponents.checkbox.onChanged(() => {
-			// entry.permission.execute = accessReadComponents.checkbox.checked; TODO hook up default logic
-		});
+			// Default - Execute
+			const defaultExecuteComponents = createCheckbox(builder, false, permissionsExecuteColumnWidth, permissionsRowHeight);
+			rowContainer.addItem(defaultExecuteComponents.container, { flex: '0 0 auto' });
+			accessReadComponents.checkbox.onChanged(() => {
+				// entry.permission.execute = accessReadComponents.checkbox.checked; TODO hook up default logic
+			});
+		}
+
 
 		const deleteContainer = builder.flexContainer().withLayout({ width: permissionsDeleteColumnWidth, height: permissionsRowHeight }).component();
 
@@ -327,60 +355,90 @@ export class ManageAccessDialog {
 
 		return rowContainer;
 	}
-}
 
-/**
- * Creates the header row for the permissions tables. This contains headers for the name, optional sticky and then read/write/execute for both
- * access and default sections.
- * @param modelBuilder The builder used to create the model components
- * @param nameColumnText The text to display for the name column
- * @param includeSticky Whether to include the sticky header
- */
-function createPermissionsHeaderRow(modelBuilder: azdata.ModelBuilder, nameColumnText: string, includeSticky: boolean): azdata.FlexContainer {
-	const rowsContainer = modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
+	/**
+	 * Creates the header row for the permissions tables. This contains headers for the name, optional sticky and then read/write/execute for both
+	 * access and default sections.
+	 * @param modelBuilder The builder used to create the model components
+	 * @param nameColumnText The text to display for the name column
+	 * @param includeSticky Whether to include the sticky header
+	 */
+	private createPermissionsHeaderRow(modelBuilder: azdata.ModelBuilder, nameColumnText: string, includeSticky: boolean): azdata.FlexContainer {
+		const rowsContainer = modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 
-	// Section Headers
-	const sectionHeaderContainer = modelBuilder.flexContainer().withLayout({ flexFlow: 'row', justifyContent: 'flex-end' }).component();
-	const accessSectionHeader = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.accessHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
-	sectionHeaderContainer.addItem(accessSectionHeader, { CSSStyles: { 'width': `${permissionsReadColumnWidth + permissionsWriteColumnWidth + permissionsExecuteColumnWidth}px`, 'min-width': `${permissionsReadColumnWidth + permissionsWriteColumnWidth + permissionsExecuteColumnWidth}px` } });
-	const defaultSectionHeader = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.defaultHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
-	sectionHeaderContainer.addItem(defaultSectionHeader, { CSSStyles: { 'width': `${permissionsReadColumnWidth + permissionsWriteColumnWidth + permissionsExecuteColumnWidth}px`, 'min-width': `${permissionsReadColumnWidth + permissionsWriteColumnWidth + permissionsExecuteColumnWidth}px` } });
-	// Delete - just used as a spacer
-	const deleteSectionHeader = modelBuilder.text().component();
-	sectionHeaderContainer.addItem(deleteSectionHeader, { CSSStyles: { 'width': `${permissionsDeleteColumnWidth}px`, 'min-width': `${permissionsDeleteColumnWidth}px` } });
+		// Section Headers
+		const sectionHeaderContainer = modelBuilder.flexContainer().withLayout({ flexFlow: 'row', justifyContent: 'flex-end' }).component();
+		const accessSectionHeader = modelBuilder.text()
+			.withProperties<azdata.TextComponentProperties>({
+				value: loc.accessHeader,
+				CSSStyles: {
+					'width': `${permissionsReadColumnWidth + permissionsWriteColumnWidth + permissionsExecuteColumnWidth}px`,
+					'min-width': `${permissionsReadColumnWidth + permissionsWriteColumnWidth + permissionsExecuteColumnWidth}px`,
+					...cssStyles.permissionsTableHeaderCss
+				}
+			})
+			.component();
 
-	rowsContainer.addItem(sectionHeaderContainer);
+		sectionHeaderContainer.addItem(accessSectionHeader, { flex: '0 0 auto' });
+		const defaultSectionHeader = modelBuilder.text()
+			.withProperties<azdata.TextComponentProperties>({
+				value: loc.defaultHeader,
+				CSSStyles: {
+					'width': `${permissionsReadColumnWidth + permissionsWriteColumnWidth + permissionsExecuteColumnWidth}px`,
+					'min-width': `${permissionsReadColumnWidth + permissionsWriteColumnWidth + permissionsExecuteColumnWidth}px`,
+					...cssStyles.permissionsTableHeaderCss
+				}
+			})
+			.component();
+		sectionHeaderContainer.addItem(defaultSectionHeader, { flex: '0 0 auto' });
+		this.defaultSectionComponents.push(defaultSectionHeader);
+		// Delete - just used as a spacer
+		const deleteSectionHeader = modelBuilder.text().component();
+		sectionHeaderContainer.addItem(deleteSectionHeader, { CSSStyles: { 'width': `${permissionsDeleteColumnWidth}px`, 'min-width': `${permissionsDeleteColumnWidth}px` } });
 
-	// Table headers
-	const headerRowContainer = modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
-	const ownersCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: nameColumnText }).component();
-	headerRowContainer.addItem(ownersCell, { flex: '1 1 auto', CSSStyles: { 'width': `${permissionsNameColumnWidth}px`, 'min-width': `${permissionsNameColumnWidth}px`, ...cssStyles.tableHeaderCss } });
-	if (includeSticky) {
-		const stickyCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.stickyHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
-		headerRowContainer.addItem(stickyCell, { CSSStyles: { 'width': `${permissionsStickyColumnWidth}px`, 'min-width': `${permissionsStickyColumnWidth}px` } });
+		rowsContainer.addItem(sectionHeaderContainer);
+
+		// Table headers
+		const headerRowContainer = modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
+
+		// Icon (spacer, no text)
+		const typeIconCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ CSSStyles: { 'width': `${permissionsTypeIconColumnWidth}px`, 'min-width': `${permissionsTypeIconColumnWidth}px` } }).component();
+		headerRowContainer.addItem(typeIconCell, { flex: '0 0 auto' });
+
+		// Name
+		const nameCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: nameColumnText }).component();
+		headerRowContainer.addItem(nameCell, { flex: '1 1 auto', CSSStyles: { 'width': `${permissionsNameColumnWidth}px`, 'min-width': `${permissionsNameColumnWidth}px`, ...cssStyles.tableHeaderCss } });
+		if (includeSticky) {
+			const stickyCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.stickyHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
+			headerRowContainer.addItem(stickyCell, { CSSStyles: { 'width': `${permissionsStickyColumnWidth}px`, 'min-width': `${permissionsStickyColumnWidth}px` } });
+		}
+
+		// Access Permissions Group
+		const accessReadCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.readHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
+		headerRowContainer.addItem(accessReadCell, { CSSStyles: { 'width': `${permissionsReadColumnWidth}px`, 'min-width': `${permissionsReadColumnWidth}px` } });
+		const accessWriteCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.writeHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
+		headerRowContainer.addItem(accessWriteCell, { CSSStyles: { 'width': `${permissionsWriteColumnWidth}px`, 'min-width': `${permissionsWriteColumnWidth}px` } });
+		const accessExecuteCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.executeHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
+		headerRowContainer.addItem(accessExecuteCell, { CSSStyles: { 'width': `${permissionsExecuteColumnWidth}px`, 'min-width': `${permissionsExecuteColumnWidth}px`, 'margin-right': '5px' } });
+		// Default Permissions Group
+		const defaultPermissionsHeadersContainer = modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
+		const defaultReadCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.readHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
+		defaultPermissionsHeadersContainer.addItem(defaultReadCell, { CSSStyles: { 'width': `${permissionsReadColumnWidth}px`, 'min-width': `${permissionsReadColumnWidth}px` } });
+		const defaultWriteCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.writeHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
+		defaultPermissionsHeadersContainer.addItem(defaultWriteCell, { CSSStyles: { 'width': `${permissionsWriteColumnWidth}px`, 'min-width': `${permissionsWriteColumnWidth}px` } });
+		const defaultExecuteCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.executeHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
+		defaultPermissionsHeadersContainer.addItem(defaultExecuteCell, { CSSStyles: { 'width': `${permissionsExecuteColumnWidth}px`, 'min-width': `${permissionsExecuteColumnWidth}px` } });
+		headerRowContainer.addItem(defaultPermissionsHeadersContainer, { flex: '0 0 auto' });
+		this.defaultSectionComponents.push(defaultPermissionsHeadersContainer);
+
+		// Delete
+		const deleteCell = modelBuilder.text().component();
+		headerRowContainer.addItem(deleteCell, { CSSStyles: { 'width': `${permissionsDeleteColumnWidth}px`, 'min-width': `${permissionsDeleteColumnWidth}px` } });
+
+		rowsContainer.addItem(headerRowContainer);
+
+		return rowsContainer;
 	}
-
-	// Access Permissions Group
-	const accessReadCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.readHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
-	headerRowContainer.addItem(accessReadCell, { CSSStyles: { 'width': `${permissionsReadColumnWidth}px`, 'min-width': `${permissionsReadColumnWidth}px` } });
-	const accessWriteCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.writeHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
-	headerRowContainer.addItem(accessWriteCell, { CSSStyles: { 'width': `${permissionsWriteColumnWidth}px`, 'min-width': `${permissionsWriteColumnWidth}px` } });
-	const accessExecuteCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.executeHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
-	headerRowContainer.addItem(accessExecuteCell, { CSSStyles: { 'width': `${permissionsExecuteColumnWidth}px`, 'min-width': `${permissionsExecuteColumnWidth}px`, 'margin-right': '5px' } });
-	// Default Permissions Group
-	const defaultReadCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.readHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
-	headerRowContainer.addItem(defaultReadCell, { CSSStyles: { 'width': `${permissionsReadColumnWidth}px`, 'min-width': `${permissionsReadColumnWidth}px` } });
-	const defaultWriteCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.writeHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
-	headerRowContainer.addItem(defaultWriteCell, { CSSStyles: { 'width': `${permissionsWriteColumnWidth}px`, 'min-width': `${permissionsWriteColumnWidth}px` } });
-	const defaultExecuteCell = modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.executeHeader, CSSStyles: { ...cssStyles.permissionsTableHeaderCss } }).component();
-	headerRowContainer.addItem(defaultExecuteCell, { CSSStyles: { 'width': `${permissionsExecuteColumnWidth}px`, 'min-width': `${permissionsExecuteColumnWidth}px` } });
-	// Delete
-	const deleteCell = modelBuilder.text().component();
-	headerRowContainer.addItem(deleteCell, { CSSStyles: { 'width': `${permissionsDeleteColumnWidth}px`, 'min-width': `${permissionsDeleteColumnWidth}px` } });
-
-	rowsContainer.addItem(headerRowContainer);
-
-	return rowsContainer;
 }
 
 function createCheckbox(builder: azdata.ModelBuilder, checked: boolean, containerWidth: number, containerHeight: number): { container: azdata.FlexContainer, checkbox: azdata.CheckBoxComponent } {
@@ -388,7 +446,6 @@ function createCheckbox(builder: azdata.ModelBuilder, checked: boolean, containe
 		.withProperties<azdata.CheckBoxProperties>({ checked: checked, height: 20, width: 20 }).component();
 	const container = builder.flexContainer()
 		.withLayout({ width: containerWidth, height: containerHeight })
-		//.withItems([checkbox], { CSSStyles: { ...cssStyles.permissionCheckboxCss }})
 		.component();
 	container.addItem(checkbox, { CSSStyles: { ...cssStyles.permissionCheckboxCss } });
 	return {
