@@ -16,6 +16,21 @@ import { renderFormattedText, renderText, FormattedTextRenderOptions } from 'vs/
 
 const $ = dom.$;
 
+//Map used to store names and alternative names for chart types.
+//This is mainly used for comparison when options are parsed into the constructor.
+const altNameHash : {[oldName: string]: string} = {
+	['horizontalBar']: 'Horziontal Bar',
+	['bar']: 'Bar',
+	['line']: 'Line',
+	['pie']: 'Pie',
+	['scatter']: 'Scatter',
+	['timeSeries']: 'Time Series',
+	['image']: 'Image',
+	['count']: 'Count',
+	['table']: 'Table',
+	['doughnut']: 'Doughnut'
+};
+
 export interface ISelectBoxStyles extends vsISelectBoxStyles {
 	disabledSelectBackground?: Color;
 	disabledSelectForeground?: Color;
@@ -59,8 +74,7 @@ export class SelectBox extends vsSelectBox {
 
 
 	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
-			/*Option must be mapped to something else besides text in order to provide user friendly names, need a data structure with original names
-			mapped to alt names, originally {text :option };*/
+		//originally {text :option };
 		super(options.map(option => {return {text : SelectBox.parseName(option)}; }), 0, contextViewProvider, undefined, selectBoxOptions);
 
 		this._optionsDictionary = new Map<string, number>();
@@ -95,38 +109,14 @@ export class SelectBox extends vsSelectBox {
 		this._register(focusTracker.onDidFocus(() => this._showMessage()));
 	}
 
+	//static method that is used to replace original names of options into user-friendly ones for display.
 	private static parseName(oldName: string): string {
-		if(oldName.localeCompare('horizontalBar') === 0){
-			return 'Horizontal Bar';
+		if(altNameHash[oldName] !== undefined) {
+			return altNameHash[oldName];
 		}
-		if(oldName.localeCompare('bar') === 0){
-			return 'Bar';
+		else {
+			return oldName;
 		}
-		if(oldName.localeCompare('line') === 0){
-			return 'Line';
-		}
-		if(oldName.localeCompare('pie') === 0){
-			return 'Pie';
-		}
-		if(oldName.localeCompare('scatter') === 0){
-			return 'Scatter';
-		}
-		if(oldName.localeCompare('timeSeries') === 0){
-			return 'Time Series';
-		}
-		if(oldName.localeCompare('image') === 0){
-			return 'Image';
-		}
-		if(oldName.localeCompare('count') === 0){
-			return 'Count';
-		}
-		if(oldName.localeCompare('table') === 0){
-			return 'Table';
-		}
-		if(oldName.localeCompare('doughnut') === 0){
-			return 'Doughnut';
-		}
-		return oldName;
 	}
 
 	public style(styles: ISelectBoxStyles): void {
