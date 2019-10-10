@@ -4442,8 +4442,9 @@ declare module 'azdata' {
 			 *
 			 * @param index The position where the new text should be inserted.
 			 * @param value The new text this operation should insert.
+			 * @param collapsed The collapsible state of the new cell.
 			 */
-			insertCell(value: ICellContents, index?: number): void;
+			insertCell(value: ICellContents, index?: number, collapsed?: boolean): void;
 
 			/**
 			 * Delete a certain cell.
