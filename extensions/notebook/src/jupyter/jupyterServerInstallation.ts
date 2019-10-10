@@ -461,28 +461,36 @@ export class JupyterServerInstallation {
 					"Installing {0}",
 					packagesStr);
 
-				let upgradeComplete = new Deferred<void>();
-				this.apiWrapper.startBackgroundOperation({
-					displayName: taskName,
-					description: taskName,
-					isCancelable: false,
-					operation: async op => {
-						try {
-							if (this._usingConda) {
-								await this.installCondaPackages(condaPackagesToInstall, true);
-							}
-							await this.installPipPackages(pipPackagesToInstall, true);
-
-							op.updateStatus(azdata.TaskStatus.Succeeded);
-							upgradeComplete.resolve();
-						} catch (err) {
-							let errorMsg = utils.getErrorMessage(err);
-							op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
-							upgradeComplete.reject(errorMsg);
-						}
+				let installPromise = new Promise(async resolve => {
+					if (this._usingConda) {
+						await this.installCondaPackages(condaPackagesToInstall, true);
 					}
+					await this.installPipPackages(pipPackagesToInstall, true);
+					resolve();
 				});
-				await upgradeComplete;
+
+				if (promptForUpgrade) {
+					let backgroundTaskComplete = new Deferred<void>();
+					this.apiWrapper.startBackgroundOperation({
+						displayName: taskName,
+						description: taskName,
+						isCancelable: false,
+						operation: async op => {
+							try {
+								await installPromise;
+								op.updateStatus(azdata.TaskStatus.Succeeded);
+								backgroundTaskComplete.resolve();
+							} catch (err) {
+								let errorMsg = utils.getErrorMessage(err);
+								op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
+								backgroundTaskComplete.reject(errorMsg);
+							}
+						}
+					});
+					await backgroundTaskComplete.promise;
+				} else {
+					await installPromise;
+				}
 			}
 		}
 	}
