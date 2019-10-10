@@ -25,12 +25,28 @@ import { CreateInsightAction, CopyAction, SaveImageAction, IChartActionContext }
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { ChartState, IInsightOptions, ChartType } from 'sql/workbench/parts/charts/common/interfaces';
+import { parseNumAsTimeString } from 'sql/platform/connection/common/utils';
 
 declare class Proxy {
 	constructor(object, handler);
 }
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
+
+//Map used to store names and alternative names for chart types.
+//This is mainly used for comparison when options are parsed into the constructor.
+const altNameHash : {[oldName : string] : string} = {
+	'horizontalBar' : 'Horziontal Bar',
+	'bar' : 'Bar',
+	'line': 'Line',
+	'pie': 'Pie',
+	'scatter': 'Scatter',
+	'timeSeries': 'Time Series',
+	'image': 'Image',
+	'count': 'Count',
+	'table': 'Table',
+	'doughnut': 'Doughnut'
+};
 
 export class ChartView extends Disposable implements IPanelView {
 	private insight: Insight;
@@ -65,6 +81,9 @@ export class ChartView extends Disposable implements IPanelView {
 
 	private optionDisposables: IDisposable[] = [];
 	private optionMap: { [x: string]: { element: HTMLElement; set: (val) => void } } = {};
+
+
+
 
 	constructor(
 		@IContextViewService private _contextViewService: IContextViewService,
@@ -126,6 +145,16 @@ export class ChartView extends Disposable implements IPanelView {
 	public clear() {
 
 	}
+
+
+	// method that is used to generate array of user-friendly ones for display.
+	private changeToAltNames(option:string[]): string[] {
+		let newArray:string[] = option.slice();
+		newArray.forEach(function(value, index){if (altNameHash[value] !== undefined){newArray[index] =altNameHash[value];}});
+		return newArray;
+	}
+
+
 
 	public dispose() {
 		dispose(this.optionDisposables);
@@ -277,8 +306,8 @@ export class ChartView extends Disposable implements IPanelView {
 				};
 				break;
 			case ControlType.combo:
-
-				let dropdown = new SelectBox(option.displayableOptions || option.options, undefined, this._contextViewService);
+				//pass options into changeAltNames in order for SelectBox to show user-friendly names.
+				let dropdown = new SelectBox(option.displayableOptions || this.changeToAltNames(option.options), undefined, this._contextViewService);
 				dropdown.select(option.options.indexOf(value));
 				dropdown.render(optionContainer);
 				dropdown.onDidSelect(e => {
