@@ -34,9 +34,9 @@ const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribu
 
 //Map used to store names and alternative names for chart types.
 //This is mainly used for comparison when options are parsed into the constructor.
-const altNameHash : {[oldName : string] : string} = {
-	'horizontalBar' : 'Horziontal Bar',
-	'bar' : 'Bar',
+const altNameHash: { [oldName: string]: string } = {
+	'horizontalBar': 'Horziontal Bar',
+	'bar': 'Bar',
 	'line': 'Line',
 	'pie': 'Pie',
 	'scatter': 'Scatter',
@@ -131,6 +131,7 @@ export class ChartView extends Disposable implements IPanelView {
 			}
 		}) as IInsightOptions;
 
+
 		ChartOptions.general[0].options = insightRegistry.getAllIds();
 		ChartOptions.general.map(o => {
 			this.createOption(o, generalControls);
@@ -143,9 +144,9 @@ export class ChartView extends Disposable implements IPanelView {
 	}
 
 	// method that is used to generate array of user-friendly ones for display.
-	private changeToAltNames(option:string[]): string[] {
-		let newArray:string[] = option.slice();
-		newArray.forEach(function(value, index){if (altNameHash[value] !== undefined){newArray[index] =altNameHash[value];}});
+	private changeToAltNames(option: string[]): string[] {
+		let newArray: string[] = option.slice();
+		newArray.forEach(function (value, index) { if (altNameHash[value] !== undefined) { newArray[index] = altNameHash[value]; } });
 		return newArray;
 	}
 
