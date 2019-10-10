@@ -36,16 +36,16 @@ const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribu
 //Map used to store names and alternative names for chart types.
 //This is mainly used for comparison when options are parsed into the constructor.
 const altNameHash: { [oldName: string]: string } = {
-	'horizontalBar': nls.localize('horizontalBarAltName', 'Horizontal Bar'),
-	'bar': nls.localize('barAltName', 'Bar'),
-	'line': nls.localize('lineAltName', 'Line'),
+	'horizontalBar': nls.localize('horizontalBarAltName', "Horizontal Bar"),
+	'bar': nls.localize('barAltName', "Bar"),
+	'line': nls.localize('lineAltName', "Line"),
 	'pie': nls.localize('pieAltName', "Pie"),
-	'scatter': nls.localize('scatterAltName', 'Scatter'),
-	'timeSeries': nls.localize('timeSeriesAltName', 'Time Series'),
-	'image': nls.localize('imageAltName', 'Image'),
-	'count': nls.localize('countAltName', 'Count'),
-	'table': nls.localize('tableAltName', 'Table'),
-	'doughnut': nls.localize('doughnutAltName', 'Doughnut')
+	'scatter': nls.localize('scatterAltName', "Scatter"),
+	'timeSeries': nls.localize('timeSeriesAltName', "Time Series"),
+	'image': nls.localize('imageAltName', "Image"),
+	'count': nls.localize('countAltName', "Count"),
+	'table': nls.localize('tableAltName', "Table"),
+	'doughnut': nls.localize('doughnutAltName', "Doughnut")
 };
 
 export class ChartView extends Disposable implements IPanelView {
