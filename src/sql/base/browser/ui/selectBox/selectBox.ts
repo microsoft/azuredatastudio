@@ -18,7 +18,7 @@ const $ = dom.$;
 
 //Map used to store names and alternative names for chart types.
 //This is mainly used for comparison when options are parsed into the constructor.
-const altNameHash : {[oldName: string]: string} = {
+const altNameHash: { [oldName: string]: string } = {
 	['horizontalBar']: 'Horziontal Bar',
 	['bar']: 'Bar',
 	['line']: 'Line',
@@ -75,7 +75,7 @@ export class SelectBox extends vsSelectBox {
 
 	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
 		//originally {text :option };
-		super(options.map(option => {return {text : SelectBox.parseName(option)}; }), 0, contextViewProvider, undefined, selectBoxOptions);
+		super(options.map(option => { return { text: SelectBox.parseName(option) }; }), 0, contextViewProvider, undefined, selectBoxOptions);
 
 		this._optionsDictionary = new Map<string, number>();
 		for (let i = 0; i < options.length; i++) {
@@ -111,7 +111,7 @@ export class SelectBox extends vsSelectBox {
 
 	//static method that is used to replace original names of options into user-friendly ones for display.
 	private static parseName(oldName: string): string {
-		if(altNameHash[oldName] !== undefined) {
+		if (altNameHash[oldName] !== undefined) {
 			return altNameHash[oldName];
 		}
 		else {
