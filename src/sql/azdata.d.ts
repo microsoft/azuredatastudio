@@ -3109,11 +3109,8 @@ declare module 'azdata' {
 		requiredIndicator?: boolean;
 	}
 
-	export interface ImageComponentProperties {
-		src: string;
-		alt?: string;
-		height?: number | string;
-		width?: number | string;
+	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIcon {
+
 	}
 
 	export interface GroupContainerProperties {
@@ -4454,8 +4451,9 @@ declare module 'azdata' {
 			 *
 			 * @param index The position where the new text should be inserted.
 			 * @param value The new text this operation should insert.
+			 * @param collapsed The collapsed state of the new cell. Default value is `false` if not provided.
 			 */
-			insertCell(value: ICellContents, index?: number): void;
+			insertCell(value: ICellContents, index?: number, collapsed?: boolean): void;
 
 			/**
 			 * Delete a certain cell.

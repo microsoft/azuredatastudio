@@ -11,9 +11,10 @@ import * as through from 'through2';
 import * as nls from 'vscode-nls';
 import * as auth from '../util/auth';
 import { IHdfsOptions, IRequestParams } from '../objectExplorerNodeProvider/fileSources';
-import { IAclStatus, AclEntry, parseAcl, AclPermissionType, parseAclPermissionFromOctal, AclEntryScope } from './aclEntry';
+import { PermissionStatus, AclEntry, parseAcl, PermissionType, parseAclPermissionFromOctal, AclEntryScope } from './aclEntry';
 import { Mount } from './mount';
 import { everyoneName } from '../localizedConstants';
+import { FileStatus, parseHdfsFileType } from './fileStatus';
 
 const localize = nls.loadMessageBundle();
 const ErrorMessageInvalidDataStructure = localize('webhdfs.invalidDataStructure', "Invalid Data Structure");
@@ -75,7 +76,7 @@ export class WebHDFS {
 		endpoint.pathname = this._opts.path + path;
 		let searchOpts = Object.assign(
 			{ 'op': operation },
-			this._opts.user ? { 'user.name': this._opts.user } : {},
+			// this._opts.user ? { 'user.name': this._opts.user } : {},
 			params || {}
 		);
 		endpoint.search = querystring.stringify(searchOpts);
@@ -420,13 +421,42 @@ export class WebHDFS {
 		});
 	}
 
+	public getFileStatus(path: string, callback: (error: HdfsError, fileStatus: FileStatus) => void): void {
+		this.checkArgDefined('path', path);
+
+		let endpoint = this.getOperationEndpoint('getfilestatus', path);
+		this.sendRequest('GET', endpoint, undefined, (error, response) => {
+			if (!callback) { return; }
+			if (error) {
+				callback(error, undefined);
+			} else if (response.body.hasOwnProperty('FileStatus')) {
+				const fileStatus = new FileStatus(
+					response.body.FileStatus.accessTime || '',
+					response.body.FileStatus.blockSize || '',
+					response.body.FileStatus.group || '',
+					response.body.FileStatus.length || '',
+					response.body.FileStatus.modificationTime || '',
+					response.body.FileStatus.owner || '',
+					response.body.FileStatus.pathSuffix || '',
+					response.body.FileStatus.permission || '',
+					response.body.FileStatus.replication || '',
+					response.body.FileStatus.snapshotEnabled || '',
+					parseHdfsFileType(response.body.FileStatus.type || 'undefined')
+				);
+				callback(undefined, fileStatus);
+			} else {
+				callback(new HdfsError(ErrorMessageInvalidDataStructure), undefined);
+			}
+		});
+	}
+
 	/**
 	 * Get ACL status for given path
 	 * @param path The path to the file/folder to get the status of
 	 * @param callback Callback to handle the response
 	 * @returns void
 	 */
-	public getAclStatus(path: string, callback: (error: HdfsError, aclStatus: IAclStatus) => void): void {
+	public getAclStatus(path: string, callback: (error: HdfsError, permissionStatus: PermissionStatus) => void): void {
 		this.checkArgDefined('path', path);
 
 		let endpoint = this.getOperationEndpoint('getaclstatus', path);
@@ -436,14 +466,17 @@ export class WebHDFS {
 				callback(error, undefined);
 			} else if (response.body.hasOwnProperty('AclStatus')) {
 				const permissions = parseAclPermissionFromOctal(response.body.AclStatus.permission);
-				const aclStatus: IAclStatus = {
-					owner: new AclEntry(AclEntryScope.access, AclPermissionType.owner, '', response.body.AclStatus.owner || '', permissions.owner),
-					group: new AclEntry(AclEntryScope.access, AclPermissionType.group, '', response.body.AclStatus.group || '', permissions.group),
-					other: new AclEntry(AclEntryScope.access, AclPermissionType.other, '', everyoneName, permissions.other),
-					stickyBit: !!response.body.AclStatus.stickyBit,
-					entries: (<any[]>response.body.AclStatus.entries).map(entry => parseAcl(entry)).reduce((acc, parsedEntries) => acc.concat(parsedEntries), [])
-				};
-				callback(undefined, aclStatus);
+				const permissionStatus = new PermissionStatus(
+					new AclEntry(AclEntryScope.access, PermissionType.owner, '', response.body.AclStatus.owner || '', permissions.owner),
+					new AclEntry(AclEntryScope.access, PermissionType.group, '', response.body.AclStatus.group || '', permissions.group),
+					new AclEntry(AclEntryScope.access, PermissionType.other, '', everyoneName, permissions.other),
+					!!response.body.AclStatus.stickyBit,
+					// We filter out empty names here since those are already added by the permission bits - WebHDFS creates an extra ACL
+					// entry for the owning group whenever another ACL is added.
+					(<any[]>response.body.AclStatus.entries).map(entry => parseAcl(entry))
+						.reduce((acc, parsedEntries) => acc.concat(parsedEntries), [])
+						.filter(e => e.name !== ''));
+				callback(undefined, permissionStatus);
 			} else {
 				callback(new HdfsError(ErrorMessageInvalidDataStructure), undefined);
 			}
@@ -468,6 +501,20 @@ export class WebHDFS {
 		this.checkArgDefined('aclEntries', aclEntries);
 		const aclSpec = [ownerEntry, groupEntry, otherEntry].concat(aclEntries).map(entry => entry.toAclString()).join(',');
 		let endpoint = this.getOperationEndpoint('setacl', path, { aclspec: aclSpec });
+		this.sendRequest('PUT', endpoint, undefined, (error) => {
+			return callback && callback(error);
+		});
+	}
+
+	/**
+	 * Sets the permission octal (sticky, owner, group & other) for a file/folder
+	 * @param path The path to the file/folder to set the permission of
+	 * @param permissionStatus The status containing the permission to set
+	 */
+	public setPermission(path: string, permissionStatus: PermissionStatus, callback: (error: HdfsError) => void): void {
+		this.checkArgDefined('path', path);
+		this.checkArgDefined('permissionStatus', permissionStatus);
+		let endpoint = this.getOperationEndpoint('setpermission', path, { permission: permissionStatus.permissionOctal });
 		this.sendRequest('PUT', endpoint, undefined, (error) => {
 			return callback && callback(error);
 		});
