@@ -147,6 +147,14 @@
           "dark": "resources/dark/save_inverse.svg",
           "light": "resources/light/save.svg"
         }
+      },
+      {
+        "command": "notebook.command.searchBook",
+        "title": "%title.searchJupyterBook%",
+        "icon": {
+          "dark": "resources/dark/manage_inverse.svg",
+          "light": "resources/light/manage.svg"
+        }
       }
     ],
     "languages": [
@@ -260,6 +268,11 @@
         }
       ],
       "view/item/context": [
+        {
+          "command": "notebook.command.searchBook",
+          "when": "view =~ /^(untitledBookTreeView|bookTreeView)$/ && viewItem =~ /^(untitledBook|savedBook)$/ && notebookQuality != stable",
+          "group": "inline"
+        },
         {
           "command": "notebook.command.saveBook",
           "when": "view == untitledBookTreeView && viewItem == untitledBook && untitledBooks && notebookQuality != stable",
