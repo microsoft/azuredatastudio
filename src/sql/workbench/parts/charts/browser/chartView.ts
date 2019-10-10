@@ -25,6 +25,7 @@ import { CreateInsightAction, CopyAction, SaveImageAction, IChartActionContext }
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { ChartState, IInsightOptions, ChartType } from 'sql/workbench/parts/charts/common/interfaces';
+import * as nls from 'vs/nls';
 
 declare class Proxy {
 	constructor(object, handler);
@@ -34,18 +35,17 @@ const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribu
 
 //Map used to store names and alternative names for chart types.
 //This is mainly used for comparison when options are parsed into the constructor.
-//Need to be localized eventually
 const altNameHash: { [oldName: string]: string } = {
-	'horizontalBar': 'Horziontal Bar',
-	'bar': 'Bar',
-	'line': 'Line',
-	'pie': 'Pie',
-	'scatter': 'Scatter',
-	'timeSeries': 'Time Series',
-	'image': 'Image',
-	'count': 'Count',
-	'table': 'Table',
-	'doughnut': 'Doughnut'
+	'horizontalBar': nls.localize('horizontalBarAltName', 'Horizontal Bar'),
+	'bar': nls.localize('barAltName', 'Bar'),
+	'line': nls.localize('lineAltName', 'Line'),
+	'pie': nls.localize('pieAltName', "Pie"),
+	'scatter': nls.localize('scatterAltName','Scatter'),
+	'timeSeries': nls.localize('timeSeriesAltName','Time Series'),
+	'image': nls.localize('imageAltName','Image'),
+	'count': nls.localize('countAltName','Count'),
+	'table': nls.localize('tableAltName', 'Table'),
+	'doughnut': nls.localize('doughnutAltName', 'Doughnut')
 };
 
 export class ChartView extends Disposable implements IPanelView {
