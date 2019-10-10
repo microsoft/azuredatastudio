@@ -13,7 +13,6 @@ import { HdfsError } from '../webhdfs';
 import { ApiWrapper } from '../../apiWrapper';
 import { IconPathHelper } from '../../iconHelper';
 import { HdfsFileType } from '../fileStatus';
-import { isUndefined } from '../../types';
 
 const permissionsTypeIconColumnWidth = 35;
 const permissionsNameColumnWidth = 250;
