@@ -428,7 +428,31 @@ export class JupyterServerInstallation {
 				doUpgrade = true;
 			}
 			if (doUpgrade) {
-				await this.installPipPackages(packagesToInstall, true);
+				let packagesStr = packagesToInstall.map(pkg => {
+					return `${pkg.name}>=${pkg.version}`;
+				}).join(' ');
+				let taskName = localize('upgradePackages.pipInstall',
+					"Installing {0}",
+					packagesStr);
+
+				let upgradeComplete = new Deferred<void>();
+				this.apiWrapper.startBackgroundOperation({
+					displayName: taskName,
+					description: taskName,
+					isCancelable: false,
+					operation: async op => {
+						try {
+							await this.installPipPackages(packagesToInstall, true);
+							op.updateStatus(azdata.TaskStatus.Succeeded);
+							upgradeComplete.resolve();
+						} catch (err) {
+							let errorMsg = utils.getErrorMessage(err);
+							op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
+							upgradeComplete.reject(errorMsg);
+						}
+					}
+				});
+				await upgradeComplete;
 			}
 		}
 	}
@@ -481,8 +505,32 @@ export class JupyterServerInstallation {
 				doUpgrade = true;
 			}
 			if (doUpgrade) {
-				await this.installCondaPackages(condaPackagesToInstall, true);
-				await this.installPipPackages(pipPackagesToInstall, true);
+				let packagesStr = condaPackagesToInstall.concat(pipPackagesToInstall).map(pkg => {
+					return `${pkg.name}>=${pkg.version}`;
+				}).join(' ');
+				let taskName = localize('upgradePackages.condaInstall',
+					"Installing {0}",
+					packagesStr);
+
+				let upgradeComplete = new Deferred<void>();
+				this.apiWrapper.startBackgroundOperation({
+					displayName: taskName,
+					description: taskName,
+					isCancelable: false,
+					operation: async op => {
+						try {
+							await this.installCondaPackages(condaPackagesToInstall, true);
+							await this.installPipPackages(pipPackagesToInstall, true);
+							op.updateStatus(azdata.TaskStatus.Succeeded);
+							upgradeComplete.resolve();
+						} catch (err) {
+							let errorMsg = utils.getErrorMessage(err);
+							op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
+							upgradeComplete.reject(errorMsg);
+						}
+					}
+				});
+				await upgradeComplete;
 			}
 		}
 	}
