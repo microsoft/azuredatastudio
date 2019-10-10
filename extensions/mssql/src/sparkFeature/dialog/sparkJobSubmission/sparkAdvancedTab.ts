@@ -23,7 +23,7 @@ export class SparkAdvancedTab {
 	}
 
 	constructor(private appContext: AppContext) {
-		this._tab = this.apiWrapper.createTab(localize('sparkJobSubmission_AdvancedTabName', 'ADVANCED'));
+		this._tab = this.apiWrapper.createTab(localize('sparkJobSubmission.AdvancedTabName', 'ADVANCED'));
 
 		this._tab.registerContent(async (modelView) => {
 			let builder = modelView.modelBuilder;
@@ -37,11 +37,11 @@ export class SparkAdvancedTab {
 			this._referenceJARFilesInputBox = builder.inputBox().component();
 			formContainer.addFormItem({
 				component: this._referenceJARFilesInputBox,
-				title: localize('sparkJobSubmission_ReferenceJarList', 'Reference Jars')
+				title: localize('sparkJobSubmission.ReferenceJarList', 'Reference Jars')
 			},
 				Object.assign(
 					{
-						info: localize('sparkJobSubmission_ReferenceJarListToolTip',
+						info: localize('sparkJobSubmission.ReferenceJarListToolTip',
 							'Jars to be placed in executor working directory. The Jar path needs to be an HDFS Path. Multiple paths should be split by semicolon (;)')
 					},
 					parentLayout));
@@ -49,11 +49,11 @@ export class SparkAdvancedTab {
 			this._referencePyFilesInputBox = builder.inputBox().component();
 			formContainer.addFormItem({
 				component: this._referencePyFilesInputBox,
-				title: localize('sparkJobSubmission_ReferencePyList', 'Reference py Files')
+				title: localize('sparkJobSubmission.ReferencePyList', 'Reference py Files')
 			},
 				Object.assign(
 					{
-						info: localize('sparkJobSubmission_ReferencePyListTooltip',
+						info: localize('sparkJobSubmission.ReferencePyListTooltip',
 							'Py Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)')
 					},
 					parentLayout));
@@ -61,10 +61,10 @@ export class SparkAdvancedTab {
 			this._referenceFilesInputBox = builder.inputBox().component();
 			formContainer.addFormItem({
 				component: this._referenceFilesInputBox,
-				title: localize('sparkJobSubmission_ReferenceFilesList', 'Reference Files')
+				title: localize('sparkJobSubmission.ReferenceFilesList', 'Reference Files')
 			},
 				Object.assign({
-					info: localize('sparkJobSubmission_ReferenceFilesListTooltip',
+					info: localize('sparkJobSubmission.ReferenceFilesListTooltip',
 						'Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)')
 				}, parentLayout));
 

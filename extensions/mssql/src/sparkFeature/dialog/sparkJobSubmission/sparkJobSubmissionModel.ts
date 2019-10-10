@@ -43,7 +43,7 @@ export class SparkJobSubmissionModel {
 		requestService?: (args: any) => any) {
 
 		if (!this._sqlClusterConnection || !this._dialog || !this._appContext) {
-			throw new Error(localize('sparkJobSubmission_SparkJobSubmissionModelInitializeError',
+			throw new Error(localize('sparkJobSubmission.SparkJobSubmissionModelInitializeError',
 				'Parameters for SparkJobSubmissionModel is illegal'));
 		}
 
@@ -91,7 +91,7 @@ export class SparkJobSubmissionModel {
 	public async submitBatchJobByLivy(submissionArgs: SparkJobSubmissionInput): Promise<string> {
 		try {
 			if (!submissionArgs) {
-				return Promise.reject(localize('sparkJobSubmission_submissionArgsIsInvalid', 'submissionArgs is invalid. '));
+				return Promise.reject(localize('sparkJobSubmission.submissionArgsIsInvalid', 'submissionArgs is invalid. '));
 			}
 
 			submissionArgs.setSparkClusterInfo(this._sqlClusterConnection);
@@ -106,11 +106,11 @@ export class SparkJobSubmissionModel {
 		// TODO: whether set timeout as 15000ms
 		try {
 			if (!submissionArgs) {
-				return Promise.reject(localize('sparkJobSubmission_submissionArgsIsInvalid', 'submissionArgs is invalid. '));
+				return Promise.reject(localize('sparkJobSubmission.submissionArgsIsInvalid', 'submissionArgs is invalid. '));
 			}
 
 			if (!utils.isValidNumber(livyBatchId)) {
-				return Promise.reject(new Error(localize('sparkJobSubmission_LivyBatchIdIsInvalid', 'livyBatchId is invalid. ')));
+				return Promise.reject(new Error(localize('sparkJobSubmission.LivyBatchIdIsInvalid', 'livyBatchId is invalid. ')));
 			}
 
 			if (!retryTime) {
@@ -127,7 +127,7 @@ export class SparkJobSubmissionModel {
 			} while (response.appId === '' && timeOutCount < retryTime);
 
 			if (response.appId === '') {
-				return Promise.reject(localize('sparkJobSubmission_GetApplicationIdTimeOut', 'Get Application Id time out. {0}[Log]   {1}', os.EOL, response.log));
+				return Promise.reject(localize('sparkJobSubmission.GetApplicationIdTimeOut', 'Get Application Id time out. {0}[Log]   {1}', os.EOL, response.log));
 			} else {
 				return response.appId;
 			}
@@ -139,7 +139,7 @@ export class SparkJobSubmissionModel {
 	public async uploadFile(localFilePath: string, hdfsFolderPath: string): Promise<void> {
 		try {
 			if (!localFilePath || !hdfsFolderPath) {
-				return Promise.reject(localize('sparkJobSubmission_localFileOrFolderNotSpecified.', 'Property localFilePath or hdfsFolderPath is not specified. '));
+				return Promise.reject(localize('sparkJobSubmission.localFileOrFolderNotSpecified.', 'Property localFilePath or hdfsFolderPath is not specified. '));
 			}
 
 			if (!(await utils.exists(localFilePath))) {
@@ -156,7 +156,7 @@ export class SparkJobSubmissionModel {
 	public async isClusterFileExisted(path: string): Promise<boolean> {
 		try {
 			if (!path) {
-				return Promise.reject(localize('sparkJobSubmission_PathNotSpecified.', 'Property Path is not specified. '));
+				return Promise.reject(localize('sparkJobSubmission.PathNotSpecified.', 'Property Path is not specified. '));
 			}
 
 			let fileSource: IFileSource = await this._sqlClusterConnection.createHdfsFileSource();
