@@ -127,7 +127,14 @@ export class HdfsModel {
 	 * Applies the current set of Permissions/ACLs to the specified path
 	 * @param path The path to apply the changes to
 	 */
-	private async applyAclChanges(path: string): Promise<[void, void]> {
+	private async applyAclChanges(path: string): Promise<any> {
+		// HDFS won't remove existing default ACLs even if you call setAcl with no default ACLs specified. You
+		// need to call removeDefaultAcl specifically to remove them.
+		if (!this.permissionStatus.owner.getPermission(AclEntryScope.default) &&
+			!this.permissionStatus.group.getPermission(AclEntryScope.default) &&
+			!this.permissionStatus.other.getPermission(AclEntryScope.default)) {
+			await this.fileSource.removeDefaultAcl(path);
+		}
 		return Promise.all([
 			this.fileSource.setAcl(path, this.permissionStatus.owner, this.permissionStatus.group, this.permissionStatus.other, this.permissionStatus.aclEntries),
 			this.fileSource.setPermission(path, this.permissionStatus)]);

@@ -88,6 +88,11 @@ export interface IFileSource {
 	 */
 	setAcl(path: string, ownerEntry: AclEntry, groupEntry: AclEntry, otherEntry: AclEntry, aclEntries: AclEntry[]): Promise<void>;
 	/**
+	 * Removes the default ACLs for the specified path
+	 * @param path The path to remove the default ACLs for
+	 */
+	removeDefaultAcl(path: string): Promise<void>;
+	/**
 	 * Sets the permission octal (sticky, owner, group & other) for a file/folder
 	 * @param path The path to the file/folder to set the permission of
 	 * @param aclStatus The status containing the permission to set
@@ -388,6 +393,22 @@ export class HdfsFileSource implements IFileSource {
 	public setAcl(path: string, ownerEntry: AclEntry, groupEntry: AclEntry, otherEntry: AclEntry, aclEntries: AclEntry[]): Promise<void> {
 		return new Promise((resolve, reject) => {
 			this.client.setAcl(path, ownerEntry, groupEntry, otherEntry, aclEntries, (error: HdfsError) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve();
+				}
+			});
+		});
+	}
+
+	/**
+	 * Removes the default ACLs for the specified path
+	 * @param path The path to remove the default ACLs for
+	 */
+	public removeDefaultAcl(path: string): Promise<void> {
+		return new Promise((resolve, reject) => {
+			this.client.removeDefaultAcl(path, (error: HdfsError) => {
 				if (error) {
 					reject(error);
 				} else {

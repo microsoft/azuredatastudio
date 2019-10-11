@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IconPathHelper, IconPath } from '../iconHelper';
+import { groupBy } from '../util/arrays';
 
 /**
  * The permission status of an HDFS path - this consists of :
@@ -136,7 +137,7 @@ function parseAclPermission(permissionString: string): AclEntryPermission {
  *  permission - The permission set for this ACL. @see AclPermission
  */
 export class AclEntry {
-	public readonly permissions = new Map<AclEntryScope, AclEntryPermission>();
+	private readonly permissions = new Map<AclEntryScope, AclEntryPermission>();
 
 	constructor(
 		public readonly type: AclType | PermissionType,
@@ -144,8 +145,40 @@ export class AclEntry {
 		public readonly displayName: string,
 	) { }
 
-	public addPermission(scope: AclEntryScope, permission: AclEntryPermission) {
+	/**
+	 * Adds a new permission at the specified scope, overwriting the existing permission at that scope if it
+	 * exists
+	 * @param scope The scope to add the new permission at
+	 * @param permission The permission to set
+	 */
+	public addPermission(scope: AclEntryScope, permission: AclEntryPermission): void {
 		this.permissions.set(scope, permission);
+	}
+
+	/**
+	 * Deletes the permission at the specified scope.
+	 * @param scope The scope to delete the permission for
+	 * @returns True if the entry was successfully deleted, false if not (it didn't exist)
+	 */
+	public removePermission(scope: AclEntryScope): boolean {
+		return this.permissions.delete(scope);
+	}
+
+	/**
+	 * Gets the permission at the specified scope if one exists
+	 * @param scope The scope to retrieve the permission for
+	 */
+	public getPermission(scope: AclEntryScope): AclEntryPermission | undefined {
+		return this.permissions.get(scope);
+	}
+
+	/**
+	 * Gets the full list of permissions and their scopes for this entry
+	 */
+	public getAllPermissions(): { scope: AclEntryScope, permission: AclEntryPermission }[] {
+		return Array.from(this.permissions.entries()).map((entry: [AclEntryScope, AclEntryPermission]) => {
+			return { scope: entry[0], permission: entry[1] };
+		});
 	}
 
 	/**
@@ -184,8 +217,22 @@ export class AclEntry {
 		if (!other) {
 			return false;
 		}
-		return this.type === other.type &&
-			this.name === other.name;
+		return AclEntry.compare(this, other) === 0;
+	}
+
+	/**
+	 * Compares two AclEntry objects for ordering
+	 * @param a The first AclEntry to compare
+	 * @param b The second AclEntry to compare
+	 */
+	static compare(a: AclEntry, b: AclEntry): number {
+		if (a.name === b.name) {
+			if (a.type === b.type) {
+				return 0;
+			}
+			return a.type.localeCompare(b.type);
+		}
+		return a.name.localeCompare(b.name);
 	}
 }
 
@@ -227,11 +274,15 @@ function getAclEntryType(type: AclType | PermissionType): AclType {
  *		user:bob:rwx,user::rwx,default::bob:rwx,group::r-x,default:other:r--
  * @param aclString The string representation of the ACL
  */
-export function parseAcl(aclString: string): AclEntry[] {
+export function parseAclList(aclString: string): AclEntry[] {
+	if (aclString === '') {
+		return [];
+	}
+
 	if (!/^(default:)?(user|group|mask|other):([A-Za-z_][A-Za-z0-9._-]*)?:([rwx-]{3})?(,(default:)?(user|group|mask|other):([A-Za-z_][A-Za-z0-9._-]*)?:([rwx-]{3})?)*$/.test(aclString)) {
 		throw new Error(`Invalid ACL string ${aclString}. Expected to match ^(default:)?(user|group|mask|other):[[A-Za-z_][A-Za-z0-9._-]]*:([rwx-]{3})?(,(default:)?(user|group|mask|other):[[A-Za-z_][A-Za-z0-9._-]]*:([rwx-]{3})?)*$`);
 	}
-	return aclString.split(',').map(aclEntryString => parseAclEntry(aclEntryString));
+	return mergeAclEntries(aclString.split(',').map(aclEntryString => parseAclEntry(aclEntryString)));
 }
 
 /**
@@ -313,4 +364,20 @@ export function getImageForType(type: AclType | PermissionType): IconPath {
 			return IconPathHelper.group;
 	}
 	return { dark: '', light: '' };
+}
+
+/**
+ * Merges a list of AclEntry objects such that the resulting list contains only a single entry for each name/type pair with
+ * a separate permission for each separate AclEntry
+ * @param entries The set of AclEntries to merge
+ */
+function mergeAclEntries(entries: AclEntry[]): AclEntry[] {
+	const groupedEntries = groupBy(entries, (a, b) => AclEntry.compare(a, b)); // First group the entries together
+	return groupedEntries.map(entryGroup => { // Now make a single AclEntry for each group and add all the permissions from each group
+		const entry = new AclEntry(entryGroup[0].type, entryGroup[0].name, entryGroup[0].displayName);
+		entryGroup.forEach(e => {
+			e.getAllPermissions().forEach(sp => entry.addPermission(sp.scope, sp.permission));
+		});
+		return entry;
+	});
 }
