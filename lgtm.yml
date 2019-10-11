@@ -1,12 +1,12 @@
 path_classifiers:
   vscode:
-    - "src/vs/**"
+    - "src/vs/**/"
   ads:
-    - "src/sql/**"
+    - "src/sql/**/"
   extensions:
-    - "extensions/**"
+    - "extensions/**/"
   build:
-    - "build/**"
+    - "build/**/"
 
 queries:
   - include: "*"
