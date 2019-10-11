@@ -234,7 +234,7 @@ export class ManageAccessDialog {
 		// Update display status for headers for the Default section - you can't set Default ACLs for non-directories so we just hide that column
 		this.defaultSectionComponents.forEach(component => component.display = this.hdfsModel.fileStatus.type === HdfsFileType.Directory ? '' : 'none');
 		this.applyRecursivelyButton.hidden = this.hdfsModel.fileStatus.type !== HdfsFileType.Directory;
-
+		this.inheritDefaultsCheckbox.display = this.hdfsModel.fileStatus.type === HdfsFileType.Directory ? '' : 'none';
 		// POSIX permission owner/group/other
 		const ownerPermissionsRow = this.createPermissionsRow(this.modelBuilder, permissionStatus.owner, /*includeDelete*/false, /*includeInherit*/false);
 		const owningGroupPermissionsRow = this.createPermissionsRow(this.modelBuilder, permissionStatus.group, /*includeDelete*/false, /*includeInherit*/false);
@@ -401,19 +401,53 @@ export class ManageAccessDialog {
 		const sectionHeaderContainer = modelBuilder.flexContainer().withLayout({ flexFlow: 'row', justifyContent: 'flex-end' }).component();
 
 		if (includeStickyAndInherit) {
-			// Sticky
-			this.stickyCheckbox = modelBuilder.checkBox()
+			this.inheritDefaultsCheckbox = modelBuilder.checkBox()
 				.withProperties<azdata.CheckBoxProperties>({
 					width: checkboxSize,
 					height: checkboxSize,
 					checked: false, // Will be set when we get the model update
-					label: loc.stickyLabel
+					label: loc.inheritDefaultsLabel
 				})
 				.component();
-			this.stickyCheckbox.onChanged(() => {
-				this.hdfsModel.permissionStatus.stickyBit = this.stickyCheckbox.checked;
+
+			this.inheritDefaultsCheckbox.onChanged(() => {
+				if (this.inheritDefaultsCheckbox.checked) {
+					this.namedSectionInheritCheckboxes.forEach(c => {
+						c.enabled = false;
+						c.checked = true;
+					});
+				} else {
+					this.namedSectionInheritCheckboxes.forEach(c => {
+						c.enabled = true;
+						c.checked = false;
+					});
+				}
+				// Go through each of the rows for owner/owning group/other and update
+				// their checkboxes based on the new value of the inherit checkbox
+				this.posixPermissionCheckboxesMapping.forEach(m => {
+					m.default.read.enabled = !this.inheritDefaultsCheckbox.checked;
+					m.default.write.enabled = !this.inheritDefaultsCheckbox.checked;
+					m.default.execute.enabled = !this.inheritDefaultsCheckbox.checked;
+					if (this.inheritDefaultsCheckbox.checked) {
+						m.model.removePermission(AclEntryScope.default);
+						m.default.read.checked = false;
+						m.default.write.checked = false;
+						m.default.execute.checked = false;
+					} else {
+						// Default to the access settings - this is what HDFS does if you don't
+						// specify the complete set of default ACLs for owner, owning group and other
+						const accessRead = m.access.read.checked;
+						const accessWrite = m.access.write.checked;
+						const accessExecute = m.access.execute.checked;
+						m.default.read.checked = accessRead;
+						m.default.write.checked = accessWrite;
+						m.default.execute.checked = accessExecute;
+						m.model.addPermission(AclEntryScope.default, new AclEntryPermission(accessRead, accessWrite, accessExecute));
+					}
+				});
 			});
-			sectionHeaderContainer.addItem(this.stickyCheckbox);
+			this.defaultSectionComponents.push(this.inheritDefaultsCheckbox);
+			sectionHeaderContainer.addItem(this.inheritDefaultsCheckbox);
 		}
 
 		// Access
@@ -453,52 +487,19 @@ export class ManageAccessDialog {
 		const headerRowContainer = modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
 
 		if (includeStickyAndInherit) {
-			this.inheritDefaultsCheckbox = modelBuilder.checkBox()
+			// Sticky
+			this.stickyCheckbox = modelBuilder.checkBox()
 				.withProperties<azdata.CheckBoxProperties>({
 					width: checkboxSize,
 					height: checkboxSize,
 					checked: false, // Will be set when we get the model update
-					label: loc.inheritDefaultsLabel
+					label: loc.stickyLabel
 				})
 				.component();
-			this.inheritDefaultsCheckbox.onChanged(() => {
-				if (this.inheritDefaultsCheckbox.checked) {
-					this.namedSectionInheritCheckboxes.forEach(c => {
-						c.enabled = false;
-						c.checked = true;
-					});
-				} else {
-					this.namedSectionInheritCheckboxes.forEach(c => {
-						c.enabled = true;
-						c.checked = false;
-					});
-				}
-				// Go through each of the rows for owner/owning group/other and update
-				// their checkboxes based on the new value of the inherit checkbox
-				this.posixPermissionCheckboxesMapping.forEach(m => {
-					m.default.read.enabled = !this.inheritDefaultsCheckbox.checked;
-					m.default.write.enabled = !this.inheritDefaultsCheckbox.checked;
-					m.default.execute.enabled = !this.inheritDefaultsCheckbox.checked;
-					if (this.inheritDefaultsCheckbox.checked) {
-						m.model.removePermission(AclEntryScope.default);
-						m.default.read.checked = false;
-						m.default.write.checked = false;
-						m.default.execute.checked = false;
-					} else {
-						// Default to the access settings - this is what HDFS does if you don't
-						// specify the complete set of default ACLs for owner, owning group and other
-						const accessRead = m.access.read.checked;
-						const accessWrite = m.access.write.checked;
-						const accessExecute = m.access.execute.checked;
-						m.default.read.checked = accessRead;
-						m.default.write.checked = accessWrite;
-						m.default.execute.checked = accessExecute;
-						m.model.addPermission(AclEntryScope.default, new AclEntryPermission(accessRead, accessWrite, accessExecute));
-					}
-				});
+			this.stickyCheckbox.onChanged(() => {
+				this.hdfsModel.permissionStatus.stickyBit = this.stickyCheckbox.checked;
 			});
-			this.defaultSectionComponents.push(this.inheritDefaultsCheckbox);
-			headerRowContainer.addItem(this.inheritDefaultsCheckbox);
+			headerRowContainer.addItem(this.stickyCheckbox);
 		}
 
 		// Name
