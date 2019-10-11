@@ -269,11 +269,6 @@
       ],
       "view/item/context": [
         {
-          "command": "notebook.command.searchBook",
-          "when": "view =~ /^(untitledBookTreeView|bookTreeView)$/ && viewItem =~ /^(untitledBook|savedBook)$/ && notebookQuality != stable",
-          "group": "inline"
-        },
-        {
           "command": "notebook.command.saveBook",
           "when": "view == untitledBookTreeView && viewItem == untitledBook && untitledBooks && notebookQuality != stable",
           "group": "inline"
