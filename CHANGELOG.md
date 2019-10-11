@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 1.12.2
+* Release date: October 11, 2019
+* Release status: General Availability
+* Hotfix release (1.12.2): `Disable automatically starting the EH in inspect mode` https://github.com/microsoft/azuredatastudio/commit/c9bef82ace6c67190d0e83820011a2bbd1f793c1
+
 ## Version 1.12.1
 * Release date: October 7, 2019
 * Release status: General Availability

@@ -9,8 +9,9 @@ import { ErrorAction, ErrorHandler, Message, CloseAction } from 'vscode-language
 
 import * as Utils from './utils';
 import * as Constants from './constants';
-import { localize } from './localize';
+import * as nls from 'vscode-nls';
 
+const localize = nls.loadMessageBundle();
 const packageJson = require('../package.json');
 const viewKnownIssuesAction = localize('viewKnownIssuesText', "View Known Issues");
 
