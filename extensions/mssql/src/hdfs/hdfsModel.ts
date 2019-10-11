@@ -93,7 +93,7 @@ export class HdfsModel {
 					description: '',
 					isCancelable: false,
 					operation: async op => {
-						await this.applyRecursive(op, this.path);
+						await this.applyToChildrenRecursive(op, this.path);
 						op.updateStatus(azdata.TaskStatus.Succeeded, localize('mssql.recursivePermissionOpSucceeded', "Permission changes applied successfully."));
 					}
 				}
@@ -102,11 +102,11 @@ export class HdfsModel {
 	}
 
 	/**
-	 *
+	 * Recursive call to apply the current set of changes to all children of this path (if any)
 	 * @param op Background operation used to track status of the task
 	 * @param path The path
 	 */
-	private async applyRecursive(op: azdata.BackgroundOperation, path: string): Promise<void> {
+	private async applyToChildrenRecursive(op: azdata.BackgroundOperation, path: string): Promise<void> {
 		try {
 			op.updateStatus(azdata.TaskStatus.InProgress, localize('mssql.recursivePermissionOpProgress', "Applying permission changes to '{0}'.", path));
 			const files = await this.fileSource.enumerateFiles(path, true);
@@ -114,7 +114,7 @@ export class HdfsModel {
 			await Promise.all(
 				[
 					files.map(file => this.applyAclChanges(file.path)),
-					files.filter(f => f.isDirectory).map(d => this.applyRecursive(op, d.path))
+					files.filter(f => f.isDirectory).map(d => this.applyToChildrenRecursive(op, d.path))
 				]);
 		} catch (error) {
 			const errMsg = localize('mssql.recursivePermissionOpError', "Error applying permission changes: {0}", (error instanceof Error ? error.message : error));
