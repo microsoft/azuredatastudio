@@ -19,6 +19,7 @@ export const connectionProviderContextKey = 'connectionProvider';
 export const applicationName = 'azdata';
 
 export const defaultEngine = 'defaultEngine';
+export const sqlOnDemand: number = 11;
 
 export const passwordChars = '***************';
 

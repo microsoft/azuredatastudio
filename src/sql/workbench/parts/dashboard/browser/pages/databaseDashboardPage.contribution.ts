@@ -98,7 +98,7 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 				'tasks-widget': [
 					'newQuery',
 					'mssqlCluster.task.newNotebook',
-					{ name: 'backup', when: '!mssql:iscloud' },
+					{ name: 'backup', when: '!mssql:iscloud && !mssql:issqlondemand' },
 					{ name: 'restore', when: '!mssql:iscloud' },
 					'configureDashboard'
 				]

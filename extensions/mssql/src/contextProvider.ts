@@ -17,7 +17,8 @@ export enum ContextKeys {
 	ISCLOUD = 'mssql:iscloud',
 	EDITIONID = 'mssql:engineedition',
 	ISCLUSTER = 'mssql:iscluster',
-	SERVERMAJORVERSION = 'mssql:servermajorversion'
+	SERVERMAJORVERSION = 'mssql:servermajorversion',
+	ISSQLONDEMAND = 'mssql:issqlondemand',
 }
 
 const isCloudEditions = [
@@ -42,6 +43,7 @@ export default class ContextProvider {
 		let edition: number;
 		let isCluster: boolean = false;
 		let serverMajorVersion: number;
+		let isSqlOnDemand: boolean = false;
 		if (e.profile.providerName.toLowerCase() === 'mssql' && !types.isUndefinedOrNull(e.serverInfo) && !types.isUndefinedOrNull(e.serverInfo.engineEditionId)) {
 			if (isCloudEditions.some(i => i === e.serverInfo.engineEditionId)) {
 				iscloud = true;
@@ -50,6 +52,11 @@ export default class ContextProvider {
 			}
 
 			edition = e.serverInfo.engineEditionId;
+
+			if (edition === Constants.sqlOnDemand)
+			{
+				isSqlOnDemand = true;
+			}
 
 			if (!types.isUndefinedOrNull(e.serverInfo.options)) {
 				let isBigDataCluster = e.serverInfo.options[Constants.isBigDataClusterProperty];
@@ -74,6 +81,11 @@ export default class ContextProvider {
 
 		if (!types.isUndefinedOrNull(serverMajorVersion)) {
 			setCommandContext(ContextKeys.SERVERMAJORVERSION, serverMajorVersion);
+		}
+
+		if (isSqlOnDemand === true || isSqlOnDemand === false)
+		{
+			setCommandContext(ContextKeys.ISSQLONDEMAND, isSqlOnDemand);
 		}
 	}
 

@@ -34,7 +34,8 @@ const targetDatabaseEngineEditionMap = {
 	4: 'SqlServerExpressEdition',
 	5: 'SqlAzureDatabaseEdition',
 	6: 'SqlDatawarehouseEdition',
-	7: 'SqlServerStretchEdition'
+	7: 'SqlServerStretchEdition',
+	11: 'SqlServerSqlOnDemandEdition',
 };
 
 /**

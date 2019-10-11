@@ -3,13 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import { INodeContextValue } from 'sql/workbench/parts/dataExplorer/browser/nodeContext';
 import { RawContextKey, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { mssqlProviderName, sqlOnDemand } from 'sql/platform/connection/common/constants';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { ExtensionNodeType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { isWindows } from 'vs/base/common/platform';
@@ -32,6 +33,7 @@ export class MssqlNodeContext extends Disposable {
 	static IsCloud = new RawContextKey<boolean>('isCloud', false);
 	static NodeType = new RawContextKey<string>('nodeType', undefined);
 	static NodeLabel = new RawContextKey<string>('nodeLabel', undefined);
+	static IsSqlOnDemand = new RawContextKey<boolean>('isSqlOnDemand', false);
 
 	// Scripting context keys
 	static CanScriptAsSelect = new RawContextKey<boolean>('canScriptAsSelect', false);
@@ -45,6 +47,7 @@ export class MssqlNodeContext extends Disposable {
 	private nodeTypeKey: IContextKey<string>;
 	private nodeLabelKey: IContextKey<string>;
 	private isDatabaseOrServerKey: IContextKey<boolean>;
+	private isSqlOnDemandKey: IContextKey<boolean>;
 
 	private canScriptAsSelectKey: IContextKey<boolean>;
 	private canEditDataKey: IContextKey<boolean>;
@@ -67,6 +70,7 @@ export class MssqlNodeContext extends Disposable {
 			if (node.payload) {
 				this.setNodeProvider();
 				this.setIsCloud();
+				this.setIsSqlOnDemand();
 				if (node.type) {
 					this.setIsDatabaseOrServer();
 					this.nodeTypeKey.set(node.type);
@@ -84,6 +88,7 @@ export class MssqlNodeContext extends Disposable {
 
 	private bindContextKeys(): void {
 		this.isCloudKey = MssqlNodeContext.IsCloud.bindTo(this.contextKeyService);
+		this.isSqlOnDemandKey = MssqlNodeContext.IsSqlOnDemand.bindTo(this.contextKeyService);
 		this.nodeTypeKey = MssqlNodeContext.NodeType.bindTo(this.contextKeyService);
 		this.nodeLabelKey = MssqlNodeContext.NodeLabel.bindTo(this.contextKeyService);
 		this.isDatabaseOrServerKey = MssqlNodeContext.IsDatabaseOrServer.bindTo(this.contextKeyService);
@@ -110,15 +115,37 @@ export class MssqlNodeContext extends Disposable {
 	 * Helper function to tell whether a connected node is cloud or not
 	 */
 	private setIsCloud(): void {
+		let serverInfo : azdata.ServerInfo = this.getServerInfo();
+		if (serverInfo && serverInfo.isCloud)
+		{
+			this.isCloudKey.set(true);
+		}
+	}
+
+	/**
+	 * Helper function to tell whether we are connected to the server with engine edition 11 (Sql Server On Demand)
+	 */
+	private setIsSqlOnDemand(): void {
+
+		let serverInfo : azdata.ServerInfo = this.getServerInfo();
+		if (serverInfo && serverInfo.engineEditionId === sqlOnDemand)
+		{
+			this.isSqlOnDemandKey.set(true);
+		}
+	}
+
+	/**
+	 * Helper function fetching the server info
+	 */
+	private getServerInfo(): azdata.ServerInfo | undefined
+	{
 		const profile = new ConnectionProfile(this.capabilitiesService,
 			this.nodeContextValue.node.payload);
 		const connection = this.connectionManagementService.findExistingConnection(profile);
 		if (connection) {
-			const serverInfo = this.connectionManagementService.getServerInfo(connection.id);
-			if (serverInfo.isCloud) {
-				this.isCloudKey.set(true);
-			}
+			return this.connectionManagementService.getServerInfo(connection.id);
 		}
+		return undefined;
 	}
 
 	/**

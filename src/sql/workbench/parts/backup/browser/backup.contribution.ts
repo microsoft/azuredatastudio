@@ -41,7 +41,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('backup', "Backup")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
-		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database), MssqlNodeContext.IsCloud.toNegated())
+		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database), MssqlNodeContext.IsCloud.toNegated(), MssqlNodeContext.IsSqlOnDemand.toNegated())
 });
 
 // oe
@@ -61,7 +61,8 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		id: OE_BACKUP_COMMAND_ID,
 		title: localize('backup', "Backup")
 	},
-	when: ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo(NodeType.Database), ConnectionContextKey.Provider.isEqualTo(mssqlProviderName), ServerInfoContextKey.IsCloud.toNegated())
+	when: ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo(NodeType.Database), ConnectionContextKey.Provider.isEqualTo(mssqlProviderName),
+		ServerInfoContextKey.IsCloud.toNegated(), MssqlNodeContext.IsSqlOnDemand.toNegated())
 });
 
 // dashboard explorer
@@ -76,6 +77,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 		id: ExplorerBackUpActionID,
 		title: BackupAction.LABEL
 	},
-	when: ContextKeyExpr.and(ItemContextKey.ItemType.isEqualTo('database'), ItemContextKey.ConnectionProvider.isEqualTo('mssql'), ItemContextKey.IsCloud.toNegated()),
+	when: ContextKeyExpr.and(ItemContextKey.ItemType.isEqualTo('database'), ItemContextKey.ConnectionProvider.isEqualTo('mssql'),
+		ItemContextKey.IsCloud.toNegated(), MssqlNodeContext.IsSqlOnDemand.toNegated()),
 	order: 2
 });

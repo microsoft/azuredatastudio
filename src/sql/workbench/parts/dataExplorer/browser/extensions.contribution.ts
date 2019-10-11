@@ -45,7 +45,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('profiler', "Launch Profiler")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
-		MssqlNodeContext.NodeType.isEqualTo(NodeType.Server))
+		MssqlNodeContext.NodeType.isEqualTo(NodeType.Server), MssqlNodeContext.IsSqlOnDemand.toNegated())
 });
 
 // Flat File Import
