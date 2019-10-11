@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
@@ -27,7 +25,7 @@ function getAuthCategory(name: AuthType): azdata.CategoryValue {
  * Converts a comma-delimited set of key value pair credentials to a JSON object.
  * This code is taken from the azdata implementation written in Python
  */
-function convertCredsToJson(creds: string): {} {
+function convertCredsToJson(creds: string): { credentials: {} } {
 	if (!creds) {
 		return undefined;
 	}

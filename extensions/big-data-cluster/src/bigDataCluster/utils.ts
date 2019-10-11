@@ -229,7 +229,7 @@ export interface IEndpoint {
 	protocol: string;
 }
 
-export function getClusterEndpoints(serverInfo: azdata.ServerInfo): IEndpoint[] | undefined {
+export function getClusterEndpoints(serverInfo: azdata.ServerInfo): IEndpoint[] {
 	let endpoints: RawEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
 	if (!endpoints || endpoints.length === 0) { return []; }
 
