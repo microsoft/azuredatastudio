@@ -109,7 +109,7 @@ export class JupyterServerInstallation {
 			try {
 				await this.installPythonPackage(backgroundOperation);
 
-				if (this._usingConda || this._usingExistingPython) {
+				if (this._usingExistingPython) {
 					await this.upgradePythonPackages(false, forceInstall);
 				} else {
 					await this.installOfflinePipDependencies();
