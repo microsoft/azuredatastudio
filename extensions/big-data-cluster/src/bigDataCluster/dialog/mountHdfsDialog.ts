@@ -30,7 +30,7 @@ function convertCredsToJson(creds: string): { credentials: {} } {
 		return undefined;
 	}
 	// TBD: can we use something other than negative lookup?
-	let credObj = { credentials: {} };
+	let credObj = { 'credentials': {} };
 	let pairs = creds.split(',');
 	// handle escaped commas in a browser-agnostic way by pushing to the next
 	let validPairs: string[] = [];
@@ -188,7 +188,7 @@ export class MountHdfsDialogModel extends HdfsDialogModelBase<MountHdfsPropertie
 	private waitOnMountStatusChange(controller: ClusterController): Promise<MountInfo> {
 		return new Promise<MountInfo>((resolve, reject) => {
 			const waitTime = 5 * 1000; // 5 seconds
-			const maxRetries = 24;	// 5 x 24 = 120 seconds. After this time, can assume things are "working"
+			const maxRetries = 30;	// 5 x 30 = 150 seconds. After this time, can assume things are "working" as 2 min timeout passed
 			let waitOnChange = async (retries: number) => {
 				try {
 					let mountInfo = await this.getMountStatus(controller, this.props.hdfsPath);
