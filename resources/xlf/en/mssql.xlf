@@ -37,6 +37,9 @@
     <trans-unit id="mssqlCluster.copyPath">
       <source xml:lang="en">Copy Path</source>
     </trans-unit>
+    <trans-unit id="mssqlCluster.manageAccess">
+      <source xml:lang="en">Manage Access</source>
+    </trans-unit>
     <trans-unit id="notebook.command.new">
       <source xml:lang="en">New Notebook</source>
     </trans-unit>
@@ -44,10 +47,10 @@
       <source xml:lang="en">Open Notebook</source>
     </trans-unit>
     <trans-unit id="tab.bigDataClusterDescription">
-      <source xml:lang="en">Tasks and information about your SQL Server big data cluster</source>
+      <source xml:lang="en">Tasks and information about your SQL Server Big Data Cluster</source>
     </trans-unit>
     <trans-unit id="title.bigDataCluster">
-      <source xml:lang="en">SQL Server big data cluster</source>
+      <source xml:lang="en">SQL Server Big Data Cluster</source>
     </trans-unit>
     <trans-unit id="title.submitSparkJob">
       <source xml:lang="en">Submit Spark Job</source>
@@ -81,6 +84,12 @@
     </trans-unit>
     <trans-unit id="title.endpoints">
       <source xml:lang="en">Service Endpoints</source>
+    </trans-unit>
+    <trans-unit id="title.books">
+      <source xml:lang="en">Notebooks</source>
+    </trans-unit>
+    <trans-unit id="title.showLogFile">
+      <source xml:lang="en">Show Log File</source>
     </trans-unit>
     <trans-unit id="mssql.configuration.title">
       <source xml:lang="en">MSSQL configuration</source>
@@ -359,7 +368,133 @@
       <source xml:lang="en">Indicates which server type system then provider will expose through the DataReader</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/mssql/out/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionService" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/mssql/dist/localizedConstants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="msgMissingNodeContext">
+      <source xml:lang="en">Node Command called without any node passed</source>
+    </trans-unit>
+    <trans-unit id="mssql.manageAccessTitle">
+      <source xml:lang="en">Manage Access</source>
+    </trans-unit>
+    <trans-unit id="mssql.permissionsTitle">
+      <source xml:lang="en">Permissions</source>
+    </trans-unit>
+    <trans-unit id="mssql.ownersHeader">
+      <source xml:lang="en">Owners</source>
+    </trans-unit>
+    <trans-unit id="mssql.allOthersHeader">
+      <source xml:lang="en">All Others</source>
+    </trans-unit>
+    <trans-unit id="mssql.everyone">
+      <source xml:lang="en">Everyone</source>
+    </trans-unit>
+    <trans-unit id="mssql.userLabel">
+      <source xml:lang="en">User</source>
+    </trans-unit>
+    <trans-unit id="mssql.groupLabel">
+      <source xml:lang="en">Group</source>
+    </trans-unit>
+    <trans-unit id="mssql.accessHeader">
+      <source xml:lang="en">Access</source>
+    </trans-unit>
+    <trans-unit id="mssql.defaultHeader">
+      <source xml:lang="en">Default</source>
+    </trans-unit>
+    <trans-unit id="mssql.stickyHeader">
+      <source xml:lang="en">Sticky</source>
+    </trans-unit>
+    <trans-unit id="mssql.readHeader">
+      <source xml:lang="en">Read</source>
+    </trans-unit>
+    <trans-unit id="mssql.writeHeader">
+      <source xml:lang="en">Write</source>
+    </trans-unit>
+    <trans-unit id="mssql.executeHeader">
+      <source xml:lang="en">Execute</source>
+    </trans-unit>
+    <trans-unit id="mssql.addUserOrGroup">
+      <source xml:lang="en">Add User or Group</source>
+    </trans-unit>
+    <trans-unit id="mssql.enterNamePlaceholder">
+      <source xml:lang="en">Enter name</source>
+    </trans-unit>
+    <trans-unit id="mssql.addLabel">
+      <source xml:lang="en">Add</source>
+    </trans-unit>
+    <trans-unit id="mssql.namedUsersAndGroups">
+      <source xml:lang="en">Named Users and Groups</source>
+    </trans-unit>
+    <trans-unit id="mssql.apply">
+      <source xml:lang="en">Apply</source>
+    </trans-unit>
+    <trans-unit id="mssql.applyRecursively">
+      <source xml:lang="en">Apply Recursively</source>
+    </trans-unit>
+    <trans-unit id="mssql.errorApplyingAclChanges">
+      <source xml:lang="en">Unexpected error occurred while applying changes : {0}</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_LocalFileDestinationHint">
+      <source xml:lang="en">Local file will be uploaded to HDFS. </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_SubmissionEndMessage">
+      <source xml:lang="en">.......................... Submit Spark Job End ............................</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_PrepareUploadingFile">
+      <source xml:lang="en">Uploading file from local {0} to HDFS folder: {1}</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_UploadingFileSucceeded">
+      <source xml:lang="en">Upload file to cluster Succeeded!</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_UploadingFileFailed">
+      <source xml:lang="en">Upload file to cluster Failed. {0}</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_PrepareSubmitJob">
+      <source xml:lang="en">Submitting job {0} ... </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_SubmitJobFinished">
+      <source xml:lang="en">The Spark Job has been submitted.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_SubmitJobFailed">
+      <source xml:lang="en">Spark Job Submission Failed. {0} </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_YarnUIMessage">
+      <source xml:lang="en">YarnUI Url: {0} </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_SparkHistoryLinkMessage">
+      <source xml:lang="en">Spark History Url: {0} </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_GetApplicationIdFailed">
+      <source xml:lang="en">Get Application Id Failed. {0}</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_LocalFileNotExisted">
+      <source xml:lang="en">Local file {0} does not existed. </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_NoSqlBigDataClusterFound">
+      <source xml:lang="en">No SQL Server Big Data Cluster found.</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/fileSources" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="maxSizeNotice">
+      <source xml:lang="en">NOTICE: This file has been truncated at {0} for preview. </source>
+    </trans-unit>
+    <trans-unit id="maxSizeReached">
+      <source xml:lang="en">The file has been truncated at {0} for preview.</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/command" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="progress">
+      <source xml:lang="en">$(sync~spin) {0}...</source>
+    </trans-unit>
+    <trans-unit id="cancelTooltip">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="cancel">
+      <source xml:lang="en">Cancel operation?</source>
+    </trans-unit>
+    <trans-unit id="mssql.searchServers">
+      <source xml:lang="en">Search Server Names</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionService" source-language="en" datatype="plaintext"><body>
     <trans-unit id="sparkJobSubmission_LivyNoBatchIdReturned">
       <source xml:lang="en">No Spark job batch id is returned from response.{0}[Error] {1}</source>
     </trans-unit>
@@ -367,199 +502,7 @@
       <source xml:lang="en">No log is returned within response.{0}[Error] {1}</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/mssql/out/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionModel" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="sparkJobSubmission_SparkJobSubmissionModelInitializeError">
-      <source xml:lang="en">Parameters for SparkJobSubmissionModel is illegal</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_submissionArgsIsInvalid">
-      <source xml:lang="en">submissionArgs is invalid. </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_LivyBatchIdIsInvalid">
-      <source xml:lang="en">livyBatchId is invalid. </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_GetApplicationIdTimeOut">
-      <source xml:lang="en">Get Application Id time out. {0}[Log]   {1}</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_localFileOrFolderNotSpecified.">
-      <source xml:lang="en">Property localFilePath or hdfsFolderPath is not specified. </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_PathNotSpecified.">
-      <source xml:lang="en">Property Path is not specified. </source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/out/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionDialog" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="sparkJobSubmission_SparkJobSubmissionDialogInitializeError">
-      <source xml:lang="en">Parameters for SparkJobSubmissionDialog is illegal</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_DialogTitleNewJob">
-      <source xml:lang="en">New Job</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_DialogCancelButton">
-      <source xml:lang="en">Cancel</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_DialogSubmitButton">
-      <source xml:lang="en">Submit</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_SubmitSparkJob">
-      <source xml:lang="en">{0} Spark Job Submission:</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_SubmissionStartMessage">
-      <source xml:lang="en">.......................... Submit Spark Job Start ..........................</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/out/sparkFeature/dialog/sparkJobSubmission/sparkConfigurationTab" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="sparkJobSubmission_GeneralTabName">
-      <source xml:lang="en">GENERAL</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_JobNamePlaceHolder">
-      <source xml:lang="en">Enter a name ...</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_JobName">
-      <source xml:lang="en">Job Name</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_SparkCluster">
-      <source xml:lang="en">Spark Cluster</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_FilePathPlaceHolder">
-      <source xml:lang="en">Path to a .jar or .py file</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_LocalFileDestinationHintWithPath">
-      <source xml:lang="en">The selected local file will be uploaded to HDFS: {0}</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_MainFilePath">
-      <source xml:lang="en">JAR/py File</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_MainClass">
-      <source xml:lang="en">Main Class</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_Arguments">
-      <source xml:lang="en">Arguments</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_ArgumentsTooltip">
-      <source xml:lang="en">Command line arguments used in your main class, multiple arguments should be split by space.</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_NotSpecifyJobName">
-      <source xml:lang="en">Property Job Name is not specified.</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_NotSpecifyJARPYPath">
-      <source xml:lang="en">Property JAR/py File is not specified.</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_NotSpecifyMainClass">
-      <source xml:lang="en">Property Main Class is not specified.</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_HDFSFileNotExistedWithPath">
-      <source xml:lang="en">{0} does not exist in Cluster or exception thrown. </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_HDFSFileNotExisted">
-      <source xml:lang="en">The specified HDFS file does not exist. </source>
-    </trans-unit>
-    <trans-unit id="sparkSelectLocalFile">
-      <source xml:lang="en">Select</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_SelectFileError">
-      <source xml:lang="en">Error in locating the file due to Error: {0}</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/out/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="sparkJobSubmission_AdvancedTabName">
-      <source xml:lang="en">ADVANCED</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_ReferenceJarList">
-      <source xml:lang="en">Reference Jars</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_ReferenceJarListToolTip">
-      <source xml:lang="en">Jars to be placed in executor working directory. The Jar path needs to be an HDFS Path. Multiple paths should be split by semicolon (;)</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_ReferencePyList">
-      <source xml:lang="en">Reference py Files</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_ReferencePyListTooltip">
-      <source xml:lang="en">Py Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_ReferenceFilesList">
-      <source xml:lang="en">Reference Files</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_ReferenceFilesListTooltip">
-      <source xml:lang="en">Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/out/sparkFeature/dialog/dialogCommands" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="sparkJobSubmission_PleaseSelectSqlWithCluster">
-      <source xml:lang="en">Please select SQL Server with big data cluster. </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_NoSqlSelected">
-      <source xml:lang="en">No Sql Server is selected.</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_GetFilePathFromSelectedNodeFailed">
-      <source xml:lang="en">Error Get File Path: {0}</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/out/sparkFeature/sparkUtils" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="mkdirOutputMsg">
-      <source xml:lang="en">... Creating {0}</source>
-    </trans-unit>
-    <trans-unit id="executeCommandProcessExited">
-      <source xml:lang="en">Process exited with code {0}</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/out/objectExplorerNodeProvider/webhdfs" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="webhdfs.invalidDataStructure">
-      <source xml:lang="en">Invalid Data Structure</source>
-    </trans-unit>
-    <trans-unit id="webhdfs.missingProperties">
-      <source xml:lang="en">Unable to create WebHDFS client due to missing options: ${0}</source>
-    </trans-unit>
-    <trans-unit id="webhdfs.undefinedArgument">
-      <source xml:lang="en">'${0}' is undefined.</source>
-    </trans-unit>
-    <trans-unit id="webhdfs.httpError400">
-      <source xml:lang="en">Bad Request</source>
-    </trans-unit>
-    <trans-unit id="webhdfs.httpError401">
-      <source xml:lang="en">Unauthorized</source>
-    </trans-unit>
-    <trans-unit id="webhdfs.httpError403">
-      <source xml:lang="en">Forbidden</source>
-    </trans-unit>
-    <trans-unit id="webhdfs.httpError404">
-      <source xml:lang="en">Not Found</source>
-    </trans-unit>
-    <trans-unit id="webhdfs.httpError500">
-      <source xml:lang="en">Internal Server Error</source>
-    </trans-unit>
-    <trans-unit id="webhdfs.unknownError">
-      <source xml:lang="en">Unknown Error</source>
-    </trans-unit>
-    <trans-unit id="webhdfs.unexpectedRedirect">
-      <source xml:lang="en">Unexpected Redirect</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/out/objectExplorerNodeProvider/objectExplorerNodeProvider" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="prmptPwd">
-      <source xml:lang="en">Please provide the password to connect to HDFS:</source>
-    </trans-unit>
-    <trans-unit id="sessionNotFound">
-      <source xml:lang="en">Session for node {0} does not exist</source>
-    </trans-unit>
-    <trans-unit id="notifyError">
-      <source xml:lang="en">Error notifying of node change: {0}</source>
-    </trans-unit>
-    <trans-unit id="rootLabel">
-      <source xml:lang="en">Root</source>
-    </trans-unit>
-    <trans-unit id="hdfsFolder">
-      <source xml:lang="en">HDFS</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/out/objectExplorerNodeProvider/hdfsProvider" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="errorExpanding">
-      <source xml:lang="en">Error: {0}</source>
-    </trans-unit>
-    <trans-unit id="errDeleteConnectionNode">
-      <source xml:lang="en">Cannot delete a connection. Only subfolders and files can be deleted.</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/out/objectExplorerNodeProvider/hdfsCommands" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/hdfsCommands" source-language="en" datatype="plaintext"><body>
     <trans-unit id="allFiles">
       <source xml:lang="en">All Files</source>
     </trans-unit>
@@ -614,16 +557,43 @@
     <trans-unit id="copyPathError">
       <source xml:lang="en">Error on copying path: {0}</source>
     </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/out/objectExplorerNodeProvider/fileSources" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="maxSizeNotice">
-      <source xml:lang="en">NOTICE: This file has been truncated at {0} for preview. </source>
-    </trans-unit>
-    <trans-unit id="maxSizeReached">
-      <source xml:lang="en">The file has been truncated at {0} for preview.</source>
+    <trans-unit id="manageAccessError">
+      <source xml:lang="en">An unexpected error occurred while opening the Manage Access dialog: {0}</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/mssql/out/objectExplorerNodeProvider/connection" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/mssql/dist/hdfs/webhdfs" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="webhdfs.invalidDataStructure">
+      <source xml:lang="en">Invalid Data Structure</source>
+    </trans-unit>
+    <trans-unit id="webhdfs.missingProperties">
+      <source xml:lang="en">Unable to create WebHDFS client due to missing options: ${0}</source>
+    </trans-unit>
+    <trans-unit id="webhdfs.undefinedArgument">
+      <source xml:lang="en">'${0}' is undefined.</source>
+    </trans-unit>
+    <trans-unit id="webhdfs.httpError400">
+      <source xml:lang="en">Bad Request</source>
+    </trans-unit>
+    <trans-unit id="webhdfs.httpError401">
+      <source xml:lang="en">Unauthorized</source>
+    </trans-unit>
+    <trans-unit id="webhdfs.httpError403">
+      <source xml:lang="en">Forbidden</source>
+    </trans-unit>
+    <trans-unit id="webhdfs.httpError404">
+      <source xml:lang="en">Not Found</source>
+    </trans-unit>
+    <trans-unit id="webhdfs.httpError500">
+      <source xml:lang="en">Internal Server Error</source>
+    </trans-unit>
+    <trans-unit id="webhdfs.unknownError">
+      <source xml:lang="en">Unknown Error</source>
+    </trans-unit>
+    <trans-unit id="webhdfs.unexpectedRedirect">
+      <source xml:lang="en">Unexpected Redirect</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/connection" source-language="en" datatype="plaintext"><body>
     <trans-unit id="connectionInfoUndefined">
       <source xml:lang="en">ConnectionInfo is undefined.</source>
     </trans-unit>
@@ -634,66 +604,17 @@
       <source xml:lang="en">Some missing properties in connectionInfo.options: {0}</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/mssql/out/objectExplorerNodeProvider/command" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="progress">
-      <source xml:lang="en">$(sync~spin) {0}...</source>
+  <file original="extensions/mssql/dist/telemetry" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="viewKnownIssuesText">
+      <source xml:lang="en">View Known Issues</source>
     </trans-unit>
-    <trans-unit id="cancelTooltip">
-      <source xml:lang="en">Cancel</source>
-    </trans-unit>
-    <trans-unit id="cancel">
-      <source xml:lang="en">Cancel operation?</source>
-    </trans-unit>
-    <trans-unit id="mssql.searchServers">
-      <source xml:lang="en">Search Server Names</source>
+    <trans-unit id="serviceCrashMessage">
+      <source xml:lang="en">{0} component exited unexpectedly. Please restart Azure Data Studio.</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/mssql/out/objectExplorerNodeProvider/cancelableStream" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="streamCanceled">
-      <source xml:lang="en">Stream operation canceled by the user</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/out/prompts/confirm" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="msgYes">
-      <source xml:lang="en">Yes</source>
-    </trans-unit>
-    <trans-unit id="msgNo">
-      <source xml:lang="en">No</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/out/main" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/mssql/dist/main" source-language="en" datatype="plaintext"><body>
     <trans-unit id="msgSampleCodeDataFrame">
       <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
-    </trans-unit>
-    <trans-unit id="grafana">
-      <source xml:lang="en">Metrics Dashboard</source>
-    </trans-unit>
-    <trans-unit id="kibana">
-      <source xml:lang="en">Log Search Dashboard</source>
-    </trans-unit>
-    <trans-unit id="sparkHistory">
-      <source xml:lang="en">Spark Job Monitoring</source>
-    </trans-unit>
-    <trans-unit id="yarnHistory">
-      <source xml:lang="en">Spark Resource Management</source>
-    </trans-unit>
-    <trans-unit id="copyText">
-      <source xml:lang="en">Copy</source>
-    </trans-unit>
-    <trans-unit id="appproxy">
-      <source xml:lang="en">Application Proxy</source>
-    </trans-unit>
-    <trans-unit id="controller">
-      <source xml:lang="en">Cluster Management Service</source>
-    </trans-unit>
-    <trans-unit id="gateway">
-      <source xml:lang="en">HDFS and Spark</source>
-    </trans-unit>
-    <trans-unit id="managementproxy">
-      <source xml:lang="en">Management Proxy</source>
-    </trans-unit>
-    <trans-unit id="mgmtproxy">
-      <source xml:lang="en">Management Proxy</source>
     </trans-unit>
     <trans-unit id="notebookFileType">
       <source xml:lang="en">Notebooks</source>
@@ -704,14 +625,249 @@
     <trans-unit id="fileNotFound">
       <source xml:lang="en">Unable to find the file specified</source>
     </trans-unit>
+  </body></file>
+  <file original="extensions/mssql/dist/prompts/confirm" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="msgYes">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
+    <trans-unit id="msgNo">
+      <source xml:lang="en">No</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/mssql/dist/sparkFeature/dialog/dialogCommands" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="selectOtherServer">
+      <source xml:lang="en">Select other SQL Server</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_PleaseSelectSqlWithCluster">
+      <source xml:lang="en">Please select SQL Server with Big Data Cluster.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_NoSqlSelected">
+      <source xml:lang="en">No SQL Server is selected.</source>
+    </trans-unit>
+    <trans-unit id="errorNotSqlBigDataCluster">
+      <source xml:lang="en">The selected server does not belong to a SQL Server Big Data Cluster</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_GetFilePathFromSelectedNodeFailed">
+      <source xml:lang="en">Error Get File Path: {0}</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="sparkJobSubmission_SparkJobSubmissionDialogInitializeError">
+      <source xml:lang="en">Parameters for SparkJobSubmissionDialog is illegal</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_DialogTitleNewJob">
+      <source xml:lang="en">New Job</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_DialogCancelButton">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_DialogSubmitButton">
+      <source xml:lang="en">Submit</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_SubmitSparkJob">
+      <source xml:lang="en">{0} Spark Job Submission:</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_SubmissionStartMessage">
+      <source xml:lang="en">.......................... Submit Spark Job Start ..........................</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionModel" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="sparkJobSubmission_SparkJobSubmissionModelInitializeError">
+      <source xml:lang="en">Parameters for SparkJobSubmissionModel is illegal</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_submissionArgsIsInvalid">
+      <source xml:lang="en">submissionArgs is invalid. </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_LivyBatchIdIsInvalid">
+      <source xml:lang="en">livyBatchId is invalid. </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_GetApplicationIdTimeOut">
+      <source xml:lang="en">Get Application Id time out. {0}[Log]   {1}</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_localFileOrFolderNotSpecified.">
+      <source xml:lang="en">Property localFilePath or hdfsFolderPath is not specified. </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_PathNotSpecified.">
+      <source xml:lang="en">Property Path is not specified. </source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkConfigurationTab" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="sparkJobSubmission_GeneralTabName">
+      <source xml:lang="en">GENERAL</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_JobNamePlaceHolder">
+      <source xml:lang="en">Enter a name ...</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_JobName">
+      <source xml:lang="en">Job Name</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_SparkCluster">
+      <source xml:lang="en">Spark Cluster</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_FilePathPlaceHolder">
+      <source xml:lang="en">Path to a .jar or .py file</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_LocalFileDestinationHintWithPath">
+      <source xml:lang="en">The selected local file will be uploaded to HDFS: {0}</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_MainFilePath">
+      <source xml:lang="en">JAR/py File</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_MainClass">
+      <source xml:lang="en">Main Class</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_Arguments">
+      <source xml:lang="en">Arguments</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_ArgumentsTooltip">
+      <source xml:lang="en">Command line arguments used in your main class, multiple arguments should be split by space.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_NotSpecifyJobName">
+      <source xml:lang="en">Property Job Name is not specified.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_NotSpecifyJARPYPath">
+      <source xml:lang="en">Property JAR/py File is not specified.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_NotSpecifyMainClass">
+      <source xml:lang="en">Property Main Class is not specified.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_HDFSFileNotExistedWithPath">
+      <source xml:lang="en">{0} does not exist in Cluster or exception thrown. </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_HDFSFileNotExisted">
+      <source xml:lang="en">The specified HDFS file does not exist. </source>
+    </trans-unit>
+    <trans-unit id="sparkSelectLocalFile">
+      <source xml:lang="en">Select</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_SelectFileError">
+      <source xml:lang="en">Error in locating the file due to Error: {0}</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="sparkJobSubmission_AdvancedTabName">
+      <source xml:lang="en">ADVANCED</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_ReferenceJarList">
+      <source xml:lang="en">Reference Jars</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_ReferenceJarListToolTip">
+      <source xml:lang="en">Jars to be placed in executor working directory. The Jar path needs to be an HDFS Path. Multiple paths should be split by semicolon (;)</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_ReferencePyList">
+      <source xml:lang="en">Reference py Files</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_ReferencePyListTooltip">
+      <source xml:lang="en">Py Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_ReferenceFilesList">
+      <source xml:lang="en">Reference Files</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission_ReferenceFilesListTooltip">
+      <source xml:lang="en">Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/objectExplorerNodeProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="prmptPwd">
+      <source xml:lang="en">Please provide the password to connect to HDFS:</source>
+    </trans-unit>
+    <trans-unit id="sessionNotFound">
+      <source xml:lang="en">Session for node {0} does not exist</source>
+    </trans-unit>
+    <trans-unit id="notifyError">
+      <source xml:lang="en">Error notifying of node change: {0}</source>
+    </trans-unit>
+    <trans-unit id="hdfsFolder">
+      <source xml:lang="en">HDFS</source>
+    </trans-unit>
+    <trans-unit id="rootLabel">
+      <source xml:lang="en">Root</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/hdfsProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="errorExpanding">
+      <source xml:lang="en">Error: {0}</source>
+    </trans-unit>
+    <trans-unit id="errDeleteConnectionNode">
+      <source xml:lang="en">Cannot delete a connection. Only subfolders and files can be deleted.</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/cancelableStream" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="streamCanceled">
+      <source xml:lang="en">Stream operation canceled by the user</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/mssql/dist/dashboard/serviceEndpoints" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="grafana">
+      <source xml:lang="en">Metrics Dashboard</source>
+    </trans-unit>
+    <trans-unit id="kibana">
+      <source xml:lang="en">Log Search Dashboard</source>
+    </trans-unit>
+    <trans-unit id="sparkHistory">
+      <source xml:lang="en">Spark Jobs Management and Monitoring Dashboard</source>
+    </trans-unit>
+    <trans-unit id="yarnHistory">
+      <source xml:lang="en">Spark Diagnostics and Monitoring Dashboard</source>
+    </trans-unit>
+    <trans-unit id="copyText">
+      <source xml:lang="en">Copy</source>
+    </trans-unit>
+    <trans-unit id="endpoint.appproxy">
+      <source xml:lang="en">Application Proxy</source>
+    </trans-unit>
+    <trans-unit id="endpoint.controller">
+      <source xml:lang="en">Cluster Management Service</source>
+    </trans-unit>
+    <trans-unit id="endpoint.gateway">
+      <source xml:lang="en">Gateway to access HDFS files, Spark</source>
+    </trans-unit>
+    <trans-unit id="endpoint.managementproxy">
+      <source xml:lang="en">Management Proxy</source>
+    </trans-unit>
+    <trans-unit id="endpoint.mgmtproxy">
+      <source xml:lang="en">Management Proxy</source>
+    </trans-unit>
+    <trans-unit id="endpoint.sqlServerEndpoint">
+      <source xml:lang="en">SQL Server Master Instance Front-End</source>
+    </trans-unit>
+    <trans-unit id="endpoint.grafana">
+      <source xml:lang="en">Metrics Dashboard</source>
+    </trans-unit>
+    <trans-unit id="endpoint.kibana">
+      <source xml:lang="en">Log Search Dashboard</source>
+    </trans-unit>
+    <trans-unit id="endpoint.yarnHistory">
+      <source xml:lang="en">Spark Diagnostics and Monitoring Dashboard</source>
+    </trans-unit>
+    <trans-unit id="endpoint.sparkHistory">
+      <source xml:lang="en">Spark Jobs Management and Monitoring Dashboard</source>
+    </trans-unit>
+    <trans-unit id="endpoint.webhdfs">
+      <source xml:lang="en">HDFS File System Proxy</source>
+    </trans-unit>
+    <trans-unit id="endpoint.livy">
+      <source xml:lang="en">Proxy for running Spark statements, jobs, applications</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/mssql/dist/sqlToolsServer" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="serviceStartedStatusMsg">
+      <source xml:lang="en">{0} Started</source>
+    </trans-unit>
+    <trans-unit id="startingServiceStatusMsg">
+      <source xml:lang="en">Starting {0}</source>
+    </trans-unit>
+    <trans-unit id="failedToStartServiceErrorMsg">
+      <source xml:lang="en">Failed to start {0}</source>
+    </trans-unit>
     <trans-unit id="installingServiceChannelMsg">
-      <source xml:lang="en">Installing {0} service to {1}</source>
+      <source xml:lang="en">Installing {0} to {1}</source>
     </trans-unit>
     <trans-unit id="installingServiceStatusMsg">
-      <source xml:lang="en">Installing Service</source>
+      <source xml:lang="en">Installing {0}</source>
     </trans-unit>
     <trans-unit id="installedServiceChannelMsg">
-      <source xml:lang="en">Installed</source>
+      <source xml:lang="en">Installed {0}</source>
     </trans-unit>
     <trans-unit id="downloadingServiceChannelMsg">
       <source xml:lang="en">Downloading {0}</source>
@@ -720,54 +876,10 @@
       <source xml:lang="en">({0} KB)</source>
     </trans-unit>
     <trans-unit id="downloadingServiceStatusMsg">
-      <source xml:lang="en">Downloading Service</source>
+      <source xml:lang="en">Downloading {0}</source>
     </trans-unit>
     <trans-unit id="downloadServiceDoneChannelMsg">
-      <source xml:lang="en">Done!</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/out/localizedConstants" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="msgMissingNodeContext">
-      <source xml:lang="en">Node Command called without any node passed</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_LocalFileDestinationHint">
-      <source xml:lang="en">Local file will be uploaded to HDFS. </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_SubmissionEndMessage">
-      <source xml:lang="en">.......................... Submit Spark Job End ............................</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_PrepareUploadingFile">
-      <source xml:lang="en">Uploading file from local {0} to HDFS folder: {1}</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_UploadingFileSucceeded">
-      <source xml:lang="en">Upload file to cluster Succeeded!</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_UploadingFileFailed">
-      <source xml:lang="en">Upload file to cluster Failed. {0}</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_PrepareSubmitJob">
-      <source xml:lang="en">Submitting job {0} ... </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_SubmitJobFinished">
-      <source xml:lang="en">The Spark Job has been submitted.</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_SubmitJobFailed">
-      <source xml:lang="en">Spark Job Submission Failed. {0} </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_YarnUIMessage">
-      <source xml:lang="en">YarnUI Url: {0} </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_SparkHistoryLinkMessage">
-      <source xml:lang="en">Spark History Url: {0} </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_GetApplicationIdFailed">
-      <source xml:lang="en">Get Application Id Failed. {0}</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_LocalFileNotExisted">
-      <source xml:lang="en">Local file {0} does not existed. </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission_NoSqlBigDataClusterFound">
-      <source xml:lang="en">No Sql Server big data cluster found.</source>
+      <source xml:lang="en">Done installing {0}</source>
     </trans-unit>
   </body></file>
 </xliff>
