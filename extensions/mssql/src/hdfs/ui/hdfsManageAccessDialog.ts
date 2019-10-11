@@ -539,7 +539,7 @@ export class ManageAccessDialog {
 
 function createCheckbox(builder: azdata.ModelBuilder, checked: boolean, enabled: boolean, containerWidth: number, containerHeight: number): { container: azdata.FlexContainer, checkbox: azdata.CheckBoxComponent } {
 	const checkbox = builder.checkBox()
-		.withProperties<azdata.CheckBoxProperties>({ checked: checked, enabled: enabled, height: checkboxSize, width: checkboxSize }).component();
+		.withProperties({ checked: checked, enabled: enabled, height: checkboxSize, width: checkboxSize }).component();
 	const container = builder.flexContainer()
 		.withLayout({ width: containerWidth, height: containerHeight })
 		.component();
