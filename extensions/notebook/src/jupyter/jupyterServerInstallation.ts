@@ -452,13 +452,6 @@ export class JupyterServerInstallation {
 			}
 
 			if (doUpgrade) {
-				let packagesStr = condaPackagesToInstall.concat(pipPackagesToInstall).map(pkg => {
-					return `${pkg.name}>=${pkg.version}`;
-				}).join(' ');
-				let taskName = localize('upgradePackages.pipInstall',
-					"Installing {0}",
-					packagesStr);
-
 				let installPromise = new Promise(async resolve => {
 					if (this._usingConda) {
 						await this.installCondaPackages(condaPackagesToInstall, true);
@@ -468,6 +461,13 @@ export class JupyterServerInstallation {
 				});
 
 				if (promptForUpgrade) {
+					let packagesStr = condaPackagesToInstall.concat(pipPackagesToInstall).map(pkg => {
+						return `${pkg.name}>=${pkg.version}`;
+					}).join(' ');
+					let taskName = localize('upgradePackages.pipInstall',
+						"Installing {0}",
+						packagesStr);
+
 					let backgroundTaskComplete = new Deferred<void>();
 					this.apiWrapper.startBackgroundOperation({
 						displayName: taskName,
