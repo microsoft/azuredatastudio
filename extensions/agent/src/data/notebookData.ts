@@ -25,6 +25,12 @@ const SelectStorageDatabaseErrorMessage = localize('notebookData.selectStorageDa
 const SelectExecutionDatabaseErrorMessage = localize('notebookData.selectExecutionDatabase', 'Select execution database');
 const JobWithSameNameExistsErrorMessage = localize('notebookData.jobExists', 'Job with similar name already exists');
 
+//added my own error message here.
+const NotebookNotSavedErrorMessage = localize('notebookData.notebookNotSaved', 'Notebook must be saved to local disk first');
+
+//Regex used to screenout file names.
+const InvalidRegex = /[\\\/\:\*\?\"\<\>\|]/g;
+
 export class NotebookData implements IAgentDialogData {
 
 	private _ownerUri: string;
@@ -187,7 +193,14 @@ export class NotebookData implements IAgentDialogData {
 				validationErrors.push(TemplatePathEmptyErrorMessage);
 			}
 			if (!(await exists(this.templatePath))) {
-				validationErrors.push(InvalidNotebookPathErrorMessage);
+				//check if filepath is actually a name of file instead of path to file.
+				if (!InvalidRegex.exec(this.templatePath)) {
+					//Place saving prompt here.
+					validationErrors.push(NotebookNotSavedErrorMessage);
+				}
+				else {
+					validationErrors.push(InvalidNotebookPathErrorMessage);
+				}
 			}
 			if (NotebookData.jobLists) {
 				for (let i = 0; i < NotebookData.jobLists.length; i++) {
@@ -200,6 +213,7 @@ export class NotebookData implements IAgentDialogData {
 		}
 		else {
 			if (this.templatePath && this.templatePath !== '' && !(await exists(this.templatePath))) {
+				console.log('We have an error at line 205.');
 				validationErrors.push(InvalidNotebookPathErrorMessage);
 			}
 		}
