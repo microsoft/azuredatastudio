@@ -262,7 +262,8 @@ export function suggestFilename(mode: string | undefined, prefix: string): strin
 		.filter(assoc => startsWith(assoc, '.'));
 
 	if (extensionsWithDotFirst.length > 0) {
-		return prefix + extensionsWithDotFirst[0];
+		// {{SQL CARBON EDIT}} when saving files that are opened with untitled schema, don't add the extension again.
+		return prefix.indexOf(extensionsWithDotFirst[0]) > -1 ? prefix : prefix + extensionsWithDotFirst[0];
 	}
 
 	return extensions[0] || prefix;
