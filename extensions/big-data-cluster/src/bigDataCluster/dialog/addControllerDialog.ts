@@ -10,7 +10,6 @@ import * as nls from 'vscode-nls';
 import { ClusterController, ControllerError } from '../controller/clusterControllerApi';
 import { ControllerTreeDataProvider } from '../tree/controllerTreeDataProvider';
 import { TreeNode } from '../tree/treeNode';
-import { showErrorMessage } from '../utils';
 import { AuthType } from '../constants';
 
 const localize = nls.loadMessageBundle();
@@ -177,7 +176,7 @@ export class AddControllerDialog {
 					],
 					title: ''
 				}]).withLayout({ width: '100%' }).component();
-
+			this.onAuthChanged();
 			await view.initializeModel(formModel);
 		});
 
