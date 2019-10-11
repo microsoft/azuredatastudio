@@ -272,22 +272,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	getUntitledNotebookUri(resource: string): vscode.Uri {
 		let untitledFileName: vscode.Uri;
-		if (process.platform === 'win32') {
-			let title = path.join(path.dirname(resource), this.findNextUntitledFileName(resource));
-			untitledFileName = vscode.Uri.parse(`untitled:${title}`);
-		}
-		else {
-			untitledFileName = vscode.Uri.parse(resource).with({ scheme: 'untitled' });
-		}
-		if (!this.currentBook.getAllBooks().get(untitledFileName.fsPath) && !this.currentBook.getAllBooks().get(path.basename(untitledFileName.fsPath))) {
+		let nextTitle: string = this.findNextUntitledFileName(resource);
+		untitledFileName = vscode.Uri.parse(`untitled:${nextTitle}`);
+		if (!this.currentBook.getAllBooks().get(untitledFileName.fsPath) && !this.currentBook.getAllBooks().get(path.basename(untitledFileName.fsPath, '.ipynb'))) {
 			let notebook = this.currentBook.getAllBooks().get(resource);
-			this.currentBook.getAllBooks().set(path.basename(untitledFileName.fsPath), notebook);
+			this.currentBook.getAllBooks().set(path.basename(untitledFileName.fsPath, '.ipynb'), notebook);
 		}
 		return untitledFileName;
 	}
 
 	findNextUntitledFileName(filePath: string): string {
-		const baseName = path.basename(filePath);
+		const baseName = path.basename(filePath, '.ipynb');
 		let idx = 0;
 		let title = `${baseName}`;
 		do {
