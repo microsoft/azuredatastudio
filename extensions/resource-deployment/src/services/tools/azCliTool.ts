@@ -43,16 +43,13 @@ export class AzCliTool extends ToolBase {
 		return true;
 	}
 
-	protected get installationPath(): Promise<string | null> {
-		return new Promise<string | null>((resolve, _reject) => {
-			switch (this.osType) {
-				case OsType.linux:
-					resolve(defaultInstallationRoot);
-				default:
-					resolve(win32InstallationRoot);
-					console.log(`TCL: AzCliTool -> win32InstallationRoot:${win32InstallationRoot}`);
-			}
-		});
+	protected async getInstallationPath(): Promise<string | null> {
+		switch (this.osType) {
+			case OsType.linux:
+				return await Promise.resolve(defaultInstallationRoot);
+			default:
+				return await Promise.resolve(win32InstallationRoot);
+		}
 	}
 	get installationCommands(): Command[] {
 		switch (this.osType) {
@@ -78,7 +75,8 @@ export class AzCliTool extends ToolBase {
 				},
 				{
 					comment: `displaying the installation log ...`,
-					command: `type AzureCliInstall.log`
+					command: `type AzureCliInstall.log`,
+					ignoreError: true
 				}
 			];
 			case OsType.linux: return [

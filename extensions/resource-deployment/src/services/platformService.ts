@@ -3,12 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import * as cp from 'child_process';
 import * as fs from 'fs';
+import * as cp from 'promisify-child-process';
 import * as sudo from 'sudo-prompt';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { OsType } from '../interfaces';
+
 
 const localize = nls.loadMessageBundle();
 const extensionOutputChannel = localize('resourceDeployment.outputChannel', 'Deployments');
@@ -24,12 +25,18 @@ export interface IPlatformService {
 	copyFile(source: string, target: string): Promise<void>;
 	fileExists(file: string): Promise<boolean>;
 	openFile(filePath: string): void;
+	getErrorMessage(error: any): string;
 	showErrorMessage(message: string): void;
 	logToOutputChannel(data: string | Buffer, header?: string): void;
 	isNotebookNameUsed(title: string): boolean;
 	makeDirectory(path: string): Promise<void>;
 	readTextFile(filePath: string): Promise<string>;
-	runCommand(command: string, options?: CommandOptions, sudo?: boolean, commandTitle?: string): Promise<string>;
+	runCommand(command: string, options?: CommandOptions, sudo?: boolean, commandTitle?: string, ignoreError?: boolean): Promise<string>;
+}
+
+interface CommandOutput {
+	stdout: string;
+	stderr: string;
 }
 
 export interface CommandOptions {
@@ -58,27 +65,30 @@ export class PlatformService implements IPlatformService {
 		return (<any>OsType)[platform] || OsType.others;
 	}
 
-	copyFile(source: string, target: string): Promise<void> {
-		return fs.promises.copyFile(source, target);
+	async copyFile(source: string, target: string): Promise<void> {
+		return await fs.promises.copyFile(source, target);
 	}
 
-	fileExists(file: string): Promise<boolean> {
-		return fs.promises.access(file).then(() => {
+	async fileExists(file: string): Promise<boolean> {
+		try {
+			await fs.promises.access(file);
 			return true;
-		}).catch(error => {
+		} catch (error) {
 			if (error && error.code === 'ENOENT') {
 				return false;
 			}
 			throw error;
-		});
+		}
 	}
 
 	openFile(filePath: string): void {
 		vscode.commands.executeCommand('vscode.open', vscode.Uri.file(filePath));
 	}
 
-	private getErrorMessage(error: Error | string): string {
-		return (error instanceof Error) ? error.message : error;
+	public getErrorMessage(error: Error | string): string {
+		return (error instanceof Error)
+			? (typeof error.message === 'string' ? error.message : '')
+			: typeof error === 'string' ? error : `unknown error:${JSON.stringify(error, undefined, '\t')}`;
 	}
 
 	showErrorMessage(error: Error | string): void {
@@ -89,12 +99,12 @@ export class PlatformService implements IPlatformService {
 		return (azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1);
 	}
 
-	makeDirectory(path: string): Promise<void> {
-		return fs.promises.mkdir(path);
+	async makeDirectory(path: string): Promise<void> {
+		await fs.promises.mkdir(path);
 	}
 
-	readTextFile(filePath: string): Promise<string> {
-		return fs.promises.readFile(filePath, 'utf8');
+	async readTextFile(filePath: string): Promise<string> {
+		return await fs.promises.readFile(filePath, 'utf8');
 	}
 
 	public logToOutputChannel(data: string | Buffer, header?: string): void {
@@ -111,92 +121,105 @@ export class PlatformService implements IPlatformService {
 			});
 	}
 
-	async runCommand(command: string, options?: CommandOptions, sudo?: boolean, commandTitle?: string): Promise<string> {
+	async runCommand(command: string, options?: CommandOptions, sudo?: boolean, commandTitle?: string, ignoreError?: boolean): Promise<string> {
 		if (commandTitle !== undefined && commandTitle !== null) {
-			this._outputChannel.appendLine(`\t<<<${commandTitle}>>>`);
+			this._outputChannel.appendLine(`\t[ ${commandTitle} ]`);
 		}
-		console.log(`TCL: PlatformService -> options: ${JSON.stringify(options)}`);
-		if (sudo) {
-			return this.runSudoCommand(command, options, this._outputChannel);
-		} else {
-			return this.runStreamedCommand(command, options, this._outputChannel);
+
+		try {
+			if (sudo) {
+				return await this.runSudoCommand(command, this._outputChannel, options);
+			} else {
+				return await this.runStreamedCommand(command, this._outputChannel, options);
+			}
+		} catch (error) {
+			this._outputChannel.append(`\t>>> ${command}   ... errored out: ${this.getErrorMessage(error)}`);
+			if (!ignoreError) {
+				throw error;
+			} else {
+				this._outputChannel.append(`\t>>> Ignoring error in execution and continuing tool deployment`);
+				return '';
+			}
 		}
 	}
 
-	private runSudoCommand(cmd: string, options: CommandOptions | undefined, outputChannel: vscode.OutputChannel): Promise<string> {
-		return new Promise<string>((resolve, reject) => {
-			if (outputChannel) {
-				outputChannel.appendLine(`    > ${cmd}`);
-			}
-
-			if (options && options.workingDirectory) {
-				process.chdir(options.workingDirectory);
-			}
-
-			// Workaround for https://github.com/jorangreef/sudo-prompt/issues/111
-			const origEnv: NodeJS.ProcessEnv = Object.assign({}, process.env, options && options.additionalEnvironmentVariables);
-			const env: NodeJS.ProcessEnv = {};
-
-			Object.keys(origEnv).filter(key => /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key)).forEach((key) => {
-				env[key] = origEnv[key];
-			});
-
-			const sudoOptions = {
-				name: sudoPromptTitle,
-				env: env
-			};
-			sudo.exec(cmd, sudoOptions, (error, stdout, stderr) => {
+	private sudoExec(command: string, options: sudo.SudoOptions): Promise<CommandOutput> {
+		return new Promise<CommandOutput>((resolve, reject) => {
+			sudo.exec(command, options, (error, stdout, stderr) => {
 				if (error) {
-					this.outputDataChunk(error, outputChannel, '    stderr: ');
 					reject(error);
 				} else {
-					if (stdout) {
-						this.outputDataChunk(stdout, outputChannel, '    stdout: ');
-					}
-					if (stderr) {
-						this.outputDataChunk(stderr, outputChannel, '    stderr: ');
-					}
-					resolve(stdout);
+					resolve({ stdout, stderr });
 				}
 			});
 		});
 	}
 
-	private runStreamedCommand(cmd: string, options?: CommandOptions, outputChannel?: vscode.OutputChannel): Promise<string> {
-		return new Promise<string>((resolve, reject) => {
-			const stdoutData: string[] = [];
-			if (outputChannel) {
-				outputChannel.appendLine(`    > ${cmd}`);
-			}
+	private async runSudoCommand(command: string, outputChannel: vscode.OutputChannel, options?: CommandOptions): Promise<string> {
+		outputChannel.appendLine(`    > ${command}`);
 
-			const spawnOptions: cp.SpawnOptions = {
-				cwd: options && options.workingDirectory,
-				env: Object.assign({}, process.env, options && options.additionalEnvironmentVariables),
-				shell: true,
-				detached: false,
-				windowsHide: true
-			};
+		if (options && options.workingDirectory) {
+			process.chdir(options.workingDirectory);
+		}
 
-			let child = cp.spawn(cmd, [], spawnOptions);
-			// Add listeners to resolve/reject the promise on exit
-			child.on('error', (error: Error) => {
-				reject(error);
-			});
-			child.on('exit', (code: number) => {
-				if (code === 0) {
-					resolve(stdoutData.join(''));
-				} else {
-					reject(localize('spawnCommandProcessExited', 'Process exited with code {0}', code));
-				}
-			});
-			// Add listeners to print stdout and stderr if an output channel was provided
-			if (outputChannel && child && child.stdout && child.stderr) {
-				child.stdout.on('data', data => {
-					stdoutData.push(data);
-					this.outputDataChunk(data, outputChannel, '    stdout: ');
-				});
-				child.stderr.on('data', data => { this.outputDataChunk(data, outputChannel, '    stderr: '); });
+		// Workaround for https://github.com/jorangreef/sudo-prompt/issues/111
+		// DevNote: The environment variable being excluded from getting passed to sudo will never exist on a 'unixy' box. So this affects windows only.
+		// On my testing on windows machine for our usage the environment variables being excluded were not important for the process execution being used here.
+		// If one is trying to use this code elsewhere, one should test on windows thoroughly unless the above issue is fixed.
+		const origEnv: NodeJS.ProcessEnv = Object.assign({}, process.env, options && options.additionalEnvironmentVariables);
+		const env: NodeJS.ProcessEnv = {};
+
+		Object.keys(origEnv).filter(key => /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key)).forEach((key) => {
+			env[key] = origEnv[key];
+		});
+		// Workaround for  https://github.com/jorangreef/sudo-prompt/issues/111 done
+
+		const sudoOptions = {
+			name: sudoPromptTitle,
+			env: env
+		};
+
+		try {
+			const { stdout, stderr } = await this.sudoExec(command, sudoOptions);
+			this.outputDataChunk(stdout, outputChannel, '    stdout: ');
+			this.outputDataChunk(stderr, outputChannel, '    stderr: ');
+			return stdout;
+		} catch (error) {
+			this.outputDataChunk(error, outputChannel, '    stderr: ');
+			throw error;
+		}
+	}
+
+	private async runStreamedCommand(command: string, outputChannel: vscode.OutputChannel, options?: CommandOptions): Promise<string> {
+		const stdoutData: string[] = [];
+		outputChannel.appendLine(`    > ${command}`);
+
+		const spawnOptions = {
+			cwd: options && options.workingDirectory,
+			env: Object.assign({}, process.env, options && options.additionalEnvironmentVariables),
+			encoding: 'utf8',
+			maxBuffer: 10 * 1024 * 1024, // 10 Mb of output can be captured.
+			shell: true,
+			detached: false,
+			windowsHide: true
+		};
+		const child = cp.spawn(command, [], spawnOptions);
+
+		// Add listeners to print stdout and stderr and exit code
+		child.on('exit', (code: number | null, signal: string | null) => {
+			if (code !== null) {
+				outputChannel.appendLine(`    >>> ${command}    ... exited with code: ${code}`);
+			} else {
+				outputChannel.appendLine(`    >>> ${command}   ... exited with signal: ${signal}`);
 			}
 		});
+		child.stdout.on('data', data => {
+			stdoutData.push(data);
+			this.outputDataChunk(data, outputChannel, '    stdout: ');
+		});
+		child.stderr.on('data', data => { this.outputDataChunk(data, outputChannel, '    stderr: '); });
+
+		await child;
+		return stdoutData.join('');
 	}
 }

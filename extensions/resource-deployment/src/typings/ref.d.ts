@@ -9,5 +9,11 @@
 /// <reference types='@types/node'/>
 declare module "sudo-prompt" {
 
-	export function exec(cmd: string, options: { name?: string, icns?: string }, callback: (error: string, stdout: string, stderr: string) => void): any;
+	type SudoOptions = {
+		name?: string;
+		icon?: string;
+		env: NodeJS.ProcessEnv;
+	};
+
+	export function exec(cmd: string, options: SudoOptions, callback: (error: string, stdout: string, stderr: string) => void): any;
 }

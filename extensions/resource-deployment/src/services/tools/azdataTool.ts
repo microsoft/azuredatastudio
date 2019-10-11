@@ -56,16 +56,12 @@ export class AzdataTool extends ToolBase {
 		return true;
 	}
 
-	protected get installationPath(): Promise<string | null> {
+	protected async getInstallationPath(): Promise<string | null> {
 		switch (this.osType) {
 			case OsType.linux:
-				return new Promise<string | null>((resolve, _reject) => {
-					resolve(installationRoot);
-				});
+				return installationRoot;
 			default:
-				return this.getPip3InstallLocation('azdata-cli').then(azdataSitePackageLocation => {
-					return path.join(azdataSitePackageLocation, '..', 'Scripts');
-				});
+				return path.join(await this.getPip3InstallLocation('azdata-cli'), '..', 'Scripts');
 		}
 	}
 

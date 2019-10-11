@@ -194,10 +194,6 @@ export enum OsType {
 	win32 = 1, // Keep this 1 based, so that only falsy values are the ones that are undefined (OsType["unknown"] returns undefined) so easy to map to others.
 	darwin,
 	linux,
-	aix,
-	freebsd,
-	openbsd,
-	sunos,
 	others
 }
 
@@ -240,4 +236,5 @@ export interface Command {
 	comment?: string;
 	workingDirectory?: string;
 	additionalEnvironmentVariables?: NodeJS.ProcessEnv;
+	ignoreError?: boolean;
 }

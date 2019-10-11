@@ -24,10 +24,8 @@ export abstract class ToolBase implements ITool {
 	protected abstract getVersionFromOutput(output: string): SemVer | undefined;
 	protected abstract readonly versionCommand: Command;
 
-	protected get installationPath(): Promise<string | null> {
-		return new Promise<string | null>((resolve, _reject) => {
-			resolve(null);
-		});
+	protected async getInstallationPath(): Promise<string | null> {
+		return await Promise.resolve(null);
 	}
 
 	protected get installationSearchPaths(): (string | null)[] {
@@ -99,7 +97,8 @@ export abstract class ToolBase implements ITool {
 					additionalEnvironmentVariables: installationCommands[i].additionalEnvironmentVariables
 				},
 				installationCommands[i].sudo,
-				installationCommands[i].comment
+				installationCommands[i].comment,
+				installationCommands[i].ignoreError
 			);
 		}
 	}
@@ -109,24 +108,21 @@ export abstract class ToolBase implements ITool {
 	}
 
 	protected async addInstallationSearchPathsToSystemPath(): Promise<void> {
-		const installationPath = await this.installationPath;
-		return new Promise<void>((resolve, _reject) => {
-			const searchPaths = [installationPath, ...this.installationSearchPaths];
-			console.log(`installationSearchPaths for tool:${this.displayName}: ${JSON.stringify(searchPaths, undefined, '\t')}`);
-			searchPaths.forEach(installationSearchPath => {
-				if (installationSearchPath) {
-					if (process.env.PATH) {
-						if (!`${delimiter}${process.env.PATH}${delimiter}`.includes(`${delimiter}${installationSearchPath}${delimiter}`)) {
-							process.env.PATH += `${delimiter}${installationSearchPath}`;
-							console.log(`Appending to Path -> ${delimiter}${installationSearchPath}`);
-						}
-					} else {
-						process.env.PATH = installationSearchPath;
-						console.log(`Appending to Path -> '${delimiter}${installationSearchPath}':${delimiter}${installationSearchPath}`);
+		const installationPath = await this.getInstallationPath();
+		const searchPaths = [installationPath, ...this.installationSearchPaths];
+		console.log(`installationSearchPaths for tool:${this.displayName}: ${JSON.stringify(searchPaths, undefined, '\t')}`);
+		searchPaths.forEach(installationSearchPath => {
+			if (installationSearchPath) {
+				if (process.env.PATH) {
+					if (!`${delimiter}${process.env.PATH}${delimiter}`.includes(`${delimiter}${installationSearchPath}${delimiter}`)) {
+						process.env.PATH += `${delimiter}${installationSearchPath}`;
+						console.log(`Appending to Path -> ${delimiter}${installationSearchPath}`);
 					}
+				} else {
+					process.env.PATH = installationSearchPath;
+					console.log(`Appending to Path -> '${delimiter}${installationSearchPath}':${delimiter}${installationSearchPath}`);
 				}
-			});
-			resolve();
+			}
 		});
 	}
 	public async loadInformation(): Promise<void> {
@@ -139,12 +135,12 @@ export abstract class ToolBase implements ITool {
 		this._versionOutput = undefined;
 		this._osType = this._platformService.osType();
 		await this.addInstallationSearchPathsToSystemPath();
-		return this._platformService.runCommand(this.versionCommand.command,
-			{
-				workingDirectory: this.versionCommand.workingDirectory,
-				additionalEnvironmentVariables: this.versionCommand.additionalEnvironmentVariables
-			}
-		).then((stdout) => {
+		try {
+			const stdout = await this._platformService.runCommand(this.versionCommand.command,
+				{
+					workingDirectory: this.versionCommand.workingDirectory,
+					additionalEnvironmentVariables: this.versionCommand.additionalEnvironmentVariables
+				});
 			this._versionOutput = stdout;
 			this._version = this.getVersionFromOutput(stdout);
 			if (this._version) {
@@ -152,11 +148,12 @@ export abstract class ToolBase implements ITool {
 			} else {
 				throw localize('deployCluster.InvalidToolVersionOutput', "Invalid output received.");
 			}
-		}).catch((error) => {
-			const errorMessage = typeof error === 'string' ? error :
-				typeof error.message === 'string' ? error.message : '';
+		} catch (error) {
+
+			const errorMessage = this._platformService.getErrorMessage(error);
 			this._statusDescription = localize('deployCluster.GetToolVersionError', "Error retrieving version information.{0}Error: {1}{0}stdout: {2} ", EOL, errorMessage, this._versionOutput);
-		});
+		}
+
 	}
 
 	private _isInstalled: boolean = false;
