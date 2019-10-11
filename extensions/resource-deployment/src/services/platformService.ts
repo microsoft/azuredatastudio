@@ -12,7 +12,7 @@ import { OsType } from '../interfaces';
 
 const localize = nls.loadMessageBundle();
 const extensionOutputChannel = localize('resourceDeployment.outputChannel', 'Deployments');
-const sudoPromptTitle = localize('resourceDeployment.SudoPromptTitle', 'AzureDataStudio');
+const sudoPromptTitle = 'AzureDataStudio';
 
 /**
  * Abstract of platform dependencies
