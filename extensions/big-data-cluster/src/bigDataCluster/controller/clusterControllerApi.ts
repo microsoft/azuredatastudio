@@ -214,6 +214,37 @@ export class ClusterController {
 		}
 	}
 
+	public async refreshMount(mountPath: string): Promise<MountResponse> {
+		let auth = await this.authPromise;
+		const api = new DefaultApiWrapper(this.username, this.password, this._url, auth);
+
+		try {
+			const mountStatus = await api.refreshMount('', '', mountPath);
+			return {
+				response: mountStatus.response,
+				status: mountStatus.body
+			};
+		} catch (error) {
+			// TODO handle 401 by reauthenticating
+			throw new ControllerError(error, localize('bdc.error.refreshHdfs', "Error refreshing mount"));
+		}
+	}
+
+	public async deleteMount(mountPath: string): Promise<MountResponse> {
+		let auth = await this.authPromise;
+		const api = new DefaultApiWrapper(this.username, this.password, this._url, auth);
+
+		try {
+			const mountStatus = await api.deleteMount('', '', mountPath);
+			return {
+				response: mountStatus.response,
+				status: mountStatus.body
+			};
+		} catch (error) {
+			// TODO handle 401 by reauthenticating
+			throw new ControllerError(error, localize('bdc.error.deleteHdfs', "Error deleting mount"));
+		}
+	}
 }
 /**
  * Fixes missing protocol and wrong character for port entered by user

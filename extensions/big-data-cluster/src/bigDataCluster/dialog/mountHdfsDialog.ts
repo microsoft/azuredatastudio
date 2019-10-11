@@ -6,13 +6,15 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { ClusterController, ControllerError, MountInfo, MountState } from '../controller/clusterControllerApi';
+import { ClusterController, ControllerError, MountInfo, MountState, IEndPointsResponse } from '../controller/clusterControllerApi';
 import { AuthType } from '../constants';
 
 const localize = nls.loadMessageBundle();
 
 const basicAuthDisplay = localize('basicAuthName', "Basic");
 const integratedAuthDisplay = localize('integratedAuthName', "Windows Authentication");
+const mountConfigutationTitle = localize('mount.main.section', "Mount Configuration");
+const hdfsPathTitle = localize('mount.hdfsPath', "HDFS Path");
 
 function getAuthCategory(name: AuthType): azdata.CategoryValue {
 	if (name === 'basic') {
@@ -125,6 +127,32 @@ abstract class HdfsDialogModelBase<T extends DialogProperties> {
 		return new ClusterController(this.props.url, this.props.auth, this.props.username, this.props.password, true);
 	}
 
+	protected async createAndVerifyControllerConnection(): Promise<ClusterController> {
+		// We pre-fetch the endpoints here to verify that the information entered is correct (the user is able to connect)
+		let controller = this.createController();
+		let response: IEndPointsResponse;
+		try {
+			response = await controller.getEndPoints();
+			if (!response || !response.endPoints) {
+				throw new Error(localize('mount.hdfs.loginerror1', "Login to controller failed"));
+			}
+		} catch (err) {
+			// An error here means we failed to
+			throw new Error(localize('mount.hdfs.loginerror2', "Login to controller failed: {0}", err.message));
+		}
+		return controller;
+	}
+
+	protected throwIfMissingUsernamePassword(): void {
+		if (this.props.auth === 'basic') {
+			// Verify username and password as we can't make them required in the UI
+			if (!this.props.username) {
+				throw new Error(localize('err.controller.username.required', "Username is required"));
+			} else if (!this.props.password) {
+				throw new Error(localize('err.controller.password.required', "Password is required"));
+			}
+		}
+	}
 }
 
 export class MountHdfsDialogModel extends HdfsDialogModelBase<MountHdfsProperties> {
@@ -135,37 +163,26 @@ export class MountHdfsDialogModel extends HdfsDialogModelBase<MountHdfsPropertie
 	}
 
 	protected async handleCompleted(): Promise<void> {
-		if (this.props.auth === 'basic') {
-			// Verify username and password as we can't make them required in the UI
-			if (!this.props.username) {
-				throw new Error(localize('err.controller.username.required', "Username is required"));
-			} else if (!this.props.password) {
-				throw new Error(localize('err.controller.password.required', "Password is required"));
-			}
-		}
+		this.throwIfMissingUsernamePassword();
 		// Validate credentials
 		this.credentials = convertCredsToJson(this.props.credentials);
 
 		// We pre-fetch the endpoints here to verify that the information entered is correct (the user is able to connect)
-		let controller = this.createController();
-		let response = await controller.getEndPoints();
-		if (response && response.endPoints) {
-			if (this._canceled) {
-				return;
-			}
-			//
-			azdata.tasks.startBackgroundOperation(
-				{
-					connection: undefined,
-					displayName: localize('mount.task.name', "Mounting HDFS folder on path {0}", this.props.hdfsPath),
-					description: '',
-					isCancelable: false,
-					operation: op => {
-						this.onSubmit(controller, op);
-					}
-				}
-			);
+		let controller = await this.createAndVerifyControllerConnection();
+		if (this._canceled) {
+			return;
 		}
+		azdata.tasks.startBackgroundOperation(
+			{
+				connection: undefined,
+				displayName: localize('mount.task.name', "Mounting HDFS folder on path {0}", this.props.hdfsPath),
+				description: '',
+				isCancelable: false,
+				operation: op => {
+					this.onSubmit(controller, op);
+				}
+			}
+		);
 	}
 
 	private async onSubmit(controller: ClusterController, op: azdata.BackgroundOperation): Promise<void> {
@@ -295,9 +312,9 @@ abstract class HdfsDialogBase<T extends DialogProperties> {
 					this.getMainSection(),
 					connectionSection
 				]).withLayout({ width: '100%' }).component();
-			this.onAuthChanged();
 
 			await view.initializeModel(formModel);
+			this.onAuthChanged();
 		});
 
 		this.dialog.registerCloseValidator(async () => await this.validate());
@@ -329,6 +346,16 @@ abstract class HdfsDialogBase<T extends DialogProperties> {
 			await this.model.onCancel();
 		}
 	}
+
+	protected async reportError(error: any): Promise<void> {
+		this.dialog.message = {
+			text: (typeof error === 'string') ? error : error.message,
+			level: azdata.window.MessageLevel.Error
+		};
+		if (this.model && this.model.onError) {
+			await this.model.onError(error as ControllerError);
+		}
+	}
 }
 export class MountHdfsDialog extends HdfsDialogBase<MountHdfsProperties> {
 	private pathInputBox: azdata.InputBoxComponent;
@@ -340,9 +367,12 @@ export class MountHdfsDialog extends HdfsDialogBase<MountHdfsProperties> {
 	}
 
 	protected getMainSection(): azdata.FormComponentGroup {
+		const newMountName = '/mymount';
+		let pathVal = this.model.props.hdfsPath;
+		pathVal = (!pathVal || pathVal === '/') ? newMountName : (pathVal + newMountName);
 		this.pathInputBox = this.uiModelBuilder.inputBox()
 			.withProperties<azdata.InputBoxProperties>({
-				value: this.model.props.hdfsPath
+				value: pathVal
 			}).component();
 		this.remoteUriInputBox = this.uiModelBuilder.inputBox()
 			.withProperties<azdata.InputBoxProperties>({
@@ -360,7 +390,7 @@ export class MountHdfsDialog extends HdfsDialogBase<MountHdfsProperties> {
 			components: [
 				{
 					component: this.pathInputBox,
-					title: localize('mount.hdfsPath', "HDFS Path"),
+					title: hdfsPathTitle,
 					required: true
 				}, {
 					component: this.remoteUriInputBox,
@@ -372,7 +402,7 @@ export class MountHdfsDialog extends HdfsDialogBase<MountHdfsProperties> {
 					required: false
 				}
 			],
-			title: localize('mount.main.section', "Mount Configuration")
+			title: mountConfigutationTitle
 		};
 	}
 
@@ -389,14 +419,168 @@ export class MountHdfsDialog extends HdfsDialogBase<MountHdfsProperties> {
 			});
 			return true;
 		} catch (error) {
-			this.dialog.message = {
-				text: (typeof error === 'string') ? error : error.message,
-				level: azdata.window.MessageLevel.Error
-			};
-			if (this.model && this.model.onError) {
-				await this.model.onError(error as ControllerError);
-			}
+			await this.reportError(error);
 			return false;
+		}
+	}
+}
+
+export class RefreshMountDialog extends HdfsDialogBase<MountHdfsProperties> {
+	private pathInputBox: azdata.InputBoxComponent;
+
+	constructor(model: RefreshMountModel) {
+		super(localize('refreshmount.dialog.title', "Refresh Mount"), model);
+	}
+
+	protected getMainSection(): azdata.FormComponentGroup {
+		this.pathInputBox = this.uiModelBuilder.inputBox()
+			.withProperties<azdata.InputBoxProperties>({
+				value: this.model.props.hdfsPath
+			}).component();
+		return {
+			components: [
+				{
+					component: this.pathInputBox,
+					title: hdfsPathTitle,
+					required: true
+				}
+			],
+			title: mountConfigutationTitle
+		};
+	}
+
+	protected async validate(): Promise<boolean> {
+		try {
+			await this.model.onComplete({
+				url: this.urlInputBox && this.urlInputBox.value,
+				auth: this.authValue,
+				username: this.usernameInputBox && this.usernameInputBox.value,
+				password: this.passwordInputBox && this.passwordInputBox.value,
+				hdfsPath: this.pathInputBox && this.pathInputBox.value
+			});
+			return true;
+		} catch (error) {
+			await this.reportError(error);
+			return false;
+		}
+	}
+}
+
+export class RefreshMountModel extends HdfsDialogModelBase<MountHdfsProperties> {
+
+	constructor(props: MountHdfsProperties) {
+		super(props);
+	}
+
+	protected async handleCompleted(): Promise<void> {
+		this.throwIfMissingUsernamePassword();
+
+		// We pre-fetch the endpoints here to verify that the information entered is correct (the user is able to connect)
+		let controller = await this.createAndVerifyControllerConnection();
+		if (this._canceled) {
+			return;
+		}
+		azdata.tasks.startBackgroundOperation(
+			{
+				connection: undefined,
+				displayName: localize('refreshmount.task.name', "Refreshing HDFS Mount on path {0}", this.props.hdfsPath),
+				description: '',
+				isCancelable: false,
+				operation: op => {
+					this.onSubmit(controller, op);
+				}
+			}
+		);
+	}
+
+	private async onSubmit(controller: ClusterController, op: azdata.BackgroundOperation): Promise<void> {
+		try {
+			await controller.refreshMount(this.props.hdfsPath);
+			op.updateStatus(azdata.TaskStatus.Succeeded, localize('refreshmount.task.submitted', "Refresh mount request submitted"));
+		} catch (error) {
+			const errMsg = (error instanceof Error) ? error.message : error;
+			vscode.window.showErrorMessage(errMsg);
+			op.updateStatus(azdata.TaskStatus.Failed, errMsg);
+		}
+	}
+}
+
+export class DeleteMountDialog extends HdfsDialogBase<MountHdfsProperties> {
+	private pathInputBox: azdata.InputBoxComponent;
+
+	constructor(model: DeleteMountModel) {
+		super(localize('deleteMount.dialog.title', "Delete Mount"), model);
+	}
+
+	protected getMainSection(): azdata.FormComponentGroup {
+		this.pathInputBox = this.uiModelBuilder.inputBox()
+			.withProperties<azdata.InputBoxProperties>({
+				value: this.model.props.hdfsPath
+			}).component();
+		return {
+			components: [
+				{
+					component: this.pathInputBox,
+					title: hdfsPathTitle,
+					required: true
+				}
+			],
+			title: mountConfigutationTitle
+		};
+	}
+
+	protected async validate(): Promise<boolean> {
+		try {
+			await this.model.onComplete({
+				url: this.urlInputBox && this.urlInputBox.value,
+				auth: this.authValue,
+				username: this.usernameInputBox && this.usernameInputBox.value,
+				password: this.passwordInputBox && this.passwordInputBox.value,
+				hdfsPath: this.pathInputBox && this.pathInputBox.value
+			});
+			return true;
+		} catch (error) {
+			await this.reportError(error);
+			return false;
+		}
+	}
+}
+
+export class DeleteMountModel extends HdfsDialogModelBase<MountHdfsProperties> {
+
+	constructor(props: MountHdfsProperties) {
+		super(props);
+	}
+
+	protected async handleCompleted(): Promise<void> {
+		this.throwIfMissingUsernamePassword();
+
+		// We pre-fetch the endpoints here to verify that the information entered is correct (the user is able to connect)
+		let controller = await this.createAndVerifyControllerConnection();
+		if (this._canceled) {
+			return;
+		}
+		azdata.tasks.startBackgroundOperation(
+			{
+				connection: undefined,
+				displayName: localize('deletemount.task.name', "Deleting HDFS Mount on path {0}", this.props.hdfsPath),
+				description: '',
+				isCancelable: false,
+				operation: op => {
+					this.onSubmit(controller, op);
+				}
+			}
+		);
+	}
+
+	private async onSubmit(controller: ClusterController, op: azdata.BackgroundOperation): Promise<void> {
+		try {
+			await controller.deleteMount(this.props.hdfsPath);
+			op.updateStatus(azdata.TaskStatus.Succeeded, localize('deletemount.task.submitted', "Delete mount request submitted"));
+		} catch (error) {
+			const errMsg = (error instanceof Error) ? error.message : error;
+			vscode.window.showErrorMessage(errMsg);
+			op.updateStatus(azdata.TaskStatus.Failed, errMsg);
 		}
 	}
 }
