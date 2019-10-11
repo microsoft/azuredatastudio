@@ -74,14 +74,14 @@
 					"when": "view == sqlBigDataCluster && viewItem == bigDataClusters.itemType.controllerNode",
 					"group": "navigation@3"
 				}
-      ],
-      "objectExplorer/item/context": [
+			],
+			"objectExplorer/item/context": [
 				{
 					"command": "bigDataClusters.command.mount",
 					"when": "nodeType=~/^mssqlCluster/ && nodeType!=mssqlCluster:message && nodeSubType=~/^(?!:mount).*$/",
 					"group": "1mssqlCluster@10"
 				}
-      ]
+			]
 		},
 		"commands": [
 			{

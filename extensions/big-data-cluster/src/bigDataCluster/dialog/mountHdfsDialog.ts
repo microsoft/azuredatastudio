@@ -29,14 +29,15 @@ function convertCredsToJson(creds: string): { credentials: {} } {
 	if (!creds) {
 		return undefined;
 	}
-	// TBD: can we use something other than negative lookup?
 	let credObj = { 'credentials': {} };
 	let pairs = creds.split(',');
-	// handle escaped commas in a browser-agnostic way by pushing to the next
 	let validPairs: string[] = [];
 	for (let i = 0; i < pairs.length; i++) {
+		// handle escaped commas in a browser-agnostic way using regex:
+		// this matches a string ending in a single escape character \, but not \\.
+		// In this case we split on ',` when we should've ignored it as it was a \, instead.
+		// Restore the escaped comma by combining the 2 split strings
 		if (i < (pairs.length - 1) && pairs[i].match(/(?!\\).*\\$/)) {
-			// Since this was meant to be an escaped comma, restore it
 			pairs[i + 1] = `${pairs[i]},${pairs[i + 1]}`;
 		} else {
 			validPairs.push(pairs[i]);
@@ -221,12 +222,12 @@ export class MountHdfsDialogModel extends HdfsDialogModelBase<MountHdfsPropertie
 abstract class HdfsDialogBase<T extends DialogProperties> {
 
 	protected dialog: azdata.window.Dialog;
-	protected uiModelBuilder: azdata.ModelBuilder;
+	protected uiModelBuilder!: azdata.ModelBuilder;
 
-	protected urlInputBox: azdata.InputBoxComponent;
-	protected authDropdown: azdata.DropDownComponent;
-	protected usernameInputBox: azdata.InputBoxComponent;
-	protected passwordInputBox: azdata.InputBoxComponent;
+	protected urlInputBox!: azdata.InputBoxComponent;
+	protected authDropdown!: azdata.DropDownComponent;
+	protected usernameInputBox!: azdata.InputBoxComponent;
+	protected passwordInputBox!: azdata.InputBoxComponent;
 
 	constructor(private title: string, protected model: HdfsDialogModelBase<T>) {
 	}
@@ -243,7 +244,7 @@ abstract class HdfsDialogBase<T extends DialogProperties> {
 
 			this.urlInputBox = this.uiModelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
-					placeHolder: localize('textUrlLower', 'url'),
+					placeHolder: localize('textUrlLower', "url"),
 					value: this.model.props.url,
 				}).component();
 			this.urlInputBox.enabled = false;
@@ -256,12 +257,12 @@ abstract class HdfsDialogBase<T extends DialogProperties> {
 			this.authDropdown.onValueChanged(e => this.onAuthChanged());
 			this.usernameInputBox = this.uiModelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
-					placeHolder: localize('textUsernameLower', 'username'),
+					placeHolder: localize('textUsernameLower', "username"),
 					value: this.model.props.username
 				}).component();
 			this.passwordInputBox = this.uiModelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
-					placeHolder: localize('textPasswordLower', 'password'),
+					placeHolder: localize('textPasswordLower', "password"),
 					inputType: 'password',
 					value: this.model.props.password
 				})
@@ -271,19 +272,19 @@ abstract class HdfsDialogBase<T extends DialogProperties> {
 				components: [
 					{
 						component: this.urlInputBox,
-						title: localize('textUrlCapital', 'URL'),
+						title: localize('textUrlCapital', "URL"),
 						required: true
 					}, {
 						component: this.authDropdown,
-						title: localize('textAuthCapital', 'Authentication type'),
+						title: localize('textAuthCapital', "Authentication type"),
 						required: true
 					}, {
 						component: this.usernameInputBox,
-						title: localize('textUsernameCapital', 'Username'),
+						title: localize('textUsernameCapital', "Username"),
 						required: false
 					}, {
 						component: this.passwordInputBox,
-						title: localize('textPasswordCapital', 'Password'),
+						title: localize('textPasswordCapital', "Password"),
 						required: false
 					}
 				],
