@@ -406,9 +406,7 @@ export class JupyterServerInstallation {
 		let condaPackagesToInstall: PythonPkgDetails[];
 		let pipPackagesToInstall: PythonPkgDetails[];
 		if (forceInstall) {
-			if (this._usingConda) {
-				condaPackagesToInstall = expectedCondaPackages;
-			}
+			condaPackagesToInstall = expectedCondaPackages;
 			pipPackagesToInstall = expectedPipPackages;
 		} else {
 			condaPackagesToInstall = [];
