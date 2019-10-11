@@ -46,7 +46,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.AdminUserName_VariableName,
 					defaultValue: 'admin',
 					useCustomValidator: true,
-					description: localize('deployCluster.AdminUsernameDescription', "You can use this username to access the controller and SQL Server, username for the gateway is root.")
+					description: localize('deployCluster.AdminUsernameDescription', "This username will be used for controller and SQL Server. Username for the gateway will be root.")
 				}, {
 					type: FieldType.Password,
 					label: localize('deployCluster.AdminPassword', "Password"),
@@ -54,7 +54,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.AdminPassword_VariableName,
 					defaultValue: '',
 					useCustomValidator: true,
-					description: localize('deployCluster.AdminPasswordDescription', "You can use this password to access the controller, SQL Server and gateway.")
+					description: localize('deployCluster.AdminPasswordDescription', "This password can be used to access the controller, SQL Server and gateway.")
 				}, {
 					type: FieldType.Password,
 					label: localize('deployCluster.ConfirmPassword', "Confirm password"),
@@ -93,7 +93,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					required: true,
 					variableName: VariableNames.OrganizationalUnitDistinguishedName_VariableName,
 					useCustomValidator: true,
-					description: localize('deployCluster.OuDistinguishedNameDescription', "Distinguished name for the organizational unit. for example: OU=bdc,DC=contoso,DC=com")
+					description: localize('deployCluster.OuDistinguishedNameDescription', "Distinguished name for the organizational unit. For example: OU=bdc,DC=contoso,DC=com.")
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.DomainControllerFQDNs', "Domain controller FQDNs"),
@@ -101,7 +101,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.DomainControllerFQDNs_VariableName,
 					useCustomValidator: true,
 					placeHolder: localize('deployCluster.DomainControllerFQDNsPlaceHolder', "Use comma to separate the values."),
-					description: localize('deployCluster.DomainControllerFQDNDescription', "Fully qualified domain names for the domain controller. for example: DC1.CONTOSO.COM, use comma to separate them if there are multiple FQDNs.")
+					description: localize('deployCluster.DomainControllerFQDNDescription', "Fully qualified domain names for the domain controller. For example: DC1.CONTOSO.COM. Use comma to separate multiple FQDNs.")
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.DomainDNSIPAddresses', "Domain DNS IP addresses"),
@@ -109,7 +109,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.DomainDNSIPAddresses_VariableName,
 					useCustomValidator: true,
 					placeHolder: localize('deployCluster.DomainDNSIPAddressesPlaceHolder', "Use comma to separate the values."),
-					description: localize('deployCluster.DomainDNSIPAddressesDescription', "Domain DNS servers' IP Addresses, use comma to separate them if there are multiple IP addresses.")
+					description: localize('deployCluster.DomainDNSIPAddressesDescription', "Domain DNS servers' IP Addresses. Use comma to separate multiple IP addresses.")
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.DomainDNSName', "Domain DNS name"),
@@ -130,7 +130,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.ClusterUsers_VariableName,
 					useCustomValidator: true,
 					placeHolder: localize('deployCluster.ClusterUsersPlaceHolder', "Use comma to separate the values."),
-					description: localize('deployCluster.ClusterUsersDescription', "The Active Directory users/groups with cluster users role, use comma to separate them if there are multiple users/groups.")
+					description: localize('deployCluster.ClusterUsersDescription', "The Active Directory users/groups with cluster users role. Use comma to separate multiple users/groups.")
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.DomainServiceAccountUserName', "Service account username"),
@@ -151,7 +151,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.AppOwners_VariableName,
 					useCustomValidator: true,
 					placeHolder: localize('deployCluster.AppOwnersPlaceHolder', "Use comma to separate the values."),
-					description: localize('deployCluster.AppOwnersDescription', "The Active Directory users or groups with app owners role, use comma to separate them if there are multiple users/groups.")
+					description: localize('deployCluster.AppOwnersDescription', "The Active Directory users or groups with app owners role. Use comma to separate multiple users/groups.")
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.AppReaders', "App readers"),
@@ -159,7 +159,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.AppReaders_VariableName,
 					useCustomValidator: true,
 					placeHolder: localize('deployCluster.AppReadersPlaceHolder', "Use comma to separate the values."),
-					description: localize('deployCluster.AppReadersDescription', "The Active Directory users or groups of app readers, use comma as separator them if there are multiple users/groups.")
+					description: localize('deployCluster.AppReadersDescription', "The Active Directory users or groups of app readers. Use comma as separator them if there are multiple users/groups.")
 				}
 			]
 		};
@@ -217,6 +217,21 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	public onLeave() {
 		setModelValues(this.inputComponents, this.wizard.model);
+		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
+			const variableDNSPrefixMapping: { [s: string]: string } = {};
+			variableDNSPrefixMapping[VariableNames.AppServiceProxyDNSName_VariableName] = 'bdc-appproxy';
+			variableDNSPrefixMapping[VariableNames.ControllerDNSName_VariableName] = 'bdc-control';
+			variableDNSPrefixMapping[VariableNames.GatewayDNSName_VariableName] = 'bdc-gateway';
+			variableDNSPrefixMapping[VariableNames.ReadableSecondaryDNSName_VariableName] = 'bdc-sqlread';
+			variableDNSPrefixMapping[VariableNames.SQLServerDNSName_VariableName] = 'bdc-sql';
+			variableDNSPrefixMapping[VariableNames.ServiceProxyDNSName_VariableName] = 'bdc-proxy';
+
+			Object.keys(variableDNSPrefixMapping).forEach((variableName: string) => {
+				if (!this.wizard.model.getStringValue(variableName)) {
+					this.wizard.model.setPropertyValue(variableName, `${variableDNSPrefixMapping[variableName]}.${this.wizard.model.getStringValue(VariableNames.DomainDNSName_VariableName)}`);
+				}
+			});
+		}
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});

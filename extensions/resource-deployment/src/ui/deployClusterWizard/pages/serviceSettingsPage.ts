@@ -316,6 +316,8 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				header: localize('deployCluster.StorageSectionTitle', "Storage settings"),
 				collapsible: true
 			});
+
+			this.handleSparkSettingEvents();
 			const form = view.modelBuilder.formContainer().withFormItems([
 				{
 					title: '',
@@ -330,6 +332,16 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			]).withLayout({ width: '100%' }).component();
 			return view.initializeModel(form);
 		});
+	}
+
+	private handleSparkSettingEvents(): void {
+		const sparkInstanceInput = getInputBoxComponent(VariableNames.SparkPoolScale_VariableName, this.inputComponents);
+		const includeSparkCheckbox = getCheckboxComponent(VariableNames.IncludeSpark_VariableName, this.inputComponents);
+		this.wizard.registerDisposable(includeSparkCheckbox.onChanged(() => {
+			if (!includeSparkCheckbox.checked && !(sparkInstanceInput.value && Number.parseInt(sparkInstanceInput.value) > 0)) {
+				sparkInstanceInput.value = '1';
+			}
+		}));
 	}
 
 	private createEndpointSection(view: azdata.ModelView): azdata.GroupContainer {
@@ -398,6 +410,12 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.setInputBoxValue(VariableNames.ServiceProxyPort_VariableName);
 		this.setInputBoxValue(VariableNames.AppServiceProxyPort_VariableName);
 		this.setInputBoxValue(VariableNames.ReadableSecondaryPort_VariableName);
+		this.setInputBoxValue(VariableNames.GatewayDNSName_VariableName);
+		this.setInputBoxValue(VariableNames.AppServiceProxyDNSName_VariableName);
+		this.setInputBoxValue(VariableNames.SQLServerDNSName_VariableName);
+		this.setInputBoxValue(VariableNames.ReadableSecondaryDNSName_VariableName);
+		this.setInputBoxValue(VariableNames.ServiceProxyDNSName_VariableName);
+		this.setInputBoxValue(VariableNames.ControllerDNSName_VariableName);
 		this.setInputBoxValue(VariableNames.ControllerDataStorageClassName_VariableName);
 		this.setInputBoxValue(VariableNames.ControllerDataStorageSize_VariableName);
 		this.setInputBoxValue(VariableNames.ControllerLogsStorageClassName_VariableName);
