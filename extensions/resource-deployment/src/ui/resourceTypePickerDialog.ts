@@ -292,7 +292,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 			text: localize('deploymentDialog.InstallingTools', "Required tools are being installed now.")
 		};
 		this._installToolButton.enabled = false;
-		// TODO
 		for (let i: number = 0; i < this._tools.length; i++) {
 			if (!this._tools[i].isInstalled) {
 				await this._tools[i].install();

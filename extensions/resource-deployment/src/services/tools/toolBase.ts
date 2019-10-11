@@ -51,11 +51,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	public get fullVersion(): string | undefined {
-		if (this._version !== undefined) {
-			return this._version && this._version.version;
-		} else {
-			return undefined;
-		}
+		return this._version && this._version.version;
 
 	}
 
