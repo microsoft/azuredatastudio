@@ -213,7 +213,6 @@ export class NotebookData implements IAgentDialogData {
 		}
 		else {
 			if (this.templatePath && this.templatePath !== '' && !(await exists(this.templatePath))) {
-				console.log('We have an error at line 205.');
 				validationErrors.push(InvalidNotebookPathErrorMessage);
 			}
 		}
