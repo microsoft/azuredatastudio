@@ -24,11 +24,11 @@ export abstract class ToolBase implements ITool {
 	protected abstract getVersionFromOutput(output: string): SemVer | undefined;
 	protected abstract readonly versionCommand: Command;
 
-	protected async getInstallationPath(): Promise<string | null> {
-		return await Promise.resolve(null);
+	protected async getInstallationPath(): Promise<string | undefined> {
+		return await Promise.resolve(undefined);
 	}
 
-	protected get installationSearchPaths(): (string | null)[] {
+	protected get installationSearchPaths(): (string | undefined)[] {
 		return [this.storagePath];
 	}
 

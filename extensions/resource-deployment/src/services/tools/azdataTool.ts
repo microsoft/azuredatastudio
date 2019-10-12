@@ -56,7 +56,7 @@ export class AzdataTool extends ToolBase {
 		return true;
 	}
 
-	protected async getInstallationPath(): Promise<string | null> {
+	protected async getInstallationPath(): Promise<string | undefined> {
 		switch (this.osType) {
 			case OsType.linux:
 				return installationRoot;
