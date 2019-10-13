@@ -56,83 +56,83 @@ export class KubeCtlTool extends ToolBase {
 		switch (this.osType) {
 			case OsType.darwin: return [
 				{
-					comment: `updating your brew repository ...`,
+					comment: localize('resourceDeployment.Kubectl.UpdatingBrewRepository', 'updating your brew repository for kubectl installation ...'),
 					command: 'brew update'
 				},
 				{
-					comment: `installing ${this.name} ...`,
+					comment: localize('resourceDeployment.Kubectl.BrewInstallingKubeCtl', 'installing kubectl ...'),
 					command: 'brew install kubectl'
 				}
 			];
 			case OsType.linux: return [
 				{
 					sudo: true,
-					comment: 'updating repository information ...',
+					comment: localize('resourceDeployment.Kubectl.AptGetUpdate', 'updating repository information before installing kubectl ...'),
 					command: 'apt-get update'
 				},
 				{
 					sudo: true,
-					comment: 'getting packages needed for installation ...',
+					comment: localize('resourceDeployment.Kubectl.AptGetPackages', 'getting packages needed for kubectl installation ...'),
 					command: 'apt-get install -y apt-transport-https'
 				},
 				{
 					sudo: true,
-					comment: 'downloading and installing the signing key ...',
+					comment: localize('resourceDeployment.Kubectl.DownloadAndInstallingSigningKey', 'downloading and installing the signing key for kubectl ...'),
 					command: 'curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -'
 				},
 				{
 					sudo: true,
-					comment: `adding the ${this.name} repository information ...`,
+					comment: localize('resourceDeployment.Kubectl.AddingKubectlRepositoryInformation', 'adding the kubectl repository information ...'),
 					command: 'echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list'
 				},
 				{
 					sudo: true,
-					comment: 'updating repository information ...',
+					comment: localize('resourceDeployment.Kubectl.AptGetUpdateAgain', 'updating repository information again for kubectl ...'),
 					command: 'apt-get update'
 				},
 				{
 					sudo: true,
-					comment: `installing ${this.name} ...`,
+					comment: localize('resourceDeployment.Kubectl.InstallingKubectl', 'installing kubectl ...'),
 					command: 'apt-get install -y kubectl'
 				}
 			];
 			// TODO: Remove dependency on curl on Win32 and use powershell Invoke-WebRequest instead
 			case OsType.win32: return [
 				{
-					comment: 'deleting previously downloaded kubectl.exe if one exists ...',
+					comment: localize('resourceDeployment.Kubectl.DeletePreviousDownloadedKubectl.exe', 'deleting previously downloaded kubectl.exe if one exists ...'),
 					command: `IF EXIST .\kubectl.exe DEL /F .\kubectl.exe`,
 				},
 				{
-					comment: `downloading and installing the latest kubectl.exe ...`,
+					comment: localize('resourceDeployment.Kubectl.DownloadingAndInstallingKubectl', 'downloading and installing the latest kubectl.exe ...'),
 					command: `for /f %i in ('curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt') do curl -LO https://storage.googleapis.com/kubernetes-release/release/%i/bin/windows/amd64/kubectl.exe`
 				}
 			];
 			default: // all other platforms
 				return [
 					{
-						comment: `deleting previously downloaded ${this.name} if one exists ...`,
+						comment: localize('resourceDeployment.Kubectl.DeletePreviousDownloadedKubectl', 'deleting previously downloaded kubectl if one exists ...'),
 						command: `[ -e ./kubectl ] && rm -f ./kubectl`,
 					},
 					{
-						comment: `downloading the latest ${this.name} release ...`,
+						comment: localize('resourceDeployment.Kubectl.DownloadingKubectl', 'downloading the latest kubectl release ...'),
 						command: 'curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl'
 					},
 					{
-						comment: `making kubectl executable ...`,
+						comment: localize('resourceDeployment.Kubectl.MakingExecutable', 'making kubectl executable ...'),
 						command: 'chmod +x ./kubectl',
 					},
 					{
 						sudo: true,
-						comment: `cleaning up any previously backed up version in the install location if they exist ...`,
+						comment: localize('resourceDeployment.Kubectl.CleaningUpOldBackups', 'cleaning up any previously backed up version in the install location if they exist ...'),
 						command: `[ -e /usr/local/bin/kubectl] && [ -e /usr/local/bin/kubectl.${this.fullVersion}_movedByADS ] && rm -f /usr/local/bin/kubectl.${this.fullVersion}_movedByADS`
 					},
 					{
 						sudo: true,
-						comment: `backing up any existing kubectl in the install location ...`,
+						comment: localize('resourceDeployment.Kubectl.BackupCurrentBinary', 'backing up any existing kubectl in the install location ...'),
 						command: `[ -e /usr/local/bin/kubectl ] && mv /usr/local/bin/kubectl /usr/local/bin/kubectl.${this.fullVersion}_movedByADS`
 					},
 					{
-						comment: `moving kubectl into the install location in the PATH ...`,
+						comment: localize('resourceDeployment.Kubectl.MoveToSystemPath', 'moving kubectl into the install location in the PATH ...'),
 						sudo: true,
 						command: 'mv ./kubectl /usr/local/bin/kubectl'
 					}

@@ -109,8 +109,8 @@ export abstract class ToolBase implements ITool {
 
 	protected async addInstallationSearchPathsToSystemPath(): Promise<void> {
 		const installationPath = await this.getInstallationPath();
-		const searchPaths = [installationPath, ...this.installationSearchPaths];
-		console.log(`installationSearchPaths for tool:${this.displayName}: ${JSON.stringify(searchPaths, undefined, '\t')}`);
+		const searchPaths = [installationPath, ...this.installationSearchPaths].filter(path => !!path);
+		this.logToOutputChannel(`Search Paths for tool:${this.displayName}: ${JSON.stringify(searchPaths, undefined, '\t')}`);
 		searchPaths.forEach(installationSearchPath => {
 			if (installationSearchPath) {
 				if (process.env.PATH) {

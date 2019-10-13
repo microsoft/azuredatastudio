@@ -55,26 +55,26 @@ export class AzCliTool extends ToolBase {
 		switch (this.osType) {
 			case OsType.darwin: return [
 				{
-					comment: `updating your brew repository ...`,
+					comment: localize('resourceDeployment.AziCli.UpdatingBrewRepository', 'updating your brew repository for azure-cli installation ...'),
 					command: 'brew update'
 				},
 				{
-					comment: `installing ${this.name} ...`,
+					comment: localize('resourceDeployment.AziCli.InstallingAzureCli', 'installing azure-cli ...'),
 					command: 'brew install azure-cli'
 				}
 			];
 			case OsType.win32: return [
 				{
-					comment: 'deleting previously downloaded azurecli.msi if one exists ...',
+					comment: localize('resourceDeployment.AziCli.DeletingPreviousAzureCli.msi', 'deleting previously downloaded azurecli.msi if one exists ...'),
 					command: `IF EXIST .\\AzureCLI.msi DEL /F .\\AzureCLI.msi`
 				},
 				{
 					sudo: true,
-					comment: `downloading azurecli.msi and installing ${this.name} ...`,
+					comment: localize('resourceDeployment.AziCli.DownloadingAndInstallingAzureCli', 'downloading azurecli.msi and installing azure-cli ...'),
 					command: `powershell -Command "& {(New-Object System.Net.WebClient).DownloadFile('https://aka.ms/installazurecliwindows', 'AzureCLI.msi'); Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /passive /quiet /lx AzureCliInstall.log'}"`
 				},
 				{
-					comment: `displaying the installation log ...`,
+					comment: localize('resourceDeployment.AziCli.DisplayingInstallationLog', 'displaying the installation log ...'),
 					command: `type AzureCliInstall.log`,
 					ignoreError: true
 				}
@@ -82,32 +82,32 @@ export class AzCliTool extends ToolBase {
 			case OsType.linux: return [
 				{
 					sudo: true,
-					comment: 'updating repository information ...',
+					comment: localize('resourceDeployment.AziCli.AptGetUpdate', 'updating repository information before installing azure-cli ...'),
 					command: 'apt-get update'
 				},
 				{
 					sudo: true,
-					comment: 'getting packages needed for installation ...',
-					command: 'apt-get install ca-certificates curl apt-transport-https lsb-release gnupg'
+					comment: localize('resourceDeployment.AziCli.AptGetPackages', 'getting packages needed for azure-cli installation ...'),
+					command: 'apt-get install ca-certificates curl apt-transport-https lsb-release gnupg -y'
 				},
 				{
 					sudo: true,
-					comment: 'downloading and installing the signing key ...',
+					comment: localize('resourceDeployment.AziCli.DownloadAndInstallingSigningKey', 'downloading and installing the signing key for azure-cli ...'),
 					command: 'curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null'
 				},
 				{
 					sudo: true,
-					comment: `adding the ${this.name} repository information ...`,
+					comment: localize('resourceDeployment.AziCli.AddingAzureCliRepositoryInformation', 'adding the azure-cli repository information ...'),
 					command: 'AZ_REPO=$(lsb_release -cs) && echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list'
 				},
 				{
 					sudo: true,
-					comment: 'updating repository information ...',
+					comment: localize('resourceDeployment.AziCli.AptGetUpdateAgain', 'updating repository information again for azure-cli ...'),
 					command: 'apt-get update'
 				},
 				{
 					sudo: true,
-					comment: `installing ${this.name} ...`,
+					comment: localize('resourceDeployment.AziCli.InstallingAzureCli', 'installing azure-cli ...'),
 					command: 'apt-get install azure-cli'
 				}
 			];
@@ -115,7 +115,7 @@ export class AzCliTool extends ToolBase {
 			default: return [
 				{
 					sudo: true,
-					comment: `download and invoking script to install ${this.name} ...`,
+					comment: localize('resourceDeployment.AziCli.ScriptedInstall', 'download and invoking script to install azure-cli ...'),
 					command: 'curl -sL https://aka.ms/InstallAzureCLIDeb | bash'
 				}
 
