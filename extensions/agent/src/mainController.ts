@@ -23,6 +23,7 @@ import { NotebookDialog, NotebookDialogOptions } from './dialogs/notebookDialog'
 
 const localize = nls.loadMessageBundle();
 
+
 /**
  * The main controller class that initializes the extension
  */
@@ -42,6 +43,9 @@ export class MainController {
 	private proxyDialog: ProxyDialog;
 	private notebookDialog: NotebookDialog;
 	private notebookTemplateMap = new Map<string, TemplateMapObject>();
+
+
+
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	public constructor(context: vscode.ExtensionContext) {
 		this._context = context;
@@ -169,7 +173,7 @@ export class MainController {
 			if (!ownerUri || ownerUri instanceof vscode.Uri) {
 				let path: string;
 				if (!ownerUri) {
-					if (azdata.nb.activeNotebookEditor.document.isDirty) {
+					if (azdata.nb.activeNotebookEditor.document.isDirty || azdata.nb.activeNotebookEditor.document.isUntitled) {
 						vscode.window.showErrorMessage(localize('agent.unsavedFileSchedulingError', 'Save file before scheduling'), { modal: true });
 						return;
 					}
