@@ -20,7 +20,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('dacFx', "Data-tier Application Wizard")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
-		MssqlNodeContext.IsDatabaseOrServer)
+		MssqlNodeContext.IsDatabaseOrServer, MssqlNodeContext.IsSqlOnDemand.toNegated())
 });
 
 
@@ -33,7 +33,8 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Folder),
-		MssqlNodeContext.NodeLabel.isEqualTo('Databases'))
+		MssqlNodeContext.NodeLabel.isEqualTo('Databases'),
+		MssqlNodeContext.IsSqlOnDemand.toNegated())
 });
 
 // Profiler
@@ -69,7 +70,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('schemaCompare', "Schema Compare")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
-		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database))
+		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database), MssqlNodeContext.IsSqlOnDemand.toNegated())
 });
 
 // Generate Scripts Action
@@ -82,7 +83,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database),
-		MssqlNodeContext.IsWindows)
+		MssqlNodeContext.IsWindows, MssqlNodeContext.IsSqlOnDemand.toNegated())
 });
 
 // Properties Action
@@ -95,7 +96,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Server), ContextKeyExpr.not('isCloud'),
-		MssqlNodeContext.IsWindows)
+		MssqlNodeContext.IsWindows, MssqlNodeContext.IsSqlOnDemand.toNegated())
 });
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
@@ -106,6 +107,6 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('properties', "Properties")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
-		MssqlNodeContext.IsWindows,
+		MssqlNodeContext.IsWindows, MssqlNodeContext.IsSqlOnDemand.toNegated(),
 		ContextKeyRegexExpr.create('nodeType', /^(Database|Table|Column|Index|Statistic|View|ServerLevelLogin|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy|ServerLevelLinkedServer)$/))
 });
