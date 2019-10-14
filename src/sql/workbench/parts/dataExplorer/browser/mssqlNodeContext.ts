@@ -115,9 +115,8 @@ export class MssqlNodeContext extends Disposable {
 	 * Helper function to tell whether a connected node is cloud or not
 	 */
 	private setIsCloud(): void {
-		let serverInfo : azdata.ServerInfo = this.getServerInfo();
-		if (serverInfo && serverInfo.isCloud)
-		{
+		let serverInfo: azdata.ServerInfo = this.getServerInfo();
+		if (serverInfo && serverInfo.isCloud) {
 			this.isCloudKey.set(true);
 		}
 	}
@@ -127,9 +126,8 @@ export class MssqlNodeContext extends Disposable {
 	 */
 	private setIsSqlOnDemand(): void {
 
-		let serverInfo : azdata.ServerInfo = this.getServerInfo();
-		if (serverInfo && serverInfo.engineEditionId === sqlOnDemand)
-		{
+		let serverInfo: azdata.ServerInfo = this.getServerInfo();
+		if (serverInfo && serverInfo.engineEditionId === sqlOnDemand) {
 			this.isSqlOnDemandKey.set(true);
 		}
 	}
@@ -137,8 +135,7 @@ export class MssqlNodeContext extends Disposable {
 	/**
 	 * Helper function fetching the server info
 	 */
-	private getServerInfo(): azdata.ServerInfo | undefined
-	{
+	private getServerInfo(): azdata.ServerInfo | undefined {
 		const profile = new ConnectionProfile(this.capabilitiesService,
 			this.nodeContextValue.node.payload);
 		const connection = this.connectionManagementService.findExistingConnection(profile);

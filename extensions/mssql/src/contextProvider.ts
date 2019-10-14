@@ -53,8 +53,7 @@ export default class ContextProvider {
 
 			edition = e.serverInfo.engineEditionId;
 
-			if (edition === Constants.sqlOnDemand)
-			{
+			if (edition === Constants.sqlOnDemand) {
 				isSqlOnDemand = true;
 			}
 
@@ -83,8 +82,7 @@ export default class ContextProvider {
 			setCommandContext(ContextKeys.SERVERMAJORVERSION, serverMajorVersion);
 		}
 
-		if (isSqlOnDemand === true || isSqlOnDemand === false)
-		{
+		if (isSqlOnDemand === true || isSqlOnDemand === false) {
 			setCommandContext(ContextKeys.ISSQLONDEMAND, isSqlOnDemand);
 		}
 	}

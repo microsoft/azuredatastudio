@@ -41,7 +41,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database), MssqlNodeContext.IsCloud.toNegated(), MssqlNodeContext.IsSqlOnDemand.toNegated())
-	});
+});
 
 // oe
 const OE_RESTORE_COMMAND_ID = 'objectExplorer.restore';
