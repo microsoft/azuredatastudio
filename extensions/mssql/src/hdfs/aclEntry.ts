@@ -202,8 +202,8 @@ export class AclEntry {
 	 *		user::r-x
 	 *		default:group::r--
 	 */
-	toAclStrings(): string[] {
-		return Array.from(this.permissions.entries()).map((entry: [AclEntryScope, AclEntryPermission]) => {
+	toAclStrings(includeDefaults: boolean = true): string[] {
+		return Array.from(this.permissions.entries()).filter((entry: [AclEntryScope, AclEntryPermission]) => includeDefaults || entry[0] !== AclEntryScope.default).map((entry: [AclEntryScope, AclEntryPermission]) => {
 			return `${entry[0] === AclEntryScope.default ? 'default:' : ''}${getAclEntryType(this.type)}:${this.name}:${entry[1].toString()}`;
 		});
 	}
