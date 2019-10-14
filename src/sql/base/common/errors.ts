@@ -12,14 +12,8 @@ export function invalidProvider(name?: string): Error {
 }
 
 export class UserCancelledConnectionError extends Error {
-	static code(): string {
-		return 'loginCanceled';
-	}
 	public readonly code: string;
 	constructor(message?) {
 		super(message);
-
-		this.code = UserCancelledConnectionError.code();
 	}
-
 }
