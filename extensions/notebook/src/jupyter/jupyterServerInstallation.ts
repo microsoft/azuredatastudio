@@ -389,13 +389,20 @@ export class JupyterServerInstallation {
 	 * Prompts user to upgrade certain python packages if they're below the minimum expected version.
 	 */
 	public async promptForPackageUpgrade(): Promise<void> {
-		if (!this._installInProgress) {
-			this._installInProgress = true;
-			try {
-				await this.upgradePythonPackages(true, false);
-			} finally {
-				this._installInProgress = false;
-			}
+		if (this._installInProgress) {
+			return;
+		}
+
+		let isPythonRunning = await this.isPythonRunning(this._pythonInstallationPath, this._usingExistingPython);
+		if (isPythonRunning) {
+			return;
+		}
+
+		this._installInProgress = true;
+		try {
+			await this.upgradePythonPackages(true, false);
+		} finally {
+			this._installInProgress = false;
 		}
 	}
 
