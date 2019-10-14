@@ -18,6 +18,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { localize } from 'vs/nls';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
+import { UserCancelledConnectionError } from 'sql/base/common/errors';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
@@ -90,7 +91,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 					resolve(connProfile);
 				},
 				onConnectCanceled: () => {
-					reject(new Error(localize('loginCanceled', "User canceled")));
+					reject(new UserCancelledConnectionError(localize('loginCanceled', "User canceled")));
 				},
 				onConnectReject: undefined,
 				onConnectStart: undefined,
