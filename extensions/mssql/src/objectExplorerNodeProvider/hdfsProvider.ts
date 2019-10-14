@@ -11,7 +11,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import * as Constants from '../constants';
-import { IFileSource, IHdfsOptions, IFile, File, FileSourceFactory } from './fileSources';
+import { IFileSource, IHdfsOptions, IFile, File, FileSourceFactory, FileType } from './fileSources';
 import { CancelableStream } from './cancelableStream';
 import { TreeNode } from './treeNodes';
 import * as utils from '../utils';
@@ -132,8 +132,9 @@ export class FolderNode extends HdfsFileSourceNode {
 				if (files) {
 					// Note: for now, assuming HDFS-provided sorting is sufficient
 					this.children = files.map((file) => {
-						let node: TreeNode = file.isDirectory ? new FolderNode(this.context, file.path, this.fileSource, Constants.MssqlClusterItems.Folder, this.getChildMountStatus(file))
-							: new FileNode(this.context, file.path, this.fileSource, this.getChildMountStatus(file));
+						let node: TreeNode = file.fileType === FileType.File ?
+							new FileNode(this.context, file.path, this.fileSource, this.getChildMountStatus(file)) :
+							new FolderNode(this.context, file.path, this.fileSource, Constants.MssqlClusterItems.Folder, this.getChildMountStatus(file));
 						node.parent = this;
 						return node;
 					});

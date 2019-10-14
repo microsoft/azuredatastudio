@@ -10,7 +10,7 @@ import { Cookie } from 'tough-cookie';
 import * as through from 'through2';
 import * as nls from 'vscode-nls';
 import * as auth from '../util/auth';
-import { IHdfsOptions, IRequestParams } from '../objectExplorerNodeProvider/fileSources';
+import { IHdfsOptions, IRequestParams, FileType } from '../objectExplorerNodeProvider/fileSources';
 import { PermissionStatus, AclEntry, parseAclList, PermissionType, parseAclPermissionFromOctal, AclEntryScope, AclType } from './aclEntry';
 import { Mount } from './mount';
 import { everyoneName, ownerPostfix, owningGroupPostfix } from '../localizedConstants';
@@ -509,20 +509,15 @@ export class WebHDFS {
 	/**
 	 * Set ACL for the given path. The owner, group and other fields are required - other entries are optional.
 	 * @param path The path to the file/folder to set the ACL on
-	 * @param ownerEntry The entry corresponding to the path owner
-	 * @param groupEntry The entry corresponding to the path owning group
-	 * @param otherEntry The entry corresponding to default permissions for all other users
-	 * @param aclEntries The optional additional ACL entries to set
+	 * @param fileType The type of file we're setting to determine if defaults should be applied. Use undefined if type is unknown
+	 * @param ownerEntry The status containing the permissions to set
 	 * @param callback Callback to handle the response
 	 */
-	public setAcl(path: string, ownerEntry: AclEntry, groupEntry: AclEntry, otherEntry: AclEntry, aclEntries: AclEntry[], callback: (error: HdfsError) => void): void {
+	public setAcl(path: string, fileType: FileType | undefined, permissionStatus: PermissionStatus, callback: (error: HdfsError) => void): void {
 		this.checkArgDefined('path', path);
-		this.checkArgDefined('ownerEntry', ownerEntry);
-		this.checkArgDefined('groupEntry', groupEntry);
-		this.checkArgDefined('otherEntry', otherEntry);
-		this.checkArgDefined('aclEntries', aclEntries);
-		const concatEntries = [ownerEntry, groupEntry, otherEntry].concat(aclEntries);
-		const aclSpec = concatEntries.reduce((acc, entry) => acc.concat(entry.toAclStrings()), []).join(',');
+		this.checkArgDefined('permissionStatus', permissionStatus);
+		const concatEntries = [permissionStatus.owner, permissionStatus.group, permissionStatus.other].concat(permissionStatus.aclEntries);
+		const aclSpec = concatEntries.reduce((acc, entry: AclEntry) => acc.concat(entry.toAclStrings(fileType !== FileType.File)), []).join(',');
 		let endpoint = this.getOperationEndpoint('setacl', path, { aclspec: aclSpec });
 		this.sendRequest('PUT', endpoint, undefined, (error) => {
 			return callback && callback(error);
