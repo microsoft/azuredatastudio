@@ -34,6 +34,7 @@ const msgInstallPkgFinish = localize('msgInstallPkgFinish', "Notebook dependenci
 const msgPythonRunningError = localize('msgPythonRunningError', "Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.");
 const msgPendingInstallError = localize('msgPendingInstallError', "Another Python installation is currently in progress.");
 const msgSkipPythonInstall = localize('msgSkipPythonInstall', "Python already exists at the specific location. Skipping install.");
+const msgSkippedPackageUpgrade = localize('msgSkippedPackageUpgrade', "Skipping notebook package upgrade since another Python install is currently in progress.");
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 
@@ -390,6 +391,7 @@ export class JupyterServerInstallation {
 	 */
 	public async promptForPackageUpgrade(): Promise<void> {
 		if (this._installInProgress) {
+			this.apiWrapper.showInfoMessage(msgSkippedPackageUpgrade);
 			return;
 		}
 
