@@ -393,11 +393,6 @@ export class JupyterServerInstallation {
 			return;
 		}
 
-		let isPythonRunning = await this.isPythonRunning(this._pythonInstallationPath, this._usingExistingPython);
-		if (isPythonRunning) {
-			return;
-		}
-
 		this._installInProgress = true;
 		try {
 			await this.upgradePythonPackages(true, false);
