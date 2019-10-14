@@ -4,6 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 declare module 'sudo-prompt' {
-
-	export function exec(cmd: string, options: { name?: string, icns?: string }, callback: (error: string, stdout: string, stderr: string) => void): void;
+	type SudoOptions = {
+		name?: string;
+		icns?: string;
+		env?: NodeJS.ProcessEnv;
+	};
+	export function exec(cmd: string, options: SudoOptions, callback: (error: string, stdout: string, stderr: string) => void): void;
 }
