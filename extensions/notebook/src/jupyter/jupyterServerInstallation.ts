@@ -400,16 +400,17 @@ export class JupyterServerInstallation {
 
 		this._installInProgress = true;
 		this._installCompletion = new Deferred<void>();
-		try {
-			await this.upgradePythonPackages(true, false);
-			this._installCompletion.resolve();
-		} catch (err) {
-			let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
-			this._installCompletion.reject(errorMsg);
-			throw err;
-		} finally {
-			this._installInProgress = false;
-		}
+		this.upgradePythonPackages(true, false)
+			.then(() => {
+				this._installCompletion.resolve();
+				this._installInProgress = false;
+			})
+			.catch(err => {
+				let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
+				this._installCompletion.reject(errorMsg);
+				this._installInProgress = false;
+			});
+		return this._installCompletion.promise;
 	}
 
 	private async upgradePythonPackages(promptForUpgrade: boolean, forceInstall: boolean): Promise<void> {
