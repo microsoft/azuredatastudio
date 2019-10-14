@@ -13,7 +13,7 @@ export function invalidProvider(name?: string): Error {
 
 export class UserCancelledConnectionError extends Error {
 	public readonly code: string;
-	constructor(message?) {
+	constructor(message?: string) {
 		super(message);
 	}
 }
