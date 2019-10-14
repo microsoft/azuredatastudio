@@ -25,7 +25,6 @@ const SelectStorageDatabaseErrorMessage = localize('notebookData.selectStorageDa
 const SelectExecutionDatabaseErrorMessage = localize('notebookData.selectExecutionDatabase', 'Select execution database');
 const JobWithSameNameExistsErrorMessage = localize('notebookData.jobExists', 'Job with similar name already exists');
 
-
 export class NotebookData implements IAgentDialogData {
 
 	private _ownerUri: string;
