@@ -75,7 +75,7 @@ export class ErrorMessageDialog extends Modal {
 	private createCopyButton() {
 		let copyButtonLabel = localize('copyDetails', "Copy details");
 		this._copyButton = this.addFooterButton(copyButtonLabel, () => this._clipboardService.writeText(this._messageDetails), 'left');
-		this._copyButton.icon = 'icon scriptToClipboard';
+		this._copyButton.icon = 'codicon scriptToClipboard';
 		this._copyButton.element.title = copyButtonLabel;
 		this._register(attachButtonStyler(this._copyButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_FOREGROUND }));
 	}
