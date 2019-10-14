@@ -253,4 +253,5 @@ export function getControllerEndpoint(serverInfo: azdata.ServerInfo): string | u
 		if (index < 0) { return undefined; }
 		return endpoints[index].endpoint;
 	}
+	return undefined;
 }
