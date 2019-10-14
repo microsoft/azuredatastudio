@@ -16,7 +16,7 @@ export const enum HdfsFileType {
  * passed in type is undefined.
  * @param hdfsFileType The HdfsFileType to map from
  */
-export function hdfsFileTypeToFileType(hdfsFileType: HdfsFileType | undefined) {
+export function hdfsFileTypeToFileType(hdfsFileType: HdfsFileType | undefined): FileType | undefined {
 	switch (hdfsFileType) {
 		case HdfsFileType.Directory:
 			return FileType.Directory;

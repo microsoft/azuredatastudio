@@ -33,6 +33,7 @@ export const enum FileType {
 	File = 'File',
 	Symlink = 'Symlink'
 }
+
 export interface IFile {
 	path: string;
 	fileType: FileType;
