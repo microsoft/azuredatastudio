@@ -91,7 +91,7 @@
 				},
 				{
 					"command": "bigDataClusters.command.refreshmount",
-					"when": "nodeType == mssqlCluster:folder && nodeSubType=~/^:mount:$/",
+					"when": "nodeType == mssqlCluster:folder && nodeSubType==:mount:",
 					"group": "1mssqlCluster@11"
 				},
 				{

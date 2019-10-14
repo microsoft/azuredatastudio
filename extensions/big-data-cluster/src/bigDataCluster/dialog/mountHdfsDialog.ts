@@ -137,7 +137,6 @@ abstract class HdfsDialogModelBase<T extends DialogProperties> {
 				throw new Error(localize('mount.hdfs.loginerror1', "Login to controller failed"));
 			}
 		} catch (err) {
-			// An error here means we failed to
 			throw new Error(localize('mount.hdfs.loginerror2', "Login to controller failed: {0}", err.message));
 		}
 		return controller;
