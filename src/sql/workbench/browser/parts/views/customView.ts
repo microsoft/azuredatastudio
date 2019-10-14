@@ -700,6 +700,9 @@ class TreeDataSource implements IAsyncDataSource<ITreeItem, ITreeItem> {
 				// So in order to enable this we need to tell the tree to refresh this node so it will ask us for the data again
 				setTimeout(() => {
 					this.treeView.collapse(node);
+					if (e.message === 'User canceled') {
+						return;
+					}
 					this.treeView.refresh([node]);
 				});
 				return [];
