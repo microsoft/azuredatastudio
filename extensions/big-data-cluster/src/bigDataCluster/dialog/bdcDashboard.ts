@@ -65,19 +65,17 @@ export class BdcDashboard {
 
 			// Refresh button
 			const refreshButton = modelView.modelBuilder.button()
-				.withProperties({
+				.withProperties<azdata.ButtonProperties>({
 					label: localize('bdc.dashboard.refreshButton', "Refresh"),
-					iconPath: IconPathHelper.refresh,
-					height: '50px'
+					iconPath: IconPathHelper.refresh
 				}).component();
 
 			refreshButton.onDidClick(() => this.model.refresh());
 
 			const openTroubleshootNotebookButton = modelView.modelBuilder.button()
-				.withProperties({
+				.withProperties<azdata.ButtonProperties>({
 					label: localize('bdc.dashboard.troubleshootButton', "Troubleshoot"),
-					iconPath: IconPathHelper.notebook,
-					height: '50px'
+					iconPath: IconPathHelper.notebook
 				}).component();
 
 			openTroubleshootNotebookButton.onDidClick(() => {
@@ -122,7 +120,7 @@ export class BdcDashboard {
 			this.mainAreaContainer.addItem(this.navContainer, { flex: `0 0 ${navWidth}`, CSSStyles: { 'padding': '0 20px 0 20px', 'border-right': 'solid 1px #ccc' } });
 
 			// Overview nav item - this will be the initial page
-			const overviewNavItemDiv = modelView.modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).withProperties({ CSSStyles: { 'cursor': 'pointer' } }).component();
+			const overviewNavItemDiv = modelView.modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).withProperties({ clickable: true }).component();
 			const overviewNavItemText = modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.overviewNavTitle', 'Big data cluster overview') }).component();
 			overviewNavItemText.updateCssStyles(selectedTabCss);
 			overviewNavItemDiv.addItem(overviewNavItemText, { CSSStyles: { 'user-select': 'text' } });
@@ -209,11 +207,11 @@ export class BdcDashboard {
 }
 
 function createServiceNavTab(modelBuilder: azdata.ModelBuilder, serviceStatus: ServiceStatusModel): NavTab {
-	const div = modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).withProperties({ CSSStyles: { 'cursor': 'pointer' } }).component();
+	const div = modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px', }).withProperties({ clickable: true }).component();
 	const innerContainer = modelBuilder.flexContainer().withLayout({ width: navWidth, height: '30px', flexFlow: 'row' }).component();
 	const dot = modelBuilder.text().withProperties({ value: getHealthStatusDot(serviceStatus.healthStatus), CSSStyles: { 'color': 'red', 'font-size': '40px', 'width': '20px', ...cssStyles.nonSelectableText } }).component();
 	innerContainer.addItem(dot, { flex: '0 0 auto' });
-	const text = modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { ...cssStyles.nonSelectableText } }).component();
+	const text = modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { ...cssStyles.tabHeaderText } }).component();
 	innerContainer.addItem(text, { flex: '0 0 auto' });
 	div.addItem(innerContainer);
 	return { div: div, dot: dot, text: text };
