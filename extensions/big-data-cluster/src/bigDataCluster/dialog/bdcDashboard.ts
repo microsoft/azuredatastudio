@@ -37,6 +37,8 @@ export class BdcDashboard {
 	private currentTab: NavTab;
 	private currentPage: azdata.FlexContainer;
 
+	private refreshButton: azdata.ButtonComponent;
+
 	private serviceTabPageMapping = new Map<string, { navTab: NavTab, servicePage: azdata.FlexContainer }>();
 
 	constructor(private title: string, private model: BdcDashboardModel) {
@@ -64,18 +66,14 @@ export class BdcDashboard {
 			// ###########
 
 			// Refresh button
-			const refreshButton = modelView.modelBuilder.button()
+			this.refreshButton = modelView.modelBuilder.button()
 				.withProperties<azdata.ButtonProperties>({
 					label: localize('bdc.dashboard.refreshButton', "Refresh"),
 					iconPath: IconPathHelper.refresh
 				}).component();
 
-			refreshButton.onDidClick(async () => {
-				refreshButton.iconPath = IconPathHelper.refresh_rotate;
-				refreshButton.enabled = false;
-				await this.model.refresh();
-				refreshButton.iconPath = IconPathHelper.refresh;
-				refreshButton.enabled = true;
+			this.refreshButton.onDidClick(async () => {
+				await this.doRefresh();
 			});
 
 			const openTroubleshootNotebookButton = modelView.modelBuilder.button()
@@ -91,7 +89,7 @@ export class BdcDashboard {
 			const toolbarContainer = modelView.modelBuilder.toolbarContainer()
 				.withToolbarItems(
 					[
-						{ component: refreshButton },
+						{ component: this.refreshButton },
 						{ component: openTroubleshootNotebookButton }
 					]
 				).component();
@@ -165,6 +163,17 @@ export class BdcDashboard {
 		}
 
 		this.updateServiceNavTabs(bdcStatus.services);
+	}
+
+	private async doRefresh(): Promise<void> {
+		try {
+			this.refreshButton.iconPath = IconPathHelper.refresh_rotate;
+			this.refreshButton.enabled = false;
+			await this.model.refresh();
+		} finally {
+			this.refreshButton.iconPath = IconPathHelper.refresh;
+			this.refreshButton.enabled = true;
+		}
 	}
 
 	/**
