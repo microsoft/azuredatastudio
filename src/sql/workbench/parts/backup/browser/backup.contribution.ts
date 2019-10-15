@@ -62,7 +62,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		title: localize('backup', "Backup")
 	},
 	when: ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo(NodeType.Database), ConnectionContextKey.Provider.isEqualTo(mssqlProviderName),
-		ServerInfoContextKey.IsCloud.toNegated(), MssqlNodeContext.IsSqlOnDemand.toNegated())
+		ServerInfoContextKey.IsCloud.toNegated(), ServerInfoContextKey.IsSqlOnDemand.toNegated())
 });
 
 // dashboard explorer
@@ -78,6 +78,6 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 		title: BackupAction.LABEL
 	},
 	when: ContextKeyExpr.and(ItemContextKey.ItemType.isEqualTo('database'), ItemContextKey.ConnectionProvider.isEqualTo('mssql'),
-		ItemContextKey.IsCloud.toNegated(), MssqlNodeContext.IsSqlOnDemand.toNegated()),
+		ItemContextKey.IsCloud.toNegated(), ItemContextKey.IsSqlOnDemand.toNegated()),
 	order: 2
 });

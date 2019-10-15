@@ -61,7 +61,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		title: localize('backup', "Restore")
 	},
 	when: ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo(NodeType.Database), ConnectionContextKey.Provider.isEqualTo(mssqlProviderName),
-		ServerInfoContextKey.IsCloud.toNegated(), MssqlNodeContext.IsSqlOnDemand.toNegated())
+		ServerInfoContextKey.IsCloud.toNegated(), ServerInfoContextKey.IsSqlOnDemand.toNegated())
 });
 
 const ExplorerRestoreActionID = 'explorer.restore';
@@ -75,6 +75,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 		id: ExplorerRestoreActionID,
 		title: RestoreAction.LABEL
 	},
-	when: ContextKeyExpr.and(ItemContextKey.ItemType.isEqualTo('database'), ItemContextKey.ConnectionProvider.isEqualTo('mssql'), ItemContextKey.IsCloud.toNegated(), MssqlNodeContext.IsSqlOnDemand.toNegated()),
+	when: ContextKeyExpr.and(ItemContextKey.ItemType.isEqualTo('database'), ItemContextKey.ConnectionProvider.isEqualTo('mssql'),
+		ItemContextKey.IsCloud.toNegated(), ItemContextKey.IsSqlOnDemand),
 	order: 2
 });

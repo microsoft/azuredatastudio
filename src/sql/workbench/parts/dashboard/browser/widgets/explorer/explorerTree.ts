@@ -78,7 +78,8 @@ export class ExplorerController extends TreeDefaults.DefaultController {
 		this.contextKey.set({
 			resource: element,
 			providerName: this.bootStrapService.connectionManagementService.connectionInfo.providerId,
-			isCloud: this.bootStrapService.connectionManagementService.connectionInfo.serverInfo.isCloud
+			isCloud: this.bootStrapService.connectionManagementService.connectionInfo.serverInfo.isCloud,
+			isSqlOnDemand: this.bootStrapService.connectionManagementService.connectionInfo.serverInfo.engineEditionId === 11
 		});
 
 		let context: ManageActionContext | BaseActionContext;
