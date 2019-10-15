@@ -173,7 +173,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		this._bodyContainer = DOM.$(`.${builderClass}`, { role: 'dialog', 'aria-label': this._title });
 		const top = this.layoutService.getTitleBarOffset();
 		this._bodyContainer.style.top = `${top}px`;
-		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog', { role: 'document' }));
+		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
 		const modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
 
 		if (!isUndefinedOrNull(this._title)) {
