@@ -106,8 +106,7 @@ export class FindDecorations implements IDisposable {
 		}
 
 		if (this._highlightedDecorationId !== null || newCurrentDecorationId !== null) {
-			let nextMatchEditor = nextMatch.cell.editor instanceof BaseTextEditor ? nextMatch.cell.editor.getControl() : nextMatch.cell.editor;
-			nextMatchEditor.changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
+			nextMatch.cell.editor.getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
 				if (this._highlightedDecorationId !== null) {
 					changeAccessor.changeDecorationOptions(this._highlightedDecorationId, FindDecorations._FIND_MATCH_DECORATION);
 					this._highlightedDecorationId = null;
@@ -118,8 +117,7 @@ export class FindDecorations implements IDisposable {
 				}
 				if (this._rangeHighlightDecorationId !== null) {
 					let prevMatch: NotebookRange = this._currentMatch;
-					let prevMatchEditor = prevMatch.cell.editor instanceof BaseTextEditor ? prevMatch.cell.editor.getControl() : prevMatch.cell.editor;
-					prevMatchEditor.changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
+					prevMatch.cell.editor.getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
 						changeAccessor.removeDecoration(this._rangeHighlightDecorationId);
 						this._rangeHighlightDecorationId = null;
 					});
@@ -316,7 +314,7 @@ export class FindDecorations implements IDisposable {
 	private static readonly _RANGE_HIGHLIGHT_DECORATION = ModelDecorationOptions.register({
 		stickiness: TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
 		className: 'rangeHighlight',
-		isWholeLine: true
+		isWholeLine: false
 	});
 
 	private static readonly _FIND_SCOPE_DECORATION = ModelDecorationOptions.register({

@@ -1241,7 +1241,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					for (let j = 0; j < cellVal.length; j++) {
 						index = 0;
 						while (cellVal[j].substr(index).toLocaleLowerCase().includes(exp.toLocaleLowerCase())) {
-							start = cellVal[j].substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index;
+							start = cellVal[j].substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index + 1;
 							end = start + exp.length;
 							// lineNumber: j+1 since notebook editors aren't zero indexed.
 							let range = new NotebookRange(cell, j + 1, start, j + 1, end);
