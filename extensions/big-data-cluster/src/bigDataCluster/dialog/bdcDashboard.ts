@@ -70,7 +70,13 @@ export class BdcDashboard {
 					iconPath: IconPathHelper.refresh
 				}).component();
 
-			refreshButton.onDidClick(() => this.model.refresh());
+			refreshButton.onDidClick(async () => {
+				refreshButton.iconPath = IconPathHelper.refresh_rotate;
+				refreshButton.enabled = false;
+				await this.model.refresh();
+				refreshButton.iconPath = IconPathHelper.refresh;
+				refreshButton.enabled = true;
+			});
 
 			const openTroubleshootNotebookButton = modelView.modelBuilder.button()
 				.withProperties<azdata.ButtonProperties>({

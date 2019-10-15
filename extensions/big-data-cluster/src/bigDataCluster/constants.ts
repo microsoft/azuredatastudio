@@ -25,6 +25,7 @@ export class IconPathHelper {
 	public static controllerNode: IconPath;
 	public static copy: IconPath;
 	public static refresh: IconPath;
+	public static refresh_rotate: IconPath;
 	public static status_ok: IconPath;
 	public static status_warning: IconPath;
 	public static notebook: IconPath;
@@ -42,6 +43,10 @@ export class IconPathHelper {
 		IconPathHelper.refresh = {
 			light: IconPathHelper.extensionContext.asAbsolutePath('resources/light/refresh.svg'),
 			dark: IconPathHelper.extensionContext.asAbsolutePath('resources/dark/refresh_inverse.svg')
+		};
+		IconPathHelper.refresh_rotate = {
+			light: IconPathHelper.extensionContext.asAbsolutePath('resources/light/refresh_rotate.svg'),
+			dark: IconPathHelper.extensionContext.asAbsolutePath('resources/dark/refresh_rotate_inverse.svg')
 		};
 		IconPathHelper.status_ok = {
 			light: IconPathHelper.extensionContext.asAbsolutePath('resources/light/status_ok_light.svg'),
