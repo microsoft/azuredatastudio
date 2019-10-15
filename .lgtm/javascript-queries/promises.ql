@@ -1,6 +1,7 @@
 /**
+ * @name No floating promises
  * @kind problem
- * @problem.severity warning
+ * @problem.severity error
  * @id js/experimental/floating-promise
  */
 import javascript
