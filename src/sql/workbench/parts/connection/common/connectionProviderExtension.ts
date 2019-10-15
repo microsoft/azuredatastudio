@@ -9,7 +9,7 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
-import {URI} from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 
 import * as azdata from 'azdata';
 import * as resources from 'vs/base/common/resources';
@@ -166,7 +166,7 @@ ExtensionsRegistry.registerExtensionPoint<ConnectionProviderProperties | Connect
 
 	for (let extension of extensions) {
 		const { value } = extension;
-		//need to figure out when an extension is already registered so to avoid this process.
+		//need to figure out when an extension is already registered so to avoid this process altogether.
 		resolveIconPath(extension);
 		if (Array.isArray<ConnectionProviderProperties>(value)) {
 			for (let command of value) {
@@ -186,7 +186,7 @@ function resolveIconPath(extension: IExtensionPointUser<any>): void {
 		if (Array.isArray(iconPath)) {
 			for (let e of iconPath) {
 				//check to make sure if dark and light parts of iconPath are not already registered.
-				if(!URI.isUri(e.path.light) || !URI.isUri(e.path.dark)){
+				if (!URI.isUri(e.path.light) || !URI.isUri(e.path.dark)) {
 					e.path = {
 						light: resources.joinPath(extension.description.extensionLocation, e.path.light),
 						dark: resources.joinPath(extension.description.extensionLocation, e.path.dark)
@@ -200,7 +200,7 @@ function resolveIconPath(extension: IExtensionPointUser<any>): void {
 			};
 		} else {
 			//check to make sure if dark and light parts of iconPath are not already registered.
-			if(!URI.isUri(iconPath.light) || !URI.isUri(iconPath.dark)){
+			if (!URI.isUri(iconPath.light) || !URI.isUri(iconPath.dark)) {
 				iconPath = {
 					light: resources.joinPath(extension.description.extensionLocation, iconPath.light),
 					dark: resources.joinPath(extension.description.extensionLocation, iconPath.dark)
