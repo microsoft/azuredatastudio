@@ -32,10 +32,9 @@ import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { NOTEBOOK_COMMAND_SEARCH, NOTEBOOK_COMMAND_CLOSE_SEARCH, NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
 import { IDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
-import { IModelDecorationsChangeAccessor, IModelDeltaDecoration, FindMatch } from 'vs/editor/common/model';
+import { IModelDecorationsChangeAccessor, IModelDeltaDecoration } from 'vs/editor/common/model';
 import { FindDecorations } from 'sql/workbench/parts/notebook/browser/cellViews/NotebookFindDecorations';
 import { TimeoutTimer } from 'vs/base/common/async';
-import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 
 export class NotebookEditor extends BaseEditor implements INotebookController {
@@ -65,13 +64,12 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IKeybindingService private _keybindingService: IKeybindingService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
-		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
-		@IEditorGroupsService _editorGroupsService: IEditorGroupsService
+		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService
 	) {
 		super(NotebookEditor.ID, telemetryService, themeService, storageService);
 		this._isDisposed = false;
 		this._startSearchingTimer = new TimeoutTimer();
-		this._decorations = new FindDecorations(this, _editorGroupsService);
+		this._decorations = new FindDecorations(this);
 		this._toDispose.add(this._decorations);
 		this._decorations.setStartPosition(this.getPosition());
 		this._actionMap[ACTION_IDS.FIND_NEXT] = this._instantiationService.createInstance(NotebookFindNext, this);
@@ -292,8 +290,8 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		if (!this._notebookModel) {
 			return null;
 		}
-		// temp
 		return this._currentPosition;
+		// temp
 		// return this._notebookModel.cursor.getSelection();
 	}
 

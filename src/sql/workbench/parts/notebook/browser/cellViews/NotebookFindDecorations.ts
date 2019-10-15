@@ -10,8 +10,6 @@ import { IModelDecorationsChangeAccessor, IModelDeltaDecoration, OverviewRulerLa
 import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
 import { overviewRulerFindMatchForeground, minimapFindMatch } from 'vs/platform/theme/common/colorRegistry';
 import { themeColorFromId } from 'vs/platform/theme/common/themeService';
-import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 
 export class FindDecorations implements IDisposable {
 
@@ -24,7 +22,7 @@ export class FindDecorations implements IDisposable {
 	private _startPosition: NotebookRange;
 	private _currentMatch: NotebookRange;
 
-	constructor(editor: NotebookEditor, private _editorGroupsService: IEditorGroupsService) {
+	constructor(editor: NotebookEditor) {
 		this._editor = editor;
 		this._decorations = [];
 		this._overviewRulerApproximateDecorations = [];

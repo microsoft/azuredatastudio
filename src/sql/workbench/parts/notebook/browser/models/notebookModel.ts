@@ -1409,7 +1409,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			const node = nodes[i];
 			if (node.range === null) {
 				node.range = this._buffer.getRangeAt(node.cachedAbsoluteStart, node.cachedAbsoluteEnd - node.cachedAbsoluteStart);
-				// this._getRangeAt(node.cachedAbsoluteStart, node.cachedAbsoluteEnd);
 			}
 		}
 		return nodes;
@@ -1477,11 +1476,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (lineNumber > lineCount) {
 			return false;
 		}
-
-		/* const maxColumn = this.getLineMaxColumn(lineNumber);
-		if (column > maxColumn) {
-			return false;
-		} */
 
 		if (strict) {
 			if (column > 1) {
