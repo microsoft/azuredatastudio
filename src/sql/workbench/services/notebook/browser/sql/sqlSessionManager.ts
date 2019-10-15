@@ -515,11 +515,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private sendResultSetAsIOPub(resultSet: ResultSetSummary): void {
 		if (this._querySubsetResultMap && this._querySubsetResultMap.get(resultSet.id)) {
 			let subsetResult = this._querySubsetResultMap.get(resultSet.id);
-			if (subsetResult.resultSubset.rowCount > 0) {
-				this.sendIOPubMessage(subsetResult, resultSet);
-			} else {
-				this.sendIOPubMessage({ message: '', resultSubset: { rowCount: 0, rows: [] } }, resultSet);
-			}
+			this.sendIOPubMessage(subsetResult, resultSet);
 		}
 	}
 
