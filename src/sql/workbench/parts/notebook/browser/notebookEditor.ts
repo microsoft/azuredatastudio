@@ -240,8 +240,11 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 				this._finder.getDomNode().style.visibility = 'visible';
 				this._finder.focusFindInput();
 				this._updateFinderMatchState();
+				// if find is closed and opened again, highlight the last position.
+				this._decorations.setStartPosition(this.getPosition());
 			} else {
 				this._finder.getDomNode().style.visibility = 'hidden';
+				this._decorations.clearDecorations();
 			}
 		}
 
@@ -325,13 +328,15 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 
 	private _setCurrentFindMatch(match: NotebookRange): void {
 		let matchesPosition = this._decorations.setCurrentFindMatch(match);
-		this._findState.changeMatchInfo(
-			matchesPosition,
-			this._decorations.getCount(),
-			match
-		);
-		this.setSelection(match);
-		this._revealRangeInCenterIfOutsideViewport(match, ScrollType.Smooth);
+		if (match) {
+			this._findState.changeMatchInfo(
+				matchesPosition,
+				this._decorations.getCount(),
+				match
+			);
+			this.setSelection(match);
+			this._revealRangeInCenterIfOutsideViewport(match, ScrollType.Smooth);
+		}
 	}
 
 	private _revealRangeInCenterIfOutsideViewport(match: NotebookRange, scrollType: ScrollType): void {

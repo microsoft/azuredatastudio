@@ -68,8 +68,10 @@ export class FindDecorations implements IDisposable {
 	}
 
 	public setStartPosition(newStartPosition: NotebookRange): void {
-		this._startPosition = newStartPosition;
-		this.setCurrentFindMatch(null);
+		if (newStartPosition) {
+			this._startPosition = newStartPosition;
+			this.setCurrentFindMatch(this._startPosition);
+		}
 	}
 
 	private _getDecorationIndex(decorationId: string): number {
@@ -91,6 +93,14 @@ export class FindDecorations implements IDisposable {
 		return 1;
 	}
 
+	public clearDecorations(): void {
+		if (this._currentMatch) {
+			this._currentMatch.cell.editor.getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
+				changeAccessor.removeDecoration(this._rangeHighlightDecorationId);
+			});
+		}
+	}
+
 	public setCurrentFindMatch(nextMatch: NotebookRange | null): number {
 		let newCurrentDecorationId: string | null = null;
 		let matchPosition = 0;
@@ -106,33 +116,35 @@ export class FindDecorations implements IDisposable {
 		}
 
 		if (this._highlightedDecorationId !== null || newCurrentDecorationId !== null) {
-			nextMatch.cell.editor.getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
-				if (this._highlightedDecorationId !== null) {
-					changeAccessor.changeDecorationOptions(this._highlightedDecorationId, FindDecorations._FIND_MATCH_DECORATION);
-					this._highlightedDecorationId = null;
-				}
-				if (newCurrentDecorationId !== null) {
-					this._highlightedDecorationId = newCurrentDecorationId;
-					changeAccessor.changeDecorationOptions(this._highlightedDecorationId, FindDecorations._CURRENT_FIND_MATCH_DECORATION);
-				}
-				if (this._rangeHighlightDecorationId !== null) {
-					let prevMatch: NotebookRange = this._currentMatch;
-					prevMatch.cell.editor.getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
-						changeAccessor.removeDecoration(this._rangeHighlightDecorationId);
-						this._rangeHighlightDecorationId = null;
-					});
-					this._currentMatch = nextMatch;
-				}
-				if (newCurrentDecorationId !== null) {
-					let rng = this._editor.getNotebookModel().getDecorationRange(newCurrentDecorationId)!;
-					if (rng.startLineNumber !== rng.endLineNumber && rng.endColumn === 1) {
-						let lineBeforeEnd = rng.endLineNumber - 1;
-						let lineBeforeEndMaxColumn = this._editor.getNotebookModel().getLineMaxColumn(lineBeforeEnd);
-						rng = new NotebookRange(rng.cell, rng.startLineNumber, rng.startColumn, lineBeforeEnd, lineBeforeEndMaxColumn);
+			if (nextMatch) {
+				nextMatch.cell.editor.getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
+					if (this._highlightedDecorationId !== null) {
+						changeAccessor.changeDecorationOptions(this._highlightedDecorationId, FindDecorations._FIND_MATCH_DECORATION);
+						this._highlightedDecorationId = null;
 					}
-					this._rangeHighlightDecorationId = changeAccessor.addDecoration(rng, FindDecorations._RANGE_HIGHLIGHT_DECORATION);
-				}
-			});
+					if (newCurrentDecorationId !== null) {
+						this._highlightedDecorationId = newCurrentDecorationId;
+						changeAccessor.changeDecorationOptions(this._highlightedDecorationId, FindDecorations._CURRENT_FIND_MATCH_DECORATION);
+					}
+					if (this._rangeHighlightDecorationId !== null) {
+						let prevMatch: NotebookRange = this._currentMatch;
+						prevMatch.cell.editor.getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
+							changeAccessor.removeDecoration(this._rangeHighlightDecorationId);
+							this._rangeHighlightDecorationId = null;
+						});
+						this._currentMatch = nextMatch;
+					}
+					if (newCurrentDecorationId !== null) {
+						let rng = this._editor.getNotebookModel().getDecorationRange(newCurrentDecorationId)!;
+						if (rng.startLineNumber !== rng.endLineNumber && rng.endColumn === 1) {
+							let lineBeforeEnd = rng.endLineNumber - 1;
+							let lineBeforeEndMaxColumn = this._editor.getNotebookModel().getLineMaxColumn(lineBeforeEnd);
+							rng = new NotebookRange(rng.cell, rng.startLineNumber, rng.startColumn, lineBeforeEnd, lineBeforeEndMaxColumn);
+						}
+						this._rangeHighlightDecorationId = changeAccessor.addDecoration(rng, FindDecorations._RANGE_HIGHLIGHT_DECORATION);
+					}
+				});
+			}
 		}
 
 		return matchPosition;
