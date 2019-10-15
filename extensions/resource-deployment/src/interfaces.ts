@@ -191,10 +191,10 @@ export interface NotebookInfo {
 }
 
 export enum OsType {
-	win32 = 1, // Keep this 1 based, so that only falsy values are the ones that are undefined (OsType["unknown"] returns undefined) so easy to map to others.
-	darwin,
-	linux,
-	others
+	win32 = 'win32',
+	darwin = 'darwin',
+	linux = 'linux',
+	others = 'others'
 }
 
 export interface ToolRequirementInfo {
@@ -209,6 +209,13 @@ export enum ToolType {
 	Azdata
 }
 
+export const enum ToolStatus {
+	NotInstalled = 'Not Installed',
+	Installed = 'Installed',
+	Installing = 'Installing ...',
+	Error = 'Error'
+}
+
 export interface ITool {
 	readonly name: string;
 	readonly displayName: string;
@@ -216,11 +223,15 @@ export interface ITool {
 	readonly type: ToolType;
 	readonly version: SemVer | undefined;
 	readonly homePage: string;
-	readonly isInstalled: boolean;
+	readonly status: ToolStatus;
 	readonly statusDescription: string | undefined;
 	readonly autoInstallSupported: boolean;
+	readonly outputChannelName: string;
+	readonly fullVersion: string | undefined;
+	showOutputChannel(preserveFocus?: boolean): void;
+	getErrorMessage(error: any): string;
 	loadInformation(): Promise<void>;
-	install(): Promise<void>;
+	install(updateDisplayTableData: (tool: ITool) => void, thisObject: any): Promise<void>;
 }
 
 export const enum BdcDeploymentType {
@@ -228,7 +239,6 @@ export const enum BdcDeploymentType {
 	ExistingAKS = 'existing-aks',
 	ExistingKubeAdm = 'existing-kubeadm'
 }
-
 
 export interface Command {
 	command: string;

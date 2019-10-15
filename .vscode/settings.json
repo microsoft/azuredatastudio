@@ -67,6 +67,7 @@
 		"azurecli",
 		"datetime",
 		"dearmor",
+		"findstr",
 		"freebsd",
 		"gnupg",
 		"icns",

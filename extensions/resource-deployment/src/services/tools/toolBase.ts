@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Command, ToolType, ITool, OsType } from '../../interfaces';
+import { Command, ToolType, ITool, OsType, ToolStatus } from '../../interfaces';
 import { SemVer } from 'semver';
 import { IPlatformService } from '../platformService';
 import * as nls from 'vscode-nls';
@@ -20,8 +20,9 @@ export abstract class ToolBase implements ITool {
 	abstract type: ToolType;
 	abstract homePage: string;
 	abstract autoInstallSupported: boolean;
-	abstract installationCommands: Command[];
+	abstract readonly allInstallationCommands: { [key: string]: Command[] };
 	protected abstract getVersionFromOutput(output: string): SemVer | undefined;
+
 	protected abstract readonly versionCommand: Command;
 
 	protected async getInstallationPath(): Promise<string | undefined> {
@@ -34,6 +35,14 @@ export abstract class ToolBase implements ITool {
 
 	protected get downloadPath(): string {
 		return this.storagePath;
+	}
+
+	protected logToOutputChannel(data: string | Buffer, header?: string): void {
+		this._platformService.logToOutputChannel(data, header);
+	}
+
+	public get status(): ToolStatus {
+		return this._status;
 	}
 
 	public get storagePath(): string {
@@ -53,17 +62,21 @@ export abstract class ToolBase implements ITool {
 
 	}
 
-	public get isInstalled(): boolean {
-		return this._isInstalled;
-	}
-
 	public get statusDescription(): string | undefined {
 		return this._statusDescription;
 	}
 
+	protected get installationCommands(): Command[] {
+		return this.allInstallationCommands[this.osType];
+	}
+
+	public getErrorMessage(error: any): string {
+		return this._platformService.getErrorMessage(error);
+	}
+
 	protected async getPip3InstallLocation(packageName: string): Promise<string> {
 		const command = `pip3 show ${packageName}`;
-		const pip3ShowOutput: string = (await this._platformService.runCommand(command));
+		const pip3ShowOutput: string = await this._platformService.runCommand(command, /* options */ undefined, /*sudo?*/ false, /*commandString*/ undefined, /*ignoreError*/ true);
 		const installLocation = /^Location\: (.*)$/gim.exec(pip3ShowOutput);
 		let retValue = installLocation && installLocation[1];
 		if (retValue === undefined || retValue === null) {
@@ -76,13 +89,28 @@ export abstract class ToolBase implements ITool {
 		}
 	}
 
-	protected logToOutputChannel(data: string | Buffer, header?: string): void {
-		this._platformService.logToOutputChannel(data, header);
+	public get outputChannelName(): string {
+		return this._platformService.outputChannelName();
 	}
 
-	public async install(): Promise<void> {
-		await this.installCore();
-		await this.postInstall();
+	public showOutputChannel(preserveFocus?: boolean | undefined): void {
+		this._platformService.showOutputChannel(preserveFocus);
+	}
+
+	public async install(updateDisplayTableData: (tool: ITool) => void, thisObject: any): Promise<void> {
+		try {
+			this._status = ToolStatus.Installing;
+			updateDisplayTableData.call(thisObject, this);
+			await this.installCore();
+			await this.checkAndUpdateVersion();
+			updateDisplayTableData.call(thisObject, this);
+		} catch (error) {
+			const errorMessage = this._platformService.getErrorMessage(error);
+			this._statusDescription = localize('deployCluster.InstallError', "Error installing tool '{0}'.{1}Error: {2}{1}See output channel '{3}' for more details", this.displayName, EOL, errorMessage, this.outputChannelName);
+			this._status = ToolStatus.Error;
+			updateDisplayTableData.call(thisObject, this);
+			throw error;
+		}
 	}
 
 	protected async installCore() {
@@ -103,14 +131,10 @@ export abstract class ToolBase implements ITool {
 		}
 	}
 
-	protected async postInstall() {
-		await this.loadInformation();
-	}
-
 	protected async addInstallationSearchPathsToSystemPath(): Promise<void> {
 		const installationPath = await this.getInstallationPath();
 		const searchPaths = [installationPath, ...this.installationSearchPaths].filter(path => !!path);
-		this.logToOutputChannel(`Search Paths for tool:${this.displayName}: ${JSON.stringify(searchPaths, undefined, '\t')}`);
+		this.logToOutputChannel(`Search Paths for tool '${this.displayName}': ${JSON.stringify(searchPaths, undefined, '\t')}`);
 		searchPaths.forEach(installationSearchPath => {
 			if (installationSearchPath) {
 				if (process.env.PATH) {
@@ -126,39 +150,40 @@ export abstract class ToolBase implements ITool {
 		});
 	}
 	public async loadInformation(): Promise<void> {
-		if (this._isInstalled) {
+		if (this.status === ToolStatus.Installed) {
 			return Promise.resolve();
 		}
-		this._isInstalled = false;
-		this._statusDescription = undefined;
-		this._version = undefined;
-		this._versionOutput = undefined;
-		this._osType = this._platformService.osType();
-		await this.addInstallationSearchPathsToSystemPath();
-		try {
-			const stdout = await this._platformService.runCommand(this.versionCommand.command,
-				{
-					workingDirectory: this.versionCommand.workingDirectory,
-					additionalEnvironmentVariables: this.versionCommand.additionalEnvironmentVariables
-				});
-			this._versionOutput = stdout;
-			this._version = this.getVersionFromOutput(stdout);
-			if (this._version) {
-				this._isInstalled = true;
-			} else {
-				throw localize('deployCluster.InvalidToolVersionOutput', "Invalid output received.");
-			}
-		} catch (error) {
-
-			const errorMessage = this._platformService.getErrorMessage(error);
-			this._statusDescription = localize('deployCluster.GetToolVersionError', "Error retrieving version information.{0}Error: {1}{0}stdout: {2} ", EOL, errorMessage, this._versionOutput);
+		if (this.status === ToolStatus.NotInstalled) {
+			this._statusDescription = undefined;
+			this._version = undefined;
+			this._versionOutput = undefined;
+			this._osType = this._platformService.osType();
+			await this.addInstallationSearchPathsToSystemPath();
+			await this.checkAndUpdateVersion();
 		}
-
 	}
 
-	private _isInstalled: boolean = false;
+	private _status: ToolStatus = ToolStatus.NotInstalled;
 	private _osType: OsType = OsType.others;
 	private _version?: SemVer;
 	private _statusDescription?: string;
 	private _versionOutput?: string;
+
+	private async checkAndUpdateVersion(): Promise<void> {
+		const commandOutput = await this._platformService.runCommand(this.versionCommand.command, {
+			workingDirectory: this.versionCommand.workingDirectory,
+			additionalEnvironmentVariables: this.versionCommand.additionalEnvironmentVariables
+		}, false, // sudo?
+			undefined, // commandTitle
+			true);
+		this._versionOutput = commandOutput;
+		this._version = this.getVersionFromOutput(commandOutput);
+		if (this._version) {
+			this._status = ToolStatus.Installed;
+		}
+		else {
+			this._status = ToolStatus.NotInstalled;
+			this._statusDescription = localize('deployCluster.GetToolVersionError', "Error retrieving version information.{0}Invalid output received, get version command output: {2} ", EOL, this._versionOutput);
+		}
+	}
 }

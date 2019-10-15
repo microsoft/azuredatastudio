@@ -50,7 +50,7 @@ export class DockerTool extends ToolBase {
 		return false;
 	}
 
-	get installationCommands(): Command[] {
-		return [];
+	get allInstallationCommands(): { [key: string]: Command[] } {
+		throw Error('Installation of DockerTool is not supported');
 	}
 }

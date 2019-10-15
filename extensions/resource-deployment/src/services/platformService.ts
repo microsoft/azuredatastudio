@@ -26,8 +26,10 @@ export interface IPlatformService {
 	fileExists(file: string): Promise<boolean>;
 	openFile(filePath: string): void;
 	getErrorMessage(error: any): string;
-	showErrorMessage(message: string): void;
+	showErrorMessage(error: Error | string): void;
 	logToOutputChannel(data: string | Buffer, header?: string): void;
+	outputChannelName(): string;
+	showOutputChannel(preserveFocus?: boolean): void;
 	isNotebookNameUsed(title: string): boolean;
 	makeDirectory(path: string): Promise<void>;
 	readTextFile(filePath: string): Promise<string>;
@@ -48,6 +50,7 @@ export interface CommandOptions {
  * A class that provides various services to interact with the platform on which the code runs
  */
 export class PlatformService implements IPlatformService {
+
 	private _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(extensionOutputChannel);
 
 	constructor(private _storagePath: string = '') {
@@ -61,8 +64,20 @@ export class PlatformService implements IPlatformService {
 		return process.platform;
 	}
 
+	outputChannelName(): string {
+		return this._outputChannel.name;
+	}
+
+	showOutputChannel(preserveFocus?: boolean | undefined): void {
+		this._outputChannel.show(preserveFocus);
+	}
+
 	osType(platform: string = this.platform()): OsType {
-		return (<any>OsType)[platform] || OsType.others;
+		if (Object.values(OsType).includes(<OsType>platform)) {
+			return <OsType>platform;
+		} else {
+			return OsType.others;
+		}
 	}
 
 	async copyFile(source: string, target: string): Promise<void> {
@@ -85,10 +100,10 @@ export class PlatformService implements IPlatformService {
 		vscode.commands.executeCommand('vscode.open', vscode.Uri.file(filePath));
 	}
 
-	public getErrorMessage(error: Error | string): string {
+	getErrorMessage(error: any): string {
 		return (error instanceof Error)
 			? (typeof error.message === 'string' ? error.message : '')
-			: typeof error === 'string' ? error : `unknown error:${JSON.stringify(error, undefined, '\t')}`;
+			: typeof error === 'string' ? error : `${JSON.stringify(error, undefined, '\t')}`;
 	}
 
 	showErrorMessage(error: Error | string): void {

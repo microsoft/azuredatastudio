@@ -51,77 +51,14 @@ export class AzCliTool extends ToolBase {
 				return await Promise.resolve(win32InstallationRoot);
 		}
 	}
-	get installationCommands(): Command[] {
-		switch (this.osType) {
-			case OsType.darwin: return [
-				{
-					comment: localize('resourceDeployment.AziCli.UpdatingBrewRepository', 'updating your brew repository for azure-cli installation ...'),
-					command: 'brew update'
-				},
-				{
-					comment: localize('resourceDeployment.AziCli.InstallingAzureCli', 'installing azure-cli ...'),
-					command: 'brew install azure-cli'
-				}
-			];
-			case OsType.win32: return [
-				{
-					comment: localize('resourceDeployment.AziCli.DeletingPreviousAzureCli.msi', 'deleting previously downloaded azurecli.msi if one exists ...'),
-					command: `IF EXIST .\\AzureCLI.msi DEL /F .\\AzureCLI.msi`
-				},
-				{
-					sudo: true,
-					comment: localize('resourceDeployment.AziCli.DownloadingAndInstallingAzureCli', 'downloading azurecli.msi and installing azure-cli ...'),
-					command: `powershell -Command "& {(New-Object System.Net.WebClient).DownloadFile('https://aka.ms/installazurecliwindows', 'AzureCLI.msi'); Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /passive /quiet /lx AzureCliInstall.log'}"`
-				},
-				{
-					comment: localize('resourceDeployment.AziCli.DisplayingInstallationLog', 'displaying the installation log ...'),
-					command: `type AzureCliInstall.log`,
-					ignoreError: true
-				}
-			];
-			case OsType.linux: return [
-				{
-					sudo: true,
-					comment: localize('resourceDeployment.AziCli.AptGetUpdate', 'updating repository information before installing azure-cli ...'),
-					command: 'apt-get update'
-				},
-				{
-					sudo: true,
-					comment: localize('resourceDeployment.AziCli.AptGetPackages', 'getting packages needed for azure-cli installation ...'),
-					command: 'apt-get install ca-certificates curl apt-transport-https lsb-release gnupg -y'
-				},
-				{
-					sudo: true,
-					comment: localize('resourceDeployment.AziCli.DownloadAndInstallingSigningKey', 'downloading and installing the signing key for azure-cli ...'),
-					command: 'curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null'
-				},
-				{
-					sudo: true,
-					comment: localize('resourceDeployment.AziCli.AddingAzureCliRepositoryInformation', 'adding the azure-cli repository information ...'),
-					command: 'AZ_REPO=$(lsb_release -cs) && echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list'
-				},
-				{
-					sudo: true,
-					comment: localize('resourceDeployment.AziCli.AptGetUpdateAgain', 'updating repository information again for azure-cli ...'),
-					command: 'apt-get update'
-				},
-				{
-					sudo: true,
-					comment: localize('resourceDeployment.AziCli.InstallingAzureCli', 'installing azure-cli ...'),
-					command: 'apt-get install azure-cli'
-				}
-			];
-			// all other linux distributions
-			default: return [
-				{
-					sudo: true,
-					comment: localize('resourceDeployment.AziCli.ScriptedInstall', 'download and invoking script to install azure-cli ...'),
-					command: 'curl -sL https://aka.ms/InstallAzureCLIDeb | bash'
-				}
 
-			];
-		}
-	}
+
+	readonly allInstallationCommands: { [key: string]: Command[] } = {
+		'linux': linuxInstallationCommands,
+		'win32': win32InstallationCommands,
+		'darwin': macOsInstallationCommands,
+		'others': defaultInstallationCommands,
+	};
 
 	protected getVersionFromOutput(output: string): SemVer | undefined {
 		if (output && output.includes('azure-cli')) {
@@ -136,3 +73,69 @@ export class AzCliTool extends ToolBase {
 		};
 	}
 }
+
+const win32InstallationCommands = [
+	{
+		comment: localize('resourceDeployment.AziCli.DeletingPreviousAzureCli.msi', 'deleting previously downloaded azurecli.msi if one exists ...'),
+		command: `IF EXIST .\\AzureCLI.msi DEL /F .\\AzureCLI.msi`
+	},
+	{
+		sudo: true,
+		comment: localize('resourceDeployment.AziCli.DownloadingAndInstallingAzureCli', 'downloading azurecli.msi and installing azure-cli ...'),
+		command: `powershell -Command "& {(New-Object System.Net.WebClient).DownloadFile('https://aka.ms/installazurecliwindows', 'AzureCLI.msi'); Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /passive /quiet /lvx ADS_AzureCliInstall.log'}"`
+	},
+	{
+		comment: localize('resourceDeployment.AziCli.DisplayingInstallationLog', 'displaying the installation log ...'),
+		command: `type AzureCliInstall.log | findstr /i /v /c:"cached product context" | findstr /i /v /c:"has no eligible binary patches" `,
+		ignoreError: true
+	}
+];
+const macOsInstallationCommands = [
+	{
+		comment: localize('resourceDeployment.AziCli.UpdatingBrewRepository', 'updating your brew repository for azure-cli installation ...'),
+		command: 'brew update'
+	},
+	{
+		comment: localize('resourceDeployment.AziCli.InstallingAzureCli', 'installing azure-cli ...'),
+		command: 'brew install azure-cli'
+	}
+];
+const linuxInstallationCommands = [
+	{
+		sudo: true,
+		comment: localize('resourceDeployment.AziCli.AptGetUpdate', 'updating repository information before installing azure-cli ...'),
+		command: 'apt-get update'
+	},
+	{
+		sudo: true,
+		comment: localize('resourceDeployment.AziCli.AptGetPackages', 'getting packages needed for azure-cli installation ...'),
+		command: 'apt-get install ca-certificates curl apt-transport-https lsb-release gnupg -y'
+	},
+	{
+		sudo: true,
+		comment: localize('resourceDeployment.AziCli.DownloadAndInstallingSigningKey', 'downloading and installing the signing key for azure-cli ...'),
+		command: 'curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null'
+	},
+	{
+		sudo: true,
+		comment: localize('resourceDeployment.AziCli.AddingAzureCliRepositoryInformation', 'adding the azure-cli repository information ...'),
+		command: 'AZ_REPO=$(lsb_release -cs) && echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list'
+	},
+	{
+		sudo: true,
+		comment: localize('resourceDeployment.AziCli.AptGetUpdateAgain', 'updating repository information again for azure-cli ...'),
+		command: 'apt-get update'
+	},
+	{
+		sudo: true,
+		comment: localize('resourceDeployment.AziCli.InstallingAzureCli', 'installing azure-cli ...'),
+		command: 'apt-get install azure-cli'
+	}
+];
+const defaultInstallationCommands = [
+	{
+		sudo: true,
+		comment: localize('resourceDeployment.AziCli.ScriptedInstall', 'download and invoking script to install azure-cli ...'),
+		command: 'curl -sL https://aka.ms/InstallAzureCLIDeb | bash'
+	}
+];

@@ -65,56 +65,58 @@ export class AzdataTool extends ToolBase {
 		}
 	}
 
-	get installationCommands(): Command[] {
-		switch (this.osType) {
-			case OsType.linux: return [
-				{
-					sudo: true,
-					comment: localize('resourceDeployment.Azdata.AptGetUpdate', 'updating repository information before installing azdata ...'),
-					command: 'apt-get update'
-				},
-				{
-					sudo: true,
-					comment: localize('resourceDeployment.Azdata.AptGetPackages', 'getting packages needed for azdata installation ...'),
-					command: 'apt-get install gnupg ca-certificates curl apt-transport-https lsb-release -y'
-				},
-				{
-					sudo: true,
-					comment: localize('resourceDeployment.Azdata.DownloadAndInstallingSigningKey', 'downloading and installing the signing key for azdata ...'),
-					command: 'wget -qO- https://packages.microsoft.com/keys/microsoft.asc | apt-key add -'
-				},
-				{
-					sudo: true,
-					comment: localize('resourceDeployment.Azdata.AddingAzureCliRepositoryInformation', 'adding the azdata repository information ...'),
-					command: 'add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-preview.list)"'
-				},
-				{
-					sudo: true,
-					comment: localize('resourceDeployment.Azdata.AptGetUpdateAgain', 'updating repository information again for azdata ...'),
-					command: 'apt-get update'
-				},
-				{
-					sudo: true,
-					comment: localize('resourceDeployment.Azdata.InstallingAzdata', 'installing azdata ...'),
-					command: 'apt-get install -y azdata-cli'
-				}
-			];
-			// all other platforms and distributions
-			default: return [
-				{
-					comment: localize('resourceDeployment.Azdata.UninstallingMssqlctl_3.1', 'uninstalling mssqlctl ctp 3.1 ...'),
-					command: 'pip3 uninstall -r https://private-repo.microsoft.com/python/ctp3.1/mssqlctl/requirements.txt -y'
-				},
-				{
-					comment: localize('resourceDeployment.Azdata.UninstallingMssqlctl_3.2', 'uninstalling mssqlctl ctp 3.2 ...'),
-					command: 'pip3 uninstall -r https://azdatacli.blob.core.windows.net/python/azdata/2019-ctp3.2/requirements.txt -y'
-				},
-				{
-					comment: localize('resourceDeployment.Azdata.Pip3_InstallAzdata', 'installing azdata ...'),
-					command: 'pip3 install -r https://aka.ms/azdata --user'
-				}
-
-			];
-		}
-	}
+	readonly allInstallationCommands: { [key: string]: Command[] } = {
+		'linux': linuxInstallationCommands,
+		'win32': defaultInstallationCommands,
+		'darwin': defaultInstallationCommands,
+		'others': defaultInstallationCommands,
+	};
 }
+
+const linuxInstallationCommands = [
+	{
+		sudo: true,
+		comment: localize('resourceDeployment.Azdata.AptGetUpdate', 'updating repository information before installing azdata ...'),
+		command: 'apt-get update'
+	},
+	{
+		sudo: true,
+		comment: localize('resourceDeployment.Azdata.AptGetPackages', 'getting packages needed for azdata installation ...'),
+		command: 'apt-get install gnupg ca-certificates curl apt-transport-https lsb-release -y'
+	},
+	{
+		sudo: true,
+		comment: localize('resourceDeployment.Azdata.DownloadAndInstallingSigningKey', 'downloading and installing the signing key for azdata ...'),
+		command: 'wget -qO- https://packages.microsoft.com/keys/microsoft.asc | apt-key add -'
+	},
+	{
+		sudo: true,
+		comment: localize('resourceDeployment.Azdata.AddingAzureCliRepositoryInformation', 'adding the azdata repository information ...'),
+		command: 'add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-preview.list)"'
+	},
+	{
+		sudo: true,
+		comment: localize('resourceDeployment.Azdata.AptGetUpdateAgain', 'updating repository information again for azdata ...'),
+		command: 'apt-get update'
+	},
+	{
+		sudo: true,
+		comment: localize('resourceDeployment.Azdata.InstallingAzdata', 'installing azdata ...'),
+		command: 'apt-get install -y azdata-cli'
+	}
+];
+
+const defaultInstallationCommands = [
+	{
+		comment: localize('resourceDeployment.Azdata.UninstallingMssqlctl_3.1', 'uninstalling mssqlctl ctp 3.1 ...'),
+		command: 'pip3 uninstall -r https://private-repo.microsoft.com/python/ctp3.1/mssqlctl/requirements.txt -y'
+	},
+	{
+		comment: localize('resourceDeployment.Azdata.UninstallingMssqlctl_3.2', 'uninstalling mssqlctl ctp 3.2 ...'),
+		command: 'pip3 uninstall -r https://azdatacli.blob.core.windows.net/python/azdata/2019-ctp3.2/requirements.txt -y'
+	},
+	{
+		comment: localize('resourceDeployment.Azdata.Pip3_InstallAzdata', 'installing azdata ...'),
+		command: `pip3 install -r https://aka.ms/azdata --quiet --user --log ADS_AzdataPip3InstallLog_${Date.now()}`
+	}
+];
