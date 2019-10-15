@@ -167,11 +167,9 @@ export class BdcDashboard {
 
 	private async doRefresh(): Promise<void> {
 		try {
-			this.refreshButton.iconPath = IconPathHelper.refresh_rotate;
 			this.refreshButton.enabled = false;
 			await this.model.refresh();
 		} finally {
-			this.refreshButton.iconPath = IconPathHelper.refresh;
 			this.refreshButton.enabled = true;
 		}
 	}
