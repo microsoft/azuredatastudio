@@ -12,7 +12,7 @@ const localize = nls.loadMessageBundle();
 
 import { ApiWrapper } from '../apiWrapper';
 import { Command, ICommandViewContext, ProgressCommand, ICommandObjectExplorerContext } from './command';
-import { File, IFile, joinHdfsPath } from './fileSources';
+import { File, IFile, joinHdfsPath, FileType } from './fileSources';
 import { FolderNode, FileNode, HdfsFileSourceNode } from './hdfsProvider';
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import * as constants from '../constants';
@@ -21,6 +21,7 @@ import * as utils from '../utils';
 import { AppContext } from '../appContext';
 import { TreeNode } from './treeNodes';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider';
+import { ManageAccessDialog } from '../hdfs/ui/hdfsManageAccessDialog';
 
 async function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPreview?: boolean): Promise<vscode.Uri> {
 	let root = utils.getUserHome();
@@ -101,8 +102,15 @@ export class UploadFilesCommand extends ProgressCommand {
 
 	private mapPathsToFiles(): (value: string, index: number, array: string[]) => Promise<File> {
 		return async (path: string) => {
-			let isDir = (await fs.lstat(path)).isDirectory();
-			return new File(path, isDir);
+			const stats = (await fs.lstat(path));
+			if (stats.isDirectory()) {
+				return new File(path, FileType.Directory);
+			} else if (stats.isSymbolicLink()) {
+				return new File(path, FileType.Symlink);
+			} else {
+				return new File(path, FileType.File);
+			}
+
 		};
 	}
 
@@ -112,7 +120,7 @@ export class UploadFilesCommand extends ProgressCommand {
 				// Throw here so that all recursion is ended
 				throw new Error('Upload canceled');
 			}
-			if (file.isDirectory) {
+			if (file.fileType === FileType.Directory) {
 				let dirName = fspath.basename(file.path);
 				let subFolder = await folderNode.mkdir(dirName);
 				let children: IFile[] = await Promise.all((await fs.readdir(file.path))
@@ -381,6 +389,27 @@ export class CopyPathCommand extends Command {
 		} catch (err) {
 			this.apiWrapper.showErrorMessage(
 				localize('copyPathError', 'Error on copying path: {0}', utils.getErrorMessage(err, true)));
+		}
+	}
+}
+
+export class ManageAccessCommand extends Command {
+
+	constructor(appContext: AppContext) {
+		super('mssqlCluster.manageAccess', appContext);
+	}
+
+	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
+		try {
+			let node = await getNode<HdfsFileSourceNode>(context, this.appContext);
+			if (node) {
+				new ManageAccessDialog(node.hdfsPath, node.fileSource, this.apiWrapper).openDialog();
+			} else {
+				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
+			}
+		} catch (err) {
+			this.apiWrapper.showErrorMessage(
+				localize('manageAccessError', "An unexpected error occurred while opening the Manage Access dialog: {0}", utils.getErrorMessage(err, true)));
 		}
 	}
 }

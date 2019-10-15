@@ -73,6 +73,7 @@ const indentationFilter = [
 
 	// except multiple specific folders
 	'!**/octicons/**',
+	'!**/codicon/**',
 	'!**/fixtures/**',
 	'!**/lib/**',
 	'!extensions/**/out/**',
@@ -102,7 +103,8 @@ const indentationFilter = [
 	'!extensions/admin-tool-ext-win/ssmsmin/**',
 	'!extensions/resource-deployment/notebooks/**',
 	'!extensions/mssql/notebooks/**',
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts'
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts'
 ];
 
 const copyrightFilter = [
@@ -135,7 +137,7 @@ const copyrightFilter = [
 	'!src/vs/editor/test/node/classification/typescript-test.ts',
 	// {{SQL CARBON EDIT}}
 	'!extensions/notebook/src/intellisense/text.ts',
-	'!extensions/mssql/src/objectExplorerNodeProvider/webhdfs.ts',
+	'!extensions/mssql/src/hdfs/webhdfs.ts',
 	'!src/sql/workbench/parts/notebook/browser/outputs/tableRenderers.ts',
 	'!src/sql/workbench/parts/notebook/common/models/url.ts',
 	'!src/sql/workbench/parts/notebook/browser/models/renderMimeInterfaces.ts',
@@ -190,7 +192,8 @@ const tslintBaseFilter = [
 	'!extensions/vscode-api-tests/testWorkspace2/**',
 	'!extensions/**/*.test.ts',
 	'!extensions/html-language-features/server/lib/jquery.d.ts',
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts' // {{SQL CARBON EDIT}}
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts', // {{SQL CARBON EDIT}},
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts' // {{SQL CARBON EDIT}}
 ];
 
 const sqlFilter = ['src/sql/**']; // {{SQL CARBON EDIT}}
@@ -382,8 +385,6 @@ function hygiene(some) {
 	const sqlTsl = es.through(function (file) { //TODO restore
 		const contents = file.contents.toString('utf8');
 		sqlTsLinter.lint(file.relative, contents, tslintSqlConfiguration.results);
-
-		this.emit('data', file);
 	});
 
 	const productJsonFilter = filter('product.json', { restore: true });

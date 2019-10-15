@@ -15,14 +15,12 @@ export function registerBooksWidget(bookContributionProvider: BookContributionPr
 		const container = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: '100%',
-			height: '100%',
-			alignItems: 'left'
+			height: '100%'
 		}).component();
 		const bookslocationContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: '270px',
 			height: '100%',
-			alignItems: 'left',
 			position: 'absolute'
 		}).component();
 
@@ -70,5 +68,5 @@ export function registerBooksWidget(bookContributionProvider: BookContributionPr
 }
 
 function openBookViewlet(folderUri: vscode.Uri): void {
-	vscode.commands.executeCommand('bookTreeView.openBook', folderUri.fsPath, true);
+	vscode.commands.executeCommand('bookTreeView.openBook', folderUri.fsPath, true, undefined);
 }

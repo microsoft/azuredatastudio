@@ -13,7 +13,7 @@ import ContextProvider from './contextProvider';
 import * as Utils from './utils';
 import { AppContext } from './appContext';
 import { ApiWrapper } from './apiWrapper';
-import { UploadFilesCommand, MkDirCommand, SaveFileCommand, PreviewFileCommand, CopyPathCommand, DeleteFilesCommand } from './objectExplorerNodeProvider/hdfsCommands';
+import { UploadFilesCommand, MkDirCommand, SaveFileCommand, PreviewFileCommand, CopyPathCommand, DeleteFilesCommand, ManageAccessCommand } from './objectExplorerNodeProvider/hdfsCommands';
 import { IPrompter } from './prompts/question';
 import CodeAdapter from './prompts/adapter';
 import { IExtension } from './mssql';
@@ -26,12 +26,14 @@ import { registerServiceEndpoints } from './dashboard/serviceEndpoints';
 import { getBookExtensionContributions } from './dashboard/bookExtensions';
 import { registerBooksWidget } from './dashboard/bookWidget';
 import { createMssqlApi } from './mssqlApiFactory';
-import { localize } from './localize';
+
 import { SqlToolsServer } from './sqlToolsServer';
 import { promises as fs } from 'fs';
+import { IconPathHelper } from './iconHelper';
+import * as nls from 'vscode-nls';
 
+const localize = nls.loadMessageBundle();
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
-
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	// lets make sure we support this platform first
@@ -46,6 +48,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	if (!(await Utils.exists(context.logPath))) {
 		await fs.mkdir(context.logPath);
 	}
+
+	IconPathHelper.setExtensionContext(context);
 
 	let prompter: IPrompter = new CodeAdapter();
 	let appContext = new AppContext(context, new ApiWrapper());
@@ -99,6 +103,7 @@ function registerHdfsCommands(context: vscode.ExtensionContext, prompter: IPromp
 	context.subscriptions.push(new PreviewFileCommand(prompter, appContext));
 	context.subscriptions.push(new CopyPathCommand(appContext));
 	context.subscriptions.push(new DeleteFilesCommand(prompter, appContext));
+	context.subscriptions.push(new ManageAccessCommand(appContext));
 }
 
 function activateSparkFeatures(appContext: AppContext): void {

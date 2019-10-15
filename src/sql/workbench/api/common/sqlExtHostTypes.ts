@@ -225,6 +225,7 @@ export enum ComponentEventType {
 	onSelectedRowChanged,
 	onComponentCreated,
 	onCellAction,
+	onEnterKeyPressed
 }
 
 export interface IComponentEventArgs {
@@ -301,10 +302,15 @@ export interface CardProperties {
 	label: string;
 	value?: string;
 	actions?: ActionDescriptor[];
-	descriptions?: string[];
+	descriptions?: CardDescriptionItem[];
 	status?: StatusIndicator;
 	selected?: boolean;
 	cardType: CardType;
+}
+
+export interface CardDescriptionItem {
+	label: string;
+	value?: string;
 }
 
 export interface ActionDescriptor {

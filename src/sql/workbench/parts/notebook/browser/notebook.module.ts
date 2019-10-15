@@ -29,6 +29,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { LinkHandlerDirective } from 'sql/workbench/parts/notebook/browser/cellViews/linkHandler.directive';
 import { IBootstrapParams, ISelector } from 'sql/platform/bootstrap/common/bootstrapParams';
 import { ICellComponenetRegistry, Extensions as OutputComponentExtensions } from 'sql/platform/notebooks/common/outputRegistry';
+import { CollapseComponent } from 'sql/workbench/parts/notebook/browser/cellViews/collapse.component';
 
 const outputComponentRegistry = Registry.as<ICellComponenetRegistry>(OutputComponentExtensions.CellComponentContributions);
 
@@ -51,6 +52,7 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			OutputAreaComponent,
 			OutputComponent,
 			StdInComponent,
+			CollapseComponent,
 			LinkHandlerDirective,
 			...outputComponents
 		],

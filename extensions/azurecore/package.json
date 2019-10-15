@@ -1,202 +1,203 @@
 {
-	"name": "azurecore",
-	"displayName": "%azure.displayName%",
-	"description": "%azure.description%",
-	"version": "0.1.0",
-	"publisher": "Microsoft",
-	"preview": true,
-	"engines": {
-		"vscode": "^1.30.1",
-		"azdata": "*"
-	},
-	"activationEvents": [
-		"*"
-	],
-	"main": "./out/extension",
-	"contributes": {
-		"configuration": [
-			{
-				"type": "object",
-				"title": "%azure.resource.config.title%",
-				"properties": {
-					"azure.resource.config.filter": {
-						"type": "array",
-						"default": null,
-						"description": "%azure.resource.config.filter.description%"
-					}
-				}
-			},
-			{
-				"type": "object",
-				"title": "Azure Account Configuration",
-				"properties": {
-					"accounts.azure.enablePublicCloud": {
-						"type": "boolean",
-						"default": true,
-						"description": "%config.enablePublicCloudDescription%"
-					}
-				}
-			}
-		],
-		"account-type": [
-			{
-				"id": "microsoft",
-				"icon": {
-					"light": "./resources/light/microsoft_account_light.svg",
-					"dark": "./resources/dark/microsoft_account_dark.svg"
-				}
-			},
-			{
-				"id": "work_school",
-				"icon": {
-					"light": "./resources/light/work_school_account_light.svg",
-					"dark": "./resources/dark/work_school_account_dark.svg"
-				}
-			}
-		],
-		"commands": [
-			{
-				"command": "accounts.clearTokenCache",
-				"title": "%accounts.clearTokenCache%",
-				"category": "Azure Accounts"
-			},
-			{
-				"command": "azure.resource.signin",
-				"title": "%azure.resource.signin.title%",
-				"icon": {
-					"dark": "resources/dark/add_inverse.svg",
-					"light": "resources/light/add.svg"
-				}
-			},
-			{
-				"command": "azure.resource.refreshall",
-				"title": "%azure.resource.refreshall.title%",
-				"icon": {
-					"dark": "resources/dark/refresh_inverse.svg",
-					"light": "resources/light/refresh.svg"
-				}
-			},
-			{
-				"command": "azure.resource.refresh",
-				"title": "%azure.resource.refresh.title%",
-				"icon": {
-					"dark": "resources/dark/refresh_inverse.svg",
-					"light": "resources/light/refresh.svg"
-				}
-			},
-			{
-				"command": "azure.resource.selectsubscriptions",
-				"title": "%azure.resource.selectsubscriptions.title%",
-				"icon": {
-					"dark": "resources/dark/filter_inverse.svg",
-					"light": "resources/light/filter.svg"
-				}
-			},
-			{
-				"command": "azure.resource.connectsqlserver",
-				"title": "%azure.resource.connectsqlserver.title%",
-				"icon": {
-					"dark": "resources/dark/connect_to_inverse.svg",
-					"light": "resources/light/connect_to.svg"
-				}
-			},
-			{
-				"command": "azure.resource.connectsqldb",
-				"title": "%azure.resource.connectsqldb.title%",
-				"icon": {
-					"dark": "resources/dark/add_to_server_list_inverse.svg",
-					"light": "resources/light/add_to_server_list.svg"
-				}
-			}
-		],
-		"dataExplorer": {
-			"azureResource": [
-				{
-					"id": "azureResourceExplorer",
-					"name": "%azure.resource.explorer.title%"
-				}
-			]
-		},
-		"menus": {
-			"commandPalette": [
-				{
-					"command": "azure.resource.signin",
-					"when": "true"
-				},
-				{
-					"command": "azure.resource.refreshall",
-					"when": "true"
-				},
-				{
-					"command": "azure.resource.selectsubscriptions",
-					"when": "false"
-				},
-				{
-					"command": "azure.resource.refresh",
-					"when": "false"
-				},
-				{
-					"command": "azure.resource.connectsqlserver",
-					"when": "false"
-				},
-				{
-					"command": "azure.resource.connectsqldb",
-					"when": "false"
-				}
-
-			],
-			"view/title": [
-				{
-					"command": "azure.resource.signin",
-					"when": "view == azureResourceExplorer",
-					"group": "navigation@1"
-				},
-				{
-					"command": "azure.resource.refreshall",
-					"when": "view == azureResourceExplorer",
-					"group": "navigation@2"
-				}
-			],
-			"view/item/context": [
-				{
-					"command": "azure.resource.selectsubscriptions",
-					"when": "viewItem == azure.resource.itemType.account",
-					"group": "inline"
-				},
-				{
-					"command": "azure.resource.refresh",
-					"when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer)$/",
-					"group": "inline"
-				},
-				{
-					"command": "azure.resource.connectsqlserver",
-					"when": "viewItem == azure.resource.itemType.databaseServer",
-					"group": "inline"
-				},
-				{
-					"command": "azure.resource.connectsqldb",
-					"when": "viewItem == azure.resource.itemType.database",
-					"group": "inline"
-				}
-			]
-		},
-		"hasAzureResourceProviders": true
-	},
-	"dependencies": {
-		"adal-node": "^0.1.28",
-		"azure-arm-resource": "^7.0.0",
-		"azure-arm-sql": "^5.0.1",
-		"ms-rest": "^2.5.0",
-		"request": "2.88.0",
-		"vscode-nls": "^4.0.0"
-	},
-	"devDependencies": {
-		"@types/mocha": "^5.2.5",
-		"@types/node": "^10.12.12",
-		"@types/request": "^2.48.1",
-		"mocha": "^5.2.0",
-		"should": "^13.2.1",
-		"typemoq": "^2.1.0",
-		"vscode": "1.1.26"
-	}
+  "name": "azurecore",
+  "displayName": "%azure.displayName%",
+  "description": "%azure.description%",
+  "version": "0.1.0",
+  "publisher": "Microsoft",
+  "preview": true,
+  "engines": {
+    "vscode": "^1.30.1",
+    "azdata": "*"
+  },
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/extension",
+  "contributes": {
+    "configuration": [
+      {
+        "type": "object",
+        "title": "%azure.resource.config.title%",
+        "properties": {
+          "azure.resource.config.filter": {
+            "type": "array",
+            "default": null,
+            "description": "%azure.resource.config.filter.description%"
+          }
+        }
+      },
+      {
+        "type": "object",
+        "title": "Azure Account Configuration",
+        "properties": {
+          "accounts.azure.enablePublicCloud": {
+            "type": "boolean",
+            "default": true,
+            "description": "%config.enablePublicCloudDescription%"
+          }
+        }
+      }
+    ],
+    "account-type": [
+      {
+        "id": "microsoft",
+        "icon": {
+          "light": "./resources/light/microsoft_account_light.svg",
+          "dark": "./resources/dark/microsoft_account_dark.svg"
+        }
+      },
+      {
+        "id": "work_school",
+        "icon": {
+          "light": "./resources/light/work_school_account_light.svg",
+          "dark": "./resources/dark/work_school_account_dark.svg"
+        }
+      }
+    ],
+    "commands": [
+      {
+        "command": "accounts.clearTokenCache",
+        "title": "%accounts.clearTokenCache%",
+        "category": "Azure Accounts"
+      },
+      {
+        "command": "azure.resource.signin",
+        "title": "%azure.resource.signin.title%",
+        "icon": {
+          "dark": "resources/dark/add_inverse.svg",
+          "light": "resources/light/add.svg"
+        }
+      },
+      {
+        "command": "azure.resource.refreshall",
+        "title": "%azure.resource.refreshall.title%",
+        "icon": {
+          "dark": "resources/dark/refresh_inverse.svg",
+          "light": "resources/light/refresh.svg"
+        }
+      },
+      {
+        "command": "azure.resource.refresh",
+        "title": "%azure.resource.refresh.title%",
+        "icon": {
+          "dark": "resources/dark/refresh_inverse.svg",
+          "light": "resources/light/refresh.svg"
+        }
+      },
+      {
+        "command": "azure.resource.selectsubscriptions",
+        "title": "%azure.resource.selectsubscriptions.title%",
+        "icon": {
+          "dark": "resources/dark/filter_inverse.svg",
+          "light": "resources/light/filter.svg"
+        }
+      },
+      {
+        "command": "azure.resource.connectsqlserver",
+        "title": "%azure.resource.connectsqlserver.title%",
+        "icon": {
+          "dark": "resources/dark/connect_to_inverse.svg",
+          "light": "resources/light/connect_to.svg"
+        }
+      },
+      {
+        "command": "azure.resource.connectsqldb",
+        "title": "%azure.resource.connectsqldb.title%",
+        "icon": {
+          "dark": "resources/dark/add_to_server_list_inverse.svg",
+          "light": "resources/light/add_to_server_list.svg"
+        }
+      }
+    ],
+    "dataExplorer": {
+      "azureResource": [
+        {
+          "id": "azureResourceExplorer",
+          "name": "%azure.resource.explorer.title%"
+        }
+      ]
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "azure.resource.signin",
+          "when": "true"
+        },
+        {
+          "command": "azure.resource.refreshall",
+          "when": "true"
+        },
+        {
+          "command": "azure.resource.selectsubscriptions",
+          "when": "false"
+        },
+        {
+          "command": "azure.resource.refresh",
+          "when": "false"
+        },
+        {
+          "command": "azure.resource.connectsqlserver",
+          "when": "false"
+        },
+        {
+          "command": "azure.resource.connectsqldb",
+          "when": "false"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "azure.resource.signin",
+          "when": "view == azureResourceExplorer",
+          "group": "navigation@1"
+        },
+        {
+          "command": "azure.resource.refreshall",
+          "when": "view == azureResourceExplorer",
+          "group": "navigation@2"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "azure.resource.selectsubscriptions",
+          "when": "viewItem == azure.resource.itemType.account",
+          "group": "inline"
+        },
+        {
+          "command": "azure.resource.refresh",
+          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer)$/",
+          "group": "inline"
+        },
+        {
+          "command": "azure.resource.connectsqlserver",
+          "when": "viewItem == azure.resource.itemType.databaseServer",
+          "group": "inline"
+        },
+        {
+          "command": "azure.resource.connectsqldb",
+          "when": "viewItem == azure.resource.itemType.database",
+          "group": "inline"
+        }
+      ]
+    },
+    "hasAzureResourceProviders": true
+  },
+  "dependencies": {
+    "adal-node": "^0.1.28",
+    "azure-arm-resource": "^7.0.0",
+    "azure-arm-sql": "^5.0.1",
+    "ms-rest": "^2.5.0",
+    "request": "2.88.0",
+    "vscode-nls": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.12.12",
+    "@types/request": "^2.48.1",
+    "mocha-junit-reporter": "^1.17.0",
+    "mocha-multi-reporters": "^1.1.7",
+    "mocha": "^5.2.0",
+    "should": "^13.2.1",
+    "typemoq": "^2.1.0",
+    "vscode": "1.1.26"
+  }
 }

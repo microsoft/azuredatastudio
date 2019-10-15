@@ -18,10 +18,6 @@ export function getAppDataPath(): string {
 	}
 }
 
-export function getDefaultLogLocation(): string {
-	return path.join(getAppDataPath(), 'azuredatastudio');
-}
-
 export function ensure(target: object, key: string): any {
 	if (target[key] === void 0) {
 		target[key] = {} as any;

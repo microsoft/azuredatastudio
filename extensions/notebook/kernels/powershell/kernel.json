@@ -1,0 +1,11 @@
+{
+	"argv": [
+		"python",
+		"-m",
+		"powershell_kernel",
+		"-f",
+		"{connection_file}"
+	],
+	"display_name": "PowerShell",
+	"language": "powershell"
+}

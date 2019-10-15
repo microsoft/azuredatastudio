@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { BdcDashboardModel } from './bdcDashboardModel';
-import { IconPathHelper } from '../constants';
+import { IconPathHelper, cssStyles } from '../constants';
 import { BdcServiceStatusPage } from './bdcServiceStatusPage';
 import { BdcDashboardOverviewPage } from './bdcDashboardOverviewPage';
 import { BdcStatusModel, ServiceStatusModel } from '../controller/apiGenerated';
@@ -29,7 +29,6 @@ export class BdcDashboard {
 	private dashboard: azdata.workspace.ModelViewEditor;
 
 	private initialized: boolean = false;
-	private serviceTabsCreated: boolean = false;
 
 	private modelView: azdata.ModelView;
 	private mainAreaContainer: azdata.FlexContainer;
@@ -38,7 +37,7 @@ export class BdcDashboard {
 	private currentTab: NavTab;
 	private currentPage: azdata.FlexContainer;
 
-	private serviceTabPageMapping: { [key: string]: { navTab: NavTab, servicePage: azdata.FlexContainer } } = {};
+	private serviceTabPageMapping = new Map<string, { navTab: NavTab, servicePage: azdata.FlexContainer }>();
 
 	constructor(private title: string, private model: BdcDashboardModel) {
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.handleBdcStatusUpdate(bdcStatus));
@@ -57,8 +56,7 @@ export class BdcDashboard {
 				{
 					flexFlow: 'column',
 					width: '100%',
-					height: '100%',
-					alignItems: 'left'
+					height: '100%'
 				}).component();
 
 			// ###########
@@ -104,8 +102,7 @@ export class BdcDashboard {
 				{
 					flexFlow: 'row',
 					width: '100%',
-					height: '100%',
-					alignItems: 'left'
+					height: '100%'
 				}).component();
 
 			rootContainer.addItem(this.mainAreaContainer, { flex: '0 0 100%' });
@@ -118,8 +115,7 @@ export class BdcDashboard {
 				{
 					flexFlow: 'column',
 					width: navWidth,
-					height: '100%',
-					alignItems: 'left'
+					height: '100%'
 				}
 			).component();
 
@@ -164,7 +160,7 @@ export class BdcDashboard {
 			return;
 		}
 
-		this.createServiceNavTabs(bdcStatus.services);
+		this.updateServiceNavTabs(bdcStatus.services);
 	}
 
 	/**
@@ -187,21 +183,27 @@ export class BdcDashboard {
 	}
 
 	/**
-	 * Helper to create the navigation tabs for the services once the status has been loaded
+	 * Helper to update the navigation tabs for the services when we get a status update
 	 */
-	private createServiceNavTabs(services: ServiceStatusModel[]): void {
-		if (this.initialized && !this.serviceTabsCreated && services) {
+	private updateServiceNavTabs(services?: ServiceStatusModel[]): void {
+		if (this.initialized && services) {
 			// Add a nav item for each service
 			services.forEach(s => {
-				const navItem = createServiceNavTab(this.modelView.modelBuilder, s);
-				const serviceStatusPage = new BdcServiceStatusPage(s.serviceName, this.model, this.modelView).container;
-				this.serviceTabPageMapping[s.serviceName] = { navTab: navItem, servicePage: serviceStatusPage };
-				navItem.div.onDidClick(() => {
-					this.switchToServiceTab(s.serviceName);
-				});
-				this.navContainer.addItem(navItem.div, { flex: '0 0 auto' });
+				const existingTabPage = this.serviceTabPageMapping[s.serviceName];
+				if (existingTabPage) {
+					// We've already created the tab and page for this service, just update the tab health status dot
+					existingTabPage.navTab.dot.value = getHealthStatusDot(s.healthStatus);
+				} else {
+					// New service - create the page and tab
+					const navItem = createServiceNavTab(this.modelView.modelBuilder, s);
+					const serviceStatusPage = new BdcServiceStatusPage(s.serviceName, this.model, this.modelView).container;
+					this.serviceTabPageMapping[s.serviceName] = { navTab: navItem, servicePage: serviceStatusPage };
+					navItem.div.onDidClick(() => {
+						this.switchToServiceTab(s.serviceName);
+					});
+					this.navContainer.addItem(navItem.div, { flex: '0 0 auto' });
+				}
 			});
-			this.serviceTabsCreated = true;
 		}
 	}
 }
@@ -209,9 +211,9 @@ export class BdcDashboard {
 function createServiceNavTab(modelBuilder: azdata.ModelBuilder, serviceStatus: ServiceStatusModel): NavTab {
 	const div = modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).withProperties({ CSSStyles: { 'cursor': 'pointer' } }).component();
 	const innerContainer = modelBuilder.flexContainer().withLayout({ width: navWidth, height: '30px', flexFlow: 'row' }).component();
-	const dot = modelBuilder.text().withProperties({ value: getHealthStatusDot(serviceStatus.healthStatus), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'none', 'color': 'red', 'font-size': '40px', 'width': '20px' } }).component();
+	const dot = modelBuilder.text().withProperties({ value: getHealthStatusDot(serviceStatus.healthStatus), CSSStyles: { 'color': 'red', 'font-size': '40px', 'width': '20px', ...cssStyles.nonSelectableText } }).component();
 	innerContainer.addItem(dot, { flex: '0 0 auto' });
-	const text = modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'none' } }).component();
+	const text = modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { ...cssStyles.nonSelectableText } }).component();
 	innerContainer.addItem(text, { flex: '0 0 auto' });
 	div.addItem(innerContainer);
 	return { div: div, dot: dot, text: text };

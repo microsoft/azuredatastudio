@@ -21,7 +21,7 @@ import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { IStatusbarService, StatusbarAlignment, IStatusbarEntryAccessor } from 'vs/platform/statusbar/common/statusbar';
+import { IStatusbarService, StatusbarAlignment, IStatusbarEntryAccessor } from 'vs/workbench/services/statusbar/common/statusbar';
 
 export interface ISqlProviderEntry extends IQuickPickItem {
 	providerId: string;
