@@ -387,7 +387,6 @@ export interface IExtensionPointDescriptor {
 export class ExtensionsRegistryImpl {
 
 	private readonly _extensionPoints = new Map<string, ExtensionPoint<any>>();
-	private _resolvedUsers = new Map<IExtensionDescription, boolean>();
 
 	public registerExtensionPoint<T>(desc: IExtensionPointDescriptor): IExtensionPoint<T> {
 		if (this._extensionPoints.has(desc.extensionPoint)) {
