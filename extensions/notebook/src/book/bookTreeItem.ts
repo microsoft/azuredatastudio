@@ -42,6 +42,8 @@ export class BookTreeItem extends vscode.TreeItem {
 			this._sections = book.page;
 			if (book.isUntitled) {
 				this.contextValue = 'untitledBook';
+			} else {
+				this.contextValue = 'savedBook';
 			}
 		} else {
 			this.setPageVariables();

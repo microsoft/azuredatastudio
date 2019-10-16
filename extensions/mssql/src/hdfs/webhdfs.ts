@@ -10,10 +10,10 @@ import { Cookie } from 'tough-cookie';
 import * as through from 'through2';
 import * as nls from 'vscode-nls';
 import * as auth from '../util/auth';
-import { IHdfsOptions, IRequestParams } from '../objectExplorerNodeProvider/fileSources';
-import { PermissionStatus, AclEntry, parseAcl, PermissionType, parseAclPermissionFromOctal, AclEntryScope } from './aclEntry';
+import { IHdfsOptions, IRequestParams, FileType } from '../objectExplorerNodeProvider/fileSources';
+import { PermissionStatus, AclEntry, parseAclList, PermissionType, parseAclPermissionFromOctal, AclEntryScope, AclType } from './aclEntry';
 import { Mount } from './mount';
-import { everyoneName } from '../localizedConstants';
+import { everyoneName, ownerPostfix, owningGroupPostfix } from '../localizedConstants';
 import { FileStatus, parseHdfsFileType } from './fileStatus';
 
 const localize = nls.loadMessageBundle();
@@ -340,11 +340,11 @@ export class WebHDFS {
 	}
 
 	/**
-	 * Read directory contents
+	 * List the status of a path
 	 *
 	 * @returns void
 	 */
-	public readdir(path: string, callback: (error: HdfsError, files: any[]) => void): void {
+	public listStatus(path: string, callback: (error: HdfsError, files: FileStatus[]) => void): void {
 		this.checkArgDefined('path', path);
 
 		let endpoint = this.getOperationEndpoint('liststatus', path);
@@ -356,7 +356,21 @@ export class WebHDFS {
 				callback(error, undefined);
 			} else if (response.body.hasOwnProperty('FileStatuses')
 				&& response.body.FileStatuses.hasOwnProperty('FileStatus')) {
-				files = response.body.FileStatuses.FileStatus;
+				files = (<any[]>response.body.FileStatuses.FileStatus).map(fs => {
+					return new FileStatus(
+						fs.accessTime || '',
+						fs.blockSize || '',
+						fs.group || '',
+						fs.length || '',
+						fs.modificationTime || '',
+						fs.owner || '',
+						fs.pathSuffix || '',
+						fs.permission || '',
+						fs.replication || '',
+						fs.snapshotEnabled || '',
+						parseHdfsFileType(fs.type)
+					);
+				});
 				callback(undefined, files);
 			} else {
 				callback(new HdfsError(ErrorMessageInvalidDataStructure), undefined);
@@ -397,26 +411,6 @@ export class WebHDFS {
 		this.sendRequest('PUT', endpoint, undefined, (error) => {
 			if (callback) {
 				callback(error);
-			}
-		});
-	}
-
-	/**
-	 * Get file status for given path
-	 * @returns void
-	 */
-	public stat(path: string, callback: (error: HdfsError, fileStatus: any) => void): void {
-		this.checkArgDefined('path', path);
-
-		let endpoint = this.getOperationEndpoint('getfilestatus', path);
-		this.sendRequest('GET', endpoint, undefined, (error, response) => {
-			if (!callback) { return; }
-			if (error) {
-				callback(error, undefined);
-			} else if (response.body.hasOwnProperty('FileStatus')) {
-				callback(undefined, response.body.FileStatus);
-			} else {
-				callback(new HdfsError(ErrorMessageInvalidDataStructure), undefined);
 			}
 		});
 	}
@@ -466,16 +460,45 @@ export class WebHDFS {
 				callback(error, undefined);
 			} else if (response.body.hasOwnProperty('AclStatus')) {
 				const permissions = parseAclPermissionFromOctal(response.body.AclStatus.permission);
+				const ownerEntry = new AclEntry(PermissionType.owner, '', `${response.body.AclStatus.owner || ''}${ownerPostfix}`);
+				ownerEntry.addPermission(AclEntryScope.access, permissions.owner);
+				const groupEntry = new AclEntry(PermissionType.group, '', `${response.body.AclStatus.group || ''}${owningGroupPostfix}`);
+				groupEntry.addPermission(AclEntryScope.access, permissions.group);
+				const otherEntry = new AclEntry(PermissionType.other, '', everyoneName);
+				otherEntry.addPermission(AclEntryScope.access, permissions.other);
+				const parsedEntries = parseAclList((<any[]>response.body.AclStatus.entries).join(','));
+
+				// First go through and apply any ACLs for the unnamed entries (which correspond to the permissions in
+				// the permission octal)
+				parsedEntries.filter(e => e.name === '').forEach(e => {
+					let targetEntry: AclEntry;
+					switch (e.type) {
+						case AclType.user:
+							targetEntry = ownerEntry;
+							break;
+						case AclType.group:
+							targetEntry = groupEntry;
+							break;
+						case AclType.other:
+							targetEntry = otherEntry;
+							break;
+						default:
+							// Unknown type - just ignore since we don't currently support the other types
+							return;
+					}
+					e.getAllPermissions().forEach( sp => {
+						targetEntry.addPermission(sp.scope, sp.permission);
+					});
+				});
+
 				const permissionStatus = new PermissionStatus(
-					new AclEntry(AclEntryScope.access, PermissionType.owner, '', response.body.AclStatus.owner || '', permissions.owner),
-					new AclEntry(AclEntryScope.access, PermissionType.group, '', response.body.AclStatus.group || '', permissions.group),
-					new AclEntry(AclEntryScope.access, PermissionType.other, '', everyoneName, permissions.other),
+					ownerEntry,
+					groupEntry,
+					otherEntry,
 					!!response.body.AclStatus.stickyBit,
-					// We filter out empty names here since those are already added by the permission bits - WebHDFS creates an extra ACL
-					// entry for the owning group whenever another ACL is added.
-					(<any[]>response.body.AclStatus.entries).map(entry => parseAcl(entry))
-						.reduce((acc, parsedEntries) => acc.concat(parsedEntries), [])
-						.filter(e => e.name !== ''));
+					// We filter out empty names here since those have already been merged into the
+					// owner/owning group/other entries
+					parsedEntries.filter(e => e.name !== ''));
 				callback(undefined, permissionStatus);
 			} else {
 				callback(new HdfsError(ErrorMessageInvalidDataStructure), undefined);
@@ -486,20 +509,15 @@ export class WebHDFS {
 	/**
 	 * Set ACL for the given path. The owner, group and other fields are required - other entries are optional.
 	 * @param path The path to the file/folder to set the ACL on
-	 * @param ownerEntry The entry corresponding to the path owner
-	 * @param groupEntry The entry corresponding to the path owning group
-	 * @param otherEntry The entry corresponding to default permissions for all other users
-	 * @param aclEntries The optional additional ACL entries to set
+	 * @param fileType The type of file we're setting to determine if defaults should be applied. Use undefined if type is unknown
+	 * @param ownerEntry The status containing the permissions to set
 	 * @param callback Callback to handle the response
-	 * @returns void
 	 */
-	public setAcl(path: string, ownerEntry: AclEntry, groupEntry: AclEntry, otherEntry: AclEntry, aclEntries: AclEntry[], callback: (error: HdfsError) => void): void {
+	public setAcl(path: string, fileType: FileType | undefined, permissionStatus: PermissionStatus, callback: (error: HdfsError) => void): void {
 		this.checkArgDefined('path', path);
-		this.checkArgDefined('ownerEntry', ownerEntry);
-		this.checkArgDefined('groupEntry', groupEntry);
-		this.checkArgDefined('otherEntry', otherEntry);
-		this.checkArgDefined('aclEntries', aclEntries);
-		const aclSpec = [ownerEntry, groupEntry, otherEntry].concat(aclEntries).map(entry => entry.toAclString()).join(',');
+		this.checkArgDefined('permissionStatus', permissionStatus);
+		const concatEntries = [permissionStatus.owner, permissionStatus.group, permissionStatus.other].concat(permissionStatus.aclEntries);
+		const aclSpec = concatEntries.reduce((acc, entry: AclEntry) => acc.concat(entry.toAclStrings(fileType !== FileType.File)), []).join(',');
 		let endpoint = this.getOperationEndpoint('setacl', path, { aclspec: aclSpec });
 		this.sendRequest('PUT', endpoint, undefined, (error) => {
 			return callback && callback(error);
@@ -510,11 +528,25 @@ export class WebHDFS {
 	 * Sets the permission octal (sticky, owner, group & other) for a file/folder
 	 * @param path The path to the file/folder to set the permission of
 	 * @param permissionStatus The status containing the permission to set
+	 * @param callback Callback to handle the response
 	 */
 	public setPermission(path: string, permissionStatus: PermissionStatus, callback: (error: HdfsError) => void): void {
 		this.checkArgDefined('path', path);
 		this.checkArgDefined('permissionStatus', permissionStatus);
 		let endpoint = this.getOperationEndpoint('setpermission', path, { permission: permissionStatus.permissionOctal });
+		this.sendRequest('PUT', endpoint, undefined, (error) => {
+			return callback && callback(error);
+		});
+	}
+
+	/**
+	 * Removes the default ACLs for the specified path
+	 * @param path The path to remove the default ACLs for
+	 * @param callback Callback to handle the response
+	 */
+	public removeDefaultAcl(path: string, callback: (error: HdfsError) => void): void {
+		this.checkArgDefined('path', path);
+		let endpoint = this.getOperationEndpoint('removedefaultacl', path);
 		this.sendRequest('PUT', endpoint, undefined, (error) => {
 			return callback && callback(error);
 		});
@@ -550,7 +582,7 @@ export class WebHDFS {
 	public exists(path: string, callback: (error: HdfsError, exists: boolean) => void): void {
 		this.checkArgDefined('path', path);
 
-		this.stat(path, (error, fileStatus) => {
+		this.listStatus(path, (error, fileStatus) => {
 			let exists = !fileStatus ? false : true;
 			callback(error, exists);
 		});

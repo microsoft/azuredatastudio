@@ -45,6 +45,18 @@
 				{
 					"command": "bigDataClusters.command.manageController",
 					"when": "false"
+				},
+				{
+					"command": "bigDataClusters.command.mount",
+					"when": "false"
+				},
+				{
+					"command": "bigDataClusters.command.refreshmount",
+					"when": "false"
+				},
+				{
+					"command": "bigDataClusters.command.deletemount",
+					"when": "false"
 				}
 			],
 			"view/title": [
@@ -69,6 +81,23 @@
 					"command": "bigDataClusters.command.deleteController",
 					"when": "view == sqlBigDataCluster && viewItem == bigDataClusters.itemType.controllerNode",
 					"group": "navigation@3"
+				}
+			],
+			"objectExplorer/item/context": [
+				{
+					"command": "bigDataClusters.command.mount",
+					"when": "nodeType=~/^mssqlCluster/ && nodeType!=mssqlCluster:message && nodeSubType=~/^(?!:mount).*$/",
+					"group": "1mssqlCluster@10"
+				},
+				{
+					"command": "bigDataClusters.command.refreshmount",
+					"when": "nodeType == mssqlCluster:folder && nodeSubType==:mount:",
+					"group": "1mssqlCluster@11"
+				},
+				{
+					"command": "bigDataClusters.command.deletemount",
+					"when": "nodeType == mssqlCluster:folder && nodeSubType==:mount:",
+					"group": "1mssqlCluster@12"
 				}
 			]
 		},
@@ -97,6 +126,18 @@
 			{
 				"command": "bigDataClusters.command.manageController",
 				"title": "%command.manageController.title%"
+			},
+			{
+				"command": "bigDataClusters.command.mount",
+				"title": "%command.mount.title%"
+			},
+			{
+				"command": "bigDataClusters.command.refreshmount",
+				"title": "%command.refreshmount.title%"
+			},
+			{
+				"command": "bigDataClusters.command.deletemount",
+				"title": "%command.deletemount.title%"
 			}
 		]
 	},
