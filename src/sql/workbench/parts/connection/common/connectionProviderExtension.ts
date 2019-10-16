@@ -9,16 +9,38 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
-import { URI } from 'vs/base/common/uri';
 
 import * as azdata from 'azdata';
 import * as resources from 'vs/base/common/resources';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 export interface ConnectionProviderProperties {
 	providerId: string;
 	displayName: string;
 	connectionOptions: azdata.ConnectionOption[];
 }
+
+class ResolveChecker {
+	private resolvedUsers = new Map<IExtensionDescription, boolean>();
+
+	public removeFromResolvedUsers(oldUser: IExtensionPointUser<any>) {
+		this.resolvedUsers.delete(oldUser.description);
+	}
+
+	public clearResolvedUsers() {
+		this.resolvedUsers.clear();
+	}
+
+	public addToResolvedUsers(newUser: IExtensionPointUser<any>) {
+		this.resolvedUsers.set(newUser.description, true);
+	}
+
+	public checkResolvedUsers(thisUser: IExtensionPointUser<any>): boolean {
+		return this.resolvedUsers.has(thisUser.description);
+	}
+}
+
+let resolver = new ResolveChecker();
 
 export const Extensions = {
 	ConnectionProviderContributions: 'connection.providers'
@@ -166,7 +188,7 @@ ExtensionsRegistry.registerExtensionPoint<ConnectionProviderProperties | Connect
 
 	for (let extension of extensions) {
 		const { value } = extension;
-		if (!ExtensionsRegistry.checkResolvedUsers(extension)) {
+		if (!resolver.checkResolvedUsers(extension)) {
 			resolveIconPath(extension);
 		}
 		if (Array.isArray<ConnectionProviderProperties>(value)) {
@@ -214,5 +236,5 @@ function resolveIconPath(extension: IExtensionPointUser<any>): void {
 	} else {
 		toAbsolutePath(properties['iconPath']);
 	}
-	ExtensionsRegistry.addToResolvedUsers(extension);
+	resolver.addToResolvedUsers(extension);
 }

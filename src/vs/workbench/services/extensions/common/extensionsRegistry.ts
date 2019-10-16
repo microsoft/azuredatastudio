@@ -402,22 +402,6 @@ export class ExtensionsRegistryImpl {
 		return result;
 	}
 
-	public removeFromResolvedUsers(oldUser: IExtensionPointUser<any>) {
-		this._resolvedUsers.delete(oldUser.description);
-	}
-
-	public clearResolvedUsers() {
-		this._resolvedUsers.clear();
-	}
-
-	public addToResolvedUsers(newUser: IExtensionPointUser<any>) {
-		this._resolvedUsers.set(newUser.description, true);
-	}
-
-	public checkResolvedUsers(thisUser: IExtensionPointUser<any>): boolean {
-		return this._resolvedUsers.has(thisUser.description);
-	}
-
 	public getExtensionPoints(): ExtensionPoint<any>[] {
 		return values(this._extensionPoints);
 	}
