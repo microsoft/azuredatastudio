@@ -78,6 +78,9 @@ export class JupyterServerInstallation {
 		}, {
 			name: 'powershell-kernel',
 			version: '0.1.0'
+		}, {
+			name: 'sqlmlutils',
+			version: '0.7.1'
 		}
 	];
 
