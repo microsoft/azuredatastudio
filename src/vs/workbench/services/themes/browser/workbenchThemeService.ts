@@ -68,7 +68,7 @@ function validateThemeId(theme: string): string {
 }
 
 export class WorkbenchThemeService implements IWorkbenchThemeService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private colorThemeStore: ColorThemeStore;
 	private currentColorTheme: ColorThemeData;

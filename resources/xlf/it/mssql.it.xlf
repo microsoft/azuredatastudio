@@ -746,10 +746,6 @@
         <source xml:lang="en">HDFS</source>
         <target state="translated">HDFS</target>
       </trans-unit>
-      <trans-unit id="dataServicesLabel">
-        <source xml:lang="en">Data Services</source>
-        <target state="translated">Servizi dati</target>
-      </trans-unit>
     </body>
   </file>
   <file original="extensions/mssql/out/objectExplorerNodeProvider/hdfsProvider" source-language="en" target-language="it" datatype="plaintext">
@@ -922,7 +918,7 @@
         <source xml:lang="en">Log Search Dashboard</source>
         <target state="translated">Dashboard di ricerca log</target>
       </trans-unit>
-      <trans-unit id="sparkHostory">
+      <trans-unit id="sparkHistory">
         <source xml:lang="en">Spark Job Monitoring</source>
         <target state="translated">Monitoraggio processi Spark</target>
       </trans-unit>

@@ -18,6 +18,8 @@ import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 's
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { localize } from 'vs/nls';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { URI } from 'vs/base/common/uri';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -25,7 +27,7 @@ export class AccountManagementService implements IAccountManagementService {
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	public _providers: { [id: string]: AccountProviderWithMetadata } = {};
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 	private _accountStore: AccountStore;
 	private _accountDialogController: AccountDialogController;
 	private _autoOAuthDialogController: AutoOAuthDialogController;
@@ -46,7 +48,8 @@ export class AccountManagementService implements IAccountManagementService {
 		private _mementoObj: object,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IStorageService private _storageService: IStorageService,
-		@IClipboardService private _clipboardService: IClipboardService
+		@IClipboardService private _clipboardService: IClipboardService,
+		@IOpenerService private _openerService: IOpenerService
 	) {
 		// Create the account store
 		if (!this._mementoObj) {
@@ -310,7 +313,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 */
 	public copyUserCodeAndOpenBrowser(userCode: string, uri: string): void {
 		this._clipboardService.writeText(userCode);
-		window.open(uri);
+		this._openerService.open(URI.parse(uri));
 	}
 
 	// SERVICE MANAGEMENT METHODS //////////////////////////////////////////

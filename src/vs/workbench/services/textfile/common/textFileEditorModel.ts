@@ -77,10 +77,10 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 
 	private resource: URI;
 
-	private contentEncoding: string; 	// encoding as reported from disk
-	private preferredEncoding: string;	// encoding as chosen by the user
+	private contentEncoding: string; // encoding as reported from disk
+	private preferredEncoding: string | undefined; // encoding as chosen by the user
 
-	private preferredMode: string;		// mode as chosen by the user
+	private preferredMode: string | undefined; // mode as chosen by the user
 
 	private versionId: number;
 	private bufferSavedVersionId: number;
@@ -107,8 +107,8 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 
 	constructor(
 		resource: URI,
-		preferredEncoding: string,
-		preferredMode: string,
+		preferredEncoding: string | undefined,
+		preferredMode: string | undefined,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IModeService modeService: IModeService,
 		@IModelService modelService: IModelService,
@@ -308,7 +308,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 				try {
 					return await this.loadFromBackup(backup, options);
 				} catch (error) {
-					// ignore error and continue to load as file below
+					this.logService.error(error); // ignore error and continue to load as file below
 				}
 			}
 		}
@@ -470,7 +470,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		// We also want to trigger auto save if it is enabled to simulate the exact same behaviour
 		// you would get if manually making the model dirty (fixes https://github.com/Microsoft/vscode/issues/16977)
 		if (fromBackup) {
-			this.makeDirty();
+			this.doMakeDirty();
 			if (this.autoSaveAfterMilliesEnabled) {
 				this.doAutoSave(this.versionId);
 			}
@@ -549,7 +549,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		this.logService.trace('onModelContentChanged() - model content changed and marked as dirty', this.resource);
 
 		// Mark as dirty
-		this.makeDirty();
+		this.doMakeDirty();
 
 		// Start auto save process unless we are in conflict resolution mode and unless it is disabled
 		if (this.autoSaveAfterMilliesEnabled) {
@@ -564,7 +564,15 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		this.contentChangeEventScheduler.schedule();
 	}
 
-	private makeDirty(): void {
+	makeDirty(): void {
+		if (!this.isResolved()) {
+			return; // only resolved models can be marked dirty
+		}
+
+		this.doMakeDirty();
+	}
+
+	private doMakeDirty(): void {
 
 		// Track dirty state and version id
 		const wasDirty = this.dirty;
@@ -584,6 +592,9 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 
 		// Create new save timer and store it for disposal as needed
 		const handle = setTimeout(() => {
+
+			// Clear the timeout now that we are running
+			this.autoSaveDisposable.clear();
 
 			// Only trigger save if the version id has not changed meanwhile
 			if (versionId === this.versionId) {
@@ -915,7 +926,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		TextFileEditorModel.saveErrorHandler.onSaveError(error, this);
 	}
 
-	isDirty(): boolean {
+	isDirty(): boolean { // {{SQL CARBON EDIT}} strict-null-check
 		return this.dirty;
 	}
 
@@ -935,6 +946,8 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 				return this.inOrphanMode;
 			case ModelState.PENDING_SAVE:
 				return this.saveSequentializer.hasPendingSave();
+			case ModelState.PENDING_AUTO_SAVE:
+				return !!this.autoSaveDisposable.value;
 			case ModelState.SAVED:
 				return !this.dirty;
 		}

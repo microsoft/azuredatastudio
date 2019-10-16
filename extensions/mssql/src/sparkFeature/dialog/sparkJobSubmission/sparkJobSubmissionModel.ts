@@ -3,12 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
-import * as fs from 'fs';
 import * as fspath from 'path';
 import * as os from 'os';
 
@@ -18,7 +15,7 @@ import * as LocalizedConstants from '../../../localizedConstants';
 import * as utils from '../../../utils';
 import { SparkJobSubmissionService, SparkJobSubmissionInput, LivyLogResponse } from './sparkJobSubmissionService';
 import { AppContext } from '../../../appContext';
-import { IFileSource, File, joinHdfsPath } from '../../../objectExplorerNodeProvider/fileSources';
+import { IFileSource, File, joinHdfsPath, FileType } from '../../../objectExplorerNodeProvider/fileSources';
 
 
 // Stores important state and service methods used by the Spark Job Submission Dialog.
@@ -143,12 +140,12 @@ export class SparkJobSubmissionModel {
 				return Promise.reject(localize('sparkJobSubmission_localFileOrFolderNotSpecified.', 'Property localFilePath or hdfsFolderPath is not specified. '));
 			}
 
-			if (!fs.existsSync(localFilePath)) {
+			if (!(await utils.exists(localFilePath))) {
 				return Promise.reject(LocalizedConstants.sparkJobSubmissionLocalFileNotExisted(localFilePath));
 			}
 
-			let fileSource: IFileSource = this._sqlClusterConnection.createHdfsFileSource();
-			await fileSource.writeFile(new File(localFilePath, false), hdfsFolderPath);
+			const fileSource: IFileSource = await this._sqlClusterConnection.createHdfsFileSource();
+			await fileSource.writeFile(new File(localFilePath, FileType.File), hdfsFolderPath);
 		} catch (error) {
 			return Promise.reject(error);
 		}
@@ -160,7 +157,7 @@ export class SparkJobSubmissionModel {
 				return Promise.reject(localize('sparkJobSubmission_PathNotSpecified.', 'Property Path is not specified. '));
 			}
 
-			let fileSource: IFileSource = this._sqlClusterConnection.createHdfsFileSource();
+			let fileSource: IFileSource = await this._sqlClusterConnection.createHdfsFileSource();
 			return await fileSource.exists(path);
 		} catch (error) {
 			return Promise.reject(error);

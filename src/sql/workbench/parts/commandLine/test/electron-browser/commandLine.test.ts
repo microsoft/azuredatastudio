@@ -21,11 +21,14 @@ import { TestCommandService } from 'vs/editor/test/browser/editorTestServices';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { assertThrowsAsync } from 'sqltest/utils/testUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { TestEditorService } from 'vs/workbench/test/workbenchTestServices';
+import { TestEditorService, TestDialogService } from 'vs/workbench/test/workbenchTestServices';
 import { QueryInput, QueryEditorState } from 'sql/workbench/parts/query/common/queryInput';
 import { URI } from 'vs/base/common/uri';
 import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 
 class TestParsedArgs implements ParsedArgs {
 	[arg: string]: any;
@@ -40,24 +43,24 @@ class TestParsedArgs implements ParsedArgs {
 	debugPluginHost?: string;
 	debugSearch?: string;
 	diff?: boolean;
-	'disable-crash-reporter'?: string;
-	'disable-extension'?: string | string[];
+	'disable-crash-reporter'?: boolean;
+	'disable-extension'?: string[]; // undefined or array of 1 or more
 	'disable-extensions'?: boolean;
 	'disable-restore-windows'?: boolean;
 	'disable-telemetry'?: boolean;
-	'disable-updates'?: string;
+	'disable-updates'?: boolean;
 	'driver'?: string;
-	'enable-proposed-api'?: string | string[];
+	'enable-proposed-api'?: string[];
 	'export-default-configuration'?: string;
 	'extensions-dir'?: string;
-	extensionDevelopmentPath?: string;
+	extensionDevelopmentPath?: string[];
 	extensionTestsPath?: string;
 	'file-chmod'?: boolean;
 	'file-write'?: boolean;
-	'folder-uri'?: string | string[];
+	'folder-uri'?: string[];
 	goto?: boolean;
 	help?: boolean;
-	'install-extension'?: string | string[];
+	'install-extension'?: string[];
 	'install-source'?: string;
 	integrated?: boolean;
 	'list-extensions'?: boolean;
@@ -69,7 +72,7 @@ class TestParsedArgs implements ParsedArgs {
 	'open-url'?: boolean;
 	performance?: boolean;
 	'prof-append-timers'?: string;
-	'prof-startup'?: string;
+	'prof-startup'?: boolean;
 	'prof-startup-prefix'?: string;
 	'reuse-window'?: boolean;
 	server?: string;
@@ -79,7 +82,7 @@ class TestParsedArgs implements ParsedArgs {
 	'skip-release-notes'?: boolean;
 	status?: boolean;
 	'sticky-quickopen'?: boolean;
-	'uninstall-extension'?: string | string[];
+	'uninstall-extension'?: string[];
 	'unity-launch'?: boolean; // Always open a new window, except if opening the first window or opening a file or folder as part of the launch.
 	'upload-logs'?: string;
 	user?: string;
@@ -93,7 +96,6 @@ class TestParsedArgs implements ParsedArgs {
 suite('commandLineService tests', () => {
 
 	let capabilitiesService: TestCapabilitiesService;
-
 	setup(() => {
 		capabilitiesService = new TestCapabilitiesService();
 	});
@@ -104,19 +106,22 @@ suite('commandLineService tests', () => {
 		capabilitiesService?: ICapabilitiesService,
 		commandService?: ICommandService,
 		editorService?: IEditorService,
-		logService?: ILogService
+		logService?: ILogService,
+		dialogService?: IDialogService,
+		notificationService?: INotificationService
 	): CommandLineWorkbenchContribution {
 		return new CommandLineWorkbenchContribution(
 			capabilitiesService,
 			connectionManagementService,
 			undefined,
-			undefined,
-			undefined,
 			editorService,
 			commandService,
 			configurationService,
+			notificationService,
+			logService,
 			undefined,
-			logService
+			undefined,
+			dialogService
 		);
 	}
 
@@ -389,5 +394,166 @@ suite('commandLineService tests', () => {
 		await contribution.processCommandLine(args);
 		queryInput.verifyAll();
 		connectionManagementService.verifyAll();
+	});
+
+	suite('URL Handler', () => {
+
+		let dialogService: TypeMoq.Mock<TestDialogService>;
+
+		setup(() => {
+			dialogService = TypeMoq.Mock.ofType(TestDialogService);
+		});
+
+
+		test('handleUrl ignores non-connect URLs', async () => {
+			// Given a URI pointing to a server
+			let uri: URI = URI.parse('azuredatastudio://file?server=myserver&database=mydatabase&user=myuser');
+
+			const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
+				= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
+			const configurationService = getConfigurationServiceMock(true);
+			const logService = new NullLogService();
+			let contribution = getCommandLineContribution(connectionManagementService.object, configurationService.object, capabilitiesService, undefined, undefined, logService, dialogService.object);
+
+			// When I call the URL handler and user confirms they should connect
+			dialogService.setup(d => d.confirm(TypeMoq.It.isAny())).returns(() => Promise.resolve({ confirmed: true }));
+			let result = await contribution.handleURL(uri);
+
+			// Then I expect connection management service to have been called
+			assert.equal(result, false, 'Expected URL to be ignored');
+		});
+
+		test('handleUrl opens a new connection if a server name is passed', async () => {
+			// Given a URI pointing to a server
+			let uri: URI = URI.parse('azuredatastudio://connect?server=myserver&database=mydatabase&user=myuser');
+
+			const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
+				= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
+
+			connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
+			connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
+			connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
+			let originalProfile: IConnectionProfile = undefined;
+			connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.sqlLogin), 'connection', true))
+				.returns((conn) => {
+					originalProfile = conn;
+					return Promise.resolve('unused');
+				})
+				.verifiable(TypeMoq.Times.once());
+			connectionManagementService.setup(c => c.getConnectionProfileById(TypeMoq.It.isAnyString())).returns(() => originalProfile);
+			const configurationService = getConfigurationServiceMock(true);
+			const logService = new NullLogService();
+			let contribution = getCommandLineContribution(connectionManagementService.object, configurationService.object, capabilitiesService, undefined, undefined, logService, dialogService.object);
+
+			// When I call the URL handler and user confirms they should connect
+			dialogService.setup(d => d.confirm(TypeMoq.It.isAny())).returns(() => Promise.resolve({ confirmed: true }));
+			let result = await contribution.handleURL(uri);
+
+			// Then I expect connection management service to have been called
+			assert.equal(result, true, 'Expected URL to be handled');
+			connectionManagementService.verifyAll();
+		});
+
+		test('handleUrl does nothing if a user does not confirm', async () => {
+			// Given a URI pointing to a server
+			let uri: URI = URI.parse('azuredatastudio://connect?server=myserver&database=mydatabase&user=myuser');
+
+			const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
+				= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
+
+			connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
+			connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
+			connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
+			let originalProfile: IConnectionProfile = undefined;
+			connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.sqlLogin), 'connection', true))
+				.returns((conn) => {
+					originalProfile = conn;
+					return Promise.resolve('unused');
+				})
+				// Note: should not run since we expect to cancel before this
+				.verifiable(TypeMoq.Times.never());
+			connectionManagementService.setup(c => c.getConnectionProfileById(TypeMoq.It.isAnyString())).returns(() => originalProfile);
+			const configurationService = getConfigurationServiceMock(true);
+			const logService = new NullLogService();
+			let contribution = getCommandLineContribution(connectionManagementService.object, configurationService.object, capabilitiesService, undefined, undefined, logService, dialogService.object);
+
+			// When I call the URL handler and user says no on confirmation dialog
+			dialogService.setup(d => d.confirm(TypeMoq.It.isAny())).returns(() => Promise.resolve({ confirmed: false }));
+			let result = await contribution.handleURL(uri);
+
+			// Then I expect no connection, but the URL should still be handled
+			assert.equal(result, true, 'Expected URL to be handled');
+			connectionManagementService.verifyAll();
+		});
+
+		test('handleUrl ignores commands', async () => {
+			// Given I pass a command
+			let uri: URI = URI.parse('azuredatastudio://connect?command=mycommand');
+
+			const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
+				= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
+			const commandService: TypeMoq.Mock<ICommandService> = TypeMoq.Mock.ofType<ICommandService>(TestCommandService);
+
+			connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true);
+			commandService.setup(c => c.executeCommand('mycommand'))
+				.returns(() => Promise.resolve())
+				.verifiable(TypeMoq.Times.never());
+			const configurationService = getConfigurationServiceMock(true);
+
+			const notificationService = TypeMoq.Mock.ofType(TestNotificationService);
+			notificationService.setup(n => n.warn(TypeMoq.It.isAny())).returns(() => undefined)
+				.verifiable(TypeMoq.Times.once());
+			let contribution = getCommandLineContribution(connectionManagementService.object, configurationService.object, capabilitiesService, commandService.object, undefined, new NullLogService(), dialogService.object, notificationService.object);
+
+			// When I handle the command URL
+			let result = await contribution.handleURL(uri);
+
+			// Then command service should not have been called, and instead connection should be handled
+			assert.equal(result, true);
+			commandService.verifyAll();
+			notificationService.verifyAll();
+		});
+
+		test('handleUrl ignores commands and connects', async () => {
+			// Given I pass a command
+			let uri: URI = URI.parse('azuredatastudio://connect?command=mycommand&server=myserver&database=mydatabase&user=myuser');
+
+			const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
+				= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
+			const commandService: TypeMoq.Mock<ICommandService> = TypeMoq.Mock.ofType<ICommandService>(TestCommandService);
+
+			connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
+			connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
+			connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
+			let originalProfile: IConnectionProfile = undefined;
+			connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.sqlLogin), 'connection', true))
+				.returns((conn) => {
+					originalProfile = conn;
+					return Promise.resolve('unused');
+				})
+				.verifiable(TypeMoq.Times.once());
+
+			commandService.setup(c => c.executeCommand('mycommand'))
+				.returns(() => Promise.resolve())
+				.verifiable(TypeMoq.Times.never());
+			const configurationService = getConfigurationServiceMock(true);
+
+			const notificationService = TypeMoq.Mock.ofType(TestNotificationService);
+			notificationService.setup(n => n.warn(TypeMoq.It.isAny())).returns(() => undefined)
+				.verifiable(TypeMoq.Times.never());
+			let contribution = getCommandLineContribution(connectionManagementService.object, configurationService.object, capabilitiesService, commandService.object, undefined, new NullLogService(), dialogService.object, notificationService.object);
+
+			// When I handle the command URL
+			dialogService.setup(d => d.confirm(TypeMoq.It.isAny())).returns(() => Promise.resolve({ confirmed: true }));
+			let result = await contribution.handleURL(uri);
+
+			// Then command service should not have been called, and instead connection should be handled
+			assert.equal(result, true);
+			commandService.verifyAll();
+			notificationService.verifyAll();
+			connectionManagementService.verifyAll();
+		});
+
+
 	});
 });

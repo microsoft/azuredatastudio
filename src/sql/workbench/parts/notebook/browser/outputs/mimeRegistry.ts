@@ -6,9 +6,9 @@ import { Type } from '@angular/core';
 
 import * as platform from 'vs/platform/registry/common/platform';
 import { ReadonlyJSONObject } from 'sql/workbench/parts/notebook/common/models/jsonext';
-import { MimeModel } from 'sql/workbench/parts/notebook/common/models/mimemodel';
+import { MimeModel } from 'sql/workbench/parts/notebook/browser/models/mimemodel';
 import * as types from 'vs/base/common/types';
-import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 
 export type FactoryIdentifier = string;
 

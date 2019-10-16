@@ -239,7 +239,7 @@ export class ExtHostCommentThread implements vscode.CommentThread {
 		return this._uri;
 	}
 
-	private _onDidUpdateCommentThread = new Emitter<void>();
+	private readonly _onDidUpdateCommentThread = new Emitter<void>();
 	readonly onDidUpdateCommentThread = this._onDidUpdateCommentThread.event;
 
 	set range(range: vscode.Range) {
@@ -253,13 +253,13 @@ export class ExtHostCommentThread implements vscode.CommentThread {
 		return this._range;
 	}
 
-	private _label: string;
+	private _label: string | undefined;
 
-	get label(): string {
+	get label(): string | undefined {
 		return this._label;
 	}
 
-	set label(label: string) {
+	set label(label: string | undefined) {
 		this._label = label;
 		this._onDidUpdateCommentThread.fire();
 	}

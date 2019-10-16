@@ -18,7 +18,7 @@
     "watch": "gulp watch-extension:configuration-editing"
   },
   "dependencies": {
-    "jsonc-parser": "2.0.2",
+    "jsonc-parser": "^2.1.1",
     "vscode-nls": "^4.0.0"
   },
   "contributes": {
@@ -51,7 +51,7 @@
         "url": "vscode://schemas/keybindings"
       },
       {
-        "fileMatch": "vscode://defaultsettings/settings.json",
+        "fileMatch": "vscode://defaultsettings/*/*.json",
         "url": "vscode://schemas/settings/default"
       },
       {

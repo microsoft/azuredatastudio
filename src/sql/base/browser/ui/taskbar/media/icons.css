@@ -12,95 +12,109 @@
 	background-image: url('ellipsis-inverse.svg');
 }
 
-.vs .icon.start,
-.vs-dark .icon.start,
-.hc-black .icon.start {
+.vs .codicon.start,
+.vs-dark .codicon.start,
+.hc-black .codicon.start {
 	background-image: url('start.svg');
 }
 
-.vs .icon.add,
-.vs-dark .icon.add,
-.hc-black .icon.add {
+.vs .codicon.add,
+.vs-dark .codicon.add,
+.hc-black .codicon.add {
 	background-image: url('add.svg');
 }
 
-.vs .icon.stop,
-.vs-dark .icon.stop,
-.hc-black .icon.stop {
+.vs .codicon.stop,
+.vs-dark .codicon.stop,
+.hc-black .codicon.stop {
 	background-image: url('stop.svg');
 }
 
-.vs .icon.disconnect {
+.vs .codicon.disconnect {
 	background-image: url('disconnect.svg');
 }
 
-.vs-dark .icon.disconnect,
-.hc-black .icon.disconnect {
+.vs-dark .codicon.disconnect,
+.hc-black .codicon.disconnect {
 	background-image: url('disconnect_inverse.svg');
 	background-repeat: no-repeat;
 }
 
-.vs .icon.connect {
+.vs .codicon.connect {
 	background-image: url('connect.svg');
 }
 
-.vs-dark .icon.connect,
-.hc-black .icon.connect {
+.vs-dark .codicon.connect,
+.hc-black .codicon.connect {
 	background-image: url('connect_inverse.svg');
 	background-repeat: no-repeat;
 }
 
-.vs .icon.changeConnection {
+.vs .codicon.changeConnection {
 	background-image: url('change_connection.svg');
 }
 
-.vs-dark .icon.changeConnection,
-.hc-black .icon.changeConnection  {
+.vs-dark .codicon.changeConnection,
+.hc-black .codicon.changeConnection  {
 	background-image: url('change_connection_inverse.svg');
 	background-repeat: no-repeat;
 }
 
-.vs .icon.estimatedQueryPlan {
+.vs .codicon.estimatedQueryPlan,
+.vs .codicon.actualQueryPlan {
 	background-image: url('query-plan.svg');
 }
 
-.vs-dark .icon.estimatedQueryPlan,
-.hc-black .icon.estimatedQueryPlan {
+.vs-dark .codicon.estimatedQueryPlan,
+.hc-black .codicon.estimatedQueryPlan,
+.vs-dark .codicon.actualQueryPlan,
+.hc-black .codicon.actualQueryPlan {
 	background-image: url('query-plan-inverse.svg');
 }
 
-.vs .icon.actualQueryPlan {
-	background-image: url('query-plan.svg');
-}
-
-.vs-dark .icon.actualQueryPlan,
-.hc-black .icon.actualQueryPlan {
-	background-image: url('query-plan-inverse.svg');
-}
-
-.vs .icon.createInsight {
+.vs .codicon.createInsight {
 	background-image: url('create_insight.svg');
 }
 
-.vs-dark .icon.createInsight,
-.hc-black .icon.createInsight {
+.vs-dark .codicon.createInsight,
+.hc-black .codicon.createInsight {
 	background-image: url('create_insight_inverse.svg');
 }
 
-.vs .icon.copyImage {
+.vs .codicon.copyImage {
 	background-image: url('copy_image.svg');
 }
 
-.vs-dark .icon.copyImage,
-.hc-black .icon.copyImage {
+.vs-dark .codicon.copyImage,
+.hc-black .codicon.copyImage {
 	background-image: url('copy_image_inverse.svg');
 }
 
-.vs .icon.saveAsImage {
+.vs .codicon.saveAsImage {
 	background-image: url('save_as_image.svg');
 }
 
-.vs-dark .icon.saveAsImage,
-.hc-black .icon.saveAsImage {
+.vs-dark .codicon.saveAsImage,
+.hc-black .codicon.saveAsImage {
 	background-image: url('save_as_image_inverse.svg');
+}
+
+.vs .codicon.enablesqlcmd {
+	background-image: url('enable_sqlcmd.svg');
+}
+
+.vs-dark .codicon.enablesqlcmd,
+.hc-black .codicon.enablesqlcmd {
+	background-image: url('enable_sqlcmd_inverse.svg');
+	background-repeat: no-repeat;
+}
+
+.vs .codicon.disablesqlcmd {
+	background-image: url('disable_sqlcmd.svg');
+}
+
+.vs-dark .codicon.disablesqlcmd,
+.hc-black .codicon.disablesqlcmd {
+	background-image: url('disable_sqlcmd_inverse.svg');
+	background-repeat: no-repeat;
 }

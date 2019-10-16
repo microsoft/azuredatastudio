@@ -30,8 +30,8 @@ export class ApiWrapper {
 		return azdata.dataprotocol.registerFileBrowserProvider(provider);
 	}
 
-	public createDialog(title: string): azdata.window.Dialog {
-		return azdata.window.createModelViewDialog(title);
+	public createDialog(title: string, dialogName?: string, isWide?: boolean): azdata.window.Dialog {
+		return azdata.window.createModelViewDialog(title, dialogName, isWide);
 	}
 
 	public openDialog(dialog: azdata.window.Dialog): void {

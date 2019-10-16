@@ -8,5 +8,4 @@ export const sharedLogChannelId = 'sharedLog';
 export const rendererLogChannelId = 'rendererLog';
 export const extHostLogChannelId = 'extHostLog';
 export const telemetryLogChannelId = 'telemetryLog';
-// {{SQL CARBON EDIT}}
-export const sqlToolsLogChannellId = 'sqlToolsLog';
+export const userDataSyncLogChannelId = 'userDataSyncLog';

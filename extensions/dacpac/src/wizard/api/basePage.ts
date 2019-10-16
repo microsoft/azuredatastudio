@@ -52,6 +52,9 @@ export abstract class BasePage {
 			return undefined;
 		}
 
+		// reverse list so that most recent connections are first
+		cons.reverse();
+
 		let count = -1;
 		let idx = -1;
 
@@ -98,9 +101,6 @@ export abstract class BasePage {
 			}
 			return uniqueValues;
 		}, []);
-
-		// reverse list so that most recent connections show first
-		values.reverse();
 
 		return values;
 	}

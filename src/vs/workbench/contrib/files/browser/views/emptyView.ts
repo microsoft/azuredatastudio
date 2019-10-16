@@ -32,9 +32,9 @@ export class EmptyView extends ViewletPanel {
 	static readonly ID: string = 'workbench.explorer.emptyView';
 	static readonly NAME = nls.localize('noWorkspace', "No Folder Opened");
 
-	private button: Button;
-	private messageElement: HTMLElement;
-	private titleElement: HTMLElement;
+	private button!: Button;
+	private messageElement!: HTMLElement;
+	private titleElement!: HTMLElement;
 
 	constructor(
 		options: IViewletViewOptions,
@@ -54,12 +54,15 @@ export class EmptyView extends ViewletPanel {
 	}
 
 	renderHeader(container: HTMLElement): void {
+		const twisties = document.createElement('div');
+		DOM.addClasses(twisties, 'twisties', 'codicon', 'codicon-chevron-right');
+		container.appendChild(twisties);
+
 		const titleContainer = document.createElement('div');
 		DOM.addClass(titleContainer, 'title');
 		container.appendChild(titleContainer);
 
 		this.titleElement = document.createElement('span');
-		this.titleElement.textContent = name;
 		titleContainer.appendChild(this.titleElement);
 	}
 

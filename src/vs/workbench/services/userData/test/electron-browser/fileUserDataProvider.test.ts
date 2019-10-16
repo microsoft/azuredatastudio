@@ -47,7 +47,7 @@ suite('FileUserDataProvider', () => {
 		userDataResource = URI.file(userDataPath).with({ scheme: Schemas.userData });
 		await Promise.all([pfs.mkdirp(userDataPath), pfs.mkdirp(backupsPath)]);
 
-		const environmentService = new BrowserWorkbenchEnvironmentService({ workspaceId: 'workspaceId' });
+		const environmentService = new BrowserWorkbenchEnvironmentService({ remoteAuthority: 'remote', workspaceId: 'workspaceId', logsPath: URI.file('logFile') });
 		environmentService.userRoamingDataHome = userDataResource;
 
 		const userDataFileSystemProvider = new FileUserDataProvider(URI.file(userDataPath), URI.file(backupsPath), diskFileSystemProvider, environmentService);
@@ -277,7 +277,7 @@ suite('FileUserDataProvider', () => {
 
 class TestFileSystemProvider implements IFileSystemProviderWithFileReadWriteCapability {
 
-	constructor(readonly onDidChangeFile: Event<IFileChange[]>) { }
+	constructor(readonly onDidChangeFile: Event<readonly IFileChange[]>) { }
 
 	readonly capabilities: FileSystemProviderCapabilities = FileSystemProviderCapabilities.FileReadWrite;
 
@@ -309,7 +309,7 @@ suite('FileUserDataProvider - Watching', () => {
 	let userDataResource: URI;
 	const disposables = new DisposableStore();
 
-	const fileEventEmitter: Emitter<IFileChange[]> = new Emitter<IFileChange[]>();
+	const fileEventEmitter: Emitter<readonly IFileChange[]> = new Emitter<readonly IFileChange[]>();
 	disposables.add(fileEventEmitter);
 
 	setup(() => {
@@ -321,7 +321,7 @@ suite('FileUserDataProvider - Watching', () => {
 		localUserDataResource = URI.file(userDataPath);
 		userDataResource = localUserDataResource.with({ scheme: Schemas.userData });
 
-		const environmentService = new BrowserWorkbenchEnvironmentService({ workspaceId: 'workspaceId' });
+		const environmentService = new BrowserWorkbenchEnvironmentService({ remoteAuthority: 'remote', workspaceId: 'workspaceId', logsPath: URI.file('logFile') });
 		environmentService.userRoamingDataHome = userDataResource;
 
 		const userDataFileSystemProvider = new FileUserDataProvider(localUserDataResource, localBackupsResource, new TestFileSystemProvider(fileEventEmitter.event), environmentService);

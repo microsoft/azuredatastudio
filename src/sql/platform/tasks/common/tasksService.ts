@@ -18,18 +18,18 @@ export const SERVICE_ID = 'taskHistoryService';
 export const ITaskService = createDecorator<ITaskService>(SERVICE_ID);
 
 export interface ITaskService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	onTaskComplete: Event<TaskNode>;
 	onAddNewTask: Event<TaskNode>;
 	handleNewTask(task: TaskNode): void;
 	handleTaskComplete(eventArgs: TaskStatusChangeArgs): void;
 	getAllTasks(): TaskNode;
 	getNumberOfInProgressTasks(): number;
-	onNewTaskCreated(handle: number, taskInfo: azdata.TaskInfo);
-	createNewTask(taskInfo: azdata.TaskInfo);
-	updateTask(taskProgressInfo: azdata.TaskProgressInfo);
-	onTaskStatusChanged(handle: number, taskProgressInfo: azdata.TaskProgressInfo);
-	cancelTask(providerId: string, taskId: string): Thenable<boolean>;
+	onNewTaskCreated(handle: number, taskInfo: azdata.TaskInfo): void;
+	createNewTask(taskInfo: azdata.TaskInfo): void;
+	updateTask(taskProgressInfo: azdata.TaskProgressInfo): void;
+	onTaskStatusChanged(handle: number, taskProgressInfo: azdata.TaskProgressInfo): void;
+	cancelTask(providerId: string, taskId: string): Promise<boolean | undefined>;
 	/**
 	 * Register a ObjectExplorer provider
 	 */
@@ -44,7 +44,7 @@ export interface TaskStatusChangeArgs {
 }
 
 export class TaskService implements ITaskService {
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 	private _taskQueue: TaskNode;
 	private _onTaskComplete = new Emitter<TaskNode>();
 	private _onAddNewTask = new Emitter<TaskNode>();
@@ -56,7 +56,7 @@ export class TaskService implements ITaskService {
 		@IQueryEditorService private queryEditorService: IQueryEditorService,
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService
 	) {
-		this._taskQueue = new TaskNode('Root', undefined, undefined);
+		this._taskQueue = new TaskNode('Root');
 		this._onTaskComplete = new Emitter<TaskNode>();
 		this._onAddNewTask = new Emitter<TaskNode>();
 
@@ -105,19 +105,21 @@ export class TaskService implements ITaskService {
 		this.updateTask(taskProgressInfo);
 	}
 
-	public cancelTask(providerId: string, taskId: string): Thenable<boolean> {
+	public cancelTask(providerId: string, taskId: string): Promise<boolean | undefined> {
 		let task = this.getTaskInQueue(taskId);
-		task.status = TaskStatus.Canceling;
-		this._onTaskComplete.fire(task);
-		if (providerId) {
-			let provider = this._providers[providerId];
-			if (provider && provider.cancelTask) {
-				return provider.cancelTask({
-					taskId: taskId
-				});
+		if (task) {
+			task.status = TaskStatus.Canceling;
+			this._onTaskComplete.fire(task);
+			if (providerId) {
+				let provider = this._providers[providerId];
+				if (provider && provider.cancelTask) {
+					return Promise.resolve(provider.cancelTask({
+						taskId: taskId
+					}));
+				}
+			} else {
+				return Promise.resolve(true);
 			}
-		} else {
-			return Promise.resolve(true);
 		}
 		return Promise.resolve(undefined);
 	}
@@ -160,9 +162,9 @@ export class TaskService implements ITaskService {
 			let numOfInprogressTasks = this.getNumberOfInProgressTasks();
 			if (numOfInprogressTasks > 0) {
 				this.dialogService.show(Severity.Warning, message, options).then(choice => {
-					switch (choice) {
+					switch (choice.choice) {
 						case 0:
-							let timeout: NodeJS.Timer;
+							let timeout: any;
 							let isTimeout = false;
 							this.cancelAllTasks().then(() => {
 								clearTimeout(timeout);
@@ -222,7 +224,7 @@ export class TaskService implements ITaskService {
 
 	}
 
-	private getTaskInQueue(taskId: string): TaskNode {
+	private getTaskInQueue(taskId: string): TaskNode | undefined {
 		if (this._taskQueue.hasChildren) {
 			return this._taskQueue.children.find(x => x.id === taskId);
 		}

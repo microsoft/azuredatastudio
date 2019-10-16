@@ -648,7 +648,6 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private createRowContainer(view: azdata.ModelView): azdata.FlexBuilder {
 		return view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
-			alignItems: 'left',
 			justifyContent: 'space-between'
 		});
 	}

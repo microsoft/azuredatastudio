@@ -11,15 +11,15 @@ import { TreeNode } from './treeNode';
 import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
 import { AddControllerNode } from './addControllerNode';
 import { ControllerRootNode, ControllerNode } from './controllerTreeNode';
-import { IEndPoint } from '../controller/clusterControllerApi';
 import { showErrorMessage } from '../utils';
 import { LoadingControllerNode } from './loadingControllerNode';
+import { AuthType } from '../constants';
 
 const CredentialNamespace = 'clusterControllerCredentials';
 
 interface IControllerInfoSlim {
-	clusterName: string;
 	url: string;
+	auth: AuthType;
 	username: string;
 	password?: string;
 	rememberPassword: boolean;
@@ -58,20 +58,19 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 	}
 
 	public addController(
-		clusterName: string,
 		url: string,
+		auth: AuthType,
 		username: string,
 		password: string,
-		rememberPassword: boolean,
-		masterInstance?: IEndPoint
+		rememberPassword: boolean
 	): void {
 		this.removeNonControllerNodes();
-		this.root.addControllerNode(clusterName, url, username, password, rememberPassword, masterInstance);
+		this.root.addControllerNode(url, auth, username, password, rememberPassword);
 		this.notifyNodeChanged();
 	}
 
-	public deleteController(url: string, username: string): ControllerNode {
-		let deleted = this.root.deleteControllerNode(url, username);
+	public deleteController(url: string, auth: AuthType, username: string): ControllerNode {
+		let deleted = this.root.deleteControllerNode(url, auth, username);
 		if (deleted) {
 			this.notifyNodeChanged();
 		}
@@ -119,8 +118,12 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 				if (c.rememberPassword) {
 					password = await this.getPassword(c.url, c.username);
 				}
+				if (!c.auth) {
+					// Added before we had added authentication
+					c.auth = 'basic';
+				}
 				this.root.addChild(new ControllerNode(
-					c.clusterName, c.url, c.username, password, c.rememberPassword,
+					c.url, c.auth, c.username, password, c.rememberPassword,
 					undefined, this.root, this, undefined
 				));
 			}
@@ -135,21 +138,21 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 	}
 
 	public async saveControllers(): Promise<void> {
-		let controllers = this.root.children.map(e => {
+		let controllers = this.root.children.map((e): IControllerInfoSlim => {
 			let controller = e as ControllerNode;
-			return <IControllerInfoSlim>{
-				clusterName: controller.clusterName,
+			return {
 				url: controller.url,
+				auth: controller.auth,
 				username: controller.username,
 				password: controller.password,
 				rememberPassword: !!controller.rememberPassword
 			};
 		});
 
-		let controllersWithoutPassword = controllers.map(e => {
-			return <IControllerInfoSlim>{
-				clusterName: e.clusterName,
+		let controllersWithoutPassword = controllers.map((e): IControllerInfoSlim => {
+			return {
 				url: e.url,
+				auth: e.auth,
 				username: e.username,
 				rememberPassword: e.rememberPassword
 			};

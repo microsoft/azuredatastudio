@@ -293,7 +293,6 @@ export default class MainController implements vscode.Disposable {
 		let flexRadioButtonsModel = view.modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'column',
-				alignItems: 'left',
 				height: 150
 			}).withItems([
 				radioButton, groupModel1, radioButton2]

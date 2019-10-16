@@ -20,6 +20,8 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { JobManagementView } from 'sql/workbench/parts/jobManagement/browser/jobManagementView';
+import { NotebooksViewComponent } from 'sql/workbench/parts/jobManagement/browser/notebooksView.component';
+import { NotebookHistoryComponent } from 'sql/workbench/parts/jobManagement/browser/notebookHistory.component';
 
 export const successLabel: string = nls.localize('jobaction.successLabel', "Success");
 export const errorLabel: string = nls.localize('jobaction.faillabel', "Error");
@@ -171,6 +173,22 @@ export class EditJobAction extends Action {
 	}
 }
 
+export class OpenMaterializedNotebookAction extends Action {
+	public static ID = 'notebookAction.openNotebook';
+	public static LABEL = nls.localize('notebookAction.openNotebook', "Open");
+
+	constructor(
+		@ICommandService private _commandService: ICommandService
+	) {
+		super(OpenMaterializedNotebookAction.ID, OpenMaterializedNotebookAction.LABEL, 'openNotebook');
+	}
+
+	public run(context: any): Promise<boolean> {
+		context.component.openNotebook(context.history);
+		return Promise.resolve(true);
+	}
+}
+
 export class DeleteJobAction extends Action {
 	public static ID = 'jobaction.deleteJob';
 	public static LABEL = nls.localize('jobaction.deleteJob', "Delete Job");
@@ -281,7 +299,6 @@ export class DeleteStepAction extends Action {
 		return Promise.resolve(true);
 	}
 }
-
 
 // Alert Actions
 
@@ -548,6 +565,186 @@ export class DeleteProxyAction extends Action {
 				run: () => { }
 			}]
 		);
+		return Promise.resolve(true);
+	}
+}
+
+//Notebook Actions
+
+export class NewNotebookJobAction extends Action {
+	public static ID = 'notebookaction.newJob';
+	public static LABEL = nls.localize('notebookaction.newJob', "New Notebook Job");
+
+	constructor(
+	) {
+		super(NewNotebookJobAction.ID, NewNotebookJobAction.LABEL, 'newStepIcon');
+	}
+
+	public async run(context: IJobActionInfo): Promise<boolean> {
+		let component = context.component as NotebooksViewComponent;
+		await component.openCreateNotebookDialog();
+		return true;
+	}
+}
+
+export class EditNotebookJobAction extends Action {
+	public static ID = 'notebookaction.editNotebook';
+	public static LABEL = nls.localize('notebookaction.editJob', "Edit");
+
+	constructor(
+		@ICommandService private _commandService: ICommandService
+	) {
+		super(EditNotebookJobAction.ID, EditNotebookJobAction.LABEL, 'edit');
+	}
+
+	public run(actionInfo: IJobActionInfo): Promise<boolean> {
+		this._commandService.executeCommand(
+			'agent.openNotebookDialog',
+			actionInfo.ownerUri,
+			actionInfo.targetObject.job);
+		return Promise.resolve(true);
+	}
+}
+
+export class OpenTemplateNotebookAction extends Action {
+	public static ID = 'notebookaction.openTemplate';
+	public static LABEL = nls.localize('notebookaction.openNotebook', "Open Template Notebook");
+
+	constructor(
+		@ICommandService private _commandService: ICommandService
+	) {
+		super(OpenTemplateNotebookAction.ID, OpenTemplateNotebookAction.LABEL, 'opennotebook');
+	}
+
+	public run(actionInfo: any): Promise<boolean> {
+		actionInfo.component.openTemplateNotebook();
+		return Promise.resolve(true);
+	}
+}
+
+export class DeleteNotebookAction extends Action {
+	public static ID = 'notebookaction.deleteNotebook';
+	public static LABEL = nls.localize('notebookaction.deleteNotebook', "Delete");
+
+	constructor(
+		@INotificationService private _notificationService: INotificationService,
+		@IErrorMessageService private _errorMessageService: IErrorMessageService,
+		@IJobManagementService private _jobService: IJobManagementService,
+		@IInstantiationService private instantationService: IInstantiationService,
+		@ITelemetryService private _telemetryService: ITelemetryService
+	) {
+		super(DeleteNotebookAction.ID, DeleteNotebookAction.LABEL);
+	}
+
+	public run(actionInfo: IJobActionInfo): Promise<boolean> {
+		let self = this;
+		let notebook = actionInfo.targetObject.job as azdata.AgentNotebookInfo;
+		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
+		self._notificationService.prompt(
+			Severity.Info,
+			nls.localize('jobaction.deleteNotebookConfirm', "Are you sure you'd like to delete the notebook '{0}'?", notebook.name),
+			[{
+				label: DeleteNotebookAction.LABEL,
+				run: () => {
+					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentJob);
+					self._jobService.deleteNotebook(actionInfo.ownerUri, actionInfo.targetObject.job).then(async (result) => {
+						if (!result || !result.success) {
+							await refreshAction.run(actionInfo);
+							let errorMessage = nls.localize("jobaction.failedToDeleteNotebook", "Could not delete notebook '{0}'.\nError: {1}",
+								notebook.name, result.errorMessage ? result.errorMessage : 'Unknown error');
+							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
+						} else {
+							let successMessage = nls.localize('jobaction.deletedNotebook', "The notebook was successfully deleted");
+							self._notificationService.info(successMessage);
+						}
+					});
+				}
+			}, {
+				label: DeleteAlertAction.CancelLabel,
+				run: () => { }
+			}]
+		);
+		return Promise.resolve(true);
+	}
+
+}
+
+export class PinNotebookMaterializedAction extends Action {
+	public static ID = 'notebookaction.openTemplate';
+	public static LABEL = nls.localize('notebookaction.pinNotebook', "Pin");
+
+	constructor(
+		@ICommandService private _commandService: ICommandService
+	) {
+		super(PinNotebookMaterializedAction.ID, PinNotebookMaterializedAction.LABEL);
+	}
+
+	public run(actionInfo: any): Promise<boolean> {
+		actionInfo.component.toggleNotebookPin(actionInfo.history, true);
+		return Promise.resolve(true);
+	}
+}
+
+export class DeleteMaterializedNotebookAction extends Action {
+	public static ID = 'notebookaction.deleteMaterializedNotebook';
+	public static LABEL = nls.localize('notebookaction.deleteMaterializedNotebook', "Delete");
+
+	constructor(
+		@ICommandService private _commandService: ICommandService
+	) {
+		super(DeleteMaterializedNotebookAction.ID, DeleteMaterializedNotebookAction.LABEL);
+	}
+
+	public run(actionInfo: any): Promise<boolean> {
+		actionInfo.component.deleteMaterializedNotebook(actionInfo.history);
+		return Promise.resolve(true);
+	}
+}
+
+export class UnpinNotebookMaterializedAction extends Action {
+	public static ID = 'notebookaction.unpinNotebook';
+	public static LABEL = nls.localize('notebookaction.unpinNotebook', "Unpin");
+
+	constructor(
+		@ICommandService private _commandService: ICommandService
+	) {
+		super(UnpinNotebookMaterializedAction.ID, UnpinNotebookMaterializedAction.LABEL);
+	}
+
+	public run(actionInfo: any): Promise<boolean> {
+		actionInfo.component.toggleNotebookPin(actionInfo.history, false);
+		return Promise.resolve(true);
+	}
+}
+
+export class RenameNotebookMaterializedAction extends Action {
+	public static ID = 'notebookaction.openTemplate';
+	public static LABEL = nls.localize('notebookaction.renameNotebook', "Rename");
+
+	constructor(
+		@ICommandService private _commandService: ICommandService,
+	) {
+		super(RenameNotebookMaterializedAction.ID, RenameNotebookMaterializedAction.LABEL);
+	}
+
+	public run(actionInfo: any): Promise<boolean> {
+		actionInfo.component.renameNotebook(actionInfo.history);
+		return Promise.resolve(true);
+	}
+}
+
+export class OpenLatestRunMaterializedNotebook extends Action {
+	public static ID = 'notebookaction.openLatestRun';
+	public static LABEL = nls.localize('notebookaction.openLatestRun', "Open Latest Run");
+
+	constructor(
+		@ICommandService private _commandService: ICommandService,
+	) {
+		super(OpenLatestRunMaterializedNotebook.ID, OpenLatestRunMaterializedNotebook.LABEL);
+	}
+
+	public run(actionInfo: IJobActionInfo): Promise<boolean> {
+		actionInfo.component.openLastNRun(actionInfo.targetObject.job, 0, 1);
 		return Promise.resolve(true);
 	}
 }

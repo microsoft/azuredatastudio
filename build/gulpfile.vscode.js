@@ -58,10 +58,9 @@ const nodeModules = [
 
 // Build
 const vscodeEntryPoints = _.flatten([
-	buildfile.entrypoint('vs/workbench/workbench.main'),
+	buildfile.entrypoint('vs/workbench/workbench.desktop.main'),
 	buildfile.base,
-	buildfile.serviceWorker,
-	buildfile.workbench,
+	buildfile.workbenchDesktop,
 	buildfile.code
 ]);
 
@@ -80,6 +79,7 @@ const vscodeResources = [
 	'out-build/vs/base/node/languagePacks.js',
 	'out-build/vs/base/node/{stdForkStart.js,terminateProcess.sh,cpuUsage.sh,ps.sh}',
 	'out-build/vs/base/browser/ui/octiconLabel/octicons/**',
+	'out-build/vs/base/browser/ui/codiconLabel/codicon/**',
 	'out-build/vs/workbench/browser/media/*-theme.css',
 	'out-build/vs/workbench/contrib/debug/**/*.json',
 	'out-build/vs/workbench/contrib/externalTerminal/**/*.scpt',
@@ -87,7 +87,6 @@ const vscodeResources = [
 	'out-build/vs/workbench/contrib/webview/electron-browser/pre/*.js',
 	'out-build/vs/**/markdown.css',
 	'out-build/vs/workbench/contrib/tasks/**/*.json',
-	'out-build/vs/workbench/contrib/welcome/walkThrough/**/*.md',
 	'out-build/vs/platform/files/**/*.exe',
 	'out-build/vs/platform/files/**/*.md',
 	'out-build/vs/code/electron-browser/workbench/**',
@@ -125,6 +124,7 @@ const optimizeVSCodeTask = task.define('optimize-vscode', task.series(
 		resources: vscodeResources,
 		loaderConfig: common.loaderConfig(nodeModules),
 		out: 'out-vscode',
+		inlineAmdImages: true,
 		bundleInfo: undefined
 	})
 ));
@@ -255,8 +255,8 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		const out = sourceFolderName;
 
 		const checksums = computeChecksums(out, [
-			'vs/workbench/workbench.main.js',
-			'vs/workbench/workbench.main.css',
+			'vs/workbench/workbench.desktop.main.js',
+			'vs/workbench/workbench.desktop.main.css',
 			'vs/code/electron-browser/workbench/workbench.html',
 			'vs/code/electron-browser/workbench/workbench.js'
 		]);
@@ -353,7 +353,15 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			.pipe(electron(_.extend({}, config, { platform, arch, ffmpegChromium: true })))
 			.pipe(filter(['**', '!LICENSE', '!LICENSES.chromium.html', '!version'], { dot: true }));
 
-		// result = es.merge(result, gulp.src('resources/completions/**', { base: '.' }));
+		if (platform === 'linux') {
+			result = es.merge(result, gulp.src('resources/completions/bash/code', { base: '.' })
+				.pipe(replace('@@APPNAME@@', product.applicationName))
+				.pipe(rename(function (f) { f.basename = product.applicationName; })));
+
+			result = es.merge(result, gulp.src('resources/completions/zsh/_code', { base: '.' })
+				.pipe(replace('@@APPNAME@@', product.applicationName))
+				.pipe(rename(function (f) { f.basename = '_' + product.applicationName; })));
+		}
 
 		if (platform === 'win32') {
 			result = es.merge(result, gulp.src('resources/win32/bin/code.js', { base: 'resources/win32', allowEmpty: true }));
@@ -460,7 +468,7 @@ gulp.task(task.define(
 		optimizeVSCodeTask,
 		function () {
 			const pathToMetadata = './out-vscode/nls.metadata.json';
-			const pathToExtensions = './extensions/*';
+			const pathToExtensions = '.build/extensions/*';
 			const pathToSetup = 'build/win32/**/{Default.isl,messages.en.isl}';
 
 			return es.merge(
@@ -481,7 +489,7 @@ gulp.task(task.define(
 		optimizeVSCodeTask,
 		function () {
 			const pathToMetadata = './out-vscode/nls.metadata.json';
-			const pathToExtensions = './extensions/*';
+			const pathToExtensions = '.build/extensions/*';
 			const pathToSetup = 'build/win32/**/{Default.isl,messages.en.isl}';
 
 			return es.merge(

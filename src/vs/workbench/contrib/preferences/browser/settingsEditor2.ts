@@ -88,54 +88,55 @@ export class SettingsEditor2 extends BaseEditor {
 			type === SettingValueType.Exclude;
 	}
 
-	private defaultSettingsEditorModel: Settings2EditorModel;
+	// (!) Lots of props that are set once on the first render
+	private defaultSettingsEditorModel!: Settings2EditorModel;
 
-	private rootElement: HTMLElement;
-	private headerContainer: HTMLElement;
-	private searchWidget: SuggestEnabledInput;
-	private countElement: HTMLElement;
-	private settingsTargetsWidget: SettingsTargetsWidget;
+	private rootElement!: HTMLElement;
+	private headerContainer!: HTMLElement;
+	private searchWidget!: SuggestEnabledInput;
+	private countElement!: HTMLElement;
+	private settingsTargetsWidget!: SettingsTargetsWidget;
 
-	private settingsTreeContainer: HTMLElement;
-	private settingsTree: SettingsTree;
-	private settingRenderers: SettingTreeRenderers;
-	private tocTreeModel: TOCTreeModel;
-	private settingsTreeModel: SettingsTreeModel;
-	private noResultsMessage: HTMLElement;
-	private clearFilterLinkContainer: HTMLElement;
+	private settingsTreeContainer!: HTMLElement;
+	private settingsTree!: SettingsTree;
+	private settingRenderers!: SettingTreeRenderers;
+	private tocTreeModel!: TOCTreeModel;
+	private settingsTreeModel!: SettingsTreeModel;
+	private noResultsMessage!: HTMLElement;
+	private clearFilterLinkContainer!: HTMLElement;
 
-	private tocTreeContainer: HTMLElement;
-	private tocTree: TOCTree;
+	private tocTreeContainer!: HTMLElement;
+	private tocTree!: TOCTree;
 
-	private settingsAriaExtraLabelsContainer: HTMLElement;
+	private settingsAriaExtraLabelsContainer!: HTMLElement;
 
 	private delayedFilterLogging: Delayer<void>;
 	private localSearchDelayer: Delayer<void>;
 	private remoteSearchThrottle: ThrottledDelayer<void>;
-	private searchInProgress: CancellationTokenSource | null;
+	private searchInProgress: CancellationTokenSource | null = null;
 
 	private settingFastUpdateDelayer: Delayer<void>;
 	private settingSlowUpdateDelayer: Delayer<void>;
-	private pendingSettingUpdate: { key: string, value: any } | null;
+	private pendingSettingUpdate: { key: string, value: any } | null = null;
 
 	private readonly viewState: ISettingsEditorViewState;
-	private _searchResultModel: SearchResultModel | null;
+	private _searchResultModel: SearchResultModel | null = null;
 
 	private tocRowFocused: IContextKey<boolean>;
 	private inSettingsEditorContextKey: IContextKey<boolean>;
 	private searchFocusContextKey: IContextKey<boolean>;
 
 	private scheduledRefreshes: Map<string, DOM.IFocusTracker>;
-	private lastFocusedSettingElement: string;
+	private lastFocusedSettingElement: string | null = null;
 
 	/** Don't spam warnings */
-	private hasWarnedMissingSettings: boolean;
+	private hasWarnedMissingSettings = false;
 
 	private editorMemento: IEditorMemento<ISettingsEditor2State>;
 
-	private tocFocusedElement: SettingsTreeGroupElement | null;
+	private tocFocusedElement: SettingsTreeGroupElement | null = null;
 	private settingsTreeScrollTop = 0;
-	private dimension: DOM.Dimension;
+	private dimension!: DOM.Dimension;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -203,14 +204,14 @@ export class SettingsEditor2 extends BaseEditor {
 
 	createEditor(parent: HTMLElement): void {
 		parent.setAttribute('tabindex', '-1');
-		this.rootElement = DOM.append(parent, $('.settings-editor'));
+		this.rootElement = DOM.append(parent, $('.settings-editor', { tabindex: '-1' }));
 
 		this.createHeader(this.rootElement);
 		this.createBody(this.rootElement);
 		this.updateStyles();
 	}
 
-	setInput(input: SettingsEditor2Input, options: SettingsEditorOptions | null, token: CancellationToken): Promise<void> {
+	setInput(input: SettingsEditor2Input, options: SettingsEditorOptions | undefined, token: CancellationToken): Promise<void> {
 		this.inSettingsEditorContextKey.set(true);
 		return super.setInput(input, options, token)
 			.then(() => timeout(0)) // Force setInput to be async
@@ -253,7 +254,7 @@ export class SettingsEditor2 extends BaseEditor {
 		}
 	}
 
-	setOptions(options: SettingsEditorOptions | null): void {
+	setOptions(options: SettingsEditorOptions | undefined): void {
 		super.setOptions(options);
 
 		if (options) {
@@ -262,7 +263,7 @@ export class SettingsEditor2 extends BaseEditor {
 	}
 
 	private _setOptions(options: SettingsEditorOptions): void {
-		// {{SQL CARBON EDIT}} - return if options is undefined to avoid nullref
+		// {{SQL CARBON EDIT}} - return if options is undefined to avoid nullref @todo anthonydresser 8/17/19 investigate
 		if (!options) {
 			return;
 		}
@@ -289,6 +290,11 @@ export class SettingsEditor2 extends BaseEditor {
 
 	layout(dimension: DOM.Dimension): void {
 		this.dimension = dimension;
+
+		if (!this.isVisible()) {
+			return;
+		}
+
 		this.layoutTrees(dimension);
 
 		const innerWidth = Math.min(1000, dimension.width) - 24 * 2; // 24px padding on left and right;
@@ -386,10 +392,10 @@ export class SettingsEditor2 extends BaseEditor {
 				return SettingsEditor2.SUGGESTIONS.filter(tag => query.indexOf(tag) === -1).map(tag => strings.endsWith(tag, ':') ? tag : tag + ' ');
 			}
 		}, searchBoxLabel, 'settingseditor:searchinput' + SettingsEditor2.NUM_INSTANCES++, {
-				placeholderText: searchBoxLabel,
-				focusContextKey: this.searchFocusContextKey,
-				// TODO: Aria-live
-			})
+			placeholderText: searchBoxLabel,
+			focusContextKey: this.searchFocusContextKey,
+			// TODO: Aria-live
+		})
 		);
 
 		this._register(this.searchWidget.onFocus(() => {
@@ -461,12 +467,12 @@ export class SettingsEditor2 extends BaseEditor {
 		}
 	}
 
-	switchToSettingsFile(): Promise<IEditor | null> {
+	switchToSettingsFile(): Promise<IEditor | undefined> {
 		const query = parseQuery(this.searchWidget.getValue());
 		return this.openSettingsFile(query.query);
 	}
 
-	private openSettingsFile(query?: string): Promise<IEditor | null> {
+	private async openSettingsFile(query?: string): Promise<IEditor | undefined> {
 		const currentSettingsTarget = this.settingsTargetsWidget.settingsTarget;
 
 		const options: ISettingsEditorOptions = { query };
@@ -476,9 +482,11 @@ export class SettingsEditor2 extends BaseEditor {
 			return this.preferencesService.openRemoteSettings();
 		} else if (currentSettingsTarget === ConfigurationTarget.WORKSPACE) {
 			return this.preferencesService.openWorkspaceSettings(true, options);
-		} else {
+		} else if (URI.isUri(currentSettingsTarget)) {
 			return this.preferencesService.openFolderSettings(currentSettingsTarget, true, options);
 		}
+
+		return undefined;
 	}
 
 	private createBody(parent: HTMLElement): void {
@@ -849,7 +857,7 @@ export class SettingsEditor2 extends BaseEditor {
 
 					this._register(model.onDidChangeGroups(() => this.onConfigUpdate()));
 					this.defaultSettingsEditorModel = model;
-					return this.onConfigUpdate();
+					return this.onConfigUpdate(undefined, true);
 				});
 		}
 		return Promise.resolve(null);
@@ -978,14 +986,9 @@ export class SettingsEditor2 extends BaseEditor {
 			// If a single setting is being refreshed, it's ok to refresh now if that is not the focused setting
 			if (key) {
 				const focusedKey = focusedSetting.getAttribute(AbstractSettingRenderer.SETTING_KEY_ATTR);
-				/**
-				 * Update `list`s live if focused item is whole list or list item,
-				 * as they have a separate "submit edit" step built in before this
-				 */
-				if (
-					focusedKey === key &&
-					!DOM.hasClass(focusedSetting, 'setting-item-list') &&
-					!DOM.hasClass(focusedSetting, 'setting-item-contents')
+				if (focusedKey === key &&
+					// update `list`s live, as they have a separate "submit edit" step built in before this
+					(focusedSetting.parentElement && !DOM.hasClass(focusedSetting.parentElement, 'setting-item-list'))
 				) {
 
 					this.updateModifiedLabelForKey(key);

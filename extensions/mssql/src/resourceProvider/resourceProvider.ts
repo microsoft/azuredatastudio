@@ -55,9 +55,9 @@ class FireWallFeature extends SqlOpsFeature<any> {
 
 			}
 		}, {
-				handleFirewallRule,
-				createFirewallRule
-			});
+			handleFirewallRule,
+			createFirewallRule
+		});
 	}
 }
 
@@ -75,7 +75,7 @@ export class AzureResourceProvider {
 	private _client: SqlOpsDataClient;
 	private _config: IConfig;
 
-	constructor(baseConfig: IConfig) {
+	constructor(private logPath: string, baseConfig: IConfig) {
 		if (baseConfig) {
 			this._config = JSON.parse(JSON.stringify(baseConfig));
 			this._config.executableFiles = ['SqlToolsResourceProviderService.exe', 'SqlToolsResourceProviderService'];
@@ -88,7 +88,7 @@ export class AzureResourceProvider {
 			providerId: Constants.providerId,
 			features: [FireWallFeature]
 		};
-		serverdownloader.getOrDownloadServer().then(e => {
+		return serverdownloader.getOrDownloadServer().then(e => {
 			let serverOptions = this.generateServerOptions(e);
 			this._client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
 			this._client.start();
@@ -102,7 +102,7 @@ export class AzureResourceProvider {
 	}
 
 	private generateServerOptions(executablePath: string): ServerOptions {
-		let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles('resourceprovider', executablePath);
+		let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles(this.logPath, 'resourceprovider.log', executablePath);
 		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 	}
 }

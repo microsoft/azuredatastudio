@@ -10,7 +10,6 @@ import { IActiveCodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IBulkEditService } from 'vs/editor/browser/services/bulkEditService';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 import { trimTrailingWhitespace } from 'vs/editor/common/commands/trimTrailingWhitespaceCommand';
-import { ICodeActionsOnSaveOptions } from 'vs/editor/common/config/editorOptions';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 import { Range } from 'vs/editor/common/core/range';
@@ -31,13 +30,13 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 import { extHostCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
-// {{SQL CARBON EDIT}}
-import { ISaveParticipant, SaveReason, IResolvedTextFileEditorModel, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
+import { ISaveParticipant, SaveReason, IResolvedTextFileEditorModel, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles'; // {{SQL CARBON EDIT}}
 import { ExtHostContext, ExtHostDocumentSaveParticipantShape, IExtHostContext } from '../common/extHost.protocol';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService'; // {{SQL CARBON EDIT}}
 
-// {{SQL CARBON EDIT}}
-import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
-
+export interface ICodeActionsOnSaveOptions {
+	[kind: string]: boolean;
+}
 
 /*
  * An update participant that ensures any un-tracked changes are synced to the JSON file contents for a
@@ -45,7 +44,7 @@ import { INotebookService } from 'sql/workbench/services/notebook/common/noteboo
  * updates the backing model in-place, this is a backup mechanism to hard-update the file before save in case
  * some are missed.
  */
-class NotebookUpdateParticipant implements ISaveParticipantParticipant {
+class NotebookUpdateParticipant implements ISaveParticipantParticipant { // {{SQL CARBON EDIT}} add notebook participant
 
 	constructor(
 		@INotebookService private notebookService: INotebookService
@@ -153,16 +152,12 @@ export class FinalNewLineParticipant implements ISaveParticipantParticipant {
 			return;
 		}
 
-		let prevSelection: Selection[] = [];
+		const edits = [EditOperation.insert(new Position(lineCount, model.getLineMaxColumn(lineCount)), model.getEOL())];
 		const editor = findEditor(model, this.codeEditorService);
 		if (editor) {
-			prevSelection = editor.getSelections();
-		}
-
-		model.pushEditOperations(prevSelection, [EditOperation.insert(new Position(lineCount, model.getLineMaxColumn(lineCount)), model.getEOL())], edits => prevSelection);
-
-		if (editor) {
-			editor.setSelections(prevSelection);
+			editor.executeEdits('insertFinalNewLine', edits, editor.getSelections());
+		} else {
+			model.pushEditOperations([], edits, () => null);
 		}
 	}
 }
@@ -276,7 +271,8 @@ class CodeActionOnSaveParticipant implements ISaveParticipant {
 	constructor(
 		@IBulkEditService private readonly _bulkEditService: IBulkEditService,
 		@ICommandService private readonly _commandService: ICommandService,
-		@IConfigurationService private readonly _configurationService: IConfigurationService
+		@IConfigurationService private readonly _configurationService: IConfigurationService,
+		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 	) { }
 
 	async participate(editorModel: IResolvedTextFileEditorModel, env: { reason: SaveReason }): Promise<void> {
@@ -342,7 +338,7 @@ class CodeActionOnSaveParticipant implements ISaveParticipant {
 
 	private async applyCodeActions(actionsToRun: readonly CodeAction[]) {
 		for (const action of actionsToRun) {
-			await applyCodeAction(action, this._bulkEditService, this._commandService);
+			await this._instantiationService.invokeFunction(applyCodeAction, action, this._bulkEditService, this._commandService);
 		}
 	}
 

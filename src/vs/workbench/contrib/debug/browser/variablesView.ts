@@ -30,6 +30,7 @@ import { FuzzyScore, createMatches } from 'vs/base/common/filters';
 import { HighlightedLabel, IHighlight } from 'vs/base/browser/ui/highlightedlabel/highlightedLabel';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { dispose } from 'vs/base/common/lifecycle';
 
 const $ = dom.$;
 let forgetScopes = true;
@@ -39,8 +40,8 @@ export const variableSetEmitter = new Emitter<void>();
 export class VariablesView extends ViewletPanel {
 
 	private onFocusStackFrameScheduler: RunOnceScheduler;
-	private needsRefresh: boolean;
-	private tree: WorkbenchAsyncDataTree<IViewModel | IExpression | IScope, IExpression | IScope, FuzzyScore>;
+	private needsRefresh = false;
+	private tree!: WorkbenchAsyncDataTree<IViewModel | IExpression | IScope, IExpression | IScope, FuzzyScore>;
 	private savedViewState: IAsyncDataTreeViewState | undefined;
 
 	constructor(
@@ -86,14 +87,14 @@ export class VariablesView extends ViewletPanel {
 		dom.addClass(container, 'debug-variables');
 		const treeContainer = renderViewTree(container);
 
-		this.tree = this.instantiationService.createInstance(WorkbenchAsyncDataTree, treeContainer, new VariablesDelegate(),
+		this.tree = this.instantiationService.createInstance(WorkbenchAsyncDataTree, 'VariablesView', treeContainer, new VariablesDelegate(),
 			[this.instantiationService.createInstance(VariablesRenderer), new ScopesRenderer()],
 			new VariablesDataSource(), {
-				ariaLabel: nls.localize('variablesAriaTreeLabel', "Debug Variables"),
-				accessibilityProvider: new VariablesAccessibilityProvider(),
-				identityProvider: { getId: (element: IExpression | IScope) => element.getId() },
-				keyboardNavigationLabelProvider: { getKeyboardNavigationLabel: (e: IExpression | IScope) => e }
-			});
+			ariaLabel: nls.localize('variablesAriaTreeLabel', "Debug Variables"),
+			accessibilityProvider: new VariablesAccessibilityProvider(),
+			identityProvider: { getId: (element: IExpression | IScope) => element.getId() },
+			keyboardNavigationLabelProvider: { getKeyboardNavigationLabel: (e: IExpression | IScope) => e }
+		});
 
 		this.tree.setInput(this.debugService.getViewModel()).then(null, onUnexpectedError);
 
@@ -123,7 +124,7 @@ export class VariablesView extends ViewletPanel {
 			this.tree.updateChildren();
 		}));
 		this._register(this.tree.onMouseDblClick(e => this.onMouseDblClick(e)));
-		this._register(this.tree.onContextMenu(e => this.onContextMenu(e)));
+		this._register(this.tree.onContextMenu(async e => await this.onContextMenu(e)));
 
 		this._register(this.onDidChangeBodyVisibility(visible => {
 			if (visible && this.needsRefresh) {
@@ -152,7 +153,7 @@ export class VariablesView extends ViewletPanel {
 		}
 	}
 
-	private onContextMenu(e: ITreeContextMenuEvent<IExpression | IScope>): void {
+	private async onContextMenu(e: ITreeContextMenuEvent<IExpression | IScope>): Promise<void> {
 		const variable = e.element;
 		if (variable instanceof Variable && !!variable.value) {
 			const actions: IAction[] = [];
@@ -174,11 +175,22 @@ export class VariablesView extends ViewletPanel {
 					return Promise.resolve(undefined);
 				}));
 			}
+			if (session && session.capabilities.supportsDataBreakpoints) {
+				const response = await session.dataBreakpointInfo(variable.name, variable.parent.reference);
+				const dataid = response.dataId;
+				if (dataid) {
+					actions.push(new Separator());
+					actions.push(new Action('debug.breakWhenValueChanges', nls.localize('breakWhenValueChanges', "Break When Value Changes"), undefined, true, () => {
+						return this.debugService.addDataBreakpoint(response.description, dataid, !!response.canPersist);
+					}));
+				}
+			}
 
 			this.contextMenuService.showContextMenu({
 				getAnchor: () => e.anchor,
 				getActions: () => actions,
-				getActionsContext: () => variable
+				getActionsContext: () => variable,
+				onHide: () => dispose(actions)
 			});
 		}
 	}

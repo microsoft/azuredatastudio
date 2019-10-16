@@ -20,7 +20,7 @@ suite('Account Management Dialog Controller Tests', () => {
 	test('Open Account Dialog - Dialog Doesn\'t Exist', () => {
 		// Setup: Create instance of the controller
 		let instantiationService = createInstantiationService();
-		let controller = new AccountDialogController(instantiationService, undefined);
+		let controller = new AccountDialogController(instantiationService, undefined!);
 		assert.strictEqual(controller.accountDialog, undefined);
 
 		// If: I open the account dialog when one hasn't been opened
@@ -34,7 +34,7 @@ suite('Account Management Dialog Controller Tests', () => {
 	test('Open Account Dialog - Dialog Exists', () => {
 		// Setup: Create instance of the controller with an account dialog already loaded
 		let instantiationService = createInstantiationService();
-		let controller = new AccountDialogController(instantiationService, undefined);
+		let controller = new AccountDialogController(instantiationService, undefined!);
 		controller.openAccountDialog();
 		let accountDialog = controller.accountDialog;
 
@@ -86,7 +86,7 @@ function createInstantiationService(addAccountFailureEmitter?: Emitter<string>):
 		.returns(() => undefined);
 
 	// Create a mock account dialog
-	let accountDialog = new AccountDialog(null, null, instantiationService.object, null, null, null, null, new MockContextKeyService(), null, undefined, undefined);
+	let accountDialog = new AccountDialog(undefined!, undefined!, instantiationService.object, undefined!, undefined!, undefined!, undefined!, new MockContextKeyService(), undefined!, undefined!, undefined!);
 	let mockAccountDialog = TypeMoq.Mock.ofInstance(accountDialog);
 	mockAccountDialog.setup(x => x.onAddAccountErrorEvent)
 		.returns(() => { return addAccountFailureEmitter ? addAccountFailureEmitter.event : mockEvent.event; });

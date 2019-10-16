@@ -41,6 +41,7 @@ export interface IViewletPanelOptions extends IPanelOptions {
 	actionRunner?: IActionRunner;
 	id: string;
 	title: string;
+	showActionsAlways?: boolean;
 }
 
 export abstract class ViewletPanel extends Panel implements IView {
@@ -67,8 +68,10 @@ export abstract class ViewletPanel extends Panel implements IView {
 
 	protected actionRunner?: IActionRunner;
 	protected toolbar: ToolBar;
+	private readonly showActionsAlways: boolean = false;
 	private headerContainer: HTMLElement;
 	private titleContainer: HTMLElement;
+	protected twistiesContainer: HTMLElement;
 
 	constructor(
 		options: IViewletPanelOptions,
@@ -82,6 +85,7 @@ export abstract class ViewletPanel extends Panel implements IView {
 		this.id = options.id;
 		this.title = options.title;
 		this.actionRunner = options.actionRunner;
+		this.showActionsAlways = !!options.showActionsAlways;
 		this.focusedViewContextKey = FocusedViewContext.bindTo(contextKeyService);
 	}
 
@@ -130,9 +134,12 @@ export abstract class ViewletPanel extends Panel implements IView {
 	protected renderHeader(container: HTMLElement): void {
 		this.headerContainer = container;
 
+		this.renderTwisties(container);
+
 		this.renderHeaderTitle(container, this.title);
 
 		const actions = append(container, $('.actions'));
+		toggleClass(actions, 'show', this.showActionsAlways);
 		this.toolbar = new ToolBar(actions, this.contextMenuService, {
 			orientation: ActionsOrientation.HORIZONTAL,
 			actionViewItemProvider: action => this.getActionViewItem(action),
@@ -147,6 +154,10 @@ export abstract class ViewletPanel extends Panel implements IView {
 		const onDidRelevantConfigurationChange = Event.filter(this.configurationService.onDidChangeConfiguration, e => e.affectsConfiguration(ViewletPanel.AlwaysShowActionsConfig));
 		this._register(onDidRelevantConfigurationChange(this.updateActionsVisibility, this));
 		this.updateActionsVisibility();
+	}
+
+	protected renderTwisties(container: HTMLElement): void {
+		this.twistiesContainer = append(container, $('.twisties.codicon.codicon-chevron-right'));
 	}
 
 	protected renderHeaderTitle(container: HTMLElement, title: string): void {

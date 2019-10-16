@@ -12,9 +12,24 @@
 				],
 				"argIndex": 1
 			}
-		]
+		],
+		"no-floating-promises": {
+			"severity": "warn"
+		},
+		"await-promise": {
+			"options": [
+				"Thenable",
+				"Deferred",
+				"PromiseLike"
+			]
+		},
+		"use-isnan": {
+			"severity": "error"
+		}
 	},
 	"linterOptions": {
-		"exclude": ["src/vs/**/*.ts"]
+		"exclude": [
+			"src/vs/**/*.ts"
+		]
 	}
 }

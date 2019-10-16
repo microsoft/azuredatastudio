@@ -9,12 +9,13 @@ import { SelectBox as vsSelectBox, ISelectBoxStyles as vsISelectBoxStyles, ISele
 import { Color } from 'vs/base/common/color';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import * as dom from 'vs/base/browser/dom';
-import { RenderOptions, renderFormattedText, renderText } from 'vs/base/browser/htmlContentRenderer';
 import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as aria from 'vs/base/browser/ui/aria/aria';
 import * as nls from 'vs/nls';
+import { renderFormattedText, renderText, FormattedTextRenderOptions } from 'vs/base/browser/formattedTextRenderer';
 
 const $ = dom.$;
+
 
 export interface ISelectBoxStyles extends vsISelectBoxStyles {
 	disabledSelectBackground?: Color;
@@ -56,6 +57,8 @@ export class SelectBox extends vsSelectBox {
 
 	private element: HTMLElement;
 
+
+
 	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
 		super(options.map(option => { return { text: option }; }), 0, contextViewProvider, undefined, selectBoxOptions);
 		this._optionsDictionary = new Map<string, number>();
@@ -89,6 +92,7 @@ export class SelectBox extends vsSelectBox {
 		this._register(focusTracker.onDidBlur(() => this._hideMessage()));
 		this._register(focusTracker.onDidFocus(() => this._showMessage()));
 	}
+
 
 	public style(styles: ISelectBoxStyles): void {
 		super.style(styles);
@@ -209,7 +213,7 @@ export class SelectBox extends vsSelectBox {
 					div = dom.append(container, $('.monaco-inputbox-container'));
 					layout();
 
-					const renderOptions: RenderOptions = {
+					const renderOptions: FormattedTextRenderOptions = {
 						inline: true,
 						className: 'monaco-inputbox-message'
 					};

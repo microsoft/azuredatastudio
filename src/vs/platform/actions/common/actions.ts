@@ -87,12 +87,14 @@ export const enum MenuId {
 	ProblemsPanelContext,
 	SCMChangeContext,
 	SCMResourceContext,
+	SCMResourceFolderContext,
 	SCMResourceGroupContext,
 	SCMSourceControl,
 	SCMTitle,
 	SearchContext,
 	StatusBarWindowIndicatorMenu,
 	TouchBarContext,
+	TitleBarContext,
 	ViewItemContext,
 	ViewTitle,
 	ObjectExplorerItemContext, // {{SQL CARBON EDIT}}
@@ -121,7 +123,7 @@ export const IMenuService = createDecorator<IMenuService>('menuService');
 
 export interface IMenuService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	createMenu(id: MenuId, scopedKeybindingService: IContextKeyService): IMenu;
 }

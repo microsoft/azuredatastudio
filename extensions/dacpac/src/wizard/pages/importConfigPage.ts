@@ -30,7 +30,7 @@ export class ImportConfigPage extends DacFxConfigPage {
 	}
 
 	async start(): Promise<boolean> {
-		let databaseComponent = await this.createDatabaseTextBox();
+		let databaseComponent = await this.createDatabaseTextBox(localize('dacfx.targetDatabaseAriaLabel', "Target Database"));
 		let serverComponent = await this.createServerDropdown(true);
 		let fileBrowserComponent = await this.createFileBrowser();
 
@@ -41,9 +41,9 @@ export class ImportConfigPage extends DacFxConfigPage {
 					serverComponent,
 					databaseComponent,
 				], {
-					horizontal: true,
-					componentWidth: 400
-				}).component();
+				horizontal: true,
+				componentWidth: 400
+			}).component();
 		await this.view.initializeModel(this.form);
 		return true;
 	}

@@ -65,8 +65,8 @@ export abstract class CodeEditorServiceImpl extends AbstractCodeEditorService {
 		return provider.getOptions(this, writable);
 	}
 
-	abstract getActiveCodeEditor(): ICodeEditor | null;
-	abstract openCodeEditor(input: IResourceInput, source: ICodeEditor | null, sideBySide?: boolean): Promise<ICodeEditor | null>;
+	abstract getActiveCodeEditor(): ICodeEditor | undefined;
+	abstract openCodeEditor(input: IResourceInput, source: ICodeEditor | undefined, sideBySide?: boolean): Promise<ICodeEditor | undefined>;
 }
 
 interface IModelDecorationOptionsProvider extends IDisposable {
@@ -127,13 +127,13 @@ class DecorationTypeOptionsProvider implements IModelDecorationOptionsProvider {
 	public refCount: number;
 
 	public className: string | undefined;
-	public inlineClassName: string;
-	public inlineClassNameAffectsLetterSpacing: boolean;
+	public inlineClassName: string | undefined;
+	public inlineClassNameAffectsLetterSpacing: boolean | undefined;
 	public beforeContentClassName: string | undefined;
 	public afterContentClassName: string | undefined;
 	public glyphMarginClassName: string | undefined;
 	public isWholeLine: boolean;
-	public overviewRuler: IModelDecorationOverviewRulerOptions;
+	public overviewRuler: IModelDecorationOverviewRulerOptions | undefined;
 	public stickiness: TrackedRangeStickiness | undefined;
 
 	constructor(themeService: IThemeService, providerArgs: ProviderArguments) {
@@ -229,11 +229,11 @@ const _CSS_MAP: { [prop: string]: string; } = {
 	cursor: 'cursor:{0};',
 	letterSpacing: 'letter-spacing:{0};',
 
-	gutterIconPath: 'background:url(\'{0}\') center center no-repeat;',
+	gutterIconPath: 'background:{0} center center no-repeat;',
 	gutterIconSize: 'background-size:{0};',
 
 	contentText: 'content:\'{0}\';',
-	contentIconPath: 'content:url(\'{0}\');',
+	contentIconPath: 'content:{0};',
 	margin: 'margin:{0};',
 	width: 'width:{0};',
 	height: 'height:{0};'
@@ -399,7 +399,7 @@ class DecorationCSSRules {
 		if (typeof opts !== 'undefined') {
 			this.collectBorderSettingsCSSText(opts, cssTextArr);
 			if (typeof opts.contentIconPath !== 'undefined') {
-				cssTextArr.push(strings.format(_CSS_MAP.contentIconPath, dom.asDomUri(URI.revive(opts.contentIconPath)).toString(true).replace(/'/g, '%27')));
+				cssTextArr.push(strings.format(_CSS_MAP.contentIconPath, dom.asCSSUrl(URI.revive(opts.contentIconPath))));
 			}
 			if (typeof opts.contentText === 'string') {
 				const truncated = opts.contentText.match(/^.*$/m)![0]; // only take first line
@@ -426,7 +426,7 @@ class DecorationCSSRules {
 		const cssTextArr: string[] = [];
 
 		if (typeof opts.gutterIconPath !== 'undefined') {
-			cssTextArr.push(strings.format(_CSS_MAP.gutterIconPath, dom.asDomUri(URI.revive(opts.gutterIconPath)).toString(true).replace(/'/g, '%27')));
+			cssTextArr.push(strings.format(_CSS_MAP.gutterIconPath, dom.asCSSUrl(URI.revive(opts.gutterIconPath))));
 			if (typeof opts.gutterIconSize !== 'undefined') {
 				cssTextArr.push(strings.format(_CSS_MAP.gutterIconSize, opts.gutterIconSize));
 			}

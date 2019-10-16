@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as DOM from 'vs/base/browser/dom';
-import { renderMarkdown } from 'vs/base/browser/htmlContentRenderer';
+import { renderMarkdown } from 'vs/base/browser/markdownRenderer';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -37,7 +37,7 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
-import { editorBackground, errorForeground, focusBorder, foreground, inputValidationErrorBackground, inputValidationErrorBorder, inputValidationErrorForeground } from 'vs/platform/theme/common/colorRegistry';
+import { errorForeground, focusBorder, foreground, inputValidationErrorBackground, inputValidationErrorBorder, inputValidationErrorForeground, transparent } from 'vs/platform/theme/common/colorRegistry';
 import { attachButtonStyler, attachInputBoxStyler, attachSelectBoxStyler, attachStyler } from 'vs/platform/theme/common/styler';
 import { ICssStyleCollector, ITheme, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { ITOCEntry } from 'vs/workbench/contrib/preferences/browser/settingsLayout';
@@ -224,8 +224,9 @@ interface ISettingComplexItemTemplate extends ISettingItemTemplate<void> {
 	button: Button;
 }
 
-interface ISettingListItemTemplate extends ISettingItemTemplate<void> {
+interface ISettingListItemTemplate extends ISettingItemTemplate<string[] | undefined> {
 	listWidget: ListSettingWidget;
+	validationErrorMessageElement: HTMLElement;
 }
 
 interface ISettingExcludeItemTemplate extends ISettingItemTemplate<void> {
@@ -392,9 +393,13 @@ export abstract class AbstractSettingRenderer extends Disposable implements ITre
 			toggleMenuTitle
 		});
 		toolbar.setActions([], this.settingActions)();
-		const button = container.querySelector('.toolbar-toggle-more');
+
+		const button = container.querySelector('.codicon-more');
 		if (button) {
 			(<HTMLElement>button).tabIndex = -1;
+
+			// change icon from ellipsis to gear
+			(<HTMLElement>button).classList.add('codicon-gear');
 		}
 
 		return toolbar;
@@ -408,7 +413,6 @@ export abstract class AbstractSettingRenderer extends Disposable implements ITre
 		const setting = element.setting;
 
 		DOM.toggleClass(template.containerElement, 'is-configured', element.isConfigured);
-		DOM.toggleClass(template.containerElement, 'is-expanded', true);
 		template.containerElement.setAttribute(AbstractSettingRenderer.SETTING_KEY_ATTR, element.setting.key);
 		template.containerElement.setAttribute(AbstractSettingRenderer.SETTING_ID_ATTR, element.id);
 
@@ -679,6 +683,9 @@ export class SettingArrayRenderer extends AbstractSettingRenderer implements ITr
 
 	renderTemplate(container: HTMLElement): ISettingListItemTemplate {
 		const common = this.renderCommonTemplate(null, container, 'list');
+		const descriptionElement = common.containerElement.querySelector('.setting-item-description')!;
+		const validationErrorMessageElement = $('.setting-item-validation-message');
+		descriptionElement.after(validationErrorMessageElement);
 
 		const listWidget = this._instantiationService.createInstance(ListSettingWidget, common.controlElement);
 		listWidget.domNode.classList.add(AbstractSettingRenderer.CONTROL_CLASS);
@@ -686,19 +693,40 @@ export class SettingArrayRenderer extends AbstractSettingRenderer implements ITr
 
 		const template: ISettingListItemTemplate = {
 			...common,
-			listWidget
+			listWidget,
+			validationErrorMessageElement
 		};
 
 		this.addSettingElementFocusHandler(template);
 
-		common.toDispose.push(listWidget.onDidChangeList(e => this.onDidChangeList(template, e)));
+		common.toDispose.push(
+			listWidget.onDidChangeList(e => {
+				const newList = this.computeNewList(template, e);
+				this.onDidChangeList(template, newList);
+				if (newList !== null && template.onChange) {
+					template.onChange(newList);
+				}
+			})
+		);
 
 		return template;
 	}
 
-	private onDidChangeList(template: ISettingListItemTemplate, e: IListChangeEvent): void {
+	private onDidChangeList(template: ISettingListItemTemplate, newList: string[] | undefined | null): void {
+		if (!template.context || newList === null) {
+			return;
+		}
+
+		this._onDidChangeSetting.fire({
+			key: template.context.setting.key,
+			value: newList,
+			type: template.context.valueType
+		});
+	}
+
+	private computeNewList(template: ISettingListItemTemplate, e: IListChangeEvent): string[] | undefined | null {
 		if (template.context) {
-			let newValue: any[] = [];
+			let newValue: string[] = [];
 			if (isArray(template.context.scopeValue)) {
 				newValue = [...template.context.scopeValue];
 			} else if (isArray(template.context.value)) {
@@ -732,29 +760,30 @@ export class SettingArrayRenderer extends AbstractSettingRenderer implements ITr
 				template.context.defaultValue.length === newValue.length &&
 				template.context.defaultValue.join() === newValue.join()
 			) {
-				return this._onDidChangeSetting.fire({
-					key: template.context.setting.key,
-					value: undefined, // reset setting
-					type: template.context.valueType
-				});
+				return undefined;
 			}
 
-			this._onDidChangeSetting.fire({
-				key: template.context.setting.key,
-				value: newValue,
-				type: template.context.valueType
-			});
+			return newValue;
 		}
+
+		return undefined;
 	}
 
 	renderElement(element: ITreeNode<SettingsTreeSettingElement, never>, index: number, templateData: ISettingListItemTemplate): void {
 		super.renderSettingElement(element, index, templateData);
 	}
 
-	protected renderValue(dataElement: SettingsTreeSettingElement, template: ISettingListItemTemplate, onChange: (value: string) => void): void {
+	protected renderValue(dataElement: SettingsTreeSettingElement, template: ISettingListItemTemplate, onChange: (value: string[] | undefined) => void): void {
 		const value = getListDisplayValue(dataElement);
 		template.listWidget.setValue(value);
 		template.context = dataElement;
+
+		template.onChange = (v) => {
+			onChange(v);
+			renderArrayValidations(dataElement, template, v, false);
+		};
+
+		renderArrayValidations(dataElement, template, value.map(v => v.value), true);
 	}
 }
 
@@ -1045,7 +1074,7 @@ export class SettingBoolRenderer extends AbstractSettingRenderer implements ITre
 		const deprecationWarningElement = DOM.append(container, $('.setting-item-deprecation-message'));
 
 		const toDispose = new DisposableStore();
-		const checkbox = new Checkbox({ actionClassName: 'setting-value-checkbox', isChecked: true, title: '', inputActiveOptionBorder: undefined });
+		const checkbox = new Checkbox({ actionClassName: 'codicon-check setting-value-checkbox', isChecked: true, title: '', inputActiveOptionBorder: undefined });
 		controlElement.appendChild(checkbox.domNode);
 		toDispose.add(checkbox);
 		toDispose.add(checkbox.onChange(() => {
@@ -1186,7 +1215,7 @@ export class SettingTreeRenderers {
 	}
 
 	showContextMenu(element: SettingsTreeSettingElement, settingDOMElement: HTMLElement): void {
-		const toolbarElement = settingDOMElement.querySelector('.toolbar-toggle-more');
+		const toolbarElement = settingDOMElement.querySelector('.monaco-toolbar');
 		if (toolbarElement) {
 			this._contextMenuService.showContextMenu({
 				getActions: () => this.settingActions,
@@ -1235,6 +1264,29 @@ function renderValidations(dataElement: SettingsTreeSettingElement, template: IS
 		}
 	}
 	DOM.removeClass(template.containerElement, 'invalid-input');
+}
+
+function renderArrayValidations(
+	dataElement: SettingsTreeSettingElement,
+	template: ISettingListItemTemplate,
+	value: string[] | undefined,
+	calledOnStartup: boolean
+) {
+	DOM.addClass(template.containerElement, 'invalid-input');
+	if (dataElement.setting.validator) {
+		const errMsg = dataElement.setting.validator(value);
+		if (errMsg && errMsg !== '') {
+			DOM.addClass(template.containerElement, 'invalid-input');
+			template.validationErrorMessageElement.innerText = errMsg;
+			const validationError = localize('validationError', "Validation Error.");
+			template.containerElement.setAttribute('aria-label', [dataElement.setting.key, validationError, errMsg].join(' '));
+			if (!calledOnStartup) { ariaAlert(validationError + ' ' + errMsg); }
+			return;
+		} else {
+			template.containerElement.setAttribute('aria-label', dataElement.setting.key);
+			DOM.removeClass(template.containerElement, 'invalid-input');
+		}
+	}
 }
 
 function cleanRenderedMarkdown(element: Node): void {
@@ -1420,7 +1472,7 @@ export class SettingsTree extends ObjectTree<SettingsTreeElement> {
 	) {
 		const treeClass = 'settings-editor-tree';
 
-		super(container,
+		super('SettingsTree', container,
 			new SettingsTreeDelegate(),
 			renderers,
 			{
@@ -1488,27 +1540,27 @@ export class SettingsTree extends ObjectTree<SettingsTreeElement> {
 		this.getHTMLElement().classList.add(treeClass);
 
 		this.disposables.push(attachStyler(themeService, {
-			listActiveSelectionBackground: editorBackground,
+			listActiveSelectionBackground: transparent(Color.white, 0),
 			listActiveSelectionForeground: foreground,
-			listFocusAndSelectionBackground: editorBackground,
+			listFocusAndSelectionBackground: transparent(Color.white, 0),
 			listFocusAndSelectionForeground: foreground,
-			listFocusBackground: editorBackground,
+			listFocusBackground: transparent(Color.white, 0),
 			listFocusForeground: foreground,
 			listHoverForeground: foreground,
-			listHoverBackground: editorBackground,
-			listHoverOutline: editorBackground,
-			listFocusOutline: editorBackground,
-			listInactiveSelectionBackground: editorBackground,
+			listHoverBackground: transparent(Color.white, 0),
+			listHoverOutline: transparent(Color.white, 0),
+			listFocusOutline: transparent(Color.white, 0),
+			listInactiveSelectionBackground: transparent(Color.white, 0),
 			listInactiveSelectionForeground: foreground,
-			listInactiveFocusBackground: editorBackground,
-			listInactiveFocusOutline: editorBackground
+			listInactiveFocusBackground: transparent(Color.white, 0),
+			listInactiveFocusOutline: transparent(Color.white, 0)
 		}, colors => {
 			this.style(colors);
 		}));
 	}
 
-	protected createModel(view: ISpliceable<ITreeNode<SettingsTreeGroupChild>>, options: IObjectTreeOptions<SettingsTreeGroupChild>): ITreeModel<SettingsTreeGroupChild | null, void, SettingsTreeGroupChild | null> {
-		return new NonCollapsibleObjectTreeModel<SettingsTreeGroupChild>(view, options);
+	protected createModel(user: string, view: ISpliceable<ITreeNode<SettingsTreeGroupChild>>, options: IObjectTreeOptions<SettingsTreeGroupChild>): ITreeModel<SettingsTreeGroupChild | null, void, SettingsTreeGroupChild | null> {
+		return new NonCollapsibleObjectTreeModel<SettingsTreeGroupChild>(user, view, options);
 	}
 }
 

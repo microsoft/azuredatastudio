@@ -6,12 +6,10 @@
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 
-import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
-import { RunQueryOnConnectionMode, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { InsightActionContext } from 'sql/workbench/common/actions';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
+import { InsightActionContext } from 'sql/workbench/browser/actions';
+import { openNewQuery } from 'sql/workbench/parts/query/browser/queryActions';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class RunInsightQueryAction extends Action {
 	public static ID = 'runQuery';
@@ -19,25 +17,12 @@ export class RunInsightQueryAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
-		@IObjectExplorerService protected _objectExplorerService: IObjectExplorerService,
-		@IEditorService protected _workbenchEditorService: IEditorService
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super(id, label);
 	}
 
 	public run(context: InsightActionContext): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			TaskUtilities.newQuery(
-				context.profile,
-				this._connectionManagementService,
-				this._queryEditorService,
-				this._objectExplorerService,
-				this._workbenchEditorService,
-				context.insight.query as string,
-				RunQueryOnConnectionMode.executeQuery
-			).then(() => resolve(true), () => resolve(false));
-		});
+		return this.instantiationService.invokeFunction(openNewQuery, context.profile, undefined, RunQueryOnConnectionMode.executeQuery).then(() => true, () => false);
 	}
 }

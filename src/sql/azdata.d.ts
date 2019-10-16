@@ -33,17 +33,13 @@ declare module 'azdata' {
 
 		export function registerMetadataProvider(provider: MetadataProvider): vscode.Disposable;
 
-		export function registerQueryProvider(provider: QueryProvider): vscode.Disposable;
+		export function registerQueryProvider(provider: QueryProvider, isLiveShare?: boolean): vscode.Disposable;
 
 		export function registerAdminServicesProvider(provider: AdminServicesProvider): vscode.Disposable;
 
 		export function registerAgentServicesProvider(provider: AgentServicesProvider): vscode.Disposable;
 
 		export function registerCapabilitiesServiceProvider(provider: CapabilitiesProvider): vscode.Disposable;
-
-		export function registerDacFxServicesProvider(provider: DacFxServicesProvider): vscode.Disposable;
-
-		export function registerSchemaCompareServicesProvider(provider: SchemaCompareServicesProvider): vscode.Disposable;
 
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
@@ -75,13 +71,6 @@ declare module 'azdata' {
 	}
 
 	/**
-	 * Namespace for serialization management global methods
-	 */
-	export namespace serialization {
-		export function registerProvider(provider: SerializationProvider): vscode.Disposable;
-	}
-
-	/**
 	 * Namespace for connection management
 	 */
 	export namespace connection {
@@ -104,7 +93,7 @@ declare module 'azdata' {
 			azureTenantId?: string;
 			options: { [name: string]: any };
 
-			static createFrom(options: any[]): ConnectionProfile;
+			static createFrom(options: Map<string, any>): ConnectionProfile;
 		}
 
 		/**
@@ -759,10 +748,6 @@ declare module 'azdata' {
 		deleteCredential(credentialId: string): Thenable<boolean>;
 	}
 
-	export interface SerializationProvider {
-		handle: number;
-		saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<SaveResultRequestResult>;
-	}
 
 
 	export interface DidChangeLanguageFlavorParams {
@@ -1402,6 +1387,20 @@ declare module 'azdata' {
 		alerts: AgentAlertInfo[];
 	}
 
+	export interface AgentNotebookInfo extends AgentJobInfo {
+		templateId: number;
+		targetDatabase: string;
+		lastRunNotebookError: string;
+		executeDatabase: string;
+	}
+
+	export interface AgentNotebookMaterializedInfo {
+		materializedId: number;
+		targetDatabase: string;
+		materializedName: string;
+		favorite: boolean;
+	}
+
 	export interface AgentJobScheduleInfo {
 		id: number;
 		name: string;
@@ -1502,6 +1501,14 @@ declare module 'azdata' {
 		steps: AgentJobStep[];
 	}
 
+	export interface AgentNotebookHistoryInfo extends AgentJobHistoryInfo {
+		materializedNotebookId: number;
+		materializedNotebookName: string;
+		materializedNotebookPin: boolean;
+		materializedNotebookErrorInfo: string;
+		materializedNotebookDeleted: boolean;
+	}
+
 	export interface AgentProxyInfo {
 		id: number;
 		accountName: string;
@@ -1592,6 +1599,39 @@ declare module 'azdata' {
 		categories: AgentJobCategory[];
 	}
 
+	export interface AgentNotebooksResult extends ResultStatus {
+		notebooks: AgentNotebookInfo[];
+	}
+
+	export interface AgentJobHistoryResult extends ResultStatus {
+		histories: AgentJobHistoryInfo[];
+		schedules: AgentJobScheduleInfo[];
+		alerts: AgentAlertInfo[];
+		steps: AgentJobStepInfo[];
+	}
+
+	export interface AgentNotebookHistoryResult extends ResultStatus {
+		histories: AgentNotebookHistoryInfo[];
+		schedules: AgentJobScheduleInfo[];
+		steps: AgentJobStepInfo[];
+	}
+
+	export interface AgentNotebookMaterializedResult extends ResultStatus {
+		notebookMaterialized: string;
+	}
+
+	export interface AgentNotebookTemplateResult extends ResultStatus {
+		notebookTemplate: string;
+	}
+
+	export interface CreateAgentNotebookResult extends ResultStatus {
+		notebook: AgentNotebookInfo;
+	}
+
+	export interface UpdateAgentNotebookResult extends ResultStatus {
+		notebook: AgentNotebookInfo;
+	}
+
 	export interface CreateAgentJobStepResult extends ResultStatus {
 		step: AgentJobStepInfo;
 	}
@@ -1666,6 +1706,18 @@ declare module 'azdata' {
 		deleteJob(ownerUri: string, jobInfo: AgentJobInfo): Thenable<ResultStatus>;
 		getJobDefaults(ownerUri: string): Thenable<AgentJobDefaultsResult>;
 
+		// Notebook management methods
+		getNotebooks(ownerUri: string): Thenable<AgentNotebooksResult>;
+		getNotebookHistory(ownerUri: string, jobId: string, jobName: string, targetDatabase: string): Thenable<AgentNotebookHistoryResult>;
+		getMaterializedNotebook(ownerUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<AgentNotebookMaterializedResult>;
+		getTemplateNotebook(ownerUri: string, targetDatabase: string, jobId: string): Thenable<AgentNotebookTemplateResult>;
+		createNotebook(ownerUri: string, notebook: AgentNotebookInfo, templateFilePath: string): Thenable<CreateAgentNotebookResult>;
+		deleteNotebook(ownerUri: string, notebook: AgentNotebookInfo): Thenable<ResultStatus>;
+		updateNotebook(ownerUri: string, originialNotebookName: string, notebook: AgentNotebookInfo, templateFilePath: string): Thenable<UpdateAgentNotebookResult>;
+		updateNotebookMaterializedName(ownerUri: string, agentNotebookHistory: AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<ResultStatus>;
+		updateNotebookMaterializedPin(ownerUri: string, agentNotebookHistory: AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<ResultStatus>;
+		deleteMaterializedNotebook(ownerUri: string, agentNotebookHistory: AgentNotebookHistoryInfo, targetDatabase: string): Thenable<ResultStatus>;
+
 		// Job Step management methods
 		createJobStep(ownerUri: string, stepInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
 		updateJobStep(ownerUri: string, originalJobStepName: string, stepInfo: AgentJobStepInfo): Thenable<UpdateAgentJobStepResult>;
@@ -1702,301 +1754,7 @@ declare module 'azdata' {
 	}
 
 	// DacFx interfaces  -----------------------------------------------------------------------
-	export interface DacFxResult extends ResultStatus {
-		operationId: string;
-	}
 
-	export interface GenerateDeployPlanResult extends DacFxResult {
-		report: string;
-	}
-
-	export interface ExportParams {
-		databaseName: string;
-		packageFilePath: string;
-		ownerUri: string;
-		taskExecutionMode: TaskExecutionMode;
-	}
-
-	export interface ImportParams {
-		packageFilePath: string;
-		databaseName: string;
-		ownerUri: string;
-		taskExecutionMode: TaskExecutionMode;
-	}
-
-	export interface ExtractParams {
-		databaseName: string;
-		packageFilePath: string;
-		applicationName: string;
-		applicationVersion: string;
-		ownerUri: string;
-		taskExecutionMode: TaskExecutionMode;
-	}
-
-	export interface DeployParams {
-		packageFilePath: string;
-		databaseName: string;
-		upgradeExisting: boolean;
-		ownerUri: string;
-		taskExecutionMode: TaskExecutionMode;
-	}
-
-	export interface GenerateDeployScriptParams {
-		packageFilePath: string;
-		databaseName: string;
-		ownerUri: string;
-		taskExecutionMode: TaskExecutionMode;
-	}
-
-	export interface GenerateDeployPlan {
-		packageFilePath: string;
-		databaseName: string;
-		ownerUri: string;
-		taskExecutionMode: TaskExecutionMode;
-	}
-
-	export interface DacFxServicesProvider extends DataProvider {
-		exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
-		importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
-		extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
-		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
-		generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
-		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
-	}
-
-	// Schema Compare interfaces  -----------------------------------------------------------------------
-	export interface SchemaCompareResult extends ResultStatus {
-		operationId: string;
-		areEqual: boolean;
-		differences: DiffEntry[];
-	}
-
-	export interface SchemaCompareCompletionResult extends ResultStatus {
-		operationId: string;
-		areEqual: boolean;
-		differences: DiffEntry[];
-	}
-
-	export interface DiffEntry {
-		updateAction: SchemaUpdateAction;
-		differenceType: SchemaDifferenceType;
-		name: string;
-		sourceValue: string[];
-		targetValue: string[];
-		parent: DiffEntry;
-		children: DiffEntry[];
-		sourceScript: string;
-		targetScript: string;
-	}
-
-	export enum SchemaUpdateAction {
-		Delete = 0,
-		Change = 1,
-		Add = 2
-	}
-
-	export enum SchemaDifferenceType {
-		Object = 0,
-		Property = 1
-	}
-	export enum SchemaCompareEndpointType {
-		Database = 0,
-		Dacpac = 1
-	}
-	export interface SchemaCompareEndpointInfo {
-		endpointType: SchemaCompareEndpointType;
-		packageFilePath: string;
-		serverDisplayName: string;
-		serverName: string;
-		databaseName: string;
-		ownerUri: string;
-		connectionDetails: ConnectionInfo;
-	}
-
-	export interface SchemaCompareObjectId {
-		nameParts: string[];
-		sqlObjectType: string;
-	}
-
-	export interface SchemaCompareOptionsResult extends ResultStatus {
-		defaultDeploymentOptions: DeploymentOptions;
-	}
-
-	export interface DeploymentOptions {
-		ignoreTableOptions: boolean;
-		ignoreSemicolonBetweenStatements: boolean;
-		ignoreRouteLifetime: boolean;
-		ignoreRoleMembership: boolean;
-		ignoreQuotedIdentifiers: boolean;
-		ignorePermissions: boolean;
-		ignorePartitionSchemes: boolean;
-		ignoreObjectPlacementOnPartitionScheme: boolean;
-		ignoreNotForReplication: boolean;
-		ignoreLoginSids: boolean;
-		ignoreLockHintsOnIndexes: boolean;
-		ignoreKeywordCasing: boolean;
-		ignoreIndexPadding: boolean;
-		ignoreIndexOptions: boolean;
-		ignoreIncrement: boolean;
-		ignoreIdentitySeed: boolean;
-		ignoreUserSettingsObjects: boolean;
-		ignoreFullTextCatalogFilePath: boolean;
-		ignoreWhitespace: boolean;
-		ignoreWithNocheckOnForeignKeys: boolean;
-		verifyCollationCompatibility: boolean;
-		unmodifiableObjectWarnings: boolean;
-		treatVerificationErrorsAsWarnings: boolean;
-		scriptRefreshModule: boolean;
-		scriptNewConstraintValidation: boolean;
-		scriptFileSize: boolean;
-		scriptDeployStateChecks: boolean;
-		scriptDatabaseOptions: boolean;
-		scriptDatabaseCompatibility: boolean;
-		scriptDatabaseCollation: boolean;
-		runDeploymentPlanExecutors: boolean;
-		registerDataTierApplication: boolean;
-		populateFilesOnFileGroups: boolean;
-		noAlterStatementsToChangeClrTypes: boolean;
-		includeTransactionalScripts: boolean;
-		includeCompositeObjects: boolean;
-		allowUnsafeRowLevelSecurityDataMovement: boolean;
-		ignoreWithNocheckOnCheckConstraints: boolean;
-		ignoreFillFactor: boolean;
-		ignoreFileSize: boolean;
-		ignoreFilegroupPlacement: boolean;
-		doNotAlterReplicatedObjects: boolean;
-		doNotAlterChangeDataCaptureObjects: boolean;
-		disableAndReenableDdlTriggers: boolean;
-		deployDatabaseInSingleUserMode: boolean;
-		createNewDatabase: boolean;
-		compareUsingTargetCollation: boolean;
-		commentOutSetVarDeclarations: boolean;
-		blockWhenDriftDetected: boolean;
-		blockOnPossibleDataLoss: boolean;
-		backupDatabaseBeforeChanges: boolean;
-		allowIncompatiblePlatform: boolean;
-		allowDropBlockingAssemblies: boolean;
-		dropConstraintsNotInSource: boolean;
-		dropDmlTriggersNotInSource: boolean;
-		dropExtendedPropertiesNotInSource: boolean;
-		dropIndexesNotInSource: boolean;
-		ignoreFileAndLogFilePath: boolean;
-		ignoreExtendedProperties: boolean;
-		ignoreDmlTriggerState: boolean;
-		ignoreDmlTriggerOrder: boolean;
-		ignoreDefaultSchema: boolean;
-		ignoreDdlTriggerState: boolean;
-		ignoreDdlTriggerOrder: boolean;
-		ignoreCryptographicProviderFilePath: boolean;
-		verifyDeployment: boolean;
-		ignoreComments: boolean;
-		ignoreColumnCollation: boolean;
-		ignoreAuthorizer: boolean;
-		ignoreAnsiNulls: boolean;
-		generateSmartDefaults: boolean;
-		dropStatisticsNotInSource: boolean;
-		dropRoleMembersNotInSource: boolean;
-		dropPermissionsNotInSource: boolean;
-		dropObjectsNotInSource: boolean;
-		ignoreColumnOrder: boolean;
-		doNotDropObjectTypes: SchemaObjectType[];
-		excludeObjectTypes: SchemaObjectType[];
-	}
-
-	export enum SchemaObjectType {
-		Aggregates = 0,
-		ApplicationRoles = 1,
-		Assemblies = 2,
-		AssemblyFiles = 3,
-		AsymmetricKeys = 4,
-		BrokerPriorities = 5,
-		Certificates = 6,
-		ColumnEncryptionKeys = 7,
-		ColumnMasterKeys = 8,
-		Contracts = 9,
-		DatabaseOptions = 10,
-		DatabaseRoles = 11,
-		DatabaseTriggers = 12,
-		Defaults = 13,
-		ExtendedProperties = 14,
-		ExternalDataSources = 15,
-		ExternalFileFormats = 16,
-		ExternalTables = 17,
-		Filegroups = 18,
-		FileTables = 19,
-		FullTextCatalogs = 20,
-		FullTextStoplists = 21,
-		MessageTypes = 22,
-		PartitionFunctions = 23,
-		PartitionSchemes = 24,
-		Permissions = 25,
-		Queues = 26,
-		RemoteServiceBindings = 27,
-		RoleMembership = 28,
-		Rules = 29,
-		ScalarValuedFunctions = 30,
-		SearchPropertyLists = 31,
-		SecurityPolicies = 32,
-		Sequences = 33,
-		Services = 34,
-		Signatures = 35,
-		StoredProcedures = 36,
-		SymmetricKeys = 37,
-		Synonyms = 38,
-		Tables = 39,
-		TableValuedFunctions = 40,
-		UserDefinedDataTypes = 41,
-		UserDefinedTableTypes = 42,
-		ClrUserDefinedTypes = 43,
-		Users = 44,
-		Views = 45,
-		XmlSchemaCollections = 46,
-		Audits = 47,
-		Credentials = 48,
-		CryptographicProviders = 49,
-		DatabaseAuditSpecifications = 50,
-		DatabaseEncryptionKeys = 51,
-		DatabaseScopedCredentials = 52,
-		Endpoints = 53,
-		ErrorMessages = 54,
-		EventNotifications = 55,
-		EventSessions = 56,
-		LinkedServerLogins = 57,
-		LinkedServers = 58,
-		Logins = 59,
-		MasterKeys = 60,
-		Routes = 61,
-		ServerAuditSpecifications = 62,
-		ServerRoleMembership = 63,
-		ServerRoles = 64,
-		ServerTriggers = 65
-	}
-
-	export interface SchemaCompareObjectId {
-		nameParts: string[];
-		sqlObjectType: string;
-	}
-
-	export interface SchemaCompareOpenScmpResult extends ResultStatus {
-		sourceEndpointInfo: SchemaCompareEndpointInfo;
-		targetEndpointInfo: SchemaCompareEndpointInfo;
-		originalTargetName: string;
-		originalConnectionString: string;
-		deploymentOptions: DeploymentOptions;
-		excludedSourceElements: SchemaCompareObjectId[];
-		excludedTargetElements: SchemaCompareObjectId[];
-	}
-
-	export interface SchemaCompareServicesProvider extends DataProvider {
-		schemaCompare(operationId: string, sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode, deploymentOptions: DeploymentOptions): Thenable<SchemaCompareResult>;
-		schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
-		schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
-		schemaCompareGetDefaultOptions(): Thenable<SchemaCompareOptionsResult>;
-		schemaCompareIncludeExcludeNode(operationId: string, diffEntry: DiffEntry, IncludeRequest: boolean, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
-		schemaCompareOpenScmp(filePath: string): Thenable<SchemaCompareOpenScmpResult>;
-		schemaCompareSaveScmp(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode, deploymentOptions: DeploymentOptions, scmpFilePath: string, excludedSourceObjects: SchemaCompareObjectId[], excludedTargetObjects: SchemaCompareObjectId[]): Thenable<ResultStatus>;
-		schemaCompareCancel(operationId: string): Thenable<ResultStatus>;
-	}
 
 	// Security service interfaces ------------------------------------------------------------------------
 	export interface CredentialInfo {
@@ -2713,6 +2471,7 @@ declare module 'azdata' {
 		editor(): ComponentBuilder<EditorComponent>;
 		diffeditor(): ComponentBuilder<DiffEditorComponent>;
 		text(): ComponentBuilder<TextComponent>;
+		image(): ComponentBuilder<ImageComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
 		tree<T>(): ComponentBuilder<TreeComponent<T>>;
@@ -2833,7 +2592,7 @@ declare module 'azdata' {
 		removeFormItem(formComponent: FormComponent | FormComponentGroup): boolean;
 	}
 
-	export interface Component {
+	export interface Component extends ComponentProperties {
 		readonly id: string;
 
 		/**
@@ -2852,7 +2611,13 @@ declare module 'azdata' {
 		 */
 		updateProperty(key: string, value: any): Thenable<void>;
 
-		enabled: boolean;
+		/**
+		 * Updates the specified CSS Styles and notifies the UI
+		 * @param cssStyles The styles to update
+		 * @returns Thenable that completes once the update has been applied to the UI
+		 */
+		updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void>;
+
 		/**
 		 * Event fired to notify that the component's validity has changed
 		 */
@@ -2956,6 +2721,35 @@ declare module 'azdata' {
 	}
 
 	/**
+	 * Valid values for the align-items CSS property
+	 */
+	export type AlignItemsType = 'normal' | 'stretch' | 'center' | 'start' | 'end' | 'flex-start' | 'flex-end' | 'baseline' | 'first baseline' | 'last baseline' | 'safe center' | 'unsafe center' | 'inherit' | 'initial' | 'unset';
+	/**
+	 * Valid values for the justify-content CSS property
+	 */
+	export type JustifyContentType = 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around' | 'initial' | 'inherit';
+	/**
+	 * Valid values for the align-content CSS property
+	 */
+	export type AlignContentType = 'stretch' | 'center' | 'flex-start' | 'flex-end' | 'space-between' | 'space-around' | 'initial' | 'inherit';
+	/**
+	 * Valid values for flex-wrap CSS property
+	 */
+	export type FlexWrapType = 'nowrap' | 'wrap' | 'wrap-reverse';
+	/**
+	 * Valid values for the text-align CSS property
+	 */
+	export type TextAlignType = 'left' | 'right' | 'center' | 'justify' | 'initial' | 'inherit';
+	/**
+	 * Valid values for the position CSS property
+	 */
+	export type PositionType = 'static' | 'absolute' | 'fixed' | 'relative' | 'sticky' | 'initial' | 'inherit';
+	/**
+	 * Valid values for the display CSS property
+	 */
+	export type DisplayType = 'inline' | 'block' | 'contents' | 'flex' | 'grid' | 'inline-block' | 'inline-flex' | 'inline-grid' | 'inline-table' | 'list-item' | 'run-in' | 'table' | 'table-caption' | ' table-column-group' | 'table-header-group' | 'table-footer-group' | 'table-row-group' | 'table-cell' | 'table-column' | 'table-row' | 'none' | 'initial' | 'inherit' | '';
+
+	/**
 	 * The config for a FlexBox-based container. This supports easy
 	 * addition of content to a container with a flexible layout
 	 * and use of space.
@@ -2970,16 +2764,19 @@ declare module 'azdata' {
 		/**
 		 * Matches the justify-content CSS property.
 		 */
-		justifyContent?: string;
+		justifyContent?: JustifyContentType;
 		/**
 		 * Matches the align-items CSS property.
 		 */
-		alignItems?: string;
+		alignItems?: AlignItemsType;
 		/**
 		 * Matches the align-content CSS property.
 		 */
-		alignContent?: string;
-
+		alignContent?: AlignContentType;
+		/**
+		 *  Matches the flex-wrap CSS property.
+		 */
+		flexWrap?: FlexWrapType;
 		/**
 		 * Container Height
 		 */
@@ -2993,7 +2790,7 @@ declare module 'azdata' {
 		/**
 		 *
 		 */
-		textAlign?: string;
+		textAlign?: TextAlignType;
 
 		/**
 		 * The position CSS property. Empty by default.
@@ -3002,7 +2799,7 @@ declare module 'azdata' {
 		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
 		 * Without this the component will fail to correctly size itself.
 		 */
-		position?: string;
+		position?: PositionType;
 	}
 
 	export interface SplitViewLayout extends FlexLayout {
@@ -3153,11 +2950,11 @@ declare module 'azdata' {
 	 * Properties representing the card component, can be used
 	 * when using ModelBuilder to create the component
 	 */
-	export interface CardProperties extends ComponentWithIcon {
+	export interface CardProperties extends ComponentProperties, ComponentWithIcon {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
-		descriptions?: string[];
+		descriptions?: CardDescriptionItem[];
 		status?: StatusIndicator;
 
 		/**
@@ -3169,6 +2966,13 @@ declare module 'azdata' {
 		 * Card Type, default: Details
 		 */
 		cardType?: CardType;
+	}
+
+	export interface CardDescriptionItem {
+		label: string;
+		value?: string;
+		tooltip?: string;
+		fontWeight?: 'normal' | 'bold';
 	}
 
 	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
@@ -3183,7 +2987,15 @@ declare module 'azdata' {
 		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
 		 * Without this the component will fail to correctly size itself
 		 */
-		position?: string;
+		position?: PositionType;
+		/**
+		 * Whether the component is enabled in the DOM
+		 */
+		enabled?: boolean;
+		/**
+		 * Corresponds to the display CSS property for the element
+		 */
+		display?: DisplayType;
 		/**
 		 * Matches the CSS style key and its available values.
 		 */
@@ -3199,6 +3011,7 @@ declare module 'azdata' {
 	export interface InputBoxProperties extends ComponentProperties {
 		value?: string;
 		ariaLabel?: string;
+		ariaLive?: string;
 		placeHolder?: string;
 		inputType?: InputBoxInputType;
 		required?: boolean;
@@ -3207,6 +3020,11 @@ declare module 'azdata' {
 		columns?: number;
 		min?: number;
 		max?: number;
+		/**
+		 * Whether to stop key event propagation when enter is pressed in the input box. Leaving this as false
+		 * means the event will propagate up to any parents that have handlers (such as validate on Dialogs)
+		 */
+		stopEnterPropagation?: boolean;
 	}
 
 	export interface TableColumn {
@@ -3249,13 +3067,19 @@ declare module 'azdata' {
 		fontSize?: number | string;
 		selectedRows?: number[];
 		forceFitColumns?: ColumnSizingMode;
+		title?: string;
+		ariaRowCount?: number;
+		ariaColumnCount?: number;
+		ariaRole?: string;
+		focused?: boolean;
+		moveFocusOutWithTab?: boolean; //accessibility requirement for tables with no actionable cells
 	}
 
 	export interface FileBrowserTreeProperties extends ComponentProperties {
 		ownerUri: string;
 	}
 
-	export interface CheckBoxProperties {
+	export interface CheckBoxProperties extends ComponentProperties {
 		checked?: boolean;
 		label?: string;
 	}
@@ -3276,12 +3100,18 @@ declare module 'azdata' {
 		label?: string;
 		value?: string;
 		checked?: boolean;
+		focused?: boolean;
 	}
 
-	export interface TextComponentProperties {
+	export interface TextComponentProperties extends ComponentProperties, TitledComponentProperties {
 		value?: string;
 		links?: LinkArea[];
-		CSSStyles?: { [key: string]: string };
+		description?: string;
+		requiredIndicator?: boolean;
+	}
+
+	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIcon {
+
 	}
 
 	export interface LinkArea {
@@ -3289,7 +3119,7 @@ declare module 'azdata' {
 		url: string;
 	}
 
-	export interface HyperlinkComponentProperties extends ComponentProperties {
+	export interface HyperlinkComponentProperties extends ComponentProperties, TitledComponentProperties {
 		label: string;
 		url: string;
 	}
@@ -3299,6 +3129,8 @@ declare module 'azdata' {
 		values?: string[] | CategoryValue[];
 		editable?: boolean;
 		fireOnTextChange?: boolean;
+		ariaLabel?: string;
+		required?: boolean;
 	}
 
 	export interface DeclarativeTableColumn {
@@ -3317,7 +3149,6 @@ declare module 'azdata' {
 	export interface ListBoxProperties {
 		selectedRow?: number;
 		values?: string[];
-
 	}
 
 	export interface WebViewProperties extends ComponentProperties {
@@ -3361,10 +3192,26 @@ declare module 'azdata' {
 	}
 
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
+		/**
+		 * The label for the button
+		 */
 		label?: string;
+		/**
+		 * Whether the button opens the file browser dialog
+		 */
 		isFile?: boolean;
+		/**
+		 * The content of the currently selected file
+		 */
 		fileContent?: string;
+		/**
+		 * The title for the button. This title will show when hovered over
+		 */
 		title?: string;
+		/**
+		 * The accessibility aria label for this component
+		 */
+		ariaLabel?: string;
 	}
 
 	export interface LoadingComponentProperties {
@@ -3389,6 +3236,13 @@ declare module 'azdata' {
 		clickable?: boolean;
 	}
 
+	export interface TitledComponentProperties {
+		/**
+		 * The title for the component. This title will show when hovered over
+		 */
+		title?: string;
+	}
+
 	export interface CardComponent extends Component, CardProperties {
 		onDidActionClick: vscode.Event<ActionDescriptor>;
 		onCardSelectedChanged: vscode.Event<any>;
@@ -3398,32 +3252,39 @@ declare module 'azdata' {
 
 	}
 
-	export interface TextComponent extends Component, ComponentProperties {
-		value: string;
+	export interface TextComponent extends Component, TextComponentProperties {
+		/**
+		 * An event called when the text is clicked
+		 */
+		onDidClick: vscode.Event<any>;
+	}
+
+	export interface ImageComponent extends Component, ImageComponentProperties {
 	}
 
 	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
-		label: string;
-		url: string;
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
 		onTextChanged: vscode.Event<any>;
+		/**
+		 * Event that's fired whenever enter is pressed within the input box
+		 */
+		onEnterKeyPressed: vscode.Event<string>;
 	}
 
 	export interface RadioButtonComponent extends Component, RadioButtonProperties {
+		/**
+		 * An event called when the radio button is clicked
+		 */
 		onDidClick: vscode.Event<any>;
 	}
 
-	export interface CheckBoxComponent extends Component {
-		checked: boolean;
-		label: string;
+	export interface CheckBoxComponent extends Component, CheckBoxProperties {
 		onChanged: vscode.Event<any>;
 	}
 
 	export interface DropDownComponent extends Component, DropDownProperties {
-		value: string | CategoryValue;
-		values: string[] | CategoryValue[];
 		onValueChanged: vscode.Event<any>;
 	}
 
@@ -3438,8 +3299,6 @@ declare module 'azdata' {
 	}
 
 	export interface ListBoxComponent extends Component, ListBoxProperties {
-		selectedRow?: number;
-		values: string[];
 		onRowSelected: vscode.Event<any>;
 	}
 
@@ -3560,19 +3419,6 @@ declare module 'azdata' {
 	}
 
 	export interface ButtonComponent extends Component, ButtonProperties {
-		/**
-		 * The label for the button
-		 */
-		label: string;
-		/**
-		 * The title for the button. This title will show when it hovers
-		 */
-		title: string;
-		/**
-		 * Icon Path for the button.
-		 */
-		iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
-
 		/**
 		 * An event called when the button is clicked
 		 */
@@ -3837,6 +3683,11 @@ declare module 'azdata' {
 			hidden: boolean;
 
 			/**
+			 * Whether the button is focused
+			 */
+			focused?: boolean;
+
+			/**
 			 * Raised when the button is clicked
 			 */
 			readonly onClick: vscode.Event<void>;
@@ -4002,8 +3853,9 @@ declare module 'azdata' {
 	 * Namespace for interacting with query editor
 	*/
 	export namespace queryeditor {
-		export type QueryEvent =
+		export type QueryEventType =
 			| 'queryStart'
+			| 'queryUpdate'
 			| 'queryStop'
 			| 'executionPlan'
 			| 'visualize';
@@ -4016,7 +3868,7 @@ declare module 'azdata' {
 		 * visualize: ResultSetSummary
 		 */
 		export interface QueryEventListener {
-			onQueryEvent(type: QueryEvent, document: queryeditor.QueryDocument, args: ResultSetSummary | string | undefined): void;
+			onQueryEvent(type: QueryEventType, document: queryeditor.QueryDocument, args: ResultSetSummary | string | undefined): void;
 		}
 
 		// new extensibility interfaces
@@ -4031,6 +3883,9 @@ declare module 'azdata' {
 			// tab content is build using the modelview UI builder APIs
 			// probably should rename DialogTab class since it is useful outside dialogs
 			createQueryTab(tab: window.DialogTab): void;
+
+			// connect the query document using the given connection profile
+			connect(connectionProfile: connection.ConnectionProfile): Thenable<void>;
 		}
 
 		/**
@@ -4043,8 +3898,10 @@ declare module 'azdata' {
 		/**
 		 * Run query if it is a query editor and it is already opened.
 		 * @param fileUri file URI for the query editor
+		 * @param options options
+		 * @param runCurrentQuery true: run current query only, false: run all the queries in the file, default is true.
 		 */
-		export function runQuery(fileUri: string, options?: Map<string, string>): void;
+		export function runQuery(fileUri: string, options?: Map<string, string>, runCurrentQuery?: boolean): void;
 
 		/**
 		 * Register a query event listener
@@ -4120,10 +3977,9 @@ declare module 'azdata' {
 		AdminServicesProvider = 'AdminServicesProvider',
 		AgentServicesProvider = 'AgentServicesProvider',
 		CapabilitiesProvider = 'CapabilitiesProvider',
-		DacFxServicesProvider = 'DacFxServicesProvider',
-		SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
-		IconProvider = 'IconProvider'
+		IconProvider = 'IconProvider',
+		SerializationProvider = 'SerializationProvider'
 	}
 
 	export namespace dataprotocol {
@@ -4585,8 +4441,9 @@ declare module 'azdata' {
 			 *
 			 * @param index The position where the new text should be inserted.
 			 * @param value The new text this operation should insert.
+			 * @param collapsed The collapsed state of the new cell. Default value is `false` if not provided.
 			 */
-			insertCell(value: ICellContents, index?: number): void;
+			insertCell(value: ICellContents, index?: number, collapsed?: boolean): void;
 
 			/**
 			 * Delete a certain cell.
@@ -4716,6 +4573,7 @@ declare module 'azdata' {
 		export interface INotebookMetadata {
 			kernelspec: IKernelInfo;
 			language_info?: ILanguageInfo;
+			tags?: string[];
 		}
 
 		export interface IKernelInfo {
@@ -4747,6 +4605,8 @@ declare module 'azdata' {
 			source: string | string[];
 			metadata?: {
 				language?: string;
+				tags?: string[];
+				azdata_cell_guid?: string;
 			};
 			execution_count?: number;
 			outputs?: ICellOutput[];

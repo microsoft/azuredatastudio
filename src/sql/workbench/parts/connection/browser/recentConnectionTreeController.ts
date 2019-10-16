@@ -7,7 +7,7 @@ import { DefaultController, ICancelableEvent } from 'vs/base/parts/tree/browser/
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { ClearSingleRecentConnectionAction } from 'sql/workbench/parts/connection/common/connectionActions';
+import { ClearSingleRecentConnectionAction } from 'sql/workbench/parts/connection/browser/connectionActions';
 import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -84,7 +84,7 @@ export class RecentConnectionTreeController extends DefaultController {
 
 	protected onRightClick(tree: ITree, element: any, eventish: ICancelableEvent, origin: string = 'mouse'): boolean {
 		this.clickcb(element, eventish, origin);
-		this.showContextMenu(tree, element, event);
+		this.showContextMenu(tree, element, eventish);
 		return true;
 	}
 

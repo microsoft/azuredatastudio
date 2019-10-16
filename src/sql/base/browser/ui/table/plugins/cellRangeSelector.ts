@@ -28,6 +28,7 @@ export interface ICellRangeSelectorOptions {
 export interface ICellRangeSelector<T> extends Slick.Plugin<T> {
 	onCellRangeSelected: Slick.Event<Slick.Range>;
 	onBeforeCellRangeSelected: Slick.Event<Slick.Cell>;
+	onAppendCellRangeSelected: Slick.Event<Slick.Range>;
 }
 
 export interface ICellRangeDecorator {
@@ -45,9 +46,9 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 
 	public onBeforeCellRangeSelected = new Slick.Event<Slick.Cell>();
 	public onCellRangeSelected = new Slick.Event<Slick.Range>();
+	public onAppendCellRangeSelected = new Slick.Event<Slick.Range>();
 
 	constructor(private options: ICellRangeSelectorOptions) {
-		require.__$__nodeRequire('slickgrid/plugins/slick.cellrangedecorator');
 
 		this.options = mixin(this.options, defaultOptions, false);
 	}
@@ -138,11 +139,18 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 		if (!dd || !dd.range || !dd.range.start || !dd.range.end) {
 			return;
 		}
-		this.onCellRangeSelected.notify(new Slick.Range(
+
+		let newRange = new Slick.Range(
 			dd.range.start.row,
 			dd.range.start.cell,
 			dd.range.end.row,
 			dd.range.end.cell
-		));
+		);
+
+		if (e.ctrlKey) {
+			this.onAppendCellRangeSelected.notify(newRange);
+		} else {
+			this.onCellRangeSelected.notify(newRange);
+		}
 	}
 }

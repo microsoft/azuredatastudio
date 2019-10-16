@@ -10,17 +10,13 @@ import { Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IAction } from 'vs/base/common/actions';
 
 import * as azdata from 'azdata';
 
 import { entries } from 'sql/base/common/objects';
-import { RestoreFeatureName, BackupFeatureName } from 'sql/workbench/common/actions';
 import { toObject } from 'sql/base/common/map';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { ICapabilitiesService, ProviderFeatures, clientCapabilities } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 const connectionRegistry = Registry.as<IConnectionProviderRegistry>(ConnectionExtensions.ConnectionProviderContributions);
 
@@ -37,7 +33,7 @@ interface CapabilitiesMomento {
  * to discover the DMP capabilities that a DMP provider offers.
  */
 export class CapabilitiesService extends Disposable implements ICapabilitiesService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private _momento: Memento;
 	private _providers = new Map<string, ProviderFeatures>();
@@ -126,11 +122,11 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	/**
 	 * Retrieve a list of registered server capabilities
 	 */
-	public getCapabilities(provider: string): ProviderFeatures {
+	public getCapabilities(provider: string): ProviderFeatures | undefined {
 		return this._providers.get(provider);
 	}
 
-	public getLegacyCapabilities(provider: string): azdata.DataProtocolServerCapabilities {
+	public getLegacyCapabilities(provider: string): azdata.DataProtocolServerCapabilities | undefined {
 		return this._legacyProviders.get(provider);
 	}
 
@@ -150,38 +146,6 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		provider.getServerCapabilities(clientCapabilities).then(serverCapabilities => {
 			this._legacyProviders.set(serverCapabilities.providerName, serverCapabilities);
 		});
-	}
-
-	/**
-	 * Returns true if the feature is available for given connection
-	 * @param featureComponent a component which should have the feature name
-	 * @param connectionManagementInfo connectionManagementInfo
-	 */
-	public isFeatureAvailable(action: IAction, connectionManagementInfo: ConnectionManagementInfo): boolean {
-		let isCloud = connectionManagementInfo && connectionManagementInfo.serverInfo && connectionManagementInfo.serverInfo.isCloud;
-		let isMssql = connectionManagementInfo.connectionProfile.providerName === mssqlProviderName;
-		// TODO: The logic should from capabilities service.
-		if (action) {
-			let featureName: string = action.id;
-			switch (featureName) {
-				case BackupFeatureName:
-					if (isMssql) {
-						return connectionManagementInfo.connectionProfile.databaseName && !isCloud;
-					} else {
-						return !!connectionManagementInfo.connectionProfile.databaseName;
-					}
-				case RestoreFeatureName:
-					if (isMssql) {
-						return !isCloud;
-					} else {
-						return !!connectionManagementInfo.connectionProfile.databaseName;
-					}
-				default:
-					return true;
-			}
-		} else {
-			return true;
-		}
 	}
 
 	private shutdown(): void {

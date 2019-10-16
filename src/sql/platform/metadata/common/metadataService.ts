@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { createDecorator, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import * as azdata from 'azdata';
 
@@ -13,15 +12,15 @@ export const SERVICE_ID = 'metadataService';
 export const IMetadataService = createDecorator<IMetadataService>(SERVICE_ID);
 
 export interface IMetadataService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
-	getMetadata(connectionUri: string): Thenable<azdata.ProviderMetadata>;
+	getMetadata(connectionUri: string): Thenable<azdata.ProviderMetadata | undefined>;
 
 	getDatabaseNames(connectionUri: string): Thenable<string[]>;
 
-	getTableInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[]>;
+	getTableInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[] | undefined>;
 
-	getViewInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[]>;
+	getViewInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[] | undefined>;
 
 	/**
 	 * Register a metadata provider
@@ -31,16 +30,14 @@ export interface IMetadataService {
 
 export class MetadataService implements IMetadataService {
 
-	public _serviceBrand: any;
-
-	private _disposables: IDisposable[] = [];
+	_serviceBrand: undefined;
 
 	private _providers: { [handle: string]: azdata.MetadataProvider; } = Object.create(null);
 
 	constructor(@IConnectionManagementService private _connectionService: IConnectionManagementService) {
 	}
 
-	public getMetadata(connectionUri: string): Thenable<azdata.ProviderMetadata> {
+	public getMetadata(connectionUri: string): Thenable<azdata.ProviderMetadata | undefined> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			let provider = this._providers[providerId];
@@ -64,7 +61,7 @@ export class MetadataService implements IMetadataService {
 		return Promise.resolve([]);
 	}
 
-	public getTableInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[]> {
+	public getTableInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[] | undefined> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			let provider = this._providers[providerId];
@@ -76,7 +73,7 @@ export class MetadataService implements IMetadataService {
 		return Promise.resolve(undefined);
 	}
 
-	public getViewInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[]> {
+	public getViewInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[] | undefined> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			let provider = this._providers[providerId];
@@ -93,9 +90,5 @@ export class MetadataService implements IMetadataService {
 	 */
 	public registerProvider(providerId: string, provider: azdata.MetadataProvider): void {
 		this._providers[providerId] = provider;
-	}
-
-	public dispose(): void {
-		this._disposables = dispose(this._disposables);
 	}
 }

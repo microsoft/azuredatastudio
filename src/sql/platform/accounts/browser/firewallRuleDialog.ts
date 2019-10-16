@@ -15,9 +15,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IWindowsService } from 'vs/platform/windows/common/windows';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
+import { URI } from 'vs/base/common/uri';
 
 import * as azdata from 'azdata';
 import { Button } from 'sql/base/browser/ui/button/button';
@@ -25,11 +25,12 @@ import { Modal } from 'sql/workbench/browser/modal/modal';
 import { FirewallRuleViewModel } from 'sql/platform/accounts/common/firewallRuleViewModel';
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { IAccountPickerService } from 'sql/platform/accounts/common/accountPicker';
+import { IAccountPickerService } from 'sql/platform/accounts/browser/accountPicker';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
 
 // TODO: Make the help link 1) extensible (01/08/2018, https://github.com/Microsoft/azuredatastudio/issues/450)
 // in case that other non-Azure sign in is to be used
@@ -70,10 +71,10 @@ export class FirewallRuleDialog extends Modal {
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IWindowsService private _windowsService: IWindowsService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
-		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
+		@IOpenerService private readonly openerService: IOpenerService
 	) {
 		super(
 			localize('createNewFirewallRule', "Create new firewall rule"),
@@ -125,7 +126,7 @@ export class FirewallRuleDialog extends Modal {
 		this._helpLink.setAttribute('href', firewallHelpUri);
 		this._helpLink.innerHTML += localize('firewallRuleHelpDescription', "Learn more about firewall settings");
 		this._helpLink.onclick = () => {
-			this._windowsService.openExternal(firewallHelpUri);
+			this.openerService.open(URI.parse(firewallHelpUri));
 		};
 
 		// Create account picker with event handling
@@ -278,7 +279,7 @@ export class FirewallRuleDialog extends Modal {
 		}
 	}
 
-	public onAccountSelectionChange(account: azdata.Account): void {
+	public onAccountSelectionChange(account: azdata.Account | undefined): void {
 		this.viewModel.selectedAccount = account;
 		if (account && !account.isStale) {
 			this._createButton.enabled = true;
