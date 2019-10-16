@@ -128,7 +128,7 @@ export class DeployClusterWizardModel extends Model {
 		return targetDeploymentProfile;
 	}
 
-	public getCodeCellContentForNotebook(): string {
+	public getCodeCellContentForNotebook(): string[] {
 		const profile = this.createTargetProfile();
 		const statements: string[] = [];
 		if (this.deploymentTarget === BdcDeploymentType.NewAKS) {
@@ -152,7 +152,7 @@ export class DeployClusterWizardModel extends Model {
 		statements.push(`bdc_json = '${profile.getBdcJson(false)}'`);
 		statements.push(`control_json = '${profile.getControlJson(false)}'`);
 		statements.push(`print('Variables have been set successfully.')`);
-		return statements.join(EOL);
+		return statements.map(line => line + EOL);
 	}
 
 	private escapeForNotebookCodeCell(original: string): string {
