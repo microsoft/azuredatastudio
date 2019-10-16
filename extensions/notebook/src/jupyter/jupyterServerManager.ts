@@ -126,11 +126,12 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 			docDir = path.dirname(this.documentPath);
 		}
 		let parsedPath = path.parse(docDir);
-		let splitDirName: string[] = [];
-		if (docDir && docDir !== '.' && parsedPath) {
-			splitDirName = path.dirname(this.documentPath).split(path.sep);
-		}
 		let userHome = utils.getUserHome();
+		// If you don't match the docDir's casing for drive letters, a 404 will result
+		// when trying to create a new session on Windows
+		if (docDir && docDir[0] !== userHome[0] && docDir[0].toLowerCase() === userHome[0].toLowerCase()) {
+			userHome = docDir[0] + userHome.substr(1);
+		}
 		let relativePathDocDirUserHome = path.relative(docDir, userHome);
 		if (!docDir || docDir === '.' || docDir === parsedPath.root || relativePathDocDirUserHome.includes('..') || relativePathDocDirUserHome === '') {
 			// If the user is using a system version of python, then
@@ -139,6 +140,10 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 			// home folder instead.
 			notebookDir = userHome;
 		} else {
+			let splitDirName: string[] = [];
+			if (docDir && docDir !== '.' && parsedPath) {
+				splitDirName = path.dirname(this.documentPath).split(path.sep);
+			}
 			if (splitDirName.length > 1) {
 				notebookDir = path.join(parsedPath.root, splitDirName[1]);
 			} else {
