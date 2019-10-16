@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IExtensionPointUser, ExtensionsRegistry, ExtensionMessageCollector, ExtensionPoint } from 'vs/workbench/services/extensions/common/extensionsRegistry';
+import { IExtensionPointUser, ExtensionsRegistry} from 'vs/workbench/services/extensions/common/extensionsRegistry';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -12,7 +13,7 @@ import { deepClone } from 'vs/base/common/objects';
 
 import * as azdata from 'azdata';
 import * as resources from 'vs/base/common/resources';
-import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+
 
 export interface ConnectionProviderProperties {
 	providerId: string;
@@ -202,7 +203,6 @@ ExtensionsRegistry.registerExtensionPoint<ConnectionProviderProperties | Connect
 });
 
 function resolveIconPath(extension: IExtensionPointUser<any>): void {
-
 	if (!extension || !extension.value) { return undefined; }
 
 	let toAbsolutePath = (iconPath: any) => {
