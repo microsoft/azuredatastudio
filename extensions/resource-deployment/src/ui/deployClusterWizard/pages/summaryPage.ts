@@ -31,6 +31,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 
 	public onEnter() {
 		this.wizard.saveConfigButton.hidden = false;
+		this.wizard.scriptToNotebookButton.hidden = false;
 		this.formItems.forEach(item => {
 			this.form!.removeFormItem(item);
 		});
@@ -305,6 +306,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 
 	public onLeave() {
 		this.wizard.saveConfigButton.hidden = true;
+		this.wizard.scriptToNotebookButton.hidden = true;
 	}
 
 	private getStorageSettingValue(propertyName: string, defaultValuePropertyName: string): string | undefined {

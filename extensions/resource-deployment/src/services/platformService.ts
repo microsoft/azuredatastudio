@@ -22,6 +22,7 @@ export interface IPlatformService {
 	makeDirectory(path: string): Promise<void>;
 	readTextFile(filePath: string): Promise<string>;
 	runCommand(command: string, options?: CommandOptions): Promise<string>;
+	saveTextFile(content: string, path: string): Promise<void>;
 }
 
 export interface CommandOptions {
@@ -90,5 +91,9 @@ export class PlatformService implements IPlatformService {
 				}
 			});
 		});
+	}
+
+	saveTextFile(content: string, path: string): Promise<void> {
+		return fs.promises.writeFile(path, content, 'utf8');
 	}
 }

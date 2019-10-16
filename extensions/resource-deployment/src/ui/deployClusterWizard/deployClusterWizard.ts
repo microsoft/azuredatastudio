@@ -18,6 +18,7 @@ import { IKubeService } from '../../services/kubeService';
 import { IAzdataService } from '../../services/azdataService';
 import { DeploymentProfilePage } from './pages/deploymentProfilePage';
 import { INotebookService } from '../../services/notebookService';
+import { IPlatformService } from '../../services/platformService';
 import { DeployClusterWizardModel, AuthenticationMode } from './deployClusterWizardModel';
 import * as VariableNames from './constants';
 import * as os from 'os';
@@ -27,6 +28,7 @@ const localize = nls.loadMessageBundle();
 
 export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployClusterWizardModel> {
 	private _saveConfigButton: azdata.window.Button;
+	private _scriptToNotebookButton: azdata.window.Button;
 
 	public get kubeService(): IKubeService {
 		return this._kubeService;
@@ -44,12 +46,20 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 		return this._saveConfigButton;
 	}
 
-	constructor(private wizardInfo: WizardInfo, private _kubeService: IKubeService, private _azdataService: IAzdataService, private _notebookService: INotebookService) {
+	public get scriptToNotebookButton(): azdata.window.Button {
+		return this._scriptToNotebookButton;
+	}
+
+	constructor(private wizardInfo: WizardInfo, private _kubeService: IKubeService, private _azdataService: IAzdataService, private _notebookService: INotebookService, private _platformService: IPlatformService) {
 		super(DeployClusterWizard.getTitle(wizardInfo.type), new DeployClusterWizardModel(wizardInfo.type));
 		this._saveConfigButton = azdata.window.createButton(localize('deployCluster.SaveConfigFiles', "Save config files"), 'left');
 		this._saveConfigButton.hidden = true;
+		this._scriptToNotebookButton = azdata.window.createButton(localize('deployCluster.ScriptToNotebook', 'Script to Notebook'), 'left');
+		this._scriptToNotebookButton.hidden = true;
 		this.addButton(this._saveConfigButton);
+		this.addButton(this._scriptToNotebookButton);
 		this.registerDisposable(this._saveConfigButton.onClick(() => this.saveConfigFiles()));
+		this.registerDisposable(this._scriptToNotebookButton.onClick(() => this.scriptToNotebook()));
 	}
 
 	public get deploymentType(): BdcDeploymentType {
@@ -59,27 +69,68 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 	protected initialize(): void {
 		this.setPages(this.getPages());
 		this.wizardObject.generateScriptButton.hidden = true;
-		this.wizardObject.doneButton.label = localize('deployCluster.ScriptToNotebook', 'Script to Notebook');
+		this.wizardObject.doneButton.label = localize('deployCluster.Deploy', 'Deploy');
 	}
 
 	protected onCancel(): void {
 	}
 
 	protected onOk(): void {
-		process.env[VariableNames.AdminPassword_VariableName] = this.model.getStringValue(VariableNames.AdminPassword_VariableName);
-		if (this.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
-			process.env[VariableNames.DomainServiceAccountPassword_VariableName] = this.model.getStringValue(VariableNames.DomainServiceAccountPassword_VariableName);
-		}
-		this.notebookService.launchNotebook(this.wizardInfo.notebook).then((notebook: azdata.nb.NotebookEditor) => {
-			notebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
-				// 5 is the position after the 'Set variables' cell in the deployment notebooks
-				editBuilder.insertCell({
+		const taskName = localize('resourceDeployment.DeployBDCTask', "Deploy SQL Server Big Data Cluster \"{0}\"", this.model.getStringValue(VariableNames.ClusterName_VariableName));
+		azdata.tasks.startBackgroundOperation({
+			displayName: taskName,
+			description: taskName,
+			isCancelable: false,
+			operation: async op => {
+				if (this.model.deploymentTarget === BdcDeploymentType.NewAKS) {
+					vscode.window.showInformationMessage(localize('resourceDeployment.NewAKSInProgressMessage', "A browser window for logging to Azure will be opened during the SQL Server Big Data Cluster deployment."));
+				}
+				op.updateStatus(azdata.TaskStatus.InProgress);
+				const env: NodeJS.ProcessEnv = {};
+				this.setEnvironmentVariables(env);
+				const notebook = await this.notebookService.getNotebook(this.wizardInfo.azdata_notebook);
+				notebook.cells.splice(3, 0, {
 					cell_type: 'code',
-					source: this.model.getCodeCellContentForNotebook()
-				}, 5);
-			});
-		}, (error) => {
-			vscode.window.showErrorMessage(error);
+					source: this.model.getCodeCellContentForNotebook(),
+					metadata: {},
+					execution_count: 0,
+					outputs: []
+				});
+				const result = await this.notebookService.executeNotebook(notebook, env);
+				if (result.succeeded) {
+					op.updateStatus(azdata.TaskStatus.Succeeded);
+					const connectToMasterSql = localize('resourceDeployment.ConnectToMasterSQLServer', "Connect to Master SQL Server");
+					vscode.window.showInformationMessage(localize('resourceDeployment.DeploymentSucceeded', "Successfully deployed SQL Server Big Data Cluster: {0}", this.model.getStringValue(VariableNames.ClusterName_VariableName)),
+						connectToMasterSql).then(async option => {
+							if (option === connectToMasterSql) {
+								const endpoints = await this.azdataService.getEndpoints(this.model.getStringValue(VariableNames.ClusterName_VariableName)!,
+									this.model.getStringValue(VariableNames.AdminUserName_VariableName)!,
+									this.model.getStringValue(VariableNames.AdminPassword_VariableName)!);
+								const sqlEndpoint = endpoints.find(endpoint => endpoint.name === 'sql-server-master');
+								if (sqlEndpoint) {
+									vscode.commands.executeCommand('azdata.connect', {
+										serverName: sqlEndpoint.endpoint,
+										providerName: 'MSSQL',
+										authenticationType: 'SqlLogin',
+										userName: this.model.getStringValue(VariableNames.AdminUserName_VariableName)!,
+										password: this.model.getStringValue(VariableNames.AdminPassword_VariableName)!
+									});
+								}
+
+							}
+						});
+				} else {
+					op.updateStatus(azdata.TaskStatus.Failed, result.errorMessage);
+					const outputExists = await this._platformService.fileExists(result.outputNotebookPath);
+					if (outputExists) {
+						this.notebookService.launchNotebook(result.outputNotebookPath).then(() => { }, (reason) => {
+							vscode.window.showErrorMessage(localize('resourceDeployment.FailedToOpenNotebook', "Failed to deploy SQL Server Big Data Cluster and an error occured launching the output notebook: {0}. {1}{2}.", result.outputNotebookPath, os.EOL, typeof reason === 'string' ? reason : reason.message));
+						});
+					} else {
+						vscode.window.showErrorMessage(localize('resourceDeployment.DeployFailedNoOutputNotebook', "Failed to deploy SQL Server Big Data Cluster and no output notebook was generated."));
+					}
+				}
+			}
 		});
 	}
 
@@ -142,6 +193,28 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 					level: azdata.window.MessageLevel.Error
 				};
 			}
+		}
+	}
+
+	private scriptToNotebook(): void {
+		this.setEnvironmentVariables(process.env);
+		this.notebookService.launchNotebook(this.wizardInfo.notebook).then((notebook: azdata.nb.NotebookEditor) => {
+			notebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
+				// 5 is the position after the 'Set variables' cell in the deployment notebooks
+				editBuilder.insertCell({
+					cell_type: 'code',
+					source: this.model.getCodeCellContentForNotebook()
+				}, 5);
+			});
+		}, (error) => {
+			vscode.window.showErrorMessage(error);
+		});
+	}
+
+	private setEnvironmentVariables(env: NodeJS.ProcessEnv): void {
+		env[VariableNames.AdminPassword_VariableName] = this.model.getStringValue(VariableNames.AdminPassword_VariableName);
+		if (this.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
+			env[VariableNames.DomainServiceAccountPassword_VariableName] = this.model.getStringValue(VariableNames.DomainServiceAccountPassword_VariableName);
 		}
 	}
 
