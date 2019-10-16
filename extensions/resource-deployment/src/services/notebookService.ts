@@ -57,13 +57,13 @@ export class NotebookService implements INotebookService {
 
 	async executeNotebook(notebook: Notebook, env: NodeJS.ProcessEnv): Promise<NotebookExecutionResult> {
 		const content = JSON.stringify(notebook, undefined, 4);
-		const fileName = 'eploy-bdc.ipynb';
+		const fileName = 'deploy-bdc.ipynb';
 		const workingDirectory = this.platformService.storagePath();
 		const notebookFullPath = path.join(workingDirectory, fileName);
 		const outputFullPath = path.join(workingDirectory, `output-${fileName}`);
 		try {
 			await this.platformService.saveTextFile(content, notebookFullPath);
-			await this.platformService.runCommand(`azdata notebook run --path ${notebookFullPath} --output-path ${workingDirectory} --timeout -1`,
+			await this.platformService.runCommand(`azdata notebook run --path "${notebookFullPath}" --output-path "${workingDirectory}" --timeout -1`,
 				{
 					additionalEnvironmentVariables: env,
 					workingDirectory: workingDirectory

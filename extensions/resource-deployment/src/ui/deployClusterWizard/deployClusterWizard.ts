@@ -82,9 +82,6 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 			description: taskName,
 			isCancelable: false,
 			operation: async op => {
-				if (this.model.deploymentTarget === BdcDeploymentType.NewAKS) {
-					vscode.window.showInformationMessage(localize('resourceDeployment.NewAKSInProgressMessage', "A browser window for logging to Azure will be opened during the SQL Server Big Data Cluster deployment."));
-				}
 				op.updateStatus(azdata.TaskStatus.InProgress);
 				const env: NodeJS.ProcessEnv = {};
 				this.setEnvironmentVariables(env);
