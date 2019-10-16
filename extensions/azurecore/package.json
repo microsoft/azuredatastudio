@@ -107,6 +107,14 @@
 					"dark": "resources/dark/add_to_server_list_inverse.svg",
 					"light": "resources/light/add_to_server_list.svg"
 				}
+      },
+      {
+				"command": "azure.resource.connectarcadiaWorkspace",
+				"title": "%azure.resource.connectarcadiaWorkspace.title%",
+				"icon": {
+					"dark": "resources/dark/add_to_server_list_inverse.svg",
+					"light": "resources/light/add_to_server_list.svg"
+				}
 			}
 		],
 		"dataExplorer": {
@@ -142,6 +150,10 @@
 				{
 					"command": "azure.resource.connectsqldb",
 					"when": "false"
+        },
+        {
+					"command": "azure.resource.connectarcadiaWorkspace",
+					"when": "false"
 				}
 
 			],
@@ -165,7 +177,7 @@
 				},
 				{
 					"command": "azure.resource.refresh",
-					"when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer)$/",
+					"when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer|arcadiaWorkspaceContainer)$/",
 					"group": "inline"
 				},
 				{
@@ -176,6 +188,11 @@
 				{
 					"command": "azure.resource.connectsqldb",
 					"when": "viewItem == azure.resource.itemType.database",
+					"group": "inline"
+        },
+        {
+					"command": "azure.resource.connectarcadiaWorkspace",
+					"when": "viewItem == azure.resource.itemType.arcadiaWorkspace",
 					"group": "inline"
 				}
 			]

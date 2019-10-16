@@ -12,6 +12,8 @@ export enum AzureResourceItemType {
 	database = 'azure.resource.itemType.database',
 	databaseServerContainer = 'azure.resource.itemType.databaseServerContainer',
 	databaseServer = 'azure.resource.itemType.databaseServer',
+	arcadiaWorkspaceContainer = 'azure.resource.itemType.arcadiaWorkspaceContainer',
+	arcadiaWorkspace = 'azure.resource.itemType.arcadiaWorkspace',
 	message = 'azure.resource.itemType.message'
 }
 
