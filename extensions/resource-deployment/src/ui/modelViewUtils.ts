@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DialogInfoBase, FieldType, FieldInfo, SectionInfo, LabelPosition, FontWeight, FontStyle } from '../interfaces';
 import { Model } from './model';
+import { getDateTimeString } from '../utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -289,10 +290,6 @@ function processDateTimeTextField(context: FieldContext): void {
 	input.width = context.fieldInfo.inputWidth;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelPosition);
-}
-
-export function getDateTimeString(): string {
-	return new Date().toISOString().slice(0, 19).replace(/[^0-9]/g, ''); // Take the date time information and only leaving the numbers
 }
 
 function processNumberField(context: FieldContext): void {

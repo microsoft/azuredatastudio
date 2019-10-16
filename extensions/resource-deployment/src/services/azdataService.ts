@@ -11,7 +11,7 @@ interface BdcConfigListOutput {
 	result: string[];
 }
 
-interface BdcEndpoint {
+export interface BdcEndpoint {
 	endpoint: string;
 	name: 'sql-server-master';
 }

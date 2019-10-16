@@ -10,6 +10,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { IPlatformService } from './platformService';
 import { NotebookInfo } from '../interfaces';
+import { getErrorMessage, getDateTimeString } from '../utils';
 const localize = nls.loadMessageBundle();
 
 export interface Notebook {
@@ -26,12 +27,13 @@ export interface NotebookCell {
 
 export interface NotebookExecutionResult {
 	succeeded: boolean;
-	outputNotebookPath: string;
+	outputNotebook?: string;
 	errorMessage?: string;
 }
 
 export interface INotebookService {
 	launchNotebook(notebook: string | NotebookInfo): Thenable<azdata.nb.NotebookEditor>;
+	launchNotebookWithContent(title: string, content: string): Thenable<azdata.nb.NotebookEditor>;
 	getNotebook(notebook: string | NotebookInfo): Promise<Notebook>;
 	executeNotebook(notebook: any, env: NodeJS.ProcessEnv): Promise<NotebookExecutionResult>;
 }
@@ -41,7 +43,7 @@ export class NotebookService implements INotebookService {
 	constructor(private platformService: IPlatformService, private extensionPath: string) { }
 
 	/**
-	 * Copy the notebook to the user's home directory and launch the notebook from there.
+	 * Launch notebook with file path
 	 * @param notebook the path of the notebook
 	 */
 	launchNotebook(notebook: string | NotebookInfo): Thenable<azdata.nb.NotebookEditor> {
@@ -50,6 +52,22 @@ export class NotebookService implements INotebookService {
 		});
 	}
 
+	/**
+	 * Launch notebook with file path
+	 * @param title the title of the notebook
+	 * @param content the notebook content
+	 */
+	launchNotebookWithContent(title: string, content: string): Thenable<azdata.nb.NotebookEditor> {
+		const uri: vscode.Uri = vscode.Uri.parse(`untitled:${title}`);
+		return azdata.nb.showNotebookDocument(uri, {
+			connectionProfile: undefined,
+			preview: false,
+			initialContent: content,
+			initialDirtyState: false
+		});
+	}
+
+
 	async getNotebook(notebook: string | NotebookInfo): Promise<Notebook> {
 		const notebookPath = await this.getNotebookFullPath(notebook);
 		return <Notebook>JSON.parse(await this.platformService.readTextFile(notebookPath));
@@ -57,7 +75,7 @@ export class NotebookService implements INotebookService {
 
 	async executeNotebook(notebook: Notebook, env: NodeJS.ProcessEnv): Promise<NotebookExecutionResult> {
 		const content = JSON.stringify(notebook, undefined, 4);
-		const fileName = 'deploy-bdc.ipynb';
+		const fileName = `nb-${getDateTimeString()}.ipynb`;
 		const workingDirectory = this.platformService.storagePath();
 		const notebookFullPath = path.join(workingDirectory, fileName);
 		const outputFullPath = path.join(workingDirectory, `output-${fileName}`);
@@ -69,16 +87,19 @@ export class NotebookService implements INotebookService {
 					workingDirectory: workingDirectory
 				});
 			return {
-				succeeded: true,
-				outputNotebookPath: outputFullPath
+				succeeded: true
 			};
 		}
 		catch (error) {
+			const outputExists = await this.platformService.fileExists(outputFullPath);
 			return {
 				succeeded: false,
-				outputNotebookPath: outputFullPath,
-				errorMessage: typeof error === 'string' ? error : error.message
+				outputNotebook: outputExists ? await this.platformService.readTextFile(outputFullPath) : undefined,
+				errorMessage: getErrorMessage(error)
 			};
+		} finally {
+			this.platformService.deleteFile(notebookFullPath);
+			this.platformService.deleteFile(outputFullPath);
 		}
 	}
 
