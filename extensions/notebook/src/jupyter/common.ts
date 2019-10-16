@@ -10,6 +10,7 @@ import * as vscode from 'vscode';
 export interface IServerInstance {
 	readonly port: string;
 	readonly uri: vscode.Uri;
+	attachedEditorCount: number;
 	configure(): Promise<void>;
 	start(): Promise<void>;
 	stop(): Promise<void>;

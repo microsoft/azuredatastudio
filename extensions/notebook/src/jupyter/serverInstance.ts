@@ -99,7 +99,7 @@ export class ServerInstanceUtils {
 	}
 }
 
-export class PerNotebookServerInstance implements IServerInstance {
+export class PerDriveServerInstance implements IServerInstance {
 
 	/**
 	 * Root of the jupyter directory structure. Config and data roots will be
@@ -123,16 +123,18 @@ export class PerNotebookServerInstance implements IServerInstance {
 	private _port: string;
 	private _uri: vscode.Uri;
 	private _isStarted: boolean = false;
+	private _isStopping: boolean = false;
 	private utils: ServerInstanceUtils;
 	private childProcess: ChildProcess;
 	private errorHandler: ErrorHandler = new ErrorHandler();
+	private _attachedEditorCount: number = 0;
 
 	constructor(private options: IInstanceOptions, fsUtils?: ServerInstanceUtils) {
 		this.utils = fsUtils || new ServerInstanceUtils();
 	}
 
 	public get isStarted(): boolean {
-		return this._isStarted;
+		return this._isStarted && !this._isStopping;
 	}
 
 	public get port(): string {
@@ -143,16 +145,32 @@ export class PerNotebookServerInstance implements IServerInstance {
 		return this._uri;
 	}
 
+	public get attachedEditorCount(): number {
+		return this._attachedEditorCount;
+	}
+
 	public async configure(): Promise<void> {
 		await this.configureJupyter();
 	}
 
+	public incrementAttachedEditorCount(): void {
+		this._attachedEditorCount++;
+		console.log('current attached editor count: ' + this._attachedEditorCount);
+	}
+
 	public async start(): Promise<void> {
 		await this.startInternal();
+		this.incrementAttachedEditorCount();
 	}
 
 	public async stop(): Promise<void> {
 		try {
+			if (this._attachedEditorCount > 1) {
+				this._attachedEditorCount--;
+				console.log('current attached editor count: ' + this._attachedEditorCount);
+				return;
+			}
+			this._isStopping = true;
 			if (this.baseDir) {
 				let exists = await this.utils.pathExists(this.baseDir);
 				if (exists) {
@@ -168,9 +186,11 @@ export class PerNotebookServerInstance implements IServerInstance {
 			// For now, we don't care as this is non-critical
 			this.notify(this.options.install, localize('serverStopError', 'Error stopping Notebook Server: {0}', utils.getErrorMessage(error)));
 		} finally {
-			this._isStarted = false;
-			this.utils.ensureProcessEnded(this.childProcess);
-			this.handleConnectionClosed();
+			if (this._attachedEditorCount === 0) {
+				this._isStarted = false;
+				this.utils.ensureProcessEnded(this.childProcess);
+				this.handleConnectionClosed();
+			}
 		}
 	}
 

@@ -19,7 +19,7 @@ import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
 
 import { AppContext } from '../common/appContext';
 import { ApiWrapper } from '../common/apiWrapper';
-import { LocalJupyterServerManager } from './jupyterServerManager';
+import { LocalJupyterServerManager, ServerInstanceFactory } from './jupyterServerManager';
 import { NotebookCompletionItemProvider } from '../intellisense/completionItemProvider';
 import { JupyterNotebookProvider } from './jupyterNotebookProvider';
 import { ConfigurePythonDialog } from '../dialog/configurePythonDialog';
@@ -31,6 +31,7 @@ let untitledCounter = 0;
 export class JupyterController implements vscode.Disposable {
 	private _jupyterInstallation: JupyterServerInstallation;
 	private _notebookInstances: IServerInstance[] = [];
+	private _serverInstanceFactory: ServerInstanceFactory = new ServerInstanceFactory();
 
 	private outputChannel: vscode.OutputChannel;
 	private prompter: IPrompter;
@@ -92,7 +93,8 @@ export class JupyterController implements vscode.Disposable {
 			documentPath: documentUri.fsPath,
 			jupyterInstallation: this._jupyterInstallation,
 			extensionContext: this.extensionContext,
-			apiWrapper: this.apiWrapper
+			apiWrapper: this.apiWrapper,
+			factory: this._serverInstanceFactory
 		}));
 		azdata.nb.registerNotebookProvider(notebookProvider);
 		return notebookProvider;
