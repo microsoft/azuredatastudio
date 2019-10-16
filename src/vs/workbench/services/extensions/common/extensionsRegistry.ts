@@ -387,6 +387,7 @@ export interface IExtensionPointDescriptor {
 export class ExtensionsRegistryImpl {
 
 	private readonly _extensionPoints = new Map<string, ExtensionPoint<any>>();
+	private _resolvedUsers = new Map<IExtensionDescription, boolean>();
 
 	public registerExtensionPoint<T>(desc: IExtensionPointDescriptor): IExtensionPoint<T> {
 		if (this._extensionPoints.has(desc.extensionPoint)) {
@@ -399,6 +400,22 @@ export class ExtensionsRegistryImpl {
 		schemaRegistry.registerSchema(schemaId, schema);
 
 		return result;
+	}
+
+	public removeFromResolvedUsers(oldUser: IExtensionPointUser<any>) {
+		this._resolvedUsers.delete(oldUser.description);
+	}
+
+	public clearResolvedUsers() {
+		this._resolvedUsers.clear();
+	}
+
+	public addToResolvedUsers(newUser: IExtensionPointUser<any>) {
+		this._resolvedUsers.set(newUser.description, true);
+	}
+
+	public checkResolvedUsers(thisUser: IExtensionPointUser<any>): boolean {
+		return this._resolvedUsers.has(thisUser.description);
 	}
 
 	public getExtensionPoints(): ExtensionPoint<any>[] {

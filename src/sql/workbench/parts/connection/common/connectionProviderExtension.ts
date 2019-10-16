@@ -166,8 +166,9 @@ ExtensionsRegistry.registerExtensionPoint<ConnectionProviderProperties | Connect
 
 	for (let extension of extensions) {
 		const { value } = extension;
-		//need to figure out when an extension is already registered so to avoid this process altogether.
-		resolveIconPath(extension);
+		if (!ExtensionsRegistry.checkResolvedUsers(extension)) {
+			resolveIconPath(extension);
+		}
 		if (Array.isArray<ConnectionProviderProperties>(value)) {
 			for (let command of value) {
 				handleCommand(command, extension);
@@ -179,19 +180,17 @@ ExtensionsRegistry.registerExtensionPoint<ConnectionProviderProperties | Connect
 });
 
 function resolveIconPath(extension: IExtensionPointUser<any>): void {
+
 	if (!extension || !extension.value) { return undefined; }
 
 	let toAbsolutePath = (iconPath: any) => {
 		if (!iconPath || !baseDir) { return; }
 		if (Array.isArray(iconPath)) {
 			for (let e of iconPath) {
-				//check to make sure if dark and light parts of iconPath are not already registered.
-				if (!URI.isUri(e.path.light) || !URI.isUri(e.path.dark)) {
-					e.path = {
-						light: resources.joinPath(extension.description.extensionLocation, e.path.light),
-						dark: resources.joinPath(extension.description.extensionLocation, e.path.dark)
-					};
-				}
+				e.path = {
+					light: resources.joinPath(extension.description.extensionLocation, e.path.light),
+					dark: resources.joinPath(extension.description.extensionLocation, e.path.dark)
+				};
 			}
 		} else if (typeof iconPath === 'string') {
 			iconPath = {
@@ -199,13 +198,10 @@ function resolveIconPath(extension: IExtensionPointUser<any>): void {
 				dark: resources.joinPath(extension.description.extensionLocation, iconPath)
 			};
 		} else {
-			//check to make sure if dark and light parts of iconPath are not already registered.
-			if (!URI.isUri(iconPath.light) || !URI.isUri(iconPath.dark)) {
-				iconPath = {
-					light: resources.joinPath(extension.description.extensionLocation, iconPath.light),
-					dark: resources.joinPath(extension.description.extensionLocation, iconPath.dark)
-				};
-			}
+			iconPath = {
+				light: resources.joinPath(extension.description.extensionLocation, iconPath.light),
+				dark: resources.joinPath(extension.description.extensionLocation, iconPath.dark)
+			};
 		}
 	};
 
@@ -218,4 +214,5 @@ function resolveIconPath(extension: IExtensionPointUser<any>): void {
 	} else {
 		toAbsolutePath(properties['iconPath']);
 	}
+	ExtensionsRegistry.addToResolvedUsers(extension);
 }
