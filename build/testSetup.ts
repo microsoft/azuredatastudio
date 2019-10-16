@@ -10,7 +10,7 @@ interface IntegrationTestConfig {
 }
 
 const readConfiguration = (async (): Promise<IntegrationTestConfig | void> => {
-	const parseConfigString = ((content): (IntegrationTestConfig | void) => {
+	const parseConfigString = ((content: string): (IntegrationTestConfig | void) => {
 		try {
 			const result = JSON.parse(content);
 			return result as IntegrationTestConfig;
@@ -32,7 +32,7 @@ const readConfiguration = (async (): Promise<IntegrationTestConfig | void> => {
 	// Attempt to read from a config file
 	let testRunPath = process.env['TEST_RUN_LIST_FILE'];
 	if (!testRunPath || testRunPath === '') {
-		testRunPath = path.resolve(__dirname, '..', '..', 'runlist.json');
+		testRunPath = path.resolve(__dirname, '..', 'runlist.json');
 	}
 
 	try {
@@ -53,7 +53,7 @@ const readConfiguration = (async (): Promise<IntegrationTestConfig | void> => {
 		return;
 	}
 
-	const testList = [];
+	const testList: string[] = [];
 	keys.forEach((key) => {
 		const arr = configuration[key];
 		if (arr) {
