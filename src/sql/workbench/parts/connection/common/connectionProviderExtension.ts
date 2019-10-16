@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IExtensionPointUser, ExtensionsRegistry} from 'vs/workbench/services/extensions/common/extensionsRegistry';
+import { IExtensionPointUser, ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
