@@ -5,7 +5,6 @@
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IExtensionPointUser, ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
-import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -20,28 +19,6 @@ export interface ConnectionProviderProperties {
 	displayName: string;
 	connectionOptions: azdata.ConnectionOption[];
 }
-
-class ResolveChecker {
-	private resolvedUsers = new Map<IExtensionDescription, boolean>();
-
-	public removeFromResolvedUsers(oldUser: IExtensionPointUser<any>) {
-		this.resolvedUsers.delete(oldUser.description);
-	}
-
-	public clearResolvedUsers() {
-		this.resolvedUsers.clear();
-	}
-
-	public addToResolvedUsers(newUser: IExtensionPointUser<any>) {
-		this.resolvedUsers.set(newUser.description, true);
-	}
-
-	public checkResolvedUsers(thisUser: IExtensionPointUser<any>): boolean {
-		return this.resolvedUsers.has(thisUser.description);
-	}
-}
-
-let resolver = new ResolveChecker();
 
 export const Extensions = {
 	ConnectionProviderContributions: 'connection.providers'
@@ -181,6 +158,9 @@ const ConnectionProviderContrib: IJSONSchema = {
 	required: ['providerId']
 };
 
+//Map to check if an extension point user has already been used or not
+let resolver = new Set<string>();
+
 ExtensionsRegistry.registerExtensionPoint<ConnectionProviderProperties | ConnectionProviderProperties[]>({ extensionPoint: 'connectionProvider', jsonSchema: ConnectionProviderContrib }).setHandler(extensions => {
 
 	function handleCommand(contrib: ConnectionProviderProperties, extension: IExtensionPointUser<any>) {
@@ -189,7 +169,7 @@ ExtensionsRegistry.registerExtensionPoint<ConnectionProviderProperties | Connect
 
 	for (let extension of extensions) {
 		const { value } = extension;
-		if (!resolver.checkResolvedUsers(extension)) {
+		if (!resolver.has(extension.description.identifier.value)) {
 			resolveIconPath(extension);
 		}
 		if (Array.isArray<ConnectionProviderProperties>(value)) {
@@ -236,5 +216,5 @@ function resolveIconPath(extension: IExtensionPointUser<any>): void {
 	} else {
 		toAbsolutePath(properties['iconPath']);
 	}
-	resolver.addToResolvedUsers(extension);
+	resolver.add(extension.description.identifier.value);
 }
