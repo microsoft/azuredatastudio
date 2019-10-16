@@ -123,9 +123,15 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 					op.updateStatus(azdata.TaskStatus.Failed, result.errorMessage);
 					const outputExists = await this._platformService.fileExists(result.outputNotebookPath);
 					if (outputExists) {
-						this.notebookService.launchNotebook(result.outputNotebookPath).then(() => { }, (reason) => {
-							vscode.window.showErrorMessage(localize('resourceDeployment.FailedToOpenNotebook', "Failed to deploy SQL Server Big Data Cluster and an error occured launching the output notebook: {0}. {1}{2}.", result.outputNotebookPath, os.EOL, typeof reason === 'string' ? reason : reason.message));
-						});
+						const viewErrorDetail = localize('resourceDeployment.ViewErrorDetail', "View error detail");
+						vscode.window.showErrorMessage(localize('resourceDeployment.DeployFailed', "Failed to deploy SQL Server Big Data Cluster \"{0}\".", this.model.getStringValue(VariableNames.ClusterName_VariableName)),
+							viewErrorDetail).then((option) => {
+								if (option === viewErrorDetail) {
+									this.notebookService.launchNotebook(result.outputNotebookPath).then(() => { }, (reason) => {
+										vscode.window.showErrorMessage(localize('resourceDeployment.FailedToOpenNotebook', "An error occured launching the output notebook: {0}. {1}{2}.", result.outputNotebookPath, os.EOL, typeof reason === 'string' ? reason : reason.message));
+									});
+								}
+							});
 					} else {
 						vscode.window.showErrorMessage(localize('resourceDeployment.DeployFailedNoOutputNotebook', "Failed to deploy SQL Server Big Data Cluster and no output notebook was generated."));
 					}
