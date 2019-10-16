@@ -6,9 +6,10 @@
 'use strict';
 
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-
 const localize = nls.loadMessageBundle();
+import * as constants from './constants';
 
 export enum Endpoint {
 	gateway = 'gateway',
@@ -209,4 +210,48 @@ export function getHealthStatusDot(healthStatus?: string): string {
 			// Display status dot for all non-healthy status'
 			return '•';
 	}
+}
+
+
+interface RawEndpoint {
+	serviceName: string;
+	description?: string;
+	endpoint?: string;
+	protocol?: string;
+	ipAddress?: string;
+	port?: number;
+}
+
+export interface IEndpoint {
+	serviceName: string;
+	description: string;
+	endpoint: string;
+	protocol: string;
+}
+
+export function getClusterEndpoints(serverInfo: azdata.ServerInfo): IEndpoint[] {
+	let endpoints: RawEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
+	if (!endpoints || endpoints.length === 0) { return []; }
+
+	return endpoints.map(e => {
+		// If endpoint is missing, we're on CTP bits. All endpoints from the CTP serverInfo should be treated as HTTPS
+		let endpoint = e.endpoint ? e.endpoint : `https://${e.ipAddress}:${e.port}`;
+		let updatedEndpoint: IEndpoint = {
+			serviceName: e.serviceName,
+			description: e.description,
+			endpoint: endpoint,
+			protocol: e.protocol
+		};
+		return updatedEndpoint;
+	});
+}
+
+export function getControllerEndpoint(serverInfo: azdata.ServerInfo): string | undefined {
+	let endpoints = getClusterEndpoints(serverInfo);
+	if (endpoints) {
+		let index = endpoints.findIndex(ep => ep.serviceName.toLowerCase() === constants.controllerEndpointName.toLowerCase());
+		if (index < 0) { return undefined; }
+		return endpoints[index].endpoint;
+	}
+	return undefined;
 }
