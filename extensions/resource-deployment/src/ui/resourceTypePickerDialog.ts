@@ -212,7 +212,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._toolsLoadingComponent.loading = true;
 			this._dialogObject.okButton.enabled = false;
 
-			Promise.all(tools.map(tool => tool.loadInformation())).then(() => {
+			Promise.all(tools.map(tool => tool.loadInformation())).then(async () => {
 				// If the local timestamp does not match the class level timestamp, it means user has changed options, ignore the results
 				if (this.toolRefreshTimestamp !== currentRefreshTimestamp) {
 					return;
@@ -312,7 +312,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				if (this._tools[i].status !== ToolStatus.Installed) {
 					// Update the informational message
 					this._dialogObject.message = {
-						level: azdata.window.MessageLevel.Warning,
+						level: azdata.window.MessageLevel.Information,
 						text: localize('deploymentDialog.InstallingTool', "Required tool '{0}' is being installed now.", this._tools[i].displayName)
 					};
 					await this._tools[i].install(this.UpdateToolsTableData, this);
