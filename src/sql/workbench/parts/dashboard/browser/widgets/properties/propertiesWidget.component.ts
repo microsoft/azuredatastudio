@@ -142,8 +142,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			} else {
 				const flavorArray = providerProperties.flavors.filter((item) => {
 					let conditionResult = true;
-					for (let i = 0; i < item.conditions.length; i++)
-					{
+					for (let i = 0; i < item.conditions.length; i++) {
 						conditionResult = conditionResult && this.getConditionResult(item, item.conditions[i]);
 					}
 					return conditionResult;
@@ -217,8 +216,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		}
 	}
 
-	private getConditionResult(item: FlavorProperties, conditionItem: ConditionProperties): boolean
-	{
+	private getConditionResult(item: FlavorProperties, conditionItem: ConditionProperties): boolean {
 		let condition = this._connection.serverInfo[conditionItem.field];
 
 		// If we need to compare strings, then we should ensure that condition is string
