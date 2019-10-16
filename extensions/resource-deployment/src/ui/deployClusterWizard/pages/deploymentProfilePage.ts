@@ -164,6 +164,9 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 		this.wizard.model.setPropertyValue(VariableNames.ControllerDataStorageClassName_VariableName, selectedProfile.controllerDataStorageClass);
 		this.wizard.model.setPropertyValue(VariableNames.ControllerLogsStorageClassName_VariableName, selectedProfile.controllerLogsStorageClass);
 		this.wizard.model.setPropertyValue(VariableNames.ReadableSecondaryPort_VariableName, selectedProfile.sqlServerReadableSecondaryPort);
+		this.wizard.model.setPropertyValue(VariableNames.DockerRegistry_VariableName, selectedProfile.registry);
+		this.wizard.model.setPropertyValue(VariableNames.DockerRepository_VariableName, selectedProfile.repository);
+		this.wizard.model.setPropertyValue(VariableNames.DockerImageTag_VariableName, selectedProfile.imageTag);
 		this.wizard.model.adAuthSupported = selectedProfile.activeDirectorySupported;
 		this.wizard.model.selectedProfile = selectedProfile;
 	}

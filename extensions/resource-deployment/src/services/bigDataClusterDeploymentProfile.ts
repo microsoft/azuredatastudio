@@ -50,6 +50,30 @@ export class BigDataClusterDeploymentProfile {
 		this._bdcConfig.metadata.name = value;
 	}
 
+	public get registry(): string {
+		return this._controlConfig.spec.docker.registry;
+	}
+
+	public set registry(value: string) {
+		this._controlConfig.spec.docker.registry = value;
+	}
+
+	public get repository(): string {
+		return this._controlConfig.spec.docker.repository;
+	}
+
+	public set repository(value: string) {
+		this._controlConfig.spec.docker.repository = value;
+	}
+
+	public get imageTag(): string {
+		return this._controlConfig.spec.docker.imageTag;
+	}
+
+	public set imageTag(value: string) {
+		this._controlConfig.spec.docker.imageTag = value;
+	}
+
 	public get bdcConfig(): any {
 		return this._bdcConfig;
 	}
