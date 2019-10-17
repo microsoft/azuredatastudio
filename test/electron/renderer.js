@@ -13,7 +13,7 @@ const util = require('util');
 const bootstrap = require('../../src/bootstrap');
 const coverage = require('../coverage');
 
-require('reflect-metadata'); // {{SQL CARBON EDIT}}
+require('../../src/sql/setup'); // {{SQL CARBON EDIT}}
 
 // Disabled custom inspect. See #38847
 if (util.inspect && util.inspect['defaultOptions']) {
