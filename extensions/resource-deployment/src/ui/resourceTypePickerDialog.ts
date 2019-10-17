@@ -5,7 +5,7 @@
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
-import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ToolStatus } from '../interfaces';
+import { AgreementInfo, DeploymentProvider, ITool, ResourceType } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
 import { DialogBase } from './dialogBase';
@@ -27,7 +27,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _agreementContainer!: azdata.DivContainer;
 	private _agreementCheckboxChecked: boolean = false;
 	private _installToolButton: azdata.window.Button;
-
 	private _tools: ITool[] = [];
 
 	constructor(
@@ -226,17 +225,15 @@ export class ResourceTypePickerDialog extends DialogBase {
 					this._toDispose.push(tool.onDidUpdateData((t: ITool) => {
 						this.updateToolsDisplayTableData(t);
 					}));
-					if (tool.status === ToolStatus.NotInstalled && !tool.autoInstallSupported) {
+					if (tool.isNotInstalled && !tool.autoInstallSupported) {
 						messages.push(localize('deploymentDialog.ToolInformation', "{0}: {1}", tool.displayName, tool.homePage));
 						if (tool.statusDescription !== undefined) {
 							console.warn(localize('deploymentDialog.DetailToolStatusDescription', "Additional status information for tool: {0}. {1}", tool.name, tool.statusDescription));
 						}
 					}
 
-					if (tool.status !== ToolStatus.Installed && tool.autoInstallSupported) {
-						autoInstallRequired = true;
-					}
-					return [tool.displayName, tool.description, this.localizedToolStatus(tool.status), tool.version ? tool.fullVersion : ''];
+					autoInstallRequired = tool.autoInstallRequired;
+					return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || ''];
 				});
 
 				this._installToolButton.hidden = !autoInstallRequired;
@@ -260,10 +257,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 			});
 			this._tools = tools;
 		}
-	}
-
-	private localizedToolStatus(status: ToolStatus): string {
-		return localize('deploymentDialog.ToolStatus.' + status, '{0}', status);
 	}
 
 	private createAgreementCheckbox(agreementInfo: AgreementInfo): azdata.FlexContainer {
@@ -298,12 +291,12 @@ export class ResourceTypePickerDialog extends DialogBase {
 	public updateToolsDisplayTableData(tool: ITool) {
 		this._toolsTable.data = this._toolsTable.data.map(rowData => {
 			if (rowData[0] === tool.displayName) {
-				if (tool.status === ToolStatus.NotInstalled || tool.status === ToolStatus.Error) {
-					if (tool.statusDescription !== undefined) {
-						console.warn(localize('deploymentDialog.DetailToolStatusDescription', "Additional status information for tool: {0}. {1}", tool.name, tool.statusDescription));
-					}
-				}
-				return [tool.displayName, tool.description, this.localizedToolStatus(tool.status), tool.version ? tool.fullVersion : ''];
+				// if (tool.status === ToolStatus.NotInstalled || tool.status === ToolStatus.Error) {
+				// 	if (tool.statusDescription !== undefined) {
+				// 		console.warn(localize('deploymentDialog.DetailToolStatusDescription', "Additional status information for tool: {0}. {1}", tool.name, tool.statusDescription));
+				// 	}
+				// }
+				return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || ''];
 			} else {
 				return rowData; //return the row unaltered if it does not correspond to the tool passed in.
 			}
@@ -315,7 +308,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		let i: number = 0;
 		try {
 			for (; i < this._tools.length; i++) {
-				if (this._tools[i].status !== ToolStatus.Installed) {
+				if (this._tools[i].needsInstallation) {
 					// Update the informational message
 					this._dialogObject.message = {
 						level: azdata.window.MessageLevel.Information,

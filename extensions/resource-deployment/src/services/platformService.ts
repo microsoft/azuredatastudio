@@ -122,7 +122,7 @@ export class PlatformService implements IPlatformService {
 		await fs.promises.mkdir(path);
 	}
 
-	public async ensureDirectoryExists(directory: string = this.storagePath()): Promise<void> {
+	async ensureDirectoryExists(directory: string = this.storagePath()): Promise<void> {
 		if (! await this.fileExists(this.storagePath())) {
 			await this.makeDirectory(this.storagePath());
 		}

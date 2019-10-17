@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { SemVer } from 'semver';
+//import { SemVer } from 'semver';
 import * as vscode from 'vscode';
 
 export const NoteBookEnvironmentVariablePrefix = 'AZDATA_NB_VAR_';
@@ -211,9 +211,9 @@ export enum ToolType {
 }
 
 export const enum ToolStatus {
-	NotInstalled = 'Not Installed',
+	NotInstalled = 'NotInstalled',
 	Installed = 'Installed',
-	Installing = 'Installing ...',
+	Installing = 'Installing',
 	Error = 'Error'
 }
 
@@ -222,11 +222,13 @@ export interface ITool {
 	readonly displayName: string;
 	readonly description: string;
 	readonly type: ToolType;
-	readonly version: SemVer | undefined;
 	readonly homePage: string;
-	readonly status: ToolStatus;
+	readonly displayStatus: string;
 	readonly statusDescription: string | undefined;
 	readonly autoInstallSupported: boolean;
+	readonly autoInstallRequired: boolean;
+	readonly isNotInstalled: boolean;
+	readonly needsInstallation: boolean;
 	readonly outputChannelName: string;
 	readonly fullVersion: string | undefined;
 	readonly onDidUpdateData: vscode.Event<ITool>;

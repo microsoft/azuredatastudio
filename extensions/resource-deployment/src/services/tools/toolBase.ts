@@ -11,9 +11,22 @@ import { Command, ITool, OsType, ToolStatus, ToolType } from '../../interfaces';
 import { IPlatformService } from '../platformService';
 
 const localize = nls.loadMessageBundle();
+const toolStatusNotInstalled: string = localize('deploymentDialog.ToolStatus.NotInstalled', 'Not Installed');
+const toolStatusInstalled: string = localize('deploymentDialog.ToolStatus.Installed', 'Installed');
+const toolStatusInstalling: string = localize('deploymentDialog.ToolStatus.NotInstalling', 'Installing ...');
+const toolStatusError: string = localize('deploymentDialog.ToolStatus.Error', 'Error');
+
+const toolStatusLocalized: Map<ToolStatus, string> = new Map<ToolStatus, string>([
+	[ToolStatus.Error, toolStatusError],
+	[ToolStatus.Installed, toolStatusInstalled],
+	[ToolStatus.Installing, toolStatusInstalling],
+	[ToolStatus.NotInstalled, toolStatusNotInstalled]
+]);
 
 export abstract class ToolBase implements ITool {
-	constructor(private _platformService: IPlatformService) { }
+	constructor(private _platformService: IPlatformService) {
+		this._osType = this._platformService.osType();
+	}
 
 	abstract name: string;
 	abstract displayName: string;
@@ -30,7 +43,7 @@ export abstract class ToolBase implements ITool {
 	protected abstract readonly versionCommand: Command;
 
 	protected async getInstallationPath(): Promise<string | undefined> {
-		return await Promise.resolve(undefined);
+		return undefined;
 	}
 
 	protected get installationSearchPaths(): (string | undefined)[] {
@@ -49,8 +62,29 @@ export abstract class ToolBase implements ITool {
 		return this._onDidUpdateData.event;
 	}
 
-	public get status(): ToolStatus {
+	protected get status(): ToolStatus {
 		return this._status;
+	}
+
+	protected set status(value: ToolStatus) {
+		this._status = value;
+		this._onDidUpdateData.fire(this);
+	}
+
+	public get displayStatus(): string {
+		return <string>toolStatusLocalized.get(this._status);
+	}
+
+	public get autoInstallRequired(): boolean {
+		return this.status !== ToolStatus.Installed && this.autoInstallSupported;
+	}
+
+	public get isNotInstalled(): boolean {
+		return this.status === ToolStatus.NotInstalled;
+	}
+
+	public get needsInstallation(): boolean {
+		return this.status !== ToolStatus.Installed;
 	}
 
 	public get storagePath(): string {
@@ -61,8 +95,13 @@ export abstract class ToolBase implements ITool {
 		return this._osType;
 	}
 
-	public get version(): SemVer | undefined {
+	protected get version(): SemVer | undefined {
 		return this._version;
+	}
+
+	protected set version(value: SemVer | undefined) {
+		this._version = value;
+		this._onDidUpdateData.fire(this);
 	}
 
 	public get fullVersion(): string | undefined {
@@ -107,17 +146,15 @@ export abstract class ToolBase implements ITool {
 
 	public async install(): Promise<void> {
 		try {
-			this._status = ToolStatus.Installing;
-			this._onDidUpdateData.fire(this);
-			this._onDidUpdateData.fire(this);
+			this.status = ToolStatus.Installing;
 			await this.installCore();
+			this.status = ToolStatus.Installed;
 			await this.checkAndUpdateVersion();
-			this._onDidUpdateData.fire(this);
+			await this.addInstallationSearchPathsToSystemPath();
 		} catch (error) {
 			const errorMessage = this._platformService.getErrorMessage(error);
 			this._statusDescription = localize('deployCluster.InstallError', "Error installing tool '{0}'.{1}Error: {2}{1}See output channel '{3}' for more details", this.displayName, EOL, errorMessage, this.outputChannelName);
-			this._status = ToolStatus.Error;
-			this._onDidUpdateData.fire(this);
+			this.status = ToolStatus.Error;
 			throw error;
 		}
 	}
@@ -157,14 +194,7 @@ export abstract class ToolBase implements ITool {
 		});
 	}
 	public async loadInformation(): Promise<void> {
-		if (this.status === ToolStatus.Installed) {
-			return Promise.resolve();
-		}
 		if (this.status === ToolStatus.NotInstalled) {
-			this._statusDescription = undefined;
-			this._version = undefined;
-			this._versionOutput = undefined;
-			this._osType = this._platformService.osType();
 			await this.addInstallationSearchPathsToSystemPath();
 			await this.checkAndUpdateVersion();
 		}
@@ -174,7 +204,6 @@ export abstract class ToolBase implements ITool {
 	private _osType: OsType = OsType.others;
 	private _version?: SemVer;
 	private _statusDescription?: string;
-	private _versionOutput?: string;
 
 	private async checkAndUpdateVersion(): Promise<void> {
 		const commandOutput = await this._platformService.runCommand(this.versionCommand.command, {
@@ -183,14 +212,13 @@ export abstract class ToolBase implements ITool {
 		}, false, // sudo?
 			undefined, // commandTitle
 			true);
-		this._versionOutput = commandOutput;
-		this._version = this.getVersionFromOutput(commandOutput);
-		if (this._version) {
-			this._status = ToolStatus.Installed;
+		this.version = this.getVersionFromOutput(commandOutput);
+		if (this.version) {
+			this.status = ToolStatus.Installed;
 		}
 		else {
-			this._status = ToolStatus.NotInstalled;
-			this._statusDescription = localize('deployCluster.GetToolVersionError', "Error retrieving version information.{0}Invalid output received, get version command output: {2} ", EOL, this._versionOutput);
+			this.status = ToolStatus.NotInstalled;
+			this._statusDescription = localize('deployCluster.GetToolVersionError', "Error retrieving version information.{0}Invalid output received, get version command output: {2} ", EOL, commandOutput);
 		}
 	}
 }

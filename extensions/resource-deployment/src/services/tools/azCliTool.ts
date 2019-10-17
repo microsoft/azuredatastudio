@@ -45,9 +45,9 @@ export class AzCliTool extends ToolBase {
 	protected async getInstallationPath(): Promise<string | undefined> {
 		switch (this.osType) {
 			case OsType.linux:
-				return await Promise.resolve(defaultInstallationRoot);
+				return defaultInstallationRoot;
 			default:
-				return await Promise.resolve(win32InstallationRoot);
+				return win32InstallationRoot;
 		}
 	}
 
