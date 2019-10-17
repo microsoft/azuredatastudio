@@ -6,7 +6,7 @@
 import { nb, IConnectionProfile } from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { NotebookRange, INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange, NotebookPosition, NotebookFindMatch } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { NotebookRange, INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange, NotebookFindMatch } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';

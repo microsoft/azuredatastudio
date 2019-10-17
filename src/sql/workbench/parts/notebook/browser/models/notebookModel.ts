@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 
-import { NotebookRange, IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants, NotebookPosition, INotebookContentsEditable, NotebookFindMatch } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { NotebookRange, IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants, NotebookFindMatch } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { nbversion } from 'sql/workbench/parts/notebook/common/models/notebookConstants';
 import * as notebookUtils from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
@@ -34,7 +34,6 @@ import { DecorationsTrees, DidChangeDecorationsEmitter, ModelDecorationOptions, 
 import { IModelDecorationsChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import { PieceTreeTextBufferBuilder } from 'vs/editor/common/model/pieceTreeTextBuffer/pieceTreeTextBufferBuilder';
 import { VSBufferReadableStream, VSBuffer } from 'vs/base/common/buffer';
-import { CharCode } from 'vs/base/common/charCode';
 import { EDITOR_MODEL_DEFAULTS } from 'vs/editor/common/config/editorOptions';
 import * as strings from 'vs/base/common/strings';
 
@@ -1681,6 +1680,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 		return result;
 	}
+
 }
 
 export class NotebookIntervalNode {
