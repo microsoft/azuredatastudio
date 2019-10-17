@@ -289,16 +289,10 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	public updateToolsDisplayTableData(tool: ITool) {
-		this._toolsTable.data = this._toolsTable.data.map(rowData => {
+		this._toolsTable.data.forEach(rowData => {
 			if (rowData[0] === tool.displayName) {
-				// if (tool.status === ToolStatus.NotInstalled || tool.status === ToolStatus.Error) {
-				// 	if (tool.statusDescription !== undefined) {
-				// 		console.warn(localize('deploymentDialog.DetailToolStatusDescription', "Additional status information for tool: {0}. {1}", tool.name, tool.statusDescription));
-				// 	}
-				// }
-				return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || ''];
-			} else {
-				return rowData; //return the row unaltered if it does not correspond to the tool passed in.
+				rowData[2] = tool.displayStatus;
+				rowData[3] = tool.fullVersion || '';
 			}
 		});
 	}

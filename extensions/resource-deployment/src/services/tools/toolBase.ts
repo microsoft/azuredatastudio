@@ -123,7 +123,13 @@ export abstract class ToolBase implements ITool {
 
 	protected async getPip3InstallLocation(packageName: string): Promise<string> {
 		const command = `pip3 show ${packageName}`;
-		const pip3ShowOutput: string = await this._platformService.runCommand(command, /* options */ undefined, /*sudo?*/ false, /*commandString*/ undefined, /*ignoreError*/ true);
+		const pip3ShowOutput: string = await this._platformService.runCommand(
+			command,
+			undefined, /* options */
+			false, /*sudo?*/
+			undefined, /*commandString*/
+			true /*ignoreError*/
+		);
 		const installLocation = /^Location\: (.*)$/gim.exec(pip3ShowOutput);
 		let retValue = installLocation && installLocation[1];
 		if (retValue === undefined || retValue === null) {
@@ -201,15 +207,18 @@ export abstract class ToolBase implements ITool {
 	}
 
 	private _status: ToolStatus = ToolStatus.NotInstalled;
-	private _osType: OsType = OsType.others;
+	private _osType: OsType;
 	private _version?: SemVer;
 	private _statusDescription?: string;
 
 	private async checkAndUpdateVersion(): Promise<void> {
-		const commandOutput = await this._platformService.runCommand(this.versionCommand.command, {
-			workingDirectory: this.versionCommand.workingDirectory,
-			additionalEnvironmentVariables: this.versionCommand.additionalEnvironmentVariables
-		}, false, // sudo?
+		const commandOutput = await this._platformService.runCommand(
+			this.versionCommand.command,
+			{
+				workingDirectory: this.versionCommand.workingDirectory,
+				additionalEnvironmentVariables: this.versionCommand.additionalEnvironmentVariables
+			},
+			false, // sudo?
 			undefined, // commandTitle
 			true);
 		this.version = this.getVersionFromOutput(commandOutput);
