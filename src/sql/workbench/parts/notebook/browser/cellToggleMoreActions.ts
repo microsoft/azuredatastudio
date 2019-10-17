@@ -42,7 +42,7 @@ export class CellToggleMoreActions {
 			instantiationService.createInstance(CollapseCellAction, 'collapseCell', localize('collapseCell', "Collapse Cell"), true),
 			instantiationService.createInstance(CollapseCellAction, 'expandCell', localize('expandCell', "Expand Cell"), false),
 			new Separator(),
-			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', "Clear Output")),
+			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', "Clear Result")),
 			new Separator(),
 			instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', "Delete")),
 		);
