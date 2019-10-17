@@ -171,6 +171,12 @@
 	background: url("FileGroupFile.svg") center center no-repeat;
 }
 
+.vs .icon.filegroupfile_mounted,
+.vs-dark .icon.filegroupfile_mounted,
+.hc-black .icon.filegroupfile_mounted {
+	background: url("FileGroupFile_mounted.svg") center center no-repeat;
+}
+
 .vs .icon.folder,
 .vs-dark .icon.folder,
 .hc-black .icon.folder {
