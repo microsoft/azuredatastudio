@@ -289,8 +289,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	public updateToolsDisplayTableData(tool: ITool) {
-		console.log('TCL: updateToolsDisplayTableData -> tool', JSON.stringify(tool, undefined, '\t'));
-		console.log('TCL: updateToolsDisplayTableData (before update)-> this._toolsTable.data', JSON.stringify(this._toolsTable.data, undefined, '\t'));
 		this._toolsTable.data = this._toolsTable.data.map(rowData => {
 			if (rowData[0] === tool.displayName) {
 				return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || ''];
@@ -298,7 +296,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 				return rowData;
 			}
 		});
-		console.log('TCL: updateToolsDisplayTableData (after update)-> this._toolsTable.data', JSON.stringify(this._toolsTable.data, undefined, '\t'));
 	}
 
 	private async installTools(): Promise<void> {
