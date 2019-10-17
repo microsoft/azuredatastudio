@@ -54,7 +54,7 @@ export default class ContextProvider {
 
 			edition = e.serverInfo.engineEditionId;
 
-			if (edition === Constants.sqlOnDemand) {
+			if (edition === 11) {
 				isSqlOnDemand = true;
 			}
 

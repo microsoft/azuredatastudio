@@ -558,7 +558,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				StepCompletionAction: sqlExtHostTypes.StepCompletionAction,
 				AgentSubSystem: sqlExtHostTypes.AgentSubSystem,
 				ExtensionNodeType: sqlExtHostTypes.ExtensionNodeType,
-				ColumnSizingMode: sqlExtHostTypes.ColumnSizingMode
+				ColumnSizingMode: sqlExtHostTypes.ColumnSizingMode,
+				DatabaseEngineEdition: sqlExtHostTypes.DatabaseEngineEdition
 			};
 		},
 
@@ -923,7 +924,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				TreeComponentItem: sqlExtHostTypes.TreeComponentItem,
 				AzureResource: sqlExtHostTypes.AzureResource,
 				extensions: extensions,
-				TreeItem: sqlExtHostTypes.TreeItem
+				TreeItem: sqlExtHostTypes.TreeItem,
 			};
 		}
 	};

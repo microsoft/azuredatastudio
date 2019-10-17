@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { RawContextKey, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { ServerInfo } from 'azdata';
-import { sqlOnDemand } from 'sql/platform/connection/common/constants';
+import { ServerInfo, DatabaseEngineEdition } from 'azdata';
 
 export class ServerInfoContextKey implements IContextKey<ServerInfo> {
 
@@ -38,7 +37,7 @@ export class ServerInfoContextKey implements IContextKey<ServerInfo> {
 		this._isCloud.set(value && value.isCloud);
 		this._isBigDataCluster.set(value && value.options && value.options['isBigDataCluster']);
 		let engineEditionId = value && value.engineEditionId;
-		this._isSqlOnDemand.set(engineEditionId && engineEditionId === sqlOnDemand);
+		this._isSqlOnDemand.set(engineEditionId && engineEditionId === DatabaseEngineEdition.SqlOnDemand);
 	}
 
 	reset(): void {

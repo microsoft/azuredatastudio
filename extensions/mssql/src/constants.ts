@@ -8,7 +8,6 @@ export const serviceName = 'SQL Tools Service';
 export const providerId = 'MSSQL';
 export const serviceCrashLink = 'https://github.com/Microsoft/vscode-mssql/wiki/SqlToolsService-Known-Issues';
 export const extensionConfigSectionName = 'mssql';
-export const sqlOnDemand: number = 11;
 
 // DATA PROTOCOL VALUES ///////////////////////////////////////////////////////////
 export const mssqlClusterProviderName = 'mssqlCluster';
