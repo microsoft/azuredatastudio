@@ -218,6 +218,7 @@ export const enum ToolStatus {
 }
 
 export interface ITool {
+	isInstalling: any;
 	readonly name: string;
 	readonly displayName: string;
 	readonly description: string;

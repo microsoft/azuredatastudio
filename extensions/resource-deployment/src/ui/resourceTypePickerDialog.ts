@@ -28,6 +28,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _agreementCheckboxChecked: boolean = false;
 	private _installToolButton: azdata.window.Button;
 	private _tools: ITool[] = [];
+	private _cardsContainer!: azdata.FlexContainer;
 
 	constructor(
 		private toolsService: IToolsService,
@@ -61,7 +62,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			const tableWidth = 1126;
 			this._view = view;
 			this.resourceTypeService.getResourceTypes().forEach(resourceType => this.addCard(resourceType));
-			const cardsContainer = view.modelBuilder.flexContainer().withItems(this._resourceTypeCards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row' }).component();
+			this._cardsContainer = view.modelBuilder.flexContainer().withItems(this._resourceTypeCards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row' }).component();
 			this._resourceDescriptionLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this._selectedResourceType ? this._selectedResourceType.description : undefined }).component();
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			this._agreementContainer = view.modelBuilder.divContainer().component();
@@ -94,7 +95,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
-						component: cardsContainer,
+						component: this._cardsContainer,
 						title: ''
 					}, {
 						component: this._resourceDescriptionLabel,
@@ -296,6 +297,13 @@ export class ResourceTypePickerDialog extends DialogBase {
 				return rowData;
 			}
 		});
+		this.enableContainers(!tool.isInstalling); // if installing the disableContainers else enable them
+	}
+
+	private enableContainers(enabled: boolean): void {
+		this._cardsContainer.enabled = enabled;
+		this._agreementContainer.enabled = enabled;
+		this._optionsContainer.enabled = enabled;
 	}
 
 	private async installTools(): Promise<void> {

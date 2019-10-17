@@ -83,6 +83,10 @@ export abstract class ToolBase implements ITool {
 		return this.status === ToolStatus.NotInstalled;
 	}
 
+	public get isInstalling(): boolean {
+		return this.status === ToolStatus.Installing;
+	}
+
 	public get needsInstallation(): boolean {
 		return this.status !== ToolStatus.Installed;
 	}
