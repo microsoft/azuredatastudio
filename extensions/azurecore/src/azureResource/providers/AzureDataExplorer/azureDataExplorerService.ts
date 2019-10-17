@@ -35,17 +35,6 @@ export class AzureResourceAzureDataExplorerService implements IAzureResourceAzur
 			}
 		});
 
-		// TODO: Use ARM calls
-		/*const sqlManagementClient = new SqlManagementClient(credential, subscription.id);
-		const svrs = await sqlManagementClient.servers.list();
-
-		svrs.forEach((svr) => databaseServers.push({
-			name: svr.name,
-			fullName: svr.fullyQualifiedDomainName,
-			loginName: svr.administratorLogin,
-			defaultDatabaseName: 'master'
-		}));*/
-
 		return azureDataExplorers;
 	}
 }

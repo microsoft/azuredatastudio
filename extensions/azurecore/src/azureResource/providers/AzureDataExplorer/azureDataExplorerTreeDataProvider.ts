@@ -61,11 +61,11 @@ export class AzureResourceAzureDataExplorerTreeDataProvider implements azureReso
 				payload: { // TODO: What is the payload for Arcadia
 					id: generateGuid(),
 					connectionName: undefined,
-					serverName: '',
+					serverName: azureDataExplorer.name,
 					databaseName: '',
 					userName: '',
 					password: '',
-					authenticationType: 'SqlLogin',
+					authenticationType: 'AzureMFA',
 					savePassword: true,
 					groupFullName: '',
 					groupId: '',
