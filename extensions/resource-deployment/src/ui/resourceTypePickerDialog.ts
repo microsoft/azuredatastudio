@@ -320,7 +320,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 		} catch (error) {
 			const errorMessage = this._tools[i].statusDescription || this._tools[i].getErrorMessage(error);
 			if (errorMessage) {
-				//this._tools[i].showErrorMessage(errorMessage);
 				// Let the tooltip status show the errorMessage just shown so that last status is visible even after showError dialogue has been dismissed.
 				this._dialogObject.message = {
 					level: azdata.window.MessageLevel.Error,
