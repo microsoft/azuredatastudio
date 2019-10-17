@@ -29,7 +29,6 @@ if (context.RunTest) {
 			await (new NotebookTester()).cleanup(this.currentTest.title);
 		});
 
-		// This test needs to be re-enabled once the SqlClient driver has been updated
 		test('Sql NB test', async function () {
 			await (new NotebookTester()).sqlNbTest(this.test.title);
 		});
