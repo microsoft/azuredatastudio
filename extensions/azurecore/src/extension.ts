@@ -17,8 +17,8 @@ import { AzureResourceDatabaseServerProvider } from './azureResource/providers/d
 import { AzureResourceDatabaseServerService } from './azureResource/providers/databaseServer/databaseServerService';
 import { AzureResourceDatabaseProvider } from './azureResource/providers/database/databaseProvider';
 import { AzureResourceDatabaseService } from './azureResource/providers/database/databaseService';
-import { AzureResourceArcadiaWorkspaceProvider } from './azureResource/providers/arcadiaWorkspace/arcadiaWorkspaceProvider';
-import { AzureResourceArcadiaWorkspaceService } from './azureResource/providers/arcadiaWorkspace/arcadiaWorkspaceService';
+import { AzureResourceAzureDataExplorerProvider } from './azureResource/providers/AzureDataExplorer/azureDataExplorerProvider';
+import { AzureResourceAzureDataExplorerService } from './azureResource/providers/AzureDataExplorer/azureDataExplorerService';
 import { AzureResourceService } from './azureResource/resourceService';
 import { IAzureResourceCacheService, IAzureResourceAccountService, IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureResourceTenantService } from './azureResource/interfaces';
 import { AzureResourceServiceNames } from './azureResource/constants';
@@ -29,7 +29,7 @@ import { AzureResourceCacheService } from './azureResource/services/cacheService
 import { AzureResourceTenantService } from './azureResource/services/tenantService';
 import { registerAzureResourceCommands } from './azureResource/commands';
 import { registerAzureResourceDatabaseServerCommands } from './azureResource/providers/databaseServer/commands';
-import { registerAzureResourceArcadiaWorkspaceCommands } from './azureResource/providers/arcadiaWorkspace/commands';
+import { registerAzureResourceAzureDataExplorerCommands } from './azureResource/providers/AzureDataExplorer/commands';
 import { registerAzureResourceDatabaseCommands } from './azureResource/providers/database/commands';
 import { AzureResourceTreeProvider } from './azureResource/tree/treeProvider';
 
@@ -80,7 +80,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			return [
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), apiWrapper, extensionContext),
 				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext),
-				new AzureResourceArcadiaWorkspaceProvider(new AzureResourceArcadiaWorkspaceService(), apiWrapper, extensionContext),
+				new AzureResourceAzureDataExplorerProvider(new AzureResourceAzureDataExplorerService(), apiWrapper, extensionContext),
 			];
 		}
 	};
@@ -126,5 +126,5 @@ function registerCommands(appContext: AppContext, azureResourceTree: AzureResour
 
 	registerAzureResourceDatabaseCommands(appContext);
 
-	registerAzureResourceArcadiaWorkspaceCommands(appContext);
+	registerAzureResourceAzureDataExplorerCommands(appContext);
 }

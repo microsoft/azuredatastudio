@@ -6,7 +6,7 @@
 'use strict';
 
 // TODO: Just use Resource imported from azure-arm-resource
-export interface AzureResourceArcadiaWorkspace {
+export interface AzureResourceAzureDataExplorer {
 	id: string;
 	name: string;
 	type: string;

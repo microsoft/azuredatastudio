@@ -10,24 +10,24 @@ import { ServiceClientCredentials } from 'ms-rest';
 //import { SqlManagementClient } from 'azure-arm-sql';
 
 import { azureResource } from '../../azure-resource';
-import { IAzureResourceArcadiaWorkspaceService } from './interfaces';
-import { AzureResourceArcadiaWorkspace } from './models';
+import { IAzureResourceAzureDataExplorerService } from './interfaces';
+import { AzureResourceAzureDataExplorer } from './models';
 import { ResourceManagementClient } from 'azure-arm-resource';
 
 let resourceTypeFilter: string[] = [
-	"Microsoft.ProjectArcadia/workspaces"
+	"Microsoft.Kusto/clusters"
 ];
 
-export class AzureResourceArcadiaWorkspaceService implements IAzureResourceArcadiaWorkspaceService {
-	public async getArcadiaWorkspaces(subscription: azureResource.AzureResourceSubscription, credential: ServiceClientCredentials): Promise<AzureResourceArcadiaWorkspace[]> {
-		const arcadiaWorkspaces: AzureResourceArcadiaWorkspace[] = [];
+export class AzureResourceAzureDataExplorerService implements IAzureResourceAzureDataExplorerService {
+	public async getAzureDataExplorers(subscription: azureResource.AzureResourceSubscription, credential: ServiceClientCredentials): Promise<AzureResourceAzureDataExplorer[]> {
+		const azureDataExplorers: AzureResourceAzureDataExplorer[] = [];
 
 		const resClient = new ResourceManagementClient.ResourceManagementClient(credential, subscription.id);
 		const resources = await resClient.resources.list();
 		resources.forEach((resource) => {
 			if(resource.type === resourceTypeFilter[0])
 			{
-				arcadiaWorkspaces.push({
+				azureDataExplorers.push({
 				id: resource.id,
 				name: resource.name,
 				type:resource.type,
@@ -46,6 +46,6 @@ export class AzureResourceArcadiaWorkspaceService implements IAzureResourceArcad
 			defaultDatabaseName: 'master'
 		}));*/
 
-		return arcadiaWorkspaces;
+		return azureDataExplorers;
 	}
 }

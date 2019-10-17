@@ -11,10 +11,10 @@ import { AppContext } from '../../../appContext';
 import { TreeNode } from '../../treeNode';
 import { generateGuid } from '../../utils';
 import { AzureResourceItemType } from '../../constants';
-import { IAzureResourceArcadiaWorkspaceNode } from './interfaces';
+import { IAzureResourceAzureDataExplorerNode } from './interfaces';
 import { AzureResourceResourceTreeNode } from '../../resourceTreeNode';
 
-export function registerAzureResourceArcadiaWorkspaceCommands(appContext: AppContext): void {
+export function registerAzureResourceAzureDataExplorerCommands(appContext: AppContext): void {
 	appContext.apiWrapper.registerCommand('azure.resource.connectarcadiaworkspace', async (node?: TreeNode) => {
 		if (!node) {
 			return;
@@ -26,15 +26,15 @@ export function registerAzureResourceArcadiaWorkspaceCommands(appContext: AppCon
 		}
 
 		const resourceNode = (node as AzureResourceResourceTreeNode).resourceNodeWithProviderId.resourceNode;
-		const arcadiaWorkspace = (resourceNode as IAzureResourceArcadiaWorkspaceNode).arcadiaWorkspace;
+		const azureDataExplorer = (resourceNode as IAzureResourceAzureDataExplorerNode).azureDataExplorer;
 
-		// TODO: Should the below be different for Arcadia Workspaces
+		// TODO: Should the below be different for Azure Data Explorers
 		let connectionProfile: IConnectionProfile = {
 			id: generateGuid(),
 			connectionName: undefined,
-			serverName: arcadiaWorkspace.fullName,
-			databaseName: arcadiaWorkspace.defaultDatabaseName,
-			userName: arcadiaWorkspace.loginName,
+			serverName: azureDataExplorer.fullName,
+			databaseName: azureDataExplorer.defaultDatabaseName,
+			userName: azureDataExplorer.loginName,
 			password: '',
 			authenticationType: 'SqlLogin',
 			savePassword: true,

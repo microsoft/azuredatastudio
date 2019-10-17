@@ -9,29 +9,29 @@ import { ExtensionContext } from 'vscode';
 import { ApiWrapper } from '../../../apiWrapper';
 
 import { azureResource } from '../../azure-resource';
-import { IAzureResourceArcadiaWorkspaceService } from './interfaces';
-import { AzureResourceArcadiaWorkspaceTreeDataProvider } from './arcadiaWorkspaceTreeDataProvider';
+import { IAzureResourceAzureDataExplorerService } from './interfaces';
+import { AzureResourceAzureDataExplorerTreeDataProvider } from './azureDataExplorerTreeDataProvider';
 
-export class AzureResourceArcadiaWorkspaceProvider implements azureResource.IAzureResourceProvider {
+export class AzureResourceAzureDataExplorerProvider implements azureResource.IAzureResourceProvider {
 	public constructor(
-		arcadiaWorkspaceService: IAzureResourceArcadiaWorkspaceService,
+		azureDataExplorerService: IAzureResourceAzureDataExplorerService,
 		apiWrapper: ApiWrapper,
 		extensionContext: ExtensionContext
 	) {
-		this._arcadiaWorkspaceService = arcadiaWorkspaceService;
+		this._azureDataExplorerService = azureDataExplorerService;
 		this._apiWrapper = apiWrapper;
 		this._extensionContext = extensionContext;
 	}
 
 	public getTreeDataProvider(): azureResource.IAzureResourceTreeDataProvider {
-		return new AzureResourceArcadiaWorkspaceTreeDataProvider(this._arcadiaWorkspaceService, this._apiWrapper, this._extensionContext);
+		return new AzureResourceAzureDataExplorerTreeDataProvider(this._azureDataExplorerService, this._apiWrapper, this._extensionContext);
 	}
 
 	public get providerId(): string {
-		return 'azure.resource.providers.arcadiaWorkspace';
+		return 'azure.resource.providers.azureDataExplorer';
 	}
 
-	private _arcadiaWorkspaceService: IAzureResourceArcadiaWorkspaceService = undefined;
+	private _azureDataExplorerService: IAzureResourceAzureDataExplorerService = undefined;
 	private _apiWrapper: ApiWrapper = undefined;
 	private _extensionContext: ExtensionContext = undefined;
 }

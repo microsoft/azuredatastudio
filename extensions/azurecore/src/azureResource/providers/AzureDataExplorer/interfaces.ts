@@ -8,12 +8,12 @@
 import { ServiceClientCredentials } from 'ms-rest';
 
 import { azureResource } from '../../azure-resource';
-import { AzureResourceArcadiaWorkspace } from './models';
+import { AzureResourceAzureDataExplorer } from './models';
 
-export interface IAzureResourceArcadiaWorkspaceService {
-	getArcadiaWorkspaces(subscription: azureResource.AzureResourceSubscription, credentials: ServiceClientCredentials): Promise<AzureResourceArcadiaWorkspace[]>;
+export interface IAzureResourceAzureDataExplorerService {
+	getAzureDataExplorers(subscription: azureResource.AzureResourceSubscription, credentials: ServiceClientCredentials): Promise<AzureResourceAzureDataExplorer[]>;
 }
 
-export interface IAzureResourceArcadiaWorkspaceNode extends azureResource.IAzureResourceNode {
-	readonly arcadiaWorkspace: AzureResourceArcadiaWorkspace;
+export interface IAzureResourceAzureDataExplorerNode extends azureResource.IAzureResourceNode {
+	readonly azureDataExplorer: AzureResourceAzureDataExplorer;
 }

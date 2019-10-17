@@ -12,19 +12,19 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { azureResource } from '../../azure-resource';
-import { IAzureResourceArcadiaWorkspaceService, IAzureResourceArcadiaWorkspaceNode } from './interfaces';
-import { AzureResourceArcadiaWorkspace } from './models';
+import { IAzureResourceAzureDataExplorerService, IAzureResourceAzureDataExplorerNode } from './interfaces';
+import { AzureResourceAzureDataExplorer } from './models';
 import { AzureResourceItemType } from '../../constants';
 import { ApiWrapper } from '../../../apiWrapper';
 import { generateGuid } from '../../utils';
 
-export class AzureResourceArcadiaWorkspaceTreeDataProvider implements azureResource.IAzureResourceTreeDataProvider {
+export class AzureResourceAzureDataExplorerTreeDataProvider implements azureResource.IAzureResourceTreeDataProvider {
 	public constructor(
-		arcadiaWorkspaceService: IAzureResourceArcadiaWorkspaceService,
+		azureDataExplorerService: IAzureResourceAzureDataExplorerService,
 		apiWrapper: ApiWrapper,
 		extensionContext: ExtensionContext
 	) {
-		this._arcadiaWorkspaceService = arcadiaWorkspaceService;
+		this._azureDataExplorerService = azureDataExplorerService;
 		this._apiWrapper = apiWrapper;
 		this._extensionContext = extensionContext;
 	}
@@ -41,23 +41,23 @@ export class AzureResourceArcadiaWorkspaceTreeDataProvider implements azureResou
 		const tokens = await this._apiWrapper.getSecurityToken(element.account, AzureResource.ResourceManagement);
 		const credential = new TokenCredentials(tokens[element.tenantId].token, tokens[element.tenantId].tokenType);
 
-		const arcadiaWorkspaces: AzureResourceArcadiaWorkspace[] = (await this._arcadiaWorkspaceService.getArcadiaWorkspaces(element.subscription, credential)) || <AzureResourceArcadiaWorkspace[]>[];
+		const azureDataExplorers: AzureResourceAzureDataExplorer[] = (await this._azureDataExplorerService.getAzureDataExplorers(element.subscription, credential)) || <AzureResourceAzureDataExplorer[]>[];
 
-		return arcadiaWorkspaces.map((arcadiaWorkspace) => <IAzureResourceArcadiaWorkspaceNode>{
+		return azureDataExplorers.map((azureDataExplorer) => <IAzureResourceAzureDataExplorerNode>{
 			account: element.account,
 			subscription: element.subscription,
 			tenantId: element.tenantId,
-			arcadiaWorkspace: arcadiaWorkspace,
+			azureDataExplorer: azureDataExplorer,
 			treeItem: {
-				id: `arcadiaWorkspace_${arcadiaWorkspace.name}`,
-				label: arcadiaWorkspace.name,
+				id: `azureDataExplorer_${azureDataExplorer.name}`,
+				label: azureDataExplorer.name,
 				iconPath: {
 					// TODO: Need new icons for Arcadia workspaces.
 					dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
 					light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
 				},
 				collapsibleState: TreeItemCollapsibleState.Collapsed,
-				contextValue: AzureResourceItemType.arcadiaWorkspace,
+				contextValue: AzureResourceItemType.azureDataExplorer,
 				payload: { // TODO: What is the payload for Arcadia
 					id: generateGuid(),
 					connectionName: undefined,
@@ -85,22 +85,22 @@ export class AzureResourceArcadiaWorkspaceTreeDataProvider implements azureResou
 			subscription: undefined,
 			tenantId: undefined,
 			treeItem: {
-				id: AzureResourceArcadiaWorkspaceTreeDataProvider.containerId,
-				label: AzureResourceArcadiaWorkspaceTreeDataProvider.containerLabel,
+				id: AzureResourceAzureDataExplorerTreeDataProvider.containerId,
+				label: AzureResourceAzureDataExplorerTreeDataProvider.containerLabel,
 				iconPath: {
 					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
 					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
 				},
 				collapsibleState: TreeItemCollapsibleState.Collapsed,
-				contextValue: AzureResourceItemType.arcadiaWorkspaceContainer
+				contextValue: AzureResourceItemType.azureDataExplorerContainer
 			}
 		};
 	}
 
-	private _arcadiaWorkspaceService: IAzureResourceArcadiaWorkspaceService = undefined;
+	private _azureDataExplorerService: IAzureResourceAzureDataExplorerService = undefined;
 	private _apiWrapper: ApiWrapper = undefined;
 	private _extensionContext: ExtensionContext = undefined;
 
-	private static readonly containerId = 'azure.resource.providers.arcadiaWorkspace.treeDataProvider.arcadiaWorkspaceContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.arcadiaWorkspace.treeDataProvider.arcadiaWorkspaceContainerLabel', 'Arcadia Workspaces');
+	private static readonly containerId = 'azure.resource.providers.azureDataExplorer.treeDataProvider.azureDataExplorerContainer';
+	private static readonly containerLabel = localize('azure.resource.providers.azureDataExplorer.treeDataProvider.azureDataExplorerContainerLabel', 'Azure Data Explorers');
 }

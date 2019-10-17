@@ -109,8 +109,8 @@
 				}
       },
       {
-				"command": "azure.resource.connectarcadiaWorkspace",
-				"title": "%azure.resource.connectarcadiaWorkspace.title%",
+				"command": "azure.resource.connectazureDataExplorer",
+				"title": "%azure.resource.connectazureDataExplorer.title%",
 				"icon": {
 					"dark": "resources/dark/add_to_server_list_inverse.svg",
 					"light": "resources/light/add_to_server_list.svg"
@@ -152,7 +152,7 @@
 					"when": "false"
         },
         {
-					"command": "azure.resource.connectarcadiaWorkspace",
+					"command": "azure.resource.connectazureDataExplorer",
 					"when": "false"
 				}
 
@@ -177,7 +177,7 @@
 				},
 				{
 					"command": "azure.resource.refresh",
-					"when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer|arcadiaWorkspaceContainer)$/",
+					"when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer|azureDataExplorerContainer)$/",
 					"group": "inline"
 				},
 				{
@@ -191,8 +191,8 @@
 					"group": "inline"
         },
         {
-					"command": "azure.resource.connectarcadiaWorkspace",
-					"when": "viewItem == azure.resource.itemType.arcadiaWorkspace",
+					"command": "azure.resource.connectazureDataExplorer",
+					"when": "viewItem == azure.resource.itemType.azureDataExplorer",
 					"group": "inline"
 				}
 			]
