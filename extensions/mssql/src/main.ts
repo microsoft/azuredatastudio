@@ -31,7 +31,6 @@ import { SqlToolsServer } from './sqlToolsServer';
 import { promises as fs } from 'fs';
 import { IconPathHelper } from './iconHelper';
 import * as nls from 'vscode-nls';
-import { TextDocument } from 'vscode-languageclient';
 
 const localize = nls.loadMessageBundle();
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
