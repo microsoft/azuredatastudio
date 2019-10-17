@@ -205,14 +205,15 @@ export class ResourceTypePickerDialog extends DialogBase {
 		if (toolRequirements.length === 0) {
 			this._dialogObject.okButton.enabled = true;
 			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
+			this._tools = [];
 		} else {
-			const tools = toolRequirements.map(toolReq => {
+			this._tools = toolRequirements.map(toolReq => {
 				return this.toolsService.getToolByName(toolReq.name)!;
 			});
 			this._toolsLoadingComponent.loading = true;
 			this._dialogObject.okButton.enabled = false;
 
-			Promise.all(tools.map(tool => tool.loadInformation())).then(async () => {
+			Promise.all(this._tools.map(tool => tool.loadInformation())).then(async () => {
 				// If the local timestamp does not match the class level timestamp, it means user has changed options, ignore the results
 				if (this.toolRefreshTimestamp !== currentRefreshTimestamp) {
 					return;
@@ -255,7 +256,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 				}
 				this._toolsLoadingComponent.loading = false;
 			});
-			this._tools = tools;
 		}
 	}
 
@@ -289,12 +289,16 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	public updateToolsDisplayTableData(tool: ITool) {
-		this._toolsTable.data.forEach(rowData => {
+		console.log('TCL: updateToolsDisplayTableData -> tool', JSON.stringify(tool, undefined, '\t'));
+		console.log('TCL: updateToolsDisplayTableData (before update)-> this._toolsTable.data', JSON.stringify(this._toolsTable.data, undefined, '\t'));
+		this._toolsTable.data = this._toolsTable.data.map(rowData => {
 			if (rowData[0] === tool.displayName) {
-				rowData[2] = tool.displayStatus;
-				rowData[3] = tool.fullVersion || '';
+				return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || ''];
+			} else {
+				return rowData;
 			}
 		});
+		console.log('TCL: updateToolsDisplayTableData (after update)-> this._toolsTable.data', JSON.stringify(this._toolsTable.data, undefined, '\t'));
 	}
 
 	private async installTools(): Promise<void> {

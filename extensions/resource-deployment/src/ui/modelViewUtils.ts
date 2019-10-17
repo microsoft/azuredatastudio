@@ -425,7 +425,7 @@ export function setModelValues(inputComponents: InputComponents, model: Model): 
 				value = inputValue.name;
 			}
 		} else {
-			throw new Error(`Unknown input type with ID ${input.id}`);
+			throw new Error(`${localize('modelViewUtils.setModelValues.Unknown.input.id', 'Unknown input type with ID')} ${input.id}`);
 		}
 
 		model.setPropertyValue(key, value);

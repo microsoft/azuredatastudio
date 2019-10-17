@@ -34,7 +34,7 @@ export interface IPlatformService {
 	makeDirectory(path: string): Promise<void>;
 	ensureDirectoryExists(directory: string): Promise<void>;
 	readTextFile(filePath: string): Promise<string>;
-	runCommand(command: string, options?: CommandOptions, sudo?: boolean, commandTitle?: string, ignoreError?: boolean): Promise<string>;
+	runCommand(command: string, options?: CommandOptions): Promise<string>;
 }
 
 interface CommandOutput {
@@ -45,6 +45,9 @@ interface CommandOutput {
 export interface CommandOptions {
 	workingDirectory?: string;
 	additionalEnvironmentVariables?: NodeJS.ProcessEnv;
+	sudo?: boolean;
+	commandTitle?: string;
+	ignoreError?: boolean;
 }
 
 /**
@@ -72,7 +75,7 @@ export class PlatformService implements IPlatformService {
 		return this._outputChannel.name;
 	}
 
-	showOutputChannel(preserveFocus?: boolean | undefined): void {
+	showOutputChannel(preserveFocus?: boolean): void {
 		this._outputChannel.show(preserveFocus);
 	}
 
@@ -133,6 +136,7 @@ export class PlatformService implements IPlatformService {
 	}
 
 	public logToOutputChannel(data: string | Buffer, header?: string): void {
+		//input data is localized by caller
 		data.toString().split(/\r?\n/)
 			.forEach(line => {
 				this._outputChannel.appendLine(header ? header + line : line);
@@ -146,23 +150,23 @@ export class PlatformService implements IPlatformService {
 			});
 	}
 
-	async runCommand(command: string, options?: CommandOptions, sudo?: boolean, commandTitle?: string, ignoreError?: boolean): Promise<string> {
-		if (commandTitle !== undefined && commandTitle !== null) {
-			this._outputChannel.appendLine(`\t[ ${commandTitle} ]`);
+	async runCommand(command: string, options?: CommandOptions): Promise<string> {
+		if (options && options.commandTitle !== undefined && options.commandTitle !== null) {
+			this._outputChannel.appendLine(`\t[ ${options.commandTitle} ]`); // commandTitle inputs are localized by caller
 		}
 
 		try {
-			if (sudo) {
+			if (options && options.sudo) {
 				return await this.runSudoCommand(command, this._outputChannel, options);
 			} else {
 				return await this.runStreamedCommand(command, this._outputChannel, options);
 			}
 		} catch (error) {
-			this._outputChannel.append(`\t>>> ${command}   ... errored out: ${this.getErrorMessage(error)}`);
-			if (!ignoreError) {
+			this._outputChannel.append(`\t>>> ${command}   ... ${localize('platformService.RunCommand.ErroredOut', 'errored out:')} ${this.getErrorMessage(error)}`); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
+			if (!(options && options.ignoreError)) {
 				throw error;
 			} else {
-				this._outputChannel.append(`\t>>> Ignoring error in execution and continuing tool deployment`);
+				this._outputChannel.append(`\t>>> ${localize('platformService.RunCommand.IgnoringError', 'Ignoring error in execution and continuing tool deployment')}`);
 				return '';
 			}
 		}
@@ -206,11 +210,11 @@ export class PlatformService implements IPlatformService {
 
 		try {
 			const { stdout, stderr } = await this.sudoExec(command, sudoOptions);
-			this.outputDataChunk(stdout, outputChannel, '    stdout: ');
-			this.outputDataChunk(stderr, outputChannel, '    stderr: ');
+			this.outputDataChunk(stdout, outputChannel, `    ${localize('platformService.RunCommand.stdout', 'stdout:')} `);
+			this.outputDataChunk(stderr, outputChannel, `    ${localize('platformService.RunCommand.stderr', 'stderr:')} `);
 			return stdout;
 		} catch (error) {
-			this.outputDataChunk(error, outputChannel, '    stderr: ');
+			this.outputDataChunk(error, outputChannel, `    ${localize('platformService.RunCommand.stderr', 'stderr:')} `);
 			throw error;
 		}
 	}
@@ -233,16 +237,16 @@ export class PlatformService implements IPlatformService {
 		// Add listeners to print stdout and stderr and exit code
 		child.on('exit', (code: number | null, signal: string | null) => {
 			if (code !== null) {
-				outputChannel.appendLine(`    >>> ${command}    ... exited with code: ${code}`);
+				outputChannel.appendLine(`    >>> ${command}    ... ${localize('platformService.RunStreamedCommand.ExitedWithCode', 'exited with code:')} ${code}`);
 			} else {
-				outputChannel.appendLine(`    >>> ${command}   ... exited with signal: ${signal}`);
+				outputChannel.appendLine(`    >>> ${command}   ... ${localize('platformService.RunStreamedCommand.ExitedWithSignal', 'exited with signal:')} ${signal}`);
 			}
 		});
 		child.stdout.on('data', data => {
 			stdoutData.push(data);
-			this.outputDataChunk(data, outputChannel, '    stdout: ');
+			this.outputDataChunk(data, outputChannel, `    ${localize('platformService.RunCommand.stdout', 'stdout:')} `);
 		});
-		child.stderr.on('data', data => { this.outputDataChunk(data, outputChannel, '    stderr: '); });
+		child.stderr.on('data', data => { this.outputDataChunk(data, outputChannel, `    ${localize('platformService.RunCommand.stderr', 'stderr:')} `); });
 
 		await child;
 		return stdoutData.join('');

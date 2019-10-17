@@ -95,7 +95,7 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 					new SummaryPage(this));
 				break;
 			default:
-				throw new Error(`Unknown deployment type: ${this.deploymentType}`);
+				throw new Error(`${localize('deploymentClusterWizard.unknown.deploymentType', 'Unknown deployment type:')} ${this.deploymentType}`);
 		}
 		return pages;
 	}
@@ -109,7 +109,7 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 			case BdcDeploymentType.ExistingKubeAdm:
 				return localize('deployCluster.ExistingKubeAdm', "Deploy SQL Server 2019 Big Data Cluster on an existing kubeadm cluster");
 			default:
-				throw new Error(`Unknown deployment type: ${type}`);
+				throw new Error(`${localize('deploymentClusterWizard.unknown.deploymentType', 'Unknown deployment type:')} ${type}`);
 		}
 	}
 }
