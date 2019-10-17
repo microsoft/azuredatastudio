@@ -217,7 +217,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 			case BdcDeploymentType.ExistingKubeAdm:
 				return 'kubeadm-dev-test';
 			default:
-				throw new Error(`${localize('deploymentProfilePage.getDefaultProfile.unknown.deploymentType', 'Unknown deployment type:')} ${this.wizard.deploymentType}`);
+				throw new Error(`Unknown deployment type: ${this.wizard.deploymentType}`);
 		}
 	}
 }

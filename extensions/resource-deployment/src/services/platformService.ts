@@ -12,7 +12,7 @@ import { OsType } from '../interfaces';
 import { getErrorMessage } from '../utils';
 
 const localize = nls.loadMessageBundle();
-const extensionOutputChannel = localize('resourceDeployment.outputChannel', 'Deployments');
+const extensionOutputChannel = localize('resourceDeployment.outputChannel', "Deployments");
 const sudoPromptTitle = 'AzureDataStudio';
 /**
  * Abstract of platform dependencies
@@ -58,9 +58,6 @@ export class PlatformService implements IPlatformService {
 	private _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(extensionOutputChannel);
 
 	constructor(private _storagePath: string = '') {
-		if (_storagePath) {
-			this.ensureDirectoryExists(_storagePath);
-		}
 	}
 
 	storagePath(): string {
@@ -119,9 +116,13 @@ export class PlatformService implements IPlatformService {
 		await fs.promises.mkdir(path);
 	}
 
-	async ensureDirectoryExists(directory: string = this.storagePath()): Promise<void> {
-		if (! await this.fileExists(this.storagePath())) {
-			await this.makeDirectory(this.storagePath());
+	/**
+	 *This function ensures that the given {@link directory} does not exist it creates it. It creates only the most leaf folder so if any ancestor folders are missing then this command throws an error.
+	 * @param directory - the path to ensure
+	 */
+	async ensureDirectoryExists(directory: string): Promise<void> {
+		if (await this.fileExists(directory)) {
+			await this.makeDirectory(directory);
 		}
 	}
 
@@ -156,11 +157,11 @@ export class PlatformService implements IPlatformService {
 				return await this.runStreamedCommand(command, this._outputChannel, options);
 			}
 		} catch (error) {
-			this._outputChannel.append(`\t>>> ${command}   ... ${localize('platformService.RunCommand.ErroredOut', 'errored out:')} ${getErrorMessage(error)}`); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
+			this._outputChannel.append(`\t>>> ${command}   ... ${localize('platformService.RunCommand.ErroredOut', "errored out:")} ${getErrorMessage(error)}`); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
 			if (!(options && options.ignoreError)) {
 				throw error;
 			} else {
-				this._outputChannel.append(`\t>>> ${localize('platformService.RunCommand.IgnoringError', 'Ignoring error in execution and continuing tool deployment')}`);
+				this._outputChannel.append(`\t>>> ${localize('platformService.RunCommand.IgnoringError', "Ignoring error in execution and continuing tool deployment")}`);
 				return '';
 			}
 		}
@@ -204,11 +205,11 @@ export class PlatformService implements IPlatformService {
 
 		try {
 			const { stdout, stderr } = await this.sudoExec(command, sudoOptions);
-			this.outputDataChunk(stdout, outputChannel, `    ${localize('platformService.RunCommand.stdout', 'stdout:')} `);
-			this.outputDataChunk(stderr, outputChannel, `    ${localize('platformService.RunCommand.stderr', 'stderr:')} `);
+			this.outputDataChunk(stdout, outputChannel, `    ${localize('platformService.RunCommand.stdout', "stdout:")} `);
+			this.outputDataChunk(stderr, outputChannel, `    ${localize('platformService.RunCommand.stderr', "stderr:")} `);
 			return stdout;
 		} catch (error) {
-			this.outputDataChunk(error, outputChannel, `    ${localize('platformService.RunCommand.stderr', 'stderr:')} `);
+			this.outputDataChunk(error, outputChannel, `    ${localize('platformService.RunCommand.stderr', "stderr:")} `);
 			throw error;
 		}
 	}
@@ -231,16 +232,16 @@ export class PlatformService implements IPlatformService {
 		// Add listeners to print stdout and stderr and exit code
 		child.on('exit', (code: number | null, signal: string | null) => {
 			if (code !== null) {
-				outputChannel.appendLine(`    >>> ${command}    ... ${localize('platformService.RunStreamedCommand.ExitedWithCode', 'exited with code:')} ${code}`);
+				outputChannel.appendLine(`    >>> ${command}    ... ${localize('platformService.RunStreamedCommand.ExitedWithCode', "exited with code:")} ${code}`);
 			} else {
-				outputChannel.appendLine(`    >>> ${command}   ... ${localize('platformService.RunStreamedCommand.ExitedWithSignal', 'exited with signal:')} ${signal}`);
+				outputChannel.appendLine(`    >>> ${command}   ... ${localize('platformService.RunStreamedCommand.ExitedWithSignal', "exited with signal:")} ${signal}`);
 			}
 		});
 		child.stdout.on('data', (data: string | Buffer) => {
 			stdoutData.push(data.toString());
-			this.outputDataChunk(data, outputChannel, `    ${localize('platformService.RunCommand.stdout', 'stdout:')} `);
+			this.outputDataChunk(data, outputChannel, `    ${localize('platformService.RunCommand.stdout', "stdout:")} `);
 		});
-		child.stderr.on('data', (data: string | Buffer) => { this.outputDataChunk(data, outputChannel, `    ${localize('platformService.RunCommand.stderr', 'stderr:')} `); });
+		child.stderr.on('data', (data: string | Buffer) => { this.outputDataChunk(data, outputChannel, `    ${localize('platformService.RunCommand.stderr', "stderr:")} `); });
 
 		await child;
 		return stdoutData.join('');

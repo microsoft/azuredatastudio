@@ -44,7 +44,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		}));
 		this._dialogObject.customButtons = [this._installToolButton];
 		this._installToolButton.hidden = true;
-		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Select');
+		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', "Select");
 	}
 
 	initialize() {
@@ -233,7 +233,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 					if (tool.isNotInstalled && !tool.autoInstallSupported) {
 						messages.push(localize('deploymentDialog.ToolInformation', "{0}: {1}", tool.displayName, tool.homePage));
 						if (tool.statusDescription !== undefined) {
-							console.warn(localize('deploymentDialog.DetailToolStatusDescription', "Additional status information for tool: {0}. {1}", tool.name, tool.statusDescription));
+							console.warn(localize('deploymentDialog.DetailToolStatusDescription', "Additional status information for tool: {0}({1}). {2}", tool.name, tool.homePage, tool.statusDescription));
 						}
 					}
 
@@ -255,7 +255,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 					// either we don't support auto install: docker, or we support auto install for all required tools
 					this._dialogObject.message = {
 						level: azdata.window.MessageLevel.Information,
-						text: localize('deploymentDialog.InstallToolsHint', "Some required tools are not installed, you can click the \"Install tools\" button to install them.")
+						text: localize('deploymentDialog.InstallToolsHint', "Some required tools are not installed, you can click the \"{0}\" button to install them.", this._installToolButton.label)
 					};
 				}
 				this._toolsLoadingComponent.loading = false;
@@ -318,7 +318,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 					// Update the informational message
 					this._dialogObject.message = {
 						level: azdata.window.MessageLevel.Information,
-						text: localize('deploymentDialog.InstallingTool', "Required tool '{0}' is being installed now.", this._tools[i].displayName)
+						text: localize('deploymentDialog.InstallingTool', "Required tool '{0}'({1}) is being installed now.", this._tools[i].displayName, this._tools[i].homePage)
 					};
 					await this._tools[i].install();
 				}

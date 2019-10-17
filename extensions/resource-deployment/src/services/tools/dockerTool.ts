@@ -20,7 +20,7 @@ export class DockerTool extends ToolBase {
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.DockerDescription', 'Provides the ability to package and run an application in isolated containers');
+		return localize('resourceDeployment.DockerDescription', "Provides the ability to package and run an application in isolated containers");
 	}
 
 	get type(): ToolType {
@@ -28,7 +28,7 @@ export class DockerTool extends ToolBase {
 	}
 
 	get displayName(): string {
-		return localize('resourceDeployment.DockerDisplayName', 'docker');
+		return localize('resourceDeployment.DockerDisplayName', "docker");
 	}
 
 	get homePage(): string {

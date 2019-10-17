@@ -12,10 +12,10 @@ import { getErrorMessage } from '../../utils';
 import { IPlatformService } from '../platformService';
 
 const localize = nls.loadMessageBundle();
-const toolStatusNotInstalled: string = localize('deploymentDialog.ToolStatus.NotInstalled', 'Not Installed');
-const toolStatusInstalled: string = localize('deploymentDialog.ToolStatus.Installed', 'Installed');
-const toolStatusInstalling: string = localize('deploymentDialog.ToolStatus.NotInstalling', 'Installing ...');
-const toolStatusError: string = localize('deploymentDialog.ToolStatus.Error', 'Error');
+const toolStatusNotInstalled: string = localize('deploymentDialog.ToolStatus.NotInstalled', "Not Installed");
+const toolStatusInstalled: string = localize('deploymentDialog.ToolStatus.Installed', "Installed");
+const toolStatusInstalling: string = localize('deploymentDialog.ToolStatus.NotInstalling', "Installing ...");
+const toolStatusError: string = localize('deploymentDialog.ToolStatus.Error', "Error");
 
 const toolStatusLocalized: Map<ToolStatus, string> = new Map<ToolStatus, string>([
 	[ToolStatus.Error, toolStatusError],
@@ -93,7 +93,12 @@ export abstract class ToolBase implements ITool {
 	}
 
 	public get storagePath(): string {
-		return this._platformService.storagePath();
+		const storagePath = this._platformService.storagePath();
+		if (!this._storagePathEnsured) {
+			this._platformService.ensureDirectoryExists(storagePath);
+			this._storagePathEnsured = true;
+		}
+		return storagePath;
 	}
 
 	public get osType(): OsType {
@@ -130,7 +135,7 @@ export abstract class ToolBase implements ITool {
 		if (retValue === undefined || retValue === null) {
 			this.logToOutputChannel(`   >${command}`); //command is localized by caller
 			this.logToOutputChannel(`   ${localize('toolBase.getPip3InstallationLocation.LocationNotFound', "Could not find 'Location' in the output:")}`);
-			this.logToOutputChannel(pip3ShowOutput, `   ${localize('toolBase.getPip3InstallationLocation.Output', 'output:')}`);
+			this.logToOutputChannel(pip3ShowOutput, `   ${localize('toolBase.getPip3InstallationLocation.Output', "output:")}`);
 			return '';
 		} else {
 			return retValue;
@@ -154,7 +159,7 @@ export abstract class ToolBase implements ITool {
 			await this.addInstallationSearchPathsToSystemPath();
 		} catch (error) {
 			const errorMessage = getErrorMessage(error);
-			this._statusDescription = localize('toolBase.InstallError', "Error installing tool '{0}'.{1}Error: {2}{1}See output channel '{3}' for more details", this.displayName, EOL, errorMessage, this.outputChannelName);
+			this._statusDescription = localize('toolBase.InstallError', "Error installing tool '{0}'({1}):.{2}Error: {3}{2}See output channel '{4}' for more details", this.displayName, this.homePage, EOL, errorMessage, this.outputChannelName);
 			this.status = ToolStatus.Error;
 			throw error;
 		}
@@ -163,7 +168,7 @@ export abstract class ToolBase implements ITool {
 	protected async installCore() {
 		const installationCommands: Command[] | undefined = this.installationCommands;
 		if (!installationCommands || installationCommands.length === 0) {
-			throw new Error(localize('toolBase.installCore.CannotInstallTool', 'Cannot install tool:${0}::${1} as installation commands are unknown', this.displayName, this.description));
+			throw new Error(localize('toolBase.installCore.CannotInstallTool', "Cannot install tool:${0}::${1} as installation commands are unknown", this.displayName, this.description));
 		}
 		for (let i: number = 0; i < installationCommands.length; i++) {
 			await this._platformService.runCommand(installationCommands[i].command,
@@ -181,7 +186,7 @@ export abstract class ToolBase implements ITool {
 	protected async addInstallationSearchPathsToSystemPath(): Promise<void> {
 		const installationPath = await this.getInstallationPath();
 		const searchPaths = [installationPath, ...this.installationSearchPaths].filter(path => !!path);
-		this.logToOutputChannel(`${localize('toolBase.addInstallationSearchPathsToSystemPath.SearchPaths', 'Search Paths for tool')} '${this.displayName}': ${JSON.stringify(searchPaths, undefined, '\t')}`); //this.diplayName is localized and searchPaths are OS filesystem paths.
+		this.logToOutputChannel(`${localize('toolBase.addInstallationSearchPathsToSystemPath.SearchPaths', "Search Paths for tool")} '${this.displayName}': ${JSON.stringify(searchPaths, undefined, '\t')}`); //this.displayName is localized and searchPaths are OS filesystem paths.
 		searchPaths.forEach(installationSearchPath => {
 			if (process.env.PATH) {
 				if (!`${delimiter}${process.env.PATH}${delimiter}`.includes(`${delimiter}${installationSearchPath}${delimiter}`)) {
@@ -200,12 +205,6 @@ export abstract class ToolBase implements ITool {
 			await this.checkAndUpdateVersion();
 		}
 	}
-
-	private _status: ToolStatus = ToolStatus.NotInstalled;
-	private _osType: OsType;
-	private _version?: SemVer;
-	private _statusDescription?: string;
-
 	private async checkAndUpdateVersion(): Promise<void> {
 		const commandOutput = await this._platformService.runCommand(
 			this.versionCommand.command,
@@ -222,7 +221,14 @@ export abstract class ToolBase implements ITool {
 		}
 		else {
 			this.status = ToolStatus.NotInstalled;
-			this._statusDescription = localize('deployCluster.GetToolVersionError', "Error retrieving version information.{0}Invalid output received, get version command output: {2} ", EOL, commandOutput);
+			this._statusDescription = localize('deployCluster.GetToolVersionError', "Error retrieving version information.{0}Invalid output received, get version command output: {1} ", EOL, commandOutput);
 		}
 	}
+
+	private _storagePathEnsured: boolean = false;
+	private _status: ToolStatus = ToolStatus.NotInstalled;
+	private _osType: OsType;
+	private _version?: SemVer;
+	private _statusDescription?: string;
+
 }
