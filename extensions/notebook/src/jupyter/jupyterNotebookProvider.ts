@@ -82,7 +82,7 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 		if (notebookPath === '.' || relativePathstrUserHome.endsWith('..') || relativePathstrUserHome === '') {
 			// If you don't match the notebookPath's casing for drive letters,
 			// a 404 will result when trying to create a new session on Windows
-			if (notebookPath && userHome) {
+			if (notebookPath && userHome && notebookPath[0].toLowerCase() === userHome[0].toLowerCase()) {
 				userHome = notebookPath[0] + userHome.substr(1);
 			}
 			// If the user is using a system version of python, then
