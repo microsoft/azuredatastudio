@@ -13,6 +13,7 @@ import { deepClone } from 'vs/base/common/objects';
 import * as azdata from 'azdata';
 import * as resources from 'vs/base/common/resources';
 
+
 export interface ConnectionProviderProperties {
 	providerId: string;
 	displayName: string;
@@ -184,8 +185,8 @@ function resolveIconPath(extension: IExtensionPointUser<any>): void {
 		if (Array.isArray(iconPath)) {
 			for (let e of iconPath) {
 				e.path = {
-					light: resources.joinPath(extension.description.extensionLocation, e.path.light),
-					dark: resources.joinPath(extension.description.extensionLocation, e.path.dark)
+					light: resources.joinPath(extension.description.extensionLocation, e.path.light.toString()),
+					dark: resources.joinPath(extension.description.extensionLocation, e.path.dark.toString())
 				};
 			}
 		} else if (typeof iconPath === 'string') {
@@ -195,8 +196,8 @@ function resolveIconPath(extension: IExtensionPointUser<any>): void {
 			};
 		} else {
 			iconPath = {
-				light: resources.joinPath(extension.description.extensionLocation, iconPath.light),
-				dark: resources.joinPath(extension.description.extensionLocation, iconPath.dark)
+				light: resources.joinPath(extension.description.extensionLocation, iconPath.light.toString()),
+				dark: resources.joinPath(extension.description.extensionLocation, iconPath.dark.toString())
 			};
 		}
 	};
