@@ -18,7 +18,7 @@ import { TitledComponent } from 'sql/workbench/browser/modelComponents/titledCom
 @Component({
 	selector: 'modelview-text',
 	template: `
-		<div *ngIf="showDiv;else noDiv" style="display:flex;flex-flow:row;align-items:center;" [style.width]="getWidth()">
+	<div *ngIf="showDiv;else noDiv" style="display:flex;flex-flow:row;align-items:center;" [style.width]="getWidth()" [style.height]="getHeight()">
 		<p [innerHTML]="getValue()" [title]="title" [ngStyle]="this.CSSStyles" (click)="onClick()"></p>
 		<p  *ngIf="requiredIndicator" style="color:red;margin-left:5px;">*</p>
 		<div *ngIf="description" tabindex="0" class="modelview-text-tooltip" [attr.aria-label]="description">
@@ -26,7 +26,7 @@ import { TitledComponent } from 'sql/workbench/browser/modelComponents/titledCom
 		</div>
 	</div>
 	<ng-template #noDiv>
-		<p [style.width]="getWidth()" [innerHTML]="getValue()" [ngStyle]="this.CSSStyles" (click)="onClick()"></p>
+		<p [innerHTML]="getValue()" [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title"  [ngStyle]="this.CSSStyles" (click)="onClick()"></p>
 	</ng-template>`
 })
 export default class TextComponent extends TitledComponent implements IComponent, OnDestroy, AfterViewInit {

@@ -8,6 +8,7 @@ import { SemVer } from 'semver';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { Command, ITool, OsType, ToolStatus, ToolType } from '../../interfaces';
+import { getErrorMessage } from '../../utils';
 import { IPlatformService } from '../platformService';
 
 const localize = nls.loadMessageBundle();
@@ -121,10 +122,6 @@ export abstract class ToolBase implements ITool {
 		return this.allInstallationCommands.get(this.osType);
 	}
 
-	public getErrorMessage(error: any): string {
-		return this._platformService.getErrorMessage(error);
-	}
-
 	protected async getPip3InstallLocation(packageName: string): Promise<string> {
 		const command = `pip3 show ${packageName}`;
 		const pip3ShowOutput: string = await this._platformService.runCommand(command, { sudo: false, ignoreError: true });
@@ -156,7 +153,7 @@ export abstract class ToolBase implements ITool {
 			await this.checkAndUpdateVersion();
 			await this.addInstallationSearchPathsToSystemPath();
 		} catch (error) {
-			const errorMessage = this._platformService.getErrorMessage(error);
+			const errorMessage = getErrorMessage(error);
 			this._statusDescription = localize('toolBase.InstallError', "Error installing tool '{0}'.{1}Error: {2}{1}See output channel '{3}' for more details", this.displayName, EOL, errorMessage, this.outputChannelName);
 			this.status = ToolStatus.Error;
 			throw error;

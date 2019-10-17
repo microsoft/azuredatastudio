@@ -17,6 +17,7 @@ export interface ResourceType {
 	options: ResourceTypeOption[];
 	providers: DeploymentProvider[];
 	agreement?: AgreementInfo;
+	displayIndex?: number;
 	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
 }
 
@@ -93,6 +94,7 @@ export type DeploymentProvider = DialogDeploymentProvider | WizardDeploymentProv
 
 export interface WizardInfo {
 	notebook: string | NotebookInfo;
+	azdata_notebook: string | NotebookInfo;
 	type: BdcDeploymentType;
 }
 
@@ -162,6 +164,9 @@ export interface FieldInfo {
 	useCustomValidator?: boolean;
 	labelPosition?: LabelPosition; // overwrite the labelPosition of SectionInfo.
 	fontStyle?: FontStyle;
+	labelFontWeight?: FontWeight;
+	links?: azdata.LinkArea[];
+	editable?: boolean; // for editable dropdown
 }
 
 export const enum LabelPosition {
@@ -174,7 +179,12 @@ export const enum FontStyle {
 	Italic = 'italic'
 }
 
-export const enum FieldType {
+export enum FontWeight {
+	Normal = 'normal',
+	Bold = 'bold'
+}
+
+export enum FieldType {
 	Text = 'text',
 	Number = 'number',
 	DateTimeText = 'datetime_text',
@@ -234,7 +244,6 @@ export interface ITool {
 	readonly fullVersion: string | undefined;
 	readonly onDidUpdateData: vscode.Event<ITool>;
 	showOutputChannel(preserveFocus?: boolean): void;
-	getErrorMessage(error: any): string;
 	loadInformation(): Promise<void>;
 	install(): Promise<void>;
 }

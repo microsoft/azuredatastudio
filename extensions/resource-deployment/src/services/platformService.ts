@@ -9,12 +9,11 @@ import * as sudo from 'sudo-prompt';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { OsType } from '../interfaces';
-
+import { getErrorMessage } from '../utils';
 
 const localize = nls.loadMessageBundle();
 const extensionOutputChannel = localize('resourceDeployment.outputChannel', 'Deployments');
 const sudoPromptTitle = 'AzureDataStudio';
-
 /**
  * Abstract of platform dependencies
  */
@@ -25,7 +24,6 @@ export interface IPlatformService {
 	copyFile(source: string, target: string): Promise<void>;
 	fileExists(file: string): Promise<boolean>;
 	openFile(filePath: string): void;
-	getErrorMessage(error: any): string;
 	showErrorMessage(error: Error | string): void;
 	logToOutputChannel(data: string | Buffer, header?: string): void;
 	outputChannelName(): string;
@@ -35,6 +33,8 @@ export interface IPlatformService {
 	ensureDirectoryExists(directory: string): Promise<void>;
 	readTextFile(filePath: string): Promise<string>;
 	runCommand(command: string, options?: CommandOptions): Promise<string>;
+	saveTextFile(content: string, path: string): Promise<void>;
+	deleteFile(path: string, ignoreError?: boolean): Promise<void>;
 }
 
 interface CommandOutput {
@@ -107,14 +107,8 @@ export class PlatformService implements IPlatformService {
 		vscode.commands.executeCommand('vscode.open', vscode.Uri.file(filePath));
 	}
 
-	getErrorMessage(error: any): string {
-		return (error instanceof Error)
-			? (typeof error.message === 'string' ? error.message : '')
-			: typeof error === 'string' ? error : `${JSON.stringify(error, undefined, '\t')}`;
-	}
-
 	showErrorMessage(error: Error | string): void {
-		vscode.window.showErrorMessage(this.getErrorMessage(error));
+		vscode.window.showErrorMessage(getErrorMessage(error));
 	}
 
 	isNotebookNameUsed(title: string): boolean {
@@ -162,7 +156,7 @@ export class PlatformService implements IPlatformService {
 				return await this.runStreamedCommand(command, this._outputChannel, options);
 			}
 		} catch (error) {
-			this._outputChannel.append(`\t>>> ${command}   ... ${localize('platformService.RunCommand.ErroredOut', 'errored out:')} ${this.getErrorMessage(error)}`); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
+			this._outputChannel.append(`\t>>> ${command}   ... ${localize('platformService.RunCommand.ErroredOut', 'errored out:')} ${getErrorMessage(error)}`); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
 			if (!(options && options.ignoreError)) {
 				throw error;
 			} else {
@@ -250,5 +244,25 @@ export class PlatformService implements IPlatformService {
 
 		await child;
 		return stdoutData.join('');
+	}
+
+	saveTextFile(content: string, path: string): Promise<void> {
+		return fs.promises.writeFile(path, content, 'utf8');
+	}
+
+	async deleteFile(path: string, ignoreError: boolean = true): Promise<void> {
+		try {
+			const exists = await this.fileExists(path);
+			if (exists) {
+				fs.promises.unlink(path);
+			}
+		}
+		catch (error) {
+			if (ignoreError) {
+				console.error('Error occurred deleting file: ', getErrorMessage(error));
+			} else {
+				throw error;
+			}
+		}
 	}
 }

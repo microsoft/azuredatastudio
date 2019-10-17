@@ -20,7 +20,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 @Component({
 	selector: 'modelview-checkbox',
 	template: `
-		<div #input [style.width]="getWidth()" [style.height]="getHeight()"></div>
+		<div #input width="100%" [style.display]="display"></div>
 	`
 })
 export default class CheckBoxComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {

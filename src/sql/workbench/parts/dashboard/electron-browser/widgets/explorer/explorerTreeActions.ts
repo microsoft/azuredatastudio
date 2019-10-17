@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ScriptSelectAction, ScriptCreateAction, ScriptAlterAction, ScriptExecuteAction } from 'sql/workbench/electron-browser/scriptingActions';
+import { ScriptSelectAction, ScriptCreateAction, ScriptAlterAction, ScriptExecuteAction } from 'sql/workbench/browser/scriptingActions';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';

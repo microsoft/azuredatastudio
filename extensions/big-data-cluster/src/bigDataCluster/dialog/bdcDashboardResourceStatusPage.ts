@@ -29,7 +29,7 @@ export interface IInstanceStatus {
 const healthAndStatusIconColumnWidth = 25;
 const healthAndStatusInstanceNameColumnWidth = 100;
 const healthAndStatusStateColumnWidth = 75;
-const healthAndStatusHealthColumnWidth = 75;
+const healthAndStatusHealthColumnWidth = 100;
 
 const metricsAndLogsInstanceNameColumnWidth = 125;
 const metricsAndLogsMetricsColumnWidth = 75;

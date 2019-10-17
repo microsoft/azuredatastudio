@@ -13,6 +13,7 @@ import { readonly } from 'vs/base/common/errors';
 import { MainThreadNotebookDocumentsAndEditorsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/common/extHostNotebookDocumentData';
 import { CellRange, ISingleNotebookEditOperation, ICellRange } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { HideInputTag } from 'sql/workbench/parts/notebook/browser/models/cell';
 
 export interface INotebookEditOperation {
 	range: azdata.nb.CellRange;
@@ -80,12 +81,21 @@ export class NotebookEditorEdit {
 		return range;
 	}
 
-	insertCell(value: Partial<azdata.nb.ICellContents>, location?: number): void {
-		if (location === null || location === undefined) {
+	insertCell(value: Partial<azdata.nb.ICellContents>, index?: number, collapsed?: boolean): void {
+		if (index === null || index === undefined) {
 			// If not specified, assume adding to end of list
-			location = this._document.cells.length;
+			index = this._document.cells.length;
 		}
-		this._pushEdit(new CellRange(location, location), value, true);
+		if (!!collapsed) {
+			if (!value.metadata) {
+				value.metadata = { tags: [HideInputTag] };
+			} else if (!value.metadata.tags) {
+				value.metadata.tags = [HideInputTag];
+			} else if (!value.metadata.tags.includes(HideInputTag)) {
+				value.metadata.tags.push(HideInputTag);
+			}
+		}
+		this._pushEdit(new CellRange(index, index), value, true);
 	}
 
 	deleteCell(index: number): void {

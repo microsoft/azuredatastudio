@@ -119,7 +119,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 			this._button.setWidth(this.convertSize(this.width.toString()));
 		}
 		if (this.height) {
-			this._button.setWidth(this.convertSize(this.height.toString()));
+			this._button.setHeight(this.convertSize(this.height.toString()));
 		}
 		this.updateIcon();
 		this._changeRef.detectChanges();

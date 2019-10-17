@@ -432,4 +432,7 @@ import 'sql/workbench/parts/backup/browser/backup.contribution';
 //restore
 import 'sql/workbench/parts/restore/browser/restore.contribution';
 
+// Scripting
+import 'sql/workbench/parts/scripting/browser/scripting.contribution';
+
 //#endregion

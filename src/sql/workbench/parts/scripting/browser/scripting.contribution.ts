@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
-import * as commands from 'sql/workbench/parts/scripting/electron-browser/scriptingActions';
+import * as commands from 'sql/workbench/parts/scripting/browser/scriptingActions';
 import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/browser/mssqlNodeContext';
 import { localize } from 'vs/nls';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';

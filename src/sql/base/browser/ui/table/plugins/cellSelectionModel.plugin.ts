@@ -131,7 +131,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 	 * DO NOT CALL THIS DIRECTLY - GO THROUGH INSERT INTO SELECTIONS
 	 *
 	 */
-	private mergeSelections(ranges: Array<Slick.Range>, range: Slick.Range) {
+	private mergeSelections(ranges: Array<Slick.Range>, range: Slick.Range): { newRanges: Array<Slick.Range>, handled: boolean } {
 		// New ranges selection
 		let newRanges: Array<Slick.Range> = [];
 
@@ -192,7 +192,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		};
 	}
 
-	private insertIntoSelections(ranges: Array<Slick.Range>, range: Slick.Range): Array<Slick.Range> {
+	public insertIntoSelections(ranges: Array<Slick.Range>, range: Slick.Range): Array<Slick.Range> {
 		let result = this.mergeSelections(ranges, range);
 		let newRanges = result.newRanges;
 

@@ -8,6 +8,7 @@ import * as nls from 'vscode-nls';
 import { AgreementInfo, DeploymentProvider, ITool, ResourceType } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
+import { getErrorMessage } from '../utils';
 import { DialogBase } from './dialogBase';
 import { createFlexContainer } from './modelViewUtils';
 
@@ -61,7 +62,9 @@ export class ResourceTypePickerDialog extends DialogBase {
 		tab.registerContent((view: azdata.ModelView) => {
 			const tableWidth = 1126;
 			this._view = view;
-			this.resourceTypeService.getResourceTypes().forEach(resourceType => this.addCard(resourceType));
+			this.resourceTypeService.getResourceTypes().sort((a: ResourceType, b: ResourceType) => {
+				return (a.displayIndex || Number.MAX_VALUE) - (b.displayIndex || Number.MAX_VALUE);
+			}).forEach(resourceType => this.addCard(resourceType));
 			this._cardsContainer = view.modelBuilder.flexContainer().withItems(this._resourceTypeCards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row' }).component();
 			this._resourceDescriptionLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this._selectedResourceType ? this._selectedResourceType.description : undefined }).component();
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
@@ -327,7 +330,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			};
 			this._dialogObject.okButton.enabled = true;
 		} catch (error) {
-			const errorMessage = this._tools[i].statusDescription || this._tools[i].getErrorMessage(error);
+			const errorMessage = this._tools[i].statusDescription || getErrorMessage(error);
 			if (errorMessage) {
 				// Let the tooltip status show the errorMessage just shown so that last status is visible even after showError dialogue has been dismissed.
 				this._dialogObject.message = {

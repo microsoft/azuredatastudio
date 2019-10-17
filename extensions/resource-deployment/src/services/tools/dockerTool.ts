@@ -28,7 +28,7 @@ export class DockerTool extends ToolBase {
 	}
 
 	get displayName(): string {
-		return localize('resourceDeployment.DockerDisplayName', 'Docker');
+		return localize('resourceDeployment.DockerDisplayName', 'docker');
 	}
 
 	get homePage(): string {
