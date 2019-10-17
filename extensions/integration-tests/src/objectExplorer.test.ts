@@ -21,7 +21,7 @@ if (context.RunTest) {
 		test('Standalone instance node label test', async function () {
 			return await (new ObjectExplorerTester()).standaloneNodeLabelTest();
 		});
-		test.skip('Azure SQL DB instance node label test', async function () {
+		test('Azure SQL DB instance node label test @UNSTABLE@', async function () {
 			return await (new ObjectExplorerTester()).sqlDbNodeLabelTest();
 		});
 		test('BDC instance context menu test', async function () {
@@ -30,7 +30,7 @@ if (context.RunTest) {
 		test('Azure SQL DB context menu test', async function () {
 			return await (new ObjectExplorerTester()).sqlDbContextMenuTest();
 		});
-		test.skip('Standalone database context menu test', async function () {
+		test('Standalone database context menu test @UNSTABLE@', async function () {
 			return await (new ObjectExplorerTester()).standaloneContextMenuTest();
 		});
 	});
