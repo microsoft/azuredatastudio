@@ -59,8 +59,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
 	let iconProvider = new MssqlIconProvider();
 	azdata.dataprotocol.registerIconProvider(iconProvider);
-  setClientQueryExecutionOptions();
-  
+	setClientQueryExecutionOptions();
+
 	activateSparkFeatures(appContext);
 	activateNotebookTask(appContext);
 
@@ -86,22 +86,18 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 }
 
 async function setClientQueryExecutionOptions() {
-	let onConnectionConnect = {
-		onConnectionEvent: (type: azdata.connection.ConnectionEventType, ownerUri: string, args: azdata.IConnectionProfile) => {
-			if (type !== 'onConnect') {
-				return;
-			}
-
-			if (args.providerName !== 'MSSQL') {
-				return;
-			}
-			const queryProvider = azdata.dataprotocol.getProvider(Constants.providerId, azdata.DataProviderType.QueryProvider) as azdata.QueryProvider;
-			queryProvider.setQueryExecutionOptions(args.id, { 'MaxXmlCharsToStore': Utils.getConfigMaxXmlCharsToStore() });
-			console.log('called');
+	vscode.workspace.onDidOpenTextDocument(async (textDocument) => {
+		if (!textDocument) {
+			return;
 		}
-	} as azdata.connection.ConnectionEventListener;
+		let queryDocument = await azdata.queryeditor.getQueryDocument(textDocument.uri.toString());
+		if (!queryDocument || queryDocument.providerId !== Constants.providerId) {
+			return;
+		}
 
-	azdata.connection.registerConnectionEventListener(onConnectionConnect);
+		const queryProvider = azdata.dataprotocol.getProvider(Constants.providerId, azdata.DataProviderType.QueryProvider) as azdata.QueryProvider;
+		queryProvider.setQueryExecutionOptions(queryDocument.uri, { 'MaxXmlCharsToStore': Utils.getConfigMaxXmlCharsToStore() });
+	});
 }
 
 const logFiles = ['resourceprovider.log', 'sqltools.log', 'credentialstore.log'];
