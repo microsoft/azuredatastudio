@@ -1004,8 +1004,7 @@ suite('Disk File Service', function () {
 		return testReadFile(URI.file(join(testDir, 'small.txt')));
 	});
 
-	// test is disabled due to failures
-	test.skip('readFile - small file - buffered / readonly', () => {
+	test.skip('readFile - small file - buffered / readonly', () => { // {{SQL CARBON EDIT}} test is disabled due to failures
 		setCapabilities(fileProvider, FileSystemProviderCapabilities.FileOpenReadWriteClose | FileSystemProviderCapabilities.Readonly);
 
 		return testReadFile(URI.file(join(testDir, 'small.txt')));
