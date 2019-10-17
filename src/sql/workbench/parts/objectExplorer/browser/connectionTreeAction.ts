@@ -63,11 +63,12 @@ export class RefreshAction extends Action {
 					await this._objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode);
 				} catch (error) {
 					this.showError(error);
-					return Promise.resolve(true);
+					return true;
 				}
 				await this._tree.refresh(this.element);
 				return this._tree.expand(this.element);
 			} catch (ex) {
+				console.log(ex);
 				return true;
 			}
 		}
@@ -96,7 +97,7 @@ export class DisconnectConnectionAction extends Action {
 		super(id, label);
 	}
 
-	async run(actionContext: ObjectExplorerActionsContext): Promise<any> {
+	async run(actionContext: ObjectExplorerActionsContext): Promise<boolean> {
 		if (!this._connectionProfile) {
 			return true;
 		}
