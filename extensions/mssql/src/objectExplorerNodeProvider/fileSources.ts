@@ -65,8 +65,20 @@ export interface IFileSource {
 	readFileLines(path: string, maxLines: number): Promise<Buffer>;
 	writeFile(localFile: IFile, remoteDir: string): Promise<string>;
 	delete(path: string, recursive?: boolean): Promise<void>;
+	/**
+	 * Get ACL status for given path
+	 * @param path The path to the file/folder to get the status of
+	 */
 	getAclStatus(path: string): Promise<IAclStatus>;
-	setAcl(path: string, aclEntries: AclEntry[]): Promise<void>;
+	/**
+	 * Sets the ACL status for given path
+	 * @param path The path to the file/folder to set the ACL on
+	 * @param ownerEntry The entry corresponding to the path owner
+	 * @param groupEntry The entry corresponding to the path owning group
+	 * @param otherEntry The entry corresponding to default permissions for all other users
+	 * @param aclEntries The ACL entries to set
+	 */
+	setAcl(path: string, ownerEntry: AclEntry, groupEntry: AclEntry, otherEntry: AclEntry, aclEntries: AclEntry[]): Promise<void>;
 	exists(path: string): Promise<boolean>;
 }
 
@@ -323,11 +335,14 @@ export class HdfsFileSource implements IFileSource {
 	/**
 	 * Sets the ACL status for given path
 	 * @param path The path to the file/folder to set the ACL on
+	 * @param ownerEntry The entry corresponding to the path owner
+	 * @param groupEntry The entry corresponding to the path owning group
+	 * @param otherEntry The entry corresponding to default permissions for all other users
 	 * @param aclEntries The ACL entries to set
 	 */
-	public setAcl(path: string, aclEntries: AclEntry[]): Promise<void> {
+	public setAcl(path: string, ownerEntry: AclEntry, groupEntry: AclEntry, otherEntry: AclEntry, aclEntries: AclEntry[]): Promise<void> {
 		return new Promise((resolve, reject) => {
-			this.client.setAcl(path, aclEntries, (error: HdfsError) => {
+			this.client.setAcl(path, ownerEntry, groupEntry, otherEntry, aclEntries, (error: HdfsError) => {
 				if (error) {
 					reject(error);
 				} else {
