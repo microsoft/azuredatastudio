@@ -86,7 +86,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 }
 
 async function setClientQueryExecutionOptions() {
-	vscode.workspace.onDidOpenTextDocument(async (textDocument) => {
+	vscode.workspace.onDidOpenTextDocument(async (textDocument: vscode.TextDocument) => {
 		if (!textDocument) {
 			return;
 		}
