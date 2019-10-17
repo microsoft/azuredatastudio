@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import { SemVer } from 'semver';
+import * as vscode from 'vscode';
 
 export const NoteBookEnvironmentVariablePrefix = 'AZDATA_NB_VAR_';
 
@@ -228,10 +229,11 @@ export interface ITool {
 	readonly autoInstallSupported: boolean;
 	readonly outputChannelName: string;
 	readonly fullVersion: string | undefined;
+	readonly onDidUpdateData: vscode.Event<ITool>;
 	showOutputChannel(preserveFocus?: boolean): void;
 	getErrorMessage(error: any): string;
 	loadInformation(): Promise<void>;
-	install(updateDisplayTableData: (tool: ITool) => void, thisObject: any): Promise<void>;
+	install(): Promise<void>;
 }
 
 export const enum BdcDeploymentType {

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Command, ToolType } from '../../interfaces';
+import { Command, ToolType, OsType } from '../../interfaces';
 import * as nls from 'vscode-nls';
 import { SemVer } from 'semver';
 import { IPlatformService } from '../platformService';
@@ -53,12 +53,12 @@ export class KubeCtlTool extends ToolBase {
 		return true;
 	}
 
-	readonly allInstallationCommands: { [key: string]: Command[] } = {
-		'linux': linuxInstallationCommands,
-		'win32': win32InstallationCommands,
-		'darwin': macOsInstallationCommands,
-		'others': defaultInstallationCommands,
-	};
+	readonly allInstallationCommands: Map<OsType, Command[]> = new Map<OsType, Command[]>([
+		[OsType.linux, linuxInstallationCommands],
+		[OsType.win32, win32InstallationCommands],
+		[OsType.darwin, macOsInstallationCommands],
+		[OsType.others, defaultInstallationCommands]
+	]);
 }
 
 const macOsInstallationCommands = [

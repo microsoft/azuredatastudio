@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 import { EOL } from 'os';
 import { SemVer } from 'semver';
 import * as nls from 'vscode-nls';
@@ -52,13 +51,12 @@ export class AzCliTool extends ToolBase {
 		}
 	}
 
-
-	readonly allInstallationCommands: { [key: string]: Command[] } = {
-		'linux': linuxInstallationCommands,
-		'win32': win32InstallationCommands,
-		'darwin': macOsInstallationCommands,
-		'others': defaultInstallationCommands,
-	};
+	readonly allInstallationCommands: Map<OsType, Command[]> = new Map<OsType, Command[]>([
+		[OsType.linux, linuxInstallationCommands],
+		[OsType.win32, win32InstallationCommands],
+		[OsType.darwin, macOsInstallationCommands],
+		[OsType.others, defaultInstallationCommands]
+	]);
 
 	protected getVersionFromOutput(output: string): SemVer | undefined {
 		if (output && output.includes('azure-cli')) {

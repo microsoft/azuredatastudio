@@ -65,12 +65,12 @@ export class AzdataTool extends ToolBase {
 		}
 	}
 
-	readonly allInstallationCommands: { [key: string]: Command[] } = {
-		'linux': linuxInstallationCommands,
-		'win32': defaultInstallationCommands,
-		'darwin': defaultInstallationCommands,
-		'others': defaultInstallationCommands,
-	};
+	readonly allInstallationCommands: Map<OsType, Command[]> = new Map<OsType, Command[]>([
+		[OsType.linux, linuxInstallationCommands],
+		[OsType.win32, defaultInstallationCommands],
+		[OsType.darwin, defaultInstallationCommands],
+		[OsType.others, defaultInstallationCommands]
+	]);
 }
 
 const linuxInstallationCommands = [

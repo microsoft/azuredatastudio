@@ -2,13 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
-import { Command, ToolType, ITool, OsType, ToolStatus } from '../../interfaces';
-import { SemVer } from 'semver';
-import { IPlatformService } from '../platformService';
-import * as nls from 'vscode-nls';
 import { EOL } from 'os';
 import { delimiter } from 'path';
+import { SemVer } from 'semver';
+import * as vscode from 'vscode';
+import * as nls from 'vscode-nls';
+import { Command, ITool, OsType, ToolStatus, ToolType } from '../../interfaces';
+import { IPlatformService } from '../platformService';
+
 const localize = nls.loadMessageBundle();
 
 export abstract class ToolBase implements ITool {
@@ -20,8 +21,11 @@ export abstract class ToolBase implements ITool {
 	abstract type: ToolType;
 	abstract homePage: string;
 	abstract autoInstallSupported: boolean;
-	abstract readonly allInstallationCommands: { [key: string]: Command[] };
+	abstract readonly allInstallationCommands: Map<OsType, Command[]>;
+
 	protected abstract getVersionFromOutput(output: string): SemVer | undefined;
+	protected readonly _onDidUpdateData = new vscode.EventEmitter<ITool>();
+
 
 	protected abstract readonly versionCommand: Command;
 
@@ -39,6 +43,10 @@ export abstract class ToolBase implements ITool {
 
 	protected logToOutputChannel(data: string | Buffer, header?: string): void {
 		this._platformService.logToOutputChannel(data, header);
+	}
+
+	public get onDidUpdateData(): vscode.Event<ITool> {
+		return this._onDidUpdateData.event;
 	}
 
 	public get status(): ToolStatus {
@@ -66,8 +74,8 @@ export abstract class ToolBase implements ITool {
 		return this._statusDescription;
 	}
 
-	protected get installationCommands(): Command[] {
-		return this.allInstallationCommands[this.osType];
+	protected get installationCommands(): Command[] | undefined {
+		return this.allInstallationCommands.get(this.osType);
 	}
 
 	public getErrorMessage(error: any): string {
@@ -97,24 +105,25 @@ export abstract class ToolBase implements ITool {
 		this._platformService.showOutputChannel(preserveFocus);
 	}
 
-	public async install(updateDisplayTableData: (tool: ITool) => void, thisObject: any): Promise<void> {
+	public async install(): Promise<void> {
 		try {
 			this._status = ToolStatus.Installing;
-			updateDisplayTableData.call(thisObject, this);
+			this._onDidUpdateData.fire(this);
+			this._onDidUpdateData.fire(this);
 			await this.installCore();
 			await this.checkAndUpdateVersion();
-			updateDisplayTableData.call(thisObject, this);
+			this._onDidUpdateData.fire(this);
 		} catch (error) {
 			const errorMessage = this._platformService.getErrorMessage(error);
 			this._statusDescription = localize('deployCluster.InstallError', "Error installing tool '{0}'.{1}Error: {2}{1}See output channel '{3}' for more details", this.displayName, EOL, errorMessage, this.outputChannelName);
 			this._status = ToolStatus.Error;
-			updateDisplayTableData.call(thisObject, this);
+			this._onDidUpdateData.fire(this);
 			throw error;
 		}
 	}
 
 	protected async installCore() {
-		const installationCommands: Command[] = this.installationCommands;
+		const installationCommands: Command[] | undefined = this.installationCommands;
 		if (!installationCommands || installationCommands.length === 0) {
 			throw new Error(`Cannot install tool:${this.displayName}::${this.description} as installation commands are unknown`);
 		}
@@ -136,16 +145,14 @@ export abstract class ToolBase implements ITool {
 		const searchPaths = [installationPath, ...this.installationSearchPaths].filter(path => !!path);
 		this.logToOutputChannel(`Search Paths for tool '${this.displayName}': ${JSON.stringify(searchPaths, undefined, '\t')}`);
 		searchPaths.forEach(installationSearchPath => {
-			if (installationSearchPath) {
-				if (process.env.PATH) {
-					if (!`${delimiter}${process.env.PATH}${delimiter}`.includes(`${delimiter}${installationSearchPath}${delimiter}`)) {
-						process.env.PATH += `${delimiter}${installationSearchPath}`;
-						console.log(`Appending to Path -> ${delimiter}${installationSearchPath}`);
-					}
-				} else {
-					process.env.PATH = installationSearchPath;
-					console.log(`Appending to Path -> '${delimiter}${installationSearchPath}':${delimiter}${installationSearchPath}`);
+			if (process.env.PATH) {
+				if (!`${delimiter}${process.env.PATH}${delimiter}`.includes(`${delimiter}${installationSearchPath}${delimiter}`)) {
+					process.env.PATH += `${delimiter}${installationSearchPath}`;
+					console.log(`Appending to Path -> ${delimiter}${installationSearchPath}`);
 				}
+			} else {
+				process.env.PATH = installationSearchPath;
+				console.log(`Appending to Path -> '${delimiter}${installationSearchPath}':${delimiter}${installationSearchPath}`);
 			}
 		});
 	}

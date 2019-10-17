@@ -27,6 +27,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _agreementContainer!: azdata.DivContainer;
 	private _agreementCheckboxChecked: boolean = false;
 	private _installToolButton: azdata.window.Button;
+
 	private _tools: ITool[] = [];
 
 	constructor(
@@ -221,6 +222,10 @@ export class ResourceTypePickerDialog extends DialogBase {
 				const messages: string[] = [];
 				this._toolsTable.data = toolRequirements.map(toolReq => {
 					const tool = this.toolsService.getToolByName(toolReq.name)!;
+					// subscribe to onUpdateData event of the tool.
+					this._toDispose.push(tool.onDidUpdateData((t: ITool) => {
+						this.updateToolsDisplayTableData(t);
+					}));
 					if (tool.status === ToolStatus.NotInstalled && !tool.autoInstallSupported) {
 						messages.push(localize('deploymentDialog.ToolInformation', "{0}: {1}", tool.displayName, tool.homePage));
 						if (tool.statusDescription !== undefined) {
@@ -290,7 +295,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this.resourceTypeService.startDeployment(this.getCurrentProvider());
 	}
 
-	private UpdateToolsTableData(tool: ITool) {
+	public updateToolsDisplayTableData(tool: ITool) {
 		this._toolsTable.data = this._toolsTable.data.map(rowData => {
 			if (rowData[0] === tool.displayName) {
 				if (tool.status === ToolStatus.NotInstalled || tool.status === ToolStatus.Error) {
@@ -304,6 +309,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			}
 		});
 	}
+
 	private async installTools(): Promise<void> {
 		this._installToolButton.enabled = false;
 		let i: number = 0;
@@ -315,7 +321,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 						level: azdata.window.MessageLevel.Information,
 						text: localize('deploymentDialog.InstallingTool', "Required tool '{0}' is being installed now.", this._tools[i].displayName)
 					};
-					await this._tools[i].install(this.UpdateToolsTableData, this);
+					await this._tools[i].install();
 				}
 			}
 			// Update the informational message
