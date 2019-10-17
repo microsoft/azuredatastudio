@@ -177,6 +177,12 @@
 	background: url("Folder.svg") center center no-repeat;
 }
 
+.vs .icon.folder_mounted,
+.vs-dark .icon.folder_mounted,
+.hc-black .icon.folder_mounted {
+	background: url("Folder_mounted.svg") center center no-repeat;
+}
+
 .vs .icon.fulltextcatalog,
 .vs-dark .icon.fulltextcatalog,
 .hc-black .icon.fulltextcatalog {
