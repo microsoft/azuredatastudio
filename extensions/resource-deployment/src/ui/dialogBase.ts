@@ -12,7 +12,8 @@ export abstract class DialogBase {
 
 	constructor(dialogTitle: string, dialogName: string, isWide: boolean = false) {
 		this._dialogObject = azdata.window.createModelViewDialog(dialogTitle, dialogName, isWide);
-		this._dialogObject.cancelButton.onClick(() => this.onCancel());
+		this._toDispose.push(this._dialogObject.cancelButton.onClick(() => this.onCancelButtonClicked()));
+		this._toDispose.push(this._dialogObject.okButton.onClick(() => this.onOkButtonClicked()));
 	}
 
 	protected abstract initialize(): void;
@@ -22,9 +23,16 @@ export abstract class DialogBase {
 		azdata.window.openDialog(this._dialogObject);
 	}
 
-	protected onCancel(): void {
+	private onCancelButtonClicked(): void {
 		this.dispose();
 	}
+
+	private onOkButtonClicked(): void {
+		this.onComplete();
+		this.dispose();
+	}
+
+	protected onComplete(): void { }
 
 	protected dispose(): void {
 		this._toDispose.forEach(disposable => disposable.dispose());
