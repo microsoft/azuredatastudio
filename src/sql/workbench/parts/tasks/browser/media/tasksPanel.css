@@ -40,7 +40,7 @@
 	background-position: left center;
 	background-repeat: no-repeat;
 	padding-right: 6px;
-	width: 22px;
+	min-width: 22px;
 	height: 22px;
 	display: inline-block;
 }

@@ -114,7 +114,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 			let columnIndex = this.grid.getColumnIndex(args.column.id!);
 			if (this.grid.canCellBeSelected(0, columnIndex)) {
 				let ranges: Array<Slick.Range>;
-				if (e.shiftKey) {
+				if (e.ctrlKey) {
 					ranges = this.getSelectedRanges();
 					ranges.push(new Slick.Range(0, columnIndex, this.grid.getDataLength() - 1, columnIndex));
 				} else {
@@ -131,7 +131,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 	 * DO NOT CALL THIS DIRECTLY - GO THROUGH INSERT INTO SELECTIONS
 	 *
 	 */
-	private mergeSelections(ranges: Array<Slick.Range>, range: Slick.Range) {
+	private mergeSelections(ranges: Array<Slick.Range>, range: Slick.Range): { newRanges: Array<Slick.Range>, handled: boolean } {
 		// New ranges selection
 		let newRanges: Array<Slick.Range> = [];
 
@@ -192,7 +192,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		};
 	}
 
-	private insertIntoSelections(ranges: Array<Slick.Range>, range: Slick.Range): Array<Slick.Range> {
+	public insertIntoSelections(ranges: Array<Slick.Range>, range: Slick.Range): Array<Slick.Range> {
 		let result = this.mergeSelections(ranges, range);
 		let newRanges = result.newRanges;
 
@@ -230,9 +230,17 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		let ranges: Array<Slick.Range>;
 
 		ranges = this.getSelectedRanges();
-		ranges = this.insertIntoSelections(ranges, new Slick.Range(args.row, args.cell));
 
-		this.grid.setActiveCell(args.row, args.cell);
+		let selectedRange: Slick.Range;
+		if (args.cell === 0) {
+			selectedRange = new Slick.Range(args.row, 1, args.row, args.grid.getColumns().length - 1);
+		} else {
+			selectedRange = new Slick.Range(args.row, args.cell);
+
+		}
+		ranges = this.insertIntoSelections(ranges, selectedRange);
+
+		this.grid.setActiveCell(selectedRange.toRow, selectedRange.toCell);
 		this.setSelectedRanges(ranges);
 
 		e.preventDefault();

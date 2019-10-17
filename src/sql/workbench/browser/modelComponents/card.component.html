@@ -13,7 +13,6 @@
 					<div [class]="iconClass" [style.width]="iconWidth" [style.height]="iconHeight"></div>
 				</div>
 				<h4 class="card-label">{{label}}</h4>
-				<hr />
 				<div *ngIf="descriptions.length > 0" class="model-card-description-container">
 					<div *ngFor="let desc of descriptions">
 						<div *ngIf="desc.label; else separator" [style.font-weight]="desc.fontWeight" class="model-card-list-item-description">

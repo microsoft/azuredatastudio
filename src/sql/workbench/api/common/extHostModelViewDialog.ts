@@ -208,6 +208,7 @@ class ButtonImpl implements azdata.window.Button {
 	private _enabled: boolean;
 	private _hidden: boolean;
 	private _focused: boolean;
+	private _position: azdata.window.DialogButtonPosition;
 
 	private _onClick = new Emitter<void>();
 	public onClick = this._onClick.event;
@@ -215,6 +216,7 @@ class ButtonImpl implements azdata.window.Button {
 	constructor(private _extHostModelViewDialog: ExtHostModelViewDialog) {
 		this._enabled = true;
 		this._hidden = false;
+		this._position = 'right';
 	}
 
 	public get label(): string {
@@ -241,6 +243,15 @@ class ButtonImpl implements azdata.window.Button {
 
 	public set hidden(hidden: boolean) {
 		this._hidden = hidden;
+		this._extHostModelViewDialog.updateButton(this);
+	}
+
+	public get position(): azdata.window.DialogButtonPosition {
+		return this._position;
+	}
+
+	public set position(value: azdata.window.DialogButtonPosition) {
+		this._position = value;
 		this._extHostModelViewDialog.updateButton(this);
 	}
 
@@ -471,10 +482,10 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return handle;
 	}
 
-	private getHandle(item: azdata.window.Button | azdata.window.Dialog | azdata.window.DialogTab
-		| azdata.window.ModelViewPanel | azdata.window.Wizard | azdata.window.WizardPage | azdata.workspace.ModelViewEditor) {
+	public getHandle(item: azdata.window.Button | azdata.window.Dialog | azdata.window.DialogTab
+		| azdata.window.ModelViewPanel | azdata.window.Wizard | azdata.window.WizardPage | azdata.workspace.ModelViewEditor, createIfNotFound: boolean = true) {
 		let handle = this._objectHandles.get(item);
-		if (handle === undefined) {
+		if (createIfNotFound && handle === undefined) {
 			handle = ExtHostModelViewDialog.getNewHandle();
 			this._objectHandles.set(item, handle);
 			this._objectsByHandle.set(handle, item);
@@ -587,7 +598,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			label: button.label,
 			enabled: button.enabled,
 			hidden: button.hidden,
-			focused: button.focused
+			focused: button.focused,
+			position: button.position
 		});
 	}
 
@@ -614,11 +626,12 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return tab;
 	}
 
-	public createButton(label: string): azdata.window.Button {
+	public createButton(label: string, position: azdata.window.DialogButtonPosition = 'right'): azdata.window.Button {
 		let button = new ButtonImpl(this);
 		this.getHandle(button);
 		this.registerOnClickCallback(button, button.getOnClickCallback());
 		button.label = label;
+		button.position = position;
 		return button;
 	}
 

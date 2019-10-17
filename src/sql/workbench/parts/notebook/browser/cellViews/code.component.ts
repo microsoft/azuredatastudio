@@ -33,6 +33,8 @@ import * as notebookUtils from 'sql/workbench/parts/notebook/browser/models/note
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
+import { CollapseComponent } from 'sql/workbench/parts/notebook/browser/cellViews/collapse.component';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -45,6 +47,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
+	@ViewChild(CollapseComponent) private collapseComponent: CollapseComponent;
 
 	public get cellModel(): ICellModel {
 		return this._cellModel;
@@ -81,7 +84,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this.cellModel.hover = value;
 		if (!this.isActive()) {
 			// Only make a change if we're not active, since this has priority
-			this.toggleMoreActionsButton(this.cellModel.hover);
+			this.toggleActionsVisibility(this.cellModel.hover);
 		}
 	}
 
@@ -112,7 +115,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			(() => this.layout()));
 		// Handle disconnect on removal of the cell, if it was the active cell
 		this._register({ dispose: () => this.updateConnectionState(false) });
-
 	}
 
 	ngOnInit() {
@@ -129,7 +131,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 				let changedProp = changes[propName];
 				let isActive = this.cellModel.id === changedProp.currentValue;
 				this.updateConnectionState(isActive);
-				this.toggleMoreActionsButton(isActive);
+				this.toggleActionsVisibility(isActive);
 				if (this._editor) {
 					this._editor.toggleEditorSelected(isActive);
 				}
@@ -191,20 +193,23 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._editor.setVisible(true);
 		this._editor.setMinimumHeight(this._minimumHeight);
 		this._editor.setMaximumHeight(this._maximumHeight);
+
 		let uri = this.cellModel.cellUri;
 		let cellModelSource: string;
 		cellModelSource = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
 		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, cellModelSource, '');
 		await this._editor.setInput(this._editorInput, undefined);
 		this.setFocusAndScroll();
+
 		let untitledEditorModel: UntitledEditorModel = await this._editorInput.resolve();
 		this._editorModel = untitledEditorModel.textEditorModel;
+
 		let isActive = this.cellModel.id === this._activeCellId;
 		this._editor.toggleEditorSelected(isActive);
+
 		// For markdown cells, don't show line numbers unless we're using editor defaults
 		let overrideEditorSetting = this._configurationService.getValue<boolean>(OVERRIDE_EDITOR_THEMING_SETTING);
 		this._editor.hideLineNumbers = (overrideEditorSetting && this.cellModel.cellType === CellTypes.Markdown);
-
 
 		if (this.destroyed) {
 			// At this point, we may have been disposed (scenario: restoring markdown cell in preview mode).
@@ -216,15 +221,21 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._register(this._editor);
 		this._register(this._editorInput);
 		this._register(this._editorModel.onDidChangeContent(e => {
-			this._editor.setHeightToScrollHeight();
 			this.cellModel.modelContentChangedEvent = e;
+
+			let originalSourceLength = this.cellModel.source.length;
 			this.cellModel.source = this._editorModel.getValue();
+			if (this._cellModel.isCollapsed && originalSourceLength !== this.cellModel.source.length) {
+				this._cellModel.isCollapsed = false;
+			}
+			this._editor.setHeightToScrollHeight(false, this._cellModel.isCollapsed);
+
 			this.onContentChanged.emit();
 			this.checkForLanguageMagics();
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('editor.wordWrap') || e.affectsConfiguration('editor.fontSize')) {
-				this._editor.setHeightToScrollHeight(true);
+				this._editor.setHeightToScrollHeight(true, this._cellModel.isCollapsed);
 			}
 		}));
 		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire(), this));
@@ -233,14 +244,22 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 				this.setFocusAndScroll();
 			}
 		}));
+		this._register(this.cellModel.onCollapseStateChanged(isCollapsed => {
+			this.onCellCollapse(isCollapsed);
+		}));
+
 		this.layout();
+
+		if (this._cellModel.isCollapsed) {
+			this.onCellCollapse(true);
+		}
 	}
 
 	public layout(): void {
 		this._editor.layout(new DOM.Dimension(
 			DOM.getContentWidth(this.codeElement.nativeElement),
 			DOM.getContentHeight(this.codeElement.nativeElement)));
-		this._editor.setHeightToScrollHeight();
+		this._editor.setHeightToScrollHeight(false, this._cellModel.isCollapsed);
 	}
 
 	protected initActionBar() {
@@ -305,7 +324,9 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	}
 
 	private setFocusAndScroll(): void {
-		if (this.cellModel.id === this._activeCellId) {
+		// If offsetParent is null, the element isn't visible
+		// In this case, we don't want a cell to grab focus for an editor that isn't in the foreground
+		if (this.cellModel.id === this._activeCellId && this._editor.getContainer().offsetParent) {
 			this._editor.focus();
 			this._editor.getContainer().scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 		}
@@ -315,7 +336,29 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		return this.cellModel && this.cellModel.id === this.activeCellId;
 	}
 
-	protected toggleMoreActionsButton(isActiveOrHovered: boolean) {
+	protected toggleActionsVisibility(isActiveOrHovered: boolean) {
 		this._cellToggleMoreActions.toggleVisible(!isActiveOrHovered);
+
+		if (this.collapseComponent) {
+			this.collapseComponent.toggleIconVisibility(isActiveOrHovered);
+		}
+	}
+
+	private onCellCollapse(isCollapsed: boolean): void {
+		let editorWidget = this._editor.getControl() as ICodeEditor;
+		if (isCollapsed) {
+			let model = editorWidget.getModel();
+			let totalLines = model.getLineCount();
+			let endColumn = model.getLineMaxColumn(totalLines);
+			editorWidget.setHiddenAreas([{
+				startLineNumber: 2,
+				startColumn: 1,
+				endLineNumber: totalLines,
+				endColumn: endColumn
+			}]);
+		} else {
+			editorWidget.setHiddenAreas([]);
+		}
+		this._editor.setHeightToScrollHeight(false, isCollapsed);
 	}
 }

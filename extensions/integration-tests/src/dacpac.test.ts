@@ -26,7 +26,7 @@ if (context.RunTest) {
 			console.log(`Start dacpac tests`);
 		});
 
-		test('Deploy and extract dacpac', async function () {
+		test('Deploy and extract dacpac @UNSTABLE@ @REL@', async function () {
 			const server = await getStandaloneServer();
 			await utils.connectToServer(server);
 
@@ -66,7 +66,7 @@ if (context.RunTest) {
 		// Tracking bug https://github.com/microsoft/azuredatastudio/issues/7323
 
 		const bacpac1: string = path.join(__dirname, '..', 'testData', 'Database1.bacpac');
-		test.skip('Import and export bacpac', async function () {
+		test('Import and export bacpac @UNSTABLE@', async function () {
 			const server = await getStandaloneServer();
 			await utils.connectToServer(server);
 

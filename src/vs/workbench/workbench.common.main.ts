@@ -16,6 +16,7 @@ import 'vs/workbench/browser/workbench.contribution';
 
 //#region --- workbench actions
 
+import 'vs/workbench/browser/actions/textInputActions';
 import 'vs/workbench/browser/actions/developerActions';
 import 'vs/workbench/browser/actions/helpActions';
 import 'vs/workbench/browser/actions/layoutActions';
@@ -339,7 +340,6 @@ import 'vs/workbench/contrib/surveys/browser/languageSurveys.contribution';
 import 'vs/workbench/contrib/welcome/overlay/browser/welcomeOverlay';
 import 'vs/workbench/contrib/welcome/page/browser/welcomePage.contribution';
 import 'vs/workbench/contrib/welcome/walkThrough/browser/walkThrough.contribution';
-import 'vs/workbench/contrib/welcome/gettingStarted/browser/gettingStarted.contribution';
 
 // Call Hierarchy
 import 'vs/workbench/contrib/callHierarchy/browser/callHierarchy.contribution';
@@ -431,5 +431,8 @@ import 'sql/workbench/parts/backup/browser/backup.contribution';
 
 //restore
 import 'sql/workbench/parts/restore/browser/restore.contribution';
+
+// Scripting
+import 'sql/workbench/parts/scripting/browser/scripting.contribution';
 
 //#endregion

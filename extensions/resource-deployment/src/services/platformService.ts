@@ -7,6 +7,7 @@ import * as fs from 'fs';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as cp from 'child_process';
+import { getErrorMessage } from '../utils';
 
 /**
  * Abstract of platform dependencies
@@ -22,6 +23,8 @@ export interface IPlatformService {
 	makeDirectory(path: string): Promise<void>;
 	readTextFile(filePath: string): Promise<string>;
 	runCommand(command: string, options?: CommandOptions): Promise<string>;
+	saveTextFile(content: string, path: string): Promise<void>;
+	deleteFile(path: string, ignoreError?: boolean): Promise<void>;
 }
 
 export interface CommandOptions {
@@ -90,5 +93,25 @@ export class PlatformService implements IPlatformService {
 				}
 			});
 		});
+	}
+
+	saveTextFile(content: string, path: string): Promise<void> {
+		return fs.promises.writeFile(path, content, 'utf8');
+	}
+
+	async deleteFile(path: string, ignoreError: boolean = true): Promise<void> {
+		try {
+			const exists = await this.fileExists(path);
+			if (exists) {
+				fs.promises.unlink(path);
+			}
+		}
+		catch (error) {
+			if (ignoreError) {
+				console.error('Error occured deleting file: ', getErrorMessage(error));
+			} else {
+				throw error;
+			}
+		}
 	}
 }

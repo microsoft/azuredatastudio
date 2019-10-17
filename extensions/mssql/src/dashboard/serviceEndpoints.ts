@@ -65,7 +65,7 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 				.sort((e1, e2) => e1.endpoint.localeCompare(e2.endpoint));
 			endpointsArray.unshift(...sqlServerMasterEndpoints);
 
-			const container = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
+			const container = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%' }).component();
 			endpointsArray.forEach(endpointInfo => {
 				const endPointRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
 				const nameCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.description }).component();
@@ -103,7 +103,7 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 
 				container.addItem(endPointRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'box-sizing': 'border-box', 'user-select': 'text' } });
 			});
-			const endpointsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '540px', height: '100%', alignItems: 'left', position: 'absolute' }).component();
+			const endpointsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '540px', height: '100%', position: 'absolute' }).component();
 			endpointsContainer.addItem(container, { CSSStyles: { 'padding-top': '25px', 'padding-left': '5px' } });
 
 			await view.initializeModel(endpointsContainer);

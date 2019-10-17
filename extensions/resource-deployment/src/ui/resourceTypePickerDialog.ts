@@ -35,7 +35,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 		super(localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
 		this._selectedResourceType = resourceType;
 		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Select');
-		this._dialogObject.okButton.onClick(() => this.onComplete());
 	}
 
 	initialize() {
@@ -53,8 +52,10 @@ export class ResourceTypePickerDialog extends DialogBase {
 		tab.registerContent((view: azdata.ModelView) => {
 			const tableWidth = 1126;
 			this._view = view;
-			this.resourceTypeService.getResourceTypes().forEach(resourceType => this.addCard(resourceType));
-			const cardsContainer = view.modelBuilder.flexContainer().withItems(this._resourceTypeCards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'left' }).component();
+			this.resourceTypeService.getResourceTypes().sort((a: ResourceType, b: ResourceType) => {
+				return (a.displayIndex || Number.MAX_VALUE) - (b.displayIndex || Number.MAX_VALUE);
+			}).forEach(resourceType => this.addCard(resourceType));
+			const cardsContainer = view.modelBuilder.flexContainer().withItems(this._resourceTypeCards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row' }).component();
 			this._resourceDescriptionLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this._selectedResourceType ? this._selectedResourceType.description : undefined }).component();
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			this._agreementContainer = view.modelBuilder.divContainer().component();
@@ -259,8 +260,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		return this._selectedResourceType.getProvider(options)!;
 	}
 
-	private onComplete(): void {
+	protected onComplete(): void {
 		this.resourceTypeService.startDeployment(this.getCurrentProvider());
-		this.dispose();
 	}
 }

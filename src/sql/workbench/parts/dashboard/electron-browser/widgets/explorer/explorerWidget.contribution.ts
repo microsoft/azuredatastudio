@@ -9,7 +9,7 @@ import { ExplorerScriptSelectAction, ExplorerScriptExecuteAction, ExplorerScript
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { EditDataAction } from 'sql/workbench/electron-browser/scriptingActions';
+import { EditDataAction } from 'sql/workbench/browser/scriptingActions';
 
 CommandsRegistry.registerCommand(ExplorerScriptSelectAction.ID, (accessor, context) => {
 	const instantiationService = accessor.get(IInstantiationService);

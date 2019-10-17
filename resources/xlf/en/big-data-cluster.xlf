@@ -2,10 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/big-data-cluster/package" source-language="en" datatype="plaintext"><body>
     <trans-unit id="description">
-      <source xml:lang="en">Support for managing SQL Server big data clusters</source>
+      <source xml:lang="en">Support for managing SQL Server Big Data Clusters</source>
     </trans-unit>
     <trans-unit id="text.sqlServerBigDataClusters">
-      <source xml:lang="en">SQL Server big data clusters</source>
+      <source xml:lang="en">SQL Server Big Data Clusters</source>
     </trans-unit>
     <trans-unit id="command.addController.title">
       <source xml:lang="en">Connect to Controller</source>
@@ -16,21 +16,159 @@
     <trans-unit id="command.refreshController.title">
       <source xml:lang="en">Refresh</source>
     </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/bigDataCluster/tree/controllerTreeNode" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="textSqlServers">
-      <source xml:lang="en">SQL Servers</source>
+    <trans-unit id="command.manageController.title">
+      <source xml:lang="en">Manage</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/big-data-cluster/out/bigDataCluster/tree/addControllerTreeNode" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/utils" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="state.creating">
+      <source xml:lang="en">Creating</source>
+    </trans-unit>
+    <trans-unit id="state.waiting">
+      <source xml:lang="en">Waiting</source>
+    </trans-unit>
+    <trans-unit id="state.ready">
+      <source xml:lang="en">Ready</source>
+    </trans-unit>
+    <trans-unit id="state.deleting">
+      <source xml:lang="en">Deleting</source>
+    </trans-unit>
+    <trans-unit id="state.waitingForDeletion">
+      <source xml:lang="en">Waiting For Deletion</source>
+    </trans-unit>
+    <trans-unit id="state.deleted">
+      <source xml:lang="en">Deleted</source>
+    </trans-unit>
+    <trans-unit id="state.upgrading">
+      <source xml:lang="en">Upgrading</source>
+    </trans-unit>
+    <trans-unit id="state.waitingForUpgrade">
+      <source xml:lang="en">Waiting For Upgrade</source>
+    </trans-unit>
+    <trans-unit id="state.error">
+      <source xml:lang="en">Error</source>
+    </trans-unit>
+    <trans-unit id="state.running">
+      <source xml:lang="en">Running</source>
+    </trans-unit>
+    <trans-unit id="endpoint.appproxy">
+      <source xml:lang="en">Application Proxy</source>
+    </trans-unit>
+    <trans-unit id="endpoint.controller">
+      <source xml:lang="en">Cluster Management Service</source>
+    </trans-unit>
+    <trans-unit id="endpoint.gateway">
+      <source xml:lang="en">Gateway to access HDFS files, Spark</source>
+    </trans-unit>
+    <trans-unit id="endpoint.managementproxy">
+      <source xml:lang="en">Management Proxy</source>
+    </trans-unit>
+    <trans-unit id="endpoint.mgmtproxy">
+      <source xml:lang="en">Management Proxy</source>
+    </trans-unit>
+    <trans-unit id="endpoint.sqlServerEndpoint">
+      <source xml:lang="en">SQL Server Master Instance Front-End</source>
+    </trans-unit>
+    <trans-unit id="endpoint.grafana">
+      <source xml:lang="en">Metrics Dashboard</source>
+    </trans-unit>
+    <trans-unit id="endpoint.kibana">
+      <source xml:lang="en">Log Search Dashboard</source>
+    </trans-unit>
+    <trans-unit id="endpoint.yarnHistory">
+      <source xml:lang="en">Spark Diagnostics and Monitoring Dashboard</source>
+    </trans-unit>
+    <trans-unit id="endpoint.sparkHistory">
+      <source xml:lang="en">Spark Jobs Management and Monitoring Dashboard</source>
+    </trans-unit>
+    <trans-unit id="endpoint.webhdfs">
+      <source xml:lang="en">HDFS File System Proxy</source>
+    </trans-unit>
+    <trans-unit id="endpoint.livy">
+      <source xml:lang="en">Proxy for running Spark statements, jobs, applications</source>
+    </trans-unit>
+    <trans-unit id="service.sql">
+      <source xml:lang="en">SQL Server</source>
+    </trans-unit>
+    <trans-unit id="service.hdfs">
+      <source xml:lang="en">HDFS</source>
+    </trans-unit>
+    <trans-unit id="service.spark">
+      <source xml:lang="en">Spark</source>
+    </trans-unit>
+    <trans-unit id="service.control">
+      <source xml:lang="en">Control</source>
+    </trans-unit>
+    <trans-unit id="service.gateway">
+      <source xml:lang="en">Gateway</source>
+    </trans-unit>
+    <trans-unit id="service.app">
+      <source xml:lang="en">App</source>
+    </trans-unit>
+    <trans-unit id="bdc.healthy">
+      <source xml:lang="en">Healthy</source>
+    </trans-unit>
+    <trans-unit id="bdc.unhealthy">
+      <source xml:lang="en">Unhealthy</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="error.no.activedirectory">
+      <source xml:lang="en">This cluster does not support Windows authentication</source>
+    </trans-unit>
+    <trans-unit id="bdc.error.tokenPost">
+      <source xml:lang="en">Error during authentication</source>
+    </trans-unit>
+    <trans-unit id="bdc.error.unauthorized">
+      <source xml:lang="en">You do not have permission to log into this cluster using Windows Authentication</source>
+    </trans-unit>
+    <trans-unit id="bdc.error.getEndPoints">
+      <source xml:lang="en">Error retrieving endpoints from {0}</source>
+    </trans-unit>
+    <trans-unit id="bdc.error.getBdcStatus">
+      <source xml:lang="en">Error retrieving BDC status from {0}</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/big-data-cluster/dist/extension" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="bdc.dashboard.title">
+      <source xml:lang="en">Big Data Cluster Dashboard -</source>
+    </trans-unit>
+    <trans-unit id="textYes">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
+    <trans-unit id="textNo">
+      <source xml:lang="en">No</source>
+    </trans-unit>
+    <trans-unit id="textConfirmDeleteController">
+      <source xml:lang="en">Are you sure you want to delete '{0}'?</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/addControllerNode" source-language="en" datatype="plaintext"><body>
     <trans-unit id="textBigDataClusterControllerWithDots">
-      <source xml:lang="en">Add big data cluster controller...</source>
+      <source xml:lang="en">Add SQL Server Big Data Cluster controller...</source>
     </trans-unit>
     <trans-unit id="textConnectToController">
       <source xml:lang="en">Connect to Controller</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/big-data-cluster/out/bigDataCluster/dialog/addControllerDialog" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/loadingControllerNode" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="textLoadingWithDots">
+      <source xml:lang="en">Loading...</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="basicAuthName">
+      <source xml:lang="en">Basic</source>
+    </trans-unit>
+    <trans-unit id="integratedAuthName">
+      <source xml:lang="en">Windows Authentication</source>
+    </trans-unit>
+    <trans-unit id="err.controller.username.required">
+      <source xml:lang="en">Username is required</source>
+    </trans-unit>
+    <trans-unit id="err.controller.password.required">
+      <source xml:lang="en">Password is required</source>
+    </trans-unit>
     <trans-unit id="textAddNewController">
       <source xml:lang="en">Add New Controller</source>
     </trans-unit>
@@ -49,6 +187,9 @@
     <trans-unit id="textUrlCapital">
       <source xml:lang="en">URL</source>
     </trans-unit>
+    <trans-unit id="textAuthCapital">
+      <source xml:lang="en">Authentication type</source>
+    </trans-unit>
     <trans-unit id="textUsernameCapital">
       <source xml:lang="en">Username</source>
     </trans-unit>
@@ -62,15 +203,94 @@
       <source xml:lang="en">Cancel</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/big-data-cluster/out/extension" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="textYes">
-      <source xml:lang="en">Yes</source>
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboard" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="bdc.dashboard.refreshButton">
+      <source xml:lang="en">Refresh</source>
     </trans-unit>
-    <trans-unit id="textNo">
-      <source xml:lang="en">No</source>
+    <trans-unit id="bdc.dashboard.troubleshootButton">
+      <source xml:lang="en">Troubleshoot</source>
     </trans-unit>
-    <trans-unit id="textConfirmDeleteController">
-      <source xml:lang="en">Are you sure you want to delete '{0}'?</source>
+    <trans-unit id="bdc.dashboard.overviewNavTitle">
+      <source xml:lang="en">Big data cluster overview</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.clusterDetails">
+      <source xml:lang="en">Cluster Details</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="bdc.dashboard.viewHyperlink">
+      <source xml:lang="en">View</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.notAvailable">
+      <source xml:lang="en">N/A</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.healthStatusDetailsHeader">
+      <source xml:lang="en">Health Status Details</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.lastUpdated">
+      <source xml:lang="en">Last Updated : {0}</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.instanceHeader">
+      <source xml:lang="en">Instance</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.stateHeader">
+      <source xml:lang="en">State</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.healthStatusHeader">
+      <source xml:lang="en">Health Status</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.metricsAndLogsLabel">
+      <source xml:lang="en">Metrics and Logs</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.metricsHeader">
+      <source xml:lang="en">Metrics</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.logsHeader">
+      <source xml:lang="en">Logs</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.viewDetails">
+      <source xml:lang="en">View Details</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="bdc.dashboard.propertiesHeader">
+      <source xml:lang="en">Cluster Properties</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.clusterState">
+      <source xml:lang="en">Cluster State :</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.healthStatus">
+      <source xml:lang="en">Health Status :</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.overviewHeader">
+      <source xml:lang="en">Cluster Overview</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.lastUpdated">
+      <source xml:lang="en">Last Updated : {0}</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.serviceNameHeader">
+      <source xml:lang="en">Service Name</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.stateHeader">
+      <source xml:lang="en">State</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.healthStatusHeader">
+      <source xml:lang="en">Health Status</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.endpointsLabel">
+      <source xml:lang="en">Service Endpoints</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.serviceHeader">
+      <source xml:lang="en">Service</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.endpointHeader">
+      <source xml:lang="en">Endpoint</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.viewDetails">
+      <source xml:lang="en">View Details</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.copyTitle">
+      <source xml:lang="en">Copy</source>
     </trans-unit>
   </body></file>
 </xliff>

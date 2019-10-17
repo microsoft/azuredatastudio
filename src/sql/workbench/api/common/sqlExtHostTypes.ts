@@ -225,6 +225,7 @@ export enum ComponentEventType {
 	onSelectedRowChanged,
 	onComponentCreated,
 	onCellAction,
+	onEnterKeyPressed
 }
 
 export interface IComponentEventArgs {
@@ -252,6 +253,7 @@ export interface IModelViewButtonDetails {
 	enabled: boolean;
 	hidden: boolean;
 	focused?: boolean;
+	position?: 'left' | 'right';
 }
 
 export interface IModelViewWizardPageDetails {

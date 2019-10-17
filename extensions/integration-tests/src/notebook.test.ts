@@ -29,13 +29,11 @@ if (context.RunTest) {
 			await (new NotebookTester()).cleanup(this.currentTest.title);
 		});
 
-		// This test needs to be re-enabled once the SqlClient driver has been updated
-		test.skip('Sql NB test', async function () {
+		test('Sql NB test', async function () {
 			await (new NotebookTester()).sqlNbTest(this.test.title);
 		});
 
-		// This test needs to be re-enabled once the SqlClient driver has been updated
-		test.skip('Sql NB multiple cells test', async function () {
+		test('Sql NB multiple cells test', async function () {
 			await (new NotebookTester()).sqlNbMultipleCellsTest(this.test.title);
 		});
 
@@ -56,7 +54,7 @@ if (context.RunTest) {
 		});
 
 		// TODO: Need to make this test more reliable.
-		test.skip('should not be dirty after saving notebook test', async function () {
+		test('should not be dirty after saving notebook test @UNSTABLE@', async function () {
 			await (new NotebookTester().shouldNotBeDirtyAfterSavingNotebookTest(this.test.title));
 		});
 

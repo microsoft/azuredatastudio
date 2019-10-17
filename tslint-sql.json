@@ -17,9 +17,10 @@
 			"severity": "warn"
 		},
 		"await-promise": {
-			"severity": "warn",
 			"options": [
-				"Thenable"
+				"Thenable",
+				"Deferred",
+				"PromiseLike"
 			]
 		},
 		"use-isnan": {
