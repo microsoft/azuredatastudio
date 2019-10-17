@@ -7,8 +7,5 @@
 		"{connection_file}"
 	],
 	"display_name": "PowerShell",
-	"env": {
-		"powershell_command": "powershell"
-	},
 	"language": "powershell"
 }

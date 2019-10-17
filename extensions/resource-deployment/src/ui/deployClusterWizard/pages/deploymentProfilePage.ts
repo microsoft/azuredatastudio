@@ -81,31 +81,36 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 		}, {
 			label: '' // line separator
 		}, {
-			label: localize('deployCluster.defaultDataStorage', "Data storage size (GB)"),
+			label: localize('deployCluster.storageSize', "Storage size"),
+			value: localize('deployCluster.gbPerInstance', "GB per Instance"),
+			fontWeight: 'bold'
+		}, {
+			label: localize('deployCluster.defaultDataStorage', "Data storage"),
 			value: profile.controllerDataStorageSize.toString()
 		}, {
-			label: localize('deployCluster.defaultLogStorage', "Log storage size (GB)"),
+			label: localize('deployCluster.defaultLogStorage', "Log storage"),
 			value: profile.controllerLogsStorageSize.toString()
 		}, {
 			label: '' // line separator
-		}
-		];
+		}, {
+			label: localize('deployCluster.features', "Features"),
+			value: '',
+			fontWeight: 'bold'
+		}, {
+			label: localize('deployCluster.basicAuthentication', "Basic authentication"),
+			value: ''
+		}];
 		if (profile.activeDirectorySupported) {
 			descriptions.push({
 				label: localize('deployCluster.activeDirectoryAuthentication', "Active Directory authentication"),
-				value: '✅'
-			});
-		} else {
-			descriptions.push({
-				label: localize('deployCluster.basicAuthentication', "Basic authentication"),
-				value: '✅'
+				value: ''
 			});
 		}
 
-		if (profile.hadrEnabled) {
+		if (profile.sqlServerReplicas > 1) {
 			descriptions.push({
 				label: localize('deployCluster.hadr', "High Availability"),
-				value: '✅'
+				value: ''
 			});
 		}
 
@@ -114,7 +119,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 			label: profile.profileName,
 			descriptions: descriptions,
 			width: '240px',
-			height: '300px',
+			height: '320px',
 		}).component();
 		this._cards.push(card);
 		this.wizard.registerDisposable(card.onCardSelectedChanged(() => {
@@ -150,20 +155,24 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 		this.wizard.model.setPropertyValue(VariableNames.ZooKeeperScale_VariableName, selectedProfile.zooKeeperReplicas);
 		this.wizard.model.setPropertyValue(VariableNames.ControllerDataStorageSize_VariableName, selectedProfile.controllerDataStorageSize);
 		this.wizard.model.setPropertyValue(VariableNames.ControllerLogsStorageSize_VariableName, selectedProfile.controllerLogsStorageSize);
-		this.wizard.model.setPropertyValue(VariableNames.EnableHADR_VariableName, selectedProfile.hadrEnabled);
 		this.wizard.model.setPropertyValue(VariableNames.SQLServerPort_VariableName, selectedProfile.sqlServerPort);
 		this.wizard.model.setPropertyValue(VariableNames.GateWayPort_VariableName, selectedProfile.gatewayPort);
 		this.wizard.model.setPropertyValue(VariableNames.ControllerPort_VariableName, selectedProfile.controllerPort);
+		this.wizard.model.setPropertyValue(VariableNames.ServiceProxyPort_VariableName, selectedProfile.serviceProxyPort);
+		this.wizard.model.setPropertyValue(VariableNames.AppServiceProxyPort_VariableName, selectedProfile.appServiceProxyPort);
 		this.wizard.model.setPropertyValue(VariableNames.IncludeSpark_VariableName, selectedProfile.includeSpark);
 		this.wizard.model.setPropertyValue(VariableNames.ControllerDataStorageClassName_VariableName, selectedProfile.controllerDataStorageClass);
 		this.wizard.model.setPropertyValue(VariableNames.ControllerLogsStorageClassName_VariableName, selectedProfile.controllerLogsStorageClass);
 		this.wizard.model.setPropertyValue(VariableNames.ReadableSecondaryPort_VariableName, selectedProfile.sqlServerReadableSecondaryPort);
+		this.wizard.model.setPropertyValue(VariableNames.DockerRegistry_VariableName, selectedProfile.registry);
+		this.wizard.model.setPropertyValue(VariableNames.DockerRepository_VariableName, selectedProfile.repository);
+		this.wizard.model.setPropertyValue(VariableNames.DockerImageTag_VariableName, selectedProfile.imageTag);
 		this.wizard.model.adAuthSupported = selectedProfile.activeDirectorySupported;
 		this.wizard.model.selectedProfile = selectedProfile;
 	}
 
 	private loadCards(): Promise<void> {
-		return this.wizard.azdataService.getDeploymentProfiles().then((profiles: BigDataClusterDeploymentProfile[]) => {
+		return this.wizard.azdataService.getDeploymentProfiles(this.wizard.deploymentType).then((profiles: BigDataClusterDeploymentProfile[]) => {
 			const defaultProfile: string = this.getDefaultProfile();
 
 			profiles.forEach(profile => {

@@ -147,6 +147,14 @@
           "dark": "resources/dark/save_inverse.svg",
           "light": "resources/light/save.svg"
         }
+      },
+      {
+        "command": "notebook.command.searchBook",
+        "title": "%title.searchJupyterBook%",
+        "icon": {
+          "dark": "resources/dark/manage_inverse.svg",
+          "light": "resources/light/manage.svg"
+        }
       }
     ],
     "languages": [
