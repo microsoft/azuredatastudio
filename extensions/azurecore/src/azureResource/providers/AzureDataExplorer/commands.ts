@@ -28,7 +28,7 @@ export function registerAzureResourceAzureDataExplorerCommands(appContext: AppCo
 		const resourceNode = (node as AzureResourceResourceTreeNode).resourceNodeWithProviderId.resourceNode;
 		const azureDataExplorer = (resourceNode as IAzureResourceAzureDataExplorerNode).azureDataExplorer;
 
-		// TODO: Should the below be different for Azure Data Explorers
+		// TODO: Should the below be different for Azure Data Explorer
 		let connectionProfile: IConnectionProfile = {
 			id: generateGuid(),
 			connectionName: undefined,

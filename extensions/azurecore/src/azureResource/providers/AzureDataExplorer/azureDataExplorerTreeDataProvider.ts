@@ -102,5 +102,5 @@ export class AzureResourceAzureDataExplorerTreeDataProvider implements azureReso
 	private _extensionContext: ExtensionContext = undefined;
 
 	private static readonly containerId = 'azure.resource.providers.azureDataExplorer.treeDataProvider.azureDataExplorerContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.azureDataExplorer.treeDataProvider.azureDataExplorerContainerLabel', 'Azure Data Explorers');
+	private static readonly containerLabel = localize('azure.resource.providers.azureDataExplorer.treeDataProvider.azureDataExplorerContainerLabel', 'Azure Data Explorer clusters');
 }
