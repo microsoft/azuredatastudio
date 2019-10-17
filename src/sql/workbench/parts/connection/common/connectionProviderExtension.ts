@@ -211,5 +211,4 @@ function resolveIconPath(extension: IExtensionPointUser<any>): void {
 	} else {
 		toAbsolutePath(properties['iconPath']);
 	}
-	//	resolver.add(extension.description.identifier.value);
 }
