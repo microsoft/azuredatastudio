@@ -455,7 +455,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			if (!providerDescriptor.instance) {
 				// Await extension registration before awaiting provider registration
 				try {
-					await this._extensionService.whenInstalledExtensionsRegistered;
+					await this._extensionService.whenInstalledExtensionsRegistered();
 				} catch (error) {
 					console.error(error);
 				}

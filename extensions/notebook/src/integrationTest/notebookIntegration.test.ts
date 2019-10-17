@@ -12,8 +12,7 @@ import 'mocha';
 import { JupyterController } from '../jupyter/jupyterController';
 import { JupyterServerInstallation, PythonPkgDetails } from '../jupyter/jupyterServerInstallation';
 import { pythonBundleVersion } from '../common/constants';
-import { executeStreamedCommand } from '../common/utils';
-import { AddNewPackageTab } from '../dialog/managePackages/addNewPackageTab';
+import { executeStreamedCommand, sortPackageVersions } from '../common/utils';
 
 describe('Notebook Extension Python Installation', function () {
 	this.timeout(600000);
@@ -90,7 +89,7 @@ describe('Notebook Extension Python Installation', function () {
 		let testPkgVersion = '0.24.2';
 		let expectedPkg: PythonPkgDetails = { name: testPkg, version: testPkgVersion };
 
-		await install.installPipPackage(testPkg, testPkgVersion);
+		await install.installPipPackages([{ name: testPkg, version: testPkgVersion}], false);
 		let packages = await install.getInstalledPipPackages();
 		should(packages).containEql(expectedPkg);
 
@@ -98,7 +97,7 @@ describe('Notebook Extension Python Installation', function () {
 		packages = await install.getInstalledPipPackages();
 		should(packages).not.containEql(expectedPkg);
 
-		await install.installPipPackage(testPkg, testPkgVersion);
+		await install.installPipPackages([{ name: testPkg, version: testPkgVersion}], false);
 		packages = await install.getInstalledPipPackages();
 		should(packages).containEql(expectedPkg);
 	});
@@ -112,16 +111,23 @@ describe('Notebook Extension Python Installation', function () {
 
 		should(install.getInstalledCondaPackages()).be.rejected();
 
-		should(install.installCondaPackage('pandas', '0.24.2')).be.rejected();
+		should(install.installCondaPackages([{ name: 'pandas', version: '0.24.2' }], false)).be.rejected();
 
 		should(install.uninstallCondaPackages([{ name: 'pandas', version: '0.24.2' }])).be.rejected();
 	});
 
-	it('Manage Packages Dialog: New Package Test', async function () {
+	it('Manage Packages Dialog: Sort Versions Test', async function () {
 		let testVersions = ['1.0.0', '1.1', '0.0.0.9', '0.0.5', '100', '0.3', '3'];
-		let expectedVerions = ['100', '3', '1.1', '1.0.0', '0.3', '0.0.5', '0.0.0.9'];
+		let ascendingVersions = ['0.0.0.9', '0.0.5', '0.3', '1.0.0', '1.1', '3', '100'];
+		let descendingVersions = ['100', '3', '1.1', '1.0.0', '0.3', '0.0.5', '0.0.0.9'];
 
-		let actualVersions = AddNewPackageTab.sortPackageVersions(testVersions);
-		should(actualVersions).be.deepEqual(expectedVerions);
+		let actualVersions = sortPackageVersions(testVersions);
+		should(actualVersions).be.deepEqual(ascendingVersions);
+
+		actualVersions = sortPackageVersions(testVersions, true);
+		should(actualVersions).be.deepEqual(ascendingVersions);
+
+		actualVersions = sortPackageVersions(testVersions, false);
+		should(actualVersions).be.deepEqual(descendingVersions);
 	});
 });

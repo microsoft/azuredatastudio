@@ -64,6 +64,7 @@ export namespace cssStyles {
 	export const hyperlink = { 'user-select': 'text', 'color': '#0078d4', 'text-decoration': 'underline', 'cursor': 'pointer' };
 	export const text = { 'margin-block-start': '0px', 'margin-block-end': '0px' };
 	export const nonSelectableText = { ...cssStyles.text, 'user-select': 'none' };
+	export const tabHeaderText = { 'margin-block-start': '2px', 'margin-block-end': '0px', 'user-select': 'none' };
 	export const selectedResourceHeaderTab = { 'font-weight': 'bold', 'color': '' };
 	export const unselectedResourceHeaderTab = { 'font-weight': '', 'color': '#0078d4' };
 	export const selectedTabDiv = { 'border-bottom': '2px solid #000' };
@@ -72,3 +73,6 @@ export namespace cssStyles {
 }
 
 export type AuthType = 'integrated' | 'basic';
+
+export const clusterEndpointsProperty = 'clusterEndpoints';
+export const controllerEndpointName = 'controller';

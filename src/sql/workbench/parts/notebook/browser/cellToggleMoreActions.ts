@@ -6,7 +6,7 @@
 import { ElementRef } from '@angular/core';
 
 import { localize } from 'vs/nls';
-import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { ActionBar, ActionsOrientation, Separator } from 'vs/base/browser/ui/actionbar/actionbar';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -19,26 +19,32 @@ import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/noteb
 import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { ToggleMoreWidgetAction } from 'sql/workbench/parts/dashboard/browser/core/actions';
 import { CellModel } from 'sql/workbench/parts/notebook/browser/models/cell';
+import { Action } from 'vs/base/common/actions';
 
 export const HIDDEN_CLASS = 'actionhidden';
 
 export class CellToggleMoreActions {
-	private _actions: CellActionBase[] = [];
+	private _actions: (Action | CellActionBase)[] = [];
 	private _moreActions: ActionBar;
 	private _moreActionsElement: HTMLElement;
 	constructor(
 		@IInstantiationService private instantiationService: IInstantiationService) {
 		this._actions.push(
-			instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', "Delete")),
-			instantiationService.createInstance(AddCellFromContextAction, 'codeBefore', localize('codeBefore', "Insert Code Before"), CellTypes.Code, false),
-			instantiationService.createInstance(AddCellFromContextAction, 'codeAfter', localize('codeAfter', "Insert Code After"), CellTypes.Code, true),
-			instantiationService.createInstance(AddCellFromContextAction, 'markdownBefore', localize('markdownBefore', "Insert Text Before"), CellTypes.Markdown, false),
-			instantiationService.createInstance(AddCellFromContextAction, 'markdownAfter', localize('markdownAfter', "Insert Text After"), CellTypes.Markdown, true),
 			instantiationService.createInstance(RunCellsAction, 'runAllBefore', localize('runAllBefore', "Run Cells Before"), false),
 			instantiationService.createInstance(RunCellsAction, 'runAllAfter', localize('runAllAfter', "Run Cells After"), true),
-			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', "Clear Output")),
+			new Separator(),
+			instantiationService.createInstance(AddCellFromContextAction, 'codeBefore', localize('codeBefore', "Insert Code Before"), CellTypes.Code, false),
+			instantiationService.createInstance(AddCellFromContextAction, 'codeAfter', localize('codeAfter', "Insert Code After"), CellTypes.Code, true),
+			new Separator(),
+			instantiationService.createInstance(AddCellFromContextAction, 'markdownBefore', localize('markdownBefore', "Insert Text Before"), CellTypes.Markdown, false),
+			instantiationService.createInstance(AddCellFromContextAction, 'markdownAfter', localize('markdownAfter', "Insert Text After"), CellTypes.Markdown, true),
+			new Separator(),
 			instantiationService.createInstance(CollapseCellAction, 'collapseCell', localize('collapseCell', "Collapse Cell"), true),
-			instantiationService.createInstance(CollapseCellAction, 'expandCell', localize('expandCell', "Expand Cell"), false)
+			instantiationService.createInstance(CollapseCellAction, 'expandCell', localize('expandCell', "Expand Cell"), false),
+			new Separator(),
+			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', "Clear Output")),
+			new Separator(),
+			instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', "Delete")),
 		);
 	}
 
@@ -50,7 +56,7 @@ export class CellToggleMoreActions {
 		}
 		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
 		this._moreActions.context = { target: this._moreActionsElement };
-		let validActions = this._actions.filter(a => a.canRun(context));
+		let validActions = this._actions.filter(a => a instanceof Separator || a instanceof CellActionBase && a.canRun(context));
 		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, validActions, context), { icon: true, label: false });
 	}
 

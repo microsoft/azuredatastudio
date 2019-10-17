@@ -16,6 +16,7 @@ export interface ResourceType {
 	options: ResourceTypeOption[];
 	providers: DeploymentProvider[];
 	agreement?: AgreementInfo;
+	displayIndex?: number;
 	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
 }
 
@@ -92,6 +93,7 @@ export type DeploymentProvider = DialogDeploymentProvider | WizardDeploymentProv
 
 export interface WizardInfo {
 	notebook: string | NotebookInfo;
+	azdata_notebook: string | NotebookInfo;
 	type: BdcDeploymentType;
 }
 
@@ -161,6 +163,9 @@ export interface FieldInfo {
 	useCustomValidator?: boolean;
 	labelPosition?: LabelPosition; // overwrite the labelPosition of SectionInfo.
 	fontStyle?: FontStyle;
+	labelFontWeight?: FontWeight;
+	links?: azdata.LinkArea[];
+	editable?: boolean; // for editable dropdown
 }
 
 export enum LabelPosition {
@@ -171,6 +176,11 @@ export enum LabelPosition {
 export enum FontStyle {
 	Normal = 'normal',
 	Italic = 'italic'
+}
+
+export enum FontWeight {
+	Normal = 'normal',
+	Bold = 'bold'
 }
 
 export enum FieldType {
