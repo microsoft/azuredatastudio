@@ -5,9 +5,10 @@
 
 'use strict';
 
+// TODO: Just use Resource imported from azure-arm-resource
 export interface AzureResourceArcadiaWorkspace {
+	id: string;
 	name: string;
-	fullName: string;
-	loginName: string;
-	defaultDatabaseName: string;
+	type: string;
+	location: string;
 }

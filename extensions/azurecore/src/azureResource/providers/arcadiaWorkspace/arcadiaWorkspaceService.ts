@@ -12,10 +12,28 @@ import { ServiceClientCredentials } from 'ms-rest';
 import { azureResource } from '../../azure-resource';
 import { IAzureResourceArcadiaWorkspaceService } from './interfaces';
 import { AzureResourceArcadiaWorkspace } from './models';
+import { ResourceManagementClient } from 'azure-arm-resource';
+
+let resourceTypeFilter: string[] = [
+	"Microsoft.ProjectArcadia/workspaces"
+];
 
 export class AzureResourceArcadiaWorkspaceService implements IAzureResourceArcadiaWorkspaceService {
 	public async getArcadiaWorkspaces(subscription: azureResource.AzureResourceSubscription, credential: ServiceClientCredentials): Promise<AzureResourceArcadiaWorkspace[]> {
 		const arcadiaWorkspaces: AzureResourceArcadiaWorkspace[] = [];
+
+		const resClient = new ResourceManagementClient.ResourceManagementClient(credential, subscription.id);
+		const resources = await resClient.resources.list();
+		resources.forEach((resource) => {
+			if(resource.type === resourceTypeFilter[0])
+			{
+				arcadiaWorkspaces.push({
+				id: resource.id,
+				name: resource.name,
+				type:resource.type,
+				location: resource.location});
+			}
+		});
 
 		// TODO: Use ARM calls
 		/*const sqlManagementClient = new SqlManagementClient(credential, subscription.id);

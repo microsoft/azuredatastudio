@@ -58,12 +58,12 @@ export class AzureResourceArcadiaWorkspaceTreeDataProvider implements azureResou
 				},
 				collapsibleState: TreeItemCollapsibleState.Collapsed,
 				contextValue: AzureResourceItemType.arcadiaWorkspace,
-				payload: {
+				payload: { // TODO: What is the payload for Arcadia
 					id: generateGuid(),
 					connectionName: undefined,
-					serverName: arcadiaWorkspace.fullName,
-					databaseName: arcadiaWorkspace.defaultDatabaseName,
-					userName: arcadiaWorkspace.loginName,
+					serverName: '',
+					databaseName: '',
+					userName: '',
 					password: '',
 					authenticationType: 'SqlLogin',
 					savePassword: true,
