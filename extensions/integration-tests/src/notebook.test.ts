@@ -33,7 +33,8 @@ if (context.RunTest) {
 			await (new NotebookTester()).sqlNbTest(this.test.title);
 		});
 
-		test('Sql NB multiple cells test', async function () {
+		// This test needs to be re-enabled once the SqlClient driver has been updated
+		test('Sql NB multiple cells test @UNSTABLE@', async function () {
 			await (new NotebookTester()).sqlNbMultipleCellsTest(this.test.title);
 		});
 
