@@ -20,10 +20,6 @@ export class JupyterServerInstanceStub implements IServerInstance {
 		return undefined;
 	}
 
-	public get attachedEditorCount(): number {
-		return undefined;
-	}
-
 	public configure(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}

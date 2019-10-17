@@ -16,7 +16,7 @@ import { ApiWrapper } from '../common/apiWrapper';
 import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as utils from '../common/utils';
 import { IServerInstance } from './common';
-import { PerDriveServerInstance, IInstanceOptions } from './serverInstance';
+import { PerFolderServerInstance, IInstanceOptions } from './serverInstance';
 import { CommandContext } from '../common/constants';
 
 export interface IServerManagerOptions {
@@ -56,11 +56,13 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 
 	public async startServer(): Promise<void> {
 		try {
-			this._jupyterServer = await this.doStartServer();
-			this.options.extensionContext.subscriptions.push(this);
-			let partialSettings = LocalJupyterServerManager.getLocalConnectionSettings(this._jupyterServer.uri);
-			this._serverSettings = partialSettings;
-			this._onServerStarted.fire();
+			if (!this._jupyterServer) {
+				this._jupyterServer = await this.doStartServer();
+				this.options.extensionContext.subscriptions.push(this);
+				let partialSettings = LocalJupyterServerManager.getLocalConnectionSettings(this._jupyterServer.uri);
+				this._serverSettings = partialSettings;
+				this._onServerStarted.fire();
+			}
 
 		} catch (error) {
 			// this is caught and notified up the stack, no longer showing a message here
@@ -119,35 +121,18 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		// /path2/nb3.ipynb
 		// ... will result in 2 notebook servers being started, one for /path1/ and one for /path2/
 		let notebookDir = this._apiWrapper.getWorkspacePathFromUri(vscode.Uri.file(this.documentPath));
-		let docDir;
-		if (notebookDir) {
-			docDir = path.dirname(notebookDir);
-		} else {
-			docDir = path.dirname(this.documentPath);
-		}
-		let parsedPath = path.parse(docDir);
-		let userHome = utils.getUserHome();
-		// If you don't match the docDir's casing for drive letters, a 404 will result
-		// when trying to create a new session on Windows
-		if (docDir && docDir[0] !== userHome[0] && docDir[0].toLowerCase() === userHome[0].toLowerCase()) {
-			userHome = docDir[0] + userHome.substr(1);
-		}
-		let relativePathDocDirUserHome = path.relative(docDir, userHome);
-		if (!docDir || docDir === '.' || docDir === parsedPath.root || relativePathDocDirUserHome.includes('..') || relativePathDocDirUserHome === '') {
-			// If the user is using a system version of python, then
-			// '.' will try to create a notebook in a system directory.
-			// Since this will fail due to permissions, use the user's
-			// home folder instead.
-			notebookDir = userHome;
-		} else {
-			let splitDirName: string[] = [];
-			if (docDir && docDir !== '.' && parsedPath) {
-				splitDirName = path.dirname(this.documentPath).split(path.sep);
-			}
-			if (splitDirName.length > 1) {
-				notebookDir = path.join(parsedPath.root, splitDirName[1]);
+		if (!notebookDir) {
+			let docDir;
+			// If a folder is passed in for documentPath, use the folder instead of calling dirname
+			docDir = path.extname(this.documentPath) ? path.dirname(this.documentPath) : this.documentPath;
+			if (docDir === '.') {
+				// If the user is using a system version of python, then
+				// '.' will try to create a notebook in a system directory.
+				// Since this will fail due to permissions, use the user's
+				// home folder instead.
+				notebookDir = utils.getUserHome();
 			} else {
-				notebookDir = userHome;
+				notebookDir = docDir;
 			}
 		}
 
@@ -162,11 +147,6 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 			install: installation
 		};
 
-		let existingInstance = this.factory.checkIfInstanceExists(serverInstanceOptions);
-		if (existingInstance) {
-			return existingInstance;
-		}
-
 		this._instanceOptions = serverInstanceOptions;
 
 		let server = this.factory.createInstance(serverInstanceOptions);
@@ -178,25 +158,9 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 }
 
 export class ServerInstanceFactory {
-	private _instances: PerDriveServerInstance[] = [];
 
-	public checkIfInstanceExists(options: IInstanceOptions): IServerInstance | undefined {
-		let index = this._instances.findIndex(e => e.getNotebookDirectory() === options.notebookDirectory);
-		if (index > -1) {
-			if (this._instances[index] && this._instances[index].isStarted) {
-				this._instances[index].incrementAttachedEditorCount();
-				return this._instances[index];
-			} else {
-				this._instances.splice(index);
-			}
-		}
-		return undefined;
-	}
-
-	public createInstance(options: IInstanceOptions): IServerInstance {
-		let instance = new PerDriveServerInstance(options);
-		this._instances.push(instance);
-		return instance;
+	createInstance(options: IInstanceOptions): IServerInstance {
+		return new PerFolderServerInstance(options);
 	}
 }
 

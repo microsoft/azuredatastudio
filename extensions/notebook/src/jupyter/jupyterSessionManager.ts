@@ -67,7 +67,6 @@ export class JupyterSessionManager implements nb.SessionManager {
 	private _ready: Deferred<void>;
 	private _isReady: boolean;
 	private _sessionManager: Session.IManager;
-	private _id: string;
 
 	private static _sessions: JupyterSession[] = [];
 
@@ -125,7 +124,6 @@ export class JupyterSessionManager implements nb.SessionManager {
 			return Promise.reject(new Error(localize('errorStartBeforeReady', 'Cannot start a session, the manager is not yet initialized')));
 		}
 		let sessionImpl = await this._sessionManager.startNew(options);
-		this._id = sessionImpl.id;
 		let jupyterSession = new JupyterSession(sessionImpl);
 		let index = JupyterSessionManager._sessions.findIndex(session => session.path === options.path);
 		if (index > -1) {
@@ -139,13 +137,10 @@ export class JupyterSessionManager implements nb.SessionManager {
 		return JupyterSessionManager._sessions;
 	}
 
-	public shutdown(id?: string): Promise<void> {
+	public shutdown(id: string): Promise<void> {
 		if (!this._isReady) {
 			// no-op
 			return Promise.resolve();
-		}
-		if (!id) {
-			id = this._id;
 		}
 		let index = JupyterSessionManager._sessions.findIndex(session => session.id === id);
 		if (index > -1) {
