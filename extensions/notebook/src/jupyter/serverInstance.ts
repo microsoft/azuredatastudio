@@ -161,7 +161,7 @@ export class PerFolderServerInstance implements IServerInstance {
 					await this.utils.removeDir(this.baseDir);
 				}
 			}
-			if (this.isStarted) {
+			if (this._isStarted) {
 				let install = this.options.install;
 				let stopCommand = `"${install.pythonExecutable}" -m jupyter notebook stop ${this._port}`;
 				await this.utils.executeBufferedCommand(stopCommand, install.execOptions, install.outputChannel);
