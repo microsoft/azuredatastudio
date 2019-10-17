@@ -32,6 +32,7 @@ export interface IPlatformService {
 	showOutputChannel(preserveFocus?: boolean): void;
 	isNotebookNameUsed(title: string): boolean;
 	makeDirectory(path: string): Promise<void>;
+	ensureDirectoryExists(directory: string): Promise<void>;
 	readTextFile(filePath: string): Promise<string>;
 	runCommand(command: string, options?: CommandOptions, sudo?: boolean, commandTitle?: string, ignoreError?: boolean): Promise<string>;
 }
@@ -54,6 +55,9 @@ export class PlatformService implements IPlatformService {
 	private _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(extensionOutputChannel);
 
 	constructor(private _storagePath: string = '') {
+		if (_storagePath) {
+			this.ensureDirectoryExists(_storagePath);
+		}
 	}
 
 	storagePath(): string {
@@ -116,6 +120,12 @@ export class PlatformService implements IPlatformService {
 
 	async makeDirectory(path: string): Promise<void> {
 		await fs.promises.mkdir(path);
+	}
+
+	public async ensureDirectoryExists(directory: string = this.storagePath()): Promise<void> {
+		if (! await this.fileExists(this.storagePath())) {
+			await this.makeDirectory(this.storagePath());
+		}
 	}
 
 	async readTextFile(filePath: string): Promise<string> {
