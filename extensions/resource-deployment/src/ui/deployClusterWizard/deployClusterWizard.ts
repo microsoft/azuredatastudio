@@ -224,6 +224,7 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 
 	private setEnvironmentVariables(env: NodeJS.ProcessEnv): void {
 		env[VariableNames.AdminPassword_VariableName] = this.model.getStringValue(VariableNames.AdminPassword_VariableName);
+		env[VariableNames.DockerPassword_VariableName] = this.model.getStringValue(VariableNames.DockerPassword_VariableName);
 		if (this.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
 			env[VariableNames.DomainServiceAccountPassword_VariableName] = this.model.getStringValue(VariableNames.DomainServiceAccountPassword_VariableName);
 		}

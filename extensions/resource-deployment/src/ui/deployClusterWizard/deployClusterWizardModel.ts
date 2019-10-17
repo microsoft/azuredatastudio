@@ -63,6 +63,13 @@ export class DeployClusterWizardModel extends Model {
 		const sourceBdcJson = Object.assign({}, this.selectedProfile!.bdcConfig);
 		const sourceControlJson = Object.assign({}, this.selectedProfile!.controlConfig);
 		const targetDeploymentProfile = new BigDataClusterDeploymentProfile('', sourceBdcJson, sourceControlJson);
+		// docker settings
+		targetDeploymentProfile.controlConfig.spec.docker = {
+			registry: this.getStringValue(VariableNames.DockerRegistry_VariableName),
+			repository: this.getStringValue(VariableNames.DockerRepository_VariableName),
+			imageTag: this.getStringValue(VariableNames.DockerImageTag_VariableName),
+			imagePullPolicy: 'Always'
+		};
 		// cluster name
 		targetDeploymentProfile.clusterName = this.getStringValue(VariableNames.ClusterName_VariableName)!;
 		// storage settings
@@ -151,6 +158,10 @@ export class DeployClusterWizardModel extends Model {
 		statements.push(`mssql_auth_mode = '${this.authenticationMode}'`);
 		statements.push(`bdc_json = '${profile.getBdcJson(false)}'`);
 		statements.push(`control_json = '${profile.getControlJson(false)}'`);
+		if (this.getStringValue(VariableNames.DockerUsername_VariableName) && this.getStringValue(VariableNames.DockerPassword_VariableName)) {
+			statements.push(`os.environ["DOCKER_USERNAME"] = '${this.getStringValue(VariableNames.DockerUsername_VariableName)}'`);
+			statements.push(`os.environ["DOCKER_PASSWORD"] = os.environ["${VariableNames.DockerPassword_VariableName}"]`);
+		}
 		statements.push(`print('Variables have been set successfully.')`);
 		return statements.map(line => line + EOL);
 	}

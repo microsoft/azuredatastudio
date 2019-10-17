@@ -83,6 +83,41 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			]
 		};
 
+		const dockerSection: SectionInfo = {
+			labelPosition: LabelPosition.Left,
+			collapsed: true,
+			collapsible: true,
+			title: localize('deployCluster.DockerSettings', "Docker settings"),
+			fields: [
+				{
+					type: FieldType.Text,
+					label: localize('deployCluster.DockerRegistry', "Registry"),
+					required: true,
+					variableName: VariableNames.DockerRegistry_VariableName
+				}, {
+					type: FieldType.Text,
+					label: localize('deployCluster.DockerRepository', "Repository"),
+					required: true,
+					variableName: VariableNames.DockerRepository_VariableName
+				}, {
+					type: FieldType.Text,
+					label: localize('deployCluster.DockerImageTag', "Image tag"),
+					required: true,
+					variableName: VariableNames.DockerImageTag_VariableName
+				}, {
+					type: FieldType.Text,
+					label: localize('deployCluster.DockerUsername', "Username"),
+					required: false,
+					variableName: VariableNames.DockerUsername_VariableName
+				}, {
+					type: FieldType.Text,
+					label: localize('deployCluster.DockerPassword', "Password"),
+					required: false,
+					variableName: VariableNames.DockerPassword_VariableName
+				}
+			]
+		};
+
 		const activeDirectorySection: SectionInfo = {
 			labelPosition: LabelPosition.Left,
 			title: localize('deployCluster.ActiveDirectorySettings', "Active Directory settings"),
@@ -192,11 +227,26 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					self.validators.push(validator);
 				}
 			});
+			const dockerSettingsGroup = createSection({
+				view: view,
+				container: self.wizard.wizardObject,
+				sectionInfo: dockerSection,
+				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
+					self.wizard.registerDisposable(disposable);
+				},
+				onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent): void => {
+					self.inputComponents[name] = component;
+				},
+				onNewValidatorCreated: (validator: Validator): void => {
+					self.validators.push(validator);
+				}
+			});
 			const basicSettingsFormItem = { title: '', component: basicSettingsGroup };
+			const dockerSettingsFormItem = { title: '', component: dockerSettingsGroup };
 			this.activeDirectorySection = { title: '', component: activeDirectorySettingsGroup };
 			const authModeDropdown = <azdata.DropDownComponent>this.inputComponents[VariableNames.AuthenticationMode_VariableName];
 			this.formBuilder = view.modelBuilder.formContainer().withFormItems(
-				[basicSettingsFormItem],
+				[basicSettingsFormItem, dockerSettingsFormItem],
 				{
 					horizontal: false,
 					componentWidth: '100%'
@@ -238,6 +288,9 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 	}
 
 	public onEnter() {
+		getInputBoxComponent(VariableNames.DockerRegistry_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(VariableNames.DockerRegistry_VariableName);
+		getInputBoxComponent(VariableNames.DockerRepository_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(VariableNames.DockerRepository_VariableName);
+		getInputBoxComponent(VariableNames.DockerImageTag_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(VariableNames.DockerImageTag_VariableName);
 		const authModeDropdown = <azdata.DropDownComponent>this.inputComponents[VariableNames.AuthenticationMode_VariableName];
 		if (authModeDropdown) {
 			authModeDropdown.enabled = this.wizard.model.adAuthSupported;
