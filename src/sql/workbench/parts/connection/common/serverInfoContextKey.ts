@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { RawContextKey, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { ServerInfo, DatabaseEngineEdition } from 'azdata';
+import { ServerInfo } from 'azdata';
+import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ServerInfoContextKey implements IContextKey<ServerInfo> {
 

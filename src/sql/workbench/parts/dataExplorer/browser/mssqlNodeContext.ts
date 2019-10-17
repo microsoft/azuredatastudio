@@ -12,7 +12,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
-import { ExtensionNodeType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ExtensionNodeType, DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { isWindows } from 'vs/base/common/platform';
 
 export class MssqlNodeContext extends Disposable {
@@ -127,7 +127,7 @@ export class MssqlNodeContext extends Disposable {
 	private setIsSqlOnDemand(): void {
 
 		let serverInfo: azdata.ServerInfo = this.getServerInfo();
-		if (serverInfo && serverInfo.engineEditionId === azdata.DatabaseEngineEdition.SqlOnDemand) {
+		if (serverInfo && serverInfo.engineEditionId === DatabaseEngineEdition.SqlOnDemand) {
 			this.isSqlOnDemandKey.set(true);
 		}
 	}
