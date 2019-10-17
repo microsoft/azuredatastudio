@@ -31,6 +31,7 @@ import { SqlToolsServer } from './sqlToolsServer';
 import { promises as fs } from 'fs';
 import { IconPathHelper } from './iconHelper';
 import * as nls from 'vscode-nls';
+import { TextDocument } from 'vscode-languageclient';
 
 const localize = nls.loadMessageBundle();
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
@@ -86,7 +87,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 }
 
 async function setClientQueryExecutionOptions() {
-	vscode.workspace.onDidOpenTextDocument(async (textDocument: vscode.TextDocument) => {
+	const handleXmlOption = (async (textDocument: vscode.TextDocument) => {
 		if (!textDocument) {
 			return;
 		}
@@ -98,6 +99,9 @@ async function setClientQueryExecutionOptions() {
 		const queryProvider = azdata.dataprotocol.getProvider(Constants.providerId, azdata.DataProviderType.QueryProvider) as azdata.QueryProvider;
 		queryProvider.setQueryExecutionOptions(queryDocument.uri, { 'MaxXmlCharsToStore': Utils.getConfigMaxXmlCharsToStore() });
 	});
+
+	vscode.workspace.textDocuments.forEach(handleXmlOption);
+	vscode.workspace.onDidOpenTextDocument(handleXmlOption);
 }
 
 const logFiles = ['resourceprovider.log', 'sqltools.log', 'credentialstore.log'];

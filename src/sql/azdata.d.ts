@@ -756,7 +756,7 @@ declare module 'azdata' {
 		flavor: string;
 	}
 
-	export type QueryExecutionOptions = { [option: string]: any };
+	export interface QueryExecutionOptions { [option: string]: any; }
 
 	export interface QueryProvider extends DataProvider {
 		cancelQuery(ownerUri: string): Thenable<QueryCancelResult>;
