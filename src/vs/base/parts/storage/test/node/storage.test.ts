@@ -207,7 +207,7 @@ suite('Storage Library', () => {
 	});
 
 	// test is disabled due to failures
-	test('conflicting updates @UNSTABLE@', async () => {
+	test.skip('conflicting updates', async () => {
 		const storageDir = uniqueStorageDir();
 		await mkdirp(storageDir);
 
@@ -250,7 +250,7 @@ suite('Storage Library', () => {
 	});
 
 	// test is disabled due to failures
-	test('corrupt DB recovers @UNSTABLE@', async () => {
+	test.skip('corrupt DB recovers', async () => {
 		const storageDir = uniqueStorageDir();
 		await mkdirp(storageDir);
 
