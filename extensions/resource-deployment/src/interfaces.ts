@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-//import { SemVer } from 'semver';
 import * as vscode from 'vscode';
 
 export const NoteBookEnvironmentVariablePrefix = 'AZDATA_NB_VAR_';
