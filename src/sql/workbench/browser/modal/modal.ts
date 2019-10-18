@@ -240,7 +240,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		if (!this._modalOptions.isAngular) {
 			this._modalFooterSection = DOM.append(modalContent, DOM.$('.modal-footer'));
 			if (this._modalOptions.hasSpinner) {
-				this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.icon.in-progress'));
+				this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.codicon.in-progress'));
 				DOM.hide(this._spinnerElement);
 			}
 			this._leftFooter = DOM.append(this._modalFooterSection, DOM.$('.left-footer'));
