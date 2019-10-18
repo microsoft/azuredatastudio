@@ -17,7 +17,7 @@ import * as constants from '../constants';
 import { WebHDFS, HdfsError } from '../hdfs/webhdfs';
 import { AclEntry, PermissionStatus } from '../hdfs/aclEntry';
 import { Mount, MountStatus } from '../hdfs/mount';
-import { FileStatus } from '../hdfs/fileStatus';
+import { FileStatus, HdfsFileType } from '../hdfs/fileStatus';
 
 const localize = nls.loadMessageBundle();
 
@@ -88,6 +88,11 @@ export interface IFileSource {
 	 */
 	setAcl(path: string, ownerEntry: AclEntry, groupEntry: AclEntry, otherEntry: AclEntry, aclEntries: AclEntry[]): Promise<void>;
 	/**
+	 * Removes the default ACLs for the specified path
+	 * @param path The path to remove the default ACLs for
+	 */
+	removeDefaultAcl(path: string): Promise<void>;
+	/**
 	 * Sets the permission octal (sticky, owner, group & other) for a file/folder
 	 * @param path The path to the file/folder to set the permission of
 	 * @param aclStatus The status containing the permission to set
@@ -118,11 +123,6 @@ export interface IRequestParams {
 	timeout?: number;
 	agent?: https.Agent;
 	headers?: {};
-}
-
-export interface IHdfsFileStatus {
-	type: 'FILE' | 'DIRECTORY';
-	pathSuffix: string;
 }
 
 export class FileSourceFactory {
@@ -181,7 +181,7 @@ export class HdfsFileSource implements IFileSource {
 		if (!this.mounts || refresh) {
 			await this.loadMounts();
 		}
-		return this.readdir(path);
+		return this.listStatus(path);
 	}
 
 	private loadMounts(): Promise<void> {
@@ -196,16 +196,15 @@ export class HdfsFileSource implements IFileSource {
 		});
 	}
 
-	private readdir(path: string): Promise<IFile[]> {
+	private listStatus(path: string): Promise<IFile[]> {
 		return new Promise((resolve, reject) => {
-			this.client.readdir(path, (error, files) => {
+			this.client.listStatus(path, (error, fileStatuses) => {
 				if (error) {
 					reject(error);
 				}
 				else {
-					let hdfsFiles: IFile[] = files.map(fileStat => {
-						let hdfsFile = <IHdfsFileStatus>fileStat;
-						let file = new File(File.createPath(path, hdfsFile.pathSuffix), hdfsFile.type === 'DIRECTORY');
+					let hdfsFiles: IFile[] = fileStatuses.map(fileStatus => {
+						let file = new File(File.createPath(path, fileStatus.pathSuffix), fileStatus.type === HdfsFileType.Directory);
 						if (this.mounts && this.mounts.has(file.path)) {
 							file.mountStatus = MountStatus.Mount;
 						}
@@ -394,6 +393,22 @@ export class HdfsFileSource implements IFileSource {
 	public setAcl(path: string, ownerEntry: AclEntry, groupEntry: AclEntry, otherEntry: AclEntry, aclEntries: AclEntry[]): Promise<void> {
 		return new Promise((resolve, reject) => {
 			this.client.setAcl(path, ownerEntry, groupEntry, otherEntry, aclEntries, (error: HdfsError) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve();
+				}
+			});
+		});
+	}
+
+	/**
+	 * Removes the default ACLs for the specified path
+	 * @param path The path to remove the default ACLs for
+	 */
+	public removeDefaultAcl(path: string): Promise<void> {
+		return new Promise((resolve, reject) => {
+			this.client.removeDefaultAcl(path, (error: HdfsError) => {
 				if (error) {
 					reject(error);
 				} else {
