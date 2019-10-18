@@ -32,8 +32,8 @@ const msgTaskName = localize('msgTaskName', "Installing Notebook dependencies");
 const msgInstallPkgStart = localize('msgInstallPkgStart', "Installing Notebook dependencies, see Tasks view for more information");
 const msgInstallPkgFinish = localize('msgInstallPkgFinish', "Notebook dependencies installation is complete");
 const msgPythonRunningError = localize('msgPythonRunningError', "Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.");
-const msgPendingInstallError = localize('msgPendingInstallError', "Another Python installation is currently in progress.");
 const msgSkipPythonInstall = localize('msgSkipPythonInstall', "Python already exists at the specific location. Skipping install.");
+const msgWaitingForInstall = localize('msgWaitingForInstall', "Another Python installation is currently in progress. Waiting for it to complete.");
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 
@@ -52,6 +52,7 @@ export class JupyterServerInstallation {
 	private _usingConda: boolean;
 
 	private _installInProgress: boolean;
+	private _installCompletion: Deferred<void>;
 
 	public static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
 
@@ -109,9 +110,7 @@ export class JupyterServerInstallation {
 			try {
 				await this.installPythonPackage(backgroundOperation);
 
-				if (this._usingConda) {
-					await this.upgradeCondaPackages(false, forceInstall);
-				} else if (this._usingExistingPython) {
+				if (this._usingExistingPython) {
 					await this.upgradePythonPackages(false, forceInstall);
 				} else {
 					await this.installOfflinePipDependencies();
@@ -329,9 +328,12 @@ export class JupyterServerInstallation {
 		}
 
 		if (this._installInProgress) {
-			return Promise.reject(msgPendingInstallError);
+			this.apiWrapper.showInfoMessage(msgWaitingForInstall);
+			return this._installCompletion.promise;
 		}
+
 		this._installInProgress = true;
+		this._installCompletion = new Deferred<void>();
 
 		if (installSettings) {
 			this._pythonInstallationPath = installSettings.installPath;
@@ -345,7 +347,7 @@ export class JupyterServerInstallation {
 			await notebookConfig.update(constants.existingPythonConfigKey, this._usingExistingPython, ConfigurationTarget.Global);
 			await this.configurePackagePaths();
 		};
-		let installReady = new Deferred<void>();
+
 		if (!(await utils.exists(this._pythonExecutable)) || forceInstall || this._usingExistingPython) {
 			this.apiWrapper.startBackgroundOperation({
 				displayName: msgTaskName,
@@ -355,13 +357,13 @@ export class JupyterServerInstallation {
 					this.installDependencies(op, forceInstall)
 						.then(async () => {
 							await updateConfig();
-							installReady.resolve();
+							this._installCompletion.resolve();
 							this._installInProgress = false;
 						})
 						.catch(err => {
 							let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
 							op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
-							installReady.reject(errorMsg);
+							this._installCompletion.reject(errorMsg);
 							this._installInProgress = false;
 						});
 				}
@@ -370,11 +372,11 @@ export class JupyterServerInstallation {
 			// Python executable already exists, but the path setting wasn't defined,
 			// so update it here
 			await updateConfig();
-			installReady.resolve();
+			this._installCompletion.resolve();
 			this._installInProgress = false;
 			this.apiWrapper.showInfoMessage(msgSkipPythonInstall);
 		}
-		return installReady.promise;
+		return this._installCompletion.promise;
 	}
 
 	/**
@@ -390,78 +392,67 @@ export class JupyterServerInstallation {
 	/**
 	 * Prompts user to upgrade certain python packages if they're below the minimum expected version.
 	 */
-	public promptForPackageUpgrade(): Promise<void> {
-		if (this._usingConda) {
-			return this.upgradeCondaPackages(true, false);
-		} else {
-			return this.upgradePythonPackages(true, false);
+	public async promptForPackageUpgrade(): Promise<void> {
+		if (this._installInProgress) {
+			this.apiWrapper.showInfoMessage(msgWaitingForInstall);
+			return this._installCompletion.promise;
 		}
+
+		this._installInProgress = true;
+		this._installCompletion = new Deferred<void>();
+		this.upgradePythonPackages(true, false)
+			.then(() => {
+				this._installCompletion.resolve();
+				this._installInProgress = false;
+			})
+			.catch(err => {
+				let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
+				this._installCompletion.reject(errorMsg);
+				this._installInProgress = false;
+			});
+		return this._installCompletion.promise;
 	}
 
 	private async upgradePythonPackages(promptForUpgrade: boolean, forceInstall: boolean): Promise<void> {
-		let installedPackages = await this.getInstalledPipPackages();
-		let pkgVersionMap = new Map<string, string>();
-		installedPackages.forEach(pkg => pkgVersionMap.set(pkg.name, pkg.version));
-
-		let packagesToInstall: PythonPkgDetails[];
-		if (forceInstall) {
-			packagesToInstall = this._expectedPythonPackages;
+		let expectedCondaPackages: PythonPkgDetails[];
+		let expectedPipPackages: PythonPkgDetails[];
+		if (this._usingConda) {
+			expectedCondaPackages = this._expectedCondaPackages;
+			expectedPipPackages = this._expectedCondaPipPackages;
 		} else {
-			packagesToInstall = [];
-			this._expectedPythonPackages.forEach(expectedPkg => {
-				let installedPkgVersion = pkgVersionMap.get(expectedPkg.name);
-				if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
-					packagesToInstall.push(expectedPkg);
-				}
-			});
+			expectedCondaPackages = [];
+			expectedPipPackages = this._expectedPythonPackages;
 		}
 
-		if (packagesToInstall.length > 0) {
-			let doUpgrade: boolean;
-			if (promptForUpgrade) {
-				doUpgrade = await this._prompter.promptSingle<boolean>(<IQuestion>{
-					type: QuestionTypes.confirm,
-					message: localize('confirmPipUpgrade', "Some installed pip packages need to be upgraded. Would you like to upgrade them now?"),
-					default: true
-				});
-			} else {
-				doUpgrade = true;
-			}
-			if (doUpgrade) {
-				await this.installPipPackages(packagesToInstall, true);
-			}
-		}
-	}
-
-	private async upgradeCondaPackages(promptForUpgrade: boolean, forceInstall: boolean): Promise<void> {
-		let condaPackagesToInstall: PythonPkgDetails[] = [];
-		let pipPackagesToInstall: PythonPkgDetails[] = [];
-
+		let condaPackagesToInstall: PythonPkgDetails[];
+		let pipPackagesToInstall: PythonPkgDetails[];
 		if (forceInstall) {
-			condaPackagesToInstall = this._expectedCondaPackages;
-			pipPackagesToInstall = this._expectedCondaPipPackages;
+			condaPackagesToInstall = expectedCondaPackages;
+			pipPackagesToInstall = expectedPipPackages;
 		} else {
 			condaPackagesToInstall = [];
 			pipPackagesToInstall = [];
 
 			// Conda packages
-			let installedCondaPackages = await this.getInstalledCondaPackages();
-			let condaVersionMap = new Map<string, string>();
-			installedCondaPackages.forEach(pkg => condaVersionMap.set(pkg.name, pkg.version));
+			if (this._usingConda) {
+				let installedCondaPackages = await this.getInstalledCondaPackages();
+				let condaVersionMap = new Map<string, string>();
+				installedCondaPackages.forEach(pkg => condaVersionMap.set(pkg.name, pkg.version));
 
-			this._expectedCondaPackages.forEach(expectedPkg => {
-				let installedPkgVersion = condaVersionMap.get(expectedPkg.name);
-				if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
-					condaPackagesToInstall.push(expectedPkg);
-				}
-			});
+				expectedCondaPackages.forEach(expectedPkg => {
+					let installedPkgVersion = condaVersionMap.get(expectedPkg.name);
+					if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
+						condaPackagesToInstall.push(expectedPkg);
+					}
+				});
+			}
 
 			// Pip packages
 			let installedPipPackages = await this.getInstalledPipPackages();
 			let pipVersionMap = new Map<string, string>();
 			installedPipPackages.forEach(pkg => pipVersionMap.set(pkg.name, pkg.version));
 
-			this._expectedCondaPipPackages.forEach(expectedPkg => {
+			expectedPipPackages.forEach(expectedPkg => {
 				let installedPkgVersion = pipVersionMap.get(expectedPkg.name);
 				if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
 					pipPackagesToInstall.push(expectedPkg);
@@ -474,15 +465,55 @@ export class JupyterServerInstallation {
 			if (promptForUpgrade) {
 				doUpgrade = await this._prompter.promptSingle<boolean>(<IQuestion>{
 					type: QuestionTypes.confirm,
-					message: localize('confirmCondaUpgrade', "Some installed conda and pip packages need to be upgraded. Would you like to upgrade them now?"),
+					message: localize('confirmPackageUpgrade', "Some installed python packages need to be upgraded. Would you like to upgrade them now?"),
 					default: true
 				});
 			} else {
 				doUpgrade = true;
 			}
+
 			if (doUpgrade) {
-				await this.installCondaPackages(condaPackagesToInstall, true);
-				await this.installPipPackages(pipPackagesToInstall, true);
+				let installPromise = new Promise(async (resolve, reject) => {
+					try {
+						if (this._usingConda) {
+							await this.installCondaPackages(condaPackagesToInstall, true);
+						}
+						await this.installPipPackages(pipPackagesToInstall, true);
+						resolve();
+					} catch (err) {
+						reject(err);
+					}
+				});
+
+				if (promptForUpgrade) {
+					let packagesStr = condaPackagesToInstall.concat(pipPackagesToInstall).map(pkg => {
+						return `${pkg.name}>=${pkg.version}`;
+					}).join(' ');
+					let taskName = localize('upgradePackages.pipInstall',
+						"Installing {0}",
+						packagesStr);
+
+					let backgroundTaskComplete = new Deferred<void>();
+					this.apiWrapper.startBackgroundOperation({
+						displayName: taskName,
+						description: taskName,
+						isCancelable: false,
+						operation: async op => {
+							try {
+								await installPromise;
+								op.updateStatus(azdata.TaskStatus.Succeeded);
+								backgroundTaskComplete.resolve();
+							} catch (err) {
+								let errorMsg = utils.getErrorMessage(err);
+								op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
+								backgroundTaskComplete.reject(errorMsg);
+							}
+						}
+					});
+					await backgroundTaskComplete.promise;
+				} else {
+					await installPromise;
+				}
 			}
 		}
 	}

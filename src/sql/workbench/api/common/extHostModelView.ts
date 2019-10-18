@@ -74,7 +74,7 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 
 	groupContainer(): azdata.GroupBuilder {
 		let id = this.getNextComponentId();
-		let container: GenericContainerBuilder<azdata.GroupContainer, any, any> = new GenericContainerBuilder<azdata.GroupContainer, azdata.GroupLayout, azdata.GroupItemLayout>(this._proxy, this._handle, ModelComponentTypes.Group, id);
+		let container = new GroupContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Group, id);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
@@ -422,6 +422,12 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 	}
 }
 
+class GroupContainerBuilder extends ContainerBuilderImpl<azdata.GroupContainer, azdata.GroupLayout, azdata.GroupItemLayout> {
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(new GroupContainerComponentWrapper(proxy, handle, type, id));
+	}
+}
+
 class ToolbarContainerBuilder extends GenericContainerBuilder<azdata.ToolbarContainer, azdata.ToolbarLayout, any> implements azdata.ToolbarBuilder {
 	withToolbarItems(components: azdata.ToolbarComponent[]): azdata.ContainerBuilder<azdata.ToolbarContainer, any, any> {
 		this._component.itemConfigs = components.map(item => {
@@ -690,6 +696,34 @@ class ComponentWrapper implements azdata.Component {
 
 	public get valid(): boolean {
 		return this._valid;
+	}
+}
+
+class ComponentWithIconWrapper extends ComponentWrapper {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(proxy, handle, type, id);
+	}
+
+	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
+		return this.properties['iconPath'];
+	}
+	public set iconPath(v: string | URI | { light: string | URI; dark: string | URI }) {
+		this.setProperty('iconPath', v);
+	}
+
+	public get iconHeight(): string | number {
+		return this.properties['iconHeight'];
+	}
+	public set iconHeight(v: string | number) {
+		this.setProperty('iconHeight', v);
+	}
+
+	public get iconWidth(): string | number {
+		return this.properties['iconWidth'];
+	}
+	public set iconWidth(v: string | number) {
+		this.setProperty('iconWidth', v);
 	}
 }
 
@@ -1152,39 +1186,11 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	}
 }
 
-class ImageComponentWrapper extends ComponentWrapper implements azdata.ImageComponentProperties {
+class ImageComponentWrapper extends ComponentWithIconWrapper implements azdata.ImageComponentProperties {
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Image, id);
 		this.properties = {};
-	}
-
-	public get src(): string {
-		return this.properties['src'];
-	}
-	public set src(v: string) {
-		this.setProperty('src', v);
-	}
-
-	public get alt(): string {
-		return this.properties['alt'];
-	}
-	public set alt(v: string) {
-		this.setProperty('alt', v);
-	}
-
-	public get height(): number | string {
-		return this.properties['height'];
-	}
-	public set height(v: number | string) {
-		this.setProperty('height', v);
-	}
-
-	public get width(): number | string {
-		return this.properties['width'];
-	}
-	public set width(v: number | string) {
-		this.setProperty('width', v);
 	}
 }
 
@@ -1291,7 +1297,7 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 
 	public get value(): string | azdata.CategoryValue {
 		let val = this.properties['value'];
-		if (!val && this.values && this.values.length > 0) {
+		if (!this.editable && !val && this.values && this.values.length > 0) {
 			val = this.values[0];
 		}
 		return val;
@@ -1391,7 +1397,7 @@ class ListBoxWrapper extends ComponentWrapper implements azdata.ListBoxComponent
 	}
 }
 
-class ButtonWrapper extends ComponentWrapper implements azdata.ButtonComponent {
+class ButtonWrapper extends ComponentWithIconWrapper implements azdata.ButtonComponent {
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Button, id);
@@ -1404,27 +1410,6 @@ class ButtonWrapper extends ComponentWrapper implements azdata.ButtonComponent {
 	}
 	public set label(v: string) {
 		this.setProperty('label', v);
-	}
-
-	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
-		return this.properties['iconPath'];
-	}
-	public set iconPath(v: string | URI | { light: string | URI; dark: string | URI }) {
-		this.setProperty('iconPath', v);
-	}
-
-	public get iconHeight(): string | number {
-		return this.properties['iconHeight'];
-	}
-	public set iconHeight(v: string | number) {
-		this.setProperty('iconHeight', v);
-	}
-
-	public get iconWidth(): string | number {
-		return this.properties['iconWidth'];
-	}
-	public set iconWidth(v: string | number) {
-		this.setProperty('iconWidth', v);
 	}
 
 	public get title(): string {
@@ -1563,6 +1548,19 @@ class HyperlinkComponentWrapper extends ComponentWrapper implements azdata.Hyper
 	}
 	public set url(v: string) {
 		this.setProperty('url', v);
+	}
+}
+
+class GroupContainerComponentWrapper extends ComponentWrapper implements azdata.GroupContainer {
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(proxy, handle, type, id);
+		this.properties = {};
+	}
+	public get collapsed(): boolean {
+		return this.properties['collapsed'];
+	}
+	public set collapsed(v: boolean) {
+		this.setProperty('collapsed', v);
 	}
 }
 

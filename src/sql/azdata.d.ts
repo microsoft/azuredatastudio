@@ -2592,7 +2592,7 @@ declare module 'azdata' {
 		removeFormItem(formComponent: FormComponent | FormComponentGroup): boolean;
 	}
 
-	export interface Component {
+	export interface Component extends ComponentProperties {
 		readonly id: string;
 
 		/**
@@ -2617,13 +2617,6 @@ declare module 'azdata' {
 		 * @returns Thenable that completes once the update has been applied to the UI
 		 */
 		updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void>;
-
-		enabled: boolean;
-
-		/**
-		 * Corresponds to the display CSS property for the element
-		 */
-		display: DisplayType;
 
 		/**
 		 * Event fired to notify that the component's validity has changed
@@ -2902,7 +2895,7 @@ declare module 'azdata' {
 	export interface FormContainer extends Container<FormLayout, FormItemLayout> {
 	}
 
-	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout> {
+	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout>, GroupContainerProperties {
 	}
 
 
@@ -2995,6 +2988,14 @@ declare module 'azdata' {
 		 * Without this the component will fail to correctly size itself
 		 */
 		position?: PositionType;
+		/**
+		 * Whether the component is enabled in the DOM
+		 */
+		enabled?: boolean;
+		/**
+		 * Corresponds to the display CSS property for the element
+		 */
+		display?: DisplayType;
 		/**
 		 * Matches the CSS style key and its available values.
 		 */
@@ -3109,12 +3110,14 @@ declare module 'azdata' {
 		requiredIndicator?: boolean;
 	}
 
-	export interface ImageComponentProperties {
-		src: string;
-		alt?: string;
-		height?: number | string;
-		width?: number | string;
+	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIcon {
+
 	}
+
+	export interface GroupContainerProperties {
+		collapsed: boolean;
+	}
+
 	export interface LinkArea {
 		text: string;
 		url: string;
@@ -3528,7 +3531,7 @@ declare module 'azdata' {
 		 * Create a button which can be included in a dialog
 		 * @param label The label of the button
 		 */
-		export function createButton(label: string): Button;
+		export function createButton(label: string, position?: DialogButtonPosition): Button;
 
 		/**
 		 * Opens the given dialog if it is not already open
@@ -3692,7 +3695,14 @@ declare module 'azdata' {
 			 * Raised when the button is clicked
 			 */
 			readonly onClick: vscode.Event<void>;
+
+			/**
+			 * Position of the button on the dialog footer
+			 */
+			position?: DialogButtonPosition;
 		}
+
+		export type DialogButtonPosition = 'left' | 'right';
 
 		export interface WizardPageChangeInfo {
 			/**
@@ -4442,8 +4452,9 @@ declare module 'azdata' {
 			 *
 			 * @param index The position where the new text should be inserted.
 			 * @param value The new text this operation should insert.
+			 * @param collapsed The collapsed state of the new cell. Default value is `false` if not provided.
 			 */
-			insertCell(value: ICellContents, index?: number): void;
+			insertCell(value: ICellContents, index?: number, collapsed?: boolean): void;
 
 			/**
 			 * Delete a certain cell.

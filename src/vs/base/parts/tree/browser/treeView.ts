@@ -154,7 +154,7 @@ export class ViewItem implements IViewItem {
 	}
 
 	set loading(value: boolean) {
-		value ? this.addClass('codicon-loading') : this.removeClass('codicon-loading');
+		value ? this.addClass('loading') : this.removeClass('loading'); // {{SQL CARBON EDIT}} Use old icons - codicon font icons aren't working currently #7715
 	}
 
 	set draggable(value: boolean) {
