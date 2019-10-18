@@ -463,12 +463,16 @@ export class JupyterServerInstallation {
 			}
 
 			if (doUpgrade) {
-				let installPromise = new Promise(async resolve => {
-					if (this._usingConda) {
-						await this.installCondaPackages(condaPackagesToInstall, true);
+				let installPromise = new Promise(async (resolve, reject) => {
+					try {
+						if (this._usingConda) {
+							await this.installCondaPackages(condaPackagesToInstall, true);
+						}
+						await this.installPipPackages(pipPackagesToInstall, true);
+						resolve();
+					} catch (err) {
+						reject(err);
 					}
-					await this.installPipPackages(pipPackagesToInstall, true);
-					resolve();
 				});
 
 				if (promptForUpgrade) {
