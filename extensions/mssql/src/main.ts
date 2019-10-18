@@ -54,7 +54,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	let prompter: IPrompter = new CodeAdapter();
 	let appContext = new AppContext(context, new ApiWrapper());
 
-
 	let nodeProvider = new MssqlObjectExplorerNodeProvider(prompter, appContext);
 	azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
 	let iconProvider = new MssqlIconProvider();

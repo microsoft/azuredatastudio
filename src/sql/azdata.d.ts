@@ -748,8 +748,6 @@ declare module 'azdata' {
 		deleteCredential(credentialId: string): Thenable<boolean>;
 	}
 
-
-
 	export interface DidChangeLanguageFlavorParams {
 		uri: string;
 		language: string;
