@@ -94,6 +94,9 @@
     <trans-unit id="title.saveJupyterBook">
       <source xml:lang="en">Save Book</source>
     </trans-unit>
+    <trans-unit id="title.searchJupyterBook">
+      <source xml:lang="en">Search Book</source>
+    </trans-unit>
     <trans-unit id="title.SavedBooks">
       <source xml:lang="en">Saved Books</source>
     </trans-unit>
@@ -154,17 +157,23 @@
     <trans-unit id="msgPythonRunningError">
       <source xml:lang="en">Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.</source>
     </trans-unit>
-    <trans-unit id="msgPendingInstallError">
-      <source xml:lang="en">Another Python installation is currently in progress.</source>
-    </trans-unit>
     <trans-unit id="msgSkipPythonInstall">
       <source xml:lang="en">Python already exists at the specific location. Skipping install.</source>
+    </trans-unit>
+    <trans-unit id="msgWaitingForInstall">
+      <source xml:lang="en">Another Python installation is currently in progress. Waiting for it to complete.</source>
     </trans-unit>
     <trans-unit id="msgDependenciesInstallationFailed">
       <source xml:lang="en">Installing Notebook dependencies failed with error: {0}</source>
     </trans-unit>
     <trans-unit id="msgDownloadPython">
       <source xml:lang="en">Downloading local python for platform: {0} to {1}</source>
+    </trans-unit>
+    <trans-unit id="confirmPackageUpgrade">
+      <source xml:lang="en">Some installed python packages need to be upgraded. Would you like to upgrade them now?</source>
+    </trans-unit>
+    <trans-unit id="upgradePackages.pipInstall">
+      <source xml:lang="en">Installing {0}</source>
     </trans-unit>
     <trans-unit id="msgInstallStart">
       <source xml:lang="en">Installing required packages to run Notebooks...</source>
