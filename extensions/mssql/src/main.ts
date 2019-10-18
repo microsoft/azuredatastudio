@@ -59,7 +59,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
 	let iconProvider = new MssqlIconProvider();
 	azdata.dataprotocol.registerIconProvider(iconProvider);
-	setClientQueryExecutionOptions();
+	// setClientQueryExecutionOptions();
 
 	activateSparkFeatures(appContext);
 	activateNotebookTask(appContext);
@@ -83,24 +83,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	await server.start(appContext);
 
 	return createMssqlApi(appContext);
-}
-
-async function setClientQueryExecutionOptions() {
-	const handleXmlOption = (async (textDocument: vscode.TextDocument) => {
-		if (!textDocument) {
-			return;
-		}
-		let queryDocument = await azdata.queryeditor.getQueryDocument(textDocument.uri.toString());
-		if (!queryDocument || queryDocument.providerId !== Constants.providerId) {
-			return;
-		}
-
-		const queryProvider = azdata.dataprotocol.getProvider(Constants.providerId, azdata.DataProviderType.QueryProvider) as azdata.QueryProvider;
-		queryProvider.setQueryExecutionOptions(queryDocument.uri, { 'MaxXmlCharsToStore': Utils.getConfigMaxXmlCharsToStore() });
-	});
-
-	vscode.workspace.textDocuments.forEach(handleXmlOption);
-	vscode.workspace.onDidOpenTextDocument(handleXmlOption);
 }
 
 const logFiles = ['resourceprovider.log', 'sqltools.log', 'credentialstore.log'];
