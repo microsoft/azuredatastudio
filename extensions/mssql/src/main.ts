@@ -59,7 +59,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
 	let iconProvider = new MssqlIconProvider();
 	azdata.dataprotocol.registerIconProvider(iconProvider);
-	// setClientQueryExecutionOptions();
 
 	activateSparkFeatures(appContext);
 	activateNotebookTask(appContext);
