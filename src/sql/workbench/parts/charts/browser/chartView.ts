@@ -49,6 +49,7 @@ export class ChartView extends Disposable implements IPanelView {
 		type: ChartType.Bar
 	};
 
+
 	/** parent container */
 	private container: HTMLElement;
 	/** container for the options controls */
@@ -276,6 +277,7 @@ export class ChartView extends Disposable implements IPanelView {
 				};
 				break;
 			case ControlType.combo:
+
 				let dropdown = new SelectBox(option.displayableOptions || option.options, undefined, this._contextViewService);
 				dropdown.select(option.options.indexOf(value));
 				dropdown.render(optionContainer);
