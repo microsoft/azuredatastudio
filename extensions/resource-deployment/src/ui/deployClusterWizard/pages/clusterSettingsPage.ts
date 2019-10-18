@@ -110,7 +110,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					required: false,
 					variableName: VariableNames.DockerUsername_VariableName
 				}, {
-					type: FieldType.Text,
+					type: FieldType.Password,
 					label: localize('deployCluster.DockerPassword', "Password"),
 					required: false,
 					variableName: VariableNames.DockerPassword_VariableName
