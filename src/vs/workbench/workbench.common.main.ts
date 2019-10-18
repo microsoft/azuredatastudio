@@ -407,7 +407,7 @@ import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/imageInsigh
 import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/tableInsight.contribution';
 import 'sql/workbench/parts/dashboard/browser/dashboard.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/insights/insightsWidget.contribution';
-import 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerWidget.common.contribution';
+import 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/tasks/tasksWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/webview/webviewWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardWebviewContainer.contribution';
