@@ -504,6 +504,9 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id).then((result) => {
 				this._querySubsetResultMap.set(resultSet.id, result);
 				deferred.resolve();
+			}, (err) => {
+				this._querySubsetResultMap.set(resultSet.id, { message: '', resultSubset: { rowCount: 0, rows: [] } });
+				deferred.reject(err);
 			});
 		} else {
 			this._querySubsetResultMap.set(resultSet.id, { message: '', resultSubset: { rowCount: 0, rows: [] } });
