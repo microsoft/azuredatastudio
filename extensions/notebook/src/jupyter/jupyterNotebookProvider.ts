@@ -78,8 +78,8 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 	private transformToBaseFolder(notebookPath: string): string {
 		let parsedPath = path.parse(notebookPath);
 		let userHome = utils.getUserHome();
-		let relativePathstrUserHome = path.relative(notebookPath, userHome);
-		if (notebookPath === '.' || relativePathstrUserHome.endsWith('..') || relativePathstrUserHome === '') {
+		let relativePathStrUserHome = path.relative(notebookPath, userHome);
+		if (notebookPath === '.' || relativePathStrUserHome.endsWith('..') || relativePathStrUserHome === '') {
 			// If you don't match the notebookPath's casing for drive letters,
 			// a 404 will result when trying to create a new session on Windows
 			if (notebookPath && userHome && notebookPath[0].toLowerCase() === userHome[0].toLowerCase()) {
