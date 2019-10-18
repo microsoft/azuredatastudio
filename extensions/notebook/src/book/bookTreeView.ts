@@ -191,7 +191,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				}
 			}
 		}
+	}
 
+	public async searchJupyterBooks(): Promise<void> {
+		if (this.currentBook && this.currentBook.bookPath) {
+			let filesToIncludeFiltered = path.join(this.currentBook.bookPath, '**', '*.md') + ',' + path.join(this.currentBook.bookPath, '**', '*.ipynb');
+			vscode.commands.executeCommand('workbench.action.findInFiles', { filesToInclude: filesToIncludeFiltered, query: '' });
+		}
 	}
 
 	private runThrottledAction(resource: string, action: () => void) {
