@@ -2,14 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 import * as azdata from 'azdata';
+import { EOL } from 'os';
 import * as nls from 'vscode-nls';
-import { DialogBase } from './dialogBase';
-import { ResourceType, AgreementInfo, DeploymentProvider } from '../interfaces';
+import { AgreementInfo, DeploymentProvider, ITool, ResourceType } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
-import { EOL } from 'os';
+import { getErrorMessage } from '../utils';
+import { DialogBase } from './dialogBase';
 import { createFlexContainer } from './modelViewUtils';
 
 const localize = nls.loadMessageBundle();
@@ -28,6 +28,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _agreementContainer!: azdata.DivContainer;
 	private _agreementCheckboxChecked: boolean = false;
 	private _installToolButton: azdata.window.Button;
+	private _tools: ITool[] = [];
+	private _cardsContainer!: azdata.FlexContainer;
 
 	constructor(
 		private toolsService: IToolsService,
@@ -42,7 +44,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		}));
 		this._dialogObject.customButtons = [this._installToolButton];
 		this._installToolButton.hidden = true;
-		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Select');
+		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', "Select");
 	}
 
 	initialize() {
@@ -63,7 +65,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this.resourceTypeService.getResourceTypes().sort((a: ResourceType, b: ResourceType) => {
 				return (a.displayIndex || Number.MAX_VALUE) - (b.displayIndex || Number.MAX_VALUE);
 			}).forEach(resourceType => this.addCard(resourceType));
-			const cardsContainer = view.modelBuilder.flexContainer().withItems(this._resourceTypeCards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row' }).component();
+			this._cardsContainer = view.modelBuilder.flexContainer().withItems(this._resourceTypeCards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row' }).component();
 			this._resourceDescriptionLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this._selectedResourceType ? this._selectedResourceType.description : undefined }).component();
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			this._agreementContainer = view.modelBuilder.divContainer().component();
@@ -76,7 +78,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				width: 650
 			};
 			const installStatusColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolStatusColumnHeader', "Installed"),
+				value: localize('deploymentDialog.toolStatusColumnHeader', "Status"),
 				width: 100
 			};
 			const versionColumn: azdata.TableColumn = {
@@ -96,7 +98,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
-						component: cardsContainer,
+						component: this._cardsContainer,
 						title: ''
 					}, {
 						component: this._resourceDescriptionLabel,
@@ -186,15 +188,15 @@ export class ResourceTypePickerDialog extends DialogBase {
 				width: '300px'
 			}).component();
 
-			this._toDispose.push(optionSelectBox.onValueChanged(() => { this.updateTools(); }));
+			this._toDispose.push(optionSelectBox.onValueChanged(() => { this.updateToolsDisplayTable(); }));
 			this._optionDropDownMap.set(option.name, optionSelectBox);
 			const row = this._view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 			this._optionsContainer.addItem(row);
 		});
-		this.updateTools();
+		this.updateToolsDisplayTable();
 	}
 
-	private updateTools(): void {
+	private updateToolsDisplayTable(): void {
 		this.toolRefreshTimestamp = new Date().getTime();
 		const currentRefreshTimestamp = this.toolRefreshTimestamp;
 		const toolRequirements = this.getCurrentProvider().requiredTools;
@@ -207,33 +209,36 @@ export class ResourceTypePickerDialog extends DialogBase {
 		if (toolRequirements.length === 0) {
 			this._dialogObject.okButton.enabled = true;
 			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
+			this._tools = [];
 		} else {
-			const tools = toolRequirements.map(toolReq => {
+			this._tools = toolRequirements.map(toolReq => {
 				return this.toolsService.getToolByName(toolReq.name)!;
 			});
 			this._toolsLoadingComponent.loading = true;
 			this._dialogObject.okButton.enabled = false;
 
-			Promise.all(tools.map(tool => tool.loadInformation())).then(() => {
+			Promise.all(this._tools.map(tool => tool.loadInformation())).then(async () => {
 				// If the local timestamp does not match the class level timestamp, it means user has changed options, ignore the results
 				if (this.toolRefreshTimestamp !== currentRefreshTimestamp) {
 					return;
 				}
 				let autoInstallRequired = false;
 				const messages: string[] = [];
-				this._toolsTable.data = toolRequirements.map(toolRef => {
-					const tool = this.toolsService.getToolByName(toolRef.name)!;
-					if (!tool.isInstalled && !tool.autoInstallSupported) {
-						messages.push(localize('deploymentDialog.ToolInformation', "{0}: {1}", tool.displayName, tool.homePage));
+				this._toolsTable.data = toolRequirements.map(toolReq => {
+					const tool = this.toolsService.getToolByName(toolReq.name)!;
+					// subscribe to onUpdateData event of the tool.
+					this._toDispose.push(tool.onDidUpdateData((t: ITool) => {
+						this.updateToolsDisplayTableData(t);
+					}));
+					if (tool.isNotInstalled && !tool.autoInstallSupported) {
+						messages.push(localize('deploymentDialog.ToolInformation', "'{0}' [ {1} ]", tool.displayName, tool.homePage));
 						if (tool.statusDescription !== undefined) {
-							console.warn(localize('deploymentDialog.DetailToolStatusDescription', "Additional status information for tool: {0}. {1}", tool.name, tool.statusDescription));
+							console.warn(localize('deploymentDialog.DetailToolStatusDescription', "Additional status information for tool: '{0}' [ {1} ]. {2}", tool.name, tool.homePage, tool.statusDescription));
 						}
 					}
 
-					if (!tool.isInstalled && tool.autoInstallSupported) {
-						autoInstallRequired = true;
-					}
-					return [tool.displayName, tool.description, tool.isInstalled ? localize('deploymentDialog.YesText', "Yes") : localize('deploymentDialog.NoText', "No"), tool.version ? tool.version.version : ''];
+					autoInstallRequired = tool.autoInstallRequired;
+					return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || ''];
 				});
 
 				this._installToolButton.hidden = !autoInstallRequired;
@@ -246,11 +251,11 @@ export class ResourceTypePickerDialog extends DialogBase {
 						description: messages.join(EOL)
 					};
 				} else if (autoInstallRequired) {
-					// we don't have scenarioes that have mixed type of tools
+					// we don't have scenarios that have mixed type of tools
 					// either we don't support auto install: docker, or we support auto install for all required tools
 					this._dialogObject.message = {
 						level: azdata.window.MessageLevel.Information,
-						text: localize('deploymentDialog.InstallToolsHint', "Some required tools are not installed, you can click the \"Install tools\" button to install them.")
+						text: localize('deploymentDialog.InstallToolsHint', "Some required tools are not installed, you can click the \"{0}\" button to install them.", this._installToolButton.label)
 					};
 				}
 				this._toolsLoadingComponent.loading = false;
@@ -287,12 +292,53 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this.resourceTypeService.startDeployment(this.getCurrentProvider());
 	}
 
-	private installTools(): void {
-		this._dialogObject.message = {
-			level: azdata.window.MessageLevel.Information,
-			text: localize('deploymentDialog.InstallingTools', "Required tools are being installed now.")
-		};
+	public updateToolsDisplayTableData(tool: ITool) {
+		this._toolsTable.data = this._toolsTable.data.map(rowData => {
+			if (rowData[0] === tool.displayName) {
+				return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || ''];
+			} else {
+				return rowData;
+			}
+		});
+		this.enableContainers(!tool.isInstalling); // if installing the disableContainers else enable them
+	}
+
+	private enableContainers(enabled: boolean): void {
+		this._cardsContainer.enabled = enabled;
+		this._agreementContainer.enabled = enabled;
+		this._optionsContainer.enabled = enabled;
+	}
+
+	private async installTools(): Promise<void> {
 		this._installToolButton.enabled = false;
-		// TODO
+		let i: number = 0;
+		try {
+			for (; i < this._tools.length; i++) {
+				if (this._tools[i].needsInstallation) {
+					// Update the informational message
+					this._dialogObject.message = {
+						level: azdata.window.MessageLevel.Information,
+						text: localize('deploymentDialog.InstallingTool', "Required tool '{0}' [ {1} ] is being installed now.", this._tools[i].displayName, this._tools[i].homePage)
+					};
+					await this._tools[i].install();
+				}
+			}
+			// Update the informational message
+			this._dialogObject.message = {
+				level: azdata.window.MessageLevel.Information,
+				text: localize('deploymentDialog.InstalledTools', "All required tools are installed now.")
+			};
+			this._dialogObject.okButton.enabled = true;
+		} catch (error) {
+			const errorMessage = this._tools[i].statusDescription || getErrorMessage(error);
+			if (errorMessage) {
+				// Let the tooltip status show the errorMessage just shown so that last status is visible even after showError dialogue has been dismissed.
+				this._dialogObject.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: errorMessage
+				};
+			}
+			this._tools[i].showOutputChannel(/*preserverFocus*/false);
+		}
 	}
 }
