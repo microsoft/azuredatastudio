@@ -55,7 +55,7 @@ if (context.RunTest) {
 		});
 
 		// TODO: Need to make this test more reliable.
-		test('should not be dirty after saving notebook test @UNSTABLE@', async function () {
+		test('should not be dirty after saving notebook test', async function () {
 			await (new NotebookTester().shouldNotBeDirtyAfterSavingNotebookTest(this.test.title));
 		});
 
