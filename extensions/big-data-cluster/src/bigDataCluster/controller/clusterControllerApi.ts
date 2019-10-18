@@ -10,6 +10,8 @@ import { BdcRouterApi, Authentication, EndpointModel, BdcStatusModel, DefaultApi
 import { TokenRouterApi } from './clusterApiGenerated2';
 import { AuthType } from '../constants';
 import * as nls from 'vscode-nls';
+import { AddControllerDialog, AddControllerDialogModel, getAuthCategory } from '../dialog/addControllerDialog';
+import { ConnectControllerDialog, ConnectControllerModel } from '../dialog/connectControllerDialog';
 
 const localize = nls.loadMessageBundle();
 
@@ -89,6 +91,8 @@ export class ClusterController {
 
 	private authPromise: Promise<Authentication>;
 	private _url: string;
+	private readonly dialog: ConnectControllerDialog;
+	private connectionPromise: Promise<ClusterController>;
 
 	constructor(url: string,
 		private authType: AuthType,
@@ -105,6 +109,13 @@ export class ClusterController {
 		} else {
 			this.authPromise = this.requestTokenUsingKerberos(ignoreSslVerification);
 		}
+		this.dialog = new ConnectControllerDialog(new ConnectControllerModel(
+			{
+				url: this._url,
+				auth: this.authType,
+				username: this.username,
+				password: this.password
+			}));
 	}
 
 	private async requestTokenUsingKerberos(ignoreSslVerification?: boolean): Promise<Authentication> {
@@ -134,8 +145,6 @@ export class ClusterController {
 		}
 	}
 
-
-
 	private async verifyKerberosSupported(ignoreSslVerification: boolean): Promise<boolean> {
 		let tokenApi = new TokenRouterApi(this._url);
 		tokenApi.setDefaultAuthentication(new SslAuth(!!ignoreSslVerification));
@@ -150,102 +159,156 @@ export class ClusterController {
 		}
 	}
 
-	public async getEndPoints(): Promise<IEndPointsResponse> {
-		let auth = await this.authPromise;
-		let endPointApi = new BdcApiWrapper(this.username, this.password, this._url, auth);
-		let options: any = {};
+	public async getEndPoints(promptConnect: boolean = false): Promise<IEndPointsResponse> {
 		try {
-			let result = await endPointApi.endpointsGet(options);
-			return {
-				response: result.response as IHttpResponse,
-				endPoints: result.body as EndpointModel[]
-			};
+			return await this.withConnectRetry<IEndPointsResponse>(this.getEndpointsImpl, promptConnect);
 		} catch (error) {
-			// TODO handle 401 by reauthenticating
 			throw new ControllerError(error, localize('bdc.error.getEndPoints', "Error retrieving endpoints from {0}", this._url));
 		}
 	}
 
-	public async getBdcStatus(): Promise<IBdcStatusResponse> {
-		let auth = await this.authPromise;
-		const bdcApi = new BdcApiWrapper(this.username, this.password, this._url, auth);
+	private async getEndpointsImpl(self: ClusterController): Promise<IEndPointsResponse> {
+		let auth = await self.authPromise;
+		let endPointApi = new BdcApiWrapper(self.username, self.password, self._url, auth);
+		let options: any = {};
 
+		let result = await endPointApi.endpointsGet(options);
+		return {
+			response: result.response as IHttpResponse,
+			endPoints: result.body as EndpointModel[]
+		};
+	}
+
+	public async getBdcStatus(promptConnect: boolean = false): Promise<IBdcStatusResponse> {
 		try {
-			const bdcStatus = await bdcApi.getBdcStatus('', '', /*all*/ true);
-			return {
-				response: bdcStatus.response,
-				bdcStatus: bdcStatus.body
-			};
+			return await this.withConnectRetry<IBdcStatusResponse>(this.getBdcStatusImpl, promptConnect);
 		} catch (error) {
-			// TODO handle 401 by reauthenticating
 			throw new ControllerError(error, localize('bdc.error.getBdcStatus', "Error retrieving BDC status from {0}", this._url));
 		}
 	}
 
-	public async mountHdfs(mountPath: string, remoteUri: string, credentials: {}): Promise<MountResponse> {
-		let auth = await this.authPromise;
-		const api = new DefaultApiWrapper(this.username, this.password, this._url, auth);
+	private async getBdcStatusImpl(self: ClusterController): Promise<IBdcStatusResponse> {
+		let auth = await self.authPromise;
+		const bdcApi = new BdcApiWrapper(self.username, self.password, self._url, auth);
 
+		const bdcStatus = await bdcApi.getBdcStatus('', '', /*all*/ true);
+		return {
+			response: bdcStatus.response,
+			bdcStatus: bdcStatus.body
+		};
+	}
+
+	public async mountHdfs(mountPath: string, remoteUri: string, credentials: {}, promptConnection: boolean = false): Promise<MountResponse> {
 		try {
-			const mountStatus = await api.createMount('', '', remoteUri, mountPath, credentials);
-			return {
-				response: mountStatus.response,
-				status: mountStatus.body
-			};
+			return await this.withConnectRetry<MountResponse>(this.mountHdfsImpl, promptConnection, mountPath, remoteUri, credentials);
 		} catch (error) {
-			// TODO handle 401 by reauthenticating
 			throw new ControllerError(error, localize('bdc.error.mountHdfs', "Error creating mount"));
 		}
 	}
 
-	public async getMountStatus(mountPath?: string): Promise<MountStatusResponse> {
-		let auth = await this.authPromise;
-		const api = new DefaultApiWrapper(this.username, this.password, this._url, auth);
+	private async mountHdfsImpl(self: ClusterController, mountPath: string, remoteUri: string, credentials: {}): Promise<MountResponse> {
+		let auth = await self.authPromise;
+		const api = new DefaultApiWrapper(self.username, self.password, self._url, auth);
 
+		const mountStatus = await api.createMount('', '', remoteUri, mountPath, credentials);
+		return {
+			response: mountStatus.response,
+			status: mountStatus.body
+		};
+	}
+
+	public async getMountStatus(mountPath?: string, promptConnect: boolean = false): Promise<MountStatusResponse> {
 		try {
-			const mountStatus = await api.listMounts('', '', mountPath);
-			return {
-				response: mountStatus.response,
-				mount: mountStatus.body ? JSON.parse(mountStatus.body) : undefined
-			};
+			return await this.withConnectRetry<MountStatusResponse>(this.getMountStatusImpl, promptConnect, mountPath);
 		} catch (error) {
-			// TODO handle 401 by reauthenticating
 			throw new ControllerError(error, localize('bdc.error.mountHdfs', "Error creating mount"));
 		}
 	}
 
-	public async refreshMount(mountPath: string): Promise<MountResponse> {
-		let auth = await this.authPromise;
-		const api = new DefaultApiWrapper(this.username, this.password, this._url, auth);
+	private async getMountStatusImpl(self: ClusterController, mountPath?: string): Promise<MountStatusResponse> {
+		const auth = await self.authPromise;
+		const api = new DefaultApiWrapper(self.username, self.password, self._url, auth);
 
+		const mountStatus = await api.listMounts('', '', mountPath);
+		return {
+			response: mountStatus.response,
+			mount: mountStatus.body ? JSON.parse(mountStatus.body) : undefined
+		};
+	}
+
+	public async refreshMount(mountPath: string, promptConnect: boolean = false): Promise<MountResponse> {
 		try {
-			const mountStatus = await api.refreshMount('', '', mountPath);
-			return {
-				response: mountStatus.response,
-				status: mountStatus.body
-			};
+			return await this.withConnectRetry<MountResponse>(this.refreshMountImpl, promptConnect, mountPath);
 		} catch (error) {
-			// TODO handle 401 by reauthenticating
 			throw new ControllerError(error, localize('bdc.error.refreshHdfs', "Error refreshing mount"));
 		}
 	}
 
-	public async deleteMount(mountPath: string): Promise<MountResponse> {
-		let auth = await this.authPromise;
-		const api = new DefaultApiWrapper(this.username, this.password, this._url, auth);
+	private async refreshMountImpl(self: ClusterController, mountPath: string): Promise<MountResponse> {
+		const auth = await self.authPromise;
+		const api = new DefaultApiWrapper(self.username, self.password, self._url, auth);
 
+		const mountStatus = await api.refreshMount('', '', mountPath);
+		return {
+			response: mountStatus.response,
+			status: mountStatus.body
+		};
+	}
+
+	public async deleteMount(mountPath: string, promptConnect: boolean = false): Promise<MountResponse> {
 		try {
-			const mountStatus = await api.deleteMount('', '', mountPath);
-			return {
-				response: mountStatus.response,
-				status: mountStatus.body
-			};
+			return await this.withConnectRetry<MountResponse>(this.deleteMountImpl, promptConnect, mountPath);
 		} catch (error) {
-			// TODO handle 401 by reauthenticating
 			throw new ControllerError(error, localize('bdc.error.deleteHdfs', "Error deleting mount"));
 		}
 	}
+
+	private async deleteMountImpl(mountPath: string): Promise<MountResponse> {
+		let auth = await this.authPromise;
+		const api = new DefaultApiWrapper(this.username, this.password, this._url, auth);
+
+		const mountStatus = await api.deleteMount('', '', mountPath);
+		return {
+			response: mountStatus.response,
+			status: mountStatus.body
+		};
+	}
+
+	/**
+	 * Helper function that wraps a function call in a try/catch and if promptConnect is true
+	 * will prompt the user to re-enter connection information and if that succeeds updates
+	 * this with the new information.
+	 * @param f The API function we're wrapping
+	 * @param promptConnect Whether to actually prompt for connection on failure
+	 * @param args The args to pass to the function
+	 */
+	private async withConnectRetry<T>(f: (...args: any[]) => Promise<T>, promptConnect: boolean, ...args: any[]): Promise<T> {
+		try {
+			return await f(this, args);
+		} catch (error) {
+			if (promptConnect) {
+				// We don't want to open multiple dialogs here if multiple calls come in the same time so check
+				// and see if we have are actively waiting on an open dialog to return and if so then just wait
+				// on that promise.
+				if (!this.connectionPromise) {
+					this.connectionPromise = this.dialog.showDialog();
+				}
+				const controller = await this.connectionPromise;
+				this.connectionPromise = undefined;
+				if (controller) {
+					this.username = controller.username;
+					this.password = controller.password;
+					this._url = controller._url;
+					this.authType = controller.authType;
+					this.authPromise = controller.authPromise;
+				}
+				return await f(this, args);
+			}
+			throw error;
+		}
+	}
 }
+
 /**
  * Fixes missing protocol and wrong character for port entered by user
  */

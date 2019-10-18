@@ -6,22 +6,13 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { ClusterController, ControllerError, MountInfo, MountState, IEndPointsResponse } from '../controller/clusterControllerApi';
-import { AuthType } from '../constants';
+import { ClusterController, MountInfo, MountState } from '../controller/clusterControllerApi';
+import { HdfsDialogBase, HdfsDialogModelBase, HdfsDialogProperties } from './hdfsDialogBase';
 
 const localize = nls.loadMessageBundle();
 
-const basicAuthDisplay = localize('basicAuthName', "Basic");
-const integratedAuthDisplay = localize('integratedAuthName', "Windows Authentication");
 const mountConfigutationTitle = localize('mount.main.section', "Mount Configuration");
 const hdfsPathTitle = localize('mount.hdfsPath', "HDFS Path");
-
-function getAuthCategory(name: AuthType): azdata.CategoryValue {
-	if (name === 'basic') {
-		return { name: name, displayName: basicAuthDisplay };
-	}
-	return { name: name, displayName: integratedAuthDisplay };
-}
 
 /**
  * Converts a comma-delimited set of key value pair credentials to a JSON object.
@@ -65,96 +56,13 @@ function convertCredsToJson(creds: string): { credentials: {} } {
 	return credObj;
 }
 
-export interface DialogProperties {
-	url?: string;
-	auth?: AuthType;
-	username?: string;
-	password?: string;
-}
-
-export interface MountHdfsProperties extends DialogProperties {
+export interface MountHdfsProperties extends HdfsDialogProperties {
 	hdfsPath?: string;
 	remoteUri?: string;
 	credentials?: string;
 }
 
-abstract class HdfsDialogModelBase<T extends DialogProperties> {
-	protected _canceled = false;
-	private _authTypes: azdata.CategoryValue[];
-	constructor(
-		public props: T
-	) {
-		if (!props.auth) {
-			this.props.auth = 'basic';
-		}
-	}
-
-	public get authCategories(): azdata.CategoryValue[] {
-		if (!this._authTypes) {
-			this._authTypes = [getAuthCategory('basic'), getAuthCategory('integrated')];
-		}
-		return this._authTypes;
-	}
-
-	public get authCategory(): azdata.CategoryValue {
-		return getAuthCategory(this.props.auth);
-	}
-
-	public async onComplete(props: T): Promise<void> {
-		try {
-			this.props = props;
-			await this.handleCompleted();
-
-		} catch (error) {
-			// Ignore the error if we cancelled the request since we can't stop the actual request from completing
-			if (!this._canceled) {
-				throw error;
-			}
-		}
-	}
-
-	protected abstract handleCompleted(): Promise<void>;
-
-	public async onError(error: ControllerError): Promise<void> {
-		// implement
-	}
-
-	public async onCancel(): Promise<void> {
-		this._canceled = true;
-	}
-
-	protected createController(): ClusterController {
-		return new ClusterController(this.props.url, this.props.auth, this.props.username, this.props.password, true);
-	}
-
-	protected async createAndVerifyControllerConnection(): Promise<ClusterController> {
-		// We pre-fetch the endpoints here to verify that the information entered is correct (the user is able to connect)
-		let controller = this.createController();
-		let response: IEndPointsResponse;
-		try {
-			response = await controller.getEndPoints();
-			if (!response || !response.endPoints) {
-				throw new Error(localize('mount.hdfs.loginerror1', "Login to controller failed"));
-			}
-		} catch (err) {
-			throw new Error(localize('mount.hdfs.loginerror2', "Login to controller failed: {0}", err.message));
-		}
-		return controller;
-	}
-
-	protected throwIfMissingUsernamePassword(): void {
-		if (this.props.auth === 'basic') {
-			// Verify username and password as we can't make them required in the UI
-			if (!this.props.username) {
-				throw new Error(localize('err.controller.username.required', "Username is required"));
-			} else if (!this.props.password) {
-				throw new Error(localize('err.controller.password.required', "Password is required"));
-			}
-		}
-	}
-}
-
-export class MountHdfsDialogModel extends HdfsDialogModelBase<MountHdfsProperties> {
+export class MountHdfsDialogModel extends HdfsDialogModelBase<MountHdfsProperties, void> {
 	private credentials: {};
 
 	constructor(props: MountHdfsProperties) {
@@ -235,128 +143,7 @@ export class MountHdfsDialogModel extends HdfsDialogModelBase<MountHdfsPropertie
 	}
 }
 
-abstract class HdfsDialogBase<T extends DialogProperties> {
-
-	protected dialog: azdata.window.Dialog;
-	protected uiModelBuilder!: azdata.ModelBuilder;
-
-	protected urlInputBox!: azdata.InputBoxComponent;
-	protected authDropdown!: azdata.DropDownComponent;
-	protected usernameInputBox!: azdata.InputBoxComponent;
-	protected passwordInputBox!: azdata.InputBoxComponent;
-
-	constructor(private title: string, protected model: HdfsDialogModelBase<T>) {
-	}
-
-	public showDialog(): void {
-		this.createDialog();
-		azdata.window.openDialog(this.dialog);
-	}
-
-	private createDialog(): void {
-		this.dialog = azdata.window.createModelViewDialog(this.title);
-		this.dialog.registerContent(async view => {
-			this.uiModelBuilder = view.modelBuilder;
-
-			this.urlInputBox = this.uiModelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({
-					placeHolder: localize('textUrlLower', "url"),
-					value: this.model.props.url,
-				}).component();
-			this.urlInputBox.enabled = false;
-
-			this.authDropdown = this.uiModelBuilder.dropDown().withProperties({
-				values: this.model.authCategories,
-				value: this.model.authCategory,
-				editable: false,
-			}).component();
-			this.authDropdown.onValueChanged(e => this.onAuthChanged());
-			this.usernameInputBox = this.uiModelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({
-					placeHolder: localize('textUsernameLower', "username"),
-					value: this.model.props.username
-				}).component();
-			this.passwordInputBox = this.uiModelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({
-					placeHolder: localize('textPasswordLower', "password"),
-					inputType: 'password',
-					value: this.model.props.password
-				})
-				.component();
-
-			let connectionSection: azdata.FormComponentGroup = {
-				components: [
-					{
-						component: this.urlInputBox,
-						title: localize('textUrlCapital', "URL"),
-						required: true
-					}, {
-						component: this.authDropdown,
-						title: localize('textAuthCapital', "Authentication type"),
-						required: true
-					}, {
-						component: this.usernameInputBox,
-						title: localize('textUsernameCapital', "Username"),
-						required: false
-					}, {
-						component: this.passwordInputBox,
-						title: localize('textPasswordCapital', "Password"),
-						required: false
-					}
-				],
-				title: localize('hdsf.dialog.connection.section', "Cluster Connection")
-			};
-			let formModel = this.uiModelBuilder.formContainer()
-				.withFormItems([
-					this.getMainSection(),
-					connectionSection
-				]).withLayout({ width: '100%' }).component();
-
-			await view.initializeModel(formModel);
-			this.onAuthChanged();
-		});
-
-		this.dialog.registerCloseValidator(async () => await this.validate());
-		this.dialog.cancelButton.onClick(async () => await this.cancel());
-		this.dialog.okButton.label = localize('hdfs.dialog.ok', "OK");
-		this.dialog.cancelButton.label = localize('hdfs.dialog.cancel', "Cancel");
-	}
-
-	protected abstract getMainSection(): azdata.FormComponentGroup;
-
-	protected get authValue(): AuthType {
-		return (<azdata.CategoryValue>this.authDropdown.value).name as AuthType;
-	}
-
-	private onAuthChanged(): void {
-		let isBasic = this.authValue === 'basic';
-		this.usernameInputBox.enabled = isBasic;
-		this.passwordInputBox.enabled = isBasic;
-		if (!isBasic) {
-			this.usernameInputBox.value = '';
-			this.passwordInputBox.value = '';
-		}
-	}
-
-	protected abstract validate(): Promise<boolean>;
-
-	private async cancel(): Promise<void> {
-		if (this.model && this.model.onCancel) {
-			await this.model.onCancel();
-		}
-	}
-
-	protected async reportError(error: any): Promise<void> {
-		this.dialog.message = {
-			text: (typeof error === 'string') ? error : error.message,
-			level: azdata.window.MessageLevel.Error
-		};
-		if (this.model && this.model.onError) {
-			await this.model.onError(error as ControllerError);
-		}
-	}
-}
-export class MountHdfsDialog extends HdfsDialogBase<MountHdfsProperties> {
+export class MountHdfsDialog extends HdfsDialogBase<MountHdfsProperties, void> {
 	private pathInputBox: azdata.InputBoxComponent;
 	private remoteUriInputBox: azdata.InputBoxComponent;
 	private credentialsInputBox: azdata.InputBoxComponent;
@@ -405,7 +192,7 @@ export class MountHdfsDialog extends HdfsDialogBase<MountHdfsProperties> {
 		};
 	}
 
-	protected async validate(): Promise<boolean> {
+	protected async validate(): Promise<{ validated: boolean }> {
 		try {
 			await this.model.onComplete({
 				url: this.urlInputBox && this.urlInputBox.value,
@@ -416,15 +203,15 @@ export class MountHdfsDialog extends HdfsDialogBase<MountHdfsProperties> {
 				remoteUri: this.remoteUriInputBox && this.remoteUriInputBox.value,
 				credentials: this.credentialsInputBox && this.credentialsInputBox.value
 			});
-			return true;
+			return { validated: true };
 		} catch (error) {
 			await this.reportError(error);
-			return false;
+			return { validated: false };
 		}
 	}
 }
 
-export class RefreshMountDialog extends HdfsDialogBase<MountHdfsProperties> {
+export class RefreshMountDialog extends HdfsDialogBase<MountHdfsProperties, void> {
 	private pathInputBox: azdata.InputBoxComponent;
 
 	constructor(model: RefreshMountModel) {
@@ -448,7 +235,7 @@ export class RefreshMountDialog extends HdfsDialogBase<MountHdfsProperties> {
 		};
 	}
 
-	protected async validate(): Promise<boolean> {
+	protected async validate(): Promise<{ validated: boolean }> {
 		try {
 			await this.model.onComplete({
 				url: this.urlInputBox && this.urlInputBox.value,
@@ -457,15 +244,15 @@ export class RefreshMountDialog extends HdfsDialogBase<MountHdfsProperties> {
 				password: this.passwordInputBox && this.passwordInputBox.value,
 				hdfsPath: this.pathInputBox && this.pathInputBox.value
 			});
-			return true;
+			return { validated: true };
 		} catch (error) {
 			await this.reportError(error);
-			return false;
+			return { validated: false };
 		}
 	}
 }
 
-export class RefreshMountModel extends HdfsDialogModelBase<MountHdfsProperties> {
+export class RefreshMountModel extends HdfsDialogModelBase<MountHdfsProperties, void> {
 
 	constructor(props: MountHdfsProperties) {
 		super(props);
@@ -504,7 +291,7 @@ export class RefreshMountModel extends HdfsDialogModelBase<MountHdfsProperties> 
 	}
 }
 
-export class DeleteMountDialog extends HdfsDialogBase<MountHdfsProperties> {
+export class DeleteMountDialog extends HdfsDialogBase<MountHdfsProperties, void> {
 	private pathInputBox: azdata.InputBoxComponent;
 
 	constructor(model: DeleteMountModel) {
@@ -528,7 +315,7 @@ export class DeleteMountDialog extends HdfsDialogBase<MountHdfsProperties> {
 		};
 	}
 
-	protected async validate(): Promise<boolean> {
+	protected async validate(): Promise<{ validated: boolean }> {
 		try {
 			await this.model.onComplete({
 				url: this.urlInputBox && this.urlInputBox.value,
@@ -537,15 +324,15 @@ export class DeleteMountDialog extends HdfsDialogBase<MountHdfsProperties> {
 				password: this.passwordInputBox && this.passwordInputBox.value,
 				hdfsPath: this.pathInputBox && this.pathInputBox.value
 			});
-			return true;
+			return { validated: true };
 		} catch (error) {
 			await this.reportError(error);
-			return false;
+			return { validated: false };
 		}
 	}
 }
 
-export class DeleteMountModel extends HdfsDialogModelBase<MountHdfsProperties> {
+export class DeleteMountModel extends HdfsDialogModelBase<MountHdfsProperties, void> {
 
 	constructor(props: MountHdfsProperties) {
 		super(props);
