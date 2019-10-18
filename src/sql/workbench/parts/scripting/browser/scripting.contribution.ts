@@ -220,16 +220,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 		id: commands.ExplorerScriptSelectAction.ID,
 		title: commands.ExplorerScriptSelectAction.LABEL
 	},
-	when: ItemContextKey.ItemType.isEqualTo('view'),
-	order: 2
-});
-
-MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
-	command: {
-		id: commands.ExplorerScriptSelectAction.ID,
-		title: commands.ExplorerScriptSelectAction.LABEL
-	},
-	when: ItemContextKey.ItemType.isEqualTo('table'),
+	when: ContextKeyExpr.or(ItemContextKey.ItemType.isEqualTo('view'), ItemContextKey.ItemType.isEqualTo('table')),
 	order: 2
 });
 
