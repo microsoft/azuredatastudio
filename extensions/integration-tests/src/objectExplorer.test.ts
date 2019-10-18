@@ -27,7 +27,7 @@ if (context.RunTest) {
 		test('BDC instance context menu test', async function () {
 			return await (new ObjectExplorerTester()).bdcContextMenuTest();
 		});
-		test('Azure SQL DB context menu test @UNSTABLE@', async function () {
+		test('Azure SQL DB context menu test', async function () {
 			return await (new ObjectExplorerTester()).sqlDbContextMenuTest();
 		});
 		test('Standalone database context menu test @UNSTABLE@', async function () {
