@@ -131,7 +131,7 @@ function activateNotebookTask(appContext: AppContext): void {
 	apiWrapper.registerTaskHandler(Constants.mssqlClusterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
 		return handleOpenNotebookTask(profile);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlopenClusterStatusDashboard, (profile: azdata.IConnectionProfile) => {
+	apiWrapper.registerTaskHandler(Constants.mssqlopenClusterDashboard, (profile: azdata.IConnectionProfile) => {
 		return handleOpenClusterDashboardTask(profile, appContext);
 	});
 }
