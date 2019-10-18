@@ -28,10 +28,6 @@ let controller: JupyterController;
 type ChooseCellType = { label: string, id: CellType };
 
 export async function activate(extensionContext: vscode.ExtensionContext): Promise<IExtensionApi> {
-	const bookTreeViewProvider = new BookTreeViewProvider(vscode.workspace.workspaceFolders || [], extensionContext, false, BOOKS_VIEWID);
-	const untitledBookTreeViewProvider = new BookTreeViewProvider([], extensionContext, true, READONLY_BOOKS_VIEWID);
-	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(BOOKS_VIEWID, bookTreeViewProvider));
-	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(READONLY_BOOKS_VIEWID, untitledBookTreeViewProvider));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openBook', (bookPath: string, openAsUntitled: boolean, urlToOpen?: string) => openAsUntitled ? untitledBookTreeViewProvider.openBook(bookPath, urlToOpen) : bookTreeViewProvider.openBook(bookPath, urlToOpen)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openNotebook', (resource) => bookTreeViewProvider.openNotebook(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openUntitledNotebook', (resource) => untitledBookTreeViewProvider.openNotebookAsUntitled(resource)));
@@ -100,6 +96,15 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	if (!result) {
 		return undefined;
 	}
+
+	let workspaceFolders = vscode.workspace.workspaceFolders || [];
+	const bookTreeViewProvider = new BookTreeViewProvider(workspaceFolders, extensionContext, false, BOOKS_VIEWID);
+	await bookTreeViewProvider.initialized;
+	const untitledBookTreeViewProvider = new BookTreeViewProvider([], extensionContext, true, READONLY_BOOKS_VIEWID);
+	await untitledBookTreeViewProvider.initialized;
+
+	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(BOOKS_VIEWID, bookTreeViewProvider));
+	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(READONLY_BOOKS_VIEWID, untitledBookTreeViewProvider));
 
 	return {
 		getJupyterController() {
