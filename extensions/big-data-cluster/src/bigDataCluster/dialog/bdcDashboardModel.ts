@@ -47,12 +47,12 @@ export class BdcDashboardModel {
 
 	public async refresh(): Promise<void> {
 		await Promise.all([
-			this._clusterController.getBdcStatus().then(response => {
+			this._clusterController.getBdcStatus(true).then(response => {
 				this._bdcStatus = response.bdcStatus;
 				this._bdcStatusLastUpdated = new Date();
 				this._onDidUpdateBdcStatus.fire(this.bdcStatus);
 			}),
-			this._clusterController.getEndPoints().then(response => {
+			this._clusterController.getEndPoints(true).then(response => {
 				this._endpoints = response.endPoints || [];
 				fixEndpoints(this._endpoints);
 				this._endpointsLastUpdated = new Date();
