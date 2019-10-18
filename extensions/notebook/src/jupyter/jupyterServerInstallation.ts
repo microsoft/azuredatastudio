@@ -17,6 +17,8 @@ import * as utils from '../common/utils';
 import { OutputChannel, ConfigurationTarget, window } from 'vscode';
 import { Deferred } from '../common/promise';
 import { ConfigurePythonDialog } from '../dialog/configurePythonDialog';
+import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
+import CodeAdapter from '../prompts/adapter';
 
 const localize = nls.loadMessageBundle();
 const msgInstallPkgProgress = localize('msgInstallPkgProgress', "Notebook dependencies installation is in progress");
@@ -49,25 +51,55 @@ export class JupyterServerInstallation {
 	private _usingExistingPython: boolean;
 	private _usingConda: boolean;
 
-	// Allows dependencies to be installed even if an existing installation is already present
-	private _forceInstall: boolean;
 	private _installInProgress: boolean;
 
 	public static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
+
+	private _prompter: IPrompter;
+
+	private readonly _commonPackages: PythonPkgDetails[] = [
+		{
+			name: 'jupyter',
+			version: '1.0.0'
+		}, {
+			name: 'pandas',
+			version: '0.24.2'
+		}, {
+			name: 'sparkmagic',
+			version: '0.12.9'
+		}
+	];
+
+	private readonly _commonPipPackages: PythonPkgDetails[] = [
+		{
+			name: 'prose-codeaccelerator',
+			version: '1.3.0'
+		}, {
+			name: 'powershell-kernel',
+			version: '0.1.0'
+		}
+	];
+
+	private readonly _expectedPythonPackages = this._commonPackages.concat(this._commonPipPackages);
+
+	private readonly _expectedCondaPackages = this._commonPackages.concat([{ name: 'pykerberos', version: '1.2.1' }]);
+
+	private readonly _expectedCondaPipPackages = this._commonPipPackages;
 
 	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
 		this.extensionPath = extensionPath;
 		this.outputChannel = outputChannel;
 		this.apiWrapper = apiWrapper;
 		this._pythonInstallationPath = pythonInstallationPath || JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
-		this._forceInstall = false;
 		this._usingConda = false;
 		this._installInProgress = false;
 		this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
+
+		this._prompter = new CodeAdapter();
 	}
 
-	private async installDependencies(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
-		if (!(await utils.exists(this._pythonExecutable)) || this._forceInstall || this._usingExistingPython) {
+	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean): Promise<void> {
+		if (!(await utils.exists(this._pythonExecutable)) || forceInstall || this._usingExistingPython) {
 			window.showInformationMessage(msgInstallPkgStart);
 
 			this.outputChannel.show(true);
@@ -78,9 +110,9 @@ export class JupyterServerInstallation {
 				await this.installPythonPackage(backgroundOperation);
 
 				if (this._usingConda) {
-					await this.installCondaDependencies();
+					await this.upgradeCondaPackages(false, forceInstall);
 				} else if (this._usingExistingPython) {
-					await this.installPipDependencies();
+					await this.upgradePythonPackages(false, forceInstall);
 				} else {
 					await this.installOfflinePipDependencies();
 				}
@@ -301,7 +333,6 @@ export class JupyterServerInstallation {
 		}
 		this._installInProgress = true;
 
-		this._forceInstall = forceInstall;
 		if (installSettings) {
 			this._pythonInstallationPath = installSettings.installPath;
 			this._usingExistingPython = installSettings.existingPython;
@@ -315,13 +346,13 @@ export class JupyterServerInstallation {
 			await this.configurePackagePaths();
 		};
 		let installReady = new Deferred<void>();
-		if (!(await utils.exists(this._pythonExecutable)) || this._forceInstall || this._usingExistingPython) {
+		if (!(await utils.exists(this._pythonExecutable)) || forceInstall || this._usingExistingPython) {
 			this.apiWrapper.startBackgroundOperation({
 				displayName: msgTaskName,
 				description: msgTaskName,
 				isCancelable: false,
 				operation: op => {
-					this.installDependencies(op)
+					this.installDependencies(op, forceInstall)
 						.then(async () => {
 							await updateConfig();
 							installReady.resolve();
@@ -356,6 +387,106 @@ export class JupyterServerInstallation {
 		}
 	}
 
+	/**
+	 * Prompts user to upgrade certain python packages if they're below the minimum expected version.
+	 */
+	public promptForPackageUpgrade(): Promise<void> {
+		if (this._usingConda) {
+			return this.upgradeCondaPackages(true, false);
+		} else {
+			return this.upgradePythonPackages(true, false);
+		}
+	}
+
+	private async upgradePythonPackages(promptForUpgrade: boolean, forceInstall: boolean): Promise<void> {
+		let installedPackages = await this.getInstalledPipPackages();
+		let pkgVersionMap = new Map<string, string>();
+		installedPackages.forEach(pkg => pkgVersionMap.set(pkg.name, pkg.version));
+
+		let packagesToInstall: PythonPkgDetails[];
+		if (forceInstall) {
+			packagesToInstall = this._expectedPythonPackages;
+		} else {
+			packagesToInstall = [];
+			this._expectedPythonPackages.forEach(expectedPkg => {
+				let installedPkgVersion = pkgVersionMap.get(expectedPkg.name);
+				if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
+					packagesToInstall.push(expectedPkg);
+				}
+			});
+		}
+
+		if (packagesToInstall.length > 0) {
+			let doUpgrade: boolean;
+			if (promptForUpgrade) {
+				doUpgrade = await this._prompter.promptSingle<boolean>(<IQuestion>{
+					type: QuestionTypes.confirm,
+					message: localize('confirmPipUpgrade', "Some installed pip packages need to be upgraded. Would you like to upgrade them now?"),
+					default: true
+				});
+			} else {
+				doUpgrade = true;
+			}
+			if (doUpgrade) {
+				await this.installPipPackages(packagesToInstall, true);
+			}
+		}
+	}
+
+	private async upgradeCondaPackages(promptForUpgrade: boolean, forceInstall: boolean): Promise<void> {
+		let condaPackagesToInstall: PythonPkgDetails[] = [];
+		let pipPackagesToInstall: PythonPkgDetails[] = [];
+
+		if (forceInstall) {
+			condaPackagesToInstall = this._expectedCondaPackages;
+			pipPackagesToInstall = this._expectedCondaPipPackages;
+		} else {
+			condaPackagesToInstall = [];
+			pipPackagesToInstall = [];
+
+			// Conda packages
+			let installedCondaPackages = await this.getInstalledCondaPackages();
+			let condaVersionMap = new Map<string, string>();
+			installedCondaPackages.forEach(pkg => condaVersionMap.set(pkg.name, pkg.version));
+
+			this._expectedCondaPackages.forEach(expectedPkg => {
+				let installedPkgVersion = condaVersionMap.get(expectedPkg.name);
+				if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
+					condaPackagesToInstall.push(expectedPkg);
+				}
+			});
+
+			// Pip packages
+			let installedPipPackages = await this.getInstalledPipPackages();
+			let pipVersionMap = new Map<string, string>();
+			installedPipPackages.forEach(pkg => pipVersionMap.set(pkg.name, pkg.version));
+
+			this._expectedCondaPipPackages.forEach(expectedPkg => {
+				let installedPkgVersion = pipVersionMap.get(expectedPkg.name);
+				if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
+					pipPackagesToInstall.push(expectedPkg);
+				}
+			});
+		}
+
+		if (condaPackagesToInstall.length > 0 || pipPackagesToInstall.length > 0) {
+			let doUpgrade: boolean;
+			if (promptForUpgrade) {
+				doUpgrade = await this._prompter.promptSingle<boolean>(<IQuestion>{
+					type: QuestionTypes.confirm,
+					message: localize('confirmCondaUpgrade', "Some installed conda and pip packages need to be upgraded. Would you like to upgrade them now?"),
+					default: true
+				});
+			} else {
+				doUpgrade = true;
+			}
+			if (doUpgrade) {
+				await this.installCondaPackages(condaPackagesToInstall, true);
+				await this.installPipPackages(pipPackagesToInstall, true);
+			}
+		}
+	}
+
 	public async getInstalledPipPackages(): Promise<PythonPkgDetails[]> {
 		let cmd = `"${this.pythonExecutable}" -m pip list --format=json`;
 		let packagesInfo = await this.executeBufferedCommand(cmd);
@@ -367,15 +498,21 @@ export class JupyterServerInstallation {
 		return packagesResult;
 	}
 
-	public installPipPackage(packageName: string, version: string): Promise<void> {
+	public installPipPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void> {
+		if (!packages || packages.length === 0) {
+			return Promise.resolve();
+		}
+
+		let versionSpecifier = useMinVersion ? '>=' : '==';
+		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
 		// Force reinstall in case some dependencies are split across multiple locations
 		let cmdOptions = this._usingExistingPython ? '--user --force-reinstall' : '--force-reinstall';
-		let cmd = `"${this.pythonExecutable}" -m pip install ${cmdOptions} ${packageName}==${version}`;
+		let cmd = `"${this.pythonExecutable}" -m pip install ${cmdOptions} ${packagesStr} --extra-index-url https://prose-python-packages.azurewebsites.net`;
 		return this.executeStreamedCommand(cmd);
 	}
 
 	public uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void> {
-		let packagesStr = packages.map(pkg => `${pkg.name}==${pkg.version}`).join(' ');
+		let packagesStr = packages.map(pkg => `"${pkg.name}==${pkg.version}"`).join(' ');
 		let cmd = `"${this.pythonExecutable}" -m pip uninstall -y ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
@@ -396,15 +533,21 @@ export class JupyterServerInstallation {
 		return [];
 	}
 
-	public installCondaPackage(packageName: string, version: string): Promise<void> {
+	public installCondaPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void> {
+		if (!packages || packages.length === 0) {
+			return Promise.resolve();
+		}
+
+		let versionSpecifier = useMinVersion ? '>=' : '==';
+		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
 		let condaExe = this.getCondaExePath();
-		let cmd = `"${condaExe}" install -y ${packageName}==${version}`;
+		let cmd = `"${condaExe}" install -y --force-reinstall ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
 
 	public uninstallCondaPackages(packages: PythonPkgDetails[]): Promise<void> {
 		let condaExe = this.getCondaExePath();
-		let packagesStr = packages.map(pkg => `${pkg.name}==${pkg.version}`).join(' ');
+		let packagesStr = packages.map(pkg => `"${pkg.name}==${pkg.version}"`).join(' ');
 		let cmd = `"${condaExe}" uninstall -y ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
@@ -433,42 +576,6 @@ export class JupyterServerInstallation {
 		} else {
 			return Promise.resolve();
 		}
-	}
-
-	private async installPipDependencies(): Promise<void> {
-		this.outputChannel.show(true);
-		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
-
-		let packages = 'jupyter>=1.0.0 pandas>=0.24.2 sparkmagic>=0.12.9 prose-codeaccelerator>=1.3.0 powershell_kernel>=0.1.0';
-		let cmdOptions = this._usingExistingPython ? '--user' : '';
-		if (this._forceInstall) {
-			cmdOptions = `${cmdOptions} --force-reinstall`;
-		}
-		let installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} ${packages} --extra-index-url https://prose-python-packages.azurewebsites.net`;
-		await this.executeStreamedCommand(installCommand);
-
-		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
-	}
-
-	private async installCondaDependencies(): Promise<void> {
-		this.outputChannel.show(true);
-		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
-
-		let installCommand = `"${this.getCondaExePath()}" install -y jupyter>=1.0.0 pandas>=0.24.2`;
-		if (process.platform !== constants.winPlatform) {
-			installCommand = `${installCommand} pykerberos>=1.2.1`;
-		}
-		await this.executeStreamedCommand(installCommand);
-
-		let pipPackages = 'sparkmagic>=0.12.9 prose-codeaccelerator>=1.3.0 powershell_kernel>=0.1.0';
-		let cmdOptions = this._usingExistingPython ? '--user' : '';
-		if (this._forceInstall) {
-			cmdOptions = `${cmdOptions} --force-reinstall`;
-		}
-		installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} ${pipPackages} --extra-index-url https://prose-python-packages.azurewebsites.net`;
-		await this.executeStreamedCommand(installCommand);
-
-		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
 	}
 
 	private async executeStreamedCommand(command: string): Promise<void> {
