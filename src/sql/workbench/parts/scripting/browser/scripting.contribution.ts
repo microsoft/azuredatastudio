@@ -11,6 +11,10 @@ import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
+import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
+import { EditDataAction } from 'sql/workbench/browser/scriptingActions';
 
 //#region -- Data Explorer
 // Script as Create
@@ -202,4 +206,104 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		TreeNodeContextKey.NodeType.isEqualTo(NodeType.TableValuedFunction))
 });
 
+//#endregion
+
+//#region -- explorer widget
+
+CommandsRegistry.registerCommand(commands.ExplorerScriptSelectAction.ID, (accessor, context) => {
+	const instantiationService = accessor.get(IInstantiationService);
+	instantiationService.createInstance(commands.ExplorerScriptSelectAction, commands.ExplorerScriptSelectAction.ID, commands.ExplorerScriptSelectAction.LABEL).run(context);
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: commands.ExplorerScriptSelectAction.ID,
+		title: commands.ExplorerScriptSelectAction.LABEL
+	},
+	when: ItemContextKey.ItemType.isEqualTo('view'),
+	order: 2
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: commands.ExplorerScriptSelectAction.ID,
+		title: commands.ExplorerScriptSelectAction.LABEL
+	},
+	when: ItemContextKey.ItemType.isEqualTo('table'),
+	order: 2
+});
+
+const ExplorerEditDataActionID = 'explorer.editData';
+CommandsRegistry.registerCommand(ExplorerEditDataActionID, (accessor, context) => {
+	const instantiationService = accessor.get(IInstantiationService);
+	instantiationService.createInstance(EditDataAction, EditDataAction.ID, EditDataAction.LABEL).run(context);
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: ExplorerEditDataActionID,
+		title: EditDataAction.LABEL
+	},
+	when: ItemContextKey.ItemType.isEqualTo('table'),
+	order: 2
+});
+
+CommandsRegistry.registerCommand(commands.ExplorerScriptExecuteAction.ID, (accessor, context) => {
+	const instantiationService = accessor.get(IInstantiationService);
+	instantiationService.createInstance(commands.ExplorerScriptExecuteAction, commands.ExplorerScriptExecuteAction.ID, commands.ExplorerScriptExecuteAction.LABEL).run(context);
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: commands.ExplorerScriptExecuteAction.ID,
+		title: commands.ExplorerScriptExecuteAction.LABEL
+	},
+	when: ItemContextKey.ItemType.isEqualTo('sproc'),
+	order: 2
+});
+
+CommandsRegistry.registerCommand(commands.ExplorerScriptAlterAction.ID, (accessor, context) => {
+	const instantiationService = accessor.get(IInstantiationService);
+	instantiationService.createInstance(commands.ExplorerScriptAlterAction, commands.ExplorerScriptAlterAction.ID, commands.ExplorerScriptAlterAction.LABEL).run(context);
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: commands.ExplorerScriptAlterAction.ID,
+		title: commands.ExplorerScriptAlterAction.LABEL
+	},
+	when: ContextKeyExpr.and(ItemContextKey.ItemType.isEqualTo('sproc'), ItemContextKey.ConnectionProvider.isEqualTo('mssql')),
+	order: 2
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: commands.ExplorerScriptAlterAction.ID,
+		title: commands.ExplorerScriptAlterAction.LABEL
+	},
+	when: ContextKeyExpr.and(ItemContextKey.ItemType.isEqualTo('function'), ItemContextKey.ConnectionProvider.isEqualTo('mssql')),
+	order: 2
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: commands.ExplorerScriptAlterAction.ID,
+		title: commands.ExplorerScriptAlterAction.LABEL
+	},
+	when: ContextKeyExpr.and(ItemContextKey.ItemType.isEqualTo('view'), ItemContextKey.ConnectionProvider.isEqualTo('mssql')),
+	order: 2
+});
+
+CommandsRegistry.registerCommand(commands.ExplorerScriptCreateAction.ID, (accessor, context) => {
+	const instantiationService = accessor.get(IInstantiationService);
+	instantiationService.createInstance(commands.ExplorerScriptCreateAction, commands.ExplorerScriptCreateAction.ID, commands.ExplorerScriptCreateAction.LABEL).run(context);
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: commands.ExplorerScriptCreateAction.ID,
+		title: commands.ExplorerScriptCreateAction.LABEL
+	},
+	order: 2
+});
 //#endregion
