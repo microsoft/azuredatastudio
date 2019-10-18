@@ -75,7 +75,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 	}
 
 	private hasHeader(): boolean {
-		return this._containerLayout && this._containerLayout && this._containerLayout.header !== undefined;
+		return this._containerLayout && this._containerLayout.header !== undefined;
 	}
 
 	private isCollapsible(): boolean {
