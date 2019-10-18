@@ -286,7 +286,7 @@ export class CmsUtils {
 
 	public didConnectionChange(connectionA: azdata.connection.Connection, connectionB: azdata.connection.Connection): boolean {
 		return (connectionA !== connectionB) || ((connectionA.connectionId === connectionB.connectionId) &&
-			(connectionA.options.savePassword !== connectionA.options.savePassword));
+			(connectionA.options.savePassword !== connectionB.options.savePassword));
 	}
 
 }
