@@ -56,6 +56,7 @@ const indentationFilter = [
 	'!src/vs/base/node/terminateProcess.sh',
 	'!src/vs/base/node/cpuUsage.sh',
 	'!test/assert.js',
+	'!build/testSetup.js',
 
 	// except specific folders
 	'!test/automation/out/**',
@@ -193,8 +194,7 @@ const tslintBaseFilter = [
 	'!extensions/**/*.test.ts',
 	'!extensions/html-language-features/server/lib/jquery.d.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts', // {{SQL CARBON EDIT}},
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts', // {{SQL CARBON EDIT}},
-	'!build/testSetup.js'
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts' // {{SQL CARBON EDIT}},
 ];
 
 const sqlFilter = ['src/sql/**']; // {{SQL CARBON EDIT}}
