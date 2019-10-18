@@ -924,7 +924,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				TreeComponentItem: sqlExtHostTypes.TreeComponentItem,
 				AzureResource: sqlExtHostTypes.AzureResource,
 				extensions: extensions,
-				TreeItem: sqlExtHostTypes.TreeItem,
+				TreeItem: sqlExtHostTypes.TreeItem
 			};
 		}
 	};

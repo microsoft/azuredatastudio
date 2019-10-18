@@ -67,7 +67,7 @@ export const properties: Array<ProviderProperties> = [
 					},
 					{
 						displayName: nls.localize('computerName', "Computer Name"),
-						value: 'machineName',
+						value: 'machineName'
 					},
 					{
 						displayName: nls.localize('osVersion', "OS Version"),
@@ -114,7 +114,7 @@ export const properties: Array<ProviderProperties> = [
 				]
 			},
 			{
-				flavor: 'issqlondemand',
+				flavor: 'on_demand',
 				conditions: [
 					{
 						field: 'engineEditionId',

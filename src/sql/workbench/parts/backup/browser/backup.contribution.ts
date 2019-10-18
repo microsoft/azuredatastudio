@@ -20,6 +20,7 @@ import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/tr
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
 import { ServerInfoContextKey } from 'sql/workbench/parts/connection/common/serverInfoContextKey';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 new BackupAction().registerTask();
 
@@ -41,7 +42,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('backup', "Backup")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
-		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database), MssqlNodeContext.IsCloud.toNegated(), MssqlNodeContext.IsSqlOnDemand.toNegated())
+		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database), MssqlNodeContext.IsCloud.toNegated(), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
 // oe
@@ -62,7 +63,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		title: localize('backup', "Backup")
 	},
 	when: ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo(NodeType.Database), ConnectionContextKey.Provider.isEqualTo(mssqlProviderName),
-		ServerInfoContextKey.IsCloud.toNegated(), ServerInfoContextKey.IsSqlOnDemand.toNegated())
+		ServerInfoContextKey.IsCloud.toNegated(), ServerInfoContextKey.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
 // dashboard explorer
@@ -78,6 +79,6 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 		title: BackupAction.LABEL
 	},
 	when: ContextKeyExpr.and(ItemContextKey.ItemType.isEqualTo('database'), ItemContextKey.ConnectionProvider.isEqualTo('mssql'),
-		ItemContextKey.IsCloud.toNegated(), ItemContextKey.IsSqlOnDemand.toNegated()),
+		ItemContextKey.IsCloud.toNegated(), ItemContextKey.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
 	order: 2
 });

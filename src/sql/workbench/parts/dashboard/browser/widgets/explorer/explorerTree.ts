@@ -79,7 +79,7 @@ export class ExplorerController extends TreeDefaults.DefaultController {
 			resource: element,
 			providerName: this.bootStrapService.connectionManagementService.connectionInfo.providerId,
 			isCloud: this.bootStrapService.connectionManagementService.connectionInfo.serverInfo.isCloud,
-			isSqlOnDemand: this.bootStrapService.connectionManagementService.connectionInfo.serverInfo.engineEditionId === 11
+			engineEdition: this.bootStrapService.connectionManagementService.connectionInfo.serverInfo.engineEditionId
 		});
 
 		let context: ManageActionContext | BaseActionContext;

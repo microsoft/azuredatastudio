@@ -357,10 +357,9 @@ export enum Orientation {
 }
 
 /**
- * Information about available engine editions
+ * The possible values of the server engine edition
  */
-export enum DatabaseEngineEdition
-{
+export enum DatabaseEngineEdition {
 	Unknown = 0,
 	Personal = 1,
 	Standard = 2,

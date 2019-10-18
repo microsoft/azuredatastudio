@@ -25,6 +25,7 @@ export interface PropertiesConfig {
 
 export interface FlavorProperties {
 	flavor: string;
+	condition?: ConditionProperties;
 	conditions?: Array<ConditionProperties>;
 	databaseProperties: Array<Property>;
 	serverProperties: Array<Property>;
@@ -141,11 +142,24 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 				return;
 			} else {
 				const flavorArray = providerProperties.flavors.filter((item) => {
-					let conditionResult = true;
-					for (let i = 0; i < item.conditions.length; i++) {
-						conditionResult = conditionResult && this.getConditionResult(item, item.conditions[i]);
+
+					// For backward compatibility we are supportig array of conditions and single condition.
+					// If nothing is specified, we return false.
+					if (item.conditions) {
+						let conditionResult = true;
+						for (let i = 0; i < item.conditions.length; i++) {
+							conditionResult = conditionResult && this.getConditionResult(item, item.conditions[i]);
+						}
+
+						return conditionResult;
 					}
-					return conditionResult;
+					else if (item.condition) {
+						return this.getConditionResult(item, item.condition);
+					}
+					else {
+						this.logService.error('No condition was specified.');
+						return false;
+					}
 				});
 
 				if (flavorArray.length === 0) {

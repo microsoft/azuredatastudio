@@ -33,7 +33,7 @@ export class MssqlNodeContext extends Disposable {
 	static IsCloud = new RawContextKey<boolean>('isCloud', false);
 	static NodeType = new RawContextKey<string>('nodeType', undefined);
 	static NodeLabel = new RawContextKey<string>('nodeLabel', undefined);
-	static IsSqlOnDemand = new RawContextKey<boolean>('isSqlOnDemand', false);
+	static EngineEdition = new RawContextKey<number>('engineEdition', DatabaseEngineEdition.Unknown);
 
 	// Scripting context keys
 	static CanScriptAsSelect = new RawContextKey<boolean>('canScriptAsSelect', false);
@@ -47,7 +47,7 @@ export class MssqlNodeContext extends Disposable {
 	private nodeTypeKey: IContextKey<string>;
 	private nodeLabelKey: IContextKey<string>;
 	private isDatabaseOrServerKey: IContextKey<boolean>;
-	private isSqlOnDemandKey: IContextKey<boolean>;
+	private engineEditionKey: IContextKey<number>;
 
 	private canScriptAsSelectKey: IContextKey<boolean>;
 	private canEditDataKey: IContextKey<boolean>;
@@ -70,7 +70,7 @@ export class MssqlNodeContext extends Disposable {
 			if (node.payload) {
 				this.setNodeProvider();
 				this.setIsCloud();
-				this.setIsSqlOnDemand();
+				this.setEngineEdition();
 				if (node.type) {
 					this.setIsDatabaseOrServer();
 					this.nodeTypeKey.set(node.type);
@@ -88,7 +88,7 @@ export class MssqlNodeContext extends Disposable {
 
 	private bindContextKeys(): void {
 		this.isCloudKey = MssqlNodeContext.IsCloud.bindTo(this.contextKeyService);
-		this.isSqlOnDemandKey = MssqlNodeContext.IsSqlOnDemand.bindTo(this.contextKeyService);
+		this.engineEditionKey = MssqlNodeContext.EngineEdition.bindTo(this.contextKeyService);
 		this.nodeTypeKey = MssqlNodeContext.NodeType.bindTo(this.contextKeyService);
 		this.nodeLabelKey = MssqlNodeContext.NodeLabel.bindTo(this.contextKeyService);
 		this.isDatabaseOrServerKey = MssqlNodeContext.IsDatabaseOrServer.bindTo(this.contextKeyService);
@@ -122,13 +122,13 @@ export class MssqlNodeContext extends Disposable {
 	}
 
 	/**
-	 * Helper function to tell whether we are connected to the server with engine edition 11 (Sql Server On Demand)
+	 * Helper function to set engine edition
 	 */
-	private setIsSqlOnDemand(): void {
+	private setEngineEdition(): void {
 
 		let serverInfo: azdata.ServerInfo = this.getServerInfo();
-		if (serverInfo && serverInfo.engineEditionId === DatabaseEngineEdition.SqlOnDemand) {
-			this.isSqlOnDemandKey.set(true);
+		if (serverInfo && serverInfo.engineEditionId) {
+			this.engineEditionKey.set(serverInfo.engineEditionId);
 		}
 	}
 

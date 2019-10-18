@@ -401,7 +401,7 @@
           ]
         },
         {
-          "flavor": "isSqlOnDemand",
+          "flavor": "on_demand",
           "conditions": [
             {
               "field": "engineEditionId",

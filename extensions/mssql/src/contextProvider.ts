@@ -17,7 +17,7 @@ export enum ContextKeys {
 	ISCLOUD = 'mssql:iscloud',
 	EDITIONID = 'mssql:engineedition',
 	ISCLUSTER = 'mssql:iscluster',
-	SERVERMAJORVERSION = 'mssql:servermajorversion',
+	SERVERMAJORVERSION = 'mssql:servermajorversion'
 }
 
 const isCloudEditions = [

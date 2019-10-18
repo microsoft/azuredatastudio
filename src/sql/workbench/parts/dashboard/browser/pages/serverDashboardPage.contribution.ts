@@ -61,11 +61,11 @@ export const serverDashboardPropertiesSchema: IJSONSchema = {
 						},
 						{
 							displayName: nls.localize('computerName', "Computer Name"),
-							value: 'machineName',
+							value: 'machineName'
 						},
 						{
 							displayName: nls.localize('osVersion', "OS Version"),
-							value: 'osVersion',
+							value: 'osVersion'
 						}
 					]
 				}
