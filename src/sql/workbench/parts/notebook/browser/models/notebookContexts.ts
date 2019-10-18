@@ -49,7 +49,7 @@ export class NotebookContexts {
 	 * @param kernelChangedArgs kernel changed args (both old and new kernel info)
 	 * @param profile current connection profile
 	 */
-	public static async getContextsForKernel(connectionService: IConnectionManagementService, connProviderIds: string[], kernelChangedArgs?: nb.IKernelChangedArgs, profile?: IConnectionProfile): Promise<IDefaultConnection> {
+	public static getContextsForKernel(connectionService: IConnectionManagementService, connProviderIds: string[], kernelChangedArgs?: nb.IKernelChangedArgs, profile?: IConnectionProfile): IDefaultConnection {
 		let connections: IDefaultConnection = this.DefaultContext;
 		if (!profile) {
 			if (!kernelChangedArgs || !kernelChangedArgs.newValue ||
@@ -61,7 +61,7 @@ export class NotebookContexts {
 		if (kernelChangedArgs && kernelChangedArgs.newValue && kernelChangedArgs.newValue.name && connProviderIds.length < 1) {
 			return connections;
 		} else {
-			connections = await this.getActiveContexts(connectionService, connProviderIds, profile);
+			connections = this.getActiveContexts(connectionService, connProviderIds, profile);
 		}
 		return connections;
 	}
@@ -71,9 +71,9 @@ export class NotebookContexts {
 	 * @param apiWrapper ApiWrapper
 	 * @param profile current connection profile
 	 */
-	public static async getActiveContexts(connectionService: IConnectionManagementService, connProviderIds: string[], profile: IConnectionProfile): Promise<IDefaultConnection> {
+	public static getActiveContexts(connectionService: IConnectionManagementService, connProviderIds: string[], profile: IConnectionProfile): IDefaultConnection {
 		let defaultConnection: ConnectionProfile = NotebookContexts.DefaultContext.defaultConnection;
-		let activeConnections: ConnectionProfile[] = await connectionService.getActiveConnections();
+		let activeConnections: ConnectionProfile[] = connectionService.getActiveConnections();
 		if (activeConnections && activeConnections.length > 0) {
 			activeConnections = activeConnections.filter(conn => conn.id !== '-1');
 		}
