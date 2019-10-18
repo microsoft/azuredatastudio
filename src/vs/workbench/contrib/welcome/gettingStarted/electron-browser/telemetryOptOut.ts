@@ -35,6 +35,6 @@ export class NativeTelemetryOptOut extends AbstractTelemetryOptOut {
 	}
 
 	protected getWindowCount(): Promise<number> {
-		return this.electronService.getWindowCount();
+		return this.electronService ? this.electronService.getWindowCount() : Promise.resolve(0); // {{SQL CARBON EDIT}} Tests run without UI context so electronService is undefined in that case
 	}
 }
