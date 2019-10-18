@@ -29,7 +29,7 @@ const timeout = (millis: number) => new Promise(c => setTimeout(c, millis));
 
 export class OpenSparkJobSubmissionDialogCommand extends Command {
 	constructor(appContext: AppContext, private outputChannel: vscode.OutputChannel) {
-		super(constants.mssqlClusterLivySubmitSparkJobCommand, appContext);
+		super(constants.kustoClusterLivySubmitSparkJobCommand, appContext);
 	}
 
 	protected async preExecute(context: ICommandUnknownContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
@@ -117,7 +117,7 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 // Open the submission dialog for a specific file path.
 export class OpenSparkJobSubmissionDialogFromFileCommand extends Command {
 	constructor(appContext: AppContext, private outputChannel: vscode.OutputChannel) {
-		super(constants.mssqlClusterLivySubmitSparkJobFromFileCommand, appContext);
+		super(constants.kustoClusterLivySubmitSparkJobFromFileCommand, appContext);
 	}
 
 	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {

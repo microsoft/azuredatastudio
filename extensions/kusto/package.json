@@ -10,42 +10,18 @@
     "vscode": "*"
   },
   "main": "./out/main",
-  "typings": "./src/mssql",
+  "typings": "./src/kusto",
   "extensionDependencies": [
     "vscode.sql"
   ],
   "scripts": {
-    "compile": "gulp compile-extension:mssql-client",
-    "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
+    "compile": "gulp compile-extension:kusto-client",
+    "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-kusto syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
   },
   "contributes": {
     "commands": [
       {
-        "command": "mssqlCluster.uploadFiles",
-        "title": "%mssqlCluster.uploadFiles%"
-      },
-      {
-        "command": "mssqlCluster.mkdir",
-        "title": "%mssqlCluster.mkdir%"
-      },
-      {
-        "command": "mssqlCluster.deleteFiles",
-        "title": "%mssqlCluster.deleteFiles%"
-      },
-      {
-        "command": "mssqlCluster.previewFile",
-        "title": "%mssqlCluster.previewFile%"
-      },
-      {
-        "command": "mssqlCluster.saveFile",
-        "title": "%mssqlCluster.saveFile%"
-      },
-      {
-        "command": "mssqlCluster.copyPath",
-        "title": "%mssqlCluster.copyPath%"
-      },
-      {
-        "command": "mssqlCluster.task.newNotebook",
+        "command": "kustoCluster.task.newNotebook",
         "title": "%notebook.command.new%",
         "icon": {
           "dark": "resources/dark/new_notebook_inverse.svg",
@@ -53,7 +29,7 @@
         }
       },
       {
-        "command": "mssqlCluster.task.openNotebook",
+        "command": "kustoCluster.task.openNotebook",
         "title": "%notebook.command.open%",
         "icon": {
           "dark": "resources/dark/open_notebook_inverse.svg",
@@ -61,77 +37,40 @@
         }
       },
       {
-        "command": "mssqlCluster.livy.cmd.submitSparkJob",
-        "title": "%title.submitSparkJob%"
-      },
-      {
-        "command": "mssqlCluster.livy.task.submitSparkJob",
-        "title": "%title.newSparkJob%",
-        "icon": {
-          "dark": "resources/dark/new_spark_job_inverse.svg",
-          "light": "resources/light/new_spark_job.svg"
-        }
-      },
-      {
-        "command": "mssqlCluster.task.openClusterStatusNotebook",
+        "command": "kustoCluster.task.openClusterStatusNotebook",
         "title": "%title.openClusterStatusNotebook%",
         "icon": {
           "dark": "resources/dark/cluster_status_inverse.svg",
           "light": "resources/light/cluster_status.svg"
         }
-      },
-      {
-        "command": "mssqlCluster.livy.task.openYarnHistory",
-        "title": "%title.openYarnHistory%",
-        "icon": {
-          "dark": "resources/light/hadoop.svg",
-          "light": "resources/light/hadoop.svg"
-        }
-      },
-      {
-        "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
-        "title": "%title.submitSparkJob%"
-      },
-      {
-        "command": "mssql.searchServers",
-        "title": "%title.searchServers%"
-      },
-      {
-        "command": "mssql.clearSearchServerResult",
-        "title": "%title.clearSearchServerResult%"
-      },
-      {
-        "command": "mssql.showLogFile",
-        "category": "MSSQL",
-        "title": "%title.showLogFile%"
       }
     ],
     "outputChannels": [
-      "MSSQL"
+      "KUSTO"
     ],
     "snippets": [
       {
-        "language": "sql",
-        "path": "./snippets/mssql.json"
+        "language": "kql",
+        "path": "./snippets/kusto.json"
       }
     ],
     "configuration": {
       "type": "object",
-      "title": "%mssql.configuration.title%",
+      "title": "%kusto.configuration.title%",
       "properties": {
-        "mssql.query.displayBitAsNumber": {
+        "kusto.query.displayBitAsNumber": {
           "type": "boolean",
           "default": true,
-          "description": "%mssql.query.displayBitAsNumber%"
+          "description": "%kusto.query.displayBitAsNumber%"
         },
-        "mssql.format.alignColumnDefinitionsInColumns": {
+        "kusto.format.alignColumnDefinitionsInColumns": {
           "type": "boolean",
-          "description": "%mssql.format.alignColumnDefinitionsInColumns%",
+          "description": "%kusto.format.alignColumnDefinitionsInColumns%",
           "default": false
         },
-        "mssql.format.datatypeCasing": {
+        "kusto.format.datatypeCasing": {
           "type": "string",
-          "description": "%mssql.format.datatypeCasing%",
+          "description": "%kusto.format.datatypeCasing%",
           "default": "none",
           "enum": [
             "none",
@@ -139,9 +78,9 @@
             "lowercase"
           ]
         },
-        "mssql.format.keywordCasing": {
+        "kusto.format.keywordCasing": {
           "type": "string",
-          "description": "%mssql.format.keywordCasing%",
+          "description": "%kusto.format.keywordCasing%",
           "default": "none",
           "enum": [
             "none",
@@ -149,24 +88,14 @@
             "lowercase"
           ]
         },
-        "mssql.format.placeCommasBeforeNextStatement": {
-          "type": "boolean",
-          "description": "%mssql.format.placeCommasBeforeNextStatement%",
-          "default": false
-        },
-        "mssql.format.placeSelectStatementReferencesOnNewLine": {
-          "type": "boolean",
-          "description": "%mssql.format.placeSelectStatementReferencesOnNewLine%",
-          "default": false
-        },
-        "mssql.logDebugInfo": {
+        "kusto.logDebugInfo": {
           "type": "boolean",
           "default": false,
-          "description": "%mssql.logDebugInfo%"
+          "description": "%kusto.logDebugInfo%"
         },
-        "mssql.tracingLevel": {
+        "kusto.tracingLevel": {
           "type": "string",
-          "description": "%mssql.tracingLevel%",
+          "description": "%kusto.tracingLevel%",
           "default": "Critical",
           "enum": [
             "All",
@@ -177,273 +106,41 @@
             "Information",
             "Verbose"
           ]
-        },
-        "mssql.logRetentionMinutes": {
-          "type": "number",
-          "default": 10080,
-          "description": "%mssql.logRetentionMinutes%"
-        },
-        "mssql.logFilesRemovalLimit": {
-          "type": "number",
-          "default": 100,
-          "description": "%mssql.logFilesRemovalLimit%"
-        },
-        "ignorePlatformWarning": {
-          "type": "boolean",
-          "description": "%ignorePlatformWarning%",
-          "default": false
         }
       }
     },
     "menus": {
       "commandPalette": [
         {
-          "command": "mssqlCluster.uploadFiles",
+          "command": "kustoCluster.task.newNotebook",
           "when": "false"
         },
         {
-          "command": "mssqlCluster.mkdir",
+          "command": "kustoCluster.task.openNotebook",
           "when": "false"
         },
         {
-          "command": "mssqlCluster.deleteFiles",
+          "command": "kustoCluster.task.openClusterStatusNotebook",
           "when": "false"
-        },
-        {
-          "command": "mssqlCluster.previewFile",
-          "when": "false"
-        },
-        {
-          "command": "mssqlCluster.saveFile",
-          "when": "false"
-        },
-        {
-          "command": "mssqlCluster.copyPath",
-          "when": "false"
-        },
-        {
-          "command": "mssqlCluster.task.newNotebook",
-          "when": "false"
-        },
-        {
-          "command": "mssqlCluster.task.openNotebook",
-          "when": "false"
-        },
-        {
-          "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
-          "when": "false"
-        },
-        {
-          "command": "mssqlCluster.livy.task.submitSparkJob",
-          "when": "false"
-        },
-        {
-          "command": "mssqlCluster.task.openClusterStatusNotebook",
-          "when": "false"
-        }
-      ],
-      "objectExplorer/item/context": [
-        {
-          "command": "mssqlCluster.uploadFiles",
-          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:message && nodeType != mssqlCluster:file",
-          "group": "1mssqlCluster@1"
-        },
-        {
-          "command": "mssqlCluster.mkdir",
-          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:message && nodeType != mssqlCluster:file",
-          "group": "1mssqlCluster@1"
-        },
-        {
-          "command": "mssqlCluster.saveFile",
-          "when": "nodeType == mssqlCluster:file",
-          "group": "1mssqlCluster@1"
-        },
-        {
-          "command": "mssqlCluster.previewFile",
-          "when": "nodeType == mssqlCluster:file",
-          "group": "1mssqlCluster@2"
-        },
-        {
-          "command": "mssqlCluster.copyPath",
-          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:connection && nodeType != mssqlCluster:message && nodeType != mssqlCluster:hdfs",
-          "group": "1mssqlCluster@3"
-        },
-        {
-          "command": "mssqlCluster.deleteFiles",
-          "when": "nodeType=~/^mssqlCluster/ && viewItem != mssqlCluster:connection && nodeType != mssqlCluster:message",
-          "group": "1mssqlCluster@4"
-        },
-        {
-          "command": "mssqlCluster.livy.cmd.submitSparkJob",
-          "when": "nodeType == mssqlCluster:hdfs",
-          "group": "1root@1"
-        },
-        {
-          "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
-          "when": "nodeType == mssqlCluster:file && nodeSubType == mssqlCluster:spark",
-          "group": "1mssqlCluster@6"
         }
       ]
     },
     "dashboard": {
-      "provider": "MSSQL",
-      "flavors": [
-        {
-          "flavor": "on_prem",
-          "condition": {
-            "field": "isCloud",
-            "operator": "!=",
-            "value": true
-          },
-          "databaseProperties": [
-            {
-              "displayName": "%onprem.databaseProperties.recoveryModel%",
-              "value": "recoveryModel"
-            },
-            {
-              "displayName": "%onprem.databaseProperties.lastBackupDate%",
-              "value": "lastBackupDate",
-              "ignore": [
-                "1/1/0001 12:00:00 AM"
-              ]
-            },
-            {
-              "displayName": "%onprem.databaseProperties.lastLogBackupDate%",
-              "value": "lastLogBackupDate",
-              "ignore": [
-                "1/1/0001 12:00:00 AM"
-              ]
-            },
-            {
-              "displayName": "%onprem.databaseProperties.compatibilityLevel%",
-              "value": "compatibilityLevel"
-            },
-            {
-              "displayName": "%onprem.databaseProperties.owner%",
-              "value": "owner"
-            }
-          ],
-          "serverProperties": [
-            {
-              "displayName": "%onprem.serverProperties.serverVersion%",
-              "value": "serverVersion"
-            },
-            {
-              "displayName": "%onprem.serverProperties.serverEdition%",
-              "value": "serverEdition"
-            },
-            {
-              "displayName": "%onprem.serverProperties.machineName%",
-              "value": "machineName"
-            },
-            {
-              "displayName": "%onprem.serverProperties.osVersion%",
-              "value": "osVersion"
-            }
-          ]
-        },
-        {
-          "flavor": "cloud",
-          "condition": {
-            "field": "isCloud",
-            "operator": "==",
-            "value": true
-          },
-          "databaseProperties": [
-            {
-              "displayName": "%cloud.databaseProperties.azureEdition%",
-              "value": "azureEdition"
-            },
-            {
-              "displayName": "%cloud.databaseProperties.serviceLevelObjective%",
-              "value": "serviceLevelObjective"
-            },
-            {
-              "displayName": "%cloud.databaseProperties.compatibilityLevel%",
-              "value": "compatibilityLevel"
-            },
-            {
-              "displayName": "%cloud.databaseProperties.owner%",
-              "value": "owner"
-            }
-          ],
-          "serverProperties": [
-            {
-              "displayName": "%cloud.serverProperties.serverVersion%",
-              "value": "serverVersion"
-            },
-            {
-              "displayName": "%cloud.serverProperties.serverEdition%",
-              "value": "serverEdition"
-            }
-          ]
-        }
-      ]
+      "provider": "KUSTO"
     },
-    "dashboard.tabs": [
-      {
-        "id": "mssql-big-data-cluster",
-        "description": "%tab.bigDataClusterDescription%",
-        "provider": "MSSQL",
-        "title": "%title.bigDataCluster%",
-        "when": "connectionProvider == 'MSSQL' && mssql:iscluster",
-        "container": {
-          "grid-container": [
-            {
-              "name": "%title.tasks%",
-              "row": 0,
-              "col": 0,
-              "colspan": 1,
-              "widget": {
-                "tasks-widget": [
-                  "mssqlCluster.task.newNotebook",
-                  "mssqlCluster.task.openNotebook",
-                  "mssqlCluster.livy.task.submitSparkJob",
-                  "mssqlCluster.task.openClusterStatusNotebook"
-                ]
-              }
-            },
-            {
-              "name": "%title.endpoints%",
-              "row": 1,
-              "col": 0,
-              "rowspan": 2.5,
-              "colspan": 2,
-              "widget": {
-                "modelview": {
-                  "id": "bdc-endpoints"
-                }
-              }
-            },
-            {
-              "name": "%title.books%",
-              "when": "notebookQuality != stable",
-              "row": 0,
-              "col": 2,
-              "colspan": 1,
-              "widget": {
-                "modelview": {
-                  "id": "books-widget"
-                }
-              }
-            }
-          ]
-        }
-      }
-    ],
     "connectionProvider": {
-      "providerId": "MSSQL",
-      "displayName": "%mssql.provider.displayName%",
+      "providerId": "KUSTO",
+      "displayName": "%kusto.provider.displayName%",
       "iconPath": [
         {
-          "id": "mssql:cloud",
+          "id": "kusto:cloud",
           "path": {
             "light": "resources/light/azureDB.svg",
             "dark": "resources/dark/azureDB_inverse.svg"
           }
         },
         {
-          "id": "mssql:cluster",
+          "id": "kusto:cluster",
           "path": {
             "light": "resources/light/sql_bigdata_cluster.svg",
             "dark": "resources/dark/sql_bigdata_cluster_inverse.svg"
@@ -455,8 +152,8 @@
           "specialValueType": "connectionName",
           "isIdentity": true,
           "name": "connectionName",
-          "displayName": "%mssql.connectionOptions.connectionName.displayName%",
-          "description": "%mssql.connectionOptions.connectionName.description%",
+          "displayName": "%kusto.connectionOptions.connectionName.displayName%",
+          "description": "%kusto.connectionOptions.connectionName.description%",
           "groupName": "Source",
           "valueType": "string",
           "defaultValue": null,
@@ -469,8 +166,8 @@
           "specialValueType": "serverName",
           "isIdentity": true,
           "name": "server",
-          "displayName": "%mssql.connectionOptions.serverName.displayName%",
-          "description": "%mssql.connectionOptions.serverName.description%",
+          "displayName": "%kusto.connectionOptions.serverName.displayName%",
+          "description": "%kusto.connectionOptions.serverName.description%",
           "groupName": "Source",
           "valueType": "string",
           "defaultValue": null,
@@ -480,40 +177,18 @@
           "isArray": false
         },
         {
-          "specialValueType": "databaseName",
-          "isIdentity": true,
-          "name": "database",
-          "displayName": "%mssql.connectionOptions.databaseName.displayName%",
-          "description": "%mssql.connectionOptions.databaseName.description%",
-          "groupName": "Source",
-          "valueType": "string",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
           "specialValueType": "authType",
           "isIdentity": true,
           "name": "authenticationType",
-          "displayName": "%mssql.connectionOptions.authType.displayName%",
-          "description": "%mssql.connectionOptions.authType.description%",
+          "displayName": "%kusto.connectionOptions.authType.displayName%",
+          "description": "%kusto.connectionOptions.authType.description%",
           "groupName": "Security",
           "valueType": "category",
           "defaultValue": null,
           "objectType": null,
           "categoryValues": [
             {
-              "displayName": "%mssql.connectionOptions.authType.categoryValues.sqlLogin%",
-              "name": "SqlLogin"
-            },
-            {
-              "displayName": "%mssql.connectionOptions.authType.categoryValues.integrated%",
-              "name": "Integrated"
-            },
-            {
-              "displayName": "%mssql.connectionOptions.authType.categoryValues.azureMFA%",
+              "displayName": "%kusto.connectionOptions.authType.categoryValues.azureMFA%",
               "name": "AzureMFA"
             }
           ],
@@ -524,8 +199,8 @@
           "specialValueType": "userName",
           "isIdentity": true,
           "name": "user",
-          "displayName": "%mssql.connectionOptions.userName.displayName%",
-          "description": "%mssql.connectionOptions.userName.description%",
+          "displayName": "%kusto.connectionOptions.userName.displayName%",
+          "description": "%kusto.connectionOptions.userName.description%",
           "groupName": "Security",
           "valueType": "string",
           "defaultValue": null,
@@ -538,8 +213,8 @@
           "specialValueType": "password",
           "isIdentity": true,
           "name": "password",
-          "displayName": "%mssql.connectionOptions.password.displayName%",
-          "description": "%mssql.connectionOptions.password.description%",
+          "displayName": "%kusto.connectionOptions.password.displayName%",
+          "description": "%kusto.connectionOptions.password.description%",
           "groupName": "Security",
           "valueType": "password",
           "defaultValue": null,
@@ -551,46 +226,9 @@
         {
           "specialValueType": null,
           "isIdentity": false,
-          "name": "applicationIntent",
-          "displayName": "%mssql.connectionOptions.applicationIntent.displayName%",
-          "description": "%mssql.connectionOptions.applicationIntent.description%",
-          "groupName": "Initialization",
-          "valueType": "category",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": [
-            {
-              "displayName": "ReadWrite",
-              "name": "ReadWrite"
-            },
-            {
-              "displayName": "ReadOnly",
-              "name": "ReadOnly"
-            }
-          ],
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "asynchronousProcessing",
-          "displayName": "%mssql.connectionOptions.asynchronousProcessing.displayName%",
-          "description": "%mssql.connectionOptions.asynchronousProcessing.description%",
-          "groupName": "Initialization",
-          "valueType": "boolean",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
           "name": "connectTimeout",
-          "displayName": "%mssql.connectionOptions.connectTimeout.displayName%",
-          "description": "%mssql.connectionOptions.connectTimeout.description%",
+          "displayName": "%kusto.connectionOptions.connectTimeout.displayName%",
+          "description": "%kusto.connectionOptions.connectTimeout.description%",
           "groupName": "Initialization",
           "valueType": "number",
           "defaultValue": "30",
@@ -602,130 +240,9 @@
         {
           "specialValueType": null,
           "isIdentity": false,
-          "name": "currentLanguage",
-          "displayName": "%mssql.connectionOptions.currentLanguage.displayName%",
-          "description": "%mssql.connectionOptions.currentLanguage.description%",
-          "groupName": "Initialization",
-          "valueType": "string",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "columnEncryptionSetting",
-          "displayName": "%mssql.connectionOptions.columnEncryptionSetting.displayName%",
-          "description": "%mssql.connectionOptions.columnEncryptionSetting.description%",
-          "groupName": "Security",
-          "valueType": "category",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": [
-            {
-              "displayName": null,
-              "name": "Disabled"
-            },
-            {
-              "displayName": null,
-              "name": "Enabled"
-            }
-          ],
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "encrypt",
-          "displayName": "%mssql.connectionOptions.encrypt.displayName%",
-          "description": "%mssql.connectionOptions.encrypt.description%",
-          "groupName": "Security",
-          "valueType": "boolean",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "persistSecurityInfo",
-          "displayName": "%mssql.connectionOptions.persistSecurityInfo.displayName%",
-          "description": "%mssql.connectionOptions.persistSecurityInfo.description%",
-          "groupName": "Security",
-          "valueType": "boolean",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "trustServerCertificate",
-          "displayName": "%mssql.connectionOptions.trustServerCertificate.displayName%",
-          "description": "%mssql.connectionOptions.trustServerCertificate.description%",
-          "groupName": "Security",
-          "valueType": "boolean",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "attachedDBFileName",
-          "displayName": "%mssql.connectionOptions.attachedDBFileName.displayName%",
-          "description": "%mssql.connectionOptions.attachedDBFileName.description%",
-          "groupName": "Source",
-          "valueType": "string",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "contextConnection",
-          "displayName": "%mssql.connectionOptions.contextConnection.displayName%",
-          "description": "%mssql.connectionOptions.contextConnection.description%",
-          "groupName": "Source",
-          "valueType": "boolean",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "port",
-          "displayName": "%mssql.connectionOptions.port.displayName%",
-          "description": null,
-          "groupName": null,
-          "valueType": "number",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
           "name": "connectRetryCount",
-          "displayName": "%mssql.connectionOptions.connectRetryCount.displayName%",
-          "description": "%mssql.connectionOptions.connectRetryCount.description%",
+          "displayName": "%kusto.connectionOptions.connectRetryCount.displayName%",
+          "description": "%kusto.connectionOptions.connectRetryCount.description%",
           "groupName": "Connection Resiliency",
           "valueType": "number",
           "defaultValue": "1",
@@ -738,8 +255,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "connectRetryInterval",
-          "displayName": "%mssql.connectionOptions.connectRetryInterval.displayName%",
-          "description": "%mssql.connectionOptions.connectRetryInterval.description%",
+          "displayName": "%kusto.connectionOptions.connectRetryInterval.displayName%",
+          "description": "%kusto.connectionOptions.connectRetryInterval.description%",
           "groupName": "Connection Resiliency",
           "valueType": "number",
           "defaultValue": "10",
@@ -752,8 +269,8 @@
           "specialValueType": "appName",
           "isIdentity": false,
           "name": "applicationName",
-          "displayName": "%mssql.connectionOptions.applicationName.displayName%",
-          "description": "%mssql.connectionOptions.applicationName.description%",
+          "displayName": "%kusto.connectionOptions.applicationName.displayName%",
+          "description": "%kusto.connectionOptions.applicationName.description%",
           "groupName": "Context",
           "valueType": "string",
           "defaultValue": null,
@@ -766,8 +283,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "workstationId",
-          "displayName": "%mssql.connectionOptions.workstationId.displayName%",
-          "description": "%mssql.connectionOptions.workstationId.description%",
+          "displayName": "%kusto.connectionOptions.workstationId.displayName%",
+          "description": "%kusto.connectionOptions.workstationId.description%",
           "groupName": "Context",
           "valueType": "string",
           "defaultValue": null,
@@ -779,150 +296,10 @@
         {
           "specialValueType": null,
           "isIdentity": false,
-          "name": "pooling",
-          "displayName": "%mssql.connectionOptions.pooling.displayName%",
-          "description": "%mssql.connectionOptions.pooling.description%",
-          "groupName": "Pooling",
-          "valueType": "boolean",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "maxPoolSize",
-          "displayName": "%mssql.connectionOptions.maxPoolSize.displayName%",
-          "description": "%mssql.connectionOptions.maxPoolSize.description%",
-          "groupName": "Pooling",
-          "valueType": "number",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "minPoolSize",
-          "displayName": "%mssql.connectionOptions.minPoolSize.displayName%",
-          "description": "%mssql.connectionOptions.minPoolSize.description%",
-          "groupName": "Pooling",
-          "valueType": "number",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "loadBalanceTimeout",
-          "displayName": "%mssql.connectionOptions.loadBalanceTimeout.displayName%",
-          "description": "%mssql.connectionOptions.loadBalanceTimeout.description%",
-          "groupName": "Pooling",
-          "valueType": "number",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "replication",
-          "displayName": "%mssql.connectionOptions.replication.displayName%",
-          "description": "%mssql.connectionOptions.replication.description%",
-          "groupName": "Replication",
-          "valueType": "boolean",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "attachDbFilename",
-          "displayName": "%mssql.connectionOptions.attachDbFilename.displayName%",
-          "description": null,
-          "groupName": null,
-          "valueType": "string",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
           "name": "failoverPartner",
-          "displayName": "%mssql.connectionOptions.failoverPartner.displayName%",
-          "description": "%mssql.connectionOptions.failoverPartner.description%",
+          "displayName": "%kusto.connectionOptions.failoverPartner.displayName%",
+          "description": "%kusto.connectionOptions.failoverPartner.description%",
           "groupName": " Source",
-          "valueType": "string",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "multiSubnetFailover",
-          "displayName": "%mssql.connectionOptions.multiSubnetFailover.displayName%",
-          "description": null,
-          "groupName": null,
-          "valueType": "boolean",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "multipleActiveResultSets",
-          "displayName": "%mssql.connectionOptions.multipleActiveResultSets.displayName%",
-          "description": "%mssql.connectionOptions.multipleActiveResultSets.description%",
-          "groupName": "Advanced",
-          "valueType": "boolean",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "packetSize",
-          "displayName": "%mssql.connectionOptions.packetSize.displayName%",
-          "description": "%mssql.connectionOptions.packetSize.description%",
-          "groupName": "Advanced",
-          "valueType": "number",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "typeSystemVersion",
-          "displayName": "%mssql.connectionOptions.typeSystemVersion.displayName%",
-          "description": "%mssql.connectionOptions.typeSystemVersion.description%",
-          "groupName": "Advanced",
           "valueType": "string",
           "defaultValue": null,
           "objectType": null,

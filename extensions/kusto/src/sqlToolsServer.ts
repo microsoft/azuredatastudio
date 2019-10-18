@@ -46,7 +46,7 @@ export class SqlToolsServer {
 				setTimeout(() => {
 					statusView.hide();
 				}, 1500);
-				vscode.commands.registerCommand('mssql.loadCompletionExtension', (params: CompletionExtensionParams) => {
+				vscode.commands.registerCommand('kusto.loadCompletionExtension', (params: CompletionExtensionParams) => {
 					this.client.sendRequest(CompletionExtLoadRequest.type, params);
 				});
 				Telemetry.sendTelemetryEvent('startup/LanguageClientStarted', {

@@ -15,7 +15,7 @@ import { promises as fs } from 'fs';
 const configTracingLevel = 'tracingLevel';
 const configLogRetentionMinutes = 'logRetentionMinutes';
 const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
-const extensionConfigSectionName = 'mssql';
+const extensionConfigSectionName = 'kusto';
 const configLogDebugInfo = 'logDebugInfo';
 
 // The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't

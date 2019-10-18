@@ -6,13 +6,13 @@
 import { AppContext } from '../appContext';
 import { SqlOpsDataClient, ISqlOpsFeature } from 'dataprotocol-client';
 import * as constants from '../constants';
-import * as mssql from '../mssql';
+import * as kusto from '../kusto';
 import * as Utils from '../utils';
 import { ClientCapabilities } from 'vscode-languageclient';
 import * as azdata from 'azdata';
 import * as contracts from '../contracts';
 
-export class SchemaCompareService implements mssql.ISchemaCompareService {
+export class SchemaCompareService implements kusto.ISchemaCompareService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
 		return class extends SchemaCompareService {
 			constructor(client: SqlOpsDataClient) {
@@ -32,7 +32,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 		context.registerService(constants.SchemaCompareService, this);
 	}
 
-	public schemaCompare(operationId: string, sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, targetEndpointInfo: mssql.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: mssql.DeploymentOptions): Thenable<mssql.SchemaCompareResult> {
+	public schemaCompare(operationId: string, sourceEndpointInfo: kusto.SchemaCompareEndpointInfo, targetEndpointInfo: kusto.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: kusto.DeploymentOptions): Thenable<kusto.SchemaCompareResult> {
 		const params: contracts.SchemaCompareParams = { operationId: operationId, sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, deploymentOptions: deploymentOptions };
 		return this.client.sendRequest(contracts.SchemaCompareRequest.type, params).then(
 			undefined,
@@ -65,7 +65,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 		);
 	}
 
-	public schemaCompareGetDefaultOptions(): Thenable<mssql.SchemaCompareOptionsResult> {
+	public schemaCompareGetDefaultOptions(): Thenable<kusto.SchemaCompareOptionsResult> {
 		const params: contracts.SchemaCompareGetOptionsParams = {};
 		return this.client.sendRequest(contracts.SchemaCompareGetDefaultOptionsRequest.type, params).then(
 			undefined,
@@ -76,7 +76,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 		);
 	}
 
-	public schemaCompareIncludeExcludeNode(operationId: string, diffEntry: mssql.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+	public schemaCompareIncludeExcludeNode(operationId: string, diffEntry: kusto.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
 		const params: contracts.SchemaCompareNodeParams = { operationId: operationId, diffEntry, includeRequest, taskExecutionMode: taskExecutionMode };
 		return this.client.sendRequest(contracts.SchemaCompareIncludeExcludeNodeRequest.type, params).then(
 			undefined,
@@ -87,7 +87,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 		);
 	}
 
-	public schemaCompareOpenScmp(filePath: string): Thenable<mssql.SchemaCompareOpenScmpResult> {
+	public schemaCompareOpenScmp(filePath: string): Thenable<kusto.SchemaCompareOpenScmpResult> {
 		const params: contracts.SchemaCompareOpenScmpParams = { filePath: filePath };
 		return this.client.sendRequest(contracts.SchemaCompareOpenScmpRequest.type, params).then(
 			undefined,
@@ -98,7 +98,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 		);
 	}
 
-	public schemaCompareSaveScmp(sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, targetEndpointInfo: mssql.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: mssql.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: mssql.SchemaCompareObjectId[], excludedTargetObjects: mssql.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> {
+	public schemaCompareSaveScmp(sourceEndpointInfo: kusto.SchemaCompareEndpointInfo, targetEndpointInfo: kusto.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: kusto.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: kusto.SchemaCompareObjectId[], excludedTargetObjects: kusto.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> {
 		const params: contracts.SchemaCompareSaveScmpParams = { sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, deploymentOptions: deploymentOptions, scmpFilePath: scmpFilePath, excludedSourceObjects: excludedSourceObjects, excludedTargetObjects: excludedTargetObjects };
 		return this.client.sendRequest(contracts.SchemaCompareSaveScmpRequest.type, params).then(
 			undefined,

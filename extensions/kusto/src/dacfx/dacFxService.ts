@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as mssql from '../mssql';
+import * as kusto from '../kusto';
 import { AppContext } from '../appContext';
 import { ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
 import { ClientCapabilities } from 'vscode-languageclient';
@@ -12,7 +12,7 @@ import * as Utils from '../utils';
 import * as azdata from 'azdata';
 import * as contracts from '../contracts';
 
-export class DacFxService implements mssql.IDacFxService {
+export class DacFxService implements kusto.IDacFxService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
 		return class extends DacFxService {
 			constructor(client: SqlOpsDataClient) {
@@ -32,7 +32,7 @@ export class DacFxService implements mssql.IDacFxService {
 		context.registerService(constants.DacFxService, this);
 	}
 
-	public exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> {
+	public exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<kusto.DacFxResult> {
 		const params: contracts.ExportParams = { databaseName: databaseName, packageFilePath: packageFilePath, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 		return this.client.sendRequest(contracts.ExportRequest.type, params).then(
 			undefined,
@@ -43,7 +43,7 @@ export class DacFxService implements mssql.IDacFxService {
 		);
 	}
 
-	public importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> {
+	public importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<kusto.DacFxResult> {
 		const params: contracts.ImportParams = { packageFilePath: packageFilePath, databaseName: databaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 		return this.client.sendRequest(contracts.ImportRequest.type, params).then(
 			undefined,
@@ -54,7 +54,7 @@ export class DacFxService implements mssql.IDacFxService {
 		);
 	}
 
-	public extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> {
+	public extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<kusto.DacFxResult> {
 		const params: contracts.ExtractParams = { databaseName: databaseName, packageFilePath: packageFilePath, applicationName: applicationName, applicationVersion: applicationVersion, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 		return this.client.sendRequest(contracts.ExtractRequest.type, params).then(
 			undefined,
@@ -65,7 +65,7 @@ export class DacFxService implements mssql.IDacFxService {
 		);
 	}
 
-	public deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> {
+	public deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<kusto.DacFxResult> {
 		const params: contracts.DeployParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, upgradeExisting: upgradeExisting, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 		return this.client.sendRequest(contracts.DeployRequest.type, params).then(
 			undefined,
@@ -76,7 +76,7 @@ export class DacFxService implements mssql.IDacFxService {
 		);
 	}
 
-	public generateDeployScript(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> {
+	public generateDeployScript(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<kusto.DacFxResult> {
 		const params: contracts.GenerateDeployScriptParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 		return this.client.sendRequest(contracts.GenerateDeployScriptRequest.type, params).then(
 			undefined,
@@ -87,7 +87,7 @@ export class DacFxService implements mssql.IDacFxService {
 		);
 	}
 
-	public generateDeployPlan(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.GenerateDeployPlanResult> {
+	public generateDeployPlan(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<kusto.GenerateDeployPlanResult> {
 		const params: contracts.GenerateDeployPlanParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 		return this.client.sendRequest(contracts.GenerateDeployPlanRequest.type, params).then(
 			undefined,

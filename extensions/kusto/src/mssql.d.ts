@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 /**
- * Covers defining what the mssql extension exports to other extensions
+ * Covers defining what the kusto extension exports to other extensions
  *
  * IMPORTANT: THIS IS NOT A HARD DEFINITION unlike vscode; therefore no enums or classes should be defined here
  * (const enums get evaluated when typescript -> javascript so those are fine)
@@ -17,7 +17,7 @@ import * as vscode from 'vscode';
 
 
 export const enum extension {
-	name = 'Microsoft.mssql'
+	name = 'Microsoft.kusto'
 }
 
 /**

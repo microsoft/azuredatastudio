@@ -5,12 +5,12 @@
 'use strict';
 
 export const serviceName = 'SQL Tools Service';
-export const providerId = 'MSSQL';
-export const serviceCrashLink = 'https://github.com/Microsoft/vscode-mssql/wiki/SqlToolsService-Known-Issues';
-export const extensionConfigSectionName = 'mssql';
+export const providerId = 'KUSTO';
+export const serviceCrashLink = 'https://github.com/Microsoft/vscode-kusto/wiki/SqlToolsService-Known-Issues';
+export const extensionConfigSectionName = 'kusto';
 
 // DATA PROTOCOL VALUES ///////////////////////////////////////////////////////////
-export const mssqlClusterProviderName = 'mssqlCluster';
+export const kustoClusterProviderName = 'kustoCluster';
 export const hadoopEndpointNameGateway = 'gateway';
 export const protocolVersion = '1.0';
 export const authenticationTypePropName = 'authenticationType';
@@ -22,7 +22,7 @@ export const passwordPropName = 'password';
 export const groupIdPropName = 'groupId';
 export const defaultKnoxPort = 30443;
 export const groupIdName = 'groupId';
-export const sqlProviderName = 'MSSQL';
+export const sqlProviderName = 'KUSTO';
 
 export const UNTITLED_SCHEMA = 'untitled';
 
@@ -49,27 +49,27 @@ export enum CommandContext {
 }
 
 export enum MssqlClusterItems {
-	Connection = 'mssqlCluster:connection',
-	Folder = 'mssqlCluster:folder',
-	File = 'mssqlCluster:file',
-	Error = 'mssqlCluster:error'
+	Connection = 'kustoCluster:connection',
+	Folder = 'kustoCluster:folder',
+	File = 'kustoCluster:file',
+	Error = 'kustoCluster:error'
 }
 
 export enum MssqlClusterItemsSubType {
-	Spark = 'mssqlCluster:spark'
+	Spark = 'kustoCluster:spark'
 }
 
 // SPARK JOB SUBMISSION //////////////////////////////////////////////////////////
-export const mssqlClusterNewNotebookTask = 'mssqlCluster.task.newNotebook';
-export const mssqlClusterOpenNotebookTask = 'mssqlCluster.task.openNotebook';
-export const mssqlopenClusterStatusNotebook = 'mssqlCluster.task.openClusterStatusNotebook';
-export const mssqlClusterLivySubmitSparkJobCommand = 'mssqlCluster.livy.cmd.submitSparkJob';
-export const mssqlClusterLivySubmitSparkJobFromFileCommand = 'mssqlCluster.livy.cmd.submitFileToSparkJob';
-export const mssqlClusterLivySubmitSparkJobTask = 'mssqlCluster.livy.task.submitSparkJob';
-export const mssqlClusterLivyOpenSparkHistory = 'mssqlCluster.livy.task.openSparkHistory';
-export const mssqlClusterLivyOpenYarnHistory = 'mssqlCluster.livy.task.openYarnHistory';
-export const mssqlClusterLivySubmitPath = '/gateway/default/livy/v1/batches';
-export const mssqlClusterLivyTimeInMSForCheckYarnApp = 1000;
-export const mssqlClusterLivyRetryTimesForCheckYarnApp = 20;
-export const mssqlClusterSparkJobFileSelectorButtonWidth = '30px';
-export const mssqlClusterSparkJobFileSelectorButtonHeight = '30px';
+export const kustoClusterNewNotebookTask = 'kustoCluster.task.newNotebook';
+export const kustoClusterOpenNotebookTask = 'kustoCluster.task.openNotebook';
+export const kustoopenClusterStatusNotebook = 'kustoCluster.task.openClusterStatusNotebook';
+export const kustoClusterLivySubmitSparkJobCommand = 'kustoCluster.livy.cmd.submitSparkJob';
+export const kustoClusterLivySubmitSparkJobFromFileCommand = 'kustoCluster.livy.cmd.submitFileToSparkJob';
+export const kustoClusterLivySubmitSparkJobTask = 'kustoCluster.livy.task.submitSparkJob';
+export const kustoClusterLivyOpenSparkHistory = 'kustoCluster.livy.task.openSparkHistory';
+export const kustoClusterLivyOpenYarnHistory = 'kustoCluster.livy.task.openYarnHistory';
+export const kustoClusterLivySubmitPath = '/gateway/default/livy/v1/batches';
+export const kustoClusterLivyTimeInMSForCheckYarnApp = 1000;
+export const kustoClusterLivyRetryTimesForCheckYarnApp = 20;
+export const kustoClusterSparkJobFileSelectorButtonWidth = '30px';
+export const kustoClusterSparkJobFileSelectorButtonHeight = '30px';

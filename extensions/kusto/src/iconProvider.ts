@@ -8,15 +8,15 @@
 import * as azdata from 'azdata';
 import * as constants from './constants';
 
-const cloudIcon = 'mssql:cloud';
-const clusterIcon = 'mssql:cluster';
+const cloudIcon = 'kusto:cloud';
+const clusterIcon = 'kusto:cluster';
 
 export class MssqlIconProvider implements azdata.IconProvider {
 	public readonly providerId: string = constants.sqlProviderName;
 	public handle: number;
 	getConnectionIconId(connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> {
 		let iconName: string = undefined;
-		if (connection.providerName === 'MSSQL') {
+		if (connection.providerName === 'KUSTO') {
 			if (serverInfo.isCloud) {
 				iconName = cloudIcon;
 			} else if (serverInfo.options['isBigDataCluster']) {

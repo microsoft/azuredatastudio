@@ -133,8 +133,8 @@ export class SparkConfigurationTab {
 				required: (this._path) ? false : true,
 				enabled: (this._path) ? false : true,
 				label: '•••',
-				width: constants.mssqlClusterSparkJobFileSelectorButtonWidth,
-				height: constants.mssqlClusterSparkJobFileSelectorButtonHeight
+				width: constants.kustoClusterSparkJobFileSelectorButtonWidth,
+				height: constants.kustoClusterSparkJobFileSelectorButtonHeight
 			}).component();
 			this._filePickerButton.onDidClick(() => this.onSelectFile());
 

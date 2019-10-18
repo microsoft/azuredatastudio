@@ -54,7 +54,7 @@ export async function getSqlClusterConnection(
 
 	let sqlClusterConnInfo: ConnectionParam = undefined;
 	if ('providerName' in obj) {
-		if (obj.providerName === constants.mssqlClusterProviderName) {
+		if (obj.providerName === constants.kustoClusterProviderName) {
 			sqlClusterConnInfo = 'id' in obj ? connProfileToConnectionParam(obj) : connToConnectionParam(obj);
 		} else {
 			sqlClusterConnInfo = await createSqlClusterConnInfo(obj);
@@ -85,7 +85,7 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 	if (!credentials) { return undefined; }
 
 	let clusterConnInfo = <ConnectionParam>{
-		providerName: constants.mssqlClusterProviderName,
+		providerName: constants.kustoClusterProviderName,
 		connectionId: UUID.generateUuid(),
 		options: {}
 	};

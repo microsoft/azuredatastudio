@@ -16,16 +16,16 @@ import { ApiWrapper } from './apiWrapper';
 import { UploadFilesCommand, MkDirCommand, SaveFileCommand, PreviewFileCommand, CopyPathCommand, DeleteFilesCommand } from './objectExplorerNodeProvider/hdfsCommands';
 import { IPrompter } from './prompts/question';
 import CodeAdapter from './prompts/adapter';
-import { IExtension } from './mssql';
+import { IExtension } from './kusto';
 import { OpenSparkJobSubmissionDialogCommand, OpenSparkJobSubmissionDialogFromFileCommand, OpenSparkJobSubmissionDialogTask } from './sparkFeature/dialog/dialogCommands';
 import { OpenSparkYarnHistoryTask } from './sparkFeature/historyTask';
-import { MssqlObjectExplorerNodeProvider, mssqlOutputChannel } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
+import { MssqlObjectExplorerNodeProvider, kustoOutputChannel } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import { registerSearchServerCommand } from './objectExplorerNodeProvider/command';
 import { MssqlIconProvider } from './iconProvider';
 import { registerServiceEndpoints } from './dashboard/serviceEndpoints';
 import { getBookExtensionContributions } from './dashboard/bookExtensions';
 import { registerBooksWidget } from './dashboard/bookWidget';
-import { createMssqlApi } from './mssqlApiFactory';
+import { createMssqlApi } from './kustoApiFactory';
 import { localize } from './localize';
 import { SqlToolsServer } from './sqlToolsServer';
 import { promises as fs } from 'fs';
@@ -81,7 +81,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 
 const logFiles = ['resourceprovider.log', 'sqltools.log', 'credentialstore.log'];
 function registerLogCommand(context: vscode.ExtensionContext) {
-	context.subscriptions.push(vscode.commands.registerCommand('mssql.showLogFile', async () => {
+	context.subscriptions.push(vscode.commands.registerCommand('kusto.showLogFile', async () => {
 		const choice = await vscode.window.showQuickPick(logFiles);
 		if (choice) {
 			const document = await vscode.workspace.openTextDocument(vscode.Uri.file(path.join(context.logPath, choice)));
@@ -104,29 +104,29 @@ function registerHdfsCommands(context: vscode.ExtensionContext, prompter: IPromp
 function activateSparkFeatures(appContext: AppContext): void {
 	let extensionContext = appContext.extensionContext;
 	let apiWrapper = appContext.apiWrapper;
-	let outputChannel: vscode.OutputChannel = mssqlOutputChannel;
+	let outputChannel: vscode.OutputChannel = kustoOutputChannel;
 	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogCommand(appContext, outputChannel));
 	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogFromFileCommand(appContext, outputChannel));
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivySubmitSparkJobTask, (profile: azdata.IConnectionProfile) => {
+	apiWrapper.registerTaskHandler(Constants.kustoClusterLivySubmitSparkJobTask, (profile: azdata.IConnectionProfile) => {
 		new OpenSparkJobSubmissionDialogTask(appContext, outputChannel).execute(profile);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenSparkHistory, (profile: azdata.IConnectionProfile) => {
+	apiWrapper.registerTaskHandler(Constants.kustoClusterLivyOpenSparkHistory, (profile: azdata.IConnectionProfile) => {
 		new OpenSparkYarnHistoryTask(appContext).execute(profile, true);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenYarnHistory, (profile: azdata.IConnectionProfile) => {
+	apiWrapper.registerTaskHandler(Constants.kustoClusterLivyOpenYarnHistory, (profile: azdata.IConnectionProfile) => {
 		new OpenSparkYarnHistoryTask(appContext).execute(profile, false);
 	});
 }
 
 function activateNotebookTask(appContext: AppContext): void {
 	let apiWrapper = appContext.apiWrapper;
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterNewNotebookTask, (profile: azdata.IConnectionProfile) => {
+	apiWrapper.registerTaskHandler(Constants.kustoClusterNewNotebookTask, (profile: azdata.IConnectionProfile) => {
 		return saveProfileAndCreateNotebook(profile);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
+	apiWrapper.registerTaskHandler(Constants.kustoClusterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
 		return handleOpenNotebookTask(profile);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlopenClusterStatusNotebook, (profile: azdata.IConnectionProfile) => {
+	apiWrapper.registerTaskHandler(Constants.kustoopenClusterStatusNotebook, (profile: azdata.IConnectionProfile) => {
 		return handleOpenClusterStatusNotebookTask(profile, appContext);
 	});
 }

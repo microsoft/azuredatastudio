@@ -22,7 +22,7 @@ import * as SqlClusterLookUp from '../sqlClusterLookUp';
 import { ICommandObjectExplorerContext } from './command';
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 
-export const mssqlOutputChannel = vscode.window.createOutputChannel(constants.providerId);
+export const kustoOutputChannel = vscode.window.createOutputChannel(constants.providerId);
 
 export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azdata.ObjectExplorerNodeProvider, ITreeChangeHandler {
 	public readonly supportedProviderId: string = constants.providerId;
@@ -191,7 +191,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 				await this.refreshNode(expandInfo);
 			}
 		} catch (err) {
-			mssqlOutputChannel.appendLine(localize('notifyError', "Error notifying of node change: {0}", err));
+			kustoOutputChannel.appendLine(localize('notifyError', "Error notifying of node change: {0}", err));
 		}
 	}
 

@@ -59,7 +59,7 @@ export async function getNode<T extends TreeNode>(context: ICommandViewContext |
 export class UploadFilesCommand extends ProgressCommand {
 
 	constructor(prompter: IPrompter, appContext: AppContext) {
-		super('mssqlCluster.uploadFiles', prompter, appContext);
+		super('kustoCluster.uploadFiles', prompter, appContext);
 	}
 
 	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
@@ -128,7 +128,7 @@ export class UploadFilesCommand extends ProgressCommand {
 export class MkDirCommand extends ProgressCommand {
 
 	constructor(prompter: IPrompter, appContext: AppContext) {
-		super('mssqlCluster.mkdir', prompter, appContext);
+		super('kustoCluster.mkdir', prompter, appContext);
 	}
 
 	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
@@ -175,7 +175,7 @@ export class MkDirCommand extends ProgressCommand {
 export class DeleteFilesCommand extends Command {
 
 	constructor(private prompter: IPrompter, appContext: AppContext) {
-		super('mssqlCluster.deleteFiles', appContext);
+		super('kustoCluster.deleteFiles', appContext);
 	}
 
 	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
@@ -247,7 +247,7 @@ export class DeleteFilesCommand extends Command {
 export class SaveFileCommand extends ProgressCommand {
 
 	constructor(prompter: IPrompter, appContext: AppContext) {
-		super('mssqlCluster.saveFile', prompter, appContext);
+		super('kustoCluster.saveFile', prompter, appContext);
 	}
 
 	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
@@ -287,7 +287,7 @@ export class PreviewFileCommand extends ProgressCommand {
 	public static readonly DefaultMaxSize = 30 * 1024 * 1024;
 
 	constructor(prompter: IPrompter, appContext: AppContext) {
-		super('mssqlCluster.previewFile', prompter, appContext);
+		super('kustoCluster.previewFile', prompter, appContext);
 	}
 
 	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
@@ -362,7 +362,7 @@ export class CopyPathCommand extends Command {
 	public static readonly DefaultMaxSize = 30 * 1024 * 1024;
 
 	constructor(appContext: AppContext) {
-		super('mssqlCluster.copyPath', appContext);
+		super('kustoCluster.copyPath', appContext);
 	}
 
 	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
