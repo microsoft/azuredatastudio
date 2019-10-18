@@ -398,7 +398,7 @@ export class NotebookInput extends EditorInput {
 	}
 
 	public dispose(): void {
-		if (this._model) {
+		if (this._model && this._model.editorModel && this._model.editorModel.textEditorModel) {
 			this._model.editorModel.textEditorModel.onBeforeDetached();
 		}
 		this._disposeContainer();
