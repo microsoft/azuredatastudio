@@ -9,7 +9,7 @@ import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/q
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IScriptingService, ScriptOperation } from 'sql/platform/scripting/common/scriptingService';
 import { BaseActionContext } from 'sql/workbench/browser/actions';
-import { scriptSelect, script, scriptEditSelect } from 'sql/workbench/electron-browser/scriptingUtils';
+import { scriptSelect, script, scriptEditSelect } from 'sql/workbench/browser/scriptingUtils';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 export class ScriptSelectAction extends Action {

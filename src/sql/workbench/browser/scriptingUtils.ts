@@ -4,8 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as path from 'vs/base/common/path';
-import * as os from 'os';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, IConnectableInput, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import * as nls from 'vs/nls';
@@ -193,7 +191,7 @@ export function script(connectionProfile: IConnectionProfile, metadata: azdata.O
 function getScriptingParamDetails(connectionService: IConnectionManagementService, ownerUri: string, metadata: azdata.ObjectMetadata): azdata.ScriptingParamDetails {
 	let serverInfo: azdata.ServerInfo = getServerInfo(connectionService, ownerUri);
 	let paramDetails: azdata.ScriptingParamDetails = {
-		filePath: getFilePath(metadata),
+		filePath: undefined,
 		scriptCompatibilityOption: scriptCompatibilityOptionMap[serverInfo.serverMajorVersion],
 		targetDatabaseEngineEdition: targetDatabaseEngineEditionMap[serverInfo.engineEditionId],
 		targetDatabaseEngineType: serverInfo.isCloud ? 'SqlAzure' : 'SingleInstance'
@@ -204,15 +202,4 @@ function getScriptingParamDetails(connectionService: IConnectionManagementServic
 function getServerInfo(connectionService: IConnectionManagementService, ownerUri: string): azdata.ServerInfo {
 	let connection: ConnectionManagementInfo = connectionService.getConnectionInfo(ownerUri);
 	return connection.serverInfo;
-}
-
-function getFilePath(metadata: azdata.ObjectMetadata): string {
-	let schemaName: string = metadata.schema;
-	let objectName: string = metadata.name;
-	let timestamp = Date.now().toString();
-	if (schemaName !== null) {
-		return path.join(os.tmpdir(), `${schemaName}.${objectName}_${timestamp}.txt`);
-	} else {
-		return path.join(os.tmpdir(), `${objectName}_${timestamp}.txt`);
-	}
 }

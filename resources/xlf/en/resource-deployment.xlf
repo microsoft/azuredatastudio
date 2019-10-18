@@ -11,10 +11,10 @@
       <source xml:lang="en">Deploy SQL Server on Docker…</source>
     </trans-unit>
     <trans-unit id="deploy-sql-bdc-command-name">
-      <source xml:lang="en">Deploy SQL Server big data cluster…</source>
+      <source xml:lang="en">Deploy SQL Server Big Data Cluster…</source>
     </trans-unit>
     <trans-unit id="deploy-resource-command-name">
-      <source xml:lang="en">Deploy SQL Server…</source>
+      <source xml:lang="en">More deployment options…</source>
     </trans-unit>
     <trans-unit id="deploy-resource-command-category">
       <source xml:lang="en">Deployment</source>
@@ -26,10 +26,10 @@
       <source xml:lang="en">Run SQL Server container image with Docker</source>
     </trans-unit>
     <trans-unit id="resource-type-sql-bdc-display-name">
-      <source xml:lang="en">SQL Server big data cluster</source>
+      <source xml:lang="en">SQL Server Big Data Cluster</source>
     </trans-unit>
     <trans-unit id="resource-type-sql-bdc-description">
-      <source xml:lang="en">SQL Server big data cluster allows you to deploy scalable clusters of SQL Server, Spark, and HDFS containers running on Kubernetes</source>
+      <source xml:lang="en">SQL Server Big Data Cluster allows you to deploy scalable clusters of SQL Server, Spark, and HDFS containers running on Kubernetes</source>
     </trans-unit>
     <trans-unit id="version-display-name">
       <source xml:lang="en">Version</source>
@@ -38,7 +38,7 @@
       <source xml:lang="en">SQL Server 2017</source>
     </trans-unit>
     <trans-unit id="sql-2019-display-name">
-      <source xml:lang="en">SQL Server 2019</source>
+      <source xml:lang="en">SQL Server 2019 RC</source>
     </trans-unit>
     <trans-unit id="sql-2017-docker-notebook">
       <source xml:lang="en">./notebooks/docker/2017/deploy-sql2017-image.ipynb</source>
@@ -46,42 +46,624 @@
     <trans-unit id="sql-2019-docker-notebook">
       <source xml:lang="en">./notebooks/docker/2019/deploy-sql2019-image.ipynb</source>
     </trans-unit>
-    <trans-unit id="sql-2019ctp31-display-name">
-      <source xml:lang="en">SQL Server 2019 big data cluster CTP 3.1</source>
+    <trans-unit id="bdc-2019-display-name">
+      <source xml:lang="en">SQL Server 2019 RC Big Data Cluster</source>
     </trans-unit>
     <trans-unit id="bdc-deployment-target">
       <source xml:lang="en">Deployment target</source>
     </trans-unit>
-    <trans-unit id="bdc-deployment-target-aks">
+    <trans-unit id="bdc-deployment-target-new-aks">
       <source xml:lang="en">New Azure Kubernetes Service Cluster</source>
     </trans-unit>
-    <trans-unit id="bdc-deployment-target-existing-cluster">
-      <source xml:lang="en">Existing Kubernetes Cluster</source>
+    <trans-unit id="bdc-deployment-target-existing-aks">
+      <source xml:lang="en">Existing Azure Kubernetes Service Cluster</source>
     </trans-unit>
-    <trans-unit id="bdc-ctp31-aks-notebook">
-      <source xml:lang="en">./notebooks/bdc/2019/ctp3-1/deploy-bdc-aks.ipynb</source>
+    <trans-unit id="bdc-deployment-target-existing-kubeadm">
+      <source xml:lang="en">Existing Kubernetes Cluster (kubeadm)</source>
     </trans-unit>
-    <trans-unit id="bdc-ctp31-existing-cluster-notebook">
-      <source xml:lang="en">./notebooks/bdc/2019/ctp3-1/deploy-bdc-existing-cluster.ipynb</source>
+    <trans-unit id="bdc-2019-aks-notebook">
+      <source xml:lang="en">./notebooks/bdc/2019/deploy-bdc-aks.ipynb</source>
+    </trans-unit>
+    <trans-unit id="bdc-2019-existing-aks-notebook">
+      <source xml:lang="en">./notebooks/bdc/2019/deploy-bdc-existing-aks.ipynb</source>
+    </trans-unit>
+    <trans-unit id="bdc-2019-existing-kubeadm-notebook">
+      <source xml:lang="en">./notebooks/bdc/2019/deploy-bdc-existing-kubeadm.ipynb</source>
+    </trans-unit>
+    <trans-unit id="docker-sql-2017-title">
+      <source xml:lang="en">Deploy SQL Server 2017 container images with Docker</source>
+    </trans-unit>
+    <trans-unit id="docker-sql-2019-title">
+      <source xml:lang="en">Deploy SQL Server 2019 container images with Docker</source>
+    </trans-unit>
+    <trans-unit id="docker-container-name-field">
+      <source xml:lang="en">Container name</source>
+    </trans-unit>
+    <trans-unit id="docker-sql-password-field">
+      <source xml:lang="en">SQL Server password</source>
+    </trans-unit>
+    <trans-unit id="docker-confirm-sql-password-field">
+      <source xml:lang="en">Confirm password</source>
+    </trans-unit>
+    <trans-unit id="docker-sql-port-field">
+      <source xml:lang="en">Port</source>
+    </trans-unit>
+    <trans-unit id="bdc-new-aks-dialog-title">
+      <source xml:lang="en">Deployment target: new AKS cluster</source>
+    </trans-unit>
+    <trans-unit id="bdc-existing-aks-dialog-title">
+      <source xml:lang="en">Deployment target: existing AKS cluster</source>
+    </trans-unit>
+    <trans-unit id="bdc-cluster-settings-section-title">
+      <source xml:lang="en">SQL Server Big Data Cluster settings</source>
+    </trans-unit>
+    <trans-unit id="bdc-cluster-name-field">
+      <source xml:lang="en">Cluster name</source>
+    </trans-unit>
+    <trans-unit id="bdc-controller-username-field">
+      <source xml:lang="en">Controller username</source>
+    </trans-unit>
+    <trans-unit id="bdc-password-field">
+      <source xml:lang="en">Password</source>
+    </trans-unit>
+    <trans-unit id="bdc-confirm-password-field">
+      <source xml:lang="en">Confirm password</source>
+    </trans-unit>
+    <trans-unit id="bdc-azure-settings-section-title">
+      <source xml:lang="en">Azure settings</source>
+    </trans-unit>
+    <trans-unit id="bdc-azure-subscription-id-field">
+      <source xml:lang="en">Subscription id</source>
+    </trans-unit>
+    <trans-unit id="bdc-azure-subscription-id-placeholder">
+      <source xml:lang="en">Use my default Azure subscription</source>
+    </trans-unit>
+    <trans-unit id="bdc-azure-resource-group-field">
+      <source xml:lang="en">Resource group name</source>
+    </trans-unit>
+    <trans-unit id="bdc-azure-region-field">
+      <source xml:lang="en">Region</source>
+    </trans-unit>
+    <trans-unit id="bdc-azure-aks-name-field">
+      <source xml:lang="en">AKS cluster name</source>
+    </trans-unit>
+    <trans-unit id="bdc-azure-vm-size-field">
+      <source xml:lang="en">VM size</source>
+    </trans-unit>
+    <trans-unit id="bdc-azure-vm-count-field">
+      <source xml:lang="en">VM count</source>
+    </trans-unit>
+    <trans-unit id="bdc-existing-kubeadm-dialog-title">
+      <source xml:lang="en">Deployment target: existing Kubernetes cluster (kubeadm)</source>
+    </trans-unit>
+    <trans-unit id="bdc-storage-class-field">
+      <source xml:lang="en">Storage class name</source>
+    </trans-unit>
+    <trans-unit id="bdc-data-size-field">
+      <source xml:lang="en">Capacity for data (GB)</source>
+    </trans-unit>
+    <trans-unit id="bdc-log-size-field">
+      <source xml:lang="en">Capacity for logs (GB)</source>
+    </trans-unit>
+    <trans-unit id="resource-type-sql-windows-setup-display-name">
+      <source xml:lang="en">SQL Server on Windows</source>
+    </trans-unit>
+    <trans-unit id="resource-type-sql-windows-setup-description">
+      <source xml:lang="en">Run SQL Server on Windows, select a version to get started.</source>
+    </trans-unit>
+    <trans-unit id="bdc-agreement">
+      <source xml:lang="en">I accept {0}, {1} and {2}.</source>
+    </trans-unit>
+    <trans-unit id="bdc-agreement-privacy-statement">
+      <source xml:lang="en">Microsoft Privacy Statement</source>
+    </trans-unit>
+    <trans-unit id="bdc-agreement-azdata-eula">
+      <source xml:lang="en">azdata License Terms</source>
+    </trans-unit>
+    <trans-unit id="bdc-agreement-bdc-eula">
+      <source xml:lang="en">SQL Server Big Data Cluster License Terms</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/resource-deployment/out/services/tools/mssqlCtlTool" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="resourceDeployment.MssqlCtlDescription">
-      <source xml:lang="en">A command-line utility written in Python that enables cluster administrators to bootstrap and manage the big data cluster via REST APIs</source>
+  <file original="extensions/resource-deployment/dist/ui/modelViewUtils" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="UnknownFieldTypeError">
+      <source xml:lang="en">Unknown field type: "{0}"</source>
     </trans-unit>
-    <trans-unit id="resourceDeployment.MssqlCtlDisplayName">
-      <source xml:lang="en">mssqlctl</source>
+    <trans-unit id="invalidSQLPassword">
+      <source xml:lang="en">{0} doesn't meet the password complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
     </trans-unit>
-  </body></file>
-  <file original="extensions/resource-deployment/out/services/tools/kubeCtlTool" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="resourceDeployment.KubeCtlDescription">
-      <source xml:lang="en">A command-line tool allows you to run commands against Kubernetes clusters</source>
+    <trans-unit id="passwordNotMatch">
+      <source xml:lang="en">{0} doesn't match the confirmation password</source>
     </trans-unit>
-    <trans-unit id="resourceDeployment.KubeCtlDisplayName">
-      <source xml:lang="en">kubectl</source>
+    <trans-unit id="deployCluster.MissingRequiredInfoError">
+      <source xml:lang="en">Please fill out the required fields marked with red asterisks.</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/resource-deployment/out/services/tools/dockerTool" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/resource-deployment/dist/services/tools/toolBase" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="deployCluster.InvalidToolVersionOutput">
+      <source xml:lang="en">Invalid output received.</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.GetToolVersionError">
+      <source xml:lang="en">Error retrieving version information.{0}Error: {1}{0}stdout: {2} </source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/resource-deployment/dist/ui/deploymentInputDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="deploymentDialog.OKButtonText">
+      <source xml:lang="en">Open Notebook</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/resource-deployment/dist/main" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="resourceDeployment.FailedToLoadExtension">
+      <source xml:lang="en">Failed to load extension: {0}, Error detected in the resource type definition in package.json, check debug console for details.</source>
+    </trans-unit>
+    <trans-unit id="resourceDeployment.UnknownResourceType">
+      <source xml:lang="en">The resource type: {0} is not defined</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/resource-deployment/dist/services/notebookService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="resourceDeployment.notebookNotFound">
+      <source xml:lang="en">The notebook {0} does not exist</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/resource-deployment/dist/services/resourceTypeService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="resourceDeployment.DownloadAndLaunchTaskName">
+      <source xml:lang="en">Download and launch installer, URL: {0}</source>
+    </trans-unit>
+    <trans-unit id="resourceDeployment.DownloadingText">
+      <source xml:lang="en">Downloading from: {0}</source>
+    </trans-unit>
+    <trans-unit id="resourceDeployment.DownloadCompleteText">
+      <source xml:lang="en">Successfully downloaded: {0}</source>
+    </trans-unit>
+    <trans-unit id="resourceDeployment.LaunchingProgramText">
+      <source xml:lang="en">Launching: {0}</source>
+    </trans-unit>
+    <trans-unit id="resourceDeployment.ProgramLaunchedText">
+      <source xml:lang="en">Successfully launched: {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadError">
+      <source xml:lang="en">Download failed, status code: {0}, message: {1}</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/deployClusterWizard" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="deployCluster.ScriptToNotebook">
+      <source xml:lang="en">Script to Notebook</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.NewAKSWizardTitle">
+      <source xml:lang="en">Deploy SQL Server 2019 Big Data Cluster on a new AKS cluster</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ExistingAKSWizardTitle">
+      <source xml:lang="en">Deploy SQL Server 2019 Big Data Cluster on an existing AKS cluster</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ExistingKubeAdm">
+      <source xml:lang="en">Deploy SQL Server 2019 Big Data Cluster on an existing kubeadm cluster</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/summaryPage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="deployCluster.summaryPageTitle">
+      <source xml:lang="en">Summary</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.SaveBdcJson">
+      <source xml:lang="en">Save bdc.json</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.SaveControlJson">
+      <source xml:lang="en">Save control.json</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DeploymentJSON">
+      <source xml:lang="en">Deployment JSON files</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DeploymentTarget">
+      <source xml:lang="en">Deployment target</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.Kubeconfig">
+      <source xml:lang="en">Kube config</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ClusterContext">
+      <source xml:lang="en">Cluster context</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ClusterSettings">
+      <source xml:lang="en">Cluster settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DeploymentProfile">
+      <source xml:lang="en">Deployment profile</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ClusterName">
+      <source xml:lang="en">Cluster name</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ControllerUsername">
+      <source xml:lang="en">Controller username</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AuthenticationMode">
+      <source xml:lang="en">Authentication mode</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AuthenticationMode.ActiveDirectory">
+      <source xml:lang="en">Active Directory</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AuthenticationMode.Basic">
+      <source xml:lang="en">Basic</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AzureSettings">
+      <source xml:lang="en">Azure settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.SubscriptionId">
+      <source xml:lang="en">Subscription id</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DefaultSubscription">
+      <source xml:lang="en">Default Azure Subscription</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ResourceGroup">
+      <source xml:lang="en">Resource group</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.Region">
+      <source xml:lang="en">Region</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AksClusterName">
+      <source xml:lang="en">AKS cluster name</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.VMSize">
+      <source xml:lang="en">VM size</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.VMCount">
+      <source xml:lang="en">VM count</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ScaleSettings">
+      <source xml:lang="en">Scale settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ComputeText">
+      <source xml:lang="en">Compute</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DataText">
+      <source xml:lang="en">Data</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.HDFSText">
+      <source xml:lang="en">HDFS</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.WithSpark">
+      <source xml:lang="en">(Spark included)</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.SparkText">
+      <source xml:lang="en">Spark</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.HadrSection">
+      <source xml:lang="en">High availability settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.SqlServerText">
+      <source xml:lang="en">SQL Server Master</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.WithHADR">
+      <source xml:lang="en">(Availability Groups Enabled)</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.HDFSNameNodeText">
+      <source xml:lang="en">HDFS name node</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ZooKeeperText">
+      <source xml:lang="en">ZooKeeper</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.SparkHeadText">
+      <source xml:lang="en">SparkHead</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DataStorageClassName">
+      <source xml:lang="en">Storage class for data</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DataClaimSize">
+      <source xml:lang="en">Claim size for data (GB)</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.LogStorageClassName">
+      <source xml:lang="en">Storage class for logs</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.LogsClaimSize">
+      <source xml:lang="en">Claim size for logs (GB)</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ControllerText">
+      <source xml:lang="en">Controller</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.MasterSqlText">
+      <source xml:lang="en">SQL Server Master</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.StorageSettings">
+      <source xml:lang="en">Storage settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.GatewayText">
+      <source xml:lang="en">Gateway</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ReadableSecondaryText">
+      <source xml:lang="en">Readable secondary</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.EndpointSettings">
+      <source xml:lang="en">Endpoint settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.SaveJsonFileMessage">
+      <source xml:lang="en">File saved: {0}</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/resource-deployment/dist/ui/wizardBase" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="resourceDeployment.DisposableError">
+      <source xml:lang="en">Error occured while closing the wizard: {0}, open 'Debugger Console' for more information.</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/azureSettingsPage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="deployCluster.AzureSettingsPageTitle">
+      <source xml:lang="en">Azure settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AzureSettingsPageDescription">
+      <source xml:lang="en">Configure the settings to create an Azure Kubernetes Service cluster</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.SubscriptionField">
+      <source xml:lang="en">Subscription id</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.SubscriptionPlaceholder">
+      <source xml:lang="en">Use my default Azure subscription</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.SubscriptionDescription">
+      <source xml:lang="en">The default subscription will be used if you leave this field blank.</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ResourceGroupName">
+      <source xml:lang="en">New resource group name</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.Region">
+      <source xml:lang="en">Region</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AksName">
+      <source xml:lang="en">AKS cluster name</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.VMCount">
+      <source xml:lang="en">VM count</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.VMSize">
+      <source xml:lang="en">VM size</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/clusterSettingsPage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="deployCluster.ClusterSettingsPageTitle">
+      <source xml:lang="en">Cluster settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ClusterSettingsPageDescription">
+      <source xml:lang="en">Configure the SQL Server Big Data Cluster settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ClusterName">
+      <source xml:lang="en">Cluster name</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ControllerUsername">
+      <source xml:lang="en">Controller username</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AdminPassword">
+      <source xml:lang="en">Password</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AdminPasswordDescription">
+      <source xml:lang="en">You can also use this password to access SQL Server and gateway.</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ConfirmPassword">
+      <source xml:lang="en">Confirm password</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AuthenticationMode">
+      <source xml:lang="en">Authentication mode</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AuthenticationMode.Basic">
+      <source xml:lang="en">Basic</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AuthenticationMode.ActiveDirectory">
+      <source xml:lang="en">Active Directory</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ActiveDirectorySettings">
+      <source xml:lang="en">Active Directory settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DistinguishedName">
+      <source xml:lang="en">Distinguished name</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AdminPrincipals">
+      <source xml:lang="en">Admin principals</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.UserPrincipals">
+      <source xml:lang="en">User principals</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.UpstreamIPAddresses">
+      <source xml:lang="en">Upstream IP Addresses</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DNSName">
+      <source xml:lang="en">DNS name</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.Realm">
+      <source xml:lang="en">Realm</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AppOnwerPrincipals">
+      <source xml:lang="en">App owner principals</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AppReaderPrincipals">
+      <source xml:lang="en">App reader principals</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AdminPasswordField">
+      <source xml:lang="en">Password</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ValidationError">
+      <source xml:lang="en">There are some errors on this page, click 'Show Details' to view the errors.</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/serviceSettingsPage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="deployCluster.ServiceSettingsPageTitle">
+      <source xml:lang="en">Service settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.scaleSectionTitle">
+      <source xml:lang="en">Scale settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ComputeText">
+      <source xml:lang="en">Compute</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DataText">
+      <source xml:lang="en">Data</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.HDFSText">
+      <source xml:lang="en">HDFS</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.includeSparkInHDFSPool">
+      <source xml:lang="en">Include Spark</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.SparkText">
+      <source xml:lang="en">Spark</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.HadrSection">
+      <source xml:lang="en">High availability settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.MasterSqlText">
+      <source xml:lang="en">SQL Server Master</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.EnableHADR">
+      <source xml:lang="en">Enable Availability Groups</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.HDFSNameNodeText">
+      <source xml:lang="en">HDFS name node</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.SparkHeadText">
+      <source xml:lang="en">SparkHead</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ZooKeeperText">
+      <source xml:lang="en">ZooKeeper</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.storageFieldTooltip">
+      <source xml:lang="en">Use controller settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DataStorageClassName">
+      <source xml:lang="en">Storage class for data</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DataClaimSize">
+      <source xml:lang="en">Claim size for data (GB)</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.LogStorageClassName">
+      <source xml:lang="en">Storage class for logs</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.LogsClaimSize">
+      <source xml:lang="en">Claim size for logs (GB)</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ControllerText">
+      <source xml:lang="en">Controller</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AdvancedStorageDescription">
+      <source xml:lang="en">By default Controller storage settings will be applied to other services as well, you can expand the advanced storage settings to configure storage for other services.</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AdvancedStorageSectionTitle">
+      <source xml:lang="en">Advanced storage settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.StorageSectionTitle">
+      <source xml:lang="en">Storage settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DNSNameHeader">
+      <source xml:lang="en">DNS name</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.PortHeader">
+      <source xml:lang="en">Port</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ControllerDNSName">
+      <source xml:lang="en">Controller DNS name</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ControllerPortName">
+      <source xml:lang="en">Controller port</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.MasterSQLServerDNSName">
+      <source xml:lang="en">SQL Server Master DNS name</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.MasterSQLServerPortName">
+      <source xml:lang="en">SQL Server Master port</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.GatewayText">
+      <source xml:lang="en">Gateway</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.GatewayDNSName">
+      <source xml:lang="en">Gateway DNS name</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.GatewayPortName">
+      <source xml:lang="en">Gateway port</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ReadableSecondaryText">
+      <source xml:lang="en">Readable secondary</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ReadableSecondaryDNSName">
+      <source xml:lang="en">Readable secondary DNS name</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ReadableSecondaryPortName">
+      <source xml:lang="en">Readable secondary port</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.EndpointSettings">
+      <source xml:lang="en">Endpoint settings</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/targetClusterPage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="deployCluster.TargetClusterContextPageTitle">
+      <source xml:lang="en">Target cluster context</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.TargetClusterContextPageDescription">
+      <source xml:lang="en">Select the kube config file and then select a cluster context from the list</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ClusterContextNotSelectedMessage">
+      <source xml:lang="en">Please select a cluster context.</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.kubeConfigFileLabelText">
+      <source xml:lang="en">Kube config file path</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.browseText">
+      <source xml:lang="en">Browse</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.clusterContextsLabelText">
+      <source xml:lang="en">Cluster Contexts</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.errorLoadingClustersText">
+      <source xml:lang="en">No cluster information is found in the config file or an error ocurred while loading the config file</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.selectKubeConfigFileText">
+      <source xml:lang="en">Select</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ConfigParseError">
+      <source xml:lang="en">Failed to load the config file</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/deploymentProfilePage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="deployCluster.summaryPageTitle">
+      <source xml:lang="en">Deployment configuration template</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.summaryPageDescription">
+      <source xml:lang="en">Select the target configuration template</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ProfileHintText">
+      <source xml:lang="en">Note: The settings of the deployment profile can be customized in later steps.</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.loadProfileFailed">
+      <source xml:lang="en">Failed to load the deployment profiles: {0}</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.serviceLabel">
+      <source xml:lang="en">Service</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.instancesLabel">
+      <source xml:lang="en">Instances</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.masterPoolLabel">
+      <source xml:lang="en">SQL Server Master</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.computePoolLable">
+      <source xml:lang="en">Compute</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.dataPoolLabel">
+      <source xml:lang="en">Data</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.hdfsLabel">
+      <source xml:lang="en">HDFS + Spark</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.defaultDataStorage">
+      <source xml:lang="en">Data storage size (GB)</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.defaultLogStorage">
+      <source xml:lang="en">Log storage size (GB)</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.activeDirectoryAuthentication">
+      <source xml:lang="en">Active Directory authentication</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.basicAuthentication">
+      <source xml:lang="en">Basic authentication</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.hadr">
+      <source xml:lang="en">High Availability</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ProfileNotSelectedError">
+      <source xml:lang="en">Please select a deployment profile.</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/resource-deployment/dist/services/tools/dockerTool" source-language="en" datatype="plaintext"><body>
     <trans-unit id="resourceDeployment.DockerDescription">
       <source xml:lang="en">Provides the ability to package and run an application in isolated containers</source>
     </trans-unit>
@@ -89,7 +671,7 @@
       <source xml:lang="en">Docker</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/resource-deployment/out/services/tools/azCliTool" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/resource-deployment/dist/services/tools/azCliTool" source-language="en" datatype="plaintext"><body>
     <trans-unit id="resourceDeployment.AzCLIDescription">
       <source xml:lang="en">A command-line tool for managing Azure resources</source>
     </trans-unit>
@@ -97,12 +679,31 @@
       <source xml:lang="en">Azure CLI</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/resource-deployment/out/ui/resourceDeploymentDialog" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="deploymentDialog.title">
+  <file original="extensions/resource-deployment/dist/services/tools/azdataTool" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="resourceDeployment.AzdataDescription">
+      <source xml:lang="en">A command-line utility written in Python that enables cluster administrators to bootstrap and manage the Big Data Cluster via REST APIs</source>
+    </trans-unit>
+    <trans-unit id="resourceDeployment.AzdataDisplayName">
+      <source xml:lang="en">azdata</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/resource-deployment/dist/services/tools/kubeCtlTool" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="resourceDeployment.KubeCtlDescription">
+      <source xml:lang="en">A command-line tool allows you to run commands against Kubernetes clusters</source>
+    </trans-unit>
+    <trans-unit id="resourceDeployment.KubeCtlDisplayName">
+      <source xml:lang="en">kubectl</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/resource-deployment/dist/ui/resourceTypePickerDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="resourceTypePickerDialog.title">
       <source xml:lang="en">Select the deployment options</source>
     </trans-unit>
     <trans-unit id="deploymentDialog.OKButtonText">
-      <source xml:lang="en">Open Notebook</source>
+      <source xml:lang="en">Select</source>
+    </trans-unit>
+    <trans-unit id="deploymentDialog.AcceptAgreements">
+      <source xml:lang="en">You must agree to the license agreements in order to proceed.</source>
     </trans-unit>
     <trans-unit id="deploymentDialog.toolNameColumnHeader">
       <source xml:lang="en">Tool</source>
@@ -110,29 +711,38 @@
     <trans-unit id="deploymentDialog.toolDescriptionColumnHeader">
       <source xml:lang="en">Description</source>
     </trans-unit>
+    <trans-unit id="deploymentDialog.toolStatusColumnHeader">
+      <source xml:lang="en">Installed</source>
+    </trans-unit>
+    <trans-unit id="deploymentDialog.toolVersionColumnHeader">
+      <source xml:lang="en">Version</source>
+    </trans-unit>
     <trans-unit id="deploymentDialog.OptionsTitle">
       <source xml:lang="en">Options</source>
     </trans-unit>
     <trans-unit id="deploymentDialog.RequiredToolsTitle">
       <source xml:lang="en">Required tools</source>
     </trans-unit>
-  </body></file>
-  <file original="extensions/resource-deployment/out/services/resourceTypeService" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="resourceDeployment.extensionFullNameError">
-      <source xml:lang="en">Could not find package.json or the name/publisher is not set</source>
+    <trans-unit id="deploymentDialog.NoRequiredTool">
+      <source xml:lang="en">No tools required</source>
     </trans-unit>
-  </body></file>
-  <file original="extensions/resource-deployment/out/services/notebookService" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="resourceDeployment.notebookNotFound">
-      <source xml:lang="en">The notebook {0} does not exist</source>
+    <trans-unit id="deploymentDialog.ToolInformation">
+      <source xml:lang="en">{0}: {1}</source>
     </trans-unit>
-  </body></file>
-  <file original="extensions/resource-deployment/out/main" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="resourceDeployment.FailedToLoadExtension">
-      <source xml:lang="en">Failed to load extension: {0}, Error detected in the resource type definition in package.json, check debug console for details.</source>
+    <trans-unit id="deploymentDialog.DetailToolStatusDescription">
+      <source xml:lang="en">Additional status information for tool: {0}. {1}</source>
     </trans-unit>
-    <trans-unit id="resourceDeployment.UnknownResourceType">
-      <source xml:lang="en">The resource type: {0} is not defined</source>
+    <trans-unit id="deploymentDialog.YesText">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
+    <trans-unit id="deploymentDialog.NoText">
+      <source xml:lang="en">No</source>
+    </trans-unit>
+    <trans-unit id="deploymentDialog.VersionInformationDebugHint">
+      <source xml:lang="en">You will need to restart Azure Data Studio if the tools are installed after Azure Data Studio is launched to pick up the updated PATH environment variable. You may find additional details in the debug console.</source>
+    </trans-unit>
+    <trans-unit id="deploymentDialog.ToolCheckFailed">
+      <source xml:lang="en">Some required tools are not installed or do not meet the minimum version requirement.</source>
     </trans-unit>
   </body></file>
 </xliff>

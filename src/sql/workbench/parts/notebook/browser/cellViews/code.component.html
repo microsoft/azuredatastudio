@@ -9,7 +9,7 @@
 	</div>
 	<div style="flex: 1 1 auto; flex-flow: column; overflow: hidden;">
 		<div #editor class="editor"></div>
-		<collapse-component *ngIf="cellModel.cellType === 'code'" [cellModel]="cellModel" [activeCellId]="activeCellId"></collapse-component>
+		<collapse-component *ngIf="cellModel.cellType === 'code' && cellModel.source && cellModel.source.length > 1" [cellModel]="cellModel" [activeCellId]="activeCellId"></collapse-component>
 	</div>
 	<div #moreactions class="moreActions" style="flex: 0 0 auto; display: flex; flex-flow:column;width: 20px; min-height: 20px; max-height: 20px; padding-top: 0px; orientation: portrait">
 	</div>

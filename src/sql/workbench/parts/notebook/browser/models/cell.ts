@@ -24,6 +24,8 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 let modelId = 0;
 
+export const HideInputTag = 'hide_input';
+
 export class CellModel implements ICellModel {
 	public id: string;
 
@@ -51,8 +53,6 @@ export class CellModel implements ICellModel {
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
-
-	private readonly _hideInputTag = 'hide_input';
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -112,7 +112,7 @@ export class CellModel implements ICellModel {
 
 		let tagIndex = -1;
 		if (this._metadata.tags) {
-			tagIndex = this._metadata.tags.findIndex(tag => tag === this._hideInputTag);
+			tagIndex = this._metadata.tags.findIndex(tag => tag === HideInputTag);
 		}
 
 		if (this._isCollapsed) {
@@ -120,7 +120,7 @@ export class CellModel implements ICellModel {
 				if (!this._metadata.tags) {
 					this._metadata.tags = [];
 				}
-				this._metadata.tags.push(this._hideInputTag);
+				this._metadata.tags.push(HideInputTag);
 			}
 		} else {
 			if (tagIndex > -1) {
@@ -295,9 +295,6 @@ export class CellModel implements ICellModel {
 				this.notebookModel.updateActiveCell(this);
 				this.active = true;
 			}
-			if (this.isCollapsed) {
-				this.isCollapsed = false;
-			}
 
 			if (connectionManagementService) {
 				this._connectionManagementService = connectionManagementService;
@@ -329,7 +326,7 @@ export class CellModel implements ICellModel {
 				if ((Array.isArray(content) && content.length > 0) || (!Array.isArray(content) && content)) {
 					// requestExecute expects a string for the code parameter
 					content = Array.isArray(content) ? content.join('') : content;
-					let future = await kernel.requestExecute({
+					const future = kernel.requestExecute({
 						code: content,
 						stop_on_error: true
 					}, false);
@@ -608,7 +605,7 @@ export class CellModel implements ICellModel {
 		this._source = this.getMultilineSource(cell.source);
 		this._metadata = cell.metadata || {};
 
-		if (this._metadata.tags && this._metadata.tags.includes(this._hideInputTag)) {
+		if (this._metadata.tags && this._metadata.tags.includes(HideInputTag)) {
 			this._isCollapsed = true;
 		} else {
 			this._isCollapsed = false;

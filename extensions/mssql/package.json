@@ -277,6 +277,11 @@
           "group": "1mssqlCluster@3"
         },
         {
+          "command": "mssqlCluster.manageAccess",
+          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:connection && nodeType != mssqlCluster:message",
+          "group": "1mssqlCluster@3"
+        },
+        {
           "command": "mssqlCluster.deleteFiles",
           "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:hdfs && nodeType != mssqlCluster:connection && viewItem != mssqlCluster:connection && nodeType != mssqlCluster:message && nodeSubType=~/^(?!:mount).*$/",
           "group": "1mssqlCluster@4"
@@ -284,7 +289,7 @@
         {
           "command": "mssqlCluster.livy.cmd.submitSparkJob",
           "when": "nodeType == mssqlCluster:hdfs",
-          "group": "1root@1"
+          "group": "1mssqlCluster@7"
         },
         {
           "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",

@@ -341,7 +341,7 @@ export class SchemaCompareMainWindow {
 		this.resetButtons(ResetButtonState.afterCompareComplete);
 
 		if (this.comparisonResult.differences.length > 0) {
-			this.flexModel.addItem(this.splitView, { CSSStyles: { 'overflow': 'hidden' } });
+			this.flexModel.addItem(this.splitView);
 
 			// only enable generate script button if the target is a db
 			if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {

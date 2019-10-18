@@ -164,6 +164,14 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		this.setPropertyFromUI<azdata.ComponentProperties, string>((properties, position) => { properties.position = position; }, newValue);
 	}
 
+	public get display(): azdata.DisplayType {
+		return this.getPropertyOrDefault<azdata.ComponentProperties, azdata.DisplayType>((props) => props.display, undefined);
+	}
+
+	public set display(newValue: azdata.DisplayType) {
+		this.setPropertyFromUI<azdata.ComponentProperties, string>((properties, display) => { properties.display = display; }, newValue);
+	}
+
 	public get CSSStyles(): { [key: string]: string } {
 		return this.getPropertyOrDefault<azdata.ComponentProperties, { [key: string]: string }>((props) => props.CSSStyles, {});
 	}

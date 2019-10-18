@@ -37,7 +37,8 @@ if (process.env.ADS_TEST_GREP) {
 	console.log(`setting options.grep to: ${options.grep}`);
 }
 if (process.env.ADS_TEST_INVERT_GREP) {
-	options.invert = parseInt(process.env.ADS_TEST_INVERT_GREP);
+	const value = parseInt(process.env.ADS_TEST_INVERT_GREP);
+	options.invert = Boolean(value);
 	console.log(`setting options.invert to: ${options.invert}`);
 }
 if (process.env.ADS_TEST_TIMEOUT) {

@@ -17,8 +17,8 @@
 	"notebook.command.new": "New Notebook",
 	"notebook.command.open": "Open Notebook",
 
-	"tab.bigDataClusterDescription": "Tasks and information about your SQL Server big data cluster",
-	"title.bigDataCluster": "SQL Server big data cluster",
+	"tab.bigDataClusterDescription": "Tasks and information about your SQL Server Big Data Cluster",
+	"title.bigDataCluster": "SQL Server Big Data Cluster",
 	"title.submitSparkJob": "Submit Spark Job",
 	"title.newSparkJob": "New Spark Job",
 	"title.openSparkHistory": "View Spark History",

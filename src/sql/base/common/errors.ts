@@ -10,3 +10,9 @@ export function invalidProvider(name?: string): Error {
 		return new Error('Invalid provider');
 	}
 }
+
+export class UserCancelledConnectionError extends Error {
+	constructor(message?: string) {
+		super(message);
+	}
+}

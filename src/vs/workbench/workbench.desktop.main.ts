@@ -155,14 +155,13 @@ import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 //#endregion
 
 // {{SQL CARBON EDIT}}
+// release notes
 import 'sql/workbench/update/electron-browser/releaseNotes.contribution';
-
-// Scripting
-import 'sql/workbench/parts/scripting/electron-browser/scripting.contribution';
 
 // query history
 import 'sql/workbench/parts/queryHistory/electron-browser/queryHistory.contribution';
 
+// CLI
 import 'sql/workbench/parts/commandLine/electron-browser/commandLine.contribution';
 
 //getting started
