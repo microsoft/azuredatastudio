@@ -9,7 +9,6 @@ import { ConnectionConfig } from 'sql/platform/connection/common/connectionConfi
 import { fixupConnectionCredentials } from 'sql/platform/connection/common/connectionInfo';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
@@ -23,6 +22,14 @@ const CRED_ID_PREFIX = 'id:';
 const CRED_ITEMTYPE_PREFIX = 'itemtype:';
 const CRED_PROFILE_USER = 'Profile';
 
+interface ConnectionStoreShape {
+	options: {};
+	groupId: string;
+	providerName: string;
+	savePassword: boolean;
+	id: string;
+}
+
 /**
  * Manages the connections list including saved profiles and the most recently used connections
  *
@@ -34,10 +41,10 @@ export class ConnectionStore {
 	private mru: Array<IConnectionProfile>;
 
 	constructor(
-		@IStorageService private storageService: IStorageService,
-		@IConfigurationService private configurationService: IConfigurationService,
-		@ICredentialsService private credentialService: ICredentialsService,
-		@ICapabilitiesService private capabilitiesService: ICapabilitiesService
+		@IStorageService private readonly storageService: IStorageService,
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@ICredentialsService private readonly credentialService: ICredentialsService,
+		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService
 	) {
 		try {
 			const configRaw = this.storageService.get(RECENT_CONNECTIONS_STATE_KEY, StorageScope.GLOBAL, '[]');

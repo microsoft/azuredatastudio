@@ -6,7 +6,6 @@
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as azdata from 'azdata';
 import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
-import * as interfaces from 'sql/platform/connection/common/interfaces';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { generateUuid } from 'vs/base/common/uuid';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -20,7 +19,7 @@ import * as Constants from 'sql/platform/connection/common/constants';
 /**
  * A concrete implementation of an IConnectionProfile with support for profile creation and validation
  */
-export class ConnectionProfile extends ProviderConnectionInfo implements interfaces.IConnectionProfile {
+export class ConnectionProfile extends ProviderConnectionInfo {
 
 	public parent?: ConnectionProfileGroup;
 	private _id: string;
