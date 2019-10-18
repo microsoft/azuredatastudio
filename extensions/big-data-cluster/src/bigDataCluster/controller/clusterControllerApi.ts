@@ -159,11 +159,10 @@ export class ClusterController {
 	}
 
 	public async getEndPoints(promptConnect: boolean = false): Promise<IEndPointsResponse> {
-		try {
-			return await this.withConnectRetry<IEndPointsResponse>(this.getEndpointsImpl, promptConnect);
-		} catch (error) {
-			throw new ControllerError(error, localize('bdc.error.getEndPoints', "Error retrieving endpoints from {0}", this._url));
-		}
+		return await this.withConnectRetry<IEndPointsResponse>(
+			this.getEndpointsImpl,
+			promptConnect,
+			localize('bdc.error.getEndPoints', "Error retrieving endpoints from {0}", this._url));
 	}
 
 	private async getEndpointsImpl(self: ClusterController): Promise<IEndPointsResponse> {
@@ -179,11 +178,10 @@ export class ClusterController {
 	}
 
 	public async getBdcStatus(promptConnect: boolean = false): Promise<IBdcStatusResponse> {
-		try {
-			return await this.withConnectRetry<IBdcStatusResponse>(this.getBdcStatusImpl, promptConnect);
-		} catch (error) {
-			throw new ControllerError(error, localize('bdc.error.getBdcStatus', "Error retrieving BDC status from {0}", this._url));
-		}
+		return await this.withConnectRetry<IBdcStatusResponse>(
+			this.getBdcStatusImpl,
+			promptConnect,
+			localize('bdc.error.getBdcStatus', "Error retrieving BDC status from {0}", this._url));
 	}
 
 	private async getBdcStatusImpl(self: ClusterController): Promise<IBdcStatusResponse> {
@@ -198,11 +196,13 @@ export class ClusterController {
 	}
 
 	public async mountHdfs(mountPath: string, remoteUri: string, credentials: {}, promptConnection: boolean = false): Promise<MountResponse> {
-		try {
-			return await this.withConnectRetry<MountResponse>(this.mountHdfsImpl, promptConnection, mountPath, remoteUri, credentials);
-		} catch (error) {
-			throw new ControllerError(error, localize('bdc.error.mountHdfs', "Error creating mount"));
-		}
+		return await this.withConnectRetry<MountResponse>(
+			this.mountHdfsImpl,
+			promptConnection,
+			localize('bdc.error.mountHdfs', "Error creating mount"),
+			mountPath,
+			remoteUri,
+			credentials);
 	}
 
 	private async mountHdfsImpl(self: ClusterController, mountPath: string, remoteUri: string, credentials: {}): Promise<MountResponse> {
@@ -217,11 +217,11 @@ export class ClusterController {
 	}
 
 	public async getMountStatus(mountPath?: string, promptConnect: boolean = false): Promise<MountStatusResponse> {
-		try {
-			return await this.withConnectRetry<MountStatusResponse>(this.getMountStatusImpl, promptConnect, mountPath);
-		} catch (error) {
-			throw new ControllerError(error, localize('bdc.error.mountHdfs', "Error creating mount"));
-		}
+		return await this.withConnectRetry<MountStatusResponse>(
+			this.getMountStatusImpl,
+			promptConnect,
+			localize('bdc.error.mountHdfs', "Error creating mount"),
+			mountPath);
 	}
 
 	private async getMountStatusImpl(self: ClusterController, mountPath?: string): Promise<MountStatusResponse> {
@@ -236,11 +236,11 @@ export class ClusterController {
 	}
 
 	public async refreshMount(mountPath: string, promptConnect: boolean = false): Promise<MountResponse> {
-		try {
-			return await this.withConnectRetry<MountResponse>(this.refreshMountImpl, promptConnect, mountPath);
-		} catch (error) {
-			throw new ControllerError(error, localize('bdc.error.refreshHdfs', "Error refreshing mount"));
-		}
+		return await this.withConnectRetry<MountResponse>(
+			this.refreshMountImpl,
+			promptConnect,
+			localize('bdc.error.refreshHdfs', "Error refreshing mount"),
+			mountPath);
 	}
 
 	private async refreshMountImpl(self: ClusterController, mountPath: string): Promise<MountResponse> {
@@ -255,11 +255,11 @@ export class ClusterController {
 	}
 
 	public async deleteMount(mountPath: string, promptConnect: boolean = false): Promise<MountResponse> {
-		try {
-			return await this.withConnectRetry<MountResponse>(this.deleteMountImpl, promptConnect, mountPath);
-		} catch (error) {
-			throw new ControllerError(error, localize('bdc.error.deleteHdfs', "Error deleting mount"));
-		}
+		return await this.withConnectRetry<MountResponse>(
+			this.deleteMountImpl,
+			promptConnect,
+			localize('bdc.error.deleteHdfs', "Error deleting mount"),
+			mountPath);
 	}
 
 	private async deleteMountImpl(mountPath: string): Promise<MountResponse> {
@@ -279,31 +279,36 @@ export class ClusterController {
 	 * this with the new information.
 	 * @param f The API function we're wrapping
 	 * @param promptConnect Whether to actually prompt for connection on failure
+	 * @param errorMessage The message to include in the wrapped error thrown
 	 * @param args The args to pass to the function
 	 */
-	private async withConnectRetry<T>(f: (...args: any[]) => Promise<T>, promptConnect: boolean, ...args: any[]): Promise<T> {
+	private async withConnectRetry<T>(f: (...args: any[]) => Promise<T>, promptConnect: boolean, errorMessage: string, ...args: any[]): Promise<T> {
 		try {
-			return await f(this, args);
-		} catch (error) {
-			if (promptConnect) {
-				// We don't want to open multiple dialogs here if multiple calls come in the same time so check
-				// and see if we have are actively waiting on an open dialog to return and if so then just wait
-				// on that promise.
-				if (!this.connectionPromise) {
-					this.connectionPromise = this.dialog.showDialog();
-				}
-				const controller = await this.connectionPromise;
-				this.connectionPromise = undefined;
-				if (controller) {
-					this.username = controller.username;
-					this.password = controller.password;
-					this._url = controller._url;
-					this.authType = controller.authType;
-					this.authPromise = controller.authPromise;
-				}
+			try {
 				return await f(this, args);
+			} catch (error) {
+				if (promptConnect) {
+					// We don't want to open multiple dialogs here if multiple calls come in the same time so check
+					// and see if we have are actively waiting on an open dialog to return and if so then just wait
+					// on that promise.
+					if (!this.connectionPromise) {
+						this.connectionPromise = this.dialog.showDialog();
+					}
+					const controller = await this.connectionPromise;
+					this.connectionPromise = undefined;
+					if (controller) {
+						this.username = controller.username;
+						this.password = controller.password;
+						this._url = controller._url;
+						this.authType = controller.authType;
+						this.authPromise = controller.authPromise;
+					}
+					return await f(this, args);
+				}
+				throw error;
 			}
-			throw error;
+		} catch (error) {
+			throw new ControllerError(error, errorMessage);
 		}
 	}
 }
