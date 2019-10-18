@@ -180,10 +180,10 @@ export abstract class HdfsDialogBase<T extends HdfsDialogProperties, R> {
 				title: localize('hdsf.dialog.connection.section', "Cluster Connection")
 			};
 			let formModel = this.uiModelBuilder.formContainer()
-				.withFormItems([
-					this.getMainSection(),
-					connectionSection
-				].filter(c => c)).withLayout({ width: '100%' }).component();
+				.withFormItems(
+					this.getMainSectionComponents().concat(
+						connectionSection)
+				).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);
 			this.onAuthChanged();
@@ -202,7 +202,7 @@ export abstract class HdfsDialogBase<T extends HdfsDialogProperties, R> {
 		this.dialog.cancelButton.label = localize('hdfs.dialog.cancel', "Cancel");
 	}
 
-	protected abstract getMainSection(): azdata.FormComponentGroup;
+	protected abstract getMainSectionComponents(): (azdata.FormComponentGroup | azdata.FormComponent)[];
 
 	protected get authValue(): AuthType {
 		return (<azdata.CategoryValue>this.authDropdown.value).name as AuthType;

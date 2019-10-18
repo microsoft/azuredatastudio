@@ -10,7 +10,6 @@ import { BdcRouterApi, Authentication, EndpointModel, BdcStatusModel, DefaultApi
 import { TokenRouterApi } from './clusterApiGenerated2';
 import { AuthType } from '../constants';
 import * as nls from 'vscode-nls';
-import { AddControllerDialog, AddControllerDialogModel, getAuthCategory } from '../dialog/addControllerDialog';
 import { ConnectControllerDialog, ConnectControllerModel } from '../dialog/connectControllerDialog';
 
 const localize = nls.loadMessageBundle();

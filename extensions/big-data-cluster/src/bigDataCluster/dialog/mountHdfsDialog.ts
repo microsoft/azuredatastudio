@@ -152,7 +152,7 @@ export class MountHdfsDialog extends HdfsDialogBase<MountHdfsProperties, void> {
 		super(localize('mount.dialog.title', "Mount HDFS Folder"), model);
 	}
 
-	protected getMainSection(): azdata.FormComponentGroup {
+	protected getMainSectionComponents(): (azdata.FormComponentGroup | azdata.FormComponent)[] {
 		const newMountName = '/mymount';
 		let pathVal = this.model.props.hdfsPath;
 		pathVal = (!pathVal || pathVal === '/') ? newMountName : (pathVal + newMountName);
@@ -172,24 +172,25 @@ export class MountHdfsDialog extends HdfsDialogBase<MountHdfsProperties, void> {
 			})
 			.component();
 
-		return {
-			components: [
-				{
-					component: this.pathInputBox,
-					title: hdfsPathTitle,
-					required: true
-				}, {
-					component: this.remoteUriInputBox,
-					title: localize('mount.remoteUri', "Remote URI"),
-					required: true
-				}, {
-					component: this.credentialsInputBox,
-					title: localize('mount.credentials', "Credentials"),
-					required: false
-				}
-			],
-			title: mountConfigutationTitle
-		};
+		return [
+			{
+				components: [
+					{
+						component: this.pathInputBox,
+						title: hdfsPathTitle,
+						required: true
+					}, {
+						component: this.remoteUriInputBox,
+						title: localize('mount.remoteUri', "Remote URI"),
+						required: true
+					}, {
+						component: this.credentialsInputBox,
+						title: localize('mount.credentials', "Credentials"),
+						required: false
+					}
+				],
+				title: mountConfigutationTitle
+			}];
 	}
 
 	protected async validate(): Promise<{ validated: boolean }> {
@@ -218,21 +219,22 @@ export class RefreshMountDialog extends HdfsDialogBase<MountHdfsProperties, void
 		super(localize('refreshmount.dialog.title', "Refresh Mount"), model);
 	}
 
-	protected getMainSection(): azdata.FormComponentGroup {
+	protected getMainSectionComponents(): (azdata.FormComponentGroup | azdata.FormComponent)[] {
 		this.pathInputBox = this.uiModelBuilder.inputBox()
 			.withProperties<azdata.InputBoxProperties>({
 				value: this.model.props.hdfsPath
 			}).component();
-		return {
-			components: [
-				{
-					component: this.pathInputBox,
-					title: hdfsPathTitle,
-					required: true
-				}
-			],
-			title: mountConfigutationTitle
-		};
+		return [
+			{
+				components: [
+					{
+						component: this.pathInputBox,
+						title: hdfsPathTitle,
+						required: true
+					}
+				],
+				title: mountConfigutationTitle
+			}];
 	}
 
 	protected async validate(): Promise<{ validated: boolean }> {
@@ -298,21 +300,22 @@ export class DeleteMountDialog extends HdfsDialogBase<MountHdfsProperties, void>
 		super(localize('deleteMount.dialog.title', "Delete Mount"), model);
 	}
 
-	protected getMainSection(): azdata.FormComponentGroup {
+	protected getMainSectionComponents(): (azdata.FormComponentGroup | azdata.FormComponent)[] {
 		this.pathInputBox = this.uiModelBuilder.inputBox()
 			.withProperties<azdata.InputBoxProperties>({
 				value: this.model.props.hdfsPath
 			}).component();
-		return {
-			components: [
-				{
-					component: this.pathInputBox,
-					title: hdfsPathTitle,
-					required: true
-				}
-			],
-			title: mountConfigutationTitle
-		};
+		return [
+			{
+				components: [
+					{
+						component: this.pathInputBox,
+						title: hdfsPathTitle,
+						required: true
+					}
+				],
+				title: mountConfigutationTitle
+			}];
 	}
 
 	protected async validate(): Promise<{ validated: boolean }> {

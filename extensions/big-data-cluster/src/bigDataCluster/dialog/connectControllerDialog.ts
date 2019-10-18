@@ -15,8 +15,8 @@ export class ConnectControllerDialog extends HdfsDialogBase<HdfsDialogProperties
 		super(localize('connectController.dialog.title', "Connect to Controller"), model);
 	}
 
-	protected getMainSection(): azdata.FormComponentGroup {
-		return undefined;
+	protected getMainSectionComponents(): (azdata.FormComponentGroup | azdata.FormComponent)[] {
+		return [];
 	}
 
 	protected async validate(): Promise<{ validated: boolean, value?: ClusterController }> {
