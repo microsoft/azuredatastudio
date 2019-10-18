@@ -72,3 +72,6 @@ export namespace cssStyles {
 }
 
 export type AuthType = 'integrated' | 'basic';
+
+export const clusterEndpointsProperty = 'clusterEndpoints';
+export const controllerEndpointName = 'controller';

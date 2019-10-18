@@ -284,7 +284,7 @@
         {
           "command": "mssqlCluster.livy.cmd.submitSparkJob",
           "when": "nodeType == mssqlCluster:hdfs",
-          "group": "1root@1"
+          "group": "1mssqlCluster@7"
         },
         {
           "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
