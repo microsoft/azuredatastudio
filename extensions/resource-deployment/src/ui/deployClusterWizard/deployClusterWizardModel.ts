@@ -85,7 +85,7 @@ export class DeployClusterWizardModel extends Model {
 			Number.parseInt(this.getStorageSettingValue(VariableNames.DataPoolLogsStorageSize_VariableName, VariableNames.ControllerLogsStorageSize_VariableName)!)
 		);
 		targetDeploymentProfile.setResourceStorage(SqlServerMasterResource,
-			this.getStorageSettingValue(VariableNames.SQLServerDNSName_VariableName, VariableNames.ControllerDataStorageClassName_VariableName)!,
+			this.getStorageSettingValue(VariableNames.SQLServerDataStorageClassName_VariableName, VariableNames.ControllerDataStorageClassName_VariableName)!,
 			Number.parseInt(this.getStorageSettingValue(VariableNames.SQLServerDataStorageSize_VariableName, VariableNames.ControllerDataStorageSize_VariableName)!),
 			this.getStorageSettingValue(VariableNames.SQLServerLogsStorageClassName_VariableName, VariableNames.ControllerLogsStorageClassName_VariableName)!,
 			Number.parseInt(this.getStorageSettingValue(VariableNames.SQLServerLogsStorageSize_VariableName, VariableNames.ControllerLogsStorageSize_VariableName)!)
@@ -133,7 +133,7 @@ export class DeployClusterWizardModel extends Model {
 			statements.push(`azure_vm_count = '${this.getStringValue(VariableNames.VMCount_VariableName)}'`);
 			statements.push(`aks_cluster_name = '${this.getStringValue(VariableNames.AksName_VariableName)}'`);
 		} else if (this.deploymentTarget === BdcDeploymentType.ExistingAKS || this.deploymentTarget === BdcDeploymentType.ExistingKubeAdm) {
-			statements.push(`mssql_kube_config_path = '${this.getStringValue(VariableNames.KubeConfigPath_VariableName)}'`);
+			statements.push(`mssql_kube_config_path = '${this.escapeForNotebookCodeCell(this.getStringValue(VariableNames.KubeConfigPath_VariableName)!)}'`);
 			statements.push(`mssql_cluster_context = '${this.getStringValue(VariableNames.ClusterContext_VariableName)}'`);
 			statements.push('os.environ["KUBECONFIG"] = mssql_kube_config_path');
 		}
@@ -143,6 +143,11 @@ export class DeployClusterWizardModel extends Model {
 		statements.push(`control_json = '${profile.getControlJson(false)}'`);
 		statements.push(`print('Variables have been set successfully.')`);
 		return statements.join(EOL);
+	}
+
+	private escapeForNotebookCodeCell(original: string): string {
+		// Escape the \ character for the code cell string value
+		return original && original.replace(/\\/g, '\\\\');
 	}
 }
 

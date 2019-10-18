@@ -148,7 +148,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 					{
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.Region', "Region"),
-						defaultValue: this.wizard.model.getStringValue(VariableNames.DeploymentProfile_VariableName),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.Region_VariableName),
 						fontStyle: FontStyle.Italic
 					}, {
 						type: FieldType.ReadonlyText,
