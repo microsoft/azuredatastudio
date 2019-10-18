@@ -126,6 +126,7 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 				// but if not stopped here then will propagate up.
 				// This might have unintended effects such as a dialog closing.
 				if (e.keyCode === KeyCode.Enter) {
+					this._tree.toggleExpansion(this._tree.getFocus());
 					e.stopPropagation();
 				}
 			});
