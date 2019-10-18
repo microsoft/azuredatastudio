@@ -7,12 +7,9 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
 import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
 import { TreeNode } from './treeNode';
 import { IconPathHelper, BdcItemType, IconPath, AuthType } from '../constants';
-
-const localize = nls.loadMessageBundle();
 
 export abstract class ControllerTreeNode extends TreeNode {
 
