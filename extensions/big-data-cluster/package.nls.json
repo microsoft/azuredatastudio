@@ -5,5 +5,7 @@
 	"command.deleteController.title" : "Delete",
 	"command.refreshController.title" : "Refresh",
 	"command.manageController.title" : "Manage",
-	"command.mount.title" : "Mount HDFS"
+	"command.mount.title" : "Mount HDFS",
+	"command.refreshmount.title" : "Refresh Mount",
+	"command.deletemount.title" : "Delete Mount"
 }
