@@ -32,11 +32,6 @@
   resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-4.1.3.tgz#380ab4c3af84c5d1d748c2a7d04151c7dc8e4982"
   integrity sha1-OAq0w6+ExdHXSMKn0EFRx9yOSYI=
 
-"@angular/http@~4.1.3":
-  version "4.1.3"
-  resolved "https://registry.yarnpkg.com/@angular/http/-/http-4.1.3.tgz#eb9d1c302a0172815f9a573310d9be0bdeb845ae"
-  integrity sha1-650cMCoBcoFfmlczENm+C964Ra4=
-
 "@angular/platform-browser-dynamic@~4.1.3":
   version "4.1.3"
   resolved "https://registry.yarnpkg.com/@angular/platform-browser-dynamic/-/platform-browser-dynamic-4.1.3.tgz#3c13fdcf591d487f6efdc1d46913f280c6d8c2ec"
@@ -51,11 +46,6 @@
   version "4.1.3"
   resolved "https://registry.yarnpkg.com/@angular/router/-/router-4.1.3.tgz#ddafd46ae7ccc8b1f74904ffb45f394e44625216"
   integrity sha1-3a/UaufMyLH3SQT/tF85TkRiUhY=
-
-"@angular/upgrade@~4.1.3":
-  version "4.1.3"
-  resolved "https://registry.yarnpkg.com/@angular/upgrade/-/upgrade-4.1.3.tgz#8f683730f0133358263e923739c740e377c086b7"
-  integrity sha1-j2g3MPATM1gmPpI3OcdA43fAhrc=
 
 "@babel/code-frame@^7.0.0":
   version "7.0.0"
