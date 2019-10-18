@@ -152,8 +152,8 @@
         "command": "notebook.command.searchBook",
         "title": "%title.searchJupyterBook%",
         "icon": {
-          "dark": "resources/dark/manage_inverse.svg",
-          "light": "resources/light/manage.svg"
+          "dark": "resources/dark/search_inverse.svg",
+          "light": "resources/light/search.svg"
         }
       }
     ],
@@ -268,6 +268,11 @@
         }
       ],
       "view/item/context": [
+        {
+          "command": "notebook.command.searchBook",
+          "when": "view =~ /^(untitledBookTreeView|bookTreeView)$/ && viewItem =~ /^(untitledBook|savedBook)$/ && notebookQuality != stable",
+          "group": "inline"
+        },
         {
           "command": "notebook.command.saveBook",
           "when": "view == untitledBookTreeView && viewItem == untitledBook && untitledBooks && notebookQuality != stable",
