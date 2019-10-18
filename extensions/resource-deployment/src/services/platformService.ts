@@ -180,7 +180,7 @@ export class PlatformService implements IPlatformService {
 	}
 
 	private async runSudoCommand(command: string, outputChannel: vscode.OutputChannel, options?: CommandOptions): Promise<string> {
-		outputChannel.appendLine(`    > ${command}`);
+		outputChannel.appendLine(`    sudo> ${command}`);
 
 		if (options && options.workingDirectory) {
 			process.chdir(options.workingDirectory);
