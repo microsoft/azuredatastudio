@@ -131,7 +131,7 @@ function activateNotebookTask(appContext: AppContext): void {
 	apiWrapper.registerTaskHandler(Constants.mssqlClusterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
 		return handleOpenNotebookTask(profile);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlopenClusterDashboard, (profile: azdata.IConnectionProfile) => {
+	apiWrapper.registerTaskHandler(Constants.mssqlOpenClusterDashboard, (profile: azdata.IConnectionProfile) => {
 		return handleOpenClusterDashboardTask(profile, appContext);
 	});
 }
@@ -207,7 +207,7 @@ async function handleOpenClusterDashboardTask(profile: azdata.IConnectionProfile
 	const serverInfo = await azdata.connection.getServerInfo(profile.id);
 	const controller = Utils.getClusterEndpoints(serverInfo).find(e => e.serviceName === Endpoint.controller);
 	if (!controller) {
-		appContext.apiWrapper.showErrorMessage(localize('noController', "Could not find the Controller endpoint for this instance"));
+		appContext.apiWrapper.showErrorMessage(localize('noController', "Could not find the controller endpoint for this instance"));
 		return;
 	}
 
