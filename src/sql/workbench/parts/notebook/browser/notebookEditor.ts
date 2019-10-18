@@ -13,9 +13,9 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
 import { NotebookModule } from 'sql/workbench/parts/notebook/browser/notebook.module';
 import { NOTEBOOK_SELECTOR } from 'sql/workbench/parts/notebook/browser/notebook.component';
-import { INotebookParams } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookParams, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { ACTION_IDS, NOTEBOOK_MAX_MATCHES, INotebookController, FindWidget, IConfigurationChangedEvent } from 'sql/workbench/parts/notebook/browser/notebookFindWidget';
+import { ACTION_IDS, NOTEBOOK_MAX_MATCHES, IFindNotebookController, FindWidget, IConfigurationChangedEvent } from 'sql/workbench/parts/notebook/browser/notebookFindWidget';
 import { IOverlayWidget } from 'vs/editor/browser/editorBrowser';
 import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
 import { IEditorAction, ScrollType } from 'vs/editor/common/editorCommon';
@@ -37,7 +37,7 @@ import { FindDecorations } from 'sql/workbench/parts/notebook/browser/cellViews/
 import { TimeoutTimer } from 'vs/base/common/async';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 
-export class NotebookEditor extends BaseEditor implements INotebookController {
+export class NotebookEditor extends BaseEditor implements IFindNotebookController {
 
 	public static ID: string = 'workbench.editor.notebookEditor';
 	private _notebookContainer: HTMLElement;
@@ -50,7 +50,8 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	public onDidChangeConfiguration: Event<IConfigurationChangedEvent> = this._onDidChangeConfiguration.event;
 	private _notebookModel: INotebookModel;
 	private _findCountChangeListener: IDisposable;
-	private _currentPosition: NotebookRange;
+	private _currentMatch: NotebookRange;
+	private _previousMatch: NotebookRange;
 	private readonly _decorations: FindDecorations;
 	private readonly _toDispose = new DisposableStore();
 	private _isDisposed: boolean;
@@ -64,7 +65,8 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IKeybindingService private _keybindingService: IKeybindingService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
-		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService
+		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
+		@INotebookService private _notebookService?: INotebookService
 	) {
 		super(NotebookEditor.ID, telemetryService, themeService, storageService);
 		this._isDisposed = false;
@@ -87,7 +89,20 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	}
 
 	public getPosition(): NotebookRange {
-		return this._currentPosition;
+		return this._currentMatch;
+	}
+
+	public getLastPosition(): NotebookRange {
+		return this._previousMatch;
+	}
+
+	public getCellEditor(cellGuid: string): BaseTextEditor {
+		let editorImpl = this._notebookService.findNotebookEditor(this.notebookInput.notebookUri);
+		if (editorImpl) {
+			let cellEditorProvider = editorImpl.cellEditors.find(c => c.cellGuid() === cellGuid);
+			return cellEditorProvider ? cellEditorProvider.getEditor() : undefined;
+		}
+		return undefined;
 	}
 
 	public changeDecorations(callback: (changeAccessor: IModelDecorationsChangeAccessor) => any): any {
@@ -271,13 +286,13 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 						}
 						this._updateFinderMatchState();
 						this._finder.focusFindInput();
-						this._decorations.set(this._notebookModel.findMatches, this._currentPosition);
+						this._decorations.set(this._notebookModel.findMatches, this._currentMatch);
 						this._findState.changeMatchInfo(
 							this._decorations.getCurrentMatchesPosition(this.getSelection()),
 							this._decorations.getCount(),
-							this._currentPosition
+							this._currentMatch
 						);
-						this._setCurrentFindMatch(this._currentPosition);
+						this._setCurrentFindMatch(this._currentMatch);
 					});
 				} else {
 					this._notebookModel.clearFind();
@@ -290,13 +305,14 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		if (!this._notebookModel) {
 			return null;
 		}
-		return this._currentPosition;
+		return this._currentMatch;
 		// temp
 		// return this._notebookModel.cursor.getSelection();
 	}
 
 	public setSelection(range: NotebookRange): void {
-		this._currentPosition = range;
+		this._previousMatch = this._currentMatch;
+		this._currentMatch = range;
 	}
 
 	public toggleSearch(reveal: boolean): void {
@@ -321,17 +337,13 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	}
 
 	private updatePosition(range: NotebookRange): void {
-		this._currentPosition = range;
+		this._previousMatch = this._currentMatch;
+		this._currentMatch = range;
 	}
 
 	private _setCurrentFindMatch(match: NotebookRange): void {
-		let matchesPosition = this._decorations.setCurrentFindMatch(match);
 		if (match) {
-			this._findState.changeMatchInfo(
-				matchesPosition,
-				this._decorations.getCount(),
-				match
-			);
+			this._decorations.setCurrentFindMatch(match);
 			this.setSelection(match);
 			this._revealRangeInCenterIfOutsideViewport(match, ScrollType.Smooth);
 		}
@@ -339,9 +351,10 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 
 	private _revealRangeInCenterIfOutsideViewport(match: NotebookRange, scrollType: ScrollType): void {
 		this._notebookModel.updateActiveCell(match.cell);
-		if (this._notebookModel.activeCell.editor instanceof BaseTextEditor) {
-			this._notebookModel.activeCell.editor.getContainer().scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-			this._notebookModel.activeCell.editor.getControl().revealRangeInCenterIfOutsideViewport(match, ScrollType.Smooth);
+		let matchEditor = this.getCellEditor(match.cell.cellGuid);
+		if (matchEditor && matchEditor instanceof BaseTextEditor) {
+			matchEditor.getContainer().scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+			matchEditor.getControl().revealRangeInCenterIfOutsideViewport(match, ScrollType.Smooth);
 		}
 	}
 
@@ -356,7 +369,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 
 	private _updateFinderMatchState(): void {
 		if (this.notebookInput && this._notebookModel) {
-			this._findState.changeMatchInfo(this._notebookModel.getFindIndex(), this._notebookModel.getFindCount(), this._currentPosition);
+			this._findState.changeMatchInfo(this._notebookModel.getFindIndex(), this._notebookModel.getFindCount(), this._currentMatch);
 		} else {
 			this._findState.changeMatchInfo(0, 0, undefined);
 		}

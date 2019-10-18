@@ -4,11 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nb } from 'azdata';
-import { OnInit, Component, Input, Inject, forwardRef, ChangeDetectorRef, SimpleChange, OnChanges, HostListener } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ChangeDetectorRef, SimpleChange, OnChanges, HostListener, ViewChildren, QueryList } from '@angular/core';
 import { CellView } from 'sql/workbench/parts/notebook/browser/cellViews/interfaces';
 import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
 import { Deferred } from 'sql/base/common/promise';
+import { INotebookService, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
+import { CodeComponent } from 'sql/workbench/parts/notebook/browser/cellViews/code.component';
+import { OutputComponent } from 'sql/workbench/parts/notebook/browser/cellViews/output.component';
 
 
 export const CODE_SELECTOR: string = 'code-cell-component';
@@ -19,6 +22,8 @@ export const CODE_SELECTOR: string = 'code-cell-component';
 })
 
 export class CodeCellComponent extends CellView implements OnInit, OnChanges {
+	@ViewChildren(CodeComponent) private codeCells: QueryList<ICellEditorProvider>;
+	@ViewChildren(OutputComponent) private outputCells: QueryList<ICellEditorProvider>;
 	@Input() cellModel: ICellModel;
 	@Input() set model(value: NotebookModel) {
 		this._model = value;
@@ -41,6 +46,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
+		@Inject(INotebookService) private _notebookService?: INotebookService,
 	) {
 		super();
 	}
@@ -64,6 +70,17 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 				break;
 			}
 		}
+	}
+
+	public get cellEditors(): ICellEditorProvider[] {
+		let editors: ICellEditorProvider[] = [];
+		if (this.codeCells) {
+			editors.push(...this.codeCells.toArray());
+		}
+		if (this.outputCells) {
+			editors.push(...this.outputCells.toArray());
+		}
+		return editors;
 	}
 
 	get model(): NotebookModel {
@@ -105,5 +122,17 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 
 	get isStdInVisible(): boolean {
 		return this.cellModel.stdInVisible;
+	}
+
+	public getEditor(): any {
+		return undefined;
+	}
+
+	public hasEditor(): boolean {
+		return false;
+	}
+
+	public cellGuid(): string {
+		return this.cellModel.cellGuid;
 	}
 }

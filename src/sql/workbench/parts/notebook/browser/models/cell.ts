@@ -50,7 +50,6 @@ export class CellModel implements ICellModel {
 	private _stdInVisible: boolean;
 	private _metadata: { language?: string, cellGuid?: string; };
 	private _modelContentChangedEvent: IModelContentChangedEvent;
-	private _associatedEditor: BaseTextEditor;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -166,14 +165,6 @@ export class CellModel implements ICellModel {
 
 	public get source(): string | string[] {
 		return this._source;
-	}
-
-	public get editor(): BaseTextEditor {
-		return this._associatedEditor;
-	}
-
-	public set editor(e: BaseTextEditor) {
-		this._associatedEditor = e;
 	}
 
 	public set source(newSource: string | string[]) {

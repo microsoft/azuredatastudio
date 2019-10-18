@@ -21,6 +21,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { localize } from 'vs/nls';
 import * as types from 'vs/base/common/types';
 import { getErrorMessage } from 'vs/base/common/errors';
+import { CellView } from 'sql/workbench/parts/notebook/browser/cellViews/interfaces';
 
 export const OUTPUT_SELECTOR: string = 'output-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -31,7 +32,7 @@ const componentRegistry = <IMimeComponentRegistry>Registry.as(Extensions.MimeCom
 	selector: OUTPUT_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./output.component.html'))
 })
-export class OutputComponent extends AngularDisposable implements OnInit, AfterViewInit {
+export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	@ViewChild('output', { read: ElementRef }) private outputElement: ElementRef;
 	@ViewChild(ComponentHostDirective) componentHost: ComponentHostDirective;
 	@Input() cellOutput: nb.ICellOutput;
@@ -183,5 +184,17 @@ export class OutputComponent extends AngularDisposable implements OnInit, AfterV
 			this.errorText = localize('componentRenderError', "Error rendering component: {0}", getErrorMessage(e));
 			return;
 		}
+	}
+
+	public getEditor(): any {
+		return undefined;
+	}
+
+	public hasEditor(): boolean {
+		return false;
+	}
+
+	public cellGuid(): string {
+		return this.cellModel.cellGuid;
 	}
 }

@@ -6,7 +6,6 @@ import 'vs/css!./code';
 
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange, forwardRef, ChangeDetectorRef } from '@angular/core';
 
-import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/browser/cellToggleMoreActions';
 import { ICellModel, notebookConstants, CellExecutionState } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
@@ -33,6 +32,7 @@ import * as notebookUtils from 'sql/workbench/parts/notebook/browser/models/note
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
+import { CellView } from 'sql/workbench/parts/notebook/browser/cellViews/interfaces';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -41,7 +41,7 @@ const MARKDOWN_CLASS = 'markdown';
 	selector: CODE_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./code.component.html'))
 })
-export class CodeComponent extends AngularDisposable implements OnInit, OnChanges {
+export class CodeComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
@@ -138,6 +138,18 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		}
 	}
 
+	public getEditor(): QueryTextEditor {
+		return this._editor;
+	}
+
+	public hasEditor(): boolean {
+		return true;
+	}
+
+	public cellGuid(): string {
+		return this.cellModel.cellGuid;
+	}
+
 	private updateConnectionState(shouldConnect: boolean) {
 		if (this.isSqlCodeCell()) {
 			let cellUri = this.cellModel.cellUri.toString();
@@ -204,7 +216,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		// For markdown cells, don't show line numbers unless we're using editor defaults
 		let overrideEditorSetting = this._configurationService.getValue<boolean>(OVERRIDE_EDITOR_THEMING_SETTING);
 		this._editor.hideLineNumbers = (overrideEditorSetting && this.cellModel.cellType === CellTypes.Markdown);
-		this._cellModel.editor = this._editor;
 
 
 		if (this.destroyed) {

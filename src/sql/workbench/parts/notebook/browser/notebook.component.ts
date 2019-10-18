@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nb } from 'azdata';
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
+import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, ViewChildren, QueryList } from '@angular/core';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -25,7 +25,7 @@ import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { CellTypes, CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/parts/notebook/browser/models/modelFactory';
 import * as notebookUtils from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
@@ -55,6 +55,8 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { CodeCellComponent } from 'sql/workbench/parts/notebook/browser/cellViews/codeCell.component';
+import { TextCellComponent } from 'sql/workbench/parts/notebook/browser/cellViews/textCell.component';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -68,6 +70,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	@ViewChild('toolbar', { read: ElementRef }) private toolbar: ElementRef;
 	@ViewChild('container', { read: ElementRef }) private container: ElementRef;
 	@ViewChild('bookNav', { read: ElementRef }) private bookNav: ElementRef;
+
+	@ViewChildren(CodeCellComponent) private codeCells: QueryList<CodeCellComponent>;
+	@ViewChildren(TextCellComponent) private textCells: QueryList<ICellEditorProvider>;
+	// @ViewChildren('codeEditor') private codeEditorCells: QueryList<ICellEditorProvider>;
 
 	private _model: NotebookModel;
 	private _isInErrorState: boolean = false;
@@ -157,6 +163,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	public get cells(): ICellModel[] {
 		return this._model ? this._model.cells : [];
+	}
+
+	public get cellEditors(): ICellEditorProvider[] {
+		let editors: ICellEditorProvider[] = [];
+		if (this.codeCells) {
+			this.codeCells.toArray().forEach(cell => editors.push(...cell.cellEditors));
+		} if (this.textCells) {
+			editors.push(...this.textCells.toArray());
+		}
+		return editors;
 	}
 
 	public get addCodeLabel(): string {

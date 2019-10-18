@@ -16,6 +16,7 @@ import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHos
 import { ICellModel, INotebookModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -143,10 +144,17 @@ export interface INotebookSection {
 	relativeUri: string;
 }
 
+export interface ICellEditorProvider {
+	hasEditor(): boolean;
+	cellGuid(): string;
+	getEditor(): BaseTextEditor;
+}
+
 export interface INotebookEditor {
 	readonly notebookParams: INotebookParams;
 	readonly id: string;
 	readonly cells?: ICellModel[];
+	readonly cellEditors: ICellEditorProvider[];
 	readonly modelReady: Promise<INotebookModel>;
 	readonly model: INotebookModel | null;
 	isDirty(): boolean;

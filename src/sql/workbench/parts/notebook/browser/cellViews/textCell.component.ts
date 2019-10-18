@@ -149,6 +149,18 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 	}
 
+	public getEditor(): any {
+		return undefined;
+	}
+
+	public hasEditor(): boolean {
+		return false;
+	}
+
+	public cellGuid(): string {
+		return this.cellModel.cellGuid;
+	}
+
 	public get isTrusted(): boolean {
 		return this.model.trustedMode;
 	}

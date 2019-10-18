@@ -26,7 +26,7 @@ import { NotebookComponent } from 'sql/workbench/parts/notebook/browser/notebook
 import { getErrorMessage } from 'vs/base/common/errors';
 import { INotebookModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
-import { INotebookController } from 'sql/workbench/parts/notebook/browser/notebookFindWidget';
+import { IFindNotebookController } from 'sql/workbench/parts/notebook/browser/notebookFindWidget';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
@@ -568,7 +568,7 @@ export class NotebookFindNext implements IEditorAction {
 	public readonly label = localize('notebook.findNext', "Find Next String");
 	public readonly alias = '';
 
-	constructor(private notebook: INotebookController) { }
+	constructor(private notebook: IFindNotebookController) { }
 
 	run(): Promise<void> {
 		this.notebook.findNext();
@@ -585,7 +585,7 @@ export class NotebookFindPrevious implements IEditorAction {
 	public readonly label = localize('notebook.findPrevious', "Find Previous String");
 	public readonly alias = '';
 
-	constructor(private notebook: INotebookController) { }
+	constructor(private notebook: IFindNotebookController) { }
 
 	run(): Promise<void> {
 		this.notebook.findPrevious();

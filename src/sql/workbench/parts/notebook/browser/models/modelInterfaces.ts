@@ -583,7 +583,6 @@ export interface ICellModel {
 	stdInVisible: boolean;
 	readonly onLoaded: Event<string>;
 	modelContentChangedEvent: IModelContentChangedEvent;
-	editor: BaseTextEditor;
 }
 
 export interface FutureInternal extends nb.IFuture {

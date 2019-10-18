@@ -48,7 +48,7 @@ export const ACTION_IDS = {
 	FIND_PREVIOUS: 'findPrev'
 };
 
-export interface INotebookController {
+export interface IFindNotebookController {
 	focus(): void;
 	getConfiguration(): any;
 	layoutOverlayWidget(widget: IOverlayWidget): void;
@@ -65,7 +65,7 @@ export interface IConfigurationChangedEvent {
 
 export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSashLayoutProvider {
 	private static ID = 'editor.contrib.findWidget';
-	private _notebookController: INotebookController;
+	private _notebookController: IFindNotebookController;
 	private _state: FindReplaceState;
 	private _contextViewProvider: IContextViewProvider;
 	private _keybindingService: IKeybindingService;
@@ -88,7 +88,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 	private searchTimeoutHandle: NodeJS.Timer;
 
 	constructor(
-		notebookController: INotebookController,
+		notebookController: IFindNotebookController,
 		state: FindReplaceState,
 		contextViewProvider: IContextViewProvider,
 		keybindingService: IKeybindingService,

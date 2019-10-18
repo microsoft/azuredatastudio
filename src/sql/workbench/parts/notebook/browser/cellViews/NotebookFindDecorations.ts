@@ -92,8 +92,8 @@ export class FindDecorations implements IDisposable {
 	}
 
 	public clearDecorations(): void {
-		if (this._currentMatch) {
-			this._currentMatch.cell.editor.getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
+		if (this.checkValidEditor(this._currentMatch)) {
+			this._editor.getCellEditor(this._currentMatch.cell.cellGuid).getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
 				changeAccessor.removeDecoration(this._rangeHighlightDecorationId);
 			});
 		}
@@ -114,8 +114,8 @@ export class FindDecorations implements IDisposable {
 		}
 
 		if (this._highlightedDecorationId !== null || newCurrentDecorationId !== null) {
-			if (nextMatch) {
-				nextMatch.cell.editor.getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
+			if (this.checkValidEditor(nextMatch)) {
+				this._editor.getCellEditor(nextMatch.cell.cellGuid).getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
 					if (this._highlightedDecorationId !== null) {
 						changeAccessor.changeDecorationOptions(this._highlightedDecorationId, FindDecorations._FIND_MATCH_DECORATION);
 						this._highlightedDecorationId = null;
@@ -125,11 +125,13 @@ export class FindDecorations implements IDisposable {
 						changeAccessor.changeDecorationOptions(this._highlightedDecorationId, FindDecorations._CURRENT_FIND_MATCH_DECORATION);
 					}
 					if (this._rangeHighlightDecorationId !== null) {
-						let prevMatch: NotebookRange = this._currentMatch;
-						prevMatch.cell.editor.getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
-							changeAccessor.removeDecoration(this._rangeHighlightDecorationId);
-							this._rangeHighlightDecorationId = null;
-						});
+						if (this._currentMatch && this._currentMatch.cell && this._editor.getCellEditor(this._currentMatch.cell.cellGuid)) {
+							let prevMatch: NotebookRange = this._currentMatch;
+							this._editor.getCellEditor(prevMatch.cell.cellGuid).getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
+								changeAccessor.removeDecoration(this._rangeHighlightDecorationId);
+								this._rangeHighlightDecorationId = null;
+							});
+						}
 						this._currentMatch = nextMatch;
 					}
 					if (newCurrentDecorationId !== null) {
@@ -146,6 +148,10 @@ export class FindDecorations implements IDisposable {
 		}
 
 		return matchPosition;
+	}
+
+	public checkValidEditor(range: NotebookRange): boolean {
+		return range && range.cell && !!(this._editor.getCellEditor(range.cell.cellGuid));
 	}
 
 	public set(findMatches: NotebookFindMatch[], findScope: NotebookRange | null): void {
