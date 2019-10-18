@@ -223,7 +223,8 @@ export const enum ToolStatus {
 	NotInstalled = 'NotInstalled',
 	Installed = 'Installed',
 	Installing = 'Installing',
-	Error = 'Error'
+	Error = 'Error',
+	Failed = 'Failed'
 }
 
 export interface ITool {

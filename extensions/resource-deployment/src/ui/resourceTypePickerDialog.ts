@@ -231,9 +231,9 @@ export class ResourceTypePickerDialog extends DialogBase {
 						this.updateToolsDisplayTableData(t);
 					}));
 					if (tool.isNotInstalled && !tool.autoInstallSupported) {
-						messages.push(localize('deploymentDialog.ToolInformation', "{0}: {1}", tool.displayName, tool.homePage));
+						messages.push(localize('deploymentDialog.ToolInformation', "'{0}' [ {1} ]", tool.displayName, tool.homePage));
 						if (tool.statusDescription !== undefined) {
-							console.warn(localize('deploymentDialog.DetailToolStatusDescription', "Additional status information for tool: {0}({1}). {2}", tool.name, tool.homePage, tool.statusDescription));
+							console.warn(localize('deploymentDialog.DetailToolStatusDescription', "Additional status information for tool: '{0}' [ {1} ]. {2}", tool.name, tool.homePage, tool.statusDescription));
 						}
 					}
 
@@ -318,7 +318,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 					// Update the informational message
 					this._dialogObject.message = {
 						level: azdata.window.MessageLevel.Information,
-						text: localize('deploymentDialog.InstallingTool', "Required tool '{0}'({1}) is being installed now.", this._tools[i].displayName, this._tools[i].homePage)
+						text: localize('deploymentDialog.InstallingTool', "Required tool '{0}' [ {1} ] is being installed now.", this._tools[i].displayName, this._tools[i].homePage)
 					};
 					await this._tools[i].install();
 				}

@@ -71,6 +71,14 @@ export class AzdataTool extends ToolBase {
 		[OsType.darwin, defaultInstallationCommands],
 		[OsType.others, defaultInstallationCommands]
 	]);
+
+	protected get uninstallCommand(): string | undefined {
+		if (this.osType !== OsType.linux) {
+			return defaultUninstallCommand;
+		} else {
+			return super.uninstallCommand;
+		}
+	}
 }
 
 const linuxInstallationCommands = [
@@ -112,3 +120,5 @@ const defaultInstallationCommands = [
 		command: `pip3 install -r https://aka.ms/azdata --quiet --user --log ADS_AzdataPip3InstallLog_${Date.now()}`
 	}
 ];
+
+const defaultUninstallCommand = `pip3 uninstall -r https://aka.ms/azdata -y `;

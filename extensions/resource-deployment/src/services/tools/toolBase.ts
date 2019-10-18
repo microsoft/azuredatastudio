@@ -16,12 +16,14 @@ const toolStatusNotInstalled: string = localize('deploymentDialog.ToolStatus.Not
 const toolStatusInstalled: string = localize('deploymentDialog.ToolStatus.Installed', "Installed");
 const toolStatusInstalling: string = localize('deploymentDialog.ToolStatus.NotInstalling', "Installing ...");
 const toolStatusError: string = localize('deploymentDialog.ToolStatus.Error', "Error");
+const toolStatusFailed: string = localize('deploymentDialog.ToolStatus.Failed', "Failed");
 
 const toolStatusLocalized: Map<ToolStatus, string> = new Map<ToolStatus, string>([
 	[ToolStatus.Error, toolStatusError],
 	[ToolStatus.Installed, toolStatusInstalled],
 	[ToolStatus.Installing, toolStatusInstalling],
-	[ToolStatus.NotInstalled, toolStatusNotInstalled]
+	[ToolStatus.NotInstalled, toolStatusNotInstalled],
+	[ToolStatus.Failed, toolStatusFailed]
 ]);
 
 export abstract class ToolBase implements ITool {
@@ -39,6 +41,7 @@ export abstract class ToolBase implements ITool {
 
 	protected abstract getVersionFromOutput(output: string): SemVer | undefined;
 	protected readonly _onDidUpdateData = new vscode.EventEmitter<ITool>();
+	protected readonly uninstallCommand?: string;
 
 
 	protected abstract readonly versionCommand: Command;
@@ -154,14 +157,24 @@ export abstract class ToolBase implements ITool {
 		try {
 			this.status = ToolStatus.Installing;
 			await this.installCore();
-			this.status = ToolStatus.Installed;
-			await this.checkAndUpdateVersion();
 			await this.addInstallationSearchPathsToSystemPath();
+			this.status = await this.updateVersionAndGetStatus();
 		} catch (error) {
 			const errorMessage = getErrorMessage(error);
-			this._statusDescription = localize('toolBase.InstallError', "Error installing tool '{0}'({1}):.{2}Error: {3}{2}See output channel '{4}' for more details", this.displayName, this.homePage, EOL, errorMessage, this.outputChannelName);
+			this._statusDescription = localize('toolBase.InstallError', "Error installing tool '{0}' [ {1} ].{2}Error: {3}{2}See output channel '{4}' for more details", this.homePage, this.displayName, EOL, errorMessage, this.outputChannelName);
 			this.status = ToolStatus.Error;
 			throw error;
+		}
+		// Since we just completed installation, the status should be ToolStatus.Installed
+		// but if it is ToolStatus.NotInstalled then it means that installation failed with 0 exit code.
+		if (this.status === ToolStatus.NotInstalled) {
+			this._statusDescription = localize('toolBase.InstallFailed', "Installation commands completed but version of tool '{0}' could not be detected so our installation attempt has failed. Detection Error: {1}{2}Cleaning up previous installations would help.", this.displayName, this._statusDescription, EOL);
+			if (this.uninstallCommand) {
+				this._statusDescription += localize('toolBase.ManualUninstallCommand', " You can try this command:{1}   >{0}", this.uninstallCommand, EOL);
+			}
+			this._statusDescription += localize('toolBase.SeeOutputChannel', "{0}See output channel '{1}' for more details", EOL, this.outputChannelName);
+			this.status = ToolStatus.Failed;
+			throw new Error(this._statusDescription);
 		}
 	}
 
@@ -202,10 +215,10 @@ export abstract class ToolBase implements ITool {
 	public async loadInformation(): Promise<void> {
 		if (this.status === ToolStatus.NotInstalled) {
 			await this.addInstallationSearchPathsToSystemPath();
-			await this.checkAndUpdateVersion();
+			this.status = await this.updateVersionAndGetStatus();
 		}
 	}
-	private async checkAndUpdateVersion(): Promise<void> {
+	private async updateVersionAndGetStatus(): Promise<ToolStatus> {
 		const commandOutput = await this._platformService.runCommand(
 			this.versionCommand.command,
 			{
@@ -217,11 +230,11 @@ export abstract class ToolBase implements ITool {
 		);
 		this.version = this.getVersionFromOutput(commandOutput);
 		if (this.version) {
-			this.status = ToolStatus.Installed;
+			return ToolStatus.Installed;
 		}
 		else {
-			this.status = ToolStatus.NotInstalled;
-			this._statusDescription = localize('deployCluster.GetToolVersionError', "Error retrieving version information.{0}Invalid output received, get version command output: {1} ", EOL, commandOutput);
+			this._statusDescription = localize('deployCluster.GetToolVersionError', "Error retrieving version information.{0}Invalid output received, get version command output: '{1}' ", EOL, commandOutput);
+			return ToolStatus.NotInstalled;
 		}
 	}
 
