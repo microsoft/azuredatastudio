@@ -300,13 +300,15 @@ export class ResourceTypePickerDialog extends DialogBase {
 				return rowData;
 			}
 		});
-		this.enableContainers(!tool.isInstalling); // if installing the disableContainers else enable them
+		this.enableUiControlsWhenNotInstalling(!tool.isInstalling); // if installing the disableContainers else enable them
 	}
 
-	private enableContainers(enabled: boolean): void {
+	private enableUiControlsWhenNotInstalling(enabled: boolean): void {
 		this._cardsContainer.enabled = enabled;
 		this._agreementContainer.enabled = enabled;
 		this._optionsContainer.enabled = enabled;
+		this._dialogObject.cancelButton.enabled = enabled;
+		// select and install tools button are controlled separately
 	}
 
 	private async installTools(): Promise<void> {

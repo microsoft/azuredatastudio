@@ -157,11 +157,11 @@ export class PlatformService implements IPlatformService {
 				return await this.runStreamedCommand(command, this._outputChannel, options);
 			}
 		} catch (error) {
-			this._outputChannel.append(`\t>>> ${command}   ... ${localize('platformService.RunCommand.ErroredOut', "errored out:")} ${getErrorMessage(error)}`); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
+			this._outputChannel.append(localize('platformService.RunCommand.ErroredOut', "\t>>> {0}   ... errored out: {1}", command, getErrorMessage(error))); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
 			if (!(options && options.ignoreError)) {
 				throw error;
 			} else {
-				this._outputChannel.append(`\t>>> ${localize('platformService.RunCommand.IgnoringError', "Ignoring error in execution and continuing tool deployment")}`);
+				this._outputChannel.append(localize('platformService.RunCommand.IgnoringError', "\t>>> Ignoring error in execution and continuing tool deployment"));
 				return '';
 			}
 		}
@@ -205,11 +205,11 @@ export class PlatformService implements IPlatformService {
 
 		try {
 			const { stdout, stderr } = await this.sudoExec(command, sudoOptions);
-			this.outputDataChunk(stdout, outputChannel, `    ${localize('platformService.RunCommand.stdout', "stdout:")} `);
-			this.outputDataChunk(stderr, outputChannel, `    ${localize('platformService.RunCommand.stderr', "stderr:")} `);
+			this.outputDataChunk(stdout, outputChannel, localize('platformService.RunCommand.stdout', "    stdout: "));
+			this.outputDataChunk(stderr, outputChannel, localize('platformService.RunCommand.stderr', "    stderr: "));
 			return stdout;
 		} catch (error) {
-			this.outputDataChunk(error, outputChannel, `    ${localize('platformService.RunCommand.stderr', "stderr:")} `);
+			this.outputDataChunk(error, outputChannel, localize('platformService.RunCommand.stderr', "    stderr: "));
 			throw error;
 		}
 	}
@@ -232,16 +232,16 @@ export class PlatformService implements IPlatformService {
 		// Add listeners to print stdout and stderr and exit code
 		child.on('exit', (code: number | null, signal: string | null) => {
 			if (code !== null) {
-				outputChannel.appendLine(`    >>> ${command}    ... ${localize('platformService.RunStreamedCommand.ExitedWithCode', "exited with code:")} ${code}`);
+				outputChannel.appendLine(localize('platformService.RunStreamedCommand.ExitedWithCode', "    >>> ${0}    ... exited with code: ${1}", command, code));
 			} else {
-				outputChannel.appendLine(`    >>> ${command}   ... ${localize('platformService.RunStreamedCommand.ExitedWithSignal', "exited with signal:")} ${signal}`);
+				outputChannel.appendLine(localize('platformService.RunStreamedCommand.ExitedWithSignal', "    >>> ${0}   ... exited with signal: ${1}", command, signal));
 			}
 		});
 		child.stdout.on('data', (data: string | Buffer) => {
 			stdoutData.push(data.toString());
-			this.outputDataChunk(data, outputChannel, `    ${localize('platformService.RunCommand.stdout', "stdout:")} `);
+			this.outputDataChunk(data, outputChannel, localize('platformService.RunCommand.stdout', "    stdout: "));
 		});
-		child.stderr.on('data', (data: string | Buffer) => { this.outputDataChunk(data, outputChannel, `    ${localize('platformService.RunCommand.stderr', "stderr:")} `); });
+		child.stderr.on('data', (data: string | Buffer) => { this.outputDataChunk(data, outputChannel, localize('platformService.RunCommand.stderr', "    stderr: ")); });
 
 		await child;
 		return stdoutData.join('');

@@ -137,8 +137,8 @@ export abstract class ToolBase implements ITool {
 		let retValue = installLocation && installLocation[1];
 		if (retValue === undefined || retValue === null) {
 			this.logToOutputChannel(`   >${command}`); //command is localized by caller
-			this.logToOutputChannel(`   ${localize('toolBase.getPip3InstallationLocation.LocationNotFound', "Could not find 'Location' in the output:")}`);
-			this.logToOutputChannel(pip3ShowOutput, `   ${localize('toolBase.getPip3InstallationLocation.Output', "output:")}`);
+			this.logToOutputChannel(localize('toolBase.getPip3InstallationLocation.LocationNotFound', "   Could not find 'Location' in the output:"));
+			this.logToOutputChannel(pip3ShowOutput, localize('toolBase.getPip3InstallationLocation.Output', "   output:"));
 			return '';
 		} else {
 			return retValue;
@@ -170,7 +170,7 @@ export abstract class ToolBase implements ITool {
 		if (this.status === ToolStatus.NotInstalled) {
 			this._statusDescription = localize('toolBase.InstallFailed', "Installation commands completed but version of tool '{0}' could not be detected so our installation attempt has failed. Detection Error: {1}{2}Cleaning up previous installations would help.", this.displayName, this._statusDescription, EOL);
 			if (this.uninstallCommand) {
-				this._statusDescription += localize('toolBase.ManualUninstallCommand', " You can try this command:{1}   >{0}", this.uninstallCommand, EOL);
+				this._statusDescription += localize('toolBase.ManualUninstallCommand', " A possibly way to uninstall is using this command:{0}   >{1}", EOL, this.uninstallCommand);
 			}
 			this._statusDescription += localize('toolBase.SeeOutputChannel', "{0}See output channel '{1}' for more details", EOL, this.outputChannelName);
 			this.status = ToolStatus.Failed;
@@ -199,7 +199,7 @@ export abstract class ToolBase implements ITool {
 	protected async addInstallationSearchPathsToSystemPath(): Promise<void> {
 		const installationPath = await this.getInstallationPath();
 		const searchPaths = [installationPath, ...this.installationSearchPaths].filter(path => !!path);
-		this.logToOutputChannel(`${localize('toolBase.addInstallationSearchPathsToSystemPath.SearchPaths', "Search Paths for tool")} '${this.displayName}': ${JSON.stringify(searchPaths, undefined, '\t')}`); //this.displayName is localized and searchPaths are OS filesystem paths.
+		this.logToOutputChannel(localize('toolBase.addInstallationSearchPathsToSystemPath.SearchPaths', "Search Paths for tool '{0}': {1}", this.displayName, JSON.stringify(searchPaths, undefined, '\t'))); //this.displayName is localized and searchPaths are OS filesystem paths.
 		searchPaths.forEach(installationSearchPath => {
 			if (process.env.PATH) {
 				if (!`${delimiter}${process.env.PATH}${delimiter}`.includes(`${delimiter}${installationSearchPath}${delimiter}`)) {
