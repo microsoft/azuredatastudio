@@ -12,6 +12,7 @@ import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/co
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { ConnectionShape } from 'sql/platform/connection/common/connectionShape';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
@@ -38,7 +39,7 @@ interface ConnectionStoreShape {
 export class ConnectionStore {
 	private groupIdMap = new ReverseLookUpMap<string, string>();
 	private connectionConfig = new ConnectionConfig(this.configurationService, this.capabilitiesService);
-	private mru: Array<IConnectionProfile>;
+	private mru: Array<ConnectionShape>;
 
 	constructor(
 		@IStorageService private readonly storageService: IStorageService,
@@ -59,13 +60,13 @@ export class ConnectionStore {
 	/**
 	 * Creates a formatted credential usable for uniquely identifying a SQL Connection.
 	 * This string can be decoded but is not optimized for this.
-	 * @param connectionProfile connection profile - require
+	 * @param shape connection shape - require
 	 * @param itemType type of the item (MRU or Profile) - optional
 	 * @returns formatted string with server, DB and username
 	 */
-	private formatCredentialId(connectionProfile: IConnectionProfile, itemType?: string): string {
-		const connectionProfileInstance: ConnectionProfile = ConnectionProfile.fromIConnectionProfile(
-			this.capabilitiesService, connectionProfile);
+	private formatCredentialId(shape: ConnectionShape, itemType?: string): string {
+		const connectionProfileInstance = ConnectionProfile.fromIConnectionProfile(
+			this.capabilitiesService, shape);
 		const cred: string[] = [CRED_PREFIX];
 		if (!itemType) {
 			itemType = CRED_PROFILE_USER;
@@ -276,7 +277,7 @@ export class ConnectionStore {
 		this.mru = configToSave;
 	}
 
-	private saveProfilePasswordIfNeeded(profile: IConnectionProfile): Promise<boolean> {
+	private saveProfilePasswordIfNeeded(profile: ConnectionProfile): Promise<boolean> {
 		if (!profile.savePassword) {
 			return Promise.resolve(true);
 		}
