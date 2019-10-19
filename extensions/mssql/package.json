@@ -77,8 +77,8 @@
         }
       },
       {
-        "command": "mssqlCluster.task.openClusterStatusNotebook",
-        "title": "%title.openClusterStatusNotebook%",
+        "command": "mssqlCluster.task.openClusterDashboard",
+        "title": "%title.openClusterDashboard%",
         "icon": {
           "dark": "resources/dark/cluster_status_inverse.svg",
           "light": "resources/light/cluster_status.svg"
@@ -251,7 +251,7 @@
           "when": "false"
         },
         {
-          "command": "mssqlCluster.task.openClusterStatusNotebook",
+          "command": "mssqlCluster.task.openClusterDashboard",
           "when": "false"
         }
       ],
@@ -417,7 +417,7 @@
                   "mssqlCluster.task.newNotebook",
                   "mssqlCluster.task.openNotebook",
                   "mssqlCluster.livy.task.submitSparkJob",
-                  "mssqlCluster.task.openClusterStatusNotebook"
+                  "mssqlCluster.task.openClusterDashboard"
                 ]
               }
             },
