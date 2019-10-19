@@ -43,7 +43,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 					subscriptions.push(...await subscriptionService.getSubscriptions(accountNode.account, new TokenCredentials(token, tokenType)));
 				}
 			} catch (error) {
-				throw new AzureResourceCredentialError(localize('azure.resource.selectsubscriptions.credentialError', 'Failed to get credential for account {0}. Please refresh the account.', this.account.key.accountId), error);
+				throw new AzureResourceCredentialError(localize('azure.resource.selectsubscriptions.credentialError', "Failed to get credential for account {0}. Please refresh the account.", this.account.key.accountId), error);
 			}
 		}
 

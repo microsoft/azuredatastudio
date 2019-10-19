@@ -152,7 +152,7 @@ export class InstalledPackagesTab {
 		this.uninstallPackageButton.updateProperties({ enabled: false });
 		let doUninstall = await this.prompter.promptSingle<boolean>(<IQuestion>{
 			type: QuestionTypes.confirm,
-			message: localize('managePackages.confirmUninstall', 'Are you sure you want to uninstall the specified packages?'),
+			message: localize('managePackages.confirmUninstall', "Are you sure you want to uninstall the specified packages?"),
 			default: false
 		});
 

@@ -69,7 +69,7 @@ class DoubleQuotedStringArgRuleWalker extends Lint.RuleWalker {
 
 			if (!doubleQuotedArg) {
 				const fix = [
-					Lint.Replacement.replaceFromTo(arg.getStart(), arg.getWidth(), `"${arg.getText().slice(1, arg.getWidth() - 2)}"`),
+					Lint.Replacement.replaceFromTo(arg.getStart(), arg.getEnd(), `"${arg.getText().slice(1, arg.getWidth() - 1)}"`),
 				];
 				this.addFailure(this.createFailure(
 					arg.getStart(), arg.getWidth(),

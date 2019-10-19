@@ -28,7 +28,7 @@ export class AddControllerNode extends TreeNode {
 	public getTreeItem(): vscode.TreeItem {
 		let item = new vscode.TreeItem(this.label, vscode.TreeItemCollapsibleState.None);
 		item.command = {
-			title: localize('textConnectToController', 'Connect to Controller'),
+			title: localize('textConnectToController', "Connect to Controller"),
 			command: 'bigDataClusters.command.addController',
 			arguments: [this]
 		};

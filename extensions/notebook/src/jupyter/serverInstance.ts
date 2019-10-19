@@ -166,7 +166,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 			}
 		} catch (error) {
 			// For now, we don't care as this is non-critical
-			this.notify(this.options.install, localize('serverStopError', 'Error stopping Notebook Server: {0}', utils.getErrorMessage(error)));
+			this.notify(this.options.install, localize('serverStopError', "Error stopping Notebook Server: {0}", utils.getErrorMessage(error)));
 		} finally {
 			this._isStarted = false;
 			this.utils.ensureProcessEnded(this.childProcess);
@@ -257,7 +257,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 			let onErrorBeforeStartup = (err: any) => reject(err);
 			let onExitBeforeStart = (err: any) => {
 				if (!this.isStarted) {
-					reject(localize('notebookStartProcessExitPremature', 'Notebook process exited prematurely with error: {0}, StdErr Output: {1}', err, stdErrLog));
+					reject(localize('notebookStartProcessExitPremature', "Notebook process exited prematurely with error: {0}, StdErr Output: {1}", err, stdErrLog));
 				}
 			};
 			this.childProcess.on('error', onErrorBeforeStartup);
@@ -306,7 +306,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 	private handleConnectionError(error: Error): void {
 		let action = this.errorHandler.handleError(error);
 		if (action === ErrorAction.Shutdown) {
-			this.notify(this.options.install, localize('jupyterError', 'Error sent from Jupyter: {0}', utils.getErrorMessage(error)));
+			this.notify(this.options.install, localize('jupyterError', "Error sent from Jupyter: {0}", utils.getErrorMessage(error)));
 			this.stop();
 		}
 	}
@@ -346,14 +346,14 @@ export class PerNotebookServerInstance implements IServerInstance {
 	}
 
 	private notifyStarted(install: JupyterServerInstallation, jupyterUri: string): void {
-		install.outputChannel.appendLine(localize('jupyterOutputMsgStartSuccessful', '... Jupyter is running at {0}', jupyterUri));
+		install.outputChannel.appendLine(localize('jupyterOutputMsgStartSuccessful', "... Jupyter is running at {0}", jupyterUri));
 	}
 	private notify(install: JupyterServerInstallation, message: string): void {
 		install.outputChannel.appendLine(message);
 	}
 
 	private notifyStarting(install: JupyterServerInstallation, startCommand: string): void {
-		install.outputChannel.appendLine(localize('jupyterOutputMsgStart', '... Starting Notebook server'));
+		install.outputChannel.appendLine(localize('jupyterOutputMsgStart', "... Starting Notebook server"));
 		install.outputChannel.appendLine(`    > ${startCommand}`);
 	}
 

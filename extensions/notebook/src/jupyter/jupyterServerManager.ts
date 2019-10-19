@@ -71,7 +71,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 	public dispose(): void {
 		this.stopServer().catch(err => {
 			let msg = utils.getErrorMessage(err);
-			this.apiWrapper.showErrorMessage(localize('shutdownError', 'Shutdown of Notebook server failed: {0}', msg));
+			this.apiWrapper.showErrorMessage(localize('shutdownError', "Shutdown of Notebook server failed: {0}", msg));
 		});
 	}
 

@@ -128,5 +128,5 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 		return this._serverGroupNodes;
 	}
 
-	public static readonly noResourcesLabel = localize('cms.resource.cmsResourceTreeNode.noResourcesLabel', 'No resources found');
+	public static readonly noResourcesLabel = localize('cms.resource.cmsResourceTreeNode.noResourcesLabel', "No resources found");
 }

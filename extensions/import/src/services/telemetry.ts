@@ -33,9 +33,9 @@ export class LanguageClientErrorHandler {
 	showOnErrorPrompt(): void {
 		// TODO add telemetry
 		// Telemetry.sendTelemetryEvent('SqlToolsServiceCrash');
-		let crashButtonText = localize('import.serviceCrashButton', 'Give Feedback');
+		let crashButtonText = localize('import.serviceCrashButton', "Give Feedback");
 		vscode.window.showErrorMessage(
-			localize('serviceCrashMessage', 'service component could not start'),
+			localize('serviceCrashMessage', "service component could not start"),
 			crashButtonText
 		).then(action => {
 			if (action && action === crashButtonText) {
