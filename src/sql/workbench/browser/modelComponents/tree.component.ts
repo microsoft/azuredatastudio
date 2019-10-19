@@ -24,8 +24,8 @@ import { DefaultFilter, DefaultAccessibilityProvider, DefaultController } from '
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { TreeViewDataProvider } from 'sql/workbench/browser/modelComponents/treeViewDataProvider';
-import { getContentHeight, getContentWidth, addDisposableListener, EventType } from 'vs/base/browser/dom';
-import { StandardKeyboardEvent, IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { getContentHeight, getContentWidth } from 'vs/base/browser/dom';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 
 class Root implements ITreeComponentItem {
@@ -170,9 +170,5 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 
 	public set withCheckbox(newValue: boolean) {
 		this.setPropertyFromUI<azdata.TreeProperties, boolean>((properties, value) => { properties.withCheckbox = value; }, newValue);
-	}
-
-	private onkeydown(domNode: HTMLElement, listener: (e: IKeyboardEvent) => void): void {
-		this._register(addDisposableListener(domNode, EventType.KEY_DOWN, (e: KeyboardEvent) => listener(new StandardKeyboardEvent(e))));
 	}
 }
