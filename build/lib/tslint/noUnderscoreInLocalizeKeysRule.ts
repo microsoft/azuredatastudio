@@ -33,7 +33,7 @@ class NoLocalizeKeysWithUnderscore extends Lint.RuleWalker {
 	}
 
 	private checkCallExpression(node: ts.CallExpression): void {
-		// If this isn't one of the localize functions then continue one
+		// If this isn't one of the localize functions then continue on
 		const functionName = node.expression.getText();
 		if (functionName && !signatures.some(s => s === functionName)) {
 			return;
