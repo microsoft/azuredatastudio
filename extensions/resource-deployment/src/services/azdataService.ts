@@ -66,9 +66,7 @@ export class AzdataService implements IAzdataService {
 	}
 
 	private async ensureWorkingDirectoryExists(): Promise<void> {
-		if (! await this.platformService.fileExists(this.platformService.storagePath())) {
-			await this.platformService.makeDirectory(this.platformService.storagePath());
-		}
+		await this.platformService.ensureDirectoryExists(this.platformService.storagePath());
 	}
 
 	private async getJsonObjectFromFile(path: string): Promise<any> {

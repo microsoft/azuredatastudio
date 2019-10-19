@@ -18,7 +18,7 @@ suite('Tools Service Tests', function (): void {
 		const toolsService = new ToolsService(mockPlatformService.object);
 
 		const tools: { name: string; type: ToolType }[] = [
-			{ name: 'azcli', type: ToolType.AzCli },
+			{ name: 'azure-cli', type: ToolType.AzCli },
 			{ name: 'docker', type: ToolType.Docker },
 			{ name: 'kubectl', type: ToolType.KubeCtl },
 			{ name: 'azdata', type: ToolType.Azdata }];
