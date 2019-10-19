@@ -23,6 +23,19 @@ const commit = util.getVersion(root);
 const plumber = require('gulp-plumber');
 const ext = require('./lib/extensions');
 
+// {{SQL CARBON EDIT}}
+const languages =  [{ folderName: 'chs/extensions', id: 'zh-hans' },
+					{ folderName: 'cht/extensions', id: 'zh-hant' },
+					{ folderName: 'deu/extensions', id: 'de' },
+					{ folderName: 'esn/extensions', id: 'es' },
+					{ folderName: 'fra/extensions', id: 'fr' },
+					{ folderName: 'ita/extensions', id: 'it' },
+					{ folderName: 'jpn/extensions', id: 'ja' },
+					{ folderName: 'kor/extensions', id: 'ko' },
+					{ folderName: 'ptb/extensions', id: 'pt-br' },
+					{ folderName: 'rus/extensions', id: 'ru' },];
+// {{SQL CARBON EDIT}}
+
 const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
 
 const compilations = glob.sync('**/tsconfig.json', {
@@ -82,6 +95,7 @@ const tasks = compilations.map(function (tsconfigFile) {
 				.pipe(util.loadSourcemaps())
 				.pipe(compilation())
 				.pipe(build ? nlsDev.rewriteLocalizeCalls() : es.through())
+				.pipe(build ? nlsDev.createAdditionalLanguageFiles(languages, 'i18n', `${name}/out`) : es.through()) 	// {{SQL CARBON EDIT}}
 				.pipe(build ? util.stripSourceMappingURL() : es.through())
 				.pipe(sourcemaps.write('.', {
 					sourceMappingURL: !build ? null : f => `${baseUrl}/${f.relative}.map`,
@@ -108,7 +122,7 @@ const tasks = compilations.map(function (tsconfigFile) {
 	const cleanTask = task.define(`clean-extension-${name}`, util.rimraf(out));
 
 	const compileTask = task.define(`compile-extension:${name}`, task.series(cleanTask, () => {
-		const pipeline = createPipeline(false, true);
+		const pipeline = createPipeline(true, true); 	// {{SQL CARBON EDIT}}
 		const input = pipeline.tsProjectSrc();
 
 		return input
