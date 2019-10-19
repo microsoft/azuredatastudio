@@ -61,7 +61,8 @@ export class AzdataTool extends ToolBase {
 			case OsType.linux:
 				return installationRoot;
 			default:
-				return path.join(await this.getPip3InstallLocation('azdata-cli'), '..', 'Scripts');
+				const azdataCliInstallLocation = await this.getPip3InstallLocation('azdata-cli');
+				return azdataCliInstallLocation && path.join(azdataCliInstallLocation, '..', 'Scripts');
 		}
 	}
 
@@ -116,8 +117,12 @@ const linuxInstallationCommands = [
 
 const defaultInstallationCommands = [
 	{
+		comment: localize('resourceDeployment.Azdata.InstallUpdatePythonRequestsPackage', "installing/updating to latest version of requests python package azdata ..."),
+		command: `pip3 install -U requests`
+	},
+	{
 		comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata ..."),
-		command: `pip3 install -r https://aka.ms/azdata --quiet --user --log ADS_AzdataPip3InstallLog_${Date.now()}`
+		command: `pip3 install -r https://aka.ms/azdata --quiet --user`
 	}
 ];
 

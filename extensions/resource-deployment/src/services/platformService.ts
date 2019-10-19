@@ -121,7 +121,7 @@ export class PlatformService implements IPlatformService {
 	 * @param directory - the path to ensure
 	 */
 	async ensureDirectoryExists(directory: string): Promise<void> {
-		if (await !this.fileExists(directory)) {
+		if (!await this.fileExists(directory)) {
 			await this.makeDirectory(directory);
 		}
 	}

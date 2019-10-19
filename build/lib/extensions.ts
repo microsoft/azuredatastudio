@@ -230,13 +230,15 @@ const sqlBuiltInExtensions = [
 	// the extension will be excluded from SQLOps package and will have separate vsix packages
 	'admin-tool-ext-win',
 	'agent',
+	'big-data-cluster',
 	'import',
 	'profiler',
 	'admin-pack',
 	'dacpac',
 	'schema-compare',
 	'cms',
-	'query-history'
+	'query-history',
+	'resource-deployment'
 ];
 
 interface IBuiltInExtension {

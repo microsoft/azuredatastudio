@@ -44,10 +44,10 @@ export class AzCliTool extends ToolBase {
 
 	protected async getInstallationPath(): Promise<string | undefined> {
 		switch (this.osType) {
-			case OsType.linux:
-				return defaultInstallationRoot;
-			default:
+			case OsType.win32:
 				return win32InstallationRoot;
+			default:
+				return defaultInstallationRoot;
 		}
 	}
 

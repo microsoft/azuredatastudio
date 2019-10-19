@@ -161,7 +161,7 @@ export abstract class ToolBase implements ITool {
 			this.status = await this.updateVersionAndGetStatus();
 		} catch (error) {
 			const errorMessage = getErrorMessage(error);
-			this._statusDescription = localize('toolBase.InstallError', "Error installing tool '{0}' [ {1} ].{2}Error: {3}{2}See output channel '{4}' for more details", this.homePage, this.displayName, EOL, errorMessage, this.outputChannelName);
+			this._statusDescription = localize('toolBase.InstallError', "Error installing tool '{0}' [ {1} ].{2}Error: {3}{2}See output channel '{4}' for more details", this.displayName, this.homePage, EOL, errorMessage, this.outputChannelName);
 			this.status = ToolStatus.Error;
 			throw error;
 		}
