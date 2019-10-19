@@ -378,6 +378,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private doneDeferred = new Deferred<nb.IShellMessage>();
 	private configuredMaxRows: number = MAX_ROWS;
 	private _outputAddedPromises: Promise<void>[] = [];
+	private _querySubsetResultMap: Map<number, QueryExecuteSubsetResult> = new Map<number, QueryExecuteSubsetResult>();
 	constructor(
 		private _queryRunner: QueryRunner,
 		private _executionCount: number | undefined,
@@ -437,6 +438,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			this.doneHandler.handle(msg);
 		}
 		this.doneDeferred.resolve(msg);
+		this._querySubsetResultMap.clear();
 	}
 
 	sendInputReply(content: nb.IInputReply): void {
@@ -475,12 +477,20 @@ export class SQLFuture extends Disposable implements FutureInternal {
 
 	private async processResultSets(batch: BatchSummary): Promise<void> {
 		try {
+			let queryRowsPromises: Promise<void>[] = [];
 			for (let resultSet of batch.resultSetSummaries) {
 				let rowCount = resultSet.rowCount > this.configuredMaxRows ? this.configuredMaxRows : resultSet.rowCount;
 				if (rowCount === this.configuredMaxRows) {
 					this.handleMessage(localize('sqlMaxRowsDisplayed', "Displaying Top {0} rows.", rowCount));
 				}
-				await this.sendResultSetAsIOPub(rowCount, resultSet);
+				queryRowsPromises.push(this.getAllQueryRows(rowCount, resultSet));
+			}
+			// We want to display table in the same order
+			let i = 0;
+			for (let resultSet of batch.resultSetSummaries) {
+				await queryRowsPromises[i];
+				this.sendResultSetAsIOPub(resultSet);
+				i++;
 			}
 		} catch (err) {
 			// TODO should we output this somewhere else?
@@ -488,13 +498,31 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		}
 	}
 
-	private async sendResultSetAsIOPub(rowCount: number, resultSet: ResultSetSummary): Promise<void> {
-		let subsetResult: QueryExecuteSubsetResult;
+	private async getAllQueryRows(rowCount: number, resultSet: ResultSetSummary): Promise<void> {
+		let deferred: Deferred<void> = new Deferred<void>();
 		if (rowCount > 0) {
-			subsetResult = await this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id);
+			this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id).then((result) => {
+				this._querySubsetResultMap.set(resultSet.id, result);
+				deferred.resolve();
+			}, (err) => {
+				this._querySubsetResultMap.set(resultSet.id, { message: '', resultSubset: { rowCount: 0, rows: [] } });
+				deferred.reject(err);
+			});
 		} else {
-			subsetResult = { message: '', resultSubset: { rowCount: 0, rows: [] } };
+			this._querySubsetResultMap.set(resultSet.id, { message: '', resultSubset: { rowCount: 0, rows: [] } });
+			deferred.resolve();
 		}
+		return deferred;
+	}
+
+	private sendResultSetAsIOPub(resultSet: ResultSetSummary): void {
+		if (this._querySubsetResultMap && this._querySubsetResultMap.get(resultSet.id)) {
+			let subsetResult = this._querySubsetResultMap.get(resultSet.id);
+			this.sendIOPubMessage(subsetResult, resultSet);
+		}
+	}
+
+	private sendIOPubMessage(subsetResult: QueryExecuteSubsetResult, resultSet: ResultSetSummary): void {
 		let msg: nb.IIOPubMessage = {
 			channel: 'iopub',
 			type: 'iopub',
@@ -515,6 +543,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			parent_header: undefined
 		};
 		this.ioHandler.handle(msg);
+		this._querySubsetResultMap.delete(resultSet.id);
 	}
 
 	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {

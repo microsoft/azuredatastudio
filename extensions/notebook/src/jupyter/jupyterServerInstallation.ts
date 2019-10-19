@@ -32,9 +32,8 @@ const msgTaskName = localize('msgTaskName', "Installing Notebook dependencies");
 const msgInstallPkgStart = localize('msgInstallPkgStart', "Installing Notebook dependencies, see Tasks view for more information");
 const msgInstallPkgFinish = localize('msgInstallPkgFinish', "Notebook dependencies installation is complete");
 const msgPythonRunningError = localize('msgPythonRunningError', "Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.");
-const msgPendingInstallError = localize('msgPendingInstallError', "Another Python installation is currently in progress.");
 const msgSkipPythonInstall = localize('msgSkipPythonInstall', "Python already exists at the specific location. Skipping install.");
-const msgSkippedPackageUpgrade = localize('msgSkippedPackageUpgrade', "Skipping notebook package upgrade since another Python install is currently in progress.");
+const msgWaitingForInstall = localize('msgWaitingForInstall', "Another Python installation is currently in progress. Waiting for it to complete.");
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 
@@ -53,6 +52,7 @@ export class JupyterServerInstallation {
 	private _usingConda: boolean;
 
 	private _installInProgress: boolean;
+	private _installCompletion: Deferred<void>;
 
 	public static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
 
@@ -328,9 +328,12 @@ export class JupyterServerInstallation {
 		}
 
 		if (this._installInProgress) {
-			return Promise.reject(msgPendingInstallError);
+			this.apiWrapper.showInfoMessage(msgWaitingForInstall);
+			return this._installCompletion.promise;
 		}
+
 		this._installInProgress = true;
+		this._installCompletion = new Deferred<void>();
 
 		if (installSettings) {
 			this._pythonInstallationPath = installSettings.installPath;
@@ -344,7 +347,7 @@ export class JupyterServerInstallation {
 			await notebookConfig.update(constants.existingPythonConfigKey, this._usingExistingPython, ConfigurationTarget.Global);
 			await this.configurePackagePaths();
 		};
-		let installReady = new Deferred<void>();
+
 		if (!(await utils.exists(this._pythonExecutable)) || forceInstall || this._usingExistingPython) {
 			this.apiWrapper.startBackgroundOperation({
 				displayName: msgTaskName,
@@ -354,13 +357,13 @@ export class JupyterServerInstallation {
 					this.installDependencies(op, forceInstall)
 						.then(async () => {
 							await updateConfig();
-							installReady.resolve();
+							this._installCompletion.resolve();
 							this._installInProgress = false;
 						})
 						.catch(err => {
 							let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
 							op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
-							installReady.reject(errorMsg);
+							this._installCompletion.reject(errorMsg);
 							this._installInProgress = false;
 						});
 				}
@@ -369,11 +372,11 @@ export class JupyterServerInstallation {
 			// Python executable already exists, but the path setting wasn't defined,
 			// so update it here
 			await updateConfig();
-			installReady.resolve();
+			this._installCompletion.resolve();
 			this._installInProgress = false;
 			this.apiWrapper.showInfoMessage(msgSkipPythonInstall);
 		}
-		return installReady.promise;
+		return this._installCompletion.promise;
 	}
 
 	/**
@@ -391,16 +394,23 @@ export class JupyterServerInstallation {
 	 */
 	public async promptForPackageUpgrade(): Promise<void> {
 		if (this._installInProgress) {
-			this.apiWrapper.showInfoMessage(msgSkippedPackageUpgrade);
-			return;
+			this.apiWrapper.showInfoMessage(msgWaitingForInstall);
+			return this._installCompletion.promise;
 		}
 
 		this._installInProgress = true;
-		try {
-			await this.upgradePythonPackages(true, false);
-		} finally {
-			this._installInProgress = false;
-		}
+		this._installCompletion = new Deferred<void>();
+		this.upgradePythonPackages(true, false)
+			.then(() => {
+				this._installCompletion.resolve();
+				this._installInProgress = false;
+			})
+			.catch(err => {
+				let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
+				this._installCompletion.reject(errorMsg);
+				this._installInProgress = false;
+			});
+		return this._installCompletion.promise;
 	}
 
 	private async upgradePythonPackages(promptForUpgrade: boolean, forceInstall: boolean): Promise<void> {
