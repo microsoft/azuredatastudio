@@ -69,7 +69,7 @@ ExtensionsRegistry.registerExtensionPoint<IAccountContrib | IAccountContrib[]>({
 				const light = resources.joinPath(extension.description.extensionLocation, icon.light);
 				const dark = resources.joinPath(extension.description.extensionLocation, icon.dark);
 				createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(light)}`);
-				createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(dark)}`);
+				createCSSRule(`.vs-dark .codicon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(dark)}`);
 			}
 		}
 	}
