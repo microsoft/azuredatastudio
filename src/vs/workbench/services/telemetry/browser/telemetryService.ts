@@ -85,8 +85,8 @@ export class TelemetryService extends Disposable implements ITelemetryService {
 		const aiKey = productService.aiConfig && productService.aiConfig.asimovKey;
 		if (!environmentService.isExtensionDevelopment && !environmentService.args['disable-telemetry'] && !!productService.enableTelemetry && !!aiKey) {
 			const config: ITelemetryServiceConfig = {
-				appender: combinedAppender(new WebTelemetryAppender(aiKey, logService, environmentService), new LogAppender(logService)),
-				commonProperties: resolveWorkbenchCommonProperties(storageService, productService.commit, productService.version, environmentService.configuration.machineId, environmentService.configuration.remoteAuthority),
+				appender: combinedAppender(new WebTelemetryAppender(aiKey, logService, environmentService), new LogAppender(logService)), // {{SQL CARBON EDIT}} add environment Service
+				commonProperties: resolveWorkbenchCommonProperties(storageService, productService.commit, productService.version, environmentService.configuration.machineId, environmentService.configuration.remoteAuthority, environmentService.options && environmentService.options.resolveCommonTelemetryProperties),
 				piiPaths: [environmentService.appRoot]
 			};
 

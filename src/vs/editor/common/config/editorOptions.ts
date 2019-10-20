@@ -1960,6 +1960,7 @@ class EditorQuickSuggestions extends BaseEditorOption<EditorOption.quickSuggesti
 				description: nls.localize('quickSuggestions', "Controls whether suggestions should automatically show up while typing.")
 			}
 		);
+		this.defaultValue = defaults;
 	}
 
 	public validate(_input: any): ValidQuickSuggestionsOptions {

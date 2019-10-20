@@ -123,7 +123,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 
 	constructor(
 		private accessor: IEditorGroupsAccessor,
-		from: IEditorGroupView | ISerializedEditorGroup,
+		from: IEditorGroupView | ISerializedEditorGroup | null,
 		private _index: number,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
@@ -426,12 +426,12 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		}
 	}
 
-	private async restoreEditors(from: IEditorGroupView | ISerializedEditorGroup): Promise<void> {
-		await this._group.removeNonExitingEditor(); // {{SQL CARBON EDIT}} @udeeshagautam perform async correction for non-existing files
-
+	private async restoreEditors(from: IEditorGroupView | ISerializedEditorGroup | null): Promise<void> {
 		if (this._group.count === 0) {
 			return; // nothing to show
 		}
+
+		await this._group.removeNonExitingEditor(); // {{SQL CARBON EDIT}} @udeeshagautam perform async correction for non-existing files
 
 		// Determine editor options
 		let options: EditorOptions;
@@ -1450,9 +1450,9 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 
 		// Container
 		if (isEmpty) {
-			this.element.style.backgroundColor = this.getColor(EDITOR_GROUP_EMPTY_BACKGROUND);
+			this.element.style.backgroundColor = this.getColor(EDITOR_GROUP_EMPTY_BACKGROUND) || '';
 		} else {
-			this.element.style.backgroundColor = null;
+			this.element.style.backgroundColor = '';
 		}
 
 		// Title control
@@ -1467,10 +1467,10 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 			this.titleContainer.style.removeProperty('--title-border-bottom-color');
 		}
 
-		this.titleContainer.style.backgroundColor = this.getColor(showTabs ? EDITOR_GROUP_HEADER_TABS_BACKGROUND : EDITOR_GROUP_HEADER_NO_TABS_BACKGROUND);
+		this.titleContainer.style.backgroundColor = this.getColor(showTabs ? EDITOR_GROUP_HEADER_TABS_BACKGROUND : EDITOR_GROUP_HEADER_NO_TABS_BACKGROUND) || '';
 
 		// Editor container
-		this.editorContainer.style.backgroundColor = this.getColor(editorBackground);
+		this.editorContainer.style.backgroundColor = this.getColor(editorBackground) || '';
 	}
 
 	//#endregion
