@@ -128,6 +128,11 @@
           "default": true,
           "description": "%mssql.query.displayBitAsNumber%"
         },
+        "mssql.query.maxXmlCharsToStore": {
+          "type": "number",
+          "default": 2097152,
+          "description": "%mssql.query.maxXmlCharsToStore%"
+        },
         "mssql.format.alignColumnDefinitionsInColumns": {
           "type": "boolean",
           "description": "%mssql.format.alignColumnDefinitionsInColumns%",
