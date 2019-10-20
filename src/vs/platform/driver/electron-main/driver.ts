@@ -39,7 +39,7 @@ export class Driver implements IDriver, IWindowDriverRegistry {
 		private options: IDriverOptions,
 		@IWindowsMainService private readonly windowsMainService: IWindowsMainService,
 		@ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService,
-		@IElectronMainService private readonly electronMainService: IElectronMainService
+		@IElectronMainService private readonly electronMainService: any // {{SQL CARBON EDIT}} remove interface, naster work around
 	) { }
 
 	async registerWindowDriver(windowId: number): Promise<IDriverOptions> {

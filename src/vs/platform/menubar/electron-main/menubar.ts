@@ -71,7 +71,7 @@ export class Menubar {
 		@IStateService private readonly stateService: IStateService,
 		@ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService,
 		@ILogService private readonly logService: ILogService,
-		@IElectronMainService private readonly electronMainService: IElectronMainService
+		@IElectronMainService private readonly electronMainService: any // {{SQL CARBON EDIT}} remove interface, naster work around
 	) {
 		this.menuUpdater = new RunOnceScheduler(() => this.doUpdateMenu(), 0);
 
