@@ -87,7 +87,7 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 			}
 			// If the user is using a system version of python, then
 			// '.' will try to create a notebook in a system directory.
-			// Since this will fail due to permissions, use the user's
+			// Since this will fail due to permissions issues, use the user's
 			// home folder instead.
 			return userHome;
 		} else {
