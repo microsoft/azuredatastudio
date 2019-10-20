@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ClusterController } from '../controller/clusterControllerApi';
 import { EndpointModel, BdcStatusModel } from '../controller/apiGenerated';
 import { showErrorMessage, Endpoint } from '../utils';
 import { AuthType } from '../constants';
+
+export type BdcDashboardOptions = { url: string, auth: AuthType, username: string, password: string };
 
 export class BdcDashboardModel {
 
@@ -24,8 +24,8 @@ export class BdcDashboardModel {
 	public onDidUpdateEndpoints = this._onDidUpdateEndpoints.event;
 	public onDidUpdateBdcStatus = this._onDidUpdateBdcStatus.event;
 
-	constructor(url: string, auth: AuthType, username: string, private password: string, ignoreSslVerification = true) {
-		this._clusterController = new ClusterController(url, auth, username, password, ignoreSslVerification);
+	constructor(private options: BdcDashboardOptions, ignoreSslVerification = true) {
+		this._clusterController = new ClusterController(options.url, options.auth, options.username, options.password, ignoreSslVerification);
 		this.refresh();
 	}
 
@@ -81,7 +81,7 @@ export class BdcDashboardModel {
 			serverName: sqlServerMasterEndpoint.endpoint,
 			databaseName: undefined,
 			userName: 'sa',
-			password: this.password,
+			password: this.options.password,
 			authenticationType: '',
 			savePassword: true,
 			groupFullName: undefined,
