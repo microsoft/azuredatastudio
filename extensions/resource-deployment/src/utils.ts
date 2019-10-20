@@ -3,8 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export function getErrorMessage(error: string | Error): string {
-	return typeof error === 'string' ? error : error.message;
+export function getErrorMessage(error: any): string {
+	return (error instanceof Error)
+		? (typeof error.message === 'string' ? error.message : '')
+		: typeof error === 'string' ? error : `${JSON.stringify(error, undefined, '\t')}`;
 }
 
 export function getDateTimeString(): string {
