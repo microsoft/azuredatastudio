@@ -430,7 +430,6 @@
             },
             {
               "name": "%title.books%",
-              "when": "notebookQuality != stable",
               "row": 0,
               "col": 2,
               "colspan": 1,
