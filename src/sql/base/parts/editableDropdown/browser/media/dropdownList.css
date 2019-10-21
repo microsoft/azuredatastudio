@@ -3,16 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.vs .dropdown-arrow.icon {
+.vs .dropdown-arrow.codicon {
 	background-image: url("dropdownarrow.svg");
 }
 
-.vs-dark .dropdown-arrow.icon,
-.hc-black .dropdown-arrow.icon {
+.vs-dark .dropdown-arrow.codicon,
+.hc-black .dropdown-arrow.codicon {
 	background-image: url("dropdownarrow_inverse.svg");
 }
 
-.monaco-dropdown .monaco-action-bar .action-label.icon.dropdown-arrow {
+.monaco-dropdown .monaco-action-bar .action-label.codicon.dropdown-arrow {
 	padding: 0;
 	background-size: 10px;
 	background-position: 50%;
@@ -38,12 +38,12 @@
 	overflow: hidden;
 }
 
-.connection-input .monaco-dropdown .monaco-action-bar .action-label.icon.dropdown-arrow {
+.connection-input .monaco-dropdown .monaco-action-bar .action-label.codicon.dropdown-arrow {
 	background-position: 50%;
 	background-size: cover;
 }
 
-.connection-input .monaco-inputbox .monaco-action-bar .action-item .icon {
+.connection-input .monaco-inputbox .monaco-action-bar .action-item .codicon {
 	width: 8px;
 	height: 8px;
 }
