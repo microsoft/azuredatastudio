@@ -7,14 +7,8 @@
     <trans-unit id="extension-description">
       <source xml:lang="en">Provides a notebook-based experience to deploy Microsoft SQL Server</source>
     </trans-unit>
-    <trans-unit id="deploy-sql-image-command-name">
-      <source xml:lang="en">Deploy SQL Server on Docker…</source>
-    </trans-unit>
-    <trans-unit id="deploy-sql-bdc-command-name">
-      <source xml:lang="en">Deploy SQL Server Big Data Cluster…</source>
-    </trans-unit>
     <trans-unit id="deploy-resource-command-name">
-      <source xml:lang="en">More deployment options…</source>
+      <source xml:lang="en">Deploy SQL Server…</source>
     </trans-unit>
     <trans-unit id="deploy-resource-command-category">
       <source xml:lang="en">Deployment</source>
@@ -23,7 +17,7 @@
       <source xml:lang="en">SQL Server container image</source>
     </trans-unit>
     <trans-unit id="resource-type-sql-image-description">
-      <source xml:lang="en">Run SQL Server container image with Docker</source>
+      <source xml:lang="en">Run SQL Server container image with docker</source>
     </trans-unit>
     <trans-unit id="resource-type-sql-bdc-display-name">
       <source xml:lang="en">SQL Server Big Data Cluster</source>
@@ -47,7 +41,7 @@
       <source xml:lang="en">./notebooks/docker/2019/deploy-sql2019-image.ipynb</source>
     </trans-unit>
     <trans-unit id="bdc-2019-display-name">
-      <source xml:lang="en">SQL Server 2019 RC Big Data Cluster</source>
+      <source xml:lang="en">SQL Server 2019 RC</source>
     </trans-unit>
     <trans-unit id="bdc-deployment-target">
       <source xml:lang="en">Deployment target</source>
@@ -70,11 +64,20 @@
     <trans-unit id="bdc-2019-existing-kubeadm-notebook">
       <source xml:lang="en">./notebooks/bdc/2019/deploy-bdc-existing-kubeadm.ipynb</source>
     </trans-unit>
+    <trans-unit id="azdata-bdc-2019-aks-notebook">
+      <source xml:lang="en">./notebooks/bdc/2019/azdata/deploy-bdc-aks.ipynb</source>
+    </trans-unit>
+    <trans-unit id="azdata-bdc-2019-existing-aks-notebook">
+      <source xml:lang="en">./notebooks/bdc/2019/azdata/deploy-bdc-existing-aks.ipynb</source>
+    </trans-unit>
+    <trans-unit id="azdata-bdc-2019-existing-kubeadm-notebook">
+      <source xml:lang="en">./notebooks/bdc/2019/azdata/deploy-bdc-existing-kubeadm.ipynb</source>
+    </trans-unit>
     <trans-unit id="docker-sql-2017-title">
-      <source xml:lang="en">Deploy SQL Server 2017 container images with Docker</source>
+      <source xml:lang="en">Deploy SQL Server 2017 container images with docker</source>
     </trans-unit>
     <trans-unit id="docker-sql-2019-title">
-      <source xml:lang="en">Deploy SQL Server 2019 container images with Docker</source>
+      <source xml:lang="en">Deploy SQL Server 2019 container images with docker</source>
     </trans-unit>
     <trans-unit id="docker-container-name-field">
       <source xml:lang="en">Container name</source>
@@ -161,7 +164,7 @@
       <source xml:lang="en">azdata License Terms</source>
     </trans-unit>
     <trans-unit id="bdc-agreement-bdc-eula">
-      <source xml:lang="en">SQL Server Big Data Cluster License Terms</source>
+      <source xml:lang="en">SQL Server License Terms</source>
     </trans-unit>
   </body></file>
   <file original="extensions/resource-deployment/dist/ui/modelViewUtils" source-language="en" datatype="plaintext"><body>
@@ -225,8 +228,47 @@
     </trans-unit>
   </body></file>
   <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/deployClusterWizard" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="deployCluster.SaveConfigFiles">
+      <source xml:lang="en">Save config files</source>
+    </trans-unit>
     <trans-unit id="deployCluster.ScriptToNotebook">
       <source xml:lang="en">Script to Notebook</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.Deploy">
+      <source xml:lang="en">Deploy</source>
+    </trans-unit>
+    <trans-unit id="resourceDeployment.DeployBDCTask">
+      <source xml:lang="en">Deploy SQL Server Big Data Cluster "{0}"</source>
+    </trans-unit>
+    <trans-unit id="resourceDeployment.ConnectToMasterSQLServer">
+      <source xml:lang="en">Connect to Master SQL Server</source>
+    </trans-unit>
+    <trans-unit id="resourceDeployment.DeploymentSucceeded">
+      <source xml:lang="en">Successfully deployed SQL Server Big Data Cluster: {0}</source>
+    </trans-unit>
+    <trans-unit id="resourceDeployment.ErroRetrievingEndpoints">
+      <source xml:lang="en">Failed to retrieve the endpoint list. {0}{1}</source>
+    </trans-unit>
+    <trans-unit id="resourceDeployment.NoSQLEndpointFound">
+      <source xml:lang="en">Master SQL Server endpoint is not found.</source>
+    </trans-unit>
+    <trans-unit id="resourceDeployment.ViewErrorDetail">
+      <source xml:lang="en">View error detail</source>
+    </trans-unit>
+    <trans-unit id="resourceDeployment.DeployFailed">
+      <source xml:lang="en">Failed to deploy SQL Server Big Data Cluster "{0}".</source>
+    </trans-unit>
+    <trans-unit id="resourceDeployment.FailedToOpenNotebook">
+      <source xml:lang="en">An error occured launching the output notebook. {1}{2}.</source>
+    </trans-unit>
+    <trans-unit id="resourceDeployment.DeployFailedNoOutputNotebook">
+      <source xml:lang="en">Failed to deploy SQL Server Big Data Cluster and no output notebook was generated.</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.SelectConfigFileFolder">
+      <source xml:lang="en">Save config files</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.SaveConfigFileSucceeded">
+      <source xml:lang="en">Config files saved to {0}</source>
     </trans-unit>
     <trans-unit id="deployCluster.NewAKSWizardTitle">
       <source xml:lang="en">Deploy SQL Server 2019 Big Data Cluster on a new AKS cluster</source>
@@ -242,14 +284,8 @@
     <trans-unit id="deployCluster.summaryPageTitle">
       <source xml:lang="en">Summary</source>
     </trans-unit>
-    <trans-unit id="deployCluster.SaveBdcJson">
-      <source xml:lang="en">Save bdc.json</source>
-    </trans-unit>
-    <trans-unit id="deployCluster.SaveControlJson">
-      <source xml:lang="en">Save control.json</source>
-    </trans-unit>
-    <trans-unit id="deployCluster.DeploymentJSON">
-      <source xml:lang="en">Deployment JSON files</source>
+    <trans-unit id="resourceDeployment.NewAKSBrowserWindowPrompt">
+      <source xml:lang="en">A browser window for logging to Azure will be opened during the SQL Server Big Data Cluster deployment.</source>
     </trans-unit>
     <trans-unit id="deployCluster.DeploymentTarget">
       <source xml:lang="en">Deployment target</source>
@@ -281,6 +317,33 @@
     <trans-unit id="deployCluster.AuthenticationMode.Basic">
       <source xml:lang="en">Basic</source>
     </trans-unit>
+    <trans-unit id="deployCluster.OuDistinguishedName">
+      <source xml:lang="en">Organizational unit</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DomainControllerFQDNs">
+      <source xml:lang="en">Domain controller FQDNs</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DomainDNSIPAddresses">
+      <source xml:lang="en">Domain DNS IP addresses</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DomainDNSName">
+      <source xml:lang="en">Domain DNS name</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ClusterAdmins">
+      <source xml:lang="en">Cluster admin group</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ClusterUsers">
+      <source xml:lang="en">Cluster users</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AppOwers">
+      <source xml:lang="en">App owners</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AppReaders">
+      <source xml:lang="en">App readers</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DomainServiceAccountUserName">
+      <source xml:lang="en">Service account username</source>
+    </trans-unit>
     <trans-unit id="deployCluster.AzureSettings">
       <source xml:lang="en">Azure settings</source>
     </trans-unit>
@@ -293,8 +356,8 @@
     <trans-unit id="deployCluster.ResourceGroup">
       <source xml:lang="en">Resource group</source>
     </trans-unit>
-    <trans-unit id="deployCluster.Region">
-      <source xml:lang="en">Region</source>
+    <trans-unit id="deployCluster.Location">
+      <source xml:lang="en">Location</source>
     </trans-unit>
     <trans-unit id="deployCluster.AksClusterName">
       <source xml:lang="en">AKS cluster name</source>
@@ -308,38 +371,23 @@
     <trans-unit id="deployCluster.ScaleSettings">
       <source xml:lang="en">Scale settings</source>
     </trans-unit>
-    <trans-unit id="deployCluster.ComputeText">
-      <source xml:lang="en">Compute</source>
+    <trans-unit id="deployCluster.MasterSqlServerInstances">
+      <source xml:lang="en">SQL Server master instances</source>
     </trans-unit>
-    <trans-unit id="deployCluster.DataText">
-      <source xml:lang="en">Data</source>
+    <trans-unit id="deployCluster.ComputePoolInstances">
+      <source xml:lang="en">Compute pool instances</source>
     </trans-unit>
-    <trans-unit id="deployCluster.HDFSText">
-      <source xml:lang="en">HDFS</source>
+    <trans-unit id="deployCluster.DataPoolInstances">
+      <source xml:lang="en">Data pool instances</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.SparkPoolInstances">
+      <source xml:lang="en">Spark pool instances</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.StoragePoolInstances">
+      <source xml:lang="en">Storage pool (HDFS) instances</source>
     </trans-unit>
     <trans-unit id="deployCluster.WithSpark">
       <source xml:lang="en">(Spark included)</source>
-    </trans-unit>
-    <trans-unit id="deployCluster.SparkText">
-      <source xml:lang="en">Spark</source>
-    </trans-unit>
-    <trans-unit id="deployCluster.HadrSection">
-      <source xml:lang="en">High availability settings</source>
-    </trans-unit>
-    <trans-unit id="deployCluster.SqlServerText">
-      <source xml:lang="en">SQL Server Master</source>
-    </trans-unit>
-    <trans-unit id="deployCluster.WithHADR">
-      <source xml:lang="en">(Availability Groups Enabled)</source>
-    </trans-unit>
-    <trans-unit id="deployCluster.HDFSNameNodeText">
-      <source xml:lang="en">HDFS name node</source>
-    </trans-unit>
-    <trans-unit id="deployCluster.ZooKeeperText">
-      <source xml:lang="en">ZooKeeper</source>
-    </trans-unit>
-    <trans-unit id="deployCluster.SparkHeadText">
-      <source xml:lang="en">SparkHead</source>
     </trans-unit>
     <trans-unit id="deployCluster.DataStorageClassName">
       <source xml:lang="en">Storage class for data</source>
@@ -356,23 +404,35 @@
     <trans-unit id="deployCluster.ControllerText">
       <source xml:lang="en">Controller</source>
     </trans-unit>
+    <trans-unit id="deployCluster.StoragePool">
+      <source xml:lang="en">Storage pool (HDFS)</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DataText">
+      <source xml:lang="en">Data</source>
+    </trans-unit>
     <trans-unit id="deployCluster.MasterSqlText">
       <source xml:lang="en">SQL Server Master</source>
     </trans-unit>
     <trans-unit id="deployCluster.StorageSettings">
       <source xml:lang="en">Storage settings</source>
     </trans-unit>
+    <trans-unit id="deployCluster.SqlServerText">
+      <source xml:lang="en">SQL Server Master</source>
+    </trans-unit>
     <trans-unit id="deployCluster.GatewayText">
       <source xml:lang="en">Gateway</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AppServiceProxyText">
+      <source xml:lang="en">Application proxy</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ServiceProxyText">
+      <source xml:lang="en">Management proxy</source>
     </trans-unit>
     <trans-unit id="deployCluster.ReadableSecondaryText">
       <source xml:lang="en">Readable secondary</source>
     </trans-unit>
     <trans-unit id="deployCluster.EndpointSettings">
       <source xml:lang="en">Endpoint settings</source>
-    </trans-unit>
-    <trans-unit id="deployCluster.SaveJsonFileMessage">
-      <source xml:lang="en">File saved: {0}</source>
     </trans-unit>
   </body></file>
   <file original="extensions/resource-deployment/dist/ui/wizardBase" source-language="en" datatype="plaintext"><body>
@@ -396,11 +456,23 @@
     <trans-unit id="deployCluster.SubscriptionDescription">
       <source xml:lang="en">The default subscription will be used if you leave this field blank.</source>
     </trans-unit>
+    <trans-unit id="deployCluster.SubscriptionHelpText">
+      <source xml:lang="en">{0}</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.SubscriptionHelpLink">
+      <source xml:lang="en">View available Azure subscriptions</source>
+    </trans-unit>
     <trans-unit id="deployCluster.ResourceGroupName">
       <source xml:lang="en">New resource group name</source>
     </trans-unit>
-    <trans-unit id="deployCluster.Region">
-      <source xml:lang="en">Region</source>
+    <trans-unit id="deployCluster.Location">
+      <source xml:lang="en">Location</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.LocationHelpText">
+      <source xml:lang="en">{0}</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AzureLocationHelpLink">
+      <source xml:lang="en">View available Azure locations</source>
     </trans-unit>
     <trans-unit id="deployCluster.AksName">
       <source xml:lang="en">AKS cluster name</source>
@@ -410,6 +482,12 @@
     </trans-unit>
     <trans-unit id="deployCluster.VMSize">
       <source xml:lang="en">VM size</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.VMSizeHelpText">
+      <source xml:lang="en">{0}</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.VMSizeHelpLink">
+      <source xml:lang="en">View available VM sizes</source>
     </trans-unit>
   </body></file>
   <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/clusterSettingsPage" source-language="en" datatype="plaintext"><body>
@@ -422,14 +500,17 @@
     <trans-unit id="deployCluster.ClusterName">
       <source xml:lang="en">Cluster name</source>
     </trans-unit>
-    <trans-unit id="deployCluster.ControllerUsername">
-      <source xml:lang="en">Controller username</source>
+    <trans-unit id="deployCluster.AdminUsername">
+      <source xml:lang="en">Admin username</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AdminUsernameDescription">
+      <source xml:lang="en">This username will be used for controller and SQL Server. Username for the gateway will be root.</source>
     </trans-unit>
     <trans-unit id="deployCluster.AdminPassword">
       <source xml:lang="en">Password</source>
     </trans-unit>
     <trans-unit id="deployCluster.AdminPasswordDescription">
-      <source xml:lang="en">You can also use this password to access SQL Server and gateway.</source>
+      <source xml:lang="en">This password can be used to access the controller, SQL Server and gateway.</source>
     </trans-unit>
     <trans-unit id="deployCluster.ConfirmPassword">
       <source xml:lang="en">Confirm password</source>
@@ -443,32 +524,95 @@
     <trans-unit id="deployCluster.AuthenticationMode.ActiveDirectory">
       <source xml:lang="en">Active Directory</source>
     </trans-unit>
+    <trans-unit id="deployCluster.DockerSettings">
+      <source xml:lang="en">Docker settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DockerRegistry">
+      <source xml:lang="en">Registry</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DockerRepository">
+      <source xml:lang="en">Repository</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DockerImageTag">
+      <source xml:lang="en">Image tag</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DockerUsername">
+      <source xml:lang="en">Username</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DockerPassword">
+      <source xml:lang="en">Password</source>
+    </trans-unit>
     <trans-unit id="deployCluster.ActiveDirectorySettings">
       <source xml:lang="en">Active Directory settings</source>
     </trans-unit>
-    <trans-unit id="deployCluster.DistinguishedName">
-      <source xml:lang="en">Distinguished name</source>
+    <trans-unit id="deployCluster.OuDistinguishedName">
+      <source xml:lang="en">Organizational unit</source>
     </trans-unit>
-    <trans-unit id="deployCluster.AdminPrincipals">
-      <source xml:lang="en">Admin principals</source>
+    <trans-unit id="deployCluster.OuDistinguishedNameDescription">
+      <source xml:lang="en">Distinguished name for the organizational unit. For example: OU=bdc,DC=contoso,DC=com.</source>
     </trans-unit>
-    <trans-unit id="deployCluster.UserPrincipals">
-      <source xml:lang="en">User principals</source>
+    <trans-unit id="deployCluster.DomainControllerFQDNs">
+      <source xml:lang="en">Domain controller FQDNs</source>
     </trans-unit>
-    <trans-unit id="deployCluster.UpstreamIPAddresses">
-      <source xml:lang="en">Upstream IP Addresses</source>
+    <trans-unit id="deployCluster.DomainControllerFQDNsPlaceHolder">
+      <source xml:lang="en">Use comma to separate the values.</source>
     </trans-unit>
-    <trans-unit id="deployCluster.DNSName">
-      <source xml:lang="en">DNS name</source>
+    <trans-unit id="deployCluster.DomainControllerFQDNDescription">
+      <source xml:lang="en">Fully qualified domain names for the domain controller. For example: DC1.CONTOSO.COM. Use comma to separate multiple FQDNs.</source>
     </trans-unit>
-    <trans-unit id="deployCluster.Realm">
-      <source xml:lang="en">Realm</source>
+    <trans-unit id="deployCluster.DomainDNSIPAddresses">
+      <source xml:lang="en">Domain DNS IP addresses</source>
     </trans-unit>
-    <trans-unit id="deployCluster.AppOnwerPrincipals">
-      <source xml:lang="en">App owner principals</source>
+    <trans-unit id="deployCluster.DomainDNSIPAddressesPlaceHolder">
+      <source xml:lang="en">Use comma to separate the values.</source>
     </trans-unit>
-    <trans-unit id="deployCluster.AppReaderPrincipals">
-      <source xml:lang="en">App reader principals</source>
+    <trans-unit id="deployCluster.DomainDNSIPAddressesDescription">
+      <source xml:lang="en">Domain DNS servers' IP Addresses. Use comma to separate multiple IP addresses.</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DomainDNSName">
+      <source xml:lang="en">Domain DNS name</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ClusterAdmins">
+      <source xml:lang="en">Cluster admin group</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ClusterAdminsDescription">
+      <source xml:lang="en">The Active Directory group for cluster admin.</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ClusterUsers">
+      <source xml:lang="en">Cluster users</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ClusterUsersPlaceHolder">
+      <source xml:lang="en">Use comma to separate the values.</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ClusterUsersDescription">
+      <source xml:lang="en">The Active Directory users/groups with cluster users role. Use comma to separate multiple users/groups.</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DomainServiceAccountUserName">
+      <source xml:lang="en">Service account username</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DomainServiceAccountUserNameDescription">
+      <source xml:lang="en">Domain service account for Big Data Cluster</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DomainServiceAccountPassword">
+      <source xml:lang="en">Service account password</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AppOwers">
+      <source xml:lang="en">App owners</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AppOwnersPlaceHolder">
+      <source xml:lang="en">Use comma to separate the values.</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AppOwnersDescription">
+      <source xml:lang="en">The Active Directory users or groups with app owners role. Use comma to separate multiple users/groups.</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AppReaders">
+      <source xml:lang="en">App readers</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AppReadersPlaceHolder">
+      <source xml:lang="en">Use comma to separate the values.</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AppReadersDescription">
+      <source xml:lang="en">The Active Directory users or groups of app readers. Use comma as separator them if there are multiple users/groups.</source>
     </trans-unit>
     <trans-unit id="deployCluster.AdminPasswordField">
       <source xml:lang="en">Password</source>
@@ -484,38 +628,23 @@
     <trans-unit id="deployCluster.scaleSectionTitle">
       <source xml:lang="en">Scale settings</source>
     </trans-unit>
-    <trans-unit id="deployCluster.ComputeText">
-      <source xml:lang="en">Compute</source>
+    <trans-unit id="deployCluster.MasterSqlServerInstances">
+      <source xml:lang="en">SQL Server master instances</source>
     </trans-unit>
-    <trans-unit id="deployCluster.DataText">
-      <source xml:lang="en">Data</source>
+    <trans-unit id="deployCluster.ComputePoolInstances">
+      <source xml:lang="en">Compute pool instances</source>
     </trans-unit>
-    <trans-unit id="deployCluster.HDFSText">
-      <source xml:lang="en">HDFS</source>
+    <trans-unit id="deployCluster.DataPoolInstances">
+      <source xml:lang="en">Data pool instances</source>
     </trans-unit>
-    <trans-unit id="deployCluster.includeSparkInHDFSPool">
-      <source xml:lang="en">Include Spark</source>
+    <trans-unit id="deployCluster.SparkPoolInstances">
+      <source xml:lang="en">Spark pool instances</source>
     </trans-unit>
-    <trans-unit id="deployCluster.SparkText">
-      <source xml:lang="en">Spark</source>
+    <trans-unit id="deployCluster.StoragePoolInstances">
+      <source xml:lang="en">Storage pool (HDFS) instances</source>
     </trans-unit>
-    <trans-unit id="deployCluster.HadrSection">
-      <source xml:lang="en">High availability settings</source>
-    </trans-unit>
-    <trans-unit id="deployCluster.MasterSqlText">
-      <source xml:lang="en">SQL Server Master</source>
-    </trans-unit>
-    <trans-unit id="deployCluster.EnableHADR">
-      <source xml:lang="en">Enable Availability Groups</source>
-    </trans-unit>
-    <trans-unit id="deployCluster.HDFSNameNodeText">
-      <source xml:lang="en">HDFS name node</source>
-    </trans-unit>
-    <trans-unit id="deployCluster.SparkHeadText">
-      <source xml:lang="en">SparkHead</source>
-    </trans-unit>
-    <trans-unit id="deployCluster.ZooKeeperText">
-      <source xml:lang="en">ZooKeeper</source>
+    <trans-unit id="deployCluster.IncludeSparkInStoragePool">
+      <source xml:lang="en">Include Spark in storage pool</source>
     </trans-unit>
     <trans-unit id="deployCluster.storageFieldTooltip">
       <source xml:lang="en">Use controller settings</source>
@@ -540,6 +669,15 @@
     </trans-unit>
     <trans-unit id="deployCluster.AdvancedStorageSectionTitle">
       <source xml:lang="en">Advanced storage settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.StoragePool">
+      <source xml:lang="en">Storage pool (HDFS)</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.DataPool">
+      <source xml:lang="en">Data pool</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.MasterSqlText">
+      <source xml:lang="en">SQL Server Master</source>
     </trans-unit>
     <trans-unit id="deployCluster.StorageSectionTitle">
       <source xml:lang="en">Storage settings</source>
@@ -571,6 +709,24 @@
     <trans-unit id="deployCluster.GatewayPortName">
       <source xml:lang="en">Gateway port</source>
     </trans-unit>
+    <trans-unit id="deployCluster.ServiceProxyText">
+      <source xml:lang="en">Management proxy</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ServiceProxyDNSName">
+      <source xml:lang="en">Management proxy DNS name</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.ServiceProxyPortName">
+      <source xml:lang="en">Management proxy port</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AppServiceProxyText">
+      <source xml:lang="en">Application proxy</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AppServiceProxyDNSName">
+      <source xml:lang="en">Application proxy DNS name</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.AppServiceProxyPortName">
+      <source xml:lang="en">Application proxy port</source>
+    </trans-unit>
     <trans-unit id="deployCluster.ReadableSecondaryText">
       <source xml:lang="en">Readable secondary</source>
     </trans-unit>
@@ -582,6 +738,9 @@
     </trans-unit>
     <trans-unit id="deployCluster.EndpointSettings">
       <source xml:lang="en">Endpoint settings</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.SparkMustBeIncluded">
+      <source xml:lang="en">Invalid Spark configuration, you must check the 'Include Spark' checkbox or set the 'Spark pool instances' to at least 1.</source>
     </trans-unit>
   </body></file>
   <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/targetClusterPage" source-language="en" datatype="plaintext"><body>
@@ -644,17 +803,26 @@
     <trans-unit id="deployCluster.hdfsLabel">
       <source xml:lang="en">HDFS + Spark</source>
     </trans-unit>
+    <trans-unit id="deployCluster.storageSize">
+      <source xml:lang="en">Storage size</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.gbPerInstance">
+      <source xml:lang="en">GB per Instance</source>
+    </trans-unit>
     <trans-unit id="deployCluster.defaultDataStorage">
-      <source xml:lang="en">Data storage size (GB)</source>
+      <source xml:lang="en">Data storage</source>
     </trans-unit>
     <trans-unit id="deployCluster.defaultLogStorage">
-      <source xml:lang="en">Log storage size (GB)</source>
+      <source xml:lang="en">Log storage</source>
     </trans-unit>
-    <trans-unit id="deployCluster.activeDirectoryAuthentication">
-      <source xml:lang="en">Active Directory authentication</source>
+    <trans-unit id="deployCluster.features">
+      <source xml:lang="en">Features</source>
     </trans-unit>
     <trans-unit id="deployCluster.basicAuthentication">
       <source xml:lang="en">Basic authentication</source>
+    </trans-unit>
+    <trans-unit id="deployCluster.activeDirectoryAuthentication">
+      <source xml:lang="en">Active Directory authentication</source>
     </trans-unit>
     <trans-unit id="deployCluster.hadr">
       <source xml:lang="en">High Availability</source>
@@ -668,7 +836,7 @@
       <source xml:lang="en">Provides the ability to package and run an application in isolated containers</source>
     </trans-unit>
     <trans-unit id="resourceDeployment.DockerDisplayName">
-      <source xml:lang="en">Docker</source>
+      <source xml:lang="en">docker</source>
     </trans-unit>
   </body></file>
   <file original="extensions/resource-deployment/dist/services/tools/azCliTool" source-language="en" datatype="plaintext"><body>

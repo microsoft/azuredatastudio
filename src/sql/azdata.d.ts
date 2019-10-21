@@ -748,8 +748,6 @@ declare module 'azdata' {
 		deleteCredential(credentialId: string): Thenable<boolean>;
 	}
 
-
-
 	export interface DidChangeLanguageFlavorParams {
 		uri: string;
 		language: string;
@@ -757,7 +755,7 @@ declare module 'azdata' {
 	}
 
 	export interface QueryExecutionOptions {
-		options: Map<string, any>;
+		options: { [option: string]: any; };
 	}
 
 	export interface QueryProvider extends DataProvider {

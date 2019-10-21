@@ -14,7 +14,7 @@ import { TreeNode } from './bigDataCluster/tree/treeNode';
 import { AddControllerDialogModel, AddControllerDialog } from './bigDataCluster/dialog/addControllerDialog';
 import { ControllerNode } from './bigDataCluster/tree/controllerTreeNode';
 import { BdcDashboard } from './bigDataCluster/dialog/bdcDashboard';
-import { BdcDashboardModel } from './bigDataCluster/dialog/bdcDashboardModel';
+import { BdcDashboardModel, BdcDashboardOptions } from './bigDataCluster/dialog/bdcDashboardModel';
 import { MountHdfsDialogModel as MountHdfsModel, MountHdfsProperties, MountHdfsDialog, DeleteMountDialog, DeleteMountModel, RefreshMountDialog, RefreshMountModel } from './bigDataCluster/dialog/mountHdfsDialog';
 import { getControllerEndpoint } from './bigDataCluster/utils';
 
@@ -62,9 +62,9 @@ function registerCommands(context: vscode.ExtensionContext, treeDataProvider: Co
 		treeDataProvider.notifyNodeChanged(node);
 	});
 
-	vscode.commands.registerCommand(ManageControllerCommand, async (node: ControllerNode) => {
-		const title: string = `${localize('bdc.dashboard.title', "Big Data Cluster Dashboard -")} ${ControllerNode.toIpAndPort(node.url)}`;
-		const dashboard: BdcDashboard = new BdcDashboard(title, new BdcDashboardModel(node.url, node.auth, node.username, node.password));
+	vscode.commands.registerCommand(ManageControllerCommand, async (info: ControllerNode | BdcDashboardOptions) => {
+		const title: string = `${localize('bdc.dashboard.title', "Big Data Cluster Dashboard -")} ${ControllerNode.toIpAndPort(info.url)}`;
+		const dashboard: BdcDashboard = new BdcDashboard(title, new BdcDashboardModel(info));
 		dashboard.showDashboard();
 	});
 

@@ -22,11 +22,11 @@ import { OpenSparkYarnHistoryTask } from './sparkFeature/historyTask';
 import { MssqlObjectExplorerNodeProvider, mssqlOutputChannel } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import { registerSearchServerCommand } from './objectExplorerNodeProvider/command';
 import { MssqlIconProvider } from './iconProvider';
-import { registerServiceEndpoints } from './dashboard/serviceEndpoints';
+import { registerServiceEndpoints, Endpoint } from './dashboard/serviceEndpoints';
 import { getBookExtensionContributions } from './dashboard/bookExtensions';
 import { registerBooksWidget } from './dashboard/bookWidget';
 import { createMssqlApi } from './mssqlApiFactory';
-
+import { AuthType } from './util/auth';
 import { SqlToolsServer } from './sqlToolsServer';
 import { promises as fs } from 'fs';
 import { IconPathHelper } from './iconHelper';
@@ -131,8 +131,8 @@ function activateNotebookTask(appContext: AppContext): void {
 	apiWrapper.registerTaskHandler(Constants.mssqlClusterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
 		return handleOpenNotebookTask(profile);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlopenClusterStatusNotebook, (profile: azdata.IConnectionProfile) => {
-		return handleOpenClusterStatusNotebookTask(profile, appContext);
+	apiWrapper.registerTaskHandler(Constants.mssqlOpenClusterDashboard, (profile: azdata.IConnectionProfile) => {
+		return handleOpenClusterDashboardTask(profile, appContext);
 	});
 }
 
@@ -203,24 +203,21 @@ async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promi
 	}
 }
 
-async function handleOpenClusterStatusNotebookTask(profile: azdata.IConnectionProfile, appContext: AppContext): Promise<void> {
-	const notebookRelativePath: string = 'notebooks/tsg/cluster-status.ipynb';
-	const notebookFullPath: string = path.join(appContext.extensionContext.extensionPath, notebookRelativePath);
-	if (!(await Utils.exists(notebookFullPath))) {
-		vscode.window.showErrorMessage(localize("fileNotFound", "Unable to find the file specified"));
-	} else {
-		const title: string = Utils.findNextUntitledEditorName(notebookFullPath);
-		const untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${title}`);
-		vscode.workspace.openTextDocument(notebookFullPath).then((document) => {
-			let initialContent = document.getText();
-			azdata.nb.showNotebookDocument(untitledFileName, {
-				connectionProfile: profile,
-				preview: true,
-				initialContent: initialContent,
-				initialDirtyState: false
-			});
-		});
+async function handleOpenClusterDashboardTask(profile: azdata.IConnectionProfile, appContext: AppContext): Promise<void> {
+	const serverInfo = await azdata.connection.getServerInfo(profile.id);
+	const controller = Utils.getClusterEndpoints(serverInfo).find(e => e.serviceName === Endpoint.controller);
+	if (!controller) {
+		appContext.apiWrapper.showErrorMessage(localize('noController', "Could not find the controller endpoint for this instance"));
+		return;
 	}
+
+	appContext.apiWrapper.executeCommand('bigDataClusters.command.manageController',
+		{
+			url: controller.endpoint,
+			auth: profile.authenticationType === 'Integrated' ? AuthType.Integrated : AuthType.Basic,
+			username: 'admin', // Default to admin as a best-guess, we'll prompt for re-entering credentials if that fails
+			password: profile.password
+		});
 }
 
 // this method is called when your extension is deactivated
