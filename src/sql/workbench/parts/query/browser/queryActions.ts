@@ -555,7 +555,7 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 		this.editor.input.state.isSqlCmdMode = toSqlCmdState;
 
 		// set query options
-		let queryoptions: QueryExecutionOptions = { options: new Map<string, any>() };
+		let queryoptions: QueryExecutionOptions = { options: {} };
 		queryoptions.options['isSqlCmdMode'] = toSqlCmdState;
 		if (!this.editor.input) {
 			console.error('editor input was null');

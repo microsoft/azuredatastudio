@@ -20,8 +20,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import * as nls from 'vs/nls';
 import { inputBackground, inputBorder } from 'vs/platform/theme/common/colorRegistry';
-import * as DomUtils from 'vs/base/browser/dom';
-import { StandardKeyboardEvent, IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 
 @Component({
@@ -107,10 +106,6 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 			this.registerInput(this._textAreaInput, () => this.multiline);
 		}
 		this.inputElement.hideErrors = true;
-	}
-
-	private onkeydown(domNode: HTMLElement, listener: (e: IKeyboardEvent) => void): void {
-		this._register(DomUtils.addDisposableListener(domNode, DomUtils.EventType.KEY_DOWN, (e: KeyboardEvent) => listener(new StandardKeyboardEvent(e))));
 	}
 
 	private tryHandleKeyEvent(e: StandardKeyboardEvent): boolean {

@@ -73,9 +73,6 @@
     <trans-unit id="title.configurePython">
       <source xml:lang="en">Configure Python for Notebooks</source>
     </trans-unit>
-    <trans-unit id="title.openClusterStatusNotebook">
-      <source xml:lang="en">Cluster Status</source>
-    </trans-unit>
     <trans-unit id="title.searchServers">
       <source xml:lang="en">Search: Servers</source>
     </trans-unit>
