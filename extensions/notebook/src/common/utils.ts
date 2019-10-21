@@ -66,20 +66,29 @@ export function executeStreamedCommand(cmd: string, options: childProcess.SpawnO
 		let child = childProcess.spawn(cmd, [], options);
 
 		// Add listeners to resolve/reject the promise on exit
-		child.on('error', reject);
+		child.on('error', err => {
+			reject(err);
+		});
+
+		let stdErrLog = '';
 		child.on('exit', (code: number) => {
 			if (code === 0) {
 				resolve();
 			} else {
-				reject(localize('executeCommandProcessExited', 'Process exited with code {0}', code));
+				reject(localize('executeCommandProcessExited', 'Process exited with  with error code: {0}. StdErr Output: "{1}"', code, stdErrLog));
 			}
 		});
 
 		// Add listeners to print stdout and stderr if an output channel was provided
 		if (outputChannel) {
 			child.stdout.on('data', data => { outputDataChunk(data, outputChannel, '    stdout: '); });
-			child.stderr.on('data', data => { outputDataChunk(data, outputChannel, '    stderr: '); });
 		}
+		child.stderr.on('data', data => {
+			if (outputChannel) {
+				outputDataChunk(data, outputChannel, '    stderr: ');
+			}
+			stdErrLog += data.toString();
+		});
 	});
 }
 
