@@ -73,7 +73,6 @@ const indentationFilter = [
 	'!**/yarn-error.log',
 
 	// except multiple specific folders
-	'!**/octicons/**',
 	'!**/codicon/**',
 	'!**/fixtures/**',
 	'!**/lib/**',
