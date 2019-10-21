@@ -20,16 +20,9 @@ Compression=lzma
 SolidCompression=yes
 AppMutex={code:GetAppMutex}
 SetupMutex={#AppMutex}setup
-// {{SQL CARBON EDIT}} Use separate icons for non-stable builds
-#if Quality == "stable"
 WizardImageFile="{#RepoDir}\resources\win32\inno-big-100.bmp,{#RepoDir}\resources\win32\inno-big-125.bmp,{#RepoDir}\resources\win32\inno-big-150.bmp,{#RepoDir}\resources\win32\inno-big-175.bmp,{#RepoDir}\resources\win32\inno-big-200.bmp,{#RepoDir}\resources\win32\inno-big-225.bmp,{#RepoDir}\resources\win32\inno-big-250.bmp"
 WizardSmallImageFile="{#RepoDir}\resources\win32\inno-small-100.bmp,{#RepoDir}\resources\win32\inno-small-125.bmp,{#RepoDir}\resources\win32\inno-small-150.bmp,{#RepoDir}\resources\win32\inno-small-175.bmp,{#RepoDir}\resources\win32\inno-small-200.bmp,{#RepoDir}\resources\win32\inno-small-225.bmp,{#RepoDir}\resources\win32\inno-small-250.bmp"
 SetupIconFile={#RepoDir}\resources\win32\code.ico
-#else
-WizardImageFile="{#RepoDir}\resources\win32\inno-big-100-insiders.bmp,{#RepoDir}\resources\win32\inno-big-125-insiders.bmp,{#RepoDir}\resources\win32\inno-big-150-insiders.bmp,{#RepoDir}\resources\win32\inno-big-175-insiders.bmp,{#RepoDir}\resources\win32\inno-big-200-insiders.bmp,{#RepoDir}\resources\win32\inno-big-225-insiders.bmp,{#RepoDir}\resources\win32\inno-big-250-insiders.bmp"
-WizardSmallImageFile="{#RepoDir}\resources\win32\inno-small-100-insiders.bmp,{#RepoDir}\resources\win32\inno-small-125-insiders.bmp,{#RepoDir}\resources\win32\inno-small-150-insiders.bmp,{#RepoDir}\resources\win32\inno-small-175-insiders.bmp,{#RepoDir}\resources\win32\inno-small-200-insiders.bmp,{#RepoDir}\resources\win32\inno-small-225-insiders.bmp,{#RepoDir}\resources\win32\inno-small-250-insiders.bmp"
-SetupIconFile={#RepoDir}\resources\win32\code-insiders.ico
-#endif
 UninstallDisplayIcon={app}\{#ExeBasename}.exe
 ChangesEnvironment=true
 ChangesAssociations=true

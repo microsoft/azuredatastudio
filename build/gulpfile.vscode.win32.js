@@ -43,8 +43,6 @@ function packageInnoSetup(iss, options, cb) {
 		definitions['Sign'] = 'true';
 	}
 
-	definitions['Quality'] = product.quality; // {{SQL CARBON EDIT}} Modify installer based on quality
-
 	// {{SQL CARBON EDIT}} Switch file icon for non-stable builds
 	if (product.quality !== 'stable') {
 		gulp.src('resources/win32/code_file-insiders.ico').pipe(rename('resources/win32/code_file.ico'));
@@ -84,6 +82,15 @@ function buildWin32Setup(arch, target) {
 		const productJson = JSON.parse(fs.readFileSync(originalProductJsonPath, 'utf8'));
 		productJson['target'] = target;
 		fs.writeFileSync(productJsonPath, JSON.stringify(productJson, undefined, '\t'));
+
+		// // {{SQL CARBON EDIT}} Modify installer file based on quality
+		if(product.quality !== 'stable') {
+			fs.writeFileSync(issPath,
+				fs.readFileSync(issPath).toString()
+					.replace(/inno-(small|big)-([\d]*)/g, 'inno-$1-$2-insiders')
+					.replace(/code.ico/g, 'code-insiders.ico'));
+		}
+
 
 		const definitions = {
 			NameLong: product.nameLong,
