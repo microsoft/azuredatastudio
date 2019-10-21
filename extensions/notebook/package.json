@@ -283,12 +283,12 @@
         },
         {
           "command": "notebook.command.searchUntitledBook",
-          "when": "view == untitledBookTreeView && viewItem == untitledBook && untitledBooks",
+          "when": "view == unsavedBookTreeView && viewItem == unsavedBook && unsavedBooks",
           "group": "inline"
         },
         {
           "command": "notebook.command.saveBook",
-          "when": "view == untitledBookTreeView && viewItem == untitledBook && untitledBooks",
+          "when": "view == unsavedBookTreeView && viewItem == unsavedBook && unsavedBooks",
           "group": "inline"
         }
       ],
@@ -410,8 +410,8 @@
           "name": "%title.SavedBooks%"
         },
         {
-          "id": "untitledBookTreeView",
-          "name": "%title.UntitledBooks%"
+          "id": "unsavedBookTreeView",
+          "name": "%title.UnsavedBooks%"
         }
       ]
     }

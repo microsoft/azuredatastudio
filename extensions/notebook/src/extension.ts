@@ -23,7 +23,7 @@ const JUPYTER_NOTEBOOK_PROVIDER = 'jupyter';
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample code loads the file into a data frame and shows the first 10 results.");
 const noNotebookVisible = localize('noNotebookVisible', "No notebook editor is active");
 const BOOKS_VIEWID = 'bookTreeView';
-const READONLY_BOOKS_VIEWID = 'untitledBookTreeView';
+const READONLY_BOOKS_VIEWID = 'unsavedBookTreeView';
 let controller: JupyterController;
 type ChooseCellType = { label: string, id: CellType };
 
