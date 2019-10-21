@@ -6,8 +6,6 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v1
-      - name: Prepare
-        run: yarn install
       - name: Lint
         uses: aaomidi/gh-action-tslint@master
         with:
