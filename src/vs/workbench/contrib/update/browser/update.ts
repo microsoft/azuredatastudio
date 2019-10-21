@@ -17,6 +17,7 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { IUpdateService, State as UpdateState, StateType, IUpdate } from 'vs/platform/update/common/update';
 import * as semver from 'semver-umd';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { ReleaseNotesManager } from './releaseNotesEditor';
 import { isWindows } from 'vs/base/common/platform';
@@ -187,6 +188,7 @@ export class UpdateContribution extends Disposable implements IWorkbenchContribu
 		@IStorageService private readonly storageService: IStorageService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@INotificationService private readonly notificationService: INotificationService,
+		@IDialogService private readonly dialogService: IDialogService,
 		@IUpdateService private readonly updateService: IUpdateService,
 		@IActivityService private readonly activityService: IActivityService,
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
@@ -279,11 +281,11 @@ export class UpdateContribution extends Disposable implements IWorkbenchContribu
 	}
 
 	private onUpdateNotAvailable(): void {
-		this.notificationService.notify({
-			severity: Severity.Info,
-			message: nls.localize('noUpdatesAvailable', "There are currently no updates available."),
-			source: nls.localize('update service', "Update Service"),
-		});
+		this.dialogService.show(
+			severity.Info,
+			nls.localize('noUpdatesAvailable', "There are currently no updates available."),
+			[nls.localize('ok', "OK")]
+		);
 	}
 
 	// linux
