@@ -292,4 +292,17 @@ registerComponentType({
 	selector: MarkdownOutputComponent.SELECTOR
 });
 
+/**
+ * A mime renderer for IPyWidgets
+ */
+registerComponentType({
+	mimeTypes: [
+		'application/vnd.jupyter.widget-view',
+		'application/vnd.jupyter.widget-view+json'
+	],
+	rank: 47,
+	safe: true,
+	ctor: MimeRendererComponent,
+	selector: MimeRendererComponent.SELECTOR
+});
 registerCellComponent(TextCellComponent);
