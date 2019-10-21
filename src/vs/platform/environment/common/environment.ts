@@ -73,17 +73,21 @@ export interface ParsedArgs {
 	'disable-user-env-probe'?: boolean;
 	'force'?: boolean;
 	'force-user-env'?: boolean;
-
-	// {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}} Start
 	aad?: boolean;
 	database?: string;
 	integrated?: boolean;
 	server?: string;
 	user?: string;
 	command?: string;
-	// {{SQL CARBON EDIT}}
-
-	// node flags
+	// {{SQL CARBON EDIT}} End
+	// chromium command line args: https://electronjs.org/docs/all#supported-chrome-command-line-switches
+	'no-proxy-server'?: boolean;
+	'proxy-server'?: string;
+	'proxy-bypass-list'?: string;
+	'proxy-pac-url'?: string;
+	'inspect'?: string;
+	'inspect-brk'?: string;
 	'js-flags'?: string;
 	'disable-gpu'?: boolean;
 	'nolazy'?: boolean;

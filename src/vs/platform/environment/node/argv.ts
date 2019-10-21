@@ -111,7 +111,7 @@ export const OPTIONS: OptionDescriptions<Required<ParsedArgs>> = {
 	'trace-options': { type: 'string' },
 	'force-user-env': { type: 'boolean' },
 
-	// {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}} Start
 	'command': { type: 'string', alias: 'c', cat: 'o', args: 'command-name', description: localize('commandParameter', 'Name of command to run') },
 	'database': { type: 'string', alias: 'D', cat: 'o', args: 'database', description: localize('databaseParameter', 'Database name') },
 	'server': { type: 'string', alias: 'S', cat: 'o', args: 'server', description: localize('serverParameter', 'Server name') },
@@ -120,7 +120,14 @@ export const OPTIONS: OptionDescriptions<Required<ParsedArgs>> = {
 	'integrated': { type: 'boolean', alias: 'E', cat: 'o', description: localize('integratedAuthParameter', 'Use Integrated authentication for server connection') },
 	// {{SQL CARBON EDIT}} - End
 
+	// chromium flags
+	'no-proxy-server': { type: 'boolean' },
+	'proxy-server': { type: 'string' },
+	'proxy-bypass-list': { type: 'string' },
+	'proxy-pac-url': { type: 'string' },
 	'js-flags': { type: 'string' }, // chrome js flags
+	'inspect': { type: 'string' },
+	'inspect-brk': { type: 'string' },
 	'nolazy': { type: 'boolean' }, // node inspect
 	'_urls': { type: 'string[]' },
 

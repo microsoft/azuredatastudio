@@ -606,6 +606,7 @@ export class ConfigurationChangeEvent extends AbstractConfigurationChangeEvent i
 		private _changedConfiguration: ConfigurationModel = new ConfigurationModel(),
 		private _changedConfigurationByResource: ResourceMap<ConfigurationModel> = new ResourceMap<ConfigurationModel>()) {
 		super();
+		this._source = ConfigurationTarget.DEFAULT;
 	}
 
 	get changedConfiguration(): IConfigurationModel {

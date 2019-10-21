@@ -19,7 +19,7 @@ import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteA
 
 export class WebTelemetryAppender implements ITelemetryAppender {
 
-	constructor(private _logService: ILogService, private _appender: ITelemetryAppender,
+	constructor(private _logService: ILogService, private _appender: IRemoteAgentService,
 		@IWorkbenchEnvironmentService private _environmentService: IWorkbenchEnvironmentService) { } // {{ SQL CARBON EDIT }}
 
 	log(eventName: string, data: any): void {
@@ -27,14 +27,14 @@ export class WebTelemetryAppender implements ITelemetryAppender {
 		this._logService.trace(`telemetry/${eventName}`, data);
 
 		const eventPrefix = this._environmentService.appQuality !== 'stable' ? '/adsworkbench/' : '/monacoworkbench/'; // {{SQL CARBON EDIT}}
-		this._appender.log(eventPrefix + eventName, {
+		this._appender.logTelemetry(eventPrefix + eventName, {
 			properties: data.properties,
 			measurements: data.measurements
 		});
 	}
 
 	flush(): Promise<void> {
-		return this._appender.flush();
+		return this._appender.flushTelemetry();
 	}
 }
 
@@ -55,9 +55,8 @@ export class TelemetryService extends Disposable implements ITelemetryService {
 		super();
 
 		if (!environmentService.args['disable-telemetry'] && !!productService.enableTelemetry) {
-			const telemetryProvider = environmentService.options && environmentService.options.telemetryAppender || { log: remoteAgentService.logTelemetry, flush: remoteAgentService.flushTelemetry };
 			const config: ITelemetryServiceConfig = {
-				appender: combinedAppender(new WebTelemetryAppender(logService, telemetryProvider, environmentService), new LogAppender(logService)), // {{SQL CARBON EDIT}} add environment Service
+				appender: combinedAppender(new WebTelemetryAppender(logService, remoteAgentService, environmentService), new LogAppender(logService)), // {{SQL CARBON EDIT}}
 				commonProperties: resolveWorkbenchCommonProperties(storageService, productService.commit, productService.version, environmentService.configuration.machineId, environmentService.configuration.remoteAuthority),
 				piiPaths: [environmentService.appRoot]
 			};
