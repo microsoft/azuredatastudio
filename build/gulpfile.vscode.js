@@ -391,16 +391,8 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 				.pipe(replace('@@QUALITY@@', quality))
 				.pipe(rename(function (f) { f.basename = product.applicationName; f.extname = ''; })));
 
-			// {{SQL CARBON EDIT}} Use separate icons for non-stable
-			if (quality !== 'stable') {
-				result = es.merge(result, gulp.src('resources/win32/VisualElementsManifest.xml', { base: 'resources/win32' })
-					.pipe(replace('code_70x70', 'code_70x70-insiders'))
-					.pipe(replace('code_150x150', 'code_150x150-insiders'))
-					.pipe(rename(product.nameShort + '.VisualElementsManifest.xml')));
-			} else {
-				result = es.merge(result, gulp.src('resources/win32/VisualElementsManifest.xml', { base: 'resources/win32' })
-					.pipe(rename(product.nameShort + '.VisualElementsManifest.xml')));
-			}
+			result = es.merge(result, gulp.src('resources/win32/VisualElementsManifest.xml', { base: 'resources/win32' })
+				.pipe(rename(product.nameShort + '.VisualElementsManifest.xml')));
 		} else if (platform === 'linux') {
 			result = es.merge(result, gulp.src('resources/linux/bin/code.sh', { base: '.' })
 				.pipe(replace('@@PRODNAME@@', product.nameLong))

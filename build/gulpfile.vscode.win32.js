@@ -45,7 +45,7 @@ function packageInnoSetup(iss, options, cb) {
 
 	// {{SQL CARBON EDIT}} Switch file icon for non-stable builds
 	if (product.quality !== 'stable') {
-		gulp.src('resources/win32/code_file-insiders.ico').pipe(rename('resources/win32/code_file.ico'));
+		gulp.src('resources/win32/code_file-insiders.ico').pipe(rename('resources/win32/code_file.ico')).pipe(gulp.dest('resources/win32'));
 	}
 
 	const keys = Object.keys(definitions);
