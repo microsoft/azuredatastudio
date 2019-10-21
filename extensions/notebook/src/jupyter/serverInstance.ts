@@ -99,7 +99,7 @@ export class ServerInstanceUtils {
 	}
 }
 
-export class PerNotebookServerInstance implements IServerInstance {
+export class PerFolderServerInstance implements IServerInstance {
 
 	/**
 	 * Root of the jupyter directory structure. Config and data roots will be
@@ -123,6 +123,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 	private _port: string;
 	private _uri: vscode.Uri;
 	private _isStarted: boolean = false;
+	private _isStopping: boolean = false;
 	private utils: ServerInstanceUtils;
 	private childProcess: ChildProcess;
 	private errorHandler: ErrorHandler = new ErrorHandler();
@@ -132,7 +133,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 	}
 
 	public get isStarted(): boolean {
-		return this._isStarted;
+		return this._isStarted && !this._isStopping;
 	}
 
 	public get port(): string {
@@ -153,13 +154,14 @@ export class PerNotebookServerInstance implements IServerInstance {
 
 	public async stop(): Promise<void> {
 		try {
+			this._isStopping = true;
 			if (this.baseDir) {
 				let exists = await this.utils.pathExists(this.baseDir);
 				if (exists) {
 					await this.utils.removeDir(this.baseDir);
 				}
 			}
-			if (this.isStarted) {
+			if (this._isStarted) {
 				let install = this.options.install;
 				let stopCommand = `"${install.pythonExecutable}" -m jupyter notebook stop ${this._port}`;
 				await this.utils.executeBufferedCommand(stopCommand, install.execOptions, install.outputChannel);
@@ -171,6 +173,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 			this._isStarted = false;
 			this.utils.ensureProcessEnded(this.childProcess);
 			this.handleConnectionClosed();
+
 		}
 	}
 
