@@ -55,7 +55,7 @@ export default class ImageComponent extends ComponentWithIconBase implements ICo
 		if (this.iconPath) {
 			if (!this._iconClass) {
 				super.updateIcon();
-				DOM.addClasses(this.imageContainer.nativeElement, this._iconClass, 'icon');
+				DOM.addClasses(this.imageContainer.nativeElement, this._iconClass, 'codicon');
 			} else {
 				super.updateIcon();
 			}

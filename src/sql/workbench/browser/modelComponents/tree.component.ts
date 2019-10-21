@@ -25,6 +25,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { TreeViewDataProvider } from 'sql/workbench/browser/modelComponents/treeViewDataProvider';
 import { getContentHeight, getContentWidth } from 'vs/base/browser/dom';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 class Root implements ITreeComponentItem {
 	label = {
@@ -119,6 +121,15 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 			this._register(this._tree.onDidChangeSelection(e => {
 				this._dataProvider.onNodeSelected(e.selection);
 			}));
+			this.onkeydown(this._inputContainer.nativeElement, (e: StandardKeyboardEvent) => {
+				// Enter on a tree will select the currently selected item as the default behavior
+				// but if not stopped here then will propagate up.
+				// This might have unintended effects such as a dialog closing.
+				if (e.keyCode === KeyCode.Enter) {
+					this._tree.toggleExpansion(this._tree.getFocus());
+					e.stopPropagation();
+				}
+			});
 			this._tree.refresh();
 			this.layout();
 		}

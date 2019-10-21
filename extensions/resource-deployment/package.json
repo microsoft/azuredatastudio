@@ -27,16 +27,6 @@
   "contributes": {
     "commands": [
       {
-        "command": "azdata.resource.sql-image.deploy",
-        "title": "%deploy-sql-image-command-name%",
-        "category": "%deploy-resource-command-category%"
-      },
-      {
-        "command": "azdata.resource.sql-bdc.deploy",
-        "title": "%deploy-sql-bdc-command-name%",
-        "category": "%deploy-resource-command-category%"
-      },
-      {
         "command": "azdata.resource.deploy",
         "title": "%deploy-resource-command-name%",
         "category": "%deploy-resource-command-category%"
@@ -56,14 +46,6 @@
       ],
       "dataExplorer/action": [
         {
-          "command": "azdata.resource.sql-image.deploy",
-          "group": "secondary"
-        },
-        {
-          "command": "azdata.resource.sql-bdc.deploy",
-          "group": "secondary"
-        },
-        {
           "command": "azdata.resource.deploy",
           "group": "secondary"
         }
@@ -72,6 +54,7 @@
     "resourceDeploymentTypes": [
       {
         "name": "sql-image",
+        "displayIndex": 2,
         "displayName": "%resource-type-sql-image-display-name%",
         "description": "%resource-type-sql-image-description%",
         "platforms": "*",
@@ -202,6 +185,7 @@
       },
       {
         "name": "sql-bdc",
+        "displayIndex": 3,
         "displayName": "%resource-type-sql-bdc-display-name%",
         "description": "%resource-type-sql-bdc-description%",
         "platforms": "*",
@@ -243,14 +227,15 @@
           {
             "wizard": {
               "type": "new-aks",
-              "notebook": "%bdc-2019-aks-notebook%"
+              "notebook": "%bdc-2019-aks-notebook%",
+              "azdata_notebook": "%azdata-bdc-2019-aks-notebook%"
             },
             "requiredTools": [
               {
                 "name": "kubectl"
               },
               {
-                "name": "azcli"
+                "name": "azure-cli"
               },
               {
                 "name": "azdata"
@@ -261,7 +246,8 @@
           {
             "wizard": {
               "type": "existing-aks",
-              "notebook": "%bdc-2019-existing-aks-notebook%"
+              "notebook": "%bdc-2019-existing-aks-notebook%",
+              "azdata_notebook": "%azdata-bdc-2019-existing-aks-notebook"
             },
             "requiredTools": [
               {
@@ -276,7 +262,8 @@
           {
             "wizard": {
               "type": "existing-kubeadm",
-              "notebook": "%bdc-2019-existing-kubeadm-notebook%"
+              "notebook": "%bdc-2019-existing-kubeadm-notebook%",
+              "azdata_notebook": "%azdata-bdc-2019-existing-kubeadm-notebook%"
             },
             "requiredTools": [
               {
@@ -309,6 +296,7 @@
       },
       {
         "name": "sql-windows-setup",
+        "displayIndex": 1,
         "displayName": "%resource-type-sql-windows-setup-display-name%",
         "description": "%resource-type-sql-windows-setup-description%",
         "platforms": [
@@ -350,14 +338,16 @@
     ]
   },
   "dependencies": {
+    "promisify-child-process": "^3.1.1",
+    "sudo-prompt": "^9.0.0",
     "vscode-nls": "^4.0.0",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "typemoq": "^2.1.0",
-    "vscode": "^1.1.26",
     "@types/yamljs": "0.2.30",
     "mocha-junit-reporter": "^1.17.0",
-    "mocha-multi-reporters": "^1.1.7"
+    "mocha-multi-reporters": "^1.1.7",
+    "typemoq": "^2.1.0",
+    "vscode": "^1.1.26"
   }
 }

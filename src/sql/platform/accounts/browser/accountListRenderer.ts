@@ -58,7 +58,7 @@ export class AccountPickerListRenderer implements IListRenderer<azdata.Account, 
 		const tableTemplate: AccountPickerListTemplate = Object.create(null);
 		const badge = DOM.$('div.badge');
 		tableTemplate.root = DOM.append(container, DOM.$('div.list-row.account-picker-list'));
-		tableTemplate.icon = DOM.append(tableTemplate.root, DOM.$('div.icon'));
+		tableTemplate.icon = DOM.append(tableTemplate.root, DOM.$('div.codicon'));
 		DOM.append(tableTemplate.icon, badge);
 		tableTemplate.badgeContent = DOM.append(badge, DOM.$('div.badge-content'));
 		tableTemplate.label = DOM.append(tableTemplate.root, DOM.$('div.label'));
@@ -81,7 +81,7 @@ export class AccountPickerListRenderer implements IListRenderer<azdata.Account, 
 		}
 
 		if (account.isStale) {
-			templateData.badgeContent.className = 'badge-content icon warning-badge';
+			templateData.badgeContent.className = 'badge-content codicon warning-badge';
 		} else {
 			templateData.badgeContent.className = 'badge-content';
 		}

@@ -46,7 +46,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	private async initialize(bookPaths: string[]): Promise<void> {
-		await vscode.commands.executeCommand('setContext', 'untitledBooks', this._openAsUntitled);
+		await vscode.commands.executeCommand('setContext', 'unsavedBooks', this._openAsUntitled);
 		await Promise.all(bookPaths.map(async (bookPath) => {
 			let book: BookModel = new BookModel(bookPath, this._openAsUntitled, this._extensionContext);
 			await book.initializeContents();
@@ -191,7 +191,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				}
 			}
 		}
+	}
 
+	public async searchJupyterBooks(): Promise<void> {
+		if (this.currentBook && this.currentBook.bookPath) {
+			let filesToIncludeFiltered = path.join(this.currentBook.bookPath, '**', '*.md') + ',' + path.join(this.currentBook.bookPath, '**', '*.ipynb');
+			vscode.commands.executeCommand('workbench.action.findInFiles', { filesToInclude: filesToIncludeFiltered, query: '' });
+		}
 	}
 
 	private runThrottledAction(resource: string, action: () => void) {

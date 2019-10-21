@@ -126,6 +126,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		let button = this._buttons.get(handle);
 		if (!button) {
 			button = new DialogButton(details.label, details.enabled);
+			button.position = details.position;
 			button.hidden = details.hidden;
 			button.onClick(() => this.onButtonClick(handle));
 			this._buttons.set(handle, button);
@@ -134,6 +135,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			button.enabled = details.enabled;
 			button.hidden = details.hidden;
 			button.focused = details.focused;
+			button.position = details.position;
 		}
 
 		return Promise.resolve();

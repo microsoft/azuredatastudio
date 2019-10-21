@@ -86,7 +86,7 @@ export class SparkJobSubmissionService {
 				return response.id;
 			}
 
-			return Promise.reject(new Error(localize('sparkJobSubmission_LivyNoBatchIdReturned',
+			return Promise.reject(new Error(localize('sparkJobSubmission.LivyNoBatchIdReturned',
 				'No Spark job batch id is returned from response.{0}[Error] {1}', os.EOL, JSON.stringify(response))));
 		} catch (error) {
 			return Promise.reject(error);
@@ -124,7 +124,7 @@ export class SparkJobSubmissionService {
 				return this.extractYarnAppIdFromLog(response.log);
 			}
 
-			return Promise.reject(localize('sparkJobSubmission_LivyNoLogReturned',
+			return Promise.reject(localize('sparkJobSubmission.LivyNoLogReturned',
 				'No log is returned within response.{0}[Error] {1}', os.EOL, JSON.stringify(response)));
 		} catch (error) {
 			return Promise.reject(error);

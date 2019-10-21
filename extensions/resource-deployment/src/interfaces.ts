@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { SemVer } from 'semver';
+import * as vscode from 'vscode';
 
 export const NoteBookEnvironmentVariablePrefix = 'AZDATA_NB_VAR_';
 
@@ -16,6 +16,7 @@ export interface ResourceType {
 	options: ResourceTypeOption[];
 	providers: DeploymentProvider[];
 	agreement?: AgreementInfo;
+	displayIndex?: number;
 	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
 }
 
@@ -92,6 +93,7 @@ export type DeploymentProvider = DialogDeploymentProvider | WizardDeploymentProv
 
 export interface WizardInfo {
 	notebook: string | NotebookInfo;
+	azdata_notebook: string | NotebookInfo;
 	type: BdcDeploymentType;
 }
 
@@ -158,19 +160,26 @@ export interface FieldInfo {
 	labelWidth?: string;
 	inputWidth?: string;
 	description?: string;
-	useCustomValidator?: boolean;
 	labelPosition?: LabelPosition; // overwrite the labelPosition of SectionInfo.
 	fontStyle?: FontStyle;
+	labelFontWeight?: FontWeight;
+	links?: azdata.LinkArea[];
+	editable?: boolean; // for editable dropdown
 }
 
-export enum LabelPosition {
+export const enum LabelPosition {
 	Top = 'top',
 	Left = 'left'
 }
 
-export enum FontStyle {
+export const enum FontStyle {
 	Normal = 'normal',
 	Italic = 'italic'
+}
+
+export enum FontWeight {
+	Normal = 'normal',
+	Bold = 'bold'
 }
 
 export enum FieldType {
@@ -190,6 +199,13 @@ export interface NotebookInfo {
 	linux: string;
 }
 
+export enum OsType {
+	win32 = 'win32',
+	darwin = 'darwin',
+	linux = 'linux',
+	others = 'others'
+}
+
 export interface ToolRequirementInfo {
 	name: string;
 	version: string;
@@ -202,20 +218,46 @@ export enum ToolType {
 	Azdata
 }
 
+export const enum ToolStatus {
+	NotInstalled = 'NotInstalled',
+	Installed = 'Installed',
+	Installing = 'Installing',
+	Error = 'Error',
+	Failed = 'Failed'
+}
+
 export interface ITool {
+	isInstalling: any;
 	readonly name: string;
 	readonly displayName: string;
 	readonly description: string;
 	readonly type: ToolType;
-	readonly version: SemVer | undefined;
 	readonly homePage: string;
-	readonly isInstalled: boolean;
-	loadInformation(): Promise<void>;
+	readonly displayStatus: string;
 	readonly statusDescription: string | undefined;
+	readonly autoInstallSupported: boolean;
+	readonly autoInstallRequired: boolean;
+	readonly isNotInstalled: boolean;
+	readonly needsInstallation: boolean;
+	readonly outputChannelName: string;
+	readonly fullVersion: string | undefined;
+	readonly onDidUpdateData: vscode.Event<ITool>;
+	showOutputChannel(preserveFocus?: boolean): void;
+	loadInformation(): Promise<void>;
+	install(): Promise<void>;
 }
 
-export enum BdcDeploymentType {
+export const enum BdcDeploymentType {
 	NewAKS = 'new-aks',
 	ExistingAKS = 'existing-aks',
 	ExistingKubeAdm = 'existing-kubeadm'
+}
+
+export interface Command {
+	command: string;
+	sudo?: boolean;
+	comment?: string;
+	workingDirectory?: string;
+	additionalEnvironmentVariables?: NodeJS.ProcessEnv;
+	ignoreError?: boolean;
 }

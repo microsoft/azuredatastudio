@@ -7,8 +7,8 @@ import * as nls from 'vs/nls';
 
 export class JobManagementUtilities {
 
-	public static startIconClass: string = 'action-label icon runJobIcon';
-	public static stopIconClass: string = 'action-label icon stopJobIcon';
+	public static startIconClass: string = 'action-label codicon runJobIcon';
+	public static stopIconClass: string = 'action-label codicon stopJobIcon';
 	public static jobMessageLength: number = 110;
 
 	public static convertToStatusString(status: number): string {
