@@ -660,6 +660,10 @@ export interface MainThreadExtensionServiceShape extends IDisposable {
 	$onExtensionHostExit(code: number): void;
 }
 
+export interface SCMProviderProps {
+	readonly treeRendering: boolean;
+}
+
 export interface SCMProviderFeatures {
 	hasQuickDiffProvider?: boolean;
 	count?: number;
@@ -693,7 +697,7 @@ export type SCMRawResourceSplices = [
 ];
 
 export interface MainThreadSCMShape extends IDisposable {
-	$registerSourceControl(handle: number, id: string, label: string, rootUri: UriComponents | undefined): void;
+	$registerSourceControl(handle: number, id: string, label: string, rootUri: UriComponents | undefined, props: SCMProviderProps): void;
 	$updateSourceControl(handle: number, features: SCMProviderFeatures): void;
 	$unregisterSourceControl(handle: number): void;
 
