@@ -80,6 +80,16 @@ export const dataResourceRendererFactory: IRenderMime.IRendererFactory = {
 	createRenderer: options => new widgets.RenderedDataResource(options)
 };
 
+export const ipywidgetFactory: IRenderMime.IRendererFactory = {
+	safe: false,
+	mimeTypes: [
+		'application/vnd.jupyter.widget-view',
+		'application/vnd.jupyter.widget-view+json'
+	],
+	defaultRank: 45,
+	createRenderer: options => new widgets.RenderedIPyWidget(options)
+};
+
 /**
  * The standard factories provided by the rendermime package.
  */
@@ -90,5 +100,6 @@ export const standardRendererFactories: ReadonlyArray<IRenderMime.IRendererFacto
 	imageRendererFactory,
 	javaScriptRendererFactory,
 	textRendererFactory,
-	dataResourceRendererFactory
+	dataResourceRendererFactory,
+	ipywidgetFactory
 ];
