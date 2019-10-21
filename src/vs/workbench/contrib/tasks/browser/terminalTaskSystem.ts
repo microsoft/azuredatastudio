@@ -113,7 +113,7 @@ export class TerminalTaskSystem implements ITaskSystem {
 
 	public static TelemetryEventName: string = 'taskService';
 
-	private static ProcessVarName = '__process__';
+	private static readonly ProcessVarName = '__process__';
 
 	private static shellQuotes: IStringDictionary<ShellQuotingOptions> = {
 		'cmd': {
@@ -987,6 +987,7 @@ export class TerminalTaskSystem implements ITaskSystem {
 				throw new Error('Task shell launch configuration should not be undefined here.');
 			}
 
+			terminalToReuse.terminal.scrollToBottom();
 			terminalToReuse.terminal.reuseTerminal(launchConfigs);
 
 			if (task.command.presentation && task.command.presentation.clear) {

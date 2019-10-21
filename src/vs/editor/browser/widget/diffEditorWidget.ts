@@ -1580,7 +1580,7 @@ const DECORATIONS = {
 
 class DiffEditorWidgetSideBySide extends DiffEditorWidgetStyle implements IDiffEditorWidgetStyle, IVerticalSashLayoutProvider {
 
-	static MINIMUM_EDITOR_WIDTH = 100;
+	static readonly MINIMUM_EDITOR_WIDTH = 100;
 
 	private _disableSash: boolean;
 	private readonly _sash: Sash;

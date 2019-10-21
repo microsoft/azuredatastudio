@@ -170,8 +170,8 @@ export interface TreeNode extends IDisposable { // {{SQL CARBON EDIT}} export in
 // {{SQL CARBON EDIT}}
 export class ExtHostTreeView<T> extends Disposable {
 
-	private static LABEL_HANDLE_PREFIX = '0';
-	private static ID_HANDLE_PREFIX = '1';
+	private static readonly LABEL_HANDLE_PREFIX = '0';
+	private static readonly ID_HANDLE_PREFIX = '1';
 
 	private readonly dataProvider: vscode.TreeDataProvider<T>;
 
