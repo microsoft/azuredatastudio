@@ -12,7 +12,7 @@ const localize = nls.loadMessageBundle();
 
 import { ApiWrapper } from '../apiWrapper';
 import { Command, ICommandViewContext, ProgressCommand, ICommandObjectExplorerContext } from './command';
-import { File, IFile, joinHdfsPath } from './fileSources';
+import { File, IFile, joinHdfsPath, FileType } from './fileSources';
 import { FolderNode, FileNode, HdfsFileSourceNode } from './hdfsProvider';
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import * as constants from '../constants';
@@ -102,8 +102,15 @@ export class UploadFilesCommand extends ProgressCommand {
 
 	private mapPathsToFiles(): (value: string, index: number, array: string[]) => Promise<File> {
 		return async (path: string) => {
-			let isDir = (await fs.lstat(path)).isDirectory();
-			return new File(path, isDir);
+			const stats = (await fs.lstat(path));
+			if (stats.isDirectory()) {
+				return new File(path, FileType.Directory);
+			} else if (stats.isSymbolicLink()) {
+				return new File(path, FileType.Symlink);
+			} else {
+				return new File(path, FileType.File);
+			}
+
 		};
 	}
 
@@ -113,7 +120,7 @@ export class UploadFilesCommand extends ProgressCommand {
 				// Throw here so that all recursion is ended
 				throw new Error('Upload canceled');
 			}
-			if (file.isDirectory) {
+			if (file.fileType === FileType.Directory) {
 				let dirName = fspath.basename(file.path);
 				let subFolder = await folderNode.mkdir(dirName);
 				let children: IFile[] = await Promise.all((await fs.readdir(file.path))

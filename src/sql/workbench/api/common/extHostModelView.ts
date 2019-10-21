@@ -74,7 +74,7 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 
 	groupContainer(): azdata.GroupBuilder {
 		let id = this.getNextComponentId();
-		let container: GenericContainerBuilder<azdata.GroupContainer, any, any> = new GenericContainerBuilder<azdata.GroupContainer, azdata.GroupLayout, azdata.GroupItemLayout>(this._proxy, this._handle, ModelComponentTypes.Group, id);
+		let container = new GroupContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Group, id);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
@@ -419,6 +419,12 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 			}
 		}
 		return result;
+	}
+}
+
+class GroupContainerBuilder extends ContainerBuilderImpl<azdata.GroupContainer, azdata.GroupLayout, azdata.GroupItemLayout> {
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(new GroupContainerComponentWrapper(proxy, handle, type, id));
 	}
 }
 
@@ -1291,7 +1297,7 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 
 	public get value(): string | azdata.CategoryValue {
 		let val = this.properties['value'];
-		if (!val && this.values && this.values.length > 0) {
+		if (!this.editable && !val && this.values && this.values.length > 0) {
 			val = this.values[0];
 		}
 		return val;
@@ -1542,6 +1548,19 @@ class HyperlinkComponentWrapper extends ComponentWrapper implements azdata.Hyper
 	}
 	public set url(v: string) {
 		this.setProperty('url', v);
+	}
+}
+
+class GroupContainerComponentWrapper extends ComponentWrapper implements azdata.GroupContainer {
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(proxy, handle, type, id);
+		this.properties = {};
+	}
+	public get collapsed(): boolean {
+		return this.properties['collapsed'];
+	}
+	public set collapsed(v: boolean) {
+		this.setProperty('collapsed', v);
 	}
 }
 

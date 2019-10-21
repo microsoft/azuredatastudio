@@ -5,9 +5,9 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { IFileSource } from '../objectExplorerNodeProvider/fileSources';
+import { IFileSource, FileType } from '../objectExplorerNodeProvider/fileSources';
 import { PermissionStatus, AclEntry, AclEntryScope, AclType, AclEntryPermission } from './aclEntry';
-import { FileStatus } from './fileStatus';
+import { FileStatus, hdfsFileTypeToFileType } from './fileStatus';
 import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
@@ -54,7 +54,7 @@ export class HdfsModel {
 	 * @param type The type of ACL to create
 	 */
 	public createAndAddAclEntry(name: string, type: AclType): void {
-		if (!this.permissionStatus) {
+		if (!this.permissionStatus || !name || name.length < 1) {
 			return;
 		}
 		const newEntry = new AclEntry(type, name, name);
@@ -84,7 +84,7 @@ export class HdfsModel {
 	 * @param recursive Whether to apply the changes recursively (to all sub-folders and files)
 	 */
 	public async apply(recursive: boolean = false): Promise<void> {
-		await this.applyAclChanges(this.path);
+		await this.applyAclChanges(this.path, hdfsFileTypeToFileType(this.fileStatus ? this.fileStatus.type : undefined));
 		if (recursive) {
 			azdata.tasks.startBackgroundOperation(
 				{
@@ -112,10 +112,9 @@ export class HdfsModel {
 			const files = await this.fileSource.enumerateFiles(path, true);
 			// Apply changes to all children of this path and then recursively apply to children of any directories
 			await Promise.all(
-				[
-					files.map(file => this.applyAclChanges(file.path)),
-					files.filter(f => f.isDirectory).map(d => this.applyToChildrenRecursive(op, d.path))
-				]);
+				files.map(file => this.applyAclChanges(file.path, file.fileType)).concat(
+					files.filter(f => f.fileType === FileType.Directory).map(d => this.applyToChildrenRecursive(op, d.path)))
+			);
 		} catch (error) {
 			const errMsg = localize('mssql.recursivePermissionOpError', "Error applying permission changes: {0}", (error instanceof Error ? error.message : error));
 			vscode.window.showErrorMessage(errMsg);
@@ -127,7 +126,7 @@ export class HdfsModel {
 	 * Applies the current set of Permissions/ACLs to the specified path
 	 * @param path The path to apply the changes to
 	 */
-	private async applyAclChanges(path: string): Promise<any> {
+	private async applyAclChanges(path: string, fileType: FileType | undefined): Promise<any> {
 		// HDFS won't remove existing default ACLs even if you call setAcl with no default ACLs specified. You
 		// need to call removeDefaultAcl specifically to remove them.
 		if (!this.permissionStatus.owner.getPermission(AclEntryScope.default) &&
@@ -136,7 +135,7 @@ export class HdfsModel {
 			await this.fileSource.removeDefaultAcl(path);
 		}
 		return Promise.all([
-			this.fileSource.setAcl(path, this.permissionStatus.owner, this.permissionStatus.group, this.permissionStatus.other, this.permissionStatus.aclEntries),
+			this.fileSource.setAcl(path, fileType, this.permissionStatus),
 			this.fileSource.setPermission(path, this.permissionStatus)]);
 	}
 }

@@ -3,10 +3,32 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export enum HdfsFileType {
+import { FileType } from '../objectExplorerNodeProvider/fileSources';
+
+export const enum HdfsFileType {
 	File = 'File',
 	Directory = 'Directory',
 	Symlink = 'Symlink'
+}
+
+/**
+ * Maps a @see HdfsFileType to its corresponding @see FileType. Will return undefined if
+ * passed in type is undefined.
+ * @param hdfsFileType The HdfsFileType to map from
+ */
+export function hdfsFileTypeToFileType(hdfsFileType: HdfsFileType | undefined): FileType | undefined {
+	switch (hdfsFileType) {
+		case HdfsFileType.Directory:
+			return FileType.Directory;
+		case HdfsFileType.File:
+			return FileType.File;
+		case HdfsFileType.Symlink:
+			return FileType.Symlink;
+		case undefined:
+			return undefined;
+		default:
+			throw new Error(`Unexpected file type ${hdfsFileType}`);
+	}
 }
 
 export class FileStatus {
