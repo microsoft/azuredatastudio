@@ -55,14 +55,14 @@
 	line-height: 18px !important;
 }
 
-.account-view .list-row .icon {
+.account-view .list-row .codicon {
 	flex: 0 0 50px;
 	height: 50px;
 	width: 50px;
 	background-size: 50px;
 }
 
-.account-view .list-row .icon .badge {
+.account-view .list-row .codicon .badge {
 	position: absolute;
 	top: 43px;
 	left: 43px;
@@ -71,7 +71,7 @@
 	height: 22px;
 }
 
-.account-view .list-row .icon .badge .badge-content {
+.account-view .list-row .codicon .badge .badge-content {
 	width: 22px;
 	height: 22px;
 	background-size: 22px;
@@ -90,7 +90,7 @@
 	background-repeat: no-repeat;
 }
 
-.account-view .list-row .actions-container .action-item .action-label.icon.remove {
+.account-view .list-row .actions-container .action-item .action-label.codicon.remove {
 	background-size: 14px !important;
 }
 

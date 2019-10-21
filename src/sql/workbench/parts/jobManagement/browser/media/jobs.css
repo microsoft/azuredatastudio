@@ -346,7 +346,7 @@ agentview-component
 	border-left: 1px dotted #444444;
 }
 
-.job-heading-container > .icon.in-progress {
+.job-heading-container > .codicon.in-progress {
 	height: 20px;
 	width: 20px;
 	padding-top: 16px;
@@ -574,21 +574,21 @@ table.jobprevruns > tbody {
 	display: block;
 }
 
-.vs .action-label.icon.refreshIcon {
+.vs .action-label.codicon.refreshIcon {
 	background-image: url("refresh.svg");
 }
 
-.vs-dark .action-label.icon.refreshIcon,
-.hc-black .action-label.icon.refreshIcon {
+.vs-dark .action-label.codicon.refreshIcon,
+.hc-black .action-label.codicon.refreshIcon {
 	background-image: url("refresh_inverse.svg");
 }
 
-.vs .action-label.icon.openNotebook {
+.vs .action-label.codicon.openNotebook {
 	background-image: url("open_notebook.svg");
 }
 
-.vs-dark .action-label.icon.openNotebook,
-.hc-black .action-label.icon.openNotebook {
+.vs-dark .action-label.codicon.openNotebook,
+.hc-black .action-label.codicon.openNotebook {
 	background-image: url("open_notebook_inverse.svg");
 }
 

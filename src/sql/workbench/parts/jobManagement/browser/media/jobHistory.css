@@ -151,40 +151,40 @@ input#accordion:checked ~ .accordion-content,
 	content: url("back_inverse.svg");
 }
 
-.vs .action-label.icon.newStepIcon {
+.vs .action-label.codicon.newStepIcon {
 	background-image: url("new.svg");
 }
 
-.vs-dark .action-label.icon.newStepIcon,
-.hc-black .action-label.icon.newStepIcon {
+.vs-dark .action-label.codicon.newStepIcon,
+.hc-black .action-label.codicon.newStepIcon {
 	background-image: url("new_inverse.svg");
 }
 
-jobhistory-component .hc-black .icon.edit,
-jobhistory-component .vs-dark .icon.edit,
-notebookhistory-component .hc-black .icon.edit,
-notebookhistory-component .vs-dark .icon.edit {
+jobhistory-component .hc-black .codicon.edit,
+jobhistory-component .vs-dark .codicon.edit,
+notebookhistory-component .hc-black .codicon.edit,
+notebookhistory-component .vs-dark .codicon.edit {
 	background-image: url("edit_inverse.svg");
 }
 
-jobhistory-component .vs .icon.edit,
-notebookhistory-component .vs .icon.edit {
+jobhistory-component .vs .codicon.edit,
+notebookhistory-component .vs .codicon.edit {
 	background-image: url("edit.svg");
 }
 
-jobhistory-component .actions-container .icon.edit,
-notebookhistory-component .actions-container .icon.edit {
+jobhistory-component .actions-container .codicon.edit,
+notebookhistory-component .actions-container .codicon.edit {
 	background-position: 0% 50%;
 	background-repeat: no-repeat;
 	background-size: 12px;
 }
 
-a.action-label.icon.runJobIcon.non-runnable {
+a.action-label.codicon.runJobIcon.non-runnable {
 	opacity: 0.4;
 	cursor: default;
 }
 
-a.action-label.icon.stopJobIcon.non-runnable {
+a.action-label.codicon.stopJobIcon.non-runnable {
 	opacity: 0.4;
 	cursor: default;
 }
@@ -308,8 +308,8 @@ notebookhistory-component > .jobhistory-heading-container {
 	display: flex;
 }
 
-jobhistory-component > .jobhistory-heading-container > .icon.in-progress,
-notebookhistory-component > .jobhistory-heading-container > .icon.in-progress {
+jobhistory-component > .jobhistory-heading-container > .codicon.in-progress,
+notebookhistory-component > .jobhistory-heading-container > .codicon.in-progress {
 	width: 20px;
 	height: 20px;
 	padding-top: 16px;
