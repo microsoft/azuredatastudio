@@ -169,8 +169,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		lifecycleService.onWillShutdown(() => this.shutdown());
 		this.hookContextKeyListeners();
 		this.hookNotebookThemesAndConfigListener();
-		// Temporary (issue #6427 will remove): Add a product quality key so we can only show books on Insiders
-		this._contextKeyService.createKey<string>('notebookQuality', environmentService.appQuality);
 
 	}
 
