@@ -337,7 +337,8 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 				gulp.src([
 					'resources/win32/code_70x70-insiders.png',
 					'resources/win32/code_150x150-insiders.png'
-				]).pipe(rename(function (f) { f.basename = f.basename.replace('-insiders', ''); }));
+				]).pipe(rename(function (f) { f.basename = f.basename.replace('-insiders', ''); }))
+				.pipe(gulp.dest('resources/win32'));
 			}
 			all = es.merge(all, gulp.src([
 				// {{SQL CARBON EDIT}} remove unused icons
