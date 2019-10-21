@@ -4,23 +4,23 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-.vs .chevron-right.icon {
+.vs .chevron-right.codicon {
 	background-image: url("chevron_right.svg");
 }
 
-.vs-dark .chevron-right.icon,
-.hc-black .chevron-right.icon {
+.vs-dark .chevron-right.codicon,
+.hc-black .chevron-right.codicon {
 	background-image: url("chevron_right_inverse.svg");
 }
 
-breadcrumb .icon {
+breadcrumb .codicon {
 	background-size: 16px;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
 	padding: 8px;
 }
 
-breadcrumb .chevron-right.icon {
+breadcrumb .chevron-right.codicon {
 	background-size: 16px;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
