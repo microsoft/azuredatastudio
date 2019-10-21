@@ -160,7 +160,6 @@ export interface FieldInfo {
 	labelWidth?: string;
 	inputWidth?: string;
 	description?: string;
-	useCustomValidator?: boolean;
 	labelPosition?: LabelPosition; // overwrite the labelPosition of SectionInfo.
 	fontStyle?: FontStyle;
 	labelFontWeight?: FontWeight;

@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { SectionInfo, FieldType } from '../../../interfaces';
-import { Validator, InputComponents, createSection, createGroupContainer, createLabel, createFlexContainer, createTextInput, createNumberInput, setModelValues, getInputBoxComponent, getCheckboxComponent, isInputBoxEmpty, getDropdownComponent, MissingRequiredInformationErrorMessage } from '../../modelViewUtils';
+import { Validator, InputComponents, createSection, createGroupContainer, createLabel, createFlexContainer, createTextInput, createNumberInput, setModelValues, getInputBoxComponent, getCheckboxComponent, getDropdownComponent } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 import { AuthenticationMode } from '../deployClusterWizardModel';
@@ -65,7 +65,6 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					label: localize('deployCluster.MasterSqlServerInstances', "SQL Server master instances"),
 					options: ['1', '3', '4', '5', '6', '7', '8', '9'],
 					defaultValue: '1',
-					required: true,
 					variableName: VariableNames.SQLServerScale_VariableName,
 				}, {
 					type: FieldType.Number,
@@ -73,7 +72,6 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					min: 1,
 					max: 100,
 					defaultValue: '1',
-					useCustomValidator: true,
 					required: true,
 					variableName: VariableNames.ComputePoolScale_VariableName,
 				}]
@@ -84,7 +82,6 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					min: 1,
 					max: 100,
 					defaultValue: '1',
-					useCustomValidator: true,
 					required: true,
 					variableName: VariableNames.DataPoolScale_VariableName,
 				}, {
@@ -93,7 +90,6 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					min: 0,
 					max: 100,
 					defaultValue: '0',
-					useCustomValidator: true,
 					required: true,
 					variableName: VariableNames.SparkPoolScale_VariableName
 				}]
@@ -105,7 +101,6 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						min: 1,
 						max: 100,
 						defaultValue: '1',
-						useCustomValidator: true,
 						required: true,
 						variableName: VariableNames.HDFSPoolScale_VariableName
 					}, {
@@ -161,7 +156,6 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					{
 						type: FieldType.Text,
 						label: localize('deployCluster.ControllerText', "Controller"),
-						useCustomValidator: true,
 						variableName: VariableNames.ControllerDataStorageClassName_VariableName,
 						required: true,
 						description: localize('deployCluster.AdvancedStorageDescription', "By default Controller storage settings will be applied to other services as well, you can expand the advanced storage settings to configure storage for other services."),
@@ -169,19 +163,19 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					}, {
 						type: FieldType.Number,
 						label: '',
-						useCustomValidator: true,
+						required: true,
 						min: 1,
 						variableName: VariableNames.ControllerDataStorageSize_VariableName,
 					}, {
 						type: FieldType.Text,
 						label: '',
-						useCustomValidator: true,
+						required: true,
 						min: 1,
 						variableName: VariableNames.ControllerLogsStorageClassName_VariableName,
 					}, {
 						type: FieldType.Number,
 						label: '',
-						useCustomValidator: true,
+						required: true,
 						min: 1,
 						variableName: VariableNames.ControllerLogsStorageSize_VariableName,
 					}
@@ -421,17 +415,27 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.setInputBoxValue(VariableNames.ControllerLogsStorageClassName_VariableName);
 		this.setInputBoxValue(VariableNames.ControllerLogsStorageSize_VariableName);
 		this.endpointHeaderRow.clearItems();
-		this.endpointSection.collapsed = this.wizard.model.authenticationMode !== AuthenticationMode.ActiveDirectory;
-		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
+		const adAuth = this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory;
+		const sqlServerScale = this.wizard.model.getIntegerValue(VariableNames.SQLServerScale_VariableName);
+
+		this.endpointSection.collapsed = !adAuth;
+		if (adAuth) {
 			this.endpointHeaderRow.addItems([this.endpointNameColumnHeader, this.dnsColumnHeader, this.portColumnHeader]);
 		}
+
+		getInputBoxComponent(VariableNames.ControllerDNSName_VariableName, this.inputComponents).required = adAuth;
+		getInputBoxComponent(VariableNames.GatewayDNSName_VariableName, this.inputComponents).required = adAuth;
+		getInputBoxComponent(VariableNames.AppServiceProxyDNSName_VariableName, this.inputComponents).required = adAuth;
+		getInputBoxComponent(VariableNames.ServiceProxyDNSName_VariableName, this.inputComponents).required = adAuth;
+		getInputBoxComponent(VariableNames.SQLServerDNSName_VariableName, this.inputComponents).required = adAuth;
+		getInputBoxComponent(VariableNames.ReadableSecondaryDNSName_VariableName, this.inputComponents).required = adAuth && sqlServerScale > 1;
+
 		this.loadEndpointRow(this.controllerEndpointRow, this.controllerNameLabel, this.controllerDNSInput, this.controllerPortInput);
 		this.loadEndpointRow(this.gatewayEndpointRow, this.gatewayNameLabel, this.gatewayDNSInput, this.gatewayPortInput);
 		this.loadEndpointRow(this.sqlServerEndpointRow, this.SqlServerNameLabel, this.sqlServerDNSInput, this.sqlServerPortInput);
 		this.loadEndpointRow(this.appServiceProxyEndpointRow, this.appServiceProxyNameLabel, this.appServiceProxyDNSInput, this.appServiceProxyPortInput);
 		this.loadEndpointRow(this.serviceProxyEndpointRow, this.serviceProxyNameLabel, this.serviceProxyDNSInput, this.serviceProxyPortInput);
 		const sqlServerScaleDropdown = getDropdownComponent(VariableNames.SQLServerScale_VariableName, this.inputComponents);
-		const sqlServerScale = this.wizard.model.getIntegerValue(VariableNames.SQLServerScale_VariableName);
 		if (sqlServerScale > 1) {
 			sqlServerScaleDropdown.values = ['3', '4', '5', '6', '7', '8', '9'];
 			this.loadEndpointRow(this.readableSecondaryEndpointRow, this.readableSecondaryNameLabel, this.readableSecondaryDNSInput, this.readableSecondaryPortInput);
@@ -444,36 +448,11 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };
 			if (pcInfo.newPage > pcInfo.lastPage) {
-				const allInputFilled: boolean = !isInputBoxEmpty(getInputBoxComponent(VariableNames.ComputePoolScale_VariableName, this.inputComponents))
-					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.DataPoolScale_VariableName, this.inputComponents))
-					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.HDFSPoolScale_VariableName, this.inputComponents))
-					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.SparkPoolScale_VariableName, this.inputComponents))
-					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ControllerDataStorageClassName_VariableName, this.inputComponents))
-					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ControllerDataStorageSize_VariableName, this.inputComponents))
-					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ControllerLogsStorageClassName_VariableName, this.inputComponents))
-					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ControllerLogsStorageSize_VariableName, this.inputComponents))
-					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ControllerPort_VariableName, this.inputComponents))
-					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.SQLServerPort_VariableName, this.inputComponents))
-					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.GateWayPort_VariableName, this.inputComponents))
-					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AppServiceProxyPort_VariableName, this.inputComponents))
-					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ServiceProxyPort_VariableName, this.inputComponents))
-					&& (getDropdownComponent(VariableNames.SQLServerScale_VariableName, this.inputComponents).value === '1'
-						|| (!isInputBoxEmpty(this.readableSecondaryPortInput)
-							&& (this.wizard.model.authenticationMode !== AuthenticationMode.ActiveDirectory || !isInputBoxEmpty(this.readableSecondaryDNSInput))))
-					&& (this.wizard.model.authenticationMode !== AuthenticationMode.ActiveDirectory
-						|| (!isInputBoxEmpty(this.gatewayDNSInput)
-							&& !isInputBoxEmpty(this.controllerDNSInput)
-							&& !isInputBoxEmpty(this.sqlServerDNSInput)
-							&& !isInputBoxEmpty(this.appServiceProxyDNSInput)
-							&& !isInputBoxEmpty(this.serviceProxyDNSInput)
-						));
 				const sparkEnabled = Number.parseInt(getInputBoxComponent(VariableNames.SparkPoolScale_VariableName, this.inputComponents).value!) !== 0
 					|| getCheckboxComponent(VariableNames.IncludeSpark_VariableName, this.inputComponents).checked!;
 
 				let errorMessage: string | undefined;
-				if (!allInputFilled) {
-					errorMessage = MissingRequiredInformationErrorMessage;
-				} else if (!sparkEnabled) {
+				if (!sparkEnabled) {
 					errorMessage = localize('deployCluster.SparkMustBeIncluded', "Invalid Spark configuration, you must check the 'Include Spark' checkbox or set the 'Spark pool instances' to at least 1.");
 				}
 				if (errorMessage) {
@@ -482,7 +461,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						level: azdata.window.MessageLevel.Error
 					};
 				}
-				return allInputFilled && sparkEnabled;
+				return sparkEnabled;
 			}
 			return true;
 		});
