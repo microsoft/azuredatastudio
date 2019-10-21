@@ -1008,7 +1008,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/schema-compare/out/schemaCompareResult" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/schema-compare/out/schemaCompareMainWindow" source-language="en" target-language="it" datatype="plaintext">
     <body>
       <trans-unit id="schemaCompare.CompareDetailsTitle">
         <source xml:lang="en">Compare Details</source>

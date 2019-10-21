@@ -302,8 +302,12 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	}
 
 	public onConnectCanceled(): void {
+		// If we're currently connecting and then cancel, set connected state to false
+		// Otherwise, keep connected state as it was
+		if (this.state.connecting) {
+			this.state.connected = false;
+		}
 		this.state.connecting = false;
-		this.state.connected = false;
 	}
 
 	public onConnectSuccess(params?: INewConnectionParams): void {

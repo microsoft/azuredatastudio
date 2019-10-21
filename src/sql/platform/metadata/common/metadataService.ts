@@ -14,13 +14,13 @@ export const IMetadataService = createDecorator<IMetadataService>(SERVICE_ID);
 export interface IMetadataService {
 	_serviceBrand: undefined;
 
-	getMetadata(connectionUri: string): Thenable<azdata.ProviderMetadata>;
+	getMetadata(connectionUri: string): Thenable<azdata.ProviderMetadata | undefined>;
 
 	getDatabaseNames(connectionUri: string): Thenable<string[]>;
 
-	getTableInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[]>;
+	getTableInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[] | undefined>;
 
-	getViewInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[]>;
+	getViewInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[] | undefined>;
 
 	/**
 	 * Register a metadata provider
@@ -37,7 +37,7 @@ export class MetadataService implements IMetadataService {
 	constructor(@IConnectionManagementService private _connectionService: IConnectionManagementService) {
 	}
 
-	public getMetadata(connectionUri: string): Thenable<azdata.ProviderMetadata> {
+	public getMetadata(connectionUri: string): Thenable<azdata.ProviderMetadata | undefined> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			let provider = this._providers[providerId];
@@ -61,7 +61,7 @@ export class MetadataService implements IMetadataService {
 		return Promise.resolve([]);
 	}
 
-	public getTableInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[]> {
+	public getTableInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[] | undefined> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			let provider = this._providers[providerId];
@@ -73,7 +73,7 @@ export class MetadataService implements IMetadataService {
 		return Promise.resolve(undefined);
 	}
 
-	public getViewInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[]> {
+	public getViewInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[] | undefined> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			let provider = this._providers[providerId];

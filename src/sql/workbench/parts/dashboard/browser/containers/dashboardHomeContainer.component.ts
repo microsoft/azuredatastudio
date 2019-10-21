@@ -37,7 +37,7 @@ import { ScrollbarVisibility } from 'vs/editor/common/standalone/standaloneEnums
 export class DashboardHomeContainer extends DashboardWidgetContainer {
 	@Input() private properties: WidgetConfig;
 	@ViewChild('propertiesClass') private _propertiesClass: DashboardWidgetWrapper;
-	@ContentChild(ScrollableDirective) private _scrollable;
+	@ContentChild(ScrollableDirective) private _scrollable: ScrollableDirective;
 
 	private ScrollbarVisibility = ScrollbarVisibility;
 

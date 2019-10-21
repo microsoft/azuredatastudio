@@ -9,7 +9,6 @@ import * as Constants from './constants';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { getCommonLaunchArgsAndCleanupOldLogFiles } from './utils';
-import { localize } from './localize';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature } from './features';
@@ -21,7 +20,9 @@ import { DacFxService } from './dacfx/dacFxService';
 import { CmsService } from './cms/cmsService';
 import { CompletionExtensionParams, CompletionExtLoadRequest } from './contracts';
 import { promises as fs } from 'fs';
+import * as nls from 'vscode-nls';
 
+const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 
@@ -40,7 +41,7 @@ export class SqlToolsServer {
 			let clientOptions = getClientOptions(context);
 			this.client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
 			const processStart = Date.now();
-			this.client.onReady().then(() => {
+			const clientReadyPromise = this.client.onReady().then(() => {
 				const processEnd = Date.now();
 				statusView.text = localize('serviceStartedStatusMsg', "{0} Started", Constants.serviceName);
 				setTimeout(() => {
@@ -59,7 +60,7 @@ export class SqlToolsServer {
 			statusView.show();
 			statusView.text = localize('startingServiceStatusMsg', "Starting {0}", Constants.serviceName);
 			this.client.start();
-			await this.activateFeatures(context);
+			await Promise.all([this.activateFeatures(context), clientReadyPromise]);
 			return this.client;
 		} catch (e) {
 			Telemetry.sendTelemetryEvent('ServiceInitializingFailed');

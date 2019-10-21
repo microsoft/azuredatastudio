@@ -13,7 +13,7 @@ export const FILE_SCHEMA: string = 'file';
 
 export function resolveCurrentDirectory(uri: string, rootPath: string): string | undefined {
 	let sqlUri = URI.parse(uri);
-	let currentDirectory: string;
+	let currentDirectory: string | undefined;
 
 	// use current directory of the sql file if sql file is saved
 	if (sqlUri.scheme === FILE_SCHEMA) {
@@ -30,12 +30,15 @@ export function resolveCurrentDirectory(uri: string, rootPath: string): string |
 	return currentDirectory;
 }
 
-export function resolveFilePath(uri: string, filePath: string, rootPath: string): string {
+export function resolveFilePath(uri: string, filePath: string, rootPath: string): string | undefined {
 	let currentDirectory = resolveCurrentDirectory(uri, rootPath);
-	return normalize(join(currentDirectory, filePath));
+	if (currentDirectory) {
+		return normalize(join(currentDirectory, filePath));
+	}
+	return undefined;
 }
 
-export function getRootPath(contextService: IWorkspaceContextService): string {
+export function getRootPath(contextService: IWorkspaceContextService): string | undefined {
 	let isWorkspace = contextService.getWorkbenchState() === WorkbenchState.WORKSPACE;
 	if (isWorkspace) {
 		let folder = contextService.getWorkspace().folders[0];

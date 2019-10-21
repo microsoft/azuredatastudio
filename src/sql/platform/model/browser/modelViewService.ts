@@ -27,7 +27,7 @@ export interface IModelView extends IView {
 	setProperties(componentId: string, properties: { [key: string]: any }): void;
 	setDataProvider(handle: number, componentId: string, context: any): void;
 	refreshDataProvider(componentId: string, item: any): void;
-	registerEvent(componentId: string);
+	registerEvent(componentId: string): void;
 	onEvent: Event<IModelViewEventArgs>;
 	validate(componentId: string): Thenable<boolean>;
 	readonly onDestroy: Event<void>;

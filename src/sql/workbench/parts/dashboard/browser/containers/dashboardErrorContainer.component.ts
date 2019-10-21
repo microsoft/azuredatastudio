@@ -19,7 +19,7 @@ import * as nls from 'vs/nls';
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => DashboardErrorContainer) }],
 	template: `
 		<div class="error-container">
-			<div class="icon globalError">
+			<div class="codicon globalError">
 			</div>
 			<div class="error-message" #errorMessage>
 			</div>

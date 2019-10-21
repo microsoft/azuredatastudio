@@ -1,0 +1,4 @@
+{
+	"flatfileimport.configuration.title": "Flat File Import configuration",
+	"flatfileimport.logDebugInfo": "[Optional] Log debug output to the console (View -> Output) and then select appropriate output channel from the dropdown"
+}

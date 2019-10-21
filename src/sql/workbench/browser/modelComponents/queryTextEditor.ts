@@ -22,10 +22,9 @@ import { StandaloneCodeEditor } from 'vs/editor/standalone/browser/standaloneCod
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
-import { IWindowService } from 'vs/platform/windows/common/windows';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
@@ -51,14 +50,13 @@ export class QueryTextEditor extends BaseTextEditor {
 		@ITextFileService textFileService: ITextFileService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IEditorService protected editorService: IEditorService,
-		@IWindowService windowService: IWindowService,
+		@IHostService hostService: IHostService,
 		@IConfigurationService private workspaceConfigurationService: IConfigurationService,
-		@IAccessibilityService private accessibilityService: IAccessibilityService
 
 	) {
 		super(
 			QueryTextEditor.ID, telemetryService, instantiationService, storageService,
-			configurationService, themeService, textFileService, editorService, editorGroupService, windowService);
+			configurationService, themeService, textFileService, editorService, editorGroupService, hostService);
 	}
 
 	public createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
@@ -112,14 +110,14 @@ export class QueryTextEditor extends BaseTextEditor {
 
 	public setWidth(width: number) {
 		if (this._dimension) {
-			this._dimension.width = width;
+			this._dimension = new DOM.Dimension(width, this._dimension.height);
 			this.layout();
 		}
 	}
 
 	public setHeight(height: number) {
 		if (this._dimension) {
-			this._dimension.height = height;
+			this._dimension = new DOM.Dimension(this._dimension.width, height);
 			this.layout(this._dimension);
 		}
 	}
@@ -129,7 +127,7 @@ export class QueryTextEditor extends BaseTextEditor {
 		return editorWidget.getScrollHeight();
 	}
 
-	public setHeightToScrollHeight(configChanged?: boolean): void {
+	public setHeightToScrollHeight(configChanged?: boolean, isEditorCollapsed?: boolean, ) {
 		let editorWidget = this.getControl() as ICodeEditor;
 		let layoutInfo = editorWidget.getLayoutInfo();
 		if (!this._scrollbarHeight) {
@@ -140,7 +138,12 @@ export class QueryTextEditor extends BaseTextEditor {
 			// Not ready yet
 			return;
 		}
-		let lineCount = editorWidgetModel.getLineCount();
+		let lineCount: number;
+		if (!!isEditorCollapsed) {
+			lineCount = 1;
+		} else {
+			lineCount = editorWidgetModel.getLineCount();
+		}
 		// Need to also keep track of lines that wrap; if we just keep into account line count, then the editor's height would not be
 		// tall enough and we would need to show a scrollbar. Unfortunately, it looks like there isn't any metadata saved in a ICodeEditor
 		// around max column length for an editor (which we could leverage to see if we need to loop through every line to determine
@@ -155,8 +158,8 @@ export class QueryTextEditor extends BaseTextEditor {
 		let wordWrapEnabled: boolean = this._editorWorkspaceConfig && this._editorWorkspaceConfig['wordWrap'] && this._editorWorkspaceConfig['wordWrap'] === 'on' ? true : false;
 		if (wordWrapEnabled) {
 			for (let line = 1; line <= lineCount; line++) {
-				// 4 columns is equivalent to the viewport column width and the edge of the editor
-				if (editorWidgetModel.getLineMaxColumn(line) >= layoutInfo.viewportColumn + 4) {
+				// 2 columns is equivalent to the viewport column width and the edge of the editor
+				if (editorWidgetModel.getLineMaxColumn(line) >= layoutInfo.viewportColumn + 2) {
 					// Subtract 1 because the first line should not count as a wrapped line
 					numberWrappedLines += Math.ceil(editorWidgetModel.getLineMaxColumn(line) / layoutInfo.viewportColumn) - 1;
 				}

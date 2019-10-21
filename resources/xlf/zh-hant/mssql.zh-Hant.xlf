@@ -94,10 +94,6 @@
         <source xml:lang="en">Configure Python for Notebooks</source>
         <target state="translated">為 Notebooks 設定 Python</target>
       </trans-unit>
-      <trans-unit id="title.openClusterStatusNotebook">
-        <source xml:lang="en">Cluster Status</source>
-        <target state="translated">叢集狀態</target>
-      </trans-unit>
       <trans-unit id="title.searchServers">
         <source xml:lang="en">Search: Servers</source>
         <target state="translated">搜尋: 伺服器</target>
@@ -745,10 +741,6 @@
       <trans-unit id="hdfsFolder">
         <source xml:lang="en">HDFS</source>
         <target state="translated">Hdfs</target>
-      </trans-unit>
-      <trans-unit id="dataServicesLabel">
-        <source xml:lang="en">Data Services</source>
-        <target state="translated">資料服務</target>
       </trans-unit>
     </body>
   </file>

@@ -1,12 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 11 11">
   <title>ADS_SQLCMD_Mode</title>
-  <path d="M6,10H3v1H6Z" fill="#015cda"/>
-  <rect x="3" y="6" width="10" height="1" fill="#015cda"/>
-  <path d="M10,9l6,3.5L10,16Zm1,1.742v3.516L14.016,12.5Z" fill="#015cda"/>
-  <path d="M1,15H9V14H2V5H14v5.175l1,.584V1H1M14,4H2V2H14Z" fill="#015cda"/>
-  <polygon points="11.985 9 13 9 13 8 11 8 11 8.425 11.985 9" fill="#015cda"/>
-  <rect x="3" y="8" width="6" height="1" fill="#015cda"/>
-  <rect x="7" y="10" width="2" height="1" fill="#015cda"/>
-  <rect x="3" y="12" width="6" height="1" fill="#015cda"/>
-  <rect width="16" height="16" fill="none"/>
+  <rect width="11" height="11" fill="none"/>
+  <rect y="2" width="10" height="1" fill="#fff"/>
+  <rect x="2" y="6" width="2" height="1" fill="#fff"/>
+  <rect x="2" y="4" width="3" height="1" fill="#fff"/>
+  <polygon points="10.962 6.462 10.255 5.755 8.358 7.651 6.462 5.755 5.755 6.462 7.651 8.358 5.755 10.255 6.462 10.962 8.358 9.065 10.255 10.962 10.962 10.255 9.065 8.358 10.962 6.462" fill="#fff"/>
+  <polygon points="5.596 9 1 9 1 1 9 1 9 5.596 10 4.596 10 0 0 0 0 10 4.596 10 5.596 9" fill="#fff"/>
+  <polygon points="10.962 6.462 10.255 5.755 8.358 7.651 6.462 5.755 5.755 6.462 7.651 8.358 5.755 10.255 6.462 10.962 8.358 9.065 10.255 10.962 10.962 10.255 9.065 8.358 10.962 6.462" fill="#fff"/>
 </svg>

@@ -1,0 +1,5 @@
+<div style="overflow: hidden; width: 100%; height: 100%; display: flex; flex-flow: row">
+	<div class="codicon in-progress" *ngIf="loading === true"></div>
+	<div #output link-handler [isTrusted]="isTrusted" [notebookUri]="notebookUri" class="notebook-preview" style="flex: 1 1 auto">
+	</div>
+</div>

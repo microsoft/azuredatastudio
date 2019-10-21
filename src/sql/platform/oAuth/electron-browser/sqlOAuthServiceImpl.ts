@@ -32,12 +32,4 @@ export class SqlOAuthService implements ISqlOAuthService {
 			}
 		);
 	}
-
-	/**
-	 * Registers a handler for the oauth-reply event on the IPC channel
-	 * @param handler Handler to call when the event is triggered
-	 */
-	registerOAuthCallback(handler: (event, args) => void): void {
-		electron.ipcRenderer.on('oauth-reply', handler);
-	}
 }

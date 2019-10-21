@@ -209,7 +209,7 @@ export class AddNewPackageTab {
 							let releaseInfo = packagesJson.releases[versionKey];
 							return Array.isArray(releaseInfo) && releaseInfo.length > 0;
 						});
-						versionNums = AddNewPackageTab.sortPackageVersions(versionKeys);
+						versionNums = utils.sortPackageVersions(versionKeys, false);
 					}
 
 					if (packagesJson.info && packagesJson.info.summary) {
@@ -247,7 +247,7 @@ export class AddNewPackageTab {
 				if (Array.isArray(packages)) {
 					let allVersions = packages.filter(pkg => pkg && pkg.version).map(pkg => pkg.version);
 					let singletonVersions = new Set<string>(allVersions);
-					let sortedVersions = AddNewPackageTab.sortPackageVersions(Array.from(singletonVersions));
+					let sortedVersions = utils.sortPackageVersions(Array.from(singletonVersions), false);
 					return {
 						name: packageName,
 						versions: sortedVersions,
@@ -258,32 +258,6 @@ export class AddNewPackageTab {
 		}
 
 		return undefined;
-	}
-
-	public static sortPackageVersions(versions: string[]): string[] {
-		return versions.sort((first, second) => {
-			// sort in descending order
-			let firstVersion = first.split('.').map(numStr => Number.parseInt(numStr));
-			let secondVersion = second.split('.').map(numStr => Number.parseInt(numStr));
-
-			// If versions have different lengths, then append zeroes to the shorter one
-			if (firstVersion.length > secondVersion.length) {
-				let diff = firstVersion.length - secondVersion.length;
-				secondVersion = secondVersion.concat(new Array(diff).fill(0));
-			} else if (secondVersion.length > firstVersion.length) {
-				let diff = secondVersion.length - firstVersion.length;
-				firstVersion = firstVersion.concat(new Array(diff).fill(0));
-			}
-
-			for (let i = 0; i < firstVersion.length; ++i) {
-				if (firstVersion[i] > secondVersion[i]) {
-					return -1;
-				} else if (firstVersion[i] < secondVersion[i]) {
-					return 1;
-				}
-			}
-			return 0;
-		});
 	}
 
 	private async doPackageInstall(): Promise<void> {
@@ -305,9 +279,9 @@ export class AddNewPackageTab {
 			operation: op => {
 				let installPromise: Promise<void>;
 				if (this.dialog.currentPkgType === PythonPkgType.Anaconda) {
-					installPromise = this.jupyterInstallation.installCondaPackage(packageName, packageVersion);
+					installPromise = this.jupyterInstallation.installCondaPackages([{ name: packageName, version: packageVersion }], false);
 				} else {
-					installPromise = this.jupyterInstallation.installPipPackage(packageName, packageVersion);
+					installPromise = this.jupyterInstallation.installPipPackages([{ name: packageName, version: packageVersion }], false);
 				}
 				installPromise
 					.then(async () => {

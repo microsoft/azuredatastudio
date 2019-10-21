@@ -631,6 +631,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			case NotebookChangeType.CellOutputUpdated:
 			case NotebookChangeType.CellSourceUpdated:
 			case NotebookChangeType.DirtyStateChanged:
+			case NotebookChangeType.CellInputVisibilityChanged:
 			case NotebookChangeType.CellOutputCleared:
 				return NotebookChangeKind.ContentUpdated;
 			case NotebookChangeType.KernelChanged:
@@ -708,8 +709,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
 					if (result.next.scheme === Schemas.untitled) {
-						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.next.path)}`);
-						let content = await this._fileService.readFile(URI.parse(result.next.path));
+						let untitledNbName: URI = URI.parse(`untitled:${result.next.path}`);
+						let content = await this._fileService.readFile(URI.file(result.next.path));
 						await this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
 					}
 					else {
@@ -721,8 +722,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
 					if (result.previous.scheme === Schemas.untitled) {
-						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.previous.path)}`);
-						let content = await this._fileService.readFile(URI.parse(result.previous.path));
+						let untitledNbName: URI = URI.parse(`untitled:${result.previous.path}`);
+						let content = await this._fileService.readFile(URI.file(result.previous.path));
 						await this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
 					}
 					else {

@@ -56,20 +56,39 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 			endpointsArray = endpointsArray.map(e => {
 				e.description = getEndpointDisplayText(e.serviceName, e.description);
 				return e;
-			}).sort((a, b) => a.endpoint.localeCompare(b.endpoint));
+			});
 
-			const container = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
+			// Sort the endpoints. The sort method is that SQL Server Master is first - followed by all
+			// others in alphabetical order by endpoint
+			const sqlServerMasterEndpoints = endpointsArray.filter(e => e.serviceName === Endpoint.sqlServerMaster);
+			endpointsArray = endpointsArray.filter(e => e.serviceName !== Endpoint.sqlServerMaster)
+				.sort((e1, e2) => e1.endpoint.localeCompare(e2.endpoint));
+			endpointsArray.unshift(...sqlServerMasterEndpoints);
+
+			const container = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%' }).component();
 			endpointsArray.forEach(endpointInfo => {
-
 				const endPointRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
 				const nameCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.description }).component();
 				endPointRow.addItem(nameCell, { CSSStyles: { 'width': '35%', 'font-weight': '600', 'user-select': 'text' } });
 				if (hyperlinkedEndpoints.findIndex(e => e === endpointInfo.serviceName) >= 0) {
-					const linkCell = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: endpointInfo.endpoint, url: endpointInfo.endpoint }).component();
-					endPointRow.addItem(linkCell, { CSSStyles: { 'width': '62%', 'color': '#0078d4', 'text-decoration': 'underline', 'padding-top': '10px' } });
+					const linkCell = view.modelBuilder.hyperlink()
+						.withProperties<azdata.HyperlinkComponentProperties>({
+							label: endpointInfo.endpoint,
+							title: endpointInfo.endpoint,
+							url: endpointInfo.endpoint
+						}).component();
+					endPointRow.addItem(linkCell, { CSSStyles: { 'width': '62%', 'color': '#0078d4', 'text-decoration': 'underline', 'padding-top': '10px', 'overflow': 'hidden', 'text-overflow': 'ellipsis' } });
 				}
 				else {
-					const endpointCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.endpoint }).component();
+					const endpointCell =
+						view.modelBuilder.text()
+							.withProperties<azdata.TextComponentProperties>(
+								{
+									value: endpointInfo.endpoint,
+									title: endpointInfo.endpoint,
+									CSSStyles: { 'overflow': 'hidden', 'text-overflow': 'ellipsis' }
+								})
+							.component();
 					endPointRow.addItem(endpointCell, { CSSStyles: { 'width': '62%', 'user-select': 'text' } });
 				}
 				const copyValueCell = view.modelBuilder.button().component();
@@ -84,7 +103,7 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 
 				container.addItem(endPointRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'box-sizing': 'border-box', 'user-select': 'text' } });
 			});
-			const endpointsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '540px', height: '100%', alignItems: 'left', position: 'absolute' }).component();
+			const endpointsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '540px', height: '100%', position: 'absolute' }).component();
 			endpointsContainer.addItem(container, { CSSStyles: { 'padding-top': '25px', 'padding-left': '5px' } });
 
 			await view.initializeModel(endpointsContainer);

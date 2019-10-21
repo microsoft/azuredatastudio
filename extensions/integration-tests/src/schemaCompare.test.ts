@@ -46,7 +46,7 @@ if (context.RunTest) {
 		test('Schema compare dacpac to dacpac comparison and scmp', async function () {
 			await schemaCompareTester.SchemaCompareDacpacToDacpac();
 		});
-		test('Schema compare database to database comparison, script generation, and scmp', async function () {
+		test('Schema compare database to database comparison, script generation, and scmp @UNSTABLE@', async function () {
 			await schemaCompareTester.SchemaCompareDatabaseToDatabase();
 		});
 		// TODO: figure out why this is failing with Error: This editor is not connected to a database Parameter name: OwnerUri
@@ -179,8 +179,8 @@ class SchemaCompareTester {
 			fs.unlinkSync(filepath);
 		}
 		finally {
-			await utils.deleteDB(sourceDB, ownerUri);
-			await utils.deleteDB(targetDB, ownerUri);
+			await utils.deleteDB(server, sourceDB, ownerUri);
+			await utils.deleteDB(server, targetDB, ownerUri);
 		}
 	}
 
@@ -249,7 +249,7 @@ class SchemaCompareTester {
 			assert(openScmpResult.targetEndpointInfo.databaseName === target.databaseName, `Expected: target database to be ${target.databaseName}, Actual: ${openScmpResult.targetEndpointInfo.databaseName}`);
 		}
 		finally {
-			await utils.deleteDB(targetDB, ownerUri);
+			await utils.deleteDB(server, targetDB, ownerUri);
 		}
 	}
 

@@ -67,7 +67,7 @@ declare module 'azdata' {
 	}
 
 	export interface SerializeDataResult {
-		messages: string;
+		messages?: string;
 		succeeded: boolean;
 	}
 

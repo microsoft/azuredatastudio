@@ -245,6 +245,94 @@ suite('Cell Model', function (): void {
 		should(JSON.stringify(cell.source)).equal(JSON.stringify(['']));
 	});
 
+	test('Should parse metadata\'s hide_input tag correctly', async function (): Promise<void> {
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: ''
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+
+		should(model.isCollapsed).be.false();
+		model.isCollapsed = true;
+		should(model.isCollapsed).be.true();
+		model.isCollapsed = false;
+		should(model.isCollapsed).be.false();
+
+		let modelJson = model.toJSON();
+		should(modelJson.metadata.tags).not.be.undefined();
+		should(modelJson.metadata.tags).not.containEql('hide_input');
+
+		contents.metadata = {
+			tags: ['hide_input']
+		};
+		model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+
+		should(model.isCollapsed).be.true();
+		model.isCollapsed = false;
+		should(model.isCollapsed).be.false();
+		model.isCollapsed = true;
+		should(model.isCollapsed).be.true();
+
+		modelJson = model.toJSON();
+		should(modelJson.metadata.tags).not.be.undefined();
+		should(modelJson.metadata.tags).containEql('hide_input');
+
+		contents.metadata = {
+			tags: ['not_a_real_tag']
+		};
+		model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		modelJson = model.toJSON();
+		should(modelJson.metadata.tags).not.be.undefined();
+		should(modelJson.metadata.tags).not.containEql('hide_input');
+
+		contents.metadata = {
+			tags: ['not_a_real_tag', 'hide_input']
+		};
+		model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		modelJson = model.toJSON();
+		should(modelJson.metadata.tags).not.be.undefined();
+		should(modelJson.metadata.tags).containEql('hide_input');
+	});
+
+	test('Should emit event after collapsing cell', async function (): Promise<void> {
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: ''
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		should(model.isCollapsed).be.false();
+
+		let createCollapsePromise = () => {
+			return new Promise((resolve, reject) => {
+				setTimeout(() => reject(), 2000);
+				model.onCollapseStateChanged(isCollapsed => {
+					resolve(isCollapsed);
+				});
+			});
+		};
+
+		should(model.isCollapsed).be.false();
+		let collapsePromise = createCollapsePromise();
+		model.isCollapsed = true;
+		let isCollapsed = await collapsePromise;
+		should(isCollapsed).be.true();
+
+		collapsePromise = createCollapsePromise();
+		model.isCollapsed = false;
+		isCollapsed = await collapsePromise;
+		should(isCollapsed).be.false();
+	});
+
 	suite('Model Future handling', function (): void {
 		let future: TypeMoq.Mock<EmptyFuture>;
 		let cell: ICellModel;

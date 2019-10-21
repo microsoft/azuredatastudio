@@ -13,7 +13,7 @@ export const SERVICE_ID = 'modelViewService';
 export interface IModelViewService {
 	_serviceBrand: undefined;
 	onRegisteredModelView: Event<IModelView>;
-	registerModelView(widget: IModelView);
+	registerModelView(widget: IModelView): void;
 }
 
 export const IModelViewService = createDecorator<IModelViewService>(SERVICE_ID);

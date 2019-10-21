@@ -16,6 +16,7 @@
 			"request": "attach",
 			"name": "Attach to Extension Host",
 			"port": 5870,
+			"timeout": 30000,
 			"restart": true,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
@@ -67,15 +68,15 @@
 			"name": "Launch azuredatastudio",
 			"windows": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat",
-				"timeout": 20000
+				"timeout": 45000
 			},
 			"osx": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
-				"timeout": 20000
+				"timeout": 45000
 			},
 			"linux": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
-				"timeout": 20000
+				"timeout": 45000
 			},
 			"env": {
 				"VSCODE_EXTHOST_WILL_SEND_SOCKET": null
@@ -165,7 +166,10 @@
 			"cwd": "${workspaceFolder}",
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
-			]
+			],
+			"env": {
+				"MOCHA_COLORS": "true"
+			}
 		},
 		{
 			"type": "chrome",
@@ -179,6 +183,22 @@
 			},
 			"linux": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.sh"
+			},
+			"webRoot": "${workspaceFolder}",
+			"timeout": 45000
+		},
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Run Extension Integration Tests",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql-test-integration.bat"
+			},
+			"osx": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql-test-integration.sh"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql-test-integration.sh"
 			},
 			"webRoot": "${workspaceFolder}",
 			"timeout": 45000
@@ -197,6 +217,13 @@
 			"configurations": [
 				"Attach to Extension Host",
 				"Run Extension Unit Tests"
+			]
+		},
+		{
+			"name": "Debug Extension Integration Tests",
+			"configurations": [
+				"Attach to Extension Host",
+				"Run Extension Integration Tests"
 			]
 		},
 		{

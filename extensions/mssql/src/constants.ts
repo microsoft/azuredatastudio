@@ -23,7 +23,6 @@ export const groupIdPropName = 'groupId';
 export const defaultKnoxPort = 30443;
 export const groupIdName = 'groupId';
 export const sqlProviderName = 'MSSQL';
-export const dataService = 'Data Services';
 
 export const UNTITLED_SCHEMA = 'untitled';
 
@@ -57,13 +56,15 @@ export enum MssqlClusterItems {
 }
 
 export enum MssqlClusterItemsSubType {
-	Spark = 'mssqlCluster:spark'
+	Mount = ':mount:',
+	MountChild = ':mountChild:',
+	Spark = ':spark:'
 }
 
 // SPARK JOB SUBMISSION //////////////////////////////////////////////////////////
 export const mssqlClusterNewNotebookTask = 'mssqlCluster.task.newNotebook';
 export const mssqlClusterOpenNotebookTask = 'mssqlCluster.task.openNotebook';
-export const mssqlopenClusterStatusNotebook = 'mssqlCluster.task.openClusterStatusNotebook';
+export const mssqlOpenClusterDashboard = 'mssqlCluster.task.openClusterDashboard';
 export const mssqlClusterLivySubmitSparkJobCommand = 'mssqlCluster.livy.cmd.submitSparkJob';
 export const mssqlClusterLivySubmitSparkJobFromFileCommand = 'mssqlCluster.livy.cmd.submitFileToSparkJob';
 export const mssqlClusterLivySubmitSparkJobTask = 'mssqlCluster.livy.task.submitSparkJob';

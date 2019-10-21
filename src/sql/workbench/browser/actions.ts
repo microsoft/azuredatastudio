@@ -12,10 +12,11 @@ import { Task } from 'sql/platform/tasks/browser/tasksRegistry';
 import { ObjectMetadata } from 'azdata';
 
 import { Action } from 'vs/base/common/actions';
-import { IWindowsService } from 'vs/platform/windows/common/windows';
 import * as nls from 'vs/nls';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { URI } from 'vs/base/common/uri';
 
 export interface BaseActionContext {
 	object?: ObjectMetadata;
@@ -85,6 +86,6 @@ export class ConfigureDashboardAction extends Task {
 	}
 
 	runTask(accessor: ServicesAccessor): Promise<void> {
-		return accessor.get<IWindowsService>(IWindowsService).openExternal(ConfigureDashboardAction.configHelpUri).then();
+		return accessor.get(IOpenerService).open(URI.parse(ConfigureDashboardAction.configHelpUri)).then();
 	}
 }

@@ -22,7 +22,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { Event } from 'vs/base/common/event';
-import { dispose, IDisposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { DisposableStore } from 'vs/base/common/lifecycle';
 import { ISelectionData } from 'azdata';
 import { Action, IActionViewItem } from 'vs/base/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';

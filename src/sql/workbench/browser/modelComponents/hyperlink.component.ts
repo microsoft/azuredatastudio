@@ -10,14 +10,14 @@ import {
 
 import * as azdata from 'azdata';
 
-import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
+import { TitledComponent } from 'sql/workbench/browser/modelComponents/titledComponent';
 
 @Component({
 	selector: 'modelview-hyperlink',
-	template: `<a [href]="getUrl()" target="blank">{{getLabel()}}</a>`
+	template: `<a [href]="getUrl()" [title]="title" target="blank">{{getLabel()}}</a>`
 })
-export default class HyperlinkComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class HyperlinkComponent extends TitledComponent implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 

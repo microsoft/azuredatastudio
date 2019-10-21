@@ -4,14 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
-import * as Constants from 'sql/workbench/parts/query/common/constants';
 import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedConstants';
 import { SaveResultsRequestParams } from 'azdata';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { ISaveRequest, SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { IWindowsService, FileFilter } from 'vs/platform/windows/common/windows';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
@@ -25,14 +23,15 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { getRootPath, resolveCurrentDirectory, resolveFilePath } from 'sql/platform/common/pathUtilities';
 import { IOutputService, IOutputChannelRegistry, IOutputChannel, Extensions as OutputExtensions } from 'vs/workbench/contrib/output/common/output';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IFileDialogService, FileFilter } from 'vs/platform/dialogs/common/dialogs';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 let prevSavePath: string;
 
 
 export interface SaveResultsResponse {
 	succeeded: boolean;
-	messages: string;
+	messages?: string;
 }
 
 interface ICsvConfig {
@@ -60,9 +59,9 @@ export class ResultSerializer {
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@IEditorService private _editorService: IEditorService,
 		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
-		@IWindowsService private _windowsService: IWindowsService,
 		@IFileDialogService private readonly fileDialogService: IFileDialogService,
-		@INotificationService private _notificationService: INotificationService
+		@INotificationService private _notificationService: INotificationService,
+		@IInstantiationService private readonly _instantiationService: IInstantiationService
 	) { }
 
 	/**
@@ -94,7 +93,7 @@ export class ResultSerializer {
 	/**
 	 * Handle save request by getting filename from user and sending request to service
 	 */
-	public handleSerialization(uri: string, format: SaveFormat, sendRequest: ((filePath: string) => Promise<SaveResultsResponse>)): Thenable<void> {
+	public handleSerialization(uri: string, format: SaveFormat, sendRequest: ((filePath: string) => Promise<SaveResultsResponse | undefined>)): Thenable<void> {
 		const self = this;
 		return this.promptForFilepath(format, uri).then(filePath => {
 			if (filePath) {
@@ -103,7 +102,7 @@ export class ResultSerializer {
 				}
 				return self.doSave(filePath, format, () => sendRequest(filePath));
 			}
-			return Promise.resolve(undefined);
+			return Promise.resolve();
 		});
 	}
 
@@ -313,14 +312,14 @@ export class ResultSerializer {
 			[{
 				label: nls.localize('openLocation', "Open file location"),
 				run: () => {
-					let action = new ShowFileInFolderAction(savedFilePath, label || path.sep, this._windowsService);
+					let action = this._instantiationService.createInstance(ShowFileInFolderAction, savedFilePath, label || path.sep);
 					action.run();
 					action.dispose();
 				}
 			}, {
 				label: nls.localize('openFile', "Open file"),
 				run: () => {
-					let action = new OpenFileInFolderAction(savedFilePath, label || path.sep, this._windowsService);
+					let action = this._instantiationService.createInstance(OpenFileInFolderAction, savedFilePath, label || path.sep);
 					action.run();
 					action.dispose();
 				}
@@ -331,19 +330,19 @@ export class ResultSerializer {
 	/**
 	 * Send request to sql tools service to save a result set
 	 */
-	private async doSave(filePath: string, format: string, sendRequest: () => Promise<SaveResultsResponse>): Promise<void> {
+	private async doSave(filePath: string, format: string, sendRequest: () => Promise<SaveResultsResponse | undefined>): Promise<void> {
 
 		this.logToOutputChannel(LocalizedConstants.msgSaveStarted + filePath);
 
 		// send message to the sqlserverclient for converting results to the requested format and saving to filepath
 		try {
 			let result = await sendRequest();
-			if (result.messages) {
+			if (!result || result.messages) {
 				this._notificationService.notify({
 					severity: Severity.Error,
-					message: LocalizedConstants.msgSaveFailed + result.messages
+					message: LocalizedConstants.msgSaveFailed + (result ? result.messages : '')
 				});
-				this.logToOutputChannel(LocalizedConstants.msgSaveFailed + result.messages);
+				this.logToOutputChannel(LocalizedConstants.msgSaveFailed + (result ? result.messages : ''));
 			} else {
 				this.promptFileSavedNotification(filePath);
 				this.logToOutputChannel(LocalizedConstants.msgSaveSucceeded + filePath);

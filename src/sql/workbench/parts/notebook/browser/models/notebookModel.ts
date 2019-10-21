@@ -60,6 +60,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private _cells: ICellModel[];
 	private _defaultLanguageInfo: nb.ILanguageInfo;
+	private _tags: string[];
 	private _language: string;
 	private _onErrorEmitter = new Emitter<INotification>();
 	private _savedKernelInfo: nb.IKernelInfo;
@@ -557,6 +558,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return undefined;
 	}
 
+	public get tags(): string[] {
+		return this._tags;
+	}
 
 	public get languageInfo(): nb.ILanguageInfo {
 		return this._defaultLanguageInfo;
@@ -836,7 +840,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private async loadActiveContexts(kernelChangedArgs: nb.IKernelChangedArgs): Promise<void> {
 		if (kernelChangedArgs && kernelChangedArgs.newValue && kernelChangedArgs.newValue.name) {
 			let kernelDisplayName = this.getDisplayNameFromSpecName(kernelChangedArgs.newValue);
-			this._activeContexts = await NotebookContexts.getContextsForKernel(this._notebookOptions.connectionService, this.getApplicableConnectionProviderIds(kernelDisplayName), kernelChangedArgs, this.connectionProfile);
+			this._activeContexts = NotebookContexts.getContextsForKernel(this._notebookOptions.connectionService, this.getApplicableConnectionProviderIds(kernelDisplayName), kernelChangedArgs, this.connectionProfile);
 			this._contextsChangedEmitter.fire();
 			if (this.contexts.defaultConnection !== undefined && this.contexts.defaultConnection.serverName !== undefined && this.contexts.defaultConnection.title !== undefined) {
 				await this.changeContext(this.contexts.defaultConnection.title, this.contexts.defaultConnection);
@@ -991,6 +995,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		// TODO update language and kernel when these change
 		metadata.kernelspec = this._savedKernelInfo;
 		metadata.language_info = this.languageInfo;
+		metadata.tags = this._tags;
 		return {
 			metadata,
 			nbformat_minor: this._nbformatMinor,
@@ -1007,6 +1012,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		switch (change) {
 			case NotebookChangeType.CellOutputUpdated:
 			case NotebookChangeType.CellSourceUpdated:
+			case NotebookChangeType.CellInputVisibilityChanged:
 				changeInfo.isDirty = true;
 				changeInfo.modelContentChangedEvent = cell.modelContentChangedEvent;
 				break;

@@ -187,11 +187,11 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 
 			this.pickScheduleButton = view.modelBuilder.button().withProperties({
 				label: PickScheduleButtonString,
-				width: 100
+				width: 110
 			}).component();
 			this.removeScheduleButton = view.modelBuilder.button().withProperties({
 				label: RemoveScheduleButtonString,
-				width: 100
+				width: 110
 			}).component();
 			this.pickScheduleButton.onDidClick(() => {
 				let pickScheduleDialog = new PickScheduleDialog(this.model.ownerUri, this.model.name);
@@ -301,7 +301,6 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 	private createRowContainer(view: azdata.ModelView): azdata.FlexBuilder {
 		return view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
-			alignItems: 'left',
 			justifyContent: 'space-between'
 		});
 	}

@@ -34,7 +34,7 @@ export function equalBookItems(book: BookTreeItem, expectedBook: ExpectedBookIte
 	}
 }
 
-describe.skip('BookTreeViewProviderTests', function() {
+describe('BookTreeViewProviderTests @UNSTABLE@', function() {
 
 	describe('BookTreeViewProvider.getChildren', function (): void {
 		let rootFolderPath: string;
@@ -111,7 +111,7 @@ describe.skip('BookTreeViewProviderTests', function() {
 				index: 0
 			};
 			console.log('Creating BookTreeViewProvider...');
-			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
+			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object, false, 'bookTreeView');
 			let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
@@ -178,15 +178,15 @@ describe.skip('BookTreeViewProviderTests', function() {
 				name: '',
 				index: 0
 			};
-			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
+			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object, false, 'bookTreeView');
 			let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
 		});
 
 		it('should ignore toc.yml files not in _data folder', function(): void {
-			bookTreeViewProvider.getTableOfContentFiles([folder.uri.toString()]);
-			for (let p of bookTreeViewProvider.tableOfContentPaths) {
+			bookTreeViewProvider.currentBook.getTableOfContentFiles(folder.uri.toString());
+			for (let p of bookTreeViewProvider.currentBook.tableOfContentPaths) {
 				should(p.toLocaleLowerCase()).equal(tableOfContentsFile.replace(/\\/g, '/').toLocaleLowerCase());
 			}
 		});
@@ -220,19 +220,19 @@ describe.skip('BookTreeViewProviderTests', function() {
 				name: '',
 				index: 0
 			};
-			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
+			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object, false, 'bookTreeView');
 			let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
 		});
 
 		it('should show error message if config.yml file not found', function(): void {
-			bookTreeViewProvider.getBooks();
+			bookTreeViewProvider.currentBook.readBooks();
 			should(bookTreeViewProvider.errorMessage.toLocaleLowerCase()).equal(('ENOENT: no such file or directory, open \'' + configFile + '\'').toLocaleLowerCase());
 		});
 		it('should show error if toc.yml file format is invalid', async function(): Promise<void> {
 			await fs.writeFile(configFile, 'title: Test Book');
-			bookTreeViewProvider.getBooks();
+			bookTreeViewProvider.currentBook.readBooks();
 			should(bookTreeViewProvider.errorMessage).equal('Error: Test Book has an incorrect toc.yml file');
 		});
 
@@ -277,15 +277,15 @@ describe.skip('BookTreeViewProviderTests', function() {
 				name: '',
 				index: 0
 			};
-			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
+			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object, false, 'bookTreeView');
 			let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
 		});
 
 		it('should show error if notebook or markdown file is missing', async function(): Promise<void> {
-			let books = bookTreeViewProvider.getBooks();
-			let children = await bookTreeViewProvider.getSections({ sections: [] }, (await books)[0].sections, rootFolderPath);
+			let books = bookTreeViewProvider.currentBook.bookItems;
+			let children = await bookTreeViewProvider.currentBook.getSections({ sections: [] }, books[0].sections, rootFolderPath);
 			should(bookTreeViewProvider.errorMessage).equal('Missing file : Notebook1');
 			// Rest of book should be detected correctly even with a missing file
 			equalBookItems(children[0], expectedNotebook2);

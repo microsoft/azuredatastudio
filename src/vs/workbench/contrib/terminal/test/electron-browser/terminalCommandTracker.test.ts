@@ -13,10 +13,8 @@ interface TestTerminal extends Terminal {
 	_core: XTermCore;
 }
 
-function syncWrite(term: TestTerminal, data: string): void {
-	// Terminal.write is asynchronous
-	term._core.writeBuffer.push(data);
-	term._core._innerWrite();
+function writePromise(term: Terminal, data: string): Promise<void> {
+	return new Promise(r => term.write(data, r));
 }
 
 const ROWS = 10;

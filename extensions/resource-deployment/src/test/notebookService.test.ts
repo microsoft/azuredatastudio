@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as TypeMoq from 'typemoq';
 import 'mocha';
 import { NotebookService } from '../services/notebookService';
@@ -19,13 +17,13 @@ suite('Notebook Service Tests', function (): void {
 		const notebookService = new NotebookService(mockPlatformService.object, '');
 		const notebookInput = 'test-notebook.ipynb';
 		mockPlatformService.setup((service) => service.platform()).returns(() => { return 'win32'; });
-		let returnValue = notebookService.getNotebook(notebookInput);
+		let returnValue = notebookService.getNotebookPath(notebookInput);
 		assert.equal(returnValue, notebookInput, 'returned notebook name does not match expected value');
 		mockPlatformService.verify((service) => service.platform(), TypeMoq.Times.never());
 
 		mockPlatformService.reset();
 		mockPlatformService.setup((service) => service.platform()).returns(() => { return 'win32'; });
-		returnValue = notebookService.getNotebook('');
+		returnValue = notebookService.getNotebookPath('');
 		assert.equal(returnValue, '', 'returned notebook name does not match expected value is not an empty string');
 		mockPlatformService.verify((service) => service.platform(), TypeMoq.Times.never());
 	});
@@ -43,19 +41,19 @@ suite('Notebook Service Tests', function (): void {
 			linux: notebookLinux
 		};
 		mockPlatformService.setup((service) => service.platform()).returns(() => { return 'win32'; });
-		let returnValue = notebookService.getNotebook(notebookInput);
+		let returnValue = notebookService.getNotebookPath(notebookInput);
 		assert.equal(returnValue, notebookWin32, 'returned notebook name does not match expected value for win32 platform');
 		mockPlatformService.verify((service) => service.platform(), TypeMoq.Times.once());
 
 		mockPlatformService.reset();
 		mockPlatformService.setup((service) => service.platform()).returns(() => { return 'darwin'; });
-		returnValue = notebookService.getNotebook(notebookInput);
+		returnValue = notebookService.getNotebookPath(notebookInput);
 		assert.equal(returnValue, notebookDarwin, 'returned notebook name does not match expected value for darwin platform');
 		mockPlatformService.verify((service) => service.platform(), TypeMoq.Times.once());
 
 		mockPlatformService.reset();
 		mockPlatformService.setup((service) => service.platform()).returns(() => { return 'linux'; });
-		returnValue = notebookService.getNotebook(notebookInput);
+		returnValue = notebookService.getNotebookPath(notebookInput);
 		assert.equal(returnValue, notebookLinux, 'returned notebook name does not match expected value for linux platform');
 		mockPlatformService.verify((service) => service.platform(), TypeMoq.Times.once());
 	});

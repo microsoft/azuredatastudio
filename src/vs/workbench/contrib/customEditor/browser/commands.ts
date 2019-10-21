@@ -3,7 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Schemas } from 'vs/base/common/network';
+// import { Schemas } from 'vs/base/common/network';
+import { firstOrDefault } from 'vs/base/common/arrays';
 import { URI } from 'vs/base/common/uri';
 import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
 import * as nls from 'vs/nls';
@@ -12,7 +13,7 @@ import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { IListService } from 'vs/platform/list/browser/listService';
 import { IEditorCommandsContext } from 'vs/workbench/common/editor';
-import { ResourceContextKey } from 'vs/workbench/common/resources';
+// import { ResourceContextKey } from 'vs/workbench/common/resources';
 import { ICustomEditorService } from 'vs/workbench/contrib/customEditor/common/customEditor';
 import { getMultiSelectedResources } from 'vs/workbench/contrib/files/browser/files';
 import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
@@ -23,7 +24,7 @@ const viewCategory = nls.localize('viewCategory', "View");
 // #region Open With
 
 const OPEN_WITH_COMMAND_ID = 'openWith';
-const OPEN_WITH_TITLE = { value: nls.localize('openWith.title', 'Open With'), original: 'Open With' };
+// const OPEN_WITH_TITLE = { value: nls.localize('openWith.title', 'Open With'), original: 'Open With' };
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: OPEN_WITH_COMMAND_ID,
@@ -32,7 +33,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	handler: async (accessor: ServicesAccessor, resource: URI | object) => {
 		const editorService = accessor.get(IEditorService);
 		const resources = getMultiSelectedResources(resource, accessor.get(IListService), editorService);
-		const targetResource = resources[0];
+		const targetResource = firstOrDefault(resources);
 		if (!targetResource) {
 			return undefined; // {{SQL CARBON EDIT}} strict-null-check
 		}
@@ -40,15 +41,15 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	}
 });
 
-MenuRegistry.appendMenuItem(MenuId.ExplorerContext, {
-	group: 'navigation',
-	order: 20,
-	command: {
-		id: OPEN_WITH_COMMAND_ID,
-		title: OPEN_WITH_TITLE,
-	},
-	when: ResourceContextKey.Scheme.isEqualTo(Schemas.file)
-});
+// MenuRegistry.appendMenuItem(MenuId.ExplorerContext, {
+// 	group: 'navigation',
+// 	order: 20,
+// 	command: {
+// 		id: OPEN_WITH_COMMAND_ID,
+// 		title: OPEN_WITH_TITLE,
+// 	},
+// 	when: ResourceContextKey.Scheme.isEqualTo(Schemas.file)
+// });
 
 // #endregion
 
@@ -86,14 +87,6 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		setTimeout(() => {
 			customEditorService.promptOpenWith(resource!, undefined, group);
 		}, 10);
-	}
-});
-
-MenuRegistry.appendMenuItem(MenuId.EditorTitleContext, {
-	order: 40,
-	command: {
-		id: REOPEN_WITH_COMMAND_ID,
-		title: REOPEN_WITH_TITLE,
 	}
 });
 

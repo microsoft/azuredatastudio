@@ -53,7 +53,7 @@ interface ExtensionListTemplate {
 class ExtensionListRenderer implements IListRenderer<IDashboardUITab, ExtensionListTemplate> {
 	public static TEMPLATE_ID = 'extensionListRenderer';
 	private static readonly OPENED_TAB_CLASS = 'success';
-	private static readonly ICON_CLASS = 'extension-status-icon icon';
+	private static readonly ICON_CLASS = 'extension-status-icon codicon';
 
 	public get templateId(): string {
 		return ExtensionListRenderer.TEMPLATE_ID;
@@ -62,7 +62,7 @@ class ExtensionListRenderer implements IListRenderer<IDashboardUITab, ExtensionL
 	public renderTemplate(container: HTMLElement): ExtensionListTemplate {
 		const tableTemplate: ExtensionListTemplate = Object.create(null);
 		tableTemplate.root = DOM.append(container, DOM.$('div.list-row.extensionTab-list'));
-		tableTemplate.icon = DOM.append(tableTemplate.root, DOM.$('div.icon'));
+		tableTemplate.icon = DOM.append(tableTemplate.root, DOM.$('div.codicon'));
 		let titleContainer = DOM.append(tableTemplate.root, DOM.$('div.extension-details'));
 		tableTemplate.title = DOM.append(titleContainer, DOM.$('div.title'));
 		tableTemplate.description = DOM.append(titleContainer, DOM.$('div.description'));

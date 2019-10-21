@@ -284,9 +284,4 @@ export class CmsUtils {
 		return connectionProfile;
 	}
 
-	public didConnectionChange(connectionA: azdata.connection.Connection, connectionB: azdata.connection.Connection): boolean {
-		return (connectionA !== connectionB) || ((connectionA.connectionId === connectionB.connectionId) &&
-			(connectionA.options.savePassword !== connectionA.options.savePassword));
-	}
-
 }

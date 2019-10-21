@@ -172,7 +172,7 @@ export class ServerTreeView extends Disposable {
 		}
 
 		return new Promise<void>(async (resolve, reject) => {
-			this.refreshTree();
+			await this.refreshTree();
 			const root = <ConnectionProfileGroup>this._tree.getInput();
 
 			const expandGroups: boolean = this._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_AUTOEXPAND_CONFIG];
@@ -216,7 +216,7 @@ export class ServerTreeView extends Disposable {
 		}
 		await this.refreshTree();
 		if (newProfile && !newProfileIsSelected) {
-			this._tree.reveal(newProfile);
+			await this._tree.reveal(newProfile);
 			this._tree.select(newProfile);
 		}
 	}

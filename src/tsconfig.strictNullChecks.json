@@ -5,7 +5,7 @@
 		"strictNullChecks": true,
 		"noImplicitAny": true,
 		"suppressImplicitAnyIndexErrors": true,
-		"skipLibCheck": true,
+		"skipLibCheck": true
 	},
 	"include": [
 		"./typings",
@@ -14,14 +14,28 @@
 		"./sql/azdata.d.ts",
 		"./sql/azdata.proposed.d.ts",
 		"./vs/base/**/*.ts",
-		"./vs/platform/**/*.ts",
+		// "./vs/platform/**/*.ts",
 		"./sql/base/**/*.ts",
 		"./sql/editor/**/*.ts",
 		"./sql/platform/angularEventing/**/*.ts",
-		// "./sql/platform/accounts/**/*.ts",
+		"./sql/platform/backup/**/*.ts",
+		"./sql/platform/browser/**/*.ts",
+		"./sql/platform/capabilities/**/*.ts",
 		"./sql/platform/clipboard/**/*.ts",
+		"./sql/platform/common/**/*.ts",
 		"./sql/platform/credentials/**/*.ts",
-		"./sql/platform/theme/**/*.ts",
-		"./sql/platform/telemetry/**/*.ts"
+		"./sql/platform/errorMessage/**/*.ts",
+		"./sql/platform/fileBrowser/**/*.ts",
+		"./sql/platform/metadata/**/*.ts",
+		"./sql/platform/model/**/*.ts",
+		"./sql/platform/modelComponents/**/*.ts",
+		"./sql/platform/notebooks/**/*.ts",
+		"./sql/platform/oAuth/**/*.ts",
+		"./sql/platform/scripting/**/*.ts",
+		"./sql/platform/serialization/**/*.ts",
+		"./sql/platform/serverGroup/**/*.ts",
+		"./sql/platform/tasks/**/*.ts",
+		"./sql/platform/telemetry/**/*.ts",
+		"./sql/platform/theme/**/*.ts"
 	]
 }

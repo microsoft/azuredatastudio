@@ -9,7 +9,7 @@ import { IComponentDescriptor } from 'sql/workbench/browser/modelComponents/inte
 import * as azdata from 'azdata';
 import { URI } from 'vs/base/common/uri';
 import { IdGenerator } from 'vs/base/common/idGenerator';
-import { createCSSRule, removeCSSRulesContainingSelector } from 'vs/base/browser/dom';
+import { createCSSRule, removeCSSRulesContainingSelector, asCSSUrl } from 'vs/base/browser/dom';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 
 
@@ -45,35 +45,34 @@ export abstract class ComponentWithIconBase extends ComponentBase {
 			}
 
 			removeCSSRulesContainingSelector(this._iconClass);
-			const icon = this.getLightIconPath(this.iconPath);
-			const iconDark = this.getDarkIconPath(this.iconPath) || icon;
-			createCSSRule(`.icon.${this._iconClass}`, `background-image: url("${icon}")`);
-			createCSSRule(`.vs-dark .icon.${this._iconClass}, .hc-black .icon.${this._iconClass}`, `background-image: url("${iconDark}")`);
+			const icon = this.getLightIconUri(this.iconPath);
+			const iconDark = this.getDarkIconUri(this.iconPath) || icon;
+			createCSSRule(`.icon.${this._iconClass}`, `background-image: ${asCSSUrl(icon)}`);
+			createCSSRule(`.vs-dark .icon.${this._iconClass}, .hc-black .icon.${this._iconClass}`, `background-image: ${asCSSUrl(iconDark)}`);
 			this._changeRef.detectChanges();
 		}
 	}
 
-	private getLightIconPath(iconPath: IUserFriendlyIcon): string {
+	private getLightIconUri(iconPath: IUserFriendlyIcon): URI {
 		if (iconPath && iconPath['light']) {
-			return this.getIconPath(iconPath['light']);
+			return this.getIconUri(iconPath['light']);
 		} else {
-			return this.getIconPath(<string | URI>iconPath);
+			return this.getIconUri(<string | URI>iconPath);
 		}
 	}
 
-	private getDarkIconPath(iconPath: IUserFriendlyIcon): string {
+	private getDarkIconUri(iconPath: IUserFriendlyIcon): URI {
 		if (iconPath && iconPath['dark']) {
-			return this.getIconPath(iconPath['dark']);
+			return this.getIconUri(iconPath['dark']);
 		}
 		return null;
 	}
 
-	private getIconPath(iconPath: string | URI): string {
+	private getIconUri(iconPath: string | URI): URI {
 		if (typeof iconPath === 'string') {
-			return URI.file(iconPath).toString();
+			return URI.file(iconPath);
 		} else {
-			let uri = URI.revive(iconPath);
-			return uri.toString();
+			return URI.revive(iconPath);
 		}
 	}
 

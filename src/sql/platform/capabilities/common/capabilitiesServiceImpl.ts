@@ -122,11 +122,11 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	/**
 	 * Retrieve a list of registered server capabilities
 	 */
-	public getCapabilities(provider: string): ProviderFeatures {
+	public getCapabilities(provider: string): ProviderFeatures | undefined {
 		return this._providers.get(provider);
 	}
 
-	public getLegacyCapabilities(provider: string): azdata.DataProtocolServerCapabilities {
+	public getLegacyCapabilities(provider: string): azdata.DataProtocolServerCapabilities | undefined {
 		return this._legacyProviders.get(provider);
 	}
 

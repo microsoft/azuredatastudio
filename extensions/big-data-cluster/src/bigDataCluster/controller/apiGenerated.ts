@@ -631,8 +631,6 @@ export class BdcRouterApi {
 
         this.authentications.default.applyToRequest(localVarRequestOptions);
 
-		this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
-
         if (Object.keys(localVarFormParams).length) {
             if (localVarUseFormData) {
                 (<any>localVarRequestOptions).formData = localVarFormParams;

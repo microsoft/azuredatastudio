@@ -173,7 +173,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		this._bodyContainer = DOM.$(`.${builderClass}`, { role: 'dialog', 'aria-label': this._title });
 		const top = this.layoutService.getTitleBarOffset();
 		this._bodyContainer.style.top = `${top}px`;
-		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog', { role: 'document' }));
+		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
 		const modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
 
 		if (!isUndefinedOrNull(this._title)) {
@@ -240,7 +240,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		if (!this._modalOptions.isAngular) {
 			this._modalFooterSection = DOM.append(modalContent, DOM.$('.modal-footer'));
 			if (this._modalOptions.hasSpinner) {
-				this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.icon.in-progress'));
+				this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.codicon.in-progress'));
 				DOM.hide(this._spinnerElement);
 			}
 			this._leftFooter = DOM.append(this._modalFooterSection, DOM.$('.left-footer'));

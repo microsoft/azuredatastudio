@@ -43,15 +43,13 @@ export interface IGridDataProvider {
 }
 
 export async function getResultsString(provider: IGridDataProvider, selection: Slick.Range[], includeHeaders?: boolean): Promise<string> {
-	let headers: Map<Number, string> = new Map();
-	let rows: Map<Number, Map<Number, string>> = new Map();
-	let copyTable: string[][] = [];
+	let headers: Map<Number, string> = new Map(); // Maps a column index -> header
+	let rows: Map<Number, Map<Number, string>> = new Map(); // Maps row index -> column index -> actual row value
 	const eol = provider.getEolString();
 
 	// create a mapping of the ranges to get promises
 	let tasks = selection.map((range, i) => {
 		return async () => {
-			let selectionsCopy = selection;
 			let startCol = range.fromCell;
 			let startRow = range.fromRow;
 
@@ -103,8 +101,9 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 		copyString = [...headers.values()].join('\t').concat(eol);
 	}
 
-	const rowKeys = [...headers.keys()];
+	const rowKeys = [...headers.keys()].sort();
 
+	rows = new Map([...rows.entries()].sort());
 	for (let rowEntry of rows) {
 		let rowMap = rowEntry[1];
 		for (let rowIdx of rowKeys) {
@@ -115,9 +114,11 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 			}
 			copyString = copyString.concat('\t');
 		}
+		// Removes the tab seperator from the end of a row
+		copyString = copyString.slice(0, -1 * '\t'.length);
 		copyString = copyString.concat(eol);
 	}
-	// Removes EoL from the end of the string
+	// Removes EoL from the end of the result
 	copyString = copyString.slice(0, -1 * eol.length);
 
 	return copyString;

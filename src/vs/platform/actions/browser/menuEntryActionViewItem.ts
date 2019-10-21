@@ -306,8 +306,8 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 				iconClass = MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!;
 			} else {
 				iconClass = ids.nextId();
-				createCSSRule(`.icon.${iconClass}`, `background-image: url("${(item.iconLocation.light || item.iconLocation.dark).toString()}")`);
-				createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${item.iconLocation.dark.toString()}")`);
+				createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(item.iconLocation.light || item.iconLocation.dark)}`);
+				createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: ${asCSSUrl(item.iconLocation.dark)}`);
 				MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
 			}
 

@@ -268,6 +268,47 @@ export class RunAllCellsAction extends Action {
 	}
 }
 
+export class CollapseCellsAction extends ToggleableAction {
+	private static readonly collapseCells = localize('collapseAllCells', "Collapse Cells");
+	private static readonly expandCells = localize('expandAllCells', "Expand Cells");
+	private static readonly baseClass = 'notebook-button';
+	private static readonly collapseCssClass = 'icon-hide-cells';
+	private static readonly expandCssClass = 'icon-show-cells';
+
+	constructor(id: string) {
+		super(id, {
+			baseClass: CollapseCellsAction.baseClass,
+			toggleOnLabel: CollapseCellsAction.expandCells,
+			toggleOnClass: CollapseCellsAction.expandCssClass,
+			toggleOffLabel: CollapseCellsAction.collapseCells,
+			toggleOffClass: CollapseCellsAction.collapseCssClass,
+			isOn: false
+		});
+	}
+
+	public get isCollapsed(): boolean {
+		return this.state.isOn;
+	}
+	public set isCollapsed(value: boolean) {
+		this.toggle(value);
+	}
+
+	public run(context: NotebookComponent): Promise<boolean> {
+		let self = this;
+		return new Promise<boolean>((resolve, reject) => {
+			try {
+				self.isCollapsed = !self.isCollapsed;
+				context.cells.forEach(cell => {
+					cell.isCollapsed = self.isCollapsed;
+				});
+				resolve(true);
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+}
+
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>) {

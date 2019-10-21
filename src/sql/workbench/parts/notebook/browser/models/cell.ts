@@ -24,8 +24,11 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 let modelId = 0;
 
+export const HideInputTag = 'hide_input';
 
 export class CellModel implements ICellModel {
+	public id: string;
+
 	private _cellType: nb.CellType;
 	private _source: string | string[];
 	private _language: string;
@@ -41,13 +44,14 @@ export class CellModel implements ICellModel {
 	private _hover: boolean;
 	private _executionCount: number | undefined;
 	private _cellUri: URI;
-	public id: string;
 	private _connectionManagementService: IConnectionManagementService;
 	private _stdInHandler: nb.MessageHandler<nb.IStdinMessage>;
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
-	private _metadata: { language?: string, cellGuid?: string; };
+	private _metadata: { language?: string; tags?: string[]; cellGuid?: string; };
+	private _isCollapsed: boolean;
+	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
 
 	constructor(cellData: nb.ICellContents,
@@ -78,6 +82,10 @@ export class CellModel implements ICellModel {
 		return other && other.id === this.id;
 	}
 
+	public get onCollapseStateChanged(): Event<boolean> {
+		return this._onCollapseStateChanged.event;
+	}
+
 	public get onOutputsChanged(): Event<IOutputChangedEvent> {
 		return this._onOutputsChanged.event;
 	}
@@ -92,6 +100,38 @@ export class CellModel implements ICellModel {
 
 	public get future(): FutureInternal {
 		return this._future;
+	}
+
+	public get isCollapsed() {
+		return this._isCollapsed;
+	}
+
+	public set isCollapsed(value: boolean) {
+		let stateChanged = this._isCollapsed !== value;
+		this._isCollapsed = value;
+
+		let tagIndex = -1;
+		if (this._metadata.tags) {
+			tagIndex = this._metadata.tags.findIndex(tag => tag === HideInputTag);
+		}
+
+		if (this._isCollapsed) {
+			if (tagIndex === -1) {
+				if (!this._metadata.tags) {
+					this._metadata.tags = [];
+				}
+				this._metadata.tags.push(HideInputTag);
+			}
+		} else {
+			if (tagIndex > -1) {
+				this._metadata.tags.splice(tagIndex, 1);
+			}
+		}
+
+		if (stateChanged) {
+			this._onCollapseStateChanged.fire(this._isCollapsed);
+			this.sendChangeToNotebook(NotebookChangeType.CellInputVisibilityChanged);
+		}
 	}
 
 	public set isEditMode(isEditMode: boolean) {
@@ -286,7 +326,7 @@ export class CellModel implements ICellModel {
 				if ((Array.isArray(content) && content.length > 0) || (!Array.isArray(content) && content)) {
 					// requestExecute expects a string for the code parameter
 					content = Array.isArray(content) ? content.join('') : content;
-					let future = await kernel.requestExecute({
+					const future = kernel.requestExecute({
 						code: content,
 						stop_on_error: true
 					}, false);
@@ -540,14 +580,16 @@ export class CellModel implements ICellModel {
 	}
 
 	public toJSON(): nb.ICellContents {
+		let metadata = this._metadata || {};
 		let cellJson: Partial<nb.ICellContents> = {
 			cell_type: this._cellType,
 			source: this._source,
-			metadata: this._metadata || {}
+			metadata: metadata
 		};
 		cellJson.metadata.azdata_cell_guid = this._cellGuid;
 		if (this._cellType === CellTypes.Code) {
 			cellJson.metadata.language = this._language;
+			cellJson.metadata.tags = metadata.tags;
 			cellJson.outputs = this._outputs;
 			cellJson.execution_count = this.executionCount ? this.executionCount : 0;
 		}
@@ -561,7 +603,14 @@ export class CellModel implements ICellModel {
 		this._cellType = cell.cell_type;
 		this.executionCount = cell.execution_count;
 		this._source = this.getMultilineSource(cell.source);
-		this._metadata = cell.metadata;
+		this._metadata = cell.metadata || {};
+
+		if (this._metadata.tags && this._metadata.tags.includes(HideInputTag)) {
+			this._isCollapsed = true;
+		} else {
+			this._isCollapsed = false;
+		}
+
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
 		this.setLanguageFromContents(cell);
 		if (cell.outputs) {
