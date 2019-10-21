@@ -117,13 +117,14 @@ export class JupyterSessionManager implements nb.SessionManager {
 		return allKernels;
 	}
 
-	public async startNew(options: nb.ISessionOptions): Promise<nb.ISession> {
+	public async startNew(options: nb.ISessionOptions, skipSettingEnvironmentVars?: boolean): Promise<nb.ISession> {
 		if (!this._isReady) {
 			// no-op
 			return Promise.reject(new Error(localize('errorStartBeforeReady', 'Cannot start a session, the manager is not yet initialized')));
 		}
 		let sessionImpl = await this._sessionManager.startNew(options);
-		let jupyterSession = new JupyterSession(sessionImpl);
+		let jupyterSession = new JupyterSession(sessionImpl, skipSettingEnvironmentVars);
+		await jupyterSession.messagesComplete;
 		let index = JupyterSessionManager._sessions.findIndex(session => session.path === options.path);
 		if (index > -1) {
 			JupyterSessionManager._sessions.splice(index);
@@ -167,8 +168,10 @@ export class JupyterSessionManager implements nb.SessionManager {
 
 export class JupyterSession implements nb.ISession {
 	private _kernel: nb.IKernel;
+	private _messagesComplete: Deferred<void> = new Deferred<void>();
 
-	constructor(private sessionImpl: Session.ISession) {
+	constructor(private sessionImpl: Session.ISession, skipSettingEnvironmentVars?: boolean) {
+		this.setEnvironmentVars(skipSettingEnvironmentVars);
 	}
 
 	public get canChangeKernels(): boolean {
@@ -203,6 +206,11 @@ export class JupyterSession implements nb.ISession {
 			}
 		}
 		return this._kernel;
+	}
+
+	// Sent when startup messages have been sent
+	public get messagesComplete(): Promise<void> {
+		return this._messagesComplete.promise;
 	}
 
 	public async changeKernel(kernelInfo: nb.IKernelSpec): Promise<nb.IKernel> {
@@ -320,6 +328,22 @@ export class JupyterSession implements nb.ISession {
 			return undefined;
 		}
 		return endpoints.find(ep => ep.serviceName.toLowerCase() === serviceName.toLowerCase());
+	}
+
+	private async setEnvironmentVars(skip: boolean = false): Promise<void> {
+		if (!skip && this.sessionImpl) {
+			let allCode: string = '';
+			for (let i = 0; i < Object.keys(process.env).length; i++) {
+				let key = Object.keys(process.env)[i];
+				// Jupyter doesn't seem to alow for setting multiple variables at once, so doing it with multiple commands
+				allCode += `%set_env ${key}=${process.env[key]}${EOL}`;
+			}
+			let future = this.sessionImpl.kernel.requestExecute({
+				code: allCode
+			}, true);
+			await future.done;
+		}
+		this._messagesComplete.resolve();
 	}
 }
 

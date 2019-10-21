@@ -11,7 +11,7 @@ import 'mocha';
 
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
 import { ApiWrapper } from '../..//common/apiWrapper';
-import { PerNotebookServerInstance, ServerInstanceUtils } from '../../jupyter/serverInstance';
+import { PerFolderServerInstance, ServerInstanceUtils } from '../../jupyter/serverInstance';
 import { MockOutputChannel } from '../common/stubs';
 import * as testUtils from '../common/testUtils';
 import { LocalJupyterServerManager } from '../../jupyter/jupyterServerManager';
@@ -27,7 +27,7 @@ describe('Jupyter server instance', function (): void {
 	let mockOutputChannel: TypeMoq.IMock<MockOutputChannel>;
 	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 	let mockUtils: TypeMoq.IMock<ServerInstanceUtils>;
-	let serverInstance: PerNotebookServerInstance;
+	let serverInstance: PerFolderServerInstance;
 
 	beforeEach(() => {
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
@@ -40,7 +40,7 @@ describe('Jupyter server instance', function (): void {
 		mockInstall.object.execOptions = { env: Object.assign({}, process.env) };
 		mockUtils = TypeMoq.Mock.ofType(ServerInstanceUtils);
 		mockUtils.setup(u => u.ensureProcessEnded(TypeMoq.It.isAny())).returns(() => undefined);
-		serverInstance = new PerNotebookServerInstance({
+		serverInstance = new PerFolderServerInstance({
 			documentPath: expectedPath,
 			install: mockInstall.object
 		}, mockUtils.object);
