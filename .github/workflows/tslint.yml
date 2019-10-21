@@ -1,4 +1,4 @@
-name: workflow
+name: TSLint Enforcement
 on: [pull_request]
 jobs:
   job:
