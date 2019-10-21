@@ -22,7 +22,7 @@ import {
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { QueryModelService } from 'sql/platform/query/common/queryModelService';
-import { ConnectionManagementService } from 'sql/platform/connection/browser/connectionManagementService';
+import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import * as TypeMoq from 'typemoq';
