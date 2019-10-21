@@ -276,12 +276,12 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	}
 
 	// State update funtions
-	public runQuery(selection: ISelectionData, executePlanOptions?: ExecutionPlanOptions): void {
+	public runQuery(selection?: ISelectionData, executePlanOptions?: ExecutionPlanOptions): void {
 		this._queryModelService.runQuery(this.uri, selection, this, executePlanOptions);
 		this.state.executing = true;
 	}
 
-	public runQueryStatement(selection: ISelectionData): void {
+	public runQueryStatement(selection?: ISelectionData): void {
 		this._queryModelService.runQueryStatement(this.uri, selection, this);
 		this.state.executing = true;
 	}
@@ -316,7 +316,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 		let isRunningQuery = this._queryModelService.isRunningQuery(this.uri);
 		if (!isRunningQuery && params && params.runQueryOnCompletion) {
-			let selection: ISelectionData = params ? params.querySelection : undefined;
+			let selection: ISelectionData | undefined = params ? params.querySelection : undefined;
 			if (params.runQueryOnCompletion === RunQueryOnConnectionMode.executeCurrentQuery) {
 				this.runQueryStatement(selection);
 			} else if (params.runQueryOnCompletion === RunQueryOnConnectionMode.executeQuery) {
@@ -361,6 +361,6 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	}
 
 	public get isSharedSession(): boolean {
-		return this.uri && this.uri.startsWith('vsls:');
+		return !!(this.uri && this.uri.startsWith('vsls:'));
 	}
 }

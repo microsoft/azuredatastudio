@@ -18,7 +18,7 @@ const CONNECTIONS_CONFIG_KEY = 'datasource.connections';
 
 export interface ISaveGroupResult {
 	groups: IConnectionProfileGroup[];
-	newGroupId: string;
+	newGroupId?: string;
 }
 
 /**
@@ -37,7 +37,9 @@ export class ConnectionConfig {
 	public getAllGroups(): IConnectionProfileGroup[] {
 
 		let allGroups: IConnectionProfileGroup[] = [];
-		let { user, workspace } = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY);
+		const config = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY);
+		let { user } = config;
+		const { workspace } = config;
 
 		if (user) {
 			if (workspace) {
@@ -109,7 +111,7 @@ export class ConnectionConfig {
 			let result = this.saveGroup(groups, profile.groupFullName, undefined, undefined);
 			groups = result.groups;
 
-			return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER).then(() => result.newGroupId);
+			return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER).then(() => result.newGroupId!);
 		}
 	}
 
@@ -129,7 +131,7 @@ export class ConnectionConfig {
 				let result = this.saveGroup(groups, profileGroup.name, profileGroup.color, profileGroup.description);
 				groups = result.groups;
 
-				return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER).then(() => result.newGroupId);
+				return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER).then(() => result.newGroupId!);
 			}
 		}
 	}
@@ -138,18 +140,22 @@ export class ConnectionConfig {
 		let configs = this.configurationService.inspect<IConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY);
 		let profiles: IConnectionProfileStore[];
 		if (configs) {
+			let fromConfig: IConnectionProfileStore[] | undefined;
 			if (configTarget === ConfigurationTarget.USER) {
-				profiles = configs.user;
+				fromConfig = configs.user;
 			} else if (configTarget === ConfigurationTarget.WORKSPACE) {
-				profiles = configs.workspace;
+				fromConfig = configs.workspace || [];
 			}
-			if (profiles) {
+			if (fromConfig) {
+				profiles = fromConfig;
 				if (this.fixConnectionIds(profiles)) {
 					this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, configTarget);
 				}
 			} else {
 				profiles = [];
 			}
+		} else {
+			profiles = [];
 		}
 
 		return profiles;
@@ -315,7 +321,7 @@ export class ConnectionConfig {
 		}
 	}
 
-	public saveGroup(groups: IConnectionProfileGroup[], groupFullName: string, color: string, description: string): ISaveGroupResult {
+	public saveGroup(groups: IConnectionProfileGroup[], groupFullName?: string, color?: string, description?: string): ISaveGroupResult {
 		let groupNames = ConnectionProfileGroup.getGroupFullNameParts(groupFullName);
 		return this.saveGroupInTree(groups, undefined, groupNames, color, description, 0);
 	}
@@ -348,21 +354,21 @@ export class ConnectionConfig {
 		return sameGroupName;
 	}
 
-	private saveGroupInTree(groupTree: IConnectionProfileGroup[], parentId: string, groupNames: string[], color: string, description: string, index: number): ISaveGroupResult {
+	private saveGroupInTree(groupTree: IConnectionProfileGroup[], parentId: string | undefined, groupNames: string[], color: string | undefined, description: string | undefined, index: number): ISaveGroupResult {
 		if (!groupTree) {
 			groupTree = [];
 		}
-		let newGroupId: string;
+		let newGroupId: string | undefined;
 
 		if (index < groupNames.length) {
 			let groupName: string = groupNames[index];
-			let newGroup: IConnectionProfileGroup = {
+			let newGroup = <unknown>{ // workaround to make this work properly
 				name: groupName,
 				id: undefined,
 				parentId: parentId,
 				color: color,
 				description: description
-			};
+			} as IConnectionProfileGroup;
 			let found = groupTree.find(group => this.isSameGroupName(group, newGroup));
 			if (found) {
 				if (index === groupNames.length - 1) {

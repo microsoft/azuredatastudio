@@ -285,7 +285,7 @@ declare module 'azdata' {
 		password: string;
 		authenticationType: string;
 		savePassword: boolean;
-		groupFullName: string;
+		groupFullName?: string;
 		groupId: string;
 		providerName: string;
 		saveProfile: boolean;
@@ -834,7 +834,7 @@ declare module 'azdata' {
 	export interface IResultMessage {
 		batchId?: number;
 		isError: boolean;
-		time: string;
+		time?: string;
 		message: string;
 	}
 
