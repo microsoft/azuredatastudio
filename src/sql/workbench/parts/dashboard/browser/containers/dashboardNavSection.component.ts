@@ -7,7 +7,7 @@ import 'vs/css!./dashboardNavSection';
 
 import { Component, Inject, Input, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, OnChanges, AfterContentInit } from '@angular/core';
 
-import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { WidgetConfig, TabConfig, NavSectionConfig } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';

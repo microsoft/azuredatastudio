@@ -20,7 +20,7 @@ import { MODELVIEW_CONTAINER } from 'sql/workbench/parts/dashboard/browser/conta
 import { CONTROLHOST_CONTAINER } from 'sql/workbench/parts/dashboard/browser/containers/dashboardControlHostContainer.contribution';
 import { NAV_SECTION } from 'sql/workbench/parts/dashboard/browser/containers/dashboardNavSection.contribution';
 import { IDashboardContainerRegistry, Extensions as DashboardContainerExtensions } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
-import { SingleConnectionManagementService } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { SingleConnectionManagementService } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ILogService } from 'vs/platform/log/common/log';
 

@@ -13,7 +13,7 @@ import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/bro
 import { FormLayout, FormItemLayout } from 'azdata';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 
 export interface TitledFormItemLayout {
 	title: string;

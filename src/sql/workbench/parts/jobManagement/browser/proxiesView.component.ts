@@ -13,7 +13,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/agentView.component';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { EditProxyAction, DeleteProxyAction, NewProxyAction } from 'sql/platform/jobManagement/browser/jobActions';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { JobManagementView } from 'sql/workbench/parts/jobManagement/browser/jobManagementView';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';

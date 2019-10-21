@@ -7,7 +7,7 @@ import { Dimension } from 'vs/base/browser/dom';
 import { dispose } from 'vs/base/common/lifecycle';
 import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { bootstrapAngular } from 'sql/platform/bootstrap/browser/bootstrapService';
+import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
 import { QueryModelViewTabModule } from 'sql/workbench/parts/query/browser/modelViewTab/queryModelViewTab.module';
 import { QueryModelViewState } from 'sql/workbench/parts/query/common/modelViewTab/modelViewState';
 

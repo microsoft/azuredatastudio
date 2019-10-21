@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DialogModal } from 'sql/platform/dialog/browser/dialogModal';
-import { WizardModal } from 'sql/platform/dialog/browser/wizardModal';
-import { Dialog, Wizard } from 'sql/platform/dialog/common/dialogTypes';
+import { DialogModal } from 'sql/workbench/parts/dialog/browser/dialogModal';
+import { WizardModal } from 'sql/workbench/parts/dialog/browser/wizardModal';
+import { Dialog, Wizard } from 'sql/workbench/parts/dialog/common/dialogTypes';
 import { IModalOptions } from 'sql/workbench/browser/modal/modal';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 

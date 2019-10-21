@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { Dialog, DialogTab } from 'sql/platform/dialog/common/dialogTypes';
-import { DialogPane } from 'sql/platform/dialog/browser/dialogPane';
-import { DialogComponentParams } from 'sql/platform/dialog/browser/dialogContainer.component';
-import { bootstrapAngular } from 'sql/platform/bootstrap/browser/bootstrapService';
+import { Dialog, DialogTab } from 'sql/workbench/parts/dialog/common/dialogTypes';
+import { DialogPane } from 'sql/workbench/parts/dialog/browser/dialogPane';
+import { DialogComponentParams } from 'sql/workbench/parts/dialog/browser/dialogContainer.component';
+import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 
 

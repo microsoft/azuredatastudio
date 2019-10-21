@@ -9,7 +9,7 @@ import 'sql/workbench/parts/dashboard/browser/core/dashboardPanelStyles';
 import { Component, Inject, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
 
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/browser/services/dashboardServiceInterface.service';
-import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { WidgetConfig, TabConfig, TabSettingConfig } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
 import { IPropertiesConfig } from 'sql/workbench/parts/dashboard/browser/pages/serverDashboardPage.contribution';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';

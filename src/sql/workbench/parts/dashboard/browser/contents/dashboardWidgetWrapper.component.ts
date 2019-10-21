@@ -24,7 +24,7 @@ import { TasksWidget } from 'sql/workbench/parts/dashboard/browser/widgets/tasks
 import { InsightsWidget } from 'sql/workbench/parts/dashboard/browser/widgets/insights/insightsWidget.component';
 import { WebviewWidget } from 'sql/workbench/parts/dashboard/browser/widgets/webview/webviewWidget.component';
 
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';

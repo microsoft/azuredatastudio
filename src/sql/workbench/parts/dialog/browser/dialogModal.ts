@@ -6,8 +6,8 @@
 import 'vs/css!./media/dialogModal';
 import { Modal, IModalOptions } from 'sql/workbench/browser/modal/modal';
 import { attachModalDialogStyler } from 'sql/platform/theme/common/styler';
-import { Dialog, DialogButton } from 'sql/platform/dialog/common/dialogTypes';
-import { DialogPane } from 'sql/platform/dialog/browser/dialogPane';
+import { Dialog, DialogButton } from 'sql/workbench/parts/dialog/common/dialogTypes';
+import { DialogPane } from 'sql/workbench/parts/dialog/browser/dialogPane';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
