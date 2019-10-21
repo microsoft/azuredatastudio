@@ -52,9 +52,9 @@ export async function resolveCommonProperties(
 	result['common.product'] = productObject.nameShort || 'desktop'; // {{SQL CARBON EDIT}}
 	result['common.application.name'] = productObject.nameLong; // {{SQL CARBON EDIT}}
 
-	// const msftInternal = verifyMicrosoftInternalDomain(msftInternalDomains || []); {{SQL CARBON EDIT}} remove msft internal
+	// const msftInternal = verifyMicrosoftInternalDomain(msftInternalDomains || []); {{SQL CARBON EDIT}} remove msftinternal
 	// if (msftInternal) {
-	// 	// __GDPR__COMMON__ "common.msftInternal" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+	// 	// __GDPR__COMMON__ "common.msftInternal" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true }
 	// 	result['common.msftInternal'] = msftInternal;
 	// }
 
