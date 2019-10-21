@@ -36,7 +36,7 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     jquery-ui: https://github.com/jquery/jquery-ui
     jquery.event.drag: https://github.com/devongovett/jquery.event.drag
     jschardet: https://github.com/aadsm/jschardet
-	jupyter-powershell: https://github.com/vors/jupyter-powershell
+    jupyter-powershell: https://github.com/vors/jupyter-powershell
     JupyterLab: https://github.com/jupyterlab/jupyterlab
     make-error: https://github.com/JsCommunity/make-error
     minimist: https://github.com/substack/minimist
