@@ -214,7 +214,7 @@ async function doSave(
 
 	// Pin the active editor if we are saving it
 	const activeControl = editorService.activeControl;
-	const activeEditorResource = activeControl && activeControl.input && activeControl.input.getResource();
+	const activeEditorResource = activeControl?.input?.getResource();
 	if (activeControl && activeEditorResource && isEqual(activeEditorResource, resource)) {
 		activeControl.group.pinEditor(activeControl.input);
 	}
@@ -273,7 +273,7 @@ async function saveAll(saveAllArguments: any, editorService: IEditorService, unt
 		const replacementPairs: IResourceEditorReplacement[] = [];
 		inputs.forEach(i => {
 			const targetResult = result.results.filter(r => r.success && isEqual(r.source, i.resource)).pop();
-			if (targetResult && targetResult.target) {
+			if (targetResult?.target) {
 				// i.resource = targetResult.target;let editor = i;
 				const editor = i;
 				const replacement: IResourceInput = {

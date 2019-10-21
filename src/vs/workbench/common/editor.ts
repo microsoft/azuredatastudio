@@ -1074,7 +1074,7 @@ export function toResource(editor: IEditorInput | undefined, options?: IResource
 		return undefined;
 	}
 
-	if (options && options.supportSideBySide && editor instanceof SideBySideEditorInput) {
+	if (options?.supportSideBySide && editor instanceof SideBySideEditorInput) {
 		editor = options.supportSideBySide === SideBySideEditor.MASTER ? editor.master : editor.details;
 	}
 
