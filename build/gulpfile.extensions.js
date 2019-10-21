@@ -24,16 +24,16 @@ const plumber = require('gulp-plumber');
 const ext = require('./lib/extensions');
 
 // {{SQL CARBON EDIT}}
-const languages =  [{ folderName: 'chs/extensions', id: 'zh-hans' },
-					{ folderName: 'cht/extensions', id: 'zh-hant' },
-					{ folderName: 'deu/extensions', id: 'de' },
-					{ folderName: 'esn/extensions', id: 'es' },
-					{ folderName: 'fra/extensions', id: 'fr' },
-					{ folderName: 'ita/extensions', id: 'it' },
-					{ folderName: 'jpn/extensions', id: 'ja' },
-					{ folderName: 'kor/extensions', id: 'ko' },
-					{ folderName: 'ptb/extensions', id: 'pt-br' },
-					{ folderName: 'rus/extensions', id: 'ru' },];
+const languages = [{ folderName: 'chs/extensions', id: 'zh-hans' },
+{ folderName: 'cht/extensions', id: 'zh-hant' },
+{ folderName: 'deu/extensions', id: 'de' },
+{ folderName: 'esn/extensions', id: 'es' },
+{ folderName: 'fra/extensions', id: 'fr' },
+{ folderName: 'ita/extensions', id: 'it' },
+{ folderName: 'jpn/extensions', id: 'ja' },
+{ folderName: 'kor/extensions', id: 'ko' },
+{ folderName: 'ptb/extensions', id: 'pt-br' },
+{ folderName: 'rus/extensions', id: 'ru' },];
 // {{SQL CARBON EDIT}}
 
 const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
