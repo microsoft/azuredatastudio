@@ -1,0 +1,15 @@
+name: workflow
+on: [push]
+jobs:
+  job:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v1
+      - name: Prepare
+        run: yarn install
+      - name: Lint
+        uses: aaomidi/gh-action-tslint@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tslint_config: 'tslint.json'
