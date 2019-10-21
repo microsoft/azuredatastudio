@@ -17,31 +17,28 @@ function computeDiff(originalSequence: ISequence, modifiedSequence: ISequence, c
 
 class LineSequence implements ISequence {
 
-	private readonly _lines: string[];
-	private readonly _trimmedLines: string[];
+	public readonly lines: string[];
 	private readonly _startColumns: number[];
 	private readonly _endColumns: number[];
 
 	constructor(lines: string[]) {
 		let startColumns: number[] = [];
 		let endColumns: number[] = [];
-		this._trimmedLines = [];
 		for (let i = 0, length = lines.length; i < length; i++) {
 			startColumns[i] = getFirstNonBlankColumn(lines[i], 1);
 			endColumns[i] = getLastNonBlankColumn(lines[i], 1);
-			this._trimmedLines[i] = lines[i].substring(startColumns[i] - 1, endColumns[i] - 1);
 		}
-		this._lines = lines;
+		this.lines = lines;
 		this._startColumns = startColumns;
 		this._endColumns = endColumns;
 	}
 
-	public getLength(): number {
-		return this._lines.length;
+	public getElements(): Int32Array | number[] | string[] {
+		const elements: string[] = [];
+		for (let i = 0, len = this.lines.length; i < len; i++) {
+			elements[i] = this.lines[i].substring(this._startColumns[i] - 1, this._endColumns[i] - 1);
 	}
-
-	public getElementAtIndex(i: number): string {
-		return this._trimmedLines[i];
+		return elements;
 	}
 
 	public getStartLineNumber(i: number): number {
@@ -58,7 +55,7 @@ class LineSequence implements ISequence {
 		let columns: number[] = [];
 		let len = 0;
 		for (let index = startIndex; index <= endIndex; index++) {
-			const lineContent = this._lines[index];
+			const lineContent = this.lines[index];
 			const startColumn = (shouldIgnoreTrimWhitespace ? this._startColumns[index] : 1);
 			const endColumn = (shouldIgnoreTrimWhitespace ? this._endColumns[index] : lineContent.length + 1);
 			for (let col = startColumn; col < endColumn; col++) {
@@ -84,12 +81,8 @@ class CharSequence implements ISequence {
 		this._columns = columns;
 	}
 
-	public getLength(): number {
-		return this._charCodes.length;
-	}
-
-	public getElementAtIndex(i: number): number {
-		return this._charCodes[i];
+	public getElements(): Int32Array | number[] | string[] {
+		return this._charCodes;
 	}
 
 	public getStartLineNumber(i: number): number {
@@ -256,7 +249,8 @@ class LineChange implements ILineChange {
 			modifiedEndLineNumber = modifiedLineSequence.getEndLineNumber(diffChange.modifiedStart + diffChange.modifiedLength - 1);
 		}
 
-		if (shouldComputeCharChanges && diffChange.originalLength !== 0 && diffChange.modifiedLength !== 0 && continueProcessingPredicate()) {
+		if (shouldComputeCharChanges && diffChange.originalLength > 0 && diffChange.originalLength < 20 && diffChange.modifiedLength > 0 && diffChange.modifiedLength < 20 && continueProcessingPredicate()) {
+			// Compute character changes for diff chunks of at most 20 lines...
 			const originalCharSequence = originalLineSequence.createCharSequence(shouldIgnoreTrimWhitespace, diffChange.originalStart, diffChange.originalStart + diffChange.originalLength - 1);
 			const modifiedCharSequence = modifiedLineSequence.createCharSequence(shouldIgnoreTrimWhitespace, diffChange.modifiedStart, diffChange.modifiedStart + diffChange.modifiedLength - 1);
 
@@ -313,13 +307,13 @@ export class DiffComputer {
 
 	public computeDiff(): ILineChange[] {
 
-		if (this.original.getLength() === 1 && this.original.getElementAtIndex(0).length === 0) {
+		if (this.original.lines.length === 1 && this.original.lines[0].length === 0) {
 			// empty original => fast path
 			return [{
 				originalStartLineNumber: 1,
 				originalEndLineNumber: 1,
 				modifiedStartLineNumber: 1,
-				modifiedEndLineNumber: this.modified.getLength(),
+				modifiedEndLineNumber: this.modified.lines.length,
 				charChanges: [{
 					modifiedEndColumn: 0,
 					modifiedEndLineNumber: 0,
@@ -333,11 +327,11 @@ export class DiffComputer {
 			}];
 		}
 
-		if (this.modified.getLength() === 1 && this.modified.getElementAtIndex(0).length === 0) {
+		if (this.modified.lines.length === 1 && this.modified.lines[0].length === 0) {
 			// empty modified => fast path
 			return [{
 				originalStartLineNumber: 1,
-				originalEndLineNumber: this.original.getLength(),
+				originalEndLineNumber: this.original.lines.length,
 				modifiedStartLineNumber: 1,
 				modifiedEndLineNumber: 1,
 				charChanges: [{
