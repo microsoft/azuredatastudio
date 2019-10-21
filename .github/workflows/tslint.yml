@@ -10,4 +10,4 @@ jobs:
         uses: aaomidi/gh-action-tslint@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          tslint_config: 'tslint.json'
+          tslint_config: 'tslint-sql.json'
