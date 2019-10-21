@@ -2210,10 +2210,6 @@ declare namespace monaco.editor {
 	 */
 	export interface IEditorContribution {
 		/**
-		 * Get a unique identifier for this contribution.
-		 */
-		getId(): string;
-		/**
 		 * Dispose this contribution.
 		 */
 		dispose(): void;
@@ -3376,6 +3372,10 @@ declare namespace monaco.editor {
 	 * Configuration options for editor suggest widget
 	 */
 	export interface ISuggestOptions {
+		/**
+		 * Overwrite word ends on accept. Default to false.
+		 */
+		overwriteOnAccept?: boolean;
 		/**
 		 * Enable graceful matching. Defaults to true.
 		 */

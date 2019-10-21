@@ -866,8 +866,8 @@ export class ExtensionEditor extends BaseEditor {
 					this.renderViewContainers(content, manifest, layout),
 					this.renderViews(content, manifest, layout),
 					this.renderLocalizations(content, manifest, layout),
-					this.renderWebviewEditors(content, manifest, layout),
-					renderDashboardContributions(content, manifest, layout) // {{SQL CARBON EDIT}}
+					renderDashboardContributions(content, manifest, layout), // {{SQL CARBON EDIT}}
+					this.renderCustomEditors(content, manifest, layout),
 				];
 
 				scrollableContent.scanDomNode();
@@ -1067,19 +1067,19 @@ export class ExtensionEditor extends BaseEditor {
 		return true;
 	}
 
-	private renderWebviewEditors(container: HTMLElement, manifest: IExtensionManifest, onDetailsToggle: Function): boolean {
+	private renderCustomEditors(container: HTMLElement, manifest: IExtensionManifest, onDetailsToggle: Function): boolean {
 		const webviewEditors = (manifest.contributes && manifest.contributes.webviewEditors) || [];
 		if (!webviewEditors.length) {
 			return false;
 		}
 
 		const details = $('details', { open: true, ontoggle: onDetailsToggle },
-			$('summary', { tabindex: '0' }, localize('webviewEditors', "Webview Editors ({0})", webviewEditors.length)),
+			$('summary', { tabindex: '0' }, localize('customEditors', "Custom Editors ({0})", webviewEditors.length)),
 			$('table', undefined,
 				$('tr', undefined,
-					$('th', undefined, localize('webviewEditors view type', "View Type")),
-					$('th', undefined, localize('webviewEditors priority', "Priority")),
-					$('th', undefined, localize('webviewEditors filenamePattern', "Filename Pattern"))),
+					$('th', undefined, localize('customEditors view type', "View Type")),
+					$('th', undefined, localize('customEditors priority', "Priority")),
+					$('th', undefined, localize('customEditors filenamePattern', "Filename Pattern"))),
 				...webviewEditors.map(webviewEditor =>
 					$('tr', undefined,
 						$('td', undefined, webviewEditor.viewType),
@@ -1364,11 +1364,9 @@ export class ExtensionEditor extends BaseEditor {
 	private loadContents<T>(loadingTask: () => CacheResult<T>, template: IExtensionEditorTemplate): Promise<T> {
 		addClass(template.content, 'loading');
 
-		const result = loadingTask();
+		const result = this.contentDisposables.add(loadingTask());
 		const onDone = () => removeClass(template.content, 'loading');
 		result.promise.then(onDone, onDone);
-
-		this.contentDisposables.add(toDisposable(() => result.dispose()));
 
 		return result.promise;
 	}
