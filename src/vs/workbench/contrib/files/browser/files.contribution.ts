@@ -255,6 +255,7 @@ configurationRegistry.registerConfiguration({
 		},
 		'files.eol': {
 			'type': 'string',
+			'overridable': true,
 			'enum': [
 				'\n',
 				'\r\n',
