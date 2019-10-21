@@ -17,6 +17,8 @@ import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { ModelComponentWrapper } from 'sql/workbench/browser/modelComponents/modelComponentWrapper.component';
 import { URI } from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
+import { EventType, addDisposableListener } from 'vs/base/browser/dom';
+import { IKeyboardEvent, StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 
 export type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
@@ -248,6 +250,10 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 			}
 			return isValid;
 		});
+	}
+
+	protected onkeydown(domNode: HTMLElement, listener: (e: IKeyboardEvent) => void): void {
+		this._register(addDisposableListener(domNode, EventType.KEY_DOWN, (e: KeyboardEvent) => listener(new StandardKeyboardEvent(e))));
 	}
 }
 
