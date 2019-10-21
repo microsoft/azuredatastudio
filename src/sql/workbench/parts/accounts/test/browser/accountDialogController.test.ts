@@ -6,13 +6,13 @@
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 import { Emitter } from 'vs/base/common/event';
-import { AccountDialog } from 'sql/platform/accounts/browser/accountDialog';
-import { AccountDialogController } from 'sql/platform/accounts/browser/accountDialogController';
+import { AccountDialog } from 'sql/workbench/parts/accounts/browser/accountDialog';
+import { AccountDialogController } from 'sql/workbench/parts/accounts/browser/accountDialogController';
 import { AccountViewModel } from 'sql/platform/accounts/common/accountViewModel';
 import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
 import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/testErrorMessageService';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
-import { AccountListRenderer } from 'sql/platform/accounts/browser/accountListRenderer';
+import { AccountListRenderer } from 'sql/workbench/parts/accounts/browser/accountListRenderer';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 
 // TESTS ///////////////////////////////////////////////////////////////////

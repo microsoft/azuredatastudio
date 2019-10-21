@@ -7,7 +7,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import Severity from 'vs/base/common/severity';
 import { localize } from 'vs/nls';
 
-import { AutoOAuthDialog } from 'sql/platform/accounts/browser/autoOAuthDialog';
+import { AutoOAuthDialog } from 'sql/workbench/parts/accounts/browser/autoOAuthDialog';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 

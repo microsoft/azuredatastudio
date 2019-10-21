@@ -21,7 +21,7 @@ import * as azdata from 'azdata';
 import { DropdownList } from 'sql/base/browser/ui/dropdownList/dropdownList';
 import { attachDropdownStyler } from 'sql/platform/theme/common/styler';
 import { AddAccountAction, RefreshAccountAction } from 'sql/platform/accounts/common/accountActions';
-import { AccountPickerListRenderer, AccountListDelegate } from 'sql/platform/accounts/browser/accountListRenderer';
+import { AccountPickerListRenderer, AccountListDelegate } from 'sql/workbench/parts/accounts/browser/accountListRenderer';
 import { AccountPickerViewModel } from 'sql/platform/accounts/common/accountPickerViewModel';
 
 export class AccountPicker extends Disposable {

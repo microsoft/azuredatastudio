@@ -8,7 +8,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import * as azdata from 'azdata';
 
 import { IAccountPickerService } from 'sql/platform/accounts/browser/accountPicker';
-import { AccountPicker } from 'sql/platform/accounts/browser/accountPickerImpl';
+import { AccountPicker } from 'sql/workbench/parts/accounts/browser/accountPickerImpl';
 
 export class AccountPickerService implements IAccountPickerService {
 	_serviceBrand: undefined;

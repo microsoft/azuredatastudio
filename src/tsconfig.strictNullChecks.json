@@ -17,7 +17,7 @@
 		// "./vs/platform/**/*.ts",
 		"./sql/base/**/*.ts",
 		"./sql/editor/**/*.ts",
-		"./sql/platform/accounts/common/**/*.ts",
+		"./sql/platform/accounts/**/*.ts",
 		"./sql/platform/angularEventing/**/*.ts",
 		"./sql/platform/backup/**/*.ts",
 		"./sql/platform/browser/**/*.ts",
