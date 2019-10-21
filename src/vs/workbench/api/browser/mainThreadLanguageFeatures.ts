@@ -502,8 +502,8 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 				}
 				return outgoing.map(([item, sourceRanges]): callh.OutgoingCall => {
 					return {
-						target: MainThreadLanguageFeatures._reviveCallHierarchyItemDto(item),
-						sourceRanges
+						to: MainThreadLanguageFeatures._reviveCallHierarchyItemDto(item),
+						fromRanges: sourceRanges
 					};
 				});
 			},
@@ -514,8 +514,8 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 				}
 				return incoming.map(([item, sourceRanges]): callh.IncomingCall => {
 					return {
-						source: MainThreadLanguageFeatures._reviveCallHierarchyItemDto(item),
-						sourceRanges
+						from: MainThreadLanguageFeatures._reviveCallHierarchyItemDto(item),
+						fromRanges: sourceRanges
 					};
 				});
 			}
