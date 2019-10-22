@@ -18,7 +18,7 @@ const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(La
 /**
  * Handles setting a mode from the editor status and converts inputs if necessary
  */
-export function setMode(accessor: ServicesAccessor, modeSupport: IModeSupport, activeEditor: IEditorInput, language: string): void {
+export async function setMode(accessor: ServicesAccessor, modeSupport: IModeSupport, activeEditor: IEditorInput, language: string): Promise<void> {
 	const editorService = accessor.get(IEditorService);
 	const instantiationService = accessor.get(IInstantiationService);
 	const activeWidget = getCodeEditor(editorService.activeTextEditorWidget);
@@ -42,10 +42,10 @@ export function setMode(accessor: ServicesAccessor, modeSupport: IModeSupport, a
 		if (newInputCreator) {
 			const newInput = instantiationService.invokeFunction(newInputCreator.creator, input || activeEditor);
 			if (newInput) {
-				editorService.replaceEditors([{ editor: activeEditor, replacement: newInput }], activeControl.group);
+				await editorService.replaceEditors([{ editor: activeEditor, replacement: newInput }], activeControl.group);
 			}
 		} else if (oldInputCreator) {
-			editorService.replaceEditors([{ editor: activeEditor, replacement: input }], activeControl.group);
+			await editorService.replaceEditors([{ editor: activeEditor, replacement: input }], activeControl.group);
 		}
 	}
 }

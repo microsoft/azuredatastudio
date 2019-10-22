@@ -990,7 +990,7 @@ export class ChangeModeAction extends Action {
 
 				// Change mode
 				if (typeof languageSelection !== 'undefined') {
-					this.instantiationService.invokeFunction(setMode, modeSupport, activeEditor, languageSelection.languageIdentifier.language); // {{SQL CARBON EDIT}} @anthonydresser use custom setMode
+					return this.instantiationService.invokeFunction(setMode, modeSupport, activeEditor, languageSelection.languageIdentifier.language); // {{SQL CARBON EDIT}} @anthonydresser use custom setMode
 				}
 			}
 		}
