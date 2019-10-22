@@ -82,7 +82,7 @@ suite('Telemetry - common properties', function () {
 		assert.ok(value1 !== value2, 'timesincesessionstart');
 	});
 
-	test('mixes in additional properties', async function () {
+	test.skip('mixes in additional properties', async function () { // {{SQL CARBON EDIT}} skip test
 		const resolveCommonTelemetryProperties = () => {
 			return {
 				'userId': '1'
