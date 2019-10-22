@@ -168,7 +168,7 @@
 				]
 			},
 			{
-				"target": "**/vs/platform/*/common/**",
+				"target": "**/{vs,sql}/platform/*/common/**",
 				"restrictions": [
 					"vs/nls",
 					"**/{vs,sql}/base/common/**",
@@ -177,7 +177,7 @@
 				]
 			},
 			{
-				"target": "**/vs/platform/*/test/common/**",
+				"target": "**/{vs,sql}/platform/*/test/common/**",
 				"restrictions": [
 					"assert",
 					"sinon",
@@ -188,7 +188,7 @@
 				]
 			},
 			{
-				"target": "**/vs/platform/*/browser/**",
+				"target": "**/{vs,sql}/platform/*/browser/**",
 				"restrictions": [
 					"vs/nls",
 					"vs/css!./**/*",
@@ -198,7 +198,7 @@
 				]
 			},
 			{
-				"target": "**/vs/platform/*/node/**",
+				"target": "**/{vs,sql}/platform/*/node/**",
 				"restrictions": [
 					"vs/nls",
 					"**/{vs,sql}/base/{common,browser,node}/**",
@@ -208,7 +208,7 @@
 				]
 			},
 			{
-				"target": "**/vs/platform/*/electron-browser/**",
+				"target": "**/{vs,sql}/platform/*/electron-browser/**",
 				"restrictions": [
 					"vs/nls",
 					"vs/css!./**/*",
@@ -219,7 +219,7 @@
 				]
 			},
 			{
-				"target": "**/vs/platform/*/electron-main/**",
+				"target": "**/{vs,sql}/platform/*/electron-main/**",
 				"restrictions": [
 					"vs/nls",
 					"**/{vs,sql}/base/{common,browser,node}/**",
@@ -229,7 +229,7 @@
 				]
 			},
 			{
-				"target": "**/vs/platform/*/test/browser/**",
+				"target": "**/{vs,sql}/platform/*/test/browser/**",
 				"restrictions": [
 					"assert",
 					"sinon",
