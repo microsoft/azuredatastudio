@@ -361,6 +361,18 @@ function hygiene(some) {
 		});
 	});
 
+	const filelength = es.through(function (file) {
+
+		const filepath = file.path;
+		if (filepath.length > 255) {
+			console.error(filelength + ': File name too long.');
+				errorCount++;
+		}
+
+		this.emit('data', file);
+	});
+
+
 	const tslintConfiguration = tslint.Configuration.findConfiguration('tslint.json', '.');
 	const tslintOptions = { fix: false, formatter: 'json' };
 	const tsLinter = new tslint.Linter(tslintOptions);
@@ -391,6 +403,7 @@ function hygiene(some) {
 	const productJsonFilter = filter('product.json', { restore: true });
 
 	const result = input
+		.pipe(filelength)
 		.pipe(filter(f => !f.stat.isDirectory()))
 		.pipe(productJsonFilter)
 		.pipe(process.env['BUILD_SOURCEVERSION'] ? es.through() : productJson)
