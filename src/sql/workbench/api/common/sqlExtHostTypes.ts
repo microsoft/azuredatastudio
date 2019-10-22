@@ -363,6 +363,22 @@ export enum Orientation {
 	Vertical = 'vertial'
 }
 
+/**
+ * The possible values of the server engine edition
+ */
+export enum DatabaseEngineEdition {
+	Unknown = 0,
+	Personal = 1,
+	Standard = 2,
+	Enterprise = 3,
+	Express = 4,
+	SqlDatabase = 5,
+	SqlDataWarehouse = 6,
+	SqlStretchDatabase = 7,
+	SqlManagedInstance = 8,
+	SqlOnDemand = 11
+}
+
 export interface ToolbarLayout {
 	orientation: Orientation;
 }

@@ -35,17 +35,17 @@
       "objectExplorer/item/context": [
         {
           "command": "dacFx.start",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
           "group": "export"
         },
         {
           "command": "dacFx.start",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Server",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
           "group": "export"
         },
         {
           "command": "dacFx.start",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Folder && nodeLabel == 'Databases'",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Folder && nodeLabel == 'Databases' && mssql:engineedition != 11",
           "group": "export"
         }
       ]
