@@ -81,5 +81,4 @@ suite('Telemetry - common properties', function () {
 		value2 = props['common.timesincesessionstart'];
 		assert.ok(value1 !== value2, 'timesincesessionstart');
 	});
-
 });
