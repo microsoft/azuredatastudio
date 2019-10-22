@@ -16,11 +16,18 @@ export const properties: Array<ProviderProperties> = [
 		flavors: [
 			{
 				flavor: 'on_prem',
-				condition: {
-					field: 'isCloud',
-					operator: '!=',
-					value: true
-				},
+				conditions: [
+					{
+						field: 'isCloud',
+						operator: '!=',
+						value: true
+					},
+					{
+						field: 'engineEditionId',
+						operator: '!=',
+						value: '11'
+					}
+				],
 				databaseProperties: [
 					{
 						displayName: nls.localize('recoveryModel', "Recovery Model"),
@@ -70,11 +77,13 @@ export const properties: Array<ProviderProperties> = [
 			},
 			{
 				flavor: 'cloud',
-				condition: {
-					field: 'isCloud',
-					operator: '==',
-					value: true
-				},
+				conditions: [
+					{
+						field: 'isCloud',
+						operator: '==',
+						value: true
+					}
+				],
 				databaseProperties: [
 					{
 						displayName: azureEditionDisplayName,
@@ -84,6 +93,36 @@ export const properties: Array<ProviderProperties> = [
 						displayName: nls.localize('serviceLevelObjective', "Pricing Tier"),
 						value: 'serviceLevelObjective'
 					},
+					{
+						displayName: nls.localize('compatibilityLevel', "Compatibility Level"),
+						value: 'compatibilityLevel'
+					},
+					{
+						displayName: nls.localize('owner', "Owner"),
+						value: 'owner'
+					}
+				],
+				serverProperties: [
+					{
+						displayName: nls.localize('version', "Version"),
+						value: 'serverVersion'
+					},
+					{
+						displayName: azureType,
+						value: 'serverEdition'
+					}
+				]
+			},
+			{
+				flavor: 'on_demand',
+				conditions: [
+					{
+						field: 'engineEditionId',
+						operator: '==',
+						value: '11'
+					}
+				],
+				databaseProperties: [
 					{
 						displayName: nls.localize('compatibilityLevel', "Compatibility Level"),
 						value: 'compatibilityLevel'
