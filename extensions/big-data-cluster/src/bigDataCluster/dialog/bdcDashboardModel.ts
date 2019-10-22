@@ -100,7 +100,7 @@ export class BdcDashboardModel {
  * @param service The service name to get the troubleshoot notebook URL for
  */
 export function getTroubleshootNotebookUrl(service: string): string {
-	switch (service) {
+	switch (service.toLowerCase()) {
 		case Service.sql:
 			return 'troubleshooters/tsg101-troubleshoot-sql-server';
 		case Service.hdfs:
@@ -116,6 +116,7 @@ export function getTroubleshootNotebookUrl(service: string): string {
 	}
 	return 'troubleshooters/tsg100-troubleshoot-bdc';
 }
+
 /**
  * Applies fixes to the endpoints received so they are displayed correctly
  * @param endpoints The endpoints received to modify
