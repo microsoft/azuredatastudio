@@ -160,6 +160,19 @@ configurationRegistry.registerConfiguration({
 	}
 });
 
+configurationRegistry.registerConfiguration({
+	'id': 'notebook',
+	'title': 'Notebook',
+	'type': 'object',
+	'properties': {
+		'notebook.sqlKernelStopOnError': {
+			'type': 'boolean',
+			'default': true,
+			'description': localize('notebook.sqlKernelStopOnError', "SQL kernel: stop notebook execution when error occurs in a cell.")
+		}
+	}
+});
+
 registerAction({
 	id: 'workbench.books.action.focusBooksExplorer',
 	handler: async (accessor) => {

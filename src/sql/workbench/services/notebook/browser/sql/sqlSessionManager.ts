@@ -30,6 +30,7 @@ export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel err
 export const MAX_ROWS = 5000;
 export const NotebookConfigSectionName = 'notebook';
 export const MaxTableRowsConfigName = 'maxTableRows';
+export const SqlKernelStopOnErrorConfigName = 'sqlKernelStopOnError';
 
 const languageMagics: ILanguageMagic[] = [{
 	language: 'Python',
@@ -379,6 +380,8 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private configuredMaxRows: number = MAX_ROWS;
 	private _outputAddedPromises: Promise<void>[] = [];
 	private _querySubsetResultMap: Map<number, QueryExecuteSubsetResult> = new Map<number, QueryExecuteSubsetResult>();
+	private _errorOccurred: boolean = false;
+	private _stopOnError: boolean = false;
 	constructor(
 		private _queryRunner: QueryRunner,
 		private _executionCount: number | undefined,
@@ -392,6 +395,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			if (maxRows && maxRows > 0) {
 				this.configuredMaxRows = maxRows;
 			}
+			this._stopOnError = config[SqlKernelStopOnErrorConfigName] ? config[SqlKernelStopOnErrorConfigName] : false;
 		}
 	}
 
@@ -426,7 +430,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			channel: 'shell',
 			type: 'execute_reply',
 			content: {
-				status: 'ok',
+				status: this._errorOccurred && this._stopOnError ? 'error' : 'ok',
 				execution_count: this._executionCount
 			},
 			header: undefined,
@@ -620,6 +624,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 
 	private convertToError(msg: IResultMessage | string): nb.IIOPubMessage {
 		if (msg) {
+			this._errorOccurred = true;
 			let msgData = typeof msg === 'string' ? msg : msg.message;
 			return {
 				channel: 'iopub',
