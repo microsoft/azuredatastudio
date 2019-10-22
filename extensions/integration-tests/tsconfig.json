@@ -3,7 +3,7 @@
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"module": "commonjs",
-		"target": "ES5",
+		"target": "es2017",
 		"outDir": "out",
 		"noUnusedLocals": true,
 		"lib": [
