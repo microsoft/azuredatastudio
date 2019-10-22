@@ -363,7 +363,7 @@ import 'vs/workbench/contrib/userDataSync/browser/userDataSync.contribution';
 
 // query
 import 'sql/workbench/parts/query/browser/query.contribution';
-import 'sql/workbench/parts/query/common/resultsGridContribution';
+import 'sql/workbench/parts/query/common/resultsGrid.contribution';
 
 // data explorer
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
