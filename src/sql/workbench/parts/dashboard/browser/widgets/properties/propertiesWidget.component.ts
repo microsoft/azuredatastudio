@@ -143,7 +143,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			} else {
 				const flavorArray = providerProperties.flavors.filter((item) => {
 
-					// For backward compatibility we are supportig array of conditions and single condition.
+					// For backward compatibility we are supporting array of conditions and single condition.
 					// If nothing is specified, we return false.
 					if (item.conditions) {
 						let conditionResult = true;
