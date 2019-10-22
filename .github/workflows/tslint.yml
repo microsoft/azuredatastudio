@@ -6,7 +6,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v1
-      - name: Lint
+      - name: TSLint
         uses: aaomidi/gh-action-tslint@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
