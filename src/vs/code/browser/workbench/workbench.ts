@@ -10,6 +10,8 @@ import { streamToBuffer } from 'vs/base/common/buffer';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { request } from 'vs/base/parts/request/browser/request';
 import { isFolderToOpen, isWorkspaceToOpen } from 'vs/platform/windows/common/windows';
+import { isEqual } from 'vs/base/common/resources';
+import { isStandalone } from 'vs/base/browser/browser';
 
 interface ICredential {
 	service: string;
@@ -21,7 +23,7 @@ class LocalStorageCredentialsProvider implements ICredentialsProvider {
 
 	static readonly CREDENTIALS_OPENED_KEY = 'credentials.provider';
 
-	private _credentials!: ICredential[];
+	private _credentials: ICredential[] | undefined;
 	private get credentials(): ICredential[] {
 		if (!this._credentials) {
 			try {
@@ -102,10 +104,10 @@ class LocalStorageCredentialsProvider implements ICredentialsProvider {
 
 class PollingURLCallbackProvider extends Disposable implements IURLCallbackProvider {
 
-	static FETCH_INTERVAL = 500; 			// fetch every 500ms
-	static FETCH_TIMEOUT = 5 * 60 * 1000; 	// ...but stop after 5min
+	static readonly FETCH_INTERVAL = 500; 			// fetch every 500ms
+	static readonly FETCH_TIMEOUT = 5 * 60 * 1000; 	// ...but stop after 5min
 
-	static QUERY_KEYS = {
+	static readonly QUERY_KEYS = {
 		REQUEST_ID: 'vscode-requestId',
 		SCHEME: 'vscode-scheme',
 		AUTHORITY: 'vscode-authority',
@@ -200,45 +202,119 @@ class PollingURLCallbackProvider extends Disposable implements IURLCallbackProvi
 
 class WorkspaceProvider implements IWorkspaceProvider {
 
-	constructor(public readonly workspace: IWorkspace) { }
+	static QUERY_PARAM_EMPTY_WINDOW = 'ew';
+	static QUERY_PARAM_FOLDER = 'folder';
+	static QUERY_PARAM_WORKSPACE = 'workspace';
 
-	async open(workspace: IWorkspace, options?: { reuse?: boolean }): Promise<void> {
-		let targetHref: string | undefined = undefined;
+	constructor(
+		public readonly workspace: IWorkspace,
+		public readonly payload: object
+	) { }
+
+	async open(workspace: IWorkspace, options?: { reuse?: boolean, payload?: object }): Promise<void> {
+		if (options?.reuse && !options.payload && this.isSame(this.workspace, workspace)) {
+			return; // return early if workspace and environment is not changing and we are reusing window
+		}
 
 		// Empty
+		let targetHref: string | undefined = undefined;
 		if (!workspace) {
-			targetHref = `${document.location.origin}${document.location.pathname}?ew=true`;
+			targetHref = `${document.location.origin}${document.location.pathname}?${WorkspaceProvider.QUERY_PARAM_EMPTY_WINDOW}=true`;
 		}
 
 		// Folder
 		else if (isFolderToOpen(workspace)) {
-			targetHref = `${document.location.origin}${document.location.pathname}?folder=${workspace.folderUri.path}`;
+			targetHref = `${document.location.origin}${document.location.pathname}?${WorkspaceProvider.QUERY_PARAM_FOLDER}=${workspace.folderUri.path}`;
 		}
 
 		// Workspace
 		else if (isWorkspaceToOpen(workspace)) {
-			targetHref = `${document.location.origin}${document.location.pathname}?workspace=${workspace.workspaceUri.path}`;
+			targetHref = `${document.location.origin}${document.location.pathname}?${WorkspaceProvider.QUERY_PARAM_WORKSPACE}=${workspace.workspaceUri.path}`;
+		}
+
+		// Environment
+		if (options?.payload) {
+			targetHref += `&payload=${encodeURIComponent(JSON.stringify(options.payload))}`;
 		}
 
 		if (targetHref) {
-			if (options && options.reuse) {
+			if (options?.reuse) {
 				window.location.href = targetHref;
 			} else {
-				window.open(targetHref);
+				if (isStandalone) {
+					window.open(targetHref, '_blank', 'toolbar=no'); // ensures to open another 'standalone' window!
+				} else {
+					window.open(targetHref);
+				}
 			}
 		}
 	}
+
+	private isSame(workspaceA: IWorkspace, workspaceB: IWorkspace): boolean {
+		if (!workspaceA || !workspaceB) {
+			return workspaceA === workspaceB; // both empty
+		}
+
+		if (isFolderToOpen(workspaceA) && isFolderToOpen(workspaceB)) {
+			return isEqual(workspaceA.folderUri, workspaceB.folderUri); // same workspace
+		}
+
+		if (isWorkspaceToOpen(workspaceA) && isWorkspaceToOpen(workspaceB)) {
+			return isEqual(workspaceA.workspaceUri, workspaceB.workspaceUri); // same workspace
+		}
+
+		return false;
+	}
 }
 
-const options: IWorkbenchConstructionOptions & { folderUri?: UriComponents, workspaceUri?: UriComponents } = JSON.parse(document.getElementById('vscode-workbench-web-configuration')!.getAttribute('data-settings')!);
-options.workspaceProvider = new WorkspaceProvider(options.folderUri ? { folderUri: URI.revive(options.folderUri) } : options.workspaceUri ? { workspaceUri: URI.revive(options.workspaceUri) } : undefined);
-options.urlCallbackProvider = new PollingURLCallbackProvider();
-options.credentialsProvider = new LocalStorageCredentialsProvider();
+(function () {
 
-if (Array.isArray(options.staticExtensions)) {
-	options.staticExtensions.forEach(extension => {
-		extension.extensionLocation = URI.revive(extension.extensionLocation);
-	});
-}
+	// Find config element in DOM
+	const configElement = document.getElementById('vscode-workbench-web-configuration');
+	const configElementAttribute = configElement ? configElement.getAttribute('data-settings') : undefined;
+	if (!configElement || !configElementAttribute) {
+		throw new Error('Missing web configuration element');
+	}
 
-create(document.body, options);
+	const options: IWorkbenchConstructionOptions & { folderUri?: UriComponents, workspaceUri?: UriComponents } = JSON.parse(configElementAttribute);
+
+	// Determine workspace to open
+	let workspace: IWorkspace;
+	if (options.folderUri) {
+		workspace = { folderUri: URI.revive(options.folderUri) };
+	} else if (options.workspaceUri) {
+		workspace = { workspaceUri: URI.revive(options.workspaceUri) };
+	} else {
+		workspace = undefined;
+	}
+
+	// Find payload
+	let payload = Object.create(null);
+	if (document.location.search) {
+		const query = document.location.search.substring(1);
+		const vars = query.split('&');
+		for (let p of vars) {
+			const pair = p.split('=');
+			if (pair.length === 2) {
+				const [key, value] = pair;
+				if (key === 'payload') {
+					payload = JSON.parse(decodeURIComponent(value));
+					break;
+				}
+			}
+		}
+	}
+
+	options.workspaceProvider = new WorkspaceProvider(workspace, payload);
+	options.urlCallbackProvider = new PollingURLCallbackProvider();
+	options.credentialsProvider = new LocalStorageCredentialsProvider();
+
+	if (Array.isArray(options.staticExtensions)) {
+		options.staticExtensions.forEach(extension => {
+			extension.extensionLocation = URI.revive(extension.extensionLocation);
+		});
+	}
+
+	// Finally create workbench
+	create(document.body, options);
+})();

@@ -101,7 +101,7 @@
 				"restrictions": [
 					"vs/nls",
 					"**/{vs,sql}/base/{common,browser,node}/**",
-					"*" // node modules
+					"!path" // node modules (except path where we have our own impl)
 				]
 			},
 			{
@@ -141,7 +141,7 @@
 					"vs/nls",
 					"**/{vs,sql}/base/{common,browser,node}/**",
 					"**/{vs,sql}/base/parts/*/{common,browser,node}/**",
-					"*" // node modules
+					"!path" // node modules (except path where we have our own impl)
 				]
 			},
 			{
@@ -151,7 +151,7 @@
 					"vs/css!./**/*",
 					"**/{vs,sql}/base/{common,browser,node,electron-browser}/**",
 					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-browser}/**",
-					"*", // node modules
+					"!path", // node modules (except path where we have our own impl)
 					"@angular/*",
 					"rxjs/*"
 				]
@@ -162,7 +162,7 @@
 					"vs/nls",
 					"**/{vs,sql}/base/{common,browser,node,electron-main}/**",
 					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-main}/**",
-					"*", // node modules
+					"!path", // node modules (except path where we have our own impl)
 					"@angular/*",
 					"rxjs/*"
 				]

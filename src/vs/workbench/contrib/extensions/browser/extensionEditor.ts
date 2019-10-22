@@ -600,7 +600,6 @@ export class ExtensionEditor extends BaseEditor {
 			this.contentDisposables.add(webviewElement.onDidFocus(() => this.fireOnDidFocus()));
 			const removeLayoutParticipant = arrays.insert(this.layoutParticipants, {
 				layout: () => {
-					webviewElement.layout();
 					webviewElement.layoutWebviewOverElement(template.content);
 				}
 			});
@@ -867,7 +866,8 @@ export class ExtensionEditor extends BaseEditor {
 					this.renderViewContainers(content, manifest, layout),
 					this.renderViews(content, manifest, layout),
 					this.renderLocalizations(content, manifest, layout),
-					renderDashboardContributions(content, manifest, layout) // {{SQL CARBON EDIT}}
+					renderDashboardContributions(content, manifest, layout), // {{SQL CARBON EDIT}}
+					this.renderCustomEditors(content, manifest, layout),
 				];
 
 				scrollableContent.scanDomNode();
@@ -1060,6 +1060,31 @@ export class ExtensionEditor extends BaseEditor {
 			$('table', undefined,
 				$('tr', undefined, $('th', undefined, localize('localizations language id', "Language Id")), $('th', undefined, localize('localizations language name', "Language Name")), $('th', undefined, localize('localizations localized language name', "Language Name (Localized)"))),
 				...localizations.map(localization => $('tr', undefined, $('td', undefined, localization.languageId), $('td', undefined, localization.languageName || ''), $('td', undefined, localization.localizedLanguageName || '')))
+			)
+		);
+
+		append(container, details);
+		return true;
+	}
+
+	private renderCustomEditors(container: HTMLElement, manifest: IExtensionManifest, onDetailsToggle: Function): boolean {
+		const webviewEditors = (manifest.contributes && manifest.contributes.webviewEditors) || [];
+		if (!webviewEditors.length) {
+			return false;
+		}
+
+		const details = $('details', { open: true, ontoggle: onDetailsToggle },
+			$('summary', { tabindex: '0' }, localize('customEditors', "Custom Editors ({0})", webviewEditors.length)),
+			$('table', undefined,
+				$('tr', undefined,
+					$('th', undefined, localize('customEditors view type', "View Type")),
+					$('th', undefined, localize('customEditors priority', "Priority")),
+					$('th', undefined, localize('customEditors filenamePattern', "Filename Pattern"))),
+				...webviewEditors.map(webviewEditor =>
+					$('tr', undefined,
+						$('td', undefined, webviewEditor.viewType),
+						$('td', undefined, webviewEditor.priority),
+						$('td', undefined, arrays.coalesce(webviewEditor.selector.map(x => x.filenamePattern)).join(', '))))
 			)
 		);
 
@@ -1339,11 +1364,9 @@ export class ExtensionEditor extends BaseEditor {
 	private loadContents<T>(loadingTask: () => CacheResult<T>, template: IExtensionEditorTemplate): Promise<T> {
 		addClass(template.content, 'loading');
 
-		const result = loadingTask();
+		const result = this.contentDisposables.add(loadingTask());
 		const onDone = () => removeClass(template.content, 'loading');
 		result.promise.then(onDone, onDone);
-
-		this.contentDisposables.add(toDisposable(() => result.dispose()));
 
 		return result.promise;
 	}

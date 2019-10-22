@@ -59,7 +59,7 @@ export class TextEditorState {
 	}
 
 	justifiesNewPushState(other: TextEditorState, event?: ICursorPositionChangedEvent): boolean {
-		if (event && event.source === 'api') {
+		if (event?.source === 'api') {
 			return true; // always let API source win (e.g. "Go to definition" should add a history entry)
 		}
 
@@ -120,7 +120,7 @@ export class HistoryService extends Disposable implements IHistoryService {
 
 	private lastEditLocation: IStackEntry | undefined;
 
-	private history!: Array<IEditorInput | IResourceInput>;
+	private history: Array<IEditorInput | IResourceInput> = [];
 	private recentlyClosedFiles: IRecentlyClosedFile[];
 	private loaded: boolean;
 	private resourceFilter: ResourceGlobMatcher;
@@ -227,7 +227,7 @@ export class HistoryService extends Disposable implements IHistoryService {
 		}
 
 		// Remember as last active editor (can be undefined if none opened)
-		this.lastActiveEditor = activeControl && activeControl.input && activeControl.group ? { editor: activeControl.input, groupId: activeControl.group.id } : undefined;
+		this.lastActiveEditor = activeControl?.input && activeControl.group ? { editor: activeControl.input, groupId: activeControl.group.id } : undefined;
 
 		// Dispose old listeners
 		this.activeEditorListeners.clear();
@@ -250,7 +250,11 @@ export class HistoryService extends Disposable implements IHistoryService {
 			// Track the last edit location by tracking model content change events
 			// Use a debouncer to make sure to capture the correct cursor position
 			// after the model content has changed.
-			this.activeEditorListeners.add(Event.debounce(activeTextEditorWidget.onDidChangeModelContent, (last, event) => event, 0)((event => this.rememberLastEditLocation(activeEditor!, activeTextEditorWidget))));
+			this.activeEditorListeners.add(Event.debounce(activeTextEditorWidget.onDidChangeModelContent, (last, event) => event, 0)((event => {
+				if (activeEditor) {
+					this.rememberLastEditLocation(activeEditor, activeTextEditorWidget);
+				}
+			})));
 		}
 	}
 
@@ -592,7 +596,7 @@ export class HistoryService extends Disposable implements IHistoryService {
 		// stack but we need to keep our currentTextEditorState up to date with
 		// the navigtion that occurs.
 		if (this.navigatingInStack) {
-			if (codeEditor && control && control.input) {
+			if (codeEditor && control?.input) {
 				this.currentTextEditorState = new TextEditorState(control.input, codeEditor.getSelection());
 			} else {
 				this.currentTextEditorState = null; // we navigated to a non text editor
@@ -603,7 +607,7 @@ export class HistoryService extends Disposable implements IHistoryService {
 		else {
 
 			// navigation inside text editor
-			if (codeEditor && control && control.input) {
+			if (codeEditor && control?.input) {
 				this.handleTextEditorEvent(control, codeEditor, event);
 			}
 
@@ -611,7 +615,7 @@ export class HistoryService extends Disposable implements IHistoryService {
 			else {
 				this.currentTextEditorState = null; // at this time we have no active text editor view state
 
-				if (control && control.input) {
+				if (control?.input) {
 					this.handleNonTextEditorEvent(control);
 				}
 			}
@@ -845,7 +849,7 @@ export class HistoryService extends Disposable implements IHistoryService {
 
 		const resourceInput = arg2 as IResourceInput;
 
-		return resourceInput && resourceInput.resource.toString() === resource.toString();
+		return resourceInput?.resource.toString() === resource.toString();
 	}
 
 	getHistory(): Array<IEditorInput | IResourceInput> {
@@ -924,7 +928,7 @@ export class HistoryService extends Disposable implements IHistoryService {
 
 		// Editor input: via factory
 		const { editorInputJSON } = serializedEditorHistoryEntry;
-		if (editorInputJSON && editorInputJSON.deserialized) {
+		if (editorInputJSON?.deserialized) {
 			const factory = registry.getEditorInputFactory(editorInputJSON.typeId);
 			if (factory) {
 				const input = factory.deserialize(this.instantiationService, editorInputJSON.deserialized);
@@ -996,7 +1000,7 @@ export class HistoryService extends Disposable implements IHistoryService {
 				resource = (input as IResourceInput).resource;
 			}
 
-			if (resource && resource.scheme === filterByScheme) {
+			if (resource?.scheme === filterByScheme) {
 				return resource;
 			}
 		}

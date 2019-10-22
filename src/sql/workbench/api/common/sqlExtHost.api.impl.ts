@@ -558,7 +558,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				StepCompletionAction: sqlExtHostTypes.StepCompletionAction,
 				AgentSubSystem: sqlExtHostTypes.AgentSubSystem,
 				ExtensionNodeType: sqlExtHostTypes.ExtensionNodeType,
-				ColumnSizingMode: sqlExtHostTypes.ColumnSizingMode
+				ColumnSizingMode: sqlExtHostTypes.ColumnSizingMode,
+				DatabaseEngineEdition: sqlExtHostTypes.DatabaseEngineEdition
 			};
 		},
 

@@ -87,7 +87,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	private _allIgnoredRecommendations: string[] = [];
 	private _globallyIgnoredRecommendations: string[] = [];
 	private _workspaceIgnoredRecommendations: string[] = [];
-	private _extensionsRecommendationsUrl: string;
+	private _extensionsRecommendationsUrl: string | undefined;
 	public loadWorkspaceConfigPromise: Promise<void>;
 	private proactiveRecommendationsFetched: boolean = false;
 
@@ -120,9 +120,10 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	) {
 		super();
 
-		// {{SQL CARBON EDIT}}
-		let extensionPolicy: string = this.configurationService.getValue<string>(ExtensionsPolicyKey);
+		const extensionPolicy = this.configurationService.getValue<string>(ExtensionsPolicyKey); // {{SQL CARBON EDIT}}
 		if (!this.isEnabled() || extensionPolicy === ExtensionsPolicy.allowNone) {
+			this.sessionSeed = 0;
+			this.loadWorkspaceConfigPromise = Promise.resolve();
 			return;
 		}
 
@@ -533,7 +534,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			const tip = this._importantExeBasedRecommendations[extensionId];
 
 			/* __GDPR__
-			exeExtensionRecommendations:alreadyInstalled" : {
+			"exeExtensionRecommendations:alreadyInstalled" : {
 				"extensionId": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" },
 				"exeName": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
 			}
