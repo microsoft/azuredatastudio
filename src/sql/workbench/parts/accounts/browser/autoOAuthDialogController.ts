@@ -8,7 +8,7 @@ import Severity from 'vs/base/common/severity';
 import { localize } from 'vs/nls';
 
 import { AutoOAuthDialog } from 'sql/workbench/parts/accounts/browser/autoOAuthDialog';
-import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
+import { IAccountManagementService } from 'sql/workbench/parts/accounts/common/interfaces';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 export class AutoOAuthDialogController {

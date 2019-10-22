@@ -6,8 +6,8 @@
 import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
 
-import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
-import { UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
+import { IAccountManagementService } from 'sql/workbench/parts/accounts/common/interfaces';
+import { UpdateAccountListEventParams } from 'sql/workbench/parts/accounts/common/eventTypes';
 
 /**
  * View model for account picker

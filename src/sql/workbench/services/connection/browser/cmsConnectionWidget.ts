@@ -15,7 +15,7 @@ import * as Constants from 'sql/platform/connection/common/constants';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as styler from 'sql/platform/theme/common/styler';
-import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
+import { IAccountManagementService } from 'sql/workbench/parts/accounts/common/interfaces';
 
 import * as azdata from 'azdata';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';

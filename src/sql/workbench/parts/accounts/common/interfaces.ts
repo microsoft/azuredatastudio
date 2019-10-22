@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { Event } from 'vs/base/common/event';
-import { AccountAdditionResult, AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
+import { AccountAdditionResult, AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/workbench/parts/accounts/common/eventTypes';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 export const SERVICE_ID = 'accountManagementService';

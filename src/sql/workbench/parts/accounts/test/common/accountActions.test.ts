@@ -6,8 +6,8 @@
 import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
-import { AddAccountAction, RemoveAccountAction } from 'sql/platform/accounts/common/accountActions';
-import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
+import { AddAccountAction, RemoveAccountAction } from 'sql/workbench/parts/accounts/common/accountActions';
+import { TestAccountManagementService } from 'sql/workbench/parts/accounts/test/common/testAccountManagementService';
 // import { MessageServiceStub } from 'sqltest/stubs/messageServiceStub';
 import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/testErrorMessageService';
 

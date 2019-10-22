@@ -8,9 +8,9 @@ import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
 import { Emitter } from 'vs/base/common/event';
-import { AccountViewModel } from 'sql/platform/accounts/common/accountViewModel';
-import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
-import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
+import { AccountViewModel } from 'sql/workbench/parts/accounts/common/accountViewModel';
+import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/workbench/parts/accounts/common/eventTypes';
+import { TestAccountManagementService } from 'sql/workbench/parts/accounts/test/common/testAccountManagementService';
 
 // SUITE STATE /////////////////////////////////////////////////////////////
 let mockAddProviderEmitter: Emitter<AccountProviderAddedEventParams>;

@@ -11,11 +11,11 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { Memento } from 'vs/workbench/common/memento';
 
-import AccountStore from 'sql/platform/accounts/common/accountStore';
+import AccountStore from 'sql/workbench/parts/accounts/common/accountStore';
 import { AccountDialogController } from 'sql/workbench/parts/accounts/browser/accountDialogController';
 import { AutoOAuthDialogController } from 'sql/workbench/parts/accounts/browser/autoOAuthDialogController';
-import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
-import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
+import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/workbench/parts/accounts/common/eventTypes';
+import { IAccountManagementService } from 'sql/workbench/parts/accounts/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { localize } from 'vs/nls';
 import { IOpenerService } from 'vs/platform/opener/common/opener';

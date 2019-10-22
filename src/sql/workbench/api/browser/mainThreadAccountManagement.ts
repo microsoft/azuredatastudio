@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
+import { IAccountManagementService } from 'sql/workbench/parts/accounts/common/interfaces';
 import { Disposable } from 'vs/base/common/lifecycle';
 import {
 	ExtHostAccountManagementShape,
@@ -14,7 +14,7 @@ import {
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
+import { UpdateAccountListEventParams } from 'sql/workbench/parts/accounts/common/eventTypes';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadAccountManagement)
 export class MainThreadAccountManagement extends Disposable implements MainThreadAccountManagementShape {

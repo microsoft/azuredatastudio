@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import * as azdata from 'azdata';
-import AccountStore from 'sql/platform/accounts/common/accountStore';
+import AccountStore from 'sql/workbench/parts/accounts/common/accountStore';
 import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
 
 suite('Account Store Tests', () => {

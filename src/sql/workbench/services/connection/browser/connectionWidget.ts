@@ -20,7 +20,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as styler from 'sql/platform/theme/common/styler';
-import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
+import { IAccountManagementService } from 'sql/workbench/parts/accounts/common/interfaces';
 
 import * as azdata from 'azdata';
 

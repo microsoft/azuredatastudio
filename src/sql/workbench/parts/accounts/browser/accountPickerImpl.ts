@@ -20,9 +20,9 @@ import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import * as azdata from 'azdata';
 import { DropdownList } from 'sql/base/browser/ui/dropdownList/dropdownList';
 import { attachDropdownStyler } from 'sql/platform/theme/common/styler';
-import { AddAccountAction, RefreshAccountAction } from 'sql/platform/accounts/common/accountActions';
+import { AddAccountAction, RefreshAccountAction } from 'sql/workbench/parts/accounts/common/accountActions';
 import { AccountPickerListRenderer, AccountListDelegate } from 'sql/workbench/parts/accounts/browser/accountListRenderer';
-import { AccountPickerViewModel } from 'sql/platform/accounts/common/accountPickerViewModel';
+import { AccountPickerViewModel } from 'sql/workbench/parts/accounts/common/accountPickerViewModel';
 
 export class AccountPicker extends Disposable {
 	public static ACCOUNTPICKERLIST_HEIGHT = 47;

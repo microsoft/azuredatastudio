@@ -10,7 +10,7 @@ import { IStatusbarService, StatusbarAlignment } from 'vs/workbench/services/sta
 import { localize } from 'vs/nls';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
-import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
+import { IAccountManagementService } from 'sql/workbench/parts/accounts/common/interfaces';
 
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 

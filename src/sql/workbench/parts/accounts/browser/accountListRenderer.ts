@@ -13,7 +13,7 @@ import { ActionBar, IActionOptions } from 'vs/base/browser/ui/actionbar/actionba
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-import { RemoveAccountAction, RefreshAccountAction } from 'sql/platform/accounts/common/accountActions';
+import { RemoveAccountAction, RefreshAccountAction } from 'sql/workbench/parts/accounts/common/accountActions';
 
 import * as azdata from 'azdata';
 

@@ -10,7 +10,7 @@ import * as azdata from 'azdata';
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { FirewallRuleDialog } from 'sql/workbench/parts/accounts/browser/firewallRuleDialog';
-import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
+import { IAccountManagementService, AzureResource } from 'sql/workbench/parts/accounts/common/interfaces';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { Deferred } from 'sql/base/common/promise';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';

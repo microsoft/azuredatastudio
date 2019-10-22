@@ -27,7 +27,7 @@ import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
+import { TestAccountManagementService } from 'sql/workbench/parts/accounts/test/common/testAccountManagementService';
 import { TestStorageService, TestEnvironmentService, TestEditorService } from 'vs/workbench/test/workbenchTestServices';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';

@@ -28,7 +28,7 @@ import { Deferred } from 'sql/base/common/promise';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { values, entries } from 'sql/base/common/objects';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
-import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
+import { IAccountManagementService, AzureResource } from 'sql/workbench/parts/accounts/common/interfaces';
 
 import * as azdata from 'azdata';
 

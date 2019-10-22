@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { AccountAdditionResult } from 'sql/platform/accounts/common/eventTypes';
-import { IAccountStore } from 'sql/platform/accounts/common/interfaces';
+import { AccountAdditionResult } from 'sql/workbench/parts/accounts/common/eventTypes';
+import { IAccountStore } from 'sql/workbench/parts/accounts/common/interfaces';
 import { deepClone } from 'vs/base/common/objects';
 
 export default class AccountStore implements IAccountStore {

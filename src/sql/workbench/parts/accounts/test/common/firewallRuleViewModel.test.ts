@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { FirewallRuleViewModel } from 'sql/platform/accounts/common/firewallRuleViewModel';
+import { FirewallRuleViewModel } from 'sql/workbench/parts/accounts/common/firewallRuleViewModel';
 
 suite('Firewall rule view model tests', () => {
 	let viewModel: FirewallRuleViewModel;

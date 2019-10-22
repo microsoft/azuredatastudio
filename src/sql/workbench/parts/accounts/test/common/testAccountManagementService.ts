@@ -5,8 +5,8 @@
 
 import * as azdata from 'azdata';
 import { Event } from 'vs/base/common/event';
-import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
-import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
+import { IAccountManagementService } from 'sql/workbench/parts/accounts/common/interfaces';
+import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/workbench/parts/accounts/common/eventTypes';
 
 export class TestAccountManagementService implements IAccountManagementService {
 	_serviceBrand: undefined;

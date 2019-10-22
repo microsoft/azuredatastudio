@@ -10,8 +10,8 @@ import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
 import { Emitter } from 'vs/base/common/event';
 import { AccountPicker } from 'sql/workbench/parts/accounts/browser/accountPickerImpl';
 import { AccountPickerService } from 'sql/workbench/parts/accounts/browser/accountPickerService';
-import { AccountPickerViewModel } from 'sql/platform/accounts/common/accountPickerViewModel';
-import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
+import { AccountPickerViewModel } from 'sql/workbench/parts/accounts/common/accountPickerViewModel';
+import { TestAccountManagementService } from 'sql/workbench/parts/accounts/test/common/testAccountManagementService';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 

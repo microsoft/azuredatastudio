@@ -9,7 +9,7 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 
 import { AutoOAuthDialog } from 'sql/workbench/parts/accounts/browser/autoOAuthDialog';
 import { AutoOAuthDialogController } from 'sql/workbench/parts/accounts/browser/autoOAuthDialogController';
-import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
+import { TestAccountManagementService } from 'sql/workbench/parts/accounts/test/common/testAccountManagementService';
 import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/testErrorMessageService';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 
