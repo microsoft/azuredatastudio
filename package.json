@@ -25,8 +25,8 @@
     "smoketest": "cd test/smoke && node test/index.js",
     "monaco-compile-check": "tsc -p src/tsconfig.monaco.json --noEmit",
     "tslint": "node node_modules/tslint/bin/tslint -c tslint-gci.json -p src/tsconfig.json",
-    "strict-null-check": "tsc -p src/tsconfig.strictNullChecks.json",
-    "strict-null-check-watch": "tsc -p src/tsconfig.strictNullChecks.json --watch",
+    "strict-null-check": "node node_modules/typescript/bin/tsc -p src/tsconfig.strictNullChecks.json",
+    "strict-null-check-watch": "node node_modules/typescript/bin/tsc -p src/tsconfig.strictNullChecks.json --watch",
     "strict-initialization-watch": "tsc --watch -p src/tsconfig.json --noEmit --strictPropertyInitialization",
     "update-distro": "node build/npm/update-distro.js",
     "web": "node scripts/code-web.js"
