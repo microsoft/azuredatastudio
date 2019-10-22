@@ -46,7 +46,7 @@
 			"objectExplorer/item/context": [
 				{
 					"command": "flatFileImport.start",
-					"when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
+					"when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
 					"group": "import"
 				}
 			]

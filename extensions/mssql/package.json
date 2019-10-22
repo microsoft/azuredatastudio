@@ -308,11 +308,18 @@
       "flavors": [
         {
           "flavor": "on_prem",
-          "condition": {
-            "field": "isCloud",
-            "operator": "!=",
-            "value": true
-          },
+          "conditions": [
+            {
+              "field": "isCloud",
+              "operator": "!=",
+              "value": true
+            },
+            {
+              "field": "engineEditionId",
+              "operator": "!=",
+              "value": "11"
+            }
+          ],
           "databaseProperties": [
             {
               "displayName": "%onprem.databaseProperties.recoveryModel%",
@@ -362,11 +369,13 @@
         },
         {
           "flavor": "cloud",
-          "condition": {
-            "field": "isCloud",
-            "operator": "==",
-            "value": true
-          },
+          "conditions": [
+            {
+              "field": "isCloud",
+              "operator": "==",
+              "value": true
+            }
+          ],
           "databaseProperties": [
             {
               "displayName": "%cloud.databaseProperties.azureEdition%",
@@ -376,6 +385,36 @@
               "displayName": "%cloud.databaseProperties.serviceLevelObjective%",
               "value": "serviceLevelObjective"
             },
+            {
+              "displayName": "%cloud.databaseProperties.compatibilityLevel%",
+              "value": "compatibilityLevel"
+            },
+            {
+              "displayName": "%cloud.databaseProperties.owner%",
+              "value": "owner"
+            }
+          ],
+          "serverProperties": [
+            {
+              "displayName": "%cloud.serverProperties.serverVersion%",
+              "value": "serverVersion"
+            },
+            {
+              "displayName": "%cloud.serverProperties.serverEdition%",
+              "value": "serverEdition"
+            }
+          ]
+        },
+        {
+          "flavor": "on_demand",
+          "conditions": [
+            {
+              "field": "engineEditionId",
+              "operator": "==",
+              "value": "11"
+            }
+          ],
+          "databaseProperties": [
             {
               "displayName": "%cloud.databaseProperties.compatibilityLevel%",
               "value": "compatibilityLevel"
