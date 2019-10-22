@@ -270,7 +270,9 @@ export class FileConfigPage extends ImportPage {
 		let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 		let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this.model.server.providerName, azdata.DataProviderType.QueryProvider);
 
-		const query = this.databaseDropdown.value ? 'SELECT name FROM \[${this.databaseDropdown.value}\].sys.schemas' : 'SELECT name FROM sys.schemas';
+		let databaseName = this.databaseDropdown.value.toString().replace(/]/g, ']]');
+
+		const query = this.databaseDropdown.value ? 'SELECT name FROM [${databaseName}].sys.schemas' : 'SELECT name FROM sys.schemas';
 
 		let results = await queryProvider.runQueryAndReturn(connectionUri, query);
 
