@@ -387,26 +387,13 @@ export class SchemaCompareMainWindow {
 			let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 			if (checkboxState) {
 				let diff = this.comparisonResult.differences[checkboxState.row];
-				let result = await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, checkboxState.checked, azdata.TaskExecutionMode.execute);
-				console.error('result.success is ' + result.success);
-				if (result.success) {
-					this.saveExcludeState(checkboxState);
-					this.differencesTable.data[checkboxState.row][checkboxState.column] = checkboxState.checked;
-				} else {
-					vscode.window.showWarningMessage(localize('schemaCompare.cannotExcludeMessage', 'Cannot exclude. Included dependents exist'));
-					this.differencesTable.data[checkboxState.row][checkboxState.column] = true;
+				await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, checkboxState.checked, azdata.TaskExecutionMode.execute);
 
-					// add and remove table to refresh the checkbox
-					// TODO: need to figure out a better way to do this. For big tables, this will refresh the table and show it from the beginning after
-					this.flexModel.removeItem(this.splitView);
-					this.splitView.addItem(this.differencesTable);
-					this.splitView.addItem(this.diffEditor);
-					this.splitView.setLayout({
-						orientation: 'vertical',
-						splitViewHeight: 800
-					});
-				}
-				this.flexModel.addItem(this.splitView);
+				// check if if the called worked or not - if worked
+				this.saveExcludeState(checkboxState);
+
+				// if failed or needs to do something more, call the following or something more
+				this.differencesTable.checked = { row: checkboxState.row, columnName: 'Include', checked: !checkboxState.checked };
 			}
 		}));
 	}

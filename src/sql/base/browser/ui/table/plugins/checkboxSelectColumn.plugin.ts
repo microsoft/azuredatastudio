@@ -176,10 +176,10 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 
 		if (this._selectedCheckBoxLookup[row]) {
 			delete this._selectedCheckBoxLookup[row];
-			this._onChange.fire({ checked: false, row: row, column: col });
+				this._onChange.fire({ checked: false, row: row, column: col });
 		} else {
 			this._selectedCheckBoxLookup[row] = true;
-			this._onChange.fire({ checked: true, row: row, column: col });
+				this._onChange.fire({ checked: true, row: row, column: col });
 		}
 
 		if (reRender) {
@@ -192,6 +192,18 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 		if(this._grid.getActiveCellNode()) {
 			this._grid.getActiveCellNode().focus();
 		}
+	}
+
+	// This call is to handle reactive changes in check box UI
+	// This DOES NOT fire UI change Events
+	reactiveCheckboxCheck(row: number, value: boolean) {
+		value ? this._selectedCheckBoxLookup[row] = true : delete this._selectedCheckBoxLookup[row];
+
+		// update row to call formatter
+		this._grid.updateRow(row);
+
+		// ensure that grid reflects the change
+		this._grid.scrollRowIntoView(row);
 	}
 
 	private handleHeaderClick(e: Event, args: Slick.OnHeaderClickEventArgs<T>): void {

@@ -26,6 +26,7 @@ import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/browser/ui/table/formatters';
+import { isNullOrUndefined } from 'util';
 
 @Component({
 	selector: 'modelview-table',
@@ -255,8 +256,19 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.focus();
 		}
 
+		if (this.checked !== undefined) {
+			this.check(this.checked);
+		}
+
 		this.layoutTable();
 		this.validate();
+	}
+
+	private check(checkInfo: azdata.CheckBoxInfo): void {
+		if (isNullOrUndefined(checkInfo.columnName) || isNullOrUndefined(checkInfo.row)) {
+			return;
+		}
+		this._checkboxColumns[checkInfo.columnName].reactiveCheckboxCheck(checkInfo.row, checkInfo.checked);
 	}
 
 	private createCheckBoxPlugin(col: any, index: number) {
@@ -356,5 +368,13 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public set focused(newValue: boolean) {
 		this.setPropertyFromUI<azdata.RadioButtonProperties, boolean>((properties, value) => { properties.focused = value; }, newValue);
+	}
+
+	public get checked(): azdata.CheckBoxInfo {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, azdata.CheckBoxInfo>((props) => props.checked, undefined);
+	}
+
+	public set checked(newValue: azdata.CheckBoxInfo) {
+		this.setPropertyFromUI<azdata.TableComponentProperties, azdata.CheckBoxInfo>((properties, value) => { properties.checked = value; }, newValue);
 	}
 }

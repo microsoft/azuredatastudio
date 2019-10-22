@@ -3086,7 +3086,14 @@ declare module 'azdata' {
 		ariaColumnCount?: number;
 		ariaRole?: string;
 		focused?: boolean;
+		checked?: CheckBoxInfo;
 		moveFocusOutWithTab?: boolean; //accessibility requirement for tables with no actionable cells
+	}
+
+	export interface CheckBoxInfo {
+		row: number;
+		columnName: string;
+		checked: boolean;
 	}
 
 	export interface FileBrowserTreeProperties extends ComponentProperties {
