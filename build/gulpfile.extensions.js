@@ -24,6 +24,19 @@ const plumber = require('gulp-plumber');
 const ext = require('./lib/extensions');
 
 const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
+// {{SQL CARBON EDIT}}
+const sqlNonBuiltInExtensions = [
+	'admin-tool-ext-win',
+	'agent',
+	'import',
+	'profiler',
+	'admin-pack',
+	'dacpac',
+	'schema-compare',
+	'cms',
+	'query-history'
+];
+// {{SQL CARBON EDIT}}
 
 const compilations = glob.sync('**/tsconfig.json', {
 	cwd: extensionsPath,
@@ -108,7 +121,7 @@ const tasks = compilations.map(function (tsconfigFile) {
 	const cleanTask = task.define(`clean-extension-${name}`, util.rimraf(out));
 
 	const compileTask = task.define(`compile-extension:${name}`, task.series(cleanTask, () => {
-		const pipeline = createPipeline(true, true);
+		const pipeline = createPipeline(sqlNonBuiltInExtensions.includes(name), true); // {{SQL CARBON EDIT}}
 		const input = pipeline.tsProjectSrc();
 
 		return input
