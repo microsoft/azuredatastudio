@@ -364,14 +364,14 @@ function hygiene(some) {
 	const filelength = es.through(function (file) {
 
 		const filepath = file.path;
-		if (filepath.length > 255) {
+		//check the filename is < 50 characters (basename gets the filename with extension).
+		if (path.basename(filepath) > 50) {
 			console.error(filelength + ': File name too long.');
 				errorCount++;
 		}
 
 		this.emit('data', file);
 	});
-
 
 	const tslintConfiguration = tslint.Configuration.findConfiguration('tslint.json', '.');
 	const tslintOptions = { fix: false, formatter: 'json' };
