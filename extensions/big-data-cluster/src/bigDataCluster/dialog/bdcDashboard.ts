@@ -8,7 +8,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { BdcDashboardModel } from './bdcDashboardModel';
+import { BdcDashboardModel, getTroubleshootNotebookUrl } from './bdcDashboardModel';
 import { IconPathHelper, cssStyles } from '../constants';
 import { BdcServiceStatusPage } from './bdcServiceStatusPage';
 import { BdcDashboardOverviewPage } from './bdcDashboardOverviewPage';
@@ -22,7 +22,7 @@ const navWidth = '200px';
 const selectedTabCss = { 'font-weight': 'bold' };
 const unselectedTabCss = { 'font-weight': '' };
 
-type NavTab = { div: azdata.DivContainer, dot: azdata.TextComponent, text: azdata.TextComponent };
+type NavTab = { serviceName: string, div: azdata.DivContainer, dot: azdata.TextComponent, text: azdata.TextComponent };
 
 export class BdcDashboard {
 
@@ -83,7 +83,7 @@ export class BdcDashboard {
 				}).component();
 
 			openTroubleshootNotebookButton.onDidClick(() => {
-				vscode.commands.executeCommand('books.sqlserver2019');
+				vscode.commands.executeCommand('books.sqlserver2019', getTroubleshootNotebookUrl(this.currentTab.serviceName));
 			});
 
 			const toolbarContainer = modelView.modelBuilder.toolbarContainer()
@@ -130,7 +130,7 @@ export class BdcDashboard {
 			overviewNavItemDiv.addItem(overviewNavItemText, { CSSStyles: { 'user-select': 'text' } });
 			const overviewPage = new BdcDashboardOverviewPage(this, this.model).create(modelView);
 			this.currentPage = overviewPage;
-			this.currentTab = { div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
+			this.currentTab = { serviceName: undefined, div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
 			this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
 
 			overviewNavItemDiv.onDidClick(() => {
@@ -140,7 +140,7 @@ export class BdcDashboard {
 				this.mainAreaContainer.removeItem(this.currentPage);
 				this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
 				this.currentPage = overviewPage;
-				this.currentTab = { div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
+				this.currentTab = { serviceName: undefined, div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
 				this.currentTab.text.updateCssStyles(selectedTabCss);
 			});
 			this.navContainer.addItem(overviewNavItemDiv, { flex: '0 0 auto' });
@@ -227,5 +227,5 @@ function createServiceNavTab(modelBuilder: azdata.ModelBuilder, serviceStatus: S
 	const text = modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { ...cssStyles.tabHeaderText } }).component();
 	innerContainer.addItem(text, { flex: '0 0 auto' });
 	div.addItem(innerContainer);
-	return { div: div, dot: dot, text: text };
+	return { serviceName: serviceStatus.serviceName, div: div, dot: dot, text: text };
 }
