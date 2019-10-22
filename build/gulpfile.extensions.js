@@ -52,10 +52,10 @@ const tasks = compilations.map(function (tsconfigFile) {
 	let headerId, headerOut;
 	let index = relativeDirname.indexOf('/');
 	if (index < 0) {
-		headerId = 'vscode.' + relativeDirname;
+		headerId = 'microsoft.' + relativeDirname;
 		headerOut = 'out';
 	} else {
-		headerId = 'vscode.' + relativeDirname.substr(0, index);
+		headerId = 'microsoft.' + relativeDirname.substr(0, index);
 		headerOut = relativeDirname.substr(index + 1) + '/out';
 	}
 
@@ -108,7 +108,7 @@ const tasks = compilations.map(function (tsconfigFile) {
 	const cleanTask = task.define(`clean-extension-${name}`, util.rimraf(out));
 
 	const compileTask = task.define(`compile-extension:${name}`, task.series(cleanTask, () => {
-		const pipeline = createPipeline(false, true);
+		const pipeline = createPipeline(true, true);
 		const input = pipeline.tsProjectSrc();
 
 		return input
