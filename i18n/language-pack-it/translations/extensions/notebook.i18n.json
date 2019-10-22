@@ -8,7 +8,7 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/notebook/package": {
+		"package": {
 			"displayName": "Estensioni principali di Notebook",
 			"description": "Consente di definire il contributo di Notebook basato sul protocollo dati e numerosi comandi e contributi di Notebook.",
 			"notebook.configuration.title": "Configurazione notebook",
@@ -37,11 +37,11 @@
 			"title.configurePython": "Configura Python per Notebooks",
 			"title.managePackages": "Gestisci pacchetti"
 		},
-		"extensions/notebook/out/dialog/managePackages/managePackagesDialog": {
+		"out/dialog/managePackages/managePackagesDialog": {
 			"managePackages.dialogName": "Gestisci pacchetti",
 			"managePackages.cancelButtonText": "Chiudi"
 		},
-		"extensions/notebook/out/dialog/managePackages/installedPackagesTab": {
+		"out/dialog/managePackages/installedPackagesTab": {
 			"managePackages.installedTabTitle": "Installato",
 			"managePackages.pkgNameColumn": "Nome",
 			"managePackages.newPkgVersionColumn": "Versione",
@@ -53,7 +53,7 @@
 			"managePackages.backgroundUninstallComplete": "Disinstallazione completata per {0}",
 			"managePackages.backgroundUninstallFailed": "Non è stato possibile disinstallare {0}. Errore: {1}."
 		},
-		"extensions/notebook/out/dialog/managePackages/addNewPackageTab": {
+		"out/dialog/managePackages/addNewPackageTab": {
 			"managePackages.invalidTextPlaceholder": "N/A",
 			"managePackages.packageNotFound": "Non è stato possibile trovare il pacchetto specificato",
 			"managePackages.searchBarPlaceholder": "Cerca nei pacchetti {0}",
@@ -69,31 +69,31 @@
 			"managePackages.backgroundInstallComplete": "Installazione completata per {0} {1}",
 			"managePackages.backgroundInstallFailed": "Non è stato possibile installare {0} {1}. Errore: {2}"
 		},
-		"extensions/notebook/out/protocol/notebookUriHandler": {
+		"out/protocol/notebookUriHandler": {
 			"notebook.unsupportedAction": "L'azione {0} non è supportata per questo gestore",
 			"unsupportedScheme": "Non è possibile aprire il collegamento {0} perché sono supportati solo i collegamenti HTTP e HTTPS",
 			"notebook.confirmOpen": "Scaricare e aprire '{0}'?",
 			"notebook.fileNotFound": "Non è stato possibile trovare il file specificato",
 			"notebook.fileDownloadError": "La richiesta di apertura file non è riuscita. Errore: {0} {1}"
 		},
-		"extensions/notebook/out/jupyter/serverInstance": {
+		"out/jupyter/serverInstance": {
 			"serverStopError": "Si è verificato un errore durante l'arresto del server di Notebook: {0}",
 			"notebookStartProcessExitPremature": "Il processo di Notebook è stato chiuso prematuramente. Errore: {0}. Output di STDERR: {1}",
 			"jupyterError": "Errore restituito da Jupyter: {0}",
 			"jupyterOutputMsgStartSuccessful": "... Jupyter è in esecuzione alla posizione {0}",
 			"jupyterOutputMsgStart": "... Avvio del server Notebook"
 		},
-		"extensions/notebook/out/jupyter/jupyterSettingWriter": {
+		"out/jupyter/jupyterSettingWriter": {
 			"UnexpectedSettingType": "Tipo di impostazione imprevisto: {0}"
 		},
-		"extensions/notebook/out/jupyter/jupyterSessionManager": {
+		"out/jupyter/jupyterSessionManager": {
 			"errorStartBeforeReady": "Non è possibile avviare una sessione. Il gestore non è ancora inizializzato",
 			"connectionNotValid": "Con i kernel Spark è richiesta una connessione a un'istanza master del cluster Big Data di SQL Server."
 		},
-		"extensions/notebook/out/jupyter/jupyterServerManager": {
+		"out/jupyter/jupyterServerManager": {
 			"shutdownError": "L'arresto del server di Notebook non è riuscito: {0}"
 		},
-		"extensions/notebook/out/jupyter/jupyterServerInstallation": {
+		"out/jupyter/jupyterServerInstallation": {
 			"msgInstallPkgProgress": "L'installazione delle dipendenze di Notebook è in corso",
 			"msgPythonDownloadComplete": "Il download di Python è stato completato",
 			"msgPythonDownloadError": "Si è verificato un errore durante il download della configurazione di Python",
@@ -113,15 +113,15 @@
 			"msgJupyterInstallDone": "... Installazione di Jupyter completata.",
 			"msgInstallingSpark": "Installazione di SparkMagic..."
 		},
-		"extensions/notebook/out/jupyter/jupyterNotebookProvider": {
+		"out/jupyter/jupyterNotebookProvider": {
 			"errNotebookUriMissing": "È necessario specificare il percorso di un notebook"
 		},
-		"extensions/notebook/out/jupyter/jupyterController": {
+		"out/jupyter/jupyterController": {
 			"notebookFileType": "Notebooks",
 			"unsupportedFileType": "Sono supportati solo notebook con estensione ipynb",
 			"confirmReinstall": "Reinstallare?"
 		},
-		"extensions/notebook/out/dialog/configurePythonDialog": {
+		"out/dialog/configurePythonDialog": {
 			"configurePython.dialogName": "Configura Python per Notebooks",
 			"configurePython.okButtonText": "Installa",
 			"configurePython.cancelButtonText": "Annulla",
@@ -136,7 +136,7 @@
 			"configurePython.newInstall": "Nuova installazione di Python",
 			"configurePython.existingInstall": "Usa l'installazione esistente di Python"
 		},
-		"extensions/notebook/out/book/bookTreeView": {
+		"out/book/bookTreeView": {
 			"openNotebookError": "Apertura del file {0} non riuscita: {1}",
 			"openMarkdownError": "Apertura del file {0} non riuscita: {1}",
 			"openExternalLinkError": "Apertura del collegamento {0} non riuscita: {1}",
@@ -146,16 +146,16 @@
 			"openMarkdownCommand": "Apri Markdown",
 			"missingFileError": "File mancante: {0}"
 		},
-		"extensions/notebook/out/common/utils": {
+		"out/common/utils": {
 			"mkdirOutputMsg": "... Creazione di {0}",
 			"executeCommandProcessExited": "Processo terminato con codice {0}"
 		},
-		"extensions/notebook/out/common/localizedConstants": {
+		"out/common/localizedConstants": {
 			"msgYes": "Sì",
 			"msgNo": "No",
 			"msgSampleCodeDataFrame": "Questo esempio di codice consente di caricare il file in un frame di dati e visualizzare i primi 10 risultati."
 		},
-		"extensions/notebook/out/extension": {
+		"out/extension": {
 			"msgSampleCodeDataFrame": "Questo esempio di codice consente di caricare il file in un frame di dati e visualizzare i primi 10 risultati.",
 			"noNotebookVisible": "Non ci sono editor di notebook attivi",
 			"codeCellName": "Codice",

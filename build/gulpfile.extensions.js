@@ -65,10 +65,10 @@ const tasks = compilations.map(function (tsconfigFile) {
 	let headerId, headerOut;
 	let index = relativeDirname.indexOf('/');
 	if (index < 0) {
-		headerId = 'microsoft.' + relativeDirname;
+		headerId = 'microsoft.' + relativeDirname; // {{SQL CARBON EDIT}}
 		headerOut = 'out';
 	} else {
-		headerId = 'microsoft.' + relativeDirname.substr(0, index);
+		headerId = 'microsoft.' + relativeDirname.substr(0, index); // {{SQL CARBON EDIT}}
 		headerOut = relativeDirname.substr(index + 1) + '/out';
 	}
 

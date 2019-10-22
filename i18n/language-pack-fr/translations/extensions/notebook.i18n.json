@@ -8,7 +8,7 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/notebook/package": {
+		"package": {
 			"displayName": "Extensions principales de notebook",
 			"description": "Définit la contribution de notebook basée sur un protocole de données, et plusieurs commandes et contributions de notebook.",
 			"notebook.configuration.title": "Configuration du notebook",
@@ -37,11 +37,11 @@
 			"title.configurePython": "Configurer Python pour Notebooks",
 			"title.managePackages": "Gérer les packages"
 		},
-		"extensions/notebook/out/dialog/managePackages/managePackagesDialog": {
+		"out/dialog/managePackages/managePackagesDialog": {
 			"managePackages.dialogName": "Gérer les packages",
 			"managePackages.cancelButtonText": "Fermer"
 		},
-		"extensions/notebook/out/dialog/managePackages/installedPackagesTab": {
+		"out/dialog/managePackages/installedPackagesTab": {
 			"managePackages.installedTabTitle": "INSTALLÉ",
 			"managePackages.pkgNameColumn": "Nom",
 			"managePackages.newPkgVersionColumn": "Version",
@@ -53,7 +53,7 @@
 			"managePackages.backgroundUninstallComplete": "Désinstallation effectuée pour {0}",
 			"managePackages.backgroundUninstallFailed": "La désinstallation de {0} a échoué. Erreur : {1}"
 		},
-		"extensions/notebook/out/dialog/managePackages/addNewPackageTab": {
+		"out/dialog/managePackages/addNewPackageTab": {
 			"managePackages.invalidTextPlaceholder": "N/A",
 			"managePackages.packageNotFound": "Package spécifié introuvable",
 			"managePackages.searchBarPlaceholder": "Rechercher dans les packages {0}",
@@ -69,31 +69,31 @@
 			"managePackages.backgroundInstallComplete": "Installation de {0} {1} effectuée",
 			"managePackages.backgroundInstallFailed": "L'installation de {0} {1} a échoué. Erreur : {2}"
 		},
-		"extensions/notebook/out/protocol/notebookUriHandler": {
+		"out/protocol/notebookUriHandler": {
 			"notebook.unsupportedAction": "L'action {0} n'est pas prise en charge pour ce gestionnaire",
 			"unsupportedScheme": "Impossible d'ouvrir le lien {0}, car seuls les liens HTTP et HTTPS sont pris en charge",
 			"notebook.confirmOpen": "Télécharger et ouvrir '{0}' ?",
 			"notebook.fileNotFound": "Fichier spécifié introuvable",
 			"notebook.fileDownloadError": "La demande d'ouverture de fichier a échoué avec l'erreur : {0} {1}"
 		},
-		"extensions/notebook/out/jupyter/serverInstance": {
+		"out/jupyter/serverInstance": {
 			"serverStopError": "Erreur d'arrêt du serveur de notebook : {0}",
 			"notebookStartProcessExitPremature": "Le processus du notebook s'est terminé prématurément avec l'erreur : {0}, sortie StdErr : {1}",
 			"jupyterError": "Erreur envoyée par Jupyter : {0}",
 			"jupyterOutputMsgStartSuccessful": "...Jupyter est en cours d'exécution sur {0}",
 			"jupyterOutputMsgStart": "...Démarrage du serveur de notebook"
 		},
-		"extensions/notebook/out/jupyter/jupyterSettingWriter": {
+		"out/jupyter/jupyterSettingWriter": {
 			"UnexpectedSettingType": "Type de paramètre inattendu {0}"
 		},
-		"extensions/notebook/out/jupyter/jupyterSessionManager": {
+		"out/jupyter/jupyterSessionManager": {
 			"errorStartBeforeReady": "Impossible de démarrer une session, le gestionnaire n'est pas encore initialisé",
 			"connectionNotValid": "Les noyaux Spark nécessitent une connexion a une instance maître de cluster Big Data SQL Server."
 		},
-		"extensions/notebook/out/jupyter/jupyterServerManager": {
+		"out/jupyter/jupyterServerManager": {
 			"shutdownError": "L'arrêt du serveur de notebook a échoué : {0}"
 		},
-		"extensions/notebook/out/jupyter/jupyterServerInstallation": {
+		"out/jupyter/jupyterServerInstallation": {
 			"msgInstallPkgProgress": "L'installation des dépendances de notebook est en cours",
 			"msgPythonDownloadComplete": "Le téléchargement de Python est terminé",
 			"msgPythonDownloadError": "Erreur de téléchargement du programme d'installation de Python",
@@ -113,15 +113,15 @@
 			"msgJupyterInstallDone": "...Installation de Jupyter effectuée.",
 			"msgInstallingSpark": "Installation de SparkMagic..."
 		},
-		"extensions/notebook/out/jupyter/jupyterNotebookProvider": {
+		"out/jupyter/jupyterNotebookProvider": {
 			"errNotebookUriMissing": "Un chemin de notebook est nécessaire"
 		},
-		"extensions/notebook/out/jupyter/jupyterController": {
+		"out/jupyter/jupyterController": {
 			"notebookFileType": "Notebooks",
 			"unsupportedFileType": "Seuls les notebooks .ipynb sont pris en charge",
 			"confirmReinstall": "Voulez-vous vraiment le réinstaller ?"
 		},
-		"extensions/notebook/out/dialog/configurePythonDialog": {
+		"out/dialog/configurePythonDialog": {
 			"configurePython.dialogName": "Configurer Python pour Notebooks",
 			"configurePython.okButtonText": "Installer",
 			"configurePython.cancelButtonText": "Annuler",
@@ -136,7 +136,7 @@
 			"configurePython.newInstall": "Nouvelle installation de Python",
 			"configurePython.existingInstall": "Utiliser l'installation existante de Python"
 		},
-		"extensions/notebook/out/book/bookTreeView": {
+		"out/book/bookTreeView": {
 			"openNotebookError": "L'ouverture du fichier {0} a échoué : {1}",
 			"openMarkdownError": "L'ouverture du fichier {0} a échoué : {1}",
 			"openExternalLinkError": "Échec de l'ouverture du lien {0} : {1}",
@@ -146,16 +146,16 @@
 			"openMarkdownCommand": "Ouvrir Markdown",
 			"missingFileError": "Fichier manquant : {0}"
 		},
-		"extensions/notebook/out/common/utils": {
+		"out/common/utils": {
 			"mkdirOutputMsg": "... Création de {0}",
 			"executeCommandProcessExited": "Processus terminé avec le code {0}"
 		},
-		"extensions/notebook/out/common/localizedConstants": {
+		"out/common/localizedConstants": {
 			"msgYes": "Oui",
 			"msgNo": "Non",
 			"msgSampleCodeDataFrame": "Cet exemple de code charge le fichier dans un cadre de données et affiche les 10 premiers résultats."
 		},
-		"extensions/notebook/out/extension": {
+		"out/extension": {
 			"msgSampleCodeDataFrame": "Cet exemple de code charge le fichier dans un cadre de données et affiche les 10 premiers résultats.",
 			"noNotebookVisible": "Aucun éditeur de notebook actif",
 			"codeCellName": "Code",
