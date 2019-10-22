@@ -224,8 +224,8 @@ export class SelectBox extends vsSelectBox {
 					dom.addClass(spanElement, this.classForType(message.type));
 
 					const styles = this.stylesForType(message.type);
-					spanElement.style.backgroundColor = styles.background ? styles.background.toString() : null;
-					spanElement.style.border = styles.border ? `1px solid ${styles.border}` : null;
+					spanElement.style.backgroundColor = styles.background ? styles.background.toString() : '';
+					spanElement.style.border = styles.border ? `1px solid ${styles.border}` : '';
 
 					dom.append(div, spanElement);
 
