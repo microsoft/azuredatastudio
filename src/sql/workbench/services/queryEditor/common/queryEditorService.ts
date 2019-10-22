@@ -20,7 +20,7 @@ export const IQueryEditorService = createDecorator<IQueryEditorService>('QueryEd
 
 export interface IQueryEditorService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	// Creates new untitled document for SQL queries and opens it in a new editor tab
 	newSqlEditor(sqlContent?: string, connectionProviderName?: string, isDirty?: boolean, objectName?: string): Promise<IConnectableInput>;

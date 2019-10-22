@@ -27,7 +27,7 @@ export class AccountManagementService implements IAccountManagementService {
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	public _providers: { [id: string]: AccountProviderWithMetadata } = {};
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 	private _accountStore: AccountStore;
 	private _accountDialogController: AccountDialogController;
 	private _autoOAuthDialogController: AutoOAuthDialogController;

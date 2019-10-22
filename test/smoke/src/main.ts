@@ -11,7 +11,15 @@ import * as tmp from 'tmp';
 import * as rimraf from 'rimraf';
 import * as mkdirp from 'mkdirp';
 import { ncp } from 'ncp';
-import { Application, Quality, ApplicationOptions } from './application';
+import {
+	Application,
+	Quality,
+	ApplicationOptions,
+	MultiLogger,
+	Logger,
+	ConsoleLogger,
+	FileLogger,
+} from '../../automation';
 
 //{{SQL CARBON EDIT}}
 import { setup as runProfilerTests } from './sql/profiler/profiler.test';
@@ -33,10 +41,7 @@ import { setup as setupDataExtensionTests } from './areas/extensions/extensions.
 import { setup as setupTerminalTests } from './areas/terminal/terminal.test';
 import { setup as setupDataMultirootTests } from './areas/multiroot/multiroot.test';
 import { setup as setupDataLocalizationTests } from './areas/workbench/localization.test';
-import { setup as setupLaunchTests } from './areas/workbench/launch.test';
-*/
-//{{END}}
-import { MultiLogger, Logger, ConsoleLogger, FileLogger } from './logger';
+import { setup as setupLaunchTests } from './areas/workbench/launch.test';*///{{END}}
 
 if (!/^v10/.test(process.version)) {
 	console.error('Error: Smoketest must be run using Node 10. Currently running', process.version);

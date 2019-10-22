@@ -9,7 +9,7 @@ import { IAccountManagementService } from 'sql/platform/accounts/common/interfac
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 
 export class TestAccountManagementService implements IAccountManagementService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	public get addAccountProviderEvent(): Event<AccountProviderAddedEventParams> { return Event.None; }
 	public get removeAccountProviderEvent(): Event<azdata.AccountProviderMetadata> { return Event.None; }

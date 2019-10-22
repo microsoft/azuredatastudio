@@ -11,8 +11,8 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 
 import { MainThreadNotebook } from 'sql/workbench/api/browser/mainThreadNotebook';
-import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
-import { INotebookProvider } from 'sql/workbench/services/notebook/common/notebookService';
+import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
+import { INotebookProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { TestLifecycleService, TestEnvironmentService } from 'vs/workbench/test/workbenchTestServices';

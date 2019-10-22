@@ -18,7 +18,7 @@ import {
 	ActiveConnectionsFilterAction,
 	AddServerAction, AddServerGroupAction
 } from 'sql/workbench/parts/objectExplorer/browser/connectionTreeAction';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 

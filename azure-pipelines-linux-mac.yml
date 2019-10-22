@@ -40,39 +40,38 @@ steps:
     condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
   - script: |
-      yarn gulp electron-x64
+      yarn electron x64
     displayName: Download Electron
     env:
       GITHUB_TOKEN: $(GITHUB_TOKEN)
 
   - script: |
-      yarn gulp hygiene
+      yarn gulp hygiene --skip-tslint
     displayName: Run Hygiene Checks
 
   - script: |
       yarn tslint
-    displayName: "Run TSLint"
+    displayName: Run TSLint
 
   - script: |
       yarn strict-null-check
-    displayName: "Run Strict Null Check"
+    displayName: Run Strict Null Check
 
   - script: |
       yarn compile
-    displayName: "Compile"
+    displayName: Compile
 
   - script: |
       DISPLAY=:10 ./scripts/test.sh --tfs "Unit Tests"
-    displayName: Run Unit Tests
+    displayName: Run Unit Tests (Linux)
     condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
 
   - script: |
       DISPLAY=:10 ./scripts/test.sh --tfs "Unit Tests" --coverage
-    displayName: "Tests"
+    displayName: Run Unit Tests (Mac)
     condition: and(succeeded(), ne(variables['Agent.OS'], 'Linux'))
 
   - task: PublishTestResults@2
-    displayName: Publish Tests Results
     inputs:
       testResultsFiles: '*-results.xml'
       searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'

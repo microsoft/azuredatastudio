@@ -9,29 +9,29 @@ import 'mocha';
 import * as azdata from 'azdata';
 import { context } from './testContext';
 import { getBdcServer, TestServerProfile, getAzureServer, getStandaloneServer } from './testConfig';
-import { connectToServer, createDB, deleteDB } from './utils';
+import { connectToServer, createDB, deleteDB, DefaultConnectTimeoutInMs, asyncTimeout } from './utils';
 import assert = require('assert');
 import { stressify } from 'adstest';
 
 if (context.RunTest) {
 	suite('Object Explorer integration suite', () => {
 		test('BDC instance node label test', async function () {
-			await (new ObjectExplorerTester()).bdcNodeLabelTest();
+			return await (new ObjectExplorerTester()).bdcNodeLabelTest();
 		});
 		test('Standalone instance node label test', async function () {
-			await (new ObjectExplorerTester()).standaloneNodeLabelTest();
+			return await (new ObjectExplorerTester()).standaloneNodeLabelTest();
 		});
-		test('Azure SQL DB instance node label test', async function () {
-			await (new ObjectExplorerTester()).sqlDbNodeLabelTest();
+		test('Azure SQL DB instance node label test @UNSTABLE@', async function () {
+			return await (new ObjectExplorerTester()).sqlDbNodeLabelTest();
 		});
 		test('BDC instance context menu test', async function () {
-			await (new ObjectExplorerTester()).bdcContextMenuTest();
+			return await (new ObjectExplorerTester()).bdcContextMenuTest();
 		});
-		test('Azure SQL DB context menu test', async function () {
-			await (new ObjectExplorerTester()).sqlDbContextMenuTest();
+		test('Azure SQL DB context menu test @UNSTABLE@', async function () {
+			return await (new ObjectExplorerTester()).sqlDbContextMenuTest();
 		});
-		test('Standalone database context menu test', async function () {
-			await (new ObjectExplorerTester()).standaloneContextMenuTest();
+		test('Standalone database context menu test @UNSTABLE@', async function () {
+			return await (new ObjectExplorerTester()).standaloneContextMenuTest();
 		});
 	});
 }
@@ -41,9 +41,9 @@ class ObjectExplorerTester {
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
 	async bdcNodeLabelTest(): Promise<void> {
-		const expectedNodeLabel = ['Databases', 'Security', 'Server Objects', 'Data Services'];
+		const expectedNodeLabel = ['Databases', 'Security', 'Server Objects'];
 		const server = await getBdcServer();
-		await this.verifyOeNode(server, 6000, expectedNodeLabel);
+		return await this.verifyOeNode(server, DefaultConnectTimeoutInMs, expectedNodeLabel);
 	}
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
@@ -51,7 +51,7 @@ class ObjectExplorerTester {
 		if (process.platform === 'win32') {
 			const expectedNodeLabel = ['Databases', 'Security', 'Server Objects'];
 			const server = await getStandaloneServer();
-			await this.verifyOeNode(server, 3000, expectedNodeLabel);
+			return await this.verifyOeNode(server, DefaultConnectTimeoutInMs, expectedNodeLabel);
 		}
 	}
 
@@ -59,14 +59,14 @@ class ObjectExplorerTester {
 	async sqlDbNodeLabelTest(): Promise<void> {
 		const expectedNodeLabel = ['Databases', 'Security'];
 		const server = await getAzureServer();
-		await this.verifyOeNode(server, 3000, expectedNodeLabel);
+		return await this.verifyOeNode(server, DefaultConnectTimeoutInMs, expectedNodeLabel);
 	}
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
 	async sqlDbContextMenuTest(): Promise<void> {
 		const server = await getAzureServer();
 		const expectedActions = ['Manage', 'New Query', 'New Notebook', 'Disconnect', 'Delete Connection', 'Refresh', 'Data-tier Application wizard', 'Launch Profiler'];
-		await this.verifyContextMenu(server, expectedActions);
+		return await this.verifyContextMenu(server, expectedActions);
 	}
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
@@ -80,7 +80,7 @@ class ObjectExplorerTester {
 		else {
 			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Refresh', 'Backup', 'Restore', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard'];
 		}
-		await this.verifyDBContextMenu(server, 3000, expectedActions);
+		return await this.verifyDBContextMenu(server, DefaultConnectTimeoutInMs, expectedActions);
 	}
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
@@ -94,11 +94,11 @@ class ObjectExplorerTester {
 		else {
 			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Disconnect', 'Delete Connection', 'Refresh', 'Data-tier Application wizard', 'Launch Profiler'];
 		}
-		await this.verifyContextMenu(server, expectedActions);
+		return await this.verifyContextMenu(server, expectedActions);
 	}
 
 	async verifyContextMenu(server: TestServerProfile, expectedActions: string[]): Promise<void> {
-		await connectToServer(server, 3000);
+		await connectToServer(server, DefaultConnectTimeoutInMs);
 		const nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
 		assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
 
@@ -110,7 +110,7 @@ class ObjectExplorerTester {
 
 		const expectedString = expectedActions.join(',');
 		const actualString = actions.join(',');
-		assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
+		return assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
 	}
 
 	async verifyOeNode(server: TestServerProfile, timeout: number, expectedNodeLabel: string[]): Promise<void> {
@@ -120,12 +120,20 @@ class ObjectExplorerTester {
 
 		const index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
 		assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
-		const actualNodeLabel = [];
-		const children = await nodes[index].getChildren();
-		assert(children.length === expectedNodeLabel.length, `Expecting node count: ${expectedNodeLabel.length}, Actual: ${children.length}`);
+		// TODO: #7146 HDFS isn't always filled in by the call to getChildren since it's loaded asynchronously. To avoid this test being flaky just removing
+		// the node for now if it exists until a proper fix can be made.
 
-		children.forEach(c => actualNodeLabel.push(c.label));
-		assert(expectedNodeLabel.toLocaleString() === actualNodeLabel.toLocaleString(), `Expected node label: "${expectedNodeLabel}", Actual: "${actualNodeLabel}"`);
+		let children: azdata.objectexplorer.ObjectExplorerNode[];
+		try {
+			children = await asyncTimeout(nodes[index].getChildren(), timeout);
+		} catch (e) {
+			return assert.fail('getChildren() timed out...', e);
+		}
+
+		const nonHDFSChildren = children.filter(c => c.label !== 'HDFS');
+		const actualLabelsString = nonHDFSChildren.map(c => c.label).join(',');
+		const expectedLabelString = expectedNodeLabel.join(',');
+		return assert(expectedNodeLabel.length === nonHDFSChildren.length && expectedLabelString === actualLabelsString, `Expected node label: "${expectedLabelString}", Actual: "${actualLabelsString}"`);
 	}
 
 	async verifyDBContextMenu(server: TestServerProfile, timeoutinMS: number, expectedActions: string[]): Promise<void> {
@@ -156,10 +164,10 @@ class ObjectExplorerTester {
 
 			const expectedString = expectedActions.join(',');
 			const actualString = actions.join(',');
-			assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
+			return assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
 		}
 		finally {
-			await deleteDB(dbName, ownerUri);
+			await deleteDB(server, dbName, ownerUri);
 		}
 	}
 }

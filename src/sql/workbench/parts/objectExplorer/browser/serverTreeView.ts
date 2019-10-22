@@ -24,7 +24,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { TreeCreationUtils } from 'sql/workbench/parts/objectExplorer/browser/treeCreationUtils';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/workbench/parts/objectExplorer/browser/treeSelectionHandler';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
@@ -172,7 +172,7 @@ export class ServerTreeView extends Disposable {
 		}
 
 		return new Promise<void>(async (resolve, reject) => {
-			this.refreshTree();
+			await this.refreshTree();
 			const root = <ConnectionProfileGroup>this._tree.getInput();
 
 			const expandGroups: boolean = this._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_AUTOEXPAND_CONFIG];
@@ -216,7 +216,7 @@ export class ServerTreeView extends Disposable {
 		}
 		await this.refreshTree();
 		if (newProfile && !newProfileIsSelected) {
-			this._tree.reveal(newProfile);
+			await this._tree.reveal(newProfile);
 			this._tree.select(newProfile);
 		}
 	}

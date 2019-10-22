@@ -18,67 +18,67 @@ let tsProject = ts.createProject('tsconfig.json');
 
 
 // GULP TASKS //////////////////////////////////////////////////////////////
-gulp.task('clean', function(done) {
-    return del('out', done);
+gulp.task('clean', function (done) {
+	return del('out', done);
 });
 
 gulp.task('lint', () => {
-    return gulp.src([
-        config.paths.project.root + '/src/**/*.ts',
-        config.paths.project.root + '/test/**/*.ts'
-    ])
-    .pipe((tslint({
-        formatter: "verbose"
-    })))
-    .pipe(tslint.report());
+	return gulp.src([
+		config.paths.project.root + '/src/**/*.ts',
+		config.paths.project.root + '/test/**/*.ts'
+	])
+		.pipe((tslint({
+			formatter: "verbose"
+		})))
+		.pipe(tslint.report());
 });
 
-gulp.task('compile:src', function(done) {
-    gulp.src([
-        config.paths.project.root + '/src/**/*.sql',
-        config.paths.project.root + '/src/**/*.svg',
-        config.paths.project.root + '/src/**/*.html'
-    ]).pipe(gulp.dest('out/src/'));
+gulp.task('compile:src', function (done) {
+	gulp.src([
+		config.paths.project.root + '/src/**/*.sql',
+		config.paths.project.root + '/src/**/*.svg',
+		config.paths.project.root + '/src/**/*.html'
+	]).pipe(gulp.dest('out/src/'));
 
-    let srcFiles = [
-        config.paths.project.root + '/src/**/*.ts',
-        config.paths.project.root + '/src/**/*.js',
-        config.paths.project.root + '/typings/**/*.ts'
-    ];
+	let srcFiles = [
+		config.paths.project.root + '/src/**/*.ts',
+		config.paths.project.root + '/src/**/*.js',
+		config.paths.project.root + '/typings/**/*.ts'
+	];
 
-    return gulp.src(srcFiles)
-        .pipe(srcmap.init())
-        .pipe(tsProject())
-        .on('error', function() {
-            if(process.env.BUILDMACHINE) {
-                done('Failed to compile extension source, see above.');
-                process.exit(1);
-            }
-        })
-        // TODO: Reinstate localization code
-        // .pipe(nls.rewriteLocalizeCalls())
-        // .pipe(nls.createAdditionalLanguageFiles(nls.coreLanguages, config.paths.project.root + '/localization/i18n', undefined, false))
-        .pipe(srcmap.write('.', { sourceRoot: function(file) { return file.cwd + '/src'; }}))
-        .pipe(gulp.dest('out/src/'));
+	return gulp.src(srcFiles)
+		.pipe(srcmap.init())
+		.pipe(tsProject())
+		.on('error', function () {
+			if (process.env.BUILDMACHINE) {
+				done('Failed to compile extension source, see above.');
+				process.exit(1);
+			}
+		})
+		// TODO: Reinstate localization code
+		// .pipe(nls.rewriteLocalizeCalls())
+		// .pipe(nls.createAdditionalLanguageFiles(nls.coreLanguages, config.paths.project.root + '/localization/i18n', undefined, false))
+		.pipe(srcmap.write('.', { sourceRoot: function (file) { return file.cwd + '/src'; } }))
+		.pipe(gulp.dest('out/src/'));
 });
 
-gulp.task('compile:test', function(done) {
-    let srcFiles = [
-        config.paths.project.root + '/test/**/*.ts',
-        config.paths.project.root + '/typings/**/*.ts'
-    ];
+gulp.task('compile:test', function (done) {
+	let srcFiles = [
+		config.paths.project.root + '/test/**/*.ts',
+		config.paths.project.root + '/typings/**/*.ts'
+	];
 
-    return gulp.src(srcFiles)
-        .pipe(srcmap.init())
-        .pipe(tsProject())
-        .on('error', function() {
-            if(process.env.BUILDMACHINE) {
-                done('Failed to compile test source, see above.');
-                process.exit(1);
-            }
-        })
-        .pipe(srcmap.write('.', {sourceRoot: function(file) { return file.cwd + '/test'; }}))
-        .pipe(gulp.dest('out/test/'));
+	return gulp.src(srcFiles)
+		.pipe(srcmap.init())
+		.pipe(tsProject())
+		.on('error', function () {
+			if (process.env.BUILDMACHINE) {
+				done('Failed to compile test source, see above.');
+				process.exit(1);
+			}
+		})
+		.pipe(srcmap.write('.', { sourceRoot: function (file) { return file.cwd + '/test'; } }))
+		.pipe(gulp.dest('out/test/'));
 });
 
 // COMPOSED GULP TASKS /////////////////////////////////////////////////////
@@ -86,33 +86,38 @@ gulp.task("compile", gulp.series("compile:src", "compile:test"));
 
 gulp.task("build", gulp.series("clean", "lint", "compile"));
 
-gulp.task("watch", function() {
-    gulp.watch([config.paths.project.root + '/src/**/*',
-                config.paths.project.root + '/test/**/*.ts'],
-        gulp.series('build'))
+gulp.task("watch", function () {
+	gulp.watch([config.paths.project.root + '/src/**/*',
+	config.paths.project.root + '/test/**/*.ts'],
+		gulp.series('build'));
 });
 
 gulp.task('test', (done) => {
-    let workspace = process.env['WORKSPACE'];
-    if (!workspace) {
-        workspace = process.cwd();
-    }
-    process.env.JUNIT_REPORT_PATH = workspace + '/test-reports/ext_xunit.xml';
+	let workspace = process.env['WORKSPACE'];
+	if (!workspace) {
+		workspace = process.cwd();
+	}
+	process.env.JUNIT_REPORT_PATH = workspace + '/test-reports/ext_xunit.xml';
 
-    let azuredatastudioPath = 'azuredatastudio';
-    if (process.env['SQLOPS_DEV']) {
-        let suffix = os.platform === 'win32' ? 'bat' : 'sh';
-        azuredatastudioPath = `${process.env['SQLOPS_DEV']}/scripts/sql-cli.${suffix}`;
-    }
-    console.log(`Using SQLOPS Path of ${azuredatastudioPath}`);
+	let azuredatastudioPath = 'azuredatastudio';
+	if (process.env['SQLOPS_DEV']) {
+		let suffix = os.platform === 'win32' ? 'bat' : 'sh';
+		azuredatastudioPath = `${process.env['SQLOPS_DEV']}/scripts/sql-cli.${suffix}`;
+	}
+	console.log(`Using SQLOPS Path of ${azuredatastudioPath}`);
 
-    cproc.exec(`${azuredatastudioPath} --extensionDevelopmentPath="${workspace}" --extensionTestsPath="${workspace}/out/test" --verbose`, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`exec error: ${error}`);
-            process.exit(1);
-        }
-        console.log(`stdout: ${stdout}`);
-        console.log(`stderr: ${stderr}`);
-        done();
-    });
+	cproc.exec(`${azuredatastudioPath} --extensionDevelopmentPath="${workspace}" --extensionTestsPath="${workspace}/out/test" --verbose`, (error, stdout, stderr) => {
+		if (error) {
+			console.error(`exec error: ${error}`);
+			process.exit(1);
+		}
+		console.log(`stdout: ${stdout}`);
+		console.log(`stderr: ${stderr}`);
+		done();
+	});
+});
+
+gulp.task('copytypings', function () {
+	return gulp.src(config.paths.project.root + '/../../src/sql/sqlops.proposed.d.ts')
+		.pipe(gulp.dest('typings/'));
 });

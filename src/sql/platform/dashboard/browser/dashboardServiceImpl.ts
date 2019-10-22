@@ -9,7 +9,7 @@ import * as DOM from 'vs/base/browser/dom';
 import * as azdata from 'azdata';
 
 export class DashboardService implements IDashboardService {
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 	private _onDidOpenDashboard = new Emitter<azdata.DashboardDocument>();
 	public readonly onDidOpenDashboard: Event<azdata.DashboardDocument> = this._onDidOpenDashboard.event;
 

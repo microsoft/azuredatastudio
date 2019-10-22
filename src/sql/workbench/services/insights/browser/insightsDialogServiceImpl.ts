@@ -9,10 +9,10 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IInsightsDialogModel, IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { InsightsDialogModel } from 'sql/workbench/services/insights/browser/insightsDialogModel';
 import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
-import { InsightsDialogController } from 'sql/workbench/services/insights/common/insightsDialogController';
+import { InsightsDialogController } from 'sql/workbench/services/insights/browser/insightsDialogController';
 
 export class InsightsDialogService implements IInsightsDialogService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	private _insightsDialogController: InsightsDialogController;
 	private _insightsDialogView: InsightsDialogView;
 	private _insightsDialogModel: IInsightsDialogModel;

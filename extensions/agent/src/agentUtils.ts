@@ -6,9 +6,7 @@
 'use strict';
 
 import * as azdata from 'azdata';
-import * as fs from 'fs';
-import { promisify } from 'util';
-
+import { promises as fs } from 'fs';
 
 export class AgentUtils {
 
@@ -52,18 +50,11 @@ export class AgentUtils {
 
 }
 
-export function exists(path: string): Promise<boolean> {
-	return promisify(fs.exists)(path);
-}
-
-export function mkdir(path: string): Promise<void> {
-	return promisify(fs.mkdir)(path);
-}
-
-export function unlink(path: string): Promise<void> {
-	return promisify(fs.unlink)(path);
-}
-
-export function writeFile(path: string, data: string): Promise<void> {
-	return promisify(fs.writeFile)(path, data);
+export async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
+	}
 }

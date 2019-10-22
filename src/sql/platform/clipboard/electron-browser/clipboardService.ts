@@ -3,72 +3,26 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IClipboardService as vsIClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { BrowserClipboardService } from 'sql/platform/clipboard/browser/clipboardService';
 import { clipboard, nativeImage } from 'electron';
-import { URI } from 'vs/base/common/uri';
 
-export class ClipboardService implements IClipboardService {
-	_serviceBrand: any;
+export class ClipboardService extends BrowserClipboardService {
+	_serviceBrand: undefined;
 
 	constructor(
-		@vsIClipboardService private _vsClipboardService: vsIClipboardService
-	) { }
+		@vsIClipboardService _vsClipboardService: vsIClipboardService,
+		@INotificationService _notificationService: INotificationService
+	) {
+		super(_vsClipboardService, _notificationService);
+	}
 
 	/**
 	 * Writes the input image as a dataurl to the clipbaord
 	 */
-	writeImageDataUrl(data: string): void {
+	async writeImageDataUrl(data: string): Promise<void> {
 		let image = nativeImage.createFromDataURL(data);
-		clipboard.writeImage(image);
-	}
-
-	writeText(text: string): Promise<void> {
-		return this._vsClipboardService.writeText(text);
-	}
-
-	/**
-	 * Reads the content of the clipboard in plain text
-	 */
-	readText(): Promise<string> {
-		return this._vsClipboardService.readText();
-	}
-	/**
-	 * Reads text from the system find pasteboard.
-	 */
-	readFindText(): string {
-		return this._vsClipboardService.readFindText();
-	}
-
-	/**
-	 * Writes text to the system find pasteboard.
-	 */
-	writeFindText(text: string): void {
-		this._vsClipboardService.writeFindText(text);
-	}
-
-	/**
-	 * Writes resources to the system clipboard.
-	 */
-	writeResources(resources: URI[]): void {
-		this._vsClipboardService.writeResources(resources);
-	}
-
-	/**
-	 * Reads resources from the system clipboard.
-	 */
-	readResources(): URI[] {
-		return this._vsClipboardService.readResources();
-	}
-
-	/**
-	 * Find out if resources are copied to the clipboard.
-	 */
-	hasResources(): boolean {
-		return this._vsClipboardService.hasResources();
-	}
-
-	readTextSync(): string | undefined {
-		return this._vsClipboardService.readTextSync();
+		return clipboard.writeImage(image);
 	}
 }

@@ -9,7 +9,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 export const IConnectionDialogService = createDecorator<IConnectionDialogService>('connectionDialogService');
 export interface IConnectionDialogService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	/**
 	 * Opens the connection dialog and returns the promise for successfully opening the dialog
 	 */

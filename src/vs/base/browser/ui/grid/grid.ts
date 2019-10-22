@@ -9,7 +9,6 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { tail2 as tail, equals } from 'vs/base/common/arrays';
 import { orthogonal, IView as IGridViewView, GridView, Sizing as GridViewSizing, Box, IGridViewStyles, IViewSize, IGridViewOptions } from './gridview';
 import { Event } from 'vs/base/common/event';
-import { InvisibleSizing } from 'vs/base/browser/ui/splitview/splitview';
 
 export { Orientation, Sizing as GridViewSizing, IViewSize, orthogonal, LayoutPriority } from './gridview';
 
@@ -596,8 +595,8 @@ export class SerializableGrid<T extends ISerializableView> extends Grid<T> {
 		super.layout(width, height);
 
 		if (this.initialLayoutContext) {
-			this.gridview.trySet2x2();
 			this.initialLayoutContext = false;
+			this.gridview.trySet2x2();
 		}
 	}
 }

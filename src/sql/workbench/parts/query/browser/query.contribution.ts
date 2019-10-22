@@ -41,10 +41,10 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileE
 import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorInput';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/parts/query/browser/queryActions';
-import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
-import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
-import { ManageActionContext } from 'sql/workbench/common/actions';
 import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
+import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/browser/mssqlNodeContext';
+import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
+import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
 
 const gridCommandsWeightBonus = 100; // give our commands a little bit more weight over other default list/tree commands

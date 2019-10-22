@@ -95,9 +95,9 @@ export class ModifyColumnsPage extends ImportPage {
 						title: ''
 					}
 				], {
-					horizontal: false,
-					componentWidth: '100%'
-				}).component();
+				horizontal: false,
+				componentWidth: '100%'
+			}).component();
 
 		this.loading.component = this.form;
 		await this.view.initializeModel(this.form);

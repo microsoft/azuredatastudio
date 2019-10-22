@@ -22,7 +22,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { ProfilerFilter, ProfilerFilterClause, ProfilerFilterClauseOperator, IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
+import { ProfilerFilter, ProfilerFilterClause, ProfilerFilterClauseOperator, IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';

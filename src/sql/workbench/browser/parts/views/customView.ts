@@ -46,8 +46,9 @@ import { FuzzyScore, createMatches } from 'vs/base/common/filters';
 import { CollapseAllAction } from 'vs/base/browser/ui/tree/treeDefaults';
 
 import { ITreeItem, ITreeView } from 'sql/workbench/common/views';
-import { IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
-import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
+import { IOEShimService } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerViewTreeShim';
+import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/browser/nodeContext';
+import { UserCancelledConnectionError } from 'sql/base/common/errors';
 
 export class CustomTreeViewPanel extends ViewletPanel {
 
@@ -65,6 +66,7 @@ export class CustomTreeViewPanel extends ViewletPanel {
 		const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).getView(options.id));
 		this.treeView = treeView as ITreeView;
 		this._register(this.treeView.onDidChangeActions(() => this.updateActions(), this));
+		this._register(this.treeView.onDidChangeTitle((newTitle) => this.updateTitle(newTitle)));
 		this._register(toDisposable(() => this.treeView.setVisibility(false)));
 		this._register(this.onDidChangeBodyVisibility(() => this.updateTreeVisibility()));
 		this.updateTreeVisibility();
@@ -200,11 +202,14 @@ export class CustomTreeView extends Disposable implements ITreeView {
 	private readonly _onDidChangeActions: Emitter<void> = this._register(new Emitter<void>());
 	readonly onDidChangeActions: Event<void> = this._onDidChangeActions.event;
 
+	private readonly _onDidChangeTitle: Emitter<string> = this._register(new Emitter<string>());
+	readonly onDidChangeTitle: Event<string> = this._onDidChangeTitle.event;
+
 	private nodeContext: NodeContextKey;
 
 	constructor(
 		private id: string,
-		private title: string,
+		private _title: string,
 		private viewContainer: ViewContainer,
 		@IExtensionService private readonly extensionService: IExtensionService,
 		@IWorkbenchThemeService private readonly themeService: IWorkbenchThemeService,
@@ -275,6 +280,15 @@ export class CustomTreeView extends Disposable implements ITreeView {
 	set message(message: string | undefined) {
 		this._message = message;
 		this.updateMessage();
+	}
+
+	get title(): string {
+		return this._title;
+	}
+
+	set title(name: string) {
+		this._title = name;
+		this._onDidChangeTitle.fire(this._title);
 	}
 
 	get canSelectMany(): boolean {
@@ -386,26 +400,26 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		const aligner = new Aligner(this.themeService);
 		const renderer = this.instantiationService.createInstance(TreeRenderer, this.id, treeMenus, this.treeLabels, actionViewItemProvider, aligner);
 
-		this.tree = this._register(this.instantiationService.createInstance(WorkbenchAsyncDataTree, this.treeContainer, new CustomTreeDelegate(), [renderer],
+		this.tree = this._register(this.instantiationService.createInstance(WorkbenchAsyncDataTree, 'SqlCustomView', this.treeContainer, new CustomTreeDelegate(), [renderer],
 			dataSource, {
-				identityProvider: new CustomViewIdentityProvider(),
-				accessibilityProvider: {
-					getAriaLabel(element: ITreeItem): string {
-						return element.label ? element.label.label : '';
-					}
-				},
-				ariaLabel: this.title,
-				keyboardNavigationLabelProvider: {
-					getKeyboardNavigationLabel: (item: ITreeItem) => {
-						return item.label ? item.label.label : (item.resourceUri ? basename(URI.revive(item.resourceUri)) : undefined);
-					}
-				},
-				expandOnlyOnTwistieClick: (e: ITreeItem) => !!e.command,
-				collapseByDefault: (e: ITreeItem): boolean => {
-					return e.collapsibleState !== TreeItemCollapsibleState.Expanded;
-				},
-				multipleSelectionSupport: this.canSelectMany,
-			}) as WorkbenchAsyncDataTree<ITreeItem, ITreeItem, FuzzyScore>);
+			identityProvider: new CustomViewIdentityProvider(),
+			accessibilityProvider: {
+				getAriaLabel(element: ITreeItem): string {
+					return element.label ? element.label.label : '';
+				}
+			},
+			ariaLabel: this.title,
+			keyboardNavigationLabelProvider: {
+				getKeyboardNavigationLabel: (item: ITreeItem) => {
+					return item.label ? item.label.label : (item.resourceUri ? basename(URI.revive(item.resourceUri)) : undefined);
+				}
+			},
+			expandOnlyOnTwistieClick: (e: ITreeItem) => !!e.command,
+			collapseByDefault: (e: ITreeItem): boolean => {
+				return e.collapsibleState !== TreeItemCollapsibleState.Expanded;
+			},
+			multipleSelectionSupport: this.canSelectMany,
+		}) as WorkbenchAsyncDataTree<ITreeItem, ITreeItem, FuzzyScore>);
 		aligner.tree = this.tree;
 		const actionRunner = new MultipleSelectionActionRunner(() => this.tree!.getSelection());
 		renderer.actionRunner = actionRunner;
@@ -687,6 +701,9 @@ class TreeDataSource implements IAsyncDataSource<ITreeItem, ITreeItem> {
 				// So in order to enable this we need to tell the tree to refresh this node so it will ask us for the data again
 				setTimeout(() => {
 					this.treeView.collapse(node);
+					if (e instanceof UserCancelledConnectionError) {
+						return;
+					}
 					this.treeView.refresh([node]);
 				});
 				return [];

@@ -26,7 +26,7 @@ import { EditDataResultsInput } from 'sql/workbench/parts/editData/browser/editD
  */
 export class QueryEditorService implements IQueryEditorService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	constructor(
 		@IUntitledEditorService private _untitledEditorService: IUntitledEditorService,
@@ -77,43 +77,31 @@ export class QueryEditorService implements IQueryEditorService {
 	/**
 	 * Creates new edit data session
 	 */
-	public newEditDataEditor(schemaName: string, tableName: string, sqlContent: string): Promise<IConnectableInput> {
+	public async newEditDataEditor(schemaName: string, tableName: string, sqlContent: string): Promise<IConnectableInput> {
 
-		return new Promise<IConnectableInput>(async (resolve, reject) => {
-			try {
-				// Create file path and file URI
-				let objectName = schemaName ? schemaName + '.' + tableName : tableName;
-				let filePath = await this.createPrefixedSqlFilePath(objectName);
-				let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
+		// Create file path and file URI
+		let objectName = schemaName ? schemaName + '.' + tableName : tableName;
+		let filePath = await this.createPrefixedSqlFilePath(objectName);
+		let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
-				// Create a sql document pane with accoutrements
-				const fileInput = this._untitledEditorService.createOrGet(docUri, 'sql');
-				fileInput.resolve().then(m => {
-					if (sqlContent) {
-						m.textEditorModel.setValue(sqlContent);
-					}
-				});
+		// Create a sql document pane with accoutrements
+		const fileInput = this._untitledEditorService.createOrGet(docUri, 'sql');
+		const m = await fileInput.resolve();
+		if (sqlContent) {
+			m.textEditorModel.setValue(sqlContent);
+		}
 
-				// Create an EditDataInput for editing
-				const resultsInput: EditDataResultsInput = this._instantiationService.createInstance(EditDataResultsInput, docUri.toString());
-				let editDataInput: EditDataInput = this._instantiationService.createInstance(EditDataInput, docUri, schemaName, tableName, fileInput, sqlContent, resultsInput);
+		// Create an EditDataInput for editing
+		const resultsInput: EditDataResultsInput = this._instantiationService.createInstance(EditDataResultsInput, docUri.toString());
+		let editDataInput: EditDataInput = this._instantiationService.createInstance(EditDataInput, docUri, schemaName, tableName, fileInput, sqlContent, resultsInput);
 
-				this._editorService.openEditor(editDataInput, { pinned: true })
-					.then((editor) => {
-						let params = <EditDataInput>editor.input;
-						resolve(params);
-					}, (error) => {
-						reject(error);
-					});
-			} catch (error) {
-				reject(error);
-			}
-		});
+		const editor = await this._editorService.openEditor(editDataInput, { pinned: true });
+		let params = editor.input as EditDataInput;
+		return params;
 	}
 
 	onSaveAsCompleted(oldResource: URI, newResource: URI): void {
 		let oldResourceString: string = oldResource.toString();
-
 
 		this._editorService.editors.forEach(input => {
 			if (input instanceof QueryEditorInput) {

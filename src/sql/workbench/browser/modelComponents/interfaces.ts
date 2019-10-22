@@ -14,7 +14,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 export interface IComponent extends IDisposable {
 	descriptor: IComponentDescriptor;
 	modelStore: IModelStore;
-	layout();
+	layout(): void;
 	registerEventHandler(handler: (event: IComponentEventArgs) => void): IDisposable;
 	clearContainer?: () => void;
 	addToContainer?: (componentDescriptor: IComponentDescriptor, config: any, index?: number) => void;
@@ -69,6 +69,7 @@ export enum ComponentEventType {
 	onSelectedRowChanged,
 	onComponentCreated,
 	onCellAction,
+	onEnterKeyPressed
 }
 
 export interface IModelStore {
@@ -76,7 +77,7 @@ export interface IModelStore {
 	 * Creates and saves the reference of a component descriptor.
 	 * This can be used during creation of a component later
 	 */
-	createComponentDescriptor(type: string, createComponentDescriptor): IComponentDescriptor;
+	createComponentDescriptor(type: string, createComponentDescriptor: string): IComponentDescriptor;
 	/**
 	 * gets the descriptor for a previously created component ID
 	 */
@@ -100,4 +101,8 @@ export interface IModelStore {
 	 * Run all validations for the given component and return the new validation value
 	 */
 	validate(component: IComponent): Thenable<boolean>;
+}
+
+export interface ITitledComponent {
+	title?: string;
 }

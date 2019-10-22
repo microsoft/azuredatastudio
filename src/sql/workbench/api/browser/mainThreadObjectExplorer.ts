@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { IObjectExplorerService, NodeInfoWithConnection } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService, NodeInfoWithConnection } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadObjectExplorer)

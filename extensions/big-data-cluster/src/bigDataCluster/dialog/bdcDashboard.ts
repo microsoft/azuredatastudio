@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { BdcDashboardModel } from './bdcDashboardModel';
-import { IconPathHelper } from '../constants';
+import { IconPathHelper, cssStyles } from '../constants';
 import { BdcServiceStatusPage } from './bdcServiceStatusPage';
 import { BdcDashboardOverviewPage } from './bdcDashboardOverviewPage';
 import { BdcStatusModel, ServiceStatusModel } from '../controller/apiGenerated';
@@ -29,7 +29,6 @@ export class BdcDashboard {
 	private dashboard: azdata.workspace.ModelViewEditor;
 
 	private initialized: boolean = false;
-	private serviceTabsCreated: boolean = false;
 
 	private modelView: azdata.ModelView;
 	private mainAreaContainer: azdata.FlexContainer;
@@ -38,7 +37,9 @@ export class BdcDashboard {
 	private currentTab: NavTab;
 	private currentPage: azdata.FlexContainer;
 
-	private serviceTabPageMapping: { [key: string]: { navTab: NavTab, servicePage: azdata.FlexContainer } } = {};
+	private refreshButton: azdata.ButtonComponent;
+
+	private serviceTabPageMapping = new Map<string, { navTab: NavTab, servicePage: azdata.FlexContainer }>();
 
 	constructor(private title: string, private model: BdcDashboardModel) {
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.handleBdcStatusUpdate(bdcStatus));
@@ -57,8 +58,7 @@ export class BdcDashboard {
 				{
 					flexFlow: 'column',
 					width: '100%',
-					height: '100%',
-					alignItems: 'left'
+					height: '100%'
 				}).component();
 
 			// ###########
@@ -66,20 +66,20 @@ export class BdcDashboard {
 			// ###########
 
 			// Refresh button
-			const refreshButton = modelView.modelBuilder.button()
-				.withProperties({
+			this.refreshButton = modelView.modelBuilder.button()
+				.withProperties<azdata.ButtonProperties>({
 					label: localize('bdc.dashboard.refreshButton', "Refresh"),
-					iconPath: IconPathHelper.refresh,
-					height: '50px'
+					iconPath: IconPathHelper.refresh
 				}).component();
 
-			refreshButton.onDidClick(() => this.model.refresh());
+			this.refreshButton.onDidClick(async () => {
+				await this.doRefresh();
+			});
 
 			const openTroubleshootNotebookButton = modelView.modelBuilder.button()
-				.withProperties({
+				.withProperties<azdata.ButtonProperties>({
 					label: localize('bdc.dashboard.troubleshootButton', "Troubleshoot"),
-					iconPath: IconPathHelper.notebook,
-					height: '50px'
+					iconPath: IconPathHelper.notebook
 				}).component();
 
 			openTroubleshootNotebookButton.onDidClick(() => {
@@ -89,7 +89,7 @@ export class BdcDashboard {
 			const toolbarContainer = modelView.modelBuilder.toolbarContainer()
 				.withToolbarItems(
 					[
-						{ component: refreshButton },
+						{ component: this.refreshButton },
 						{ component: openTroubleshootNotebookButton }
 					]
 				).component();
@@ -104,8 +104,7 @@ export class BdcDashboard {
 				{
 					flexFlow: 'row',
 					width: '100%',
-					height: '100%',
-					alignItems: 'left'
+					height: '100%'
 				}).component();
 
 			rootContainer.addItem(this.mainAreaContainer, { flex: '0 0 100%' });
@@ -118,29 +117,28 @@ export class BdcDashboard {
 				{
 					flexFlow: 'column',
 					width: navWidth,
-					height: '100%',
-					alignItems: 'left'
+					height: '100%'
 				}
 			).component();
 
-			this.mainAreaContainer.addItem(this.navContainer, { flex: `0 0 ${navWidth}`, CSSStyles: { 'padding-left': '10px', 'border-right': 'solid 1px #ccc' } });
+			this.mainAreaContainer.addItem(this.navContainer, { flex: `0 0 ${navWidth}`, CSSStyles: { 'padding': '0 20px 0 20px', 'border-right': 'solid 1px #ccc' } });
 
 			// Overview nav item - this will be the initial page
-			const overviewNavItemDiv = modelView.modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).withProperties({ CSSStyles: { 'cursor': 'pointer' } }).component();
+			const overviewNavItemDiv = modelView.modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).withProperties({ clickable: true }).component();
 			const overviewNavItemText = modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.overviewNavTitle', 'Big data cluster overview') }).component();
 			overviewNavItemText.updateCssStyles(selectedTabCss);
 			overviewNavItemDiv.addItem(overviewNavItemText, { CSSStyles: { 'user-select': 'text' } });
 			const overviewPage = new BdcDashboardOverviewPage(this, this.model).create(modelView);
 			this.currentPage = overviewPage;
 			this.currentTab = { div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
-			this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%' });
+			this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
 
 			overviewNavItemDiv.onDidClick(() => {
 				if (this.currentTab) {
 					this.currentTab.text.updateCssStyles(unselectedTabCss);
 				}
 				this.mainAreaContainer.removeItem(this.currentPage);
-				this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%' });
+				this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
 				this.currentPage = overviewPage;
 				this.currentTab = { div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
 				this.currentTab.text.updateCssStyles(selectedTabCss);
@@ -164,7 +162,16 @@ export class BdcDashboard {
 			return;
 		}
 
-		this.createServiceNavTabs(bdcStatus.services);
+		this.updateServiceNavTabs(bdcStatus.services);
+	}
+
+	private async doRefresh(): Promise<void> {
+		try {
+			this.refreshButton.enabled = false;
+			await this.model.refresh();
+		} finally {
+			this.refreshButton.enabled = true;
+		}
 	}
 
 	/**
@@ -180,38 +187,44 @@ export class BdcDashboard {
 			this.currentTab.text.updateCssStyles(unselectedTabCss);
 		}
 		this.mainAreaContainer.removeItem(this.currentPage);
-		this.mainAreaContainer.addItem(tabPageMapping.servicePage);
+		this.mainAreaContainer.addItem(tabPageMapping.servicePage, { CSSStyles: { 'margin': '0 20px 0 20px' } });
 		this.currentPage = tabPageMapping.servicePage;
 		this.currentTab = tabPageMapping.navTab;
 		this.currentTab.text.updateCssStyles(selectedTabCss);
 	}
 
 	/**
-	 * Helper to create the navigation tabs for the services once the status has been loaded
+	 * Helper to update the navigation tabs for the services when we get a status update
 	 */
-	private createServiceNavTabs(services: ServiceStatusModel[]): void {
-		if (this.initialized && !this.serviceTabsCreated && services) {
+	private updateServiceNavTabs(services?: ServiceStatusModel[]): void {
+		if (this.initialized && services) {
 			// Add a nav item for each service
 			services.forEach(s => {
-				const navItem = createServiceNavTab(this.modelView.modelBuilder, s);
-				const serviceStatusPage = new BdcServiceStatusPage(s.serviceName, this.model, this.modelView).container;
-				this.serviceTabPageMapping[s.serviceName] = { navTab: navItem, servicePage: serviceStatusPage };
-				navItem.div.onDidClick(() => {
-					this.switchToServiceTab(s.serviceName);
-				});
-				this.navContainer.addItem(navItem.div, { flex: '0 0 auto' });
+				const existingTabPage = this.serviceTabPageMapping[s.serviceName];
+				if (existingTabPage) {
+					// We've already created the tab and page for this service, just update the tab health status dot
+					existingTabPage.navTab.dot.value = getHealthStatusDot(s.healthStatus);
+				} else {
+					// New service - create the page and tab
+					const navItem = createServiceNavTab(this.modelView.modelBuilder, s);
+					const serviceStatusPage = new BdcServiceStatusPage(s.serviceName, this.model, this.modelView).container;
+					this.serviceTabPageMapping[s.serviceName] = { navTab: navItem, servicePage: serviceStatusPage };
+					navItem.div.onDidClick(() => {
+						this.switchToServiceTab(s.serviceName);
+					});
+					this.navContainer.addItem(navItem.div, { flex: '0 0 auto' });
+				}
 			});
-			this.serviceTabsCreated = true;
 		}
 	}
 }
 
 function createServiceNavTab(modelBuilder: azdata.ModelBuilder, serviceStatus: ServiceStatusModel): NavTab {
-	const div = modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).withProperties({ CSSStyles: { 'cursor': 'pointer' } }).component();
+	const div = modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px', }).withProperties({ clickable: true }).component();
 	const innerContainer = modelBuilder.flexContainer().withLayout({ width: navWidth, height: '30px', flexFlow: 'row' }).component();
-	const dot = modelBuilder.text().withProperties({ value: getHealthStatusDot(serviceStatus.healthStatus), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'none', 'color': 'red', 'font-size': '40px', 'width': '20px' } }).component();
+	const dot = modelBuilder.text().withProperties({ value: getHealthStatusDot(serviceStatus.healthStatus), CSSStyles: { 'color': 'red', 'font-size': '40px', 'width': '20px', ...cssStyles.nonSelectableText } }).component();
 	innerContainer.addItem(dot, { flex: '0 0 auto' });
-	const text = modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'none' } }).component();
+	const text = modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { ...cssStyles.tabHeaderText } }).component();
 	innerContainer.addItem(text, { flex: '0 0 auto' });
 	div.addItem(innerContainer);
 	return { div: div, dot: dot, text: text };

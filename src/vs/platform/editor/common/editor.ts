@@ -82,17 +82,43 @@ export interface IResourceInput extends IBaseResourceInput {
 export enum EditorActivation {
 
 	/**
-	 * Activate the editor after it opened.
+	 * Activate the editor after it opened. This will automatically restore
+	 * the editor if it is minimized.
 	 */
 	ACTIVATE,
 
 	/**
+	 * Only restore the editor if it is minimized but do not activate it.
+	 *
+	 * Note: will only work in combination with the `preserveFocus: true` option.
+	 * Otherwise, if focus moves into the editor, it will activate and restore
+	 * automatically.
+	 */
+	RESTORE,
+
+	/**
 	 * Preserve the current active editor.
 	 *
-	 * Note: will only work in combination with the
-	 * `preserveFocus: true` option.
+	 * Note: will only work in combination with the `preserveFocus: true` option.
+	 * Otherwise, if focus moves into the editor, it will activate and restore
+	 * automatically.
 	 */
 	PRESERVE
+}
+
+export enum EditorOpenContext {
+
+	/**
+	 * Default: the editor is opening via a programmatic call
+	 * to the editor service API.
+	 */
+	API,
+
+	/**
+	 * Indicates that a user action triggered the opening, e.g.
+	 * via mouse or keyboard use.
+	 */
+	USER
 }
 
 export interface IEditorOptions {
@@ -107,7 +133,8 @@ export interface IEditorOptions {
 
 	/**
 	 * This option is only relevant if an editor is opened into a group that is not active
-	 * already and allows to control if the inactive group should become active or not.
+	 * already and allows to control if the inactive group should become active, restored
+	 * or preserved.
 	 *
 	 * By default, the editor group will become active unless `preserveFocus` or `inactive`
 	 * is specified.
@@ -162,6 +189,23 @@ export interface IEditorOptions {
 	 * message as needed. By default, an error will be presented as notification if opening was not possible.
 	 */
 	readonly ignoreError?: boolean;
+
+	/**
+	 * Does not use editor overrides while opening the editor
+	 */
+	readonly ignoreOverrides?: boolean;
+
+	/**
+	 * A optional hint to signal in which context the editor opens.
+	 *
+	 * If configured to be `EditorOpenContext.USER`, this hint can be
+	 * used in various places to control the experience. For example,
+	 * if the editor to open fails with an error, a notification could
+	 * inform about this in a modal dialog. If the editor opened through
+	 * some background task, the notification would show in the background,
+	 * not as a modal dialog.
+	 */
+	readonly context?: EditorOpenContext;
 }
 
 export interface ITextEditorSelection {

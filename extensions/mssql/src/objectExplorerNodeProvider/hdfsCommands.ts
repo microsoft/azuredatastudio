@@ -5,14 +5,14 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 import * as fspath from 'path';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { ApiWrapper } from '../apiWrapper';
 import { Command, ICommandViewContext, ProgressCommand, ICommandObjectExplorerContext } from './command';
-import { File, IFile, joinHdfsPath } from './fileSources';
+import { File, IFile, joinHdfsPath, FileType } from './fileSources';
 import { FolderNode, FileNode, HdfsFileSourceNode } from './hdfsProvider';
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import * as constants from '../constants';
@@ -21,8 +21,9 @@ import * as utils from '../utils';
 import { AppContext } from '../appContext';
 import { TreeNode } from './treeNodes';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider';
+import { ManageAccessDialog } from '../hdfs/ui/hdfsManageAccessDialog';
 
-function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPreview?: boolean): vscode.Uri {
+async function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPreview?: boolean): Promise<vscode.Uri> {
 	let root = utils.getUserHome();
 	let workspaceFolders = apiWrapper.workspaceFolders;
 	if (workspaceFolders && workspaceFolders.length > 0) {
@@ -33,7 +34,7 @@ function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPreview?: bo
 		let fileNum = 1;
 		let fileNameWithoutExtension = fspath.parse(fileName).name;
 		let fileExtension = fspath.parse(fileName).ext;
-		while (fs.existsSync(fspath.join(root, fileName))) {
+		while (await utils.exists(fspath.join(root, fileName))) {
 			fileName = `${fileNameWithoutExtension}-${fileNum}${fileExtension}`;
 			fileNum++;
 		}
@@ -82,7 +83,7 @@ export class UploadFilesCommand extends ProgressCommand {
 				};
 				let fileUris: vscode.Uri[] = await this.apiWrapper.showOpenDialog(options);
 				if (fileUris) {
-					let files: IFile[] = fileUris.map(uri => uri.fsPath).map(this.mapPathsToFiles());
+					let files: IFile[] = await Promise.all(fileUris.map(uri => uri.fsPath).map(this.mapPathsToFiles()));
 					await this.executeWithProgress(
 						(cancelToken: vscode.CancellationTokenSource) => this.writeFiles(files, folderNode, cancelToken),
 						localize('uploading', 'Uploading files to HDFS'), true,
@@ -99,10 +100,17 @@ export class UploadFilesCommand extends ProgressCommand {
 		}
 	}
 
-	private mapPathsToFiles(): (value: string, index: number, array: string[]) => File {
-		return (path: string) => {
-			let isDir = fs.lstatSync(path).isDirectory();
-			return new File(path, isDir);
+	private mapPathsToFiles(): (value: string, index: number, array: string[]) => Promise<File> {
+		return async (path: string) => {
+			const stats = (await fs.lstat(path));
+			if (stats.isDirectory()) {
+				return new File(path, FileType.Directory);
+			} else if (stats.isSymbolicLink()) {
+				return new File(path, FileType.Symlink);
+			} else {
+				return new File(path, FileType.File);
+			}
+
 		};
 	}
 
@@ -112,12 +120,12 @@ export class UploadFilesCommand extends ProgressCommand {
 				// Throw here so that all recursion is ended
 				throw new Error('Upload canceled');
 			}
-			if (file.isDirectory) {
+			if (file.fileType === FileType.Directory) {
 				let dirName = fspath.basename(file.path);
 				let subFolder = await folderNode.mkdir(dirName);
-				let children: IFile[] = fs.readdirSync(file.path)
+				let children: IFile[] = await Promise.all((await fs.readdir(file.path))
 					.map(childFileName => joinHdfsPath(file.path, childFileName))
-					.map(this.mapPathsToFiles());
+					.map(this.mapPathsToFiles()));
 				this.writeFiles(children, subFolder, cancelToken);
 			} else {
 				await folderNode.writeFile(file);
@@ -258,7 +266,7 @@ export class SaveFileCommand extends ProgressCommand {
 		try {
 			let fileNode = await getNode<FileNode>(context, this.appContext);
 			if (fileNode) {
-				let defaultUri = getSaveableUri(this.apiWrapper, fspath.basename(fileNode.hdfsPath));
+				let defaultUri = await getSaveableUri(this.apiWrapper, fspath.basename(fileNode.hdfsPath));
 				let fileUri: vscode.Uri = await this.apiWrapper.showSaveDialog({
 					defaultUri: defaultUri
 				});
@@ -330,7 +338,7 @@ export class PreviewFileCommand extends ProgressCommand {
 	private async showNotebookDocument(fileName: string, connectionProfile?: azdata.IConnectionProfile,
 		initialContent?: string
 	): Promise<azdata.nb.NotebookEditor> {
-		let docUri: vscode.Uri = getSaveableUri(this.apiWrapper, fileName, true)
+		let docUri: vscode.Uri = (await getSaveableUri(this.apiWrapper, fileName, true))
 			.with({ scheme: constants.UNTITLED_SCHEMA });
 		return await azdata.nb.showNotebookDocument(docUri, {
 			connectionProfile: connectionProfile,
@@ -340,7 +348,7 @@ export class PreviewFileCommand extends ProgressCommand {
 	}
 
 	private async openTextDocument(fileName: string): Promise<vscode.TextDocument> {
-		let docUri: vscode.Uri = getSaveableUri(this.apiWrapper, fileName, true);
+		let docUri: vscode.Uri = await getSaveableUri(this.apiWrapper, fileName, true);
 		if (docUri) {
 			docUri = docUri.with({ scheme: constants.UNTITLED_SCHEMA });
 			return await this.apiWrapper.openTextDocument(docUri);
@@ -381,6 +389,27 @@ export class CopyPathCommand extends Command {
 		} catch (err) {
 			this.apiWrapper.showErrorMessage(
 				localize('copyPathError', 'Error on copying path: {0}', utils.getErrorMessage(err, true)));
+		}
+	}
+}
+
+export class ManageAccessCommand extends Command {
+
+	constructor(appContext: AppContext) {
+		super('mssqlCluster.manageAccess', appContext);
+	}
+
+	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
+		try {
+			let node = await getNode<HdfsFileSourceNode>(context, this.appContext);
+			if (node) {
+				new ManageAccessDialog(node.hdfsPath, node.fileSource, this.apiWrapper).openDialog();
+			} else {
+				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
+			}
+		} catch (err) {
+			this.apiWrapper.showErrorMessage(
+				localize('manageAccessError', "An unexpected error occurred while opening the Manage Access dialog: {0}", utils.getErrorMessage(err, true)));
 		}
 	}
 }

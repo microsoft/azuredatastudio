@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { createCSSRule } from 'vs/base/browser/dom';
+import { createCSSRule, asCSSUrl } from 'vs/base/browser/dom';
 import { hash } from 'vs/base/common/hash';
 import { URI } from 'vs/base/common/uri';
 
@@ -15,8 +15,8 @@ class IconRenderer {
 		let iconPath: IconPath = this.toIconPath(path);
 		let iconUid: string = this.getIconUid(iconPath);
 		if (!this.iconRegistered.has(iconUid)) {
-			createCSSRule(`.icon#${iconUid}`, `background: url("${iconPath.light.toString()}") center center no-repeat`);
-			createCSSRule(`.vs-dark .icon#${iconUid}, .hc-black .icon#${iconUid}`, `background: url("${iconPath.dark.toString()}") center center no-repeat`);
+			createCSSRule(`.icon#${iconUid}`, `background: ${asCSSUrl(iconPath.light || iconPath.dark)} center center no-repeat`);
+			createCSSRule(`.vs-dark .icon#${iconUid}, .hc-black .icon#${iconUid}`, `background: ${asCSSUrl(iconPath.dark)} center center no-repeat`);
 			this.iconRegistered.add(iconUid);
 		}
 		return iconUid;

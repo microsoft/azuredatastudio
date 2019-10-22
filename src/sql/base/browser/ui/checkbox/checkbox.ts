@@ -100,6 +100,14 @@ export class Checkbox extends Widget {
 		this.enabled = true;
 	}
 
+	public setHeight(value: string) {
+		this._el.style.height = value;
+	}
+
+	public setWidth(value: string) {
+		this._el.style.width = value;
+	}
+
 	public style(styles: ICheckboxStyles): void {
 		this.disabledCheckboxForeground = styles.disabledCheckboxForeground;
 		this.updateStyle();

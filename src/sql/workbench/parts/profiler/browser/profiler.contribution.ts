@@ -12,7 +12,7 @@ import * as nls from 'vs/nls';
 
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
 import { ProfilerEditor } from 'sql/workbench/parts/profiler/browser/profilerEditor';
-import { PROFILER_VIEW_TEMPLATE_SETTINGS, PROFILER_SESSION_TEMPLATE_SETTINGS, IProfilerViewTemplate, IProfilerSessionTemplate, EngineType, PROFILER_FILTER_SETTINGS } from 'sql/workbench/services/profiler/common/interfaces';
+import { PROFILER_VIEW_TEMPLATE_SETTINGS, PROFILER_SESSION_TEMPLATE_SETTINGS, IProfilerViewTemplate, IProfilerSessionTemplate, EngineType, PROFILER_FILTER_SETTINGS } from 'sql/workbench/services/profiler/browser/interfaces';
 
 const profilerDescriptor = new EditorDescriptor(
 	ProfilerEditor,

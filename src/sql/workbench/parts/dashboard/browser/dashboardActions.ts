@@ -17,7 +17,7 @@ import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IViewsService } from 'vs/workbench/common/views';
 import { ConnectionViewletPanel } from 'sql/workbench/parts/dataExplorer/browser/connectionViewletPanel';
 

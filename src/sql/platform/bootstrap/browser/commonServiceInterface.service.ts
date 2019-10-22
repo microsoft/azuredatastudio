@@ -31,7 +31,7 @@ export class SingleConnectionMetadataService {
 		private _uri: string
 	) { }
 
-	get metadata(): Observable<ProviderMetadata> {
+	get metadata(): Observable<ProviderMetadata | undefined> {
 		return Observable.fromPromise(this._metadataService.getMetadata(this._uri));
 	}
 

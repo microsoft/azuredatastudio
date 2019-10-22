@@ -23,7 +23,13 @@
 		["\"", "\""],
 		["'", "'"],
 		["`", "`"]
-	]
+	],
+	"folding": {
+		"markers": {
+			"start": "^\\s*--\\s*#region\\s*.*$",
+			"end": "^\\s*--\\s*#endregion\\s*.*$"
+		}
+	}
 
 	// enhancedBrackets:[
 	// 	{ openTrigger: 'n', open: /begin$/i, closeComplete: 'end', matchCase: true },

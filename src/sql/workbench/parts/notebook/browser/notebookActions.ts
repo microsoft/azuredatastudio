@@ -14,9 +14,9 @@ import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selec
 import { IConnectionManagementService, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
+import { noKernel } from 'sql/workbench/services/notebook/browser/sessionManager';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
-import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebookModel';
+import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
 import { generateUri } from 'sql/platform/connection/common/utils';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -24,7 +24,7 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { NotebookComponent } from 'sql/workbench/parts/notebook/browser/notebook.component';
 import { getErrorMessage } from 'vs/base/common/errors';
-import { INotebookModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { INotebookModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
@@ -265,6 +265,47 @@ export class RunAllCellsAction extends Action {
 			this.notificationService.error(getErrorMessage(e));
 			return false;
 		}
+	}
+}
+
+export class CollapseCellsAction extends ToggleableAction {
+	private static readonly collapseCells = localize('collapseAllCells', "Collapse Cells");
+	private static readonly expandCells = localize('expandAllCells', "Expand Cells");
+	private static readonly baseClass = 'notebook-button';
+	private static readonly collapseCssClass = 'icon-hide-cells';
+	private static readonly expandCssClass = 'icon-show-cells';
+
+	constructor(id: string) {
+		super(id, {
+			baseClass: CollapseCellsAction.baseClass,
+			toggleOnLabel: CollapseCellsAction.expandCells,
+			toggleOnClass: CollapseCellsAction.expandCssClass,
+			toggleOffLabel: CollapseCellsAction.collapseCells,
+			toggleOffClass: CollapseCellsAction.collapseCssClass,
+			isOn: false
+		});
+	}
+
+	public get isCollapsed(): boolean {
+		return this.state.isOn;
+	}
+	public set isCollapsed(value: boolean) {
+		this.toggle(value);
+	}
+
+	public run(context: NotebookComponent): Promise<boolean> {
+		let self = this;
+		return new Promise<boolean>((resolve, reject) => {
+			try {
+				self.isCollapsed = !self.isCollapsed;
+				context.cells.forEach(cell => {
+					cell.isCollapsed = self.isCollapsed;
+				});
+				resolve(true);
+			} catch (e) {
+				reject(e);
+			}
+		});
 	}
 }
 

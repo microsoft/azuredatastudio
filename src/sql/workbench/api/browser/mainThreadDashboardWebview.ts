@@ -6,7 +6,7 @@
 import { MainThreadDashboardWebviewShape, SqlMainContext, ExtHostDashboardWebviewsShape, SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { IDashboardViewService, IDashboardWebview } from 'sql/platform/dashboard/common/dashboardViewService';
+import { IDashboardViewService, IDashboardWebview } from 'sql/platform/dashboard/browser/dashboardViewService';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadDashboardWebview)
 export class MainThreadDashboardWebview implements MainThreadDashboardWebviewShape {

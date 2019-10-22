@@ -15,18 +15,15 @@ import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator'
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { generateUuid, isUUID } from 'vs/base/common/uuid';
 import { values } from 'vs/base/common/map';
-// {{SQL CARBON EDIT}}
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/workbench/contrib/extensions/common/extensions';
-// {{SQL CARBON EDIT}} - End
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration'; // {{SQL CARBON EDIT}}
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IExtensionManifest } from 'vs/platform/extensions/common/extensions';
+import { IExtensionManifest, ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}} add imports
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { joinPath } from 'vs/base/common/resources';
 import { VSBuffer } from 'vs/base/common/buffer';
-import { IProductService } from 'vs/platform/product/common/product';
+import { IProductService } from 'vs/platform/product/common/productService';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { optional } from 'vs/platform/instantiation/common/instantiation';
 
@@ -340,7 +337,7 @@ function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGaller
 		publisher: galleryExtension.publisher.publisherName,
 		publisherDisplayName: galleryExtension.publisher.displayName,
 		description: galleryExtension.shortDescription || '',
-		installCount: getStatistic(galleryExtension.statistics, 'install') + getStatistic(galleryExtension.statistics, 'updateCount'),
+		installCount: getStatistic(galleryExtension.statistics, 'install'),
 		rating: getStatistic(galleryExtension.statistics, 'averagerating'),
 		ratingCount: getStatistic(galleryExtension.statistics, 'ratingcount'),
 		assets,
@@ -375,7 +372,7 @@ interface IRawExtensionsReport {
 
 export class ExtensionGalleryService implements IExtensionGalleryService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private extensionsGalleryUrl: string | undefined;
 	private extensionsControlUrl: string | undefined;
@@ -387,8 +384,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		@ILogService private readonly logService: ILogService,
 		@IEnvironmentService private readonly environmentService: IEnvironmentService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
-		// {{SQL CARBON EDIT}}
-		@IConfigurationService private configurationService: IConfigurationService,
+		@IConfigurationService private configurationService: IConfigurationService, // {{SQL CARBON EDIT}}
 		@IFileService private readonly fileService: IFileService,
 		@IProductService private readonly productService: IProductService,
 		@optional(IStorageService) private readonly storageService: IStorageService,

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IInstantiationService, ServicesAccessor, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IResourceInput, ITextEditorOptions, IEditorOptions, EditorActivation } from 'vs/platform/editor/common/editor';
 import { IEditorInput, IEditor, GroupIdentifier, IFileEditorInput, IUntitledResourceInput, IResourceDiffInput, IResourceSideBySideInput, IEditorInputFactoryRegistry, Extensions as EditorExtensions, IFileInputFactory, EditorInput, SideBySideEditorInput, IEditorInputWithOptions, isEditorInputWithOptions, EditorOptions, TextEditorOptions, IEditorIdentifier, IEditorCloseEvent, ITextEditor, ITextDiffEditor, ITextSideBySideEditor, toResource, SideBySideEditor } from 'vs/workbench/common/editor';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
@@ -15,7 +15,7 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { Schemas } from 'vs/base/common/network';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { basename } from 'vs/base/common/resources';
+import { basename, isEqual } from 'vs/base/common/resources';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { localize } from 'vs/nls';
 import { IEditorGroupsService, IEditorGroup, GroupsOrder, IEditorReplacement, GroupChangeKind, preferredSideBySideGroupDirection } from 'vs/workbench/services/editor/common/editorGroupsService';
@@ -34,7 +34,7 @@ type OpenInEditorGroup = IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTI
 
 export class EditorService extends Disposable implements EditorServiceImpl {
 
-	_serviceBrand!: ServiceIdentifier<any>;
+	_serviceBrand: undefined;
 
 	private static CACHE: ResourceMap<CachedEditorInput> = new ResourceMap<CachedEditorInput>();
 
@@ -146,10 +146,15 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 	}
 
 	private onGroupWillOpenEditor(group: IEditorGroup, event: IEditorOpeningEvent): void {
+		if (event.options && event.options.ignoreOverrides) {
+			return;
+		}
+
 		for (const handler of this.openEditorHandlers) {
 			const result = handler(event.editor, event.options, group);
-			if (result && result.override) {
-				event.prevent((() => result.override!.then(editor => withNullAsUndefined(editor))));
+			const override = result ? result.override : undefined;
+			if (override) {
+				event.prevent((() => override.then(editor => withNullAsUndefined(editor))));
 				break;
 			}
 		}
@@ -302,7 +307,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 			const groupsByLastActive = this.editorGroupService.getGroups(GroupsOrder.MOST_RECENTLY_ACTIVE);
 
 			// Respect option to reveal an editor if it is already visible in any group
-			if (options && options.revealIfVisible) {
+			if (options?.revealIfVisible) {
 				for (const group of groupsByLastActive) {
 					if (group.isActive(input)) {
 						targetGroup = group;
@@ -314,7 +319,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 			// Respect option to reveal an editor if it is open (not necessarily visible)
 			// Still prefer to reveal an editor in a group where the editor is active though.
 			if (!targetGroup) {
-				if ((options && options.revealIfOpened) || this.configurationService.getValue<boolean>('workbench.editor.revealIfOpen')) {
+				if (options?.revealIfOpened || this.configurationService.getValue<boolean>('workbench.editor.revealIfOpen')) {
 					let groupWithInputActive: IEditorGroup | undefined = undefined;
 					let groupWithInputOpened: IEditorGroup | undefined = undefined;
 
@@ -460,7 +465,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 					}
 
 					const resourceInput = editor as IResourceInput | IUntitledResourceInput;
-					if (resourceInput.resource && resource.toString() === resourceInput.resource.toString()) {
+					if (resourceInput.resource && isEqual(resource, resourceInput.resource)) {
 						return editorInGroup;
 					}
 				}
@@ -635,10 +640,10 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		return input;
 	}
 
-	private toDiffLabel(input: EditorInput): string | null {
+	private toDiffLabel(input: EditorInput): string | undefined {
 		const res = input.getResource();
 		if (!res) {
-			return null;
+			return undefined;
 		}
 
 		// Do not try to extract any paths from simple untitled editors

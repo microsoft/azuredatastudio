@@ -10,7 +10,7 @@ import { localize } from 'vs/nls';
 import * as types from 'vs/base/common/types';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IMimeComponent } from 'sql/workbench/parts/notebook/browser/outputs/mimeRegistry';
-import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { MimeModel } from 'sql/workbench/parts/notebook/browser/models/mimemodel';
 import { getErrorMessage } from 'vs/base/common/errors';
 

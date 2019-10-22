@@ -54,7 +54,7 @@ class AccountPanel extends ViewletPanel {
 	}
 
 	protected renderBody(container: HTMLElement): void {
-		this.accountList = new List<azdata.Account>(container, new AccountListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(AccountListRenderer)]);
+		this.accountList = new List<azdata.Account>('AccountList', container, new AccountListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(AccountListRenderer)]);
 		this._register(attachListStyler(this.accountList, this.themeService));
 	}
 

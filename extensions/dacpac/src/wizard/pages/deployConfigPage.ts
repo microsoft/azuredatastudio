@@ -35,8 +35,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 	async start(): Promise<boolean> {
 		let serverComponent = await this.createServerDropdown(true);
 		let fileBrowserComponent = await this.createFileBrowser();
-		this.databaseComponent = await this.createDatabaseTextBox();
-		this.databaseComponent.title = localize('dacFx.databaseNameTextBox', 'Database Name');
+		this.databaseComponent = await this.createDatabaseTextBox(localize('dacFx.databaseNameTextBox', "Database Name"));
 		this.databaseDropdownComponent = await this.createDeployDatabaseDropdown();
 		this.databaseDropdownComponent.title = localize('dacFx.databaseNameDropdown', 'Database Name');
 		let radioButtons = await this.createRadiobuttons();
@@ -49,9 +48,9 @@ export class DeployConfigPage extends DacFxConfigPage {
 					radioButtons,
 					this.databaseDropdownComponent
 				], {
-					horizontal: true,
-					componentWidth: 400
-				});
+				horizontal: true,
+				componentWidth: 400
+			});
 
 		this.form = this.formBuilder.component();
 		await this.view.initializeModel(this.form);

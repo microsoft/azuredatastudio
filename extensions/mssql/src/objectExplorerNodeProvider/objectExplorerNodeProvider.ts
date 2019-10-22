@@ -198,7 +198,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 	private getSqlClusterSessionForNode(node: TreeNode): SqlClusterSession {
 		let sqlClusterSession: SqlClusterSession = undefined;
 		while (node !== undefined) {
-			if (node instanceof DataServicesNode) {
+			if (node instanceof SqlClusterRootNode) {
 				sqlClusterSession = node.session;
 				break;
 			} else {
@@ -281,11 +281,17 @@ class SqlClusterRootNode extends TreeNode {
 
 	public getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]> {
 		if (refreshChildren || !this._children) {
-			this._children = [];
-			let dataServicesNode = new DataServicesNode(this._session, this._treeDataContext, this._nodePathValue);
-			dataServicesNode.parent = this;
-			this._children.push(dataServicesNode);
+			return this.refreshChildren();
 		}
+		return this._children;
+	}
+
+	private async refreshChildren(): Promise<TreeNode[]> {
+		this._children = [];
+		let fileSource: IFileSource = await this.session.sqlClusterConnection.createHdfsFileSource();
+		let hdfsNode = new ConnectionNode(this._treeDataContext, localize('hdfsFolder', "HDFS"), fileSource);
+		hdfsNode.parent = this;
+		this._children.push(hdfsNode);
 		return this._children;
 	}
 
@@ -302,56 +308,6 @@ class SqlClusterRootNode extends TreeNode {
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
 			nodeType: 'sqlCluster:root',
-			nodeSubType: undefined,
-			iconType: 'folder'
-		};
-		return nodeInfo;
-	}
-}
-
-class DataServicesNode extends TreeNode {
-	private _children: TreeNode[];
-	constructor(private _session: SqlClusterSession, private _context: TreeDataContext, private _nodePath: string) {
-		super();
-	}
-
-	public get session(): SqlClusterSession {
-		return this._session;
-	}
-
-	public get nodePathValue(): string {
-		return this._nodePath;
-	}
-
-	public getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]> {
-		if (refreshChildren || !this._children) {
-			return this.refreshChildren();
-		}
-		return this._children;
-	}
-
-	private async refreshChildren(): Promise<TreeNode[]> {
-		this._children = [];
-		let fileSource: IFileSource = await this.session.sqlClusterConnection.createHdfsFileSource();
-		let hdfsNode = new ConnectionNode(this._context, localize('hdfsFolder', "HDFS"), fileSource);
-		hdfsNode.parent = this;
-		this._children.push(hdfsNode);
-		return this._children;
-	}
-
-	getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {
-		throw new Error('Not intended for use in a file explorer view.');
-	}
-
-	getNodeInfo(): azdata.NodeInfo {
-		let nodeInfo: azdata.NodeInfo = {
-			label: localize('dataServicesLabel', "Data Services"),
-			isLeaf: false,
-			errorMessage: undefined,
-			metadata: undefined,
-			nodePath: this.generateNodePath(),
-			nodeStatus: undefined,
-			nodeType: 'dataservices',
 			nodeSubType: undefined,
 			iconType: 'folder'
 		};

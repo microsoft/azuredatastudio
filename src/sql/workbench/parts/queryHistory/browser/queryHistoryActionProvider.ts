@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DeleteAction, OpenQueryAction, RunQueryAction } from 'sql/workbench/parts/queryHistory/browser/queryHistoryActions';
+import { DeleteAction, OpenQueryAction, RunQueryAction, ClearHistoryAction, ToggleQueryHistoryCaptureAction } from 'sql/workbench/parts/queryHistory/browser/queryHistoryActions';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IAction } from 'vs/base/common/actions';
@@ -15,40 +15,50 @@ import { QueryHistoryNode } from 'sql/workbench/parts/queryHistory/browser/query
  */
 export class QueryHistoryActionProvider extends ContributableActionProvider {
 
+	private _actions: {
+		openQueryAction: IAction,
+		runQueryAction: IAction,
+		deleteAction: IAction,
+		clearAction: IAction,
+		toggleCaptureAction: IAction
+	};
+
 	constructor(
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IInstantiationService instantiationService: IInstantiationService
 	) {
 		super();
+		this._actions = {
+			openQueryAction: instantiationService.createInstance(OpenQueryAction, OpenQueryAction.ID, OpenQueryAction.LABEL),
+			runQueryAction: instantiationService.createInstance(RunQueryAction, RunQueryAction.ID, RunQueryAction.LABEL),
+			deleteAction: instantiationService.createInstance(DeleteAction, DeleteAction.ID, DeleteAction.LABEL),
+			clearAction: instantiationService.createInstance(ClearHistoryAction, ClearHistoryAction.ID, ClearHistoryAction.LABEL),
+			toggleCaptureAction: instantiationService.createInstance(ToggleQueryHistoryCaptureAction, ToggleQueryHistoryCaptureAction.ID, ToggleQueryHistoryCaptureAction.LABEL)
+		};
 	}
 
-	public hasActions(tree: ITree, element: any): boolean {
+	public hasActions(element: any): boolean {
 		return element instanceof QueryHistoryNode;
 	}
 
 	/**
-	 * Return actions given an element in the tree
+	 * Return actions for a selected node - or the default actions if no node is selected
 	 */
-	public getActions(tree: ITree, element: any): IAction[] {
+	public getActions(element: any): IAction[] {
+		const actions: IAction[] = [];
+		// Actions we only want to display if we're on a valid QueryHistoryNode
 		if (element instanceof QueryHistoryNode && element.info) {
-			return this.getQueryHistoryActions(tree, element);
+			if (element.info && element.info.queryText && element.info.queryText !== '') {
+				actions.push(this._actions.openQueryAction);
+				actions.push(this._actions.runQueryAction);
+			}
+			actions.push(this._actions.deleteAction);
 		}
-		return [];
+		// Common actions we want to always display
+		actions.push(this._actions.clearAction, this._actions.toggleCaptureAction);
+		return actions;
 	}
 
 	public hasSecondaryActions(tree: ITree, element: any): boolean {
 		return false;
-	}
-
-	/**
-	 * Return actions for query history task
-	 */
-	public getQueryHistoryActions(tree: ITree, element: QueryHistoryNode): IAction[] {
-		const actions: IAction[] = [];
-		if (element.info && element.info.queryText && element.info.queryText !== '') {
-			actions.push(this._instantiationService.createInstance(OpenQueryAction, OpenQueryAction.ID, OpenQueryAction.LABEL));
-			actions.push(this._instantiationService.createInstance(RunQueryAction, RunQueryAction.ID, RunQueryAction.LABEL));
-		}
-		actions.push(this._instantiationService.createInstance(DeleteAction, DeleteAction.ID, DeleteAction.LABEL));
-		return actions;
 	}
 }

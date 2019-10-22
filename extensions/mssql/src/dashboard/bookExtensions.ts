@@ -124,8 +124,8 @@ class AzdataExtensionBookContributionProvider extends Disposable implements Book
 		this.contributions.map(book => {
 			let bookName: string = path.basename(book.path);
 			vscode.commands.executeCommand('setContext', bookName, true);
-			vscode.commands.registerCommand('books.' + bookName, async (context) => {
-				vscode.commands.executeCommand('bookTreeView.openBook', book.path, true);
+			vscode.commands.registerCommand('books.' + bookName, async (urlToOpen?: string) => {
+				vscode.commands.executeCommand('bookTreeView.openBook', book.path, true, urlToOpen);
 			});
 		});
 	}

@@ -34,7 +34,7 @@ export interface IGridDataProvider {
 
 	shouldRemoveNewLines(): boolean;
 
-	getColumnHeaders(range: Slick.Range): string[];
+	getColumnHeaders(range: Slick.Range): string[] | undefined;
 
 	readonly canSerialize: boolean;
 
@@ -43,22 +43,25 @@ export interface IGridDataProvider {
 }
 
 export async function getResultsString(provider: IGridDataProvider, selection: Slick.Range[], includeHeaders?: boolean): Promise<string> {
-	let copyTable: string[][] = [];
+	let headers: Map<Number, string> = new Map(); // Maps a column index -> header
+	let rows: Map<Number, Map<Number, string>> = new Map(); // Maps row index -> column index -> actual row value
 	const eol = provider.getEolString();
 
 	// create a mapping of the ranges to get promises
 	let tasks = selection.map((range, i) => {
 		return async () => {
+			let startCol = range.fromCell;
+			let startRow = range.fromRow;
+
 			const result = await provider.getRowData(range.fromRow, range.toRow - range.fromRow + 1);
 			// If there was a previous selection separate it with a line break. Currently
 			// when there are multiple selections they are never on the same line
-			if (provider.shouldIncludeHeaders(includeHeaders)) {
-				let columnHeaders = provider.getColumnHeaders(range);
-				if (columnHeaders !== undefined) {
-					if (copyTable[0] === undefined) {
-						copyTable[0] = [];
-					}
-					copyTable[0].push(...columnHeaders);
+			let columnHeaders = provider.getColumnHeaders(range);
+			if (columnHeaders !== undefined) {
+				let idx = 0;
+				for (let header of columnHeaders) {
+					headers.set(startCol + idx, header);
+					idx++;
 				}
 			}
 			// Iterate over the rows to paste into the copy string
@@ -70,11 +73,17 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 					? cellObjects.map(x => removeNewLines(x.displayValue))
 					: cellObjects.map(x => x.displayValue);
 
-				let idx = rowIndex + 1;
-				if (copyTable[idx] === undefined) {
-					copyTable[idx] = [];
+				let idx = 0;
+				for (let cell of cells) {
+					let map = rows.get(rowIndex + startRow);
+					if (!map) {
+						map = new Map();
+						rows.set(rowIndex + startRow, map);
+					}
+
+					map.set(startCol + idx, cell);
+					idx++;
 				}
-				copyTable[idx].push(...cells);
 			}
 		};
 	});
@@ -88,12 +97,28 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 	}
 
 	let copyString = '';
-	copyTable.forEach((row) => {
-		if (row === undefined) {
-			return;
+	if (includeHeaders) {
+		copyString = [...headers.values()].join('\t').concat(eol);
+	}
+
+	const rowKeys = [...headers.keys()].sort();
+
+	rows = new Map([...rows.entries()].sort());
+	for (let rowEntry of rows) {
+		let rowMap = rowEntry[1];
+		for (let rowIdx of rowKeys) {
+
+			let value = rowMap.get(rowIdx);
+			if (value) {
+				copyString = copyString.concat(value);
+			}
+			copyString = copyString.concat('\t');
 		}
-		copyString = copyString.concat(row.join('\t').concat(eol));
-	});
+		// Removes the tab seperator from the end of a row
+		copyString = copyString.slice(0, -1 * '\t'.length);
+		copyString = copyString.concat(eol);
+	}
+	// Removes EoL from the end of the result
 	copyString = copyString.slice(0, -1 * eol.length);
 
 	return copyString;

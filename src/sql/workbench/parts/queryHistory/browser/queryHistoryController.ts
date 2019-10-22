@@ -65,7 +65,7 @@ export class QueryHistoryController extends treeDefaults.DefaultController {
 		let anchor = { x: event.posx + 1, y: event.posy };
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => anchor,
-			getActions: () => this.actionProvider.getActions(tree, element),
+			getActions: () => this.actionProvider.getActions(element),
 			getKeyBinding: (action) => this.keybindingService.lookupKeybinding(action.id),
 			onHide: (wasCancelled?: boolean) => {
 				if (wasCancelled) {

@@ -6,7 +6,7 @@ import 'vs/css!./notebook';
 
 import { registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
-import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, editorForeground, editorBackground } from 'vs/platform/theme/common/colorRegistry';
+import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, editorBackground, lighten } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -38,6 +38,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		}
 
 		if (buttonBackgroundColor) {
+			let lighterBackgroundColor = lighten(buttonBackgroundColor, 0.825)(theme);
 			collector.addRule(`
 				.notebookEditor .notebook-cell.active {
 					border-color: ${buttonBackgroundColor};
@@ -56,6 +57,17 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				}
 				.notebookEditor .hoverButton {
 					color: ${buttonBackgroundColor};
+				}
+
+				.vs-dark .notebookEditor .hoverButton {
+					border-color: ${lighterBackgroundColor};
+				}
+				.vs-dark .notebookEditor .hoverButton:active,
+				.vs-dark .notebookEditor .hoverButton:hover {
+					background-color: ${lighterBackgroundColor};
+				}
+				.vs-dark .notebookEditor .hoverButton {
+					color: ${lighterBackgroundColor};
 				}
 			`);
 		}
@@ -132,7 +144,8 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				collector.addRule(`
 					.notebook-cell:not(.active) code-component .monaco-editor,
 					.notebook-cell:not(.active) code-component .monaco-editor-background,
-					.notebook-cell:not(.active) code-component .monaco-editor .inputarea.ime-input
+					.notebook-cell:not(.active) code-component .monaco-editor .inputarea.ime-input,
+					.notebook-cell.active .hide-component-button:hover
 					{
 						background-color: ${codeBackground};
 					}`);

@@ -87,7 +87,7 @@ export class AccountPicker extends Disposable {
 		const delegate = new AccountListDelegate(AccountPicker.ACCOUNTPICKERLIST_HEIGHT);
 		const accountRenderer = new AccountPickerListRenderer();
 		this._listContainer = DOM.$('div.account-list-container');
-		this._accountList = new List<azdata.Account>(this._listContainer, delegate, [accountRenderer]);
+		this._accountList = new List<azdata.Account>('AccountPicker', this._listContainer, delegate, [accountRenderer]);
 		this._register(attachListStyler(this._accountList, this._themeService));
 
 		this._rootElement = DOM.$('div.account-picker-container');
@@ -115,7 +115,7 @@ export class AccountPicker extends Disposable {
 
 		// Create refresh account action
 		this._refreshContainer = DOM.append(this._rootElement, DOM.$('div.refresh-container'));
-		DOM.append(this._refreshContainer, DOM.$('div.sql icon warning'));
+		DOM.append(this._refreshContainer, DOM.$('div.sql codicon warning'));
 		const actionBar = new ActionBar(this._refreshContainer, { animated: false });
 		this._refreshAccountAction = this._instantiationService.createInstance(RefreshAccountAction);
 		actionBar.push(this._refreshAccountAction, { icon: false, label: true });
@@ -169,7 +169,7 @@ export class AccountPicker extends Disposable {
 		if (account) {
 			const badge = DOM.$('div.badge');
 			const row = DOM.append(container, DOM.$('div.selected-account-container'));
-			const icon = DOM.append(row, DOM.$('div.icon'));
+			const icon = DOM.append(row, DOM.$('div.codicon'));
 			DOM.append(icon, badge);
 			const badgeContent = DOM.append(badge, DOM.$('div.badge-content'));
 			const label = DOM.append(row, DOM.$('div.label'));
@@ -181,7 +181,7 @@ export class AccountPicker extends Disposable {
 			label.innerText = account.displayInfo.displayName + ' (' + account.displayInfo.contextualDisplayName + ')';
 
 			if (account.isStale) {
-				badgeContent.className = 'badge-content icon warning-badge';
+				badgeContent.className = 'badge-content codicon warning-badge';
 			} else {
 				badgeContent.className = 'badge-content';
 			}

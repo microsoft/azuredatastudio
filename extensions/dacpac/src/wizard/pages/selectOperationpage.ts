@@ -51,8 +51,8 @@ export class SelectOperationPage extends BasePage {
 					importComponent,
 					exportComponent
 				], {
-					horizontal: true
-				}).component();
+				horizontal: true
+			}).component();
 		await this.view.initializeModel(this.form);
 
 		this.instance.setDoneButton(Operation.deploy);

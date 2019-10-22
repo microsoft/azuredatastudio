@@ -7,7 +7,7 @@ import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 
 import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
-import { InsightActionContext } from 'sql/workbench/common/actions';
+import { InsightActionContext } from 'sql/workbench/browser/actions';
 import { openNewQuery } from 'sql/workbench/parts/query/browser/queryActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 

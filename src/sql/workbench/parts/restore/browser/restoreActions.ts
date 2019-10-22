@@ -12,7 +12,7 @@ import { IRestoreDialogController } from 'sql/platform/restore/common/restoreSer
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { Task } from 'sql/platform/tasks/browser/tasksRegistry';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';

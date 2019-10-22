@@ -31,7 +31,7 @@ const crypto = require('crypto');
 const i18n = require('./lib/i18n');
 const ext = require('./lib/extensions'); // {{SQL CARBON EDIT}}
 const deps = require('./dependencies');
-const getElectronVersion = require('./lib/electron').getElectronVersion;
+const { config } = require('./lib/electron');
 const createAsar = require('./lib/asar').createAsar;
 const { compileBuildTask } = require('./gulpfile.compile');
 const { compileExtensionsBuildTask } = require('./gulpfile.extensions');
@@ -60,8 +60,7 @@ const nodeModules = [
 const vscodeEntryPoints = _.flatten([
 	buildfile.entrypoint('vs/workbench/workbench.desktop.main'),
 	buildfile.base,
-	buildfile.serviceWorker,
-	buildfile.workbench,
+	buildfile.workbenchDesktop,
 	buildfile.code
 ]);
 
@@ -79,7 +78,7 @@ const vscodeResources = [
 	'out-build/vs/base/common/performance.js',
 	'out-build/vs/base/node/languagePacks.js',
 	'out-build/vs/base/node/{stdForkStart.js,terminateProcess.sh,cpuUsage.sh,ps.sh}',
-	'out-build/vs/base/browser/ui/octiconLabel/octicons/**',
+	'out-build/vs/base/browser/ui/codiconLabel/codicon/**',
 	'out-build/vs/workbench/browser/media/*-theme.css',
 	'out-build/vs/workbench/contrib/debug/**/*.json',
 	'out-build/vs/workbench/contrib/externalTerminal/**/*.scpt',
@@ -87,7 +86,6 @@ const vscodeResources = [
 	'out-build/vs/workbench/contrib/webview/electron-browser/pre/*.js',
 	'out-build/vs/**/markdown.css',
 	'out-build/vs/workbench/contrib/tasks/**/*.json',
-	'out-build/vs/workbench/contrib/welcome/walkThrough/**/*.md',
 	'out-build/vs/platform/files/**/*.exe',
 	'out-build/vs/platform/files/**/*.md',
 	'out-build/vs/code/electron-browser/workbench/**',
@@ -125,6 +123,7 @@ const optimizeVSCodeTask = task.define('optimize-vscode', task.series(
 		resources: vscodeResources,
 		loaderConfig: common.loaderConfig(nodeModules),
 		out: 'out-vscode',
+		inlineAmdImages: true,
 		bundleInfo: undefined
 	})
 ));
@@ -143,73 +142,6 @@ const minifyVSCodeTask = task.define('minify-vscode', task.series(
 	common.minifyTask('out-vscode', `${sourceMappingURLBase}/core`)
 ));
 gulp.task(minifyVSCodeTask);
-
-// Package
-
-// @ts-ignore JSON checking: darwinCredits is optional
-const darwinCreditsTemplate = product.darwinCredits && _.template(fs.readFileSync(path.join(root, product.darwinCredits), 'utf8'));
-
-function darwinBundleDocumentType(extensions, icon) {
-	return {
-		name: product.nameLong + ' document',
-		role: 'Editor',
-		ostypes: ["TEXT", "utxt", "TUTX", "****"],
-		extensions: extensions,
-		iconFile: icon
-	};
-}
-
-const config = {
-	version: getElectronVersion(),
-	productAppName: product.nameLong,
-	companyName: 'Microsoft Corporation',
-	copyright: 'Copyright (C) 2019 Microsoft. All rights reserved',
-	darwinIcon: 'resources/darwin/code.icns',
-	darwinBundleIdentifier: product.darwinBundleIdentifier,
-	darwinApplicationCategoryType: 'public.app-category.developer-tools',
-	darwinHelpBookFolder: 'VS Code HelpBook',
-	darwinHelpBookName: 'VS Code HelpBook',
-	darwinBundleDocumentTypes: [
-		// {{SQL CARBON EDIT}} - Remove most document types and replace with ours
-		darwinBundleDocumentType(["csv", "json", "sqlplan", "sql", "xml"], 'resources/darwin/code_file.icns'),
-	],
-	darwinBundleURLTypes: [{
-		role: 'Viewer',
-		name: product.nameLong,
-		urlSchemes: [product.urlProtocol]
-	}],
-	darwinForceDarkModeSupport: true,
-	darwinCredits: darwinCreditsTemplate ? Buffer.from(darwinCreditsTemplate({ commit: commit, date: new Date().toISOString() })) : undefined,
-	linuxExecutableName: product.applicationName,
-	winIcon: 'resources/win32/code.ico',
-	token: process.env['VSCODE_MIXIN_PASSWORD'] || process.env['GITHUB_TOKEN'] || undefined,
-
-	// @ts-ignore JSON checking: electronRepository is optional
-	repo: product.electronRepository || undefined
-};
-
-function getElectron(arch) {
-	return () => {
-		const electronOpts = _.extend({}, config, {
-			platform: process.platform,
-			arch,
-			ffmpegChromium: true,
-			keepDefaultApp: true
-		});
-
-		return gulp.src('package.json')
-			.pipe(json({ name: product.nameShort }))
-			.pipe(electron(electronOpts))
-			.pipe(filter(['**', '!**/app/package.json']))
-			.pipe(vfs.dest('.build/electron'));
-	};
-}
-
-gulp.task(task.define('electron', task.series(util.rimraf('.build/electron'), getElectron(process.arch))));
-gulp.task(task.define('electron-ia32', task.series(util.rimraf('.build/electron'), getElectron('ia32'))));
-gulp.task(task.define('electron-x64', task.series(util.rimraf('.build/electron'), getElectron('x64'))));
-gulp.task(task.define('electron-arm', task.series(util.rimraf('.build/electron'), getElectron('armv7l'))));
-gulp.task(task.define('electron-arm64', task.series(util.rimraf('.build/electron'), getElectron('arm64'))));
 
 /**
  * Compute checksums for some files.
@@ -333,12 +265,24 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		);
 
 		if (platform === 'win32') {
+			if (quality !== 'stable') {
+				// {{SQL CARBON EDIT}} use separate icons for non-stable
+				gulp.src([
+					'resources/win32/code_70x70-insiders.png',
+					'resources/win32/code_150x150-insiders.png'
+				]).pipe(rename(function (f) { f.basename = f.basename.replace('-insiders', ''); }))
+				.pipe(gulp.dest('resources/win32'));
+			}
 			all = es.merge(all, gulp.src([
 				// {{SQL CARBON EDIT}} remove unused icons
 				'resources/win32/code_70x70.png',
 				'resources/win32/code_150x150.png'
 			], { base: '.' }));
 		} else if (platform === 'linux') {
+			// {{SQL CARBON EDIT}} use separate icons for non-stable
+			if (quality !== 'stable') {
+				gulp.src('resources/linux/code-insiders.png').pipe(rename('resources/linux/code.png'));
+			}
 			all = es.merge(all, gulp.src('resources/linux/code.png', { base: '.' }));
 		} else if (platform === 'darwin') {
 			const shortcut = gulp.src('resources/darwin/bin/code.sh')
@@ -468,7 +412,7 @@ gulp.task(task.define(
 		optimizeVSCodeTask,
 		function () {
 			const pathToMetadata = './out-vscode/nls.metadata.json';
-			const pathToExtensions = './extensions/*';
+			const pathToExtensions = '.build/extensions/*';
 			const pathToSetup = 'build/win32/**/{Default.isl,messages.en.isl}';
 
 			return es.merge(
@@ -489,7 +433,7 @@ gulp.task(task.define(
 		optimizeVSCodeTask,
 		function () {
 			const pathToMetadata = './out-vscode/nls.metadata.json';
-			const pathToExtensions = './extensions/*';
+			const pathToExtensions = '.build/extensions/*';
 			const pathToSetup = 'build/win32/**/{Default.isl,messages.en.isl}';
 
 			return es.merge(
@@ -510,7 +454,7 @@ gulp.task('vscode-translations-pull', function () {
 
 gulp.task('vscode-translations-import', function () {
 	// {{SQL CARBON EDIT}} - Replace function body with our own
-	return new Promise(function(resolve) {
+	return new Promise(function (resolve) {
 		[...i18n.defaultLanguages, ...i18n.extraLanguages].forEach(language => {
 			let languageId = language.translationId ? language.translationId : language.id;
 			gulp.src(`resources/xlf/${languageId}/**/*.xlf`)

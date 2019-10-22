@@ -215,12 +215,12 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	// State update funtions
-	public runQuery(selection: ISelectionData, executePlanOptions?: ExecutionPlanOptions): void {
+	public runQuery(selection?: ISelectionData, executePlanOptions?: ExecutionPlanOptions): void {
 		this.queryModelService.runQuery(this.uri, selection, this, executePlanOptions);
 		this.state.executing = true;
 	}
 
-	public runQueryStatement(selection: ISelectionData): void {
+	public runQueryStatement(selection?: ISelectionData): void {
 		this.queryModelService.runQueryStatement(this.uri, selection, this);
 		this.state.executing = true;
 	}
@@ -241,8 +241,12 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	public onConnectCanceled(): void {
+		// If we're currently connecting and then cancel, set connected state to false
+		// Otherwise, keep connected state as it was
+		if (this.state.connecting) {
+			this.state.connected = false;
+		}
 		this.state.connecting = false;
-		this.state.connected = false;
 	}
 
 	public onConnectSuccess(params?: INewConnectionParams): void {
@@ -251,7 +255,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 		let isRunningQuery = this.queryModelService.isRunningQuery(this.uri);
 		if (!isRunningQuery && params && params.runQueryOnCompletion) {
-			let selection: ISelectionData = params ? params.querySelection : undefined;
+			let selection: ISelectionData | undefined = params ? params.querySelection : undefined;
 			if (params.runQueryOnCompletion === RunQueryOnConnectionMode.executeCurrentQuery) {
 				this.runQueryStatement(selection);
 			} else if (params.runQueryOnCompletion === RunQueryOnConnectionMode.executeQuery) {
@@ -296,6 +300,6 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	public get isSharedSession(): boolean {
-		return this.uri && this.uri.startsWith('vsls:');
+		return !!(this.uri && this.uri.startsWith('vsls:'));
 	}
 }

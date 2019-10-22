@@ -11,11 +11,11 @@ import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 
-import { INotebookService, INotebookProvider, INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookService, INotebookProvider, INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, FutureMessageType, INotebookFutureDetails, INotebookFutureDone } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { Deferred } from 'sql/base/common/promise';
-import { FutureInternal } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { FutureInternal } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebook)

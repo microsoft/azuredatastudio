@@ -17,6 +17,7 @@ const vfs = require('vinyl-fs');
 const path = require('path');
 const fs = require('fs');
 const pall = require('p-all');
+const task = require('./lib/task');
 
 /**
  * Hygiene works by creating cascading subsets of all our files and
@@ -55,8 +56,10 @@ const indentationFilter = [
 	'!src/vs/base/node/terminateProcess.sh',
 	'!src/vs/base/node/cpuUsage.sh',
 	'!test/assert.js',
+	'!build/testSetup.js',
 
 	// except specific folders
+	'!test/automation/out/**',
 	'!test/smoke/out/**',
 	'!extensions/vscode-api-tests/testWorkspace/**',
 	'!extensions/vscode-api-tests/testWorkspace2/**',
@@ -65,11 +68,12 @@ const indentationFilter = [
 
 	// except multiple specific files
 	'!**/package.json',
+	'!**/package-lock.json', // {{SQL CARBON EDIT}}
 	'!**/yarn.lock',
 	'!**/yarn-error.log',
 
 	// except multiple specific folders
-	'!**/octicons/**',
+	'!**/codicon/**',
 	'!**/fixtures/**',
 	'!**/lib/**',
 	'!extensions/**/out/**',
@@ -99,7 +103,8 @@ const indentationFilter = [
 	'!extensions/admin-tool-ext-win/ssmsmin/**',
 	'!extensions/resource-deployment/notebooks/**',
 	'!extensions/mssql/notebooks/**',
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts'
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts'
 ];
 
 const copyrightFilter = [
@@ -130,9 +135,10 @@ const copyrightFilter = [
 	'!extensions/html-language-features/server/src/modes/typescript/*',
 	'!extensions/*/server/bin/*',
 	'!src/vs/editor/test/node/classification/typescript-test.ts',
+	'!scripts/code-web.js',
 	// {{SQL CARBON EDIT}}
 	'!extensions/notebook/src/intellisense/text.ts',
-	'!extensions/mssql/src/objectExplorerNodeProvider/webhdfs.ts',
+	'!extensions/mssql/src/hdfs/webhdfs.ts',
 	'!src/sql/workbench/parts/notebook/browser/outputs/tableRenderers.ts',
 	'!src/sql/workbench/parts/notebook/common/models/url.ts',
 	'!src/sql/workbench/parts/notebook/browser/models/renderMimeInterfaces.ts',
@@ -187,25 +193,17 @@ const tslintBaseFilter = [
 	'!extensions/vscode-api-tests/testWorkspace2/**',
 	'!extensions/**/*.test.ts',
 	'!extensions/html-language-features/server/lib/jquery.d.ts',
-	// {{SQL CARBON EDIT}}
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts'
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts', // {{SQL CARBON EDIT}},
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts' // {{SQL CARBON EDIT}},
 ];
 
-// {{SQL CARBON EDIT}}
-const useStrictFilter = [
-	'src/**'
-];
-
-const sqlFilter = [
-	'src/sql/**'
-];
-
-// {{SQL CARBON EDIT}}
+const sqlFilter = ['src/sql/**']; // {{SQL CARBON EDIT}}
 
 const tslintCoreFilter = [
 	'src/**/*.ts',
 	'test/**/*.ts',
 	'!extensions/**/*.ts',
+	'!test/automation/**',
 	'!test/smoke/**',
 	...tslintBaseFilter
 ];
@@ -214,6 +212,7 @@ const tslintExtensionsFilter = [
 	'extensions/**/*.ts',
 	'!src/**/*.ts',
 	'!test/**/*.ts',
+	'test/automation/**/*.ts',
 	...tslintBaseFilter
 ];
 
@@ -255,6 +254,33 @@ gulp.task('tslint', () => {
 			.pipe(gulptslint.default.report({ emitError: true }))
 	]).pipe(es.through());
 });
+
+function checkPackageJSON(actualPath) {
+	const actual = require(path.join(__dirname, '..', actualPath));
+	const rootPackageJSON = require('../package.json');
+
+	for (let depName in actual.dependencies) {
+		const depVersion = actual.dependencies[depName];
+		const rootDepVersion = rootPackageJSON.dependencies[depName];
+		if (!rootDepVersion) {
+			// missing in root is allowed
+			continue;
+		}
+		if (depVersion !== rootDepVersion) {
+			this.emit('error', `The dependency ${depName} in '${actualPath}' (${depVersion}) is different than in the root package.json (${rootDepVersion})`);
+		}
+	}
+}
+
+const checkPackageJSONTask = task.define('check-package-json', () => {
+	return gulp.src('package.json')
+		.pipe(es.through(function() {
+			checkPackageJSON.call(this, 'remote/package.json');
+			checkPackageJSON.call(this, 'remote/web/package.json');
+		}));
+});
+gulp.task(checkPackageJSONTask);
+
 
 function hygiene(some) {
 	let errorCount = 0;
@@ -304,23 +330,6 @@ function hygiene(some) {
 
 		this.emit('data', file);
 	});
-
-	// {{SQL CARBON EDIT}}
-	// Check for unnecessary 'use strict' lines. These are automatically added by the alwaysStrict compiler option so don't need to be added manually
-	const useStrict = es.through(function (file) {
-		const lines = file.__lines;
-		// Only take the first 10 lines to reduce false positives- the compiler will throw an error if it's not the first non-comment line in a file
-		// (10 is used to account for copyright and extraneous newlines)
-		lines.slice(0, 10).forEach((line, i) => {
-			if (/\s*'use\s*strict\s*'/.test(line)) {
-				console.error(file.relative + '(' + (i + 1) + ',1): Unnecessary \'use strict\' - this is already added by the compiler');
-				errorCount++;
-			}
-		});
-
-		this.emit('data', file);
-	});
-	// {{SQL CARBON EDIT}} END
 
 	const formatting = es.map(function (file, cb) {
 		tsfmt.processString(file.path, file.contents.toString('utf8'), {
@@ -374,11 +383,9 @@ function hygiene(some) {
 	const tslintSqlOptions = { fix: false, formatter: 'json' };
 	const sqlTsLinter = new tslint.Linter(tslintSqlOptions);
 
-	const sqlTsl = es.through(function (file) {
+	const sqlTsl = es.through(function (file) { //TODO restore
 		const contents = file.contents.toString('utf8');
 		sqlTsLinter.lint(file.relative, contents, tslintSqlConfiguration.results);
-
-		this.emit('data', file);
 	});
 
 	const productJsonFilter = filter('product.json', { restore: true });
@@ -393,15 +400,16 @@ function hygiene(some) {
 		.pipe(filter(copyrightFilter))
 		.pipe(copyrights);
 
-	const typescript = result
+	let typescript = result
 		.pipe(filter(tslintHygieneFilter))
-		.pipe(formatting)
-		.pipe(tsl)
-		// {{SQL CARBON EDIT}}
-		.pipe(filter(useStrictFilter))
-		.pipe(useStrict)
-		.pipe(filter(sqlFilter))
-		.pipe(sqlTsl);
+		.pipe(formatting);
+
+	if (!process.argv.some(arg => arg === '--skip-tslint')) {
+		typescript = typescript.pipe(tsl);
+		typescript = typescript
+			.pipe(filter(sqlFilter))
+			.pipe(sqlTsl); // {{SQL CARBON EDIT}}
+	}
 
 	const javascript = result
 		.pipe(filter(eslintFilter))
@@ -487,7 +495,7 @@ function createGitIndexVinyls(paths) {
 		.then(r => r.filter(p => !!p));
 }
 
-gulp.task('hygiene', () => hygiene());
+gulp.task('hygiene', task.series(checkPackageJSONTask, () => hygiene()));
 
 // this allows us to run hygiene as a git pre-commit hook
 if (require.main === module) {

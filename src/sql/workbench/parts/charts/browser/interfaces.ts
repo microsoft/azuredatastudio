@@ -47,6 +47,6 @@ export interface IInsight {
 }
 
 export interface IInsightCtor {
-	new(container: HTMLElement, options: IInsightOptions, ...services: { _serviceBrand: any; }[]): IInsight;
+	new(container: HTMLElement, options: IInsightOptions, ...services: { _serviceBrand: undefined; }[]): IInsight;
 	readonly types: Array<InsightType | ChartType>;
 }

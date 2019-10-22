@@ -11,7 +11,7 @@ import {
 } from 'sql/platform/connection/common/connectionManagement';
 import { EditDataInput } from 'sql/workbench/parts/editData/browser/editDataInput';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { DashboardInput } from 'sql/workbench/parts/dashboard/browser/dashboardInput';
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
 

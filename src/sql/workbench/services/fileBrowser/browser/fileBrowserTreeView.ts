@@ -9,7 +9,7 @@ import { FileBrowserRenderer } from 'sql/workbench/services/fileBrowser/browser/
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import errors = require('vs/base/common/errors');
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
 import nls = require('vs/nls');
 import { DefaultFilter, DefaultAccessibilityProvider, DefaultDragAndDrop } from 'vs/base/parts/tree/browser/treeDefaults';
@@ -23,15 +23,15 @@ import { IExpandableTree } from 'sql/workbench/parts/objectExplorer/browser/tree
 /**
  * Implements tree view for file browser
  */
-export class FileBrowserTreeView implements IDisposable {
+export class FileBrowserTreeView extends Disposable implements IDisposable {
 	private _tree: ITree;
-	private _toDispose: IDisposable[] = [];
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
 		@IThemeService private _themeService: IThemeService
 	) {
+		super();
 	}
 
 	/**
@@ -40,10 +40,10 @@ export class FileBrowserTreeView implements IDisposable {
 	public renderBody(container: HTMLElement, rootNode: FileNode, selectedNode: FileNode, expandedNodes: FileNode[]): void {
 		if (!this._tree) {
 			DOM.addClass(container, 'show-file-icons');
-			this._tree = this.createFileBrowserTree(container, this._instantiationService);
-			this._toDispose.push(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
-			this._toDispose.push(this._fileBrowserService.onExpandFolder(fileNode => this._tree.refresh(fileNode)));
-			this._toDispose.push(attachListStyler(this._tree, this._themeService));
+			this._tree = this._register(this.createFileBrowserTree(container, this._instantiationService));
+			this._register(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
+			this._register(this._fileBrowserService.onExpandFolder(fileNode => this._tree.refresh(fileNode)));
+			this._register(attachListStyler(this._tree, this._themeService));
 			this._tree.domFocus();
 		}
 
@@ -76,10 +76,10 @@ export class FileBrowserTreeView implements IDisposable {
 		return new Tree(treeContainer, {
 			dataSource, renderer, controller, dnd, filter, sorter, accessibilityProvider
 		}, {
-				indentPixels: 10,
-				twistiePixels: 12,
-				ariaLabel: nls.localize({ key: 'fileBrowser.regTreeAriaLabel', comment: ['FileBrowserTree'] }, "File browser tree")
-			});
+			indentPixels: 10,
+			twistiePixels: 12,
+			ariaLabel: nls.localize({ key: 'fileBrowser.regTreeAriaLabel', comment: ['FileBrowserTree'] }, "File browser tree")
+		});
 	}
 
 	/**
@@ -158,15 +158,5 @@ export class FileBrowserTreeView implements IDisposable {
 		} else {
 			this._tree.onHidden();
 		}
-	}
-
-	/**
-	 * dispose the file browser tree view
-	 */
-	public dispose(): void {
-		if (this._tree) {
-			this._tree.dispose();
-		}
-		this._toDispose = dispose(this._toDispose);
 	}
 }

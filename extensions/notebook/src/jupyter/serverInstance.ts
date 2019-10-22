@@ -62,8 +62,13 @@ export class ServerInstanceUtils {
 	public copy(src: string, dest: string): Promise<void> {
 		return fs.copy(src, dest);
 	}
-	public existsSync(dirPath: string): boolean {
-		return fs.existsSync(dirPath);
+	public async exists(path: string): Promise<boolean> {
+		try {
+			await fs.access(path);
+			return true;
+		} catch (e) {
+			return false;
+		}
 	}
 	public generateUuid(): string {
 		return UUID.generateUuid();
@@ -94,7 +99,7 @@ export class ServerInstanceUtils {
 	}
 }
 
-export class PerNotebookServerInstance implements IServerInstance {
+export class PerFolderServerInstance implements IServerInstance {
 
 	/**
 	 * Root of the jupyter directory structure. Config and data roots will be
@@ -118,6 +123,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 	private _port: string;
 	private _uri: vscode.Uri;
 	private _isStarted: boolean = false;
+	private _isStopping: boolean = false;
 	private utils: ServerInstanceUtils;
 	private childProcess: ChildProcess;
 	private errorHandler: ErrorHandler = new ErrorHandler();
@@ -127,7 +133,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 	}
 
 	public get isStarted(): boolean {
-		return this._isStarted;
+		return this._isStarted && !this._isStopping;
 	}
 
 	public get port(): string {
@@ -148,13 +154,14 @@ export class PerNotebookServerInstance implements IServerInstance {
 
 	public async stop(): Promise<void> {
 		try {
+			this._isStopping = true;
 			if (this.baseDir) {
 				let exists = await this.utils.pathExists(this.baseDir);
 				if (exists) {
 					await this.utils.removeDir(this.baseDir);
 				}
 			}
-			if (this.isStarted) {
+			if (this._isStarted) {
 				let install = this.options.install;
 				let stopCommand = `"${install.pythonExecutable}" -m jupyter notebook stop ${this._port}`;
 				await this.utils.executeBufferedCommand(stopCommand, install.execOptions, install.outputChannel);
@@ -166,6 +173,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 			this._isStarted = false;
 			this.utils.ensureProcessEnded(this.childProcess);
 			this.handleConnectionClosed();
+
 		}
 	}
 
@@ -204,7 +212,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 	private async copyKernelsToSystemJupyterDirs(): Promise<void> {
 		let kernelsExtensionSource = path.join(this.options.install.extensionPath, 'kernels');
 		this._systemJupyterDir = path.join(this.getSystemJupyterHomeDir(), 'kernels');
-		if (!this.utils.existsSync(this._systemJupyterDir)) {
+		if (!(await this.utils.exists(this._systemJupyterDir))) {
 			await this.utils.mkDir(this._systemJupyterDir, this.options.install.outputChannel);
 		}
 		await this.utils.copy(kernelsExtensionSource, this._systemJupyterDir);

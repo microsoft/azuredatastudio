@@ -130,6 +130,10 @@ process.env[ENVAR_RUN_PYSPARK_TEST] = '0';
 
 const promises = [];
 
+// Open up a web browser to the login page so the user doesn't have to copy the URL manually
+const start = (process.platform == 'darwin'? 'open': process.platform == 'win32'? 'start': 'xdg-open');
+child_process.exec(`${start} https://microsoft.com/devicelogin`);
+
 // Fetch the values from AKV
 msrestAzure.interactiveLogin().then((credentials) => {
 	const client = new KeyVault.KeyVaultClient(credentials);

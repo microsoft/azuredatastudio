@@ -5,7 +5,7 @@
 
 import { Dimension } from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
-import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 import { Table } from 'sql/base/browser/ui/table/table';
 import { PlanXmlParser } from 'sql/workbench/parts/queryPlan/common/planXmlParser';
@@ -34,17 +34,14 @@ const topOperationColumns: Array<Slick.Column<any>> = [
 	{ name: localize('topOperations.partitioned', "Partitioned"), field: 'partitioned', sortable: true }
 ];
 
-export class TopOperationsTab implements IPanelTab {
+export class TopOperationsTab extends Disposable implements IPanelTab {
 	public readonly title = localize('topOperationsTitle', "Top Operations");
 	public readonly identifier = 'TopOperationsTab';
 	public readonly view: TopOperationsView;
 
 	constructor(@IInstantiationService instantiationService: IInstantiationService) {
-		this.view = instantiationService.createInstance(TopOperationsView);
-	}
-
-	public dispose() {
-		dispose(this.view);
+		super();
+		this.view = this._register(instantiationService.createInstance(TopOperationsView));
 	}
 
 	public clear() {
@@ -52,14 +49,14 @@ export class TopOperationsTab implements IPanelTab {
 	}
 }
 
-export class TopOperationsView implements IPanelView {
+export class TopOperationsView extends Disposable implements IPanelView {
 	private _state: TopOperationsState;
 	private table: Table<any>;
-	private disposables: IDisposable[] = [];
 	private container = document.createElement('div');
 	private dataView = new TableDataView();
 
 	constructor(@IThemeService private themeService: IThemeService) {
+		super();
 		this.table = new Table(this.container, {
 			columns: topOperationColumns,
 			dataProvider: this.dataView,
@@ -67,16 +64,12 @@ export class TopOperationsView implements IPanelView {
 				this.dataView.sort(args);
 			}
 		});
-		this.disposables.push(this.table);
-		this.disposables.push(attachTableStyler(this.table, this.themeService));
+		this._register(this.table);
+		this._register(attachTableStyler(this.table, this.themeService));
 	}
 
 	public render(container: HTMLElement): void {
 		container.appendChild(this.container);
-	}
-
-	dispose() {
-		dispose(this.disposables);
 	}
 
 	public layout(dimension: Dimension): void {

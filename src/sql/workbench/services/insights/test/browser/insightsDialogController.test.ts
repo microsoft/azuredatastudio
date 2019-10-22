@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { InsightsDialogController } from 'sql/workbench/services/insights/common/insightsDialogController';
+import { InsightsDialogController } from 'sql/workbench/services/insights/browser/insightsDialogController';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
-import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
+import { ConnectionManagementService } from 'sql/platform/connection/browser/connectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';

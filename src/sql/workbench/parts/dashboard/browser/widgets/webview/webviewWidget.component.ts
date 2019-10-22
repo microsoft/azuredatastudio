@@ -12,7 +12,7 @@ import { memoize } from 'vs/base/common/decorators';
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/browser/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
-import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard/common/dashboardViewService';
+import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard/browser/dashboardViewService';
 
 import * as azdata from 'azdata';
 import { WebviewElement, IWebviewService } from 'vs/workbench/contrib/webview/browser/webview';
@@ -60,7 +60,6 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 		this._html = html;
 		if (this._webview) {
 			this._webview.html = html;
-			this._webview.layout();
 		}
 	}
 
@@ -81,7 +80,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 	}
 
 	public layout(): void {
-		this._webview.layout();
+		// no op
 	}
 
 	public sendMessage(message: string): void {
@@ -111,6 +110,5 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 		if (this._html) {
 			this._webview.html = this._html;
 		}
-		this._webview.layout();
 	}
 }

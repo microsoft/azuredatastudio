@@ -29,7 +29,7 @@ export interface IAngularEvent {
 }
 
 export interface IAngularEventingService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	/**
 	 * Adds a listener for the dashboard to send events, should only be called once for each dashboard by the dashboard itself
 	 * @param uri Uri of the dashboard

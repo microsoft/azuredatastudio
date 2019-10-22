@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ManageAction, ManageActionContext } from 'sql/workbench/common/actions';
+import { ManageAction, ManageActionContext } from 'sql/workbench/browser/actions';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';

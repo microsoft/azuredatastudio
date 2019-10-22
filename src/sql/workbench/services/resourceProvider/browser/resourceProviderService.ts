@@ -18,7 +18,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 
 export class ResourceProviderService implements IResourceProviderService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 	private _providers: { [handle: string]: azdata.ResourceProvider; } = Object.create(null);
 	private _firewallRuleDialogController: FirewallRuleDialogController;
 

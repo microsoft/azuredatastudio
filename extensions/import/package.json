@@ -50,6 +50,17 @@
 					"group": "import"
 				}
 			]
+		},
+		"configuration":{
+			"type": "object",
+			"title": "%flatfileimport.configuration.title%",
+			"properties": {
+				"flatFileImport.logDebugInfo": {
+					"type": "boolean",
+					"default": false,
+					"description": "%flatfileimport.logDebugInfo%"
+				}
+			}
 		}
 	},
 	"dependencies": {

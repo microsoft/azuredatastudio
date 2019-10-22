@@ -8,12 +8,12 @@ import * as azdata from 'azdata';
 
 import { IGridDataProvider, getResultsString } from 'sql/platform/query/common/gridDataProvider';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, optional } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
-import { IDataResource } from 'sql/workbench/services/notebook/common/sql/sqlSessionManager';
+import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/platform/query/common/queryRunner';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -24,7 +24,7 @@ import { localize } from 'vs/nls';
 import { IAction } from 'vs/base/common/actions';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IMimeComponent } from 'sql/workbench/parts/notebook/browser/outputs/mimeRegistry';
-import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { MimeModel } from 'sql/workbench/parts/notebook/browser/models/mimemodel';
 import { GridTableState } from 'sql/workbench/parts/query/common/gridPanelState';
 import { GridTableBase } from 'sql/workbench/parts/query/browser/gridPanel';
@@ -32,10 +32,11 @@ import { getErrorMessage } from 'vs/base/common/errors';
 import { ISerializationService, SerializeDataParams } from 'sql/platform/serialization/common/serializationService';
 import { SaveResultAction } from 'sql/workbench/parts/query/browser/actions';
 import { ResultSerializer, SaveResultsResponse } from 'sql/workbench/parts/query/common/resultSerializer';
+import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
-	template: `<div #output class="notebook-cellTable"></div>`
+	template: `<div #output class="notebook-cellTable" (mouseover)="hover=true" (mouseleave)="hover=false"></div>`
 })
 export class GridOutputComponent extends AngularDisposable implements IMimeComponent, OnInit {
 	public static readonly SELECTOR: string = 'grid-output';
@@ -46,6 +47,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	private _cellModel: ICellModel;
 	private _bundleOptions: MimeModel.IOptions;
 	private _table: DataResourceTable;
+	private _hover: boolean;
 	constructor(
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IThemeService) private readonly themeService: IThemeService
@@ -73,6 +75,14 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		}
 	}
 
+	@Input() set hover(value: boolean) {
+		// only reaction on hover changes
+		if (this._hover !== value) {
+			this.toggleActionbar(value);
+			this._hover = value;
+		}
+	}
+
 	ngOnInit() {
 		this.renderGrid();
 	}
@@ -89,6 +99,8 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			outputElement.appendChild(this._table.element);
 			this._register(attachTableStyler(this._table, this.themeService));
 			this.layout();
+			// By default, do not show the actions
+			this.toggleActionbar(false);
 			this._table.onAdd();
 			this._initialized = true;
 		}
@@ -97,7 +109,19 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	layout(): void {
 		if (this._table) {
 			let maxSize = Math.min(this._table.maximumSize, 500);
-			this._table.layout(maxSize);
+			this._table.layout(maxSize, undefined, ActionsOrientation.HORIZONTAL);
+		}
+	}
+
+	private toggleActionbar(visible: boolean) {
+		let outputElement = <HTMLElement>this.output.nativeElement;
+		let actionsContainers: HTMLElement[] = Array.prototype.slice.call(outputElement.getElementsByClassName('actions-container'));
+		if (actionsContainers && actionsContainers.length) {
+			if (visible) {
+				actionsContainers.forEach(container => container.style.visibility = 'visible');
+			} else {
+				actionsContainers.forEach(container => container.style.visibility = 'hidden');
+			}
 		}
 	}
 }
@@ -125,7 +149,7 @@ class DataResourceTable extends GridTableBase<any> {
 	}
 
 	protected getCurrentActions(): IAction[] {
-		return [];
+		return this.getContextActions();
 	}
 
 	protected getContextActions(): IAction[] {
@@ -233,7 +257,10 @@ class DataResourceDataProvider implements IGridDataProvider {
 		return serializer.handleSerialization(this.documentUri, format, (filePath) => this.doSerialize(serializer, filePath, format, selection));
 	}
 
-	private async doSerialize(serializer: ResultSerializer, filePath: string, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse> {
+	private doSerialize(serializer: ResultSerializer, filePath: string, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse | undefined> {
+		if (!this.canSerialize) {
+			return Promise.resolve(undefined);
+		}
 		// TODO implement selection support
 		let columns = this.resultSet.columnInfo;
 		let rowLength = this.rows.length;
@@ -272,8 +299,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 			getRowRange: (rowStart, numberOfRows) => getRows(rowStart, numberOfRows),
 			rowCount: rowLength
 		});
-		let result = await this._serializationService.serializeResults(serializeRequestParams);
-		return result;
+		return this._serializationService.serializeResults(serializeRequestParams);
 	}
 
 	/**

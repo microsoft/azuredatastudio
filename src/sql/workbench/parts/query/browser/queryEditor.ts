@@ -22,7 +22,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { Event } from 'vs/base/common/event';
-import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { DisposableStore } from 'vs/base/common/lifecycle';
 import { ISelectionData } from 'azdata';
 import { Action, IActionViewItem } from 'vs/base/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -68,7 +68,7 @@ export class QueryEditor extends BaseEditor {
 	private splitviewContainer: HTMLElement;
 	private splitview: SplitView;
 
-	private inputDisposables: IDisposable[] = [];
+	private inputDisposables = this._register(new DisposableStore());
 
 	private resultsVisible = false;
 
@@ -120,7 +120,7 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	// PUBLIC METHODS ////////////////////////////////////////////////////////////
-	public get input(): QueryEditorInput {
+	public get input(): QueryEditorInput | null {
 		return this._input as QueryEditorInput;
 	}
 
@@ -313,9 +313,8 @@ export class QueryEditor extends BaseEditor {
 			this.resultsEditor.setInput(newInput.results, options)
 		]);
 
-		dispose(this.inputDisposables);
-		this.inputDisposables = [];
-		this.inputDisposables.push(this.input.state.onChange(c => this.updateState(c)));
+		this.inputDisposables.clear();
+		this.inputDisposables.add(this.input.state.onChange(c => this.updateState(c)));
 		this.updateState({ connectingChange: true, connectedChange: true, executingChange: true, resultsVisibleChange: true, sqlCmdModeChanged: true });
 
 		const editorViewState = this.loadTextEditorViewState(this.input.getResource());

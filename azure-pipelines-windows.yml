@@ -28,32 +28,32 @@ steps:
     condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
   - script: |
-      yarn gulp electron-x64
+      yarn electron x64
     displayName: "Electron"
     env:
       GITHUB_TOKEN: $(GITHUB_TOKEN)
 
   - script: |
-      yarn gulp hygiene
+      yarn gulp hygiene --skip-tslint
     displayName: Run Hygiene Checks
 
   - script: |
       yarn tslint
-    displayName: "Run TSLint"
+    displayName: Run TSLint
 
   - script: |
       yarn strict-null-check
-    displayName: "Run Strict Null Check"
+    displayName: Run Strict Null Check
 
   - script: |
       yarn compile
-    displayName: "Compile"
+    displayName: Compile
 
   - powershell: |
       .\scripts\test.bat --tfs "Unit Tests"
+    displayName: Run Unit Tests
 
   - task: PublishTestResults@2
-    displayName: Publish Tests Results
     inputs:
       testResultsFiles: "*-results.xml"
       searchFolder: "$(Build.ArtifactStagingDirectory)/test-results"

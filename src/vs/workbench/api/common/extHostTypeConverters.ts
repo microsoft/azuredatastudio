@@ -19,7 +19,7 @@ import { IRange } from 'vs/editor/common/core/range';
 import { ISelection } from 'vs/editor/common/core/selection';
 import * as htmlContent from 'vs/base/common/htmlContent';
 import * as languageSelector from 'vs/editor/common/modes/languageSelector';
-import { IWorkspaceEditDto, IResourceTextEditDto, IResourceFileEditDto } from 'vs/workbench/api/common/extHost.protocol';
+import * as extHostProtocol from 'vs/workbench/api/common/extHost.protocol';
 import { MarkerSeverity, IRelatedInformation, IMarkerData, MarkerTag } from 'vs/platform/markers/common/markers';
 import { ACTIVE_GROUP, SIDE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { ExtHostDocumentsAndEditors } from 'vs/workbench/api/common/extHostDocumentsAndEditors';
@@ -30,6 +30,7 @@ import { cloneAndChange } from 'vs/base/common/objects';
 import { LogLevel as _MainLogLevel } from 'vs/platform/log/common/log';
 import { coalesce, isNonEmptyArray } from 'vs/base/common/arrays';
 import { RenderLineNumbersType } from 'vs/editor/common/config/editorOptions';
+
 
 export interface PositionLike {
 	line: number;
@@ -254,12 +255,12 @@ export namespace MarkdownString {
 		}
 
 		// extract uris into a separate object
-		const resUris: { [href: string]: UriComponents } = Object.create(null);
+		const resUris: { [href: string]: UriComponents; } = Object.create(null);
 		res.uris = resUris;
 
 		const collectUri = (href: string): string => {
 			try {
-				let uri = URI.parse(href, true);
+				let uri = URI.parse(href);
 				uri = uri.with({ query: _uriMassage(uri.query, resUris) });
 				resUris[href] = uri;
 			} catch (e) {
@@ -276,13 +277,13 @@ export namespace MarkdownString {
 		return res;
 	}
 
-	function _uriMassage(part: string, bucket: { [n: string]: UriComponents }): string {
+	function _uriMassage(part: string, bucket: { [n: string]: UriComponents; }): string {
 		if (!part) {
 			return part;
 		}
 		let data: any;
 		try {
-			data = parse(decodeURIComponent(part));
+			data = parse(part);
 		} catch (e) {
 			// ignore
 		}
@@ -290,7 +291,7 @@ export namespace MarkdownString {
 			return part;
 		}
 		data = cloneAndChange(data, value => {
-			if (value instanceof URI) {
+			if (URI.isUri(value)) {
 				const key = `__uri_${Math.random().toString(16).slice(2, 8)}`;
 				bucket[key] = value;
 				return key;
@@ -302,9 +303,7 @@ export namespace MarkdownString {
 	}
 
 	export function to(value: htmlContent.IMarkdownString): vscode.MarkdownString {
-		const ret = new htmlContent.MarkdownString(value.value);
-		ret.isTrusted = value.isTrusted;
-		return ret;
+		return new htmlContent.MarkdownString(value.value, value.isTrusted);
 	}
 
 	export function fromStrict(value: string | types.MarkdownString): undefined | string | htmlContent.IMarkdownString {
@@ -473,8 +472,8 @@ export namespace TextEdit {
 }
 
 export namespace WorkspaceEdit {
-	export function from(value: vscode.WorkspaceEdit, documents?: ExtHostDocumentsAndEditors): IWorkspaceEditDto {
-		const result: IWorkspaceEditDto = {
+	export function from(value: vscode.WorkspaceEdit, documents?: ExtHostDocumentsAndEditors): extHostProtocol.IWorkspaceEditDto {
+		const result: extHostProtocol.IWorkspaceEditDto = {
 			edits: []
 		};
 		for (const entry of (value as types.WorkspaceEdit)._allEntries()) {
@@ -482,28 +481,28 @@ export namespace WorkspaceEdit {
 			if (Array.isArray(uriOrEdits)) {
 				// text edits
 				const doc = documents && uri ? documents.getDocument(uri) : undefined;
-				result.edits.push(<IResourceTextEditDto>{ resource: uri, modelVersionId: doc && doc.version, edits: uriOrEdits.map(TextEdit.from) });
+				result.edits.push(<extHostProtocol.IResourceTextEditDto>{ resource: uri, modelVersionId: doc && doc.version, edits: uriOrEdits.map(TextEdit.from) });
 			} else {
 				// resource edits
-				result.edits.push(<IResourceFileEditDto>{ oldUri: uri, newUri: uriOrEdits, options: entry[2] });
+				result.edits.push(<extHostProtocol.IResourceFileEditDto>{ oldUri: uri, newUri: uriOrEdits, options: entry[2] });
 			}
 		}
 		return result;
 	}
 
-	export function to(value: IWorkspaceEditDto) {
+	export function to(value: extHostProtocol.IWorkspaceEditDto) {
 		const result = new types.WorkspaceEdit();
 		for (const edit of value.edits) {
-			if (Array.isArray((<IResourceTextEditDto>edit).edits)) {
+			if (Array.isArray((<extHostProtocol.IResourceTextEditDto>edit).edits)) {
 				result.set(
-					URI.revive((<IResourceTextEditDto>edit).resource),
-					<types.TextEdit[]>(<IResourceTextEditDto>edit).edits.map(TextEdit.to)
+					URI.revive((<extHostProtocol.IResourceTextEditDto>edit).resource),
+					<types.TextEdit[]>(<extHostProtocol.IResourceTextEditDto>edit).edits.map(TextEdit.to)
 				);
 			} else {
 				result.renameFile(
-					URI.revive((<IResourceFileEditDto>edit).oldUri!),
-					URI.revive((<IResourceFileEditDto>edit).newUri!),
-					(<IResourceFileEditDto>edit).options
+					URI.revive((<extHostProtocol.IResourceFileEditDto>edit).oldUri!),
+					URI.revive((<extHostProtocol.IResourceFileEditDto>edit).newUri!),
+					(<extHostProtocol.IResourceFileEditDto>edit).options
 				);
 			}
 		}
@@ -514,7 +513,7 @@ export namespace WorkspaceEdit {
 
 export namespace SymbolKind {
 
-	const _fromMapping: { [kind: number]: modes.SymbolKind } = Object.create(null);
+	const _fromMapping: { [kind: number]: modes.SymbolKind; } = Object.create(null);
 	_fromMapping[types.SymbolKind.File] = modes.SymbolKind.File;
 	_fromMapping[types.SymbolKind.Module] = modes.SymbolKind.Module;
 	_fromMapping[types.SymbolKind.Namespace] = modes.SymbolKind.Namespace;
@@ -625,6 +624,32 @@ export namespace DocumentSymbol {
 		return result;
 	}
 }
+
+export namespace CallHierarchyItem {
+
+	export function from(item: vscode.CallHierarchyItem): extHostProtocol.ICallHierarchyItemDto {
+		return {
+			name: item.name,
+			detail: item.detail,
+			kind: SymbolKind.from(item.kind),
+			uri: item.uri,
+			range: Range.from(item.range),
+			selectionRange: Range.from(item.selectionRange),
+		};
+	}
+
+	export function to(item: extHostProtocol.ICallHierarchyItemDto): vscode.CallHierarchyItem {
+		return new types.CallHierarchyItem(
+			SymbolKind.to(item.kind),
+			item.name,
+			item.detail || '',
+			URI.revive(item.uri),
+			Range.to(item.range),
+			Range.to(item.selectionRange)
+		);
+	}
+}
+
 
 export namespace location {
 	export function from(value: vscode.Location): modes.Location {
@@ -832,7 +857,7 @@ export namespace SignatureInformation {
 		return {
 			label: info.label,
 			documentation: info.documentation ? MarkdownString.fromStrict(info.documentation) : undefined,
-			parameters: info.parameters && info.parameters.map(ParameterInformation.from)
+			parameters: Array.isArray(info.parameters) ? info.parameters.map(ParameterInformation.from) : []
 		};
 	}
 
@@ -840,7 +865,7 @@ export namespace SignatureInformation {
 		return {
 			label: info.label,
 			documentation: htmlContent.isMarkdownString(info.documentation) ? MarkdownString.to(info.documentation) : info.documentation,
-			parameters: info.parameters && info.parameters.map(ParameterInformation.to)
+			parameters: Array.isArray(info.parameters) ? info.parameters.map(ParameterInformation.to) : []
 		};
 	}
 }
@@ -851,7 +876,7 @@ export namespace SignatureHelp {
 		return {
 			activeSignature: help.activeSignature,
 			activeParameter: help.activeParameter,
-			signatures: help.signatures && help.signatures.map(SignatureInformation.from)
+			signatures: Array.isArray(help.signatures) ? help.signatures.map(SignatureInformation.from) : [],
 		};
 	}
 
@@ -859,7 +884,7 @@ export namespace SignatureHelp {
 		return {
 			activeSignature: help.activeSignature,
 			activeParameter: help.activeParameter,
-			signatures: help.signatures && help.signatures.map(SignatureInformation.to)
+			signatures: Array.isArray(help.signatures) ? help.signatures.map(SignatureInformation.to) : [],
 		};
 	}
 }
@@ -878,7 +903,7 @@ export namespace DocumentLink {
 		let target: URI | undefined = undefined;
 		if (link.url) {
 			try {
-				target = typeof link.url === 'string' ? URI.parse(link.url, true) : URI.revive(link.url);
+				target = typeof link.url === 'string' ? URI.parse(link.url) : URI.revive(link.url);
 			} catch (err) {
 				// ignore
 			}

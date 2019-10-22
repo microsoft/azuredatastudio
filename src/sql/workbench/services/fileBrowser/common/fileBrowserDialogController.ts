@@ -7,7 +7,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 
 export const IFileBrowserDialogController = createDecorator<IFileBrowserDialogController>('fileBrowserDialogService');
 export interface IFileBrowserDialogController {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	/**
 	 * Show file browser dialog
 	 */

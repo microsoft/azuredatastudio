@@ -5,7 +5,7 @@
 
 import { ConnectionDialogService } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { ConnectionDialogWidget } from 'sql/workbench/services/connection/browser/connectionDialogWidget';
-import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
+import { ConnectionManagementService } from 'sql/platform/connection/browser/connectionManagementService';
 import { ConnectionType, IConnectableInput, IConnectionResult, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/testErrorMessageService';
 

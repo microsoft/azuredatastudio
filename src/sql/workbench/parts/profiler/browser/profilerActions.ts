@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
+import { IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { IProfilerController } from 'sql/workbench/parts/profiler/common/interfaces';
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
 import { Task } from 'sql/platform/tasks/browser/tasksRegistry';

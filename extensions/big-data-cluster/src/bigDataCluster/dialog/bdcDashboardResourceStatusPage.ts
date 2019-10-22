@@ -10,6 +10,8 @@ import * as nls from 'vscode-nls';
 import { BdcDashboardModel } from './bdcDashboardModel';
 import { BdcStatusModel, InstanceStatusModel } from '../controller/apiGenerated';
 import { getHealthStatusDisplayText, getHealthStatusIcon, getStateDisplayText } from '../utils';
+import { cssStyles } from '../constants';
+import { isNullOrUndefined } from 'util';
 
 const localize = nls.loadMessageBundle();
 
@@ -24,15 +26,17 @@ export interface IInstanceStatus {
 	healthStatus: string;
 }
 
-const healthAndStatusIconColumnWidth = '50px';
-const healthAndStatusInstanceNameColumnWidth = '100px';
-const healthAndStatusStateColumnWidth = '75px';
-const healthAndStatusHealthColumnWidth = '75px';
+const healthAndStatusIconColumnWidth = 25;
+const healthAndStatusInstanceNameColumnWidth = 100;
+const healthAndStatusStateColumnWidth = 75;
+const healthAndStatusHealthColumnWidth = 100;
 
-const metricsAndLogsInstanceNameColumnWidth = '100px';
-const metricsAndLogsMetricsColumnWidth = '75px';
-const metricsAndLogsLogsColumnWidth = '75px';
+const metricsAndLogsInstanceNameColumnWidth = 125;
+const metricsAndLogsMetricsColumnWidth = 75;
+const metricsAndLogsLogsColumnWidth = 75;
 
+const viewText = localize('bdc.dashboard.viewHyperlink', "View");
+const notAvailableText = localize('bdc.dashboard.notAvailable', "N/A");
 
 export class BdcDashboardResourceStatusPage {
 
@@ -56,8 +60,7 @@ export class BdcDashboardResourceStatusPage {
 			{
 				flexFlow: 'column',
 				width: '100%',
-				height: '100%',
-				alignItems: 'left'
+				height: '100%'
 			}).component();
 
 		// ##############################
@@ -75,31 +78,27 @@ export class BdcDashboardResourceStatusPage {
 			})
 			.component();
 
-		healthStatusHeaderContainer.addItem(healthStatusHeaderLabel, { CSSStyles: { 'font-size': '20px', 'font-weight': 'bold' } });
+		healthStatusHeaderContainer.addItem(healthStatusHeaderLabel, { CSSStyles: { ...cssStyles.title } });
 
 		// Last updated label
 		this.lastUpdatedLabel = view.modelBuilder.text()
 			.withProperties({
 				value: localize('bdc.dashboard.lastUpdated', "Last Updated : {0}", '-'),
-				CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'color': 'lightgray' }
+				CSSStyles: { ...cssStyles.lastUpdatedText }
 			}).component();
 
 		healthStatusHeaderContainer.addItem(this.lastUpdatedLabel, { CSSStyles: { 'margin-left': '45px' } });
 
-
-		healthStatusHeaderContainer.addItem(healthStatusHeaderLabel, { CSSStyles: { 'font-size': '20px', 'font-weight': 'bold' } });
-
 		// Header row
 		const instanceHealthStatusHeaderRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
-		const instanceHealthAndStatusIconHeader = view.modelBuilder.text().component();
-		instanceHealthStatusHeaderRow.addItem(instanceHealthAndStatusIconHeader, { CSSStyles: { 'width': healthAndStatusIconColumnWidth, 'min-width': healthAndStatusIconColumnWidth, 'font-weight': 'bold', 'user-select': 'text' } });
 		const instanceHealthAndStatusNameHeader = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.instanceHeader', "Instance") }).component();
-		instanceHealthStatusHeaderRow.addItem(instanceHealthAndStatusNameHeader, { CSSStyles: { 'width': healthAndStatusInstanceNameColumnWidth, 'min-width': healthAndStatusInstanceNameColumnWidth, 'font-weight': 'bold', 'user-select': 'text' } });
+		// Instance name cell covers both icon + service name so width stretches both cells
+		instanceHealthStatusHeaderRow.addItem(instanceHealthAndStatusNameHeader, { CSSStyles: { 'width': `${healthAndStatusIconColumnWidth + healthAndStatusInstanceNameColumnWidth}px`, 'min-width': `${healthAndStatusIconColumnWidth + healthAndStatusInstanceNameColumnWidth}px`, ...cssStyles.tableHeader } });
 		const instanceHealthAndStatusState = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.stateHeader', "State") }).component();
-		instanceHealthStatusHeaderRow.addItem(instanceHealthAndStatusState, { CSSStyles: { 'width': healthAndStatusStateColumnWidth, 'min-width': healthAndStatusStateColumnWidth, 'font-weight': 'bold', 'user-select': 'text' } });
+		instanceHealthStatusHeaderRow.addItem(instanceHealthAndStatusState, { CSSStyles: { 'width': `${healthAndStatusStateColumnWidth}px`, 'min-width': `${healthAndStatusStateColumnWidth}px`, ...cssStyles.tableHeader } });
 		const instanceHealthAndStatusHealthStatus = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.healthStatusHeader', "Health Status") }).component();
-		instanceHealthStatusHeaderRow.addItem(instanceHealthAndStatusHealthStatus, { CSSStyles: { 'width': healthAndStatusHealthColumnWidth, 'min-width': healthAndStatusHealthColumnWidth, 'font-weight': 'bold', 'user-select': 'text' } });
-		rootContainer.addItem(instanceHealthStatusHeaderRow, { flex: '0 0 auto', CSSStyles: { 'padding-left': '10px', 'box-sizing': 'border-box', 'user-select': 'text' } });
+		instanceHealthStatusHeaderRow.addItem(instanceHealthAndStatusHealthStatus, { CSSStyles: { 'width': `${healthAndStatusHealthColumnWidth}px`, 'min-width': `${healthAndStatusHealthColumnWidth}px`, ...cssStyles.tableHeader } });
+		rootContainer.addItem(instanceHealthStatusHeaderRow, { flex: '0 0 auto', CSSStyles: { 'padding-left': '10px', 'box-sizing': 'border-box' } });
 
 		this.instanceHealthStatusRowsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 		rootContainer.addItem(this.instanceHealthStatusRowsContainer, { flex: '0 0 auto' });
@@ -112,17 +111,17 @@ export class BdcDashboardResourceStatusPage {
 		const endpointsLabel = view.modelBuilder.text()
 			.withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.metricsAndLogsLabel', "Metrics and Logs"), CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
 			.component();
-		rootContainer.addItem(endpointsLabel, { CSSStyles: { 'font-size': '20px', 'font-weight': 'bold', 'padding-left': '10px' } });
+		rootContainer.addItem(endpointsLabel, { CSSStyles: { 'padding-left': '10px', ...cssStyles.title } });
 
 		// Header row
 		const metricsAndLogsHeaderRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
 		const nameCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.instanceHeader', "Instance") }).component();
-		metricsAndLogsHeaderRow.addItem(nameCell, { CSSStyles: { 'width': metricsAndLogsInstanceNameColumnWidth, 'min-width': metricsAndLogsInstanceNameColumnWidth, 'font-weight': 'bold', 'user-select': 'text' } });
+		metricsAndLogsHeaderRow.addItem(nameCell, { CSSStyles: { 'width': `${metricsAndLogsInstanceNameColumnWidth}px`, 'min-width': `${metricsAndLogsInstanceNameColumnWidth}px`, ...cssStyles.tableHeader } });
 		const metricsCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.metricsHeader', "Metrics") }).component();
-		metricsAndLogsHeaderRow.addItem(metricsCell, { CSSStyles: { 'width': metricsAndLogsMetricsColumnWidth, 'min-width': metricsAndLogsMetricsColumnWidth, 'font-weight': 'bold', 'user-select': 'text' } });
+		metricsAndLogsHeaderRow.addItem(metricsCell, { CSSStyles: { 'width': `${metricsAndLogsMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsMetricsColumnWidth}px`, ...cssStyles.tableHeader } });
 		const healthStatusCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.logsHeader', "Logs") }).component();
-		metricsAndLogsHeaderRow.addItem(healthStatusCell, { CSSStyles: { 'width': metricsAndLogsLogsColumnWidth, 'min-width': metricsAndLogsLogsColumnWidth, 'font-weight': 'bold', 'user-select': 'text' } });
-		rootContainer.addItem(metricsAndLogsHeaderRow, { flex: '0 0 auto', CSSStyles: { 'padding-left': '10px', 'box-sizing': 'border-box', 'user-select': 'text' } });
+		metricsAndLogsHeaderRow.addItem(healthStatusCell, { CSSStyles: { 'width': `${metricsAndLogsLogsColumnWidth}px`, 'min-width': `${metricsAndLogsLogsColumnWidth}px`, ...cssStyles.tableHeader } });
+		rootContainer.addItem(metricsAndLogsHeaderRow, { flex: '0 0 auto', CSSStyles: { 'padding-left': '10px', 'box-sizing': 'border-box' } });
 
 		this.metricsAndLogsRowsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 		rootContainer.addItem(this.metricsAndLogsRowsContainer, { flex: '0 0 auto' });
@@ -137,7 +136,7 @@ export class BdcDashboardResourceStatusPage {
 		const service = bdcStatus.services ? bdcStatus.services.find(s => s.serviceName === this.serviceName) : undefined;
 		const resource = service ? service.resources.find(r => r.resourceName === this.resourceName) : undefined;
 
-		if (!this.initialized || !resource) {
+		if (!this.initialized || !resource || isNullOrUndefined(resource.instances)) {
 			return;
 		}
 
@@ -173,13 +172,13 @@ function createInstanceHealthStatusRow(modelBuilder: azdata.ModelBuilder, instan
 			value: getHealthStatusIcon(instanceStatus.healthStatus),
 			CSSStyles: { 'user-select': 'none' }
 		}).component();
-	instanceHealthStatusRow.addItem(statusIconCell, { CSSStyles: { 'width': healthAndStatusIconColumnWidth, 'min-width': healthAndStatusIconColumnWidth } });
-	const nameCell = modelBuilder.text().withProperties({ value: instanceStatus.instanceName, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' } }).component();
-	instanceHealthStatusRow.addItem(nameCell, { CSSStyles: { 'width': healthAndStatusInstanceNameColumnWidth, 'min-width': healthAndStatusInstanceNameColumnWidth, 'user-select': 'text', 'margin-block-start': '0px', 'margin-block-end': '0px' } });
-	const stateCell = modelBuilder.text().withProperties({ value: getStateDisplayText(instanceStatus.state), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text' } }).component();
-	instanceHealthStatusRow.addItem(stateCell, { CSSStyles: { 'width': healthAndStatusStateColumnWidth, 'min-width': healthAndStatusStateColumnWidth } });
-	const healthStatusCell = modelBuilder.text().withProperties({ value: getHealthStatusDisplayText(instanceStatus.healthStatus), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text' } }).component();
-	instanceHealthStatusRow.addItem(healthStatusCell, { CSSStyles: { 'width': healthAndStatusHealthColumnWidth, 'min-width': healthAndStatusHealthColumnWidth } });
+	instanceHealthStatusRow.addItem(statusIconCell, { CSSStyles: { 'width': `${healthAndStatusIconColumnWidth}px`, 'min-width': `${healthAndStatusIconColumnWidth}px` } });
+	const nameCell = modelBuilder.text().withProperties({ value: instanceStatus.instanceName, CSSStyles: { ...cssStyles.text } }).component();
+	instanceHealthStatusRow.addItem(nameCell, { CSSStyles: { 'width': `${healthAndStatusInstanceNameColumnWidth}px`, 'min-width': `${healthAndStatusInstanceNameColumnWidth}px`, ...cssStyles.text } });
+	const stateCell = modelBuilder.text().withProperties({ value: getStateDisplayText(instanceStatus.state), CSSStyles: { ...cssStyles.text } }).component();
+	instanceHealthStatusRow.addItem(stateCell, { CSSStyles: { 'width': `${healthAndStatusStateColumnWidth}px`, 'min-width': `${healthAndStatusStateColumnWidth}px` } });
+	const healthStatusCell = modelBuilder.text().withProperties({ value: getHealthStatusDisplayText(instanceStatus.healthStatus), CSSStyles: { ...cssStyles.text } }).component();
+	instanceHealthStatusRow.addItem(healthStatusCell, { CSSStyles: { 'width': `${healthAndStatusHealthColumnWidth}px`, 'min-width': `${healthAndStatusHealthColumnWidth}px` } });
 
 	if (instanceStatus.healthStatus !== 'healthy' && instanceStatus.details && instanceStatus.details.length > 0) {
 		const viewDetailsButton = modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: localize('bdc.dashboard.viewDetails', "View Details") }).component();
@@ -198,12 +197,25 @@ function createInstanceHealthStatusRow(modelBuilder: azdata.ModelBuilder, instan
  */
 function createMetricsAndLogsRow(modelBuilder: azdata.ModelBuilder, instanceStatus: InstanceStatusModel): azdata.FlexContainer {
 	const metricsAndLogsRow = modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center', height: '30px' }).component();
-	const nameCell = modelBuilder.text().withProperties({ value: instanceStatus.instanceName, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' } }).component();
-	metricsAndLogsRow.addItem(nameCell, { CSSStyles: { 'width': '100px', 'min-width': '100px', 'user-select': 'text', 'margin-block-start': '0px', 'margin-block-end': '0px' } });
-	const metricsCell = modelBuilder.hyperlink().withProperties({ label: localize('bdc.dashboard.viewHyperlink', "View"), url: instanceStatus.dashboards.nodeMetricsUrl, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text', 'color': '#0078d4', 'text-decoration': 'underline' } }).component();
-	metricsAndLogsRow.addItem(metricsCell, { CSSStyles: { 'width': '75px', 'min-width': '75px' } });
-	const logsCell = modelBuilder.hyperlink().withProperties({ label: localize('bdc.dashboard.viewHyperlink', "View"), url: instanceStatus.dashboards.logsUrl, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text', 'color': '#0078d4', 'text-decoration': 'underline' } }).component();
-	metricsAndLogsRow.addItem(logsCell, { CSSStyles: { 'width': '75px', 'min-width': '75px' } });
+	const nameCell = modelBuilder.text().withProperties({ value: instanceStatus.instanceName, CSSStyles: { ...cssStyles.text } }).component();
+	metricsAndLogsRow.addItem(nameCell, { CSSStyles: { 'width': `${metricsAndLogsInstanceNameColumnWidth}px`, 'min-width': `${metricsAndLogsInstanceNameColumnWidth}px`, ...cssStyles.text } });
+
+	// Not all instances have all logs available - in that case just display N/A instead of a link
+	if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.nodeMetricsUrl)) {
+		const metricsCell = modelBuilder.text().withProperties({ value: notAvailableText, CSSStyles: { ...cssStyles.text } }).component();
+		metricsAndLogsRow.addItem(metricsCell, { CSSStyles: { 'width': `${metricsAndLogsMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsMetricsColumnWidth}px`, ...cssStyles.text } });
+	} else {
+		const metricsCell = modelBuilder.hyperlink().withProperties({ label: viewText, url: instanceStatus.dashboards.nodeMetricsUrl, CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink } }).component();
+		metricsAndLogsRow.addItem(metricsCell, { CSSStyles: { 'width': `${metricsAndLogsMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsMetricsColumnWidth}px` } });
+	}
+
+	if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.logsUrl)) {
+		const logsCell = modelBuilder.text().withProperties({ value: notAvailableText, CSSStyles: { ...cssStyles.text } }).component();
+		metricsAndLogsRow.addItem(logsCell, { CSSStyles: { 'width': `${metricsAndLogsLogsColumnWidth}px`, 'min-width': `${metricsAndLogsLogsColumnWidth}px`, ...cssStyles.text } });
+	} else {
+		const logsCell = modelBuilder.hyperlink().withProperties({ label: viewText, url: instanceStatus.dashboards.logsUrl, CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink } }).component();
+		metricsAndLogsRow.addItem(logsCell, { CSSStyles: { 'width': `${metricsAndLogsLogsColumnWidth}px`, 'min-width': `${metricsAndLogsLogsColumnWidth}px` } });
+	}
 
 	return metricsAndLogsRow;
 }

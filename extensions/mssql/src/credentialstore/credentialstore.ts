@@ -41,7 +41,7 @@ class CredentialsFeature extends SqlOpsFeature<any> {
 		const client = this._client;
 
 		let readCredential = (credentialId: string): Thenable<azdata.Credential> => {
-			return client.sendRequest(Contracts.ReadCredentialRequest.type, { credentialId });
+			return client.sendRequest(Contracts.ReadCredentialRequest.type, { credentialId, password: undefined });
 		};
 
 		let saveCredential = (credentialId: string, password: string): Thenable<boolean> => {
@@ -49,7 +49,7 @@ class CredentialsFeature extends SqlOpsFeature<any> {
 		};
 
 		let deleteCredential = (credentialId: string): Thenable<boolean> => {
-			return client.sendRequest(Contracts.DeleteCredentialRequest.type, { credentialId });
+			return client.sendRequest(Contracts.DeleteCredentialRequest.type, { credentialId, password: undefined });
 		};
 
 		return azdata.credentials.registerProvider({

@@ -12,7 +12,7 @@ import { IDashboardUITab } from 'sql/workbench/services/dashboard/browser/newDas
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class NewDashboardTabDialogService implements INewDashboardTabDialogService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _addNewTabDialog: NewDashboardTabDialog;
