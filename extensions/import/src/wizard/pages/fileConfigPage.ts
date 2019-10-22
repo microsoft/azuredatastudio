@@ -273,10 +273,10 @@ export class FileConfigPage extends ImportPage {
 		let query = '';
 		if (this.databaseDropdown.value !== null)
 		{
-			query = `SELECT name FROM [${this.databaseDropdown.value}].sys.schemas`;
+			query = 'SELECT name FROM [${this.databaseDropdown.value}].sys.schema';
 		}
 		else {
-			query = `SELECT name FROM sys.schemas`;
+			query = 'SELECT name FROM sys.schemas';
 		}
 
 		let results = await queryProvider.runQueryAndReturn(connectionUri, query);
