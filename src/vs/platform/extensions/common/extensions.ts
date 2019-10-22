@@ -11,6 +11,13 @@ export const MANIFEST_CACHE_FOLDER = 'CachedExtensions';
 export const USER_MANIFEST_CACHE_FILE = 'user';
 export const BUILTIN_MANIFEST_CACHE_FILE = 'builtin';
 
+export const ExtensionsPolicyKey = 'extensions.extensionsPolicy'; // {{SQL CARBON EDIT}} start
+export enum ExtensionsPolicy {
+	allowAll = 'allowAll',
+	allowNone = 'allowNone',
+	allowMicrosoft = 'allowMicrosoft'
+} // {{SQL CARBON EDIT}} - End
+
 export interface ICommand {
 	command: string;
 	title: string;

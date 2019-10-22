@@ -14,12 +14,12 @@ import { ActionViewItem, Separator, IActionViewItemOptions } from 'vs/base/brows
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { dispose, Disposable } from 'vs/base/common/lifecycle';
 // {{SQL CARBON EDIT}}
-import { IExtension, ExtensionState, IExtensionsWorkbenchService, VIEWLET_ID, IExtensionsViewlet, AutoUpdateConfigurationKey, IExtensionContainer, EXTENSIONS_CONFIG, ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/workbench/contrib/extensions/common/extensions';
+import { IExtension, ExtensionState, IExtensionsWorkbenchService, VIEWLET_ID, IExtensionsViewlet, AutoUpdateConfigurationKey, IExtensionContainer, EXTENSIONS_CONFIG } from 'vs/workbench/contrib/extensions/common/extensions';
 import { ExtensionsConfigurationInitialContent } from 'vs/workbench/contrib/extensions/common/extensionsFileTemplate';
 import { ExtensionsLabel, IGalleryExtension, IExtensionGalleryService, INSTALL_ERROR_MALICIOUS, INSTALL_ERROR_INCOMPATIBLE, IGalleryExtensionVersion, ILocalExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IExtensionEnablementService, EnablementState, IExtensionManagementServerService, IExtensionTipsService, IExtensionRecommendation, IExtensionsConfigContent, IExtensionManagementServer } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
-import { ExtensionType, ExtensionIdentifier, IExtensionDescription, IExtensionManifest, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions';
+import { ExtensionType, ExtensionIdentifier, IExtensionDescription, IExtensionManifest, isLanguagePackExtension, ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { ShowViewletAction } from 'vs/workbench/browser/viewlet';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
@@ -2799,8 +2799,7 @@ export class InstallVSIXAction extends Action {
 		@IHostService private readonly hostService: IHostService,
 		@IFileDialogService private readonly fileDialogService: IFileDialogService,
 		@IExtensionService private readonly extensionService: IExtensionService,
-		// {{SQL CARBON EDIT}}
-		@IConfigurationService private configurationService: IConfigurationService,
+		@IConfigurationService private readonly configurationService: IConfigurationService, // {{SQL CARBON EDIT}}
 		@IStorageService private storageService: IStorageService
 	) {
 		super(id, label, 'extension-action install-vsix', true);

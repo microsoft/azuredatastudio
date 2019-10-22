@@ -23,7 +23,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { URI } from 'vs/base/common/uri';
-import { IExtension, ExtensionState, IExtensionsWorkbenchService, AutoUpdateConfigurationKey, AutoCheckUpdatesConfigurationKey, ExtensionsPolicyKey, ExtensionsPolicy } from 'vs/workbench/contrib/extensions/common/extensions';
+import { IExtension, ExtensionState, IExtensionsWorkbenchService, AutoUpdateConfigurationKey, AutoCheckUpdatesConfigurationKey } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IEditorService, SIDE_GROUP, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { IURLService, IURLHandler, IOpenURLOptions } from 'vs/platform/url/common/url';
 import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput';
@@ -34,7 +34,7 @@ import * as resources from 'vs/base/common/resources';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { IFileService } from 'vs/platform/files/common/files';
-import { IExtensionManifest, ExtensionType, IExtension as IPlatformExtension, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions';
+import { IExtensionManifest, ExtensionType, IExtension as IPlatformExtension, isLanguagePackExtension, ExtensionsPolicyKey, ExtensionsPolicy } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { asDomUri } from 'vs/base/browser/dom';
