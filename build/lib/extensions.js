@@ -194,6 +194,7 @@ const sqlBuiltInExtensions = [
     // the extension will be excluded from SQLOps package and will have separate vsix packages
     'admin-tool-ext-win',
     'agent',
+    'big-data-cluster',
     'import',
     'profiler',
     'admin-pack',
