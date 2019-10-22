@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+//TODO: This is the same file from mssql. Move this into a common place.
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';

@@ -2,12 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
 import * as types from './types';
-import * as Constants from './constants';
 
 export enum BuiltInCommands {
 	SetContext = 'setContext',
@@ -40,7 +38,7 @@ export default class ContextProvider {
 	public onDashboardOpen(e: azdata.DashboardDocument): void {
 		let iscloud: boolean;
 		let edition: number;
-		let isCluster: boolean = false;
+		let isCluster: boolean = false; // TODO: Do we even need this for Kusto
 		let serverMajorVersion: number;
 		if (e.profile.providerName.toLowerCase() === 'kusto' && !types.isUndefinedOrNull(e.serverInfo) && !types.isUndefinedOrNull(e.serverInfo.engineEditionId)) {
 			if (isCloudEditions.some(i => i === e.serverInfo.engineEditionId)) {
@@ -51,12 +49,6 @@ export default class ContextProvider {
 
 			edition = e.serverInfo.engineEditionId;
 
-			if (!types.isUndefinedOrNull(e.serverInfo.options)) {
-				let isBigDataCluster = e.serverInfo.options[Constants.isBigDataClusterProperty];
-				if (isBigDataCluster) {
-					isCluster = isBigDataCluster;
-				}
-			}
 			serverMajorVersion = e.serverInfo.serverMajorVersion;
 		}
 

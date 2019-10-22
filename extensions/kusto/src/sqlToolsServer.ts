@@ -15,10 +15,7 @@ import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature } from './features';
 import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
-import { SchemaCompareService } from './schemaCompare/schemaCompareService';
 import { AppContext } from './appContext';
-import { DacFxService } from './dacfx/dacFxService';
-import { CmsService } from './cms/cmsService';
 import { CompletionExtensionParams, CompletionExtLoadRequest } from './contracts';
 import { promises as fs } from 'fs';
 
@@ -149,10 +146,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 			...SqlOpsDataClient.defaultFeatures,
 			TelemetryFeature,
 			AgentServicesFeature,
-			SerializationFeature,
-			SchemaCompareService.asFeature(context),
-			DacFxService.asFeature(context),
-			CmsService.asFeature(context)
+			SerializationFeature
 		],
 		outputChannel: new CustomOutputChannel()
 	};

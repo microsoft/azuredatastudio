@@ -13,16 +13,10 @@ import ContextProvider from './contextProvider';
 import * as Utils from './utils';
 import { AppContext } from './appContext';
 import { ApiWrapper } from './apiWrapper';
-import { UploadFilesCommand, MkDirCommand, SaveFileCommand, PreviewFileCommand, CopyPathCommand, DeleteFilesCommand } from './objectExplorerNodeProvider/hdfsCommands';
-import { IPrompter } from './prompts/question';
-import CodeAdapter from './prompts/adapter';
 import { IExtension } from './kusto';
-import { OpenSparkJobSubmissionDialogCommand, OpenSparkJobSubmissionDialogFromFileCommand, OpenSparkJobSubmissionDialogTask } from './sparkFeature/dialog/dialogCommands';
-import { OpenSparkYarnHistoryTask } from './sparkFeature/historyTask';
-import { MssqlObjectExplorerNodeProvider, kustoOutputChannel } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
+import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import { registerSearchServerCommand } from './objectExplorerNodeProvider/command';
 import { MssqlIconProvider } from './iconProvider';
-import { registerServiceEndpoints } from './dashboard/serviceEndpoints';
 import { getBookExtensionContributions } from './dashboard/bookExtensions';
 import { registerBooksWidget } from './dashboard/bookWidget';
 import { createMssqlApi } from './kustoApiFactory';
@@ -47,24 +41,20 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		await fs.mkdir(context.logPath);
 	}
 
-	let prompter: IPrompter = new CodeAdapter();
 	let appContext = new AppContext(context, new ApiWrapper());
 
-	let nodeProvider = new MssqlObjectExplorerNodeProvider(prompter, appContext);
+	let nodeProvider = new MssqlObjectExplorerNodeProvider(appContext);
 	azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
 	let iconProvider = new MssqlIconProvider();
 	azdata.dataprotocol.registerIconProvider(iconProvider);
 
-	activateSparkFeatures(appContext);
 	activateNotebookTask(appContext);
 
 	registerSearchServerCommand(appContext);
 	context.subscriptions.push(new ContextProvider());
-	registerHdfsCommands(context, prompter, appContext);
 
 	registerLogCommand(context);
 
-	registerServiceEndpoints(context);
 	// Get book contributions - in the future this will be integrated with the Books/Notebook widget to show as a dashboard widget
 	const bookContributionProvider = getBookExtensionContributions(context);
 	context.subscriptions.push(bookContributionProvider);
@@ -90,32 +80,6 @@ function registerLogCommand(context: vscode.ExtensionContext) {
 			}
 		}
 	}));
-}
-
-function registerHdfsCommands(context: vscode.ExtensionContext, prompter: IPrompter, appContext: AppContext) {
-	context.subscriptions.push(new UploadFilesCommand(prompter, appContext));
-	context.subscriptions.push(new MkDirCommand(prompter, appContext));
-	context.subscriptions.push(new SaveFileCommand(prompter, appContext));
-	context.subscriptions.push(new PreviewFileCommand(prompter, appContext));
-	context.subscriptions.push(new CopyPathCommand(appContext));
-	context.subscriptions.push(new DeleteFilesCommand(prompter, appContext));
-}
-
-function activateSparkFeatures(appContext: AppContext): void {
-	let extensionContext = appContext.extensionContext;
-	let apiWrapper = appContext.apiWrapper;
-	let outputChannel: vscode.OutputChannel = kustoOutputChannel;
-	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogCommand(appContext, outputChannel));
-	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogFromFileCommand(appContext, outputChannel));
-	apiWrapper.registerTaskHandler(Constants.kustoClusterLivySubmitSparkJobTask, (profile: azdata.IConnectionProfile) => {
-		new OpenSparkJobSubmissionDialogTask(appContext, outputChannel).execute(profile);
-	});
-	apiWrapper.registerTaskHandler(Constants.kustoClusterLivyOpenSparkHistory, (profile: azdata.IConnectionProfile) => {
-		new OpenSparkYarnHistoryTask(appContext).execute(profile, true);
-	});
-	apiWrapper.registerTaskHandler(Constants.kustoClusterLivyOpenYarnHistory, (profile: azdata.IConnectionProfile) => {
-		new OpenSparkYarnHistoryTask(appContext).execute(profile, false);
-	});
 }
 
 function activateNotebookTask(appContext: AppContext): void {

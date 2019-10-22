@@ -29,16 +29,6 @@ export interface IExtension {
 	 *
 	 */
 	getMssqlObjectExplorerBrowser(): MssqlObjectExplorerBrowser;
-
-	/**
-	 * Get the Cms Service APIs to communicate with CMS connections supported by this extension
-	 *
-	 */
-	readonly cmsService: ICmsService;
-
-	readonly schemaCompare: ISchemaCompareService;
-
-	readonly dacFx: IDacFxService;
 }
 
 /**

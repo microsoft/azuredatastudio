@@ -11,8 +11,8 @@ import { AppContext } from '../../../appContext';
 import { TreeNode } from '../../treeNode';
 import { generateGuid } from '../../utils';
 import { AzureResourceItemType } from '../../constants';
-import { IAzureResourceAzureDataExplorerNode } from './interfaces';
-import { AzureResourceResourceTreeNode } from '../../resourceTreeNode';
+//import { IAzureResourceAzureDataExplorerNode } from './interfaces';
+//import { AzureResourceResourceTreeNode } from '../../resourceTreeNode';
 
 export function registerAzureResourceAzureDataExplorerCommands(appContext: AppContext): void {
 	appContext.apiWrapper.registerCommand('azure.resource.connectarcadiaworkspace', async (node?: TreeNode) => {
@@ -25,22 +25,22 @@ export function registerAzureResourceAzureDataExplorerCommands(appContext: AppCo
 			return;
 		}
 
-		const resourceNode = (node as AzureResourceResourceTreeNode).resourceNodeWithProviderId.resourceNode;
-		const azureDataExplorer = (resourceNode as IAzureResourceAzureDataExplorerNode).azureDataExplorer;
+		// const resourceNode = (node as AzureResourceResourceTreeNode).resourceNodeWithProviderId.resourceNode;
+		// const azureDataExplorer = (resourceNode as IAzureResourceAzureDataExplorerNode).azureDataExplorer;
 
 		// TODO: Should the below be different for Azure Data Explorer
 		let connectionProfile: IConnectionProfile = {
 			id: generateGuid(),
 			connectionName: undefined,
-			serverName: azureDataExplorer.fullName,
-			databaseName: azureDataExplorer.defaultDatabaseName,
-			userName: azureDataExplorer.loginName,
+			serverName: '',
+			databaseName: '',
+			userName: '',
 			password: '',
-			authenticationType: 'SqlLogin',
+			authenticationType: 'AzureMFA',
 			savePassword: true,
 			groupFullName: '',
 			groupId: '',
-			providerName: 'MSSQL',
+			providerName: 'KUSTO',
 			saveProfile: true,
 			options: {}
 		};

@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
@@ -20,7 +18,6 @@ import { AppContext } from '../appContext';
 import * as constants from '../constants';
 import * as SqlClusterLookUp from '../sqlClusterLookUp';
 import { ICommandObjectExplorerContext } from './command';
-import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 
 export const kustoOutputChannel = vscode.window.createOutputChannel(constants.providerId);
 
@@ -29,7 +26,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 	private sessionMap: Map<string, SqlClusterSession>;
 	private expandCompleteEmitter = new vscode.EventEmitter<azdata.ObjectExplorerExpandInfo>();
 
-	constructor(private prompter: IPrompter, private appContext: AppContext) {
+	constructor(private appContext: AppContext) {
 		super();
 		this.sessionMap = new Map<string, SqlClusterSession>();
 		this.appContext.registerService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService, this);
@@ -96,13 +93,6 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 		return true;
 	}
 
-	private hasExpansionError(children: TreeNode[]): boolean {
-		if (children.find(c => c.errorStatusCode > 0)) {
-			return true;
-		}
-		return false;
-	}
-
 	private async startExpansion(session: SqlClusterSession, nodeInfo: azdata.ExpandNodeInfo, isRefresh: boolean = false): Promise<void> {
 		let expandResult: azdata.ObjectExplorerExpandInfo = {
 			sessionId: session.sessionId,
@@ -114,42 +104,12 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 			let node = await session.rootNode.findNodeByPath(nodeInfo.nodePath, true);
 			if (node) {
 				expandResult.errorMessage = node.getNodeInfo().errorMessage;
-				let children = await node.getChildren(true);
-				if (children && children.length > 0) {
-					// Only child returned when failure happens : When failed with 'Unauthorized' error, prompt for password.
-					if (children.length === 1 && this.hasExpansionError(children)) {
-						if (children[0].errorStatusCode === 401) {
-							//Prompt for password
-							let password: string = await this.promptPassword(localize('prmptPwd', "Please provide the password to connect to HDFS:"));
-							if (password && password.length > 0) {
-								session.sqlClusterConnection.updatePassword(password);
-								await node.updateFileSource(session.sqlClusterConnection);
-								children = await node.getChildren(true);
-							}
-						}
-					}
-
-					expandResult.nodes = children.map(c => c.getNodeInfo());
-					if (children.length === 1 && this.hasExpansionError(children)) {
-						let child = children[0].getNodeInfo();
-						expandResult.errorMessage = child ? child.label : 'Unknown Error';
-						expandResult.nodes = [];
-					}
-				}
+				node.getChildren(true);
 			}
 		} catch (error) {
 			expandResult.errorMessage = utils.getErrorMessage(error);
 		}
 		this.expandCompleteEmitter.fire(expandResult);
-	}
-
-	private async promptPassword(promptMsg: string): Promise<string> {
-		return await this.prompter.promptSingle(<IQuestion>{
-			type: QuestionTypes.password,
-			name: 'passwordPrompt',
-			message: promptMsg,
-			default: ''
-		}).then(confirmed => <string>confirmed);
 	}
 
 	refreshNode(nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {

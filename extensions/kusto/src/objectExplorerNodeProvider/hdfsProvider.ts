@@ -105,7 +105,7 @@ export class FolderNode extends HdfsFileSourceNode {
 	protected _nodeType: string;
 	constructor(context: TreeDataContext, path: string, fileSource: IFileSource, nodeType?: string) {
 		super(context, path, fileSource);
-		this._nodeType = nodeType ? nodeType : Constants.MssqlClusterItems.Folder;
+		this._nodeType = nodeType ? nodeType : Constants.KustoClusterItems.Folder;
 	}
 
 	private ensureChildrenExist(): void {
@@ -206,7 +206,7 @@ export class FolderNode extends HdfsFileSourceNode {
 export class ConnectionNode extends FolderNode {
 
 	constructor(context: TreeDataContext, private displayName: string, fileSource: IFileSource) {
-		super(context, '/', fileSource, Constants.MssqlClusterItems.Connection);
+		super(context, '/', fileSource, Constants.KustoClusterItems.Connection);
 	}
 
 	getDisplayName(): string {
@@ -233,7 +233,7 @@ export class ConnectionNode extends FolderNode {
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
-			nodeType: 'kustoCluster:hdfs',
+			nodeType: 'mssqlCluster:hdfs',
 			nodeSubType: undefined,
 			iconType: 'HDFSFolder'
 		};
@@ -261,7 +261,7 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 			dark: this.context.extensionContext.asAbsolutePath('resources/dark/file_inverse.svg'),
 			light: this.context.extensionContext.asAbsolutePath('resources/light/file.svg')
 		};
-		item.contextValue = Constants.MssqlClusterItems.File;
+		item.contextValue = Constants.KustoClusterItems.File;
 		return item;
 	}
 
@@ -275,7 +275,7 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
-			nodeType: Constants.MssqlClusterItems.File,
+			nodeType: Constants.KustoClusterItems.File,
 			nodeSubType: this.getSubType(),
 			iconType: 'FileGroupFile'
 		};
@@ -323,10 +323,6 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 	}
 
 	private getSubType(): string {
-		if (this.getDisplayName().toLowerCase().endsWith('.jar') || this.getDisplayName().toLowerCase().endsWith('.py')) {
-			return Constants.MssqlClusterItemsSubType.Spark;
-		}
-
 		return undefined;
 	}
 }
@@ -365,7 +361,7 @@ export class ErrorNode extends TreeNode {
 
 	public getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {
 		let item = new vscode.TreeItem(this.message, vscode.TreeItemCollapsibleState.None);
-		item.contextValue = Constants.MssqlClusterItems.Error;
+		item.contextValue = Constants.KustoClusterItems.Error;
 		return item;
 	}
 
@@ -378,7 +374,7 @@ export class ErrorNode extends TreeNode {
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
-			nodeType: Constants.MssqlClusterItems.Error,
+			nodeType: Constants.KustoClusterItems.Error,
 			nodeSubType: undefined,
 			iconType: 'MessageType'
 		};

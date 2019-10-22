@@ -3,15 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as constants from './constants';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { AppContext } from './appContext';
 import { SqlClusterConnection } from './objectExplorerNodeProvider/connection';
 import { ICommandObjectExplorerContext } from './objectExplorerNodeProvider/command';
-import { IEndpoint, getClusterEndpoints, getHostAndPortFromEndpoint } from './utils';
+import { IEndpoint, getClusterEndpoints } from './utils';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 
 export function findSqlClusterConnection(
@@ -78,9 +76,6 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 	let endpoints: IEndpoint[] = getClusterEndpoints(serverInfo);
 	if (!endpoints || endpoints.length === 0) { return undefined; }
 
-	let index = endpoints.findIndex(ep => ep.serviceName.toLowerCase() === constants.hadoopEndpointNameGateway.toLowerCase());
-	if (index < 0) { return undefined; }
-
 	let credentials = await azdata.connection.getCredentials(connectionId);
 	if (!credentials) { return undefined; }
 
@@ -90,15 +85,9 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 		options: {}
 	};
 
-	let hostAndIp = getHostAndPortFromEndpoint(endpoints[index].endpoint);
-	clusterConnInfo.options[constants.hostPropName] = hostAndIp.host;
-	// TODO should we default the port? Or just ignore later?
-	clusterConnInfo.options[constants.knoxPortPropName] = hostAndIp.port || constants.defaultKnoxPort;
-	let authType = clusterConnInfo.options[constants.authenticationTypePropName] = sqlConnInfo.options[constants.authenticationTypePropName];
-	if (authType && authType.toLowerCase() !== constants.integratedAuth) {
-		clusterConnInfo.options[constants.userPropName] = 'root'; //should be the same user as sql master
-		clusterConnInfo.options[constants.passwordPropName] = credentials.password;
-	}
+	clusterConnInfo.options[constants.userPropName] = 'root'; //should be the same user as sql master
+	clusterConnInfo.options[constants.passwordPropName] = credentials.password;
+
 	clusterConnInfo = connToConnectionParam(clusterConnInfo);
 
 	return clusterConnInfo;
@@ -115,7 +104,7 @@ function connToConnectionParam(connection: azdata.connection.Connection): Connec
 	let options = connection.options;
 	let result = Object.assign(connection,
 		{
-			serverName: `${options[constants.hostPropName]},${options[constants.knoxPortPropName]}`,
+			serverName: `${options[constants.hostPropName]}`,
 			userName: options[constants.userPropName],
 			password: options[constants.passwordPropName],
 			id: connectionId,

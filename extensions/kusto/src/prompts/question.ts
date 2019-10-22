@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+// TODO: Common file with mssql
 import vscode = require('vscode');
 
 export class QuestionTypes {
