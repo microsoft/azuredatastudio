@@ -29,6 +29,9 @@ import { Deferred } from 'sql/base/common/promise';
 import { NotebookTextFileModel } from 'sql/workbench/parts/notebook/browser/models/notebookTextFileModel';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
+import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -195,6 +198,8 @@ export class NotebookEditorModel extends EditorModel {
 	}
 }
 
+type TextInput = ResourceEditorInput | UntitledEditorInput | FileEditorInput;
+
 export abstract class NotebookInput extends EditorInput {
 	private _providerId: string;
 	private _providers: string[];
@@ -216,7 +221,7 @@ export abstract class NotebookInput extends EditorInput {
 
 	constructor(private _title: string,
 		private resource: URI,
-		private _textInput: EditorInput,
+		private _textInput: TextInput,
 		@ITextModelService private textModelService: ITextModelService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@INotebookService private notebookService: INotebookService,
@@ -232,7 +237,7 @@ export abstract class NotebookInput extends EditorInput {
 		}
 	}
 
-	public get textInput(): EditorInput {
+	public get textInput(): TextInput {
 		return this._textInput;
 	}
 
@@ -349,7 +354,9 @@ export abstract class NotebookInput extends EditorInput {
 					textOrUntitledEditorModel = this._untitledEditorModel;
 				} else {
 					let resolvedInput = await this._textInput.resolve();
-					resolvedInput.textEditorModel.onBeforeAttached();
+					if (!(resolvedInput instanceof BinaryEditorModel)) {
+						resolvedInput.textEditorModel.onBeforeAttached();
+					}
 					textOrUntitledEditorModel = resolvedInput;
 				}
 			} else {

@@ -6,10 +6,10 @@
 import { URI } from 'vs/base/common/uri';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 
 export class UntitledNotebookInput extends NotebookInput {
 	public static ID: string = 'workbench.editorinputs.untitledNotebookInput';

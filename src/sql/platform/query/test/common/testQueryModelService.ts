@@ -23,7 +23,7 @@ export class TestQueryModelService implements IQueryModelService {
 	getShortcuts(): Promise<any> {
 		throw new Error('Method not implemented.');
 	}
-	getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Thenable<azdata.ResultSetSubset> {
+	getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Promise<azdata.ResultSetSubset> {
 		throw new Error('Method not implemented.');
 	}
 	runQuery(uri: string, selection: azdata.ISelectionData, queryInput: QueryEditorInput, runOptions?: azdata.ExecutionPlanOptions): void {
@@ -85,28 +85,28 @@ export class TestQueryModelService implements IQueryModelService {
 	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): void {
 		throw new Error('Method not implemented.');
 	}
-	disposeEdit(ownerUri: string): Thenable<void> {
+	disposeEdit(ownerUri: string): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
-	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<azdata.EditUpdateCellResult> {
+	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Promise<azdata.EditUpdateCellResult> {
 		throw new Error('Method not implemented.');
 	}
-	commitEdit(ownerUri: any): Thenable<void> {
+	commitEdit(ownerUri: any): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
-	createRow(ownerUri: string): Thenable<azdata.EditCreateRowResult> {
+	createRow(ownerUri: string): Promise<azdata.EditCreateRowResult> {
 		throw new Error('Method not implemented.');
 	}
-	deleteRow(ownerUri: string, rowId: number): Thenable<void> {
+	deleteRow(ownerUri: string, rowId: number): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
-	revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<azdata.EditRevertCellResult> {
+	revertCell(ownerUri: string, rowId: number, columnId: number): Promise<azdata.EditRevertCellResult> {
 		throw new Error('Method not implemented.');
 	}
-	revertRow(ownerUri: string, rowId: number): Thenable<void> {
+	revertRow(ownerUri: string, rowId: number): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
-	getEditRows(ownerUri: string, rowStart: number, numberOfRows: number): Thenable<azdata.EditSubsetResult> {
+	getEditRows(ownerUri: string, rowStart: number, numberOfRows: number): Promise<azdata.EditSubsetResult> {
 		throw new Error('Method not implemented.');
 	}
 	_getQueryInfo(uri: string): QueryInfo {
