@@ -52,7 +52,7 @@
       "objectExplorer/item/context": [
         {
           "command": "schemaCompare.start",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
           "group": "export"
         }
       ]

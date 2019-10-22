@@ -62,7 +62,7 @@
                 "id": "all-database-size-server-insight",
                 "contrib": {
                     "name": "Database Size (MB)",
-                    "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
+                    "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11",
                     "gridItemConfig": {
                         "x": 2,
                         "y": 2
@@ -83,7 +83,7 @@
                 "contrib": {
                     "cacheId": "backup-history-server-insight",
                     "name": "Backup Status",
-                    "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
+                    "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11",
                     "gridItemConfig": {
                         "x": 1,
                         "y": 1

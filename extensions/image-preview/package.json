@@ -24,9 +24,10 @@
       {
         "viewType": "imagePreview.previewEditor",
         "displayName": "%webviewEditors.displayName%",
+        "priority": "builtin",
         "selector": [
           {
-            "filenamePattern": "*.{jpg,jpe,jpeg,png,bmp,gif,ico,tga,tif,tiff,webp}",
+            "filenamePattern": "*.{jpg,jpe,jpeg,png,bmp,gif,ico,tga,webp}",
             "mime": "image/*"
           }
         ]

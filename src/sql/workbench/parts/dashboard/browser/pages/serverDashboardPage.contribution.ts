@@ -78,7 +78,7 @@ const defaultVal = [
 	{
 		name: 'Tasks',
 		widget: {
-			'tasks-widget': [{ name: 'restore', when: '!mssql:iscloud' }, 'configureDashboard', 'newQuery', 'mssqlCluster.task.newNotebook']
+			'tasks-widget': [{ name: 'restore', when: '!mssql:iscloud && mssql:engineedition != 11' }, 'configureDashboard', 'newQuery', 'mssqlCluster.task.newNotebook']
 		},
 		gridItemConfig: {
 			sizex: 1,
