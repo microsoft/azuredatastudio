@@ -155,6 +155,14 @@
           "dark": "resources/dark/search_inverse.svg",
           "light": "resources/light/search.svg"
         }
+      },
+      {
+        "command": "notebook.command.searchUntitledBook",
+        "title": "%title.searchJupyterBook%",
+        "icon": {
+          "dark": "resources/dark/search_inverse.svg",
+          "light": "resources/light/search.svg"
+        }
       }
     ],
     "languages": [
@@ -235,7 +243,7 @@
         },
         {
           "command": "books.sqlserver2019",
-          "when": "sqlserver2019 && notebookQuality != stable"
+          "when": "sqlserver2019"
         }
       ],
       "touchBar": [
@@ -270,12 +278,17 @@
       "view/item/context": [
         {
           "command": "notebook.command.searchBook",
-          "when": "view =~ /^(untitledBookTreeView|bookTreeView)$/ && viewItem =~ /^(untitledBook|savedBook)$/ && notebookQuality != stable",
+          "when": "view == bookTreeView && viewItem == savedBook",
+          "group": "inline"
+        },
+        {
+          "command": "notebook.command.searchUntitledBook",
+          "when": "view == unsavedBookTreeView && viewItem == unsavedBook && unsavedBooks",
           "group": "inline"
         },
         {
           "command": "notebook.command.saveBook",
-          "when": "view == untitledBookTreeView && viewItem == untitledBook && untitledBooks && notebookQuality != stable",
+          "when": "view == unsavedBookTreeView && viewItem == unsavedBook && unsavedBooks",
           "group": "inline"
         }
       ],
@@ -397,8 +410,8 @@
           "name": "%title.SavedBooks%"
         },
         {
-          "id": "untitledBookTreeView",
-          "name": "%title.UntitledBooks%"
+          "id": "unsavedBookTreeView",
+          "name": "%title.UnsavedBooks%"
         }
       ]
     }
