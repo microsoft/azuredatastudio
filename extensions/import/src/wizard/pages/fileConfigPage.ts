@@ -271,7 +271,7 @@ export class FileConfigPage extends ImportPage {
 		let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this.model.server.providerName, azdata.DataProviderType.QueryProvider);
 
 		let query = '';
-		if (this.databaseDropdown.value != null)
+		if (this.databaseDropdown.value !== null)
 		{
 			query = `SELECT name FROM [${this.databaseDropdown.value}].sys.schemas`;
 		}
