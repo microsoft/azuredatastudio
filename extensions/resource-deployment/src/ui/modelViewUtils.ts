@@ -284,7 +284,7 @@ function processDateTimeTextField(context: FieldContext): void {
 		value: defaultValue,
 		ariaLabel: context.fieldInfo.label,
 		inputType: 'text',
-		required: !context.fieldInfo.useCustomValidator && context.fieldInfo.required,
+		required: context.fieldInfo.required,
 		placeHolder: context.fieldInfo.placeHolder
 	}).component();
 	input.width = context.fieldInfo.inputWidth;
@@ -299,7 +299,7 @@ function processNumberField(context: FieldContext): void {
 		ariaLabel: context.fieldInfo.label,
 		min: context.fieldInfo.min,
 		max: context.fieldInfo.max,
-		required: !context.fieldInfo.useCustomValidator && context.fieldInfo.required,
+		required: context.fieldInfo.required,
 		width: context.fieldInfo.inputWidth,
 		placeHolder: context.fieldInfo.placeHolder
 	});
@@ -312,7 +312,7 @@ function processTextField(context: FieldContext): void {
 	const input = createTextInput(context.view, {
 		defaultValue: context.fieldInfo.defaultValue,
 		ariaLabel: context.fieldInfo.label,
-		required: !context.fieldInfo.useCustomValidator && context.fieldInfo.required,
+		required: context.fieldInfo.required,
 		placeHolder: context.fieldInfo.placeHolder,
 		width: context.fieldInfo.inputWidth
 	});
@@ -325,7 +325,7 @@ function processPasswordField(context: FieldContext): void {
 	const passwordInput = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		ariaLabel: context.fieldInfo.label,
 		inputType: 'password',
-		required: !context.fieldInfo.useCustomValidator && context.fieldInfo.required,
+		required: context.fieldInfo.required,
 		placeHolder: context.fieldInfo.placeHolder,
 		width: context.fieldInfo.inputWidth
 	}).component();
@@ -351,7 +351,7 @@ function processPasswordField(context: FieldContext): void {
 		const confirmPasswordInput = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: context.fieldInfo.confirmationLabel,
 			inputType: 'password',
-			required: !context.fieldInfo.useCustomValidator,
+			required: true,
 			width: context.fieldInfo.inputWidth
 		}).component();
 

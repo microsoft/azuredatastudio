@@ -64,7 +64,7 @@ export class Taskbar {
 	 */
 	public static createTaskbarSpinner(): HTMLElement {
 		let spinnerContainer = document.createElement('div');
-		spinnerContainer.className = 'taskbar-progress icon in-progress ';
+		spinnerContainer.className = 'taskbar-progress codicon in-progress ';
 		spinnerContainer.style.visibility = 'hidden';
 		return spinnerContainer;
 	}

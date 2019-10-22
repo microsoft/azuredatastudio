@@ -44,7 +44,7 @@ function prepareDebPackage(arch) {
 			.pipe(replace('@@NAME_SHORT@@', product.nameShort))
 			.pipe(replace('@@NAME@@', product.applicationName))
 			.pipe(replace('@@EXEC@@', `/usr/share/${product.applicationName}/${product.applicationName}`))
-			.pipe(replace('@@ICON@@', product.linuxIconName))
+			.pipe(replace('@@ICON@@', `/usr/share/pixmaps/${product.linuxIconName}.png`))
 			.pipe(replace('@@URLPROTOCOL@@', product.urlProtocol));
 
 		const appdata = gulp.src('resources/linux/code.appdata.xml', { base: '.' })
@@ -53,7 +53,7 @@ function prepareDebPackage(arch) {
 			.pipe(replace('@@LICENSE@@', product.licenseName))
 			.pipe(rename('usr/share/appdata/' + product.applicationName + '.appdata.xml'));
 
-		const icon = gulp.src('resources/linux/code.png', { base: '.' })
+		const icon = gulp.src(product.quality === 'stable' ? 'resources/linux/code.png' : 'resources/linux/code-insiders.png', { base: '.' }) // {{SQL CARBON EDIT}} Use separate icons for non-stable
 			.pipe(rename('usr/share/pixmaps/' + product.linuxIconName + '.png'));
 
 		const bash_completion = gulp.src('resources/completions/bash/code')
@@ -147,7 +147,7 @@ function prepareRpmPackage(arch) {
 			.pipe(replace('@@LICENSE@@', product.licenseName))
 			.pipe(rename('usr/share/appdata/' + product.applicationName + '.appdata.xml'));
 
-		const icon = gulp.src('resources/linux/code.png', { base: '.' })
+		const icon = gulp.src(product.quality === 'stable' ? 'resources/linux/code.png' : 'resources/linux/code-insiders.png', { base: '.' }) // {{SQL CARBON EDIT}} Use separate icons for non-stable
 			.pipe(rename('BUILD/usr/share/pixmaps/' + product.linuxIconName + '.png'));
 
 		const bash_completion = gulp.src('resources/completions/bash/code')
@@ -225,7 +225,7 @@ function prepareSnapPackage(arch) {
 			.pipe(replace('@@URLPROTOCOL@@', product.urlProtocol));
 
 		// An icon that is placed in snap/gui will be placed into meta/gui verbatim.
-		const icon = gulp.src('resources/linux/code.png', { base: '.' })
+		const icon = gulp.src(product.quality === 'stable' ? 'resources/linux/code.png' : 'resources/linux/code-insiders.png', { base: '.' }) // {{SQL CARBON EDIT}} Use separate icons for non-stable
 			.pipe(rename(`snap/gui/${product.linuxIconName}.png`));
 
 		const code = gulp.src(binaryDir + '/**/*', { base: binaryDir })

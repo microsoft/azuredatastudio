@@ -7,6 +7,7 @@ import * as renderers from './renderers';
 import { IRenderMime } from '../models/renderMimeInterfaces';
 import { ReadonlyJSONObject } from '../../common/models/jsonext';
 import * as tableRenderers from 'sql/workbench/parts/notebook/browser/outputs/tableRenderers';
+import { Deferred } from 'sql/base/common/promise';
 
 /**
  * A common base class for mime renderers.
@@ -374,5 +375,33 @@ export class RenderedDataResource extends RenderedCommon {
 			source: JSON.stringify(model.data[this.mimeType]),
 			themeService: model.themeService
 		});
+	}
+}
+
+/**
+ * A dummy widget for (not) displaying ipywidgets.
+ */
+export class RenderedIPyWidget extends RenderedCommon {
+	/**
+	 * Construct a new rendered widget.
+	 *
+	 * @param options - The options for initializing the widget.
+	 */
+	constructor(options: IRenderMime.IRendererOptions) {
+		super(options);
+		this.addClass('jp-RenderedIPyWidget');
+	}
+
+	/**
+	 * Render a mime model.
+	 *
+	 * @param model - The mime model to render.
+	 *
+	 * @returns A promise which resolves when rendering is complete.
+	 */
+	render(model: IRenderMime.IMimeModel): Promise<void> {
+		let deferred = new Deferred<void>();
+		deferred.resolve();
+		return deferred.promise;
 	}
 }

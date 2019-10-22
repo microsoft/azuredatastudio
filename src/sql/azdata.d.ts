@@ -285,7 +285,7 @@ declare module 'azdata' {
 		password: string;
 		authenticationType: string;
 		savePassword: boolean;
-		groupFullName: string;
+		groupFullName?: string;
 		groupId: string;
 		providerName: string;
 		saveProfile: boolean;
@@ -748,8 +748,6 @@ declare module 'azdata' {
 		deleteCredential(credentialId: string): Thenable<boolean>;
 	}
 
-
-
 	export interface DidChangeLanguageFlavorParams {
 		uri: string;
 		language: string;
@@ -757,7 +755,7 @@ declare module 'azdata' {
 	}
 
 	export interface QueryExecutionOptions {
-		options: Map<string, any>;
+		options: { [option: string]: any; };
 	}
 
 	export interface QueryProvider extends DataProvider {
@@ -836,7 +834,7 @@ declare module 'azdata' {
 	export interface IResultMessage {
 		batchId?: number;
 		isError: boolean;
-		time: string;
+		time?: string;
 		message: string;
 	}
 

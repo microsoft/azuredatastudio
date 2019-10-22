@@ -19,6 +19,15 @@
     <trans-unit id="command.manageController.title">
       <source xml:lang="en">Manage</source>
     </trans-unit>
+    <trans-unit id="command.mount.title">
+      <source xml:lang="en">Mount HDFS</source>
+    </trans-unit>
+    <trans-unit id="command.refreshmount.title">
+      <source xml:lang="en">Refresh Mount</source>
+    </trans-unit>
+    <trans-unit id="command.deletemount.title">
+      <source xml:lang="en">Delete Mount</source>
+    </trans-unit>
   </body></file>
   <file original="extensions/big-data-cluster/dist/bigDataCluster/utils" source-language="en" datatype="plaintext"><body>
     <trans-unit id="state.creating">
@@ -128,8 +137,20 @@
     <trans-unit id="bdc.error.getBdcStatus">
       <source xml:lang="en">Error retrieving BDC status from {0}</source>
     </trans-unit>
+    <trans-unit id="bdc.error.mountHdfs">
+      <source xml:lang="en">Error creating mount</source>
+    </trans-unit>
+    <trans-unit id="bdc.error.refreshHdfs">
+      <source xml:lang="en">Error refreshing mount</source>
+    </trans-unit>
+    <trans-unit id="bdc.error.deleteHdfs">
+      <source xml:lang="en">Error deleting mount</source>
+    </trans-unit>
   </body></file>
   <file original="extensions/big-data-cluster/dist/extension" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="mount.error.endpointNotFound">
+      <source xml:lang="en">Controller endpoint information was not found</source>
+    </trans-unit>
     <trans-unit id="bdc.dashboard.title">
       <source xml:lang="en">Big Data Cluster Dashboard -</source>
     </trans-unit>
@@ -291,6 +312,110 @@
     </trans-unit>
     <trans-unit id="bdc.dashboard.copyTitle">
       <source xml:lang="en">Copy</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="basicAuthName">
+      <source xml:lang="en">Basic</source>
+    </trans-unit>
+    <trans-unit id="integratedAuthName">
+      <source xml:lang="en">Windows Authentication</source>
+    </trans-unit>
+    <trans-unit id="mount.main.section">
+      <source xml:lang="en">Mount Configuration</source>
+    </trans-unit>
+    <trans-unit id="mount.hdfsPath">
+      <source xml:lang="en">HDFS Path</source>
+    </trans-unit>
+    <trans-unit id="mount.err.formatting">
+      <source xml:lang="en">Bad formatting of credentials at {0}</source>
+    </trans-unit>
+    <trans-unit id="mount.hdfs.loginerror1">
+      <source xml:lang="en">Login to controller failed</source>
+    </trans-unit>
+    <trans-unit id="mount.hdfs.loginerror2">
+      <source xml:lang="en">Login to controller failed: {0}</source>
+    </trans-unit>
+    <trans-unit id="err.controller.username.required">
+      <source xml:lang="en">Username is required</source>
+    </trans-unit>
+    <trans-unit id="err.controller.password.required">
+      <source xml:lang="en">Password is required</source>
+    </trans-unit>
+    <trans-unit id="mount.task.name">
+      <source xml:lang="en">Mounting HDFS folder on path {0}</source>
+    </trans-unit>
+    <trans-unit id="mount.task.submitted">
+      <source xml:lang="en">Mount creation has started</source>
+    </trans-unit>
+    <trans-unit id="mount.task.complete">
+      <source xml:lang="en">Mounting HDFS folder is complete</source>
+    </trans-unit>
+    <trans-unit id="mount.task.inprogress">
+      <source xml:lang="en">Mounting is likely to complete, check back later to verify</source>
+    </trans-unit>
+    <trans-unit id="mount.task.error">
+      <source xml:lang="en">Error mounting folder: {0}</source>
+    </trans-unit>
+    <trans-unit id="mount.error.unknown">
+      <source xml:lang="en">Unknown error occurred during the mount process</source>
+    </trans-unit>
+    <trans-unit id="textUrlLower">
+      <source xml:lang="en">url</source>
+    </trans-unit>
+    <trans-unit id="textUsernameLower">
+      <source xml:lang="en">username</source>
+    </trans-unit>
+    <trans-unit id="textPasswordLower">
+      <source xml:lang="en">password</source>
+    </trans-unit>
+    <trans-unit id="textUrlCapital">
+      <source xml:lang="en">URL</source>
+    </trans-unit>
+    <trans-unit id="textAuthCapital">
+      <source xml:lang="en">Authentication type</source>
+    </trans-unit>
+    <trans-unit id="textUsernameCapital">
+      <source xml:lang="en">Username</source>
+    </trans-unit>
+    <trans-unit id="textPasswordCapital">
+      <source xml:lang="en">Password</source>
+    </trans-unit>
+    <trans-unit id="hdsf.dialog.connection.section">
+      <source xml:lang="en">Cluster Connection</source>
+    </trans-unit>
+    <trans-unit id="hdfs.dialog.ok">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="hdfs.dialog.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="mount.dialog.title">
+      <source xml:lang="en">Mount HDFS Folder</source>
+    </trans-unit>
+    <trans-unit id="mount.remoteUri">
+      <source xml:lang="en">Remote URI</source>
+    </trans-unit>
+    <trans-unit id="mount.credentials">
+      <source xml:lang="en">Credentials</source>
+    </trans-unit>
+    <trans-unit id="refreshmount.dialog.title">
+      <source xml:lang="en">Refresh Mount</source>
+    </trans-unit>
+    <trans-unit id="refreshmount.task.name">
+      <source xml:lang="en">Refreshing HDFS Mount on path {0}</source>
+    </trans-unit>
+    <trans-unit id="refreshmount.task.submitted">
+      <source xml:lang="en">Refresh mount request submitted</source>
+    </trans-unit>
+    <trans-unit id="deleteMount.dialog.title">
+      <source xml:lang="en">Delete Mount</source>
+    </trans-unit>
+    <trans-unit id="deletemount.task.name">
+      <source xml:lang="en">Deleting HDFS Mount on path {0}</source>
+    </trans-unit>
+    <trans-unit id="deletemount.task.submitted">
+      <source xml:lang="en">Delete mount request submitted</source>
     </trans-unit>
   </body></file>
 </xliff>

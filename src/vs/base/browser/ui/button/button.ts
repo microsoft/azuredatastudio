@@ -79,7 +79,7 @@ export class Button extends Disposable {
 		this._register(DOM.addDisposableListener(this._element, DOM.EventType.KEY_DOWN, e => {
 			const event = new StandardKeyboardEvent(e);
 			let eventHandled = false;
-			if (this.enabled && event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
+			if (this.enabled && (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space))) {
 				this._onDidClick.fire(e);
 				eventHandled = true;
 			} else if (event.equals(KeyCode.Escape)) {
@@ -129,15 +129,15 @@ export class Button extends Disposable {
 	// {{SQL CARBON EDIT}} -- removed 'private' access modifier @todo anthonydresser 4/12/19 things needs investigation whether we need this
 	applyStyles(): void {
 		if (this._element) {
-			const background = this.buttonBackground ? this.buttonBackground.toString() : null;
+			const background = this.buttonBackground ? this.buttonBackground.toString() : '';
 			const foreground = this.buttonForeground ? this.buttonForeground.toString() : null;
-			const border = this.buttonBorder ? this.buttonBorder.toString() : null;
+			const border = this.buttonBorder ? this.buttonBorder.toString() : '';
 
 			this._element.style.color = foreground;
 			this._element.style.backgroundColor = background;
 
-			this._element.style.borderWidth = border ? '1px' : null;
-			this._element.style.borderStyle = border ? 'solid' : null;
+			this._element.style.borderWidth = border ? '1px' : '';
+			this._element.style.borderStyle = border ? 'solid' : '';
 			this._element.style.borderColor = border;
 		}
 	}
