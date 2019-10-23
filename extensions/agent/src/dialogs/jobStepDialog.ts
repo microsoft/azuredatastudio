@@ -20,63 +20,63 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 	// TODO: localize
 	// Top level
 	//
-	private static readonly NewDialogTitle: string = localize('jobStepDialog.newJobStep', 'New Job Step');
-	private static readonly EditDialogTitle: string = localize('jobStepDialog.editJobStep', 'Edit Job Step');
-	private readonly FileBrowserDialogTitle: string = localize('jobStepDialog.fileBrowserTitle', 'Locate Database Files - ');
-	private readonly OkButtonText: string = localize('jobStepDialog.ok', 'OK');
-	private readonly CancelButtonText: string = localize('jobStepDialog.cancel', 'Cancel');
-	private readonly GeneralTabText: string = localize('jobStepDialog.general', 'General');
-	private readonly AdvancedTabText: string = localize('jobStepDialog.advanced', 'Advanced');
-	private readonly OpenCommandText: string = localize('jobStepDialog.open', 'Open...');
-	private readonly ParseCommandText: string = localize('jobStepDialog.parse', 'Parse');
-	private readonly SuccessfulParseText: string = localize('jobStepDialog.successParse', 'The command was successfully parsed.');
-	private readonly FailureParseText: string = localize('jobStepDialog.failParse', 'The command failed.');
-	private readonly BlankStepNameErrorText: string = localize('jobStepDialog.blankStepName', 'The step name cannot be left blank');
-	private readonly ProcessExitCodeText: string = localize('jobStepDialog.processExitCode', 'Process exit code of a successful command:');
+	private static readonly NewDialogTitle: string = localize('jobStepDialog.newJobStep', "New Job Step");
+	private static readonly EditDialogTitle: string = localize('jobStepDialog.editJobStep', "Edit Job Step");
+	private readonly FileBrowserDialogTitle: string = localize('jobStepDialog.fileBrowserTitle', "Locate Database Files - ");
+	private readonly OkButtonText: string = localize('jobStepDialog.ok', "OK");
+	private readonly CancelButtonText: string = localize('jobStepDialog.cancel', "Cancel");
+	private readonly GeneralTabText: string = localize('jobStepDialog.general', "General");
+	private readonly AdvancedTabText: string = localize('jobStepDialog.advanced', "Advanced");
+	private readonly OpenCommandText: string = localize('jobStepDialog.open', "Open...");
+	private readonly ParseCommandText: string = localize('jobStepDialog.parse', "Parse");
+	private readonly SuccessfulParseText: string = localize('jobStepDialog.successParse', "The command was successfully parsed.");
+	private readonly FailureParseText: string = localize('jobStepDialog.failParse', "The command failed.");
+	private readonly BlankStepNameErrorText: string = localize('jobStepDialog.blankStepName', "The step name cannot be left blank");
+	private readonly ProcessExitCodeText: string = localize('jobStepDialog.processExitCode', "Process exit code of a successful command:");
 
 	// General Control Titles
-	private readonly StepNameLabelString: string = localize('jobStepDialog.stepNameLabel', 'Step Name');
-	private readonly TypeLabelString: string = localize('jobStepDialog.typeLabel', 'Type');
-	private readonly RunAsLabelString: string = localize('jobStepDialog.runAsLabel', 'Run as');
-	private readonly DatabaseLabelString: string = localize('jobStepDialog.databaseLabel', 'Database');
-	private readonly CommandLabelString: string = localize('jobStepDialog.commandLabel', 'Command');
+	private readonly StepNameLabelString: string = localize('jobStepDialog.stepNameLabel', "Step Name");
+	private readonly TypeLabelString: string = localize('jobStepDialog.typeLabel', "Type");
+	private readonly RunAsLabelString: string = localize('jobStepDialog.runAsLabel', "Run as");
+	private readonly DatabaseLabelString: string = localize('jobStepDialog.databaseLabel', "Database");
+	private readonly CommandLabelString: string = localize('jobStepDialog.commandLabel', "Command");
 
 	// Advanced Control Titles
-	private readonly SuccessActionLabel: string = localize('jobStepDialog.successAction', 'On success action');
-	private readonly FailureActionLabel: string = localize('jobStepDialog.failureAction', 'On failure action');
-	private readonly RunAsUserLabel: string = localize('jobStepDialog.runAsUser', 'Run as user');
-	private readonly RetryAttemptsLabel: string = localize('jobStepDialog.retryAttempts', 'Retry Attempts');
-	private readonly RetryIntervalLabel: string = localize('jobStepDialog.retryInterval', 'Retry Interval (minutes)');
-	private readonly LogToTableLabel: string = localize('jobStepDialog.logToTable', 'Log to table');
-	private readonly AppendExistingTableEntryLabel: string = localize('jobStepDialog.appendExistingTableEntry', 'Append output to exisiting entry in table');
-	private readonly IncludeStepOutputHistoryLabel: string = localize('jobStepDialog.includeStepOutputHistory', 'Include step output in history');
-	private readonly OutputFileNameLabel: string = localize('jobStepDialog.outputFile', 'Output File');
-	private readonly AppendOutputToFileLabel: string = localize('jobStepDialog.appendOutputToFile', 'Append output to existing file');
+	private readonly SuccessActionLabel: string = localize('jobStepDialog.successAction', "On success action");
+	private readonly FailureActionLabel: string = localize('jobStepDialog.failureAction', "On failure action");
+	private readonly RunAsUserLabel: string = localize('jobStepDialog.runAsUser', "Run as user");
+	private readonly RetryAttemptsLabel: string = localize('jobStepDialog.retryAttempts', "Retry Attempts");
+	private readonly RetryIntervalLabel: string = localize('jobStepDialog.retryInterval', "Retry Interval (minutes)");
+	private readonly LogToTableLabel: string = localize('jobStepDialog.logToTable', "Log to table");
+	private readonly AppendExistingTableEntryLabel: string = localize('jobStepDialog.appendExistingTableEntry', "Append output to exisiting entry in table");
+	private readonly IncludeStepOutputHistoryLabel: string = localize('jobStepDialog.includeStepOutputHistory', "Include step output in history");
+	private readonly OutputFileNameLabel: string = localize('jobStepDialog.outputFile', "Output File");
+	private readonly AppendOutputToFileLabel: string = localize('jobStepDialog.appendOutputToFile', "Append output to existing file");
 
 	// File Browser Control Titles
-	private readonly SelectedPathLabelString: string = localize('jobStepDialog.selectedPath', 'Selected path');
-	private readonly FilesOfTypeLabelString: string = localize('jobStepDialog.filesOfType', 'Files of type');
-	private readonly FileNameLabelString: string = localize('jobStepDialog.fileName', 'File name');
-	private readonly AllFilesLabelString: string = localize('jobStepDialog.allFiles', 'All Files (*)');
+	private readonly SelectedPathLabelString: string = localize('jobStepDialog.selectedPath', "Selected path");
+	private readonly FilesOfTypeLabelString: string = localize('jobStepDialog.filesOfType', "Files of type");
+	private readonly FileNameLabelString: string = localize('jobStepDialog.fileName', "File name");
+	private readonly AllFilesLabelString: string = localize('jobStepDialog.allFiles', "All Files (*)");
 
 	// Dropdown options
-	public static readonly TSQLScript: string = localize('jobStepDialog.TSQL', 'Transact-SQL script (T-SQL)');
-	public static readonly Powershell: string = localize('jobStepDialog.powershell', 'PowerShell');
-	public static readonly CmdExec: string = localize('jobStepDialog.CmdExec', 'Operating system (CmdExec)');
-	public static readonly ReplicationDistributor: string = localize('jobStepDialog.replicationDistribution', 'Replication Distributor');
-	public static readonly ReplicationMerge: string = localize('jobStepDialog.replicationMerge', 'Replication Merge');
-	public static readonly ReplicationQueueReader: string = localize('jobStepDialog.replicationQueueReader', 'Replication Queue Reader');
-	public static readonly ReplicationSnapshot: string = localize('jobStepDialog.replicationSnapshot', 'Replication Snapshot');
-	public static readonly ReplicationTransactionLogReader: string = localize('jobStepDialog.replicationTransactionLogReader', 'Replication Transaction-Log Reader');
-	public static readonly AnalysisServicesCommand: string = localize('jobStepDialog.analysisCommand', 'SQL Server Analysis Services Command');
-	public static readonly AnalysisServicesQuery: string = localize('jobStepDialog.analysisQuery', 'SQL Server Analysis Services Query');
-	public static readonly ServicesPackage: string = localize('jobStepDialog.servicesPackage', 'SQL Server Integration Service Package');
+	public static readonly TSQLScript: string = localize('jobStepDialog.TSQL', "Transact-SQL script (T-SQL)");
+	public static readonly Powershell: string = localize('jobStepDialog.powershell', "PowerShell");
+	public static readonly CmdExec: string = localize('jobStepDialog.CmdExec', "Operating system (CmdExec)");
+	public static readonly ReplicationDistributor: string = localize('jobStepDialog.replicationDistribution', "Replication Distributor");
+	public static readonly ReplicationMerge: string = localize('jobStepDialog.replicationMerge', "Replication Merge");
+	public static readonly ReplicationQueueReader: string = localize('jobStepDialog.replicationQueueReader', "Replication Queue Reader");
+	public static readonly ReplicationSnapshot: string = localize('jobStepDialog.replicationSnapshot', "Replication Snapshot");
+	public static readonly ReplicationTransactionLogReader: string = localize('jobStepDialog.replicationTransactionLogReader', "Replication Transaction-Log Reader");
+	public static readonly AnalysisServicesCommand: string = localize('jobStepDialog.analysisCommand', "SQL Server Analysis Services Command");
+	public static readonly AnalysisServicesQuery: string = localize('jobStepDialog.analysisQuery', "SQL Server Analysis Services Query");
+	public static readonly ServicesPackage: string = localize('jobStepDialog.servicesPackage', "SQL Server Integration Service Package");
 
 
-	public static readonly AgentServiceAccount: string = localize('jobStepDialog.agentServiceAccount', 'SQL Server Agent Service Account');
-	public static readonly NextStep: string = localize('jobStepDialog.nextStep', 'Go to the next step');
-	public static readonly QuitJobReportingSuccess: string = localize('jobStepDialog.quitJobSuccess', 'Quit the job reporting success');
-	public static readonly QuitJobReportingFailure: string = localize('jobStepDialog.quitJobFailure', 'Quit the job reporting failure');
+	public static readonly AgentServiceAccount: string = localize('jobStepDialog.agentServiceAccount', "SQL Server Agent Service Account");
+	public static readonly NextStep: string = localize('jobStepDialog.nextStep', "Go to the next step");
+	public static readonly QuitJobReportingSuccess: string = localize('jobStepDialog.quitJobSuccess', "Quit the job reporting success");
+	public static readonly QuitJobReportingFailure: string = localize('jobStepDialog.quitJobFailure', "Quit the job reporting failure");
 
 	// Event Name strings
 	private readonly NewStepDialog = 'NewStepDialogOpened';

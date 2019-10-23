@@ -14,11 +14,11 @@ const localize = nls.loadMessageBundle();
 export class ScheduleDialog {
 
 	// Top level
-	private readonly DialogTitle: string = localize('scheduleDialog.newSchedule', 'New Schedule');
-	private readonly OkButtonText: string = localize('scheduleDialog.ok', 'OK');
-	private readonly CancelButtonText: string = localize('scheduleDialog.cancel', 'Cancel');
-	private readonly ScheduleNameText: string = localize('scheduleDialog.scheduleName', 'Schedule Name');
-	private readonly SchedulesLabelText: string = localize('scheduleDialog.schedules', 'Schedules');
+	private readonly DialogTitle: string = localize('scheduleDialog.newSchedule', "New Schedule");
+	private readonly OkButtonText: string = localize('scheduleDialog.ok', "OK");
+	private readonly CancelButtonText: string = localize('scheduleDialog.cancel', "Cancel");
+	private readonly ScheduleNameText: string = localize('scheduleDialog.scheduleName', "Schedule Name");
+	private readonly SchedulesLabelText: string = localize('scheduleDialog.schedules', "Schedules");
 
 	// UI Components
 	private dialog: azdata.window.Dialog;

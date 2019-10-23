@@ -131,22 +131,22 @@ export class DropdownList extends Dropdown {
 	}
 
 	protected applyStyles(): void {
-		const background = this.backgroundColor ? this.backgroundColor.toString() : null;
-		const foreground = this.foregroundColor ? this.foregroundColor.toString() : null;
-		const border = this.borderColor ? this.borderColor.toString() : null;
+		const background = this.backgroundColor ? this.backgroundColor.toString() : '';
+		const foreground = this.foregroundColor ? this.foregroundColor.toString() : '';
+		const border = this.borderColor ? this.borderColor.toString() : '';
 		this.applyStylesOnElement(this._contentContainer, background, foreground, border);
 		if (this.label) {
 			this.applyStylesOnElement(this.element, background, foreground, border);
 		}
 	}
 
-	private applyStylesOnElement(element: HTMLElement, background: string | null, foreground: string | null, border: string | null): void {
+	private applyStylesOnElement(element: HTMLElement, background: string, foreground: string, border: string): void {
 		if (element) {
 			element.style.backgroundColor = background;
 			element.style.color = foreground;
 
-			element.style.borderWidth = border ? '1px' : null;
-			element.style.borderStyle = border ? 'solid' : null;
+			element.style.borderWidth = border ? '1px' : '';
+			element.style.borderStyle = border ? 'solid' : '';
 			element.style.borderColor = border;
 		}
 	}

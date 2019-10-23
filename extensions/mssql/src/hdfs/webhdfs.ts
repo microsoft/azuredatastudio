@@ -73,10 +73,10 @@ export class WebHDFS {
 	 */
 	private getOperationEndpoint(operation: string, path: string, params?: object): string {
 		let endpoint = this._url;
-		endpoint.pathname = this._opts.path + path;
+		endpoint.pathname = encodeURI(this._opts.path + path);
 		let searchOpts = Object.assign(
 			{ 'op': operation },
-			// this._opts.user ? { 'user.name': this._opts.user } : {},
+			this._opts.user ? { 'user.name': this._opts.user } : {},
 			params || {}
 		);
 		endpoint.search = querystring.stringify(searchOpts);

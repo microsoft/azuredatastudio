@@ -129,6 +129,33 @@
 			"timeout": 45000
 		},
 		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Launch ADS (Web) (TBD)",
+			"runtimeExecutable": "yarn",
+			"runtimeArgs": [
+				"web"
+			],
+		},
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Launch ADS (Web, Chrome) (TBD)",
+			"url": "http://localhost:8080",
+			"preLaunchTask": "Run web"
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Git Unit Tests",
+			"program": "${workspaceFolder}/extensions/git/node_modules/mocha/bin/_mocha",
+			"stopOnEntry": false,
+			"cwd": "${workspaceFolder}/extensions/git",
+			"outFiles": [
+				"${workspaceFolder}/extensions/git/out/**/*.js"
+			]
+		},
+		{
 			"name": "Launch Built-in Extension",
 			"type": "extensionHost",
 			"request": "launch",
