@@ -40,7 +40,7 @@ steps:
     condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
   - script: |
-      yarn gulp electron-x64
+      yarn electron x64
     displayName: Download Electron
     env:
       GITHUB_TOKEN: $(GITHUB_TOKEN)

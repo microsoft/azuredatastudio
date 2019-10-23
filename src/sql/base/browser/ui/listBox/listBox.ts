@@ -120,7 +120,7 @@ export class ListBox extends SelectBox {
 			this.selectElement.style.border = `1px solid ${this.selectBorder}`;
 		} else if (this.message) {
 			const styles = this.stylesForType(this.message.type);
-			this.selectElement.style.border = styles.border ? `1px solid ${styles.border}` : null;
+			this.selectElement.style.border = styles.border ? `1px solid ${styles.border}` : '';
 		}
 	}
 
@@ -224,8 +224,8 @@ export class ListBox extends SelectBox {
 					dom.addClass(spanElement, this.classForType(this.message.type));
 
 					const styles = this.stylesForType(this.message.type);
-					spanElement.style.backgroundColor = styles.background ? styles.background.toString() : null;
-					spanElement.style.border = styles.border ? `1px solid ${styles.border}` : null;
+					spanElement.style.backgroundColor = styles.background ? styles.background.toString() : '';
+					spanElement.style.border = styles.border ? `1px solid ${styles.border}` : '';
 
 					dom.append(div, spanElement);
 				}

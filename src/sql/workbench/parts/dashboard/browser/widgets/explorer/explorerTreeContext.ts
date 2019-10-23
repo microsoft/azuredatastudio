@@ -15,6 +15,7 @@ export interface IContextValue {
 	resource: ContextResource;
 	providerName: string;
 	isCloud: boolean;
+	engineEdition: number;
 }
 
 export class ItemContextKey extends Disposable implements IContextKey<IContextValue> {
@@ -23,11 +24,13 @@ export class ItemContextKey extends Disposable implements IContextKey<IContextVa
 	static readonly Item = new RawContextKey<IContextValue>('item', undefined);
 	static readonly ConnectionProvider = new RawContextKey<string>('provider', undefined);
 	static readonly IsCloud = new RawContextKey<boolean>('isCloud', undefined);
+	static readonly EngineEdition = new RawContextKey<number>('engineEdition', undefined);
 
 	private _itemTypeKey: IContextKey<string>;
 	private _itemKey: IContextKey<IContextValue>;
 	private _connectionProviderKey: IContextKey<string>;
 	private _isCloudKey: IContextKey<boolean>;
+	private _engineEditionKey: IContextKey<number>;
 
 	constructor(
 		@IContextKeyService contextKeyService: IContextKeyService
@@ -38,12 +41,14 @@ export class ItemContextKey extends Disposable implements IContextKey<IContextVa
 		this._itemKey = ItemContextKey.Item.bindTo(contextKeyService);
 		this._connectionProviderKey = ItemContextKey.ConnectionProvider.bindTo(contextKeyService);
 		this._isCloudKey = ItemContextKey.IsCloud.bindTo(contextKeyService);
+		this._engineEditionKey = ItemContextKey.EngineEdition.bindTo(contextKeyService);
 	}
 
 	set(value: IContextValue) {
 		this._itemKey.set(value);
 		this._connectionProviderKey.set(value.providerName.toLowerCase());
 		this._isCloudKey.set(value.isCloud);
+		this._engineEditionKey.set(value.engineEdition);
 		if (value.resource instanceof ObjectMetadataWrapper) {
 			switch (value.resource.metadataType) {
 				case MetadataType.Function:
@@ -69,6 +74,7 @@ export class ItemContextKey extends Disposable implements IContextKey<IContextVa
 		this._itemKey.reset();
 		this._connectionProviderKey.reset();
 		this._isCloudKey.reset();
+		this._engineEditionKey.reset();
 	}
 
 	get(): IContextValue | undefined {

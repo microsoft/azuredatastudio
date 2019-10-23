@@ -99,7 +99,7 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 			}
 		}
 
-		let errorMsg = localize('sparkJobSubmission.NoSqlSelected', 'No SQL Server is selected.');
+		let errorMsg = localize('sparkJobSubmission.NoSqlSelected', "No SQL Server is selected.");
 		if (!selectedHost) { throw new Error(errorMsg); }
 
 		let sqlConnection = connectionMap.get(selectedHost);
@@ -135,7 +135,7 @@ export class OpenSparkJobSubmissionDialogFromFileCommand extends Command {
 				return;
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('sparkJobSubmission.GetFilePathFromSelectedNodeFailed', 'Error Get File Path: {0}', err));
+			this.apiWrapper.showErrorMessage(localize('sparkJobSubmission.GetFilePathFromSelectedNodeFailed', "Error Get File Path: {0}", err));
 			return;
 		}
 

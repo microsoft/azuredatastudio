@@ -285,7 +285,7 @@ declare module 'azdata' {
 		password: string;
 		authenticationType: string;
 		savePassword: boolean;
-		groupFullName: string;
+		groupFullName?: string;
 		groupId: string;
 		providerName: string;
 		saveProfile: boolean;
@@ -427,6 +427,22 @@ declare module 'azdata' {
 		 * options for all new server properties.
 		 */
 		options: { [key: string]: any };
+	}
+
+	/**
+	 * The possible values of the server engine edition
+	 */
+	export enum DatabaseEngineEdition {
+		Unknown = 0,
+		Personal = 1,
+		Standard = 2,
+		Enterprise = 3,
+		Express = 4,
+		SqlDatabase = 5,
+		SqlDataWarehouse = 6,
+		SqlStretchDatabase = 7,
+		SqlManagedInstance = 8,
+		SqlOnDemand = 11
 	}
 
 	export interface DataProvider {
@@ -834,7 +850,7 @@ declare module 'azdata' {
 	export interface IResultMessage {
 		batchId?: number;
 		isError: boolean;
-		time: string;
+		time?: string;
 		message: string;
 	}
 

@@ -500,10 +500,10 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 				if (!outgoing) {
 					return undefined; // {{SQL CARBON EDIT}} strict-null-check
 				}
-				return outgoing.map(([item, sourceRanges]): callh.OutgoingCall => {
+				return outgoing.map(([item, fromRanges]): callh.OutgoingCall => {
 					return {
-						target: MainThreadLanguageFeatures._reviveCallHierarchyItemDto(item),
-						sourceRanges
+						to: MainThreadLanguageFeatures._reviveCallHierarchyItemDto(item),
+						fromRanges
 					};
 				});
 			},
@@ -512,10 +512,10 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 				if (!incoming) {
 					return undefined; // {{SQL CARBON EDIT}} strict-null-check
 				}
-				return incoming.map(([item, sourceRanges]): callh.IncomingCall => {
+				return incoming.map(([item, fromRanges]): callh.IncomingCall => {
 					return {
-						source: MainThreadLanguageFeatures._reviveCallHierarchyItemDto(item),
-						sourceRanges
+						from: MainThreadLanguageFeatures._reviveCallHierarchyItemDto(item),
+						fromRanges
 					};
 				});
 			}
