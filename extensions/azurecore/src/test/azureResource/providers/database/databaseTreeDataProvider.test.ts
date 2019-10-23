@@ -11,13 +11,12 @@ import 'mocha';
 
 import { azureResource } from '../../../../azureResource/azure-resource';
 import { ApiWrapper } from '../../../../apiWrapper';
-import { IAzureResourceDatabaseService } from '../../../../azureResource/providers/database/interfaces';
 import { AzureResourceDatabaseTreeDataProvider } from '../../../../azureResource/providers/database/databaseTreeDataProvider';
-import { AzureResourceDatabase } from '../../../../azureResource/providers/database/models';
 import { AzureResourceItemType } from '../../../../azureResource/constants';
+import { IAzureResourceService, AzureResourceDatabase } from '../../../../azureResource/interfaces';
 
 // Mock services
-let mockDatabaseService: TypeMoq.IMock<IAzureResourceDatabaseService>;
+let mockDatabaseService: TypeMoq.IMock<IAzureResourceService<AzureResourceDatabase>>;
 let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 
@@ -80,7 +79,7 @@ const mockDatabases: AzureResourceDatabase[] = [
 
 describe('AzureResourceDatabaseTreeDataProvider.info', function (): void {
 	beforeEach(() => {
-		mockDatabaseService = TypeMoq.Mock.ofType<IAzureResourceDatabaseService>();
+		mockDatabaseService = TypeMoq.Mock.ofType<IAzureResourceService<AzureResourceDatabase>>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 	});
@@ -98,12 +97,12 @@ describe('AzureResourceDatabaseTreeDataProvider.info', function (): void {
 
 describe('AzureResourceDatabaseTreeDataProvider.getChildren', function (): void {
 	beforeEach(() => {
-		mockDatabaseService = TypeMoq.Mock.ofType<IAzureResourceDatabaseService>();
+		mockDatabaseService = TypeMoq.Mock.ofType<IAzureResourceService<AzureResourceDatabase>>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 
 		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
-		mockDatabaseService.setup((o) => o.getDatabases(mockSubscription, TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabases));
+		mockDatabaseService.setup((o) => o.getResources(mockSubscription, TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabases));
 		mockExtensionContext.setup((o) => o.asAbsolutePath(TypeMoq.It.isAnyString())).returns(() => TypeMoq.It.isAnyString());
 	});
 
