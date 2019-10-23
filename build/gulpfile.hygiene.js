@@ -367,7 +367,7 @@ function hygiene(some) {
 		const fileDir = path.dirname(file.path);
 		//check the filename is < 50 characters (basename gets the filename with extension).
 		if (fileName.length > 50) {
-			console.error(`File name in the path ${fileName} under ${fileDir} is too long. Rename file to have less than 50 characters.`);
+			console.error(`File name '${fileName}' under ${fileDir} is too long. Rename file to have less than 50 characters.`);
 			errorCount++;
 		}
 		if (file.path.length > 255) {
