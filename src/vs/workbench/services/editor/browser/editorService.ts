@@ -153,7 +153,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 
 		for (const handler of this.openEditorHandlers) {
 			const result = handler(event.editor, event.options, group);
-			const override = result ? result.override : undefined;
+			const override = result?.override;
 			if (override) {
 				event.prevent((() => override.then(editor => withNullAsUndefined(editor))));
 				break;
@@ -162,9 +162,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 	}
 
 	get activeControl(): IVisibleEditor | undefined {
-		const activeGroup = this.editorGroupService.activeGroup;
-
-		return activeGroup ? activeGroup.activeControl : undefined;
+		return this.editorGroupService.activeGroup?.activeControl;
 	}
 
 	get activeTextEditorWidget(): ICodeEditor | IDiffEditor | undefined {

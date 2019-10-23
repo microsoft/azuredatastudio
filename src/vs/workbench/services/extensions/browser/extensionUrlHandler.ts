@@ -142,7 +142,7 @@ class ExtensionUrlHandler implements IExtensionUrlHandler, IURLHandler {
 		}
 
 		if (showConfirm) {
-			let uriString = uri.toString();
+			let uriString = uri.toString(false);
 
 			// {{SQL CARBON EDIT}} - Begin
 			// Dialog service starts truncating words longer than 80 characters and adds ellipses to it.
