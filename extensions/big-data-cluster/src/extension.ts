@@ -20,13 +20,13 @@ import { getControllerEndpoint } from './bigDataCluster/utils';
 
 const localize = nls.loadMessageBundle();
 
-const AddControllerCommand = 'bigDataClusters.command.addController';
-const DeleteControllerCommand = 'bigDataClusters.command.deleteController';
-const RefreshControllerCommand = 'bigDataClusters.command.refreshController';
-const ManageControllerCommand = 'bigDataClusters.command.manageController';
-const MountHdfsCommand = 'bigDataClusters.command.mount';
-const RefreshMountCommand = 'bigDataClusters.command.refreshmount';
-const DeleteMountCommand = 'bigDataClusters.command.deletemount';
+export const AddControllerCommand = 'bigDataClusters.command.addController';
+export const DeleteControllerCommand = 'bigDataClusters.command.deleteController';
+export const RefreshControllerCommand = 'bigDataClusters.command.refreshController';
+export const ManageControllerCommand = 'bigDataClusters.command.manageController';
+export const MountHdfsCommand = 'bigDataClusters.command.mount';
+export const RefreshMountCommand = 'bigDataClusters.command.refreshmount';
+export const DeleteMountCommand = 'bigDataClusters.command.deletemount';
 
 const endpointNotFoundError = localize('mount.error.endpointNotFound', "Controller endpoint information was not found");
 

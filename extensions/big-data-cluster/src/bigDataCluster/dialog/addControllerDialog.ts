@@ -6,11 +6,14 @@
 'use strict';
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { ClusterController, ControllerError } from '../controller/clusterControllerApi';
 import { ControllerTreeDataProvider } from '../tree/controllerTreeDataProvider';
 import { TreeNode } from '../tree/treeNode';
 import { AuthType } from '../constants';
+import { ManageControllerCommand } from '../../extension';
+import { BdcDashboardOptions } from './bdcDashboardModel';
 
 const localize = nls.loadMessageBundle();
 
@@ -74,6 +77,7 @@ export class AddControllerDialogModel {
 					return;
 				}
 				this.treeDataProvider.addController(url, auth, username, password, rememberPassword);
+				vscode.commands.executeCommand(ManageControllerCommand, <BdcDashboardOptions>{ url: url, auth: auth, username: username, password: password });
 				await this.treeDataProvider.saveControllers();
 			}
 		} catch (error) {

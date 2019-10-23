@@ -378,7 +378,7 @@ export class ControllerError extends Error {
 	public code?: number;
 	public reason?: string;
 	public address?: string;
-
+	public statusMessage?: string;
 	/**
 	 *
 	 * @param error The original error to wrap
@@ -391,6 +391,7 @@ export class ControllerError extends Error {
 			this.code = error.response.statusCode;
 			this.message += `${error.response.statusMessage ? ` - ${error.response.statusMessage}` : ''}` || '';
 			this.address = error.response.url || '';
+			this.statusMessage = error.response.statusMessage;
 		}
 		else if (error.message) {
 			this.message += ` - ${error.message}`;

@@ -22,7 +22,6 @@ interface IControllerInfoSlim {
 	auth: AuthType;
 	username: string;
 	password?: string;
-	rememberPassword: boolean;
 }
 
 export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeNode>, IControllerTreeChangeHandler {
@@ -114,16 +113,13 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		let controllers: IControllerInfoSlim[] = this.memento.get('controllers');
 		if (controllers) {
 			for (let c of controllers) {
-				let password = undefined;
-				if (c.rememberPassword) {
-					password = await this.getPassword(c.url, c.username);
-				}
+				const password = await this.getPassword(c.url, c.username);
 				if (!c.auth) {
 					// Added before we had added authentication
 					c.auth = 'basic';
 				}
 				this.root.addChild(new ControllerNode(
-					c.url, c.auth, c.username, password, c.rememberPassword,
+					c.url, c.auth, c.username, password,
 					undefined, this.root, this, undefined
 				));
 			}
@@ -138,23 +134,21 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 	}
 
 	public async saveControllers(): Promise<void> {
-		let controllers = this.root.children.map((e): IControllerInfoSlim => {
-			let controller = e as ControllerNode;
+		const controllers = this.root.children.map((e): IControllerInfoSlim => {
+			const controller = e as ControllerNode;
 			return {
 				url: controller.url,
 				auth: controller.auth,
 				username: controller.username,
-				password: controller.password,
-				rememberPassword: !!controller.rememberPassword
+				password: controller.password
 			};
 		});
 
-		let controllersWithoutPassword = controllers.map((e): IControllerInfoSlim => {
+		const controllersWithoutPassword = controllers.map((e): IControllerInfoSlim => {
 			return {
 				url: e.url,
 				auth: e.auth,
-				username: e.username,
-				rememberPassword: e.rememberPassword
+				username: e.username
 			};
 		});
 
@@ -164,8 +158,8 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 			showErrorMessage(error);
 		}
 
-		for (let e of controllers) {
-			if (e.rememberPassword) {
+		for (const e of controllers) {
+			if (e.password) {
 				await this.savePassword(e.url, e.username, e.password);
 			} else {
 				await this.deletePassword(e.url, e.username);
@@ -187,7 +181,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		return result;
 	}
 
-	private async getPassword(url: string, username: string): Promise<string> {
+	private async getPassword(url: string, username: string): Promise<string | undefined> {
 		let provider = await this.getCredentialProvider();
 		let id = this.createId(url, username);
 		let credential = await provider.readCredential(id);

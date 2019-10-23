@@ -112,11 +112,10 @@ export class ControllerRootNode extends ControllerTreeNode {
 	): void {
 		let controllerNode = this.getExistingControllerNode(url, auth, username);
 		if (controllerNode) {
-			controllerNode.password = password;
-			controllerNode.rememberPassword = rememberPassword;
+			controllerNode.password = rememberPassword ? password : undefined;
 			controllerNode.clearChildren();
 		} else {
-			controllerNode = new ControllerNode(url, auth, username, password, rememberPassword, undefined, this, this.treeChangeHandler, undefined);
+			controllerNode = new ControllerNode(url, auth, username, rememberPassword ? password : undefined, undefined, this, this.treeChangeHandler, undefined);
 			this.addChild(controllerNode);
 		}
 	}
@@ -150,7 +149,6 @@ export class ControllerNode extends ControllerTreeNode {
 		private _auth: AuthType,
 		private _username: string,
 		private _password: string,
-		private _rememberPassword: boolean,
 		label: string,
 		parent: ControllerTreeNode,
 		treeChangeHandler: IControllerTreeChangeHandler,
@@ -199,14 +197,6 @@ export class ControllerNode extends ControllerTreeNode {
 
 	public set password(pw: string) {
 		this._password = pw;
-	}
-
-	public get rememberPassword() {
-		return this._rememberPassword;
-	}
-
-	public set rememberPassword(rememberPassword: boolean) {
-		this._rememberPassword = rememberPassword;
 	}
 
 	public set label(label: string) {
