@@ -16,32 +16,32 @@ const localize = nls.loadMessageBundle();
 export class OperatorDialog extends AgentDialog<OperatorData> {
 
 	// Top level
-	private static readonly CreateDialogTitle: string = localize('createOperator.createOperator', 'Create Operator');
-	private static readonly EditDialogTitle: string = localize('createOperator.editOperator', 'Edit Operator');
-	private static readonly GeneralTabText: string = localize('createOperator.General', 'General');
-	private static readonly NotificationsTabText: string = localize('createOperator.Notifications', 'Notifications');
+	private static readonly CreateDialogTitle: string = localize('createOperator.createOperator', "Create Operator");
+	private static readonly EditDialogTitle: string = localize('createOperator.editOperator', "Edit Operator");
+	private static readonly GeneralTabText: string = localize('createOperator.General', "General");
+	private static readonly NotificationsTabText: string = localize('createOperator.Notifications', "Notifications");
 
 	// General tab strings
-	private static readonly NameLabel: string = localize('createOperator.Name', 'Name');
-	private static readonly EnabledCheckboxLabel: string = localize('createOperator.Enabled', 'Enabled');
-	private static readonly EmailNameTextLabel: string = localize('createOperator.EmailName', 'E-mail Name');
-	private static readonly PagerEmailNameTextLabel: string = localize('createOperator.PagerEmailName', 'Pager E-mail Name');
-	private static readonly PagerMondayCheckBoxLabel: string = localize('createOperator.PagerMondayCheckBox', 'Monday');
-	private static readonly PagerTuesdayCheckBoxLabel: string = localize('createOperator.PagerTuesdayCheckBox', 'Tuesday');
-	private static readonly PagerWednesdayCheckBoxLabel: string = localize('createOperator.PagerWednesdayCheckBox', 'Wednesday');
-	private static readonly PagerThursdayCheckBoxLabel: string = localize('createOperator.PagerThursdayCheckBox', 'Thursday');
-	private static readonly PagerFridayCheckBoxLabel: string = localize('createOperator.PagerFridayCheckBox', 'Friday  ');
-	private static readonly PagerSaturdayCheckBoxLabel: string = localize('createOperator.PagerSaturdayCheckBox', 'Saturday');
-	private static readonly PagerSundayCheckBoxLabel: string = localize('createOperator.PagerSundayCheckBox', 'Sunday');
-	private static readonly WorkdayBeginLabel: string = localize('createOperator.workdayBegin', 'Workday begin');
-	private static readonly WorkdayEndLabel: string = localize('createOperator.workdayEnd', 'Workday end');
-	private static readonly PagerDutyScheduleLabel: string = localize('createOperator.PagerDutySchedule', 'Pager on duty schedule');
+	private static readonly NameLabel: string = localize('createOperator.Name', "Name");
+	private static readonly EnabledCheckboxLabel: string = localize('createOperator.Enabled', "Enabled");
+	private static readonly EmailNameTextLabel: string = localize('createOperator.EmailName', "E-mail Name");
+	private static readonly PagerEmailNameTextLabel: string = localize('createOperator.PagerEmailName', "Pager E-mail Name");
+	private static readonly PagerMondayCheckBoxLabel: string = localize('createOperator.PagerMondayCheckBox', "Monday");
+	private static readonly PagerTuesdayCheckBoxLabel: string = localize('createOperator.PagerTuesdayCheckBox', "Tuesday");
+	private static readonly PagerWednesdayCheckBoxLabel: string = localize('createOperator.PagerWednesdayCheckBox', "Wednesday");
+	private static readonly PagerThursdayCheckBoxLabel: string = localize('createOperator.PagerThursdayCheckBox', "Thursday");
+	private static readonly PagerFridayCheckBoxLabel: string = localize('createOperator.PagerFridayCheckBox', "Friday  ");
+	private static readonly PagerSaturdayCheckBoxLabel: string = localize('createOperator.PagerSaturdayCheckBox', "Saturday");
+	private static readonly PagerSundayCheckBoxLabel: string = localize('createOperator.PagerSundayCheckBox', "Sunday");
+	private static readonly WorkdayBeginLabel: string = localize('createOperator.workdayBegin', "Workday begin");
+	private static readonly WorkdayEndLabel: string = localize('createOperator.workdayEnd', "Workday end");
+	private static readonly PagerDutyScheduleLabel: string = localize('createOperator.PagerDutySchedule', "Pager on duty schedule");
 
 	// Notifications tab strings
-	private static readonly AlertsTableLabel: string = localize('createOperator.AlertListHeading', 'Alert list');
-	private static readonly AlertNameColumnLabel: string = localize('createOperator.AlertNameColumnLabel', 'Alert name');
-	private static readonly AlertEmailColumnLabel: string = localize('createOperator.AlertEmailColumnLabel', 'E-mail');
-	private static readonly AlertPagerColumnLabel: string = localize('createOperator.AlertPagerColumnLabel', 'Pager');
+	private static readonly AlertsTableLabel: string = localize('createOperator.AlertListHeading', "Alert list");
+	private static readonly AlertNameColumnLabel: string = localize('createOperator.AlertNameColumnLabel', "Alert name");
+	private static readonly AlertEmailColumnLabel: string = localize('createOperator.AlertEmailColumnLabel', "E-mail");
+	private static readonly AlertPagerColumnLabel: string = localize('createOperator.AlertPagerColumnLabel', "Pager");
 
 	// Event strings
 	private readonly NewOperatorDialog = 'NewOperatorDialogOpened';

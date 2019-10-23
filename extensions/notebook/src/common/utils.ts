@@ -22,7 +22,7 @@ export function getLivyUrl(serverName: string, port: string): string {
 export async function mkDir(dirPath: string, outputChannel?: vscode.OutputChannel): Promise<void> {
 	if (!await fs.pathExists(dirPath)) {
 		if (outputChannel) {
-			outputChannel.appendLine(localize('mkdirOutputMsg', '... Creating {0}', dirPath));
+			outputChannel.appendLine(localize('mkdirOutputMsg', "... Creating {0}", dirPath));
 		}
 		await fs.ensureDir(dirPath);
 	}
@@ -71,7 +71,7 @@ export function executeStreamedCommand(cmd: string, options: childProcess.SpawnO
 			if (code === 0) {
 				resolve();
 			} else {
-				reject(localize('executeCommandProcessExited', 'Process exited with code {0}', code));
+				reject(localize('executeCommandProcessExited', "Process exited with code {0}", code));
 			}
 		});
 

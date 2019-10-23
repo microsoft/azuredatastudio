@@ -54,7 +54,7 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 		super(DeployClusterWizard.getTitle(wizardInfo.type), new DeployClusterWizardModel(wizardInfo.type));
 		this._saveConfigButton = azdata.window.createButton(localize('deployCluster.SaveConfigFiles', "Save config files"), 'left');
 		this._saveConfigButton.hidden = true;
-		this._scriptToNotebookButton = azdata.window.createButton(localize('deployCluster.ScriptToNotebook', 'Script to Notebook'), 'left');
+		this._scriptToNotebookButton = azdata.window.createButton(localize('deployCluster.ScriptToNotebook', "Script to Notebook"), 'left');
 		this._scriptToNotebookButton.hidden = true;
 		this.addButton(this._saveConfigButton);
 		this.addButton(this._scriptToNotebookButton);

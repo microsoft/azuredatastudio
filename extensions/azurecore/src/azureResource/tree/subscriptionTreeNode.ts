@@ -91,5 +91,5 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 
 	private _id: string = undefined;
 
-	private static readonly noResourcesLabel = localize('azure.resource.tree.subscriptionTreeNode.noResourcesLabel', 'No Resources found.');
+	private static readonly noResourcesLabel = localize('azure.resource.tree.subscriptionTreeNode.noResourcesLabel', "No Resources found.");
 }

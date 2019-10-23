@@ -3,15 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as nls from 'vscode-nls';
+import { IWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
+import { URI } from 'vs/base/common/uri';
+import { hash } from 'vs/base/common/hash';
 
-const localize = nls.loadMessageBundle();
-
-export const extensionConfigSectionName = 'azure';
-export const ViewType = 'view';
-
-export enum BuiltInCommands {
-	SetContext = 'setContext'
+export function getWorkspaceIdentifier(workspacePath: URI): IWorkspaceIdentifier {
+	return {
+		id: hash(workspacePath.toString()).toString(16),
+		configPath: workspacePath
+	};
 }
-
-export const extensionName = localize('extensionName', "Azure Accounts");
