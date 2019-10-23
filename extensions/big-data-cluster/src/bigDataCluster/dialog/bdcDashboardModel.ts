@@ -59,6 +59,7 @@ export class BdcDashboardModel {
 	public async refresh(): Promise<void> {
 		try {
 			if (!this._clusterController) {
+				// If this succeeds without error we know we have a clusterController at this point
 				await this.promptReconnect();
 			}
 
