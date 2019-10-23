@@ -371,7 +371,7 @@ function hygiene(some) {
 			errorCount++;
 		}
 		if (file.relative.length > 150) {
-			console.error(`File path ${file.relative} exceeds acceptable file-length. Rename the path to have less than 255 characters.`);
+			console.error(`File path ${file.relative} exceeds acceptable file-length. Rename the path to have less than 150 characters.`);
 			errorCount++;
 		}
 
