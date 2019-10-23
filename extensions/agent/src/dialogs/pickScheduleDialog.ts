@@ -15,13 +15,13 @@ export class PickScheduleDialog {
 
 	// TODO: localize
 	// Top level
-	private readonly DialogTitle: string = localize('pickSchedule.jobSchedules', 'Job Schedules');
-	private readonly OkButtonText: string = localize('pickSchedule.ok', 'OK');
-	private readonly CancelButtonText: string = localize('pickSchedule.cancel', 'Cancel');
-	private readonly SchedulesLabelText: string = localize('pickSchedule.availableSchedules', 'Available Schedules:');
-	public static readonly ScheduleNameLabelText: string = localize('pickSchedule.scheduleName', 'Name');
-	public static readonly SchedulesIDText: string = localize('pickSchedule.scheduleID', 'ID');
-	public static readonly ScheduleDescription: string = localize('pickSchedule.description', 'Description');
+	private readonly DialogTitle: string = localize('pickSchedule.jobSchedules', "Job Schedules");
+	private readonly OkButtonText: string = localize('pickSchedule.ok', "OK");
+	private readonly CancelButtonText: string = localize('pickSchedule.cancel', "Cancel");
+	private readonly SchedulesLabelText: string = localize('pickSchedule.availableSchedules', "Available Schedules:");
+	public static readonly ScheduleNameLabelText: string = localize('pickSchedule.scheduleName', "Name");
+	public static readonly SchedulesIDText: string = localize('pickSchedule.scheduleID', "ID");
+	public static readonly ScheduleDescription: string = localize('pickSchedule.description', "Description");
 
 
 	// UI Components

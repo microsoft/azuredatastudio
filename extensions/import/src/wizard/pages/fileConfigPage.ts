@@ -97,7 +97,7 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.serverDropdown,
-			title: localize('flatFileImport.serverDropdownTitle', 'Server the database is in')
+			title: localize('flatFileImport.serverDropdownTitle', "Server the database is in")
 		};
 	}
 
@@ -132,7 +132,7 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.databaseLoader,
-			title: localize('flatFileImport.databaseDropdownTitle', 'Database the table is created in')
+			title: localize('flatFileImport.databaseDropdownTitle', "Database the table is created in")
 		};
 	}
 
@@ -164,7 +164,7 @@ export class FileConfigPage extends ImportPage {
 			required: true
 		}).component();
 		this.fileButton = this.view.modelBuilder.button().withProperties({
-			label: localize('flatFileImport.browseFiles', 'Browse'),
+			label: localize('flatFileImport.browseFiles', "Browse"),
 		}).component();
 
 		this.fileButton.onDidClick(async (click) => {
@@ -173,7 +173,7 @@ export class FileConfigPage extends ImportPage {
 					canSelectFiles: true,
 					canSelectFolders: false,
 					canSelectMany: false,
-					openLabel: localize('flatFileImport.openFile', 'Open'),
+					openLabel: localize('flatFileImport.openFile', "Open"),
 					filters: {
 						'CSV/TXT Files': ['csv', 'txt'],
 						'All Files': ['*']
@@ -213,7 +213,7 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('flatFileImport.fileTextboxTitle', 'Location of the file to be imported'),
+			title: localize('flatFileImport.fileTextboxTitle', "Location of the file to be imported"),
 			actions: [this.fileButton]
 		};
 	}
@@ -242,7 +242,7 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.tableNameTextBox,
-			title: localize('flatFileImport.tableTextboxTitle', 'New table name'),
+			title: localize('flatFileImport.tableTextboxTitle', "New table name"),
 		};
 	}
 
@@ -260,7 +260,7 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.schemaLoader,
-			title: localize('flatFileImport.schemaTextboxTitle', 'Table schema'),
+			title: localize('flatFileImport.schemaTextboxTitle', "Table schema"),
 		};
 
 	}
