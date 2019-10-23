@@ -7,7 +7,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 // HDFS Constants //////////////////////////////////////////////////////////
-export const msgMissingNodeContext = localize('msgMissingNodeContext', 'Node Command called without any node passed');
+export const msgMissingNodeContext = localize('msgMissingNodeContext', "Node Command called without any node passed");
 
 // HDFS Manage Access Dialog Constants ////////////////////////////////////
 
@@ -37,16 +37,16 @@ export const applyRecursivelyText = localize('mssql.applyRecursively', "Apply Re
 export function errorApplyingAclChanges(errMsg: string): string { return localize('mssql.errorApplyingAclChanges', "Unexpected error occurred while applying changes : {0}", errMsg); }
 
 // Spark Job Submission Constants //////////////////////////////////////////
-export const sparkLocalFileDestinationHint = localize('sparkJobSubmission.LocalFileDestinationHint', 'Local file will be uploaded to HDFS. ');
-export const sparkJobSubmissionEndMessage = localize('sparkJobSubmission.SubmissionEndMessage', '.......................... Submit Spark Job End ............................');
-export function sparkJobSubmissionPrepareUploadingFile(localPath: string, clusterFolder: string): string { return localize('sparkJobSubmission.PrepareUploadingFile', 'Uploading file from local {0} to HDFS folder: {1}', localPath, clusterFolder); }
-export const sparkJobSubmissionUploadingFileSucceeded = localize('sparkJobSubmission.UploadingFileSucceeded', 'Upload file to cluster Succeeded!');
-export function sparkJobSubmissionUploadingFileFailed(err: string): string { return localize('sparkJobSubmission.UploadingFileFailed', 'Upload file to cluster Failed. {0}', err); }
-export function sparkJobSubmissionPrepareSubmitJob(jobName: string): string { return localize('sparkJobSubmission.PrepareSubmitJob', 'Submitting job {0} ... ', jobName); }
-export const sparkJobSubmissionSparkJobHasBeenSubmitted = localize('sparkJobSubmission.SubmitJobFinished', 'The Spark Job has been submitted.');
-export function sparkJobSubmissionSubmitJobFailed(err: string): string { return localize('sparkJobSubmission.SubmitJobFailed', 'Spark Job Submission Failed. {0} ', err); }
-export function sparkJobSubmissionYarnUIMessage(yarnUIURL: string): string { return localize('sparkJobSubmission.YarnUIMessage', 'YarnUI Url: {0} ', yarnUIURL); }
-export function sparkJobSubmissionSparkHistoryLinkMessage(sparkHistoryLink: string): string { return localize('sparkJobSubmission.SparkHistoryLinkMessage', 'Spark History Url: {0} ', sparkHistoryLink); }
-export function sparkJobSubmissionGetApplicationIdFailed(err: string): string { return localize('sparkJobSubmission.GetApplicationIdFailed', 'Get Application Id Failed. {0}', err); }
-export function sparkJobSubmissionLocalFileNotExisted(path: string): string { return localize('sparkJobSubmission.LocalFileNotExisted', 'Local file {0} does not existed. ', path); }
-export const sparkJobSubmissionNoSqlBigDataClusterFound = localize('sparkJobSubmission.NoSqlBigDataClusterFound', 'No SQL Server Big Data Cluster found.');
+export const sparkLocalFileDestinationHint = localize('sparkJobSubmission.LocalFileDestinationHint', "Local file will be uploaded to HDFS. ");
+export const sparkJobSubmissionEndMessage = localize('sparkJobSubmission.SubmissionEndMessage', ".......................... Submit Spark Job End ............................");
+export function sparkJobSubmissionPrepareUploadingFile(localPath: string, clusterFolder: string): string { return localize('sparkJobSubmission.PrepareUploadingFile', "Uploading file from local {0} to HDFS folder: {1}", localPath, clusterFolder); }
+export const sparkJobSubmissionUploadingFileSucceeded = localize('sparkJobSubmission.UploadingFileSucceeded', "Upload file to cluster Succeeded!");
+export function sparkJobSubmissionUploadingFileFailed(err: string): string { return localize('sparkJobSubmission.UploadingFileFailed', "Upload file to cluster Failed. {0}", err); }
+export function sparkJobSubmissionPrepareSubmitJob(jobName: string): string { return localize('sparkJobSubmission.PrepareSubmitJob', "Submitting job {0} ... ", jobName); }
+export const sparkJobSubmissionSparkJobHasBeenSubmitted = localize('sparkJobSubmission.SubmitJobFinished', "The Spark Job has been submitted.");
+export function sparkJobSubmissionSubmitJobFailed(err: string): string { return localize('sparkJobSubmission.SubmitJobFailed', "Spark Job Submission Failed. {0} ", err); }
+export function sparkJobSubmissionYarnUIMessage(yarnUIURL: string): string { return localize('sparkJobSubmission.YarnUIMessage', "YarnUI Url: {0} ", yarnUIURL); }
+export function sparkJobSubmissionSparkHistoryLinkMessage(sparkHistoryLink: string): string { return localize('sparkJobSubmission.SparkHistoryLinkMessage', "Spark History Url: {0} ", sparkHistoryLink); }
+export function sparkJobSubmissionGetApplicationIdFailed(err: string): string { return localize('sparkJobSubmission.GetApplicationIdFailed', "Get Application Id Failed. {0}", err); }
+export function sparkJobSubmissionLocalFileNotExisted(path: string): string { return localize('sparkJobSubmission.LocalFileNotExisted', "Local file {0} does not existed. ", path); }
+export const sparkJobSubmissionNoSqlBigDataClusterFound = localize('sparkJobSubmission.NoSqlBigDataClusterFound', "No SQL Server Big Data Cluster found.");

@@ -14,4 +14,4 @@ export enum BuiltInCommands {
 	SetContext = 'setContext'
 }
 
-export const extensionName = localize('extensionName', 'Azure Accounts');
+export const extensionName = localize('extensionName', "Azure Accounts");

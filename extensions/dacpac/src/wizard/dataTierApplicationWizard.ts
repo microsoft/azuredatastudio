@@ -110,13 +110,13 @@ export class DataTierApplicationWizard {
 		this.model.serverId = this.connection.connectionId;
 
 		this.wizard = azdata.window.createWizard('Data-tier Application Wizard');
-		let selectOperationWizardPage = azdata.window.createWizardPage(localize('dacFx.selectOperationPageName', 'Select an Operation'));
-		let deployConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.deployConfigPageName', 'Select Deploy Dacpac Settings'));
-		let deployPlanWizardPage = azdata.window.createWizardPage(localize('dacFx.deployPlanPage', 'Review the deploy plan'));
-		let summaryWizardPage = azdata.window.createWizardPage(localize('dacFx.summaryPageName', 'Summary'));
-		let extractConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.extractConfigPageName', 'Select Extract Dacpac Settings'));
-		let importConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.importConfigPageName', 'Select Import Bacpac Settings'));
-		let exportConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.exportConfigPageName', 'Select Export Bacpac Settings'));
+		let selectOperationWizardPage = azdata.window.createWizardPage(localize('dacFx.selectOperationPageName', "Select an Operation"));
+		let deployConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.deployConfigPageName', "Select Deploy Dacpac Settings"));
+		let deployPlanWizardPage = azdata.window.createWizardPage(localize('dacFx.deployPlanPage', "Review the deploy plan"));
+		let summaryWizardPage = azdata.window.createWizardPage(localize('dacFx.summaryPageName', "Summary"));
+		let extractConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.extractConfigPageName', "Select Extract Dacpac Settings"));
+		let importConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.importConfigPageName', "Select Import Bacpac Settings"));
+		let exportConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.exportConfigPageName', "Select Export Bacpac Settings"));
 
 		this.pages.set(PageName.selectOperation, new Page(selectOperationWizardPage));
 		this.pages.set(PageName.deployConfig, new Page(deployConfigWizardPage));
@@ -201,27 +201,27 @@ export class DataTierApplicationWizard {
 	public setDoneButton(operation: Operation): void {
 		switch (operation) {
 			case Operation.deploy: {
-				this.wizard.doneButton.label = localize('dacFx.deployButton', 'Deploy');
+				this.wizard.doneButton.label = localize('dacFx.deployButton', "Deploy");
 				this.selectedOperation = Operation.deploy;
 				break;
 			}
 			case Operation.extract: {
-				this.wizard.doneButton.label = localize('dacFx.extractButton', 'Extract');
+				this.wizard.doneButton.label = localize('dacFx.extractButton', "Extract");
 				this.selectedOperation = Operation.extract;
 				break;
 			}
 			case Operation.import: {
-				this.wizard.doneButton.label = localize('dacFx.importButton', 'Import');
+				this.wizard.doneButton.label = localize('dacFx.importButton', "Import");
 				this.selectedOperation = Operation.import;
 				break;
 			}
 			case Operation.export: {
-				this.wizard.doneButton.label = localize('dacFx.exportButton', 'Export');
+				this.wizard.doneButton.label = localize('dacFx.exportButton', "Export");
 				this.selectedOperation = Operation.export;
 				break;
 			}
 			case Operation.generateDeployScript: {
-				this.wizard.doneButton.label = localize('dacFx.generateScriptButton', 'Generate Script');
+				this.wizard.doneButton.label = localize('dacFx.generateScriptButton', "Generate Script");
 				this.selectedOperation = Operation.generateDeployScript;
 				break;
 			}
@@ -305,7 +305,7 @@ export class DataTierApplicationWizard {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 		this.wizard.message = {
-			text: localize('dacfx.scriptGeneratingMessage', 'You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.'),
+			text: localize('dacfx.scriptGeneratingMessage', "You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete."),
 			level: azdata.window.MessageLevel.Information,
 			description: ''
 		};

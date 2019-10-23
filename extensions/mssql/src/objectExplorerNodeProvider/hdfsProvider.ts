@@ -140,7 +140,7 @@ export class FolderNode extends HdfsFileSourceNode {
 					});
 				}
 			} catch (error) {
-				this.children = [ErrorNode.create(localize('errorExpanding', 'Error: {0}', utils.getErrorMessage(error)), this, error.statusCode)];
+				this.children = [ErrorNode.create(localize('errorExpanding', "Error: {0}", utils.getErrorMessage(error)), this, error.statusCode)];
 			}
 		}
 		return this.children;
@@ -242,7 +242,7 @@ export class ConnectionNode extends FolderNode {
 	}
 
 	public async delete(): Promise<void> {
-		throw new Error(localize('errDeleteConnectionNode', 'Cannot delete a connection. Only subfolders and files can be deleted.'));
+		throw new Error(localize('errDeleteConnectionNode', "Cannot delete a connection. Only subfolders and files can be deleted."));
 	}
 
 	async getTreeItem(): Promise<vscode.TreeItem> {

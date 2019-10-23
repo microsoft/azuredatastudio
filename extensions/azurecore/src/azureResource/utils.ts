@@ -14,7 +14,7 @@ export function getErrorMessage(error: Error | string): string {
 
 export class AzureResourceErrorMessageUtil {
 	public static getErrorMessage(error: Error | string): string {
-		return localize('azure.resource.error', 'Error: {0}', getErrorMessage(error));
+		return localize('azure.resource.error', "Error: {0}", getErrorMessage(error));
 	}
 }
 

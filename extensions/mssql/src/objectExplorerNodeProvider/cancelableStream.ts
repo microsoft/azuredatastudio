@@ -18,7 +18,7 @@ export class CancelableStream extends Transform {
 
 	public _transform(chunk: any, encoding: string, callback: Function): void {
 		if (this.cancelationToken && this.cancelationToken.token.isCancellationRequested) {
-			callback(new Error(localize('streamCanceled', 'Stream operation canceled by the user')));
+			callback(new Error(localize('streamCanceled', "Stream operation canceled by the user")));
 		} else {
 			this.push(chunk);
 			callback();

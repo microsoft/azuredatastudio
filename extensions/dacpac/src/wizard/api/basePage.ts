@@ -74,7 +74,7 @@ export abstract class BasePage {
 			let srv = c.options.server;
 
 			if (!usr) {
-				usr = localize('basePage.defaultUser', 'default');
+				usr = localize('basePage.defaultUser', "default");
 			}
 
 			let finalName = `${srv} (${usr})`;
