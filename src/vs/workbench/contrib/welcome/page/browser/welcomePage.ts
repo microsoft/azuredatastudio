@@ -42,8 +42,6 @@ import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { joinPath } from 'vs/base/common/resources';
 import { IRecentlyOpened, isRecentWorkspace, IRecentWorkspace, IRecentFolder, isRecentFolder, IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment'; // {{SQL CARBON EDIT}}
-import { setProductQuality } from 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}}
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 
 const configurationKey = 'workbench.startupEditor';
@@ -265,7 +263,6 @@ class WelcomePage extends Disposable {
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
-		@IEnvironmentService private readonly environmentService: IEnvironmentService, // {{SQL CARBON EDIT}}
 		@IHostService private readonly hostService: IHostService
 	) {
 		super();
@@ -274,7 +271,6 @@ class WelcomePage extends Disposable {
 		const recentlyOpened = this.workspacesService.getRecentlyOpened();
 		const installedExtensions = this.instantiationService.invokeFunction(getInstalledExtensions);
 		// {{SQL CARBON EDIT}} - Redirect to ADS welcome page
-		setProductQuality(this.environmentService.appQuality);
 		const resource = URI.parse(require.toUrl('./az_data_welcome_page'))
 			.with({
 				scheme: Schemas.walkThrough,
