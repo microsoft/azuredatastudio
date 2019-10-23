@@ -968,6 +968,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			});
 
 			// send connection request
+			console.log('test');
 			self.sendConnectRequest(connection, uri);
 		});
 	}
