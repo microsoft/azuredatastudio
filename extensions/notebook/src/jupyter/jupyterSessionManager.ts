@@ -69,7 +69,7 @@ export class JupyterSessionManager implements nb.SessionManager {
 	private _sessionManager: Session.IManager;
 	private static _sessions: JupyterSession[] = [];
 
-	constructor() {
+	constructor(private _pythonEnvVarPath?: string) {
 		this._isReady = false;
 		this._ready = new Deferred<void>();
 	}
@@ -123,7 +123,7 @@ export class JupyterSessionManager implements nb.SessionManager {
 			return Promise.reject(new Error(localize('errorStartBeforeReady', "Cannot start a session, the manager is not yet initialized")));
 		}
 		let sessionImpl = await this._sessionManager.startNew(options);
-		let jupyterSession = new JupyterSession(sessionImpl, skipSettingEnvironmentVars);
+		let jupyterSession = new JupyterSession(sessionImpl, skipSettingEnvironmentVars, this._pythonEnvVarPath);
 		await jupyterSession.messagesComplete;
 		let index = JupyterSessionManager._sessions.findIndex(session => session.path === options.path);
 		if (index > -1) {
@@ -170,7 +170,7 @@ export class JupyterSession implements nb.ISession {
 	private _kernel: nb.IKernel;
 	private _messagesComplete: Deferred<void> = new Deferred<void>();
 
-	constructor(private sessionImpl: Session.ISession, skipSettingEnvironmentVars?: boolean) {
+	constructor(private sessionImpl: Session.ISession, skipSettingEnvironmentVars?: boolean, private _pythonEnvVarPath?: string) {
 		this.setEnvironmentVars(skipSettingEnvironmentVars);
 	}
 
@@ -335,8 +335,12 @@ export class JupyterSession implements nb.ISession {
 			let allCode: string = '';
 			for (let i = 0; i < Object.keys(process.env).length; i++) {
 				let key = Object.keys(process.env)[i];
-				// Jupyter doesn't seem to alow for setting multiple variables at once, so doing it with multiple commands
-				allCode += `%set_env ${key}=${process.env[key]}${EOL}`;
+				if (key.toLowerCase() === 'path' && this._pythonEnvVarPath) {
+					allCode += `%set_env ${key}=${this._pythonEnvVarPath}${EOL}`;
+				} else {
+					// Jupyter doesn't seem to alow for setting multiple variables at once, so doing it with multiple commands
+					allCode += `%set_env ${key}=${process.env[key]}${EOL}`;
+				}
 			}
 			let future = this.sessionImpl.kernel.requestExecute({
 				code: allCode
