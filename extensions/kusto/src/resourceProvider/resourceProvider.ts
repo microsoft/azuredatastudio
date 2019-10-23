@@ -49,8 +49,8 @@ class FireWallFeature extends SqlOpsFeature<any> {
 		};
 
 		return azdata.resources.registerResourceProvider({
-			displayName: 'Azure SQL Resource Provider', // TODO Localize
-			id: 'Microsoft.Azure.SQL.ResourceProvider',
+			displayName: 'Kusto Resource Provider', // TODO Localize
+			id: 'Microsoft.Azure.Kusto.ResourceProvider',
 			settings: {
 
 			}

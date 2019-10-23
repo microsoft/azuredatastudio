@@ -22,6 +22,7 @@ export class AzureResourceAzureDataExplorerService implements IAzureResourceAzur
 	public async getAzureDataExplorers(subscription: azureResource.AzureResourceSubscription, credential: ServiceClientCredentials): Promise<AzureResourceAzureDataExplorer[]> {
 		const azureDataExplorers: AzureResourceAzureDataExplorer[] = [];
 
+		// TODO: Use listWithHttpOperationResponse to filter resources at the server rather than pulling down all resource information.
 		const resClient = new ResourceManagementClient.ResourceManagementClient(credential, subscription.id);
 		const resources = await resClient.resources.list();
 		resources.forEach((resource) => {

@@ -17,8 +17,8 @@ import { IExtension } from './kusto';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import { registerSearchServerCommand } from './objectExplorerNodeProvider/command';
 import { MssqlIconProvider } from './iconProvider';
-import { getBookExtensionContributions } from './dashboard/bookExtensions';
-import { registerBooksWidget } from './dashboard/bookWidget';
+//import { getBookExtensionContributions } from './dashboard/bookExtensions';
+//import { registerBooksWidget } from './dashboard/bookWidget';
 import { createMssqlApi } from './kustoApiFactory';
 import { localize } from './localize';
 import { SqlToolsServer } from './sqlToolsServer';
@@ -54,12 +54,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	context.subscriptions.push(new ContextProvider());
 
 	registerLogCommand(context);
-
-	// Get book contributions - in the future this will be integrated with the Books/Notebook widget to show as a dashboard widget
-	const bookContributionProvider = getBookExtensionContributions(context);
-	context.subscriptions.push(bookContributionProvider);
-
-	registerBooksWidget(bookContributionProvider);
 
 	// initialize client last so we don't have features stuck behind it
 	const server = new SqlToolsServer();

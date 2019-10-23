@@ -60,7 +60,7 @@ export function getConfiguration(config: string = extensionConfigSectionName): v
 
 export function getConfigLogFilesRemovalLimit(): number {
 	let config = getConfiguration();
-	if (config) {
+	if (config && config[configLogFilesRemovalLimit]) {
 		return Number((config[configLogFilesRemovalLimit]).toFixed(0));
 	}
 	else {
@@ -70,7 +70,7 @@ export function getConfigLogFilesRemovalLimit(): number {
 
 export function getConfigLogRetentionSeconds(): number {
 	let config = getConfiguration();
-	if (config) {
+	if (config && config[configLogRetentionMinutes]) {
 		return Number((config[configLogRetentionMinutes] * 60).toFixed(0));
 	}
 	else {
