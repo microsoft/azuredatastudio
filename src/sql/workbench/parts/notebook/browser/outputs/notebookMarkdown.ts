@@ -190,7 +190,7 @@ export class NotebookMarkdownRenderer {
 			}
 		}
 		try {
-			if (URI.parse(href)) {
+			if (URI.parse(href) && path.isAbsolute(href)) {
 				return href;
 			}
 		} catch {
