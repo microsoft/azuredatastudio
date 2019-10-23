@@ -165,10 +165,10 @@ configurationRegistry.registerConfiguration({
 	'title': 'Notebook',
 	'type': 'object',
 	'properties': {
-		'notebook.sqlKernelStopOnError': {
+		'notebook.sqlStopOnError': {
 			'type': 'boolean',
 			'default': true,
-			'description': localize('notebook.sqlKernelStopOnError', "SQL kernel: stop notebook execution when error occurs in a cell.")
+			'description': localize('notebook.sqlStopOnError', "SQL kernel: stop Notebook execution when error occurs in a cell.")
 		}
 	}
 });
