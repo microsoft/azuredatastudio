@@ -363,11 +363,11 @@ function hygiene(some) {
 
 	const filelength = es.through(function (file) {
 
-		const filepath = file.path;
+		const fileName = path.basename(file.path);
 		//check the filename is < 50 characters (basename gets the filename with extension).
-		if (path.basename(filepath) > 50) {
-			console.error(filelength + ': File name too long.');
-				errorCount++;
+		if (fileName.length > 50) {
+			console.error("File name {0} under {1} is too long. Rename file to have less than 50 characters.", fileName, path.dirname(file.path));
+			errorCount++;
 		}
 
 		this.emit('data', file);
