@@ -489,8 +489,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	// When changing kernel, update the active session and register the kernel change event
-	// So KernelDropDown could get the event fired when added listerner on Model.KernelChange
+	// When changing kernel, update the active session
 	private updateActiveClientSession(clientSession: IClientSession) {
 		this._activeClientSession = clientSession;
 	}
