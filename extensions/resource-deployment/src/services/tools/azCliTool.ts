@@ -51,7 +51,7 @@ export class AzCliTool extends ToolBase {
 		}
 	}
 
-	readonly allInstallationCommands: Map<OsType, Command[]> = new Map<OsType, Command[]>([
+	protected readonly allInstallationCommands: Map<OsType, Command[]> = new Map<OsType, Command[]>([
 		[OsType.linux, linuxInstallationCommands],
 		[OsType.win32, win32InstallationCommands],
 		[OsType.darwin, macOsInstallationCommands],

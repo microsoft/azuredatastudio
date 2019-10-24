@@ -68,19 +68,38 @@ export class AzdataTool extends ToolBase {
 		}
 	}
 
-	readonly allInstallationCommands: Map<OsType, Command[]> = new Map<OsType, Command[]>([
-		[OsType.linux, defaultInstallationCommands],
-		[OsType.win32, defaultInstallationCommands],
-		[OsType.darwin, defaultInstallationCommands],
-		[OsType.others, defaultInstallationCommands]
-	]);
+	protected get allInstallationCommands(): Map<OsType, Command[]> {
+		return new Map<OsType, Command[]>([
+			[OsType.linux, this.defaultInstallationCommands],
+			[OsType.win32, this.defaultInstallationCommands],
+			[OsType.darwin, this.defaultInstallationCommands],
+			[OsType.others, this.defaultInstallationCommands]
+		]);
+	}
 
 	protected get uninstallCommand(): string | undefined {
 		if (this.osType !== OsType.linux) {
-			return defaultUninstallCommand;
+			return this.defaultUninstallCommand;
 		} else {
 			return super.uninstallCommand;
 		}
+	}
+
+	private get defaultInstallationCommands(): Command[] {
+		return [
+			{
+				comment: localize('resourceDeployment.Azdata.InstallUpdatePythonRequestsPackage', "installing/updating to latest version of requests python package azdata ..."),
+				command: `pip3 install -U requests`
+			},
+			{
+				comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata ..."),
+				command: `pip3 install -r ${vscode.workspace.getConfiguration(DeploymentConfigurationKey)[AzdataPipInstallUriKey]} ${vscode.workspace.getConfiguration(DeploymentConfigurationKey)[azdataPipInstallArgsKey]} --quiet --user`
+			}
+		];
+	}
+
+	private get defaultUninstallCommand(): string {
+		return `pip3 uninstall -r ${vscode.workspace.getConfiguration(DeploymentConfigurationKey)[AzdataPipInstallUriKey]} ${vscode.workspace.getConfiguration(DeploymentConfigurationKey)[azdataPipInstallArgsKey]} -y `;
 	}
 }
 
@@ -118,16 +137,3 @@ const linuxInstallationCommands = [
 	}
 ];
 */
-
-const defaultInstallationCommands = [
-	{
-		comment: localize('resourceDeployment.Azdata.InstallUpdatePythonRequestsPackage', "installing/updating to latest version of requests python package azdata ..."),
-		command: `pip3 install -U requests`
-	},
-	{
-		comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata ..."),
-		command: `pip3 install -r ${vscode.workspace.getConfiguration(DeploymentConfigurationKey)[AzdataPipInstallUriKey]} ${vscode.workspace.getConfiguration(DeploymentConfigurationKey)[azdataPipInstallArgsKey]} --quiet --user`
-	}
-];
-
-const defaultUninstallCommand = `pip3 uninstall -r ${vscode.workspace.getConfiguration(DeploymentConfigurationKey)[AzdataPipInstallUriKey]} ${vscode.workspace.getConfiguration(DeploymentConfigurationKey)[azdataPipInstallArgsKey]} -y `;
