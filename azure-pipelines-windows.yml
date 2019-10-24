@@ -38,8 +38,12 @@ steps:
     displayName: Run Hygiene Checks
 
   - script: |
-      yarn tslint
+      yarn tslint (gci)
     displayName: Run TSLint
+
+  - script: |
+      yarn gulp tslint
+    displayName: Run TSLint Checks
 
   - script: |
       yarn strict-null-check
