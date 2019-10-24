@@ -3,12 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { EOL } from 'os';
+import * as vscode from 'vscode';
 import * as path from 'path';
 import { SemVer } from 'semver';
 import * as nls from 'vscode-nls';
 import { Command, OsType, ToolType } from '../../interfaces';
 import { IPlatformService } from '../platformService';
 import { ToolBase } from './toolBase';
+import { DeploymentConfigurationKey, AzdataPipInstallUriKey, azdataPipInstallArgsKey } from '../../constants';
 
 const localize = nls.loadMessageBundle();
 const installationRoot = '~/.local/bin';
@@ -67,7 +69,7 @@ export class AzdataTool extends ToolBase {
 	}
 
 	readonly allInstallationCommands: Map<OsType, Command[]> = new Map<OsType, Command[]>([
-		[OsType.linux, linuxInstallationCommands],
+		[OsType.linux, defaultInstallationCommands],
 		[OsType.win32, defaultInstallationCommands],
 		[OsType.darwin, defaultInstallationCommands],
 		[OsType.others, defaultInstallationCommands]
@@ -82,6 +84,7 @@ export class AzdataTool extends ToolBase {
 	}
 }
 
+/*
 const linuxInstallationCommands = [
 	{
 		sudo: true,
@@ -114,6 +117,7 @@ const linuxInstallationCommands = [
 		command: 'apt-get install -y azdata-cli'
 	}
 ];
+*/
 
 const defaultInstallationCommands = [
 	{
@@ -122,8 +126,8 @@ const defaultInstallationCommands = [
 	},
 	{
 		comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata ..."),
-		command: `pip3 install -r https://aka.ms/azdata --quiet --user`
+		command: `pip3 install -r ${vscode.workspace.getConfiguration(DeploymentConfigurationKey)[AzdataPipInstallUriKey]} ${vscode.workspace.getConfiguration(DeploymentConfigurationKey)[azdataPipInstallArgsKey]} --quiet --user`
 	}
 ];
 
-const defaultUninstallCommand = `pip3 uninstall -r https://aka.ms/azdata -y `;
+const defaultUninstallCommand = `pip3 uninstall -r ${vscode.workspace.getConfiguration(DeploymentConfigurationKey)[AzdataPipInstallUriKey]} ${vscode.workspace.getConfiguration(DeploymentConfigurationKey)[azdataPipInstallArgsKey]} -y `;
