@@ -413,8 +413,6 @@ function hygiene(some) {
 	const productJsonFilter = filter('product.json', { restore: true });
 
 	const result = input
-		.pipe(filter(fileLengthFilter))
-		.pipe(filelength)
 		.pipe(filter(f => !f.stat.isDirectory()))
 		.pipe(productJsonFilter)
 		.pipe(process.env['BUILD_SOURCEVERSION'] ? es.through() : productJson)
@@ -427,6 +425,10 @@ function hygiene(some) {
 	let typescript = result
 		.pipe(filter(tslintHygieneFilter))
 		.pipe(formatting);
+
+	input
+		.pipe(filter(fileLengthFilter))
+		.pipe(filelength);
 
 	if (!process.argv.some(arg => arg === '--skip-tslint')) {
 		typescript = typescript.pipe(tsl);
