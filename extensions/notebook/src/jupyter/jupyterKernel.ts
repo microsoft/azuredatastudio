@@ -88,7 +88,7 @@ export class JupyterKernel implements nb.IKernel {
 
 	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean): nb.IFuture {
 		content.code = Array.isArray(content.code) ? content.code.join('') : content.code;
-		content.code = content.code.split(/[\r\n]+/gm).join('\n');
+		content.code = content.code.replace(/\r+\n/gm, '\n'); // Remove \r (if it exists) from newlines
 		let futureImpl = this.kernelImpl.requestExecute(content as KernelMessage.IExecuteRequest, disposeOnDone);
 		return new JupyterFuture(futureImpl);
 	}
