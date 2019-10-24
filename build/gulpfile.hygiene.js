@@ -223,10 +223,10 @@ const tslintHygieneFilter = [
 	...tslintBaseFilter
 ];
 
-const fileLengthFilter = filter([
+const fileLengthFilter = [
 	'!extensions/import/*.docx',
 	'!extensions/admin-tool-ext-win/license/**'
-], {restore: true});
+];
 
 const copyrightHeaderLines = [
 	'/*---------------------------------------------------------------------------------------------',
@@ -413,9 +413,8 @@ function hygiene(some) {
 	const productJsonFilter = filter('product.json', { restore: true });
 
 	const result = input
-		.pipe(fileLengthFilter)
+		.pipe(filter(fileLengthFilter, { restore: true }))
 		.pipe(filelength)
-		.pipe(fileLengthFilter.restore)
 		.pipe(filter(f => !f.stat.isDirectory()))
 		.pipe(productJsonFilter)
 		.pipe(process.env['BUILD_SOURCEVERSION'] ? es.through() : productJson)
