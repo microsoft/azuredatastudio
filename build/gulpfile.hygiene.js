@@ -413,8 +413,6 @@ function hygiene(some) {
 	const productJsonFilter = filter('product.json', { restore: true });
 
 	const result = input
-		.pipe(fileLengthFilter)
-		.pipe(filelength)
 		.pipe(filter(f => !f.stat.isDirectory()))
 		.pipe(productJsonFilter)
 		.pipe(process.env['BUILD_SOURCEVERSION'] ? es.through() : productJson)
@@ -432,7 +430,9 @@ function hygiene(some) {
 		typescript = typescript.pipe(tsl);
 		typescript = typescript
 			.pipe(filter(sqlFilter))
-			.pipe(sqlTsl); // {{SQL CARBON EDIT}}
+			.pipe(sqlTsl)
+			.pipe(fileLengthFilter)
+			.pipe(filelength); // {{SQL CARBON EDIT}}
 	}
 
 	const javascript = result
