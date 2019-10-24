@@ -16,11 +16,10 @@ const vfs = require('vinyl-fs');
 const ext = require('./extensions');
 const fancyLog = require('fancy-log');
 const ansiColors = require('ansi-colors');
-const product =  require('vs/platform/product/common/product');
 
 const root = path.dirname(path.dirname(__dirname));
 // {{SQL CARBON EDIT}}
-const builtInExtensions = product.quality === 'stable' ? require('../builtInExtensions.json') : require('../builtInExtensions-insiders.json');
+const builtInExtensions = require('../builtInExtensions.json');
 // {{SQL CARBON EDIT}} - END
 const controlFilePath = path.join(os.homedir(), '.vscode-oss-dev', 'extensions', 'control.json');
 
