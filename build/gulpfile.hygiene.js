@@ -443,7 +443,7 @@ function hygiene(some) {
 		.pipe(gulpeslint.failAfterError());
 
 	let count = 0;
-	return es.merge(typescript, javascript) // {{SQL CARBON EDIT}}
+	return es.merge(typescript, javascript)
 		.pipe(es.through(function (data) {
 			count++;
 			if (process.env['TRAVIS'] && count % 10 === 0) {
