@@ -37,8 +37,7 @@ export abstract class ToolBase implements ITool {
 	abstract type: ToolType;
 	abstract homePage: string;
 	abstract autoInstallSupported: boolean;
-	abstract readonly allInstallationCommands: Map<OsType, Command[]>;
-
+	protected abstract readonly allInstallationCommands: Map<OsType, Command[]>;
 	protected abstract getVersionFromOutput(output: string): SemVer | undefined;
 	protected readonly _onDidUpdateData = new vscode.EventEmitter<ITool>();
 	protected readonly uninstallCommand?: string;

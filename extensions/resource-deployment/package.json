@@ -25,6 +25,23 @@
     "microsoft.notebook"
   ],
   "contributes": {
+    "configuration": [
+      {
+        "title": "%deployment.configuration.title%",
+        "properties": {
+          "deployment.azdataPipInstallUri": {
+            "type": "string",
+            "default": "https://aka.ms/azdata",
+            "description": "%azdata-pip-install-uri-description%"
+          },
+          "deployment.azdataPipInstallArgs": {
+            "type": "string",
+            "default": "",
+            "description": "%azdata-pip-install-args-description%"
+          }
+        }
+      }
+    ],
     "commands": [
       {
         "command": "azdata.resource.deploy",
