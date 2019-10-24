@@ -223,10 +223,10 @@ const tslintHygieneFilter = [
 	...tslintBaseFilter
 ];
 
-const fileLengthFilter = [
+const fileLengthFilter = filter([
 	'!extensions/import/*.docx',
 	'!extensions/admin-tool-ext-win/license/**'
-];
+], {restore: true, passthrough: false});
 
 const copyrightHeaderLines = [
 	'/*---------------------------------------------------------------------------------------------',
@@ -413,6 +413,8 @@ function hygiene(some) {
 	const productJsonFilter = filter('product.json', { restore: true });
 
 	const result = input
+		.pipe(fileLengthFilter)
+		.pipe(filelength)
 		.pipe(filter(f => !f.stat.isDirectory()))
 		.pipe(productJsonFilter)
 		.pipe(process.env['BUILD_SOURCEVERSION'] ? es.through() : productJson)
@@ -425,10 +427,6 @@ function hygiene(some) {
 	let typescript = result
 		.pipe(filter(tslintHygieneFilter))
 		.pipe(formatting);
-
-	input
-		.pipe(filter(fileLengthFilter))
-		.pipe(filelength);
 
 	if (!process.argv.some(arg => arg === '--skip-tslint')) {
 		typescript = typescript.pipe(tsl);
@@ -444,7 +442,7 @@ function hygiene(some) {
 		.pipe(gulpeslint.failAfterError());
 
 	let count = 0;
-	return es.merge(typescript, javascript)
+	return es.merge(typescript, javascript) // {{SQL CARBON EDIT}}
 		.pipe(es.through(function (data) {
 			count++;
 			if (process.env['TRAVIS'] && count % 10 === 0) {
