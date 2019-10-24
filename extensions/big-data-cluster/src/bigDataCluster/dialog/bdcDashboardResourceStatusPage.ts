@@ -183,7 +183,7 @@ function createInstanceHealthStatusRow(modelBuilder: azdata.ModelBuilder, instan
 	if (instanceStatus.healthStatus !== 'healthy' && instanceStatus.details && instanceStatus.details.length > 0) {
 		const viewDetailsButton = modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: localize('bdc.dashboard.viewDetails', "View Details") }).component();
 		viewDetailsButton.onDidClick(() => {
-			vscode.window.showErrorMessage(instanceStatus.details);
+			vscode.window.showErrorMessage(instanceStatus.details, { modal: true });
 		});
 		instanceHealthStatusRow.addItem(viewDetailsButton, { flex: '0 0 auto' });
 	}

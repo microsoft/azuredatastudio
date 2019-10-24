@@ -238,7 +238,7 @@ export class BdcDashboardOverviewPage {
 		if (serviceStatus.healthStatus !== 'healthy' && serviceStatus.details && serviceStatus.details.length > 0) {
 			const viewDetailsButton = this.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: localize('bdc.dashboard.viewDetails', "View Details") }).component();
 			viewDetailsButton.onDidClick(() => {
-				vscode.window.showErrorMessage(serviceStatus.details);
+				vscode.window.showErrorMessage(serviceStatus.details, { modal: true });
 			});
 			serviceStatusRow.addItem(viewDetailsButton, { flex: '0 0 auto' });
 		}
