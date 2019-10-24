@@ -143,6 +143,7 @@
       {
         "command": "notebook.command.saveBook",
         "title": "%title.saveJupyterBook%",
+        "category": "%books-preview-category%",
         "icon": {
           "dark": "resources/dark/save_inverse.svg",
           "light": "resources/light/save.svg"
@@ -151,6 +152,7 @@
       {
         "command": "notebook.command.searchBook",
         "title": "%title.searchJupyterBook%",
+        "category": "%books-preview-category%",
         "icon": {
           "dark": "resources/dark/search_inverse.svg",
           "light": "resources/light/search.svg"
@@ -159,6 +161,7 @@
       {
         "command": "notebook.command.searchUntitledBook",
         "title": "%title.searchJupyterBook%",
+        "category": "%books-preview-category%",
         "icon": {
           "dark": "resources/dark/search_inverse.svg",
           "light": "resources/light/search.svg"
@@ -244,6 +247,10 @@
         {
           "command": "books.sqlserver2019",
           "when": "sqlserver2019"
+        },
+        {
+          "command": "notebook.command.saveBook",
+          "when": "false"
         }
       ],
       "touchBar": [
