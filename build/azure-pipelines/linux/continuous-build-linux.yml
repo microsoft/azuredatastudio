@@ -2,7 +2,7 @@ steps:
 - script: |
     set -e
     sudo apt-get update
-    sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0
+    sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 libkrb5-dev #{{SQL CARBON EDIT}} add kerberos dep
     sudo cp build/azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
     sudo chmod +x /etc/init.d/xvfb
     sudo update-rc.d xvfb defaults
