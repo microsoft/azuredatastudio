@@ -108,7 +108,6 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		if (this._webview && this.html) {
 			this._renderedHtml = this.html;
 			this._webview.html = this._renderedHtml;
-			this._webview.layout();
 		}
 	}
 
@@ -142,7 +141,6 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 			this._ready.then(() => {
 				let element = <HTMLElement>this._el.nativeElement;
 				element.style.position = this.position;
-				this._webview.layout();
 			});
 		}
 	}

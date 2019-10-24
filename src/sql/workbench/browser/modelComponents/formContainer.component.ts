@@ -29,10 +29,6 @@ export interface TitledFormItemLayout {
 	isGroupLabel?: boolean;
 }
 
-export interface FormLayout {
-	width: number;
-}
-
 class FormItem {
 	constructor(public descriptor: IComponentDescriptor, public config: TitledFormItemLayout) { }
 }

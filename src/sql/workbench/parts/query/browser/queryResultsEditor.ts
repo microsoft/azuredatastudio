@@ -43,14 +43,7 @@ export class BareResultsGridInfo extends BareFontInfo {
 	protected constructor(fontInfo: BareFontInfo, opts: {
 		cellPadding: number | number[];
 	}) {
-		super({
-			zoomLevel: fontInfo.zoomLevel,
-			fontFamily: fontInfo.fontFamily,
-			fontWeight: fontInfo.fontWeight,
-			fontSize: fontInfo.fontSize,
-			lineHeight: fontInfo.lineHeight,
-			letterSpacing: fontInfo.letterSpacing
-		});
+		super(fontInfo);
 		this.cellPadding = opts.cellPadding;
 	}
 }

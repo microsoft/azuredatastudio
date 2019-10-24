@@ -246,6 +246,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					if (!connectionResult.connected && !connectionResult.errorHandled) {
 						// If connection fails show the dialog
 						return this.showConnectionDialogOnError(connection, owner, connectionResult, options);
+					} else if (!connectionResult.connected && connectionResult.errorHandled) {
+						// Cancelled firewall dialog
+						return undefined;
 					} else {
 						//Resolve with the connection result
 						return connectionResult;

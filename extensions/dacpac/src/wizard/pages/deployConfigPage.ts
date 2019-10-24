@@ -37,7 +37,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 		let fileBrowserComponent = await this.createFileBrowser();
 		this.databaseComponent = await this.createDatabaseTextBox(localize('dacFx.databaseNameTextBox', "Database Name"));
 		this.databaseDropdownComponent = await this.createDeployDatabaseDropdown();
-		this.databaseDropdownComponent.title = localize('dacFx.databaseNameDropdown', 'Database Name');
+		this.databaseDropdownComponent.title = localize('dacFx.databaseNameDropdown', "Database Name");
 		let radioButtons = await this.createRadiobuttons();
 
 		this.formBuilder = this.view.modelBuilder.formContainer()
@@ -73,7 +73,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 					canSelectFolders: false,
 					canSelectMany: false,
 					defaultUri: vscode.Uri.file(this.getRootPath()),
-					openLabel: localize('dacFxDeploy.openFile', 'Open'),
+					openLabel: localize('dacFxDeploy.openFile', "Open"),
 					filters: {
 						'dacpac Files': ['dacpac'],
 					}
@@ -99,7 +99,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxDeploy.fileTextboxTitle', 'File Location'),
+			title: localize('dacFxDeploy.fileTextboxTitle', "File Location"),
 			actions: [this.fileButton]
 		};
 	}
@@ -108,13 +108,13 @@ export class DeployConfigPage extends DacFxConfigPage {
 		let upgradeRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'updateExisting',
-				label: localize('dacFx.upgradeRadioButtonLabel', 'Upgrade Existing Database'),
+				label: localize('dacFx.upgradeRadioButtonLabel', "Upgrade Existing Database"),
 			}).component();
 
 		let newRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'updateExisting',
-				label: localize('dacFx.newRadioButtonLabel', 'New Database'),
+				label: localize('dacFx.newRadioButtonLabel', "New Database"),
 			}).component();
 
 		upgradeRadioButton.onDidClick(() => {
@@ -158,7 +158,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		return {
 			component: flexRadioButtonsModel,
-			title: localize('dacFx.targetDatabaseRadioButtonsTitle', 'Target Database')
+			title: localize('dacFx.targetDatabaseRadioButtonsTitle', "Target Database")
 		};
 	}
 

@@ -26,7 +26,7 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 
 	public getNotebookManager(notebookUri: vscode.Uri): Thenable<nb.NotebookManager> {
 		if (!notebookUri) {
-			return Promise.reject(localize('errNotebookUriMissing', 'A notebook path is required'));
+			return Promise.reject(localize('errNotebookUriMissing', "A notebook path is required"));
 		}
 		return Promise.resolve(this.doGetNotebookManager(notebookUri));
 	}

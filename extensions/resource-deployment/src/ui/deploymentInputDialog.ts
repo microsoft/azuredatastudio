@@ -22,7 +22,7 @@ export class DeploymentInputDialog extends DialogBase {
 	constructor(private notebookService: INotebookService,
 		private dialogInfo: DialogInfo) {
 		super(dialogInfo.title, dialogInfo.name, false);
-		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Open Notebook');
+		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', "Open Notebook");
 	}
 
 	protected initialize() {

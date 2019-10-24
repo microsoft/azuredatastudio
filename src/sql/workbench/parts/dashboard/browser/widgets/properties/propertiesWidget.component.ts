@@ -25,13 +25,16 @@ export interface PropertiesConfig {
 
 export interface FlavorProperties {
 	flavor: string;
-	condition?: {
-		field: string;
-		operator: '==' | '<=' | '>=' | '!=';
-		value: string | boolean;
-	};
+	condition?: ConditionProperties;
+	conditions?: Array<ConditionProperties>;
 	databaseProperties: Array<Property>;
 	serverProperties: Array<Property>;
+}
+
+export interface ConditionProperties {
+	field: string;
+	operator: '==' | '<=' | '>=' | '!=';
+	value: string | boolean;
 }
 
 export interface ProviderProperties {
@@ -139,20 +142,23 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 				return;
 			} else {
 				const flavorArray = providerProperties.flavors.filter((item) => {
-					const condition = this._connection.serverInfo[item.condition.field];
-					switch (item.condition.operator) {
-						case '==':
-							return condition === item.condition.value;
-						case '!=':
-							return condition !== item.condition.value;
-						case '>=':
-							return condition >= item.condition.value;
-						case '<=':
-							return condition <= item.condition.value;
-						default:
-							this.logService.error('Could not parse operator: "', item.condition.operator,
-								'" on item "', item, '"');
-							return false;
+
+					// For backward compatibility we are supporting array of conditions and single condition.
+					// If nothing is specified, we return false.
+					if (item.conditions) {
+						let conditionResult = true;
+						for (let i = 0; i < item.conditions.length; i++) {
+							conditionResult = conditionResult && this.getConditionResult(item, item.conditions[i]);
+						}
+
+						return conditionResult;
+					}
+					else if (item.condition) {
+						return this.getConditionResult(item, item.condition);
+					}
+					else {
+						this.logService.error('No condition was specified.');
+						return false;
 					}
 				});
 
@@ -221,6 +227,31 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 		if (this._hasInit) {
 			this._changeRef.detectChanges();
+		}
+	}
+
+	private getConditionResult(item: FlavorProperties, conditionItem: ConditionProperties): boolean {
+		let condition = this._connection.serverInfo[conditionItem.field];
+
+		// If we need to compare strings, then we should ensure that condition is string
+		// Otherwise tripple equals/unequals would return false values
+		if (typeof conditionItem.value === 'string') {
+			condition = condition.toString();
+		}
+
+		switch (conditionItem.operator) {
+			case '==':
+				return condition === conditionItem.value;
+			case '!=':
+				return condition !== conditionItem.value;
+			case '>=':
+				return condition >= conditionItem.value;
+			case '<=':
+				return condition <= conditionItem.value;
+			default:
+				this.logService.error('Could not parse operator: "', conditionItem.operator,
+					'" on item "', item, '"');
+				return false;
 		}
 	}
 

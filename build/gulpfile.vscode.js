@@ -31,7 +31,7 @@ const crypto = require('crypto');
 const i18n = require('./lib/i18n');
 const ext = require('./lib/extensions'); // {{SQL CARBON EDIT}}
 const deps = require('./dependencies');
-const getElectronVersion = require('./lib/electron').getElectronVersion;
+const { config } = require('./lib/electron');
 const createAsar = require('./lib/asar').createAsar;
 const { compileBuildTask } = require('./gulpfile.compile');
 const { compileExtensionsBuildTask } = require('./gulpfile.extensions');
@@ -78,7 +78,6 @@ const vscodeResources = [
 	'out-build/vs/base/common/performance.js',
 	'out-build/vs/base/node/languagePacks.js',
 	'out-build/vs/base/node/{stdForkStart.js,terminateProcess.sh,cpuUsage.sh,ps.sh}',
-	'out-build/vs/base/browser/ui/octiconLabel/octicons/**',
 	'out-build/vs/base/browser/ui/codiconLabel/codicon/**',
 	'out-build/vs/workbench/browser/media/*-theme.css',
 	'out-build/vs/workbench/contrib/debug/**/*.json',
@@ -143,72 +142,6 @@ const minifyVSCodeTask = task.define('minify-vscode', task.series(
 	common.minifyTask('out-vscode', `${sourceMappingURLBase}/core`)
 ));
 gulp.task(minifyVSCodeTask);
-
-// Package
-
-// @ts-ignore JSON checking: darwinCredits is optional
-const darwinCreditsTemplate = product.darwinCredits && _.template(fs.readFileSync(path.join(root, product.darwinCredits), 'utf8'));
-
-function darwinBundleDocumentType(extensions, icon) {
-	return {
-		name: product.nameLong + ' document',
-		role: 'Editor',
-		ostypes: ["TEXT", "utxt", "TUTX", "****"],
-		extensions: extensions,
-		iconFile: icon
-	};
-}
-
-const config = {
-	version: getElectronVersion(),
-	productAppName: product.nameLong,
-	companyName: 'Microsoft Corporation',
-	copyright: 'Copyright (C) 2019 Microsoft. All rights reserved',
-	darwinIcon: product.quality === 'stable' ? 'resources/darwin/code.icns' : 'resources/darwin/code-insiders.icns', // {{SQL CARBON EDIT}} Use separate icons for non-stable
-	darwinBundleIdentifier: product.darwinBundleIdentifier,
-	darwinApplicationCategoryType: 'public.app-category.developer-tools',
-	darwinHelpBookFolder: 'VS Code HelpBook',
-	darwinHelpBookName: 'VS Code HelpBook',
-	darwinBundleDocumentTypes: [
-		darwinBundleDocumentType(["csv", "json", "sqlplan", "sql", "xml"], product.quality === 'stable' ? 'resources/darwin/code_file.icns' : 'resources/darwin/code_file-insiders.icns'), // {{SQL CARBON EDIT}} - Remove most document types and replace with ours. Also use separate icon for non-stable
-	],
-	darwinBundleURLTypes: [{
-		role: 'Viewer',
-		name: product.nameLong,
-		urlSchemes: [product.urlProtocol]
-	}],
-	darwinForceDarkModeSupport: true,
-	darwinCredits: darwinCreditsTemplate ? Buffer.from(darwinCreditsTemplate({ commit: commit, date: new Date().toISOString() })) : undefined,
-	linuxExecutableName: product.applicationName,
-	winIcon: product.quality === 'stable' ? 'resources/win32/code.ico' : 'resources/win32/code-insiders.ico', // {{SQL CARBON EDIT}} Use separate icons for non-stable
-	token: process.env['VSCODE_MIXIN_PASSWORD'] || process.env['GITHUB_TOKEN'] || undefined,
-
-	// @ts-ignore JSON checking: electronRepository is optional
-	repo: product.electronRepository || undefined
-};
-
-function getElectron(arch) {
-	return () => {
-		const electronOpts = _.extend({}, config, {
-			platform: process.platform,
-			arch,
-			ffmpegChromium: true,
-			keepDefaultApp: true
-		});
-
-		return gulp.src('package.json')
-			.pipe(json({ name: product.nameShort }))
-			.pipe(electron(electronOpts))
-			.pipe(filter(['**', '!**/app/package.json']))
-			.pipe(vfs.dest('.build/electron'));
-	};
-}
-
-gulp.task(task.define('electron', task.series(util.rimraf('.build/electron'), getElectron(process.arch))));
-gulp.task(task.define('electron-ia32', task.series(util.rimraf('.build/electron'), getElectron('ia32'))));
-gulp.task(task.define('electron-x64', task.series(util.rimraf('.build/electron'), getElectron('x64'))));
-gulp.task(task.define('electron-arm', task.series(util.rimraf('.build/electron'), getElectron('armv7l'))));
-gulp.task(task.define('electron-arm64', task.series(util.rimraf('.build/electron'), getElectron('arm64'))));
 
 /**
  * Compute checksums for some files.

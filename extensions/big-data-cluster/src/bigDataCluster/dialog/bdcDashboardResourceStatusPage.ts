@@ -5,13 +5,13 @@
 'use strict';
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { BdcDashboardModel } from './bdcDashboardModel';
 import { BdcStatusModel, InstanceStatusModel } from '../controller/apiGenerated';
 import { getHealthStatusDisplayText, getHealthStatusIcon, getStateDisplayText } from '../utils';
 import { cssStyles } from '../constants';
 import { isNullOrUndefined } from 'util';
+import { createViewDetailsButton } from './commonControls';
 
 const localize = nls.loadMessageBundle();
 
@@ -181,11 +181,7 @@ function createInstanceHealthStatusRow(modelBuilder: azdata.ModelBuilder, instan
 	instanceHealthStatusRow.addItem(healthStatusCell, { CSSStyles: { 'width': `${healthAndStatusHealthColumnWidth}px`, 'min-width': `${healthAndStatusHealthColumnWidth}px` } });
 
 	if (instanceStatus.healthStatus !== 'healthy' && instanceStatus.details && instanceStatus.details.length > 0) {
-		const viewDetailsButton = modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: localize('bdc.dashboard.viewDetails', "View Details") }).component();
-		viewDetailsButton.onDidClick(() => {
-			vscode.window.showErrorMessage(instanceStatus.details);
-		});
-		instanceHealthStatusRow.addItem(viewDetailsButton, { flex: '0 0 auto' });
+		instanceHealthStatusRow.addItem(createViewDetailsButton(modelBuilder, instanceStatus.details), { flex: '0 0 auto' });
 	}
 	return instanceHealthStatusRow;
 }

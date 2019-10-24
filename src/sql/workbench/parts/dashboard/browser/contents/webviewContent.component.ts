@@ -53,7 +53,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	}
 
 	public layout(): void {
-		this._webview.layout();
+		// no op
 	}
 
 	public get id(): string {
@@ -80,7 +80,6 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 		this._html = html;
 		if (this._webview) {
 			this._webview.html = html;
-			this._webview.layout();
 		}
 	}
 
@@ -113,6 +112,5 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 		if (this._html) {
 			this._webview.html = this._html;
 		}
-		this._webview.layout();
 	}
 }

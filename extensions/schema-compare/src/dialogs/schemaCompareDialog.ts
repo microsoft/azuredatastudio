@@ -15,23 +15,23 @@ import { getEndpointName, getRootPath } from '../utils';
 import * as mssql from '../../../mssql';
 
 const localize = nls.loadMessageBundle();
-const OkButtonText: string = localize('schemaCompareDialog.ok', 'OK');
-const CancelButtonText: string = localize('schemaCompareDialog.cancel', 'Cancel');
-const SourceTitle: string = localize('schemaCompareDialog.SourceTitle', 'Source');
-const TargetTitle: string = localize('schemaCompareDialog.TargetTitle', 'Target');
-const FileTextBoxLabel: string = localize('schemaCompareDialog.fileTextBoxLabel', 'File');
-const DacpacRadioButtonLabel: string = localize('schemaCompare.dacpacRadioButtonLabel', 'Data-tier Application File (.dacpac)');
-const DatabaseRadioButtonLabel: string = localize('schemaCompare.databaseButtonLabel', 'Database');
-const RadioButtonsLabel: string = localize('schemaCompare.radioButtonsLabel', 'Type');
-const ServerDropdownLabel: string = localize('schemaCompareDialog.serverDropdownTitle', 'Server');
-const DatabaseDropdownLabel: string = localize('schemaCompareDialog.databaseDropdownTitle', 'Database');
-const NoActiveConnectionsLabel: string = localize('schemaCompare.noActiveConnectionsText', 'No active connections');
-const SchemaCompareLabel: string = localize('schemaCompare.dialogTitle', 'Schema Compare');
-const differentSourceMessage: string = localize('schemaCompareDialog.differentSourceMessage', 'A different source schema has been selected. Compare to see the comparison?');
-const differentTargetMessage: string = localize('schemaCompareDialog.differentTargetMessage', 'A different target schema has been selected. Compare to see the comparison?');
-const differentSourceTargetMessage: string = localize('schemaCompareDialog.differentSourceTargetMessage', 'Different source and target schemas have been selected. Compare to see the comparison?');
-const YesButtonText: string = localize('schemaCompareDialog.Yes', 'Yes');
-const NoButtonText: string = localize('schemaCompareDialog.No', 'No');
+const OkButtonText: string = localize('schemaCompareDialog.ok', "OK");
+const CancelButtonText: string = localize('schemaCompareDialog.cancel', "Cancel");
+const SourceTitle: string = localize('schemaCompareDialog.SourceTitle', "Source");
+const TargetTitle: string = localize('schemaCompareDialog.TargetTitle', "Target");
+const FileTextBoxLabel: string = localize('schemaCompareDialog.fileTextBoxLabel', "File");
+const DacpacRadioButtonLabel: string = localize('schemaCompare.dacpacRadioButtonLabel', "Data-tier Application File (.dacpac)");
+const DatabaseRadioButtonLabel: string = localize('schemaCompare.databaseButtonLabel', "Database");
+const RadioButtonsLabel: string = localize('schemaCompare.radioButtonsLabel', "Type");
+const ServerDropdownLabel: string = localize('schemaCompareDialog.serverDropdownTitle', "Server");
+const DatabaseDropdownLabel: string = localize('schemaCompareDialog.databaseDropdownTitle', "Database");
+const NoActiveConnectionsLabel: string = localize('schemaCompare.noActiveConnectionsText', "No active connections");
+const SchemaCompareLabel: string = localize('schemaCompare.dialogTitle', "Schema Compare");
+const differentSourceMessage: string = localize('schemaCompareDialog.differentSourceMessage', "A different source schema has been selected. Compare to see the comparison?");
+const differentTargetMessage: string = localize('schemaCompareDialog.differentTargetMessage', "A different target schema has been selected. Compare to see the comparison?");
+const differentSourceTargetMessage: string = localize('schemaCompareDialog.differentSourceTargetMessage', "Different source and target schemas have been selected. Compare to see the comparison?");
+const YesButtonText: string = localize('schemaCompareDialog.Yes', "Yes");
+const NoButtonText: string = localize('schemaCompareDialog.No', "No");
 const titleFontSize: number = 13;
 
 async function exists(path: string): Promise<boolean> {
@@ -323,7 +323,7 @@ export class SchemaCompareDialog {
 					canSelectFolders: false,
 					canSelectMany: false,
 					defaultUri: vscode.Uri.file(defaultUri),
-					openLabel: localize('schemaCompare.openFile', 'Open'),
+					openLabel: localize('schemaCompare.openFile', "Open"),
 					filters: {
 						'dacpac Files': ['dacpac'],
 					}
@@ -556,7 +556,7 @@ export class SchemaCompareDialog {
 			let srv = c.options.server;
 
 			if (!usr) {
-				usr = localize('schemaCompareDialog.defaultUser', 'default');
+				usr = localize('schemaCompareDialog.defaultUser', "default");
 			}
 
 			let finalName = `${srv} (${usr})`;

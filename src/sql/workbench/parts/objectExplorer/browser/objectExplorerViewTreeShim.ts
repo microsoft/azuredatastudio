@@ -83,7 +83,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 	private async connectOrPrompt(connProfile: ConnectionProfile): Promise<ConnectionProfile> {
 		connProfile = await new Promise(async (resolve, reject) => {
-			await this.cm.connect(connProfile, undefined, { showConnectionDialogOnError: true, showFirewallRuleOnError: true, saveTheConnection: false, showDashboard: false, params: undefined }, {
+			let result = await this.cm.connect(connProfile, undefined, { showConnectionDialogOnError: true, showFirewallRuleOnError: true, saveTheConnection: false, showDashboard: false, params: undefined }, {
 				onConnectSuccess: async (e, profile) => {
 					let existingConnection = this.cm.findExistingConnection(profile);
 					connProfile = new ConnectionProfile(this.capabilities, existingConnection);
@@ -97,6 +97,10 @@ export class OEShimService extends Disposable implements IOEShimService {
 				onConnectStart: undefined,
 				onDisconnect: undefined
 			});
+			// connection cancelled from firewall dialog
+			if (!result) {
+				reject(new UserCancelledConnectionError(localize('firewallCanceled', "Firewall dialog canceled")));
+			}
 		});
 		return connProfile;
 	}

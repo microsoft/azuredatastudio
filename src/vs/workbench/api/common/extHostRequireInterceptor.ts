@@ -62,7 +62,7 @@ export abstract class RequireInterceptor {
 		this.register(new SqlopsNodeModuleFactory(this._apiFactory.sqlops, extensionPaths)); // {{SQL CARBON EDIT}} // add node module
 		this.register(this._instaService.createInstance(KeytarNodeModuleFactory));
 		if (this._initData.remote.isRemote) {
-			this.register(this._instaService.createInstance(OpenNodeModuleFactory, extensionPaths));
+			this.register(this._instaService.createInstance(OpenNodeModuleFactory, extensionPaths, this._initData.environment.appUriScheme));
 		}
 	}
 
@@ -233,6 +233,7 @@ class OpenNodeModuleFactory implements INodeModuleFactory {
 
 	constructor(
 		private readonly _extensionPaths: TernarySearchTree<IExtensionDescription>,
+		private readonly _appUriScheme: string,
 		@IExtHostRpcService rpcService: IExtHostRpcService,
 	) {
 
@@ -247,7 +248,7 @@ class OpenNodeModuleFactory implements INodeModuleFactory {
 			}
 			if (uri.scheme === 'http' || uri.scheme === 'https') {
 				return mainThreadWindow.$openUri(uri, { allowTunneling: true });
-			} else if (uri.scheme === 'mailto') {
+			} else if (uri.scheme === 'mailto' || uri.scheme === this._appUriScheme) {
 				return mainThreadWindow.$openUri(uri, {});
 			}
 			return this.callOriginal(target, options);

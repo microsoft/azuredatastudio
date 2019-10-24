@@ -13,6 +13,7 @@ import { IconPathHelper, cssStyles } from '../constants';
 import { getStateDisplayText, getHealthStatusDisplayText, getEndpointDisplayText, getHealthStatusIcon, getServiceNameDisplayText, Endpoint } from '../utils';
 import { EndpointModel, ServiceStatusModel, BdcStatusModel } from '../controller/apiGenerated';
 import { BdcDashboard } from './bdcDashboard';
+import { createViewDetailsButton } from './commonControls';
 
 const localize = nls.loadMessageBundle();
 
@@ -28,6 +29,8 @@ const serviceEndpointRowServiceNameCellWidth = 200;
 const serviceEndpointRowEndpointCellWidth = 350;
 
 const hyperlinkedEndpoints = [Endpoint.metricsui, Endpoint.logsui, Endpoint.sparkHistory, Endpoint.yarnUi];
+
+type ActionItem = (vscode.MessageItem & { execute: () => void; });
 
 export class BdcDashboardOverviewPage {
 
@@ -236,11 +239,7 @@ export class BdcDashboardOverviewPage {
 		serviceStatusRow.addItem(healthStatusCell, { CSSStyles: { 'width': `${overviewHealthStatusCellWidthPx}px`, 'min-width': `${overviewHealthStatusCellWidthPx}px` } });
 
 		if (serviceStatus.healthStatus !== 'healthy' && serviceStatus.details && serviceStatus.details.length > 0) {
-			const viewDetailsButton = this.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: localize('bdc.dashboard.viewDetails', "View Details") }).component();
-			viewDetailsButton.onDidClick(() => {
-				vscode.window.showErrorMessage(serviceStatus.details);
-			});
-			serviceStatusRow.addItem(viewDetailsButton, { flex: '0 0 auto' });
+			serviceStatusRow.addItem(createViewDetailsButton(this.modelBuilder, serviceStatus.details), { flex: '0 0 auto' });
 		}
 
 		container.addItem(serviceStatusRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'border-bottom': isLastRow ? 'solid 1px #ccc' : '', 'box-sizing': 'border-box', 'user-select': 'text' } });

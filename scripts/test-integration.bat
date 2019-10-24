@@ -30,22 +30,22 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 :: if %errorlevel% neq 0 exit /b %errorlevel%
 
 :: Tests in the extension host
-call "%INTEGRATION_TEST_ELECTRON_PATH%" %~dp0\..\extensions\vscode-api-tests\testWorkspace --extensionDevelopmentPath=%~dp0\..\extensions\vscode-api-tests --extensionTestsPath=%~dp0\..\extensions\vscode-api-tests\out\singlefolder-tests --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions --disable-inspect --user-data-dir=%VSCODEUSERDATADIR%
+
+call "%INTEGRATION_TEST_ELECTRON_PATH%" %~dp0\..\extensions\vscode-api-tests\testWorkspace --enable-proposed-api=vscode.vscode-api-tests --extensionDevelopmentPath=%~dp0\..\extensions\vscode-api-tests --extensionTestsPath=%~dp0\..\extensions\vscode-api-tests\out\singlefolder-tests --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions --user-data-dir=%VSCODEUSERDATADIR%
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-call "%INTEGRATION_TEST_ELECTRON_PATH%" %~dp0\..\extensions\vscode-api-tests\testworkspace.code-workspace --extensionDevelopmentPath=%~dp0\..\extensions\vscode-api-tests --extensionTestsPath=%~dp0\..\extensions\vscode-api-tests\out\workspace-tests --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions --disable-inspect --user-data-dir=%VSCODEUSERDATADIR%
+call "%INTEGRATION_TEST_ELECTRON_PATH%" %~dp0\..\extensions\vscode-api-tests\testworkspace.code-workspace --enable-proposed-api=vscode.vscode-api-tests --extensionDevelopmentPath=%~dp0\..\extensions\vscode-api-tests --extensionTestsPath=%~dp0\..\extensions\vscode-api-tests\out\workspace-tests --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions --user-data-dir=%VSCODEUSERDATADIR%
+
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-call "%INTEGRATION_TEST_ELECTRON_PATH%" %~dp0\..\extensions\vscode-colorize-tests\test --extensionDevelopmentPath=%~dp0\..\extensions\vscode-colorize-tests --extensionTestsPath=%~dp0\..\extensions\vscode-colorize-tests\out --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions --disable-inspect --user-data-dir=%VSCODEUSERDATADIR%
-call "%INTEGRATION_TEST_ELECTRON_PATH%" %~dp0\..\extensions\markdown-language-features\test-fixtures --extensionDevelopmentPath=%~dp0\..\extensions\markdown-language-features --extensionTestsPath=%~dp0\..\extensions\markdown-language-features\out\test --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions --disable-inspect --user-data-dir=%VSCODEUSERDATADIR%
-call "%INTEGRATION_TEST_ELECTRON_PATH%" %~dp0\..\extensions\azurecore\test-fixtures --extensionDevelopmentPath=%~dp0\..\extensions\azurecore --extensionTestsPath=%~dp0\..\extensions\azurecore\out\test --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions --disable-inspect --user-data-dir=%VSCODEUSERDATADIR%
+call "%INTEGRATION_TEST_ELECTRON_PATH%" %~dp0\..\extensions\vscode-colorize-tests\test --extensionDevelopmentPath=%~dp0\..\extensions\vscode-colorize-tests --extensionTestsPath=%~dp0\..\extensions\vscode-colorize-tests\out --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions --user-data-dir=%VSCODEUSERDATADIR%
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-:: call "%INTEGRATION_TEST_ELECTRON_PATH%" %~dp0\..\extensions\vscode-colorize-tests\test --extensionDevelopmentPath=%~dp0\..\extensions\vscode-colorize-tests --extensionTestsPath=%~dp0\..\extensions\vscode-colorize-tests\out --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions --disable-inspect --user-data-dir=%VSCODEUSERDATADIR%
+:: call "%INTEGRATION_TEST_ELECTRON_PATH%" $%~dp0\..\extensions\emmet\test-fixtures --extensionDevelopmentPath=%~dp0\..\extensions\emmet --extensionTestsPath=%~dp0\..\extensions\emmet\out\test --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions --user-data-dir=%VSCODEUSERDATADIR% .
 :: if %errorlevel% neq 0 exit /b %errorlevel%
 
-:: call "%INTEGRATION_TEST_ELECTRON_PATH%" $%~dp0\..\extensions\emmet\test-fixtures --extensionDevelopmentPath=%~dp0\..\extensions\emmet --extensionTestsPath=%~dp0\..\extensions\emmet\out\test --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions --disable-inspect --user-data-dir=%VSCODEUSERDATADIR% .
-:: if %errorlevel% neq 0 exit /b %errorlevel%
+call "%INTEGRATION_TEST_ELECTRON_PATH%" %~dp0\..\extensions\azurecore\test-fixtures --extensionDevelopmentPath=%~dp0\..\extensions\azurecore --extensionTestsPath=%~dp0\..\extensions\azurecore\out\test --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions --user-data-dir=%VSCODEUSERDATADIR%
+if %errorlevel% neq 0 exit /b %errorlevel%
 
 :: Tests in commonJS (HTML, CSS, JSON language server tests...)
 call .\scripts\node-electron.bat .\node_modules\mocha\bin\_mocha .\extensions\*\server\out\test\**\*.test.js

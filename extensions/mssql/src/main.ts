@@ -33,7 +33,7 @@ import { IconPathHelper } from './iconHelper';
 import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
-const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
+const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample code loads the file into a data frame and shows the first 10 results.");
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	// lets make sure we support this platform first
@@ -180,7 +180,7 @@ async function handleNewNotebookTask(oeContext?: azdata.ObjectExplorerContext, p
 }
 
 async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promise<void> {
-	let notebookFileTypeName = localize('notebookFileType', 'Notebooks');
+	let notebookFileTypeName = localize('notebookFileType', "Notebooks");
 	let filter = {};
 	filter[notebookFileTypeName] = 'ipynb';
 	let uris = await vscode.window.showOpenDialog({
@@ -193,7 +193,7 @@ async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promi
 		// Verify this is a .ipynb file since this isn't actually filtered on Mac/Linux
 		if (path.extname(fileUri.fsPath) !== '.ipynb') {
 			// in the future might want additional supported types
-			vscode.window.showErrorMessage(localize('unsupportedFileType', 'Only .ipynb Notebooks are supported'));
+			vscode.window.showErrorMessage(localize('unsupportedFileType', "Only .ipynb Notebooks are supported"));
 		} else {
 			await azdata.nb.showNotebookDocument(fileUri, {
 				connectionProfile: profile,
