@@ -99,7 +99,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 			});
 			// connection cancelled from firewall dialog
 			if (!result) {
-				reject(new UserCancelledConnectionError(localize('loginCanceled', "User canceled")));
+				reject(new UserCancelledConnectionError(localize('firewallCanceled', "Firewall dialog canceled")));
 			}
 		});
 		return connProfile;
