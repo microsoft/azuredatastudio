@@ -27,6 +27,8 @@ import { AzureResourceCacheService } from './azureResource/services/cacheService
 import { AzureResourceTenantService } from './azureResource/services/tenantService';
 import { registerAzureResourceCommands } from './azureResource/commands';
 import { AzureResourceTreeProvider } from './azureResource/tree/treeProvider';
+import { SqlInstanceResourceService } from './azureResource/providers/sqlinstance/sqlInstanceService';
+import { SqlInstanceProvider } from './azureResource/providers/sqlinstance/sqlInstanceProvider';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -74,7 +76,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		provideResources() {
 			return [
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), apiWrapper, extensionContext),
-				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext)
+				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext),
+				new SqlInstanceProvider(new SqlInstanceResourceService(), apiWrapper, extensionContext)
 			];
 		}
 	};

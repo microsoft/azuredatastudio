@@ -30,14 +30,14 @@ export abstract class ResourceTreeDataProviderBase<T extends AzureSqlResource> i
 		const tokens = await this._apiWrapper.getSecurityToken(element.account, AzureResource.ResourceManagement);
 		const credential = new TokenCredentials(tokens[element.tenantId].token, tokens[element.tenantId].tokenType);
 
-		const resources: T[] = (await this._resourceService.getResources(element.subscription, credential)) || <T[]>[];
+		const resources: T[] = await this._resourceService.getResources(element.subscription, credential) || <T[]>[];
 
 		return resources.map((resource) => <azureResource.IAzureResourceNode>{
 			account: element.account,
 			subscription: element.subscription,
 			tenantId: element.tenantId,
 			treeItem: this.getTreeItemForResource(resource)
-		});
+		}).sort((a, b) => a.treeItem.label.localeCompare(b.treeItem.label));
 	}
 
 	protected abstract getTreeItemForResource(resource: T): TreeItem;
