@@ -244,8 +244,7 @@
           {
             "wizard": {
               "type": "new-aks",
-              "notebook": "%bdc-2019-aks-notebook%",
-              "azdata_notebook": "%azdata-bdc-2019-aks-notebook%"
+              "notebook": "%bdc-2019-aks-notebook%"
             },
             "requiredTools": [
               {
@@ -263,8 +262,7 @@
           {
             "wizard": {
               "type": "existing-aks",
-              "notebook": "%bdc-2019-existing-aks-notebook%",
-              "azdata_notebook": "%azdata-bdc-2019-existing-aks-notebook"
+              "notebook": "%bdc-2019-existing-aks-notebook%"
             },
             "requiredTools": [
               {
@@ -279,8 +277,7 @@
           {
             "wizard": {
               "type": "existing-kubeadm",
-              "notebook": "%bdc-2019-existing-kubeadm-notebook%",
-              "azdata_notebook": "%azdata-bdc-2019-existing-kubeadm-notebook%"
+              "notebook": "%bdc-2019-existing-kubeadm-notebook%"
             },
             "requiredTools": [
               {
