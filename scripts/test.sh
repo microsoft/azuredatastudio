@@ -1,6 +1,7 @@
 #!/bin/bash
 
 
+PASSED_ARGS="$@"
 if [[ "$OSTYPE" == "darwin"* ]] || [[ "$AGENT_OS" == "Darwin"* ]]; then
 	realpath() { [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"; }
 	ROOT=$(dirname $(dirname $(realpath "$0")))
@@ -42,10 +43,10 @@ if [[ "$OSTYPE" == "darwin"* ]] || [[ "$AGENT_OS" == "Darwin"* ]]; then
 	cd $ROOT ; ulimit -n 4096 ; \
 		ELECTRON_ENABLE_LOGGING=1 \
 		"$CODE" \
-		test/electron/index.js $CODE_ARGS "$@"
+		test/electron/index.js "$CODE_ARGS" "$PASSED_ARGS" "$@"
 else
 	cd $ROOT ; \
 		ELECTRON_ENABLE_LOGGING=1 \
 		"$CODE" \
-		test/electron/index.js --no-sandbox "$@" # Electron 6 introduces a chrome-sandbox that requires root to run. This can fail. Disable sandbox via --no-sandbox.
+		test/electron/index.js --no-sandbox "$CODE_ARGS" "$PASSED_ARGS" "$@" # Electron 6 introduces a chrome-sandbox that requires root to run. This can fail. Disable sandbox via --no-sandbox.
 fi
