@@ -138,10 +138,6 @@
         {
           "command": "azure.resource.connectsqlserver",
           "when": "false"
-        },
-        {
-          "command": "azure.resource.connectsqldb",
-          "when": "false"
         }
       ],
       "view/title": [
@@ -169,12 +165,7 @@
         },
         {
           "command": "azure.resource.connectsqlserver",
-          "when": "viewItem == azure.resource.itemType.databaseServer",
-          "group": "inline"
-        },
-        {
-          "command": "azure.resource.connectsqldb",
-          "when": "viewItem == azure.resource.itemType.database",
+          "when": "viewItem == azure.resource.itemType.databaseServer || viewItem == azure.resource.itemType.database || viewItem == azure.resource.itemType.sqlInstance",
           "group": "inline"
         }
       ]
