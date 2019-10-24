@@ -25,16 +25,9 @@ const ext = require('./lib/extensions');
 
 const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
 // {{SQL CARBON EDIT}}
-const sqlNonBuiltInExtensions = [
-	'admin-tool-ext-win',
-	'agent',
-	'import',
-	'profiler',
-	'admin-pack',
+const sqlLocalizedExtensions = [
 	'dacpac',
-	'schema-compare',
-	'cms',
-	'query-history'
+	'schema-compare'
 ];
 // {{SQL CARBON EDIT}}
 
@@ -121,7 +114,7 @@ const tasks = compilations.map(function (tsconfigFile) {
 	const cleanTask = task.define(`clean-extension-${name}`, util.rimraf(out));
 
 	const compileTask = task.define(`compile-extension:${name}`, task.series(cleanTask, () => {
-		const pipeline = createPipeline(sqlNonBuiltInExtensions.includes(name), true); // {{SQL CARBON EDIT}}
+		const pipeline = createPipeline(sqlLocalizedExtensions.includes(name), true); // {{SQL CARBON EDIT}}
 		const input = pipeline.tsProjectSrc();
 
 		return input
