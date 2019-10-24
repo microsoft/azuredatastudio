@@ -54,8 +54,8 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		return this._onServerStarted.event;
 	}
 
-	public get jupyterInstallation(): JupyterServerInstallation {
-		return this.options && this.options.jupyterInstallation && this.options.jupyterInstallation;
+	public get jupyterServerInstallation(): JupyterServerInstallation | undefined {
+		return this.options && this.options.jupyterInstallation;
 	}
 
 	public async startServer(): Promise<void> {
