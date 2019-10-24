@@ -93,13 +93,21 @@ export class AzdataTool extends ToolBase {
 			},
 			{
 				comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata ..."),
-				command: `pip3 install -r ${vscode.workspace.getConfiguration(DeploymentConfigurationKey)[AzdataPipInstallUriKey]} ${vscode.workspace.getConfiguration(DeploymentConfigurationKey)[azdataPipInstallArgsKey]} --quiet --user`
+				command: `pip3 install -r ${this.azdataInstallUri} ${this.azdataInstallAdditionalArgs} --quiet --user`
 			}
 		];
 	}
 
 	private get defaultUninstallCommand(): string {
-		return `pip3 uninstall -r ${vscode.workspace.getConfiguration(DeploymentConfigurationKey)[AzdataPipInstallUriKey]} ${vscode.workspace.getConfiguration(DeploymentConfigurationKey)[azdataPipInstallArgsKey]} -y `;
+		return `pip3 uninstall -r ${this.azdataInstallUri} ${this.azdataInstallAdditionalArgs} -y `;
+	}
+
+	private get azdataInstallUri(): string {
+		return vscode.workspace.getConfiguration(DeploymentConfigurationKey)[AzdataPipInstallUriKey];
+	}
+
+	private get azdataInstallAdditionalArgs(): string {
+		return vscode.workspace.getConfiguration(DeploymentConfigurationKey)[azdataPipInstallArgsKey];
 	}
 }
 
