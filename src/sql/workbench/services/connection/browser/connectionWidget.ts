@@ -64,7 +64,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected _tableContainer: HTMLElement;
 	protected _providerName: string;
 	protected _authTypeMap: { [providerName: string]: AuthenticationType[] } = {
-		[Constants.mssqlProviderName]: [AuthenticationType.SqlLogin, AuthenticationType.Integrated, AuthenticationType.AzureMFA]
+		[Constants.mssqlProviderName]: [AuthenticationType.SqlLogin, AuthenticationType.Integrated, AuthenticationType.AzureMFA],
+		[Constants.kustoProviderName]: [AuthenticationType.AzureMFA]
 	};
 	protected _connectionNameInputBox: InputBox;
 	protected _databaseNameInputBox: Dropdown;
@@ -112,11 +113,17 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		if (authTypeOption) {
-			if (OS === OperatingSystem.Windows) {
-				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.Integrated);
-			} else {
-				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.SqlLogin);
+			let defaultValue = authTypeOption.defaultValue;
+			if(defaultValue === 'undefined')
+			{
+				// Backwards compat: For MSSQL flavored extensions, we default to the following if the defaultValue is not defined.
+				if (OS === OperatingSystem.Windows) {
+					authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.Integrated);
+				} else {
+					authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.SqlLogin);
+				}
 			}
+
 			this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeOption.defaultValue, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
 		}
 		this._providerName = providerName;
