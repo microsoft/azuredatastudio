@@ -53,9 +53,9 @@ steps:
 - powershell: |
     .\scripts\test.bat --tfs "Unit Tests"
   displayName: Run Unit Tests
-- powershell: |
-    .\scripts\test-integration.bat --tfs "Integration Tests"
-  displayName: Run Integration Tests
+# - powershell: | {{SQL CARBON EDIT}} remove step
+#     .\scripts\test-integration.bat --tfs "Integration Tests"
+#   displayName: Run Integration Tests
 - task: PublishTestResults@2
   displayName: Publish Tests Results
   inputs:
