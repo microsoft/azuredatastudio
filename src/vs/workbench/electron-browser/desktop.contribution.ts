@@ -99,7 +99,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 		KeybindingsRegistry.registerKeybindingRule({
 			id: ToggleDevToolsAction.ID,
 			weight: KeybindingWeight.WorkbenchContrib + 50,
-			when: IsDevelopmentContext,
+			when: undefined, // {{SQL CARBON EDIT}} allow this toggle in all circumstances
 			primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_I,
 			mac: { primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_I }
 		});
