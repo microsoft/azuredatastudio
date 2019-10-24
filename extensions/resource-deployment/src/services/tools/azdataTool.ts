@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { EOL } from 'os';
-import * as vscode from 'vscode';
 import * as path from 'path';
 import { SemVer } from 'semver';
+import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
+import { azdataPipInstallArgsKey, AzdataPipInstallUriKey, DeploymentConfigurationKey } from '../../constants';
 import { Command, OsType, ToolType } from '../../interfaces';
 import { IPlatformService } from '../platformService';
-import { ToolBase } from './toolBase';
-import { DeploymentConfigurationKey, AzdataPipInstallUriKey, azdataPipInstallArgsKey } from '../../constants';
+import { InformationalMessageType, ToolBase } from './toolBase';
 
 const localize = nls.loadMessageBundle();
 const installationRoot = '~/.local/bin';
@@ -109,6 +109,13 @@ export class AzdataTool extends ToolBase {
 	private get azdataInstallAdditionalArgs(): string {
 		return vscode.workspace.getConfiguration(DeploymentConfigurationKey)[azdataPipInstallArgsKey];
 	}
+	// Additional Information messages for various OsTypes.
+	public additionalInformation: Map<OsType, InformationalMessageType[]> = new Map<OsType, InformationalMessageType[]>([
+		[OsType.linux, []],
+		[OsType.win32, [InformationalMessageType.PythonAndPip3]],
+		[OsType.darwin, [InformationalMessageType.PythonAndPip3, InformationalMessageType.Freetds]],
+		[OsType.others, [InformationalMessageType.PythonAndPip3]]
+	]);
 }
 
 /*
@@ -128,6 +135,7 @@ const linuxInstallationCommands = [
 		comment: localize('resourceDeployment.Azdata.DownloadAndInstallingSigningKey', "downloading and installing the signing key for azdata ..."),
 		command: 'wget -qO- https://packages.microsoft.com/keys/microsoft.asc | apt-key add -'
 	},
+	// Double check with Sean Wells on the current url for azdata corresponding to https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-preview.list)
 	{
 		sudo: true,
 		comment: localize('resourceDeployment.Azdata.AddingAzureCliRepositoryInformation', "adding the azdata repository information ..."),

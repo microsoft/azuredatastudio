@@ -233,6 +233,7 @@ export interface ITool {
 	readonly type: ToolType;
 	readonly homePage: string;
 	readonly displayStatus: string;
+	readonly informationalMessages: string[];
 	readonly statusDescription: string | undefined;
 	readonly autoInstallSupported: boolean;
 	readonly autoInstallRequired: boolean;

@@ -250,12 +250,20 @@ export class ResourceTypePickerDialog extends DialogBase {
 						description: messages.join(EOL)
 					};
 				} else if (autoInstallRequired) {
+					let description: string | undefined = undefined;
+					const informationalMessages: Set<string> = new Set<string>(...this._tools.filter(tool => tool.needsInstallation).map(tool => tool.informationalMessages));
+					console.log(`informationalMessages:${JSON.stringify(informationalMessages, undefined, '\t')}`);
+					if (informationalMessages.size > 0) {
+						description = [...informationalMessages.values()].join(EOL);
+					}
 					// we don't have scenarios that have mixed type of tools
 					// either we don't support auto install: docker, or we support auto install for all required tools
 					this._dialogObject.message = {
 						level: azdata.window.MessageLevel.Warning,
-						text: localize('deploymentDialog.InstallToolsHint', "Some required tools are not installed, you can click the \"{0}\" button to install them.", this._installToolButton.label)
+						text: localize('deploymentDialog.InstallToolsHint', "Some required tools are not installed, you can click the \"{0}\" button to install them.", this._installToolButton.label),
+						description: description
 					};
+
 				}
 				this._toolsLoadingComponent.loading = false;
 			});

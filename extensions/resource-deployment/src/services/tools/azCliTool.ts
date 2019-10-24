@@ -7,7 +7,7 @@ import { SemVer } from 'semver';
 import * as nls from 'vscode-nls';
 import { Command, OsType, ToolType } from '../../interfaces';
 import { IPlatformService } from '../platformService';
-import { ToolBase } from './toolBase';
+import { ToolBase, InformationalMessageType } from './toolBase';
 
 const localize = nls.loadMessageBundle();
 const defaultInstallationRoot = '~/.local/bin';
@@ -70,6 +70,14 @@ export class AzCliTool extends ToolBase {
 			command: 'az --version'
 		};
 	}
+
+	// Additional Information messages for various OsTypes.
+	public additionalInformation: Map<OsType, InformationalMessageType[]> = new Map<OsType, InformationalMessageType[]>([
+		[OsType.linux, []],
+		[OsType.win32, []],
+		[OsType.darwin, [InformationalMessageType.Brew]],
+		[OsType.others, [InformationalMessageType.Curl]]
+	]);
 }
 
 const win32InstallationCommands = [
@@ -89,6 +97,7 @@ const win32InstallationCommands = [
 	}
 ];
 const macOsInstallationCommands = [
+	// try to install brew ourselves
 	{
 		comment: localize('resourceDeployment.AziCli.UpdatingBrewRepository', "updating your brew repository for azure-cli installation ..."),
 		command: 'brew update'

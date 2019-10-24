@@ -7,7 +7,7 @@ import { Command, ToolType, OsType } from '../../interfaces';
 import * as nls from 'vscode-nls';
 import { SemVer } from 'semver';
 import { IPlatformService } from '../platformService';
-import { ToolBase } from './toolBase';
+import { ToolBase, InformationalMessageType } from './toolBase';
 
 const localize = nls.loadMessageBundle();
 
@@ -59,6 +59,14 @@ export class KubeCtlTool extends ToolBase {
 		[OsType.darwin, macOsInstallationCommands],
 		[OsType.others, defaultInstallationCommands]
 	]);
+
+	// Additional Information messages for various OsTypes.
+	public additionalInformation: Map<OsType, InformationalMessageType[]> = new Map<OsType, InformationalMessageType[]>([
+		[OsType.linux, []],
+		[OsType.win32, []],
+		[OsType.darwin, [InformationalMessageType.Brew]],
+		[OsType.others, [InformationalMessageType.Curl]]
+	]);
 }
 
 const macOsInstallationCommands = [
@@ -107,11 +115,11 @@ const linuxInstallationCommands = [
 const win32InstallationCommands = [
 	{
 		comment: localize('resourceDeployment.Kubectl.DeletePreviousDownloadedKubectl.exe', "deleting previously downloaded kubectl.exe if one exists ..."),
-		command: `IF EXIST .\kubectl.exe DEL /F .\kubectl.exe`,
+		command: 'IF EXIST .\\kubectl.exe DEL /F .\\kubectl.exe',
 	},
 	{
 		comment: localize('resourceDeployment.Kubectl.DownloadingAndInstallingKubectl', "downloading and installing the latest kubectl.exe ..."),
-		command: `for /f %i in ('curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt') do curl -LO https://storage.googleapis.com/kubernetes-release/release/%i/bin/windows/amd64/kubectl.exe`
+		command: `powershell -Command "& {(New-Object System.Net.WebClient).DownloadFile('https://storage.googleapis.com/kubernetes-release/release/v1.16.2/bin/windows/amd64/kubectl.exe', 'kubectl.exe')}"`
 	}
 ];
 const defaultInstallationCommands = [
@@ -130,12 +138,12 @@ const defaultInstallationCommands = [
 	{
 		sudo: true,
 		comment: localize('resourceDeployment.Kubectl.CleaningUpOldBackups', "cleaning up any previously backed up version in the install location if they exist ..."),
-		command: `[ -e /usr/local/bin/kubectl] && [ -e /usr/local/bin/kubectl_movedByADS ] && rm -f /usr/local/bin/kubectl_movedByADS`
+		command: '[ -e /usr/local/bin/kubectl] && [ -e /usr/local/bin/kubectl_movedByADS ] && rm -f /usr/local/bin/kubectl_movedByADS'
 	},
 	{
 		sudo: true,
 		comment: localize('resourceDeployment.Kubectl.BackupCurrentBinary', "backing up any existing kubectl in the install location ..."),
-		command: `[ -e /usr/local/bin/kubectl ] && mv /usr/local/bin/kubectl /usr/local/bin/kubectl_movedByADS`
+		command: '[ -e /usr/local/bin/kubectl ] && mv /usr/local/bin/kubectl /usr/local/bin/kubectl_movedByADS'
 	},
 	{
 		comment: localize('resourceDeployment.Kubectl.MoveToSystemPath', "moving kubectl into the install location in the PATH ..."),
