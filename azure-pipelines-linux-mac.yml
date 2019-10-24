@@ -1,13 +1,12 @@
 steps:
   - script: |
-      export CXX="g++-4.9" CC="gcc-4.9" DISPLAY=:10
+      set -e
+      sudo apt-get update
+      sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 libkrb5-dev
       sudo cp build/azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
       sudo chmod +x /etc/init.d/xvfb
       sudo update-rc.d xvfb defaults
       sudo service xvfb start
-      sudo apt-get install -y libkrb5-dev
-      # sh -e /etc/init.d/xvfb start
-      # sleep 3
     displayName: "Linux preinstall"
     condition: eq(variables['Agent.OS'], 'Linux')
 
@@ -50,8 +49,12 @@ steps:
     displayName: Run Hygiene Checks
 
   - script: |
-      yarn tslint
+      yarn tslint (gci)
     displayName: Run TSLint
+
+  - script: |
+      yarn gulp tslint
+    displayName: Run TSLint Checks
 
   - script: |
       yarn strict-null-check
