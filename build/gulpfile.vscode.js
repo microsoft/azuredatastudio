@@ -164,13 +164,14 @@ const config = {
 	productAppName: product.nameLong,
 	companyName: 'Microsoft Corporation',
 	copyright: 'Copyright (C) 2019 Microsoft. All rights reserved',
-	darwinIcon: product.quality === 'stable' ? 'resources/darwin/code.icns' : 'resources/darwin/code-insiders.icns', // {{SQL CARBON EDIT}} Use separate icons for non-stable
+	darwinIcon: 'resources/darwin/code.icns',
 	darwinBundleIdentifier: product.darwinBundleIdentifier,
 	darwinApplicationCategoryType: 'public.app-category.developer-tools',
 	darwinHelpBookFolder: 'VS Code HelpBook',
 	darwinHelpBookName: 'VS Code HelpBook',
 	darwinBundleDocumentTypes: [
-		darwinBundleDocumentType(["csv", "json", "sqlplan", "sql", "xml"], product.quality === 'stable' ? 'resources/darwin/code_file.icns' : 'resources/darwin/code_file-insiders.icns'), // {{SQL CARBON EDIT}} - Remove most document types and replace with ours. Also use separate icon for non-stable
+		// {{SQL CARBON EDIT}} - Remove most document types and replace with ours
+		darwinBundleDocumentType(["csv", "json", "sqlplan", "sql", "xml"], 'resources/darwin/code_file.icns'),
 	],
 	darwinBundleURLTypes: [{
 		role: 'Viewer',
@@ -180,7 +181,7 @@ const config = {
 	darwinForceDarkModeSupport: true,
 	darwinCredits: darwinCreditsTemplate ? Buffer.from(darwinCreditsTemplate({ commit: commit, date: new Date().toISOString() })) : undefined,
 	linuxExecutableName: product.applicationName,
-	winIcon: product.quality === 'stable' ? 'resources/win32/code.ico' : 'resources/win32/code-insiders.ico', // {{SQL CARBON EDIT}} Use separate icons for non-stable
+	winIcon: 'resources/win32/code.ico',
 	token: process.env['VSCODE_MIXIN_PASSWORD'] || process.env['GITHUB_TOKEN'] || undefined,
 
 	// @ts-ignore JSON checking: electronRepository is optional
@@ -332,24 +333,12 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		);
 
 		if (platform === 'win32') {
-			if (quality !== 'stable') {
-				// {{SQL CARBON EDIT}} use separate icons for non-stable
-				gulp.src([
-					'resources/win32/code_70x70-insiders.png',
-					'resources/win32/code_150x150-insiders.png'
-				]).pipe(rename(function (f) { f.basename = f.basename.replace('-insiders', ''); }))
-				.pipe(gulp.dest('resources/win32'));
-			}
 			all = es.merge(all, gulp.src([
 				// {{SQL CARBON EDIT}} remove unused icons
 				'resources/win32/code_70x70.png',
 				'resources/win32/code_150x150.png'
 			], { base: '.' }));
 		} else if (platform === 'linux') {
-			// {{SQL CARBON EDIT}} use separate icons for non-stable
-			if (quality !== 'stable') {
-				gulp.src('resources/linux/code-insiders.png').pipe(rename('resources/linux/code.png'));
-			}
 			all = es.merge(all, gulp.src('resources/linux/code.png', { base: '.' }));
 		} else if (platform === 'darwin') {
 			const shortcut = gulp.src('resources/darwin/bin/code.sh')
@@ -521,7 +510,7 @@ gulp.task('vscode-translations-pull', function () {
 
 gulp.task('vscode-translations-import', function () {
 	// {{SQL CARBON EDIT}} - Replace function body with our own
-	return new Promise(function (resolve) {
+	return new Promise(function(resolve) {
 		[...i18n.defaultLanguages, ...i18n.extraLanguages].forEach(language => {
 			let languageId = language.translationId ? language.translationId : language.id;
 			gulp.src(`resources/xlf/${languageId}/**/*.xlf`)
