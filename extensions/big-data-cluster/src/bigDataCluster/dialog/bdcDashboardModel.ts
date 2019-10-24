@@ -99,7 +99,8 @@ export class BdcDashboardModel {
  * troubleshoot notebook if the service name is unknown.
  * @param service The service name to get the troubleshoot notebook URL for
  */
-export function getTroubleshootNotebookUrl(service: string): string {
+export function getTroubleshootNotebookUrl(service?: string): string {
+	service = service || '';
 	switch (service.toLowerCase()) {
 		case Service.sql:
 			return 'troubleshooters/tsg101-troubleshoot-sql-server';
