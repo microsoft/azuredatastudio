@@ -93,7 +93,6 @@ export type DeploymentProvider = DialogDeploymentProvider | WizardDeploymentProv
 
 export interface WizardInfo {
 	notebook: string | NotebookInfo;
-	azdata_notebook: string | NotebookInfo;
 	type: BdcDeploymentType;
 }
 
