@@ -226,7 +226,7 @@ export const enum ToolStatus {
 }
 
 export interface ITool {
-	isInstalling: any;
+	readonly isInstalling: boolean;
 	readonly name: string;
 	readonly displayName: string;
 	readonly description: string;
@@ -237,6 +237,7 @@ export interface ITool {
 	readonly autoInstallSupported: boolean;
 	readonly autoInstallRequired: boolean;
 	readonly isNotInstalled: boolean;
+	readonly installationSearchPaths: (string | undefined)[];
 	readonly needsInstallation: boolean;
 	readonly outputChannelName: string;
 	readonly fullVersion: string | undefined;

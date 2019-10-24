@@ -42,12 +42,12 @@ export class AzCliTool extends ToolBase {
 		return true;
 	}
 
-	protected async getInstallationPath(): Promise<string | undefined> {
+	protected async getInstallationPath(): Promise<string[]> {
 		switch (this.osType) {
 			case OsType.win32:
-				return win32InstallationRoot;
+				return [win32InstallationRoot];
 			default:
-				return defaultInstallationRoot;
+				return [defaultInstallationRoot];
 		}
 	}
 

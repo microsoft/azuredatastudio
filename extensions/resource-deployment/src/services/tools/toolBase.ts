@@ -45,11 +45,11 @@ export abstract class ToolBase implements ITool {
 
 	protected abstract readonly versionCommand: Command;
 
-	protected async getInstallationPath(): Promise<string | undefined> {
-		return undefined;
+	protected async getInstallationPath(): Promise<string[]> {
+		return [];
 	}
 
-	protected get installationSearchPaths(): (string | undefined)[] {
+	public get installationSearchPaths(): (string | undefined)[] {
 		return [this.storagePath];
 	}
 
@@ -196,8 +196,8 @@ export abstract class ToolBase implements ITool {
 	}
 
 	protected async addInstallationSearchPathsToSystemPath(): Promise<void> {
-		const installationPath = await this.getInstallationPath();
-		const searchPaths = [installationPath, ...this.installationSearchPaths].filter(path => !!path);
+		const installationPaths = await this.getInstallationPath();
+		const searchPaths = [...installationPaths, ...this.installationSearchPaths].filter(path => !!path);
 		this.logToOutputChannel(localize('toolBase.addInstallationSearchPathsToSystemPath.SearchPaths', "Search Paths for tool '{0}': {1}", this.displayName, JSON.stringify(searchPaths, undefined, '\t'))); //this.displayName is localized and searchPaths are OS filesystem paths.
 		searchPaths.forEach(installationSearchPath => {
 			if (process.env.PATH) {

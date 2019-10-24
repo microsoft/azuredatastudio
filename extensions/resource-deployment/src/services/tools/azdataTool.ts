@@ -58,13 +58,17 @@ export class AzdataTool extends ToolBase {
 		return true;
 	}
 
-	protected async getInstallationPath(): Promise<string | undefined> {
+	protected async getInstallationPath(): Promise<string[]> {
 		switch (this.osType) {
 			case OsType.linux:
-				return installationRoot;
+				return [installationRoot];
 			default:
 				const azdataCliInstallLocation = await this.getPip3InstallLocation('azdata-cli');
-				return azdataCliInstallLocation && path.join(azdataCliInstallLocation, '..', 'Scripts');
+				if (azdataCliInstallLocation) {
+					return [path.join(azdataCliInstallLocation, '..', 'Scripts'), path.join(azdataCliInstallLocation, '..', '..', '..', 'bin')];
+				} else {
+					return [];
+				}
 		}
 	}
 
