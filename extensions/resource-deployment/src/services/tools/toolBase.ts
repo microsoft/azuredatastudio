@@ -63,11 +63,11 @@ export abstract class ToolBase implements ITool {
 		return this._onDidUpdateData.event;
 	}
 
-	protected get status(): ToolStatus {
+	get status(): ToolStatus {
 		return this._status;
 	}
 
-	protected set status(value: ToolStatus) {
+	set status(value: ToolStatus) {
 		this._status = value;
 		this._onDidUpdateData.fire(this);
 	}

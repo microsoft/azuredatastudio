@@ -226,6 +226,7 @@ export const enum ToolStatus {
 }
 
 export interface ITool {
+	readonly status: ToolStatus;
 	readonly isInstalling: boolean;
 	readonly name: string;
 	readonly displayName: string;
