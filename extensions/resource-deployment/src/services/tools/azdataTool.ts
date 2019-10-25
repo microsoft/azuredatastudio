@@ -66,8 +66,6 @@ export class AzdataTool extends ToolBase {
 
 	protected async getSearchPaths(): Promise<string[]> {
 		switch (this.osType) {
-			case OsType.linux:
-				return [installationRoot];
 			default:
 				const azdataCliInstallLocation = await this.getPip3InstallLocation('azdata-cli');
 				if (azdataCliInstallLocation) {
@@ -88,11 +86,7 @@ export class AzdataTool extends ToolBase {
 	}
 
 	protected get uninstallCommand(): string | undefined {
-		if (this.osType !== OsType.linux) {
-			return this.defaultUninstallCommand;
-		} else {
-			return super.uninstallCommand;
-		}
+		return this.defaultUninstallCommand;
 	}
 
 	private get defaultInstallationCommands(): Command[] {

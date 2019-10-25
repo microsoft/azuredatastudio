@@ -14,7 +14,7 @@ import { IPlatformService } from '../platformService';
 const localize = nls.loadMessageBundle();
 const toolStatusNotInstalled: string = localize('deploymentDialog.ToolStatus.NotInstalled', "Not Installed");
 const toolStatusInstalled: string = localize('deploymentDialog.ToolStatus.Installed', "Installed");
-const toolStatusInstalling: string = localize('deploymentDialog.ToolStatus.NotInstalling', "Installing ...");
+const toolStatusInstalling: string = localize('deploymentDialog.ToolStatus.Installing', "Installing");
 const toolStatusError: string = localize('deploymentDialog.ToolStatus.Error', "Error");
 const toolStatusFailed: string = localize('deploymentDialog.ToolStatus.Failed', "Failed");
 
@@ -264,7 +264,7 @@ export abstract class ToolBase implements ITool {
 			},
 		);
 		if (!commandOutput) {
-			throw new Error(`Enexpected Error: install location of tool:'${this.displayName}' could not be discovered`);
+			throw new Error(`Install location of tool:'${this.displayName}' could not be discovered`);
 		} else {
 			this._installationPath = commandOutput.split(EOL)[0];
 		}
