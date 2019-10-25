@@ -22,6 +22,8 @@ const generateScriptEnabledMessage = localize('schemaCompare.generateScriptEnabl
 const generateScriptNoChangesMessage = localize('schemaCompare.generateScriptNoChanges', "No changes to script");
 const applyEnabledMessage = localize('schemaCompare.applyButtonEnabledTitle', "Apply changes to target");
 const applyNoChangesMessage = localize('schemaCompare.applyNoChanges', "No changes to apply");
+const cannotExcludeMessage = localize('schemaCompare.cannotExcludeMessage', "Cannot exclude. Included dependents exist such as ");
+const cannotIncludeMessage = localize('schemaCompare.cannotIncludeMessage', "Cannot include. Excluded dependents exist such as ");
 // Do not localize this, this is used to decide the icon for the editor.
 // TODO : In future icon should be decided based on language id (scmp) and not resource name
 const schemaCompareResourceName = 'Schema Compare';
@@ -101,7 +103,6 @@ export class SchemaCompareMainWindow {
 		this.editor.registerContent(async view => {
 			this.differencesTable = view.modelBuilder.table().withProperties({
 				data: [],
-				height: 300,
 				title: localize('schemaCompare.differencesTableTitle', "Comparison between Source and Target")
 			}).component();
 
@@ -386,21 +387,63 @@ export class SchemaCompareMainWindow {
 		this.tablelistenersToDispose.push(this.differencesTable.onCellAction(async (rowState) => {
 			let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 			if (checkboxState) {
+				this.differencesTable.checked = undefined;
+				this.differencesTable.selectedRows = [checkboxState.row];
 				let diff = this.comparisonResult.differences[checkboxState.row];
-				await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, checkboxState.checked, azdata.TaskExecutionMode.execute);
+				const result = await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, checkboxState.checked, azdata.TaskExecutionMode.execute);
+				if (result.success) {
+					this.saveExcludeState(checkboxState);
 
-				// check if if the called worked or not - if worked
-				this.saveExcludeState(checkboxState);
+					// depencies could have been included or excluded as a result, so save their exclude states
+					result.affectedDependencies.forEach(difference => {
+						// find the row of the difference and set it's checkbox
+						const row = this.findDifferenceRow(difference);
+						if (row !== -1) {
+							this.differencesTable.checked = { row: row, columnName: 'Include', checked: difference.included };
+							const dependencyCheckBoxState: azdata.ICheckboxCellActionEventArgs = {
+								checked: difference.included,
+								row: row,
+								column: 2,
+								columnName: undefined
+							};
+							this.saveExcludeState(dependencyCheckBoxState);
+						}
+					});
+				} else {
+					// failed because of dependencies
+					if (result.blockingDependencies) {
+						// show the first dependent that caused this to fail in the warning message
+						const firstDependentName = this.createName(result.blockingDependencies[0].sourceValue ? result.blockingDependencies[0].sourceValue : result.blockingDependencies[0].targetValue);
+						vscode.window.showWarningMessage(checkboxState.checked ? cannotIncludeMessage + firstDependentName : cannotExcludeMessage + firstDependentName);
+					} else {
+						vscode.window.showWarningMessage(result.errorMessage);
+					}
 
-				// if failed or needs to do something more, call the following or something more
-				this.differencesTable.checked = { row: checkboxState.row, columnName: 'Include', checked: !checkboxState.checked };
+					// set checkbox back to previous state
+					this.differencesTable.checked = { row: checkboxState.row, columnName: 'Include', checked: !checkboxState.checked };
+				}
 			}
 		}));
+	}
+
+	// get the row number of the difference in the table
+	private findDifferenceRow(difference: mssql.DiffEntry): number {
+		for (let i = 0; i < this.comparisonResult.differences.length; i++) {
+			if (this.comparisonResult.differences[i].differenceType === difference.differenceType
+				&& this.comparisonResult.differences[i].name === difference.name
+				&& this.createName(this.comparisonResult.differences[i].sourceValue) === this.createName(difference.sourceValue)
+				&& this.createName(this.comparisonResult.differences[i].targetValue) === this.createName(difference.targetValue)) {
+				return i;
+			}
+		}
+
+		return -1;
 	}
 
 	// save state based on source name if present otherwise target name (parity with SSDT)
 	private saveExcludeState(rowState: azdata.ICheckboxCellActionEventArgs) {
 		if (rowState) {
+			this.differencesTable.data[rowState.row][2] = rowState.checked;
 			let diff = this.comparisonResult.differences[rowState.row];
 			let key = (diff.sourceValue && diff.sourceValue.length > 0) ? this.createName(diff.sourceValue) : this.createName(diff.targetValue);
 			if (key) {
@@ -465,7 +508,6 @@ export class SchemaCompareMainWindow {
 
 	private removeExcludeEntry(collection: mssql.SchemaCompareObjectId[], entryName: string) {
 		if (collection) {
-			console.error('removing ' + entryName);
 			const index = collection.findIndex(e => this.createName(e.nameParts) === entryName);
 			collection.splice(index, 1);
 		}
