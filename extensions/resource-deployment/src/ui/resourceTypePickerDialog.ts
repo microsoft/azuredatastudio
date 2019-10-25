@@ -15,7 +15,6 @@ import { createFlexContainer } from './modelViewUtils';
 const localize = nls.loadMessageBundle();
 
 export class ResourceTypePickerDialog extends DialogBase {
-	private toolRefreshTimestamp: number = 0;
 	private _selectedResourceType: ResourceType;
 	private _resourceTypeCards: azdata.CardComponent[] = [];
 	private _view!: azdata.ModelView;
@@ -196,35 +195,25 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	private updateToolsDisplayTable(): void {
-		this.toolRefreshTimestamp = new Date().getTime();
-		const currentRefreshTimestamp = this.toolRefreshTimestamp;
-		const toolRequirements = this.getCurrentProvider().requiredTools;
+		this._tools = this.getCurrentProvider().requiredTools.map(toolReq => this.toolsService.getToolByName(toolReq.name)!);
 		const headerRowHeight = 28;
-		this._toolsTable.height = 25 * Math.max(toolRequirements.length, 1) + headerRowHeight;
-		this._dialogObject.message = {
-			text: ''
-		};
+		this._toolsTable.height = 25 * Math.max(this._tools.length, 1) + headerRowHeight;
+		this._dialogObject.message = { text: '' };
 		this._installToolButton.hidden = true;
-		if (toolRequirements.length === 0) {
+		if (this._tools.length === 0) {
 			this._dialogObject.okButton.enabled = true;
 			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
-			this._tools = [];
 		} else {
-			this._tools = toolRequirements.map(toolReq => {
-				return this.toolsService.getToolByName(toolReq.name)!;
-			});
 			this._toolsLoadingComponent.loading = true;
 			this._dialogObject.okButton.enabled = false;
-
-			Promise.all(this._tools.map(tool => tool.loadInformation())).then(async () => {
-				// If the local timestamp does not match the class level timestamp, it means user has changed options, ignore the results
-				if (this.toolRefreshTimestamp !== currentRefreshTimestamp) {
-					return;
-				}
-				let autoInstallRequired = false;
-				const messages: string[] = [];
-				this._toolsTable.data = toolRequirements.map(toolReq => {
-					const tool = this.toolsService.getToolByName(toolReq.name)!;
+			(async () => {
+				await Promise.all(this._tools.map(async tool => tool.loadInformation()));
+				let autoInstallRequired = this._tools.reduce<boolean>((accumulated, current) => {
+					accumulated = accumulated || current.autoInstallRequired;
+					return accumulated;
+				}, /* initialValue of accumulated */false);
+				let messages: string[] = [];
+				this._toolsTable.data = this._tools.map(tool => {
 					// subscribe to onUpdateData event of the tool.
 					this._toDispose.push(tool.onDidUpdateData((t: ITool) => {
 						this.updateToolsDisplayTableData(t);
@@ -235,8 +224,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 							console.warn(localize('deploymentDialog.DetailToolStatusDescription', "Additional status information for tool: '{0}' [ {1} ]. {2}", tool.name, tool.homePage, tool.statusDescription));
 						}
 					}
-
-					autoInstallRequired = tool.autoInstallRequired;
 					return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || ''];
 				});
 
@@ -250,22 +237,26 @@ export class ResourceTypePickerDialog extends DialogBase {
 						description: messages.join(EOL)
 					};
 				} else if (autoInstallRequired) {
-					let infoText: string = localize('deploymentDialog.InstallToolsHint', "Some required tools are not installed, you can click the \"{0}\" button to install them.", this._installToolButton.label);
-					const informationalMessages: Set<string> = new Set<string>(...this._tools.filter(tool => tool.needsInstallation).map(tool => tool.informationalMessages));
-					console.log(`informationalMessages:${JSON.stringify(informationalMessages, undefined, '\t')}`);
-					if (informationalMessages.size > 0) {
-						infoText = [infoText, ...informationalMessages.values()].join(EOL);
+					let infoText: string[] = [localize('deploymentDialog.InstallToolsHint', "Some required tools are not installed, you can click the \"{0}\" button to install them.", this._installToolButton.label)];
+					const informationalMessagesArray = this._tools.reduce<string[]>((returnArray, currentTool) => {
+						if (currentTool.needsInstallation) {
+							returnArray.push(...currentTool.informationalMessages);
+						}
+						return returnArray;
+					}, /* initial Value of return array*/[]);
+					const informationalMessagesSet: Set<string> = new Set<string>(informationalMessagesArray);
+					if (informationalMessagesSet.size > 0) {
+						infoText.push(...informationalMessagesSet.values());
 					}
 					// we don't have scenarios that have mixed type of tools
 					// either we don't support auto install: docker, or we support auto install for all required tools
 					this._dialogObject.message = {
 						level: azdata.window.MessageLevel.Warning,
-						text: infoText
+						text: infoText.join(EOL)
 					};
-
 				}
 				this._toolsLoadingComponent.loading = false;
-			});
+			})();
 		}
 	}
 
