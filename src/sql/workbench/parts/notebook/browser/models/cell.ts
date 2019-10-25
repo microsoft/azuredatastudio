@@ -311,6 +311,10 @@ export class CellModel implements ICellModel {
 			// If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
 			// This matches the same behavior as JupyterLab
 			if (this.future && this.future.inProgress) {
+				// If stdIn is visible, to prevent a kernel hang, we need to send a dummy input reply
+				if (this._stdInVisible && this._stdInHandler) {
+					this.future.sendInputReply({ value: '' });
+				}
 				this.future.inProgress = false;
 				await kernel.interrupt();
 				this.sendNotification(notificationService, Severity.Info, localize('runCellCancelled', "Cell execution cancelled"));
