@@ -102,7 +102,7 @@ const stateToDisplayTextMap = {
 	'waitingforkerberosdelegationsetup': localize('state.waitingForKerberosDelegationSetup', "Waiting For Kerberos Delegation Setup"),
 	'waitingfordeletion': localize('state.waitingForDeletion', "Waiting For Deletion"),
 	'waitingforupgrade': localize('state.waitingForUpgrade', "Waiting For Upgrade"),
-	'upgradePaused': localize('state.upgradePaused', "UpgradePaused"),
+	'upgradePaused': localize('state.upgradePaused', "Upgrade Paused"),
 
 	// Other
 	'running': localize('state.running', "Running"),
