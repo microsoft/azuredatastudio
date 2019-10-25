@@ -84,6 +84,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 	public async stopServer(): Promise<void> {
 		if (this._jupyterServer) {
 			await this._jupyterServer.stop();
+			this._jupyterServer = undefined;
 		}
 	}
 
