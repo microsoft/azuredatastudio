@@ -13,7 +13,6 @@ import { ToolBase } from './toolBase';
 import { DeploymentConfigurationKey, AzdataPipInstallUriKey, azdataPipInstallArgsKey } from '../../constants';
 
 const localize = nls.loadMessageBundle();
-const installationRoot = '~/.local/bin';
 
 export class AzdataTool extends ToolBase {
 	constructor(platformService: IPlatformService) {
