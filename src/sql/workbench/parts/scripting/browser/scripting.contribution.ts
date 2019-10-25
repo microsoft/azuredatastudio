@@ -15,6 +15,7 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
 import { EditDataAction } from 'sql/workbench/browser/scriptingActions';
+import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 //#region -- Data Explorer
 // Script as Create
@@ -80,7 +81,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: commands.EDIT_DATA_COMMAND_ID,
 		title: localize('editData', "Edit Data")
 	},
-	when: MssqlNodeContext.CanEditData
+	when: ContextKeyExpr.and(MssqlNodeContext.CanEditData, MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 //#endregion
 
@@ -103,7 +104,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		id: commands.OE_EDIT_DATA_COMMAND_ID,
 		title: localize('editData', "Edit Data")
 	},
-	when: TreeNodeContextKey.NodeType.isEqualTo('Table')
+	when: ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('Table'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
