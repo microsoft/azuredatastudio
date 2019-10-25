@@ -213,7 +213,7 @@ export class WebClientServer {
 			// and we want to set it prolong it to ensure that this
 			// client is valid for another 1 week at least
 			'Set-Cookie': cookie.serialize('vscode-tkn', this._connectionToken, { maxAge: 60 * 60 * 24 * 7 /* 1 week */ }),
-			'Content-Security-Policy': cspDirectives
+			// 'Content-Security-Policy': cspDirectives
 		});
 		return res.end(data);
 	}

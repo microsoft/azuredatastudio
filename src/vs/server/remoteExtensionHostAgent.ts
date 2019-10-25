@@ -139,7 +139,7 @@ if (shouldSpawnCli(args)) {
 	const license = `
 
 *
-* Visual Studio Code Server
+* Azure Data Studio Server
 *
 * Reminder: You may only use this software with Visual Studio family products,
 * as described in the license https://aka.ms/vscode-remote/license
