@@ -29,19 +29,16 @@ const toolStatusLocalized: Map<ToolStatus, string> = new Map<ToolStatus, string>
 export const enum InformationalMessageType {
 	PythonAndPip3 = 'PythonAndPip3',
 	Brew = 'PythonAndPip3',
-	Freetds = 'Freetds',
 	Curl = 'Curl'
 }
 
 const pythonAndPip3Localized = localize('deploymentDialog.ToolInformationalMessage.PythonAndPip3', "•	azdata installation needs python3 and pip3 need to be pre-installed before necessary tools can be deployed");
 const brewLocalized = localize('deploymentDialog.ToolInformationalMessage.Brew', "•	brew is needed for deployment of the tools and needs to be pre-installed before necessary tools can be deployed");
-const freeTdsLocalized = localize('deploymentDialog.ToolInformationalMessage.FreeTds', "•	freetds is needed for azdata installation and will be installed if not present");
 const curlLocalized = localize('deploymentDialog.ToolInformationalMessage.Curl', "•	curl is needed for installation and needs to be pre-installed before necessary tools can be deployed");
 
 export const informationalMessage: Map<InformationalMessageType, string> = new Map<InformationalMessageType, string>([
 	[InformationalMessageType.PythonAndPip3, pythonAndPip3Localized],
 	[InformationalMessageType.Brew, brewLocalized],
-	[InformationalMessageType.Freetds, freeTdsLocalized],
 	[InformationalMessageType.Curl, curlLocalized]
 ]);
 
@@ -70,7 +67,11 @@ export abstract class ToolBase implements ITool {
 	}
 
 	public get informationalMessages(): string[] {
-		return this.additionalInformationalMessages.map(msgType => informationalMessage.get(msgType) || '');
+
+		return (this.needsInstallation
+			? this.additionalInformationalMessages.map((msgType: InformationalMessageType) => informationalMessage.get(msgType) || '')
+			: []
+		).filter(s => !!s);
 	}
 
 	protected async getInstallationPath(): Promise<string | undefined> {

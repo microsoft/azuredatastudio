@@ -113,7 +113,7 @@ export class AzdataTool extends ToolBase {
 	public additionalInformation: Map<OsType, InformationalMessageType[]> = new Map<OsType, InformationalMessageType[]>([
 		[OsType.linux, []],
 		[OsType.win32, [InformationalMessageType.PythonAndPip3]],
-		[OsType.darwin, [InformationalMessageType.PythonAndPip3, InformationalMessageType.Freetds]],
+		[OsType.darwin, [InformationalMessageType.PythonAndPip3]],
 		[OsType.others, [InformationalMessageType.PythonAndPip3]]
 	]);
 }
