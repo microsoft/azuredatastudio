@@ -1,0 +1,50 @@
+diff --git a/src/vs/server/cli.js b/src/vs/server/cli.js
+index 72aaf6c95e..c2f149cdd5 100644
+--- a/src/vs/server/cli.js
++++ b/src/vs/server/cli.js
+@@ -1,6 +1,6 @@
+ /*---------------------------------------------------------------------------------------------
+  *  Copyright (c) Microsoft Corporation. All rights reserved.
+- *  Licensed under the MIT License. See License.txt in the project root for license information.
++ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+  *--------------------------------------------------------------------------------------------*/
+ const path = require('path');
+ 
+diff --git a/src/vs/server/main.js b/src/vs/server/main.js
+index 13a03967ab..e23be0562f 100644
+--- a/src/vs/server/main.js
++++ b/src/vs/server/main.js
+@@ -1,6 +1,6 @@
+ /*---------------------------------------------------------------------------------------------
+  *  Copyright (c) Microsoft Corporation. All rights reserved.
+- *  Licensed under the MIT License. See License.txt in the project root for license information.
++ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+  *--------------------------------------------------------------------------------------------*/
+ 
+ //@ts-check
+diff --git a/src/vs/server/remoteExtensionHostAgent.ts b/src/vs/server/remoteExtensionHostAgent.ts
+index 030c38f07b..ea35604f9a 100644
+--- a/src/vs/server/remoteExtensionHostAgent.ts
++++ b/src/vs/server/remoteExtensionHostAgent.ts
+@@ -139,7 +139,7 @@ if (shouldSpawnCli(args)) {
+ 	const license = `
+ 
+ *
+-* Visual Studio Code Server
++* Azure Data Studio Server
+ *
+ * Reminder: You may only use this software with Visual Studio family products,
+ * as described in the license https://aka.ms/vscode-remote/license
+diff --git a/src/vs/server/webClientServer.ts b/src/vs/server/webClientServer.ts
+index 6ce045a262..f236564cde 100644
+--- a/src/vs/server/webClientServer.ts
++++ b/src/vs/server/webClientServer.ts
+@@ -213,7 +213,7 @@ export class WebClientServer {
+ 			// and we want to set it prolong it to ensure that this
+ 			// client is valid for another 1 week at least
+ 			'Set-Cookie': cookie.serialize('vscode-tkn', this._connectionToken, { maxAge: 60 * 60 * 24 * 7 /* 1 week */ }),
+-			'Content-Security-Policy': cspDirectives
++			// 'Content-Security-Policy': cspDirectives
+ 		});
+ 		return res.end(data);
+ 	}

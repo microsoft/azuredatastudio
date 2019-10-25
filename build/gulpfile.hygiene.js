@@ -104,7 +104,8 @@ const indentationFilter = [
 	'!extensions/resource-deployment/notebooks/**',
 	'!extensions/mssql/notebooks/**',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts'
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
+	'!**/*.patch'
 ];
 
 const copyrightFilter = [
