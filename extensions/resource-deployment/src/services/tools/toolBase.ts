@@ -45,12 +45,10 @@ export abstract class ToolBase implements ITool {
 
 	protected abstract readonly versionCommand: Command;
 
-	protected async getInstallationPath(): Promise<string[]> {
-		return [];
-	}
+	protected abstract readonly discoveryCommand: Command;
 
-	public get installationSearchPaths(): (string | undefined)[] {
-		return [this.storagePath];
+	protected async getSearchPaths(): Promise<string[]> {
+		return [];
 	}
 
 	protected get downloadPath(): string {
@@ -125,6 +123,9 @@ export abstract class ToolBase implements ITool {
 		return this._statusDescription;
 	}
 
+	public get installationPath(): string {
+		return this._installationPath;
+	}
 	protected get installationCommands(): Command[] | undefined {
 		return this.allInstallationCommands.get(this.osType);
 	}
@@ -164,6 +165,7 @@ export abstract class ToolBase implements ITool {
 			this.status = ToolStatus.Error;
 			throw error;
 		}
+
 		// Since we just completed installation, the status should be ToolStatus.Installed
 		// but if it is ToolStatus.NotInstalled then it means that installation failed with 0 exit code.
 		if (this.status === ToolStatus.NotInstalled) {
@@ -196,27 +198,28 @@ export abstract class ToolBase implements ITool {
 	}
 
 	protected async addInstallationSearchPathsToSystemPath(): Promise<void> {
-		const installationPaths = await this.getInstallationPath();
-		const searchPaths = [...installationPaths, ...this.installationSearchPaths].filter(path => !!path);
+		const searchPaths = [...await this.getSearchPaths(), this.storagePath].filter(path => !!path);
 		this.logToOutputChannel(localize('toolBase.addInstallationSearchPathsToSystemPath.SearchPaths', "Search Paths for tool '{0}': {1}", this.displayName, JSON.stringify(searchPaths, undefined, '\t'))); //this.displayName is localized and searchPaths are OS filesystem paths.
-		searchPaths.forEach(installationSearchPath => {
+		searchPaths.forEach(searchPath => {
 			if (process.env.PATH) {
-				if (!`${delimiter}${process.env.PATH}${delimiter}`.includes(`${delimiter}${installationSearchPath}${delimiter}`)) {
-					process.env.PATH += `${delimiter}${installationSearchPath}`;
-					console.log(`Appending to Path -> ${delimiter}${installationSearchPath}`);
+				if (!`${delimiter}${process.env.PATH}${delimiter}`.includes(`${delimiter}${searchPath}${delimiter}`)) {
+					process.env.PATH += `${delimiter}${searchPath}`;
+					console.log(`Appending to Path -> '${delimiter}${searchPath}'`);
 				}
 			} else {
-				process.env.PATH = installationSearchPath;
-				console.log(`Appending to Path -> '${delimiter}${installationSearchPath}':${delimiter}${installationSearchPath}`);
+				process.env.PATH = searchPath;
+				console.log(`Setting PATH to -> '${searchPath}'`);
 			}
 		});
 	}
+
 	public async loadInformation(): Promise<void> {
 		if (this.status === ToolStatus.NotInstalled) {
 			await this.addInstallationSearchPathsToSystemPath();
 			this.status = await this.updateVersionAndGetStatus();
 		}
 	}
+
 	private async updateVersionAndGetStatus(): Promise<ToolStatus> {
 		const commandOutput = await this._platformService.runCommand(
 			this.versionCommand.command,
@@ -229,6 +232,8 @@ export abstract class ToolBase implements ITool {
 		);
 		this.version = this.getVersionFromOutput(commandOutput);
 		if (this.version) {
+			// discover and set the installationPath
+			await this.setInstallationPath();
 			return ToolStatus.Installed;
 		}
 		else {
@@ -237,10 +242,39 @@ export abstract class ToolBase implements ITool {
 		}
 	}
 
+	protected discoveryCommandString(toolBinary: string) {
+		switch (this.osType) {
+			case OsType.win32:
+				return `where.exe  ${toolBinary}`;
+			case OsType.darwin:
+				return `command -v ${toolBinary}`;
+			default:
+				return `which ${toolBinary}`;
+		}
+	}
+
+	protected async setInstallationPath() {
+		const commandOutput = await this._platformService.runCommand(
+			this.discoveryCommand.command,
+			{
+				workingDirectory: this.discoveryCommand.workingDirectory,
+				additionalEnvironmentVariables: this.discoveryCommand.additionalEnvironmentVariables,
+				sudo: false,
+				ignoreError: false
+			},
+		);
+		if (!commandOutput) {
+			throw new Error(`Enexpected Error: install location of tool:'${this.displayName}' could not be discovered`);
+		} else {
+			this._installationPath = commandOutput.split(EOL)[0];
+		}
+	}
+
 	private _storagePathEnsured: boolean = false;
 	private _status: ToolStatus = ToolStatus.NotInstalled;
 	private _osType: OsType;
 	private _version?: SemVer;
 	private _statusDescription?: string;
+	private _installationPath!: string;
 
 }

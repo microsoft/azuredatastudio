@@ -11,6 +11,7 @@ import { ToolBase } from './toolBase';
 const localize = nls.loadMessageBundle();
 
 export class DockerTool extends ToolBase {
+	protected discoveryCommand: Command = { command: '' };
 	constructor(platformService: IPlatformService) {
 		super(platformService);
 	}

@@ -8,10 +8,9 @@ import * as nls from 'vscode-nls';
 import { AgreementInfo, DeploymentProvider, ITool, ResourceType } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
-import { getErrorMessage, toolsInstallationSearchPath } from '../utils';
+import { getErrorMessage, setNoteBookEnvironmentVariableForInstallPaths } from '../utils';
 import { DialogBase } from './dialogBase';
 import { createFlexContainer } from './modelViewUtils';
-import { ToolsInstallPath } from './deployClusterWizard/constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -45,12 +44,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._dialogObject.customButtons = [this._installToolButton];
 		this._installToolButton.hidden = true;
 		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', "Select");
-	}
-
-	protected onOkClick(): void {
-		const installSearchPaths = toolsInstallationSearchPath(this._tools);
-		console.log(`InstallSearchPaths: ${installSearchPaths}`);
-		process.env[ToolsInstallPath] = installSearchPaths;
 	}
 
 	initialize() {
@@ -295,6 +288,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	protected onComplete(): void {
+		setNoteBookEnvironmentVariableForInstallPaths(this._tools);
 		this.resourceTypeService.startDeployment(this.getCurrentProvider());
 	}
 

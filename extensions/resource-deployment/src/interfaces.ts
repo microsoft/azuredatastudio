@@ -237,7 +237,7 @@ export interface ITool {
 	readonly autoInstallSupported: boolean;
 	readonly autoInstallRequired: boolean;
 	readonly isNotInstalled: boolean;
-	readonly installationSearchPaths: (string | undefined)[];
+	readonly installationPath: string;
 	readonly needsInstallation: boolean;
 	readonly outputChannelName: string;
 	readonly fullVersion: string | undefined;

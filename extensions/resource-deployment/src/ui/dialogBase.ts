@@ -9,7 +9,6 @@ import * as vscode from 'vscode';
 export abstract class DialogBase {
 	protected _toDispose: vscode.Disposable[] = [];
 	protected _dialogObject: azdata.window.Dialog;
-	protected onOkClick(): void { }
 
 	constructor(dialogTitle: string, dialogName: string, isWide: boolean = false) {
 		this._dialogObject = azdata.window.createModelViewDialog(dialogTitle, dialogName, isWide);
@@ -34,7 +33,6 @@ export abstract class DialogBase {
 	}
 
 	protected onComplete(): void {
-		this.onOkClick();
 	}
 
 	protected dispose(): void {

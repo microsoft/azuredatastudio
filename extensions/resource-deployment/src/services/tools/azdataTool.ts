@@ -46,6 +46,12 @@ export class AzdataTool extends ToolBase {
 		};
 	}
 
+	protected get discoveryCommand(): Command {
+		return {
+			command: this.discoveryCommandString('azdata')
+		};
+	}
+
 	protected getVersionFromOutput(output: string): SemVer | undefined {
 		let version: SemVer | undefined = undefined;
 		if (output && output.split(EOL).length > 0) {
@@ -58,7 +64,7 @@ export class AzdataTool extends ToolBase {
 		return true;
 	}
 
-	protected async getInstallationPath(): Promise<string[]> {
+	protected async getSearchPaths(): Promise<string[]> {
 		switch (this.osType) {
 			case OsType.linux:
 				return [installationRoot];
