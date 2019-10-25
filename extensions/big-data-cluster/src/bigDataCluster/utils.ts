@@ -93,7 +93,7 @@ const stateToDisplayTextMap = {
 
 	// BigDataClusterStateMachine
 	'creatingsecrets': localize('state.creatingSecrets', "Creating Secrets"),
-	'waitingforsecrets': localize('state.waitingForSecrets', "Waiting Fo Secrets"),
+	'waitingforsecrets': localize('state.waitingForSecrets', "Waiting For Secrets"),
 	'creatinggroups': localize('state.creatingGroups', "Creating Groups"),
 	'waitingforgroups': localize('state.waitingForGroups', "Waiting For Groups"),
 	'creatingresources': localize('state.creatingResources', "Creating Resources"),
