@@ -91,6 +91,10 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	}));
 	extensionContext.subscriptions.push(vscode.window.registerUriHandler(new NotebookUriHandler()));
 
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('books.command.openLocalizedBooks', () => {
+		const urlToOpen: string = 'https://aka.ms/localized-BDC-book';
+		vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(urlToOpen));
+	}));
 
 	let appContext = new AppContext(extensionContext, new ApiWrapper());
 	controller = new JupyterController(appContext);
