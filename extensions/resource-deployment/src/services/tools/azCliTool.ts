@@ -42,12 +42,12 @@ export class AzCliTool extends ToolBase {
 		return true;
 	}
 
-	protected async getInstallationPath(): Promise<string | undefined> {
+	protected async getSearchPaths(): Promise<string[]> {
 		switch (this.osType) {
 			case OsType.win32:
-				return win32InstallationRoot;
+				return [win32InstallationRoot];
 			default:
-				return defaultInstallationRoot;
+				return [defaultInstallationRoot];
 		}
 	}
 
@@ -65,9 +65,16 @@ export class AzCliTool extends ToolBase {
 			return undefined;
 		}
 	}
+
 	protected get versionCommand(): Command {
 		return {
 			command: 'az --version'
+		};
+	}
+
+	protected get discoveryCommand(): Command {
+		return {
+			command: this.discoveryCommandString('az')
 		};
 	}
 }

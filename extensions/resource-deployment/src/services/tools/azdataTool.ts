@@ -13,7 +13,6 @@ import { ToolBase } from './toolBase';
 import { DeploymentConfigurationKey, AzdataPipInstallUriKey, azdataPipInstallArgsKey } from '../../constants';
 
 const localize = nls.loadMessageBundle();
-const installationRoot = '~/.local/bin';
 
 export class AzdataTool extends ToolBase {
 	constructor(platformService: IPlatformService) {
@@ -46,6 +45,12 @@ export class AzdataTool extends ToolBase {
 		};
 	}
 
+	protected get discoveryCommand(): Command {
+		return {
+			command: this.discoveryCommandString('azdata')
+		};
+	}
+
 	protected getVersionFromOutput(output: string): SemVer | undefined {
 		let version: SemVer | undefined = undefined;
 		if (output && output.split(EOL).length > 0) {
@@ -58,13 +63,15 @@ export class AzdataTool extends ToolBase {
 		return true;
 	}
 
-	protected async getInstallationPath(): Promise<string | undefined> {
+	protected async getSearchPaths(): Promise<string[]> {
 		switch (this.osType) {
-			case OsType.linux:
-				return installationRoot;
 			default:
 				const azdataCliInstallLocation = await this.getPip3InstallLocation('azdata-cli');
-				return azdataCliInstallLocation && path.join(azdataCliInstallLocation, '..', 'Scripts');
+				if (azdataCliInstallLocation) {
+					return [path.join(azdataCliInstallLocation, '..', 'Scripts'), path.join(azdataCliInstallLocation, '..', '..', '..', 'bin')];
+				} else {
+					return [];
+				}
 		}
 	}
 
@@ -78,11 +85,7 @@ export class AzdataTool extends ToolBase {
 	}
 
 	protected get uninstallCommand(): string | undefined {
-		if (this.osType !== OsType.linux) {
-			return this.defaultUninstallCommand;
-		} else {
-			return super.uninstallCommand;
-		}
+		return this.defaultUninstallCommand;
 	}
 
 	private get defaultInstallationCommands(): Command[] {
