@@ -8,12 +8,12 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/schema-compare/package": {
+		"package": {
 			"displayName": "Confronto schema di SQL Server",
 			"description": "La funzionalità Confronto schema di SQL Server per Azure Data Studio supporta il confronto degli schemi di database e pacchetti di applicazione livello dati.",
 			"schemaCompare.start": "Confronto schema"
 		},
-		"extensions/schema-compare/out/dialogs/schemaCompareOptionsDialog": {
+		"out/dialogs/schemaCompareOptionsDialog": {
 			"SchemaCompareOptionsDialog.Ok": "OK",
 			"SchemaCompareOptionsDialog.Cancel": "Annulla",
 			"SchemaCompareOptionsDialog.Reset": "Reimposta",
@@ -242,7 +242,7 @@
 			"SchemaCompare.Description.DropObjectsNotInSource": "Specifica se oggetti che non esistono nel file snapshot del database (.dacpac) vengono eliminati dal database di destinazione quando si esegue la pubblicazione in un database. Questo valore ha precedenza su DropExtendedProperties.",
 			"SchemaCompare.Description.IgnoreColumnOrder": "Specifica se le differenze nell'ordine colonne della tabella devono essere ignorate o aggiornate durante la pubblicazione di un database."
 		},
-		"extensions/schema-compare/out/dialogs/schemaCompareDialog": {
+		"out/dialogs/schemaCompareDialog": {
 			"schemaCompareDialog.ok": "OK",
 			"schemaCompareDialog.cancel": "Annulla",
 			"schemaCompareDialog.SourceTitle": "ORIGINE",
@@ -263,7 +263,7 @@
 			"schemaCompare.openFile": "Apri",
 			"schemaCompareDialog.defaultUser": "Predefinito"
 		},
-		"extensions/schema-compare/out/schemaCompareMainWindow": {
+		"out/schemaCompareMainWindow": {
 			"schemaCompare.CompareDetailsTitle": "Confronta dettagli",
 			"schemaCompare.ApplyConfirmation": "Aggiornare la destinazione?",
 			"schemaCompare.RecompareToRefresh": "Fare clic su Confronta per aggiornare il confronto.",
