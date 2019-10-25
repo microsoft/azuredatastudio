@@ -1,0 +1,14 @@
+{
+	"displayName": "SQL Server Machine Learning Services",
+	"description": "SQL Server Machine Learning Services",
+	"mlServices.enable": "Enable Machine Learning Services",
+	"mlServices.disable": "Disable Machine Learning Services",
+	"title.notebooks": "Notebooks",
+	"title.assets": "Assets",
+	"title.manage": "Manage",
+	"title.tasks": "Tasks",
+	"title.datasets": "Datasets",
+	"mlservice.command.refreshDataSets": "Refresh",
+	"title.endpoints": "Endpoints",
+	"title.books": "Notebooks"
+}

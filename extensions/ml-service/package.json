@@ -1,0 +1,127 @@
+{
+  "name": "ml-services",
+  "displayName": "%displayName%",
+  "description": "%description%",
+  "version": "0.1.0",
+  "publisher": "Microsoft",
+  "preview": true,
+  "engines": {
+    "vscode": "^1.25.0",
+    "azdata": ">=1.11.0"
+  },
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx",
+  "icon": "",
+  "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "extensionDependencies": [
+    "Microsoft.mssql"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "mlservice.command.refreshDataSets",
+        "title": "%mlservice.command.refreshDataSets%"
+      }
+    ],
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "mlservice.command.refreshDataSets",
+          "when": "view == dataspaceTreeView",
+          "group": "1notebook@1"
+        },
+        {
+          "command": "notebook.command.analyzeNotebook",
+          "when": "view == dataspaceTreeView",
+          "group": "1notebook@1"
+        },
+        {
+          "command": "mssqlCluster.previewFile",
+          "when": "view == dataspaceTreeView",
+          "group": "1mssqlCluster@2"
+        }
+      ],
+      "explorer/context": []
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "dataspaceTreeView",
+          "name": "%title.datasets%"
+        }
+      ]
+    },
+    "dashboard.tabs": [
+      {
+        "id": "ml-server",
+        "description": "Machine Learning Services",
+        "provider": "MSSQL",
+        "title": "Machine Learning Services",
+        "when": "connectionProvider == 'MSSQL'",
+        "container": {
+          "grid-container": [
+            {
+              "name": "Tasks",
+              "row": 0,
+              "col": 0,
+              "widget": {
+                "modelview": {
+                  "id": "ml.tasks"
+                }
+              }
+            },
+            {
+              "name": "%title.endpoints%",
+              "row": 1,
+              "col": 0,
+              "rowspan": 2.5,
+              "colspan": 2,
+              "widget": {
+                "modelview": {
+                  "id": "ml-endpoints"
+                }
+              }
+            },
+            {
+              "name": "%title.books%",
+              "row": 0,
+              "col": 2,
+              "colspan": 1,
+              "widget": {
+                "modelview": {
+                  "id": "ml-books"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "dependencies": {
+    "vscode-extension-telemetry": "0.0.18",
+    "vscode-nls": "^3.2.1"
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.14.8",
+    "mocha": "^5.2.0",
+    "mocha-junit-reporter": "^1.17.0",
+    "mocha-multi-reporters": "^1.1.7",
+    "should": "^13.2.1",
+    "typemoq": "^2.1.0",
+    "vscode": "1.1.26"
+  },
+  "__metadata": {
+    "id": "37",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
+  }
+}

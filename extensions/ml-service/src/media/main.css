@@ -1,0 +1,24 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.loading {
+	position: fixed;
+	width: 30px;
+	height: 30px;
+	left: 50%;
+	top: 50%;
+	margin-top: -15px;
+	margin-left: -15px;
+	background-image: url('./loading.svg');
+	background-size: cover;
+}
+
+.vscode-dark .loading {
+	background-image: url('./loading-dark.svg');
+}
+
+.vscode-high-contrast .loading {
+	background-image: url('./loading-hc.svg');
+}
