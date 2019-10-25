@@ -251,6 +251,14 @@
         {
           "command": "notebook.command.saveBook",
           "when": "false"
+        },
+        {
+          "command": "notebook.command.searchBook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.searchUntitledBook",
+          "when": "false"
         }
       ],
       "touchBar": [

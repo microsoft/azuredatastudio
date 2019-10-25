@@ -19,7 +19,8 @@ const ansiColors = require('ansi-colors');
 
 const root = path.dirname(path.dirname(__dirname));
 // {{SQL CARBON EDIT}}
-const builtInExtensions = require('../builtInExtensions-insiders.json');
+const quality = process.env['VSCODE_QUALITY'];
+const builtInExtensions = quality && quality === 'stable' ? require('../builtInExtensions.json') : require('../builtInExtensions-insiders.json');
 // {{SQL CARBON EDIT}} - END
 const controlFilePath = path.join(os.homedir(), '.vscode-oss-dev', 'extensions', 'control.json');
 
