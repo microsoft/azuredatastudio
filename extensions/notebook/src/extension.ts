@@ -44,17 +44,17 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		}
 		newNotebook(connectionProfile);
 	}));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.open', () => {
-		openNotebook();
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.open', async () => {
+		await openNotebook();
 	}));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.runactivecell', () => {
-		runActiveCell();
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.runactivecell', async () => {
+		await runActiveCell();
 	}));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.runallcells', () => {
-		runAllCells();
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.runallcells', async () => {
+		await runAllCells();
 	}));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.clearactivecellresult', () => {
-		clearActiveCellOutput();
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.clearactivecellresult', async () => {
+		await clearActiveCellOutput();
 	}));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addcell', async () => {
 		let cellType: CellType;
@@ -77,23 +77,23 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 			return;
 		}
 		if (cellType) {
-			addCell(cellType);
+			await addCell(cellType);
 		}
 	}));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addcode', () => {
-		addCell('code');
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addcode', async () => {
+		await addCell('code');
 	}));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addtext', () => {
-		addCell('markdown');
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addtext', async () => {
+		await addCell('markdown');
 	}));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.analyzeNotebook', (explorerContext: azdata.ObjectExplorerContext) => {
-		analyzeNotebook(explorerContext);
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.analyzeNotebook', async (explorerContext: azdata.ObjectExplorerContext) => {
+		await analyzeNotebook(explorerContext);
 	}));
 	extensionContext.subscriptions.push(vscode.window.registerUriHandler(new NotebookUriHandler()));
 
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('books.command.openLocalizedBooks', () => {
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('books.command.openLocalizedBooks', async () => {
 		const urlToOpen: string = 'https://aka.ms/localized-BDC-book';
-		vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(urlToOpen));
+		await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(urlToOpen));
 	}));
 
 	let appContext = new AppContext(extensionContext, new ApiWrapper());
