@@ -191,7 +191,7 @@ export class CmsUtils {
 		if (connection && connection.options) {
 			if (connection.options.server === parentServerName) {
 				// error out for same server registration
-				let errorText = localize('cms.errors.sameServerUnderCms', 'You cannot add a shared registered server with the same name as the Configuration Server');
+				let errorText = localize('cms.errors.sameServerUnderCms', "You cannot add a shared registered server with the same name as the Configuration Server");
 				this.showErrorMessage(errorText);
 				throw new Error(errorText);
 			} else {
@@ -282,11 +282,6 @@ export class CmsUtils {
 			options: connection.options
 		};
 		return connectionProfile;
-	}
-
-	public didConnectionChange(connectionA: azdata.connection.Connection, connectionB: azdata.connection.Connection): boolean {
-		return (connectionA !== connectionB) || ((connectionA.connectionId === connectionB.connectionId) &&
-			(connectionA.options.savePassword !== connectionA.options.savePassword));
 	}
 
 }

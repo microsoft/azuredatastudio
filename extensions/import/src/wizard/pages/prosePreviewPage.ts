@@ -17,8 +17,8 @@ const localize = nls.loadMessageBundle();
 
 export class ProsePreviewPage extends ImportPage {
 
-	private readonly successTitle: string = localize('flatFileImport.prosePreviewMessage', 'This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.');
-	private readonly failureTitle: string = localize('flatFileImport.prosePreviewMessageFail', 'This operation was unsuccessful. Please try a different input file.');
+	private readonly successTitle: string = localize('flatFileImport.prosePreviewMessage', "This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.");
+	private readonly failureTitle: string = localize('flatFileImport.prosePreviewMessageFail', "This operation was unsuccessful. Please try a different input file.");
 
 	private table: azdata.TableComponent;
 	private loading: azdata.LoadingComponent;
@@ -38,7 +38,7 @@ export class ProsePreviewPage extends ImportPage {
 			forceFitColumns: azdata.ColumnSizingMode.AutoFit
 		}).component();
 		this.refresh = this.view.modelBuilder.button().withProperties({
-			label: localize('flatFileImport.refresh', 'Refresh'),
+			label: localize('flatFileImport.refresh', "Refresh"),
 			isFile: false
 		}).component();
 

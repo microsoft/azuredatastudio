@@ -41,7 +41,7 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 			const children = await this._resourceService.getChildren(this.resourceNodeWithProviderId.resourceProviderId, this.resourceNodeWithProviderId.resourceNode);
 
 			if (children.length === 0) {
-				return [AzureResourceMessageTreeNode.create(localize('azure.resource.resourceTreeNode.noResourcesLabel', 'No Resources found'), this)];
+				return [AzureResourceMessageTreeNode.create(localize('azure.resource.resourceTreeNode.noResourcesLabel', "No Resources found"), this)];
 			} else {
 				return children.map((child) => {
 					// To make tree node's id unique, otherwise, treeModel.js would complain 'item already registered'

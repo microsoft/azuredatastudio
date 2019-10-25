@@ -5,13 +5,13 @@
 'use strict';
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { BdcDashboardModel } from './bdcDashboardModel';
 import { BdcStatusModel, InstanceStatusModel } from '../controller/apiGenerated';
 import { getHealthStatusDisplayText, getHealthStatusIcon, getStateDisplayText } from '../utils';
 import { cssStyles } from '../constants';
 import { isNullOrUndefined } from 'util';
+import { createViewDetailsButton } from './commonControls';
 
 const localize = nls.loadMessageBundle();
 
@@ -28,8 +28,8 @@ export interface IInstanceStatus {
 
 const healthAndStatusIconColumnWidth = 25;
 const healthAndStatusInstanceNameColumnWidth = 100;
-const healthAndStatusStateColumnWidth = 75;
-const healthAndStatusHealthColumnWidth = 75;
+const healthAndStatusStateColumnWidth = 150;
+const healthAndStatusHealthColumnWidth = 100;
 
 const metricsAndLogsInstanceNameColumnWidth = 125;
 const metricsAndLogsMetricsColumnWidth = 75;
@@ -175,17 +175,15 @@ function createInstanceHealthStatusRow(modelBuilder: azdata.ModelBuilder, instan
 	instanceHealthStatusRow.addItem(statusIconCell, { CSSStyles: { 'width': `${healthAndStatusIconColumnWidth}px`, 'min-width': `${healthAndStatusIconColumnWidth}px` } });
 	const nameCell = modelBuilder.text().withProperties({ value: instanceStatus.instanceName, CSSStyles: { ...cssStyles.text } }).component();
 	instanceHealthStatusRow.addItem(nameCell, { CSSStyles: { 'width': `${healthAndStatusInstanceNameColumnWidth}px`, 'min-width': `${healthAndStatusInstanceNameColumnWidth}px`, ...cssStyles.text } });
-	const stateCell = modelBuilder.text().withProperties({ value: getStateDisplayText(instanceStatus.state), CSSStyles: { ...cssStyles.text } }).component();
+	const stateText = getStateDisplayText(instanceStatus.state);
+	const stateCell = modelBuilder.text().withProperties({ value: stateText, title: stateText, CSSStyles: { ...cssStyles.overflowEllipsisText } }).component();
 	instanceHealthStatusRow.addItem(stateCell, { CSSStyles: { 'width': `${healthAndStatusStateColumnWidth}px`, 'min-width': `${healthAndStatusStateColumnWidth}px` } });
-	const healthStatusCell = modelBuilder.text().withProperties({ value: getHealthStatusDisplayText(instanceStatus.healthStatus), CSSStyles: { ...cssStyles.text } }).component();
+	const healthStatusText = getHealthStatusDisplayText(instanceStatus.healthStatus);
+	const healthStatusCell = modelBuilder.text().withProperties({ value: healthStatusText, title: healthStatusText, CSSStyles: { ...cssStyles.overflowEllipsisText } }).component();
 	instanceHealthStatusRow.addItem(healthStatusCell, { CSSStyles: { 'width': `${healthAndStatusHealthColumnWidth}px`, 'min-width': `${healthAndStatusHealthColumnWidth}px` } });
 
 	if (instanceStatus.healthStatus !== 'healthy' && instanceStatus.details && instanceStatus.details.length > 0) {
-		const viewDetailsButton = modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: localize('bdc.dashboard.viewDetails', "View Details") }).component();
-		viewDetailsButton.onDidClick(() => {
-			vscode.window.showErrorMessage(instanceStatus.details);
-		});
-		instanceHealthStatusRow.addItem(viewDetailsButton, { flex: '0 0 auto' });
+		instanceHealthStatusRow.addItem(createViewDetailsButton(modelBuilder, instanceStatus.details), { flex: '0 0 auto' });
 	}
 	return instanceHealthStatusRow;
 }

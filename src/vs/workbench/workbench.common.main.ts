@@ -81,6 +81,7 @@ import 'vs/workbench/services/extensionManagement/common/extensionEnablementServ
 import 'vs/workbench/services/notification/common/notificationService';
 import 'vs/workbench/services/extensions/common/staticExtensions';
 import 'vs/workbench/services/userDataSync/common/settingsMergeService';
+import 'vs/workbench/services/path/common/remotePathService';
 
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
@@ -407,7 +408,7 @@ import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/imageInsigh
 import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/tableInsight.contribution';
 import 'sql/workbench/parts/dashboard/browser/dashboard.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/insights/insightsWidget.contribution';
-import 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerWidget.common.contribution';
+import 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/tasks/tasksWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/webview/webviewWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardWebviewContainer.contribution';
@@ -431,5 +432,8 @@ import 'sql/workbench/parts/backup/browser/backup.contribution';
 
 //restore
 import 'sql/workbench/parts/restore/browser/restore.contribution';
+
+// Scripting
+import 'sql/workbench/parts/scripting/browser/scripting.contribution';
 
 //#endregion

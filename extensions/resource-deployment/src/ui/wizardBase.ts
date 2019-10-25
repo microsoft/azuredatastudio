@@ -68,19 +68,19 @@ export abstract class WizardBase<T, M extends Model> {
 	}
 
 	private dispose() {
-		let errorOccured = false;
+		let errorOccurred = false;
 		this.toDispose.forEach((disposable: vscode.Disposable) => {
 			try {
 				disposable.dispose();
 			}
 			catch (error) {
-				errorOccured = true;
+				errorOccurred = true;
 				console.error(error);
 			}
 		});
 
-		if (errorOccured) {
-			vscode.window.showErrorMessage(localize('resourceDeployment.DisposableError', "Error occured while closing the wizard: {0}, open 'Debugger Console' for more information."), this.title);
+		if (errorOccurred) {
+			vscode.window.showErrorMessage(localize('resourceDeployment.DisposableError', "Error occurred while closing the wizard: {0}, open 'Debugger Console' for more information."), this.title);
 		}
 	}
 

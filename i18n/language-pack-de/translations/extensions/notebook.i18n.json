@@ -8,7 +8,7 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/notebook/package": {
+		"package": {
 			"displayName": "Notebook-Kernerweiterungen",
 			"description": "Definiert den datenprokotollbasierten Notebook-Beitrag und viele Notebook-Befehle und -Beiträge.",
 			"notebook.configuration.title": "Notebook-Konfiguration",
@@ -37,11 +37,11 @@
 			"title.configurePython": "Python für Notebooks konfigurieren",
 			"title.managePackages": "Pakete verwalten"
 		},
-		"extensions/notebook/out/dialog/managePackages/managePackagesDialog": {
+		"out/dialog/managePackages/managePackagesDialog": {
 			"managePackages.dialogName": "Pakete verwalten",
 			"managePackages.cancelButtonText": "Schließen"
 		},
-		"extensions/notebook/out/dialog/managePackages/installedPackagesTab": {
+		"out/dialog/managePackages/installedPackagesTab": {
 			"managePackages.installedTabTitle": "INSTALLIERT",
 			"managePackages.pkgNameColumn": "Name",
 			"managePackages.newPkgVersionColumn": "Version",
@@ -53,7 +53,7 @@
 			"managePackages.backgroundUninstallComplete": "Die Deinstallation für \"{0}\" wurde abgeschlossen.",
 			"managePackages.backgroundUninstallFailed": "Fehler beim Deinstallieren von \"{0}\". Fehler: {1}"
 		},
-		"extensions/notebook/out/dialog/managePackages/addNewPackageTab": {
+		"out/dialog/managePackages/addNewPackageTab": {
 			"managePackages.invalidTextPlaceholder": "N/V",
 			"managePackages.packageNotFound": "Das angegebene Paket wurde nicht gefunden.",
 			"managePackages.searchBarPlaceholder": "{0}-Pakete durchsuchen",
@@ -69,31 +69,31 @@
 			"managePackages.backgroundInstallComplete": "Die Installation für {0} {1} wurde abgeschlossen.",
 			"managePackages.backgroundInstallFailed": "Fehler beim Installieren von {0} {1}. Fehler: {2}"
 		},
-		"extensions/notebook/out/protocol/notebookUriHandler": {
+		"out/protocol/notebookUriHandler": {
 			"notebook.unsupportedAction": "Die Aktion \"{0}\" wird für diesen Handler nicht unterstützt.",
 			"unsupportedScheme": "Der Link \"{0}\" kann nicht geöffnet werden, weil nur HTTP- und HTTPS-Links unterstützt werden.",
 			"notebook.confirmOpen": "\"{0}\" herunterladen und öffnen?",
 			"notebook.fileNotFound": "Die angegebene Datei wurde nicht gefunden.",
 			"notebook.fileDownloadError": "Fehler bei der Anforderung zum Öffnen von Dateien: {0} {1}"
 		},
-		"extensions/notebook/out/jupyter/serverInstance": {
+		"out/jupyter/serverInstance": {
 			"serverStopError": "Fehler beim Beenden von Notebook-Server: {0}",
 			"notebookStartProcessExitPremature": "Der Notebook-Vorgang wurde vorzeitig beendet. Fehler: {0}, StdErr-Ausgabe: {1}",
 			"jupyterError": "Von Jupyter gesendeter Fehler: {0}",
 			"jupyterOutputMsgStartSuccessful": "... Jupyter wird bei \"{0}\" ausgeführt.",
 			"jupyterOutputMsgStart": "... Der Notebook-Server wird gestartet."
 		},
-		"extensions/notebook/out/jupyter/jupyterSettingWriter": {
+		"out/jupyter/jupyterSettingWriter": {
 			"UnexpectedSettingType": "Unerwarteter Einstellungstyp \"{0}\"."
 		},
-		"extensions/notebook/out/jupyter/jupyterSessionManager": {
+		"out/jupyter/jupyterSessionManager": {
 			"errorStartBeforeReady": "Eine Sitzung kann nicht gestartet werden, der Manager ist noch nicht initialisiert.",
 			"connectionNotValid": "Für Spark-Kernel ist eine Verbindung mit einer Masterinstanz eines Big Data-Clusters in SQL Server erforderlich."
 		},
-		"extensions/notebook/out/jupyter/jupyterServerManager": {
+		"out/jupyter/jupyterServerManager": {
 			"shutdownError": "Fehler beim Herunterfahren des Notebook-Servers: {0}"
 		},
-		"extensions/notebook/out/jupyter/jupyterServerInstallation": {
+		"out/jupyter/jupyterServerInstallation": {
 			"msgInstallPkgProgress": "Notebook-Abhängigkeiten werden installiert.",
 			"msgPythonDownloadComplete": "Der Python-Download ist abgeschlossen.",
 			"msgPythonDownloadError": "Fehler beim Herunterladen von Python-Setup.",
@@ -113,15 +113,15 @@
 			"msgJupyterInstallDone": "... Jupyter-Installation abgeschlossen.",
 			"msgInstallingSpark": "SparkMagic wird installiert..."
 		},
-		"extensions/notebook/out/jupyter/jupyterNotebookProvider": {
+		"out/jupyter/jupyterNotebookProvider": {
 			"errNotebookUriMissing": "Ein Notebook-Pfad ist erforderlich."
 		},
-		"extensions/notebook/out/jupyter/jupyterController": {
+		"out/jupyter/jupyterController": {
 			"notebookFileType": "Notebooks",
 			"unsupportedFileType": "Nur IPYNB-Notebooks werden unterstützt.",
 			"confirmReinstall": "Möchten Sie eine Neuinstallation durchführen?"
 		},
-		"extensions/notebook/out/dialog/configurePythonDialog": {
+		"out/dialog/configurePythonDialog": {
 			"configurePython.dialogName": "Python für Notebooks konfigurieren",
 			"configurePython.okButtonText": "Installieren",
 			"configurePython.cancelButtonText": "Abbrechen",
@@ -136,7 +136,7 @@
 			"configurePython.newInstall": "Neue Python-Installation",
 			"configurePython.existingInstall": "Vorhandene Python-Installation verwenden"
 		},
-		"extensions/notebook/out/book/bookTreeView": {
+		"out/book/bookTreeView": {
 			"openNotebookError": "Fehler beim Öffnen der Datei \"{0}\": {1}",
 			"openMarkdownError": "Fehler beim Öffnen der Datei \"{0}\": {1}",
 			"openExternalLinkError": "Fehler beim Öffnen von Link {0}: {1}",
@@ -146,16 +146,16 @@
 			"openMarkdownCommand": "Markdown öffnen",
 			"missingFileError": "Fehlende Datei: {0}"
 		},
-		"extensions/notebook/out/common/utils": {
+		"out/common/utils": {
 			"mkdirOutputMsg": "... {0} wird erstellt",
 			"executeCommandProcessExited": "Der Prozess wurde mit Code {0} beendet."
 		},
-		"extensions/notebook/out/common/localizedConstants": {
+		"out/common/localizedConstants": {
 			"msgYes": "Ja",
 			"msgNo": "Nein",
 			"msgSampleCodeDataFrame": "Dieser Beispielcode lädt die Datei in einen Datenrahmen und zeigt die ersten 10 Ergebnisse an."
 		},
-		"extensions/notebook/out/extension": {
+		"out/extension": {
 			"msgSampleCodeDataFrame": "Dieser Beispielcode lädt die Datei in einen Datenrahmen und zeigt die ersten 10 Ergebnisse an.",
 			"noNotebookVisible": "Es ist kein Notebook-Editor aktiv.",
 			"codeCellName": "Code",

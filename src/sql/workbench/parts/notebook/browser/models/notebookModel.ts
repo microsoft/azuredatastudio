@@ -7,7 +7,7 @@ import { nb, connection } from 'azdata';
 
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
-import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants, INotebookContentsEditable } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
@@ -75,7 +75,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _kernelDisplayNameToNotebookProviderIds: Map<string, string> = new Map<string, string>();
 	private _onValidConnectionSelected = new Emitter<boolean>();
 	private _oldKernel: nb.IKernel;
-	private _clientSessionListeners = new DisposableStore(); // should this be registered?
 	private _connectionUrisToDispose: string[] = [];
 	private _textCellsLoading: number = 0;
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[];
@@ -490,16 +489,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	// When changing kernel, update the active session and register the kernel change event
-	// So KernelDropDown could get the event fired when added listerner on Model.KernelChange
+	// When changing kernel, update the active session
 	private updateActiveClientSession(clientSession: IClientSession) {
-		this.clearClientSessionListeners();
 		this._activeClientSession = clientSession;
-		this._clientSessionListeners.add(this._activeClientSession.kernelChanged(e => this._kernelChangedEmitter.fire(e)));
-	}
-
-	private clearClientSessionListeners() {
-		this._clientSessionListeners.clear();
 	}
 
 	public setDefaultKernelAndProviderId() {
@@ -670,6 +662,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (kernel.info) {
 			this.updateLanguageInfo(kernel.info.language_info);
 		}
+		this._kernelChangedEmitter.fire({
+			newValue: kernel,
+			oldValue: undefined
+		});
 	}
 
 	private findSpec(displayName: string) {
@@ -832,7 +828,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this.notifyError(localize('shutdownClientSessionError', "A client session error occurred when closing the notebook: {0}", getErrorMessage(err)));
 			}
 			await this._activeClientSession.shutdown();
-			this.clearClientSessionListeners();
 			this._activeClientSession = undefined;
 		}
 	}
@@ -840,7 +835,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private async loadActiveContexts(kernelChangedArgs: nb.IKernelChangedArgs): Promise<void> {
 		if (kernelChangedArgs && kernelChangedArgs.newValue && kernelChangedArgs.newValue.name) {
 			let kernelDisplayName = this.getDisplayNameFromSpecName(kernelChangedArgs.newValue);
-			this._activeContexts = await NotebookContexts.getContextsForKernel(this._notebookOptions.connectionService, this.getApplicableConnectionProviderIds(kernelDisplayName), kernelChangedArgs, this.connectionProfile);
+			this._activeContexts = NotebookContexts.getContextsForKernel(this._notebookOptions.connectionService, this.getApplicableConnectionProviderIds(kernelDisplayName), kernelChangedArgs, this.connectionProfile);
 			this._contextsChangedEmitter.fire();
 			if (this.contexts.defaultConnection !== undefined && this.contexts.defaultConnection.serverName !== undefined && this.contexts.defaultConnection.title !== undefined) {
 				await this.changeContext(this.contexts.defaultConnection.title, this.contexts.defaultConnection);

@@ -22,7 +22,7 @@ export function getLivyUrl(serverName: string, port: string): string {
 export async function mkDir(dirPath: string, outputChannel?: vscode.OutputChannel): Promise<void> {
 	if (!await fs.pathExists(dirPath)) {
 		if (outputChannel) {
-			outputChannel.appendLine(localize('mkdirOutputMsg', '... Creating {0}', dirPath));
+			outputChannel.appendLine(localize('mkdirOutputMsg', "... Creating {0}", dirPath));
 		}
 		await fs.ensureDir(dirPath);
 	}
@@ -66,20 +66,29 @@ export function executeStreamedCommand(cmd: string, options: childProcess.SpawnO
 		let child = childProcess.spawn(cmd, [], options);
 
 		// Add listeners to resolve/reject the promise on exit
-		child.on('error', reject);
+		child.on('error', err => {
+			reject(err);
+		});
+
+		let stdErrLog = '';
 		child.on('exit', (code: number) => {
 			if (code === 0) {
 				resolve();
 			} else {
-				reject(localize('executeCommandProcessExited', 'Process exited with code {0}', code));
+				reject(localize('executeCommandProcessExited', 'Process exited with  with error code: {0}. StdErr Output: {1}', code, stdErrLog));
 			}
 		});
 
 		// Add listeners to print stdout and stderr if an output channel was provided
 		if (outputChannel) {
 			child.stdout.on('data', data => { outputDataChunk(data, outputChannel, '    stdout: '); });
-			child.stderr.on('data', data => { outputDataChunk(data, outputChannel, '    stderr: '); });
 		}
+		child.stderr.on('data', data => {
+			if (outputChannel) {
+				outputDataChunk(data, outputChannel, '    stderr: ');
+			}
+			stdErrLog += data.toString();
+		});
 	});
 }
 
@@ -137,6 +146,46 @@ export function getOSPlatformId(): string {
 			break;
 	}
 	return platformId;
+}
+
+/**
+ * Compares two version strings to see which is greater.
+ * @param first First version string to compare.
+ * @param second Second version string to compare.
+ * @returns 1 if the first version is greater, -1 if it's less, and 0 otherwise.
+ */
+export function comparePackageVersions(first: string, second: string): number {
+	let firstVersion = first.split('.').map(numStr => Number.parseInt(numStr));
+	let secondVersion = second.split('.').map(numStr => Number.parseInt(numStr));
+
+	// If versions have different lengths, then append zeroes to the shorter one
+	if (firstVersion.length > secondVersion.length) {
+		let diff = firstVersion.length - secondVersion.length;
+		secondVersion = secondVersion.concat(new Array(diff).fill(0));
+	} else if (secondVersion.length > firstVersion.length) {
+		let diff = secondVersion.length - firstVersion.length;
+		firstVersion = firstVersion.concat(new Array(diff).fill(0));
+	}
+
+	for (let i = 0; i < firstVersion.length; ++i) {
+		if (firstVersion[i] > secondVersion[i]) {
+			return 1;
+		} else if (firstVersion[i] < secondVersion[i]) {
+			return -1;
+		}
+	}
+	return 0;
+}
+
+export function sortPackageVersions(versions: string[], ascending: boolean = true) {
+	return versions.sort((first, second) => {
+		let compareResult = comparePackageVersions(first, second);
+		if (ascending) {
+			return compareResult;
+		} else {
+			return compareResult * -1;
+		}
+	});
 }
 
 // PRIVATE HELPERS /////////////////////////////////////////////////////////

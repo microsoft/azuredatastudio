@@ -76,8 +76,8 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 
 			selectedHost = await vscode.window.showQuickPick(displayList, {
 				placeHolder:
-					localize('sparkJobSubmission_PleaseSelectSqlWithCluster',
-						"Please select SQL Server with big data cluster.")
+					localize('sparkJobSubmission.PleaseSelectSqlWithCluster',
+						"Please select SQL Server with Big Data Cluster.")
 			});
 			if (selectedHost === selectConnectionMsg) {
 				showConnectionDialog = true;
@@ -99,7 +99,7 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 			}
 		}
 
-		let errorMsg = localize('sparkJobSubmission_NoSqlSelected', 'No SQL Server is selected.');
+		let errorMsg = localize('sparkJobSubmission.NoSqlSelected', "No SQL Server is selected.");
 		if (!selectedHost) { throw new Error(errorMsg); }
 
 		let sqlConnection = connectionMap.get(selectedHost);
@@ -107,7 +107,7 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 
 		let sqlClusterConnection = await SqlClusterLookUp.getSqlClusterConnection(sqlConnection);
 		if (!sqlClusterConnection) {
-			throw new Error(localize('errorNotSqlBigDataCluster', "The selected server does not belong to a SQL Server big data cluster"));
+			throw new Error(localize('errorNotSqlBigDataCluster', "The selected server does not belong to a SQL Server Big Data Cluster"));
 		}
 
 		return new SqlClusterConnection(sqlClusterConnection);
@@ -135,7 +135,7 @@ export class OpenSparkJobSubmissionDialogFromFileCommand extends Command {
 				return;
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('sparkJobSubmission_GetFilePathFromSelectedNodeFailed', 'Error Get File Path: {0}', err));
+			this.apiWrapper.showErrorMessage(localize('sparkJobSubmission.GetFilePathFromSelectedNodeFailed', "Error Get File Path: {0}", err));
 			return;
 		}
 

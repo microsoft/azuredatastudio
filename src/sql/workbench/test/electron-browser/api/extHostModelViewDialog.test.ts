@@ -105,10 +105,6 @@ suite('ExtHostModelViewDialog Tests', () => {
 	});
 
 	test('Button clicks are forwarded to the correct button', () => {
-		// Set up the proxy to record button handles
-		let handles = [];
-		mockProxy.setup(x => x.$setButtonDetails(It.isAny(), It.isAny())).callback((handle, details) => handles.push(handle));
-
 		// Set up the buttons to record click events
 		let label1 = 'button_1';
 		let label2 = 'button_2';
@@ -117,14 +113,16 @@ suite('ExtHostModelViewDialog Tests', () => {
 		let clickEvents = [];
 		button1.onClick(() => clickEvents.push(1));
 		button2.onClick(() => clickEvents.push(2));
+		const button1Handle = extHostModelViewDialog.getHandle(button1, false);
+		const button2Handle = extHostModelViewDialog.getHandle(button2, false);
 		extHostModelViewDialog.updateButton(button1);
 		extHostModelViewDialog.updateButton(button2);
 
 		// If the main thread sends some notifications that the buttons have been clicked
-		extHostModelViewDialog.$onButtonClick(handles[0]);
-		extHostModelViewDialog.$onButtonClick(handles[1]);
-		extHostModelViewDialog.$onButtonClick(handles[1]);
-		extHostModelViewDialog.$onButtonClick(handles[0]);
+		extHostModelViewDialog.$onButtonClick(button1Handle);
+		extHostModelViewDialog.$onButtonClick(button2Handle);
+		extHostModelViewDialog.$onButtonClick(button2Handle);
+		extHostModelViewDialog.$onButtonClick(button1Handle);
 
 		// Then the clicks should have been handled by the expected handlers
 		assert.deepEqual(clickEvents, [1, 2, 2, 1]);

@@ -12,7 +12,7 @@ const localize = nls.loadMessageBundle();
 
 import { ApiWrapper } from '../apiWrapper';
 import { Command, ICommandViewContext, ProgressCommand, ICommandObjectExplorerContext } from './command';
-import { File, IFile, joinHdfsPath } from './fileSources';
+import { File, IFile, joinHdfsPath, FileType } from './fileSources';
 import { FolderNode, FileNode, HdfsFileSourceNode } from './hdfsProvider';
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import * as constants from '../constants';
@@ -78,7 +78,7 @@ export class UploadFilesCommand extends ProgressCommand {
 					canSelectFiles: true,
 					canSelectFolders: false,
 					canSelectMany: true,
-					openLabel: localize('lblUploadFiles', 'Upload'),
+					openLabel: localize('lblUploadFiles', "Upload"),
 					filters: filter
 				};
 				let fileUris: vscode.Uri[] = await this.apiWrapper.showOpenDialog(options);
@@ -86,8 +86,8 @@ export class UploadFilesCommand extends ProgressCommand {
 					let files: IFile[] = await Promise.all(fileUris.map(uri => uri.fsPath).map(this.mapPathsToFiles()));
 					await this.executeWithProgress(
 						(cancelToken: vscode.CancellationTokenSource) => this.writeFiles(files, folderNode, cancelToken),
-						localize('uploading', 'Uploading files to HDFS'), true,
-						() => this.apiWrapper.showInformationMessage(localize('uploadCanceled', 'Upload operation was canceled')));
+						localize('uploading', "Uploading files to HDFS"), true,
+						() => this.apiWrapper.showInformationMessage(localize('uploadCanceled', "Upload operation was canceled")));
 					if (context.type === constants.ObjectExplorerService) {
 						let objectExplorerNode = await azdata.objectexplorer.getNode(context.explorerContext.connectionProfile.id, folderNode.getNodeInfo().nodePath);
 						await objectExplorerNode.refresh();
@@ -96,14 +96,21 @@ export class UploadFilesCommand extends ProgressCommand {
 			}
 		} catch (err) {
 			this.apiWrapper.showErrorMessage(
-				localize('uploadError', 'Error uploading files: {0}', utils.getErrorMessage(err, true)));
+				localize('uploadError', "Error uploading files: {0}", utils.getErrorMessage(err, true)));
 		}
 	}
 
 	private mapPathsToFiles(): (value: string, index: number, array: string[]) => Promise<File> {
 		return async (path: string) => {
-			let isDir = (await fs.lstat(path)).isDirectory();
-			return new File(path, isDir);
+			const stats = (await fs.lstat(path));
+			if (stats.isDirectory()) {
+				return new File(path, FileType.Directory);
+			} else if (stats.isSymbolicLink()) {
+				return new File(path, FileType.Symlink);
+			} else {
+				return new File(path, FileType.File);
+			}
+
 		};
 	}
 
@@ -113,7 +120,7 @@ export class UploadFilesCommand extends ProgressCommand {
 				// Throw here so that all recursion is ended
 				throw new Error('Upload canceled');
 			}
-			if (file.isDirectory) {
+			if (file.fileType === FileType.Directory) {
 				let dirName = fspath.basename(file.path);
 				let subFolder = await folderNode.mkdir(dirName);
 				let children: IFile[] = await Promise.all((await fs.readdir(file.path))
@@ -145,8 +152,8 @@ export class MkDirCommand extends ProgressCommand {
 				if (fileName && fileName.length > 0) {
 					await this.executeWithProgress(
 						async (cancelToken: vscode.CancellationTokenSource) => this.mkDir(fileName, folderNode, cancelToken),
-						localize('makingDir', 'Creating directory'), true,
-						() => this.apiWrapper.showInformationMessage(localize('mkdirCanceled', 'Operation was canceled')));
+						localize('makingDir', "Creating directory"), true,
+						() => this.apiWrapper.showInformationMessage(localize('mkdirCanceled', "Operation was canceled")));
 					if (context.type === constants.ObjectExplorerService) {
 						let objectExplorerNode = await azdata.objectexplorer.getNode(context.explorerContext.connectionProfile.id, folderNode.getNodeInfo().nodePath);
 						await objectExplorerNode.refresh();
@@ -155,7 +162,7 @@ export class MkDirCommand extends ProgressCommand {
 			}
 		} catch (err) {
 			this.apiWrapper.showErrorMessage(
-				localize('mkDirError', 'Error on making directory: {0}', utils.getErrorMessage(err, true)));
+				localize('mkDirError', "Error on making directory: {0}", utils.getErrorMessage(err, true)));
 		}
 	}
 
@@ -163,7 +170,7 @@ export class MkDirCommand extends ProgressCommand {
 		return await this.prompter.promptSingle(<IQuestion>{
 			type: QuestionTypes.input,
 			name: 'enterDirName',
-			message: localize('enterDirName', 'Enter directory name'),
+			message: localize('enterDirName', "Enter directory name"),
 			default: ''
 		}).then(confirmed => <string>confirmed);
 	}
@@ -213,7 +220,7 @@ export class DeleteFilesCommand extends Command {
 			}
 		} catch (err) {
 			this.apiWrapper.showErrorMessage(
-				localize('deleteError', 'Error on deleting files: {0}', utils.getErrorMessage(err, true)));
+				localize('deleteError', "Error on deleting files: {0}", utils.getErrorMessage(err, true)));
 		}
 	}
 
@@ -227,7 +234,7 @@ export class DeleteFilesCommand extends Command {
 
 	private async deleteFolder(node: FolderNode): Promise<void> {
 		if (node) {
-			let confirmed = await this.confirmDelete(localize('msgDeleteFolder', 'Are you sure you want to delete this folder and its contents?'));
+			let confirmed = await this.confirmDelete(localize('msgDeleteFolder', "Are you sure you want to delete this folder and its contents?"));
 			if (confirmed) {
 				// TODO prompt for recursive delete if non-empty?
 				await node.delete(true);
@@ -237,7 +244,7 @@ export class DeleteFilesCommand extends Command {
 
 	private async deleteFile(node: FileNode): Promise<void> {
 		if (node) {
-			let confirmed = await this.confirmDelete(localize('msgDeleteFile', 'Are you sure you want to delete this file?'));
+			let confirmed = await this.confirmDelete(localize('msgDeleteFile', "Are you sure you want to delete this file?"));
 			if (confirmed) {
 				await node.delete();
 			}
@@ -266,15 +273,15 @@ export class SaveFileCommand extends ProgressCommand {
 				if (fileUri) {
 					await this.executeWithProgress(
 						(cancelToken: vscode.CancellationTokenSource) => this.doSaveAndOpen(fileUri, fileNode, cancelToken),
-						localize('saving', 'Saving HDFS Files'), true,
-						() => this.apiWrapper.showInformationMessage(localize('saveCanceled', 'Save operation was canceled')));
+						localize('saving', "Saving HDFS Files"), true,
+						() => this.apiWrapper.showInformationMessage(localize('saveCanceled', "Save operation was canceled")));
 				}
 			} else {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
 			this.apiWrapper.showErrorMessage(
-				localize('saveError', 'Error on saving file: {0}', utils.getErrorMessage(err, true)));
+				localize('saveError', "Error on saving file: {0}", utils.getErrorMessage(err, true)));
 		}
 	}
 
@@ -317,14 +324,14 @@ export class PreviewFileCommand extends ProgressCommand {
 							await this.showNotebookDocument(fileName, connectionProfile, contents);
 						}
 					},
-					localize('previewing', 'Generating preview'),
+					localize('previewing', "Generating preview"),
 					false);
 			} else {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
 			this.apiWrapper.showErrorMessage(
-				localize('previewError', 'Error on previewing file: {0}', utils.getErrorMessage(err, true)));
+				localize('previewError', "Error on previewing file: {0}", utils.getErrorMessage(err, true)));
 		}
 	}
 
@@ -381,7 +388,7 @@ export class CopyPathCommand extends Command {
 			}
 		} catch (err) {
 			this.apiWrapper.showErrorMessage(
-				localize('copyPathError', 'Error on copying path: {0}', utils.getErrorMessage(err, true)));
+				localize('copyPathError', "Error on copying path: {0}", utils.getErrorMessage(err, true)));
 		}
 	}
 }

@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ClusterController } from '../controller/clusterControllerApi';
 import { EndpointModel, BdcStatusModel } from '../controller/apiGenerated';
-import { showErrorMessage, Endpoint } from '../utils';
+import { showErrorMessage, Endpoint, Service } from '../utils';
 import { AuthType } from '../constants';
+
+export type BdcDashboardOptions = { url: string, auth: AuthType, username: string, password: string };
 
 export class BdcDashboardModel {
 
@@ -24,8 +24,8 @@ export class BdcDashboardModel {
 	public onDidUpdateEndpoints = this._onDidUpdateEndpoints.event;
 	public onDidUpdateBdcStatus = this._onDidUpdateBdcStatus.event;
 
-	constructor(url: string, auth: AuthType, username: string, private password: string, ignoreSslVerification = true) {
-		this._clusterController = new ClusterController(url, auth, username, password, ignoreSslVerification);
+	constructor(private options: BdcDashboardOptions, ignoreSslVerification = true) {
+		this._clusterController = new ClusterController(options.url, options.auth, options.username, options.password, ignoreSslVerification);
 		this.refresh();
 	}
 
@@ -47,12 +47,12 @@ export class BdcDashboardModel {
 
 	public async refresh(): Promise<void> {
 		await Promise.all([
-			this._clusterController.getBdcStatus().then(response => {
+			this._clusterController.getBdcStatus(true).then(response => {
 				this._bdcStatus = response.bdcStatus;
 				this._bdcStatusLastUpdated = new Date();
 				this._onDidUpdateBdcStatus.fire(this.bdcStatus);
 			}),
-			this._clusterController.getEndPoints().then(response => {
+			this._clusterController.getEndPoints(true).then(response => {
 				this._endpoints = response.endPoints || [];
 				fixEndpoints(this._endpoints);
 				this._endpointsLastUpdated = new Date();
@@ -81,7 +81,7 @@ export class BdcDashboardModel {
 			serverName: sqlServerMasterEndpoint.endpoint,
 			databaseName: undefined,
 			userName: 'sa',
-			password: this.password,
+			password: this.options.password,
 			authenticationType: '',
 			savePassword: true,
 			groupFullName: undefined,
@@ -92,6 +92,30 @@ export class BdcDashboardModel {
 			options: {}
 		};
 	}
+}
+
+/**
+ * Retrieves the troubleshoot book URL for the specified service, defaulting to the BDC
+ * troubleshoot notebook if the service name is unknown.
+ * @param service The service name to get the troubleshoot notebook URL for
+ */
+export function getTroubleshootNotebookUrl(service?: string): string {
+	service = service || '';
+	switch (service.toLowerCase()) {
+		case Service.sql:
+			return 'troubleshooters/tsg101-troubleshoot-sql-server';
+		case Service.hdfs:
+			return 'troubleshooters/tsg102-troubleshoot-hdfs';
+		case Service.spark:
+			return 'troubleshooters/tsg103-troubleshoot-spark';
+		case Service.control:
+			return 'troubleshooters/tsg104-troubleshoot-control';
+		case Service.gateway:
+			return 'troubleshooters/tsg105-troubleshoot-gateway';
+		case Service.app:
+			return 'troubleshooters/tsg106-troubleshoot-app';
+	}
+	return 'troubleshooters/tsg100-troubleshoot-bdc';
 }
 
 /**

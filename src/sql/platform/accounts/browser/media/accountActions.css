@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 /* Icons for various account actions */
-.vs .action-item .icon.add-linked-account-action {
+.vs .action-item .codicon.add-linked-account-action {
 	background-image: url('new_account.svg');
 }
 
-.vs-dark .action-item .icon.add-linked-account-action,
-.hc-black .action-item .icon.add-linked-account-action {
+.vs-dark .action-item .codicon.add-linked-account-action,
+.hc-black .action-item .codicon.add-linked-account-action {
 	background-image: url('new_account_inverse.svg');
 }

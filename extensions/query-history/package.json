@@ -20,8 +20,7 @@
 		"type": "git",
 		"url": "https://github.com/Microsoft/azuredatastudio.git"
 	},
-	"extensionDependencies": [
-	],
+	"extensionDependencies": [],
 	"contributes": {
 		"commands": [
 			{
@@ -46,9 +45,13 @@
 			]
 		}
 	},
-	"dependencies": {
-	},
+	"dependencies": {},
 	"devDependencies": {
 		"vscode": "1.0.1"
+	},
+	"__metadata": {
+		"id": "55",
+		"publisherDisplayName": "Microsoft",
+		"publisherId": "Microsoft"
 	}
 }

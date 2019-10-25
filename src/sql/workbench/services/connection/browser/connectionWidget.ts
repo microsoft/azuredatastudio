@@ -547,7 +547,12 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (this._serverGroupSelectBox) {
 			this._serverGroupOptions = connectionGroups;
 			this._serverGroupOptions.push(this._addNewServerGroup);
-			this._serverGroupSelectBox.setOptions(this._serverGroupOptions.map(g => g.name));
+			this._serverGroupSelectBox.setOptions(this._serverGroupOptions.map(g => {
+				if (g instanceof ConnectionProfileGroup) {
+					return g.fullName;
+				}
+				return g.name;
+			}));
 			if (groupName) {
 				this._serverGroupSelectBox.selectWithOptionName(groupName);
 				this._previousGroupOption = this._serverGroupSelectBox.value;

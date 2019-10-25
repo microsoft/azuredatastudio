@@ -477,7 +477,7 @@ suite('ConnectionStore', () => {
 		for (let i = 0; i < 5; i++) {
 			const cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
 			const connectionProfile = new ConnectionProfile(capabilitiesService, cred);
-			await connectionStore.removeRecentConnection(connectionProfile);
+			connectionStore.removeRecentConnection(connectionProfile);
 			const current = connectionStore.getRecentlyUsedConnections();
 			assert.equal(current.length, 4 - i);
 		}

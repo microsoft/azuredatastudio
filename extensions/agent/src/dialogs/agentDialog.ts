@@ -13,8 +13,8 @@ const localize = nls.loadMessageBundle();
 
 export abstract class AgentDialog<T extends IAgentDialogData> {
 
-	private static readonly OkButtonText: string = localize('agentDialog.OK', 'OK');
-	private static readonly CancelButtonText: string = localize('agentDialog.Cancel', 'Cancel');
+	private static readonly OkButtonText: string = localize('agentDialog.OK', "OK");
+	private static readonly CancelButtonText: string = localize('agentDialog.Cancel', "Cancel");
 
 	protected _onSuccess: vscode.EventEmitter<T> = new vscode.EventEmitter<T>();
 	protected _isOpen: boolean = false;

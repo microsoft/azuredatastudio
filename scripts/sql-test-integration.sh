@@ -12,6 +12,7 @@ else
 	VSCODEEXTDIR=`mktemp -d 2>/dev/null`
 fi
 
+# Default to only running stable tests if test grep isn't set
 if [[ "$ADS_TEST_GREP" == "" ]]; then
 	echo Running stable tests only
 	export ADS_TEST_GREP=@UNSTABLE@
@@ -40,10 +41,11 @@ if [[ "$SKIP_PYTHON_INSTALL_TEST" == "1" ]]; then
 else
 	export PYTHON_TEST_PATH=$VSCODEUSERDATADIR/TestPythonInstallation
 	echo $PYTHON_TEST_PATH
-	$INTEGRATION_TEST_ELECTRON_PATH --extensionDevelopmentPath=$ROOT/extensions/notebook --extensionTestsPath=$ROOT/extensions/notebook/out/integrationTest --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --skip-getting-started --disable-inspect
+
+	$INTEGRATION_TEST_ELECTRON_PATH --nogpu --extensionDevelopmentPath=$ROOT/extensions/notebook --extensionTestsPath=$ROOT/extensions/notebook/out/integrationTest --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --skip-getting-started --disable-inspect
 fi
 
-$INTEGRATION_TEST_ELECTRON_PATH --extensionDevelopmentPath=$ROOT/extensions/admin-pack \
+$INTEGRATION_TEST_ELECTRON_PATH --nogpu --extensionDevelopmentPath=$ROOT/extensions/admin-pack \
 --extensionDevelopmentPath=$ROOT/extensions/admin-tool-ext-win \
 --extensionDevelopmentPath=$ROOT/extensions/agent \
 --extensionDevelopmentPath=$ROOT/extensions/azurecore \
@@ -60,6 +62,7 @@ $INTEGRATION_TEST_ELECTRON_PATH --extensionDevelopmentPath=$ROOT/extensions/admi
 --extensionTestsPath=$ROOT/extensions/integration-tests/out \
 --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR \
 --disable-telemetry --disable-crash-reporter --disable-updates --skip-getting-started --disable-inspect
+
 
 rm -r -f $VSCODEUSERDATADIR
 rm -r $VSCODEEXTDIR

@@ -35,13 +35,13 @@ export class SparkJobSubmissionDialog {
 		private appContext: AppContext,
 		private outputChannel: vscode.OutputChannel) {
 		if (!this.sqlClusterConnection || !this.appContext || !this.outputChannel) {
-			throw new Error(localize('sparkJobSubmission_SparkJobSubmissionDialogInitializeError',
-				'Parameters for SparkJobSubmissionDialog is illegal'));
+			throw new Error(localize('sparkJobSubmission.SparkJobSubmissionDialogInitializeError',
+				"Parameters for SparkJobSubmissionDialog is illegal"));
 		}
 	}
 
 	public async openDialog(path?: string): Promise<void> {
-		this._dialog = this.apiWrapper.createDialog(localize('sparkJobSubmission_DialogTitleNewJob', 'New Job'));
+		this._dialog = this.apiWrapper.createDialog(localize('sparkJobSubmission.DialogTitleNewJob', "New Job"));
 
 		this._dataModel = new SparkJobSubmissionModel(this.sqlClusterConnection, this._dialog, this.appContext);
 
@@ -50,9 +50,9 @@ export class SparkJobSubmissionDialog {
 
 		this._dialog.content = [this._sparkConfigTab.tab, this._sparkAdvancedTab.tab];
 
-		this._dialog.cancelButton.label = localize('sparkJobSubmission_DialogCancelButton', 'Cancel');
+		this._dialog.cancelButton.label = localize('sparkJobSubmission.DialogCancelButton', "Cancel");
 
-		this._dialog.okButton.label = localize('sparkJobSubmission_DialogSubmitButton', 'Submit');
+		this._dialog.okButton.label = localize('sparkJobSubmission.DialogSubmitButton', "Submit");
 		this._dialog.okButton.onClick(() => this.onClickOk());
 
 		this._dialog.registerCloseValidator(() => this.handleValidate());
@@ -61,7 +61,7 @@ export class SparkJobSubmissionDialog {
 	}
 
 	private onClickOk(): void {
-		let jobName = localize('sparkJobSubmission_SubmitSparkJob', '{0} Spark Job Submission:',
+		let jobName = localize('sparkJobSubmission.SubmitSparkJob', "{0} Spark Job Submission:",
 			this._sparkConfigTab.getInputValues()[0]);
 		this.apiWrapper.startBackgroundOperation(
 			{
@@ -79,8 +79,8 @@ export class SparkJobSubmissionDialog {
 	private async onSubmit(op: azdata.BackgroundOperation): Promise<void> {
 		try {
 			this.outputChannel.show();
-			let msg = localize('sparkJobSubmission_SubmissionStartMessage',
-				'.......................... Submit Spark Job Start ..........................');
+			let msg = localize('sparkJobSubmission.SubmissionStartMessage',
+				".......................... Submit Spark Job Start ..........................");
 			this.outputChannel.appendLine(msg);
 			// 1. Upload local file to HDFS for local source.
 			if (this._dataModel.isMainSourceFromLocal) {

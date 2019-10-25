@@ -10,7 +10,6 @@ import * as nls from 'vscode-nls';
 import { ClusterController, ControllerError } from '../controller/clusterControllerApi';
 import { ControllerTreeDataProvider } from '../tree/controllerTreeDataProvider';
 import { TreeNode } from '../tree/treeNode';
-import { showErrorMessage } from '../utils';
 import { AuthType } from '../constants';
 
 const localize = nls.loadMessageBundle();
@@ -118,13 +117,13 @@ export class AddControllerDialog {
 	}
 
 	private createDialog(): void {
-		this.dialog = azdata.window.createModelViewDialog(localize('textAddNewController', 'Add New Controller'));
+		this.dialog = azdata.window.createModelViewDialog(localize('textAddNewController', "Add New Controller"));
 		this.dialog.registerContent(async view => {
 			this.uiModelBuilder = view.modelBuilder;
 
 			this.urlInputBox = this.uiModelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
-					placeHolder: localize('textUrlLower', 'url'),
+					placeHolder: localize('textUrlLower', "url"),
 					value: this.model.prefilledUrl
 				}).component();
 			this.authDropdown = this.uiModelBuilder.dropDown().withProperties({
@@ -135,19 +134,19 @@ export class AddControllerDialog {
 			this.authDropdown.onValueChanged(e => this.onAuthChanged());
 			this.usernameInputBox = this.uiModelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
-					placeHolder: localize('textUsernameLower', 'username'),
+					placeHolder: localize('textUsernameLower', "username"),
 					value: this.model.prefilledUsername
 				}).component();
 			this.passwordInputBox = this.uiModelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
-					placeHolder: localize('textPasswordLower', 'password'),
+					placeHolder: localize('textPasswordLower', "password"),
 					inputType: 'password',
 					value: this.model.prefilledPassword
 				})
 				.component();
 			this.rememberPwCheckBox = this.uiModelBuilder.checkBox()
 				.withProperties<azdata.CheckBoxProperties>({
-					label: localize('textRememberPassword', 'Remember Password'),
+					label: localize('textRememberPassword', "Remember Password"),
 					checked: this.model.prefilledRememberPassword
 				}).component();
 
@@ -156,19 +155,19 @@ export class AddControllerDialog {
 					components: [
 						{
 							component: this.urlInputBox,
-							title: localize('textUrlCapital', 'URL'),
+							title: localize('textUrlCapital', "URL"),
 							required: true
 						}, {
 							component: this.authDropdown,
-							title: localize('textAuthCapital', 'Authentication type'),
+							title: localize('textAuthCapital', "Authentication type"),
 							required: true
 						}, {
 							component: this.usernameInputBox,
-							title: localize('textUsernameCapital', 'Username'),
+							title: localize('textUsernameCapital', "Username"),
 							required: false
 						}, {
 							component: this.passwordInputBox,
-							title: localize('textPasswordCapital', 'Password'),
+							title: localize('textPasswordCapital', "Password"),
 							required: false
 						}, {
 							component: this.rememberPwCheckBox,
@@ -177,14 +176,14 @@ export class AddControllerDialog {
 					],
 					title: ''
 				}]).withLayout({ width: '100%' }).component();
-
+			this.onAuthChanged();
 			await view.initializeModel(formModel);
 		});
 
 		this.dialog.registerCloseValidator(async () => await this.validate());
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
-		this.dialog.okButton.label = localize('textAdd', 'Add');
-		this.dialog.cancelButton.label = localize('textCancel', 'Cancel');
+		this.dialog.okButton.label = localize('textAdd', "Add");
+		this.dialog.cancelButton.label = localize('textCancel', "Cancel");
 	}
 
 	private get authValue(): AuthType {

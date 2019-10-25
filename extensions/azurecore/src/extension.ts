@@ -26,9 +26,9 @@ import { AzureResourceSubscriptionFilterService } from './azureResource/services
 import { AzureResourceCacheService } from './azureResource/services/cacheService';
 import { AzureResourceTenantService } from './azureResource/services/tenantService';
 import { registerAzureResourceCommands } from './azureResource/commands';
-import { registerAzureResourceDatabaseServerCommands } from './azureResource/providers/databaseServer/commands';
-import { registerAzureResourceDatabaseCommands } from './azureResource/providers/database/commands';
 import { AzureResourceTreeProvider } from './azureResource/tree/treeProvider';
+import { SqlInstanceResourceService } from './azureResource/providers/sqlinstance/sqlInstanceService';
+import { SqlInstanceProvider } from './azureResource/providers/sqlinstance/sqlInstanceProvider';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -70,13 +70,14 @@ export async function activate(context: vscode.ExtensionContext) {
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
 	pushDisposable(apiWrapper.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
-	registerCommands(appContext, azureResourceTree);
+	registerAzureResourceCommands(appContext, azureResourceTree);
 
 	return {
 		provideResources() {
 			return [
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), apiWrapper, extensionContext),
-				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext)
+				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext),
+				new SqlInstanceProvider(new SqlInstanceResourceService(), apiWrapper, extensionContext)
 			];
 		}
 	};
@@ -129,10 +130,3 @@ function registerAzureServices(appContext: AppContext): void {
 	appContext.registerService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService, new AzureResourceTenantService());
 }
 
-function registerCommands(appContext: AppContext, azureResourceTree: AzureResourceTreeProvider): void {
-	registerAzureResourceCommands(appContext, azureResourceTree);
-
-	registerAzureResourceDatabaseServerCommands(appContext);
-
-	registerAzureResourceDatabaseCommands(appContext);
-}

@@ -53,7 +53,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 						subscriptions.push(...(await this._subscriptionService.getSubscriptions(this.account, new TokenCredentials(token, tokenType)) || <azureResource.AzureResourceSubscription[]>[]));
 					}
 				} catch (error) {
-					throw new AzureResourceCredentialError(localize('azure.resource.tree.accountTreeNode.credentialError', 'Failed to get credential for account {0}. Please refresh the account.', this.account.key.accountId), error);
+					throw new AzureResourceCredentialError(localize('azure.resource.tree.accountTreeNode.credentialError', "Failed to get credential for account {0}. Please refresh the account.", this.account.key.accountId), error);
 				}
 
 				this.updateCache<azureResource.AzureResourceSubscription[]>(subscriptions);
@@ -80,11 +80,12 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 			if (subscriptions.length === 0) {
 				return [AzureResourceMessageTreeNode.create(AzureResourceAccountTreeNode.noSubscriptionsLabel, this)];
 			} else {
-				return await Promise.all(subscriptions.map(async (subscription) => {
+				let subTreeNodes = await Promise.all(subscriptions.map(async (subscription) => {
 					const tenantId = await this._tenantService.getTenantId(subscription);
 
 					return new AzureResourceSubscriptionTreeNode(this.account, subscription, tenantId, this.appContext, this.treeChangeHandler, this);
 				}));
+				return subTreeNodes.sort((a, b) => a.subscription.name.localeCompare(b.subscription.name));
 			}
 		} catch (error) {
 			if (error instanceof AzureResourceCredentialError) {
@@ -162,5 +163,5 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 	private _totalSubscriptionCount = 0;
 	private _selectedSubscriptionCount = 0;
 
-	private static readonly noSubscriptionsLabel = localize('azure.resource.tree.accountTreeNode.noSubscriptionsLabel', 'No Subscriptions found.');
+	private static readonly noSubscriptionsLabel = localize('azure.resource.tree.accountTreeNode.noSubscriptionsLabel', "No Subscriptions found.");
 }

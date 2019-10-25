@@ -3,17 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { ServiceClientCredentials } from 'ms-rest';
 import { SqlManagementClient } from 'azure-arm-sql';
 
 import { azureResource } from '../../azure-resource';
-import { IAzureResourceDatabaseServerService } from './interfaces';
-import { AzureResourceDatabaseServer } from './models';
+import { IAzureResourceService, AzureResourceDatabaseServer } from '../../interfaces';
 
-export class AzureResourceDatabaseServerService implements IAzureResourceDatabaseServerService {
-	public async getDatabaseServers(subscription: azureResource.AzureResourceSubscription, credential: ServiceClientCredentials): Promise<AzureResourceDatabaseServer[]> {
+export class AzureResourceDatabaseServerService implements IAzureResourceService<AzureResourceDatabaseServer> {
+	public async getResources(subscription: azureResource.AzureResourceSubscription, credential: ServiceClientCredentials): Promise<AzureResourceDatabaseServer[]> {
 		const databaseServers: AzureResourceDatabaseServer[] = [];
 
 		const sqlManagementClient = new SqlManagementClient(credential, subscription.id);

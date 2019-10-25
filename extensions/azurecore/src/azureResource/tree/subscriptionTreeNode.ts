@@ -54,7 +54,7 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 					// To make tree node's id unique, otherwise, treeModel.js would complain 'item already registered'
 					child.resourceNode.treeItem.id = `${this._id}.${child.resourceNode.treeItem.id}`;
 					return new AzureResourceResourceTreeNode(child, this, this.appContext);
-				});
+				}).sort((a, b) => a.nodePathValue.localeCompare(b.nodePathValue));
 			}
 		} catch (error) {
 			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), this)];
@@ -91,5 +91,5 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 
 	private _id: string = undefined;
 
-	private static readonly noResourcesLabel = localize('azure.resource.tree.subscriptionTreeNode.noResourcesLabel', 'No Resources found.');
+	private static readonly noResourcesLabel = localize('azure.resource.tree.subscriptionTreeNode.noResourcesLabel', "No Resources found.");
 }

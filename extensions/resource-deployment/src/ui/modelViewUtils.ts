@@ -6,8 +6,9 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DialogInfoBase, FieldType, FieldInfo, SectionInfo, LabelPosition } from '../interfaces';
+import { DialogInfoBase, FieldType, FieldInfo, SectionInfo, LabelPosition, FontWeight, FontStyle } from '../interfaces';
 import { Model } from './model';
+import { getDateTimeString } from '../utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -40,7 +41,6 @@ export interface WizardPageContext extends CreateContext {
 	container: azdata.window.Wizard;
 }
 
-
 export interface SectionContext extends CreateContext {
 	sectionInfo: SectionInfo;
 	view: azdata.ModelView;
@@ -70,12 +70,13 @@ export function createTextInput(view: azdata.ModelView, inputInfo: { defaultValu
 	}).component();
 }
 
-export function createLabel(view: azdata.ModelView, info: { text: string, description?: string, required?: boolean, width?: string, fontStyle?: string }): azdata.TextComponent {
+export function createLabel(view: azdata.ModelView, info: { text: string, description?: string, required?: boolean, width?: string, fontStyle?: FontStyle, fontWeight?: FontWeight, links?: azdata.LinkArea[] }): azdata.TextComponent {
 	const text = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 		value: info.text,
 		description: info.description,
 		requiredIndicator: info.required,
-		CSSStyles: { 'font-style': info.fontStyle || 'normal' }
+		CSSStyles: { 'font-style': info.fontStyle || 'normal', 'font-weight': info.fontWeight || 'normal' },
+		links: info.links
 	}).component();
 	text.width = info.width;
 	return text;
@@ -101,11 +102,13 @@ export function createCheckbox(view: azdata.ModelView, info: { initialValue: boo
 	}).component();
 }
 
-export function createDropdown(view: azdata.ModelView, info: { defaultValue?: string | azdata.CategoryValue, values?: string[] | azdata.CategoryValue[], width?: string }): azdata.DropDownComponent {
+export function createDropdown(view: azdata.ModelView, info: { defaultValue?: string | azdata.CategoryValue, values?: string[] | azdata.CategoryValue[], width?: string, editable?: boolean, required?: boolean }): azdata.DropDownComponent {
 	return view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 		values: info.values,
 		value: info.defaultValue,
-		width: info.width
+		width: info.width,
+		editable: info.editable,
+		fireOnTextChange: true
 	}).component();
 }
 
@@ -232,7 +235,6 @@ function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata
 	}
 }
 
-
 function processField(context: FieldContext): void {
 	switch (context.fieldInfo.type) {
 		case FieldType.Options:
@@ -263,24 +265,26 @@ function processField(context: FieldContext): void {
 }
 
 function processOptionsTypeField(context: FieldContext): void {
-	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth });
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
 	const dropdown = createDropdown(context.view, {
 		values: context.fieldInfo.options,
 		defaultValue: context.fieldInfo.defaultValue,
-		width: context.fieldInfo.inputWidth
+		width: context.fieldInfo.inputWidth,
+		editable: context.fieldInfo.editable,
+		required: context.fieldInfo.required
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, dropdown);
 	addLabelInputPairToContainer(context.view, context.components, label, dropdown, context.fieldInfo.labelPosition);
 }
 
 function processDateTimeTextField(context: FieldContext): void {
-	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth });
-	const defaultValue = context.fieldInfo.defaultValue + new Date().toISOString().slice(0, 19).replace(/[^0-9]/g, ''); // Take the date time information and only leaving the numbers
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
+	const defaultValue = context.fieldInfo.defaultValue + getDateTimeString();
 	const input = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		value: defaultValue,
 		ariaLabel: context.fieldInfo.label,
 		inputType: 'text',
-		required: !context.fieldInfo.useCustomValidator && context.fieldInfo.required,
+		required: context.fieldInfo.required,
 		placeHolder: context.fieldInfo.placeHolder
 	}).component();
 	input.width = context.fieldInfo.inputWidth;
@@ -289,13 +293,13 @@ function processDateTimeTextField(context: FieldContext): void {
 }
 
 function processNumberField(context: FieldContext): void {
-	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth });
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
 	const input = createNumberInput(context.view, {
 		defaultValue: context.fieldInfo.defaultValue,
 		ariaLabel: context.fieldInfo.label,
 		min: context.fieldInfo.min,
 		max: context.fieldInfo.max,
-		required: !context.fieldInfo.useCustomValidator && context.fieldInfo.required,
+		required: context.fieldInfo.required,
 		width: context.fieldInfo.inputWidth,
 		placeHolder: context.fieldInfo.placeHolder
 	});
@@ -304,11 +308,11 @@ function processNumberField(context: FieldContext): void {
 }
 
 function processTextField(context: FieldContext): void {
-	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth });
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
 	const input = createTextInput(context.view, {
 		defaultValue: context.fieldInfo.defaultValue,
 		ariaLabel: context.fieldInfo.label,
-		required: !context.fieldInfo.useCustomValidator && context.fieldInfo.required,
+		required: context.fieldInfo.required,
 		placeHolder: context.fieldInfo.placeHolder,
 		width: context.fieldInfo.inputWidth
 	});
@@ -317,11 +321,11 @@ function processTextField(context: FieldContext): void {
 }
 
 function processPasswordField(context: FieldContext): void {
-	const passwordLabel = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth });
+	const passwordLabel = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
 	const passwordInput = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		ariaLabel: context.fieldInfo.label,
 		inputType: 'password',
-		required: !context.fieldInfo.useCustomValidator && context.fieldInfo.required,
+		required: context.fieldInfo.required,
 		placeHolder: context.fieldInfo.placeHolder,
 		width: context.fieldInfo.inputWidth
 	}).component();
@@ -343,11 +347,11 @@ function processPasswordField(context: FieldContext): void {
 
 	if (context.fieldInfo.confirmationRequired) {
 		const passwordNotMatchMessage = getPasswordMismatchMessage(context.fieldInfo.label);
-		const confirmPasswordLabel = createLabel(context.view, { text: context.fieldInfo.confirmationLabel!, required: true, width: context.fieldInfo.labelWidth });
+		const confirmPasswordLabel = createLabel(context.view, { text: context.fieldInfo.confirmationLabel!, required: true, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
 		const confirmPasswordInput = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: context.fieldInfo.confirmationLabel,
 			inputType: 'password',
-			required: !context.fieldInfo.useCustomValidator,
+			required: true,
 			width: context.fieldInfo.inputWidth
 		}).component();
 
@@ -373,8 +377,8 @@ function processPasswordField(context: FieldContext): void {
 }
 
 function processReadonlyTextField(context: FieldContext): void {
-	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth });
-	const text = createLabel(context.view, { text: context.fieldInfo.defaultValue!, description: '', required: false, width: context.fieldInfo.inputWidth, fontStyle: context.fieldInfo.fontStyle });
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth, fontWeight: context.fieldInfo.labelFontWeight });
+	const text = createLabel(context.view, { text: context.fieldInfo.defaultValue!, description: '', required: false, width: context.fieldInfo.inputWidth, fontStyle: context.fieldInfo.fontStyle, links: context.fieldInfo.links });
 	addLabelInputPairToContainer(context.view, context.components, label, text, context.fieldInfo.labelPosition);
 }
 
