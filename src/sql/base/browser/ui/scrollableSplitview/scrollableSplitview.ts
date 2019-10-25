@@ -811,7 +811,9 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		for (let i = 0, deltaUp = delta; i < upItems.length; i++) {
 			const item = upItems[i];
-			const size = clamp(upSizes[i] + deltaUp, item.view.minimumSize, item.view.maximumSize);
+			const maxSize = clamp(item.view.minimumSize, this.size / this.viewItems.length, item.view.maximumSize);
+
+			const size = clamp(upSizes[i] + deltaUp, item.view.minimumSize, maxSize);
 			const viewDelta = size - upSizes[i];
 
 			deltaUp -= viewDelta;
@@ -822,7 +824,9 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		for (let i = 0, deltaDown = delta; i < downItems.length; i++) {
 			const item = downItems[i];
-			const size = clamp(downSizes[i] - deltaDown, item.view.minimumSize, item.view.maximumSize);
+			const maxSize = Math.min(this.size / this.viewItems.length, item.view.maximumSize);
+
+			const size = clamp(downSizes[i] - deltaDown, item.view.minimumSize, maxSize);
 			const viewDelta = size - downSizes[i];
 
 			deltaDown += viewDelta;
