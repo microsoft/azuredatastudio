@@ -42,12 +42,12 @@ export class AzCliTool extends ToolBase {
 		return true;
 	}
 
-	protected async getInstallationPath(): Promise<string | undefined> {
+	protected async getSearchPaths(): Promise<string[]> {
 		switch (this.osType) {
 			case OsType.win32:
-				return win32InstallationRoot;
+				return [win32InstallationRoot];
 			default:
-				return defaultInstallationRoot;
+				return [defaultInstallationRoot];
 		}
 	}
 
@@ -60,24 +60,31 @@ export class AzCliTool extends ToolBase {
 
 	protected getVersionFromOutput(output: string): SemVer | undefined {
 		if (output && output.includes('azure-cli')) {
-			return new SemVer(output.split(EOL)[0].replace('azure-cli', '').replace(/ /g, '').replace('*', ''));
+			return new SemVer(output.split(EOL)[0].replace('azure-cli', '').replace(/ /g, '').replace('*', '')); //lgtm [js/incomplete-sanitization]
 		} else {
 			return undefined;
 		}
 	}
+
 	protected get versionCommand(): Command {
 		return {
 			command: 'az --version'
 		};
 	}
 
-	// Additional Information messages for various OsTypes.
-	public additionalInformation: Map<OsType, InformationalMessageType[]> = new Map<OsType, InformationalMessageType[]>([
+	// Additional Informational messages for various OsTypes.
+	protected additionalInformation: Map<OsType, InformationalMessageType[]> = new Map<OsType, InformationalMessageType[]>([
 		[OsType.linux, []],
 		[OsType.win32, []],
 		[OsType.darwin, [InformationalMessageType.Brew]],
 		[OsType.others, [InformationalMessageType.Curl]]
 	]);
+
+	protected get discoveryCommand(): Command {
+		return {
+			command: this.discoveryCommandString('az')
+		};
+	}
 }
 
 const win32InstallationCommands = [

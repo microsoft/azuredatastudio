@@ -11,6 +11,8 @@ import { ToolBase, InformationalMessageType } from './toolBase';
 
 const localize = nls.loadMessageBundle();
 
+const defaultInstallationRoot = '/usr/local/bin';
+
 export class KubeCtlTool extends ToolBase {
 	constructor(platformService: IPlatformService) {
 		super(platformService);
@@ -49,10 +51,24 @@ export class KubeCtlTool extends ToolBase {
 		return { command: 'kubectl version -o json --client' };
 	}
 
+	protected get discoveryCommand(): Command {
+		return {
+			command: this.discoveryCommandString('kubectl')
+		};
+	}
+
 	get autoInstallSupported(): boolean {
 		return true;
 	}
 
+	protected async getSearchPaths(): Promise<string[]> {
+		switch (this.osType) {
+			case OsType.win32:
+				return [this.storagePath];
+			default:
+				return [defaultInstallationRoot];
+		}
+	}
 	protected readonly allInstallationCommands: Map<OsType, Command[]> = new Map<OsType, Command[]>([
 		[OsType.linux, linuxInstallationCommands],
 		[OsType.win32, win32InstallationCommands],
@@ -60,8 +76,8 @@ export class KubeCtlTool extends ToolBase {
 		[OsType.others, defaultInstallationCommands]
 	]);
 
-	// Additional Information messages for various OsTypes.
-	public additionalInformation: Map<OsType, InformationalMessageType[]> = new Map<OsType, InformationalMessageType[]>([
+	// Additional Informational messages for various OsTypes.
+	protected additionalInformation: Map<OsType, InformationalMessageType[]> = new Map<OsType, InformationalMessageType[]>([
 		[OsType.linux, []],
 		[OsType.win32, []],
 		[OsType.darwin, [InformationalMessageType.Brew]],

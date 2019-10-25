@@ -8,7 +8,7 @@ import * as nls from 'vscode-nls';
 import { AgreementInfo, DeploymentProvider, ITool, ResourceType } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
-import { getErrorMessage } from '../utils';
+import { getErrorMessage, setEnvironmentVariablesForInstallPaths } from '../utils';
 import { DialogBase } from './dialogBase';
 import { createFlexContainer } from './modelViewUtils';
 
@@ -230,7 +230,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				this._installToolButton.hidden = !autoInstallRequired;
 				this._dialogObject.okButton.enabled = messages.length === 0 && !autoInstallRequired;
 				if (messages.length !== 0) {
-					messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed after Azure Data Studio is launched to pick up the updated PATH environment variable. You may find additional details in the debug console."));
+					messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed by yourself after Azure Data Studio is launched to pick up the updated PATH environment variable. You may find additional details in the debug console by running the 'Toggle Developer Tools' command in the Azure Data Studio Command Palette."));
 					this._dialogObject.message = {
 						level: azdata.window.MessageLevel.Error,
 						text: localize('deploymentDialog.ToolCheckFailed', "Some required tools are not installed."),
@@ -286,6 +286,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	protected onComplete(): void {
+		setEnvironmentVariablesForInstallPaths(this._tools);
 		this.resourceTypeService.startDeployment(this.getCurrentProvider());
 	}
 
