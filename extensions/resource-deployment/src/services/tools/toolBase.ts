@@ -14,7 +14,7 @@ import { IPlatformService } from '../platformService';
 const localize = nls.loadMessageBundle();
 const toolStatusNotInstalled: string = localize('deploymentDialog.ToolStatus.NotInstalled', "Not Installed");
 const toolStatusInstalled: string = localize('deploymentDialog.ToolStatus.Installed', "Installed");
-const toolStatusInstalling: string = localize('deploymentDialog.ToolStatus.Installing', "Installing");
+const toolStatusInstalling: string = localize('deploymentDialog.ToolStatus.Installing', "Installing …");
 const toolStatusError: string = localize('deploymentDialog.ToolStatus.Error', "Error");
 const toolStatusFailed: string = localize('deploymentDialog.ToolStatus.Failed', "Failed");
 
@@ -32,7 +32,7 @@ export const enum InformationalMessageType {
 	Curl = 'Curl'
 }
 
-const pythonAndPip3Localized = localize('deploymentDialog.ToolInformationalMessage.PythonAndPip3', "•	azdata installation needs python3 and pip3 need to be pre-installed before necessary tools can be deployed");
+const pythonAndPip3Localized = localize('deploymentDialog.ToolInformationalMessage.PythonAndPip3', "•	azdata installation needs python3 and pip3 to be pre-installed before necessary tools can be deployed");
 const brewLocalized = localize('deploymentDialog.ToolInformationalMessage.Brew', "•	brew is needed for deployment of the tools and needs to be pre-installed before necessary tools can be deployed");
 const curlLocalized = localize('deploymentDialog.ToolInformationalMessage.Curl', "•	curl is needed for installation and needs to be pre-installed before necessary tools can be deployed");
 

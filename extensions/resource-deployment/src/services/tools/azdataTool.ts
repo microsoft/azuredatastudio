@@ -91,11 +91,11 @@ export class AzdataTool extends ToolBase {
 	private get defaultInstallationCommands(): Command[] {
 		return [
 			{
-				comment: localize('resourceDeployment.Azdata.InstallUpdatePythonRequestsPackage', "installing/updating to latest version of requests python package azdata ..."),
+				comment: localize('resourceDeployment.Azdata.InstallUpdatePythonRequestsPackage', "installing/updating to latest version of requests python package azdata …"),
 				command: `pip3 install -U requests`
 			},
 			{
-				comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata ..."),
+				comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata …"),
 				command: `pip3 install -r ${this.azdataInstallUri} ${this.azdataInstallAdditionalArgs} --quiet --user`
 			}
 		];
@@ -126,33 +126,33 @@ export class AzdataTool extends ToolBase {
 const linuxInstallationCommands = [
 	{
 		sudo: true,
-		comment: localize('resourceDeployment.Azdata.AptGetUpdate', "updating repository information ..."),
+		comment: localize('resourceDeployment.Azdata.AptGetUpdate', "updating repository information …"),
 		command: 'apt-get update'
 	},
 	{
 		sudo: true,
-		comment: localize('resourceDeployment.Azdata.AptGetPackages', "getting packages needed for azdata installation ..."),
+		comment: localize('resourceDeployment.Azdata.AptGetPackages', "getting packages needed for azdata installation …"),
 		command: 'apt-get install gnupg ca-certificates curl apt-transport-https lsb-release -y'
 	},
 	{
 		sudo: true,
-		comment: localize('resourceDeployment.Azdata.DownloadAndInstallingSigningKey', "downloading and installing the signing key for azdata ..."),
+		comment: localize('resourceDeployment.Azdata.DownloadAndInstallingSigningKey', "downloading and installing the signing key for azdata …"),
 		command: 'wget -qO- https://packages.microsoft.com/keys/microsoft.asc | apt-key add -'
 	},
 	// Double check with Sean Wells on the current url for azdata corresponding to https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-preview.list)
 	{
 		sudo: true,
-		comment: localize('resourceDeployment.Azdata.AddingAzureCliRepositoryInformation', "adding the azdata repository information ..."),
+		comment: localize('resourceDeployment.Azdata.AddingAzureCliRepositoryInformation', "adding the azdata repository information …"),
 		command: 'add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-preview.list)"'
 	},
 	{
 		sudo: true,
-		comment: localize('resourceDeployment.Azdata.AptGetUpdate', "updating repository information ..."),
+		comment: localize('resourceDeployment.Azdata.AptGetUpdate', "updating repository information …"),
 		command: 'apt-get update'
 	},
 	{
 		sudo: true,
-		comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata ..."),
+		comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata …"),
 		command: 'apt-get install -y azdata-cli'
 	}
 ];
