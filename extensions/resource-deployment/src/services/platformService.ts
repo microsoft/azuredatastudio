@@ -232,9 +232,9 @@ export class PlatformService implements IPlatformService {
 		// Add listeners to print stdout and stderr and exit code
 		child.on('exit', (code: number | null, signal: string | null) => {
 			if (code !== null) {
-				outputChannel.appendLine(localize('platformService.RunStreamedCommand.ExitedWithCode', "    >>> ${0}    ... exited with code: ${1}", command, code));
+				outputChannel.appendLine(localize('platformService.RunStreamedCommand.ExitedWithCode', "    >>> {0}    ... exited with code: {1}", command, code));
 			} else {
-				outputChannel.appendLine(localize('platformService.RunStreamedCommand.ExitedWithSignal', "    >>> ${0}   ... exited with signal: ${1}", command, signal));
+				outputChannel.appendLine(localize('platformService.RunStreamedCommand.ExitedWithSignal', "    >>> {0}   ... exited with signal: {1}", command, signal));
 			}
 		});
 		child.stdout.on('data', (data: string | Buffer) => {
