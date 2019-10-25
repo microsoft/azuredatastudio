@@ -47,12 +47,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', "Select");
 	}
 
-	protected onOkClick(): void {
-		const installSearchPaths = toolsInstallationSearchPath(this._tools);
-		console.log(`InstallSearchPaths: ${installSearchPaths}`);
-		process.env[ToolsInstallPath] = installSearchPaths;
-	}
-
 	initialize() {
 		let tab = azdata.window.createTab('');
 		this._dialogObject.registerCloseValidator(() => {
@@ -295,6 +289,9 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	protected onComplete(): void {
+		const installSearchPaths = toolsInstallationSearchPath(this._tools);
+		console.log(`InstallSearchPaths: ${installSearchPaths}`);
+		process.env[ToolsInstallPath] = installSearchPaths;
 		this.resourceTypeService.startDeployment(this.getCurrentProvider());
 	}
 
