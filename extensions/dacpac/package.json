@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "htmlparser2": "^3.10.1",
-    "vscode-nls": "^3.2.1"
+    "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",

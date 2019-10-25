@@ -8,7 +8,7 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/notebook/package": {
+		"package": {
 			"displayName": "Notebook 核心延伸模組",
 			"description": "定義以資料通訊協定為基礎的 Notebook 參與，以及許多 Notebook 命令和參與。",
 			"notebook.configuration.title": "Notebook 設定",
@@ -37,11 +37,11 @@
 			"title.configurePython": "為 Notebooks 設定 Python",
 			"title.managePackages": "管理套件"
 		},
-		"extensions/notebook/out/dialog/managePackages/managePackagesDialog": {
+		"out/dialog/managePackages/managePackagesDialog": {
 			"managePackages.dialogName": "管理套件",
 			"managePackages.cancelButtonText": "關閉"
 		},
-		"extensions/notebook/out/dialog/managePackages/installedPackagesTab": {
+		"out/dialog/managePackages/installedPackagesTab": {
 			"managePackages.installedTabTitle": "已安裝",
 			"managePackages.pkgNameColumn": "名稱",
 			"managePackages.newPkgVersionColumn": "版本",
@@ -53,7 +53,7 @@
 			"managePackages.backgroundUninstallComplete": "已完成 {0} 的解除安裝",
 			"managePackages.backgroundUninstallFailed": "無法將 {0} 解除安裝。錯誤: {1}"
 		},
-		"extensions/notebook/out/dialog/managePackages/addNewPackageTab": {
+		"out/dialog/managePackages/addNewPackageTab": {
 			"managePackages.invalidTextPlaceholder": "N/A",
 			"managePackages.packageNotFound": "找不到指定的套件",
 			"managePackages.searchBarPlaceholder": "搜尋 {0} 個套件",
@@ -69,31 +69,31 @@
 			"managePackages.backgroundInstallComplete": "已完成 {0} {1} 的安裝",
 			"managePackages.backgroundInstallFailed": "無法安裝 {0} {1}。錯誤: {2}"
 		},
-		"extensions/notebook/out/protocol/notebookUriHandler": {
+		"out/protocol/notebookUriHandler": {
 			"notebook.unsupportedAction": "這個處理常式不支援動作 {0}",
 			"unsupportedScheme": "因為只支援 HTTP 和 HTTPS 連結，所以無法開啟連結 {0}",
 			"notebook.confirmOpen": "要下載並開啟 '{0}' 嗎?",
 			"notebook.fileNotFound": "無法尋找指定的檔案",
 			"notebook.fileDownloadError": "檔案開啟要求失敗。錯誤: {0} {1}"
 		},
-		"extensions/notebook/out/jupyter/serverInstance": {
+		"out/jupyter/serverInstance": {
 			"serverStopError": "停止 Notebook 伺服器時發生錯誤: {0}",
 			"notebookStartProcessExitPremature": "Notebook 處理序提前結束。錯誤: {0}，StdErr 輸出: {1}",
 			"jupyterError": "從 Jupyter 傳送的錯誤: {0}",
 			"jupyterOutputMsgStartSuccessful": "... Jupyter 正在 {0} 中執行",
 			"jupyterOutputMsgStart": "... 正在啟動 Notebook 伺服器"
 		},
-		"extensions/notebook/out/jupyter/jupyterSettingWriter": {
+		"out/jupyter/jupyterSettingWriter": {
 			"UnexpectedSettingType": "未預期的設定類型 {0}"
 		},
-		"extensions/notebook/out/jupyter/jupyterSessionManager": {
+		"out/jupyter/jupyterSessionManager": {
 			"errorStartBeforeReady": "無法啟動工作階段，管理員尚未初始化",
 			"connectionNotValid": "Spark 核心需要對 SQL Server 巨量資料叢集主要執行個體的連線。"
 		},
-		"extensions/notebook/out/jupyter/jupyterServerManager": {
+		"out/jupyter/jupyterServerManager": {
 			"shutdownError": "無法關閉 Notebook 伺服器: {0}"
 		},
-		"extensions/notebook/out/jupyter/jupyterServerInstallation": {
+		"out/jupyter/jupyterServerInstallation": {
 			"msgInstallPkgProgress": "正在安裝 Notebook 相依性",
 			"msgPythonDownloadComplete": "Python 下載完成",
 			"msgPythonDownloadError": "下載 python 設定時發生錯誤",
@@ -113,15 +113,15 @@
 			"msgJupyterInstallDone": "... Jupyter 安裝完成。",
 			"msgInstallingSpark": "正在安裝 SparkMagic..."
 		},
-		"extensions/notebook/out/jupyter/jupyterNotebookProvider": {
+		"out/jupyter/jupyterNotebookProvider": {
 			"errNotebookUriMissing": "筆記本路徑為必要項"
 		},
-		"extensions/notebook/out/jupyter/jupyterController": {
+		"out/jupyter/jupyterController": {
 			"notebookFileType": "Notebooks",
 			"unsupportedFileType": "僅支援 .ipynb Notebooks",
 			"confirmReinstall": "確定要重新安裝嗎?"
 		},
-		"extensions/notebook/out/dialog/configurePythonDialog": {
+		"out/dialog/configurePythonDialog": {
 			"configurePython.dialogName": "為 Notebooks 設定 Python",
 			"configurePython.okButtonText": "安裝",
 			"configurePython.cancelButtonText": "取消",
@@ -136,7 +136,7 @@
 			"configurePython.newInstall": "新增 Python 安裝",
 			"configurePython.existingInstall": "使用現有的 Python 安裝"
 		},
-		"extensions/notebook/out/book/bookTreeView": {
+		"out/book/bookTreeView": {
 			"openNotebookError": "無法開啟檔案 {0}: {1}",
 			"openMarkdownError": "無法開啟檔案 {0}: {1}",
 			"openExternalLinkError": "開啟連結 {0} 失敗: {1}",
@@ -146,16 +146,16 @@
 			"openMarkdownCommand": "開啟 Markdown",
 			"missingFileError": "缺少檔案 : {0}"
 		},
-		"extensions/notebook/out/common/utils": {
+		"out/common/utils": {
 			"mkdirOutputMsg": "... 正在建立 {0}",
 			"executeCommandProcessExited": "處理序結束。代碼: {0}"
 		},
-		"extensions/notebook/out/common/localizedConstants": {
+		"out/common/localizedConstants": {
 			"msgYes": "是",
 			"msgNo": "否",
 			"msgSampleCodeDataFrame": "這個範例指令碼會將檔案載入資料框架，並顯示前 10 個結果。"
 		},
-		"extensions/notebook/out/extension": {
+		"out/extension": {
 			"msgSampleCodeDataFrame": "這個範例指令碼會將檔案載入資料框架，並顯示前 10 個結果。",
 			"noNotebookVisible": "沒有任何正在使用的筆記本編輯器",
 			"codeCellName": "程式碼",

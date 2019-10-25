@@ -8,12 +8,12 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/schema-compare/package": {
+		"package": {
 			"displayName": "SQL Server スキーマの比較",
 			"description": "Azure Data Studio 用 SQL Server スキーマ比較では、データベースと dacpac のスキーマを比較できます。",
 			"schemaCompare.start": "スキーマ比較"
 		},
-		"extensions/schema-compare/out/dialogs/schemaCompareOptionsDialog": {
+		"out/dialogs/schemaCompareOptionsDialog": {
 			"SchemaCompareOptionsDialog.Ok": "OK",
 			"SchemaCompareOptionsDialog.Cancel": "キャンセル",
 			"SchemaCompareOptionsDialog.Reset": "リセット",
@@ -242,7 +242,7 @@
 			"SchemaCompare.Description.DropObjectsNotInSource": "データベースに公開するとき、データベース スナップショット (.dacpac) ファイルに存在しないオブジェクトをターゲット データベースから削除するかどうかを指定します。この値は DropExtendedProperties よりも優先されます。",
 			"SchemaCompare.Description.IgnoreColumnOrder": "データベースに発行するときに、テーブルの列の順序の違いを無視するか、更新するかを指定します。"
 		},
-		"extensions/schema-compare/out/dialogs/schemaCompareDialog": {
+		"out/dialogs/schemaCompareDialog": {
 			"schemaCompareDialog.ok": "OK",
 			"schemaCompareDialog.cancel": "キャンセル",
 			"schemaCompareDialog.SourceTitle": "SOURCE",
@@ -263,7 +263,7 @@
 			"schemaCompare.openFile": "開く",
 			"schemaCompareDialog.defaultUser": "既定"
 		},
-		"extensions/schema-compare/out/schemaCompareMainWindow": {
+		"out/schemaCompareMainWindow": {
 			"schemaCompare.CompareDetailsTitle": "詳細の比較",
 			"schemaCompare.ApplyConfirmation": "ターゲットを更新しますか?",
 			"schemaCompare.RecompareToRefresh": "比較を更新するには、[比較] をクリックします。",

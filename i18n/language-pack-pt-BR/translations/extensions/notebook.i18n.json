@@ -8,7 +8,7 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/notebook/package": {
+		"package": {
 			"displayName": "Extensões Principais do Notebook",
 			"description": "Define a contribuição do Notebook baseada em protocolo de Dados e muitos comandos e contribuições do Notebook.",
 			"notebook.configuration.title": "Configuração do Notebook",
@@ -37,11 +37,11 @@
 			"title.configurePython": "Configurar o Python para notebooks",
 			"title.managePackages": "Gerenciar pacotes"
 		},
-		"extensions/notebook/out/dialog/managePackages/managePackagesDialog": {
+		"out/dialog/managePackages/managePackagesDialog": {
 			"managePackages.dialogName": "Gerenciar pacotes",
 			"managePackages.cancelButtonText": "Fechar"
 		},
-		"extensions/notebook/out/dialog/managePackages/installedPackagesTab": {
+		"out/dialog/managePackages/installedPackagesTab": {
 			"managePackages.installedTabTitle": "INSTALADO",
 			"managePackages.pkgNameColumn": "Nome",
 			"managePackages.newPkgVersionColumn": "Versão",
@@ -53,7 +53,7 @@
 			"managePackages.backgroundUninstallComplete": "Desinstalação concluída para {0}",
 			"managePackages.backgroundUninstallFailed": "Falha ao desinstalar {0}. Erro: {1}"
 		},
-		"extensions/notebook/out/dialog/managePackages/addNewPackageTab": {
+		"out/dialog/managePackages/addNewPackageTab": {
 			"managePackages.invalidTextPlaceholder": "N/A",
 			"managePackages.packageNotFound": "Não foi possível localizar o pacote especificado",
 			"managePackages.searchBarPlaceholder": "Pesquisar pacotes {0}",
@@ -69,31 +69,31 @@
 			"managePackages.backgroundInstallComplete": "Instalação concluída para {0} {1}",
 			"managePackages.backgroundInstallFailed": "Falha ao instalar {0} {1}. Erro: {2}"
 		},
-		"extensions/notebook/out/protocol/notebookUriHandler": {
+		"out/protocol/notebookUriHandler": {
 			"notebook.unsupportedAction": "Não há suporte para a ação {0} para esse manipulador",
 			"unsupportedScheme": "Não é possível abrir o link {0} porque somente há suporte para os links HTTP e HTTPS",
 			"notebook.confirmOpen": "Baixar e abrir '{0}'?",
 			"notebook.fileNotFound": "Não foi possível localizar o arquivo especificado",
 			"notebook.fileDownloadError": "Falha na solicitação de abertura de arquivo com o erro: {0} {1}"
 		},
-		"extensions/notebook/out/jupyter/serverInstance": {
+		"out/jupyter/serverInstance": {
 			"serverStopError": "Erro ao parar o servidor do notebook: {0}",
 			"notebookStartProcessExitPremature": "O processo do Notebook foi encerrado prematuramente com erro: {0}, Saída de StdErr: {1}",
 			"jupyterError": "Erro enviado do Jupyter: {0}",
 			"jupyterOutputMsgStartSuccessful": "... O jupyter está sendo executado em {0}",
 			"jupyterOutputMsgStart": "...Iniciando o servidor do Notebook"
 		},
-		"extensions/notebook/out/jupyter/jupyterSettingWriter": {
+		"out/jupyter/jupyterSettingWriter": {
 			"UnexpectedSettingType": "Tipo de configuração inesperado {0}"
 		},
-		"extensions/notebook/out/jupyter/jupyterSessionManager": {
+		"out/jupyter/jupyterSessionManager": {
 			"errorStartBeforeReady": "Não é possível iniciar uma sessão. O gerente ainda não foi inicializado",
 			"connectionNotValid": "Os kernels do Spark exigem uma conexão com uma instância mestra do cluster de Big data do SQL Server."
 		},
-		"extensions/notebook/out/jupyter/jupyterServerManager": {
+		"out/jupyter/jupyterServerManager": {
 			"shutdownError": "Falha no desligamento do servidor do notebook: {0}"
 		},
-		"extensions/notebook/out/jupyter/jupyterServerInstallation": {
+		"out/jupyter/jupyterServerInstallation": {
 			"msgInstallPkgProgress": "A instalação de dependências do Notebook está em andamento",
 			"msgPythonDownloadComplete": "O download do Python está concluído",
 			"msgPythonDownloadError": "Erro ao baixar a configuração do Python",
@@ -113,15 +113,15 @@
 			"msgJupyterInstallDone": "...Instalação do Jupyter concluída.",
 			"msgInstallingSpark": "Instalando o SparkMagic..."
 		},
-		"extensions/notebook/out/jupyter/jupyterNotebookProvider": {
+		"out/jupyter/jupyterNotebookProvider": {
 			"errNotebookUriMissing": "É necessário um caminho de notebook"
 		},
-		"extensions/notebook/out/jupyter/jupyterController": {
+		"out/jupyter/jupyterController": {
 			"notebookFileType": "Notebooks",
 			"unsupportedFileType": "Somente há suporte para os Notebooks .ipynb",
 			"confirmReinstall": "Tem certeza de que deseja reinstalar?"
 		},
-		"extensions/notebook/out/dialog/configurePythonDialog": {
+		"out/dialog/configurePythonDialog": {
 			"configurePython.dialogName": "Configurar o Python para notebooks",
 			"configurePython.okButtonText": "Instalar",
 			"configurePython.cancelButtonText": "Cancelar",
@@ -136,7 +136,7 @@
 			"configurePython.newInstall": "Nova instalação do Python",
 			"configurePython.existingInstall": "Usar a instalação existente do Python"
 		},
-		"extensions/notebook/out/book/bookTreeView": {
+		"out/book/bookTreeView": {
 			"openNotebookError": "Falha ao abrir o arquivo {0}: {1}",
 			"openMarkdownError": "Falha ao abrir o arquivo {0}: {1}",
 			"openExternalLinkError": "Falha ao abrir o link {0}: {1}",
@@ -146,16 +146,16 @@
 			"openMarkdownCommand": "Abrir Markdown",
 			"missingFileError": "Arquivo ausente: {0}"
 		},
-		"extensions/notebook/out/common/utils": {
+		"out/common/utils": {
 			"mkdirOutputMsg": "... Criando {0}",
 			"executeCommandProcessExited": "Processo encerrado com o código {0}"
 		},
-		"extensions/notebook/out/common/localizedConstants": {
+		"out/common/localizedConstants": {
 			"msgYes": "Sim",
 			"msgNo": "Não",
 			"msgSampleCodeDataFrame": "Este código de exemplo carrega o arquivo em um quadro de dados e mostra os 10 primeiros resultados."
 		},
-		"extensions/notebook/out/extension": {
+		"out/extension": {
 			"msgSampleCodeDataFrame": "Este código de exemplo carrega o arquivo em um quadro de dados e mostra os primeiros 10 resultados.",
 			"noNotebookVisible": "Não há nenhum editor de notebook ativo",
 			"codeCellName": "Código",
