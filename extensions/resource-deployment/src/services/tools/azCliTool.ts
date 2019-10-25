@@ -42,16 +42,16 @@ export class AzCliTool extends ToolBase {
 		return true;
 	}
 
-	protected async getInstallationPath(): Promise<string | undefined> {
+	protected async getSearchPaths(): Promise<string[]> {
 		switch (this.osType) {
 			case OsType.win32:
-				return win32InstallationRoot;
+				return [win32InstallationRoot];
 			default:
-				return defaultInstallationRoot;
+				return [defaultInstallationRoot];
 		}
 	}
 
-	readonly allInstallationCommands: Map<OsType, Command[]> = new Map<OsType, Command[]>([
+	protected readonly allInstallationCommands: Map<OsType, Command[]> = new Map<OsType, Command[]>([
 		[OsType.linux, linuxInstallationCommands],
 		[OsType.win32, win32InstallationCommands],
 		[OsType.darwin, macOsInstallationCommands],
@@ -60,14 +60,21 @@ export class AzCliTool extends ToolBase {
 
 	protected getVersionFromOutput(output: string): SemVer | undefined {
 		if (output && output.includes('azure-cli')) {
-			return new SemVer(output.split(EOL)[0].replace('azure-cli', '').replace(/ /g, '').replace('*', ''));
+			return new SemVer(output.split(EOL)[0].replace('azure-cli', '').replace(/ /g, '').replace('*', '')); //lgtm [js/incomplete-sanitization]
 		} else {
 			return undefined;
 		}
 	}
+
 	protected get versionCommand(): Command {
 		return {
 			command: 'az --version'
+		};
+	}
+
+	protected get discoveryCommand(): Command {
+		return {
+			command: this.discoveryCommandString('az')
 		};
 	}
 }

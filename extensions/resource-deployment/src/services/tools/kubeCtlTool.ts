@@ -11,6 +11,8 @@ import { ToolBase } from './toolBase';
 
 const localize = nls.loadMessageBundle();
 
+const defaultInstallationRoot = '/usr/local/bin';
+
 export class KubeCtlTool extends ToolBase {
 	constructor(platformService: IPlatformService) {
 		super(platformService);
@@ -49,11 +51,25 @@ export class KubeCtlTool extends ToolBase {
 		return { command: 'kubectl version -o json --client' };
 	}
 
+	protected get discoveryCommand(): Command {
+		return {
+			command: this.discoveryCommandString('kubectl')
+		};
+	}
+
 	get autoInstallSupported(): boolean {
 		return true;
 	}
 
-	readonly allInstallationCommands: Map<OsType, Command[]> = new Map<OsType, Command[]>([
+	protected async getSearchPaths(): Promise<string[]> {
+		switch (this.osType) {
+			case OsType.win32:
+				return [this.storagePath];
+			default:
+				return [defaultInstallationRoot];
+		}
+	}
+	protected readonly allInstallationCommands: Map<OsType, Command[]> = new Map<OsType, Command[]>([
 		[OsType.linux, linuxInstallationCommands],
 		[OsType.win32, win32InstallationCommands],
 		[OsType.darwin, macOsInstallationCommands],

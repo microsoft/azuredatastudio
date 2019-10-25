@@ -36,8 +36,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 				text: localize('resourceDeployment.NewAKSBrowserWindowPrompt', "A browser window for signing into Azure will be opened during the SQL Server Big Data Cluster deployment.")
 			};
 		}
-		this.wizard.saveConfigButton.hidden = false;
-		this.wizard.scriptToNotebookButton.hidden = false;
+		this.wizard.showCustomButtons();
 		this.formItems.forEach(item => {
 			this.form!.removeFormItem(item);
 		});
@@ -311,8 +310,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 	}
 
 	public onLeave() {
-		this.wizard.saveConfigButton.hidden = true;
-		this.wizard.scriptToNotebookButton.hidden = true;
+		this.wizard.hideCustomButtons();
 		this.wizard.wizardObject.message = { text: '' };
 	}
 

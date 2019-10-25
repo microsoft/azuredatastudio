@@ -8,26 +8,26 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/dacpac/out/wizard/pages/selectOperationpage": {
+		"out/wizard/pages/selectOperationpage": {
 			"dacFx.deployRadioButtonLabel": "DACPAC-Datei für eine Datenebenenanwendung für eine SQL Server-Instanz bereitstellen [DACPAC bereitstellen]",
 			"dacFx.extractRadioButtonLabel": "Datenebenenanwendung aus einer SQL Server-Instanz in DACPAC-Datei extrahieren [DACPAC extrahieren]",
 			"dacFx.importRadioButtonLabel": "Datenbank aus einer BACPAC-Datei erstellen [BACPAC importieren]",
 			"dacFx.exportRadioButtonLabel": "Schema und Daten aus einer Datenbank in das logische BACPAC-Dateiformat exportieren [BACPAC exportieren]"
 		},
-		"extensions/dacpac/out/wizard/pages/importConfigPage": {
+		"out/wizard/pages/importConfigPage": {
 			"dacFxImport.openFile": "Eröffnungskurs",
 			"dacFxImport.fileTextboxTitle": "Dateispeicherort"
 		},
-		"extensions/dacpac/out/wizard/pages/extractConfigPage": {
+		"out/wizard/pages/extractConfigPage": {
 			"dacfxExtract.saveFile": "Speichern",
 			"dacFxExtract.fileTextboxTitle": "Dateispeicherort",
 			"dacFxExtract.versionTextboxTitle": "Version (Verwenden Sie x.x.x.x, wobei x für eine Zahl steht)"
 		},
-		"extensions/dacpac/out/wizard/pages/exportConfigPage": {
+		"out/wizard/pages/exportConfigPage": {
 			"dacfxExport.saveFile": "Speichern",
 			"dacFxExport.fileTextboxTitle": "Dateispeicherort"
 		},
-		"extensions/dacpac/out/wizard/pages/deployPlanPage": {
+		"out/wizard/pages/deployPlanPage": {
 			"dacfx.dataLossTextWithCount": "{0} der aufgeführten Bereitstellungsaktionen können zu Datenverlust führen. Stellen Sie sicher, dass eine Sicherung oder eine Momentaufnahme vorhanden ist, falls Probleme mit der Bereitstellung auftreten.",
 			"dacFx.dataLossCheckbox": "Vorgang trotz möglicher Datenverluste fortsetzen",
 			"dacfx.noDataLossText": "Die aufgeführten Bereitstellungsaktionen führen nicht zu Datenverlust.",
@@ -41,7 +41,7 @@
 			"dacfx.dataLossColumn": "Datenverlust",
 			"dacfx.dataLossTooltip": "Vorgänge, die zu Datenverlusten führen können, werden mit einem Warnhinweis gekennzeichnet."
 		},
-		"extensions/dacpac/out/wizard/pages/deployConfigPage": {
+		"out/wizard/pages/deployConfigPage": {
 			"dacFx.databaseNameTextBox": "Datenbankname",
 			"dacFx.databaseNameDropdown": "Datenbankname",
 			"dacFxDeploy.openFile": "Eröffnungskurs",
@@ -51,7 +51,7 @@
 			"dacFx.targetDatabaseRadioButtonsTitle": "Zieldatenbank",
 			"dacFx.targetDatabaseDropdownTitle": "Datenbankname"
 		},
-		"extensions/dacpac/out/wizard/pages/dacFxSummaryPage": {
+		"out/wizard/pages/dacFxSummaryPage": {
 			"dacfx.targetServerName": "Zielserver",
 			"dacfx.targetDatabaseName": "Zieldatenbank",
 			"dacfx.sourceServerName": "Quellserver",
@@ -61,16 +61,16 @@
 			"dacfx.settingColumn": "Einstellung",
 			"dacfx.valueColumn": "Wert"
 		},
-		"extensions/dacpac/out/wizard/api/dacFxConfigPage": {
+		"out/wizard/api/dacFxConfigPage": {
 			"dacFx.targetServerDropdownTitle": "Zielserver",
 			"dacFx.sourceServerDropdownTitle": "Quellserver",
 			"dacFx.databaseNameTextBox": "Zieldatenbank",
 			"dacFx.sourceDatabaseDropdownTitle": "Quelldatenbank"
 		},
-		"extensions/dacpac/out/wizard/api/basePage": {
+		"out/wizard/api/basePage": {
 			"basePage.defaultUser": "Standard"
 		},
-		"extensions/dacpac/out/wizard/dataTierApplicationWizard": {
+		"out/wizard/dataTierApplicationWizard": {
 			"dacFx.selectOperationPageName": "Vorgang auswählen",
 			"dacFx.deployConfigPageName": "Einstellungen für die DACPAC-Bereitstellung festlegen",
 			"dacFx.deployPlanPage": "Bereitstellungsplan überprüfen",

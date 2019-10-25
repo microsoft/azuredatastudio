@@ -25,6 +25,23 @@
     "microsoft.notebook"
   ],
   "contributes": {
+    "configuration": [
+      {
+        "title": "%deployment.configuration.title%",
+        "properties": {
+          "deployment.azdataPipInstallUri": {
+            "type": "string",
+            "default": "https://aka.ms/azdata",
+            "description": "%azdata-pip-install-uri-description%"
+          },
+          "deployment.azdataPipInstallArgs": {
+            "type": "string",
+            "default": "",
+            "description": "%azdata-pip-install-args-description%"
+          }
+        }
+      }
+    ],
     "commands": [
       {
         "command": "azdata.resource.deploy",
@@ -227,8 +244,7 @@
           {
             "wizard": {
               "type": "new-aks",
-              "notebook": "%bdc-2019-aks-notebook%",
-              "azdata_notebook": "%azdata-bdc-2019-aks-notebook%"
+              "notebook": "%bdc-2019-aks-notebook%"
             },
             "requiredTools": [
               {
@@ -246,8 +262,7 @@
           {
             "wizard": {
               "type": "existing-aks",
-              "notebook": "%bdc-2019-existing-aks-notebook%",
-              "azdata_notebook": "%azdata-bdc-2019-existing-aks-notebook"
+              "notebook": "%bdc-2019-existing-aks-notebook%"
             },
             "requiredTools": [
               {
@@ -262,8 +277,7 @@
           {
             "wizard": {
               "type": "existing-kubeadm",
-              "notebook": "%bdc-2019-existing-kubeadm-notebook%",
-              "azdata_notebook": "%azdata-bdc-2019-existing-kubeadm-notebook%"
+              "notebook": "%bdc-2019-existing-kubeadm-notebook%"
             },
             "requiredTools": [
               {

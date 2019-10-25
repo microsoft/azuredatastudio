@@ -54,6 +54,10 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		return this._onServerStarted.event;
 	}
 
+	public get jupyterServerInstallation(): JupyterServerInstallation | undefined {
+		return this.options && this.options.jupyterInstallation;
+	}
+
 	public async startServer(): Promise<void> {
 		try {
 			if (!this._jupyterServer) {
@@ -80,6 +84,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 	public async stopServer(): Promise<void> {
 		if (this._jupyterServer) {
 			await this._jupyterServer.stop();
+			this._jupyterServer = undefined;
 		}
 	}
 

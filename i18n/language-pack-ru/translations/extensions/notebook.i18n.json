@@ -8,7 +8,7 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/notebook/package": {
+		"package": {
 			"displayName": "Основные расширения Notebook",
 			"description": "Определяет протокол данных на основе вклада Notebook, а также многие команды и вклады Notebook.",
 			"notebook.configuration.title": "Конфигурация Notebook",
@@ -37,11 +37,11 @@
 			"title.configurePython": "Настройка Python для Записных книжек",
 			"title.managePackages": "Управление пакетами"
 		},
-		"extensions/notebook/out/dialog/managePackages/managePackagesDialog": {
+		"out/dialog/managePackages/managePackagesDialog": {
 			"managePackages.dialogName": "Управление пакетами",
 			"managePackages.cancelButtonText": "Закрыть"
 		},
-		"extensions/notebook/out/dialog/managePackages/installedPackagesTab": {
+		"out/dialog/managePackages/installedPackagesTab": {
 			"managePackages.installedTabTitle": "УСТАНОВЛЕН",
 			"managePackages.pkgNameColumn": "Имя",
 			"managePackages.newPkgVersionColumn": "Версия",
@@ -53,7 +53,7 @@
 			"managePackages.backgroundUninstallComplete": "Завершено удаление для {0}",
 			"managePackages.backgroundUninstallFailed": "Не удалось удалить {0}. Ошибка: {1}"
 		},
-		"extensions/notebook/out/dialog/managePackages/addNewPackageTab": {
+		"out/dialog/managePackages/addNewPackageTab": {
 			"managePackages.invalidTextPlaceholder": "Н/Д",
 			"managePackages.packageNotFound": "Не удалось найти указанный пакет",
 			"managePackages.searchBarPlaceholder": "Поиск пакетов: {0}",
@@ -69,31 +69,31 @@
 			"managePackages.backgroundInstallComplete": "Завершена установка для {0} {1}",
 			"managePackages.backgroundInstallFailed": "Не удалось установить {0} {1}. Ошибка: {2}"
 		},
-		"extensions/notebook/out/protocol/notebookUriHandler": {
+		"out/protocol/notebookUriHandler": {
 			"notebook.unsupportedAction": "Действие {0} не поддерживается для этого обработчика",
 			"unsupportedScheme": "Не удается открыть ссылку {0}, так как поддерживаются только ссылки HTTP и HTTPS",
 			"notebook.confirmOpen": "Скачать и открыть \"{0}\"?",
 			"notebook.fileNotFound": "Не удалось найти указанный файл",
 			"notebook.fileDownloadError": "Запрос на открытие файла завершился с ошибкой: {0} {1}"
 		},
-		"extensions/notebook/out/jupyter/serverInstance": {
+		"out/jupyter/serverInstance": {
 			"serverStopError": "Ошибка при остановке сервера Notebook: {0}",
 			"notebookStartProcessExitPremature": "Процесс Notebook преждевременно завершил работу с ошибкой: {0}, выходные данные StdErr: {1}",
 			"jupyterError": "Ошибка, отправленная из Jupyter: {0}",
 			"jupyterOutputMsgStartSuccessful": "... Jupyter выполняется в {0}",
 			"jupyterOutputMsgStart": "... Выполняется запуск сервера Notebook"
 		},
-		"extensions/notebook/out/jupyter/jupyterSettingWriter": {
+		"out/jupyter/jupyterSettingWriter": {
 			"UnexpectedSettingType": "Непредвиденный тип параметра {0}"
 		},
-		"extensions/notebook/out/jupyter/jupyterSessionManager": {
+		"out/jupyter/jupyterSessionManager": {
 			"errorStartBeforeReady": "Не удается запустить сеанс, диспетчер еще не инициализирован",
 			"connectionNotValid": "Ядрам Spark требуется подключение к главному экземпляру кластера больших данных SQL Server."
 		},
-		"extensions/notebook/out/jupyter/jupyterServerManager": {
+		"out/jupyter/jupyterServerManager": {
 			"shutdownError": "Сбой при завершении работы сервера Notebook: {0}"
 		},
-		"extensions/notebook/out/jupyter/jupyterServerInstallation": {
+		"out/jupyter/jupyterServerInstallation": {
 			"msgInstallPkgProgress": "Выполняется установка зависимостей Notebook",
 			"msgPythonDownloadComplete": "Скачивание Python завершено",
 			"msgPythonDownloadError": "Ошибка при скачивании программы установки Python",
@@ -113,15 +113,15 @@
 			"msgJupyterInstallDone": "... Установка Jupyter завершена.",
 			"msgInstallingSpark": "Установка SparkMagic..."
 		},
-		"extensions/notebook/out/jupyter/jupyterNotebookProvider": {
+		"out/jupyter/jupyterNotebookProvider": {
 			"errNotebookUriMissing": "Требуется путь к записной книжке"
 		},
-		"extensions/notebook/out/jupyter/jupyterController": {
+		"out/jupyter/jupyterController": {
 			"notebookFileType": "Записные книжки",
 			"unsupportedFileType": "Поддерживаются только записные книжки IPYNB",
 			"confirmReinstall": "Вы действительно хотите переустановить?"
 		},
-		"extensions/notebook/out/dialog/configurePythonDialog": {
+		"out/dialog/configurePythonDialog": {
 			"configurePython.dialogName": "Настройка Python для Записных книжек",
 			"configurePython.okButtonText": "Установить",
 			"configurePython.cancelButtonText": "Отмена",
@@ -136,7 +136,7 @@
 			"configurePython.newInstall": "Новая установка Python",
 			"configurePython.existingInstall": "Использовать существующую установку Python"
 		},
-		"extensions/notebook/out/book/bookTreeView": {
+		"out/book/bookTreeView": {
 			"openNotebookError": "Сбой при открытии файла {0}: {1}",
 			"openMarkdownError": "Сбой при открытии файла {0}: {1}",
 			"openExternalLinkError": "Не удалось открыть ссылку {0}: {1}",
@@ -146,16 +146,16 @@
 			"openMarkdownCommand": "Открыть разметку Markdown",
 			"missingFileError": "Отсутствует файл: {0}"
 		},
-		"extensions/notebook/out/common/utils": {
+		"out/common/utils": {
 			"mkdirOutputMsg": "... Создание {0}",
 			"executeCommandProcessExited": "Процесс завершил работу с кодом {0}"
 		},
-		"extensions/notebook/out/common/localizedConstants": {
+		"out/common/localizedConstants": {
 			"msgYes": "Да",
 			"msgNo": "Нет",
 			"msgSampleCodeDataFrame": "Этот пример кода загружает файл в кадр данных и отображает первые 10 результатов."
 		},
-		"extensions/notebook/out/extension": {
+		"out/extension": {
 			"msgSampleCodeDataFrame": "Этот пример кода загружает файл в кадр данных и отображает первые 10 результатов.",
 			"noNotebookVisible": "Нет активного редактора записных книжек",
 			"codeCellName": "Код",

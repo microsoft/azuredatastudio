@@ -200,7 +200,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		// {{SQL CARBON EDIT}}
 		ext.packageBuiltInExtensions();
 
-		const extensions = gulp.src('.build/extensions/**', { base: '.build', dot: true });
+		const extensions = gulp.src(['.build/extensions/**', '!.build/extensions/node_modules/**'], { base: '.build', dot: true }); // {{SQL CARBON EDIT}} - don't package the node_modules directory
 
 		const sources = es.merge(src, extensions)
 			.pipe(filter(['**', '!**/*.js.map'], { dot: true }));
