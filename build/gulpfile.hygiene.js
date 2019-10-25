@@ -415,7 +415,6 @@ function hygiene(some) {
 	const result = input
 		.pipe(fileLengthFilter)
 		.pipe(filelength)
-		.pipe(fileLengthFilter.restore)
 		.pipe(filter(f => !f.stat.isDirectory()))
 		.pipe(productJsonFilter)
 		.pipe(process.env['BUILD_SOURCEVERSION'] ? es.through() : productJson)
