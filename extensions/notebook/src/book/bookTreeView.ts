@@ -221,7 +221,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	private clearAndResetThrottleTimer() {
+	private clearAndResetThrottleTimer(): void {
 		clearTimeout(this._throttleTimer);
 		this._throttleTimer = undefined;
 	}
