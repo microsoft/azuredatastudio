@@ -11,7 +11,6 @@ import { IToolsService } from '../services/toolsService';
 import { getErrorMessage, setEnvironmentVariablesForInstallPaths } from '../utils';
 import { DialogBase } from './dialogBase';
 import { createFlexContainer } from './modelViewUtils';
-import { SemVer, compare } from 'semver';
 
 const localize = nls.loadMessageBundle();
 
@@ -240,14 +239,10 @@ export class ResourceTypePickerDialog extends DialogBase {
 						if (tool.statusDescription !== undefined) {
 							console.warn(localize('deploymentDialog.DetailToolStatusDescription', "Additional status information for tool: '{0}' [ {1} ]. {2}", tool.name, tool.homePage, tool.statusDescription));
 						}
-					} else if (tool.status === ToolStatus.Installed && toolReq.version) {
-						const currentVersion = new SemVer(tool.fullVersion!);
-						const requiredVersion = new SemVer(toolReq.version);
+					} else if (tool.status === ToolStatus.Installed && toolReq.version && !tool.isSameOrNewerThan(toolReq.version)) {
+						minVersionCheckFailed = true;
+						messages.push(localize('deploymentDialog.ToolDoesNotMeetVersionRequirement', "'{0}' [ {1} ] does not meet the minimum version requirement, please uninstall it and restart Azure Data Studio.", tool.displayName, tool.homePage));
 
-						if (compare(currentVersion, requiredVersion) < 0) {
-							minVersionCheckFailed = true;
-							messages.push(localize('deploymentDialog.ToolDoesNotMeetVersionRequirement', "'{0}' [ {1} ] does not meet the minimum version requirement, please uninstall it and restart Azure Data Studio.", tool.displayName, tool.homePage));
-						}
 					}
 					autoInstallRequired = autoInstallRequired || tool.autoInstallRequired;
 					return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || '', toolReq.version || ''];

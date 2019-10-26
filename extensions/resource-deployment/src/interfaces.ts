@@ -246,6 +246,7 @@ export interface ITool {
 	showOutputChannel(preserveFocus?: boolean): void;
 	loadInformation(): Promise<void>;
 	install(): Promise<void>;
+	isSameOrNewerThan(version: string): boolean;
 }
 
 export const enum BdcDeploymentType {
