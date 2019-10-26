@@ -18,17 +18,20 @@ export class AzureResourceDatabaseService implements IAzureResourceService<Azure
 		const databases: AzureResourceDatabase[] = [];
 		const resourceClient = new ResourceGraphClient(credential);
 
+		// Query servers and databases in parallel (start both promises before waiting on the 1st)
+		let serverQueryPromise = queryGraphResources<GraphData>(resourceClient, subscription.id, serversQuery);
+		let dbQueryPromise = queryGraphResources<GraphData>(resourceClient, subscription.id, 'where type == "microsoft.sql/servers/databases"');
+		let servers: DbServerGraphData[] = await serverQueryPromise as DbServerGraphData[];
+		let dbByGraph: DatabaseGraphData[] = await dbQueryPromise as DatabaseGraphData[];
+
 		// Group servers by resource group, then merge DB results with servers so we
 		// can get the login name and server fully qualified name to use for connections
-		let servers = await queryGraphResources<DbServerGraphData>(resourceClient, subscription.id, serversQuery);
 		let rgMap = new Map<string, DbServerGraphData[]>();
 		servers.forEach(s => {
 			let serversForRg = rgMap.get(s.resourceGroup) || [];
 			serversForRg.push(s);
 			rgMap.set(s.resourceGroup, serversForRg);
 		});
-
-		let dbByGraph = await queryGraphResources<DatabaseGraphData>(resourceClient, subscription.id, 'where type == "microsoft.sql/servers/databases"');
 
 		// Match database ID. When calling exec [0] is full match, [1] is resource group name, [2] is server name
 		const svrIdRegExp = new RegExp(`\/subscriptions\/${subscription.id}\/resourceGroups\/(.+)\/providers\/Microsoft\.Sql\/servers\/(.+)\/databases\/.+`);
