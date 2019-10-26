@@ -73,7 +73,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 
 		const selectedSubscriptionQuickPickItems = await window.showQuickPick(subscriptionQuickPickItems, { canPickMany: true });
 		if (selectedSubscriptionQuickPickItems && selectedSubscriptionQuickPickItems.length > 0) {
-			tree.refresh(node, false);
+			await tree.refresh(node, false);
 
 			selectedSubscriptions = selectedSubscriptionQuickPickItems.map((subscriptionItem) => subscriptionItem.subscription);
 			await subscriptionFilterService.saveSelectedSubscriptions(accountNode.account, selectedSubscriptions);
