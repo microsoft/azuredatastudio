@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { EOL } from 'os';
 import { delimiter } from 'path';
-import { SemVer } from 'semver';
+import { SemVer, compare } from 'semver';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { Command, ITool, OsType, ToolStatus, ToolType } from '../../interfaces';
@@ -63,11 +63,11 @@ export abstract class ToolBase implements ITool {
 		return this._onDidUpdateData.event;
 	}
 
-	protected get status(): ToolStatus {
+	get status(): ToolStatus {
 		return this._status;
 	}
 
-	protected set status(value: ToolStatus) {
+	set status(value: ToolStatus) {
 		this._status = value;
 		this._onDidUpdateData.fire(this);
 	}
@@ -268,6 +268,13 @@ export abstract class ToolBase implements ITool {
 		} else {
 			this._installationPath = commandOutput.split(EOL)[0];
 		}
+	}
+
+	isSameOrNewerThan(version: string): boolean {
+		const currentVersion = new SemVer(this.fullVersion!);
+		const requiredVersion = new SemVer(version);
+
+		return compare(currentVersion, requiredVersion) >= 0;
 	}
 
 	private _storagePathEnsured: boolean = false;
