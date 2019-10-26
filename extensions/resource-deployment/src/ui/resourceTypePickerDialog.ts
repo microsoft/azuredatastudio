@@ -15,6 +15,7 @@ import { createFlexContainer } from './modelViewUtils';
 const localize = nls.loadMessageBundle();
 
 export class ResourceTypePickerDialog extends DialogBase {
+	private toolRefreshTimestamp: number = 0;
 	private _selectedResourceType: ResourceType;
 	private _resourceTypeCards: azdata.CardComponent[] = [];
 	private _view!: azdata.ModelView;
@@ -195,6 +196,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	private updateToolsDisplayTable(): void {
+		this.toolRefreshTimestamp = new Date().getTime();
+		const currentRefreshTimestamp = this.toolRefreshTimestamp;
 		this._tools = this.getCurrentProvider().requiredTools.map(toolReq => this.toolsService.getToolByName(toolReq.name)!);
 		const headerRowHeight = 28;
 		this._toolsTable.height = 25 * Math.max(this._tools.length, 1) + headerRowHeight;
@@ -206,12 +209,14 @@ export class ResourceTypePickerDialog extends DialogBase {
 		} else {
 			this._toolsLoadingComponent.loading = true;
 			this._dialogObject.okButton.enabled = false;
-			(async () => {
-				await Promise.all(this._tools.map(async tool => tool.loadInformation()));
-				let autoInstallRequired = this._tools.reduce<boolean>((accumulated, current) => {
-					accumulated = accumulated || current.autoInstallRequired;
-					return accumulated;
-				}, /* initialValue of accumulated */false);
+			Promise.all(
+				this._tools.map(tool => tool.loadInformation())
+			).then(async () => {
+				// If the local timestamp does not match the class level timestamp, it means user has changed options, ignore the results
+				if (this.toolRefreshTimestamp !== currentRefreshTimestamp) {
+					return;
+				}
+				let autoInstallRequired = false;
 				let messages: string[] = [];
 				this._toolsTable.data = this._tools.map(tool => {
 					// subscribe to onUpdateData event of the tool.
@@ -224,6 +229,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 							console.warn(localize('deploymentDialog.DetailToolStatusDescription', "Additional status information for tool: '{0}' [ {1} ]. {2}", tool.name, tool.homePage, tool.statusDescription));
 						}
 					}
+					autoInstallRequired = autoInstallRequired || tool.autoInstallRequired;
 					return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || ''];
 				});
 
@@ -256,7 +262,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 					};
 				}
 				this._toolsLoadingComponent.loading = false;
-			})();
+			});
 		}
 	}
 
