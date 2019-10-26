@@ -46,7 +46,11 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			}
 		}
 
-		let selectedSubscriptions = (await subscriptionFilterService.getSelectedSubscriptions(accountNode.account)) || <azureResource.AzureResourceSubscription[]>[];
+		let selectedSubscriptions = await subscriptionFilterService.getSelectedSubscriptions(accountNode.account);
+		if (!selectedSubscriptions) {
+			selectedSubscriptions = [];
+		}
+
 		const selectedSubscriptionIds: string[] = [];
 		if (selectedSubscriptions.length > 0) {
 			selectedSubscriptionIds.push(...selectedSubscriptions.map((subscription) => subscription.id));
@@ -79,7 +83,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 	appContext.apiWrapper.registerCommand('azure.resource.refreshall', () => tree.notifyNodeChanged(undefined));
 
 	appContext.apiWrapper.registerCommand('azure.resource.refresh', async (node?: TreeNode) => {
-		tree.refresh(node, true);
+		await tree.refresh(node, true);
 	});
 
 	appContext.apiWrapper.registerCommand('azure.resource.signin', async (node?: TreeNode) => {

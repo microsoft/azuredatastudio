@@ -67,7 +67,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 
 	// Create the provider service and activate
-	initAzureAccountProvider(extensionContext, storagePath);
+	initAzureAccountProvider(extensionContext, storagePath).catch((err) => console.log(err));
 
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
