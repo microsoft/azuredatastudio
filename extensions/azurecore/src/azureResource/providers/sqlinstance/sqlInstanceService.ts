@@ -3,25 +3,32 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ServiceClientCredentials as OldSc } from 'ms-rest';
-import { SqlManagementClient } from 'azure-arm-sql';
+import { AzureResourceDatabaseServer } from '../../interfaces';
+import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
 
-import { azureResource } from '../../azure-resource';
-import { IAzureResourceService, AzureResourceDatabaseServer } from '../../interfaces';
+export interface SqlInstanceGraphData extends GraphData {
+	properties: {
+		fullyQualifiedDomainName: string;
+		administratorLogin: string;
+	};
+}
 
-export class SqlInstanceResourceService implements IAzureResourceService<AzureResourceDatabaseServer> {
-	public async getResources(subscription: azureResource.AzureResourceSubscription, credential: OldSc): Promise<AzureResourceDatabaseServer[]> {
-		const databaseServers: AzureResourceDatabaseServer[] = [];
-		const sqlManagementClient = new SqlManagementClient(credential, subscription.id);
-		const svrs = await sqlManagementClient.managedInstances.list();
+const instanceQuery = 'where type == "microsoft.sql/managedinstances"';
 
-		svrs.forEach((svr) => databaseServers.push({
-			name: svr.name,
-			fullName: svr.fullyQualifiedDomainName,
-			loginName: svr.administratorLogin,
+export class SqlInstanceResourceService extends ResourceServiceBase<SqlInstanceGraphData, AzureResourceDatabaseServer> {
+
+	protected get query(): string {
+		return instanceQuery;
+	}
+
+	protected convertResource(resource: SqlInstanceGraphData): AzureResourceDatabaseServer {
+		// TODO: fullName should be updated to use IP/domain name + port
+		return {
+			id: resource.id,
+			name: resource.name,
+			fullName: resource.properties.fullyQualifiedDomainName,
+			loginName: resource.properties.administratorLogin,
 			defaultDatabaseName: 'master'
-		}));
-
-		return databaseServers;
+		};
 	}
 }

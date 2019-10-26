@@ -15,9 +15,9 @@ export interface DbServerGraphData extends GraphData {
 	};
 }
 
-export const serversQuery = 'where type == "microsoft.sql/servers"';
+export const serversQuery = 'where type == "microsoft.dbforpostgresql/servers"';
 
-export class AzureResourceDatabaseServerService extends ResourceServiceBase<DbServerGraphData, AzureResourceDatabaseServer> {
+export class PostgresServerService extends ResourceServiceBase<DbServerGraphData, AzureResourceDatabaseServer> {
 
 	protected get query(): string {
 		return serversQuery;
@@ -30,7 +30,7 @@ export class AzureResourceDatabaseServerService extends ResourceServiceBase<DbSe
 			name: resource.name,
 			fullName: resource.properties.fullyQualifiedDomainName,
 			loginName: resource.properties.administratorLogin,
-			defaultDatabaseName: 'master'
+			defaultDatabaseName: 'postgres'
 		};
 	}
 }
