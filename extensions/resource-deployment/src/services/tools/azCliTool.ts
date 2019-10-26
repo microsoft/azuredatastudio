@@ -7,7 +7,7 @@ import { SemVer } from 'semver';
 import * as nls from 'vscode-nls';
 import { Command, OsType, ToolType } from '../../interfaces';
 import { IPlatformService } from '../platformService';
-import { ToolBase, InformationalMessageType } from './toolBase';
+import { ToolBase, dependencyType } from './toolBase';
 
 const localize = nls.loadMessageBundle();
 const defaultInstallationRoot = '~/.local/bin';
@@ -72,12 +72,11 @@ export class AzCliTool extends ToolBase {
 		};
 	}
 
-	// Additional Informational messages for various OsTypes.
-	protected additionalInformation: Map<OsType, InformationalMessageType[]> = new Map<OsType, InformationalMessageType[]>([
+	protected dependenciesByOsType: Map<OsType, dependencyType[]> = new Map<OsType, dependencyType[]>([
 		[OsType.linux, []],
 		[OsType.win32, []],
-		[OsType.darwin, [InformationalMessageType.Brew]],
-		[OsType.others, [InformationalMessageType.Curl]]
+		[OsType.darwin, [dependencyType.Brew]],
+		[OsType.others, [dependencyType.Curl]]
 	]);
 
 	protected get discoveryCommand(): Command {

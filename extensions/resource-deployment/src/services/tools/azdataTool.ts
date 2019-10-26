@@ -10,7 +10,7 @@ import * as nls from 'vscode-nls';
 import { azdataPipInstallArgsKey, AzdataPipInstallUriKey, DeploymentConfigurationKey } from '../../constants';
 import { Command, OsType, ToolType } from '../../interfaces';
 import { IPlatformService } from '../platformService';
-import { InformationalMessageType, ToolBase } from './toolBase';
+import { dependencyType, ToolBase } from './toolBase';
 
 const localize = nls.loadMessageBundle();
 
@@ -113,12 +113,11 @@ export class AzdataTool extends ToolBase {
 		return vscode.workspace.getConfiguration(DeploymentConfigurationKey)[azdataPipInstallArgsKey];
 	}
 
-	// Additional Informational messages for various OsTypes.
-	protected additionalInformation: Map<OsType, InformationalMessageType[]> = new Map<OsType, InformationalMessageType[]>([
-		[OsType.linux, []],
-		[OsType.win32, [InformationalMessageType.PythonAndPip3]],
-		[OsType.darwin, [InformationalMessageType.PythonAndPip3]],
-		[OsType.others, [InformationalMessageType.PythonAndPip3]]
+	protected dependenciesByOsType: Map<OsType, dependencyType[]> = new Map<OsType, dependencyType[]>([
+		[OsType.linux, [dependencyType.PythonAndPip3]],
+		[OsType.win32, [dependencyType.PythonAndPip3]],
+		[OsType.darwin, [dependencyType.PythonAndPip3]],
+		[OsType.others, [dependencyType.PythonAndPip3]]
 	]);
 }
 

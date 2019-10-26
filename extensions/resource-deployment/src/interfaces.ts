@@ -233,11 +233,12 @@ export interface ITool {
 	readonly type: ToolType;
 	readonly homePage: string;
 	readonly displayStatus: string;
-	readonly informationalMessages: string[];
+	readonly dependencyMessages: string[];
 	readonly statusDescription: string | undefined;
 	readonly autoInstallSupported: boolean;
 	readonly autoInstallRequired: boolean;
 	readonly isNotInstalled: boolean;
+	readonly isInstalled: boolean;
 	readonly installationPath: string;
 	readonly needsInstallation: boolean;
 	readonly outputChannelName: string;
@@ -246,6 +247,7 @@ export interface ITool {
 	showOutputChannel(preserveFocus?: boolean): void;
 	loadInformation(): Promise<void>;
 	install(): Promise<void>;
+	isSameOrNewerThan(version: string): boolean;
 }
 
 export const enum BdcDeploymentType {

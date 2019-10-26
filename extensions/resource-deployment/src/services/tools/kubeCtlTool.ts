@@ -7,7 +7,7 @@ import { Command, ToolType, OsType } from '../../interfaces';
 import * as nls from 'vscode-nls';
 import { SemVer } from 'semver';
 import { IPlatformService } from '../platformService';
-import { ToolBase, InformationalMessageType } from './toolBase';
+import { ToolBase, dependencyType } from './toolBase';
 
 const localize = nls.loadMessageBundle();
 
@@ -76,12 +76,11 @@ export class KubeCtlTool extends ToolBase {
 		[OsType.others, defaultInstallationCommands]
 	]);
 
-	// Additional Informational messages for various OsTypes.
-	protected additionalInformation: Map<OsType, InformationalMessageType[]> = new Map<OsType, InformationalMessageType[]>([
+	protected dependenciesByOsType: Map<OsType, dependencyType[]> = new Map<OsType, dependencyType[]>([
 		[OsType.linux, []],
 		[OsType.win32, []],
-		[OsType.darwin, [InformationalMessageType.Brew]],
-		[OsType.others, [InformationalMessageType.Curl]]
+		[OsType.darwin, [dependencyType.Brew]],
+		[OsType.others, [dependencyType.Curl]]
 	]);
 }
 
