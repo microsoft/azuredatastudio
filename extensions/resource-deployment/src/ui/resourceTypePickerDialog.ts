@@ -5,7 +5,7 @@
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
-import { AgreementInfo, DeploymentProvider, ITool, ResourceType } from '../interfaces';
+import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ToolStatus } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
 import { getErrorMessage, setEnvironmentVariablesForInstallPaths } from '../utils';
@@ -84,10 +84,14 @@ export class ResourceTypePickerDialog extends DialogBase {
 				value: localize('deploymentDialog.toolVersionColumnHeader', "Version"),
 				width: 100
 			};
+			const minVersionColumn: azdata.TableColumn = {
+				value: localize('deploymentDialog.toolMinimumVersionColumnHeader', "Minimum Version"),
+				width: 100
+			};
 
 			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 				data: [],
-				columns: [toolColumn, descriptionColumn, installStatusColumn, versionColumn],
+				columns: [toolColumn, descriptionColumn, installStatusColumn, versionColumn, minVersionColumn],
 				width: tableWidth
 			}).component();
 
@@ -222,6 +226,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 					return;
 				}
 				let autoInstallRequired = false;
+				let minVersionCheckFailed = false;
 				const messages: string[] = [];
 				this._toolsTable.data = toolRequirements.map(toolReq => {
 					const tool = this.toolsService.getToolByName(toolReq.name)!;
@@ -234,19 +239,24 @@ export class ResourceTypePickerDialog extends DialogBase {
 						if (tool.statusDescription !== undefined) {
 							console.warn(localize('deploymentDialog.DetailToolStatusDescription', "Additional status information for tool: '{0}' [ {1} ]. {2}", tool.name, tool.homePage, tool.statusDescription));
 						}
-					}
+					} else if (tool.status === ToolStatus.Installed && toolReq.version && !tool.isSameOrNewerThan(toolReq.version)) {
+						minVersionCheckFailed = true;
+						messages.push(localize('deploymentDialog.ToolDoesNotMeetVersionRequirement', "'{0}' [ {1} ] does not meet the minimum version requirement, please uninstall it and restart Azure Data Studio.", tool.displayName, tool.homePage));
 
-					autoInstallRequired = tool.autoInstallRequired;
-					return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || ''];
+					}
+					autoInstallRequired = autoInstallRequired || tool.autoInstallRequired;
+					return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || '', toolReq.version || ''];
 				});
 
 				this._installToolButton.hidden = !autoInstallRequired;
 				this._dialogObject.okButton.enabled = messages.length === 0 && !autoInstallRequired;
 				if (messages.length !== 0) {
-					messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed by yourself after Azure Data Studio is launched to pick up the updated PATH environment variable. You may find additional details in the debug console by running the 'Toggle Developer Tools' command in the Azure Data Studio Command Palette."));
+					if (!minVersionCheckFailed) {
+						messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed by yourself after Azure Data Studio is launched to pick up the updated PATH environment variable. You may find additional details in the debug console by running the 'Toggle Developer Tools' command in the Azure Data Studio Command Palette."));
+					}
 					this._dialogObject.message = {
 						level: azdata.window.MessageLevel.Error,
-						text: localize('deploymentDialog.ToolCheckFailed', "Some required tools are not installed."),
+						text: localize('deploymentDialog.ToolCheckFailed', "Some required tools are not installed or do not meet the minimum version requirement."),
 						description: messages.join(EOL)
 					};
 				} else if (autoInstallRequired) {
@@ -295,7 +305,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	public updateToolsDisplayTableData(tool: ITool) {
 		this._toolsTable.data = this._toolsTable.data.map(rowData => {
 			if (rowData[0] === tool.displayName) {
-				return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || ''];
+				return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || '', rowData[4]];
 			} else {
 				return rowData;
 			}
