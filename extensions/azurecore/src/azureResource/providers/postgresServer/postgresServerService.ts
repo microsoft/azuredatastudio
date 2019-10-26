@@ -24,7 +24,6 @@ export class PostgresServerService extends ResourceServiceBase<DbServerGraphData
 	}
 
 	protected convertResource(resource: DbServerGraphData): AzureResourceDatabaseServer {
-		// TODO: fullName should be updated to use IP/domain name + port
 		return {
 			id: resource.id,
 			name: resource.name,

@@ -22,7 +22,6 @@ export class SqlInstanceResourceService extends ResourceServiceBase<SqlInstanceG
 	}
 
 	protected convertResource(resource: SqlInstanceGraphData): AzureResourceDatabaseServer {
-		// TODO: fullName should be updated to use IP/domain name + port
 		return {
 			id: resource.id,
 			name: resource.name,
