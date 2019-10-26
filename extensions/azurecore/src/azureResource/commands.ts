@@ -71,7 +71,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			};
 		}).sort((a, b) => a.label.localeCompare(b.label));
 
-		const selectedSubscriptionQuickPickItems = (await window.showQuickPick(subscriptionQuickPickItems, { canPickMany: true }));
+		const selectedSubscriptionQuickPickItems = await window.showQuickPick(subscriptionQuickPickItems, { canPickMany: true });
 		if (selectedSubscriptionQuickPickItems && selectedSubscriptionQuickPickItems.length > 0) {
 			tree.refresh(node, false);
 
