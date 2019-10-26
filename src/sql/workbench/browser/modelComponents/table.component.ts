@@ -264,11 +264,13 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		this.validate();
 	}
 
-	private check(checkInfo: azdata.CheckBoxInfo): void {
-		if (isNullOrUndefined(checkInfo.columnName) || isNullOrUndefined(checkInfo.row)) {
-			return;
-		}
-		this._checkboxColumns[checkInfo.columnName].reactiveCheckboxCheck(checkInfo.row, checkInfo.checked);
+	private check(checkInfos: azdata.CheckBoxInfo[]): void {
+		checkInfos.forEach((checkInfo) => {
+			if (isNullOrUndefined(checkInfo.columnName) || isNullOrUndefined(checkInfo.row) || checkInfo.row < 0 || checkInfo.row > this.data.length) {
+				return;
+			}
+			this._checkboxColumns[checkInfo.columnName].reactiveCheckboxCheck(checkInfo.row, checkInfo.checked);
+		});
 	}
 
 	private createCheckBoxPlugin(col: any, index: number) {
@@ -370,11 +372,11 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		this.setPropertyFromUI<azdata.RadioButtonProperties, boolean>((properties, value) => { properties.focused = value; }, newValue);
 	}
 
-	public get checked(): azdata.CheckBoxInfo {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, azdata.CheckBoxInfo>((props) => props.checked, undefined);
+	public get checked(): azdata.CheckBoxInfo[] {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, azdata.CheckBoxInfo[]>((props) => props.checked, undefined);
 	}
 
-	public set checked(newValue: azdata.CheckBoxInfo) {
-		this.setPropertyFromUI<azdata.TableComponentProperties, azdata.CheckBoxInfo>((properties, value) => { properties.checked = value; }, newValue);
+	public set checked(newValue: azdata.CheckBoxInfo[]) {
+		this.setPropertyFromUI<azdata.TableComponentProperties, azdata.CheckBoxInfo[]>((properties, value) => { properties.checked = value; }, newValue);
 	}
 }

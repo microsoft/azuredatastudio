@@ -1274,11 +1274,11 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		this.setProperty('focused', v);
 	}
 
-	public get checked(): CheckBoxInfo {
+	public get checked(): CheckBoxInfo[] {
 		return this.properties['checked'];
 	}
 
-	public set checked(v: CheckBoxInfo) {
+	public set checked(v: CheckBoxInfo[]) {
 		this.setProperty('checked', v);
 	}
 

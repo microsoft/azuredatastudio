@@ -419,11 +419,13 @@ export class SchemaCompareMainWindow {
 						vscode.window.showWarningMessage(result.errorMessage);
 					}
 
-					// set checkbox back to previous state
-					this.differencesTable.checked = { row: checkboxState.row, columnName: 'Include', checked: !checkboxState.checked };
+
+					// if failed or needs to do something more, call the following or something more
+					let dependencies = [];
+					dependencies.push({ row: checkboxState.row, columnName: 'Include', checked: !checkboxState.checked });
+					this.differencesTable.checked = dependencies;
 				}
-			}
-		}));
+			}));
 	}
 
 	// get the row number of the difference in the table

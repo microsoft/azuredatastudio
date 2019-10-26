@@ -3086,7 +3086,7 @@ declare module 'azdata' {
 		ariaColumnCount?: number;
 		ariaRole?: string;
 		focused?: boolean;
-		checked?: CheckBoxInfo;
+		checked?: CheckBoxInfo[];
 		moveFocusOutWithTab?: boolean; //accessibility requirement for tables with no actionable cells
 	}
 
