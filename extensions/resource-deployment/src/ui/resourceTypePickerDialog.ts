@@ -344,7 +344,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 					// Update the informational message
 					this._dialogObject.message = {
 						level: azdata.window.MessageLevel.Information,
-						text: localize('deploymentDialog.InstallingTool', "Required tool '{0}' [ {1} ] is being installed now.", this._tools[i].displayName, this._tools[i].homePage)
+						text: localize('deploymentDialog.InstallingTool', "Required tool '{0}' [ {1} ] is being installed now.", tool.displayName, tool.homePage)
 					};
 					await this._tools[i].install();
 					if (tool.isInstalled && toolReq.version && !tool.isSameOrNewerThan(toolReq.version)) {
