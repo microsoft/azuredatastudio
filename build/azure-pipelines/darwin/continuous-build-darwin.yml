@@ -25,6 +25,8 @@ steps:
 - script: |
     yarn electron x64
   displayName: Download Electron
+  env:
+    GITHUB_TOKEN: $(GITHUB_TOKEN) # {{SQL CARBON EDIT}} add github token
 - script: |
     yarn gulp hygiene --skip-tslint
   displayName: Run Hygiene Checks

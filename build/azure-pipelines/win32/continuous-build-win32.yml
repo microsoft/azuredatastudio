@@ -29,6 +29,8 @@ steps:
   condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 - powershell: |
     yarn electron
+  env:
+    GITHUB_TOKEN: $(GITHUB_TOKEN) # {{SQL CARBON EDIT}} add github token
 - script: |
     yarn gulp hygiene --skip-tslint
   displayName: Run Hygiene Checks
