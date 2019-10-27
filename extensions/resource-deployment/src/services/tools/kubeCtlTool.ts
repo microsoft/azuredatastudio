@@ -126,7 +126,6 @@ const linuxInstallationCommands = [
 		command: 'apt-get install -y kubectl'
 	}
 ];
-// TODO: Remove dependency on curl on Win32 and use powershell Invoke-WebRequest instead
 const win32InstallationCommands = [
 	{
 		comment: localize('resourceDeployment.Kubectl.DeletePreviousDownloadedKubectl.exe', "deleting previously downloaded kubectl.exe if one exists …"),
