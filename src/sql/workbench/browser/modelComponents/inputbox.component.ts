@@ -22,6 +22,7 @@ import * as nls from 'vs/nls';
 import { inputBackground, inputBorder } from 'vs/platform/theme/common/colorRegistry';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import * as DOM from 'vs/base/browser/dom';
 
 @Component({
 	selector: 'modelview-inputBox',
@@ -78,7 +79,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 						args: this._input.value
 					});
 					if (this.stopEnterPropagation) {
-						e.stopPropagation();
+						DOM.EventHelper.stop(e, true);
 					}
 				}
 			});
@@ -89,7 +90,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 			this._textAreaInput = new InputBox(this._textareaContainer.nativeElement, this.contextViewService, textAreaInputOptions);
 			this.onkeydown(this._textAreaInput.inputElement, (e: StandardKeyboardEvent) => {
 				if (this.tryHandleKeyEvent(e)) {
-					e.stopPropagation();
+					DOM.EventHelper.stop(e, true);
 				}
 				if (e.keyCode === KeyCode.Enter) {
 					this.fireEvent({
@@ -97,7 +98,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 						args: this._textAreaInput.value
 					});
 					if (this.stopEnterPropagation) {
-						e.stopPropagation();
+						DOM.EventHelper.stop(e, true);
 					}
 				}
 				// Else assume that keybinding service handles routing this to a command

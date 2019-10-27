@@ -236,7 +236,7 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 
 			if (showDropDown) {
 				this.showSelectDropDown();
-				dom.EventHelper.stop(e);
+				dom.EventHelper.stop(e, true); // {{SQL CARBON EDIT}} Stop propagation since we've handled it here
 			}
 		}));
 	}
@@ -905,7 +905,7 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 
 	// List exit - active - hide ContextView dropdown, return focus to parent select, fire onDidSelect if change
 	private onEnter(e: StandardKeyboardEvent): void {
-		dom.EventHelper.stop(e);
+		dom.EventHelper.stop(e, true); // {{SQL CARBON EDIT}} Stop propagation since we're handling it here
 
 		// Only fire if selection change
 		if (this.selected !== this._currentSelection) {
