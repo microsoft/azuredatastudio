@@ -3011,6 +3011,10 @@ declare module 'azdata' {
 		 */
 		display?: DisplayType;
 		/**
+		 * Corresponds to the aria-label accessibility attribute for this component
+		 */
+		ariaLabel?: string;
+		/**
 		 * Matches the CSS style key and its available values.
 		 */
 		CSSStyles?: { [key: string]: string };
@@ -3024,7 +3028,6 @@ declare module 'azdata' {
 
 	export interface InputBoxProperties extends ComponentProperties {
 		value?: string;
-		ariaLabel?: string;
 		ariaLive?: string;
 		placeHolder?: string;
 		inputType?: InputBoxInputType;
@@ -3147,7 +3150,6 @@ declare module 'azdata' {
 		values?: string[] | CategoryValue[];
 		editable?: boolean;
 		fireOnTextChange?: boolean;
-		ariaLabel?: string;
 		required?: boolean;
 	}
 
@@ -3226,10 +3228,6 @@ declare module 'azdata' {
 		 * The title for the button. This title will show when hovered over
 		 */
 		title?: string;
-		/**
-		 * The accessibility aria label for this component
-		 */
-		ariaLabel?: string;
 	}
 
 	export interface LoadingComponentProperties {
