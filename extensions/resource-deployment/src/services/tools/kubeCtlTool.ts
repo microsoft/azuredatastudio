@@ -133,7 +133,7 @@ const win32InstallationCommands = [
 	},
 	{
 		comment: localize('resourceDeployment.Kubectl.DownloadingAndInstallingKubectl', "downloading and installing the latest kubectl.exe …"),
-		command: `powershell -Command "& {(New-Object System.Net.WebClient).DownloadFile('https://storage.googleapis.com/kubernetes-release/release/v1.16.2/bin/windows/amd64/kubectl.exe', 'kubectl.exe')}"`
+		command: `powershell -Command "& {$WebClient = New-Object System.Net.WebClient; $Version=$WebClient.DownloadString('https://storage.googleapis.com/kubernetes-release/release/stable.txt').Trim();Write-Output \\\"KubeCtl Version=$Version\\\";$Url=\\\"https://storage.googleapis.com/kubernetes-release/release/$Version/bin/windows/amd64/kubectl.exe\\\"; Write-Output \\\"Downloading file: $Url\\\"; $WebClient.DownloadFile($Url, 'kubectl.exe')}"`
 	}
 ];
 const defaultInstallationCommands = [
