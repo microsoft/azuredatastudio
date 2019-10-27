@@ -138,7 +138,6 @@ const linuxInstallationCommands = [
 		comment: localize('resourceDeployment.Azdata.DownloadAndInstallingSigningKey', "downloading and installing the signing key for azdata …"),
 		command: 'wget -qO- https://packages.microsoft.com/keys/microsoft.asc | apt-key add -'
 	},
-	// Double check with Sean Wells on the current url for azdata corresponding to https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-preview.list)
 	{
 		sudo: true,
 		comment: localize('resourceDeployment.Azdata.AddingAzureCliRepositoryInformation', "adding the azdata repository information …"),
