@@ -263,10 +263,6 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	protected onkeydown(domNode: HTMLElement, listener: (e: IKeyboardEvent) => void): void {
 		this._register(addDisposableListener(domNode, EventType.KEY_DOWN, (e: KeyboardEvent) => listener(new StandardKeyboardEvent(e))));
 	}
-
-	protected onkeyup(domNode: HTMLElement, listener: (e: IKeyboardEvent) => void): void { //
-		this._register(addDisposableListener(domNode, EventType.KEY_UP, (e: KeyboardEvent) => listener(new StandardKeyboardEvent(e))));
-	}
 }
 
 export abstract class ContainerBase<T> extends ComponentBase {
