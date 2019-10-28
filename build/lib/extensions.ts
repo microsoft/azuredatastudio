@@ -236,7 +236,8 @@ const sqlBuiltInExtensions = [
 	'dacpac',
 	'schema-compare',
 	'cms',
-	'query-history'
+	'query-history',
+	'liveshare'
 ];
 
 interface IBuiltInExtension {

@@ -254,7 +254,8 @@
                 "name": "azure-cli"
               },
               {
-                "name": "azdata"
+                "name": "azdata",
+                "version": "15.0.2070"
               }
             ],
             "when": "target=new-aks&&version=bdc2019"

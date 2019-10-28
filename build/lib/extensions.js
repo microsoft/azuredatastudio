@@ -200,7 +200,8 @@ const sqlBuiltInExtensions = [
     'dacpac',
     'schema-compare',
     'cms',
-    'query-history'
+    'query-history',
+    'liveshare'
 ];
 const builtInExtensions = process.env['VSCODE_QUALITY'] === 'stable' ? require('../builtInExtensions.json') : require('../builtInExtensions-insiders.json');
 // {{SQL CARBON EDIT}} - End

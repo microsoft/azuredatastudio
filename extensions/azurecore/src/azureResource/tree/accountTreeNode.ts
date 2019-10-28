@@ -5,11 +5,12 @@
 
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import { Account, NodeInfo, AzureResource } from 'azdata';
-import { TokenCredentials } from 'ms-rest';
-import { AppContext } from '../../appContext';
+import { TokenCredentials } from '@azure/ms-rest-js';
+
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
+import { AppContext } from '../../appContext';
 import { azureResource } from '../azure-resource';
 import { TreeNode } from '../treeNode';
 import { AzureResourceCredentialError } from '../errors';
