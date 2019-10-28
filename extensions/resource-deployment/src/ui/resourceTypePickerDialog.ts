@@ -5,7 +5,7 @@
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
-import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ToolStatus } from '../interfaces';
+import { AgreementInfo, DeploymentProvider, ITool, ResourceType } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
 import { getErrorMessage, setEnvironmentVariablesForInstallPaths } from '../utils';
@@ -70,7 +70,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._agreementContainer = view.modelBuilder.divContainer().component();
 			const toolColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolNameColumnHeader', "Tool"),
-				width: 150
+				width: 70
 			};
 			const descriptionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolDescriptionColumnHeader', "Description"),
@@ -78,15 +78,15 @@ export class ResourceTypePickerDialog extends DialogBase {
 			};
 			const installStatusColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolStatusColumnHeader', "Status"),
-				width: 100
+				width: 70
 			};
 			const versionColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolVersionColumnHeader', "Version"),
-				width: 100
+				value: localize('deploymentDialog.toolVersionColumnHeader', "Installed Version"),
+				width: 90
 			};
 			const minVersionColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolMinimumVersionColumnHeader', "Minimum Version"),
-				width: 100
+				value: localize('deploymentDialog.toolMinimumVersionColumnHeader', "Required Version"),
+				width: 90
 			};
 
 			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
@@ -219,8 +219,9 @@ export class ResourceTypePickerDialog extends DialogBase {
 			});
 			this._toolsLoadingComponent.loading = true;
 			this._dialogObject.okButton.enabled = false;
-
-			Promise.all(this._tools.map(tool => tool.loadInformation())).then(async () => {
+			Promise.all(
+				this._tools.map(tool => tool.loadInformation())
+			).then(async () => {
 				// If the local timestamp does not match the class level timestamp, it means user has changed options, ignore the results
 				if (this.toolRefreshTimestamp !== currentRefreshTimestamp) {
 					return;
@@ -239,10 +240,9 @@ export class ResourceTypePickerDialog extends DialogBase {
 						if (tool.statusDescription !== undefined) {
 							console.warn(localize('deploymentDialog.DetailToolStatusDescription', "Additional status information for tool: '{0}' [ {1} ]. {2}", tool.name, tool.homePage, tool.statusDescription));
 						}
-					} else if (tool.status === ToolStatus.Installed && toolReq.version && !tool.isSameOrNewerThan(toolReq.version)) {
+					} else if (tool.isInstalled && toolReq.version && !tool.isSameOrNewerThan(toolReq.version)) {
 						minVersionCheckFailed = true;
 						messages.push(localize('deploymentDialog.ToolDoesNotMeetVersionRequirement', "'{0}' [ {1} ] does not meet the minimum version requirement, please uninstall it and restart Azure Data Studio.", tool.displayName, tool.homePage));
-
 					}
 					autoInstallRequired = autoInstallRequired || tool.autoInstallRequired;
 					return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || '', toolReq.version || ''];
@@ -260,11 +260,22 @@ export class ResourceTypePickerDialog extends DialogBase {
 						description: messages.join(EOL)
 					};
 				} else if (autoInstallRequired) {
+					let infoText: string[] = [localize('deploymentDialog.InstallToolsHint', "Some required tools are not installed, you can click the \"{0}\" button to install them.", this._installToolButton.label)];
+					const informationalMessagesArray = this._tools.reduce<string[]>((returnArray, currentTool) => {
+						if (currentTool.needsInstallation) {
+							returnArray.push(...currentTool.dependencyMessages);
+						}
+						return returnArray;
+					}, /* initial Value of return array*/[]);
+					const informationalMessagesSet: Set<string> = new Set<string>(informationalMessagesArray);
+					if (informationalMessagesSet.size > 0) {
+						infoText.push(...informationalMessagesSet.values());
+					}
 					// we don't have scenarios that have mixed type of tools
 					// either we don't support auto install: docker, or we support auto install for all required tools
 					this._dialogObject.message = {
-						level: azdata.window.MessageLevel.Information,
-						text: localize('deploymentDialog.InstallToolsHint', "Some required tools are not installed, you can click the \"{0}\" button to install them.", this._installToolButton.label)
+						level: azdata.window.MessageLevel.Warning,
+						text: infoText.join(EOL)
 					};
 				}
 				this._toolsLoadingComponent.loading = false;
@@ -302,7 +313,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this.resourceTypeService.startDeployment(this.getCurrentProvider());
 	}
 
-	public updateToolsDisplayTableData(tool: ITool) {
+	protected updateToolsDisplayTableData(tool: ITool) {
 		this._toolsTable.data = this._toolsTable.data.map(rowData => {
 			if (rowData[0] === tool.displayName) {
 				return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || '', rowData[4]];
@@ -323,16 +334,26 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 	private async installTools(): Promise<void> {
 		this._installToolButton.enabled = false;
-		let i: number = 0;
+		let tool: ITool;
 		try {
-			for (; i < this._tools.length; i++) {
-				if (this._tools[i].needsInstallation) {
+			const toolRequirements = this.getCurrentProvider().requiredTools;
+			for (let i: number = 0; i < toolRequirements.length; i++) {
+				const toolReq = toolRequirements[i];
+				tool = this.toolsService.getToolByName(toolReq.name)!;
+				if (tool.needsInstallation) {
 					// Update the informational message
 					this._dialogObject.message = {
 						level: azdata.window.MessageLevel.Information,
-						text: localize('deploymentDialog.InstallingTool', "Required tool '{0}' [ {1} ] is being installed now.", this._tools[i].displayName, this._tools[i].homePage)
+						text: localize('deploymentDialog.InstallingTool', "Required tool '{0}' [ {1} ] is being installed now.", tool.displayName, tool.homePage)
 					};
 					await this._tools[i].install();
+					if (tool.isInstalled && toolReq.version && !tool.isSameOrNewerThan(toolReq.version)) {
+						throw new Error(
+							localize('deploymentDialog.ToolDoesNotMeetVersionRequirement', "'{0}' [ {1} ] does not meet the minimum version requirement, please uninstall it and restart Azure Data Studio.",
+								tool.displayName, tool.homePage
+							)
+						);
+					}
 				}
 			}
 			// Update the informational message
@@ -342,7 +363,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			};
 			this._dialogObject.okButton.enabled = true;
 		} catch (error) {
-			const errorMessage = this._tools[i].statusDescription || getErrorMessage(error);
+			const errorMessage = tool!.statusDescription || getErrorMessage(error);
 			if (errorMessage) {
 				// Let the tooltip status show the errorMessage just shown so that last status is visible even after showError dialogue has been dismissed.
 				this._dialogObject.message = {
@@ -350,7 +371,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 					text: errorMessage
 				};
 			}
-			this._tools[i].showOutputChannel(/*preserverFocus*/false);
+			tool!.showOutputChannel(/*preserverFocus*/false);
 		}
 	}
 }
