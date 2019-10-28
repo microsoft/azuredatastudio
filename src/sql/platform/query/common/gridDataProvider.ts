@@ -43,8 +43,8 @@ export interface IGridDataProvider {
 }
 
 export async function getResultsString(provider: IGridDataProvider, selection: Slick.Range[], includeHeaders?: boolean): Promise<string> {
-	let headers: Map<Number, string> = new Map(); // Maps a column index -> header
-	let rows: Map<Number, Map<Number, string>> = new Map(); // Maps row index -> column index -> actual row value
+	let headers: Map<number, string> = new Map(); // Maps a column index -> header
+	let rows: Map<number, Map<number, string>> = new Map(); // Maps row index -> column index -> actual row value
 	const eol = provider.getEolString();
 
 	// create a mapping of the ranges to get promises
@@ -95,6 +95,13 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 		}
 		await p;
 	}
+	headers = new Map([...headers].sort(([k1], [k2]): number => {
+		return k1 - k2;
+	}));
+
+	rows = new Map([...rows].sort(([k1], [k2]): number => {
+		return k1 - k2;
+	}));
 
 	let copyString = '';
 	if (includeHeaders) {
@@ -103,7 +110,6 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 
 	const rowKeys = [...headers.keys()].sort();
 
-	rows = new Map([...rows.entries()].sort());
 	for (let rowEntry of rows) {
 		let rowMap = rowEntry[1];
 		for (let rowIdx of rowKeys) {
