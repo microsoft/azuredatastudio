@@ -48,8 +48,8 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 	const eol = provider.getEolString();
 
 	// create a mapping of the ranges to get promises
-	let tasks = selection.map((range, i) => {
-		return async () => {
+	let tasks: (() => Promise<void>)[] = selection.map((range) => {
+		return async (): Promise<void> => {
 			let startCol = range.fromCell;
 			let startRow = range.fromRow;
 
@@ -88,28 +88,24 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 		};
 	});
 
-	if (tasks.length > 0) {
-		let p = tasks[0]();
-		for (let i = 1; i < tasks.length; i++) {
-			p = p.then(tasks[i]);
-		}
-		await p;
-	}
-	headers = new Map([...headers].sort(([k1], [k2]): number => {
-		return k1 - k2;
-	}));
+	// Set the tasks gathered above to execute
+	let actionedTasks: Promise<void>[] = tasks.map(t => { return t(); });
 
-	rows = new Map([...rows].sort(([k1], [k2]): number => {
-		return k1 - k2;
-	}));
+	// Make sure all these tasks have executed
+	await Promise.all(actionedTasks);
+
+	const sortResults = (e1: [number, any], e2: [number, any]) => {
+		return e1[0] - e2[0];
+	};
+	headers = new Map([...headers].sort(sortResults));
+	rows = new Map([...rows].sort(sortResults));
 
 	let copyString = '';
 	if (includeHeaders) {
 		copyString = [...headers.values()].join('\t').concat(eol);
 	}
 
-	const rowKeys = [...headers.keys()].sort();
-
+	const rowKeys = [...headers.keys()];
 	for (let rowEntry of rows) {
 		let rowMap = rowEntry[1];
 		for (let rowIdx of rowKeys) {
