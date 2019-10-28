@@ -334,8 +334,8 @@ export abstract class Modal extends Disposable implements IThemable {
 		// Try to find focusable element in dialog pane rather than overall container. _modalBodySection contains items in the pane for a wizard.
 		// This ensures that we are setting the focus on a useful element in the form when possible.
 		let focusableElements = this._modalBodySection ?
-		this._modalBodySection.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]') :
-		this._bodyContainer.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
+			this._modalBodySection.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]') :
+			this._bodyContainer.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
 
 		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
 
