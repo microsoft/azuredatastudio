@@ -22,6 +22,8 @@ const generateScriptEnabledMessage = localize('schemaCompare.generateScriptEnabl
 const generateScriptNoChangesMessage = localize('schemaCompare.generateScriptNoChanges', "No changes to script");
 const applyEnabledMessage = localize('schemaCompare.applyButtonEnabledTitle', "Apply changes to target");
 const applyNoChangesMessage = localize('schemaCompare.applyNoChanges', "No changes to apply");
+const includeExcludeInfoMessage = localize('schemaCompare.includeExcludeInfoMessage', "Please note that include/exclude operations can take a moment to calculate affected dependencies");
+
 // Do not localize this, this is used to decide the icon for the editor.
 // TODO : In future icon should be decided based on language id (scmp) and not resource name
 const schemaCompareResourceName = 'Schema Compare';
@@ -70,6 +72,7 @@ export class SchemaCompareMainWindow {
 	private scmpSourceExcludes: mssql.SchemaCompareObjectId[];
 	private scmpTargetExcludes: mssql.SchemaCompareObjectId[];
 	private diffEntryRowMap = new Map<string, number>();
+	private showIncludeExcludeWaitingMessage: boolean = true;
 
 	public sourceEndpointInfo: mssql.SchemaCompareEndpointInfo;
 	public targetEndpointInfo: mssql.SchemaCompareEndpointInfo;
@@ -391,8 +394,12 @@ export class SchemaCompareMainWindow {
 		this.tablelistenersToDispose.push(this.differencesTable.onCellAction(async (rowState) => {
 			let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 			if (checkboxState) {
-				this.differencesTable.checked = undefined;
-				this.differencesTable.selectedRows = [checkboxState.row];
+				// show an info notification the first time when trying to exclude to notify the user that it may take some time to calculate affected dependencies
+				if (this.showIncludeExcludeWaitingMessage) {
+					this.showIncludeExcludeWaitingMessage = false;
+					vscode.window.showInformationMessage(includeExcludeInfoMessage);
+				}
+
 				let diff = this.comparisonResult.differences[checkboxState.row];
 				const result = await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, checkboxState.checked, azdata.TaskExecutionMode.execute);
 				let checkboxesToChange = [];
@@ -431,7 +438,9 @@ export class SchemaCompareMainWindow {
 					checkboxesToChange.push({ row: checkboxState.row, columnName: 'Include', checked: !checkboxState.checked });
 				}
 
-				this.differencesTable.checked = checkboxesToChange;
+				if (checkboxesToChange.length > 0) {
+					this.differencesTable.checked = checkboxesToChange;
+				}
 			}
 		}));
 	}
@@ -572,6 +581,7 @@ export class SchemaCompareMainWindow {
 		this.flexModel.removeItem(this.startText);
 		this.flexModel.addItem(this.loader, { CSSStyles: { 'margin-top': '30px' } });
 		this.flexModel.addItem(this.waitText, { CSSStyles: { 'margin-top': '30px', 'align-self': 'center' } });
+		this.showIncludeExcludeWaitingMessage = true;
 		this.diffEditor.updateProperties({
 			contentLeft: os.EOL,
 			contentRight: os.EOL,
