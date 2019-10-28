@@ -21,6 +21,4 @@ define(["require", "exports"], function (require) {
 	require.__$__nodeRequire('zone.js');
 	require.__$__nodeRequire('zone.js/dist/zone-error');
 	require.__$__nodeRequire('chart.js');
-
-	window["Zone"]["__zone_symbol__ignoreConsoleErrorUncaughtError"] = true;
 });
