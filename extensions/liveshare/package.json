@@ -10,6 +10,10 @@
     "vscode": "*"
   },
   "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
   "extensionDependencies": [
     "vscode.sql"
   ],
