@@ -22,8 +22,6 @@ const generateScriptEnabledMessage = localize('schemaCompare.generateScriptEnabl
 const generateScriptNoChangesMessage = localize('schemaCompare.generateScriptNoChanges', "No changes to script");
 const applyEnabledMessage = localize('schemaCompare.applyButtonEnabledTitle', "Apply changes to target");
 const applyNoChangesMessage = localize('schemaCompare.applyNoChanges', "No changes to apply");
-const cannotExcludeMessage = localize('schemaCompare.cannotExcludeMessage', "Cannot exclude. Included dependents exist such as ");
-const cannotIncludeMessage = localize('schemaCompare.cannotIncludeMessage', "Cannot include. Excluded dependents exist such as ");
 // Do not localize this, this is used to decide the icon for the editor.
 // TODO : In future icon should be decided based on language id (scmp) and not resource name
 const schemaCompareResourceName = 'Schema Compare';
@@ -391,6 +389,7 @@ export class SchemaCompareMainWindow {
 				this.differencesTable.selectedRows = [checkboxState.row];
 				let diff = this.comparisonResult.differences[checkboxState.row];
 				const result = await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, checkboxState.checked, azdata.TaskExecutionMode.execute);
+				let checkboxesToChange = [];
 				if (result.success) {
 					this.saveExcludeState(checkboxState);
 
@@ -399,7 +398,7 @@ export class SchemaCompareMainWindow {
 						// find the row of the difference and set it's checkbox
 						const row = this.findDifferenceRow(difference);
 						if (row !== -1) {
-							this.differencesTable.checked = { row: row, columnName: 'Include', checked: difference.included };
+							checkboxesToChange.push({ row: row, columnName: 'Include', checked: difference.included });
 							const dependencyCheckBoxState: azdata.ICheckboxCellActionEventArgs = {
 								checked: difference.included,
 								row: row,
@@ -414,18 +413,20 @@ export class SchemaCompareMainWindow {
 					if (result.blockingDependencies) {
 						// show the first dependent that caused this to fail in the warning message
 						const firstDependentName = this.createName(result.blockingDependencies[0].sourceValue ? result.blockingDependencies[0].sourceValue : result.blockingDependencies[0].targetValue);
-						vscode.window.showWarningMessage(checkboxState.checked ? cannotIncludeMessage + firstDependentName : cannotExcludeMessage + firstDependentName);
+						const cannotExcludeMessage = localize('schemaCompare.cannotExcludeMessage', "Cannot exclude. Included dependents exist such as {0}", firstDependentName);
+						const cannotIncludeMessage = localize('schemaCompare.cannotIncludeMessage', "Cannot include. Excluded dependents exist such as {0}", firstDependentName);
+						vscode.window.showWarningMessage(checkboxState.checked ? cannotIncludeMessage : cannotExcludeMessage);
 					} else {
 						vscode.window.showWarningMessage(result.errorMessage);
 					}
 
-
-					// if failed or needs to do something more, call the following or something more
-					let dependencies = [];
-					dependencies.push({ row: checkboxState.row, columnName: 'Include', checked: !checkboxState.checked });
-					this.differencesTable.checked = dependencies;
+					// set checkbox back to previous state
+					checkboxesToChange.push({ row: checkboxState.row, columnName: 'Include', checked: !checkboxState.checked });
 				}
-			}));
+
+				this.differencesTable.checked = checkboxesToChange;
+			}
+		}));
 	}
 
 	// get the row number of the difference in the table
