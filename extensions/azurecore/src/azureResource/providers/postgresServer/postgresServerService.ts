@@ -3,31 +3,33 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureResourceDatabaseServer } from '../../interfaces';
-import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
 
-export interface SqlInstanceGraphData extends GraphData {
+import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
+import { AzureResourceDatabaseServer } from '../../interfaces';
+
+
+export interface DbServerGraphData extends GraphData {
 	properties: {
 		fullyQualifiedDomainName: string;
 		administratorLogin: string;
 	};
 }
 
-const instanceQuery = 'where type == "microsoft.sql/managedinstances"';
+export const serversQuery = 'where type == "microsoft.dbforpostgresql/servers"';
 
-export class SqlInstanceResourceService extends ResourceServiceBase<SqlInstanceGraphData, AzureResourceDatabaseServer> {
+export class PostgresServerService extends ResourceServiceBase<DbServerGraphData, AzureResourceDatabaseServer> {
 
 	protected get query(): string {
-		return instanceQuery;
+		return serversQuery;
 	}
 
-	protected convertResource(resource: SqlInstanceGraphData): AzureResourceDatabaseServer {
+	protected convertResource(resource: DbServerGraphData): AzureResourceDatabaseServer {
 		return {
 			id: resource.id,
 			name: resource.name,
 			fullName: resource.properties.fullyQualifiedDomainName,
 			loginName: resource.properties.administratorLogin,
-			defaultDatabaseName: 'master'
+			defaultDatabaseName: 'postgres'
 		};
 	}
 }
