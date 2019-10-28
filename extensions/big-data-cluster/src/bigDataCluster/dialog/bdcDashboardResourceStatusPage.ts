@@ -199,6 +199,7 @@ function createInstanceHealthStatusRow(modelBuilder: azdata.ModelBuilder, instan
  * Creates a row with the name, link to the metrics and a link to the logs for a particular instance on this resource
  * @param modelBuilder The builder used to create the component
  * @param instanceStatus The status object for the instance this row is for
+ * @param serviceName The name of the service this resource instance belongs to
  */
 function createMetricsAndLogsRow(modelBuilder: azdata.ModelBuilder, instanceStatus: InstanceStatusModel, serviceName: string): azdata.FlexContainer {
 	const metricsAndLogsRow = modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center', height: '30px' }).component();
