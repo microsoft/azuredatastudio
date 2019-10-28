@@ -69,6 +69,7 @@ export class SchemaCompareMainWindow {
 	private targetName: string;
 	private scmpSourceExcludes: mssql.SchemaCompareObjectId[];
 	private scmpTargetExcludes: mssql.SchemaCompareObjectId[];
+	private diffEntryRowMap = new Map<string, number>();
 
 	public sourceEndpointInfo: mssql.SchemaCompareEndpointInfo;
 	public targetEndpointInfo: mssql.SchemaCompareEndpointInfo;
@@ -342,6 +343,11 @@ export class SchemaCompareMainWindow {
 		if (this.comparisonResult.differences.length > 0) {
 			this.flexModel.addItem(this.splitView);
 
+			// create a map of the differences to row numbers
+			for (let i = 0; i < data.length; ++i) {
+				this.diffEntryRowMap[this.createDiffEntryKey(this.comparisonResult.differences[i])] = i;
+			}
+
 			// only enable generate script button if the target is a db
 			if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
 				this.generateScriptButton.enabled = true;
@@ -396,7 +402,7 @@ export class SchemaCompareMainWindow {
 					// depencies could have been included or excluded as a result, so save their exclude states
 					result.affectedDependencies.forEach(difference => {
 						// find the row of the difference and set it's checkbox
-						const row = this.findDifferenceRow(difference);
+						const row = this.diffEntryRowMap[this.createDiffEntryKey(difference)];
 						if (row !== -1) {
 							checkboxesToChange.push({ row: row, columnName: 'Include', checked: difference.included });
 							const dependencyCheckBoxState: azdata.ICheckboxCellActionEventArgs = {
@@ -539,6 +545,10 @@ export class SchemaCompareMainWindow {
 			return '';
 		}
 		return nameParts.join('.');
+	}
+
+	private createDiffEntryKey(entry: mssql.DiffEntry): string {
+		return `${this.createName(entry.sourceValue)}_${this.createName(entry.targetValue)}_${entry.updateAction}_${entry.name}`;
 	}
 
 	private getFormattedScript(diffEntry: mssql.DiffEntry, getSourceScript: boolean): string {
