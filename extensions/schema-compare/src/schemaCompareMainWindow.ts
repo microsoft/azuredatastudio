@@ -345,7 +345,7 @@ export class SchemaCompareMainWindow {
 
 			// create a map of the differences to row numbers
 			for (let i = 0; i < data.length; ++i) {
-				this.diffEntryRowMap[this.createDiffEntryKey(this.comparisonResult.differences[i])] = i;
+				this.diffEntryRowMap.set(this.createDiffEntryKey(this.comparisonResult.differences[i]), i);
 			}
 
 			// only enable generate script button if the target is a db
@@ -402,8 +402,9 @@ export class SchemaCompareMainWindow {
 					// depencies could have been included or excluded as a result, so save their exclude states
 					result.affectedDependencies.forEach(difference => {
 						// find the row of the difference and set it's checkbox
-						const row = this.diffEntryRowMap[this.createDiffEntryKey(difference)];
-						if (row !== -1) {
+						const diffEntryKey = this.createDiffEntryKey(difference);
+						if (this.diffEntryRowMap.has(diffEntryKey)) {
+							const row = this.diffEntryRowMap.get(diffEntryKey);
 							checkboxesToChange.push({ row: row, columnName: 'Include', checked: difference.included });
 							const dependencyCheckBoxState: azdata.ICheckboxCellActionEventArgs = {
 								checked: difference.included,
@@ -433,20 +434,6 @@ export class SchemaCompareMainWindow {
 				this.differencesTable.checked = checkboxesToChange;
 			}
 		}));
-	}
-
-	// get the row number of the difference in the table
-	private findDifferenceRow(difference: mssql.DiffEntry): number {
-		for (let i = 0; i < this.comparisonResult.differences.length; i++) {
-			if (this.comparisonResult.differences[i].differenceType === difference.differenceType
-				&& this.comparisonResult.differences[i].name === difference.name
-				&& this.createName(this.comparisonResult.differences[i].sourceValue) === this.createName(difference.sourceValue)
-				&& this.createName(this.comparisonResult.differences[i].targetValue) === this.createName(difference.targetValue)) {
-				return i;
-			}
-		}
-
-		return -1;
 	}
 
 	// save state based on source name if present otherwise target name (parity with SSDT)
