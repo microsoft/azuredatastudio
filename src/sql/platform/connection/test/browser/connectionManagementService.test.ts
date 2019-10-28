@@ -593,8 +593,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		};
 
 		connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack).then(result => {
-			assert.equal(result.connected, expectedConnection);
-			assert.equal(result.errorMessage, connectionResult.errorMessage);
+			assert.equal(result, undefined);
 			verifyShowFirewallRuleDialog(connectionProfile, true);
 			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, true, connectionResult, false);
 			done();

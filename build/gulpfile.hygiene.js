@@ -197,7 +197,33 @@ const tslintBaseFilter = [
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts' // {{SQL CARBON EDIT}},
 ];
 
-const sqlFilter = ['src/sql/**']; // {{SQL CARBON EDIT}}
+// {{SQL CARBON EDIT}}
+const sqlFilter = [
+	'src/sql/**',
+	'extensions/**',
+	// Ignore VS Code extensions
+	'!extensions/bat/**',
+	'!extensions/configuration-editing/**',
+	'!extensions/docker/**',
+	'!extensions/extension-editing/**',
+	'!extensions/git/**',
+	'!extensions/git-ui/**',
+	'!extensions/image-preview/**',
+	'!extensions/insights-default/**',
+	'!extensions/json/**',
+	'!extensions/json-language-features/**',
+	'!extensions/markdown-basics/**',
+	'!extensions/markdown-language-features/**',
+	'!extensions/merge-conflict/**',
+	'!extensions/powershell/**',
+	'!extensions/python/**',
+	'!extensions/r/**',
+	'!extensions/theme-*/**',
+	'!extensions/vscode-*/**',
+	'!extensions/xml/**',
+	'!extensions/xml-language-features/**',
+	'!extensions/yarml/**',
+];
 
 const tslintCoreFilter = [
 	'src/**/*.ts',
@@ -222,6 +248,12 @@ const tslintHygieneFilter = [
 	'extensions/**/*.ts',
 	...tslintBaseFilter
 ];
+
+const fileLengthFilter = filter([
+	'**',
+	'!extensions/import/*.docx',
+	'!extensions/admin-tool-ext-win/license/**'
+], {restore: true});
 
 const copyrightHeaderLines = [
 	'/*---------------------------------------------------------------------------------------------',
@@ -361,6 +393,23 @@ function hygiene(some) {
 		});
 	});
 
+	const filelength = es.through(function (file) {
+
+		const fileName = path.basename(file.relative);
+		const fileDir = path.dirname(file.relative);
+		//check the filename is < 50 characters (basename gets the filename with extension).
+		if (fileName.length > 50) {
+			console.error(`File name '${fileName}' under ${fileDir} is too long. Rename file to have less than 50 characters.`);
+			errorCount++;
+		}
+		if (file.relative.length > 150) {
+			console.error(`File path ${file.relative} exceeds acceptable file-length. Rename the path to have less than 150 characters.`);
+			errorCount++;
+		}
+
+		this.emit('data', file);
+	});
+
 	const tslintConfiguration = tslint.Configuration.findConfiguration('tslint.json', '.');
 	const tslintOptions = { fix: false, formatter: 'json' };
 	const tsLinter = new tslint.Linter(tslintOptions);
@@ -379,6 +428,7 @@ function hygiene(some) {
 		input = some;
 	}
 
+	// {{SQL CARBON EDIT}} Linting for SQL
 	const tslintSqlConfiguration = tslint.Configuration.findConfiguration('tslint-sql.json', '.');
 	const tslintSqlOptions = { fix: false, formatter: 'json' };
 	const sqlTsLinter = new tslint.Linter(tslintSqlOptions);
@@ -391,6 +441,9 @@ function hygiene(some) {
 	const productJsonFilter = filter('product.json', { restore: true });
 
 	const result = input
+		.pipe(fileLengthFilter)
+		.pipe(filelength)
+		.pipe(fileLengthFilter.restore)
 		.pipe(filter(f => !f.stat.isDirectory()))
 		.pipe(productJsonFilter)
 		.pipe(process.env['BUILD_SOURCEVERSION'] ? es.through() : productJson)
@@ -407,8 +460,8 @@ function hygiene(some) {
 	if (!process.argv.some(arg => arg === '--skip-tslint')) {
 		typescript = typescript.pipe(tsl);
 		typescript = typescript
-			.pipe(filter(sqlFilter))
-			.pipe(sqlTsl); // {{SQL CARBON EDIT}}
+			.pipe(filter(sqlFilter)) // {{SQL CARBON EDIT}}
+			.pipe(sqlTsl);
 	}
 
 	const javascript = result

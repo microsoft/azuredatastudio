@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ClusterController } from '../controller/clusterControllerApi';
 import { EndpointModel, BdcStatusModel } from '../controller/apiGenerated';
-import { showErrorMessage, Endpoint } from '../utils';
+import { showErrorMessage, Endpoint, Service } from '../utils';
 import { AuthType } from '../constants';
 
 export type BdcDashboardOptions = { url: string, auth: AuthType, username: string, password: string };
@@ -92,6 +92,30 @@ export class BdcDashboardModel {
 			options: {}
 		};
 	}
+}
+
+/**
+ * Retrieves the troubleshoot book URL for the specified service, defaulting to the BDC
+ * troubleshoot notebook if the service name is unknown.
+ * @param service The service name to get the troubleshoot notebook URL for
+ */
+export function getTroubleshootNotebookUrl(service?: string): string {
+	service = service || '';
+	switch (service.toLowerCase()) {
+		case Service.sql:
+			return 'troubleshooters/tsg101-troubleshoot-sql-server';
+		case Service.hdfs:
+			return 'troubleshooters/tsg102-troubleshoot-hdfs';
+		case Service.spark:
+			return 'troubleshooters/tsg103-troubleshoot-spark';
+		case Service.control:
+			return 'troubleshooters/tsg104-troubleshoot-control';
+		case Service.gateway:
+			return 'troubleshooters/tsg105-troubleshoot-gateway';
+		case Service.app:
+			return 'troubleshooters/tsg106-troubleshoot-app';
+	}
+	return 'troubleshooters/tsg100-troubleshoot-bdc';
 }
 
 /**

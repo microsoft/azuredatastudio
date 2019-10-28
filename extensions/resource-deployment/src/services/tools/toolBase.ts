@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { EOL } from 'os';
 import { delimiter } from 'path';
-import { SemVer } from 'semver';
+import { SemVer, compare } from 'semver';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { Command, ITool, OsType, ToolStatus, ToolType } from '../../interfaces';
@@ -14,7 +14,7 @@ import { IPlatformService } from '../platformService';
 const localize = nls.loadMessageBundle();
 const toolStatusNotInstalled: string = localize('deploymentDialog.ToolStatus.NotInstalled', "Not Installed");
 const toolStatusInstalled: string = localize('deploymentDialog.ToolStatus.Installed', "Installed");
-const toolStatusInstalling: string = localize('deploymentDialog.ToolStatus.NotInstalling', "Installing ...");
+const toolStatusInstalling: string = localize('deploymentDialog.ToolStatus.Installing', "Installing…");
 const toolStatusError: string = localize('deploymentDialog.ToolStatus.Error', "Error");
 const toolStatusFailed: string = localize('deploymentDialog.ToolStatus.Failed', "Failed");
 
@@ -24,6 +24,22 @@ const toolStatusLocalized: Map<ToolStatus, string> = new Map<ToolStatus, string>
 	[ToolStatus.Installing, toolStatusInstalling],
 	[ToolStatus.NotInstalled, toolStatusNotInstalled],
 	[ToolStatus.Failed, toolStatusFailed]
+]);
+
+export const enum dependencyType {
+	PythonAndPip3 = 'PythonAndPip3',
+	Brew = 'Brew',
+	Curl = 'Curl'
+}
+
+const pythonAndPip3Localized = localize('deploymentDialog.ToolInformationalMessage.PythonAndPip3', "•	azdata installation needs python3 and pip3 to be pre-installed before necessary tools can be deployed");
+const brewLocalized = localize('deploymentDialog.ToolInformationalMessage.Brew', "•	brew is needed for deployment of the tools and needs to be pre-installed before necessary tools can be deployed");
+const curlLocalized = localize('deploymentDialog.ToolInformationalMessage.Curl', "•	curl is needed for installation and needs to be pre-installed before necessary tools can be deployed");
+
+export const messageByDependencyType: Map<dependencyType, string> = new Map<dependencyType, string>([
+	[dependencyType.PythonAndPip3, pythonAndPip3Localized],
+	[dependencyType.Brew, brewLocalized],
+	[dependencyType.Curl, curlLocalized]
 ]);
 
 export abstract class ToolBase implements ITool {
@@ -37,21 +53,27 @@ export abstract class ToolBase implements ITool {
 	abstract type: ToolType;
 	abstract homePage: string;
 	abstract autoInstallSupported: boolean;
-	abstract readonly allInstallationCommands: Map<OsType, Command[]>;
+	protected abstract readonly allInstallationCommands: Map<OsType, Command[]>;
+	protected readonly dependenciesByOsType: Map<OsType, dependencyType[]> = new Map<OsType, dependencyType[]>();
 
 	protected abstract getVersionFromOutput(output: string): SemVer | undefined;
 	protected readonly _onDidUpdateData = new vscode.EventEmitter<ITool>();
 	protected readonly uninstallCommand?: string;
 
-
 	protected abstract readonly versionCommand: Command;
+
+	public get dependencyMessages(): string[] {
+		return (this.dependenciesByOsType.get(this.osType) || []).map((msgType: dependencyType) => messageByDependencyType.get(msgType)!);
+	}
 
 	protected async getInstallationPath(): Promise<string | undefined> {
 		return undefined;
 	}
 
-	protected get installationSearchPaths(): (string | undefined)[] {
-		return [this.storagePath];
+	protected abstract readonly discoveryCommand: Command;
+
+	protected async getSearchPaths(): Promise<string[]> {
+		return [];
 	}
 
 	protected get downloadPath(): string {
@@ -85,6 +107,10 @@ export abstract class ToolBase implements ITool {
 
 	public get isNotInstalled(): boolean {
 		return this.status === ToolStatus.NotInstalled;
+	}
+
+	public get isInstalled(): boolean {
+		return this.status === ToolStatus.Installed;
 	}
 
 	public get isInstalling(): boolean {
@@ -126,6 +152,9 @@ export abstract class ToolBase implements ITool {
 		return this._statusDescription;
 	}
 
+	public get installationPath(): string {
+		return this._installationPath;
+	}
 	protected get installationCommands(): Command[] | undefined {
 		return this.allInstallationCommands.get(this.osType);
 	}
@@ -154,6 +183,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	public async install(): Promise<void> {
+		this._statusDescription = '';
 		try {
 			this.status = ToolStatus.Installing;
 			await this.installCore();
@@ -165,6 +195,7 @@ export abstract class ToolBase implements ITool {
 			this.status = ToolStatus.Error;
 			throw error;
 		}
+
 		// Since we just completed installation, the status should be ToolStatus.Installed
 		// but if it is ToolStatus.NotInstalled then it means that installation failed with 0 exit code.
 		if (this.status === ToolStatus.NotInstalled) {
@@ -197,28 +228,30 @@ export abstract class ToolBase implements ITool {
 	}
 
 	protected async addInstallationSearchPathsToSystemPath(): Promise<void> {
-		const installationPath = await this.getInstallationPath();
-		const searchPaths = [installationPath, ...this.installationSearchPaths].filter(path => !!path);
+		const searchPaths = [...await this.getSearchPaths(), this.storagePath].filter(path => !!path);
 		this.logToOutputChannel(localize('toolBase.addInstallationSearchPathsToSystemPath.SearchPaths', "Search Paths for tool '{0}': {1}", this.displayName, JSON.stringify(searchPaths, undefined, '\t'))); //this.displayName is localized and searchPaths are OS filesystem paths.
-		searchPaths.forEach(installationSearchPath => {
+		searchPaths.forEach(searchPath => {
 			if (process.env.PATH) {
-				if (!`${delimiter}${process.env.PATH}${delimiter}`.includes(`${delimiter}${installationSearchPath}${delimiter}`)) {
-					process.env.PATH += `${delimiter}${installationSearchPath}`;
-					console.log(`Appending to Path -> ${delimiter}${installationSearchPath}`);
+				if (!`${delimiter}${process.env.PATH}${delimiter}`.includes(`${delimiter}${searchPath}${delimiter}`)) {
+					process.env.PATH += `${delimiter}${searchPath}`;
+					console.log(`Appending to Path -> '${delimiter}${searchPath}'`);
 				}
 			} else {
-				process.env.PATH = installationSearchPath;
-				console.log(`Appending to Path -> '${delimiter}${installationSearchPath}':${delimiter}${installationSearchPath}`);
+				process.env.PATH = searchPath;
+				console.log(`Setting PATH to -> '${searchPath}'`);
 			}
 		});
 	}
+
 	public async loadInformation(): Promise<void> {
 		if (this.status === ToolStatus.NotInstalled) {
 			await this.addInstallationSearchPathsToSystemPath();
 			this.status = await this.updateVersionAndGetStatus();
 		}
 	}
+
 	private async updateVersionAndGetStatus(): Promise<ToolStatus> {
+		this._statusDescription = '';
 		const commandOutput = await this._platformService.runCommand(
 			this.versionCommand.command,
 			{
@@ -230,6 +263,8 @@ export abstract class ToolBase implements ITool {
 		);
 		this.version = this.getVersionFromOutput(commandOutput);
 		if (this.version) {
+			// discover and set the installationPath
+			await this.setInstallationPath();
 			return ToolStatus.Installed;
 		}
 		else {
@@ -238,10 +273,43 @@ export abstract class ToolBase implements ITool {
 		}
 	}
 
+	protected discoveryCommandString(toolBinary: string) {
+		switch (this.osType) {
+			case OsType.win32:
+				return `where.exe  ${toolBinary}`;
+			case OsType.darwin:
+				return `command -v ${toolBinary}`;
+			default:
+				return `which ${toolBinary}`;
+		}
+	}
+
+	protected async setInstallationPath() {
+		const commandOutput = await this._platformService.runCommand(
+			this.discoveryCommand.command,
+			{
+				workingDirectory: this.discoveryCommand.workingDirectory,
+				additionalEnvironmentVariables: this.discoveryCommand.additionalEnvironmentVariables,
+				sudo: false,
+				ignoreError: false
+			},
+		);
+		if (!commandOutput) {
+			throw new Error(`Install location of tool:'${this.displayName}' could not be discovered`);
+		} else {
+			this._installationPath = commandOutput.split(EOL)[0];
+		}
+	}
+
+	isSameOrNewerThan(version: string): boolean {
+		return this._version ? compare(this._version, new SemVer(version)) >= 0 : false;
+	}
+
 	private _storagePathEnsured: boolean = false;
 	private _status: ToolStatus = ToolStatus.NotInstalled;
 	private _osType: OsType;
 	private _version?: SemVer;
 	private _statusDescription?: string;
+	private _installationPath!: string;
 
 }

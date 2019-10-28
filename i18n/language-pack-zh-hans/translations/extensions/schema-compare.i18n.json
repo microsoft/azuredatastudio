@@ -8,12 +8,12 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/schema-compare/package": {
+		"package": {
 			"displayName": "SQL Server 架构比较",
 			"description": "Azure Data Studio 的 SQL Server 架构比较支持对数据库和 dacpacs 的架构进行比较。",
 			"schemaCompare.start": "架构比较"
 		},
-		"extensions/schema-compare/out/dialogs/schemaCompareOptionsDialog": {
+		"out/dialogs/schemaCompareOptionsDialog": {
 			"SchemaCompareOptionsDialog.Ok": "确定",
 			"SchemaCompareOptionsDialog.Cancel": "取消",
 			"SchemaCompareOptionsDialog.Reset": "重置",
@@ -242,7 +242,7 @@
 			"SchemaCompare.Description.DropObjectsNotInSource": "指定当您发布到某个数据库时，是否从目标数据库中删除不存在于数据库屏幕快照(.dacpac)文件中的对象。此值优先于 DropExtendedProperties。",
 			"SchemaCompare.Description.IgnoreColumnOrder": "指定在发布到数据库时，是否应忽略或更新表列顺序中的差异。"
 		},
-		"extensions/schema-compare/out/dialogs/schemaCompareDialog": {
+		"out/dialogs/schemaCompareDialog": {
 			"schemaCompareDialog.ok": "确定",
 			"schemaCompareDialog.cancel": "取消",
 			"schemaCompareDialog.SourceTitle": "SOURCE",
@@ -263,7 +263,7 @@
 			"schemaCompare.openFile": "打开",
 			"schemaCompareDialog.defaultUser": "默认值"
 		},
-		"extensions/schema-compare/out/schemaCompareMainWindow": {
+		"out/schemaCompareMainWindow": {
 			"schemaCompare.CompareDetailsTitle": "比较详细信息",
 			"schemaCompare.ApplyConfirmation": "确定要更新目标吗?",
 			"schemaCompare.RecompareToRefresh": "按“比较”以刷新比较结果。",

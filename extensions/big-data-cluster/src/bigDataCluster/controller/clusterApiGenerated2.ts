@@ -383,7 +383,7 @@ export class AppRouterApi {
 	* @param version
 	* @param {*} [options] Override http request options.
 	*/
-	public apiV1AppByNameAndVersionDelete(name: string, version: string, options: any = {}): Promise<{ response: http.ClientResponse; body?: any; }> {
+	public apiV1AppByNameAndVersionDelete(name: string, version: string, options: any = {}): Promise<{ response: http.IncomingMessage; body?: any; }> {
 		const localVarPath = this.basePath + '/api/v1/app/{name}/{version}'
 			.replace('{' + 'name' + '}', encodeURIComponent(String(name)))
 			.replace('{' + 'version' + '}', encodeURIComponent(String(version)));
@@ -425,7 +425,7 @@ export class AppRouterApi {
 				localVarRequestOptions.form = localVarFormParams;
 			}
 		}
-		return new Promise<{ response: http.ClientResponse; body?: any; }>((resolve, reject) => {
+		return new Promise<{ response: http.IncomingMessage; body?: any; }>((resolve, reject) => {
 			localVarRequest(localVarRequestOptions, (error, response, body) => {
 				if (error) {
 					reject(error);
@@ -446,7 +446,7 @@ export class AppRouterApi {
 	* @param version
 	* @param {*} [options] Override http request options.
 	*/
-	public apiV1AppByNameAndVersionGet(name: string, version: string, options: any = {}): Promise<{ response: http.ClientResponse; body: AppModel; }> {
+	public apiV1AppByNameAndVersionGet(name: string, version: string, options: any = {}): Promise<{ response: http.IncomingMessage; body: AppModel; }> {
 		const localVarPath = this.basePath + '/api/v1/app/{name}/{version}'
 			.replace('{' + 'name' + '}', encodeURIComponent(String(name)))
 			.replace('{' + 'version' + '}', encodeURIComponent(String(version)));
@@ -488,7 +488,7 @@ export class AppRouterApi {
 				localVarRequestOptions.form = localVarFormParams;
 			}
 		}
-		return new Promise<{ response: http.ClientResponse; body: AppModel; }>((resolve, reject) => {
+		return new Promise<{ response: http.IncomingMessage; body: AppModel; }>((resolve, reject) => {
 			localVarRequest(localVarRequestOptions, (error, response, body) => {
 				if (error) {
 					reject(error);
@@ -509,7 +509,7 @@ export class AppRouterApi {
 	* @param name
 	* @param {*} [options] Override http request options.
 	*/
-	public apiV1AppByNameGet(name: string, options: any = {}): Promise<{ response: http.ClientResponse; body: Array<AppModel>; }> {
+	public apiV1AppByNameGet(name: string, options: any = {}): Promise<{ response: http.IncomingMessage; body: Array<AppModel>; }> {
 		const localVarPath = this.basePath + '/api/v1/app/{name}'
 			.replace('{' + 'name' + '}', encodeURIComponent(String(name)));
 		let localVarQueryParameters: any = {};
@@ -545,7 +545,7 @@ export class AppRouterApi {
 				localVarRequestOptions.form = localVarFormParams;
 			}
 		}
-		return new Promise<{ response: http.ClientResponse; body: Array<AppModel>; }>((resolve, reject) => {
+		return new Promise<{ response: http.IncomingMessage; body: Array<AppModel>; }>((resolve, reject) => {
 			localVarRequest(localVarRequestOptions, (error, response, body) => {
 				if (error) {
 					reject(error);
@@ -565,7 +565,7 @@ export class AppRouterApi {
 	* @summary ApiV1App_GET
 	* @param {*} [options] Override http request options.
 	*/
-	public apiV1AppGet(options: any = {}): Promise<{ response: http.ClientResponse; body: Array<AppModel>; }> {
+	public apiV1AppGet(options: any = {}): Promise<{ response: http.IncomingMessage; body: Array<AppModel>; }> {
 		const localVarPath = this.basePath + '/api/v1/app';
 		let localVarQueryParameters: any = {};
 		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -595,7 +595,7 @@ export class AppRouterApi {
 				localVarRequestOptions.form = localVarFormParams;
 			}
 		}
-		return new Promise<{ response: http.ClientResponse; body: Array<AppModel>; }>((resolve, reject) => {
+		return new Promise<{ response: http.IncomingMessage; body: Array<AppModel>; }>((resolve, reject) => {
 			localVarRequest(localVarRequestOptions, (error, response, body) => {
 				if (error) {
 					reject(error);
@@ -617,7 +617,7 @@ export class AppRouterApi {
 	* @param _package
 	* @param {*} [options] Override http request options.
 	*/
-	public apiV1AppPatch(spec?: Buffer, _package?: Buffer, options: any = {}): Promise<{ response: http.ClientResponse; body?: any; }> {
+	public apiV1AppPatch(spec?: Buffer, _package?: Buffer, options: any = {}): Promise<{ response: http.IncomingMessage; body?: any; }> {
 		const localVarPath = this.basePath + '/api/v1/app';
 		let localVarQueryParameters: any = {};
 		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -657,7 +657,7 @@ export class AppRouterApi {
 				localVarRequestOptions.form = localVarFormParams;
 			}
 		}
-		return new Promise<{ response: http.ClientResponse; body?: any; }>((resolve, reject) => {
+		return new Promise<{ response: http.IncomingMessage; body?: any; }>((resolve, reject) => {
 			localVarRequest(localVarRequestOptions, (error, response, body) => {
 				if (error) {
 					reject(error);
@@ -678,7 +678,7 @@ export class AppRouterApi {
 	* @param _package
 	* @param {*} [options] Override http request options.
 	*/
-	public apiV1AppPost(spec?: Buffer, _package?: Buffer, options: any = {}): Promise<{ response: http.ClientResponse; body?: any; }> {
+	public apiV1AppPost(spec?: Buffer, _package?: Buffer, options: any = {}): Promise<{ response: http.IncomingMessage; body?: any; }> {
 		const localVarPath = this.basePath + '/api/v1/app';
 		let localVarQueryParameters: any = {};
 		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -718,7 +718,7 @@ export class AppRouterApi {
 				localVarRequestOptions.form = localVarFormParams;
 			}
 		}
-		return new Promise<{ response: http.ClientResponse; body?: any; }>((resolve, reject) => {
+		return new Promise<{ response: http.IncomingMessage; body?: any; }>((resolve, reject) => {
 			localVarRequest(localVarRequestOptions, (error, response, body) => {
 				if (error) {
 					reject(error);
@@ -739,7 +739,7 @@ export class AppRouterApi {
 	* @param version
 	* @param {*} [options] Override http request options.
 	*/
-	public apiV1AppSwaggerJsonByNameAndVersionGet(name: string, version: string, options: any = {}): Promise<{ response: http.ClientResponse; body?: any; }> {
+	public apiV1AppSwaggerJsonByNameAndVersionGet(name: string, version: string, options: any = {}): Promise<{ response: http.IncomingMessage; body?: any; }> {
 		const localVarPath = this.basePath + '/api/v1/app/{name}/{version}/swagger.json'
 			.replace('{' + 'name' + '}', encodeURIComponent(String(name)))
 			.replace('{' + 'version' + '}', encodeURIComponent(String(version)));
@@ -781,7 +781,7 @@ export class AppRouterApi {
 				localVarRequestOptions.form = localVarFormParams;
 			}
 		}
-		return new Promise<{ response: http.ClientResponse; body?: any; }>((resolve, reject) => {
+		return new Promise<{ response: http.IncomingMessage; body?: any; }>((resolve, reject) => {
 			localVarRequest(localVarRequestOptions, (error, response, body) => {
 				if (error) {
 					reject(error);
@@ -857,7 +857,7 @@ export class FileRouterApi {
 	* @param filePath
 	* @param {*} [options] Override http request options.
 	*/
-	public apiV1FilesByFilePathGet(filePath: string, options: any = {}): Promise<{ response: http.ClientResponse; body?: any; }> {
+	public apiV1FilesByFilePathGet(filePath: string, options: any = {}): Promise<{ response: http.IncomingMessage; body?: any; }> {
 		const localVarPath = this.basePath + '/api/v1/files/{filePath}'
 			.replace('{' + 'filePath' + '}', encodeURIComponent(String(filePath)));
 		let localVarQueryParameters: any = {};
@@ -893,7 +893,7 @@ export class FileRouterApi {
 				localVarRequestOptions.form = localVarFormParams;
 			}
 		}
-		return new Promise<{ response: http.ClientResponse; body?: any; }>((resolve, reject) => {
+		return new Promise<{ response: http.IncomingMessage; body?: any; }>((resolve, reject) => {
 			localVarRequest(localVarRequestOptions, (error, response, body) => {
 				if (error) {
 					reject(error);
@@ -914,7 +914,7 @@ export class FileRouterApi {
 	* @param containerName
 	* @param {*} [options] Override http request options.
 	*/
-	public apiV1FilesFilelistByPodNameAndContainerNameGet(podName: string, containerName: string, options: any = {}): Promise<{ response: http.ClientResponse; body?: any; }> {
+	public apiV1FilesFilelistByPodNameAndContainerNameGet(podName: string, containerName: string, options: any = {}): Promise<{ response: http.IncomingMessage; body?: any; }> {
 		const localVarPath = this.basePath + '/api/v1/files/filelist/{podName}/{containerName}'
 			.replace('{' + 'podName' + '}', encodeURIComponent(String(podName)))
 			.replace('{' + 'containerName' + '}', encodeURIComponent(String(containerName)));
@@ -956,7 +956,7 @@ export class FileRouterApi {
 				localVarRequestOptions.form = localVarFormParams;
 			}
 		}
-		return new Promise<{ response: http.ClientResponse; body?: any; }>((resolve, reject) => {
+		return new Promise<{ response: http.IncomingMessage; body?: any; }>((resolve, reject) => {
 			localVarRequest(localVarRequestOptions, (error, response, body) => {
 				if (error) {
 					reject(error);
@@ -976,7 +976,7 @@ export class FileRouterApi {
 	* @param filePath
 	* @param {*} [options] Override http request options.
 	*/
-	public filesByFilePathGet(filePath: string, options: any = {}): Promise<{ response: http.ClientResponse; body?: any; }> {
+	public filesByFilePathGet(filePath: string, options: any = {}): Promise<{ response: http.IncomingMessage; body?: any; }> {
 		const localVarPath = this.basePath + '/files/{filePath}'
 			.replace('{' + 'filePath' + '}', encodeURIComponent(String(filePath)));
 		let localVarQueryParameters: any = {};
@@ -1012,7 +1012,7 @@ export class FileRouterApi {
 				localVarRequestOptions.form = localVarFormParams;
 			}
 		}
-		return new Promise<{ response: http.ClientResponse; body?: any; }>((resolve, reject) => {
+		return new Promise<{ response: http.IncomingMessage; body?: any; }>((resolve, reject) => {
 			localVarRequest(localVarRequestOptions, (error, response, body) => {
 				if (error) {
 					reject(error);
@@ -1033,7 +1033,7 @@ export class FileRouterApi {
 	* @param containerName
 	* @param {*} [options] Override http request options.
 	*/
-	public filesFilelistByPodNameAndContainerNameGet(podName: string, containerName: string, options: any = {}): Promise<{ response: http.ClientResponse; body?: any; }> {
+	public filesFilelistByPodNameAndContainerNameGet(podName: string, containerName: string, options: any = {}): Promise<{ response: http.IncomingMessage; body?: any; }> {
 		const localVarPath = this.basePath + '/files/filelist/{podName}/{containerName}'
 			.replace('{' + 'podName' + '}', encodeURIComponent(String(podName)))
 			.replace('{' + 'containerName' + '}', encodeURIComponent(String(containerName)));
@@ -1075,7 +1075,7 @@ export class FileRouterApi {
 				localVarRequestOptions.form = localVarFormParams;
 			}
 		}
-		return new Promise<{ response: http.ClientResponse; body?: any; }>((resolve, reject) => {
+		return new Promise<{ response: http.IncomingMessage; body?: any; }>((resolve, reject) => {
 			localVarRequest(localVarRequestOptions, (error, response, body) => {
 				if (error) {
 					reject(error);
@@ -1151,7 +1151,7 @@ export class HealthRouterApi {
 	* @param query
 	* @param {*} [options] Override http request options.
 	*/
-	public apiV1HealthGet(query?: string, options: any = {}): Promise<{ response: http.ClientResponse; body?: any; }> {
+	public apiV1HealthGet(query?: string, options: any = {}): Promise<{ response: http.IncomingMessage; body?: any; }> {
 		const localVarPath = this.basePath + '/api/v1/health';
 		let localVarQueryParameters: any = {};
 		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1185,7 +1185,7 @@ export class HealthRouterApi {
 				localVarRequestOptions.form = localVarFormParams;
 			}
 		}
-		return new Promise<{ response: http.ClientResponse; body?: any; }>((resolve, reject) => {
+		return new Promise<{ response: http.IncomingMessage; body?: any; }>((resolve, reject) => {
 			localVarRequest(localVarRequestOptions, (error, response, body) => {
 				if (error) {
 					reject(error);
@@ -1204,7 +1204,7 @@ export class HealthRouterApi {
 	* @summary ApiV1Health_POST
 	* @param {*} [options] Override http request options.
 	*/
-	public apiV1HealthPost(options: any = {}): Promise<{ response: http.ClientResponse; body?: any; }> {
+	public apiV1HealthPost(options: any = {}): Promise<{ response: http.IncomingMessage; body?: any; }> {
 		const localVarPath = this.basePath + '/api/v1/health';
 		let localVarQueryParameters: any = {};
 		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1234,7 +1234,7 @@ export class HealthRouterApi {
 				localVarRequestOptions.form = localVarFormParams;
 			}
 		}
-		return new Promise<{ response: http.ClientResponse; body?: any; }>((resolve, reject) => {
+		return new Promise<{ response: http.IncomingMessage; body?: any; }>((resolve, reject) => {
 			localVarRequest(localVarRequestOptions, (error, response, body) => {
 				if (error) {
 					reject(error);
@@ -1254,7 +1254,7 @@ export class HealthRouterApi {
 	* @param query
 	* @param {*} [options] Override http request options.
 	*/
-	public healthGet(query?: string, options: any = {}): Promise<{ response: http.ClientResponse; body?: any; }> {
+	public healthGet(query?: string, options: any = {}): Promise<{ response: http.IncomingMessage; body?: any; }> {
 		const localVarPath = this.basePath + '/health';
 		let localVarQueryParameters: any = {};
 		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1288,7 +1288,7 @@ export class HealthRouterApi {
 				localVarRequestOptions.form = localVarFormParams;
 			}
 		}
-		return new Promise<{ response: http.ClientResponse; body?: any; }>((resolve, reject) => {
+		return new Promise<{ response: http.IncomingMessage; body?: any; }>((resolve, reject) => {
 			localVarRequest(localVarRequestOptions, (error, response, body) => {
 				if (error) {
 					reject(error);
@@ -1307,7 +1307,7 @@ export class HealthRouterApi {
 	* @summary Health_POST
 	* @param {*} [options] Override http request options.
 	*/
-	public healthPost(options: any = {}): Promise<{ response: http.ClientResponse; body?: any; }> {
+	public healthPost(options: any = {}): Promise<{ response: http.IncomingMessage; body?: any; }> {
 		const localVarPath = this.basePath + '/health';
 		let localVarQueryParameters: any = {};
 		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1337,7 +1337,7 @@ export class HealthRouterApi {
 				localVarRequestOptions.form = localVarFormParams;
 			}
 		}
-		return new Promise<{ response: http.ClientResponse; body?: any; }>((resolve, reject) => {
+		return new Promise<{ response: http.IncomingMessage; body?: any; }>((resolve, reject) => {
 			localVarRequest(localVarRequestOptions, (error, response, body) => {
 				if (error) {
 					reject(error);
@@ -1412,7 +1412,7 @@ export class TokenRouterApi {
 	* @summary ApiV1Token_POST
 	* @param {*} [options] Override http request options.
 	*/
-	public apiV1TokenPost(options: any = {}): Promise<{ response: http.ClientResponse; body: TokenModel; }> {
+	public apiV1TokenPost(options: any = {}): Promise<{ response: http.IncomingMessage; body: TokenModel; }> {
 		const localVarPath = this.basePath + '/api/v1/token';
 		let localVarQueryParameters: any = {};
 		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1442,7 +1442,7 @@ export class TokenRouterApi {
 				localVarRequestOptions.form = localVarFormParams;
 			}
 		}
-		return new Promise<{ response: http.ClientResponse; body: TokenModel; }>((resolve, reject) => {
+		return new Promise<{ response: http.IncomingMessage; body: TokenModel; }>((resolve, reject) => {
 			localVarRequest(localVarRequestOptions, (error, response, body) => {
 				if (error) {
 					reject(error);
@@ -1462,7 +1462,7 @@ export class TokenRouterApi {
 	* @summary Token_POST
 	* @param {*} [options] Override http request options.
 	*/
-	public tokenPost(options: any = {}): Promise<{ response: http.ClientResponse; body: TokenModel; }> {
+	public tokenPost(options: any = {}): Promise<{ response: http.IncomingMessage; body: TokenModel; }> {
 		const localVarPath = this.basePath + '/token';
 		let localVarQueryParameters: any = {};
 		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1492,7 +1492,7 @@ export class TokenRouterApi {
 				localVarRequestOptions.form = localVarFormParams;
 			}
 		}
-		return new Promise<{ response: http.ClientResponse; body: TokenModel; }>((resolve, reject) => {
+		return new Promise<{ response: http.IncomingMessage; body: TokenModel; }>((resolve, reject) => {
 			localVarRequest(localVarRequestOptions, (error, response, body) => {
 				if (error) {
 					reject(error);

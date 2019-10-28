@@ -158,12 +158,12 @@ async function deleteBdcController(treeDataProvider: ControllerTreeDataProvider,
 	let controllerNode = node as ControllerNode;
 
 	let choices: { [id: string]: boolean } = {};
-	choices[localize('textYes', 'Yes')] = true;
-	choices[localize('textNo', 'No')] = false;
+	choices[localize('textYes', "Yes")] = true;
+	choices[localize('textNo', "No")] = false;
 
 	let options = {
 		ignoreFocusOut: false,
-		placeHolder: localize('textConfirmDeleteController', 'Are you sure you want to delete \'{0}\'?', controllerNode.label)
+		placeHolder: localize('textConfirmDeleteController', "Are you sure you want to delete \'{0}\'?", controllerNode.label)
 	};
 
 	let result = await vscode.window.showQuickPick(Object.keys(choices), options);

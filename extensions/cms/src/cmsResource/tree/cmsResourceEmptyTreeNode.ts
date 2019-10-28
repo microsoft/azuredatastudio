@@ -47,5 +47,5 @@ export class CmsResourceEmptyTreeNode extends TreeNode {
 		return 'message_cmsTreeNode';
 	}
 
-	private static readonly addCmsServerLabel = localize('cms.resource.tree.CmsTreeNode.addCmsServerLabel', 'Add Central Management Server...');
+	private static readonly addCmsServerLabel = localize('cms.resource.tree.CmsTreeNode.addCmsServerLabel', "Add Central Management Server...");
 }

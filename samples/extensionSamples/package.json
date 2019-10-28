@@ -109,11 +109,11 @@
                                 "tasks-widget": [
                                     {
                                         "name": "backup",
-                                        "when": "!mssql:iscloud"
+                                        "when": "!mssql:iscloud && mssql:engineedition != 11"
                                     },
                                     {
                                         "name": "restore",
-                                        "when": "!mssql:iscloud"
+                                        "when": "!mssql:iscloud && mssql:engineedition != 11"
                                     },
                                     "configureDashboard",
                                     "newQuery"

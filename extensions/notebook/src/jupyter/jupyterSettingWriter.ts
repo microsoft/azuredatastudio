@@ -69,7 +69,7 @@ export class JupyterSettingWriter {
 				value = `set([${setting.value}])`;
 				break;
 			default:
-				throw new Error(localize('UnexpectedSettingType', 'Unexpected setting type {0}', setting.type));
+				throw new Error(localize('UnexpectedSettingType', "Unexpected setting type {0}", setting.type));
 		}
 		return `c.${setting.key} = ${value}`;
 	}

@@ -107,20 +107,20 @@ export class ModifyColumnsPage extends ImportPage {
 	async onPageEnter(): Promise<boolean> {
 		this.loading.loading = true;
 		await this.populateTable();
-		this.instance.changeNextButtonLabel(localize('flatFileImport.importData', 'Import Data'));
+		this.instance.changeNextButtonLabel(localize('flatFileImport.importData', "Import Data"));
 		this.loading.loading = false;
 
 		return true;
 	}
 
 	async onPageLeave(): Promise<boolean> {
-		this.instance.changeNextButtonLabel(localize('flatFileImport.next', 'Next'));
+		this.instance.changeNextButtonLabel(localize('flatFileImport.next', "Next"));
 		return undefined;
 	}
 
 	async cleanup(): Promise<boolean> {
 		delete this.model.proseColumns;
-		this.instance.changeNextButtonLabel(localize('flatFileImport.next', 'Next'));
+		this.instance.changeNextButtonLabel(localize('flatFileImport.next', "Next"));
 
 		return true;
 	}
@@ -141,23 +141,23 @@ export class ModifyColumnsPage extends ImportPage {
 		this.table.updateProperties({
 			height: 400,
 			columns: [{
-				displayName: localize('flatFileImport.columnName', 'Column Name'),
+				displayName: localize('flatFileImport.columnName', "Column Name"),
 				valueType: azdata.DeclarativeDataType.string,
 				width: '150px',
 				isReadOnly: false
 			}, {
-				displayName: localize('flatFileImport.dataType', 'Data Type'),
+				displayName: localize('flatFileImport.dataType', "Data Type"),
 				valueType: azdata.DeclarativeDataType.editableCategory,
 				width: '150px',
 				isReadOnly: false,
 				categoryValues: this.categoryValues
 			}, {
-				displayName: localize('flatFileImport.primaryKey', 'Primary Key'),
+				displayName: localize('flatFileImport.primaryKey', "Primary Key"),
 				valueType: azdata.DeclarativeDataType.boolean,
 				width: '100px',
 				isReadOnly: false
 			}, {
-				displayName: localize('flatFileImport.allowNulls', 'Allow Nulls'),
+				displayName: localize('flatFileImport.allowNulls', "Allow Nulls"),
 				valueType: azdata.DeclarativeDataType.boolean,
 				isReadOnly: false,
 				width: '100px'

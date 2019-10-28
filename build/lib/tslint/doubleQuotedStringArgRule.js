@@ -48,9 +48,7 @@ class DoubleQuotedStringArgRuleWalker extends Lint.RuleWalker {
             const argText = arg.getText();
             const doubleQuotedArg = argText.length >= 2 && argText[0] === DoubleQuotedStringArgRuleWalker.DOUBLE_QUOTE && argText[argText.length - 1] === DoubleQuotedStringArgRuleWalker.DOUBLE_QUOTE;
             if (!doubleQuotedArg) {
-                const fix = [
-                    Lint.Replacement.replaceFromTo(arg.getStart(), arg.getWidth(), `"${arg.getText().slice(1, arg.getWidth() - 2)}"`),
-                ];
+                const fix = Lint.Replacement.replaceFromTo(arg.getStart(), arg.getEnd(), `"${arg.getText().slice(1, arg.getWidth() - 1)}"`);
                 this.addFailure(this.createFailure(arg.getStart(), arg.getWidth(), `Argument ${this.argIndex + 1} to '${functionName}' must be double quoted.`, fix));
                 return;
             }

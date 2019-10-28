@@ -12,7 +12,7 @@ import { HdfsDialogBase, HdfsDialogModelBase, HdfsDialogProperties } from './hdf
 const localize = nls.loadMessageBundle();
 
 const mountConfigutationTitle = localize('mount.main.section', "Mount Configuration");
-const hdfsPathTitle = localize('mount.hdfsPath', "HDFS Path");
+const hdfsPathTitle = localize('mount.hdfsPath.title', "HDFS Path");
 
 /**
  * Converts a comma-delimited set of key value pair credentials to a JSON object.
@@ -178,15 +178,24 @@ export class MountHdfsDialog extends HdfsDialogBase<MountHdfsProperties, void> {
 					{
 						component: this.pathInputBox,
 						title: hdfsPathTitle,
-						required: true
+						required: true,
+						layout: {
+							info: localize('mount.hdfsPath.info', "Path to a new (non-existing) directory which you want to associate with the mount")
+						}
 					}, {
 						component: this.remoteUriInputBox,
-						title: localize('mount.remoteUri', "Remote URI"),
-						required: true
+						title: localize('mount.remoteUri.title', "Remote URI"),
+						required: true,
+						layout: {
+							info: localize('mount.remoteUri.info', "The URI to the remote data source. Example for ADLS: abfs://fs@saccount.dfs.core.windows.net/")
+						}
 					}, {
 						component: this.credentialsInputBox,
-						title: localize('mount.credentials', "Credentials"),
-						required: false
+						title: localize('mount.credentials.title', "Credentials"),
+						required: false,
+						layout: {
+							info: localize('mount.credentials.info', "Mount credentials for authentication to remote data source for reads")
+						}
 					}
 				],
 				title: mountConfigutationTitle

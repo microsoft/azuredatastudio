@@ -8,26 +8,26 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/dacpac/out/wizard/pages/selectOperationpage": {
+		"out/wizard/pages/selectOperationpage": {
 			"dacFx.deployRadioButtonLabel": "Implementa un archivo .dacpa de una aplicación de la capa de datos en una instancia de SQL Server [Implementar Dacpac]",
 			"dacFx.extractRadioButtonLabel": "Extrae una aplicación de la capa de datos de una instancia de SQL Server a un archivo .dacpac [Extraer Dacpac]",
 			"dacFx.importRadioButtonLabel": "Crea una base de datos a partir de un archivo .bacpac [Importar Bacpac]",
 			"dacFx.exportRadioButtonLabel": "Exportar el esquema y los datos de una base de datos al formato de archivo lógico .bacpac [Exportar Bacpac]"
 		},
-		"extensions/dacpac/out/wizard/pages/importConfigPage": {
+		"out/wizard/pages/importConfigPage": {
 			"dacFxImport.openFile": "Abrir",
 			"dacFxImport.fileTextboxTitle": "Ubicación de archivos"
 		},
-		"extensions/dacpac/out/wizard/pages/extractConfigPage": {
+		"out/wizard/pages/extractConfigPage": {
 			"dacfxExtract.saveFile": "Guardar",
 			"dacFxExtract.fileTextboxTitle": "Ubicación de archivos",
 			"dacFxExtract.versionTextboxTitle": "Versión (use x.x.x.x, donde x es un número)"
 		},
-		"extensions/dacpac/out/wizard/pages/exportConfigPage": {
+		"out/wizard/pages/exportConfigPage": {
 			"dacfxExport.saveFile": "Guardar",
 			"dacFxExport.fileTextboxTitle": "Ubicación de archivos"
 		},
-		"extensions/dacpac/out/wizard/pages/deployPlanPage": {
+		"out/wizard/pages/deployPlanPage": {
 			"dacfx.dataLossTextWithCount": "{0} de las acciones de implementación enumeradas pueden dar lugar a la pérdida de datos. Asegúrese de que tiene una copia de seguridad o una instantánea por si hay algún problema con la implementación.",
 			"dacFx.dataLossCheckbox": "Continuar a pesar de la posible pérdida de datos",
 			"dacfx.noDataLossText": "Las acciones de implementación enumeradas no darán lugar a la pérdida de datos.",
@@ -41,7 +41,7 @@
 			"dacfx.dataLossColumn": "Pérdida de datos",
 			"dacfx.dataLossTooltip": "Las operaciones que pueden dar lugar a la pérdida de datos se marcan con un signo de advertencia"
 		},
-		"extensions/dacpac/out/wizard/pages/deployConfigPage": {
+		"out/wizard/pages/deployConfigPage": {
 			"dacFx.databaseNameTextBox": "Nombre de la base de datos",
 			"dacFx.databaseNameDropdown": "Nombre de la base de datos",
 			"dacFxDeploy.openFile": "Abrir",
@@ -51,7 +51,7 @@
 			"dacFx.targetDatabaseRadioButtonsTitle": "Base de datos destino",
 			"dacFx.targetDatabaseDropdownTitle": "Nombre de la base de datos"
 		},
-		"extensions/dacpac/out/wizard/pages/dacFxSummaryPage": {
+		"out/wizard/pages/dacFxSummaryPage": {
 			"dacfx.targetServerName": "Servidor de destino",
 			"dacfx.targetDatabaseName": "Base de datos destino",
 			"dacfx.sourceServerName": "Servidor de origen",
@@ -61,16 +61,16 @@
 			"dacfx.settingColumn": "Valor",
 			"dacfx.valueColumn": "Valor"
 		},
-		"extensions/dacpac/out/wizard/api/dacFxConfigPage": {
+		"out/wizard/api/dacFxConfigPage": {
 			"dacFx.targetServerDropdownTitle": "Servidor de destino",
 			"dacFx.sourceServerDropdownTitle": "Servidor de origen",
 			"dacFx.databaseNameTextBox": "Base de datos destino",
 			"dacFx.sourceDatabaseDropdownTitle": "Base de datos de origen"
 		},
-		"extensions/dacpac/out/wizard/api/basePage": {
+		"out/wizard/api/basePage": {
 			"basePage.defaultUser": "Predeterminado"
 		},
-		"extensions/dacpac/out/wizard/dataTierApplicationWizard": {
+		"out/wizard/dataTierApplicationWizard": {
 			"dacFx.selectOperationPageName": "Seleccione una operación",
 			"dacFx.deployConfigPageName": "Seleccione la configuración de implementación de Dacpac",
 			"dacFx.deployPlanPage": "Revise el plan de implementación",

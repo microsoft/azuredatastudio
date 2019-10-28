@@ -8,26 +8,26 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/dacpac/out/wizard/pages/selectOperationpage": {
+		"out/wizard/pages/selectOperationpage": {
 			"dacFx.deployRadioButtonLabel": "データ層アプリケーションの .dacpac ファイルを SQL Server インスタンスに展開します [Dacpac の展開]",
 			"dacFx.extractRadioButtonLabel": "SQL Server インスタンスのデータ層アプリケーションを .dacpac ファイルに抽出します [Dacpac の抽出]",
 			"dacFx.importRadioButtonLabel": ".bacpac ファイルからデータベースを作成します [Bacpac のインポート]",
 			"dacFx.exportRadioButtonLabel": "データベースのスキーマとデータを論理 .bacpac ファイル形式にエクスポートします [Bacpac のエクスポート]"
 		},
-		"extensions/dacpac/out/wizard/pages/importConfigPage": {
+		"out/wizard/pages/importConfigPage": {
 			"dacFxImport.openFile": "開く",
 			"dacFxImport.fileTextboxTitle": "ファイルの場所"
 		},
-		"extensions/dacpac/out/wizard/pages/extractConfigPage": {
+		"out/wizard/pages/extractConfigPage": {
 			"dacfxExtract.saveFile": "保存",
 			"dacFxExtract.fileTextboxTitle": "ファイルの場所",
 			"dacFxExtract.versionTextboxTitle": "バージョン (形式は x.x.x.x。x は数字)"
 		},
-		"extensions/dacpac/out/wizard/pages/exportConfigPage": {
+		"out/wizard/pages/exportConfigPage": {
 			"dacfxExport.saveFile": "保存",
 			"dacFxExport.fileTextboxTitle": "ファイルの場所"
 		},
-		"extensions/dacpac/out/wizard/pages/deployPlanPage": {
+		"out/wizard/pages/deployPlanPage": {
 			"dacfx.dataLossTextWithCount": "リストされている {0} の展開アクションによってデータが失われる可能性があります。展開で生じる問題に備えてバックアップまたはスナップショットが使用可能であることを確認してください。",
 			"dacFx.dataLossCheckbox": "データ損失の可能性がありますが続行します",
 			"dacfx.noDataLossText": "リストされている展開アクションによってデータ損失は生じません。",
@@ -41,7 +41,7 @@
 			"dacfx.dataLossColumn": "データ損失",
 			"dacfx.dataLossTooltip": "データが失われる可能性のある操作には警告マークが表示されます"
 		},
-		"extensions/dacpac/out/wizard/pages/deployConfigPage": {
+		"out/wizard/pages/deployConfigPage": {
 			"dacFx.databaseNameTextBox": "データベース名",
 			"dacFx.databaseNameDropdown": "データベース名",
 			"dacFxDeploy.openFile": "開く",
@@ -51,7 +51,7 @@
 			"dacFx.targetDatabaseRadioButtonsTitle": "ターゲット データベース",
 			"dacFx.targetDatabaseDropdownTitle": "データベース名"
 		},
-		"extensions/dacpac/out/wizard/pages/dacFxSummaryPage": {
+		"out/wizard/pages/dacFxSummaryPage": {
 			"dacfx.targetServerName": "ターゲット サーバー",
 			"dacfx.targetDatabaseName": "ターゲット データベース",
 			"dacfx.sourceServerName": "ソース サーバー",
@@ -61,16 +61,16 @@
 			"dacfx.settingColumn": "設定",
 			"dacfx.valueColumn": "値"
 		},
-		"extensions/dacpac/out/wizard/api/dacFxConfigPage": {
+		"out/wizard/api/dacFxConfigPage": {
 			"dacFx.targetServerDropdownTitle": "ターゲット サーバー",
 			"dacFx.sourceServerDropdownTitle": "ソース サーバー",
 			"dacFx.databaseNameTextBox": "ターゲット データベース",
 			"dacFx.sourceDatabaseDropdownTitle": "ソース データベース"
 		},
-		"extensions/dacpac/out/wizard/api/basePage": {
+		"out/wizard/api/basePage": {
 			"basePage.defaultUser": "既定"
 		},
-		"extensions/dacpac/out/wizard/dataTierApplicationWizard": {
+		"out/wizard/dataTierApplicationWizard": {
 			"dacFx.selectOperationPageName": "操作を選択します",
 			"dacFx.deployConfigPageName": "Dacpac の展開設定を選択します",
 			"dacFx.deployPlanPage": "展開計画を確認します",

@@ -32,7 +32,8 @@ export abstract class DialogBase {
 		this.dispose();
 	}
 
-	protected onComplete(): void { }
+	protected onComplete(): void {
+	}
 
 	protected dispose(): void {
 		this._toDispose.forEach(disposable => disposable.dispose());
