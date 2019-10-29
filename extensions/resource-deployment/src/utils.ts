@@ -22,7 +22,7 @@ export function setEnvironmentVariablesForInstallPaths(tools: ITool[]): void {
 		if (t.installationPath) {
 			// construct an env variable name with NoteBookEnvironmentVariablePrefix prefix
 			// and tool.name as suffix, making sure of using all uppercase characters and only _ as separator
-			const envVarName: string = `${NoteBookEnvironmentVariablePrefix}${t.name.toUpperCase().replace(/ |-/, '_')}`;
+			const envVarName: string = `${NoteBookEnvironmentVariablePrefix}${t.name.toUpperCase().replace(/ |-/g, '_')}`;
 			process.env[envVarName] = t.installationPath;
 			installationPaths.push(path.resolve(path.dirname(t.installationPath)));
 			console.log(`setting env var:'${envVarName}' to: '${t.installationPath}'`);
