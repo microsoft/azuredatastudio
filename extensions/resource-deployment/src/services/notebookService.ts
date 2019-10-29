@@ -35,7 +35,7 @@ export interface INotebookService {
 	launchNotebook(notebook: string | NotebookInfo): Thenable<azdata.nb.NotebookEditor>;
 	launchNotebookWithContent(title: string, content: string): Thenable<azdata.nb.NotebookEditor>;
 	getNotebook(notebook: string | NotebookInfo): Promise<Notebook>;
-	executeNotebook(notebook: any, env: NodeJS.ProcessEnv): Promise<NotebookExecutionResult>;
+	executeNotebook(notebook: any, env?: NodeJS.ProcessEnv): Promise<NotebookExecutionResult>;
 }
 
 export class NotebookService implements INotebookService {
@@ -73,7 +73,7 @@ export class NotebookService implements INotebookService {
 		return <Notebook>JSON.parse(await this.platformService.readTextFile(notebookPath));
 	}
 
-	async executeNotebook(notebook: Notebook, env: NodeJS.ProcessEnv): Promise<NotebookExecutionResult> {
+	async executeNotebook(notebook: Notebook, env?: NodeJS.ProcessEnv): Promise<NotebookExecutionResult> {
 		const content = JSON.stringify(notebook, undefined, 4);
 		const fileName = `nb-${getDateTimeString()}.ipynb`;
 		const workingDirectory = this.platformService.storagePath();

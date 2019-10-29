@@ -263,8 +263,10 @@ export abstract class ToolBase implements ITool {
 		);
 		this.version = this.getVersionFromOutput(commandOutput);
 		if (this.version) {
-			// discover and set the installationPath
-			await this.setInstallationPath();
+			if (this.autoInstallSupported) {
+				// discover and set the installationPath
+				await this.setInstallationPath();
+			}
 			return ToolStatus.Installed;
 		}
 		else {
