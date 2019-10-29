@@ -61,6 +61,8 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	private updateSpecialValueType(typeName: SettableProperty, model: azdata.IConnectionProfile): void {
 		if (!this[typeName]) {
 			this[typeName] = model[typeName];
+		} else if (typeName === ConnectionOptionSpecialType.databaseName && this[typeName] === 'master' && model[typeName] !== 'master') {
+			this[typeName] = model[typeName];
 		}
 	}
 
