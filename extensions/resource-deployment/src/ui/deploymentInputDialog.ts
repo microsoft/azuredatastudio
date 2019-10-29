@@ -13,6 +13,7 @@ import { Validator, initializeDialog, InputComponents, setModelValues } from './
 import { Model } from './model';
 import { EOL } from 'os';
 import { getDateTimeString, getErrorMessage } from '../utils';
+import { IPlatformService } from '../services/platformService';
 
 const localize = nls.loadMessageBundle();
 
@@ -21,6 +22,7 @@ export class DeploymentInputDialog extends DialogBase {
 	private inputComponents: InputComponents = {};
 
 	constructor(private notebookService: INotebookService,
+		private platformService: IPlatformService,
 		private dialogInfo: DialogInfo) {
 		super(dialogInfo.title, dialogInfo.name, false);
 		let okButtonText: string;
@@ -100,16 +102,22 @@ export class DeploymentInputDialog extends DialogBase {
 					op.updateStatus(azdata.TaskStatus.Failed, result.errorMessage);
 					if (result.outputNotebook) {
 						const viewErrorDetail = localize('resourceDeployment.ViewErrorDetail', "View error detail");
-						const selectedOption = await vscode.window.showErrorMessage(localize('resourceDeployment.DeployFailed', "The task \"{0}\" has failed.", notebookDialogInfo.taskName), viewErrorDetail);
+						const taskFailedMessage = localize('resourceDeployment.DeployFailed', "The task \"{0}\" has failed.", notebookDialogInfo.taskName);
+						const selectedOption = await vscode.window.showErrorMessage(taskFailedMessage, viewErrorDetail);
+						this.platformService.logToOutputChannel(taskFailedMessage);
 						if (selectedOption === viewErrorDetail) {
 							try {
 								this.notebookService.launchNotebookWithContent(`deploy-${getDateTimeString()}`, result.outputNotebook);
 							} catch (error) {
-								vscode.window.showErrorMessage(localize('resourceDeployment.FailedToOpenNotebook', "An error occured launching the output notebook. {1}{2}.", EOL, getErrorMessage(error)));
+								const launchNotebookError = localize('resourceDeployment.FailedToOpenNotebook', "An error occurred launching the output notebook. {1}{2}.", EOL, getErrorMessage(error));
+								this.platformService.logToOutputChannel(launchNotebookError);
+								vscode.window.showErrorMessage(launchNotebookError);
 							}
 						}
 					} else {
-						vscode.window.showErrorMessage(localize('resourceDeployment.TaskFailedWithNoOutputNotebook', "The task failed and no output Notebook was generated."));
+						const errorMessage = localize('resourceDeployment.TaskFailedWithNoOutputNotebook', "The task \"{0}\" failed and no output Notebook was generated.", notebookDialogInfo.taskName);
+						this.platformService.logToOutputChannel(errorMessage);
+						vscode.window.showErrorMessage(errorMessage);
 					}
 				}
 			}
