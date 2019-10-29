@@ -203,7 +203,7 @@ export class NotebookMarkdownRenderer {
 			href = this.resolveUrl(base, href);
 		}
 		try {
-			href = encodeURI(href).replace(/%25/g, '%');
+			href = encodeURI(href).replace(/%25/g, '%').replace(/%5C/g, '\\');
 		} catch (e) {
 			return null;
 		}
