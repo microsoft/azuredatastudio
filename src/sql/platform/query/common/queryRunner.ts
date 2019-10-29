@@ -26,6 +26,7 @@ import { URI } from 'vs/base/common/uri';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IGridDataProvider, getResultsString } from 'sql/platform/query/common/gridDataProvider';
 import { getErrorMessage } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -103,7 +104,8 @@ export default class QueryRunner extends Disposable {
 		@INotificationService private _notificationService: INotificationService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService
+		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService,
+		@ILogService private _logService: ILogService
 	) {
 		super();
 	}
@@ -352,7 +354,7 @@ export default class QueryRunner extends Disposable {
 					if (e.resultSubset.rows) {
 						this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
 					}
-				}).catch(console.error);
+				}).catch(this._logService.error);
 			}
 			// we will just ignore the set if we already have it
 			// ideally this should never happen
@@ -388,7 +390,7 @@ export default class QueryRunner extends Disposable {
 							});
 						}
 					}
-				}).catch(console.error);
+				}).catch(this._logService.error);
 			}
 			if (batchSet) {
 				// Store the result set in the batch and emit that a result set has completed
