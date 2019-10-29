@@ -321,7 +321,7 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Handle a ResultSetComplete from the service layer
 	 */
-	public async handleResultSetAvailable(result: azdata.QueryExecuteResultSetNotificationParams): Promise<void> {
+	public handleResultSetAvailable(result: azdata.QueryExecuteResultSetNotificationParams): void {
 		if (result && result.resultSetSummary) {
 			let resultSet = result.resultSetSummary;
 			let batchSet: azdata.BatchSummary;
@@ -347,10 +347,12 @@ export default class QueryRunner extends Disposable {
 			let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 			if (hasShowPlan) {
 				this._isQueryPlan = true;
-				const e = await this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id);
-				if (e.resultSubset.rows) {
-					this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
-				}
+
+				this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
+					if (e.resultSubset.rows) {
+						this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
+					}
+				}).catch(console.error);
 			}
 			// we will just ignore the set if we already have it
 			// ideally this should never happen
@@ -372,19 +374,21 @@ export default class QueryRunner extends Disposable {
 			let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 			if (hasShowPlan) {
 				this._isQueryPlan = true;
-				const e = await this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id);
-				if (e.resultSubset.rows) {
-					let planXmlString = e.resultSubset.rows[0][0].displayValue;
-					this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
-					// fire query plan available event if execution is completed
-					if (result.resultSetSummary.complete) {
-						this._onQueryPlanAvailable.fire({
-							providerId: mssqlProviderName,
-							fileUri: result.ownerUri,
-							planXml: planXmlString
-						});
+				this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
+
+					if (e.resultSubset.rows) {
+						let planXmlString = e.resultSubset.rows[0][0].displayValue;
+						this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
+						// fire query plan available event if execution is completed
+						if (result.resultSetSummary.complete) {
+							this._onQueryPlanAvailable.fire({
+								providerId: mssqlProviderName,
+								fileUri: result.ownerUri,
+								planXml: planXmlString
+							});
+						}
 					}
-				}
+				}).catch(console.error);
 			}
 			if (batchSet) {
 				// Store the result set in the batch and emit that a result set has completed
