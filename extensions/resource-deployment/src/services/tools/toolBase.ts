@@ -14,7 +14,7 @@ import { IPlatformService } from '../platformService';
 const localize = nls.loadMessageBundle();
 const toolStatusNotInstalled: string = localize('deploymentDialog.ToolStatus.NotInstalled', "Not Installed");
 const toolStatusInstalled: string = localize('deploymentDialog.ToolStatus.Installed', "Installed");
-const toolStatusInstalling: string = localize('deploymentDialog.ToolStatus.Installing', "Installing");
+const toolStatusInstalling: string = localize('deploymentDialog.ToolStatus.Installing', "Installing…");
 const toolStatusError: string = localize('deploymentDialog.ToolStatus.Error', "Error");
 const toolStatusFailed: string = localize('deploymentDialog.ToolStatus.Failed', "Failed");
 
@@ -24,6 +24,22 @@ const toolStatusLocalized: Map<ToolStatus, string> = new Map<ToolStatus, string>
 	[ToolStatus.Installing, toolStatusInstalling],
 	[ToolStatus.NotInstalled, toolStatusNotInstalled],
 	[ToolStatus.Failed, toolStatusFailed]
+]);
+
+export const enum dependencyType {
+	PythonAndPip3 = 'PythonAndPip3',
+	Brew = 'Brew',
+	Curl = 'Curl'
+}
+
+const pythonAndPip3Localized = localize('deploymentDialog.ToolInformationalMessage.PythonAndPip3', "•	azdata installation needs python3 and pip3 to be pre-installed before necessary tools can be deployed");
+const brewLocalized = localize('deploymentDialog.ToolInformationalMessage.Brew', "•	brew is needed for deployment of the tools and needs to be pre-installed before necessary tools can be deployed");
+const curlLocalized = localize('deploymentDialog.ToolInformationalMessage.Curl', "•	curl is needed for installation and needs to be pre-installed before necessary tools can be deployed");
+
+export const messageByDependencyType: Map<dependencyType, string> = new Map<dependencyType, string>([
+	[dependencyType.PythonAndPip3, pythonAndPip3Localized],
+	[dependencyType.Brew, brewLocalized],
+	[dependencyType.Curl, curlLocalized]
 ]);
 
 export abstract class ToolBase implements ITool {
@@ -38,12 +54,21 @@ export abstract class ToolBase implements ITool {
 	abstract homePage: string;
 	abstract autoInstallSupported: boolean;
 	protected abstract readonly allInstallationCommands: Map<OsType, Command[]>;
+	protected readonly dependenciesByOsType: Map<OsType, dependencyType[]> = new Map<OsType, dependencyType[]>();
+
 	protected abstract getVersionFromOutput(output: string): SemVer | undefined;
 	protected readonly _onDidUpdateData = new vscode.EventEmitter<ITool>();
 	protected readonly uninstallCommand?: string;
 
-
 	protected abstract readonly versionCommand: Command;
+
+	public get dependencyMessages(): string[] {
+		return (this.dependenciesByOsType.get(this.osType) || []).map((msgType: dependencyType) => messageByDependencyType.get(msgType)!);
+	}
+
+	protected async getInstallationPath(): Promise<string | undefined> {
+		return undefined;
+	}
 
 	protected abstract readonly discoveryCommand: Command;
 
@@ -63,11 +88,11 @@ export abstract class ToolBase implements ITool {
 		return this._onDidUpdateData.event;
 	}
 
-	get status(): ToolStatus {
+	protected get status(): ToolStatus {
 		return this._status;
 	}
 
-	set status(value: ToolStatus) {
+	protected set status(value: ToolStatus) {
 		this._status = value;
 		this._onDidUpdateData.fire(this);
 	}
@@ -82,6 +107,10 @@ export abstract class ToolBase implements ITool {
 
 	public get isNotInstalled(): boolean {
 		return this.status === ToolStatus.NotInstalled;
+	}
+
+	public get isInstalled(): boolean {
+		return this.status === ToolStatus.Installed;
 	}
 
 	public get isInstalling(): boolean {
@@ -154,6 +183,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	public async install(): Promise<void> {
+		this._statusDescription = '';
 		try {
 			this.status = ToolStatus.Installing;
 			await this.installCore();
@@ -221,6 +251,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	private async updateVersionAndGetStatus(): Promise<ToolStatus> {
+		this._statusDescription = '';
 		const commandOutput = await this._platformService.runCommand(
 			this.versionCommand.command,
 			{
@@ -271,10 +302,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	isSameOrNewerThan(version: string): boolean {
-		const currentVersion = new SemVer(this.fullVersion!);
-		const requiredVersion = new SemVer(version);
-
-		return compare(currentVersion, requiredVersion) >= 0;
+		return this._version ? compare(this._version, new SemVer(version)) >= 0 : false;
 	}
 
 	private _storagePathEnsured: boolean = false;

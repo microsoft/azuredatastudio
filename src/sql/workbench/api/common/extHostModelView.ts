@@ -331,6 +331,9 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 		}
 		if (formComponent.title && componentWrapper) {
 			componentWrapper.ariaLabel = formComponent.title;
+			if (componentWrapper instanceof LoadingComponentWrapper) {
+				componentWrapper.component.ariaLabel = formComponent.title;
+			}
 		}
 		let actions: string[] = undefined;
 		if (formComponent.actions) {

@@ -17,7 +17,7 @@ import { azureResource } from '../../azure-resource';
 
 export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<AzureResourceDatabaseServer> {
 	private static readonly containerId = 'azure.resource.providers.sqlInstanceContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.sqlInstanceContainerLabel', "SQL Instances");
+	private static readonly containerLabel = localize('azure.resource.providers.sqlInstanceContainerLabel', "SQL Managed Instances");
 
 	public constructor(
 		databaseServerService: IAzureResourceService<AzureResourceDatabaseServer>,
@@ -30,7 +30,7 @@ export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<Az
 
 	protected getTreeItemForResource(databaseServer: AzureResourceDatabaseServer): TreeItem {
 		return {
-			id: `sqlInstance_${databaseServer.name}`,
+			id: `sqlInstance_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: databaseServer.name,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_instance_inverse.svg'),

@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { EOL } from 'os';
-import * as vscode from 'vscode';
 import * as path from 'path';
 import { SemVer } from 'semver';
+import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
+import { azdataPipInstallArgsKey, AzdataPipInstallUriKey, DeploymentConfigurationKey } from '../../constants';
 import { Command, OsType, ToolType } from '../../interfaces';
 import { IPlatformService } from '../platformService';
-import { ToolBase } from './toolBase';
-import { DeploymentConfigurationKey, AzdataPipInstallUriKey, azdataPipInstallArgsKey } from '../../constants';
+import { dependencyType, ToolBase } from './toolBase';
 
 const localize = nls.loadMessageBundle();
 
@@ -91,11 +91,11 @@ export class AzdataTool extends ToolBase {
 	private get defaultInstallationCommands(): Command[] {
 		return [
 			{
-				comment: localize('resourceDeployment.Azdata.InstallUpdatePythonRequestsPackage', "installing/updating to latest version of requests python package azdata ..."),
+				comment: localize('resourceDeployment.Azdata.InstallUpdatePythonRequestsPackage', "installing/updating to latest version of requests python package azdata …"),
 				command: `pip3 install -U requests`
 			},
 			{
-				comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata ..."),
+				comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata …"),
 				command: `pip3 install -r ${this.azdataInstallUri} ${this.azdataInstallAdditionalArgs} --quiet --user`
 			}
 		];
@@ -112,38 +112,45 @@ export class AzdataTool extends ToolBase {
 	private get azdataInstallAdditionalArgs(): string {
 		return vscode.workspace.getConfiguration(DeploymentConfigurationKey)[azdataPipInstallArgsKey];
 	}
+
+	protected dependenciesByOsType: Map<OsType, dependencyType[]> = new Map<OsType, dependencyType[]>([
+		[OsType.linux, [dependencyType.PythonAndPip3]],
+		[OsType.win32, [dependencyType.PythonAndPip3]],
+		[OsType.darwin, [dependencyType.PythonAndPip3]],
+		[OsType.others, [dependencyType.PythonAndPip3]]
+	]);
 }
 
 /*
 const linuxInstallationCommands = [
 	{
 		sudo: true,
-		comment: localize('resourceDeployment.Azdata.AptGetUpdate', "updating repository information ..."),
+		comment: localize('resourceDeployment.Azdata.AptGetUpdate', "updating repository information …"),
 		command: 'apt-get update'
 	},
 	{
 		sudo: true,
-		comment: localize('resourceDeployment.Azdata.AptGetPackages', "getting packages needed for azdata installation ..."),
+		comment: localize('resourceDeployment.Azdata.AptGetPackages', "getting packages needed for azdata installation …"),
 		command: 'apt-get install gnupg ca-certificates curl apt-transport-https lsb-release -y'
 	},
 	{
 		sudo: true,
-		comment: localize('resourceDeployment.Azdata.DownloadAndInstallingSigningKey', "downloading and installing the signing key for azdata ..."),
+		comment: localize('resourceDeployment.Azdata.DownloadAndInstallingSigningKey', "downloading and installing the signing key for azdata …"),
 		command: 'wget -qO- https://packages.microsoft.com/keys/microsoft.asc | apt-key add -'
 	},
 	{
 		sudo: true,
-		comment: localize('resourceDeployment.Azdata.AddingAzureCliRepositoryInformation', "adding the azdata repository information ..."),
+		comment: localize('resourceDeployment.Azdata.AddingAzureCliRepositoryInformation', "adding the azdata repository information …"),
 		command: 'add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-preview.list)"'
 	},
 	{
 		sudo: true,
-		comment: localize('resourceDeployment.Azdata.AptGetUpdate', "updating repository information ..."),
+		comment: localize('resourceDeployment.Azdata.AptGetUpdate', "updating repository information …"),
 		command: 'apt-get update'
 	},
 	{
 		sudo: true,
-		comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata ..."),
+		comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata …"),
 		command: 'apt-get install -y azdata-cli'
 	}
 ];

@@ -3,26 +3,33 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ServiceClientCredentials } from 'ms-rest';
-import { SqlManagementClient } from 'azure-arm-sql';
 
-import { azureResource } from '../../azure-resource';
-import { IAzureResourceService, AzureResourceDatabaseServer } from '../../interfaces';
+import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
+import { AzureResourceDatabaseServer } from '../../interfaces';
 
-export class AzureResourceDatabaseServerService implements IAzureResourceService<AzureResourceDatabaseServer> {
-	public async getResources(subscription: azureResource.AzureResourceSubscription, credential: ServiceClientCredentials): Promise<AzureResourceDatabaseServer[]> {
-		const databaseServers: AzureResourceDatabaseServer[] = [];
 
-		const sqlManagementClient = new SqlManagementClient(credential, subscription.id);
-		const svrs = await sqlManagementClient.servers.list();
+export interface DbServerGraphData extends GraphData {
+	properties: {
+		fullyQualifiedDomainName: string;
+		administratorLogin: string;
+	};
+}
 
-		svrs.forEach((svr) => databaseServers.push({
-			name: svr.name,
-			fullName: svr.fullyQualifiedDomainName,
-			loginName: svr.administratorLogin,
+export const serversQuery = 'where type == "microsoft.sql/servers"';
+
+export class AzureResourceDatabaseServerService extends ResourceServiceBase<DbServerGraphData, AzureResourceDatabaseServer> {
+
+	protected get query(): string {
+		return serversQuery;
+	}
+
+	protected convertResource(resource: DbServerGraphData): AzureResourceDatabaseServer {
+		return {
+			id: resource.id,
+			name: resource.name,
+			fullName: resource.properties.fullyQualifiedDomainName,
+			loginName: resource.properties.administratorLogin,
 			defaultDatabaseName: 'master'
-		}));
-
-		return databaseServers;
+		};
 	}
 }
