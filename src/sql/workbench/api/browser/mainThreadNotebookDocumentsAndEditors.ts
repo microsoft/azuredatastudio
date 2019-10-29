@@ -709,7 +709,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
 					if (result.next.scheme === Schemas.untitled) {
-						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.next.path, '.ipynb')}`);
+						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.next.path)}`);
 						let content = await this._fileService.readFile(URI.file(result.next.path));
 						await this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
 					}
@@ -722,7 +722,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
 					if (result.previous.scheme === Schemas.untitled) {
-						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.previous.path, '.ipynb')}`);
+						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.previous.path)}`);
 						let content = await this._fileService.readFile(URI.file(result.previous.path));
 						await this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
 					}

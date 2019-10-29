@@ -274,15 +274,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		let untitledFileName: vscode.Uri;
 		let nextTitle: string = this.findNextUntitledFileName(resource);
 		untitledFileName = vscode.Uri.parse(`untitled:${nextTitle}`);
-		if (!this.currentBook.getAllBooks().get(untitledFileName.fsPath) && !this.currentBook.getAllBooks().get(path.basename(untitledFileName.fsPath, '.ipynb'))) {
+		if (!this.currentBook.getAllBooks().get(untitledFileName.fsPath) && !this.currentBook.getAllBooks().get(path.basename(untitledFileName.fsPath))) {
 			let notebook = this.currentBook.getAllBooks().get(resource);
-			this.currentBook.getAllBooks().set(path.basename(untitledFileName.fsPath, '.ipynb'), notebook);
+			this.currentBook.getAllBooks().set(path.basename(untitledFileName.fsPath), notebook);
 		}
 		return untitledFileName;
 	}
 
 	findNextUntitledFileName(filePath: string): string {
-		const baseName = path.basename(filePath, '.ipynb');
+		const baseName = path.basename(filePath);
 		let idx = 0;
 		let title = `${baseName}`;
 		do {

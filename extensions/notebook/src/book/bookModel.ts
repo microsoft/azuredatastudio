@@ -140,8 +140,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 						);
 
 						if (this.openAsUntitled) {
-							if (!this._allNotebooks.get(path.basename(pathToNotebook, '.ipynb'))) {
-								this._allNotebooks.set(path.basename(pathToNotebook, '.ipynb'), notebook);
+							if (!this._allNotebooks.get(path.basename(pathToNotebook))) {
+								this._allNotebooks.set(path.basename(pathToNotebook), notebook);
 								notebooks.push(notebook);
 							}
 						}
@@ -202,7 +202,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	}
 
 	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {
-		let notebook = !this.openAsUntitled ? this._allNotebooks.get(uri.fsPath) : this._allNotebooks.get(path.basename(uri.fsPath, '.ipynb'));
+		let notebook = !this.openAsUntitled ? this._allNotebooks.get(uri.fsPath) : this._allNotebooks.get(path.basename(uri.fsPath));
 		let result: azdata.nb.NavigationResult;
 		if (notebook) {
 			result = {

@@ -262,7 +262,7 @@ export function suggestFilename(mode: string | undefined, prefix: string): strin
 		.filter(assoc => startsWith(assoc, '.'));
 
 	if (extensionsWithDotFirst.length > 0) {
-		return prefix + extensionsWithDotFirst[0];
+		return prefix.endsWith(extensionsWithDotFirst[0]) ? prefix : prefix + extensionsWithDotFirst[0]; // {{SQL CARBON EDIT}}
 	}
 
 	return extensions[0] || prefix;
