@@ -26,7 +26,7 @@
 	"title.tasks": "Tasks",
 	"title.installPackages": "Install Packages",
 	"title.configurePython": "Configure Python for Notebooks",
-	"title.openClusterStatusNotebook": "Cluster Status",
+	"title.openClusterDashboard": "Cluster\nDashboard",
 
 	"title.searchServers": "Search: Servers",
 	"title.clearSearchServerResult": "Search: Clear Search Server Results",
@@ -38,6 +38,7 @@
 
 	"mssql.configuration.title": "MSSQL configuration",
 	"mssql.query.displayBitAsNumber": "Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'",
+	"mssql.query.maxXmlCharsToStore": "Number of XML characters to store after running a query",
 	"mssql.format.alignColumnDefinitionsInColumns": "Should column definitions be aligned?",
 	"mssql.format.datatypeCasing": "Should data types be formatted as UPPERCASE, lowercase, or none (not formatted)",
 	"mssql.format.keywordCasing": "Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)",

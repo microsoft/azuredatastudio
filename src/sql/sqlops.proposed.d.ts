@@ -143,7 +143,7 @@ declare module 'sqlops' {
 		removeFormItem(formComponent: FormComponent | FormComponentGroup): boolean;
 	}
 
-	export interface Component {
+	export interface Component extends ComponentProperties {
 		readonly id: string;
 
 		/**
@@ -168,13 +168,6 @@ declare module 'sqlops' {
 		 * @returns Thenable that completes once the update has been applied to the UI
 		 */
 		updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void>;
-
-		enabled: boolean;
-
-		/**
-		 * Corresponds to the display CSS property for the element
-		 */
-		display: DisplayType;
 
 		/**
 		 * Event fired to notify that the component's validity has changed
@@ -519,7 +512,15 @@ declare module 'sqlops' {
 		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
 		 * Without this the component will fail to correctly size itself
 		 */
-		position?: string;
+		position?: PositionType;
+		/**
+		 * Whether the component is enabled in the DOM
+		 */
+		enabled?: boolean;
+		/**
+		 * Corresponds to the display CSS property for the element
+		 */
+		display?: DisplayType;
 		/**
 		 * Matches the CSS style key and its available values.
 		 */

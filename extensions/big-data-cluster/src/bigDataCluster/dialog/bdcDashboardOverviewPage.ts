@@ -13,21 +13,25 @@ import { IconPathHelper, cssStyles } from '../constants';
 import { getStateDisplayText, getHealthStatusDisplayText, getEndpointDisplayText, getHealthStatusIcon, getServiceNameDisplayText, Endpoint } from '../utils';
 import { EndpointModel, ServiceStatusModel, BdcStatusModel } from '../controller/apiGenerated';
 import { BdcDashboard } from './bdcDashboard';
+import { createViewDetailsButton } from './commonControls';
 
 const localize = nls.loadMessageBundle();
 
-const clusterStateColumnWidth = 125;
+const clusterStateLabelColumnWidth = 100;
+const clusterStateValueColumnWidth = 225;
 const healthStatusColumnWidth = 125;
 
 const overviewIconColumnWidthPx = 25;
 const overviewServiceNameCellWidthPx = 175;
-const overviewStateCellWidthPx = 75;
+const overviewStateCellWidthPx = 150;
 const overviewHealthStatusCellWidthPx = 100;
 
 const serviceEndpointRowServiceNameCellWidth = 200;
 const serviceEndpointRowEndpointCellWidth = 350;
 
 const hyperlinkedEndpoints = [Endpoint.metricsui, Endpoint.logsui, Endpoint.sparkHistory, Endpoint.yarnUi];
+
+type ActionItem = (vscode.MessageItem & { execute: () => void; });
 
 export class BdcDashboardOverviewPage {
 
@@ -72,8 +76,8 @@ export class BdcDashboardOverviewPage {
 		const clusterStateLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.clusterState', "Cluster State :") }).component();
 		const clusterStateValue = view.modelBuilder.text().component();
 		this.clusterStateLoadingComponent = view.modelBuilder.loadingComponent().withItem(clusterStateValue).component();
-		row1.addItem(clusterStateLabel, { CSSStyles: { 'width': `${clusterStateColumnWidth}px`, 'min-width': `${clusterStateColumnWidth}px`, 'user-select': 'none', 'font-weight': 'bold' } });
-		row1.addItem(this.clusterStateLoadingComponent, { CSSStyles: { 'width': `${clusterStateColumnWidth}px`, 'min-width': `${clusterStateColumnWidth}px` } });
+		row1.addItem(clusterStateLabel, { CSSStyles: { 'width': `${clusterStateLabelColumnWidth}px`, 'min-width': `${clusterStateLabelColumnWidth}px`, 'user-select': 'none', 'font-weight': 'bold' } });
+		row1.addItem(this.clusterStateLoadingComponent, { CSSStyles: { 'width': `${clusterStateValueColumnWidth}px`, 'min-width': `${clusterStateValueColumnWidth}px` } });
 
 		// Health Status
 		const healthStatusLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.healthStatus', "Health Status :") }).component();
@@ -230,17 +234,15 @@ export class BdcDashboardOverviewPage {
 			this.dashboard.switchToServiceTab(serviceStatus.serviceName);
 		});
 		serviceStatusRow.addItem(nameCell, { CSSStyles: { 'width': `${overviewServiceNameCellWidthPx}px`, 'min-width': `${overviewServiceNameCellWidthPx}px`, ...cssStyles.text } });
-		const stateCell = this.modelBuilder.text().withProperties({ value: getStateDisplayText(serviceStatus.state), CSSStyles: { ...cssStyles.text } }).component();
+		const stateText = getStateDisplayText(serviceStatus.state);
+		const stateCell = this.modelBuilder.text().withProperties({ value: stateText, title: stateText, CSSStyles: { ...cssStyles.overflowEllipsisText } }).component();
 		serviceStatusRow.addItem(stateCell, { CSSStyles: { 'width': `${overviewStateCellWidthPx}px`, 'min-width': `${overviewStateCellWidthPx}px` } });
-		const healthStatusCell = this.modelBuilder.text().withProperties({ value: getHealthStatusDisplayText(serviceStatus.healthStatus), CSSStyles: { ...cssStyles.text } }).component();
+		const healthStatusText = getHealthStatusDisplayText(serviceStatus.healthStatus);
+		const healthStatusCell = this.modelBuilder.text().withProperties({ value: healthStatusText, title: healthStatusText, CSSStyles: { ...cssStyles.overflowEllipsisText } }).component();
 		serviceStatusRow.addItem(healthStatusCell, { CSSStyles: { 'width': `${overviewHealthStatusCellWidthPx}px`, 'min-width': `${overviewHealthStatusCellWidthPx}px` } });
 
 		if (serviceStatus.healthStatus !== 'healthy' && serviceStatus.details && serviceStatus.details.length > 0) {
-			const viewDetailsButton = this.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: localize('bdc.dashboard.viewDetails', "View Details") }).component();
-			viewDetailsButton.onDidClick(() => {
-				vscode.window.showErrorMessage(serviceStatus.details);
-			});
-			serviceStatusRow.addItem(viewDetailsButton, { flex: '0 0 auto' });
+			serviceStatusRow.addItem(createViewDetailsButton(this.modelBuilder, serviceStatus.details), { flex: '0 0 auto' });
 		}
 
 		container.addItem(serviceStatusRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'border-bottom': isLastRow ? 'solid 1px #ccc' : '', 'box-sizing': 'border-box', 'user-select': 'text' } });

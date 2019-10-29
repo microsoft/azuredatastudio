@@ -285,7 +285,7 @@ declare module 'azdata' {
 		password: string;
 		authenticationType: string;
 		savePassword: boolean;
-		groupFullName: string;
+		groupFullName?: string;
 		groupId: string;
 		providerName: string;
 		saveProfile: boolean;
@@ -427,6 +427,22 @@ declare module 'azdata' {
 		 * options for all new server properties.
 		 */
 		options: { [key: string]: any };
+	}
+
+	/**
+	 * The possible values of the server engine edition
+	 */
+	export enum DatabaseEngineEdition {
+		Unknown = 0,
+		Personal = 1,
+		Standard = 2,
+		Enterprise = 3,
+		Express = 4,
+		SqlDatabase = 5,
+		SqlDataWarehouse = 6,
+		SqlStretchDatabase = 7,
+		SqlManagedInstance = 8,
+		SqlOnDemand = 11
 	}
 
 	export interface DataProvider {
@@ -748,8 +764,6 @@ declare module 'azdata' {
 		deleteCredential(credentialId: string): Thenable<boolean>;
 	}
 
-
-
 	export interface DidChangeLanguageFlavorParams {
 		uri: string;
 		language: string;
@@ -757,7 +771,7 @@ declare module 'azdata' {
 	}
 
 	export interface QueryExecutionOptions {
-		options: Map<string, any>;
+		options: { [option: string]: any; };
 	}
 
 	export interface QueryProvider extends DataProvider {
@@ -836,7 +850,7 @@ declare module 'azdata' {
 	export interface IResultMessage {
 		batchId?: number;
 		isError: boolean;
-		time: string;
+		time?: string;
 		message: string;
 	}
 
@@ -2592,7 +2606,7 @@ declare module 'azdata' {
 		removeFormItem(formComponent: FormComponent | FormComponentGroup): boolean;
 	}
 
-	export interface Component {
+	export interface Component extends ComponentProperties {
 		readonly id: string;
 
 		/**
@@ -2617,13 +2631,6 @@ declare module 'azdata' {
 		 * @returns Thenable that completes once the update has been applied to the UI
 		 */
 		updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void>;
-
-		enabled: boolean;
-
-		/**
-		 * Corresponds to the display CSS property for the element
-		 */
-		display: DisplayType;
 
 		/**
 		 * Event fired to notify that the component's validity has changed
@@ -2902,7 +2909,7 @@ declare module 'azdata' {
 	export interface FormContainer extends Container<FormLayout, FormItemLayout> {
 	}
 
-	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout> {
+	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout>, GroupContainerProperties {
 	}
 
 
@@ -2996,6 +3003,18 @@ declare module 'azdata' {
 		 */
 		position?: PositionType;
 		/**
+		 * Whether the component is enabled in the DOM
+		 */
+		enabled?: boolean;
+		/**
+		 * Corresponds to the display CSS property for the element
+		 */
+		display?: DisplayType;
+		/**
+		 * Corresponds to the aria-label accessibility attribute for this component
+		 */
+		ariaLabel?: string;
+		/**
 		 * Matches the CSS style key and its available values.
 		 */
 		CSSStyles?: { [key: string]: string };
@@ -3009,7 +3028,6 @@ declare module 'azdata' {
 
 	export interface InputBoxProperties extends ComponentProperties {
 		value?: string;
-		ariaLabel?: string;
 		ariaLive?: string;
 		placeHolder?: string;
 		inputType?: InputBoxInputType;
@@ -3113,6 +3131,10 @@ declare module 'azdata' {
 
 	}
 
+	export interface GroupContainerProperties {
+		collapsed: boolean;
+	}
+
 	export interface LinkArea {
 		text: string;
 		url: string;
@@ -3128,7 +3150,6 @@ declare module 'azdata' {
 		values?: string[] | CategoryValue[];
 		editable?: boolean;
 		fireOnTextChange?: boolean;
-		ariaLabel?: string;
 		required?: boolean;
 	}
 
@@ -3207,10 +3228,6 @@ declare module 'azdata' {
 		 * The title for the button. This title will show when hovered over
 		 */
 		title?: string;
-		/**
-		 * The accessibility aria label for this component
-		 */
-		ariaLabel?: string;
 	}
 
 	export interface LoadingComponentProperties {
@@ -3526,7 +3543,7 @@ declare module 'azdata' {
 		 * Create a button which can be included in a dialog
 		 * @param label The label of the button
 		 */
-		export function createButton(label: string): Button;
+		export function createButton(label: string, position?: DialogButtonPosition): Button;
 
 		/**
 		 * Opens the given dialog if it is not already open
@@ -3690,7 +3707,14 @@ declare module 'azdata' {
 			 * Raised when the button is clicked
 			 */
 			readonly onClick: vscode.Event<void>;
+
+			/**
+			 * Position of the button on the dialog footer
+			 */
+			position?: DialogButtonPosition;
 		}
+
+		export type DialogButtonPosition = 'left' | 'right';
 
 		export interface WizardPageChangeInfo {
 			/**

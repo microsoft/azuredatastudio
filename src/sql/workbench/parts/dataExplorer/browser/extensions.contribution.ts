@@ -10,6 +10,7 @@ import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/browser/mssql
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { localize } from 'vs/nls';
+import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 // Data-Tier Application Wizard
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
@@ -20,7 +21,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('dacFx', "Data-tier Application Wizard")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
-		MssqlNodeContext.IsDatabaseOrServer)
+		MssqlNodeContext.IsDatabaseOrServer, MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
 
@@ -33,7 +34,8 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Folder),
-		MssqlNodeContext.NodeLabel.isEqualTo('Databases'))
+		MssqlNodeContext.NodeLabel.isEqualTo('Databases'),
+		MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
 // Profiler
@@ -45,7 +47,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('profiler', "Launch Profiler")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
-		MssqlNodeContext.NodeType.isEqualTo(NodeType.Server))
+		MssqlNodeContext.NodeType.isEqualTo(NodeType.Server), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
 // Flat File Import
@@ -69,7 +71,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('schemaCompare', "Schema Compare")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
-		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database))
+		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
 // Generate Scripts Action
@@ -82,7 +84,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database),
-		MssqlNodeContext.IsWindows)
+		MssqlNodeContext.IsWindows, MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
 // Properties Action
@@ -95,7 +97,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Server), ContextKeyExpr.not('isCloud'),
-		MssqlNodeContext.IsWindows)
+		MssqlNodeContext.IsWindows, MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
@@ -106,6 +108,6 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('properties', "Properties")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
-		MssqlNodeContext.IsWindows,
+		MssqlNodeContext.IsWindows, MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()),
 		ContextKeyRegexExpr.create('nodeType', /^(Database|Table|Column|Index|Statistic|View|ServerLevelLogin|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy|ServerLevelLinkedServer)$/))
 });

@@ -73,9 +73,6 @@
     <trans-unit id="title.configurePython">
       <source xml:lang="en">Configure Python for Notebooks</source>
     </trans-unit>
-    <trans-unit id="title.openClusterStatusNotebook">
-      <source xml:lang="en">Cluster Status</source>
-    </trans-unit>
     <trans-unit id="title.searchServers">
       <source xml:lang="en">Search: Servers</source>
     </trans-unit>
@@ -375,17 +372,20 @@
     <trans-unit id="mssql.manageAccessTitle">
       <source xml:lang="en">Manage Access</source>
     </trans-unit>
+    <trans-unit id="mssql.locationTitle">
+      <source xml:lang="en">Location : </source>
+    </trans-unit>
     <trans-unit id="mssql.permissionsTitle">
       <source xml:lang="en">Permissions</source>
     </trans-unit>
-    <trans-unit id="mssql.ownersHeader">
-      <source xml:lang="en">Owners</source>
+    <trans-unit id="mssql.ownerPostfix">
+      <source xml:lang="en"> - Owner</source>
     </trans-unit>
-    <trans-unit id="mssql.allOthersHeader">
-      <source xml:lang="en">All Others</source>
+    <trans-unit id="mssql.owningGroupPostfix">
+      <source xml:lang="en"> - Owning Group</source>
     </trans-unit>
     <trans-unit id="mssql.everyone">
-      <source xml:lang="en">Everyone</source>
+      <source xml:lang="en">Everyone else</source>
     </trans-unit>
     <trans-unit id="mssql.userLabel">
       <source xml:lang="en">User</source>
@@ -399,8 +399,14 @@
     <trans-unit id="mssql.defaultHeader">
       <source xml:lang="en">Default</source>
     </trans-unit>
+    <trans-unit id="mssql.delete">
+      <source xml:lang="en">Delete</source>
+    </trans-unit>
     <trans-unit id="mssql.stickyHeader">
       <source xml:lang="en">Sticky</source>
+    </trans-unit>
+    <trans-unit id="mssql.inheritDefaultsLabel">
+      <source xml:lang="en">Inherit Defaults</source>
     </trans-unit>
     <trans-unit id="mssql.readHeader">
       <source xml:lang="en">Read</source>
@@ -624,6 +630,20 @@
     </trans-unit>
     <trans-unit id="fileNotFound">
       <source xml:lang="en">Unable to find the file specified</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/mssql/dist/hdfs/hdfsModel" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="mssql.recursivePermissionOpStarted">
+      <source xml:lang="en">Applying permission changes recursively under '{0}'</source>
+    </trans-unit>
+    <trans-unit id="mssql.recursivePermissionOpSucceeded">
+      <source xml:lang="en">Permission changes applied successfully.</source>
+    </trans-unit>
+    <trans-unit id="mssql.recursivePermissionOpProgress">
+      <source xml:lang="en">Applying permission changes to '{0}'.</source>
+    </trans-unit>
+    <trans-unit id="mssql.recursivePermissionOpError">
+      <source xml:lang="en">Error applying permission changes: {0}</source>
     </trans-unit>
   </body></file>
   <file original="extensions/mssql/dist/prompts/confirm" source-language="en" datatype="plaintext"><body>

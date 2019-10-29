@@ -160,6 +160,19 @@ configurationRegistry.registerConfiguration({
 	}
 });
 
+configurationRegistry.registerConfiguration({
+	'id': 'notebook',
+	'title': 'Notebook',
+	'type': 'object',
+	'properties': {
+		'notebook.sqlStopOnError': {
+			'type': 'boolean',
+			'default': true,
+			'description': localize('notebook.sqlStopOnError', "SQL kernel: stop Notebook execution when error occurs in a cell.")
+		}
+	}
+});
+
 registerAction({
 	id: 'workbench.books.action.focusBooksExplorer',
 	handler: async (accessor) => {
@@ -292,4 +305,17 @@ registerComponentType({
 	selector: MarkdownOutputComponent.SELECTOR
 });
 
+/**
+ * A mime renderer for IPyWidgets
+ */
+registerComponentType({
+	mimeTypes: [
+		'application/vnd.jupyter.widget-view',
+		'application/vnd.jupyter.widget-view+json'
+	],
+	rank: 47,
+	safe: true,
+	ctor: MimeRendererComponent,
+	selector: MimeRendererComponent.SELECTOR
+});
 registerCellComponent(TextCellComponent);

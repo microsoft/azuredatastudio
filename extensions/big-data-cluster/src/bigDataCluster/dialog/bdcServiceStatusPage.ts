@@ -131,11 +131,11 @@ export class BdcServiceStatusPage {
  * @param resourceStatus The status of the resource we're creating
  */
 function createResourceHeaderTab(modelBuilder: azdata.ModelBuilder, resourceStatus: ResourceStatusModel): ServiceTab {
-	const resourceHeaderTab = modelBuilder.divContainer().withLayout({ width: '100px', height: '25px' }).withProperties({ CSSStyles: { 'cursor': 'pointer' } }).component();
+	const resourceHeaderTab = modelBuilder.divContainer().withLayout({ width: '100px', height: '25px' }).withProperties({ clickable: true }).component();
 	const innerContainer = modelBuilder.flexContainer().withLayout({ width: '100px', height: '25px', flexFlow: 'row' }).component();
 	const statusDot = modelBuilder.text().withProperties({ value: getHealthStatusDot(resourceStatus.healthStatus), CSSStyles: { 'color': 'red', 'font-size': '40px', 'width': '20px', 'text-align': 'right', ...cssStyles.nonSelectableText } }).component();
 	innerContainer.addItem(statusDot, { flex: '0 0 auto' });
-	const resourceHeaderLabel = modelBuilder.text().withProperties({ value: resourceStatus.resourceName, CSSStyles: { 'text-align': 'left', ...cssStyles.text } }).component();
+	const resourceHeaderLabel = modelBuilder.text().withProperties({ value: resourceStatus.resourceName, CSSStyles: { 'text-align': 'left', ...cssStyles.tabHeaderText } }).component();
 	innerContainer.addItem(resourceHeaderLabel);
 	resourceHeaderTab.addItem(innerContainer);
 	return { div: resourceHeaderTab, text: resourceHeaderLabel, dot: statusDot };

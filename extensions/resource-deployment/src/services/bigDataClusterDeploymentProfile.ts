@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
+import { AuthenticationMode } from '../ui/deployClusterWizard/deployClusterWizardModel';
 export const SqlServerMasterResource = 'master';
 export const DataResource = 'data-0';
 export const HdfsResource = 'storage-0';
@@ -11,15 +11,26 @@ export const NameNodeResource = 'nmnode-0';
 export const SparkHeadResource = 'sparkhead';
 export const ZooKeeperResource = 'zookeeper';
 export const SparkResource = 'spark-0';
-export const HadrEnabledSetting = 'hadr.enabled';
 
 interface ServiceEndpoint {
 	port: number;
 	serviceType: ServiceType;
 	name: EndpointName;
+	dnsName?: string;
 }
 type ServiceType = 'NodePort' | 'LoadBalancer';
-type EndpointName = 'Controller' | 'Master' | 'Knox' | 'MasterSecondary';
+type EndpointName = 'Controller' | 'Master' | 'Knox' | 'MasterSecondary' | 'AppServiceProxy' | 'ServiceProxy';
+
+export interface ActiveDirectorySettings {
+	organizationalUnit: string;
+	domainControllerFQDNs: string;
+	dnsIPAddresses: string;
+	domainDNSName: string;
+	clusterUsers: string;
+	clusterAdmins: string;
+	appReaders?: string;
+	appOwners?: string;
+}
 
 export class BigDataClusterDeploymentProfile {
 	constructor(private _profileName: string, private _bdcConfig: any, private _controlConfig: any) {
@@ -37,6 +48,30 @@ export class BigDataClusterDeploymentProfile {
 
 	public set clusterName(value: string) {
 		this._bdcConfig.metadata.name = value;
+	}
+
+	public get registry(): string {
+		return this._controlConfig.spec.docker.registry;
+	}
+
+	public set registry(value: string) {
+		this._controlConfig.spec.docker.registry = value;
+	}
+
+	public get repository(): string {
+		return this._controlConfig.spec.docker.repository;
+	}
+
+	public set repository(value: string) {
+		this._controlConfig.spec.docker.repository = value;
+	}
+
+	public get imageTag(): string {
+		return this._controlConfig.spec.docker.imageTag;
+	}
+
+	public set imageTag(value: string) {
+		this._controlConfig.spec.docker.imageTag = value;
 	}
 
 	public get bdcConfig(): any {
@@ -107,15 +142,6 @@ export class BigDataClusterDeploymentProfile {
 		return this._bdcConfig.spec.resources[SparkResource] ? this.getReplicas(SparkResource) : 0;
 	}
 
-	public get hadrEnabled(): boolean {
-		const value = this._bdcConfig.spec.resources[SqlServerMasterResource].spec.settings.sql[HadrEnabledSetting];
-		return value === true || value === 'true';
-	}
-
-	public set hadrEnabled(value: boolean) {
-		this._bdcConfig.spec.resources[SqlServerMasterResource].spec.settings.sql[HadrEnabledSetting] = value;
-	}
-
 	public get includeSpark(): boolean {
 		return <boolean>this._bdcConfig.spec.resources[HdfsResource].spec.settings.spark.includeSpark;
 	}
@@ -175,32 +201,48 @@ export class BigDataClusterDeploymentProfile {
 		return this.getEndpointPort(this._controlConfig.spec.endpoints, 'Controller', 30080);
 	}
 
-	public set controllerPort(port: number) {
-		this.setEndpointPort(this._controlConfig.spec.endpoints, 'Controller', port);
+	public setControllerEndpoint(port: number, dnsName?: string) {
+		this.setEndpoint(this._controlConfig.spec.endpoints, 'Controller', port, dnsName);
+	}
+
+	public get serviceProxyPort(): number {
+		return this.getEndpointPort(this._controlConfig.spec.endpoints, 'ServiceProxy', 30080);
+	}
+
+	public setServiceProxyEndpoint(port: number, dnsName?: string) {
+		this.setEndpoint(this._controlConfig.spec.endpoints, 'ServiceProxy', port, dnsName);
+	}
+
+	public get appServiceProxyPort(): number {
+		return this.getEndpointPort(this._bdcConfig.spec.resources.appproxy.spec.endpoints, 'AppServiceProxy', 30777);
+	}
+
+	public setAppServiceProxyEndpoint(port: number, dnsName?: string) {
+		this.setEndpoint(this._bdcConfig.spec.resources.appproxy.spec.endpoints, 'AppServiceProxy', port, dnsName);
 	}
 
 	public get sqlServerPort(): number {
 		return this.getEndpointPort(this._bdcConfig.spec.resources.master.spec.endpoints, 'Master', 31433);
 	}
 
-	public set sqlServerPort(port: number) {
-		this.setEndpointPort(this._bdcConfig.spec.resources.master.spec.endpoints, 'Master', port);
+	public setSqlServerEndpoint(port: number, dnsName?: string) {
+		this.setEndpoint(this._bdcConfig.spec.resources.master.spec.endpoints, 'Master', port, dnsName);
 	}
 
 	public get sqlServerReadableSecondaryPort(): number {
 		return this.getEndpointPort(this._bdcConfig.spec.resources.master.spec.endpoints, 'MasterSecondary', 31436);
 	}
 
-	public set sqlServerReadableSecondaryPort(port: number) {
-		this.setEndpointPort(this._bdcConfig.spec.resources.master.spec.endpoints, 'MasterSecondary', port);
+	public setSqlServerReadableSecondaryEndpoint(port: number, dnsName?: string) {
+		this.setEndpoint(this._bdcConfig.spec.resources.master.spec.endpoints, 'MasterSecondary', port, dnsName);
 	}
 
 	public get gatewayPort(): number {
 		return this.getEndpointPort(this._bdcConfig.spec.resources.gateway.spec.endpoints, 'Knox', 30443);
 	}
 
-	public set gatewayPort(port: number) {
-		this.setEndpointPort(this._bdcConfig.spec.resources.gateway.spec.endpoints, 'Knox', port);
+	public setGatewayEndpoint(port: number, dnsName?: string) {
+		this.setEndpoint(this._bdcConfig.spec.resources.gateway.spec.endpoints, 'Knox', port, dnsName);
 	}
 
 	public addSparkResource(replicas: number): void {
@@ -220,8 +262,32 @@ export class BigDataClusterDeploymentProfile {
 	}
 
 	public get activeDirectorySupported(): boolean {
-		// TODO: Implement AD authentication
-		return false;
+		// The profiles that highlight the AD authentication feature will have a security secion in the control.json for the AD settings.
+		return 'security' in this._controlConfig;
+	}
+
+	public setAuthenticationMode(mode: string): void {
+		// If basic authentication is picked, the security section must be removed
+		// otherwise azdata will throw validation error
+		if (mode === AuthenticationMode.Basic && 'security' in this._controlConfig) {
+			delete this._controlConfig.security;
+		}
+	}
+
+	public setActiveDirectorySettings(adSettings: ActiveDirectorySettings): void {
+		this._controlConfig.security.ouDistinguishedName = adSettings.organizationalUnit;
+		this._controlConfig.security.dnsIpAddresses = this.splitByComma(adSettings.dnsIPAddresses);
+		this._controlConfig.security.domainControllerFullyQualifiedDns = this.splitByComma(adSettings.domainControllerFQDNs);
+		this._controlConfig.security.domainDnsName = adSettings.domainDNSName;
+		this._controlConfig.security.realm = adSettings.domainDNSName.toUpperCase();
+		this._controlConfig.security.clusterAdmins = this.splitByComma(adSettings.clusterAdmins);
+		this._controlConfig.security.clusterUsers = this.splitByComma(adSettings.clusterUsers);
+		if (adSettings.appReaders) {
+			this._controlConfig.security.appReaders = this.splitByComma(adSettings.appReaders);
+		}
+		if (adSettings.appOwners) {
+			this._controlConfig.security.appOwners = this.splitByComma(adSettings.appOwners);
+		}
 	}
 
 	public getBdcJson(readable: boolean = true): string {
@@ -249,16 +315,27 @@ export class BigDataClusterDeploymentProfile {
 		return endpoint ? endpoint.port : defaultValue;
 	}
 
-	private setEndpointPort(endpoints: ServiceEndpoint[], name: EndpointName, port: number): void {
+	private setEndpoint(endpoints: ServiceEndpoint[], name: EndpointName, port: number, dnsName?: string): void {
 		const endpoint = endpoints.find(endpoint => endpoint.name === name);
 		if (endpoint) {
 			endpoint.port = port;
+			endpoint.dnsName = dnsName;
 		} else {
-			endpoints.push({
+			const newEndpoint: ServiceEndpoint = {
 				name: name,
 				serviceType: 'NodePort',
 				port: port
-			});
+			};
+			// for newly added endpoint, we cannot have blank value for the dnsName, only set it if it is not empty
+			if (dnsName) {
+				newEndpoint.dnsName = dnsName;
+			}
+			endpoints.push(newEndpoint);
 		}
+	}
+
+	private splitByComma(value: string): string[] {
+		// split by comma, then remove trailing spaces for each item and finally remove the empty values.
+		return value.split(',').map(v => v && v.trim()).filter(v => v !== '' && v !== undefined);
 	}
 }

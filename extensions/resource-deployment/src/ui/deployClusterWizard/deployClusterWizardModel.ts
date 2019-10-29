@@ -8,20 +8,13 @@ import * as VariableNames from './constants';
 import { BigDataClusterDeploymentProfile, DataResource, SqlServerMasterResource, HdfsResource } from '../../services/bigDataClusterDeploymentProfile';
 import { BdcDeploymentType } from '../../interfaces';
 import { EOL } from 'os';
+import { delimiter } from 'path';
 
 export class DeployClusterWizardModel extends Model {
 	constructor(public deploymentTarget: BdcDeploymentType) {
 		super();
 	}
 	public adAuthSupported: boolean = false;
-
-	public get hadrEnabled(): boolean {
-		return this.getBooleanValue(VariableNames.EnableHADR_VariableName);
-	}
-
-	public set hadrEnabled(value: boolean) {
-		this.setPropertyValue(VariableNames.EnableHADR_VariableName, value);
-	}
 
 	public get authenticationMode(): string | undefined {
 		return this.getStringValue(VariableNames.AuthenticationMode_VariableName);
@@ -71,6 +64,13 @@ export class DeployClusterWizardModel extends Model {
 		const sourceBdcJson = Object.assign({}, this.selectedProfile!.bdcConfig);
 		const sourceControlJson = Object.assign({}, this.selectedProfile!.controlConfig);
 		const targetDeploymentProfile = new BigDataClusterDeploymentProfile('', sourceBdcJson, sourceControlJson);
+		// docker settings
+		targetDeploymentProfile.controlConfig.spec.docker = {
+			registry: this.getStringValue(VariableNames.DockerRegistry_VariableName),
+			repository: this.getStringValue(VariableNames.DockerRepository_VariableName),
+			imageTag: this.getStringValue(VariableNames.DockerImageTag_VariableName),
+			imagePullPolicy: 'Always'
+		};
 		// cluster name
 		targetDeploymentProfile.clusterName = this.getStringValue(VariableNames.ClusterName_VariableName)!;
 		// storage settings
@@ -111,23 +111,37 @@ export class DeployClusterWizardModel extends Model {
 		}
 
 		targetDeploymentProfile.includeSpark = this.getBooleanValue(VariableNames.IncludeSpark_VariableName);
-		targetDeploymentProfile.hadrEnabled = this.getBooleanValue(VariableNames.EnableHADR_VariableName);
 
-		// port settings
-		targetDeploymentProfile.gatewayPort = this.getIntegerValue(VariableNames.GateWayPort_VariableName);
-		targetDeploymentProfile.sqlServerPort = this.getIntegerValue(VariableNames.SQLServerPort_VariableName);
-		targetDeploymentProfile.controllerPort = this.getIntegerValue(VariableNames.ControllerPort_VariableName);
-		targetDeploymentProfile.sqlServerReadableSecondaryPort = this.getIntegerValue(VariableNames.ReadableSecondaryPort_VariableName);
+		// endpoint settings
+		targetDeploymentProfile.setGatewayEndpoint(this.getIntegerValue(VariableNames.GateWayPort_VariableName), this.getStringValue(VariableNames.GatewayDNSName_VariableName));
+		targetDeploymentProfile.setSqlServerEndpoint(this.getIntegerValue(VariableNames.SQLServerPort_VariableName), this.getStringValue(VariableNames.SQLServerDNSName_VariableName));
+		targetDeploymentProfile.setControllerEndpoint(this.getIntegerValue(VariableNames.ControllerPort_VariableName), this.getStringValue(VariableNames.ControllerDNSName_VariableName));
+		targetDeploymentProfile.setSqlServerReadableSecondaryEndpoint(this.getIntegerValue(VariableNames.ReadableSecondaryPort_VariableName), this.getStringValue(VariableNames.ReadableSecondaryDNSName_VariableName));
+		targetDeploymentProfile.setServiceProxyEndpoint(this.getIntegerValue(VariableNames.ServiceProxyPort_VariableName), this.getStringValue(VariableNames.ServiceProxyDNSName_VariableName));
+		targetDeploymentProfile.setAppServiceProxyEndpoint(this.getIntegerValue(VariableNames.AppServiceProxyPort_VariableName), this.getStringValue(VariableNames.AppServiceProxyDNSName_VariableName));
 
+		targetDeploymentProfile.setAuthenticationMode(this.authenticationMode!);
+		if (this.authenticationMode === AuthenticationMode.ActiveDirectory) {
+			targetDeploymentProfile.setActiveDirectorySettings({
+				organizationalUnit: this.getStringValue(VariableNames.OrganizationalUnitDistinguishedName_VariableName)!,
+				domainControllerFQDNs: this.getStringValue(VariableNames.DomainControllerFQDNs_VariableName)!,
+				domainDNSName: this.getStringValue(VariableNames.DomainDNSName_VariableName)!,
+				dnsIPAddresses: this.getStringValue(VariableNames.DomainDNSIPAddresses_VariableName)!,
+				clusterAdmins: this.getStringValue(VariableNames.ClusterAdmins_VariableName)!,
+				clusterUsers: this.getStringValue(VariableNames.ClusterUsers_VariableName)!,
+				appOwners: this.getStringValue(VariableNames.AppOwners_VariableName),
+				appReaders: this.getStringValue(VariableNames.AppReaders_VariableName)
+			});
+		}
 		return targetDeploymentProfile;
 	}
 
-	public getCodeCellContentForNotebook(): string {
+	public getCodeCellContentForNotebook(): string[] {
 		const profile = this.createTargetProfile();
 		const statements: string[] = [];
 		if (this.deploymentTarget === BdcDeploymentType.NewAKS) {
 			statements.push(`azure_subscription_id = '${this.getStringValue(VariableNames.SubscriptionId_VariableName, '')}'`);
-			statements.push(`azure_region = '${this.getStringValue(VariableNames.Region_VariableName)}'`);
+			statements.push(`azure_region = '${this.getStringValue(VariableNames.Location_VariableName)}'`);
 			statements.push(`azure_resource_group = '${this.getStringValue(VariableNames.ResourceGroup_VariableName)}'`);
 			statements.push(`azure_vm_size = '${this.getStringValue(VariableNames.VMSize_VariableName)}'`);
 			statements.push(`azure_vm_count = '${this.getStringValue(VariableNames.VMCount_VariableName)}'`);
@@ -137,12 +151,21 @@ export class DeployClusterWizardModel extends Model {
 			statements.push(`mssql_cluster_context = '${this.getStringValue(VariableNames.ClusterContext_VariableName)}'`);
 			statements.push('os.environ["KUBECONFIG"] = mssql_kube_config_path');
 		}
+		if (this.authenticationMode === AuthenticationMode.ActiveDirectory) {
+			statements.push(`mssql_domain_service_account_username = '${this.escapeForNotebookCodeCell(this.getStringValue(VariableNames.DomainServiceAccountUserName_VariableName)!)}'`);
+		}
 		statements.push(`mssql_cluster_name = '${this.getStringValue(VariableNames.ClusterName_VariableName)}'`);
-		statements.push(`mssql_controller_username = '${this.getStringValue(VariableNames.AdminUserName_VariableName)}'`);
+		statements.push(`mssql_username = '${this.getStringValue(VariableNames.AdminUserName_VariableName)}'`);
+		statements.push(`mssql_auth_mode = '${this.authenticationMode}'`);
 		statements.push(`bdc_json = '${profile.getBdcJson(false)}'`);
 		statements.push(`control_json = '${profile.getControlJson(false)}'`);
+		if (this.getStringValue(VariableNames.DockerUsername_VariableName) && this.getStringValue(VariableNames.DockerPassword_VariableName)) {
+			statements.push(`os.environ["DOCKER_USERNAME"] = '${this.getStringValue(VariableNames.DockerUsername_VariableName)}'`);
+			statements.push(`os.environ["DOCKER_PASSWORD"] = os.environ["${VariableNames.DockerPassword_VariableName}"]`);
+		}
+		statements.push(`os.environ["PATH"] = os.environ["PATH"] + "${delimiter}" + "${this.escapeForNotebookCodeCell(process.env[VariableNames.ToolsInstallPath]!)}"`);
 		statements.push(`print('Variables have been set successfully.')`);
-		return statements.join(EOL);
+		return statements.map(line => line + EOL);
 	}
 
 	private escapeForNotebookCodeCell(original: string): string {

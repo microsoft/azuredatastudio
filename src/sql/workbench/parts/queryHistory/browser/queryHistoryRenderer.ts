@@ -50,7 +50,7 @@ export class QueryHistoryRenderer implements IRenderer {
 	public renderTemplate(tree: ITree, templateId: string, container: HTMLElement): any {
 		const taskTemplate: IQueryHistoryItemTemplateData = Object.create(null);
 		taskTemplate.root = dom.append(container, $('.query-history-item'));
-		taskTemplate.icon = dom.append(taskTemplate.root, $('.icon.query-history-icon'));
+		taskTemplate.icon = dom.append(taskTemplate.root, $('.codicon.query-history-icon'));
 		taskTemplate.label = dom.append(taskTemplate.root, $('.label'));
 		taskTemplate.connectionInfo = dom.append(taskTemplate.root, $('.connection-info'));
 		taskTemplate.time = dom.append(taskTemplate.root, $('.time'));

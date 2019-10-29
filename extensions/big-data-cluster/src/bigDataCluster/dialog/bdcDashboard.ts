@@ -8,12 +8,13 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { BdcDashboardModel } from './bdcDashboardModel';
+import { BdcDashboardModel, getTroubleshootNotebookUrl } from './bdcDashboardModel';
 import { IconPathHelper, cssStyles } from '../constants';
 import { BdcServiceStatusPage } from './bdcServiceStatusPage';
 import { BdcDashboardOverviewPage } from './bdcDashboardOverviewPage';
 import { BdcStatusModel, ServiceStatusModel } from '../controller/apiGenerated';
-import { getHealthStatusDot, getServiceNameDisplayText } from '../utils';
+import { getHealthStatusDot, getServiceNameDisplayText, showErrorMessage } from '../utils';
+import { HdfsDialogCancelledError } from './hdfsDialogBase';
 
 const localize = nls.loadMessageBundle();
 
@@ -22,7 +23,7 @@ const navWidth = '200px';
 const selectedTabCss = { 'font-weight': 'bold' };
 const unselectedTabCss = { 'font-weight': '' };
 
-type NavTab = { div: azdata.DivContainer, dot: azdata.TextComponent, text: azdata.TextComponent };
+type NavTab = { serviceName: string, div: azdata.DivContainer, dot: azdata.TextComponent, text: azdata.TextComponent };
 
 export class BdcDashboard {
 
@@ -37,10 +38,13 @@ export class BdcDashboard {
 	private currentTab: NavTab;
 	private currentPage: azdata.FlexContainer;
 
+	private refreshButton: azdata.ButtonComponent;
+
 	private serviceTabPageMapping = new Map<string, { navTab: NavTab, servicePage: azdata.FlexContainer }>();
 
 	constructor(private title: string, private model: BdcDashboardModel) {
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.handleBdcStatusUpdate(bdcStatus));
+		this.model.onError(error => this.handleError(error));
 	}
 
 	public showDashboard(): void {
@@ -64,30 +68,30 @@ export class BdcDashboard {
 			// ###########
 
 			// Refresh button
-			const refreshButton = modelView.modelBuilder.button()
-				.withProperties({
+			this.refreshButton = modelView.modelBuilder.button()
+				.withProperties<azdata.ButtonProperties>({
 					label: localize('bdc.dashboard.refreshButton', "Refresh"),
-					iconPath: IconPathHelper.refresh,
-					height: '50px'
+					iconPath: IconPathHelper.refresh
 				}).component();
 
-			refreshButton.onDidClick(() => this.model.refresh());
+			this.refreshButton.onDidClick(async () => {
+				await this.doRefresh();
+			});
 
 			const openTroubleshootNotebookButton = modelView.modelBuilder.button()
-				.withProperties({
+				.withProperties<azdata.ButtonProperties>({
 					label: localize('bdc.dashboard.troubleshootButton', "Troubleshoot"),
-					iconPath: IconPathHelper.notebook,
-					height: '50px'
+					iconPath: IconPathHelper.notebook
 				}).component();
 
 			openTroubleshootNotebookButton.onDidClick(() => {
-				vscode.commands.executeCommand('books.sqlserver2019');
+				vscode.commands.executeCommand('books.sqlserver2019', getTroubleshootNotebookUrl(this.currentTab.serviceName));
 			});
 
 			const toolbarContainer = modelView.modelBuilder.toolbarContainer()
 				.withToolbarItems(
 					[
-						{ component: refreshButton },
+						{ component: this.refreshButton },
 						{ component: openTroubleshootNotebookButton }
 					]
 				).component();
@@ -122,13 +126,13 @@ export class BdcDashboard {
 			this.mainAreaContainer.addItem(this.navContainer, { flex: `0 0 ${navWidth}`, CSSStyles: { 'padding': '0 20px 0 20px', 'border-right': 'solid 1px #ccc' } });
 
 			// Overview nav item - this will be the initial page
-			const overviewNavItemDiv = modelView.modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).withProperties({ CSSStyles: { 'cursor': 'pointer' } }).component();
-			const overviewNavItemText = modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.overviewNavTitle', 'Big data cluster overview') }).component();
+			const overviewNavItemDiv = modelView.modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).withProperties({ clickable: true }).component();
+			const overviewNavItemText = modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.overviewNavTitle', "Big data cluster overview") }).component();
 			overviewNavItemText.updateCssStyles(selectedTabCss);
 			overviewNavItemDiv.addItem(overviewNavItemText, { CSSStyles: { 'user-select': 'text' } });
 			const overviewPage = new BdcDashboardOverviewPage(this, this.model).create(modelView);
 			this.currentPage = overviewPage;
-			this.currentTab = { div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
+			this.currentTab = { serviceName: undefined, div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
 			this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
 
 			overviewNavItemDiv.onDidClick(() => {
@@ -138,12 +142,12 @@ export class BdcDashboard {
 				this.mainAreaContainer.removeItem(this.currentPage);
 				this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
 				this.currentPage = overviewPage;
-				this.currentTab = { div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
+				this.currentTab = { serviceName: undefined, div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
 				this.currentTab.text.updateCssStyles(selectedTabCss);
 			});
 			this.navContainer.addItem(overviewNavItemDiv, { flex: '0 0 auto' });
 
-			const clusterDetailsHeader = modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.clusterDetails', 'Cluster Details'), CSSStyles: { 'margin-block-end': '0px' } }).component();
+			const clusterDetailsHeader = modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.clusterDetails', "Cluster Details"), CSSStyles: { 'margin-block-end': '0px' } }).component();
 			this.navContainer.addItem(clusterDetailsHeader, { CSSStyles: { 'user-select': 'none', 'font-weight': 'bold', 'border-bottom': 'solid 1px #ccc', 'margin-bottom': '10px' } });
 
 			await modelView.initializeModel(rootContainer);
@@ -161,6 +165,23 @@ export class BdcDashboard {
 		}
 
 		this.updateServiceNavTabs(bdcStatus.services);
+	}
+
+	private handleError(error: Error): void {
+		// We don't want to show an error for the connection dialog being
+		// canceled since that's a normal case.
+		if (!(error instanceof HdfsDialogCancelledError)) {
+			showErrorMessage(error.message);
+		}
+	}
+
+	private async doRefresh(): Promise<void> {
+		try {
+			this.refreshButton.enabled = false;
+			await this.model.refresh();
+		} finally {
+			this.refreshButton.enabled = true;
+		}
 	}
 
 	/**
@@ -209,12 +230,12 @@ export class BdcDashboard {
 }
 
 function createServiceNavTab(modelBuilder: azdata.ModelBuilder, serviceStatus: ServiceStatusModel): NavTab {
-	const div = modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).withProperties({ CSSStyles: { 'cursor': 'pointer' } }).component();
+	const div = modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px', }).withProperties({ clickable: true }).component();
 	const innerContainer = modelBuilder.flexContainer().withLayout({ width: navWidth, height: '30px', flexFlow: 'row' }).component();
 	const dot = modelBuilder.text().withProperties({ value: getHealthStatusDot(serviceStatus.healthStatus), CSSStyles: { 'color': 'red', 'font-size': '40px', 'width': '20px', ...cssStyles.nonSelectableText } }).component();
 	innerContainer.addItem(dot, { flex: '0 0 auto' });
-	const text = modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { ...cssStyles.nonSelectableText } }).component();
+	const text = modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { ...cssStyles.tabHeaderText } }).component();
 	innerContainer.addItem(text, { flex: '0 0 auto' });
 	div.addItem(innerContainer);
-	return { div: div, dot: dot, text: text };
+	return { serviceName: serviceStatus.serviceName, div: div, dot: dot, text: text };
 }

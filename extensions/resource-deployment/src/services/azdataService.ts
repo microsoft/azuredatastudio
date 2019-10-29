@@ -5,23 +5,42 @@
 import * as path from 'path';
 import { IPlatformService } from './platformService';
 import { BigDataClusterDeploymentProfile } from './bigDataClusterDeploymentProfile';
+import { BdcDeploymentType } from '../interfaces';
 
 interface BdcConfigListOutput {
-	stdout: string[];
+	result: string[];
+}
+
+export interface BdcEndpoint {
+	endpoint: string;
+	name: 'sql-server-master';
 }
 
 export interface IAzdataService {
-	getDeploymentProfiles(): Promise<BigDataClusterDeploymentProfile[]>;
+	getDeploymentProfiles(deploymentType: BdcDeploymentType): Promise<BigDataClusterDeploymentProfile[]>;
+	getEndpoints(clusterName: string, userName: string, password: string): Promise<BdcEndpoint[]>;
 }
 
 export class AzdataService implements IAzdataService {
 	constructor(private platformService: IPlatformService) {
 	}
 
-	public async getDeploymentProfiles(): Promise<BigDataClusterDeploymentProfile[]> {
+	public async getDeploymentProfiles(deploymentType: BdcDeploymentType): Promise<BigDataClusterDeploymentProfile[]> {
+		let profilePrefix: string;
+		switch (deploymentType) {
+			case BdcDeploymentType.NewAKS:
+			case BdcDeploymentType.ExistingAKS:
+				profilePrefix = 'aks';
+				break;
+			case BdcDeploymentType.ExistingKubeAdm:
+				profilePrefix = 'kubeadm';
+				break;
+			default:
+				throw new Error(`Unknown deployment type: ${deploymentType}`);
+		}
 		await this.ensureWorkingDirectoryExists();
 		const profileNames = await this.getDeploymentProfileNames();
-		return await Promise.all(profileNames.map(profile => this.getDeploymentProfileInfo(profile)));
+		return await Promise.all(profileNames.filter(profile => profile.startsWith(profilePrefix)).map(profile => this.getDeploymentProfileInfo(profile)));
 	}
 
 	private async getDeploymentProfileNames(): Promise<string[]> {
@@ -29,17 +48,16 @@ export class AzdataService implements IAzdataService {
 		// azdata requires this environment variables to be set
 		env['ACCEPT_EULA'] = 'yes';
 		const cmd = 'azdata bdc config list -o json';
-		// Run the command twice to workaround the issue:
-		// First time use of the azdata will have extra EULA related string in the output
-		// there is no easy and reliable way to filter out the profile names from it.
-		await this.platformService.runCommand(cmd, { additionalEnvironmentVariables: env });
-		const stdout = await this.platformService.runCommand(cmd);
+		const stdout = await this.platformService.runCommand(cmd, { additionalEnvironmentVariables: env });
 		const output = <BdcConfigListOutput>JSON.parse(stdout);
-		return output.stdout;
+		return output.result;
 	}
 
 	private async getDeploymentProfileInfo(profileName: string): Promise<BigDataClusterDeploymentProfile> {
-		await this.platformService.runCommand(`azdata bdc config init --source ${profileName} --target ${profileName} --force`, { workingDirectory: this.platformService.storagePath() });
+		const env: NodeJS.ProcessEnv = {};
+		// azdata requires this environment variables to be set
+		env['ACCEPT_EULA'] = 'yes';
+		await this.platformService.runCommand(`azdata bdc config init --source ${profileName} --target ${profileName} --force`, { workingDirectory: this.platformService.storagePath(), additionalEnvironmentVariables: env });
 		const configObjects = await Promise.all([
 			this.getJsonObjectFromFile(path.join(this.platformService.storagePath(), profileName, 'bdc.json')),
 			this.getJsonObjectFromFile(path.join(this.platformService.storagePath(), profileName, 'control.json'))
@@ -48,12 +66,22 @@ export class AzdataService implements IAzdataService {
 	}
 
 	private async ensureWorkingDirectoryExists(): Promise<void> {
-		if (! await this.platformService.fileExists(this.platformService.storagePath())) {
-			await this.platformService.makeDirectory(this.platformService.storagePath());
-		}
+		await this.platformService.ensureDirectoryExists(this.platformService.storagePath());
 	}
 
 	private async getJsonObjectFromFile(path: string): Promise<any> {
 		return JSON.parse(await this.platformService.readTextFile(path));
+	}
+
+	public async getEndpoints(clusterName: string, userName: string, password: string): Promise<BdcEndpoint[]> {
+		const env: NodeJS.ProcessEnv = {};
+		env['AZDATA_USERNAME'] = userName;
+		env['AZDATA_PASSWORD'] = password;
+		env['ACCEPT_EULA'] = 'yes';
+		let cmd = 'azdata login -n ' + clusterName;
+		await this.platformService.runCommand(cmd, { additionalEnvironmentVariables: env });
+		cmd = 'azdata bdc endpoint list';
+		const stdout = await this.platformService.runCommand(cmd, { additionalEnvironmentVariables: env });
+		return <BdcEndpoint[]>JSON.parse(stdout);
 	}
 }

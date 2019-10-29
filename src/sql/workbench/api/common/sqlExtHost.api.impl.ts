@@ -413,8 +413,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				createTab(title: string): azdata.window.DialogTab {
 					return extHostModelViewDialog.createTab(title, extension);
 				},
-				createButton(label: string): azdata.window.Button {
-					return extHostModelViewDialog.createButton(label);
+				createButton(label: string, position: azdata.window.DialogButtonPosition = 'right'): azdata.window.Button {
+					return extHostModelViewDialog.createButton(label, position);
 				},
 				openDialog(dialog: azdata.window.Dialog) {
 					return extHostModelViewDialog.openDialog(dialog);
@@ -558,7 +558,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				StepCompletionAction: sqlExtHostTypes.StepCompletionAction,
 				AgentSubSystem: sqlExtHostTypes.AgentSubSystem,
 				ExtensionNodeType: sqlExtHostTypes.ExtensionNodeType,
-				ColumnSizingMode: sqlExtHostTypes.ColumnSizingMode
+				ColumnSizingMode: sqlExtHostTypes.ColumnSizingMode,
+				DatabaseEngineEdition: sqlExtHostTypes.DatabaseEngineEdition
 			};
 		},
 

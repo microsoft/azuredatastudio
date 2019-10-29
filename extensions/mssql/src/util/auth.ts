@@ -5,6 +5,11 @@
 
 import * as kerberos from 'kerberos';
 
+export enum AuthType {
+	Integrated = 'integrated',
+	Basic = 'basic'
+}
+
 export async function authenticateKerberos(hostname: string): Promise<string> {
 	const service = 'HTTP' + (process.platform === 'win32' ? '/' : '@') + hostname;
 	const mechOID = kerberos.GSS_MECH_OID_KRB5;

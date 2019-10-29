@@ -12,7 +12,7 @@ import { IExtensionPointUser, ExtensionMessageCollector, ExtensionsRegistry } fr
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { MenuId, MenuRegistry, ILocalizedString, IMenuItem } from 'vs/platform/actions/common/actions';
 import { URI } from 'vs/base/common/uri';
-import { IDisposable, dispose, DisposableStore } from 'vs/base/common/lifecycle';
+import { DisposableStore } from 'vs/base/common/lifecycle';
 
 namespace schema {
 
@@ -392,7 +392,7 @@ commandsExtensionPoint.setHandler(extensions => {
 	}
 });
 
-let _menuRegistrations: IDisposable[] = [];
+const _menuRegistrations = new DisposableStore();
 
 ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: schema.IUserFriendlyMenuItem[] }>({
 	extensionPoint: 'menus',
@@ -400,7 +400,7 @@ ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: schema.IUserFriendlyM
 }).setHandler(extensions => {
 
 	// remove all previous menu registrations
-	_menuRegistrations = dispose(_menuRegistrations);
+	_menuRegistrations.clear();
 
 	for (let extension of extensions) {
 		const { value, collector } = extension;
@@ -455,7 +455,7 @@ ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: schema.IUserFriendlyM
 					order,
 					when: ContextKeyExpr.deserialize(item.when)
 				} as IMenuItem);
-				_menuRegistrations.push(registration);
+				_menuRegistrations.add(registration);
 			}
 		});
 	}

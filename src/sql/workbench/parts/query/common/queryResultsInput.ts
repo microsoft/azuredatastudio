@@ -42,9 +42,9 @@ export class ResultsViewState {
  */
 export class QueryResultsInput extends EditorInput {
 
-	private _state = new ResultsViewState();
+	private _state?= new ResultsViewState();
 
-	public get state(): ResultsViewState {
+	public get state(): ResultsViewState | undefined {
 		return this._state;
 	}
 
@@ -53,7 +53,7 @@ export class QueryResultsInput extends EditorInput {
 	}
 
 	close() {
-		this.state.dispose();
+		this.state!.dispose();
 		this._state = undefined;
 		super.close();
 	}

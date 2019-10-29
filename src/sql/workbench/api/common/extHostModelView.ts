@@ -74,7 +74,7 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 
 	groupContainer(): azdata.GroupBuilder {
 		let id = this.getNextComponentId();
-		let container: GenericContainerBuilder<azdata.GroupContainer, any, any> = new GenericContainerBuilder<azdata.GroupContainer, azdata.GroupLayout, azdata.GroupItemLayout>(this._proxy, this._handle, ModelComponentTypes.Group, id);
+		let container = new GroupContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Group, id);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
@@ -329,6 +329,12 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 		if (formComponent.required && componentWrapper) {
 			componentWrapper.required = true;
 		}
+		if (formComponent.title && componentWrapper) {
+			componentWrapper.ariaLabel = formComponent.title;
+			if (componentWrapper instanceof LoadingComponentWrapper) {
+				componentWrapper.component.ariaLabel = formComponent.title;
+			}
+		}
 		let actions: string[] = undefined;
 		if (formComponent.actions) {
 			actions = formComponent.actions.map(action => {
@@ -419,6 +425,12 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 			}
 		}
 		return result;
+	}
+}
+
+class GroupContainerBuilder extends ContainerBuilderImpl<azdata.GroupContainer, azdata.GroupLayout, azdata.GroupItemLayout> {
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(new GroupContainerComponentWrapper(proxy, handle, type, id));
 	}
 }
 
@@ -544,6 +556,14 @@ class ComponentWrapper implements azdata.Component {
 	}
 	public set display(v: azdata.DisplayType) {
 		this.setProperty('display', v);
+	}
+
+	public get ariaLabel(): string {
+		return this.properties['ariaLabel'];
+	}
+
+	public set ariaLabel(v: string) {
+		this.setProperty('ariaLabel', v);
 	}
 
 	public get CSSStyles(): { [key: string]: string } {
@@ -814,18 +834,11 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		this.setProperty('value', v);
 	}
 
-	public get ariaLabel(): string {
-		return this.properties['ariaLabel'];
-	}
-	public set ariaLabel(v: string) {
-		this.setProperty('ariaLabel', v);
-	}
-
 	public get ariaLive(): string {
 		return this.properties['ariaLive'];
 	}
 	public set ariaLive(v: string) {
-		this.setProperty('ariaLabel', v);
+		this.setProperty('ariaLive', v);
 	}
 
 	public get placeHolder(): string {
@@ -1291,7 +1304,7 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 
 	public get value(): string | azdata.CategoryValue {
 		let val = this.properties['value'];
-		if (!val && this.values && this.values.length > 0) {
+		if (!this.editable && !val && this.values && this.values.length > 0) {
 			val = this.values[0];
 		}
 		return val;
@@ -1319,13 +1332,6 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 	}
 	public set fireOnTextChange(v: boolean) {
 		this.setProperty('fireOnTextChange', v);
-	}
-
-	public get ariaLabel(): string {
-		return this.properties['ariaLabel'];
-	}
-	public set ariaLabel(v: string) {
-		this.setProperty('ariaLabel', v);
 	}
 
 	public get onValueChanged(): vscode.Event<any> {
@@ -1411,13 +1417,6 @@ class ButtonWrapper extends ComponentWithIconWrapper implements azdata.ButtonCom
 	}
 	public set title(v: string) {
 		this.setProperty('title', v);
-	}
-
-	public get ariaLabel(): string {
-		return this.properties['ariaLabel'];
-	}
-	public set ariaLabel(v: string) {
-		this.setProperty('ariaLabel', v);
 	}
 
 	public get onDidClick(): vscode.Event<any> {
@@ -1542,6 +1541,19 @@ class HyperlinkComponentWrapper extends ComponentWrapper implements azdata.Hyper
 	}
 	public set url(v: string) {
 		this.setProperty('url', v);
+	}
+}
+
+class GroupContainerComponentWrapper extends ComponentWrapper implements azdata.GroupContainer {
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(proxy, handle, type, id);
+		this.properties = {};
+	}
+	public get collapsed(): boolean {
+		return this.properties['collapsed'];
+	}
+	public set collapsed(v: boolean) {
+		this.setProperty('collapsed', v);
 	}
 }
 

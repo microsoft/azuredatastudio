@@ -187,11 +187,11 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 
 			this.pickScheduleButton = view.modelBuilder.button().withProperties({
 				label: PickScheduleButtonString,
-				width: 100
+				width: 110
 			}).component();
 			this.removeScheduleButton = view.modelBuilder.button().withProperties({
 				label: RemoveScheduleButtonString,
-				width: 100
+				width: 110
 			}).component();
 			this.pickScheduleButton.onDidClick(() => {
 				let pickScheduleDialog = new PickScheduleDialog(this.model.ownerUri, this.model.name);
@@ -228,20 +228,20 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 							component: notebookPathFlexBox,
 							title: TemplateNotebookTextBoxLabel,
 							layout: {
-								info: localize('notebookDialog.templatePath', 'Select a notebook to schedule from PC')
+								info: localize('notebookDialog.templatePath', "Select a notebook to schedule from PC")
 							}
 						},
 						{
 							component: this.targetDatabaseDropDown,
 							title: TargetDatabaseDropdownLabel,
 							layout: {
-								info: localize('notebookDialog.targetDatabaseInfo', 'Select a database to store all notebook job metadata and results')
+								info: localize('notebookDialog.targetDatabaseInfo', "Select a database to store all notebook job metadata and results")
 							}
 						}, {
 							component: this.executeDatabaseDropDown,
 							title: ExecuteDatabaseDropdownLabel,
 							layout: {
-								info: localize('notebookDialog.executionDatabaseInfo', 'Select a database against which notebook queries will run')
+								info: localize('notebookDialog.executionDatabaseInfo', "Select a database against which notebook queries will run")
 							}
 						}],
 						title: NotebookDetailsSeparatorTitle

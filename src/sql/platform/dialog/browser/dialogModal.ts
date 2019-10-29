@@ -91,7 +91,7 @@ export class DialogModal extends Modal {
 	}
 
 	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true, requireDialogValid: boolean = false): Button {
-		let buttonElement = this.addFooterButton(button.label, onSelect);
+		let buttonElement = this.addFooterButton(button.label, onSelect, button.position);
 		buttonElement.enabled = button.enabled;
 		if (registerClickEvent) {
 			button.registerClickEvent(buttonElement.onDidClick);

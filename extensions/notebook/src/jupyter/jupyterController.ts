@@ -19,7 +19,7 @@ import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
 
 import { AppContext } from '../common/appContext';
 import { ApiWrapper } from '../common/apiWrapper';
-import { LocalJupyterServerManager } from './jupyterServerManager';
+import { LocalJupyterServerManager, ServerInstanceFactory } from './jupyterServerManager';
 import { NotebookCompletionItemProvider } from '../intellisense/completionItemProvider';
 import { JupyterNotebookProvider } from './jupyterNotebookProvider';
 import { ConfigurePythonDialog } from '../dialog/configurePythonDialog';
@@ -31,6 +31,7 @@ let untitledCounter = 0;
 export class JupyterController implements vscode.Disposable {
 	private _jupyterInstallation: JupyterServerInstallation;
 	private _notebookInstances: IServerInstance[] = [];
+	private _serverInstanceFactory: ServerInstanceFactory = new ServerInstanceFactory();
 
 	private outputChannel: vscode.OutputChannel;
 	private prompter: IPrompter;
@@ -92,7 +93,8 @@ export class JupyterController implements vscode.Disposable {
 			documentPath: documentUri.fsPath,
 			jupyterInstallation: this._jupyterInstallation,
 			extensionContext: this.extensionContext,
-			apiWrapper: this.apiWrapper
+			apiWrapper: this.apiWrapper,
+			factory: this._serverInstanceFactory
 		}));
 		azdata.nb.registerNotebookProvider(notebookProvider);
 		return notebookProvider;
@@ -117,7 +119,7 @@ export class JupyterController implements vscode.Disposable {
 	}
 
 	private async handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promise<void> {
-		let notebookFileTypeName = localize('notebookFileType', 'Notebooks');
+		let notebookFileTypeName = localize('notebookFileType', "Notebooks");
 		let filter: { [key: string]: Array<string> } = {};
 		filter[notebookFileTypeName] = ['ipynb'];
 		let uris = await this.apiWrapper.showOpenDialog({
@@ -130,7 +132,7 @@ export class JupyterController implements vscode.Disposable {
 			// Verify this is a .ipynb file since this isn't actually filtered on Mac/Linux
 			if (path.extname(fileUri.fsPath) !== '.ipynb') {
 				// in the future might want additional supported types
-				this.apiWrapper.showErrorMessage(localize('unsupportedFileType', 'Only .ipynb Notebooks are supported'));
+				this.apiWrapper.showErrorMessage(localize('unsupportedFileType', "Only .ipynb Notebooks are supported"));
 			} else {
 				await azdata.nb.showNotebookDocument(fileUri, {
 					connectionProfile: profile,
@@ -189,7 +191,7 @@ export class JupyterController implements vscode.Disposable {
 	private async confirmReinstall(): Promise<boolean> {
 		return await this.prompter.promptSingle<boolean>(<IQuestion>{
 			type: QuestionTypes.confirm,
-			message: localize('confirmReinstall', 'Are you sure you want to reinstall?'),
+			message: localize('confirmReinstall', "Are you sure you want to reinstall?"),
 			default: true
 		});
 	}

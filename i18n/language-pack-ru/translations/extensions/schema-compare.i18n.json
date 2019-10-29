@@ -8,12 +8,12 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/schema-compare/package": {
+		"package": {
 			"displayName": "Сравнение схем SQL Server",
 			"description": "Сравнение схем SQL для Azure Data Studio поддерживает сравнение схем баз данных и файлов DACPAC.",
 			"schemaCompare.start": "Сравнение схем"
 		},
-		"extensions/schema-compare/out/dialogs/schemaCompareOptionsDialog": {
+		"out/dialogs/schemaCompareOptionsDialog": {
 			"SchemaCompareOptionsDialog.Ok": "ОК",
 			"SchemaCompareOptionsDialog.Cancel": "Отмена",
 			"SchemaCompareOptionsDialog.Reset": "Сброс",
@@ -242,7 +242,7 @@
 			"SchemaCompare.Description.DropObjectsNotInSource": "Указывает, будут ли объекты, которые отсутствуют в файле моментального снимка базы данных (DACPAC), удалены из целевой базы данных при публикации в базе данных. Данное значение имеет приоритет над DropExtendedProperties.",
 			"SchemaCompare.Description.IgnoreColumnOrder": "Указывает, следует ли игнорировать или обновлять различия в порядке столбцов таблицы при публикации в базе данных."
 		},
-		"extensions/schema-compare/out/dialogs/schemaCompareDialog": {
+		"out/dialogs/schemaCompareDialog": {
 			"schemaCompareDialog.ok": "ОК",
 			"schemaCompareDialog.cancel": "Отмена",
 			"schemaCompareDialog.SourceTitle": "Исходная база данных",
@@ -263,7 +263,7 @@
 			"schemaCompare.openFile": "Открыто",
 			"schemaCompareDialog.defaultUser": "По умолчанию"
 		},
-		"extensions/schema-compare/out/schemaCompareMainWindow": {
+		"out/schemaCompareMainWindow": {
 			"schemaCompare.CompareDetailsTitle": "Сравнить сведения",
 			"schemaCompare.ApplyConfirmation": "Вы действительно хотите обновить целевой объект?",
 			"schemaCompare.RecompareToRefresh": "Нажмите \"Сравнить\", чтобы обновить сравнение.",

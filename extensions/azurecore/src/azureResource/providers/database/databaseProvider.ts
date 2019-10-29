@@ -3,24 +3,20 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 
 import { ExtensionContext } from 'vscode';
 import { ApiWrapper } from '../../../apiWrapper';
 
 import { azureResource } from '../../azure-resource';
-import { IAzureResourceDatabaseService } from './interfaces';
 import { AzureResourceDatabaseTreeDataProvider } from './databaseTreeDataProvider';
+import { IAzureResourceService, AzureResourceDatabase } from '../../interfaces';
 
 export class AzureResourceDatabaseProvider implements azureResource.IAzureResourceProvider {
 	public constructor(
-		databaseService: IAzureResourceDatabaseService,
-		apiWrapper: ApiWrapper,
-		extensionContext: ExtensionContext
+		private _databaseService: IAzureResourceService<AzureResourceDatabase>,
+		private _apiWrapper: ApiWrapper,
+		private _extensionContext: ExtensionContext
 	) {
-		this._databaseService = databaseService;
-		this._apiWrapper = apiWrapper;
-		this._extensionContext = extensionContext;
 	}
 
 	public getTreeDataProvider(): azureResource.IAzureResourceTreeDataProvider {
@@ -30,8 +26,4 @@ export class AzureResourceDatabaseProvider implements azureResource.IAzureResour
 	public get providerId(): string {
 		return 'azure.resource.providers.database';
 	}
-
-	private _databaseService: IAzureResourceDatabaseService = undefined;
-	private _apiWrapper: ApiWrapper = undefined;
-	private _extensionContext: ExtensionContext = undefined;
 }

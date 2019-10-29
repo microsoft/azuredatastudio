@@ -105,10 +105,10 @@ export class MainController {
 			AgentUtils.getAgentService().then(async (agentService) => {
 				let result = await agentService.updateNotebook(templateMap.ownerUri, templateMap.notebookInfo.name, templateMap.notebookInfo, templateMap.tempPath);
 				if (result.success) {
-					vscode.window.showInformationMessage(localize('agent.templateUploadSuccessful', 'Template updated successfully'));
+					vscode.window.showInformationMessage(localize('agent.templateUploadSuccessful', "Template updated successfully"));
 				}
 				else {
-					vscode.window.showInformationMessage(localize('agent.templateUploadError', 'Template update failure'));
+					vscode.window.showInformationMessage(localize('agent.templateUploadError', "Template update failure"));
 				}
 			});
 
@@ -169,8 +169,8 @@ export class MainController {
 			if (!ownerUri || ownerUri instanceof vscode.Uri) {
 				let path: string;
 				if (!ownerUri) {
-					if (azdata.nb.activeNotebookEditor.document.isDirty) {
-						vscode.window.showErrorMessage(localize('agent.unsavedFileSchedulingError', 'Save file before scheduling'), { modal: true });
+					if (azdata.nb.activeNotebookEditor.document.isDirty || azdata.nb.activeNotebookEditor.document.isUntitled) {
+						vscode.window.showErrorMessage(localize('agent.unsavedFileSchedulingError', "The notebook must be saved before being scheduled. Please save and then retry scheduling again."), { modal: true });
 						return;
 					}
 					path = azdata.nb.activeNotebookEditor.document.fileName;
@@ -218,10 +218,10 @@ export class MainController {
 				connectionNames.push(connections[i]);
 				connectionDisplayString.push(currentConnectionString);
 			}
-			connectionDisplayString.push(localize('agent.AddNewConnection', 'Add new connection'));
-			let connectionName = await vscode.window.showQuickPick(connectionDisplayString, { placeHolder: localize('agent.selectConnection', 'Select a connection') });
+			connectionDisplayString.push(localize('agent.AddNewConnection', "Add new connection"));
+			let connectionName = await vscode.window.showQuickPick(connectionDisplayString, { placeHolder: localize('agent.selectConnection', "Select a connection") });
 			if (connectionDisplayString.indexOf(connectionName) !== -1) {
-				if (connectionName === localize('agent.AddNewConnection', 'Add new connection')) {
+				if (connectionName === localize('agent.AddNewConnection', "Add new connection")) {
 					connection = await azdata.connection.openConnectionDialog();
 				}
 				else {
@@ -229,7 +229,7 @@ export class MainController {
 				}
 			}
 			else {
-				vscode.window.showErrorMessage(localize('agent.selectValidConnection', 'Please select a valid connection'), { modal: true });
+				vscode.window.showErrorMessage(localize('agent.selectValidConnection', "Please select a valid connection"), { modal: true });
 			}
 		}
 		return connection;

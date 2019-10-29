@@ -6,9 +6,10 @@
 'use strict';
 
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-
 const localize = nls.loadMessageBundle();
+import * as constants from './constants';
 
 export enum Endpoint {
 	gateway = 'gateway',
@@ -71,35 +72,49 @@ export function showErrorMessage(error: any, prefixText?: string): void {
 }
 
 /**
+ * Mappings of the different expected state values to their localized friendly names.
+ * These are defined in aris/projects/controller/src/Microsoft.SqlServer.Controller/StateMachines
+ */
+const stateToDisplayTextMap = {
+	// K8sScaledSetStateMachine
+	'creating': localize('state.creating', "Creating"),
+	'waiting': localize('state.waiting', "Waiting"),
+	'ready': localize('state.ready', "Ready"),
+	'deleting': localize('state.deleting', "Deleting"),
+	'deleted': localize('state.deleted', "Deleted"),
+	'applyingupgrade': localize('state.applyingUpgrade', "Applying Upgrade"),
+	'upgrading': localize('state.upgrading', "Upgrading"),
+	'applyingmanagedupgrade': localize('state.applyingmanagedupgrade', "Applying Managed Upgrade"),
+	'managedupgrading': localize('state.managedUpgrading', "Managed Upgrading"),
+	'rollback': localize('state.rollback', "Rollback"),
+	'rollbackinprogress': localize('state.rollbackInProgress', "Rollback In Progress"),
+	'rollbackcomplete': localize('state.rollbackComplete', "Rollback Complete"),
+	'error': localize('state.error', "Error"),
+
+	// BigDataClusterStateMachine
+	'creatingsecrets': localize('state.creatingSecrets', "Creating Secrets"),
+	'waitingforsecrets': localize('state.waitingForSecrets', "Waiting For Secrets"),
+	'creatinggroups': localize('state.creatingGroups', "Creating Groups"),
+	'waitingforgroups': localize('state.waitingForGroups', "Waiting For Groups"),
+	'creatingresources': localize('state.creatingResources', "Creating Resources"),
+	'waitingforresources': localize('state.waitingForResources', "Waiting For Resources"),
+	'creatingkerberosdelegationsetup': localize('state.creatingKerberosDelegationSetup', "Creating Kerberos Delegation Setup"),
+	'waitingforkerberosdelegationsetup': localize('state.waitingForKerberosDelegationSetup', "Waiting For Kerberos Delegation Setup"),
+	'waitingfordeletion': localize('state.waitingForDeletion', "Waiting For Deletion"),
+	'waitingforupgrade': localize('state.waitingForUpgrade', "Waiting For Upgrade"),
+	'upgradePaused': localize('state.upgradePaused', "Upgrade Paused"),
+
+	// Other
+	'running': localize('state.running', "Running"),
+};
+
+/**
  * Gets the localized text to display for a corresponding state
  * @param state The state to get the display text for
  */
 export function getStateDisplayText(state?: string): string {
 	state = state || '';
-	switch (state.toLowerCase()) {
-		case 'creating':
-			return localize('state.creating', "Creating");
-		case 'waiting':
-			return localize('state.waiting', "Waiting");
-		case 'ready':
-			return localize('state.ready', "Ready");
-		case 'deleting':
-			return localize('state.deleting', "Deleting");
-		case 'waitingfordeletion':
-			return localize('state.waitingForDeletion', "Waiting For Deletion");
-		case 'deleted':
-			return localize('state.deleted', "Deleted");
-		case 'upgrading':
-			return localize('state.upgrading', "Upgrading");
-		case 'waitingforupgrade':
-			return localize('state.waitingForUpgrade', "Waiting For Upgrade");
-		case 'error':
-			return localize('state.error', "Error");
-		case 'running':
-			return localize('state.running', "Running");
-		default:
-			return state;
-	}
+	return stateToDisplayTextMap[state.toLowerCase()] || state;
 }
 
 /**
@@ -209,4 +224,48 @@ export function getHealthStatusDot(healthStatus?: string): string {
 			// Display status dot for all non-healthy status'
 			return '•';
 	}
+}
+
+
+interface RawEndpoint {
+	serviceName: string;
+	description?: string;
+	endpoint?: string;
+	protocol?: string;
+	ipAddress?: string;
+	port?: number;
+}
+
+export interface IEndpoint {
+	serviceName: string;
+	description: string;
+	endpoint: string;
+	protocol: string;
+}
+
+export function getClusterEndpoints(serverInfo: azdata.ServerInfo): IEndpoint[] {
+	let endpoints: RawEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
+	if (!endpoints || endpoints.length === 0) { return []; }
+
+	return endpoints.map(e => {
+		// If endpoint is missing, we're on CTP bits. All endpoints from the CTP serverInfo should be treated as HTTPS
+		let endpoint = e.endpoint ? e.endpoint : `https://${e.ipAddress}:${e.port}`;
+		let updatedEndpoint: IEndpoint = {
+			serviceName: e.serviceName,
+			description: e.description,
+			endpoint: endpoint,
+			protocol: e.protocol
+		};
+		return updatedEndpoint;
+	});
+}
+
+export function getControllerEndpoint(serverInfo: azdata.ServerInfo): string | undefined {
+	let endpoints = getClusterEndpoints(serverInfo);
+	if (endpoints) {
+		let index = endpoints.findIndex(ep => ep.serviceName.toLowerCase() === constants.controllerEndpointName.toLowerCase());
+		if (index < 0) { return undefined; }
+		return endpoints[index].endpoint;
+	}
+	return undefined;
 }

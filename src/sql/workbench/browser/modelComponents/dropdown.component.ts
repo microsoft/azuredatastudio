@@ -188,10 +188,6 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 		return this.getPropertyOrDefault<azdata.DropDownProperties, boolean>((props) => props.fireOnTextChange, false);
 	}
 
-	private get ariaLabel(): string {
-		return this.getPropertyOrDefault<azdata.DropDownProperties, string>((props) => props.ariaLabel, '');
-	}
-
 	public getEditableDisplay(): string {
 		return this.editable && !this._isInAccessibilityMode ? '' : 'none';
 	}

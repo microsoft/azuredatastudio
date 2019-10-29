@@ -66,7 +66,7 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 			let clusterSelected = this.wizard.model.getStringValue(ClusterContext_VariableName) !== undefined;
 			if (!clusterSelected) {
 				this.wizard.wizardObject.message = {
-					text: localize('deployCluster.ClusterContextNotSelectedMessage', 'Please select a cluster context.'),
+					text: localize('deployCluster.ClusterContextNotSelectedMessage', "Please select a cluster context."),
 					level: azdata.window.MessageLevel.Error
 				};
 			}
@@ -83,17 +83,17 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 	private initExistingClusterControl(): void {
 		let self = this;
 		const labelWidth = '150px';
-		let configFileLabel = this.view!.modelBuilder.text().withProperties({ value: localize('deployCluster.kubeConfigFileLabelText', 'Kube config file path') }).component();
+		let configFileLabel = this.view!.modelBuilder.text().withProperties({ value: localize('deployCluster.kubeConfigFileLabelText', "Kube config file path") }).component();
 		configFileLabel.width = labelWidth;
 		this.configFileInput = this.view!.modelBuilder.inputBox().withProperties({ width: '300px' }).component();
 		this.configFileInput.enabled = false;
-		this.browseFileButton = this.view!.modelBuilder.button().withProperties({ label: localize('deployCluster.browseText', 'Browse'), width: '100px' }).component();
+		this.browseFileButton = this.view!.modelBuilder.button().withProperties({ label: localize('deployCluster.browseText', "Browse"), width: '100px' }).component();
 		let configFileContainer = this.view!.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'row', alignItems: 'baseline' })
 			.withItems([configFileLabel, this.configFileInput, this.browseFileButton], { CSSStyles: { 'margin-right': '10px' } }).component();
-		this.clusterContextsLabel = this.view!.modelBuilder.text().withProperties({ value: localize('deployCluster.clusterContextsLabelText', 'Cluster Contexts') }).component();
+		this.clusterContextsLabel = this.view!.modelBuilder.text().withProperties({ value: localize('deployCluster.clusterContextsLabelText', "Cluster Contexts") }).component();
 		this.clusterContextsLabel.width = labelWidth;
-		this.errorLoadingClustersLabel = this.view!.modelBuilder.text().withProperties({ value: localize('deployCluster.errorLoadingClustersText', 'No cluster information is found in the config file or an error ocurred while loading the config file') }).component();
+		this.errorLoadingClustersLabel = this.view!.modelBuilder.text().withProperties({ value: localize('deployCluster.errorLoadingClustersText', "No cluster information is found in the config file or an error ocurred while loading the config file") }).component();
 		this.clusterContextList = this.view!.modelBuilder.divContainer().component();
 		this.clusterContextLoadingComponent = this.view!.modelBuilder.loadingComponent().withItem(this.clusterContextList).component();
 		this.existingClusterControl = this.view!.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
@@ -113,7 +113,7 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 					canSelectFolders: false,
 					canSelectMany: false,
 					defaultUri: vscode.Uri.file(os.homedir()),
-					openLabel: localize('deployCluster.selectKubeConfigFileText', 'Select'),
+					openLabel: localize('deployCluster.selectKubeConfigFileText', "Select"),
 					filters: {
 						'Config Files': ['*'],
 					}

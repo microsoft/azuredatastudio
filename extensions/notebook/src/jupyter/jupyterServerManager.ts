@@ -16,7 +16,7 @@ import { ApiWrapper } from '../common/apiWrapper';
 import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as utils from '../common/utils';
 import { IServerInstance } from './common';
-import { PerNotebookServerInstance, IInstanceOptions } from './serverInstance';
+import { PerFolderServerInstance, IInstanceOptions } from './serverInstance';
 import { CommandContext } from '../common/constants';
 
 export interface IServerManagerOptions {
@@ -30,11 +30,11 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 	private _serverSettings: Partial<ServerConnection.ISettings>;
 	private _onServerStarted = new vscode.EventEmitter<void>();
 	private _instanceOptions: IInstanceOptions;
-	private apiWrapper: ApiWrapper;
-	private jupyterServer: IServerInstance;
+	private _apiWrapper: ApiWrapper;
+	private _jupyterServer: IServerInstance;
 	factory: ServerInstanceFactory;
 	constructor(private options: IServerManagerOptions) {
-		this.apiWrapper = options.apiWrapper || new ApiWrapper();
+		this._apiWrapper = options.apiWrapper || new ApiWrapper();
 		this.factory = options.factory || new ServerInstanceFactory();
 	}
 
@@ -43,7 +43,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 	}
 
 	public get isStarted(): boolean {
-		return !!this.jupyterServer;
+		return !!this._jupyterServer;
 	}
 
 	public get instanceOptions(): IInstanceOptions {
@@ -54,13 +54,19 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		return this._onServerStarted.event;
 	}
 
+	public get jupyterServerInstallation(): JupyterServerInstallation | undefined {
+		return this.options && this.options.jupyterInstallation;
+	}
+
 	public async startServer(): Promise<void> {
 		try {
-			this.jupyterServer = await this.doStartServer();
-			this.options.extensionContext.subscriptions.push(this);
-			let partialSettings = LocalJupyterServerManager.getLocalConnectionSettings(this.jupyterServer.uri);
-			this._serverSettings = partialSettings;
-			this._onServerStarted.fire();
+			if (!this._jupyterServer) {
+				this._jupyterServer = await this.doStartServer();
+				this.options.extensionContext.subscriptions.push(this);
+				let partialSettings = LocalJupyterServerManager.getLocalConnectionSettings(this._jupyterServer.uri);
+				this._serverSettings = partialSettings;
+				this._onServerStarted.fire();
+			}
 
 		} catch (error) {
 			// this is caught and notified up the stack, no longer showing a message here
@@ -71,13 +77,14 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 	public dispose(): void {
 		this.stopServer().catch(err => {
 			let msg = utils.getErrorMessage(err);
-			this.apiWrapper.showErrorMessage(localize('shutdownError', 'Shutdown of Notebook server failed: {0}', msg));
+			this._apiWrapper.showErrorMessage(localize('shutdownError', "Shutdown of Notebook server failed: {0}", msg));
 		});
 	}
 
 	public async stopServer(): Promise<void> {
-		if (this.jupyterServer) {
-			await this.jupyterServer.stop();
+		if (this._jupyterServer) {
+			await this._jupyterServer.stop();
+			this._jupyterServer = undefined;
 		}
 	}
 
@@ -106,7 +113,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		let installation = this.options.jupyterInstallation;
 		await installation.promptForPythonInstall();
 		await installation.promptForPackageUpgrade();
-		this.apiWrapper.setCommandContext(CommandContext.NotebookPythonInstalled, true);
+		this._apiWrapper.setCommandContext(CommandContext.NotebookPythonInstalled, true);
 
 		// Calculate the path to use as the notebook-dir for Jupyter based on the path of the uri of the
 		// notebook to open. This will be the workspace folder if the notebook uri is inside a workspace
@@ -118,9 +125,11 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		// /path2/nb2.ipynb
 		// /path2/nb3.ipynb
 		// ... will result in 2 notebook servers being started, one for /path1/ and one for /path2/
-		let notebookDir = this.apiWrapper.getWorkspacePathFromUri(vscode.Uri.file(this.documentPath));
+		let notebookDir = this._apiWrapper.getWorkspacePathFromUri(vscode.Uri.file(this.documentPath));
 		if (!notebookDir) {
-			let docDir = path.dirname(this.documentPath);
+			let docDir;
+			// If a folder is passed in for documentPath, use the folder instead of calling dirname
+			docDir = path.extname(this.documentPath) ? path.dirname(this.documentPath) : this.documentPath;
 			if (docDir === '.') {
 				// If the user is using a system version of python, then
 				// '.' will try to create a notebook in a system directory.
@@ -156,7 +165,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 export class ServerInstanceFactory {
 
 	createInstance(options: IInstanceOptions): IServerInstance {
-		return new PerNotebookServerInstance(options);
+		return new PerFolderServerInstance(options);
 	}
 }
 
