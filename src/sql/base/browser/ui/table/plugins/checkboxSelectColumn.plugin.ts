@@ -189,7 +189,24 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 		}
 
 		//Ensure that the focus stays correct
-		this._grid.getActiveCellNode().focus();
+		if(this._grid.getActiveCellNode()) {
+			this._grid.getActiveCellNode().focus();
+		}
+
+		// set selected row to the row of this checkbox
+		this._grid.setSelectedRows([row]);
+	}
+
+	// This call is to handle reactive changes in check box UI
+	// This DOES NOT fire UI change Events
+	reactiveCheckboxCheck(row: number, value: boolean) {
+		value ? this._selectedCheckBoxLookup[row] = true : delete this._selectedCheckBoxLookup[row];
+
+		// update row to call formatter
+		this._grid.updateRow(row);
+
+		// ensure that grid reflects the change
+		this._grid.scrollRowIntoView(row);
 	}
 
 	private handleHeaderClick(e: Event, args: Slick.OnHeaderClickEventArgs<T>): void {
