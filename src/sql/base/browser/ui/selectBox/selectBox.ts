@@ -13,6 +13,9 @@ import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as aria from 'vs/base/browser/ui/aria/aria';
 import * as nls from 'vs/nls';
 import { renderFormattedText, renderText, FormattedTextRenderOptions } from 'vs/base/browser/formattedTextRenderer';
+import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { SelectBoxList } from 'vs/base/browser/ui/selectBox/selectBoxCustom';
 
 const $ = dom.$;
 
@@ -91,6 +94,23 @@ export class SelectBox extends vsSelectBox {
 		this._register(focusTracker);
 		this._register(focusTracker.onDidBlur(() => this._hideMessage()));
 		this._register(focusTracker.onDidFocus(() => this._showMessage()));
+		// Stop propagation - we've handled the event already and letting it bubble up causes issues with parent
+		// controls handling it (such as dialog pages)
+		this.onkeydown(this.selectElement, (e: IKeyboardEvent) => {
+			if (e.keyCode === KeyCode.Enter) {
+				dom.EventHelper.stop(e, true);
+			}
+		});
+		if (this.selectBoxDelegate instanceof SelectBoxList) {
+			// SelectBoxList uses its own custom drop down list so we need to also stop propagation from that or it'll
+			// also bubble up
+			this.onkeydown(this.selectBoxDelegate.selectDropDownContainer, (e: IKeyboardEvent) => {
+				if (e.keyCode === KeyCode.Enter) {
+					dom.EventHelper.stop(e, true);
+				}
+			});
+		}
+
 	}
 
 
