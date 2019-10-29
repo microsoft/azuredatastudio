@@ -89,7 +89,7 @@
     },
     "dependencies": {
         "fs-extra": "^5.0.0",
-        "handlebars": "^4.0.14",
+        "handlebars": "^4.3.0",
         "vscode-nls": "^4.0.0"
     },
     "devDependencies": {
