@@ -403,11 +403,11 @@ export class QueryModelService implements IQueryModelService {
 
 	}
 
-	public disposeQuery(ownerUri: string): void {
+	public async disposeQuery(ownerUri: string): Promise<void> {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
-			queryRunner.disposeQuery();
+			await queryRunner.disposeQuery();
 		}
 		// remove our info map
 		if (this._queryInfoMap.has(ownerUri)) {
