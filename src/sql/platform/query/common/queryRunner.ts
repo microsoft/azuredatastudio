@@ -364,7 +364,7 @@ export default class QueryRunner extends Disposable {
 		}
 	}
 
-	public async handleResultSetUpdated(result: azdata.QueryExecuteResultSetNotificationParams): Promise<void> {
+	public handleResultSetUpdated(result: azdata.QueryExecuteResultSetNotificationParams): void {
 		if (result && result.resultSetSummary) {
 			let resultSet = result.resultSetSummary;
 			let batchSet: azdata.BatchSummary;
