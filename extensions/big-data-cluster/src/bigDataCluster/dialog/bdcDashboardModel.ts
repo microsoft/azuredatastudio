@@ -23,10 +23,14 @@ export class BdcDashboardModel {
 	private _endpointsLastUpdated: Date;
 	private readonly _onDidUpdateEndpoints = new vscode.EventEmitter<EndpointModel[]>();
 	private readonly _onDidUpdateBdcStatus = new vscode.EventEmitter<BdcStatusModel>();
-	private readonly _onError = new vscode.EventEmitter<Error>();
+	private readonly _onBdcStatusError = new vscode.EventEmitter<Error>();
+	private readonly _onEndpointsError = new vscode.EventEmitter<Error>();
+	private readonly _onGeneralError = new vscode.EventEmitter<Error>();
 	public onDidUpdateEndpoints = this._onDidUpdateEndpoints.event;
 	public onDidUpdateBdcStatus = this._onDidUpdateBdcStatus.event;
-	public onError = this._onError.event;
+	public onBdcStatusError = this._onBdcStatusError.event;
+	public onEndpointsError = this._onEndpointsError.event;
+	public onGeneralError = this._onGeneralError.event;
 
 	constructor(private _options: BdcDashboardOptions, private _treeDataProvider: ControllerTreeDataProvider, ignoreSslVerification = true) {
 		try {
@@ -37,7 +41,7 @@ export class BdcDashboardModel {
 			this.promptReconnect().then(async () => {
 				await this.refresh();
 			}).catch(error => {
-				this._onError.fire(error);
+				this._onGeneralError.fire(error);
 			});
 		}
 	}
@@ -58,6 +62,8 @@ export class BdcDashboardModel {
 		return this._endpointsLastUpdated;
 	}
 
+	private firstStatus = true;
+	private firstEndpoints = true;
 	public async refresh(): Promise<void> {
 		try {
 			if (!this._clusterController) {
@@ -67,19 +73,27 @@ export class BdcDashboardModel {
 
 			await Promise.all([
 				this._clusterController.getBdcStatus(true).then(response => {
+					if (this.firstStatus) {
+						this.firstStatus = false;
+						throw new Error('This is a BDC status error');
+					}
 					this._bdcStatus = response.bdcStatus;
 					this._bdcStatusLastUpdated = new Date();
 					this._onDidUpdateBdcStatus.fire(this.bdcStatus);
-				}),
+				}).catch(error => this._onBdcStatusError.fire(error)),
 				this._clusterController.getEndPoints(true).then(response => {
+					if (this.firstEndpoints) {
+						this.firstEndpoints = false;
+						throw new Error('This is a BDC endpoints error');
+					}
 					this._endpoints = response.endPoints || [];
 					fixEndpoints(this._endpoints);
 					this._endpointsLastUpdated = new Date();
 					this._onDidUpdateEndpoints.fire(this.serviceEndpoints);
-				})
+				}).catch(error => this._onEndpointsError.fire(error))
 			]);
 		} catch (error) {
-			this._onError.fire(error);
+			this._onGeneralError.fire(error);
 		}
 	}
 

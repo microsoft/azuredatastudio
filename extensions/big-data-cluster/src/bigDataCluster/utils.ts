@@ -269,3 +269,7 @@ export function getControllerEndpoint(serverInfo: azdata.ServerInfo): string | u
 	}
 	return undefined;
 }
+
+export function getBdcStatusErrorMessage(error: Error): string {
+	return localize('endpointsError', "Unexpected error retrieving BDC Endpoints: {0}", error.message);
+}
