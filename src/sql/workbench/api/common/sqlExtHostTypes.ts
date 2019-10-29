@@ -203,6 +203,12 @@ export enum ExtensionNodeType {
 	Database = 'Database'
 }
 
+export interface CheckBoxInfo {
+	row: number;
+	columnName: string;
+	checked: boolean;
+}
+
 export interface IComponentShape {
 	type: ModelComponentTypes;
 	id: string;

@@ -26,6 +26,7 @@ import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/browser/ui/table/formatters';
+import { isNullOrUndefined } from 'util';
 
 @Component({
 	selector: 'modelview-table',
@@ -255,8 +256,25 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.focus();
 		}
 
+		if (this.updateCells !== undefined) {
+			this.updateTableCells(this.updateCells);
+		}
+
 		this.layoutTable();
 		this.validate();
+	}
+
+	private updateTableCells(cellInfos): void {
+		cellInfos.forEach((cellInfo) => {
+			if (isNullOrUndefined(cellInfo.column) || isNullOrUndefined(cellInfo.row) || cellInfo.row < 0 || cellInfo.row > this.data.length) {
+				return;
+			}
+
+			const checkInfo: azdata.CheckBoxCell = cellInfo as azdata.CheckBoxCell;
+			if (checkInfo) {
+				this._checkboxColumns[checkInfo.columnName].reactiveCheckboxCheck(checkInfo.row, checkInfo.checked);
+			}
+		});
 	}
 
 	private createCheckBoxPlugin(col: any, index: number) {
@@ -356,5 +374,13 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public set focused(newValue: boolean) {
 		this.setPropertyFromUI<azdata.RadioButtonProperties, boolean>((properties, value) => { properties.focused = value; }, newValue);
+	}
+
+	public get updateCells(): azdata.TableCell[] {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, azdata.TableCell[]>((props) => props.updateCells, undefined);
+	}
+
+	public set updateCells(newValue: azdata.TableCell[]) {
+		this.setPropertyFromUI<azdata.TableComponentProperties, azdata.TableCell[]>((properties, value) => { properties.updateCells = value; }, newValue);
 	}
 }
