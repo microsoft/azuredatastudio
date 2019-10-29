@@ -62,8 +62,6 @@ export class BdcDashboardModel {
 		return this._endpointsLastUpdated;
 	}
 
-	private firstStatus = true;
-	private firstEndpoints = true;
 	public async refresh(): Promise<void> {
 		try {
 			if (!this._clusterController) {
@@ -73,19 +71,11 @@ export class BdcDashboardModel {
 
 			await Promise.all([
 				this._clusterController.getBdcStatus(true).then(response => {
-					if (this.firstStatus) {
-						this.firstStatus = false;
-						throw new Error('This is a BDC status error');
-					}
 					this._bdcStatus = response.bdcStatus;
 					this._bdcStatusLastUpdated = new Date();
 					this._onDidUpdateBdcStatus.fire(this.bdcStatus);
 				}).catch(error => this._onBdcStatusError.fire(error)),
 				this._clusterController.getEndPoints(true).then(response => {
-					if (this.firstEndpoints) {
-						this.firstEndpoints = false;
-						throw new Error('This is a BDC endpoints error');
-					}
 					this._endpoints = response.endPoints || [];
 					fixEndpoints(this._endpoints);
 					this._endpointsLastUpdated = new Date();
