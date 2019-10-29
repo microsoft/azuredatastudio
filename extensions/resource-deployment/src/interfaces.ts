@@ -120,7 +120,7 @@ export interface DialogInfoBase {
 	title: string;
 	name: string;
 	tabs: DialogTabInfo[];
-	actionText: string;
+	actionText?: string;
 }
 
 export interface DialogTabInfo {
