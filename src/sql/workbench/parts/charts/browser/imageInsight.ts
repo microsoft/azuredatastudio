@@ -5,7 +5,6 @@
 
 import { IInsight, IInsightData } from './interfaces';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import Severity from 'vs/base/common/severity';
 import { $ } from 'vs/base/browser/dom';
 import { mixin } from 'vs/base/common/objects';
 import { IInsightOptions, InsightType } from 'sql/workbench/parts/charts/common/interfaces';
