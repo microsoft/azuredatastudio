@@ -354,7 +354,7 @@ export default class QueryRunner extends Disposable {
 					if (e.resultSubset.rows) {
 						this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
 					}
-				}).catch(this._logService.error);
+				}).catch((e) => this._logService.error(e));
 			}
 			// we will just ignore the set if we already have it
 			// ideally this should never happen
@@ -390,7 +390,7 @@ export default class QueryRunner extends Disposable {
 							});
 						}
 					}
-				}).catch(this._logService.error);
+				}).catch((e) => this._logService.error(e));
 			}
 			if (batchSet) {
 				// Store the result set in the batch and emit that a result set has completed
