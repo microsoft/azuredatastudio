@@ -13,7 +13,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape, ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, ColumnSizingMode, CheckBoxInfo } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, ColumnSizingMode } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 class ModelBuilderImpl implements azdata.ModelBuilder {
@@ -1274,12 +1274,12 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		this.setProperty('focused', v);
 	}
 
-	public get checked(): CheckBoxInfo[] {
-		return this.properties['checked'];
+	public get updateCells(): azdata.TableCell[] {
+		return this.properties['updateCells'];
 	}
 
-	public set checked(v: CheckBoxInfo[]) {
-		this.setProperty('checked', v);
+	public set updateCells(v: azdata.TableCell[]) {
+		this.setProperty('updateCells', v);
 	}
 
 	public get onRowSelected(): vscode.Event<any> {

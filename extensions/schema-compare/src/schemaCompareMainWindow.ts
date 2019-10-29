@@ -406,13 +406,13 @@ export class SchemaCompareMainWindow {
 				if (result.success) {
 					this.saveExcludeState(checkboxState);
 
-					// depencies could have been included or excluded as a result, so save their exclude states
+					// dependencies could have been included or excluded as a result, so save their exclude states
 					result.affectedDependencies.forEach(difference => {
-						// find the row of the difference and set it's checkbox
+						// find the row of the difference and set its checkbox
 						const diffEntryKey = this.createDiffEntryKey(difference);
 						if (this.diffEntryRowMap.has(diffEntryKey)) {
 							const row = this.diffEntryRowMap.get(diffEntryKey);
-							checkboxesToChange.push({ row: row, columnName: 'Include', checked: difference.included });
+							checkboxesToChange.push({ row: row, column: 2, columnName: 'Include', checked: difference.included });
 							const dependencyCheckBoxState: azdata.ICheckboxCellActionEventArgs = {
 								checked: difference.included,
 								row: row,
@@ -435,11 +435,11 @@ export class SchemaCompareMainWindow {
 					}
 
 					// set checkbox back to previous state
-					checkboxesToChange.push({ row: checkboxState.row, columnName: 'Include', checked: !checkboxState.checked });
+					checkboxesToChange.push({ row: checkboxState.row, column: checkboxState.column, columnName: 'Include', checked: !checkboxState.checked });
 				}
 
 				if (checkboxesToChange.length > 0) {
-					this.differencesTable.checked = checkboxesToChange;
+					this.differencesTable.updateCells = checkboxesToChange;
 				}
 			}
 		}));

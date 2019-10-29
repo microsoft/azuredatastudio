@@ -256,20 +256,24 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.focus();
 		}
 
-		if (this.checked !== undefined) {
-			this.check(this.checked);
+		if (this.updateCells !== undefined) {
+			this.updateTableCells(this.updateCells);
 		}
 
 		this.layoutTable();
 		this.validate();
 	}
 
-	private check(checkInfos: azdata.CheckBoxInfo[]): void {
-		checkInfos.forEach((checkInfo) => {
-			if (isNullOrUndefined(checkInfo.columnName) || isNullOrUndefined(checkInfo.row) || checkInfo.row < 0 || checkInfo.row > this.data.length) {
+	private updateTableCells(cellInfos): void {
+		cellInfos.forEach((cellInfo) => {
+			if (isNullOrUndefined(cellInfo.column) || isNullOrUndefined(cellInfo.row) || cellInfo.row < 0 || cellInfo.row > this.data.length) {
 				return;
 			}
-			this._checkboxColumns[checkInfo.columnName].reactiveCheckboxCheck(checkInfo.row, checkInfo.checked);
+
+			const checkInfo: azdata.CheckBoxCell = cellInfo as azdata.CheckBoxCell;
+			if (checkInfo) {
+				this._checkboxColumns[checkInfo.columnName].reactiveCheckboxCheck(checkInfo.row, checkInfo.checked);
+			}
 		});
 	}
 
@@ -372,11 +376,11 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		this.setPropertyFromUI<azdata.RadioButtonProperties, boolean>((properties, value) => { properties.focused = value; }, newValue);
 	}
 
-	public get checked(): azdata.CheckBoxInfo[] {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, azdata.CheckBoxInfo[]>((props) => props.checked, undefined);
+	public get updateCells(): azdata.TableCell[] {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, azdata.TableCell[]>((props) => props.updateCells, undefined);
 	}
 
-	public set checked(newValue: azdata.CheckBoxInfo[]) {
-		this.setPropertyFromUI<azdata.TableComponentProperties, azdata.CheckBoxInfo[]>((properties, value) => { properties.checked = value; }, newValue);
+	public set updateCells(newValue: azdata.TableCell[]) {
+		this.setPropertyFromUI<azdata.TableComponentProperties, azdata.TableCell[]>((properties, value) => { properties.updateCells = value; }, newValue);
 	}
 }

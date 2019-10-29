@@ -193,7 +193,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 			this._grid.getActiveCellNode().focus();
 		}
 
-		// set selected row to the row with this checkbox
+		// set selected row to the row of this checkbox
 		this._grid.setSelectedRows([row]);
 	}
 
