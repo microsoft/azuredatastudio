@@ -51,8 +51,8 @@ function registerCommands(context: vscode.ExtensionContext, treeDataProvider: Co
 		runThrottledAction(AddControllerCommand, () => addBdcController(treeDataProvider, node));
 	});
 
-	vscode.commands.registerCommand(DeleteControllerCommand, (node: TreeNode) => {
-		deleteBdcController(treeDataProvider, node);
+	vscode.commands.registerCommand(DeleteControllerCommand, async (node: TreeNode) => {
+		await deleteBdcController(treeDataProvider, node);
 	});
 
 	vscode.commands.registerCommand(RefreshControllerCommand, (node: TreeNode) => {
@@ -80,26 +80,26 @@ function registerCommands(context: vscode.ExtensionContext, treeDataProvider: Co
 }
 
 async function mountHdfs(explorerContext?: azdata.ObjectExplorerContext): Promise<void> {
-	let mountProps = await getMountProps(explorerContext);
+	const mountProps = await getMountProps(explorerContext);
 	if (mountProps) {
-		let dialog = new MountHdfsDialog(new MountHdfsModel(mountProps));
-		dialog.showDialog();
+		const dialog = new MountHdfsDialog(new MountHdfsModel(mountProps));
+		await dialog.showDialog();
 	}
 }
 
 async function refreshMount(explorerContext?: azdata.ObjectExplorerContext): Promise<void> {
-	let mountProps = await getMountProps(explorerContext);
+	const mountProps = await getMountProps(explorerContext);
 	if (mountProps) {
-		let dialog = new RefreshMountDialog(new RefreshMountModel(mountProps));
-		dialog.showDialog();
+		const dialog = new RefreshMountDialog(new RefreshMountModel(mountProps));
+		await dialog.showDialog();
 	}
 }
 
 async function deleteMount(explorerContext?: azdata.ObjectExplorerContext): Promise<void> {
-	let mountProps = await getMountProps(explorerContext);
+	const mountProps = await getMountProps(explorerContext);
 	if (mountProps) {
-		let dialog = new DeleteMountDialog(new DeleteMountModel(mountProps));
-		dialog.showDialog();
+		const dialog = new DeleteMountDialog(new DeleteMountModel(mountProps));
+		await dialog.showDialog();
 	}
 }
 
@@ -169,15 +169,15 @@ async function deleteBdcController(treeDataProvider: ControllerTreeDataProvider,
 	let result = await vscode.window.showQuickPick(Object.keys(choices), options);
 	let remove: boolean = !!(result && choices[result]);
 	if (remove) {
-		deleteControllerInternal(treeDataProvider, controllerNode);
+		await deleteControllerInternal(treeDataProvider, controllerNode);
 	}
 	return remove;
 }
 
-function deleteControllerInternal(treeDataProvider: ControllerTreeDataProvider, controllerNode: ControllerNode): void {
-	let deleted = treeDataProvider.deleteController(controllerNode.url, controllerNode.auth, controllerNode.username);
+async function deleteControllerInternal(treeDataProvider: ControllerTreeDataProvider, controllerNode: ControllerNode): Promise<void> {
+	const deleted = treeDataProvider.deleteController(controllerNode.url, controllerNode.auth, controllerNode.username);
 	if (deleted) {
-		treeDataProvider.saveControllers();
+		await treeDataProvider.saveControllers();
 	}
 }
 

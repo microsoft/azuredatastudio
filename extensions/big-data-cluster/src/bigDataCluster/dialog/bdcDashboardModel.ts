@@ -31,10 +31,11 @@ export class BdcDashboardModel {
 	constructor(private _options: BdcDashboardOptions, private _treeDataProvider: ControllerTreeDataProvider, ignoreSslVerification = true) {
 		try {
 			this._clusterController = new ClusterController(_options.url, _options.auth, _options.username, _options.password, ignoreSslVerification);
+			// tslint:disable-next-line:no-floating-promises
 			this.refresh();
 		} catch {
-			this.promptReconnect().then(() => {
-				this.refresh();
+			this.promptReconnect().then(async () => {
+				await this.refresh();
 			}).catch(error => {
 				this._onError.fire(error);
 			});

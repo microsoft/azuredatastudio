@@ -45,7 +45,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 			return this.root.getChildren();
 		}
 
-		this.loadSavedControllers();
+		await this.loadSavedControllers();
 		return [new LoadingControllerNode()];
 	}
 
