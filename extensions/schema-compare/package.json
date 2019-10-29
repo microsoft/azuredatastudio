@@ -2,9 +2,9 @@
   "name": "schema-compare",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.8.0",
+  "version": "1.0.0",
   "publisher": "Microsoft",
-  "preview": true,
+  "preview": false,
   "engines": {
     "vscode": "^1.25.0",
     "azdata": ">=1.11.0"
