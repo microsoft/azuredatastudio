@@ -23,6 +23,7 @@ import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryText
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { SimpleEditorProgressService } from 'vs/editor/standalone/browser/simpleServices';
 import { IProgressService } from 'vs/platform/progress/common/progress';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	template: '',
@@ -45,14 +46,15 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
-		@Inject(IModeService) private _modeService: IModeService
+		@Inject(IModeService) private _modeService: IModeService,
+		@Inject(ILogService) private _logService: ILogService
 	) {
 		super(changeRef, el);
 	}
 
 	ngOnInit(): void {
 		this.baseInit();
-		this._createEditor();
+		this._createEditor().catch((e) => this._logService.error(e));
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
 			this.layout();
 		}));
