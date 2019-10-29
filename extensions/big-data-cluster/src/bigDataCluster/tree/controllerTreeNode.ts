@@ -103,7 +103,15 @@ export class ControllerRootNode extends ControllerTreeNode {
 		return this.children as ControllerNode[];
 	}
 
-	public addControllerNode(
+	/**
+	 * Creates or updates a node in the tree with the specified connection information
+	 * @param url The URL for the BDC management endpoint
+	 * @param auth The type of auth to use
+	 * @param username The username (if basic auth)
+	 * @param password The password (if basic auth)
+	 * @param rememberPassword Whether to store the password in the password store when saving
+	 */
+	public addOrUpdateControllerNode(
 		url: string,
 		auth: AuthType,
 		username: string,
@@ -112,10 +120,11 @@ export class ControllerRootNode extends ControllerTreeNode {
 	): void {
 		let controllerNode = this.getExistingControllerNode(url, auth, username);
 		if (controllerNode) {
-			controllerNode.password = rememberPassword ? password : undefined;
+			controllerNode.password = password;
+			controllerNode.rememberPassword = rememberPassword;
 			controllerNode.clearChildren();
 		} else {
-			controllerNode = new ControllerNode(url, auth, username, rememberPassword ? password : undefined, undefined, this, this.treeChangeHandler, undefined);
+			controllerNode = new ControllerNode(url, auth, username, password, rememberPassword, undefined, this, this.treeChangeHandler, undefined);
 			this.addChild(controllerNode);
 		}
 	}
@@ -149,6 +158,7 @@ export class ControllerNode extends ControllerTreeNode {
 		private _auth: AuthType,
 		private _username: string,
 		private _password: string,
+		private _rememberPassword: boolean,
 		label: string,
 		parent: ControllerTreeNode,
 		treeChangeHandler: IControllerTreeChangeHandler,
@@ -201,6 +211,14 @@ export class ControllerNode extends ControllerTreeNode {
 
 	public set label(label: string) {
 		super.label = label || this.generateLabel();
+	}
+
+	public get rememberPassword() {
+		return this._rememberPassword;
+	}
+
+	public set rememberPassword(rememberPassword: boolean) {
+		this._rememberPassword = rememberPassword;
 	}
 
 	private generateLabel(): string {

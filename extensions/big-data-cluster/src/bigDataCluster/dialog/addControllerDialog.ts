@@ -76,7 +76,7 @@ export class AddControllerDialogModel {
 				if (this._canceled) {
 					return;
 				}
-				this.treeDataProvider.addController(url, auth, username, password, rememberPassword);
+				this.treeDataProvider.addOrUpdateController(url, auth, username, password, rememberPassword);
 				vscode.commands.executeCommand(ManageControllerCommand, <BdcDashboardOptions>{ url: url, auth: auth, username: username, password: password });
 				await this.treeDataProvider.saveControllers();
 			}

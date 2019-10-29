@@ -22,6 +22,7 @@ interface IControllerInfoSlim {
 	auth: AuthType;
 	username: string;
 	password?: string;
+	rememberPassword: boolean;
 }
 
 export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeNode>, IControllerTreeChangeHandler {
@@ -56,7 +57,15 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		this._onDidChangeTreeData.fire(node);
 	}
 
-	public addController(
+	/**
+	 * Creates or updates a node in the tree with the specified connection information
+	 * @param url The URL for the BDC management endpoint
+	 * @param auth The type of auth to use
+	 * @param username The username (if basic auth)
+	 * @param password The password (if basic auth)
+	 * @param rememberPassword Whether to store the password in the password store when saving
+	 */
+	public addOrUpdateController(
 		url: string,
 		auth: AuthType,
 		username: string,
@@ -64,7 +73,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		rememberPassword: boolean
 	): void {
 		this.removeNonControllerNodes();
-		this.root.addControllerNode(url, auth, username, password, rememberPassword);
+		this.root.addOrUpdateControllerNode(url, auth, username, password, rememberPassword);
 		this.notifyNodeChanged();
 	}
 
@@ -112,14 +121,17 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		this.root.clearChildren();
 		let controllers: IControllerInfoSlim[] = this.memento.get('controllers');
 		if (controllers) {
-			for (let c of controllers) {
-				const password = await this.getPassword(c.url, c.username);
+			for (const c of controllers) {
+				let password = undefined;
+				if (c.rememberPassword) {
+					password = await this.getPassword(c.url, c.username);
+				}
 				if (!c.auth) {
 					// Added before we had added authentication
 					c.auth = 'basic';
 				}
 				this.root.addChild(new ControllerNode(
-					c.url, c.auth, c.username, password,
+					c.url, c.auth, c.username, password, c.rememberPassword,
 					undefined, this.root, this, undefined
 				));
 			}
@@ -140,7 +152,8 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 				url: controller.url,
 				auth: controller.auth,
 				username: controller.username,
-				password: controller.password
+				password: controller.password,
+				rememberPassword: controller.rememberPassword
 			};
 		});
 
@@ -148,7 +161,8 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 			return {
 				url: e.url,
 				auth: e.auth,
-				username: e.username
+				username: e.username,
+				rememberPassword: e.rememberPassword
 			};
 		});
 
@@ -159,7 +173,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		}
 
 		for (const e of controllers) {
-			if (e.password) {
+			if (e.rememberPassword) {
 				await this.savePassword(e.url, e.username, e.password);
 			} else {
 				await this.deletePassword(e.url, e.username);

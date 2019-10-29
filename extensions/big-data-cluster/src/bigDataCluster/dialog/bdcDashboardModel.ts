@@ -10,6 +10,7 @@ import { EndpointModel, BdcStatusModel } from '../controller/apiGenerated';
 import { Endpoint, Service } from '../utils';
 import { AuthType } from '../constants';
 import { ConnectControllerDialog, ConnectControllerModel } from './connectControllerDialog';
+import { ControllerTreeDataProvider } from '../tree/controllerTreeDataProvider';
 
 export type BdcDashboardOptions = { url: string, auth: AuthType, username: string, password: string };
 
@@ -27,9 +28,9 @@ export class BdcDashboardModel {
 	public onDidUpdateBdcStatus = this._onDidUpdateBdcStatus.event;
 	public onError = this._onError.event;
 
-	constructor(private options: BdcDashboardOptions, ignoreSslVerification = true) {
+	constructor(private _options: BdcDashboardOptions, private _treeDataProvider: ControllerTreeDataProvider, ignoreSslVerification = true) {
 		try {
-			this._clusterController = new ClusterController(options.url, options.auth, options.username, options.password, ignoreSslVerification);
+			this._clusterController = new ClusterController(_options.url, _options.auth, _options.username, _options.password, ignoreSslVerification);
 			this.refresh();
 		} catch {
 			this.promptReconnect().then(() => {
@@ -99,7 +100,7 @@ export class BdcDashboardModel {
 			serverName: sqlServerMasterEndpoint.endpoint,
 			databaseName: undefined,
 			userName: 'sa',
-			password: this.options.password,
+			password: this._options.password,
 			authenticationType: '',
 			savePassword: true,
 			groupFullName: undefined,
@@ -115,7 +116,13 @@ export class BdcDashboardModel {
 	 * Opens up a dialog prompting the user to re-enter credentials for the controller
 	 */
 	private async promptReconnect(): Promise<void> {
-		this._clusterController = await new ConnectControllerDialog(new ConnectControllerModel(this.options)).showDialog();
+		this._clusterController = await new ConnectControllerDialog(new ConnectControllerModel(this._options)).showDialog();
+		this._treeDataProvider.addOrUpdateController(
+			this._clusterController.url,
+			this._clusterController.authType,
+			this._clusterController.username,
+			this._clusterController.password,
+			/* Remember password */false);
 	}
 }
 
