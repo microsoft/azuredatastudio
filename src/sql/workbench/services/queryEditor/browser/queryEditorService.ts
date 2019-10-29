@@ -30,6 +30,7 @@ import { ILanguageSelection } from 'vs/editor/common/services/modeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { ILogService } from 'vs/platform/log/common/log';
 
 /**
  * Service wrapper for opening and creating SQL documents as sql editor inputs
@@ -54,7 +55,8 @@ export class QueryEditorService implements IQueryEditorService {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@ILogService private _logService: ILogService
 	) {
 	}
 
@@ -139,7 +141,7 @@ export class QueryEditorService implements IQueryEditorService {
 						} else {
 							input.onConnectReject();
 						}
-					});
+					}).catch((e) => this._logService.error(e));
 				}
 			}
 		});

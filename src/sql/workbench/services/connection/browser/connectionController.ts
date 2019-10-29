@@ -16,6 +16,7 @@ import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHost
 import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { ConnectionWidget } from 'sql/workbench/services/connection/browser/connectionWidget';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class ConnectionController implements IConnectionComponentController {
 	private _advancedController: AdvancedPropertiesController;
@@ -33,7 +34,8 @@ export class ConnectionController implements IConnectionComponentController {
 		providerName: string,
 		@IConnectionManagementService protected readonly _connectionManagementService: IConnectionManagementService,
 		@IInstantiationService protected readonly _instantiationService: IInstantiationService,
-		@IServerGroupController protected readonly _serverGroupController: IServerGroupController
+		@IServerGroupController protected readonly _serverGroupController: IServerGroupController,
+		@ILogService private readonly _logService: ILogService
 	) {
 		this._callback = callback;
 		this._providerOptions = connectionProperties.connectionOptions;
@@ -52,7 +54,7 @@ export class ConnectionController implements IConnectionComponentController {
 		this._providerName = providerName;
 	}
 
-	protected onFetchDatabases(serverName: string, authenticationType: string, userName?: string, password?: string): Promise<string[]> {
+	protected async onFetchDatabases(serverName: string, authenticationType: string, userName?: string, password?: string): Promise<string[]> {
 		let tempProfile = this._model;
 		tempProfile.serverName = serverName;
 		tempProfile.authenticationType = authenticationType;
@@ -61,39 +63,35 @@ export class ConnectionController implements IConnectionComponentController {
 		tempProfile.groupFullName = '';
 		tempProfile.saveProfile = false;
 		let uri = this._connectionManagementService.getConnectionUri(tempProfile);
-		return new Promise<string[]>((resolve, reject) => {
-			if (this._databaseCache.has(uri)) {
-				let cachedDatabases: string[] = this._databaseCache.get(uri);
-				if (cachedDatabases !== null) {
-					resolve(cachedDatabases);
+		if (this._databaseCache.has(uri)) {
+			let cachedDatabases: string[] = this._databaseCache.get(uri);
+			if (cachedDatabases !== null) {
+				return cachedDatabases;
+			} else {
+				throw new Error();
+			}
+		} else {
+			const connResult = await this._connectionManagementService.connect(tempProfile, uri);
+			if (connResult && connResult.connected) {
+				const result = await this._connectionManagementService.listDatabases(uri);
+				if (result && result.databaseNames) {
+					this._databaseCache.set(uri, result.databaseNames);
+					return result.databaseNames;
 				} else {
-					reject();
+					this._databaseCache.set(uri, null);
+					throw new Error();
 				}
 			} else {
-				this._connectionManagementService.connect(tempProfile, uri).then(connResult => {
-					if (connResult && connResult.connected) {
-						this._connectionManagementService.listDatabases(uri).then(result => {
-							if (result && result.databaseNames) {
-								this._databaseCache.set(uri, result.databaseNames);
-								resolve(result.databaseNames);
-							} else {
-								this._databaseCache.set(uri, null);
-								reject();
-							}
-						});
-					} else {
-						reject(connResult.errorMessage);
-					}
-				});
+				throw new Error(connResult.errorMessage);
 			}
-		});
+		}
 	}
 
 	protected onCreateNewServerGroup(): void {
 		this._serverGroupController.showCreateGroupDialog({
 			onAddGroup: (groupName) => this._connectionWidget.updateServerGroup(this.getAllServerGroups(), groupName),
 			onClose: () => this._connectionWidget.focusOnServerGroup()
-		});
+		}).catch((e) => this._logService.error(e));
 	}
 
 	protected handleonSetAzureTimeOut(): void {

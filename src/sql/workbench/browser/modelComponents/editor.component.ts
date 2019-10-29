@@ -58,20 +58,19 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		}));
 	}
 
-	private _createEditor(): void {
+	private async _createEditor(): Promise<void> {
 		let instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleEditorProgressService()]));
 		this._editor = instantiationService.createInstance(QueryTextEditor);
 		this._editor.create(this._el.nativeElement);
 		this._editor.setVisible(true);
 		let uri = this.createUri();
 		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, 'plaintext', '', '');
-		this._editor.setInput(this._editorInput, undefined);
-		this._editorInput.resolve().then(model => {
-			this._editorModel = model.textEditorModel;
-			this.fireEvent({
-				eventType: ComponentEventType.onComponentCreated,
-				args: this._uri
-			});
+		await this._editor.setInput(this._editorInput, undefined);
+		const model = await this._editorInput.resolve();
+		this._editorModel = model.textEditorModel;
+		this.fireEvent({
+			eventType: ComponentEventType.onComponentCreated,
+			args: this._uri
 		});
 
 		this._register(this._editor);
