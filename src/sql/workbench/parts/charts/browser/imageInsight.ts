@@ -30,9 +30,6 @@ export class ImageInsight implements IInsight {
 
 	private imageEle: HTMLImageElement;
 
-
-
-
 	constructor(container: HTMLElement, options: IConfig) {
 		this._options = mixin(options, defaultConfig, false);
 		this.imageEle = $('img');
@@ -67,11 +64,9 @@ export class ImageInsight implements IInsight {
 				alert(nls.localize('invalidImage', "Error: Table is not a valid image"));
 			};
 
-
 			this.imageEle.src = `data:image/${this._options.imageFormat};base64,${img}`;
 		}
 	}
-
 
 	private static _hexToBase64(hexVal: string) {
 
