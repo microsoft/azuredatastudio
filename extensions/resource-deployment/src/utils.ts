@@ -17,16 +17,20 @@ export function getDateTimeString(): string {
 }
 
 export function setEnvironmentVariablesForInstallPaths(tools: ITool[]): void {
-	let installationPaths: Set<string> = new Set<string>();
+	let installationPaths: string[] = [];
 	tools.forEach(t => {
-		// construct an env variable name with NoteBookEnvironmentVariablePrefix prefix
-		// and tool.name as suffix, making sure of using all uppercase characters and only _ as separator
-		const envVarName: string = `${NoteBookEnvironmentVariablePrefix}${t.name.toUpperCase().replace(/ |-/, '_')}`;
-		process.env[envVarName] = t.installationPath;
-		installationPaths.add(path.resolve(path.dirname(t.installationPath)));
-		console.log(`setting env var:'${envVarName}' to: '${t.installationPath}'`);
+		if (t.installationPath) {
+			// construct an env variable name with NoteBookEnvironmentVariablePrefix prefix
+			// and tool.name as suffix, making sure of using all uppercase characters and only _ as separator
+			const envVarName: string = `${NoteBookEnvironmentVariablePrefix}${t.name.toUpperCase().replace(/ |-/, '_')}`;
+			process.env[envVarName] = t.installationPath;
+			installationPaths.push(path.resolve(path.dirname(t.installationPath)));
+			console.log(`setting env var:'${envVarName}' to: '${t.installationPath}'`);
+		}
 	});
-	const envVarToolsInstallationPath: string = [...installationPaths.values()].join(path.delimiter);
-	process.env[ToolsInstallPath] = envVarToolsInstallationPath;
-	console.log(`setting env var:'${ToolsInstallPath}' to: '${envVarToolsInstallationPath}'`);
+	if (installationPaths.length > 0) {
+		const envVarToolsInstallationPath: string = installationPaths.join(path.delimiter);
+		process.env[ToolsInstallPath] = envVarToolsInstallationPath;
+		console.log(`setting env var:'${ToolsInstallPath}' to: '${envVarToolsInstallationPath}'`);
+	}
 }

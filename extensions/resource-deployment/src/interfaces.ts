@@ -98,6 +98,8 @@ export interface WizardInfo {
 
 export interface NotebookBasedDialogInfo extends DialogInfoBase {
 	notebook: string | NotebookInfo;
+	runNotebook?: boolean;
+	taskName?: string;
 }
 
 export interface CommandBasedDialogInfo extends DialogInfoBase {
@@ -118,6 +120,7 @@ export interface DialogInfoBase {
 	title: string;
 	name: string;
 	tabs: DialogTabInfo[];
+	actionText: string;
 }
 
 export interface DialogTabInfo {
