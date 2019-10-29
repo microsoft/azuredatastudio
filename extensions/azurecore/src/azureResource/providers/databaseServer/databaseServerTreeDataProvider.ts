@@ -30,7 +30,7 @@ export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDat
 
 	protected getTreeItemForResource(databaseServer: AzureResourceDatabaseServer): TreeItem {
 		return {
-			id: `databaseServer_${databaseServer.name}`,
+			id: `databaseServer_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: databaseServer.name,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),

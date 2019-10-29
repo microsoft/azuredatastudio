@@ -93,7 +93,6 @@ export type DeploymentProvider = DialogDeploymentProvider | WizardDeploymentProv
 
 export interface WizardInfo {
 	notebook: string | NotebookInfo;
-	azdata_notebook: string | NotebookInfo;
 	type: BdcDeploymentType;
 }
 
@@ -227,17 +226,20 @@ export const enum ToolStatus {
 }
 
 export interface ITool {
-	isInstalling: any;
+	readonly isInstalling: boolean;
 	readonly name: string;
 	readonly displayName: string;
 	readonly description: string;
 	readonly type: ToolType;
 	readonly homePage: string;
 	readonly displayStatus: string;
+	readonly dependencyMessages: string[];
 	readonly statusDescription: string | undefined;
 	readonly autoInstallSupported: boolean;
 	readonly autoInstallRequired: boolean;
 	readonly isNotInstalled: boolean;
+	readonly isInstalled: boolean;
+	readonly installationPath: string;
 	readonly needsInstallation: boolean;
 	readonly outputChannelName: string;
 	readonly fullVersion: string | undefined;
@@ -245,6 +247,7 @@ export interface ITool {
 	showOutputChannel(preserveFocus?: boolean): void;
 	loadInformation(): Promise<void>;
 	install(): Promise<void>;
+	isSameOrNewerThan(version: string): boolean;
 }
 
 export const enum BdcDeploymentType {

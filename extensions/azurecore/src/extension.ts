@@ -27,6 +27,10 @@ import { AzureResourceCacheService } from './azureResource/services/cacheService
 import { AzureResourceTenantService } from './azureResource/services/tenantService';
 import { registerAzureResourceCommands } from './azureResource/commands';
 import { AzureResourceTreeProvider } from './azureResource/tree/treeProvider';
+import { SqlInstanceResourceService } from './azureResource/providers/sqlinstance/sqlInstanceService';
+import { SqlInstanceProvider } from './azureResource/providers/sqlinstance/sqlInstanceProvider';
+import { PostgresServerProvider } from './azureResource/providers/postgresServer/postgresServerProvider';
+import { PostgresServerService } from './azureResource/providers/postgresServer/postgresServerService';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -63,7 +67,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 
 	// Create the provider service and activate
-	initAzureAccountProvider(extensionContext, storagePath);
+	initAzureAccountProvider(extensionContext, storagePath).catch((err) => console.log(err));
 
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
@@ -74,7 +78,9 @@ export async function activate(context: vscode.ExtensionContext) {
 		provideResources() {
 			return [
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), apiWrapper, extensionContext),
-				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext)
+				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext),
+				new SqlInstanceProvider(new SqlInstanceResourceService(), apiWrapper, extensionContext),
+				new PostgresServerProvider(new PostgresServerService(), apiWrapper, extensionContext)
 			];
 		}
 	};

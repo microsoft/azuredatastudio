@@ -11,6 +11,7 @@ import { ToolBase } from './toolBase';
 const localize = nls.loadMessageBundle();
 
 export class DockerTool extends ToolBase {
+	protected discoveryCommand: Command = { command: '' };
 	constructor(platformService: IPlatformService) {
 		super(platformService);
 	}
@@ -50,7 +51,7 @@ export class DockerTool extends ToolBase {
 		return false;
 	}
 
-	get allInstallationCommands(): Map<OsType, Command[]> {
+	protected get allInstallationCommands(): Map<OsType, Command[]> {
 		throw Error('Installation of DockerTool is not supported');
 	}
 }

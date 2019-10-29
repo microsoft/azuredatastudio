@@ -57,6 +57,7 @@ export class CellToggleMoreActions {
 		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
 		this._moreActions.context = { target: this._moreActionsElement };
 		let validActions = this._actions.filter(a => a instanceof Separator || a instanceof CellActionBase && a.canRun(context));
+		this.removeDuplicatedAndStartingSeparators(validActions);
 		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, validActions, context), { icon: true, label: false });
 	}
 
@@ -68,6 +69,25 @@ export class CellToggleMoreActions {
 			DOM.addClass(this._moreActionsElement, HIDDEN_CLASS);
 		} else {
 			DOM.removeClass(this._moreActionsElement, HIDDEN_CLASS);
+		}
+	}
+
+	private removeDuplicatedAndStartingSeparators(actions: (Action | CellActionBase)[]): void {
+		let indexesToRemove: number[] = [];
+		for (let i = 0; i < actions.length; i++) {
+			// Never should have a separator at the beginning of the list
+			if (i === 0 && actions[i] instanceof Separator) {
+				indexesToRemove.push(0);
+			}
+			// Handle multiple separators in a row
+			if (i > 0 && actions[i] instanceof Separator && actions[i - 1] instanceof Separator) {
+				indexesToRemove.push(i);
+			}
+		}
+		if (indexesToRemove.length > 0) {
+			for (let i = indexesToRemove.length - 1; i >= 0; i--) {
+				actions.splice(indexesToRemove[i], 1);
+			}
 		}
 	}
 }

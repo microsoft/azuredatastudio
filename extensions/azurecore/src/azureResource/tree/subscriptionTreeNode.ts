@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import { Account, NodeInfo } from 'azdata';
 import { AppContext } from '../../appContext';
@@ -54,7 +52,7 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 					// To make tree node's id unique, otherwise, treeModel.js would complain 'item already registered'
 					child.resourceNode.treeItem.id = `${this._id}.${child.resourceNode.treeItem.id}`;
 					return new AzureResourceResourceTreeNode(child, this, this.appContext);
-				});
+				}).sort((a, b) => a.nodePathValue.localeCompare(b.nodePathValue));
 			}
 		} catch (error) {
 			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), this)];
