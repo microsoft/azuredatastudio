@@ -28,6 +28,12 @@ export interface HdfsDialogProperties {
 	password?: string;
 }
 
+export class HdfsDialogCancelledError extends Error {
+	constructor(message: string = 'Dialog cancelled') {
+		super(message);
+	}
+}
+
 export abstract class HdfsDialogModelBase<T extends HdfsDialogProperties, R> {
 	protected _canceled = false;
 	private _authTypes: azdata.CategoryValue[];
@@ -87,7 +93,7 @@ export abstract class HdfsDialogModelBase<T extends HdfsDialogProperties, R> {
 				throw new Error(localize('mount.hdfs.loginerror1', "Login to controller failed"));
 			}
 		} catch (err) {
-			throw new Error(localize('mount.hdfs.loginerror2', "Login to controller failed: {0}", err.message));
+			throw new Error(localize('mount.hdfs.loginerror2', "Login to controller failed: {0}", err.statusMessage || err.message));
 		}
 		return controller;
 	}
@@ -224,7 +230,7 @@ export abstract class HdfsDialogBase<T extends HdfsDialogProperties, R> {
 		if (this.model && this.model.onCancel) {
 			await this.model.onCancel();
 		}
-		this.returnPromise.reject(new Error('Dialog cancelled'));
+		this.returnPromise.reject(new HdfsDialogCancelledError());
 	}
 
 	protected async reportError(error: any): Promise<void> {

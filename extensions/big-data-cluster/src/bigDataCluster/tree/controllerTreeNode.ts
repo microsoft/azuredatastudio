@@ -103,7 +103,15 @@ export class ControllerRootNode extends ControllerTreeNode {
 		return this.children as ControllerNode[];
 	}
 
-	public addControllerNode(
+	/**
+	 * Creates or updates a node in the tree with the specified connection information
+	 * @param url The URL for the BDC management endpoint
+	 * @param auth The type of auth to use
+	 * @param username The username (if basic auth)
+	 * @param password The password (if basic auth)
+	 * @param rememberPassword Whether to store the password in the password store when saving
+	 */
+	public addOrUpdateControllerNode(
 		url: string,
 		auth: AuthType,
 		username: string,
@@ -201,16 +209,16 @@ export class ControllerNode extends ControllerTreeNode {
 		this._password = pw;
 	}
 
+	public set label(label: string) {
+		super.label = label || this.generateLabel();
+	}
+
 	public get rememberPassword() {
 		return this._rememberPassword;
 	}
 
 	public set rememberPassword(rememberPassword: boolean) {
 		this._rememberPassword = rememberPassword;
-	}
-
-	public set label(label: string) {
-		super.label = label || this.generateLabel();
 	}
 
 	private generateLabel(): string {
