@@ -274,14 +274,14 @@ export class QueryManagementService implements IQueryManagementService {
 	}
 
 	public onResultSetAvailable(resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
-		this._notify(resultSetInfo.ownerUri, (runner: QueryRunner) => {
-			runner.handleResultSetAvailable(resultSetInfo);
+		this._notify(resultSetInfo.ownerUri, async (runner: QueryRunner) => {
+			await runner.handleResultSetAvailable(resultSetInfo);
 		});
 	}
 
 	public onResultSetUpdated(resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
-		this._notify(resultSetInfo.ownerUri, (runner: QueryRunner) => {
-			runner.handleResultSetUpdated(resultSetInfo);
+		this._notify(resultSetInfo.ownerUri, async (runner: QueryRunner) => {
+			await runner.handleResultSetUpdated(resultSetInfo);
 		});
 	}
 

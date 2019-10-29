@@ -321,7 +321,7 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Handle a ResultSetComplete from the service layer
 	 */
-	public handleResultSetAvailable(result: azdata.QueryExecuteResultSetNotificationParams): void {
+	public async handleResultSetAvailable(result: azdata.QueryExecuteResultSetNotificationParams): Promise<void> {
 		if (result && result.resultSetSummary) {
 			let resultSet = result.resultSetSummary;
 			let batchSet: azdata.BatchSummary;
@@ -347,11 +347,10 @@ export default class QueryRunner extends Disposable {
 			let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 			if (hasShowPlan) {
 				this._isQueryPlan = true;
-				this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
-					if (e.resultSubset.rows) {
-						this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
-					}
-				});
+				const e = await this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id);
+				if (e.resultSubset.rows) {
+					this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
+				}
 			}
 			// we will just ignore the set if we already have it
 			// ideally this should never happen
@@ -363,7 +362,7 @@ export default class QueryRunner extends Disposable {
 		}
 	}
 
-	public handleResultSetUpdated(result: azdata.QueryExecuteResultSetNotificationParams): void {
+	public async handleResultSetUpdated(result: azdata.QueryExecuteResultSetNotificationParams): Promise<void> {
 		if (result && result.resultSetSummary) {
 			let resultSet = result.resultSetSummary;
 			let batchSet: azdata.BatchSummary;
@@ -373,20 +372,19 @@ export default class QueryRunner extends Disposable {
 			let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 			if (hasShowPlan) {
 				this._isQueryPlan = true;
-				this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
-					if (e.resultSubset.rows) {
-						let planXmlString = e.resultSubset.rows[0][0].displayValue;
-						this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
-						// fire query plan available event if execution is completed
-						if (result.resultSetSummary.complete) {
-							this._onQueryPlanAvailable.fire({
-								providerId: mssqlProviderName,
-								fileUri: result.ownerUri,
-								planXml: planXmlString
-							});
-						}
+				const e = await this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id);
+				if (e.resultSubset.rows) {
+					let planXmlString = e.resultSubset.rows[0][0].displayValue;
+					this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
+					// fire query plan available event if execution is completed
+					if (result.resultSetSummary.complete) {
+						this._onQueryPlanAvailable.fire({
+							providerId: mssqlProviderName,
+							fileUri: result.ownerUri,
+							planXml: planXmlString
+						});
 					}
-				});
+				}
 			}
 			if (batchSet) {
 				// Store the result set in the batch and emit that a result set has completed
@@ -525,10 +523,9 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Disposes the Query from the service client
 	 */
-	public disposeQuery(): void {
-		this._queryManagementService.disposeQuery(this.uri).then(() => {
-			this.dispose();
-		});
+	public async disposeQuery(): Promise<void> {
+		await this._queryManagementService.disposeQuery(this.uri);
+		this.dispose();
 	}
 
 	public dispose() {
@@ -547,9 +544,9 @@ export default class QueryRunner extends Disposable {
 	 * @param resultId The result id of the result to copy from
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
-	copyResults(selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): void {
+	async copyResults(selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<void> {
 		let provider = this.getGridDataProvider(batchId, resultId);
-		provider.copyResults(selection, includeHeaders);
+		return provider.copyResults(selection, includeHeaders);
 	}
 
 
@@ -618,14 +615,14 @@ export class QueryGridDataProvider implements IGridDataProvider {
 		return this.queryRunner.getQueryRows(rowStart, numberOfRows, this.batchId, this.resultSetId);
 	}
 
-	copyResults(selection: Slick.Range[], includeHeaders?: boolean): void {
-		this.copyResultsAsync(selection, includeHeaders);
+	copyResults(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
+		return this.copyResultsAsync(selection, includeHeaders);
 	}
 
 	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
 		try {
 			let results = await getResultsString(this, selection, includeHeaders);
-			this._clipboardService.writeText(results);
+			await this._clipboardService.writeText(results);
 		} catch (error) {
 			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
 		}

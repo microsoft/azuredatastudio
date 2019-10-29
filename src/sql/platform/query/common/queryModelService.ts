@@ -208,8 +208,8 @@ export class QueryModelService implements IQueryModelService {
 	/**
 	 * Run Query implementation
 	 */
-	private doRunQuery(uri: string, selection: azdata.ISelectionData | string, queryInput: QueryInput,
-		runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): void {
+	private async doRunQuery(uri: string, selection: azdata.ISelectionData | string, queryInput: QueryInput,
+		runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): Promise<void> {
 		// Reuse existing query runner if it exists
 		let queryRunner: QueryRunner | undefined;
 		let info: QueryInfo;
@@ -243,11 +243,11 @@ export class QueryModelService implements IQueryModelService {
 			} else {
 				info.selectionSnippet = selection.substring(0, selectionSnippetMaxLen - 3) + '...';
 			}
-			queryRunner.runQuery(selection, runOptions);
+			return queryRunner.runQuery(selection, runOptions);
 		} else if (runCurrentStatement) {
-			queryRunner.runQueryStatement(selection);
+			return queryRunner.runQueryStatement(selection);
 		} else {
-			queryRunner.runQuery(selection, runOptions);
+			return queryRunner.runQuery(selection, runOptions);
 		}
 	}
 
@@ -416,7 +416,7 @@ export class QueryModelService implements IQueryModelService {
 	}
 
 	// EDIT DATA METHODS /////////////////////////////////////////////////////
-	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): void {
+	async initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Promise<void> {
 		// Reuse existing query runner if it exists
 		let queryRunner: QueryRunner;
 		let info: QueryInfo;
@@ -522,7 +522,7 @@ export class QueryModelService implements IQueryModelService {
 			}
 		}
 
-		queryRunner.initializeEdit(ownerUri, schemaName, objectName, objectType, rowLimit, queryString);
+		return queryRunner.initializeEdit(ownerUri, schemaName, objectName, objectType, rowLimit, queryString);
 	}
 
 	public cancelInitializeEdit(input: QueryRunner | string): void {
