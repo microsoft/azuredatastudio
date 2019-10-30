@@ -41,71 +41,53 @@ const targetDatabaseEngineEditionMap = {
 /**
  * Select the top rows from an object
  */
-export function scriptSelect(connectionProfile: IConnectionProfile, metadata: azdata.ObjectMetadata, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService, scriptingService: IScriptingService): Promise<void> {
-	return new Promise<void>((resolve, reject) => {
-		connectionService.connectIfNotConnected(connectionProfile).then(connectionResult => {
-			let paramDetails: azdata.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
-			scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails).then(result => {
-				if (result && result.script) {
-					queryEditorService.newSqlEditor(result.script).then((owner: IConnectableInput) => {
-						// Connect our editor to the input connection
-						let options: IConnectionCompletionOptions = {
-							params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.executeQuery, input: owner },
-							saveTheConnection: false,
-							showDashboard: false,
-							showConnectionDialogOnError: true,
-							showFirewallRuleOnError: true
-						};
-						connectionService.connect(connectionProfile, owner.uri, options).then(() => {
-							resolve();
-						});
-					}).catch(editorError => {
-						reject(editorError);
-					});
-				} else {
-					let errMsg: string = nls.localize('scriptSelectNotFound', "No script was returned when calling select script on object ");
-					reject(errMsg.concat(metadata.metadataTypeName));
-				}
-			}, scriptError => {
-				reject(scriptError);
-			});
-		});
-	});
+export async function scriptSelect(connectionProfile: IConnectionProfile, metadata: azdata.ObjectMetadata, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService, scriptingService: IScriptingService): Promise<boolean> {
+	const connectionResult = await connectionService.connectIfNotConnected(connectionProfile);
+	let paramDetails: azdata.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
+	const result = await scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails);
+	if (result && result.script) {
+		const owner = await queryEditorService.newSqlEditor(result.script);
+		// Connect our editor to the input connection
+		let options: IConnectionCompletionOptions = {
+			params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.executeQuery, input: owner },
+			saveTheConnection: false,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+		const innerConnectionResult = await connectionService.connect(connectionProfile, owner.uri, options);
+
+		return Boolean(innerConnectionResult) && innerConnectionResult.connected;
+	} else {
+		let errMsg: string = nls.localize('scriptSelectNotFound', "No script was returned when calling select script on object ");
+		throw new Error(errMsg.concat(metadata.metadataTypeName));
+	}
 }
 
 /**
  * Opens a new Edit Data session
  */
-export function scriptEditSelect(connectionProfile: IConnectionProfile, metadata: azdata.ObjectMetadata, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService, scriptingService: IScriptingService): Promise<void> {
-	return new Promise<void>((resolve, reject) => {
-		connectionService.connectIfNotConnected(connectionProfile).then(connectionResult => {
-			let paramDetails: azdata.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
-			scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails).then(result => {
-				if (result && result.script) {
-					queryEditorService.newEditDataEditor(metadata.schema, metadata.name, result.script).then((owner: EditDataInput) => {
-						// Connect our editor
-						let options: IConnectionCompletionOptions = {
-							params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: owner },
-							saveTheConnection: false,
-							showDashboard: false,
-							showConnectionDialogOnError: true,
-							showFirewallRuleOnError: true
-						};
-						connectionService.connect(connectionProfile, owner.uri, options).then(() => {
-							resolve();
-						});
-					}).catch(editorError => {
-						reject(editorError);
-					});
-				} else {
-					let errMsg: string = nls.localize('scriptSelectNotFound', "No script was returned when calling select script on object ");
-					reject(errMsg.concat(metadata.metadataTypeName));
-				}
-			}, scriptError => {
-				reject(scriptError);
-			});
-		});
-	});
+export async function scriptEditSelect(connectionProfile: IConnectionProfile, metadata: azdata.ObjectMetadata, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService, scriptingService: IScriptingService): Promise<boolean> {
+	const connectionResult = await connectionService.connectIfNotConnected(connectionProfile);
+	let paramDetails: azdata.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
+	const result = await scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails);
+	if (result && result.script) {
+		const owner = await queryEditorService.newEditDataEditor(metadata.schema, metadata.name, result.script);
+		// Connect our editor
+		let options: IConnectionCompletionOptions = {
+			params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: owner },
+			saveTheConnection: false,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+		const innerConnectionResult = await connectionService.connect(connectionProfile, owner.uri, options);
+
+		return Boolean(innerConnectionResult) && innerConnectionResult.connected;
+	} else {
+		let errMsg: string = nls.localize('scriptSelectNotFound', "No script was returned when calling select script on object ");
+		throw new Error(errMsg.concat(metadata.metadataTypeName));
+	}
 }
 
 
@@ -132,61 +114,51 @@ export function GetScriptOperationName(operation: ScriptOperation) {
 /**
  * Script the object as a statement based on the provided action (except Select)
  */
-export function script(connectionProfile: IConnectionProfile, metadata: azdata.ObjectMetadata,
+export async function script(connectionProfile: IConnectionProfile, metadata: azdata.ObjectMetadata,
 	connectionService: IConnectionManagementService,
 	queryEditorService: IQueryEditorService,
 	scriptingService: IScriptingService,
 	operation: ScriptOperation,
-	errorMessageService: IErrorMessageService): Promise<void> {
-	return new Promise<void>((resolve, reject) => {
-		connectionService.connectIfNotConnected(connectionProfile).then(connectionResult => {
-			let paramDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
-			scriptingService.script(connectionResult, metadata, operation, paramDetails).then(result => {
-				if (result) {
-					let script: string = result.script;
+	errorMessageService: IErrorMessageService): Promise<boolean> {
+	const connectionResult = await connectionService.connectIfNotConnected(connectionProfile);
+	let paramDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
+	const result = await scriptingService.script(connectionResult, metadata, operation, paramDetails);
+	if (result) {
+		let script: string = result.script;
 
-					if (script) {
-						let description = (metadata.schema && metadata.schema !== '') ? `${metadata.schema}.${metadata.name}` : metadata.name;
-						queryEditorService.newSqlEditor(script, connectionProfile.providerName, undefined, description).then((owner) => {
-							// Connect our editor to the input connection
-							let options: IConnectionCompletionOptions = {
-								params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: owner },
-								saveTheConnection: false,
-								showDashboard: false,
-								showConnectionDialogOnError: true,
-								showFirewallRuleOnError: true
-							};
-							connectionService.connect(connectionProfile, owner.uri, options).then(() => {
-								resolve();
-							});
-						}).catch(editorError => {
-							reject(editorError);
-						});
-					} else {
-						let scriptNotFoundMsg = nls.localize('scriptNotFoundForObject', "No script was returned when scripting as {0} on object {1}",
-							GetScriptOperationName(operation), metadata.metadataTypeName);
-						let messageDetail = '';
-						let operationResult = scriptingService.getOperationFailedResult(result.operationId);
-						if (operationResult && operationResult.hasError && operationResult.errorMessage) {
-							scriptNotFoundMsg = operationResult.errorMessage;
-							messageDetail = operationResult.errorDetails;
-						}
-						if (errorMessageService) {
-							let title = nls.localize('scriptingFailed', "Scripting Failed");
-							errorMessageService.showDialog(Severity.Error, title, scriptNotFoundMsg, messageDetail);
-						}
-						reject(scriptNotFoundMsg);
-					}
-				} else {
-					reject(nls.localize('scriptNotFound', "No script was returned when scripting as {0}", GetScriptOperationName(operation)));
-				}
-			}, scriptingError => {
-				reject(scriptingError);
-			});
-		}).catch(connectionError => {
-			reject(connectionError);
-		});
-	});
+		if (script) {
+			let description = (metadata.schema && metadata.schema !== '') ? `${metadata.schema}.${metadata.name}` : metadata.name;
+			const owner = await queryEditorService.newSqlEditor(script, connectionProfile.providerName, undefined, description);
+			// Connect our editor to the input connection
+			let options: IConnectionCompletionOptions = {
+				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: owner },
+				saveTheConnection: false,
+				showDashboard: false,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			};
+			const innerConnectionResult = await connectionService.connect(connectionProfile, owner.uri, options);
+
+			return Boolean(innerConnectionResult) && innerConnectionResult.connected;
+
+		} else {
+			let scriptNotFoundMsg = nls.localize('scriptNotFoundForObject', "No script was returned when scripting as {0} on object {1}",
+				GetScriptOperationName(operation), metadata.metadataTypeName);
+			let messageDetail = '';
+			let operationResult = scriptingService.getOperationFailedResult(result.operationId);
+			if (operationResult && operationResult.hasError && operationResult.errorMessage) {
+				scriptNotFoundMsg = operationResult.errorMessage;
+				messageDetail = operationResult.errorDetails;
+			}
+			if (errorMessageService) {
+				let title = nls.localize('scriptingFailed', "Scripting Failed");
+				errorMessageService.showDialog(Severity.Error, title, scriptNotFoundMsg, messageDetail);
+			}
+			throw new Error(scriptNotFoundMsg);
+		}
+	} else {
+		throw new Error(nls.localize('scriptNotFound', "No script was returned when scripting as {0}", GetScriptOperationName(operation)));
+	}
 }
 
 function getScriptingParamDetails(connectionService: IConnectionManagementService, ownerUri: string, metadata: azdata.ObjectMetadata): azdata.ScriptingParamDetails {

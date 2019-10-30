@@ -25,14 +25,14 @@ export class ScriptSelectAction extends Action {
 		super(id, label);
 	}
 
-	public run(actionContext: BaseActionContext): Promise<boolean> {
+	public async run(actionContext: BaseActionContext): Promise<boolean> {
 		return scriptSelect(
 			actionContext.profile,
 			actionContext.object,
 			this._connectionManagementService,
 			this._queryEditorService,
 			this._scriptingService
-		).then(() => true);
+		);
 	}
 }
 
@@ -50,7 +50,7 @@ export class ScriptExecuteAction extends Action {
 		super(id, label);
 	}
 
-	public run(actionContext: BaseActionContext): Promise<boolean> {
+	public async run(actionContext: BaseActionContext): Promise<boolean> {
 		return script(
 			actionContext.profile,
 			actionContext.object,
@@ -59,7 +59,7 @@ export class ScriptExecuteAction extends Action {
 			this._scriptingService,
 			ScriptOperation.Execute,
 			this._errorMessageService
-		).then(() => true);
+		);
 	}
 }
 
@@ -77,7 +77,7 @@ export class ScriptAlterAction extends Action {
 		super(id, label);
 	}
 
-	public run(actionContext: BaseActionContext): Promise<boolean> {
+	public async run(actionContext: BaseActionContext): Promise<boolean> {
 		return script(
 			actionContext.profile,
 			actionContext.object,
@@ -86,7 +86,7 @@ export class ScriptAlterAction extends Action {
 			this._scriptingService,
 			ScriptOperation.Alter,
 			this._errorMessageService
-		).then(() => true);
+		);
 	}
 }
 
@@ -103,14 +103,14 @@ export class EditDataAction extends Action {
 		super(id, label);
 	}
 
-	public run(actionContext: BaseActionContext): Promise<boolean> {
+	public async run(actionContext: BaseActionContext): Promise<boolean> {
 		return scriptEditSelect(
 			actionContext.profile,
 			actionContext.object,
 			this._connectionManagementService,
 			this._queryEditorService,
 			this._scriptingService
-		).then(() => true);
+		);
 	}
 }
 
@@ -128,7 +128,7 @@ export class ScriptCreateAction extends Action {
 		super(id, label);
 	}
 
-	public run(actionContext: BaseActionContext): Promise<boolean> {
+	public async run(actionContext: BaseActionContext): Promise<boolean> {
 		return script(
 			actionContext.profile,
 			actionContext.object,
@@ -137,7 +137,7 @@ export class ScriptCreateAction extends Action {
 			this._scriptingService,
 			ScriptOperation.Create,
 			this._errorMessageService
-		).then(() => true);
+		);
 	}
 }
 
@@ -155,7 +155,7 @@ export class ScriptDeleteAction extends Action {
 		super(id, label);
 	}
 
-	public run(actionContext: BaseActionContext): Promise<boolean> {
+	public async run(actionContext: BaseActionContext): Promise<boolean> {
 		return script(
 			actionContext.profile,
 			actionContext.object,
@@ -164,6 +164,6 @@ export class ScriptDeleteAction extends Action {
 			this._scriptingService,
 			ScriptOperation.Delete,
 			this._errorMessageService
-		).then(() => true);
+		);
 	}
 }
