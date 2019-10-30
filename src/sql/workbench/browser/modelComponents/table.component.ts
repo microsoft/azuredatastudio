@@ -26,7 +26,7 @@ import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/browser/ui/table/formatters';
-import { isNullOrUndefined } from 'util';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
 @Component({
 	selector: 'modelview-table',
@@ -266,7 +266,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	private updateTableCells(cellInfos): void {
 		cellInfos.forEach((cellInfo) => {
-			if (isNullOrUndefined(cellInfo.column) || isNullOrUndefined(cellInfo.row) || cellInfo.row < 0 || cellInfo.row > this.data.length) {
+			if (isUndefinedOrNull(cellInfo.column) || isUndefinedOrNull(cellInfo.row) || cellInfo.row < 0 || cellInfo.row > this.data.length) {
 				return;
 			}
 

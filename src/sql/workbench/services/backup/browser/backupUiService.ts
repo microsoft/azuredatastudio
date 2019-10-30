@@ -108,7 +108,7 @@ export class BackupUiService implements IBackupUiService {
 	public onShowBackupDialog() {
 		let backupDialog = this._backupDialogs[this._currentProvider];
 		if (backupDialog) {
-			backupDialog.setFocusableElements();
+			backupDialog.setInitialFocusedElement();
 		}
 	}
 

@@ -28,7 +28,7 @@ steps:
   inputs:
     keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
     targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-    vstsFeed: '$(ArtifactFeed)' # {{SQL CARBON EDIT}} update build cache
+    vstsFeed: '$(build-cache)' # {{SQL CARBON EDIT}} update build cache
   condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 - script: |
     yarn electron x64
