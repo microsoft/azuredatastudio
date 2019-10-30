@@ -235,7 +235,7 @@ export class ProfilerFilterDialog extends Modal {
 		this._register(attachInputBoxStyler(valueText, this._themeService));
 
 		const removeCell = DOM.append(row, DOM.$('td'));
-		const removeClauseButton = DOM.append(removeCell, DOM.$('.profiler-filter-remove-condition.icon.remove', {
+		const removeClauseButton = DOM.append(removeCell, DOM.$('.profiler-filter-remove-condition.codicon.remove', {
 			'tabIndex': '0',
 			'aria-label': RemoveText,
 			'title': RemoveText,
