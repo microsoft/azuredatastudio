@@ -64,59 +64,6 @@
 					"flags": "preview"
 				},
 				{
-					"extensionId": "10",
-					"extensionName": "vscodeintellicode",
-					"displayName": "Visual Studio IntelliCode",
-					"shortDescription": "AI-assisted development",
-					"publisher": {
-						"displayName": "Microsoft",
-						"publisherId": "Microsoft",
-						"publisherName": "Microsoft"
-					},
-					"versions": [
-						{
-							"version": "1.2.1",
-							"lastUpdated": "10/29/2019",
-							"assetUri": "",
-							"fallbackAssetUri": "fallbackAssetUri",
-							"files": [
-								{
-									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/agent/agent-0.43.0.vsix"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://intellicodeextensions.blob.core.windows.net/intellicodeextensions/extensions/azuredatastudio/1.2.1/icon.png"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://intellicodeextensions.blob.core.windows.net/intellicodeextensions/extensions/azuredatastudio/1.2.1/README.md"
-								}
-							],
-							"properties": [
-								{
-									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
-									"value": ""
-								},
-								{
-									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.29.1"
-								},
-								{
-									"key": "Microsoft.AzDataEngine",
-									"value": ""
-								},
-								{
-									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://visualstudio.microsoft.com/services/intellicode"
-								}
-							]
-						}
-					],
-					"statistics": [],
-					"flags": "preview"
-				},
-				{
 					"extensionId": "11",
 					"extensionName": "whoisactive",
 					"displayName": "whoisactive",
@@ -2783,6 +2730,67 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "57",
+					"extensionName": "vscodeintellicode",
+					"displayName": "Visual Studio IntelliCode",
+					"shortDescription": "AI-assisted development",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "VisualStudioExptTeam"
+					},
+					"versions": [
+						{
+							"version": "1.2.1",
+							"lastUpdated": "10/29/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": ""
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": ""
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": ""
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": ""
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": ""
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=1.29.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://visualstudio.microsoft.com/services/intellicode"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -2791,7 +2799,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 46
+							"count": 47
 						}
 					]
 				}
