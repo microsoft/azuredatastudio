@@ -250,6 +250,12 @@ const tslintHygieneFilter = [
 	...tslintBaseFilter
 ];
 
+const fileLengthFilter = filter([
+	'**',
+	'!extensions/import/*.docx',
+	'!extensions/admin-tool-ext-win/license/**'
+], {restore: true});
+
 const copyrightHeaderLines = [
 	'/*---------------------------------------------------------------------------------------------',
 	' *  Copyright (c) Microsoft Corporation. All rights reserved.',
@@ -404,6 +410,23 @@ function hygiene(some) {
 		});
 	});
 
+	const filelength = es.through(function (file) {
+
+		const fileName = path.basename(file.relative);
+		const fileDir = path.dirname(file.relative);
+		//check the filename is < 50 characters (basename gets the filename with extension).
+		if (fileName.length > 50) {
+			console.error(`File name '${fileName}' under ${fileDir} is too long. Rename file to have less than 50 characters.`);
+			errorCount++;
+		}
+		if (file.relative.length > 150) {
+			console.error(`File path ${file.relative} exceeds acceptable file-length. Rename the path to have less than 150 characters.`);
+			errorCount++;
+		}
+
+		this.emit('data', file);
+	});
+
 	const tslintConfiguration = tslint.Configuration.findConfiguration('tslint.json', '.');
 	const tslintOptions = { fix: false, formatter: 'json' };
 	const tsLinter = new tslint.Linter(tslintOptions);
@@ -435,6 +458,9 @@ function hygiene(some) {
 	const productJsonFilter = filter('product.json', { restore: true });
 
 	const result = input
+		.pipe(fileLengthFilter)
+		.pipe(filelength)
+		.pipe(fileLengthFilter.restore)
 		.pipe(filter(f => !f.stat.isDirectory()))
 		.pipe(productJsonFilter)
 		.pipe(process.env['BUILD_SOURCEVERSION'] ? es.through() : productJson)

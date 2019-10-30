@@ -329,6 +329,12 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 		if (formComponent.required && componentWrapper) {
 			componentWrapper.required = true;
 		}
+		if (formComponent.title && componentWrapper) {
+			componentWrapper.ariaLabel = formComponent.title;
+			if (componentWrapper instanceof LoadingComponentWrapper) {
+				componentWrapper.component.ariaLabel = formComponent.title;
+			}
+		}
 		let actions: string[] = undefined;
 		if (formComponent.actions) {
 			actions = formComponent.actions.map(action => {
@@ -550,6 +556,14 @@ class ComponentWrapper implements azdata.Component {
 	}
 	public set display(v: azdata.DisplayType) {
 		this.setProperty('display', v);
+	}
+
+	public get ariaLabel(): string {
+		return this.properties['ariaLabel'];
+	}
+
+	public set ariaLabel(v: string) {
+		this.setProperty('ariaLabel', v);
 	}
 
 	public get CSSStyles(): { [key: string]: string } {
@@ -820,18 +834,11 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		this.setProperty('value', v);
 	}
 
-	public get ariaLabel(): string {
-		return this.properties['ariaLabel'];
-	}
-	public set ariaLabel(v: string) {
-		this.setProperty('ariaLabel', v);
-	}
-
 	public get ariaLive(): string {
 		return this.properties['ariaLive'];
 	}
 	public set ariaLive(v: string) {
-		this.setProperty('ariaLabel', v);
+		this.setProperty('ariaLive', v);
 	}
 
 	public get placeHolder(): string {
@@ -1274,6 +1281,14 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		this.setProperty('focused', v);
 	}
 
+	public get updateCells(): azdata.TableCell[] {
+		return this.properties['updateCells'];
+	}
+
+	public set updateCells(v: azdata.TableCell[]) {
+		this.setProperty('updateCells', v);
+	}
+
 	public get onRowSelected(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
 		return emitter && emitter.event;
@@ -1325,13 +1340,6 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 	}
 	public set fireOnTextChange(v: boolean) {
 		this.setProperty('fireOnTextChange', v);
-	}
-
-	public get ariaLabel(): string {
-		return this.properties['ariaLabel'];
-	}
-	public set ariaLabel(v: string) {
-		this.setProperty('ariaLabel', v);
 	}
 
 	public get onValueChanged(): vscode.Event<any> {
@@ -1417,13 +1425,6 @@ class ButtonWrapper extends ComponentWithIconWrapper implements azdata.ButtonCom
 	}
 	public set title(v: string) {
 		this.setProperty('title', v);
-	}
-
-	public get ariaLabel(): string {
-		return this.properties['ariaLabel'];
-	}
-	public set ariaLabel(v: string) {
-		this.setProperty('ariaLabel', v);
 	}
 
 	public get onDidClick(): vscode.Event<any> {

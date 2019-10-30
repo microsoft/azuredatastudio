@@ -52,7 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 	vscode.commands.registerCommand('azdata.openNotebookInputDialog', (dialogInfo: NotebookBasedDialogInfo) => {
-		const dialog = new DeploymentInputDialog(notebookService, dialogInfo);
+		const dialog = new DeploymentInputDialog(notebookService, platformService, dialogInfo);
 		dialog.open();
 	});
 }

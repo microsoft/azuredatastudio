@@ -6,11 +6,11 @@
 
 import { window, QuickPickItem } from 'vscode';
 import * as azdata from 'azdata';
-import { TokenCredentials } from 'ms-rest';
-import { AppContext } from '../appContext';
+import { TokenCredentials } from '@azure/ms-rest-js';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
+import { AppContext } from '../appContext';
 import { azureResource } from './azure-resource';
 import { TreeNode } from './treeNode';
 import { AzureResourceCredentialError } from './errors';
@@ -46,7 +46,11 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			}
 		}
 
-		let selectedSubscriptions = (await subscriptionFilterService.getSelectedSubscriptions(accountNode.account)) || <azureResource.AzureResourceSubscription[]>[];
+		let selectedSubscriptions = await subscriptionFilterService.getSelectedSubscriptions(accountNode.account);
+		if (!selectedSubscriptions) {
+			selectedSubscriptions = [];
+		}
+
 		const selectedSubscriptionIds: string[] = [];
 		if (selectedSubscriptions.length > 0) {
 			selectedSubscriptionIds.push(...selectedSubscriptions.map((subscription) => subscription.id));
@@ -67,9 +71,9 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			};
 		}).sort((a, b) => a.label.localeCompare(b.label));
 
-		const selectedSubscriptionQuickPickItems = (await window.showQuickPick(subscriptionQuickPickItems, { canPickMany: true }));
+		const selectedSubscriptionQuickPickItems = await window.showQuickPick(subscriptionQuickPickItems, { canPickMany: true });
 		if (selectedSubscriptionQuickPickItems && selectedSubscriptionQuickPickItems.length > 0) {
-			tree.refresh(node, false);
+			await tree.refresh(node, false);
 
 			selectedSubscriptions = selectedSubscriptionQuickPickItems.map((subscriptionItem) => subscriptionItem.subscription);
 			await subscriptionFilterService.saveSelectedSubscriptions(accountNode.account, selectedSubscriptions);
@@ -79,7 +83,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 	appContext.apiWrapper.registerCommand('azure.resource.refreshall', () => tree.notifyNodeChanged(undefined));
 
 	appContext.apiWrapper.registerCommand('azure.resource.refresh', async (node?: TreeNode) => {
-		tree.refresh(node, true);
+		await tree.refresh(node, true);
 	});
 
 	appContext.apiWrapper.registerCommand('azure.resource.signin', async (node?: TreeNode) => {

@@ -8,16 +8,16 @@ import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { AzureResourceItemType } from '../../../azureResource/constants';
+import { AzureResourceItemType } from '../../constants';
 import { ApiWrapper } from '../../../apiWrapper';
 import { generateGuid } from '../../utils';
 import { IAzureResourceService, AzureResourceDatabaseServer } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 import { azureResource } from '../../azure-resource';
 
-export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDataProviderBase<AzureResourceDatabaseServer> {
-	private static readonly containerId = 'azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel', "SQL Servers");
+export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase<AzureResourceDatabaseServer> {
+	private static readonly containerId = 'azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainer';
+	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel', "Azure Database for PostgreSQL Servers");
 
 	public constructor(
 		databaseServerService: IAzureResourceService<AzureResourceDatabaseServer>,
@@ -32,6 +32,7 @@ export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDat
 		return {
 			id: `databaseServer_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: databaseServer.name,
+			// TODO: should get PGSQL-specific icons (also needed in that extension)
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
@@ -43,17 +44,20 @@ export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDat
 				connectionName: undefined,
 				serverName: databaseServer.fullName,
 				databaseName: databaseServer.defaultDatabaseName,
-				userName: databaseServer.loginName,
+				userName: `${databaseServer.loginName}@${databaseServer.fullName}`,
 				password: '',
 				authenticationType: 'SqlLogin',
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: 'MSSQL',
+				providerName: 'PGSQL',
 				saveProfile: false,
-				options: {}
+				options: {
+					// Set default for SSL or will get error complaining about it not being set correctly
+					'sslmode': 'require'
+				}
 			},
-			childProvider: 'MSSQL',
+			childProvider: 'PGSQL',
 			type: ExtensionNodeType.Server
 		};
 	}
@@ -64,8 +68,8 @@ export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDat
 			subscription: undefined,
 			tenantId: undefined,
 			treeItem: {
-				id: AzureResourceDatabaseServerTreeDataProvider.containerId,
-				label: AzureResourceDatabaseServerTreeDataProvider.containerLabel,
+				id: PostgresServerTreeDataProvider.containerId,
+				label: PostgresServerTreeDataProvider.containerLabel,
 				iconPath: {
 					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
 					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')

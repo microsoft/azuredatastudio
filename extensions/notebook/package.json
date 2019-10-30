@@ -141,6 +141,11 @@
         "category": "%books-preview-category%"
       },
       {
+        "command": "books.command.openLocalizedBooks",
+        "title": "%title.PreviewLocalizedBook%",
+        "category": "%books-preview-category%"
+      },
+      {
         "command": "notebook.command.saveBook",
         "title": "%title.saveJupyterBook%",
         "category": "%books-preview-category%",

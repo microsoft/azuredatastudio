@@ -157,7 +157,7 @@ export class PlatformService implements IPlatformService {
 				return await this.runStreamedCommand(command, this._outputChannel, options);
 			}
 		} catch (error) {
-			this._outputChannel.append(localize('platformService.RunCommand.ErroredOut', "\t>>> {0}   ... errored out: {1}", command, getErrorMessage(error))); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
+			this._outputChannel.append(localize('platformService.RunCommand.ErroredOut', "\t>>> {0}   … errored out: {1}", command, getErrorMessage(error))); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
 			if (!(options && options.ignoreError)) {
 				throw error;
 			} else {
@@ -232,9 +232,9 @@ export class PlatformService implements IPlatformService {
 		// Add listeners to print stdout and stderr and exit code
 		child.on('exit', (code: number | null, signal: string | null) => {
 			if (code !== null) {
-				outputChannel.appendLine(localize('platformService.RunStreamedCommand.ExitedWithCode', "    >>> {0}    ... exited with code: {1}", command, code));
+				outputChannel.appendLine(localize('platformService.RunStreamedCommand.ExitedWithCode', "    >>> {0}    … exited with code: {1}", command, code));
 			} else {
-				outputChannel.appendLine(localize('platformService.RunStreamedCommand.ExitedWithSignal', "    >>> {0}   ... exited with signal: {1}", command, signal));
+				outputChannel.appendLine(localize('platformService.RunStreamedCommand.ExitedWithSignal', "    >>> {0}   … exited with signal: {1}", command, signal));
 			}
 		});
 		child.stdout.on('data', (data: string | Buffer) => {
