@@ -15,6 +15,10 @@ export interface IObservableCollection<T> {
 	dispose(): void;
 }
 
+export interface ISlickColumn<T> extends Slick.Column<T> {
+	isEditable?: boolean;
+}
+
 class DataWindow<T> {
 	private _data: T[] | undefined;
 	private _length: number = 0;
@@ -177,6 +181,10 @@ export class VirtualizedCollection<T extends Slick.SlickData> implements IObserv
 		}
 
 		return this.placeHolderGenerator(index);
+	}
+
+	public publicResetWindowsAroundIndex(index: number): void {
+		this.resetWindowsAroundIndex(index);
 	}
 
 	private resetWindowsAroundIndex(index: number): void {

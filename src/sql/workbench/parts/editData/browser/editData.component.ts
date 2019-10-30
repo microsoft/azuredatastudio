@@ -6,7 +6,8 @@
 import 'vs/css!./media/editData';
 
 import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, EventEmitter } from '@angular/core';
-import { VirtualizedCollection } from 'angular2-slickgrid';
+//import { VirtualizedCollection } from 'angular2-slickgrid';
+import { VirtualizedCollection } from 'sql/base/browser/ui/table/asyncDataView';
 
 import { IGridDataSet } from 'sql/workbench/parts/grid/common/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
@@ -360,9 +361,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			minHeight: minHeight,
 			dataRows: new VirtualizedCollection(
 				self.windowSize,
+				index => { return {}; },
 				resultSet.rowCount,
 				this.loadDataFunction,
-				index => { return {}; }
 			),
 			columnDefinitions: [rowNumberColumn.getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
 				let columnIndex = (i + 1).toString();
@@ -483,7 +484,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				this.resetCurrentCell();
 
 				if (row !== undefined) {
-					this.dataSet.dataRows.resetWindowsAroundIndex(row);
+					this.dataSet.dataRows.publicResetWindowsAroundIndex(row);
 				}
 			}
 		}
@@ -592,9 +593,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				self.dataSet.minHeight = self.getMinHeight(self.dataSet.totalRows);
 				self.dataSet.dataRows = new VirtualizedCollection(
 					self.windowSize,
+					index => { return {}; },
 					self.dataSet.totalRows,
 					self.loadDataFunction,
-					index => { return {}; }
 				);
 			});
 	}
@@ -607,9 +608,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		this.dataSet.totalRows--;
 		this.dataSet.dataRows = new VirtualizedCollection(
 			this.windowSize,
+			index => { return {}; },
 			this.dataSet.totalRows,
 			this.loadDataFunction,
-			index => { return {}; }
 		);
 
 		// refresh results view
@@ -716,6 +717,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			isDirty: false
 		};
 	}
+
 
 	private setCurrentCell(row: number, column: number) {
 		// Only update if we're actually changing cells
