@@ -4,11 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IInsight, IInsightData } from './interfaces';
-import { INotificationService } from 'vs/platform/notification/common/notification';
+
 import { $ } from 'vs/base/browser/dom';
 import { mixin } from 'vs/base/common/objects';
 import { IInsightOptions, InsightType } from 'sql/workbench/parts/charts/common/interfaces';
-import * as nls from 'vs/nls';
 
 export interface IConfig extends IInsightOptions {
 	encoding?: string;
@@ -30,7 +29,7 @@ export class ImageInsight implements IInsight {
 
 	private imageEle: HTMLImageElement;
 
-	constructor(container: HTMLElement, options: IConfig, @INotificationService private _notificationService: INotificationService) {
+	constructor(container: HTMLElement, options: IConfig) {
 		this._options = mixin(options, defaultConfig, false);
 		this.imageEle = $('img');
 		container.appendChild(this.imageEle);
@@ -53,16 +52,11 @@ export class ImageInsight implements IInsight {
 	}
 
 	set data(data: IInsightData) {
-		const that = this;
 		if (data.rows && data.rows.length > 0 && data.rows[0].length > 0) {
 			let img = data.rows[0][0];
 			if (this._options.encoding === 'hex') {
 				img = ImageInsight._hexToBase64(img);
 			}
-			this.imageEle.onerror = function () {
-				this.src = require.toUrl(`./media/images/invalidImage.png`);
-				that._notificationService.error(nls.localize('invalidImage', "Table does not contain a valid image"));
-			};
 			this.imageEle.src = `data:image/${this._options.imageFormat};base64,${img}`;
 		}
 	}
