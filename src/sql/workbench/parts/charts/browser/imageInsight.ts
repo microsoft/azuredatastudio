@@ -61,7 +61,7 @@ export class ImageInsight implements IInsight {
 			}
 			this.imageEle.onerror = function () {
 				this.src = require.toUrl(`./media/images/invalidImage.png`);
-				that._notificationService.error(nls.localize('invalidImage', "Error: Table is not a valid image"));
+				that._notificationService.error(nls.localize('invalidImage', "Table does not contain a valid image"));
 			};
 			this.imageEle.src = `data:image/${this._options.imageFormat};base64,${img}`;
 		}
