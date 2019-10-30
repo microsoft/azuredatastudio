@@ -66,7 +66,7 @@
 	"dependencies": {
 		"dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.3.0",
 		"htmlparser2": "^3.10.1",
-		"service-downloader": "github:anthonydresser/service-downloader#0.1.5",
+		"service-downloader": "github:anthonydresser/service-downloader#2c71718e2b1b2610612a3e0db4eba86987a9dbb3",
 		"vscode-extension-telemetry": "0.0.18",
 		"vscode-nls": "^3.2.1"
 	},
