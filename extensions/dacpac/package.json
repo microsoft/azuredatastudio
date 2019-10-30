@@ -60,8 +60,7 @@
     "mocha": "^5.2.0",
     "should": "^13.2.1",
     "mocha-junit-reporter": "^1.17.0",
-    "mocha-multi-reporters": "^1.1.7",
-    "vscode": "^1.1.26"
+    "mocha-multi-reporters": "^1.1.7"
   },
   "__metadata": {
     "id": "33",
