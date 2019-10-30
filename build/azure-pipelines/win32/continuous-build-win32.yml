@@ -66,4 +66,6 @@ steps:
   condition: succeededOrFailed()
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0 # {{SQL CARBON EDIT}} add task
   displayName: 'Component Detection'
-  continueOnError: true
+  inputs:
+    alertWarningLevel: Critical
+    failOnAlert: true
