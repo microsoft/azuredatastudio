@@ -39,7 +39,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
 		this.books = [];
-		this.initialize(workspaceFolders.map(a => a.uri.fsPath));
+		this.initialize(workspaceFolders.map(a => a.uri.fsPath)).catch((e) => console.error(e));
 		this.viewId = view;
 		this.prompter = new CodeAdapter();
 
@@ -72,14 +72,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			// Check if the book is already open in viewlet.
 			if (books.length > 0 && books[0].bookItems) {
 				this.currentBook = books[0];
-				this.showPreviewFile(urlToOpen);
+				this.showPreviewFile(urlToOpen).catch((e) => console.error(e));
 			}
 			else {
 				await this.initialize([bookPath]);
 				let bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
 				this.currentBook = this.books.filter(book => book.bookPath === bookPath)[0];
 				bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
-				this.showPreviewFile(urlToOpen);
+				this.showPreviewFile(urlToOpen).catch((e) => console.error(e));
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(localize('openBookError', "Open book {0} failed: {1}",
@@ -99,7 +99,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				this.openMarkdown(sectionToOpenMarkdown);
 			}
 			else if (await fs.pathExists(sectionToOpenNotebook)) {
-				this.openNotebook(sectionToOpenNotebook);
+				this.openNotebook(sectionToOpenNotebook).catch((e) => console.error(e));
 			}
 		}
 	}
