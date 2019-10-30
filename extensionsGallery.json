@@ -2739,7 +2739,7 @@
 					"publisher": {
 						"displayName": "Microsoft",
 						"publisherId": "Microsoft",
-						"publisherName": "VisualStudioExptTeam"
+						"publisherName": "Microsoft"
 					},
 					"versions": [
 						{
@@ -2750,23 +2750,23 @@
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": ""
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/intellicode/vscodeintellicode-1.2.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": ""
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/intellicode/icon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": ""
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/intellicode/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": ""
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/intellicode/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": ""
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/intellicode/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -2780,17 +2780,17 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ""
+									"value": ">=1.12.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://visualstudio.microsoft.com/services/intellicode"
+									"value": "https://github.com/MicrosoftDocs/intellicode"
 								}
 							]
 						}
 					],
 					"statistics": [],
-					"flags": "preview"
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
