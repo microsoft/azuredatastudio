@@ -1,5 +1,5 @@
 <div *ngIf="label" [class]="getClass()" (click)="onCardClick()" (mouseover)="onCardHoverChanged($event)"
-	(mouseout)="onCardHoverChanged($event)" tabIndex="0">
+	(mouseout)="onCardHoverChanged($event)" tabIndex="0" [style.width]="width" [style.height]="height">
 	<ng-container *ngIf="isVerticalButton || isDetailsCard">
 		<span *ngIf="hasStatus" class="card-status">
 			<div class="status-content" [style.backgroundColor]="statusColor"></div>
@@ -10,11 +10,18 @@
 		<ng-container *ngIf="isVerticalButton">
 			<div class="card-vertical-button">
 				<div *ngIf="iconPath" class="iconContainer">
-					<div [class]="iconClass" [style.maxWidth]="iconWidth" [style.maxHeight]="iconHeight"></div>
+					<div [class]="iconClass" [style.width]="iconWidth" [style.height]="iconHeight"></div>
 				</div>
 				<h4 class="card-label">{{label}}</h4>
-				<div *ngFor="let desc of descriptions">
-					<div class="list-item-description">{{desc}}</div>
+				<div *ngIf="descriptions.length > 0" class="model-card-description-container">
+					<div *ngFor="let desc of descriptions">
+						<div *ngIf="desc.label; else separator" [style.font-weight]="desc.fontWeight" class="model-card-list-item-description">
+							<span>{{desc.label}}</span><span class="model-card-list-item-description-value">{{desc.value}}</span>
+						</div>
+						<ng-template #separator>
+							<div style="height: 12px"></div>
+						</ng-template>
+					</div>
 				</div>
 			</div>
 		</ng-container>

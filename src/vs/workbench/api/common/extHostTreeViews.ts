@@ -170,8 +170,8 @@ export interface TreeNode extends IDisposable { // {{SQL CARBON EDIT}} export in
 // {{SQL CARBON EDIT}}
 export class ExtHostTreeView<T> extends Disposable {
 
-	private static LABEL_HANDLE_PREFIX = '0';
-	private static ID_HANDLE_PREFIX = '1';
+	private static readonly LABEL_HANDLE_PREFIX = '0';
+	private static readonly ID_HANDLE_PREFIX = '1';
 
 	private readonly dataProvider: vscode.TreeDataProvider<T>;
 
@@ -557,7 +557,7 @@ export class ExtHostTreeView<T> extends Disposable {
 	private getLightIconPath(extensionTreeItem: vscode.TreeItem): URI | undefined {
 		if (extensionTreeItem.iconPath && !(extensionTreeItem.iconPath instanceof ThemeIcon)) {
 			if (typeof extensionTreeItem.iconPath === 'string'
-				|| extensionTreeItem.iconPath instanceof URI) {
+				|| URI.isUri(extensionTreeItem.iconPath)) {
 				return this.getIconPath(extensionTreeItem.iconPath);
 			}
 			return this.getIconPath((<{ light: string | URI; dark: string | URI }>extensionTreeItem.iconPath).light);
@@ -573,7 +573,7 @@ export class ExtHostTreeView<T> extends Disposable {
 	}
 
 	private getIconPath(iconPath: string | URI): URI {
-		if (iconPath instanceof URI) {
+		if (URI.isUri(iconPath)) {
 			return iconPath;
 		}
 		return URI.file(iconPath);

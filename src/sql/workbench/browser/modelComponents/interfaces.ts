@@ -69,6 +69,7 @@ export enum ComponentEventType {
 	onSelectedRowChanged,
 	onComponentCreated,
 	onCellAction,
+	onEnterKeyPressed
 }
 
 export interface IModelStore {
@@ -100,4 +101,8 @@ export interface IModelStore {
 	 * Run all validations for the given component and return the new validation value
 	 */
 	validate(component: IComponent): Thenable<boolean>;
+}
+
+export interface ITitledComponent {
+	title?: string;
 }

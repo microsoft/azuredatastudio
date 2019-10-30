@@ -12,7 +12,7 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { DefaultFilter, DefaultDragAndDrop, DefaultAccessibilityProvider } from 'vs/base/parts/tree/browser/treeDefaults';
 import { localize } from 'vs/nls';
-import { hide, $, append } from 'vs/base/browser/dom';
+import { hide, $, append, show } from 'vs/base/browser/dom';
 import { QueryHistoryRenderer } from 'sql/workbench/parts/queryHistory/browser/queryHistoryRenderer';
 import { QueryHistoryDataSource } from 'sql/workbench/parts/queryHistory/browser/queryHistoryDataSource';
 import { QueryHistoryController } from 'sql/workbench/parts/queryHistory/browser/queryHistoryController';
@@ -21,12 +21,14 @@ import { IExpandableTree } from 'sql/workbench/parts/objectExplorer/browser/tree
 import { IQueryHistoryService } from 'sql/platform/queryHistory/common/queryHistoryService';
 import { QueryHistoryNode } from 'sql/workbench/parts/queryHistory/browser/queryHistoryNode';
 import { QueryHistoryInfo } from 'sql/platform/queryHistory/common/queryHistoryInfo';
+import { IAction } from 'vs/base/common/actions';
 /**
  * QueryHistoryView implements the dynamic tree view for displaying Query History
  */
 export class QueryHistoryView extends Disposable {
 	private _messages: HTMLElement;
 	private _tree: ITree;
+	private _actionProvider: QueryHistoryActionProvider;
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -34,6 +36,7 @@ export class QueryHistoryView extends Disposable {
 		@IQueryHistoryService private readonly _queryHistoryService: IQueryHistoryService
 	) {
 		super();
+		this._actionProvider = this._instantiationService.createInstance(QueryHistoryActionProvider);
 	}
 
 	/**
@@ -64,9 +67,8 @@ export class QueryHistoryView extends Disposable {
 	 */
 	public createQueryHistoryTree(treeContainer: HTMLElement, instantiationService: IInstantiationService): Tree {
 		const dataSource = instantiationService.createInstance(QueryHistoryDataSource);
-		const actionProvider = instantiationService.createInstance(QueryHistoryActionProvider);
 		const renderer = instantiationService.createInstance(QueryHistoryRenderer);
-		const controller = instantiationService.createInstance(QueryHistoryController, actionProvider);
+		const controller = instantiationService.createInstance(QueryHistoryController, this._actionProvider);
 		const dnd = new DefaultDragAndDrop();
 		const filter = new DefaultFilter();
 		const sorter = null;
@@ -85,9 +87,6 @@ export class QueryHistoryView extends Disposable {
 		let selectedElement: any;
 		let targetsToExpand: any[];
 
-		// Focus
-		this._tree.domFocus();
-
 		if (this._tree) {
 			const selection = this._tree.getSelection();
 			if (selection && selection.length === 1) {
@@ -102,6 +101,8 @@ export class QueryHistoryView extends Disposable {
 
 		if (nodes.length > 0) {
 			hide(this._messages);
+		} else {
+			show(this._messages);
 		}
 
 		// Set the tree input - root node is just an empty container node
@@ -117,7 +118,6 @@ export class QueryHistoryView extends Disposable {
 			if (selectedElement) {
 				this._tree.select(selectedElement);
 			}
-			this._tree.getFocus();
 		}, errors.onUnexpectedError);
 	}
 
@@ -137,5 +137,10 @@ export class QueryHistoryView extends Disposable {
 		} else {
 			this._tree.onHidden();
 		}
+	}
+
+
+	public getActions(): IAction[] {
+		return this._actionProvider.getActions(undefined);
 	}
 }

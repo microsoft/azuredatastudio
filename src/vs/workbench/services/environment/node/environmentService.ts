@@ -20,22 +20,21 @@ export class WorkbenchEnvironmentService extends EnvironmentService implements I
 
 	get webviewExternalEndpoint(): string {
 		const baseEndpoint = 'https://{{uuid}}.vscode-webview-test.com/{{commit}}';
-		return baseEndpoint.replace('{{commit}}', product.commit || '211fa02efe8c041fd7baa8ec3dce199d5185aa44');
+		return baseEndpoint.replace('{{commit}}', product.commit || 'c58aaab8a1cc22a7139b761166a0d4f37d41e998');
 	}
 
-	readonly webviewResourceRoot = 'vscode-resource:{{resource}}';
+	readonly webviewResourceRoot = 'vscode-resource://{{resource}}';
 	readonly webviewCspSource = 'vscode-resource:';
 
 	constructor(
 		readonly configuration: IWindowConfiguration,
-		execPath: string
+		execPath: string,
+		private readonly windowId: number
 	) {
 		super(configuration, execPath);
 
 		this.configuration.backupWorkspaceResource = this.configuration.backupPath ? toBackupWorkspaceResource(this.configuration.backupPath, this) : undefined;
 	}
-
-	get skipGettingStarted(): boolean { return !!this.args['skip-getting-started']; }
 
 	get skipReleaseNotes(): boolean { return !!this.args['skip-release-notes']; }
 
@@ -43,7 +42,7 @@ export class WorkbenchEnvironmentService extends EnvironmentService implements I
 	get userRoamingDataHome(): URI { return this.appSettingsHome.with({ scheme: Schemas.userData }); }
 
 	@memoize
-	get logFile(): URI { return URI.file(join(this.logsPath, `renderer${this.configuration.windowId}.log`)); }
+	get logFile(): URI { return URI.file(join(this.logsPath, `renderer${this.windowId}.log`)); }
 
 	get logExtensionHostCommunication(): boolean { return !!this.args.logExtensionHostCommunication; }
 

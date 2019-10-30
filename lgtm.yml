@@ -1,0 +1,5 @@
+path_classifiers:
+  vscode:
+    - "src/vs/**/"
+queries:
+  - include: "*"

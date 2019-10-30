@@ -10,7 +10,15 @@ import { readFile } from 'vs/base/node/pfs';
 
 import product from 'vs/platform/product/common/product'; // {{SQL CARBON EDIT}}
 const productObject = product; // {{SQL CARBON EDIT}}
-export async function resolveCommonProperties(commit: string | undefined, version: string | undefined, machineId: string | undefined, msftInternalDomains: string[] | undefined, installSourcePath: string, product?: string): Promise<{ [name: string]: string | boolean | undefined; }> {
+
+export async function resolveCommonProperties(
+	commit: string | undefined,
+	version: string | undefined,
+	machineId: string | undefined,
+	msftInternalDomains: string[] | undefined,
+	installSourcePath: string,
+	product?: string
+): Promise<{ [name: string]: string | boolean | undefined; }> {
 	const result: { [name: string]: string | boolean | undefined; } = Object.create(null);
 	// {{SQL CARBON EDIT}} start
 	if (productObject.quality !== 'stable') {
@@ -44,9 +52,9 @@ export async function resolveCommonProperties(commit: string | undefined, versio
 	result['common.product'] = productObject.nameShort || 'desktop'; // {{SQL CARBON EDIT}}
 	result['common.application.name'] = productObject.nameLong; // {{SQL CARBON EDIT}}
 
-	// const msftInternal = verifyMicrosoftInternalDomain(msftInternalDomains || []); {{SQL CARBON EDIT}} remove msft internal
+	// const msftInternal = verifyMicrosoftInternalDomain(msftInternalDomains || []); {{SQL CARBON EDIT}} remove msftinternal
 	// if (msftInternal) {
-	// 	// __GDPR__COMMON__ "common.msftInternal" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+	// 	// __GDPR__COMMON__ "common.msftInternal" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true }
 	// 	result['common.msftInternal'] = msftInternal;
 	// }
 
@@ -88,17 +96,11 @@ export async function resolveCommonProperties(commit: string | undefined, versio
 	return result;
 }
 
-function verifyMicrosoftInternalDomain(domainList: string[]): boolean {
+function verifyMicrosoftInternalDomain(domainList: readonly string[]): boolean {
 	if (!process || !process.env || !process.env['USERDNSDOMAIN']) {
 		return false;
 	}
 
 	const domain = process.env['USERDNSDOMAIN']!.toLowerCase();
-	for (let msftDomain of domainList) {
-		if (domain === msftDomain) {
-			return true;
-		}
-	}
-
-	return false;
+	return domainList.some(msftDomain => domain === msftDomain);
 }

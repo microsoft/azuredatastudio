@@ -9,7 +9,7 @@
 	height: 200px;
 }
 
-.error-dialog .icon.error, .error-dialog .icon.warning , .error-dialog .icon.info {
+.error-dialog .codicon.error, .error-dialog .codicon.warning , .error-dialog .codicon.info {
 	width: 20px;
 	height: 20px;
 	float: left;
@@ -22,6 +22,6 @@
 	user-select: text;
 }
 
-.modal .footer-button a.monaco-button.monaco-text-button.icon.scriptToClipboard {
+.modal .footer-button a.monaco-button.monaco-text-button.codicon.scriptToClipboard {
 	width: 120px;
 }

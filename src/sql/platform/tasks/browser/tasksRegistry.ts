@@ -10,7 +10,7 @@ import * as types from 'vs/base/common/types';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
-import { createCSSRule } from 'vs/base/browser/dom';
+import { createCSSRule, asCSSUrl } from 'vs/base/browser/dom';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IdGenerator } from 'vs/base/common/idGenerator';
@@ -58,8 +58,8 @@ export const TaskRegistry: ITaskRegistry = new class implements ITaskRegistry {
 			iconClass = this.taskIdToIconClassNameMap.get(item.id);
 		} else if (item.iconLocation) {
 			iconClass = ids.nextId();
-			createCSSRule(`.icon.${iconClass}`, `background-image: url("${(item.iconLocation.light || item.iconLocation.dark).toString()}")`);
-			createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${(item.iconLocation.dark).toString()}")`);
+			createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(item.iconLocation.light || item.iconLocation.dark)}`);
+			createCSSRule(`.vs-dark .codicon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(item.iconLocation.dark)}`);
 			this.taskIdToIconClassNameMap.set(item.id, iconClass);
 		}
 		return iconClass;

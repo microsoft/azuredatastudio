@@ -26,9 +26,11 @@ import { AzureResourceSubscriptionFilterService } from './azureResource/services
 import { AzureResourceCacheService } from './azureResource/services/cacheService';
 import { AzureResourceTenantService } from './azureResource/services/tenantService';
 import { registerAzureResourceCommands } from './azureResource/commands';
-import { registerAzureResourceDatabaseServerCommands } from './azureResource/providers/databaseServer/commands';
-import { registerAzureResourceDatabaseCommands } from './azureResource/providers/database/commands';
 import { AzureResourceTreeProvider } from './azureResource/tree/treeProvider';
+import { SqlInstanceResourceService } from './azureResource/providers/sqlinstance/sqlInstanceService';
+import { SqlInstanceProvider } from './azureResource/providers/sqlinstance/sqlInstanceProvider';
+import { PostgresServerProvider } from './azureResource/providers/postgresServer/postgresServerProvider';
+import { PostgresServerService } from './azureResource/providers/postgresServer/postgresServerService';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -65,45 +67,50 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 
 	// Create the provider service and activate
-	initAzureAccountProvider(extensionContext, storagePath);
+	initAzureAccountProvider(extensionContext, storagePath).catch((err) => console.log(err));
 
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
 	pushDisposable(apiWrapper.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
-	registerCommands(appContext, azureResourceTree);
+	registerAzureResourceCommands(appContext, azureResourceTree);
 
 	return {
 		provideResources() {
 			return [
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), apiWrapper, extensionContext),
-				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext)
+				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext),
+				new SqlInstanceProvider(new SqlInstanceResourceService(), apiWrapper, extensionContext),
+				new PostgresServerProvider(new PostgresServerService(), apiWrapper, extensionContext)
 			];
 		}
 	};
 }
 
-async function exists(path: string): Promise<boolean> {
-	try {
-		await fs.access(path);
-		return true;
-	} catch (e) {
-		return false;
-	}
-}
-
 // Create the folder for storing the token caches
 async function findOrMakeStoragePath() {
-	let storagePath = path.join(getDefaultLogLocation(), constants.extensionName);
+	let defaultLogLocation = getDefaultLogLocation();
+	let storagePath = path.join(defaultLogLocation, constants.extensionName);
+
 	try {
-		if (!(await exists(storagePath))) {
-			await fs.mkdir(storagePath);
-			console.log('Initialized Azure account extension storage.');
+		await fs.mkdir(defaultLogLocation, { recursive: true });
+	} catch (e) {
+		if (e.code !== 'EEXIST') {
+			console.log(`Creating the base directory failed... ${e}`);
+			return undefined;
 		}
 	}
-	catch (e) {
-		console.error(`Initialization of Azure account extension storage failed: ${e}`);
-		console.error('Azure accounts will not be available');
+
+	try {
+		await fs.mkdir(storagePath, { recursive: true });
+	} catch (e) {
+		if (e.code !== 'EEXIST') {
+			console.error(`Initialization of Azure account extension storage failed: ${e}`);
+			console.error('Azure accounts will not be available');
+			return undefined;
+		}
 	}
+
+	console.log('Initialized Azure account extension storage.');
 	return storagePath;
 }
 
@@ -126,10 +133,3 @@ function registerAzureServices(appContext: AppContext): void {
 	appContext.registerService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService, new AzureResourceTenantService());
 }
 
-function registerCommands(appContext: AppContext, azureResourceTree: AzureResourceTreeProvider): void {
-	registerAzureResourceCommands(appContext, azureResourceTree);
-
-	registerAzureResourceDatabaseServerCommands(appContext);
-
-	registerAzureResourceDatabaseCommands(appContext);
-}

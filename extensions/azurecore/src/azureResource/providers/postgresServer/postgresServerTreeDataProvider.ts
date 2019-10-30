@@ -1,0 +1,82 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { ExtensionNodeType, TreeItem } from 'azdata';
+import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
+
+import { AzureResourceItemType } from '../../constants';
+import { ApiWrapper } from '../../../apiWrapper';
+import { generateGuid } from '../../utils';
+import { IAzureResourceService, AzureResourceDatabaseServer } from '../../interfaces';
+import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
+import { azureResource } from '../../azure-resource';
+
+export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase<AzureResourceDatabaseServer> {
+	private static readonly containerId = 'azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainer';
+	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel', "Azure Database for PostgreSQL Servers");
+
+	public constructor(
+		databaseServerService: IAzureResourceService<AzureResourceDatabaseServer>,
+		apiWrapper: ApiWrapper,
+		private _extensionContext: ExtensionContext
+	) {
+		super(databaseServerService, apiWrapper);
+	}
+
+
+	protected getTreeItemForResource(databaseServer: AzureResourceDatabaseServer): TreeItem {
+		return {
+			id: `databaseServer_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
+			label: databaseServer.name,
+			// TODO: should get PGSQL-specific icons (also needed in that extension)
+			iconPath: {
+				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
+				light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
+			},
+			collapsibleState: TreeItemCollapsibleState.Collapsed,
+			contextValue: AzureResourceItemType.databaseServer,
+			payload: {
+				id: generateGuid(),
+				connectionName: undefined,
+				serverName: databaseServer.fullName,
+				databaseName: databaseServer.defaultDatabaseName,
+				userName: `${databaseServer.loginName}@${databaseServer.fullName}`,
+				password: '',
+				authenticationType: 'SqlLogin',
+				savePassword: true,
+				groupFullName: '',
+				groupId: '',
+				providerName: 'PGSQL',
+				saveProfile: false,
+				options: {
+					// Set default for SSL or will get error complaining about it not being set correctly
+					'sslmode': 'require'
+				}
+			},
+			childProvider: 'PGSQL',
+			type: ExtensionNodeType.Server
+		};
+	}
+
+	protected createContainerNode(): azureResource.IAzureResourceNode {
+		return {
+			account: undefined,
+			subscription: undefined,
+			tenantId: undefined,
+			treeItem: {
+				id: PostgresServerTreeDataProvider.containerId,
+				label: PostgresServerTreeDataProvider.containerLabel,
+				iconPath: {
+					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
+					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
+				},
+				collapsibleState: TreeItemCollapsibleState.Collapsed,
+				contextValue: AzureResourceItemType.databaseServerContainer
+			}
+		};
+	}
+}

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { DisposableStore } from 'vs/base/common/lifecycle';
 import * as strings from 'vs/base/common/strings';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { EditorAction, IActionOptions, ServicesAccessor, registerEditorAction, registerEditorContribution } from 'vs/editor/browser/editorExtensions';
@@ -422,26 +422,24 @@ export class AutoIndentOnPasteCommand implements ICommand {
 }
 
 export class AutoIndentOnPaste implements IEditorContribution {
-	private static readonly ID = 'editor.contrib.autoIndentOnPaste';
+	public static readonly ID = 'editor.contrib.autoIndentOnPaste';
 
 	private readonly editor: ICodeEditor;
-	private callOnDispose: IDisposable[];
-	private callOnModel: IDisposable[];
+	private readonly callOnDispose = new DisposableStore();
+	private readonly callOnModel = new DisposableStore();
 
 	constructor(editor: ICodeEditor) {
 		this.editor = editor;
-		this.callOnDispose = [];
-		this.callOnModel = [];
 
-		this.callOnDispose.push(editor.onDidChangeConfiguration(() => this.update()));
-		this.callOnDispose.push(editor.onDidChangeModel(() => this.update()));
-		this.callOnDispose.push(editor.onDidChangeModelLanguage(() => this.update()));
+		this.callOnDispose.add(editor.onDidChangeConfiguration(() => this.update()));
+		this.callOnDispose.add(editor.onDidChangeModel(() => this.update()));
+		this.callOnDispose.add(editor.onDidChangeModelLanguage(() => this.update()));
 	}
 
 	private update(): void {
 
 		// clean up
-		this.callOnModel = dispose(this.callOnModel);
+		this.callOnModel.clear();
 
 		// we are disabled
 		if (!this.editor.getOption(EditorOption.autoIndent) || this.editor.getOption(EditorOption.formatOnPaste)) {
@@ -453,7 +451,7 @@ export class AutoIndentOnPaste implements IEditorContribution {
 			return;
 		}
 
-		this.callOnModel.push(this.editor.onDidPaste((range: Range) => {
+		this.callOnModel.add(this.editor.onDidPaste((range: Range) => {
 			this.trigger(range);
 		}));
 	}
@@ -606,13 +604,9 @@ export class AutoIndentOnPaste implements IEditorContribution {
 		return false;
 	}
 
-	public getId(): string {
-		return AutoIndentOnPaste.ID;
-	}
-
 	public dispose(): void {
-		this.callOnDispose = dispose(this.callOnDispose);
-		this.callOnModel = dispose(this.callOnModel);
+		this.callOnDispose.dispose();
+		this.callOnModel.dispose();
 	}
 }
 
@@ -683,7 +677,7 @@ export class IndentationToTabsCommand implements ICommand {
 	}
 }
 
-registerEditorContribution(AutoIndentOnPaste);
+registerEditorContribution(AutoIndentOnPaste.ID, AutoIndentOnPaste);
 registerEditorAction(IndentationToSpacesAction);
 registerEditorAction(IndentationToTabsAction);
 registerEditorAction(IndentUsingTabs);

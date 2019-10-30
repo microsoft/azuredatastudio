@@ -39,8 +39,6 @@ class SelectListRenderer implements IListRenderer<ISelectOptionItem, ISelectList
 
 	get templateId(): string { return SELECT_OPTION_ENTRY_TEMPLATE_ID; }
 
-	constructor() { }
-
 	renderTemplate(container: HTMLElement): ISelectListTemplateData {
 		const data: ISelectListTemplateData = Object.create(null);
 		data.disposables = [];
@@ -383,22 +381,22 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 		// Style parent select
 
 		// {{SQL CARBON EDIT}}
-		let background: Color | undefined = undefined;
-		let foreground: Color | undefined = undefined;
-		let border: Color | undefined = undefined;
+		let background = '';
+		let foreground = '';
+		let border = '';
 
 		if (this.selectElement) {
 			if (this.selectElement.disabled) {
-				background = (<any>this.styles).disabledSelectBackground;
-				foreground = (<any>this.styles).disabledSelectForeground;
+				background = (<any>this.styles).disabledSelectBackground ? (<any>this.styles).disabledSelectBackground.toString() : '';
+				foreground = (<any>this.styles).disabledSelectForeground ? (<any>this.styles).disabledSelectForeground.toString() : '';
 			} else {
-				background = this.styles.selectBackground;
-				foreground = this.styles.selectForeground;
-				border = this.styles.selectBorder;
+				background = this.styles.selectBackground ? this.styles.selectBackground.toString() : '';
+				foreground = this.styles.selectForeground ? this.styles.selectForeground.toString() : '';
+				border = this.styles.selectBorder ? this.styles.selectBorder.toString() : '';
 			}
-			this.selectElement.style.backgroundColor = background ? background.toString() : null;
-			this.selectElement.style.color = foreground ? foreground.toString() : null;
-			this.selectElement.style.borderColor = border ? border.toString() : null;
+			this.selectElement.style.backgroundColor = background;
+			this.selectElement.style.color = foreground;
+			this.selectElement.style.borderColor = border;
 		}
 
 		// Style drop down select list (non-native mode only)
@@ -410,10 +408,10 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 
 	private styleList() {
 		if (this.selectList) {
-			let background = this.styles.selectBackground ? this.styles.selectBackground.toString() : null;
+			const background = this.styles.selectBackground ? this.styles.selectBackground.toString() : '';
 			this.selectList.style({});
 
-			let listBackground = this.styles.selectListBackground ? this.styles.selectListBackground.toString() : background;
+			const listBackground = this.styles.selectListBackground ? this.styles.selectListBackground.toString() : background;
 			this.selectDropDownListContainer.style.backgroundColor = listBackground;
 			this.selectionDetailsPane.style.backgroundColor = listBackground;
 			const optionsBorder = this.styles.focusBorder ? this.styles.focusBorder.toString() : '';

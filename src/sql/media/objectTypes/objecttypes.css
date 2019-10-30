@@ -171,10 +171,22 @@
 	background: url("FileGroupFile.svg") center center no-repeat;
 }
 
+.vs .icon.filegroupfile_mounted,
+.vs-dark .icon.filegroupfile_mounted,
+.hc-black .icon.filegroupfile_mounted {
+	background: url("FileGroupFile_mounted.svg") center center no-repeat;
+}
+
 .vs .icon.folder,
 .vs-dark .icon.folder,
 .hc-black .icon.folder {
 	background: url("Folder.svg") center center no-repeat;
+}
+
+.vs .icon.folder_mounted,
+.vs-dark .icon.folder_mounted,
+.hc-black .icon.folder_mounted {
+	background: url("Folder_mounted.svg") center center no-repeat;
 }
 
 .vs .icon.fulltextcatalog,
@@ -189,11 +201,6 @@
 	background: url("FullTextStopList.svg") center center no-repeat;
 }
 
-.vs .icon.hdfsfolder,
-.vs-dark .icon.hdfsfolder,
-.hc-black .icon.hdfsfolder {
-	background: url("HDFSFolder.svg") center center no-repeat;
-}
 .vs .icon.index,
 .vs-dark .icon.index,
 .hc-black .icon.index {

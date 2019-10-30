@@ -114,8 +114,8 @@ margin-bottom: 2px;
 }
 
 /* loading for OE node */
-.server-explorer-viewlet .monaco-tree .monaco-tree-rows > .monaco-tree-row > .icon.in-progress .connection-tile:before,
-.server-explorer-viewlet .monaco-tree .monaco-tree-rows > .monaco-tree-row > .icon.in-progress .object-element-group:before {
+.server-explorer-viewlet .monaco-tree .monaco-tree-rows > .monaco-tree-row > .codicon.in-progress .connection-tile:before,
+.server-explorer-viewlet .monaco-tree .monaco-tree-rows > .monaco-tree-row > .codicon.in-progress .object-element-group:before {
 	position: absolute;
 	display: block;
 	width: 36px;

@@ -9,7 +9,6 @@ import { IClipboardService } from 'sql/platform/clipboard/common/clipboardServic
 
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
-import { IWindowsService, FileFilter } from 'vs/platform/windows/common/windows';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
@@ -18,8 +17,9 @@ import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
 import { IInsightOptions } from 'sql/workbench/parts/charts/common/interfaces';
 import { IFileService } from 'vs/platform/files/common/files';
-import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IFileDialogService, FileFilter } from 'vs/platform/dialogs/common/dialogs';
 import { VSBuffer } from 'vs/base/common/buffer';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
 
 export interface IChartActionContext {
 	options: IInsightOptions;
@@ -142,10 +142,10 @@ export class SaveImageAction extends Action {
 	public static ICON = 'saveAsImage';
 
 	constructor(
-		@IWindowsService private readonly windowsService: IWindowsService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IFileService private readonly fileService: IFileService,
-		@IFileDialogService private readonly fileDialogService: IFileDialogService
+		@IFileDialogService private readonly fileDialogService: IFileDialogService,
+		@IOpenerService private readonly openerService: IOpenerService
 	) {
 		super(SaveImageAction.ID, SaveImageAction.LABEL, SaveImageAction.ICON);
 	}
@@ -168,7 +168,7 @@ export class SaveImageAction extends Action {
 					if (err) {
 						this.notificationService.error(err.message);
 					} else {
-						this.windowsService.openExternal(filePath.toString());
+						this.openerService.open(filePath, { openExternal: true });
 						this.notificationService.notify({
 							severity: Severity.Error,
 							message: localize('chartSaved', "Saved Chart to path: {0}", filePath.toString())

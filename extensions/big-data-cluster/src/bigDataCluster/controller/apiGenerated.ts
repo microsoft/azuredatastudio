@@ -489,7 +489,7 @@ export class BdcRouterApi {
      * @param data Cluster configuration in JSON format
      * @param {*} [options] Override http request options.
      */
-    public createCluster (xRequestId: string, connection: string, data: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+    public createCluster (xRequestId: string, connection: string, data: string, options: any = {}) : Promise<{ response: http.IncomingMessage; body: any;  }> {
         const localVarPath = this.basePath + '/api/v1/bdc';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -537,7 +537,7 @@ export class BdcRouterApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.IncomingMessage; body: any;  }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -557,7 +557,7 @@ export class BdcRouterApi {
      * @param endpointName
      * @param {*} [options] Override http request options.
      */
-    public endpointsByNameGet (endpointName: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: EndpointModel;  }> {
+    public endpointsByNameGet (endpointName: string, options: any = {}) : Promise<{ response: http.IncomingMessage; body: EndpointModel;  }> {
         const localVarPath = this.basePath + '/api/v1/bdc/endpoints/{endpointName}'
             .replace('{' + 'endpointName' + '}', encodeURIComponent(String(endpointName)));
         let localVarQueryParameters: any = {};
@@ -591,7 +591,7 @@ export class BdcRouterApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: EndpointModel;  }>((resolve, reject) => {
+        return new Promise<{ response: http.IncomingMessage; body: EndpointModel;  }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -610,7 +610,7 @@ export class BdcRouterApi {
      *
      * @param {*} [options] Override http request options.
      */
-    public endpointsGet (options: any = {}) : Promise<{ response: http.ClientResponse; body: Array<EndpointModel>;  }> {
+    public endpointsGet (options: any = {}) : Promise<{ response: http.IncomingMessage; body: Array<EndpointModel>;  }> {
         const localVarPath = this.basePath + '/api/v1/bdc/endpoints';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -631,8 +631,6 @@ export class BdcRouterApi {
 
         this.authentications.default.applyToRequest(localVarRequestOptions);
 
-		this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
-
         if (Object.keys(localVarFormParams).length) {
             if (localVarUseFormData) {
                 (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -640,7 +638,7 @@ export class BdcRouterApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: Array<EndpointModel>;  }>((resolve, reject) => {
+        return new Promise<{ response: http.IncomingMessage; body: Array<EndpointModel>;  }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -664,7 +662,7 @@ export class BdcRouterApi {
      * @param all Whether you want all of the instances within the given resource
      * @param {*} [options] Override http request options.
      */
-    public getBdcResourceStatus (resourceName: string, xRequestId?: string, connection?: string, all?: boolean, options: any = {}) : Promise<{ response: http.ClientResponse; body: BdcStatusModel;  }> {
+    public getBdcResourceStatus (resourceName: string, xRequestId?: string, connection?: string, all?: boolean, options: any = {}) : Promise<{ response: http.IncomingMessage; body: BdcStatusModel;  }> {
         const localVarPath = this.basePath + '/api/v1/bdc/resources/{resourceName}/status'
             .replace('{' + 'resourceName' + '}', encodeURIComponent(String(resourceName)));
         let localVarQueryParameters: any = {};
@@ -706,7 +704,7 @@ export class BdcRouterApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: BdcStatusModel;  }>((resolve, reject) => {
+        return new Promise<{ response: http.IncomingMessage; body: BdcStatusModel;  }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -731,7 +729,7 @@ export class BdcRouterApi {
      * @param all Whether you want all of the instances within the given resource
      * @param {*} [options] Override http request options.
      */
-    public getBdcServiceResourceStatus (serviceName: string, resourceName: string, xRequestId?: string, connection?: string, all?: boolean, options: any = {}) : Promise<{ response: http.ClientResponse; body: ResourceStatusModel;  }> {
+    public getBdcServiceResourceStatus (serviceName: string, resourceName: string, xRequestId?: string, connection?: string, all?: boolean, options: any = {}) : Promise<{ response: http.IncomingMessage; body: ResourceStatusModel;  }> {
         const localVarPath = this.basePath + '/api/v1/bdc/services/{serviceName}/resources/{resourceName}/status'
             .replace('{' + 'serviceName' + '}', encodeURIComponent(String(serviceName)))
             .replace('{' + 'resourceName' + '}', encodeURIComponent(String(resourceName)));
@@ -779,7 +777,7 @@ export class BdcRouterApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: ResourceStatusModel;  }>((resolve, reject) => {
+        return new Promise<{ response: http.IncomingMessage; body: ResourceStatusModel;  }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -802,7 +800,7 @@ export class BdcRouterApi {
      * @param all Whether you want all of the instances within the given resource
      * @param {*} [options] Override http request options.
      */
-    public getBdcStatus (xRequestId?: string, connection?: string, all?: boolean, options: any = {}) : Promise<{ response: http.ClientResponse; body: BdcStatusModel;  }> {
+    public getBdcStatus (xRequestId?: string, connection?: string, all?: boolean, options: any = {}) : Promise<{ response: http.IncomingMessage; body: BdcStatusModel;  }> {
         const localVarPath = this.basePath + '/api/v1/bdc/status';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -838,7 +836,7 @@ export class BdcRouterApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: BdcStatusModel;  }>((resolve, reject) => {
+        return new Promise<{ response: http.IncomingMessage; body: BdcStatusModel;  }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -861,7 +859,7 @@ export class BdcRouterApi {
      * @param connection
      * @param {*} [options] Override http request options.
      */
-    public getCluster (xRequestId: string, connection: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+    public getCluster (xRequestId: string, connection: string, options: any = {}) : Promise<{ response: http.IncomingMessage; body: any;  }> {
         const localVarPath = this.basePath + '/api/v1/bdc/';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -903,7 +901,7 @@ export class BdcRouterApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.IncomingMessage; body: any;  }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -926,7 +924,7 @@ export class BdcRouterApi {
      * @param offset
      * @param {*} [options] Override http request options.
      */
-    public getLogs (xRequestId: string, connection: string, offset: number, options: any = {}) : Promise<{ response: http.ClientResponse; body: string;  }> {
+    public getLogs (xRequestId: string, connection: string, offset: number, options: any = {}) : Promise<{ response: http.IncomingMessage; body: string;  }> {
         const localVarPath = this.basePath + '/api/v1/bdc/log';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -977,7 +975,7 @@ export class BdcRouterApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: string;  }>((resolve, reject) => {
+        return new Promise<{ response: http.IncomingMessage; body: string;  }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1055,7 +1053,7 @@ export class ControlRouterApi {
      * @param connection
      * @param {*} [options] Override http request options.
      */
-    public getControlStatus (xRequestId: string, connection: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+    public getControlStatus (xRequestId: string, connection: string, options: any = {}) : Promise<{ response: http.IncomingMessage; body: any;  }> {
         const localVarPath = this.basePath + '/api/v1/control/status';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1097,7 +1095,7 @@ export class ControlRouterApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.IncomingMessage; body: any;  }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1178,7 +1176,7 @@ export class DefaultApi {
      * @param credentials Credentials to create the mount
      * @param {*} [options] Override http request options.
      */
-    public createMount (xRequestId: string, connection: string, remote: string, mount: string, credentials?: any, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+    public createMount (xRequestId: string, connection: string, remote: string, mount: string, credentials?: any, options: any = {}) : Promise<{ response: http.IncomingMessage; body: any;  }> {
         const localVarPath = this.basePath + '/api/v1/storage/mounts';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1239,7 +1237,7 @@ export class DefaultApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.IncomingMessage; body: any;  }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1261,7 +1259,7 @@ export class DefaultApi {
      * @param connection
      * @param {*} [options] Override http request options.
      */
-    public deleteCluster (xRequestId: string, connection: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+    public deleteCluster (xRequestId: string, connection: string, options: any = {}) : Promise<{ response: http.IncomingMessage; body: any;  }> {
         const localVarPath = this.basePath + '/api/v1/bdc/';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1303,7 +1301,7 @@ export class DefaultApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.IncomingMessage; body: any;  }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1326,7 +1324,7 @@ export class DefaultApi {
      * @param mount Local HDFS mount path
      * @param {*} [options] Override http request options.
      */
-    public deleteMount (xRequestId: string, connection: string, mount: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+    public deleteMount (xRequestId: string, connection: string, mount: string, options: any = {}) : Promise<{ response: http.IncomingMessage; body: any;  }> {
         const localVarPath = this.basePath + '/api/v1/storage/mounts';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1377,7 +1375,7 @@ export class DefaultApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.IncomingMessage; body: any;  }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1400,7 +1398,7 @@ export class DefaultApi {
      * @param query The query in the json format for the health properties
      * @param {*} [options] Override http request options.
      */
-    public getHealthProperties (xRequestId: string, connection: string, query: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+    public getHealthProperties (xRequestId: string, connection: string, query: string, options: any = {}) : Promise<{ response: http.IncomingMessage; body: any;  }> {
         const localVarPath = this.basePath + '/api/v1/health';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1451,7 +1449,7 @@ export class DefaultApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.IncomingMessage; body: any;  }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1473,7 +1471,7 @@ export class DefaultApi {
      * @param connection
      * @param {*} [options] Override http request options.
      */
-    public getHome (xRequestId: string, connection: string, options: any = {}) : Promise<{ response: http.ClientResponse; body?: any;  }> {
+    public getHome (xRequestId: string, connection: string, options: any = {}) : Promise<{ response: http.IncomingMessage; body?: any;  }> {
         const localVarPath = this.basePath + '/api/v1';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1515,7 +1513,7 @@ export class DefaultApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body?: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.IncomingMessage; body?: any;  }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1539,7 +1537,7 @@ export class DefaultApi {
      * @param all Whether you want all of the instances within the given resource
      * @param {*} [options] Override http request options.
      */
-    public getPoolStatus (bdcName: string, serviceName: string, xRequestId?: string, connection?: string, all?: boolean, options: any = {}) : Promise<{ response: http.ClientResponse; body: ServiceStatusModel;  }> {
+    public getPoolStatus (bdcName: string, serviceName: string, xRequestId?: string, connection?: string, all?: boolean, options: any = {}) : Promise<{ response: http.IncomingMessage; body: ServiceStatusModel;  }> {
         const localVarPath = this.basePath + '/api/v1/bdc/services/{serviceName}/status'
             .replace('{' + 'bdcName' + '}', encodeURIComponent(String(bdcName)))
             .replace('{' + 'serviceName' + '}', encodeURIComponent(String(serviceName)));
@@ -1587,7 +1585,7 @@ export class DefaultApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: ServiceStatusModel;  }>((resolve, reject) => {
+        return new Promise<{ response: http.IncomingMessage; body: ServiceStatusModel;  }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1610,7 +1608,7 @@ export class DefaultApi {
      * @param mount
      * @param {*} [options] Override http request options.
      */
-    public listMounts (xRequestId: string, connection: string, mount?: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+    public listMounts (xRequestId: string, connection: string, mount?: string, options: any = {}) : Promise<{ response: http.IncomingMessage; body: any;  }> {
         const localVarPath = this.basePath + '/api/v1/storage/mounts';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1656,7 +1654,7 @@ export class DefaultApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.IncomingMessage; body: any;  }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1679,7 +1677,7 @@ export class DefaultApi {
      * @param mount Local path to mount on HDFS
      * @param {*} [options] Override http request options.
      */
-    public refreshMount (xRequestId: string, connection: string, mount: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+    public refreshMount (xRequestId: string, connection: string, mount: string, options: any = {}) : Promise<{ response: http.IncomingMessage; body: any;  }> {
         const localVarPath = this.basePath + '/api/v1/storage/mounts/refresh';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1730,7 +1728,7 @@ export class DefaultApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.IncomingMessage; body: any;  }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1755,7 +1753,7 @@ export class DefaultApi {
      * @param data Password and cluster name in JSON format
      * @param {*} [options] Override http request options.
      */
-    public updatePassword (xRequestId: string, connection: string, serviceName: string, serviceUsername: string, data: string, options: any = {}) : Promise<{ response: http.ClientResponse; body?: any;  }> {
+    public updatePassword (xRequestId: string, connection: string, serviceName: string, serviceUsername: string, data: string, options: any = {}) : Promise<{ response: http.IncomingMessage; body?: any;  }> {
         const localVarPath = this.basePath + '/api/v1/passwords/{serviceName}/{serviceUsername}'
             .replace('{' + 'serviceName' + '}', encodeURIComponent(String(serviceName)))
             .replace('{' + 'serviceUsername' + '}', encodeURIComponent(String(serviceUsername)));
@@ -1815,7 +1813,7 @@ export class DefaultApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body?: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.IncomingMessage; body?: any;  }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);

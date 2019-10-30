@@ -30,7 +30,7 @@ export class ImportConfigPage extends DacFxConfigPage {
 	}
 
 	async start(): Promise<boolean> {
-		let databaseComponent = await this.createDatabaseTextBox();
+		let databaseComponent = await this.createDatabaseTextBox(localize('dacfx.targetDatabaseAriaLabel', "Target Database"));
 		let serverComponent = await this.createServerDropdown(true);
 		let fileBrowserComponent = await this.createFileBrowser();
 
@@ -63,7 +63,7 @@ export class ImportConfigPage extends DacFxConfigPage {
 					canSelectFolders: false,
 					canSelectMany: false,
 					defaultUri: vscode.Uri.file(this.getRootPath()),
-					openLabel: localize('dacFxImport.openFile', 'Open'),
+					openLabel: localize('dacFxImport.openFile', "Open"),
 					filters: {
 						'bacpac Files': ['bacpac'],
 					}
@@ -89,7 +89,7 @@ export class ImportConfigPage extends DacFxConfigPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxImport.fileTextboxTitle', 'File Location'),
+			title: localize('dacFxImport.fileTextboxTitle', "File Location"),
 			actions: [this.fileButton]
 		};
 	}

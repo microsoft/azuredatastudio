@@ -200,13 +200,9 @@ const sqlBuiltInExtensions = [
     'dacpac',
     'schema-compare',
     'cms',
-    'query-history'
+    'query-history',
+    'liveshare'
 ];
-// make resource deployment and BDC extension only available in insiders
-if (process.env['VSCODE_QUALITY'] === 'stable') {
-    sqlBuiltInExtensions.push('resource-deployment');
-    sqlBuiltInExtensions.push('big-data-cluster');
-}
 const builtInExtensions = process.env['VSCODE_QUALITY'] === 'stable' ? require('../builtInExtensions.json') : require('../builtInExtensions-insiders.json');
 // {{SQL CARBON EDIT}} - End
 function packageLocalExtensionsStream() {

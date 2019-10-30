@@ -16,6 +16,7 @@ import { renderFormattedText, renderText, FormattedTextRenderOptions } from 'vs/
 
 const $ = dom.$;
 
+
 export interface ISelectBoxStyles extends vsISelectBoxStyles {
 	disabledSelectBackground?: Color;
 	disabledSelectForeground?: Color;
@@ -56,6 +57,8 @@ export class SelectBox extends vsSelectBox {
 
 	private element: HTMLElement;
 
+
+
 	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
 		super(options.map(option => { return { text: option }; }), 0, contextViewProvider, undefined, selectBoxOptions);
 		this._optionsDictionary = new Map<string, number>();
@@ -89,6 +92,7 @@ export class SelectBox extends vsSelectBox {
 		this._register(focusTracker.onDidBlur(() => this._hideMessage()));
 		this._register(focusTracker.onDidFocus(() => this._showMessage()));
 	}
+
 
 	public style(styles: ISelectBoxStyles): void {
 		super.style(styles);
@@ -220,8 +224,8 @@ export class SelectBox extends vsSelectBox {
 					dom.addClass(spanElement, this.classForType(message.type));
 
 					const styles = this.stylesForType(message.type);
-					spanElement.style.backgroundColor = styles.background ? styles.background.toString() : null;
-					spanElement.style.border = styles.border ? `1px solid ${styles.border}` : null;
+					spanElement.style.backgroundColor = styles.background ? styles.background.toString() : '';
+					spanElement.style.border = styles.border ? `1px solid ${styles.border}` : '';
 
 					dom.append(div, spanElement);
 

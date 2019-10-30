@@ -582,6 +582,8 @@ export interface ICellModel {
 	loaded: boolean;
 	stdInVisible: boolean;
 	readonly onLoaded: Event<string>;
+	isCollapsed: boolean;
+	readonly onCollapseStateChanged: Event<boolean>;
 	modelContentChangedEvent: IModelContentChangedEvent;
 }
 

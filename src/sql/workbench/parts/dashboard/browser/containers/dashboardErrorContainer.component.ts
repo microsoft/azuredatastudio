@@ -19,7 +19,7 @@ import * as nls from 'vs/nls';
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => DashboardErrorContainer) }],
 	template: `
 		<div class="error-container">
-			<div class="icon globalError">
+			<div class="codicon globalError">
 			</div>
 			<div class="error-message" #errorMessage>
 			</div>
@@ -40,7 +40,7 @@ export class DashboardErrorContainer extends DashboardTab implements AfterViewIn
 
 	ngAfterViewInit() {
 		const errorMessage = this._errorMessageContainer.nativeElement as HTMLElement;
-		errorMessage.innerText = nls.localize('dashboardNavSection_loadTabError', "The \"{0}\" section has invalid content. Please contact extension owner.", this.tab.title);
+		errorMessage.innerText = nls.localize('dashboardNavSection.loadTabError', "The \"{0}\" section has invalid content. Please contact extension owner.", this.tab.title);
 	}
 
 	public get id(): string {

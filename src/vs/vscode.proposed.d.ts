@@ -59,15 +59,15 @@ declare module 'vscode' {
 	}
 
 	export class CallHierarchyIncomingCall {
-		source: CallHierarchyItem;
-		sourceRanges: Range[];
-		constructor(item: CallHierarchyItem, sourceRanges: Range[]);
+		from: CallHierarchyItem;
+		fromRanges: Range[];
+		constructor(item: CallHierarchyItem, fromRanges: Range[]);
 	}
 
 	export class CallHierarchyOutgoingCall {
-		sourceRanges: Range[];
-		target: CallHierarchyItem;
-		constructor(item: CallHierarchyItem, sourceRanges: Range[]);
+		fromRanges: Range[];
+		to: CallHierarchyItem;
+		constructor(item: CallHierarchyItem, fromRanges: Range[]);
 	}
 
 	export interface CallHierarchyItemProvider {
@@ -616,6 +616,41 @@ declare module 'vscode' {
 		debugAdapterExecutable?(folder: WorkspaceFolder | undefined, token?: CancellationToken): ProviderResult<DebugAdapterExecutable>;
 	}
 
+	/**
+	 * Debug console mode used by debug session, see [options](#DebugSessionOptions).
+	 */
+	export enum DebugConsoleMode {
+		/**
+		 * Debug session should have a separate debug console.
+		 */
+		Separate = 0,
+
+		/**
+		 * Debug session should share debug console with its parent session.
+		 * This value has no effect for sessions which do not have a parent session.
+		 */
+		MergeWithParent = 1
+	}
+
+	/**
+	 * Options for [starting a debug session](#debug.startDebugging).
+	 */
+	export interface DebugSessionOptions {
+
+		/**
+		 * When specified the newly created debug session is registered as a "child" session of this
+		 * "parent" debug session.
+		 */
+		parentSession?: DebugSession;
+
+		/**
+		 * Controls whether this session should have a separate debug console or share it
+		 * with the parent session. Has no effect for sessions which do not have a parent session.
+		 * Defaults to Separate.
+		 */
+		consoleMode?: DebugConsoleMode;
+	}
+
 	//#endregion
 
 	//#region Rob, Matt: logging
@@ -821,7 +856,8 @@ declare module 'vscode' {
 
 	export interface TreeView<T> {
 		/**
-		 * The name of the tree view. It is set from the extension package.json and can be changed later.
+		 * The tree view title is initially taken from the extension package.json
+		 * Changes to the title property will be properly reflected in the UI in the title of the view.
 		 */
 		title?: string;
 	}
@@ -859,50 +895,15 @@ declare module 'vscode' {
 	//#endregion
 
 	//#region CustomExecution
-	/**
-	 * Class used to execute an extension callback as a task.
-	 */
-	export class CustomExecution2 {
-		/**
-		 * @param process The [Pseudoterminal](#Pseudoterminal) to be used by the task to display output.
-		 * @param callback The callback that will be called when the task is started by a user.
-		 */
-		constructor(callback: () => Thenable<Pseudoterminal>);
 
-		/**
-		 * The callback used to execute the task. Cancellation should be handled using
-		 * [Pseudoterminal.close](#Pseudoterminal.close). When the task is complete fire
-		 * [Pseudoterminal.onDidClose](#Pseudoterminal.onDidClose).
-		 */
-		callback: () => Thenable<Pseudoterminal>;
-	}
 
 	/**
 	 * A task to execute
 	 */
 	export class Task2 extends Task {
-		/**
-		 * Creates a new task.
-		 *
-		 * @param definition The task definition as defined in the taskDefinitions extension point.
-		 * @param scope Specifies the task's scope. It is either a global or a workspace task or a task for a specific workspace folder.
-		 * @param name The task's name. Is presented in the user interface.
-		 * @param source The task's source (e.g. 'gulp', 'npm', ...). Is presented in the user interface.
-		 * @param execution The process or shell execution.
-		 * @param problemMatchers the names of problem matchers to use, like '$tsc'
-		 *  or '$eslint'. Problem matchers can be contributed by an extension using
-		 *  the `problemMatchers` extension point.
-		 */
-		constructor(taskDefinition: TaskDefinition, scope: WorkspaceFolder | TaskScope.Global | TaskScope.Workspace, name: string, source: string, execution?: ProcessExecution | ShellExecution | CustomExecution2, problemMatchers?: string | string[]);
-
-		/**
-		 * The task's execution engine
-		 */
-		execution2?: ProcessExecution | ShellExecution | CustomExecution2;
+		detail?: string;
 	}
-	//#endregion
 
-	//#region Tasks
 	export interface TaskPresentationOptions {
 		/**
 		 * Controls whether the task is executed in a specific terminal group using split panes.
@@ -1005,68 +1006,9 @@ declare module 'vscode' {
 
 	//#endregion
 
-	// #region Ben - UIKind
-
-	/**
-	 * Possible kinds of UI that can use extensions.
-	 */
-	export enum UIKind {
-
-		/**
-		 * Extensions are accessed from a desktop application.
-		 */
-		Desktop = 1,
-
-		/**
-		 * Extensions are accessed from a web browser.
-		 */
-		Web = 2
-	}
-
-	export namespace env {
-
-		/**
-		 * The UI kind property indicates from which UI extensions
-		 * are accessed from. For example, extensions could be accessed
-		 * from a desktop application or a web browser.
-		 */
-		export const uiKind: UIKind;
-	}
-
-	//#endregion
-
 	//#region Custom editors, mjbvz
 
-	export enum WebviewEditorState {
-		/**
-		 * The webview editor's content cannot be modified.
-		 *
-		 * This disables save
-		 */
-		Readonly = 1,
-
-		/**
-		 * The webview editor's content has not been changed but they can be modified and saved.
-		 */
-		Unchanged = 2,
-
-		/**
-		 * The webview editor's content has been changed and can be saved.
-		 */
-		Dirty = 3,
-	}
-
 	export interface WebviewEditor extends WebviewPanel {
-		state: WebviewEditorState;
-
-		/**
-		 * Fired when the webview editor is saved.
-		 *
-		 * Both `Unchanged` and `Dirty` editors can be saved.
-		 *
-		 * Extensions should call `waitUntil` to signal when the save operation complete
-		 */
-		readonly onWillSave: Event<{ waitUntil: (thenable: Thenable<boolean>) => void }>;
 	}
 
 	export interface WebviewEditorProvider {
@@ -1085,6 +1027,7 @@ declare module 'vscode' {
 		export function registerWebviewEditorProvider(
 			viewType: string,
 			provider: WebviewEditorProvider,
+			options?: WebviewPanelOptions
 		): Disposable;
 	}
 

@@ -6,7 +6,7 @@
 import { Registry } from 'vs/platform/registry/common/platform';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IWorkbenchContribution, IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
-import { IStatusbarService, StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
+import { IStatusbarService, StatusbarAlignment } from 'vs/workbench/services/statusbar/common/statusbar';
 import { localize } from 'vs/nls';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';

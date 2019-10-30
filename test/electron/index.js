@@ -16,6 +16,7 @@ const defaultReporterName = process.platform === 'win32' ? 'list' : 'spec';
 
 const optimist = require('optimist')
 	.describe('grep', 'only run tests matching <pattern>').alias('grep', 'g').alias('grep', 'f').string('grep')
+	.describe('invert', 'uses the inverse of the match specified by grep').alias('invert', 'i').string('invert')
 	.describe('run', 'only run tests from <file>').string('run')
 	.describe('runGlob', 'only run tests matching <file_pattern>').alias('runGlob', 'runGrep').string('runGlob')
 	.describe('build', 'run with build output (out-build)').boolean('build')

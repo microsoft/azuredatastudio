@@ -119,7 +119,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 			this._button.setWidth(this.convertSize(this.width.toString()));
 		}
 		if (this.height) {
-			this._button.setWidth(this.convertSize(this.height.toString()));
+			this._button.setHeight(this.convertSize(this.height.toString()));
 		}
 		this.updateIcon();
 		this._changeRef.detectChanges();
@@ -191,13 +191,5 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 
 	private setFileType(value: string) {
 		this.properties.fileType = value;
-	}
-
-	private get ariaLabel(): string {
-		return this.getPropertyOrDefault<azdata.ButtonProperties, string>((properties) => properties.ariaLabel, '');
-	}
-
-	private set ariaLabel(newValue: string) {
-		this.setPropertyFromUI<azdata.ButtonProperties, string>((properties, ariaLabel) => { properties.ariaLabel = ariaLabel; }, newValue);
 	}
 }

@@ -7,9 +7,10 @@ import { IExtensionPointUser } from 'vs/workbench/services/extensions/common/ext
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 import { join } from 'vs/base/common/path';
-import { createCSSRule } from 'vs/base/browser/dom';
+import { createCSSRule, asCSSUrl } from 'vs/base/browser/dom';
 import { URI } from 'vs/base/common/uri';
 import { IdGenerator } from 'vs/base/common/idGenerator';
+import * as resources from 'vs/base/common/resources';
 
 import { NavSectionConfig, IUserFriendlyIcon } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
 import { registerContainerType, generateNavSectionContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
@@ -84,13 +85,13 @@ function createCSSRuleForIcon(icon: IUserFriendlyIcon, extension: IExtensionPoin
 	if (icon) {
 		iconClass = ids.nextId();
 		if (typeof icon === 'string') {
-			const path = join(extension.description.extensionLocation.fsPath, icon);
-			createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(path).toString()}")`);
+			const path = resources.joinPath(extension.description.extensionLocation, icon);
+			createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(path)}`);
 		} else {
-			const light = join(extension.description.extensionLocation.fsPath, icon.light);
-			const dark = join(extension.description.extensionLocation.fsPath, icon.dark);
-			createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(light).toString()}")`);
-			createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${URI.file(dark).toString()}")`);
+			const light = resources.joinPath(extension.description.extensionLocation, icon.light);
+			const dark = resources.joinPath(extension.description.extensionLocation, icon.dark);
+			createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(light)}`);
+			createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: ${asCSSUrl(dark)}`);
 		}
 	}
 	return iconClass;
@@ -101,12 +102,12 @@ export function validateNavSectionContributionAndRegisterIcon(extension: IExtens
 	navSectionConfigs.forEach(section => {
 		if (!section.title) {
 			result = false;
-			extension.collector.error(nls.localize('navSection.missingTitle_error', "No title in nav section specified for extension."));
+			extension.collector.error(nls.localize('navSection.missingTitle.error', "No title in nav section specified for extension."));
 		}
 
 		if (!section.container) {
 			result = false;
-			extension.collector.error(nls.localize('navSection.missingContainer_error', "No container in nav section specified for extension."));
+			extension.collector.error(nls.localize('navSection.missingContainer.error', "No container in nav section specified for extension."));
 		}
 
 		if (Object.keys(section.container).length !== 1) {
@@ -130,7 +131,7 @@ export function validateNavSectionContributionAndRegisterIcon(extension: IExtens
 				break;
 			case NAV_SECTION:
 				result = false;
-				extension.collector.error(nls.localize('navSection.invalidContainer_error', "NAV_SECTION within NAV_SECTION is an invalid container for extension."));
+				extension.collector.error(nls.localize('navSection.invalidContainer.error', "NAV_SECTION within NAV_SECTION is an invalid container for extension."));
 				break;
 		}
 
