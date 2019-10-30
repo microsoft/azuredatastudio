@@ -63,5 +63,5 @@ steps:
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0 # {{SQL CARBON EDIT}} add task
   displayName: 'Component Detection'
   inputs:
-    alertWarningLevel: Critical
+    alertWarningLevel: High
     failOnAlert: true
