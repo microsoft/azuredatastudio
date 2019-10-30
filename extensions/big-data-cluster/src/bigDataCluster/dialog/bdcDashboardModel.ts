@@ -14,6 +14,9 @@ import { ControllerTreeDataProvider } from '../tree/controllerTreeDataProvider';
 
 export type BdcDashboardOptions = { url: string, auth: AuthType, username: string, password: string };
 
+export type BdcErrorType = 'bdcStatus' | 'bdcEndpoints' | 'general';
+export type BdcErrorEvent = { error: Error, errorType: BdcErrorType };
+
 export class BdcDashboardModel {
 
 	private _clusterController: ClusterController;
@@ -23,10 +26,10 @@ export class BdcDashboardModel {
 	private _endpointsLastUpdated: Date;
 	private readonly _onDidUpdateEndpoints = new vscode.EventEmitter<EndpointModel[]>();
 	private readonly _onDidUpdateBdcStatus = new vscode.EventEmitter<BdcStatusModel>();
-	private readonly _onError = new vscode.EventEmitter<Error>();
+	private readonly _onBdcError = new vscode.EventEmitter<BdcErrorEvent>();
 	public onDidUpdateEndpoints = this._onDidUpdateEndpoints.event;
 	public onDidUpdateBdcStatus = this._onDidUpdateBdcStatus.event;
-	public onError = this._onError.event;
+	public onBdcError = this._onBdcError.event;
 
 	constructor(private _options: BdcDashboardOptions, private _treeDataProvider: ControllerTreeDataProvider, ignoreSslVerification = true) {
 		try {
@@ -37,7 +40,7 @@ export class BdcDashboardModel {
 			this.promptReconnect().then(async () => {
 				await this.refresh();
 			}).catch(error => {
-				this._onError.fire(error);
+				this._onBdcError.fire({ error: error, errorType: 'general' });
 			});
 		}
 	}
@@ -70,16 +73,16 @@ export class BdcDashboardModel {
 					this._bdcStatus = response.bdcStatus;
 					this._bdcStatusLastUpdated = new Date();
 					this._onDidUpdateBdcStatus.fire(this.bdcStatus);
-				}),
+				}).catch(error => this._onBdcError.fire({ error: error, errorType: 'bdcStatus' })),
 				this._clusterController.getEndPoints(true).then(response => {
 					this._endpoints = response.endPoints || [];
 					fixEndpoints(this._endpoints);
 					this._endpointsLastUpdated = new Date();
 					this._onDidUpdateEndpoints.fire(this.serviceEndpoints);
-				})
+				}).catch(error => this._onBdcError.fire({ error: error, errorType: 'bdcEndpoints' }))
 			]);
 		} catch (error) {
-			this._onError.fire(error);
+			this._onBdcError.fire({ error: error, errorType: 'general' });
 		}
 	}
 
