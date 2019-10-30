@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, IConnectableInput, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import * as nls from 'vs/nls';
 import Severity from 'vs/base/common/severity';
@@ -12,7 +12,6 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IScriptingService, ScriptOperation } from 'sql/platform/scripting/common/scriptingService';
-import { EditDataInput } from 'sql/workbench/parts/editData/browser/editDataInput';
 
 // map for the version of SQL Server (default is 140)
 const scriptCompatibilityOptionMap = {
