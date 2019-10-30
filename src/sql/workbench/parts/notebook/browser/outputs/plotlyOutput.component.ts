@@ -89,7 +89,7 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 		this._initialized = true;
 	}
 
-	async renderPlotly(): Promise<void> {
+	renderPlotly(): void {
 		if (this._rendered) {
 			// just re-layout
 			this.layout();
@@ -111,11 +111,9 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 				// Workaround: to avoid filling up the entire cell, use plotly's default
 				figure.layout.width = Math.min(700, this._plotDiv.clientWidth);
 			}
-			try {
-				(await PlotlyOutputComponent.Plotly).newPlot(this._plotDiv, figure.data, figure.layout);
-			} catch (error) {
-				this.displayError(error);
-			}
+			PlotlyOutputComponent.Plotly.then(plotly => {
+				return plotly.newPlot(this._plotDiv, figure.data, figure.layout);
+			}).catch(e => this.displayError(e));
 		}
 		this._rendered = true;
 	}
