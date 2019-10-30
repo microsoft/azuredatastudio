@@ -152,9 +152,9 @@ export class QueryModelService implements IQueryModelService {
 		}
 	}
 
-	public copyResults(uri: string, selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): void {
+	public async copyResults(uri: string, selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<void> {
 		if (this._queryInfoMap.has(uri)) {
-			this._queryInfoMap.get(uri)!.queryRunner.copyResults(selection, batchId, resultId, includeHeaders);
+			return this._queryInfoMap.get(uri)!.queryRunner.copyResults(selection, batchId, resultId, includeHeaders);
 		}
 	}
 
@@ -187,29 +187,29 @@ export class QueryModelService implements IQueryModelService {
 	/**
 	 * Run a query for the given URI with the given text selection
 	 */
-	public runQuery(uri: string, selection: azdata.ISelectionData, queryInput: QueryInput, runOptions?: azdata.ExecutionPlanOptions): void {
-		this.doRunQuery(uri, selection, queryInput, false, runOptions);
+	public async runQuery(uri: string, selection: azdata.ISelectionData, queryInput: QueryInput, runOptions?: azdata.ExecutionPlanOptions): Promise<void> {
+		return this.doRunQuery(uri, selection, queryInput, false, runOptions);
 	}
 
 	/**
 	 * Run the current SQL statement for the given URI
 	 */
-	public runQueryStatement(uri: string, selection: azdata.ISelectionData, queryInput: QueryInput): void {
-		this.doRunQuery(uri, selection, queryInput, true);
+	public async runQueryStatement(uri: string, selection: azdata.ISelectionData, queryInput: QueryInput): Promise<void> {
+		return this.doRunQuery(uri, selection, queryInput, true);
 	}
 
 	/**
 	 * Run the current SQL statement for the given URI
 	 */
-	public runQueryString(uri: string, selection: string, queryInput: QueryInput): void {
-		this.doRunQuery(uri, selection, queryInput, true);
+	public async runQueryString(uri: string, selection: string, queryInput: QueryInput): Promise<void> {
+		return this.doRunQuery(uri, selection, queryInput, true);
 	}
 
 	/**
 	 * Run Query implementation
 	 */
-	private doRunQuery(uri: string, selection: azdata.ISelectionData | string, queryInput: QueryInput,
-		runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): void {
+	private async doRunQuery(uri: string, selection: azdata.ISelectionData | string, queryInput: QueryInput,
+		runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): Promise<void> {
 		// Reuse existing query runner if it exists
 		let queryRunner: QueryRunner | undefined;
 		let info: QueryInfo;
@@ -243,11 +243,11 @@ export class QueryModelService implements IQueryModelService {
 			} else {
 				info.selectionSnippet = selection.substring(0, selectionSnippetMaxLen - 3) + '...';
 			}
-			queryRunner.runQuery(selection, runOptions);
+			return queryRunner.runQuery(selection, runOptions);
 		} else if (runCurrentStatement) {
-			queryRunner.runQueryStatement(selection);
+			return queryRunner.runQueryStatement(selection);
 		} else {
-			queryRunner.runQuery(selection, runOptions);
+			return queryRunner.runQuery(selection, runOptions);
 		}
 	}
 
@@ -403,11 +403,11 @@ export class QueryModelService implements IQueryModelService {
 
 	}
 
-	public disposeQuery(ownerUri: string): void {
+	public async disposeQuery(ownerUri: string): Promise<void> {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
-			queryRunner.disposeQuery();
+			await queryRunner.disposeQuery();
 		}
 		// remove our info map
 		if (this._queryInfoMap.has(ownerUri)) {
@@ -416,7 +416,7 @@ export class QueryModelService implements IQueryModelService {
 	}
 
 	// EDIT DATA METHODS /////////////////////////////////////////////////////
-	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): void {
+	async initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Promise<void> {
 		// Reuse existing query runner if it exists
 		let queryRunner: QueryRunner;
 		let info: QueryInfo;
@@ -522,7 +522,7 @@ export class QueryModelService implements IQueryModelService {
 			}
 		}
 
-		queryRunner.initializeEdit(ownerUri, schemaName, objectName, objectType, rowLimit, queryString);
+		return queryRunner.initializeEdit(ownerUri, schemaName, objectName, objectType, rowLimit, queryString);
 	}
 
 	public cancelInitializeEdit(input: QueryRunner | string): void {
