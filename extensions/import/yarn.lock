@@ -451,9 +451,9 @@ semver@^5.3.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.6.0.tgz#7e74256fbaa49c75aa7c7a205cc22799cac80004"
   integrity sha512-RS9R6R35NYgQn++fkDWaOmqGoj4Ek9gGs+DPxNUZKuwE183xjJroKvyo1IzVFeXvUrvmALy6FWD5xrdJT25gMg==
 
-"service-downloader@github:anthonydresser/service-downloader#2c71718e2b1b2610612a3e0db4eba86987a9dbb3":
+"service-downloader@github:anthonydresser/service-downloader#905a4686b61c62b5bbf107cbbe3a322e13dac472":
   version "0.1.7"
-  resolved "https://codeload.github.com/anthonydresser/service-downloader/tar.gz/2c71718e2b1b2610612a3e0db4eba86987a9dbb3"
+  resolved "https://codeload.github.com/anthonydresser/service-downloader/tar.gz/905a4686b61c62b5bbf107cbbe3a322e13dac472"
   dependencies:
     async-retry "^1.2.3"
     decompress "^4.2.0"
