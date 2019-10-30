@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { BdcDashboardModel } from './bdcDashboardModel';
+import { BdcDashboardModel, BdcErrorEvent } from './bdcDashboardModel';
 import { IconPathHelper, cssStyles } from '../constants';
 import { getStateDisplayText, getHealthStatusDisplayText, getEndpointDisplayText, getHealthStatusIcon, getServiceNameDisplayText, Endpoint, getBdcStatusErrorMessage } from '../utils';
 import { EndpointModel, ServiceStatusModel, BdcStatusModel } from '../controller/apiGenerated';
@@ -43,8 +43,8 @@ export class BdcDashboardOverviewPage {
 	private serviceStatusRowContainer: azdata.FlexContainer;
 
 	private endpointsRowContainer: azdata.FlexContainer;
-	private endpointRowContainerLoadingComponent: azdata.LoadingComponent;
-	private serviceStatusRowContainerLoadingComponent: azdata.LoadingComponent;
+	private endpointsDisplayContainer: azdata.DivContainer;
+	private serviceStatusDisplayContainer: azdata.DivContainer;
 	private propertiesErrorMessage: azdata.TextComponent;
 	private endpointsErrorMessage: azdata.TextComponent;
 	private serviceStatusErrorMessage: azdata.TextComponent;
@@ -52,9 +52,7 @@ export class BdcDashboardOverviewPage {
 	constructor(private dashboard: BdcDashboard, private model: BdcDashboardModel) {
 		this.model.onDidUpdateEndpoints(endpoints => this.handleEndpointsUpdate(endpoints));
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.handleBdcStatusUpdate(bdcStatus));
-		this.model.onBdcStatusError(error => this.handleBdcStatusError(error));
-		this.model.onEndpointsError(error => this.handleEndpointsError(error));
-		this.model.onGeneralError(error => this.handleGeneralError(error));
+		this.model.onBdcError(error => this.handleBdcError(error));
 	}
 
 	public create(view: azdata.ModelView): azdata.FlexContainer {
@@ -138,20 +136,23 @@ export class BdcDashboardOverviewPage {
 		serviceStatusHeaderRow.addItem(healthStatusCell, { CSSStyles: { 'width': `${overviewHealthStatusCellWidthPx}px`, 'min-width': `${overviewHealthStatusCellWidthPx}px` } });
 		overviewContainer.addItem(serviceStatusHeaderRow, { CSSStyles: { 'padding-left': '10px', 'box-sizing': 'border-box', 'user-select': 'text' } });
 
-		this.serviceStatusErrorMessage = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ display: 'none', CSSStyles: { ...cssStyles.errorText } }).component();
-		rootContainer.addItem(this.serviceStatusErrorMessage, { flex: '0 0 auto' });
+		this.serviceStatusDisplayContainer = view.modelBuilder.divContainer().component();
 
 		// Service Status row container
 		this.serviceStatusRowContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 		// Note we don't give the rows container as a child of the loading component since in order to align the loading component correctly
 		// messes up the layout for the row container that we display after loading is finished. Instead we just remove the loading component
 		// and replace it with the rows directly
-		this.serviceStatusRowContainerLoadingComponent = view.modelBuilder.loadingComponent()
+		const serviceStatusRowContainerLoadingComponent = view.modelBuilder.loadingComponent()
 			.withProperties({ CSSStyles: { 'padding-top': '0px', 'padding-bottom': '0px' } })
 			.component();
-		this.serviceStatusRowContainer.addItem(this.serviceStatusRowContainerLoadingComponent, { flex: '0 0 auto', CSSStyles: { 'padding-left': '150px', width: '30px' } });
+		this.serviceStatusRowContainer.addItem(serviceStatusRowContainerLoadingComponent, { flex: '0 0 auto', CSSStyles: { 'padding-left': '150px', width: '30px' } });
 
-		overviewContainer.addItem(this.serviceStatusRowContainer);
+		this.serviceStatusErrorMessage = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ display: 'none', CSSStyles: { ...cssStyles.errorText } }).component();
+		overviewContainer.addItem(this.serviceStatusErrorMessage);
+
+		this.serviceStatusDisplayContainer.addItem(this.serviceStatusRowContainer);
+		overviewContainer.addItem(this.serviceStatusDisplayContainer);
 
 		rootContainer.addItem(overviewContainer, { flex: '0 0 auto' });
 
@@ -176,20 +177,20 @@ export class BdcDashboardOverviewPage {
 		endpointsHeaderRow.addItem(endpointsEndpointHeaderCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}px`, 'min-width': `${serviceEndpointRowEndpointCellWidth}px`, ...cssStyles.tableHeader } });
 		endpointsContainer.addItem(endpointsHeaderRow, { CSSStyles: { 'padding-left': '10px', 'box-sizing': 'border-box', 'user-select': 'text' } });
 
+		this.endpointsDisplayContainer = view.modelBuilder.divContainer().component();
 		this.endpointsRowContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 		// Note we don't give the rows container as a child of the loading component since in order to align the loading component correctly
 		// messes up the layout for the row container that we display after loading is finished. Instead we just remove the loading component
 		// and replace it with the rows directly
-		this.endpointRowContainerLoadingComponent = view.modelBuilder.loadingComponent()
+		const endpointRowContainerLoadingComponent = view.modelBuilder.loadingComponent()
 			.withProperties({ CSSStyles: { 'padding-top': '0px', 'padding-bottom': '0px' } })
 			.component();
-		this.endpointsRowContainer.addItem(this.endpointRowContainerLoadingComponent, { flex: '0 0 auto', CSSStyles: { 'padding-left': '150px', width: '30px' } });
+		this.endpointsRowContainer.addItem(endpointRowContainerLoadingComponent, { flex: '0 0 auto', CSSStyles: { 'padding-left': '150px', width: '30px' } });
 
-		endpointsContainer.addItem(this.endpointsRowContainer);
-
-		rootContainer.addItem(this.endpointsErrorMessage, { flex: '0 0 auto' });
-
-		rootContainer.addItem(this.endpointsRowContainer, { flex: '0 0 auto' });
+		this.endpointsDisplayContainer.addItem(this.endpointsRowContainer);
+		endpointsContainer.addItem(this.endpointsErrorMessage);
+		endpointsContainer.addItem(this.endpointsDisplayContainer);
+		rootContainer.addItem(endpointsContainer, { flex: '0 0 auto' });
 
 		this.initialized = true;
 
@@ -205,9 +206,9 @@ export class BdcDashboardOverviewPage {
 		this.serviceStatusErrorMessage.display = 'none';
 		this.endpointsErrorMessage.display = 'none';
 
-		this.serviceStatusRowContainerLoadingComponent.display = undefined;
+		this.serviceStatusDisplayContainer.display = undefined;
 		this.propertiesContainer.display = undefined;
-		this.endpointRowContainerLoadingComponent.display = undefined;
+		this.endpointsDisplayContainer.display = undefined;
 
 
 	}
@@ -258,25 +259,28 @@ export class BdcDashboardOverviewPage {
 		});
 	}
 
-	private handleBdcStatusError(error: Error): void {
-		this.showBdcStatusError(getBdcStatusErrorMessage(error));
+	private handleBdcError(errorEvent: BdcErrorEvent): void {
+		if (errorEvent.errorType === 'bdcEndpoints') {
+			const errorMessage = localize('endpointsError', "Unexpected error retrieving BDC Endpoints: {0}", errorEvent.error.message);
+			this.showEndpointsError(errorMessage);
+		} else if (errorEvent.errorType === 'bdcStatus') {
+			this.showBdcStatusError(getBdcStatusErrorMessage(errorEvent.error));
+		} else {
+			this.handleGeneralError(errorEvent.error);
+		}
 	}
 
 	private showBdcStatusError(errorMessage: string): void {
-		this.serviceStatusRowContainerLoadingComponent.display = 'none';
+		this.serviceStatusDisplayContainer.display = 'none';
 		this.propertiesContainer.display = 'none';
 		this.serviceStatusErrorMessage.value = errorMessage;
 		this.serviceStatusErrorMessage.display = undefined;
 		this.propertiesErrorMessage.value = errorMessage;
 		this.propertiesErrorMessage.display = undefined;
 	}
-	private handleEndpointsError(error: Error): void {
-		const errorMessage = localize('endpointsError', "Unexpected error retrieving BDC Endpoints: {0}", error.message);
-		this.showEndpointsError(errorMessage);
-	}
 
 	private showEndpointsError(errorMessage: string): void {
-		this.endpointRowContainerLoadingComponent.display = 'none';
+		this.endpointsDisplayContainer.display = 'none';
 		this.endpointsErrorMessage.display = undefined;
 		this.endpointsErrorMessage.value = errorMessage;
 	}
@@ -291,7 +295,6 @@ export class BdcDashboardOverviewPage {
 			this.showBdcStatusError(errorMessage);
 			this.showEndpointsError(errorMessage);
 		}
-
 	}
 
 	private createServiceStatusRow(container: azdata.FlexContainer, serviceStatus: ServiceStatusModel, isLastRow: boolean): void {

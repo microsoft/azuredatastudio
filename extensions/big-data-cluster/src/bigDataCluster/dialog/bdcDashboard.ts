@@ -8,7 +8,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { BdcDashboardModel, getTroubleshootNotebookUrl } from './bdcDashboardModel';
+import { BdcDashboardModel, getTroubleshootNotebookUrl, BdcErrorEvent } from './bdcDashboardModel';
 import { IconPathHelper, cssStyles } from '../constants';
 import { BdcServiceStatusPage } from './bdcServiceStatusPage';
 import { BdcDashboardOverviewPage } from './bdcDashboardOverviewPage';
@@ -45,7 +45,7 @@ export class BdcDashboard {
 
 	constructor(private title: string, private model: BdcDashboardModel) {
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.handleBdcStatusUpdate(bdcStatus));
-		this.model.onGeneralError(error => this.handleError(error));
+		this.model.onBdcError(errorEvent => this.handleError(errorEvent));
 	}
 
 	public showDashboard(): void {
@@ -170,11 +170,14 @@ export class BdcDashboard {
 		this.updateServiceNavTabs(bdcStatus.services);
 	}
 
-	private handleError(error: Error): void {
+	private handleError(errorEvent: BdcErrorEvent): void {
+		if (errorEvent.errorType !== 'general') {
+			return;
+		}
 		// We don't want to show an error for the connection dialog being
 		// canceled since that's a normal case.
-		if (!(error instanceof HdfsDialogCancelledError)) {
-			showErrorMessage(error.message);
+		if (!(errorEvent.error instanceof HdfsDialogCancelledError)) {
+			showErrorMessage(errorEvent.error.message);
 		}
 	}
 

@@ -17,13 +17,11 @@ import * as nls from 'vs/nls';
 @Component({
 	selector: 'modelview-loadingComponent',
 	template: `
-		<div [style.display]="display">
-			<div class="modelview-loadingComponent-container" role="alert" aria-busy="true" *ngIf="loading">
-				<div class="modelview-loadingComponent-spinner" *ngIf="loading" [title]=_loadingTitle #spinnerElement></div>
-			</div>
-			<model-component-wrapper #childElement [descriptor]="_component" [modelStore]="modelStore" *ngIf="_component" [ngClass]="{'modelview-loadingComponent-content-loading': loading}">
-			</model-component-wrapper>
+		<div class="modelview-loadingComponent-container" role="alert" aria-busy="true" *ngIf="loading">
+			<div class="modelview-loadingComponent-spinner" *ngIf="loading" [title]=_loadingTitle #spinnerElement></div>
 		</div>
+		<model-component-wrapper #childElement [descriptor]="_component" [modelStore]="modelStore" *ngIf="_component" [ngClass]="{'modelview-loadingComponent-content-loading': loading}">
+		</model-component-wrapper>
 	`
 })
 export default class LoadingComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
