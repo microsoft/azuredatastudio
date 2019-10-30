@@ -7974,9 +7974,9 @@ slice-ansi@^2.0.0:
     astral-regex "^1.0.0"
     is-fullwidth-code-point "^2.0.0"
 
-"slickgrid@github:anthonydresser/SlickGrid#fe0d0284a6e7094503b75d8038da85ada167e24c":
-  version "2.3.31"
-  resolved "https://codeload.github.com/anthonydresser/SlickGrid/tar.gz/fe0d0284a6e7094503b75d8038da85ada167e24c"
+"slickgrid@github:anthonydresser/SlickGrid#2.3.32":
+  version "2.3.32"
+  resolved "https://codeload.github.com/anthonydresser/SlickGrid/tar.gz/3909801b6c5de2b92147eeb474e8082df95b7098"
 
 smart-buffer@^4.0.1:
   version "4.0.1"
