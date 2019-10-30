@@ -24,7 +24,7 @@ import { DefaultFilter, DefaultAccessibilityProvider, DefaultController } from '
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { TreeViewDataProvider } from 'sql/workbench/browser/modelComponents/treeViewDataProvider';
-import { getContentHeight, getContentWidth } from 'vs/base/browser/dom';
+import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 
@@ -127,7 +127,7 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 				// This might have unintended effects such as a dialog closing.
 				if (e.keyCode === KeyCode.Enter) {
 					this._tree.toggleExpansion(this._tree.getFocus());
-					e.stopPropagation();
+					DOM.EventHelper.stop(e, true);
 				}
 			});
 			this._tree.refresh();
@@ -149,8 +149,8 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 		let width: number = this.convertSizeToNumber(this.width);
 		let height: number = this.convertSizeToNumber(this.height);
 		this._tree.layout(
-			height && height > 0 ? height : getContentHeight(this._inputContainer.nativeElement),
-			width && width > 0 ? width : getContentWidth(this._inputContainer.nativeElement));
+			height && height > 0 ? height : DOM.getContentHeight(this._inputContainer.nativeElement),
+			width && width > 0 ? width : DOM.getContentWidth(this._inputContainer.nativeElement));
 	}
 
 	public setLayout(layout: any): void {
