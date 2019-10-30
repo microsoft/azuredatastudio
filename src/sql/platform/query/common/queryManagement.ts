@@ -178,6 +178,7 @@ export class QueryManagementService implements IQueryManagementService {
 				displayActualQueryPlan: runOptions.displayActualQueryPlan
 			});
 		}
+		// tslint:disable-next-line:no-floating-promises
 		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, eventName, data);
 	}
 
