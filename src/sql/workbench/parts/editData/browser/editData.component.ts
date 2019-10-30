@@ -7,7 +7,9 @@ import 'vs/css!./media/editData';
 
 import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, EventEmitter } from '@angular/core';
 //import { VirtualizedCollection } from 'angular2-slickgrid';
-import { VirtualizedCollection } from 'sql/base/browser/ui/table/asyncDataView';
+import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
+import { Table } from 'sql/base/browser/ui/table/table';
+import { GridPanel } from 'sql/workbench/parts/query/browser/gridPanel';
 
 import { IGridDataSet } from 'sql/workbench/parts/grid/common/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
@@ -87,15 +89,15 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
 		@Inject(IBootstrapParams) params: IEditDataComponentParams,
-		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(INotificationService) private notificationService: INotificationService,
-		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IKeybindingService) keybindingService: IKeybindingService,
-		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
-		@Inject(IConfigurationService) configurationService: IConfigurationService,
-		@Inject(IClipboardService) clipboardService: IClipboardService,
-		@Inject(IQueryEditorService) queryEditorService: IQueryEditorService,
-		@Inject(ILogService) logService: ILogService
+		@IInstantiationService private instantiationService: IInstantiationService,
+		@INotificationService private notificationService: INotificationService,
+		@IContextMenuService contextMenuService: IContextMenuService,
+		@IKeybindingService keybindingService: IKeybindingService,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IConfigurationService configurationService: IConfigurationService,
+		@IClipboardService clipboardService: IClipboardService,
+		@IQueryEditorService queryEditorService: IQueryEditorService,
+		@ILogService logService: ILogService
 	) {
 		super(el, cd, contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, logService);
 		this._el.nativeElement.className = 'slickgridContainer';
@@ -365,6 +367,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				resultSet.rowCount,
 				this.loadDataFunction,
 			),
+			// dataRows: new VirtualizedCollection(
+			// 	self.windowSize,
+			// 	resultSet.rowCount,
+			// 	this.loadDataFunction,
+			// 	index => { return {}; }
+			// ),
 			columnDefinitions: [rowNumberColumn.getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
 				let columnIndex = (i + 1).toString();
 				return {
@@ -484,6 +492,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				this.resetCurrentCell();
 
 				if (row !== undefined) {
+					//	this.dataSet.dataRows.publicResetWindowsAroundIndex(row);
 					this.dataSet.dataRows.publicResetWindowsAroundIndex(row);
 				}
 			}
@@ -591,6 +600,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				self.dataSet.totalRows++;
 				self.dataSet.maxHeight = self.getMaxHeight(self.dataSet.totalRows);
 				self.dataSet.minHeight = self.getMinHeight(self.dataSet.totalRows);
+				// self.dataSet.dataRows = new VirtualizedCollection(
+				// 	self.windowSize,
+				// 	self.dataSet.totalRows,
+				// 	self.loadDataFunction,
+				// 	index => { return {}; }
+				// );
 				self.dataSet.dataRows = new VirtualizedCollection(
 					self.windowSize,
 					index => { return {}; },
@@ -612,6 +627,14 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			this.dataSet.totalRows,
 			this.loadDataFunction,
 		);
+
+		// this.dataSet.dataRows = new VirtualizedCollection(
+		// 	this.windowSize,
+		// 	this.dataSet.totalRows,
+		// 	this.loadDataFunction,
+		// 	index => { return {}; }
+		// );
+
 
 		// refresh results view
 		return this.refreshGrid().then(() => {

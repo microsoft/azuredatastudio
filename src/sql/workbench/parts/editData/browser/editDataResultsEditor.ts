@@ -16,7 +16,7 @@ import * as types from 'vs/base/common/types';
 
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { bootstrapAngular } from 'sql/platform/bootstrap/browser/bootstrapService';
-import { BareResultsGridInfo } from 'sql/workbench/parts/query/browser/queryResultsEditor';
+import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/parts/query/browser/queryResultsEditor';
 import { IEditDataComponentParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 import { EditDataModule } from 'sql/workbench/parts/editData/browser/editData.module';
 import { EDITDATA_SELECTOR } from 'sql/workbench/parts/editData/browser/editData.component';
@@ -66,9 +66,9 @@ export class EditDataResultsEditor extends BaseEditor {
 	public setInput(input: EditDataResultsInput, options: EditorOptions): Promise<void> {
 		super.setInput(input, options, CancellationToken.None);
 		this._applySettings();
-		if (!input.hasBootstrapped) {
-			this._bootstrapAngular();
-		}
+		// if (!input.hasBootstrapped) {
+		// 	this._bootstrapAngular();
+		// }
 		return Promise.resolve<void>(null);
 	}
 
@@ -85,6 +85,7 @@ export class EditDataResultsEditor extends BaseEditor {
 				cssRuleText = this._rawOptions.cellPadding.join('px ') + 'px;';
 			}
 			let content = `.grid .slick-cell { padding: ${cssRuleText}; }`;
+			content += `.grid-panel .monaco-table, .message-tree { ${getBareResultsGridInfoStyles(this._rawOptions)} }`;
 			this.input.css.innerHTML = content;
 		}
 	}

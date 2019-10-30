@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ISlickColumn, VirtualizedCollection } from 'sql/base/browser/ui/table/asyncDataView';
-
+//import { ISlickColumn, VirtualizedCollection } from 'angular2-slickgrid';
 export interface IGridDataSet {
 	dataRows: VirtualizedCollection<{}>;
 	columnDefinitions: ISlickColumn<any>[];
