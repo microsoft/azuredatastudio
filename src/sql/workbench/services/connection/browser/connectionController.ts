@@ -68,7 +68,7 @@ export class ConnectionController implements IConnectionComponentController {
 			if (cachedDatabases !== null) {
 				return cachedDatabases;
 			} else {
-				throw new Error();
+				throw new Error('database cache didn\'t have value');
 			}
 		} else {
 			const connResult = await this._connectionManagementService.connect(tempProfile, uri);
@@ -79,7 +79,7 @@ export class ConnectionController implements IConnectionComponentController {
 					return result.databaseNames;
 				} else {
 					this._databaseCache.set(uri, null);
-					throw new Error();
+					throw new Error('list databases failed');
 				}
 			} else {
 				throw new Error(connResult.errorMessage);
