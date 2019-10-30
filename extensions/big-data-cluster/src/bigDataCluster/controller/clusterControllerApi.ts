@@ -88,33 +88,49 @@ class DefaultApiWrapper extends DefaultApi {
 
 export class ClusterController {
 
-	private authPromise: Promise<Authentication>;
+	private _authPromise: Promise<Authentication>;
 	private _url: string;
-	private readonly dialog: ConnectControllerDialog;
-	private connectionPromise: Promise<ClusterController>;
+	private readonly _dialog: ConnectControllerDialog;
+	private _connectionPromise: Promise<ClusterController>;
 
 	constructor(url: string,
-		private authType: AuthType,
-		private username?: string,
-		private password?: string,
+		private _authType: AuthType,
+		private _username?: string,
+		private _password?: string,
 		ignoreSslVerification?: boolean
 	) {
-		if (!url || (authType === 'basic' && (!username || !password))) {
+		if (!url || (_authType === 'basic' && (!_username || !_password))) {
 			throw new Error('Missing required inputs for Cluster controller API (URL, username, password)');
 		}
 		this._url = adjustUrl(url);
-		if (this.authType === 'basic') {
-			this.authPromise = Promise.resolve(new BasicAuth(username, password, !!ignoreSslVerification));
+		if (this._authType === 'basic') {
+			this._authPromise = Promise.resolve(new BasicAuth(_username, _password, !!ignoreSslVerification));
 		} else {
-			this.authPromise = this.requestTokenUsingKerberos(ignoreSslVerification);
+			this._authPromise = this.requestTokenUsingKerberos(ignoreSslVerification);
 		}
-		this.dialog = new ConnectControllerDialog(new ConnectControllerModel(
+		this._dialog = new ConnectControllerDialog(new ConnectControllerModel(
 			{
 				url: this._url,
-				auth: this.authType,
-				username: this.username,
-				password: this.password
+				auth: this._authType,
+				username: this._username,
+				password: this._password
 			}));
+	}
+
+	public get url(): string {
+		return this._url;
+	}
+
+	public get authType(): AuthType {
+		return this._authType;
+	}
+
+	public get username(): string | undefined {
+		return this._username;
+	}
+
+	public get password(): string | undefined {
+		return this._password;
 	}
 
 	private async requestTokenUsingKerberos(ignoreSslVerification?: boolean): Promise<Authentication> {
@@ -166,8 +182,8 @@ export class ClusterController {
 	}
 
 	private async getEndpointsImpl(self: ClusterController): Promise<IEndPointsResponse> {
-		let auth = await self.authPromise;
-		let endPointApi = new BdcApiWrapper(self.username, self.password, self._url, auth);
+		let auth = await self._authPromise;
+		let endPointApi = new BdcApiWrapper(self._username, self._password, self._url, auth);
 		let options: any = {};
 
 		let result = await endPointApi.endpointsGet(options);
@@ -185,8 +201,8 @@ export class ClusterController {
 	}
 
 	private async getBdcStatusImpl(self: ClusterController): Promise<IBdcStatusResponse> {
-		let auth = await self.authPromise;
-		const bdcApi = new BdcApiWrapper(self.username, self.password, self._url, auth);
+		let auth = await self._authPromise;
+		const bdcApi = new BdcApiWrapper(self._username, self._password, self._url, auth);
 
 		const bdcStatus = await bdcApi.getBdcStatus('', '', /*all*/ true);
 		return {
@@ -206,8 +222,8 @@ export class ClusterController {
 	}
 
 	private async mountHdfsImpl(self: ClusterController, mountPath: string, remoteUri: string, credentials: {}): Promise<MountResponse> {
-		let auth = await self.authPromise;
-		const api = new DefaultApiWrapper(self.username, self.password, self._url, auth);
+		let auth = await self._authPromise;
+		const api = new DefaultApiWrapper(self._username, self._password, self._url, auth);
 
 		const mountStatus = await api.createMount('', '', remoteUri, mountPath, credentials);
 		return {
@@ -225,8 +241,8 @@ export class ClusterController {
 	}
 
 	private async getMountStatusImpl(self: ClusterController, mountPath?: string): Promise<MountStatusResponse> {
-		const auth = await self.authPromise;
-		const api = new DefaultApiWrapper(self.username, self.password, self._url, auth);
+		const auth = await self._authPromise;
+		const api = new DefaultApiWrapper(self._username, self._password, self._url, auth);
 
 		const mountStatus = await api.listMounts('', '', mountPath);
 		return {
@@ -244,8 +260,8 @@ export class ClusterController {
 	}
 
 	private async refreshMountImpl(self: ClusterController, mountPath: string): Promise<MountResponse> {
-		const auth = await self.authPromise;
-		const api = new DefaultApiWrapper(self.username, self.password, self._url, auth);
+		const auth = await self._authPromise;
+		const api = new DefaultApiWrapper(self._username, self._password, self._url, auth);
 
 		const mountStatus = await api.refreshMount('', '', mountPath);
 		return {
@@ -263,8 +279,8 @@ export class ClusterController {
 	}
 
 	private async deleteMountImpl(mountPath: string): Promise<MountResponse> {
-		let auth = await this.authPromise;
-		const api = new DefaultApiWrapper(this.username, this.password, this._url, auth);
+		let auth = await this._authPromise;
+		const api = new DefaultApiWrapper(this._username, this._password, this._url, auth);
 
 		const mountStatus = await api.deleteMount('', '', mountPath);
 		return {
@@ -291,17 +307,17 @@ export class ClusterController {
 					// We don't want to open multiple dialogs here if multiple calls come in the same time so check
 					// and see if we have are actively waiting on an open dialog to return and if so then just wait
 					// on that promise.
-					if (!this.connectionPromise) {
-						this.connectionPromise = this.dialog.showDialog();
+					if (!this._connectionPromise) {
+						this._connectionPromise = this._dialog.showDialog();
 					}
-					const controller = await this.connectionPromise;
-					this.connectionPromise = undefined;
+					const controller = await this._connectionPromise;
+					this._connectionPromise = undefined;
 					if (controller) {
-						this.username = controller.username;
-						this.password = controller.password;
+						this._username = controller._username;
+						this._password = controller._password;
 						this._url = controller._url;
-						this.authType = controller.authType;
-						this.authPromise = controller.authPromise;
+						this._authType = controller._authType;
+						this._authPromise = controller._authPromise;
 					}
 					return await f(this, args);
 				}
@@ -378,7 +394,7 @@ export class ControllerError extends Error {
 	public code?: number;
 	public reason?: string;
 	public address?: string;
-
+	public statusMessage?: string;
 	/**
 	 *
 	 * @param error The original error to wrap
@@ -391,6 +407,7 @@ export class ControllerError extends Error {
 			this.code = error.response.statusCode;
 			this.message += `${error.response.statusMessage ? ` - ${error.response.statusMessage}` : ''}` || '';
 			this.address = error.response.url || '';
+			this.statusMessage = error.response.statusMessage;
 		}
 		else if (error.message) {
 			this.message += ` - ${error.message}`;

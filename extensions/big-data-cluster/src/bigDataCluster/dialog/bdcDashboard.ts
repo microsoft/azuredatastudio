@@ -13,7 +13,8 @@ import { IconPathHelper, cssStyles } from '../constants';
 import { BdcServiceStatusPage } from './bdcServiceStatusPage';
 import { BdcDashboardOverviewPage } from './bdcDashboardOverviewPage';
 import { BdcStatusModel, ServiceStatusModel } from '../controller/apiGenerated';
-import { getHealthStatusDot, getServiceNameDisplayText } from '../utils';
+import { getHealthStatusDot, getServiceNameDisplayText, showErrorMessage } from '../utils';
+import { HdfsDialogCancelledError } from './hdfsDialogBase';
 
 const localize = nls.loadMessageBundle();
 
@@ -43,6 +44,7 @@ export class BdcDashboard {
 
 	constructor(private title: string, private model: BdcDashboardModel) {
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.handleBdcStatusUpdate(bdcStatus));
+		this.model.onError(error => this.handleError(error));
 	}
 
 	public showDashboard(): void {
@@ -163,6 +165,14 @@ export class BdcDashboard {
 		}
 
 		this.updateServiceNavTabs(bdcStatus.services);
+	}
+
+	private handleError(error: Error): void {
+		// We don't want to show an error for the connection dialog being
+		// canceled since that's a normal case.
+		if (!(error instanceof HdfsDialogCancelledError)) {
+			showErrorMessage(error.message);
+		}
 	}
 
 	private async doRefresh(): Promise<void> {

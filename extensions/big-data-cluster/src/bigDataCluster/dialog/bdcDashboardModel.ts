@@ -7,8 +7,10 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ClusterController } from '../controller/clusterControllerApi';
 import { EndpointModel, BdcStatusModel } from '../controller/apiGenerated';
-import { showErrorMessage, Endpoint, Service } from '../utils';
+import { Endpoint, Service } from '../utils';
 import { AuthType } from '../constants';
+import { ConnectControllerDialog, ConnectControllerModel } from './connectControllerDialog';
+import { ControllerTreeDataProvider } from '../tree/controllerTreeDataProvider';
 
 export type BdcDashboardOptions = { url: string, auth: AuthType, username: string, password: string };
 
@@ -21,12 +23,23 @@ export class BdcDashboardModel {
 	private _endpointsLastUpdated: Date;
 	private readonly _onDidUpdateEndpoints = new vscode.EventEmitter<EndpointModel[]>();
 	private readonly _onDidUpdateBdcStatus = new vscode.EventEmitter<BdcStatusModel>();
+	private readonly _onError = new vscode.EventEmitter<Error>();
 	public onDidUpdateEndpoints = this._onDidUpdateEndpoints.event;
 	public onDidUpdateBdcStatus = this._onDidUpdateBdcStatus.event;
+	public onError = this._onError.event;
 
-	constructor(private options: BdcDashboardOptions, ignoreSslVerification = true) {
-		this._clusterController = new ClusterController(options.url, options.auth, options.username, options.password, ignoreSslVerification);
-		this.refresh();
+	constructor(private _options: BdcDashboardOptions, private _treeDataProvider: ControllerTreeDataProvider, ignoreSslVerification = true) {
+		try {
+			this._clusterController = new ClusterController(_options.url, _options.auth, _options.username, _options.password, ignoreSslVerification);
+			// tslint:disable-next-line:no-floating-promises
+			this.refresh();
+		} catch {
+			this.promptReconnect().then(async () => {
+				await this.refresh();
+			}).catch(error => {
+				this._onError.fire(error);
+			});
+		}
 	}
 
 	public get bdcStatus(): BdcStatusModel | undefined {
@@ -46,21 +59,28 @@ export class BdcDashboardModel {
 	}
 
 	public async refresh(): Promise<void> {
-		await Promise.all([
-			this._clusterController.getBdcStatus(true).then(response => {
-				this._bdcStatus = response.bdcStatus;
-				this._bdcStatusLastUpdated = new Date();
-				this._onDidUpdateBdcStatus.fire(this.bdcStatus);
-			}),
-			this._clusterController.getEndPoints(true).then(response => {
-				this._endpoints = response.endPoints || [];
-				fixEndpoints(this._endpoints);
-				this._endpointsLastUpdated = new Date();
-				this._onDidUpdateEndpoints.fire(this.serviceEndpoints);
-			})
-		]).catch(error => {
-			showErrorMessage(error);
-		});
+		try {
+			if (!this._clusterController) {
+				// If this succeeds without error we know we have a clusterController at this point
+				await this.promptReconnect();
+			}
+
+			await Promise.all([
+				this._clusterController.getBdcStatus(true).then(response => {
+					this._bdcStatus = response.bdcStatus;
+					this._bdcStatusLastUpdated = new Date();
+					this._onDidUpdateBdcStatus.fire(this.bdcStatus);
+				}),
+				this._clusterController.getEndPoints(true).then(response => {
+					this._endpoints = response.endPoints || [];
+					fixEndpoints(this._endpoints);
+					this._endpointsLastUpdated = new Date();
+					this._onDidUpdateEndpoints.fire(this.serviceEndpoints);
+				})
+			]);
+		} catch (error) {
+			this._onError.fire(error);
+		}
 	}
 
 	/**
@@ -81,7 +101,7 @@ export class BdcDashboardModel {
 			serverName: sqlServerMasterEndpoint.endpoint,
 			databaseName: undefined,
 			userName: 'sa',
-			password: this.options.password,
+			password: this._options.password,
 			authenticationType: '',
 			savePassword: true,
 			groupFullName: undefined,
@@ -91,6 +111,19 @@ export class BdcDashboardModel {
 			id: undefined,
 			options: {}
 		};
+	}
+
+	/**
+	 * Opens up a dialog prompting the user to re-enter credentials for the controller
+	 */
+	private async promptReconnect(): Promise<void> {
+		this._clusterController = await new ConnectControllerDialog(new ConnectControllerModel(this._options)).showDialog();
+		this._treeDataProvider.addOrUpdateController(
+			this._clusterController.url,
+			this._clusterController.authType,
+			this._clusterController.username,
+			this._clusterController.password,
+			/* Remember password */false);
 	}
 }
 
