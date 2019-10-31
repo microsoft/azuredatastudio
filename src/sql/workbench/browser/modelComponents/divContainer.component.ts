@@ -23,7 +23,7 @@ class DivItem {
 
 @Component({
 	template: `
-		<div #divContainer *ngIf="items" class="divContainer" [style.height]="height" [style.width]="width"  (click)="onClick()" (keyup)="onKey($event)">
+		<div #divContainer *ngIf="items" class="divContainer" [style.height]="height" [style.width]="width" [style.display]="display" (click)="onClick()" (keyup)="onKey($event)">
 			<div *ngFor="let item of items" [style.order]="getItemOrder(item)" [ngStyle]="getItemStyles(item)">
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
