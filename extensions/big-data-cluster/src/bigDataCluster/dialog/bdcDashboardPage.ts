@@ -31,6 +31,7 @@ export abstract class BdcDashboardPage {
 	 */
 	protected eventuallyRunOnInitialized(action: () => void): void {
 		if (!this._initialized) {
+			// tslint:disable-next-line:no-floating-promises Currently we don't have any need to wait for the result
 			this.onInitializedPromise.promise.then(() => action());
 		} else {
 			action();
