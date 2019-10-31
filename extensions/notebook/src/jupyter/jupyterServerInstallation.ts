@@ -524,7 +524,13 @@ export class JupyterServerInstallation {
 
 		let packagesResult: PythonPkgDetails[] = [];
 		if (packagesInfo) {
-			packagesResult = <PythonPkgDetails[]>JSON.parse(packagesInfo);
+			try {
+				packagesResult = <PythonPkgDetails[]>JSON.parse(packagesInfo);
+			}
+			catch (err) {
+				let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
+				this.outputChannel.appendLine(errorMsg);
+			}
 		}
 		return packagesResult;
 	}
@@ -554,7 +560,15 @@ export class JupyterServerInstallation {
 		let packagesInfo = await this.executeBufferedCommand(cmd);
 
 		if (packagesInfo) {
-			let packagesResult = JSON.parse(packagesInfo);
+			let packagesResult = [];
+			try {
+				packagesResult = JSON.parse(packagesInfo);
+			}
+			catch (err) {
+				let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
+				this.outputChannel.appendLine(errorMsg);
+			}
+
 			if (Array.isArray(packagesResult)) {
 				return packagesResult
 					.filter(pkg => pkg && pkg.channel && pkg.channel !== 'pypi')
