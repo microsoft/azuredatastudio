@@ -218,7 +218,7 @@ async function handleOpenClusterDashboardTask(profile: azdata.IConnectionProfile
 			username: 'admin', // Default to admin as a best-guess, we'll prompt for re-entering credentials if that fails
 			password: profile.password,
 			rememberPassword: true
-		});
+		}, /*addOrUpdateController*/true);
 }
 
 // this method is called when your extension is deactivated

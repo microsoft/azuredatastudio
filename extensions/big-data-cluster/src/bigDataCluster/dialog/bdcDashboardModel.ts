@@ -121,6 +121,13 @@ export class BdcDashboardModel {
 	 */
 	private async promptReconnect(): Promise<void> {
 		this._clusterController = await new ConnectControllerDialog(new ConnectControllerModel(this._options)).showDialog();
+		await this.updateController();
+	}
+
+	private async updateController(): Promise<void> {
+		if (!this._clusterController) {
+			return;
+		}
 		this._treeDataProvider.addOrUpdateController(
 			this._clusterController.url,
 			this._clusterController.authType,
