@@ -28,20 +28,19 @@ export class TreeViewProvider implements vscode.TreeDataProvider<mssql.ITreeNode
 	}
 
 	public Initialize(model: TreeModel): void {
-			this.projectRoot = model;
-			this.notifyRootChanged();
+		this.projectRoot = model;
+		this.notifyRootChanged();
 	}
 
 	getTreeItem(element?: mssql.ITreeNode): any | Promise<any> {
 		if (element) {
-			let nodeInfo =  element.getNodeInfo();
+			let nodeInfo = element.getNodeInfo();
 			return nodeInfo ? nodeInfo : element;
 		}
 		return element;
 	}
 
 	getChildren(element?: mssql.ITreeNode): Thenable<mssql.ITreeNode[]> {
-
 		return Promise.resolve(this.projectRoot.Nodes);
 	}
 

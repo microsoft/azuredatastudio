@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { MlServiceprovider} from '../mlServiceProvider';
+import { MlServiceprovider } from '../mlServiceProvider';
 import * as path from 'path';
 import { Dataspace } from '../models/dataspace';
 import * as types from '../types';
@@ -18,7 +18,6 @@ function addRow(container: azdata.FlexContainer, view: azdata.ModelView, compone
 	bookRow.addItem(component, {
 		CSSStyles: {
 			'width': '100%',
-			'color': '#0078d4',
 			'padding-top': '10px',
 			'text-align': 'left'
 		}
@@ -31,44 +30,43 @@ export function registerMlTasksWidget(dataspace: Dataspace): void {
 		const container = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: '100%',
-			height: '100%' })
-		.component();
+			height: '100%'
+		})
+			.component();
+
+		const installWarning = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: '',
+		}).component();
 
 		let notebooksFolder = path.join(__dirname, '..', '..', 'notebooks');
-		const enableMlButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: 'Loading...',
-			title: 'Loading...'
-		}).component();
-
-		const enableMlFlowButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: 'Install MlFlow Package',
-			title: 'Install MlFlow Package'
-		}).component();
-
-		enableMlFlowButton.onDidClick(async () => {
-			let notebookPath = path.join(notebooksFolder, 'enable-MlFlow.ipynb');
-			let doc = await vscode.workspace.openTextDocument(notebookPath);
-			vscode.window.showTextDocument(doc);
-		});
 
 		let isBigDataCluster = false;
 		if (!types.isUndefinedOrNull(view.serverInfo.options)) {
 			isBigDataCluster = view.serverInfo.options[isBigDataClusterProperty];
 		}
+		let deployMlFlowButton: azdata.ButtonComponent;
 		if (isBigDataCluster) {
-			const deployMlFlowButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			deployMlFlowButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 				label: 'Deploy Model Management',
 				title: 'Deploy Model Management'
 			}).component();
 
 			deployMlFlowButton.onDidClick(async () => {
-				let notebookPath = path.join(notebooksFolder, 'deploy-ml-aks.ipynb');
+				let notebookPath = path.join(notebooksFolder, 'Deploy MLFlow', 'Deploy MLFlow.ipynb');
 				let doc = await vscode.workspace.openTextDocument(notebookPath);
 				vscode.window.showTextDocument(doc);
 			});
-			addRow(container, view, deployMlFlowButton);
-
 		}
+
+		const mlDocsButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: 'Machine Learning Services Documentation',
+			title: 'Machine Learning Services Documentation'
+		}).component();
+
+		mlDocsButton.onDidClick(async () => {
+			vscode.env.openExternal(vscode.Uri.parse('https://docs.microsoft.com/en-us/sql/advanced-analytics/?view=sql-server-ver15'));
+		});
+
 
 		const installOdbcDriverButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: 'Install ODBC Driver for SQL Server',
@@ -84,17 +82,7 @@ export function registerMlTasksWidget(dataspace: Dataspace): void {
 			}
 		});
 
-		const installWarning = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			title: '',
-		}).component();
-
-		addRow(container, view, enableMlFlowButton);
-		addRow(container, view, enableMlButton);
-		addRow(container, view, installOdbcDriverButton);
 		addRow(container, view, installWarning);
-
-		loadLabel(installWarning, container);
-		loadButton(enableMlButton);
 
 		const bookslocationContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
@@ -109,24 +97,47 @@ export function registerMlTasksWidget(dataspace: Dataspace): void {
 				'padding-left': '5px'
 			}
 		});
-		await view.initializeModel(bookslocationContainer);
+
+		let spinner = view.modelBuilder.loadingComponent()
+			.withItem(bookslocationContainer)
+			.withProperties<azdata.LoadingComponentProperties>({ loading: true })
+			.component();
+
+		loadTasks(view, container, [mlDocsButton, deployMlFlowButton, installOdbcDriverButton], installWarning, spinner);
+		await view.initializeModel(spinner);
 	});
 }
 
-async function loadLabel(installWarning: azdata.TextComponent, container: azdata.FlexContainer): Promise<void> {
+async function loadTasks(
+	view: azdata.ModelView,
+	container: azdata.FlexContainer,
+	components: azdata.Component[],
+	warningComponent: azdata.TextComponent,
+	loadingComponent: azdata.LoadingComponent): Promise<void> {
 	let mlServiceprovider = new MlServiceprovider();
-	let isInstalled = await mlServiceprovider.IsPythonInstalled();
-	if (!isInstalled) {
-		container.items.forEach(item => {
-			item.enabled = false;
+	components.push(await loadButton(view, mlServiceprovider));
+	let isMLInstalled = await mlServiceprovider.IsPythonInstalled();
+	if (isMLInstalled) {
+		container.clearItems();
+		components.forEach(component => {
+			if (component) {
+				addRow(container, view, component);
+			}
 		});
-		installWarning.value = 'To get started, click <a target="blank" href="https://docs.microsoft.com/en-us/sql/advanced-analytics/install/sql-machine-learning-services-windows-install?view=sql-server-ver15">here</a> to download and install SQL Machine Learning Services';
+
+	} else {
+		warningComponent.value = 'To get started, click <a target="blank" href="https://docs.microsoft.com/en-us/sql/advanced-analytics/install/sql-machine-learning-services-windows-install?view=sql-server-ver15">here</a> to download and install SQL Machine Learning Services';
 	}
-	return;
+
+	loadingComponent.updateProperties({ loading: false });
 }
 
-async function loadButton(button: azdata.ButtonComponent): Promise<void> {
-	let mlServiceprovider = new MlServiceprovider();
+async function loadButton(view: azdata.ModelView, mlServiceprovider: MlServiceprovider): Promise<azdata.ButtonComponent> {
+
+	const button = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		label: 'Loading...',
+		title: 'Loading...'
+	}).component();
 	let isEnabled = await mlServiceprovider.IsMachineLearningServiceEnabled();
 	button.label = getLabel(isEnabled);
 	button.onDidClick(async () => {
@@ -135,14 +146,14 @@ async function loadButton(button: azdata.ButtonComponent): Promise<void> {
 		isEnabled = !isEnabled;
 		button.label = getLabel(isEnabled);
 	});
-	return;
+	return button;
 }
 
 function getLabel(isEnabled: boolean): string {
-	let enable = 'Enable Machine Learning Service';
-	let disable = 'Disable Machine Learning Service';
+	let enable = 'Enable Machine Learning Services';
+	let disable = 'Disable Machine Learning Services';
 	let title = enable;
-	if(!isEnabled) {
+	if (!isEnabled) {
 		title = enable;
 
 	} else {

@@ -38,7 +38,7 @@ export function registerMlEndpointsWidget(context: vscode.ExtensionContext, data
 
 		container.addItem(endPointRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'box-sizing': 'border-box', 'user-select': 'text' } });
 
-		const endpointsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '540px', height: '100%', position: 'absolute' }).component();
+		const endpointsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '265px', height: '100%', position: 'absolute' }).component();
 		endpointsContainer.addItem(container, { CSSStyles: { 'padding-top': '25px', 'padding-left': '5px' } });
 
 		await view.initializeModel(endpointsContainer);

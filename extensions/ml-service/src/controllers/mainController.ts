@@ -11,9 +11,10 @@ import { TreeViewProvider } from '../dataspaceTree/treeView';
 import { TreeModel } from '../dataspaceTree/treeModel';
 import * as mssql from '../../../mssql';
 import { Dataspace } from '../models/dataspace';
-import {registerMlTasksWidget} from '../widgets/mlTasksWidget';
-import {registerMlEndpointsWidget} from '../widgets/mlEndpointsWidget';
-import {registerMlBooksWidget} from '../widgets/mlBooksWidget';
+import { registerMlTasksWidget } from '../widgets/mlTasksWidget';
+import { registerMlEndpointsWidget } from '../widgets/mlEndpointsWidget';
+import { registerMlBooksWidget } from '../widgets/mlBooksWidget';
+import { registerMlBooksTreeWidget } from '../widgets/mlBooksTreeWidget';
 
 const DATASPACE_VIEWID = 'dataspaceTreeView';
 /**
@@ -51,14 +52,14 @@ export default class MainController implements vscode.Disposable {
 
 		this._context.subscriptions.push(vscode.window.registerTreeDataProvider(DATASPACE_VIEWID, treeViewProvider));
 		vscode.commands.registerCommand('mlservice.command.refreshDataSets', () => {
-			model.createModel(dataspace).then (() => {
+			model.createModel(dataspace).then(() => {
 				treeViewProvider.Initialize(model);
 			});
 		});
 
 		azdata.connection.registerConnectionEventListener({
 			onConnectionEvent(type: azdata.connection.ConnectionEventType, ownerUri: string, profile: azdata.IConnectionProfile) {
-				model.createModel(dataspace).then (() => {
+				model.createModel(dataspace).then(() => {
 					treeViewProvider.Initialize(model);
 				});
 			}
@@ -66,7 +67,7 @@ export default class MainController implements vscode.Disposable {
 
 		registerMlTasksWidget(dataspace);
 		registerMlEndpointsWidget(this._context, dataspace);
-		registerMlBooksWidget(dataspace);
+		registerMlBooksTreeWidget(this._context);
 	}
 
 	public dispose(): void {

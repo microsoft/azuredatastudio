@@ -6,9 +6,9 @@
 	"title.notebooks": "Notebooks",
 	"title.assets": "Assets",
 	"title.manage": "Manage",
-	"title.tasks": "Tasks",
+	"title.tasks": "Setup Tasks",
 	"title.datasets": "Datasets",
 	"mlservice.command.refreshDataSets": "Refresh",
 	"title.endpoints": "Endpoints",
-	"title.books": "Notebooks"
+	"title.books": "Machine Learning Books"
 }

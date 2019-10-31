@@ -43,7 +43,7 @@ export class TreeModel {
 			let nodeInfo = node.getNodeInfo();
 
 			let datasetNode = this.createNode(nodeInfo.label, nodeInfo.nodeType, null, false);
-			this._nodes.push(Object.assign(node, {'nodeInfo': nodeInfo}));
+			this._nodes.push(Object.assign(node, { 'nodeInfo': nodeInfo }));
 			datasetNode.treeItem = node;
 		}
 
@@ -51,22 +51,26 @@ export class TreeModel {
 	}
 
 	public getConnectionProfile(connection: azdata.connection.Connection): azdata.IConnectionProfile {
-		let connectionProfile: azdata.IConnectionProfile = {
-			connectionName: connection.options.connectionName,
-			serverName: connection.options.server,
-			databaseName: undefined,
-			userName: connection.options.user,
-			password: connection.options.password,
-			authenticationType: connection.options.authenticationType,
-			savePassword: connection.options.savePassword,
-			groupFullName: undefined,
-			groupId: undefined,
-			providerName: connection.providerName,
-			saveProfile: false,
-			id: connection.connectionId,
-			options: connection.options
-		};
-		return connectionProfile;
+		if (connection && connection.options) {
+			let connectionProfile: azdata.IConnectionProfile = {
+				connectionName: connection.options.connectionName,
+				serverName: connection.options.server,
+				databaseName: undefined,
+				userName: connection.options.user,
+				password: connection.options.password,
+				authenticationType: connection.options.authenticationType,
+				savePassword: connection.options.savePassword,
+				groupFullName: undefined,
+				groupId: undefined,
+				providerName: connection.providerName,
+				saveProfile: false,
+				id: connection.connectionId,
+				options: connection.options
+			};
+			return connectionProfile;
+		} else {
+			return undefined;
+		}
 	}
 
 	/**

@@ -10,8 +10,8 @@
     "azdata": ">=1.11.0"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx",
-  "icon": "",
-  "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
+  "icon": "images/ML_mlflow_ExtensionIcon.png",
+  "aiKey": "AIF-333c3af9-8e69-4462-ab49-4191e6ad1916",
   "activationEvents": [
     "*"
   ],
@@ -68,7 +68,7 @@
         "container": {
           "grid-container": [
             {
-              "name": "Tasks",
+              "name": "%title.tasks%",
               "row": 0,
               "col": 0,
               "widget": {
@@ -79,10 +79,10 @@
             },
             {
               "name": "%title.endpoints%",
-              "row": 1,
-              "col": 0,
-              "rowspan": 2.5,
-              "colspan": 2,
+              "row": 0,
+              "col": 1,
+              "rowspan": 1,
+              "colspan": 1,
               "widget": {
                 "modelview": {
                   "id": "ml-endpoints"
@@ -91,12 +91,12 @@
             },
             {
               "name": "%title.books%",
-              "row": 0,
-              "col": 2,
-              "colspan": 1,
+              "row": 1,
+              "col": 0,
+              "colspan": 2,
               "widget": {
                 "modelview": {
-                  "id": "ml-books"
+                  "id": "ml-bookstree"
                 }
               }
             }
@@ -118,10 +118,5 @@
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
     "vscode": "1.1.26"
-  },
-  "__metadata": {
-    "id": "37",
-    "publisherDisplayName": "Microsoft",
-    "publisherId": "Microsoft"
   }
 }
