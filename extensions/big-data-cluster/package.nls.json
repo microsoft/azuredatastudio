@@ -7,5 +7,7 @@
 	"command.manageController.title" : "Manage",
 	"command.mount.title" : "Mount HDFS",
 	"command.refreshmount.title" : "Refresh Mount",
-	"command.deletemount.title" : "Delete Mount"
+	"command.deletemount.title" : "Delete Mount",
+	"bdc.configuration.title" : "Big Data Cluster",
+	"bdc.ignoreSslVerification.desc" : "Whether to ignore SSL verification errors when running Big Data Cluster queries"
 }

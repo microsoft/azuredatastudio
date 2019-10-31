@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as kerberos from 'kerberos';
+import * as vscode from 'vscode';
 
 export enum AuthType {
 	Integrated = 'integrated',
@@ -17,3 +18,33 @@ export async function authenticateKerberos(hostname: string): Promise<string> {
 	let response = await client.step('');
 	return response;
 }
+
+const bdcConfigSectionName = 'bigDataCluster';
+const ignoreSslConfigName = 'ignoreSslVerification';
+
+/**
+ * Retrieves the current setting for whether to ignore SSL verification errors
+ */
+export function getIgnoreSslVerificationConfigSetting(): boolean {
+	return _ignoreSslVerification;
+}
+
+let _ignoreSslVerification = false;
+
+vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
+	if (e.affectsConfiguration(`${bdcConfigSectionName}.${ignoreSslConfigName}`)) {
+		updateIgnoreSslConfigSetting();
+	}
+});
+
+function updateIgnoreSslConfigSetting(): void {
+	try {
+		const config = vscode.workspace.getConfiguration(bdcConfigSectionName);
+		_ignoreSslVerification = config.get<boolean>(ignoreSslConfigName) || false;
+	} catch (error) {
+		console.error(`Unexpected error retrieving ${bdcConfigSectionName}.${ignoreSslConfigName} setting : ${error}`);
+	}
+}
+
+updateIgnoreSslConfigSetting();
+

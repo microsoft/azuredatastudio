@@ -26,9 +26,6 @@ const configBase = {
 	'kernel_r_credentials': {
 		'url': ''
 	},
-
-	'ignore_ssl_errors': true,
-
 	'logging_config': {
 		'version': 1,
 		'formatters': {
@@ -308,6 +305,7 @@ export class JupyterSession implements nb.ISession {
 		config.kernel_scala_credentials = creds;
 		config.kernel_r_credentials = creds;
 		config.logging_config.handlers.magicsHandler.home_path = homePath;
+		config.ignore_ssl_errors = utils.getIgnoreSslVerificationConfigSetting();
 	}
 
 	private getKnoxPortOrDefault(connectionProfile: IConnectionProfile): string {

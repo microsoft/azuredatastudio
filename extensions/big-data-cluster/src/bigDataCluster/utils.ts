@@ -3,13 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
 import * as constants from './constants';
+const localize = nls.loadMessageBundle();
 
 export enum Endpoint {
 	gateway = 'gateway',
@@ -273,3 +271,34 @@ export function getControllerEndpoint(serverInfo: azdata.ServerInfo): string | u
 export function getBdcStatusErrorMessage(error: Error): string {
 	return localize('endpointsError', "Unexpected error retrieving BDC Endpoints: {0}", error.message);
 }
+
+export const bdcConfigSectionName = 'bigDataCluster';
+export const ignoreSslConfigName = 'ignoreSslVerification';
+
+/**
+ * Retrieves the current setting for whether to ignore SSL verification errors
+ */
+export function getIgnoreSslVerificationConfigSetting(): boolean {
+	return _ignoreSslVerification;
+}
+
+let _ignoreSslVerification = false;
+
+vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
+	if (e.affectsConfiguration(`${bdcConfigSectionName}.${ignoreSslConfigName}`)) {
+		updateIgnoreSslConfigSetting();
+	}
+});
+
+function updateIgnoreSslConfigSetting(): void {
+	try {
+		const config = vscode.workspace.getConfiguration(bdcConfigSectionName);
+		_ignoreSslVerification = config.get<boolean>(ignoreSslConfigName) || false;
+	} catch (error) {
+		console.error(`Unexpected error retrieving ${bdcConfigSectionName}.${ignoreSslConfigName} setting : ${error}`);
+	}
+}
+
+updateIgnoreSslConfigSetting();
+
+
