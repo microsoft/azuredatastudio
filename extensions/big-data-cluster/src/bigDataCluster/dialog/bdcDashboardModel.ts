@@ -127,7 +127,7 @@ export class BdcDashboardModel {
 			this._clusterController.username,
 			this._clusterController.password,
 			this._options.rememberPassword);
-		this._treeDataProvider.saveControllers();
+		await this._treeDataProvider.saveControllers();
 	}
 }
 
