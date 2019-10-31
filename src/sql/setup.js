@@ -8,8 +8,8 @@ define(["require", "exports"], function (require) {
 	window['jQuery'] = jquerylib;
 	window['$'] = jquerylib;
 
-	require.__$__nodeRequire('jquery.event.drag');
-	require.__$__nodeRequire('jquery-ui');
+	require.__$__nodeRequire('slickgrid/lib/jquery.event.drag-2.3.0');
+	require.__$__nodeRequire('slickgrid/lib/jquery-ui-1.9.2');
 	const underscore = require.__$__nodeRequire('underscore');
 	window['_'] = underscore;
 	require.__$__nodeRequire('slickgrid/slick.core');
