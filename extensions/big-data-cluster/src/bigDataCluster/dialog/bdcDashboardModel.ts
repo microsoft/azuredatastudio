@@ -12,7 +12,7 @@ import { AuthType } from '../constants';
 import { ConnectControllerDialog, ConnectControllerModel } from './connectControllerDialog';
 import { ControllerTreeDataProvider } from '../tree/controllerTreeDataProvider';
 
-export type BdcDashboardOptions = { url: string, auth: AuthType, username: string, password: string };
+export type BdcDashboardOptions = { url: string, auth: AuthType, username: string, password: string, rememberPassword: boolean };
 
 export type BdcErrorType = 'bdcStatus' | 'bdcEndpoints' | 'general';
 export type BdcErrorEvent = { error: Error, errorType: BdcErrorType };
@@ -126,7 +126,8 @@ export class BdcDashboardModel {
 			this._clusterController.authType,
 			this._clusterController.username,
 			this._clusterController.password,
-			/* Remember password */false);
+			this._options.rememberPassword);
+		this._treeDataProvider.saveControllers();
 	}
 }
 

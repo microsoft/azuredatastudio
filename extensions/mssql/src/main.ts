@@ -216,7 +216,8 @@ async function handleOpenClusterDashboardTask(profile: azdata.IConnectionProfile
 			url: controller.endpoint,
 			auth: profile.authenticationType === 'Integrated' ? AuthType.Integrated : AuthType.Basic,
 			username: 'admin', // Default to admin as a best-guess, we'll prompt for re-entering credentials if that fails
-			password: profile.password
+			password: profile.password,
+			rememberPassword: true
 		});
 }
 
