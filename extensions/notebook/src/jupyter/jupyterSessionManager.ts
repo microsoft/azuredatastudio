@@ -347,7 +347,9 @@ export class JupyterSession implements nb.ISession {
 				}
 			}
 			let future = this.sessionImpl.kernel.requestExecute({
-				code: allCode
+				code: allCode,
+				silent: true,
+				store_history: false
 			}, true);
 			await future.done;
 		}
