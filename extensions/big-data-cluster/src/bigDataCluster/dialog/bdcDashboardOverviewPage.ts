@@ -13,6 +13,7 @@ import { EndpointModel, ServiceStatusModel, BdcStatusModel } from '../controller
 import { BdcDashboard } from './bdcDashboard';
 import { createViewDetailsButton } from './commonControls';
 import { HdfsDialogCancelledError } from './hdfsDialogBase';
+import { BdcDashboardPage } from './bdcDashboardPage';
 
 const localize = nls.loadMessageBundle();
 
@@ -30,9 +31,8 @@ const serviceEndpointRowEndpointCellWidth = 350;
 
 const hyperlinkedEndpoints = [Endpoint.metricsui, Endpoint.logsui, Endpoint.sparkHistory, Endpoint.yarnUi];
 
-export class BdcDashboardOverviewPage {
+export class BdcDashboardOverviewPage extends BdcDashboardPage {
 
-	private initialized: boolean = false;
 	private modelBuilder: azdata.ModelBuilder;
 
 	private lastUpdatedLabel: azdata.TextComponent;
@@ -50,9 +50,10 @@ export class BdcDashboardOverviewPage {
 	private serviceStatusErrorMessage: azdata.TextComponent;
 
 	constructor(private dashboard: BdcDashboard, private model: BdcDashboardModel) {
-		this.model.onDidUpdateEndpoints(endpoints => this.handleEndpointsUpdate(endpoints));
-		this.model.onDidUpdateBdcStatus(bdcStatus => this.handleBdcStatusUpdate(bdcStatus));
-		this.model.onBdcError(error => this.handleBdcError(error));
+		super();
+		this.model.onDidUpdateEndpoints(endpoints => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdate(endpoints)));
+		this.model.onDidUpdateBdcStatus(bdcStatus => this.eventuallyRunOnInitialized(() => this.handleBdcStatusUpdate(bdcStatus)));
+		this.model.onBdcError(error => this.eventuallyRunOnInitialized(() => this.handleBdcError(error)));
 	}
 
 	public create(view: azdata.ModelView): azdata.FlexContainer {
@@ -209,14 +210,9 @@ export class BdcDashboardOverviewPage {
 		this.serviceStatusDisplayContainer.display = undefined;
 		this.propertiesContainer.display = undefined;
 		this.endpointsDisplayContainer.display = undefined;
-
-
 	}
-	private handleBdcStatusUpdate(bdcStatus: BdcStatusModel): void {
-		if (!this.initialized || !bdcStatus) {
-			return;
-		}
 
+	private handleBdcStatusUpdate(bdcStatus: BdcStatusModel): void {
 		this.lastUpdatedLabel.value =
 			localize('bdc.dashboard.lastUpdated', "Last Updated : {0}",
 				this.model.bdcStatusLastUpdated ?
@@ -237,10 +233,6 @@ export class BdcDashboardOverviewPage {
 	}
 
 	private handleEndpointsUpdate(endpoints: EndpointModel[]): void {
-		if (!this.initialized || !endpoints) {
-			return;
-		}
-
 		this.endpointsRowContainer.clearItems();
 
 		// Sort the endpoints. The sort method is that SQL Server Master is first - followed by all
