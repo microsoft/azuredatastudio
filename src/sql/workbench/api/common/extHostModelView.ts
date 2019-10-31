@@ -331,6 +331,9 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 		}
 		if (formComponent.title && componentWrapper) {
 			componentWrapper.ariaLabel = formComponent.title;
+			if (componentWrapper instanceof LoadingComponentWrapper) {
+				componentWrapper.component.ariaLabel = formComponent.title;
+			}
 		}
 		let actions: string[] = undefined;
 		if (formComponent.actions) {
@@ -1276,6 +1279,14 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 	}
 	public set focused(v: boolean) {
 		this.setProperty('focused', v);
+	}
+
+	public get updateCells(): azdata.TableCell[] {
+		return this.properties['updateCells'];
+	}
+
+	public set updateCells(v: azdata.TableCell[]) {
+		this.setProperty('updateCells', v);
 	}
 
 	public get onRowSelected(): vscode.Event<any> {

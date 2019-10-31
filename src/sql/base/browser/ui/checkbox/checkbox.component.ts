@@ -8,7 +8,7 @@ import {
 	Output, OnChanges, SimpleChanges, EventEmitter
 } from '@angular/core';
 
-import { Checkbox as vsCheckbox } from 'sql/base/browser/ui/checkbox/checkbox';
+import { Checkbox as sqlCheckbox } from 'sql/base/browser/ui/checkbox/checkbox';
 
 @Component({
 	selector: 'checkbox',
@@ -22,14 +22,14 @@ export class Checkbox implements OnInit, OnChanges {
 
 	@Output() onChange = new EventEmitter<boolean>();
 
-	private _checkbox: vsCheckbox;
+	private _checkbox: sqlCheckbox;
 
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
 	) { }
 
 	ngOnInit(): void {
-		this._checkbox = new vsCheckbox(this._el.nativeElement, {
+		this._checkbox = new sqlCheckbox(this._el.nativeElement, {
 			label: this.label,
 			ariaLabel: this.ariaLabel || this.label,
 			checked: this.checked,

@@ -20,9 +20,6 @@ import { ISelectBoxDelegate, ISelectOptionItem, ISelectBoxOptions, ISelectBoxSty
 import { isMacintosh } from 'vs/base/common/platform';
 import { renderMarkdown } from 'vs/base/browser/markdownRenderer';
 
-// {{SQL CARBON EDIT}} import color
-import { Color } from 'vs/base/common/color';
-
 const $ = dom.$;
 
 const SELECT_OPTION_ENTRY_TEMPLATE_ID = 'selectOption.entry.template';
@@ -92,15 +89,14 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 	private _isVisible: boolean;
 	private selectBoxOptions: ISelectBoxOptions;
 
-	// {{SQL CARBON EDIT}}
-	public selectElement: HTMLSelectElement;
+	public selectElement: HTMLSelectElement; // {{SQL CARBON EDIT}}
 	private options: ISelectOptionItem[] = [];
 	private selected: number;
 	private readonly _onDidSelect: Emitter<ISelectData>;
 	private styles: ISelectBoxStyles;
 	private listRenderer!: SelectListRenderer;
 	private contextViewProvider!: IContextViewProvider;
-	private selectDropDownContainer!: HTMLElement;
+	public selectDropDownContainer!: HTMLElement; // {{SQL CARBON EDIT}} Make public so we can hook into keyboard events
 	private styleElement!: HTMLStyleElement;
 	private selectList!: List<ISelectOptionItem>;
 	private selectDropDownListContainer!: HTMLElement;

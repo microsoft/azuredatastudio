@@ -217,8 +217,8 @@ class DataResourceDataProvider implements IGridDataProvider {
 		return Promise.resolve(resultSubset);
 	}
 
-	copyResults(selection: Slick.Range[], includeHeaders?: boolean): void {
-		this.copyResultsAsync(selection, includeHeaders);
+	async copyResults(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
+		return this.copyResultsAsync(selection, includeHeaders);
 	}
 
 	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {

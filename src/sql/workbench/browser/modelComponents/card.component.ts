@@ -16,6 +16,9 @@ import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/theme
 import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { StatusIndicator, CardProperties, ActionDescriptor, CardDescriptionItem } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import * as DOM from 'vs/base/browser/dom';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('./card.component.html'))
@@ -37,6 +40,12 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		this.baseInit();
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
+		this.onkeydown(this._el.nativeElement, (e: StandardKeyboardEvent) => {
+			if (e.keyCode === KeyCode.Enter) {
+				this.onCardClick();
+				DOM.EventHelper.stop(e, true);
+			}
+		});
 
 	}
 
