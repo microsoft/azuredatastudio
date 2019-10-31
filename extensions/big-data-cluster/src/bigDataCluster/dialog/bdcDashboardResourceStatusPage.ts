@@ -206,38 +206,37 @@ function createMetricsAndLogsRow(modelBuilder: azdata.ModelBuilder, instanceStat
 	const nameCell = modelBuilder.text().withProperties({ value: instanceStatus.instanceName, CSSStyles: { ...cssStyles.text } }).component();
 	metricsAndLogsRow.addItem(nameCell, { CSSStyles: { 'width': `${metricsAndLogsInstanceNameColumnWidth}px`, 'min-width': `${metricsAndLogsInstanceNameColumnWidth}px`, ...cssStyles.text } });
 
-	// Only show SQL metrics column for SQL resource instances
-	if (serviceName === Service.sql) {
-		// Not all instances have all logs available - in that case just display N/A instead of a link
-		if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.nodeMetricsUrl)) {
-			const metricsCell = modelBuilder.text().withProperties({ value: notAvailableText, CSSStyles: { ...cssStyles.text } }).component();
-			metricsAndLogsRow.addItem(metricsCell, { CSSStyles: { 'width': `${metricsAndLogsNodeMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsNodeMetricsColumnWidth}px`, ...cssStyles.text } });
-		} else {
-			const nodeMetricsCell = modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
-				label: viewText,
-				url: instanceStatus.dashboards.nodeMetricsUrl,
-				title: instanceStatus.dashboards.nodeMetricsUrl,
-				CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink }
-			})
-				.component();
-			metricsAndLogsRow.addItem(nodeMetricsCell, { CSSStyles: { 'width': `${metricsAndLogsNodeMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsNodeMetricsColumnWidth}px` } });
-		}
-	}
-
-
 	// Not all instances have all logs available - in that case just display N/A instead of a link
-	if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.sqlMetricsUrl)) {
+	if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.nodeMetricsUrl)) {
 		const metricsCell = modelBuilder.text().withProperties({ value: notAvailableText, CSSStyles: { ...cssStyles.text } }).component();
-		metricsAndLogsRow.addItem(metricsCell, { CSSStyles: { 'width': `${metricsAndLogsSqlMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsSqlMetricsColumnWidth}px`, ...cssStyles.text } });
+		metricsAndLogsRow.addItem(metricsCell, { CSSStyles: { 'width': `${metricsAndLogsNodeMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsNodeMetricsColumnWidth}px`, ...cssStyles.text } });
 	} else {
-		const sqlMetricsCell = modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+		const nodeMetricsCell = modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
 			label: viewText,
-			url: instanceStatus.dashboards.sqlMetricsUrl,
-			title: instanceStatus.dashboards.sqlMetricsUrl,
+			url: instanceStatus.dashboards.nodeMetricsUrl,
+			title: instanceStatus.dashboards.nodeMetricsUrl,
 			CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink }
 		})
 			.component();
-		metricsAndLogsRow.addItem(sqlMetricsCell, { CSSStyles: { 'width': `${metricsAndLogsSqlMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsSqlMetricsColumnWidth}px` } });
+		metricsAndLogsRow.addItem(nodeMetricsCell, { CSSStyles: { 'width': `${metricsAndLogsNodeMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsNodeMetricsColumnWidth}px` } });
+	}
+
+	// Only show SQL metrics column for SQL resource instances
+	if (serviceName === Service.sql) {
+		// Not all instances have all logs available - in that case just display N/A instead of a link
+		if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.sqlMetricsUrl)) {
+			const metricsCell = modelBuilder.text().withProperties({ value: notAvailableText, CSSStyles: { ...cssStyles.text } }).component();
+			metricsAndLogsRow.addItem(metricsCell, { CSSStyles: { 'width': `${metricsAndLogsSqlMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsSqlMetricsColumnWidth}px`, ...cssStyles.text } });
+		} else {
+			const sqlMetricsCell = modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+				label: viewText,
+				url: instanceStatus.dashboards.sqlMetricsUrl,
+				title: instanceStatus.dashboards.sqlMetricsUrl,
+				CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink }
+			})
+				.component();
+			metricsAndLogsRow.addItem(sqlMetricsCell, { CSSStyles: { 'width': `${metricsAndLogsSqlMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsSqlMetricsColumnWidth}px` } });
+		}
 	}
 
 	if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.logsUrl)) {
