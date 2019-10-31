@@ -7,7 +7,7 @@
 import { ApplicationRef, ComponentFactoryResolver, NgModule, Inject, forwardRef, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
-//import { SlickGrid } from 'angular2-slickgrid';
+import { SlickGrid } from 'angular2-slickgrid';
 
 import { EditDataComponent } from 'sql/workbench/parts/editData/browser/editData.component';
 import { providerIterator } from 'sql/platform/bootstrap/browser/bootstrapService';
@@ -26,7 +26,7 @@ export const EditDataModule = (params: IBootstrapParams, selector: string, insta
 
 		declarations: [
 			EditDataComponent,
-			//	SlickGrid
+			SlickGrid
 		],
 
 		entryComponents: [
