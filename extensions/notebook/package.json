@@ -469,8 +469,5 @@
     "typemoq": "^2.1.0",
     "vscode": "1.1.5"
   },
-  "enableProposedApi": true,
-  "optionalDependencies": {
-    "ws": "^7.2.0"
-  }
+  "enableProposedApi": true
 }
