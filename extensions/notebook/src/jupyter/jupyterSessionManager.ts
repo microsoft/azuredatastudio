@@ -334,7 +334,9 @@ export class JupyterSession implements nb.ISession {
 		if (!skip && this.sessionImpl) {
 			let allCode: string = '';
 			// Ensure cwd matches notebook path (this follows Jupyter behavior)
-			allCode += `%cd ${path.dirname(this.path)}${EOL}`;
+			if (this.path && path.dirname(this.path)) {
+				allCode += `%cd ${path.dirname(this.path)}${EOL}`;
+			}
 			for (let i = 0; i < Object.keys(process.env).length; i++) {
 				let key = Object.keys(process.env)[i];
 				if (key.toLowerCase() === 'path' && this._pythonEnvVarPath) {
