@@ -212,7 +212,10 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		this.endpointsDisplayContainer.display = undefined;
 	}
 
-	private handleBdcStatusUpdate(bdcStatus: BdcStatusModel): void {
+	private handleBdcStatusUpdate(bdcStatus?: BdcStatusModel): void {
+		if (!bdcStatus) {
+			return;
+		}
 		this.lastUpdatedLabel.value =
 			localize('bdc.dashboard.lastUpdated', "Last Updated : {0}",
 				this.model.bdcStatusLastUpdated ?

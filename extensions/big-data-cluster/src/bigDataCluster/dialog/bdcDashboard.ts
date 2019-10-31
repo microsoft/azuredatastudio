@@ -160,7 +160,10 @@ export class BdcDashboard extends BdcDashboardPage {
 		});
 	}
 
-	private handleBdcStatusUpdate(bdcStatus: BdcStatusModel): void {
+	private handleBdcStatusUpdate(bdcStatus?: BdcStatusModel): void {
+		if (!bdcStatus) {
+			return;
+		}
 		this.updateServiceNavTabs(bdcStatus.services);
 	}
 

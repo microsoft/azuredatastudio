@@ -56,6 +56,9 @@ export class BdcServiceStatusPage extends BdcDashboardPage {
 	}
 
 	private handleBdcStatusUpdate(bdcStatus: BdcStatusModel): void {
+		if (!bdcStatus) {
+			return;
+		}
 		const service = bdcStatus.services.find(s => s.serviceName === this.serviceName);
 		if (service && service.resources) {
 			this.createResourceNavTabs(service.resources);

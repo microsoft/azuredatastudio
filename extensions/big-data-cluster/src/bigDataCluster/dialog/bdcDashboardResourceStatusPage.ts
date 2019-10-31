@@ -138,7 +138,10 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 		return rootContainer;
 	}
 
-	private handleBdcStatusUpdate(bdcStatus: BdcStatusModel): void {
+	private handleBdcStatusUpdate(bdcStatus?: BdcStatusModel): void {
+		if (!bdcStatus) {
+			return;
+		}
 		const service = bdcStatus.services ? bdcStatus.services.find(s => s.serviceName === this.serviceName) : undefined;
 		const resource = service ? service.resources.find(r => r.resourceName === this.resourceName) : undefined;
 
