@@ -528,7 +528,7 @@ export class JupyterServerInstallation {
 				packagesResult = <PythonPkgDetails[]>JSON.parse(packagesInfo);
 			}
 			catch (err) {
-				let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
+				let errorMsg = `Failed to parse package info, encountered following error: ${(utils.getErrorMessage(err))} \n PackageInfo: ${packagesInfo}`;
 				this.outputChannel.appendLine(errorMsg);
 			}
 		}
@@ -565,7 +565,7 @@ export class JupyterServerInstallation {
 				packagesResult = JSON.parse(packagesInfo);
 			}
 			catch (err) {
-				let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
+				let errorMsg = `Failed to parse package info, encountered following error: ${(utils.getErrorMessage(err))} \n PackageInfo: ${packagesInfo}`;
 				this.outputChannel.appendLine(errorMsg);
 			}
 
