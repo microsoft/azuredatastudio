@@ -1000,7 +1000,7 @@
     "kerberos": "^1.1.3",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
-    "service-downloader": "github:anthonydresser/service-downloader#905a4686b61c62b5bbf107cbbe3a322e13dac472",
+    "service-downloader": "github:anthonydresser/service-downloader#0.1.7",
     "stream-meter": "^1.0.4",
     "through2": "^3.0.1",
     "tough-cookie": "^3.0.1",

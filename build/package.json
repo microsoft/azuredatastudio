@@ -46,7 +46,7 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "terser": "4.3.8",
     "tslint": "^5.9.1",
-    "service-downloader": "github:anthonydresser/service-downloader#905a4686b61c62b5bbf107cbbe3a322e13dac472",
+    "service-downloader": "github:anthonydresser/service-downloader#0.1.7",
     "typescript": "3.7.0-dev.20191017",
     "vsce": "1.48.0",
     "vscode-telemetry-extractor": "^1.5.4",

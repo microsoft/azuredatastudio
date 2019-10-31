@@ -296,7 +296,7 @@ http-proxy-agent@^2.1.0:
     agent-base "4"
     debug "3.1.0"
 
-https-proxy-agent@^2.2.3:
+https-proxy-agent@^2.2.1:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-2.2.4.tgz#4ee7a737abd92678a293d9b34a1af4d0d08c787b"
   integrity sha512-OmvfoQ53WLjtA9HeYP9RNrWMJzzAz1JGaSFr1nijg0PVR1JaD/xbJq1mdEIIlxGpXp9eSe/O2LgU9DJmTPd0Eg==
@@ -451,15 +451,15 @@ semver@^5.3.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.6.0.tgz#7e74256fbaa49c75aa7c7a205cc22799cac80004"
   integrity sha512-RS9R6R35NYgQn++fkDWaOmqGoj4Ek9gGs+DPxNUZKuwE183xjJroKvyo1IzVFeXvUrvmALy6FWD5xrdJT25gMg==
 
-"service-downloader@github:anthonydresser/service-downloader#905a4686b61c62b5bbf107cbbe3a322e13dac472":
+"service-downloader@github:anthonydresser/service-downloader#0.1.7":
   version "0.1.7"
-  resolved "https://codeload.github.com/anthonydresser/service-downloader/tar.gz/905a4686b61c62b5bbf107cbbe3a322e13dac472"
+  resolved "https://codeload.github.com/anthonydresser/service-downloader/tar.gz/c08de456c9f1af6258061fdc524275b21c6db667"
   dependencies:
     async-retry "^1.2.3"
     decompress "^4.2.0"
     eventemitter2 "^5.0.1"
     http-proxy-agent "^2.1.0"
-    https-proxy-agent "^2.2.3"
+    https-proxy-agent "^2.2.1"
     mkdirp "^0.5.1"
     tmp "^0.0.33"
 
