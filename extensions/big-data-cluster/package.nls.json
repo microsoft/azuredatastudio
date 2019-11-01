@@ -9,5 +9,5 @@
 	"command.refreshmount.title" : "Refresh Mount",
 	"command.deletemount.title" : "Delete Mount",
 	"bdc.configuration.title" : "Big Data Cluster",
-	"bdc.ignoreSslVerification.desc" : "Whether to ignore SSL verification errors when running Big Data Cluster queries"
+	"bdc.ignoreSslVerification.desc" : "Ignore SSL verification errors against SQL Server Big Data Cluster endpoints such as HDFS, Spark, and Controller if true"
 }
