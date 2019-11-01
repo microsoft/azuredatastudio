@@ -1,9 +1,9 @@
 # Microsoft SQL Server Dacpac for Azure Data Studio
 
-## Data-tier Application Wizard *(preview)*
+## Data-tier Application Wizard
 **The Data-tier Application Wizard** provides an easy to use experience to deploy and extract .dacpac files and import and export .bacpac files.
 
-This experience is currently in its initial preview. Please report issues and feature requests [here.](https://github.com/microsoft/azuredatastudio/issues)
+Please report issues and feature requests [here.](https://github.com/microsoft/azuredatastudio/issues)
 
 <img src="https://user-images.githubusercontent.com/30873802/49676289-f2df6880-fa2d-11e8-8bfa-6213b7734075.png" width="800px" />
 
