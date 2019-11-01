@@ -712,7 +712,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.TreatVerificationErrorsAsWarnings">
         <source xml:lang="en">Specifies whether errors encountered during publish verification should be treated as warnings. The check is performed against the generated deployment plan before the plan is executed against your target database. Plan verification detects problems such as the loss of target-only objects (such as indexes) that must be dropped to make a change. Verification will also detect situations where dependencies (such as a table or view) exist because of a reference to a composite project, but do not exist in the target database. You might choose to do this to get a complete list of all issues, instead of having the publish action stop on the first error.</source>
-        <target state="translated">Gibt an, ob während der Veröffentlichungsüberprüfung ermittelte Fehler als Warnungen behandelt werden sollen. Die Überprüfung wird anhand des generierten Bereitstellungsplans durchgeführt, bevor der Plan für die Zieldatenbank ausgeführt wird. Bei der Planüberprüfung werden Probleme wie der Verlust von nur in der Zieldatenbank vorkommenden Objekten (z. B. Indizes) ermittelt, die gelöscht werden müssen, damit eine Änderung vorgenommen werden kann. Bei der Überprüfung werden auch Situationen ermittelt, in denen Abhängigkeiten (z. B. eine Tabelle oder Sicht) aufgrund eines Verweises auf ein zusammengesetztes Projekt vorhanden sind, die jedoch nicht in der Zieldatenbank vorhanden sind. Sie können diese Option verwenden, um eine vollständige Liste aller Probleme abzurufen, und dadurch erreichen, dass der Veröffentlichungsvorgang nicht beim ersten Fehler beendet wird.</target>
+        <target state="translated">Gibt an, ob während der Veröffentlichungsüberprüfung ermittelte Fehler als Warnungen behandelt werden sollen. Die Überprüfung wird anhand des generierten Bereitstellungsplans durchgeführt, bevor der Plan für die Zieldatenbank ausgeführt wird. Bei der Planüberprüfung werden Probleme wie der Verlust von nur in der Zieldatenbank vorkommenden Objekten (z.B. Indizes) ermittelt, die gelöscht werden müssen, damit eine Änderung vorgenommen werden kann. Bei der Überprüfung werden auch Situationen ermittelt, in denen Abhängigkeiten (z.B. eine Tabelle oder Sicht) aufgrund eines Verweises auf ein zusammengesetztes Projekt vorhanden sind, die jedoch nicht in der Zieldatenbank vorhanden sind. Sie können diese Option verwenden, um eine vollständige Liste aller Probleme abzurufen, und dadurch erreichen, dass der Veröffentlichungsvorgang nicht beim ersten Fehler beendet wird.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.ScriptRefreshModule">
         <source xml:lang="en">Include refresh statements at the end of the publish script.</source>
@@ -792,7 +792,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DoNotAlterChangeDataCaptureObjects">
         <source xml:lang="en">If true, Change Data Capture objects are not altered.</source>
-        <target state="translated">Wenn 'true', werden Change Data Capture-Objekte nicht geändert.</target>
+        <target state="translated">Sofern TRUE, werden Change Data Capture-Objekte nicht geändert.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DisableAndReenableDdlTriggers">
         <source xml:lang="en">Specifies whether Data Definition Language (DDL) triggers are disabled at the beginning of the publish process and re-enabled at the end of the publish action.</source>
@@ -908,7 +908,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropStatisticsNotInSource">
         <source xml:lang="en">Specifies whether statistics that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">Gibt an, ob Statistiken, die nicht in der Datenbank-Momentaufnahmedatei ('.dacpac') enthalten sind, bei der Veröffentlichung in einer Datenbank aus der Zieldatenbank gelöscht werden.</target>
+        <target state="translated">Gibt an, ob Statistiken, die nicht in der Datenbank-Momentaufnahmedatei (.dacpac) enthalten sind, bei der Veröffentlichung in einer Datenbank aus der Zieldatenbank gelöscht werden.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropRoleMembersNotInSource">
         <source xml:lang="en">Specifies whether role members that are not defined in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.&lt;/</source>
@@ -920,7 +920,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropObjectsNotInSource">
         <source xml:lang="en">Specifies whether objects that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.  This value takes precedence over DropExtendedProperties.</source>
-        <target state="translated">Gibt an, ob Objekte, die nicht in der Datenbankmomentaufnahme-Datei (.dacpac) enthalten sind, beim Veröffentlichen in einer Datenbank aus der Zieldatenbank gelöscht werden. Dieser Wert hat Vorrang vor 'DropExtendedProperties'.</target>
+        <target state="translated">Gibt an, ob Objekte, die nicht in der Datenbankmomentaufnahme-Datei (.dacpac) enthalten sind, beim Veröffentlichen in einer Datenbank aus der Zieldatenbank gelöscht werden. Dieser Wert hat Vorrang vor "DropExtendedProperties".</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreColumnOrder">
         <source xml:lang="en">Specifies whether differences in table column order should be ignored or updated when you publish to a database.</source>

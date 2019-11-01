@@ -116,7 +116,7 @@
     <body>
       <trans-unit id="import.needConnection">
         <source xml:lang="en">Please connect to a server before using this wizard.</source>
-        <target state="translated">Bitte verbinden Sie sich mit einem Server, bevor Sie diesen Assistenten verwenden.</target>
+        <target state="translated">Stellen Sie eine Verbindung zu einem Server her, bevor Sie diesen Assistenten verwenden.</target>
       </trans-unit>
       <trans-unit id="flatFileImport.wizardName">
         <source xml:lang="en">Import flat file wizard</source>
@@ -180,7 +180,7 @@
       </trans-unit>
       <trans-unit id="serviceInstalled">
         <source xml:lang="en">Installed</source>
-        <target state="translated">INSTALLIERT</target>
+        <target state="translated">Installiert</target>
       </trans-unit>
       <trans-unit id="downloadingService">
         <source xml:lang="en">Downloading {0}</source>

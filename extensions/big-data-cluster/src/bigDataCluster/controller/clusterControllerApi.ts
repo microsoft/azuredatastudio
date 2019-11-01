@@ -301,7 +301,7 @@ export class ClusterController {
 	private async withConnectRetry<T>(f: (...args: any[]) => Promise<T>, promptConnect: boolean, errorMessage: string, ...args: any[]): Promise<T> {
 		try {
 			try {
-				return await f(this, args);
+				return await f(this, ...args);
 			} catch (error) {
 				if (promptConnect) {
 					// We don't want to open multiple dialogs here if multiple calls come in the same time so check
@@ -311,7 +311,6 @@ export class ClusterController {
 						this._connectionPromise = this._dialog.showDialog();
 					}
 					const controller = await this._connectionPromise;
-					this._connectionPromise = undefined;
 					if (controller) {
 						this._username = controller._username;
 						this._password = controller._password;
@@ -325,6 +324,8 @@ export class ClusterController {
 			}
 		} catch (error) {
 			throw new ControllerError(error, errorMessage);
+		} finally {
+			this._connectionPromise = undefined;
 		}
 	}
 }
