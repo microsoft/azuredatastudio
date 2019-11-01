@@ -70,7 +70,7 @@ export class AddControllerDialogModel {
 				}
 			}
 			// We pre-fetch the endpoints here to verify that the information entered is correct (the user is able to connect)
-			let controller = new ClusterController(url, auth, username, password, true);
+			let controller = new ClusterController(url, auth, username, password);
 			let response = await controller.getEndPoints();
 			if (response && response.endPoints) {
 				if (this._canceled) {

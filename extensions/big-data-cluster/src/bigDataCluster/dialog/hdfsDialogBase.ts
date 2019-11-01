@@ -80,7 +80,7 @@ export abstract class HdfsDialogModelBase<T extends HdfsDialogProperties, R> {
 	}
 
 	protected createController(): ClusterController {
-		return new ClusterController(this.props.url, this.props.auth, this.props.username, this.props.password, true);
+		return new ClusterController(this.props.url, this.props.auth, this.props.username, this.props.password);
 	}
 
 	protected async createAndVerifyControllerConnection(): Promise<ClusterController> {
