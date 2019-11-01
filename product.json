@@ -49,7 +49,7 @@
 		"Microsoft.powershell",
 		"Microsoft.profiler",
 		"Microsoft.schema-compare",
-		"Microsoft.sql-vnext",
+		"Microsoft.datavirtualization",
 		"Redgate.sql-search",
 		"IDERA.sqldm-performance-insights",
 		"SentryOne.plan-explorer"
