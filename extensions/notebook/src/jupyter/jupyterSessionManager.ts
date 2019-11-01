@@ -28,6 +28,7 @@ const configBase = {
 	},
 
 	'ignore_ssl_errors': true,
+	'livy_session_startup_timeout_seconds': 100,
 
 	'logging_config': {
 		'version': 1,
