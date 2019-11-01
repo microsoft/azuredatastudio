@@ -33,7 +33,11 @@ const version = (quality && quality !== 'stable') ? `${packageJson.version}-${qu
 const productionDependencies = deps.getProductionDependencies(WEB_FOLDER);
 
 const nodeModules = Object.keys(product.dependencies || {})
-	.concat(_.uniq(productionDependencies.map(d => d.name)));
+	.concat(_.uniq(productionDependencies.map(d => d.name))).concat([
+		'rxjs/Observable',
+		'rxjs/Subject',
+		'rxjs/Observer',
+	]);
 
 const vscodeWebResourceIncludes = [
 
@@ -48,7 +52,8 @@ const vscodeWebResourceIncludes = [
 	'out-build/vs/workbench/contrib/webview/browser/pre/*.js',
 
 	// Extension Worker
-	'out-build/vs/workbench/services/extensions/worker/extensionHostWorkerMain.js'
+	'out-build/vs/workbench/services/extensions/worker/extensionHostWorkerMain.js',
+	'out-build/sql/{base,platform,workbench}/**/*.{svg,png}', // {{SQL CARBON EDIT}}
 ];
 exports.vscodeWebResourceIncludes = vscodeWebResourceIncludes;
 
@@ -61,7 +66,8 @@ const vscodeWebResources = [
 	'!out-build/vs/**/{node,electron-browser,electron-main}/**',
 	'!out-build/vs/editor/standalone/**',
 	'!out-build/vs/workbench/**/*-tb.png',
-	'!**/test/**'
+	'!**/test/**',
+	'!out-build/sql/**/{node,electron-browser,electron-main}/**' // {{SQL CARBON EDIT}}
 ];
 
 const buildfile = require('../src/buildfile');

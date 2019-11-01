@@ -31,6 +31,7 @@ const { compileExtensionsBuildTask } = require('./gulpfile.extensions');
 const { vscodeWebEntryPoints, vscodeWebResourceIncludes, vscodeWebPatchProductTask } = require('./gulpfile.vscode.web');
 const remote = require('gulp-remote-retry-src');
 const cp = require('child_process');
+const { rollupAngular, rollupAngularSlickgrid } = require('./lib/rollup');
 
 const REPO_ROOT = path.dirname(__dirname);
 const commit = util.getVersion(REPO_ROOT);
@@ -57,7 +58,12 @@ const nodeModules = ['electron', 'original-fs']
 	// @ts-ignore JSON checking: dependencies property is optional
 	.concat(Object.keys(product.dependencies || {}))
 	.concat(_.uniq(productionDependencies.map(d => d.name)))
-	.concat(baseModules);
+	.concat(baseModules)
+	.concat([
+		'rxjs/Observable',
+		'rxjs/Subject',
+		'rxjs/Observer',
+	]);
 
 const serverResources = [
 
@@ -399,6 +405,38 @@ function packagePkgTask(platform, arch, pkgTarget) {
 			const sourceFolderName = `out-vscode-${type}${dashed(minified)}`;
 			const destinationFolderName = `vscode-${type}${dashed(platform)}${dashed(arch)}`;
 
+			const rollupAngularTask = task.define(`vscode-web-${type}${dashed(platform)}${dashed(arch)}-angular-rollup`, () => {
+				return rollupAngular(REMOTE_FOLDER);
+			});
+
+			const rollupAngularSlickgridTask = task.define(`vscode-web-${type}${dashed(platform)}${dashed(arch)}-angular-slickgrid-rollup`, () => {
+				return rollupAngularSlickgrid(REMOTE_FOLDER);
+			});
+
+			const rebuildExtensions = ['big-data-cluster', 'mssql', 'notebook'];
+			const EXTENSIONS = path.join(REPO_ROOT, 'extensions');
+			function exec(cmdLine, cwd) {
+				console.log(cmdLine);
+				cp.execSync(cmdLine, { stdio: "inherit", cwd: cwd });
+			}
+			const tasks = [];
+			rebuildExtensions.forEach(scope => {
+				const root = path.join(EXTENSIONS, scope);
+				tasks.push(
+					() => gulp.src(path.join(REMOTE_FOLDER, '.yarnrc')).pipe(gulp.dest(root)),
+					util.rimraf(path.join(root, 'node_modules')),
+					() => exec('yarn', root),
+				);
+			});
+			const yarnrcExtensions = task.define(`vscode-web-${type}${dashed(platform)}${dashed(arch)}-yarnrc-extensions`, task.series(...tasks));
+
+			const cleanupExtensions = task.define(`vscode-web-${type}${dashed(platform)}${dashed(arch)}-cleanup-extensions`, () => {
+				return Promise.all(rebuildExtensions.map(scope => {
+					const root = path.join(EXTENSIONS, scope);
+					return util.rimraf(path.join(root, '.yarnrc'))();
+				}));
+			});
+
 			const serverTaskCI = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}${dashed(minified)}-ci`, task.series(
 				gulp.task(`node-${platform}-${platform === 'darwin' ? 'x64' : arch}`),
 				util.rimraf(path.join(BUILD_ROOT, destinationFolderName)),
@@ -408,8 +446,12 @@ function packagePkgTask(platform, arch, pkgTarget) {
 
 			const serverTask = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
 				compileBuildTask,
+				yarnrcExtensions,
 				compileExtensionsBuildTask,
+				cleanupExtensions,
 				minified ? minifyTask : optimizeTask,
+				rollupAngularTask,
+				rollupAngularSlickgridTask,
 				serverTaskCI
 			));
 			gulp.task(serverTask);

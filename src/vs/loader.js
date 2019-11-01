@@ -472,7 +472,7 @@ var AMDLoader;
             }
             var result = moduleId;
             var results;
-            if (!AMDLoader.Utilities.endsWith(result, '.js') && !AMDLoader.Utilities.isAbsolutePath(result)) {
+            if ((!AMDLoader.Utilities.endsWith(result, '.js') || result === 'chart.js') && !AMDLoader.Utilities.isAbsolutePath(result)) {
                 results = this._applyPaths(result);
                 for (var i = 0, len = results.length; i < len; i++) {
                     if (this.isBuild() && results[i] === 'empty:') {

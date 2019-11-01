@@ -82,6 +82,14 @@ registerSingleton(IUserDataSyncService, UserDataSyncService);
 
 //#endregion
 
+//#region -- sql services
+
+import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { BrowserClipboardService as sqlClipboardService } from 'sql/platform/clipboard/browser/clipboardService';
+
+registerSingleton(sqlIClipboardService, sqlClipboardService);
+
+//#endregion
 
 //#region --- workbench contributions
 
