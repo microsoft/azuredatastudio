@@ -6,6 +6,12 @@
 import 'vs/css!./media/flexbox';
 import 'vs/css!./media/styles';
 
+//import 'vs/css!./media/slick.grid';
+//import 'vs/css!./media/slickColorTheme';
+//import 'vs/css!./media/slickGrid';
+
+import { Table } from 'sql/base/browser/ui/table/table';
+
 import { Subscription, Subject } from 'rxjs/Rx';
 import { ElementRef, QueryList, ChangeDetectorRef, ViewChildren } from '@angular/core';
 import { SlickGrid } from 'angular2-slickgrid';
@@ -73,6 +79,8 @@ export abstract class GridParentComponent {
 	protected activeGrid = 0;
 
 	@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
+	//need to initialize this
+	protected tablegrids: Table<any>[] = [];
 
 	set messageActive(input: boolean) {
 		this._messageActive = input;
@@ -227,7 +235,9 @@ export abstract class GridParentComponent {
 	}
 
 	protected getSelection(index?: number): Slick.Range[] {
+		console.log(this.slickgrids.toArray());
 		let selection = this.slickgrids.toArray()[index || this.activeGrid].getSelectedRanges();
+		//let selection = this.tablegrids[index || this.activeGrid].getSelectedRanges();
 		if (selection) {
 			selection = selection.map(c => { return <Slick.Range>{ fromCell: c.fromCell - 1, toCell: c.toCell - 1, toRow: c.toRow, fromRow: c.fromRow }; });
 			return selection;
@@ -380,7 +390,9 @@ export abstract class GridParentComponent {
 	}
 
 	openContextMenu(event, batchId, resultId, index): void {
+		console.log(this.slickgrids.toArray());
 		let slick: any = this.slickgrids.toArray()[index];
+		//let slick: any  = this.tablegrids[index];
 		let grid = slick._grid;
 
 		let selection = this.getSelection(index);
@@ -420,6 +432,7 @@ export abstract class GridParentComponent {
 		return (gridIndex: number) => {
 			self.activeGrid = gridIndex;
 			let grid = self.slickgrids.toArray()[self.activeGrid];
+			//let grid = self.tablegrids[self.activeGrid];
 			grid.setActive();
 			grid.selection = true;
 		};
@@ -429,6 +442,10 @@ export abstract class GridParentComponent {
 		if (this.activeGrid >= 0 && this.slickgrids.length > this.activeGrid) {
 			this.slickgrids.toArray()[this.activeGrid].selection = true;
 		}
+
+		// if (this.activeGrid >= 0 && this.tablegrids.length > this.activeGrid) {
+		// 	this.tablegrids[this.activeGrid].selection = true;
+		// }
 	}
 
 	/**
@@ -446,6 +463,7 @@ export abstract class GridParentComponent {
 		setTimeout(() => {
 			self.resizeGrids();
 			self.slickgrids.toArray()[0].setActive();
+			//self.tablegrids[0].setActive();
 			self._cd.detectChanges();
 		});
 	}

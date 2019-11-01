@@ -9,7 +9,7 @@ import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, fo
 import { VirtualizedCollection } from 'angular2-slickgrid';
 //import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { GridPanel } from 'sql/workbench/parts/query/browser/gridPanel';
+
 
 import { IGridDataSet } from 'sql/workbench/parts/grid/common/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
@@ -35,6 +35,8 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { EditUpdateCellResult } from 'azdata';
 import { ILogService } from 'vs/platform/log/common/log';
 import { deepClone } from 'vs/base/common/objects';
+import { Disposable, dispose, DisposableStore } from 'vs/base/common/lifecycle';
+
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
 @Component({
@@ -42,6 +44,9 @@ export const EDITDATA_SELECTOR: string = 'editdata-component';
 	host: { '(window:keydown)': 'keyEvent($event)', '(window:gridnav)': 'keyEvent($event)' },
 	templateUrl: decodeURI(require.toUrl('./editData.component.html'))
 })
+
+
+
 export class EditDataComponent extends GridParentComponent implements OnInit, OnDestroy {
 	// The time(in milliseconds) we wait before refreshing the grid.
 	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
@@ -89,6 +94,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
 		@Inject(IBootstrapParams) params: IEditDataComponentParams,
+
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(INotificationService) private notificationService: INotificationService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
@@ -98,6 +104,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		@Inject(IClipboardService) clipboardService: IClipboardService,
 		@Inject(IQueryEditorService) queryEditorService: IQueryEditorService,
 		@Inject(ILogService) logService: ILogService
+
 		// @IInstantiationService private instantiationService: IInstantiationService,
 		// @INotificationService private notificationService: INotificationService,
 		// @IContextMenuService contextMenuService: IContextMenuService,

@@ -52,6 +52,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	private _onColumnResize = new Emitter<void>();
 	public readonly onColumnResize = this._onColumnResize.event;
 
+	public selection: Slick.Range[] | boolean;
+
 	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
 		super();
 		if (!configuration || !configuration.dataProvider || isArray(configuration.dataProvider)) {
@@ -197,12 +199,24 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._grid.setSelectionModel(model);
 	}
 
+	getSelectionModel(): Slick.SelectionModel<T, Array<Slick.Range>> {
+		return this._grid.getSelectionModel();
+	}
+
+	getSelectedRanges(): Slick.Range[] {
+		return this._grid.getSelectionModel().getSelectedRanges();
+	}
+
 	focus(): void {
 		this._grid.focus();
 	}
 
 	setActiveCell(row: number, cell: number): void {
 		this._grid.setActiveCell(row, cell);
+	}
+
+	setActive(): void {
+		this._grid.setActiveCell(0, 1);
 	}
 
 	get activeCell(): Slick.Cell {

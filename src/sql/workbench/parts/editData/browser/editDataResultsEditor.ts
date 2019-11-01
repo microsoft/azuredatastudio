@@ -24,6 +24,8 @@ import { EditDataResultsInput } from 'sql/workbench/parts/editData/browser/editD
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+
 export class EditDataResultsEditor extends BaseEditor {
 
 	public static ID: string = 'workbench.editor.editDataResultsEditor';
@@ -66,9 +68,9 @@ export class EditDataResultsEditor extends BaseEditor {
 	public setInput(input: EditDataResultsInput, options: EditorOptions): Promise<void> {
 		super.setInput(input, options, CancellationToken.None);
 		this._applySettings();
-		// if (!input.hasBootstrapped) {
-		// 	this._bootstrapAngular();
-		// }
+		if (!input.hasBootstrapped) {
+			this._bootstrapAngular();
+		}
 		return Promise.resolve<void>(null);
 	}
 
@@ -116,6 +118,15 @@ export class EditDataResultsEditor extends BaseEditor {
 			onSaveViewState: input.onSaveViewStateEmitter.event,
 			onRestoreViewState: input.onRestoreViewStateEmitter.event
 		};
+
+		//comment this out when actually running.
+		let selector = document.createElement(EDITDATA_SELECTOR);
+		parent.appendChild(selector);
+		this._instantiationService.invokeFunction((accessor) => {
+			const environmentService = accessor.get(IEnvironmentService);
+		});
+
+
 		bootstrapAngular(this._instantiationService,
 			EditDataModule,
 			parent,
