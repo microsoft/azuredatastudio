@@ -260,7 +260,7 @@
       </trans-unit>
       <trans-unit id="dacFx.generateScriptButton">
         <source xml:lang="en">Generate Script</source>
-        <target state="translated">Genera script</target>
+        <target state="translated">Genera lo script</target>
       </trans-unit>
       <trans-unit id="alertData.deployErrorMessage">
         <source xml:lang="en">Deploy failed '{0}'</source>

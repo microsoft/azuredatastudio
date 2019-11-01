@@ -768,7 +768,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.AllowUnsafeRowLevelSecurityDataMovement">
         <source xml:lang="en">Do not block data motion on a table which has Row Level Security if this property is set to true. Default is false.</source>
-        <target state="translated">Не блокировать перемещение данных в таблице с защитой на уровне строк, если свойство имеет значение "True". Значение по умолчанию — "False".</target>
+        <target state="translated">Не блокировать перемещение данных в таблице с безопасностью на уровне строк, если свойство имеет значение "True". Значение по умолчанию — "False".</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnCheckConstraints">
         <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for check constraints will be ignored or updated when you publish to a database.</source>
