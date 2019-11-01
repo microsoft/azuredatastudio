@@ -754,8 +754,8 @@
 				{
 					"extensionId": "24",
 					"extensionName": "sql-vnext",
-					"displayName": "SQL Server 2019 (Preview)",
-					"shortDescription": "Support for SQL Server 2019 features, including Create External Data wizards.",
+					"displayName": "SQL Server 2019 (Deprecated)",
+					"shortDescription": "This has been replaced by the Data Virtualization extension",
 					"publisher": {
 						"displayName": "Microsoft",
 						"publisherId": "Microsoft",
@@ -763,14 +763,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.16.0",
-							"lastUpdated": "9/10/2019",
+							"version": "0.17.0",
+							"lastUpdated": "10/31/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
-									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://docs.microsoft.com/sql/azure-data-studio/sql-server-2019-extension"
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-vnext/sql-vnext-0.17.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -778,15 +778,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://go.microsoft.com/fwlink/?linkid=2103616"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-vnext/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://go.microsoft.com/fwlink/?linkid=2103615"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-vnext/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://go.microsoft.com/fwlink/?linkid=2103614"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-vnext/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -2785,6 +2785,63 @@
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/MicrosoftDocs/intellicode"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
+				},
+				{
+					"extensionId": "58",
+					"extensionName": "datavirtualization",
+					"displayName": "Data Virtualization",
+					"shortDescription": "Support for Data Virtualization in SQL Server, including Create External Data wizards.",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "1.0.0",
+							"lastUpdated": "10/31/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/datavirtualization-1.0.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.0.0/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.0.0/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.0.0/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=0.33.1"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://docs.microsoft.com/sql/azure-data-studio/sql-server-2019-extension"
 								}
 							]
 						}
