@@ -139,7 +139,18 @@
 				"command": "bigDataClusters.command.deletemount",
 				"title": "%command.deletemount.title%"
 			}
-		]
+		],
+		"configuration": {
+			"type": "object",
+			"title": "%bdc.configuration.title%",
+			"properties": {
+				"bigDataCluster.ignoreSslVerification": {
+					"type": "boolean",
+					"default": true,
+					"description": "%bdc.ignoreSslVerification.desc%"
+				}
+			}
+		}
 	},
 	"dependencies": {
 		"kerberos": "^1.1.3",

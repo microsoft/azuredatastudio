@@ -31,9 +31,9 @@ export class BdcDashboardModel {
 	public onDidUpdateBdcStatus = this._onDidUpdateBdcStatus.event;
 	public onBdcError = this._onBdcError.event;
 
-	constructor(private _options: BdcDashboardOptions, private _treeDataProvider: ControllerTreeDataProvider, ignoreSslVerification = true) {
+	constructor(private _options: BdcDashboardOptions, private _treeDataProvider: ControllerTreeDataProvider) {
 		try {
-			this._clusterController = new ClusterController(_options.url, _options.auth, _options.username, _options.password, ignoreSslVerification);
+			this._clusterController = new ClusterController(_options.url, _options.auth, _options.username, _options.password);
 			// tslint:disable-next-line:no-floating-promises
 			this.refresh();
 		} catch {

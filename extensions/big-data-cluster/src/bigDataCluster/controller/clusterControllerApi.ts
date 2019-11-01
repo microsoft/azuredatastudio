@@ -4,32 +4,30 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as request from 'request';
-
 import { authenticateKerberos, getHostAndPortFromEndpoint } from '../auth';
 import { BdcRouterApi, Authentication, EndpointModel, BdcStatusModel, DefaultApi } from './apiGenerated';
 import { TokenRouterApi } from './clusterApiGenerated2';
 import { AuthType } from '../constants';
 import * as nls from 'vscode-nls';
 import { ConnectControllerDialog, ConnectControllerModel } from '../dialog/connectControllerDialog';
+import { getIgnoreSslVerificationConfigSetting } from '../utils';
 
 const localize = nls.loadMessageBundle();
 
 class SslAuth implements Authentication {
-
-	constructor(private _ignoreSslVerification: boolean) {
-	}
+	constructor() { }
 
 	applyToRequest(requestOptions: request.Options): void {
 		requestOptions['agentOptions'] = {
-			rejectUnauthorized: !this._ignoreSslVerification
+			rejectUnauthorized: !getIgnoreSslVerificationConfigSetting()
 		};
 	}
 }
 
 export class KerberosAuth extends SslAuth implements Authentication {
 
-	constructor(public kerberosToken: string, ignoreSslVerification: boolean) {
-		super(ignoreSslVerification);
+	constructor(public kerberosToken: string) {
+		super();
 	}
 
 	applyToRequest(requestOptions: request.Options): void {
@@ -41,8 +39,8 @@ export class KerberosAuth extends SslAuth implements Authentication {
 	}
 }
 export class BasicAuth extends SslAuth implements Authentication {
-	constructor(public username: string, public password: string, ignoreSslVerification: boolean) {
-		super(ignoreSslVerification);
+	constructor(public username: string, public password: string) {
+		super();
 	}
 
 	applyToRequest(requestOptions: request.Options): void {
@@ -96,17 +94,16 @@ export class ClusterController {
 	constructor(url: string,
 		private _authType: AuthType,
 		private _username?: string,
-		private _password?: string,
-		ignoreSslVerification?: boolean
+		private _password?: string
 	) {
 		if (!url || (_authType === 'basic' && (!_username || !_password))) {
 			throw new Error('Missing required inputs for Cluster controller API (URL, username, password)');
 		}
 		this._url = adjustUrl(url);
 		if (this._authType === 'basic') {
-			this._authPromise = Promise.resolve(new BasicAuth(_username, _password, !!ignoreSslVerification));
+			this._authPromise = Promise.resolve(new BasicAuth(_username, _password));
 		} else {
-			this._authPromise = this.requestTokenUsingKerberos(ignoreSslVerification);
+			this._authPromise = this.requestTokenUsingKerberos();
 		}
 		this._dialog = new ConnectControllerDialog(new ConnectControllerModel(
 			{
@@ -133,8 +130,8 @@ export class ClusterController {
 		return this._password;
 	}
 
-	private async requestTokenUsingKerberos(ignoreSslVerification?: boolean): Promise<Authentication> {
-		let supportsKerberos = await this.verifyKerberosSupported(ignoreSslVerification);
+	private async requestTokenUsingKerberos(): Promise<Authentication> {
+		let supportsKerberos = await this.verifyKerberosSupported();
 		if (!supportsKerberos) {
 			throw new Error(localize('error.no.activedirectory', "This cluster does not support Windows authentication"));
 		}
@@ -145,9 +142,9 @@ export class ClusterController {
 			let host = getHostAndPortFromEndpoint(this._url).host;
 			let kerberosToken = await authenticateKerberos(host);
 			let tokenApi = new TokenRouterApi(this._url);
-			tokenApi.setDefaultAuthentication(new KerberosAuth(kerberosToken, !!ignoreSslVerification));
+			tokenApi.setDefaultAuthentication(new KerberosAuth(kerberosToken));
 			let result = await tokenApi.apiV1TokenPost();
-			let auth = new OAuthWithSsl(ignoreSslVerification);
+			let auth = new OAuthWithSsl();
 			auth.accessToken = result.body.accessToken;
 			return auth;
 		} catch (error) {
@@ -160,9 +157,9 @@ export class ClusterController {
 		}
 	}
 
-	private async verifyKerberosSupported(ignoreSslVerification: boolean): Promise<boolean> {
+	private async verifyKerberosSupported(): Promise<boolean> {
 		let tokenApi = new TokenRouterApi(this._url);
-		tokenApi.setDefaultAuthentication(new SslAuth(!!ignoreSslVerification));
+		tokenApi.setDefaultAuthentication(new SslAuth());
 		try {
 			await tokenApi.apiV1TokenPost();
 			// If we get to here, the route for endpoints doesn't require auth so state this is false
