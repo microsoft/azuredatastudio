@@ -28,10 +28,10 @@ const ignoreSslConfigName = 'ignoreSslVerification';
 export function getIgnoreSslVerificationConfigSetting(): boolean {
 	try {
 		const config = vscode.workspace.getConfiguration(bdcConfigSectionName);
-		return config.get<boolean>(ignoreSslConfigName) || false;
+		return config.get<boolean>(ignoreSslConfigName) || true;
 	} catch (error) {
 		console.error(`Unexpected error retrieving ${bdcConfigSectionName}.${ignoreSslConfigName} setting : ${error}`);
 	}
-	return false;
+	return true;
 }
 
