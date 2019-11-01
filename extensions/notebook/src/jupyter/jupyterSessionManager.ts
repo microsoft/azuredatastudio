@@ -168,8 +168,12 @@ export class JupyterSession implements nb.ISession {
 	private _messagesComplete: Deferred<void> = new Deferred<void>();
 
 	constructor(private sessionImpl: Session.ISession, skipSettingEnvironmentVars?: boolean, private _pythonEnvVarPath?: string) {
-		// tslint:disable-next-line:no-floating-promises This is handled by use of a deferred promise for callers to await on
-		this.setEnvironmentVars(skipSettingEnvironmentVars);
+		this.setEnvironmentVars(skipSettingEnvironmentVars).catch(error => {
+			console.error(`Unexpected exception setting Jupyter Session variables : ${error}`);
+			// We don't want callers to hang forever waiting - it's better to continue on even if we weren't
+			// able to set environment variables
+			this._messagesComplete.resolve();
+		});
 	}
 
 	public get canChangeKernels(): boolean {
