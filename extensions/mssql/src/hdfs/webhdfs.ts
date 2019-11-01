@@ -780,10 +780,6 @@ export class WebHDFS {
 				stream.pipe(upload);
 				stream.resume();
 			}
-			if (error && !response) {
-				// request failed, and req is not accessible in this case.
-				throw this.parseError(undefined, undefined, error);
-			}
 			if (error || this.isError(response)) {
 				emitError(req, this.parseError(response, body, error));
 			}
