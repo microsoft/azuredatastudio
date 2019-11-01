@@ -22,7 +22,7 @@ import { Event } from 'vs/base/common/event';
 import { LayoutRequestParams } from 'sql/platform/dialog/browser/dialogContainer.component';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 
 const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentContribution);
 

@@ -10,7 +10,7 @@ import { VirtualizedCollection } from 'angular2-slickgrid';
 
 import { IGridDataSet } from 'sql/workbench/parts/grid/common/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
-import { IEditDataComponentParams, IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { IEditDataComponentParams, IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { GridParentComponent } from 'sql/workbench/parts/editData/browser/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/workbench/parts/editData/browser/editDataGridActions';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';

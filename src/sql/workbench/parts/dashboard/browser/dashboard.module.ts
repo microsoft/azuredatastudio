@@ -14,8 +14,8 @@ import { ChartsModule } from 'ng2-charts';
 import CustomUrlSerializer from 'sql/base/browser/urlSerializer';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/browser/insightRegistry';
 import { Extensions as ComponentExtensions, IComponentRegistry } from 'sql/platform/dashboard/browser/modelComponentRegistry';
-import { providerIterator } from 'sql/platform/bootstrap/browser/bootstrapService';
-import { IBootstrapParams, ISelector } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { providerIterator } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
+import { IBootstrapParams, ISelector } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 
@@ -27,7 +27,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 /* Services */
 import { BreadcrumbService } from 'sql/workbench/parts/dashboard/browser/services/breadcrumb.service';
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/browser/services/dashboardServiceInterface.service';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 
 /* Directives */
 import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/browser/core/componentHost.directive';

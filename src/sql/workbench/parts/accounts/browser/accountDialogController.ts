@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import Severity from 'vs/base/common/severity';
-import { AccountDialog } from 'sql/platform/accounts/browser/accountDialog';
+import { AccountDialog } from 'sql/workbench/parts/accounts/browser/accountDialog';
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';

@@ -10,15 +10,7 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
 
-import * as azdata from 'azdata';
 import * as resources from 'vs/base/common/resources';
-
-
-export interface ConnectionProviderProperties {
-	providerId: string;
-	displayName: string;
-	connectionOptions: azdata.ConnectionOption[];
-}
 
 export const Extensions = {
 	ConnectionProviderContributions: 'connection.providers'

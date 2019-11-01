@@ -147,8 +147,8 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { AdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { OEShimService, IOEShimService } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerViewTreeShim';
 import { IObjectExplorerService, ObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
-import { IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
-import { AngularEventingService } from 'sql/platform/angularEventing/node/angularEventingService';
+import { IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
+import { AngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingServiceImpl';
 import { ISerializationService, SerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IMetadataService, MetadataService } from 'sql/platform/metadata/common/metadataService';
 import { ITaskService, TaskService } from 'sql/platform/tasks/common/tasksService';
@@ -174,8 +174,8 @@ import { IAccountManagementService } from 'sql/platform/accounts/common/interfac
 import { AccountManagementService } from 'sql/workbench/services/accountManagement/browser/accountManagementService';
 import { IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ProfilerService } from 'sql/workbench/services/profiler/browser/profilerService';
-import { AccountPickerService } from 'sql/platform/accounts/browser/accountPickerService';
-import { IAccountPickerService } from 'sql/platform/accounts/browser/accountPicker';
+import { AccountPickerService } from 'sql/workbench/parts/accounts/browser/accountPickerService';
+import { IAccountPickerService } from 'sql/workbench/parts/accounts/browser/accountPicker';
 import { IDashboardViewService } from 'sql/platform/dashboard/browser/dashboardViewService';
 import { DashboardViewService } from 'sql/platform/dashboard/browser/dashboardViewServiceImpl';
 import { IModelViewService } from 'sql/platform/modelComponents/browser/modelViewService';
@@ -389,7 +389,7 @@ import 'sql/workbench/parts/queryPlan/browser/queryPlan.contribution';
 
 //acounts
 import 'sql/workbench/parts/accounts/browser/accounts.contribution';
-import 'sql/platform/accounts/browser/accountManagement.contribution';
+import 'sql/workbench/parts/accounts/browser/accountManagement.contribution';
 
 // profiler
 import 'sql/workbench/parts/profiler/browser/profiler.contribution';

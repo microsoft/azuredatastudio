@@ -29,7 +29,7 @@ import { Modal } from 'sql/workbench/browser/modal/modal';
 import { attachModalDialogStyler, attachButtonStyler, attachPanelStyler } from 'sql/platform/theme/common/styler';
 import { AccountViewModel } from 'sql/platform/accounts/common/accountViewModel';
 import { AddAccountAction } from 'sql/platform/accounts/common/accountActions';
-import { AccountListRenderer, AccountListDelegate } from 'sql/platform/accounts/browser/accountListRenderer';
+import { AccountListRenderer, AccountListDelegate } from 'sql/workbench/parts/accounts/browser/accountListRenderer';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';

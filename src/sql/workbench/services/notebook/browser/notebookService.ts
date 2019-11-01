@@ -15,7 +15,7 @@ import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/noteb
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ICellModel, INotebookModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
-import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);

@@ -10,8 +10,8 @@ import { Component, forwardRef, Input, ChangeDetectorRef, Inject, ViewChild, Con
 import { DashboardWidgetContainer } from 'sql/workbench/parts/dashboard/browser/containers/dashboardWidgetContainer.component';
 import { WidgetConfig } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/browser/services/dashboardServiceInterface.service';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
-import { AngularEventType, IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
+import { AngularEventType, IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { DashboardWidgetWrapper } from 'sql/workbench/parts/dashboard/browser/contents/dashboardWidgetWrapper.component';
 import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';

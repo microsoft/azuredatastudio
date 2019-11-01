@@ -10,7 +10,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IResourceProviderService, IHandleFirewallRuleResult } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
-import { FirewallRuleDialogController } from 'sql/platform/accounts/browser/firewallRuleDialogController';
+import { FirewallRuleDialogController } from 'sql/workbench/parts/accounts/browser/firewallRuleDialogController';
 
 import * as azdata from 'azdata';
 import { invalidProvider } from 'sql/base/common/errors';

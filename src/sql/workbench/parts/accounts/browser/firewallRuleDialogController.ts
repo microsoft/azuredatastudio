@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import * as azdata from 'azdata';
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { FirewallRuleDialog } from 'sql/platform/accounts/browser/firewallRuleDialog';
+import { FirewallRuleDialog } from 'sql/workbench/parts/accounts/browser/firewallRuleDialog';
 import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { Deferred } from 'sql/base/common/promise';

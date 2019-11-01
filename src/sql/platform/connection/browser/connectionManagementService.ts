@@ -22,7 +22,7 @@ import { ConnectionGlobalStatus } from 'sql/workbench/parts/connection/common/co
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
-import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
+import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/browser/angularEventingService';
 import * as QueryConstants from 'sql/workbench/parts/query/common/constants';
 import { Deferred } from 'sql/base/common/promise';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -35,7 +35,7 @@ import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import * as errors from 'vs/base/common/errors';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IInstantiationService, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import * as platform from 'vs/platform/registry/common/platform';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';

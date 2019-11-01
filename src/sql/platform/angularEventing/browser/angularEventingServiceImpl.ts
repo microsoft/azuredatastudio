@@ -6,7 +6,7 @@
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 
-import { IAngularEventingService, IAngularEvent, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
+import { IAngularEventingService, IAngularEvent, AngularEventType } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { ILogService } from 'vs/platform/log/common/log';
 
 export class AngularEventingService implements IAngularEventingService {

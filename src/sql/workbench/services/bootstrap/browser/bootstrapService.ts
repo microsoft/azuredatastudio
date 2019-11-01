@@ -9,7 +9,7 @@ import { IInstantiationService, _util } from 'vs/platform/instantiation/common/i
 import { IEditorInput } from 'vs/workbench/common/editor';
 import { Trace } from 'vs/platform/instantiation/common/instantiationService';
 import { values } from 'vs/base/common/map';
-import { IModuleFactory, IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { IModuleFactory, IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 const selectorCounter = new Map<string, number>();

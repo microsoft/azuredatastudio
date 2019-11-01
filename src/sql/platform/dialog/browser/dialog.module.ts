@@ -16,8 +16,8 @@ import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/browser/m
 import { ModelViewContent } from 'sql/workbench/browser/modelComponents/modelViewContent.component';
 import { ModelComponentWrapper } from 'sql/workbench/browser/modelComponents/modelComponentWrapper.component';
 import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/browser/core/componentHost.directive';
-import { providerIterator } from 'sql/platform/bootstrap/browser/bootstrapService';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { providerIterator } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { EditableDropDown } from 'sql/platform/browser/editableDropdown/editableDropdown.component';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
 import { SelectBox } from 'sql/platform/browser/selectBox/selectBox.component';
@@ -25,7 +25,7 @@ import { InputBox } from 'sql/platform/browser/inputbox/inputBox.component';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IBootstrapParams, ISelector } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { IBootstrapParams, ISelector } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 
 export const DialogModule = (params, selector: string, instantiationService: IInstantiationService): any => {
 
