@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
@@ -15,6 +13,7 @@ import { BdcDashboardOverviewPage } from './bdcDashboardOverviewPage';
 import { BdcStatusModel, ServiceStatusModel } from '../controller/apiGenerated';
 import { getHealthStatusDot, getServiceNameDisplayText, showErrorMessage } from '../utils';
 import { HdfsDialogCancelledError } from './hdfsDialogBase';
+import { BdcDashboardPage } from './bdcDashboardPage';
 
 const localize = nls.loadMessageBundle();
 
@@ -25,11 +24,9 @@ const unselectedTabCss = { 'font-weight': '' };
 
 type NavTab = { serviceName: string, div: azdata.DivContainer, dot: azdata.TextComponent, text: azdata.TextComponent };
 
-export class BdcDashboard {
+export class BdcDashboard extends BdcDashboardPage {
 
 	private dashboard: azdata.workspace.ModelViewEditor;
-
-	private initialized: boolean = false;
 
 	private modelView: azdata.ModelView;
 	private mainAreaContainer: azdata.FlexContainer;
@@ -44,8 +41,9 @@ export class BdcDashboard {
 	private serviceTabPageMapping = new Map<string, { navTab: NavTab, servicePage: azdata.FlexContainer }>();
 
 	constructor(private title: string, private model: BdcDashboardModel) {
-		this.model.onDidUpdateBdcStatus(bdcStatus => this.handleBdcStatusUpdate(bdcStatus));
-		this.model.onBdcError(errorEvent => this.handleError(errorEvent));
+		super();
+		this.model.onDidUpdateBdcStatus(bdcStatus => this.eventuallyRunOnInitialized(() => this.handleBdcStatusUpdate(bdcStatus)));
+		this.model.onBdcError(errorEvent => this.eventuallyRunOnInitialized(() => this.handleError(errorEvent)));
 	}
 
 	public showDashboard(): void {
@@ -162,11 +160,10 @@ export class BdcDashboard {
 		});
 	}
 
-	private handleBdcStatusUpdate(bdcStatus: BdcStatusModel): void {
-		if (!this.initialized || !bdcStatus) {
+	private handleBdcStatusUpdate(bdcStatus?: BdcStatusModel): void {
+		if (!bdcStatus) {
 			return;
 		}
-
 		this.updateServiceNavTabs(bdcStatus.services);
 	}
 
@@ -213,7 +210,7 @@ export class BdcDashboard {
 	 * Helper to update the navigation tabs for the services when we get a status update
 	 */
 	private updateServiceNavTabs(services?: ServiceStatusModel[]): void {
-		if (this.initialized && services) {
+		if (services) {
 			// Add a nav item for each service
 			services.forEach(s => {
 				const existingTabPage = this.serviceTabPageMapping[s.serviceName];
