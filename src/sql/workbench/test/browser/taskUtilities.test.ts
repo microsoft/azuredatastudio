@@ -12,7 +12,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { URI } from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
 import { TestEditorService } from 'vs/workbench/test/workbenchTestServices';
 
 suite('TaskUtilities', function () {

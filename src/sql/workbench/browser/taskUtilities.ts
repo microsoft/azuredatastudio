@@ -9,12 +9,12 @@ import {
 	IConnectionCompletionOptions, ConnectionType,
 	RunQueryOnConnectionMode, IConnectionResult
 } from 'sql/platform/connection/common/connectionManagement';
-import { EditDataInput } from 'sql/workbench/parts/editData/browser/editDataInput';
+import { EditDataInput } from 'sql/workbench/contrib/editData/browser/editDataInput';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
-import { DashboardInput } from 'sql/workbench/parts/dashboard/browser/dashboardInput';
-import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
+import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
+import { DashboardInput } from 'sql/workbench/contrib/dashboard/browser/dashboardInput';
+import { ProfilerInput } from 'sql/workbench/contrib/profiler/browser/profilerInput';
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';

@@ -5,7 +5,7 @@
 
 import { Event, Emitter } from 'vs/base/common/event';
 
-import { IDashboardTab } from 'sql/workbench/parts/dashboard/browser/dashboardRegistry';
+import { IDashboardTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 
 
 export interface IDashboardUITab {
