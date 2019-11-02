@@ -34,6 +34,7 @@ import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { endsWith, startsWith } from 'vs/base/common/strings';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class ConnectionWidget extends lifecycle.Disposable {
 	private _previousGroupOption: string;
@@ -100,7 +101,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@IAccountManagementService private _accountManagementService: IAccountManagementService
+		@IAccountManagementService private _accountManagementService: IAccountManagementService,
+		@ILogService protected _logService: ILogService,
 	) {
 		super();
 		this._callbacks = callbacks;
@@ -135,7 +137,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		}
 
 		DOM.addDisposableListener(container, 'paste', e => {
-			this._handleClipboard().catch(err => console.error(`Unexpected error parsing clipboard contents for connection widget : ${err}`));
+			this._handleClipboard().catch(err => this._logService.error(`Unexpected error parsing clipboard contents for connection widget : ${err}`));
 		});
 	}
 
@@ -365,8 +367,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 		if (this._azureAccountDropdown) {
 			this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
-			this._register(this._azureAccountDropdown.onDidSelect(async () => {
-				await this.onAzureAccountSelected();
+			this._register(this._azureAccountDropdown.onDidSelect(() => {
+				return this.onAzureAccountSelected();
 			}));
 		}
 
@@ -442,7 +444,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this.fillInAzureAccountOptions().then(() => {
 				// Don't enable the control until we've populated it
 				this._azureAccountDropdown.enable();
-			}).catch(err => console.error(`Unexpected error populating Azure Account dropdown : ${err}`));
+			}).catch(err => this._logService.error(`Unexpected error populating Azure Account dropdown : ${err}`));
 			// Immediately show/hide appropriate elements though so user gets immediate feedback while we load accounts
 			DOM.addClass(this._tableContainer, 'hide-username-password');
 			DOM.removeClass(this._tableContainer, 'hide-azure-accounts');
@@ -568,7 +570,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	public focusOnOpen(): void {
-		this._handleClipboard().catch(err => console.error(`Unexpected error parsing clipboard contents for connection widget : ${err}`));
+		this._handleClipboard().catch(err => this._logService.error(`Unexpected error parsing clipboard contents for connection widget : ${err}`));
 		this._serverNameInputBox.focus();
 		this.focusPasswordIfNeeded();
 		this.clearValidationMessages();
@@ -643,7 +645,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						}
 						this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
 					}
-				}).catch(err => console.error(`Unexpected error populating initial Azure Account options : ${err}`));
+				}).catch(err => this._logService.error(`Unexpected error populating initial Azure Account options : ${err}`));
 			}
 
 			// Disable connect button if -
