@@ -368,7 +368,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (this._azureAccountDropdown) {
 			this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 			this._register(this._azureAccountDropdown.onDidSelect(() => {
-				return this.onAzureAccountSelected();
+				this.onAzureAccountSelected().catch(err => this._logService.error(`Unexpeted error handling Azure Account dropdown click : ${err}`));
 			}));
 		}
 
