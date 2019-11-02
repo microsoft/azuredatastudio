@@ -480,6 +480,13 @@
 				]
 			},
 			{
+				"target": "**/sql/workbench/contrib/notebook/browser/outputs/sanitizer.ts",
+				"restrictions": [
+					"sanitize-html",
+					"**/{vs,sql}/**"
+				]
+			},
+			{
 				"target": "**/{vs,sql}/code/node/**",
 				"restrictions": [
 					"vs/nls",
