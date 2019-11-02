@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 
-export async function assertThrowsAsync(fn, expectedMessage?: string): Promise<void> {
+export async function assertThrowsAsync(fn: () => Promise<any>, expectedMessage?: string): Promise<void> {
 	let threw = false;
 	try {
 		await fn();
