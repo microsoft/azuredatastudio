@@ -399,7 +399,7 @@ export class ConnectionDialogWidget extends Modal {
 		await TreeUpdateUtils.structuralTreeUpdate(this._recentConnectionTree, 'recent', this._connectionManagementService, this._providers);
 
 		// reset saved connection tree
-		this._savedConnectionTree.setInput([]);
+		await this._savedConnectionTree.setInput([]);
 
 		// call layout with view height
 		this.layout();

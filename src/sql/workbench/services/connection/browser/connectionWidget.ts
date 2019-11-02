@@ -135,7 +135,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		}
 
 		DOM.addDisposableListener(container, 'paste', e => {
-			this._handleClipboard();
+			this._handleClipboard().catch(err => console.error(`Unexpected error parsing clipboard contents for connection widget : ${err}`));
 		});
 	}
 
@@ -365,8 +365,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 		if (this._azureAccountDropdown) {
 			this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
-			this._register(this._azureAccountDropdown.onDidSelect(() => {
-				this.onAzureAccountSelected();
+			this._register(this._azureAccountDropdown.onDidSelect(async () => {
+				await this.onAzureAccountSelected();
 			}));
 		}
 
@@ -382,7 +382,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 				if (account) {
 					await this._accountManagementService.refreshAccount(account);
-					this.fillInAzureAccountOptions();
+					await this.fillInAzureAccountOptions();
 				}
 			}));
 		}
@@ -439,8 +439,11 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		}
 
 		if (currentAuthType === AuthenticationType.AzureMFA) {
-			this.fillInAzureAccountOptions();
-			this._azureAccountDropdown.enable();
+			this.fillInAzureAccountOptions().then(() => {
+				// Don't enable the control until we've populated it
+				this._azureAccountDropdown.enable();
+			}).catch(err => console.error(`Unexpected error populating Azure Account dropdown : ${err}`));
+			// Immediately show/hide appropriate elements though so user gets immediate feedback while we load accounts
 			DOM.addClass(this._tableContainer, 'hide-username-password');
 			DOM.removeClass(this._tableContainer, 'hide-azure-accounts');
 		} else {
@@ -464,7 +467,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._azureAccountDropdown.selectWithOptionName(oldSelection);
 	}
 
-	private async updateRefreshCredentialsLink(): Promise<void> {
+	private updateRefreshCredentialsLink(): void {
 		let chosenAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 		if (chosenAccount && chosenAccount.isStale) {
 			DOM.removeClass(this._tableContainer, 'hide-refresh-link');
@@ -565,7 +568,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	public focusOnOpen(): void {
-		this._handleClipboard();
+		this._handleClipboard().catch(err => console.error(`Unexpected error parsing clipboard contents for connection widget : ${err}`));
 		this._serverNameInputBox.focus();
 		this.focusPasswordIfNeeded();
 		this.clearValidationMessages();
@@ -640,7 +643,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						}
 						this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
 					}
-				});
+				}).catch(err => console.error(`Unexpected error populating initial Azure Account options : ${err}`));
 			}
 
 			// Disable connect button if -

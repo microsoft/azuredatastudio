@@ -135,7 +135,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		}
 
 		DOM.addDisposableListener(container, 'paste', e => {
-			this._handleClipboard();
+			this._handleClipboard().catch(err => console.error(`Unexpected error parsing clipboard contents for CMS Connection Dialog ${err}`));
 		});
 	}
 
