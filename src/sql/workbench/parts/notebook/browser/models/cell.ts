@@ -674,7 +674,7 @@ export class CellModel implements ICellModel {
 
 
 	private getMultilineSource(source: string | string[]): string | string[] {
-		if (!source) {
+		if (source === undefined) {
 			return [];
 		}
 		if (typeof source === 'string') {
