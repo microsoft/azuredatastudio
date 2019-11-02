@@ -145,7 +145,7 @@ suite('Cell Model', function (): void {
 			mimetype: ''
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		assert.equal(Array.isArray(cell.source), true);
+		assert(Array.isArray(cell.source));
 		assert.equal(cell.source.length, 1);
 		assert.equal(cell.source[0], 'print(1)');
 	});

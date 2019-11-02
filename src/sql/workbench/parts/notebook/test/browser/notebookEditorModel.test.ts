@@ -548,7 +548,7 @@ suite('Notebook Editor Model', function (): void {
 			assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(10 + i * 21), '            ],');
 			assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14 + i * 21), '            "outputs": [');
 			assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25 + i * 21), '            "execution_count": 0');
-			assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(26 + i * 21), '        }');
+			assert(notebookEditorModel.editorModel.textEditorModel.getLineContent(26 + i * 21).startsWith('        }'));
 		}
 	});
 
