@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
-import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
+import { EventVerifierSingle } from 'sql/base/test/common/event';
 import { Emitter } from 'vs/base/common/event';
 import { AccountPicker } from 'sql/workbench/parts/accounts/browser/accountPickerImpl';
 import { AccountPickerService } from 'sql/workbench/parts/accounts/browser/accountPickerService';

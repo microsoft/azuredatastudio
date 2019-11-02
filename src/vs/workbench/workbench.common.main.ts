@@ -126,7 +126,7 @@ registerSingleton(IOpenerService, OpenerService, true);
 //#region -- sql services
 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ConnectionManagementService } from 'sql/platform/connection/browser/connectionManagementService';
+import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ConnectionDialogService } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -134,7 +134,7 @@ import { ErrorMessageService } from 'sql/workbench/services/errorMessage/browser
 import { ServerGroupController } from 'sql/workbench/services/serverGroup/browser/serverGroupController';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesServiceImpl';
+import { CapabilitiesService } from 'sql/workbench/services/capabilities/common/capabilitiesServiceImpl';
 import { ICredentialsService as sqlICredentialsService, CredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { QueryModelService } from 'sql/platform/query/common/queryModelService';

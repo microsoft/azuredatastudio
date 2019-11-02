@@ -7,7 +7,7 @@ import { InjectionToken, OnDestroy } from '@angular/core';
 import { NgGridItemConfig } from 'angular2-grid';
 import { Action } from 'vs/base/common/actions';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IDashboardTab } from 'sql/platform/dashboard/browser/dashboardRegistry';
+import { IDashboardTab } from 'sql/workbench/parts/dashboard/browser/dashboardRegistry';
 
 export interface IDashboardWidget {
 	actions: Array<Action>;

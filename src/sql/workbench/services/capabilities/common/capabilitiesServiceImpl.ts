@@ -15,8 +15,8 @@ import * as azdata from 'azdata';
 
 import { entries } from 'sql/base/common/objects';
 import { toObject } from 'sql/base/common/map';
-import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
-import { ICapabilitiesService, ProviderFeatures, clientCapabilities } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
+import { ICapabilitiesService, ProviderFeatures, clientCapabilities, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 
 const connectionRegistry = Registry.as<IConnectionProviderRegistry>(ConnectionExtensions.ConnectionProviderContributions);
 

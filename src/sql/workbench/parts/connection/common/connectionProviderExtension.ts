@@ -11,6 +11,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
 
 import * as resources from 'vs/base/common/resources';
+import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 
 export const Extensions = {
 	ConnectionProviderContributions: 'connection.providers'

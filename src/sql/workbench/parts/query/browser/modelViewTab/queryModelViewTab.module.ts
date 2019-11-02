@@ -9,7 +9,7 @@ import { forwardRef, NgModule, ComponentFactoryResolver, Inject, ApplicationRef 
 import { FormsModule } from '@angular/forms';
 import { CommonModule, APP_BASE_HREF } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
-import { WizardNavigation } from 'sql/platform/dialog/browser/wizardNavigation.component';
+import { WizardNavigation } from 'sql/workbench/services/dialog/browser/wizardNavigation.component';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/browser/modelComponentRegistry';
 import { ModelViewContent } from 'sql/workbench/browser/modelComponents/modelViewContent.component';
 import { ModelComponentWrapper } from 'sql/workbench/browser/modelComponents/modelComponentWrapper.component';

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TestConnectionDialogService } from 'sql/workbench/services/connection/test/common/testConnectionDialogService';
-import { ConnectionManagementService } from 'sql/platform/connection/browser/connectionManagementService';
+import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
 import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
 import {

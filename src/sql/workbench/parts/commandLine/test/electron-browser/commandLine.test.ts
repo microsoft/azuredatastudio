@@ -19,7 +19,7 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { TestCommandService } from 'vs/editor/test/browser/editorTestServices';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { assertThrowsAsync } from 'sqltest/utils/testUtils';
+import { assertThrowsAsync } from 'sql/base/test/common/async';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { TestEditorService, TestDialogService } from 'vs/workbench/test/workbenchTestServices';
 import { QueryInput, QueryEditorState } from 'sql/workbench/parts/query/common/queryInput';

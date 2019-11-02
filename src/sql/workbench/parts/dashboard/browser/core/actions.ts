@@ -10,7 +10,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 import { IAngularEventingService, AngularEventType, IAngularEvent } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/browser/newDashboardTabDialog';
-import { IDashboardTab } from 'sql/platform/dashboard/browser/dashboardRegistry';
+import { IDashboardTab } from 'sql/workbench/parts/dashboard/browser/dashboardRegistry';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 
 export class EditDashboardAction extends Action {

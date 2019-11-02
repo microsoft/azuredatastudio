@@ -6,11 +6,11 @@
 import 'vs/css!./media/dialogModal';
 import { Modal, IModalOptions } from 'sql/workbench/browser/modal/modal';
 import { attachModalDialogStyler } from 'sql/platform/theme/common/styler';
-import { Wizard, DialogButton, WizardPage } from 'sql/platform/dialog/common/dialogTypes';
-import { DialogPane } from 'sql/platform/dialog/browser/dialogPane';
+import { Wizard, DialogButton, WizardPage } from 'sql/workbench/services/dialog/common/dialogTypes';
+import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
 import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
 import { DialogMessage } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { DialogModule } from 'sql/platform/dialog/browser/dialog.module';
+import { DialogModule } from 'sql/workbench/services/dialog/browser/dialog.module';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';

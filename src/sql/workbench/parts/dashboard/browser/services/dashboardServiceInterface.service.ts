@@ -14,7 +14,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { AngularEventType, IAngularEvent, IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
-import { IDashboardTab } from 'sql/platform/dashboard/browser/dashboardRegistry';
+import { IDashboardTab } from 'sql/workbench/parts/dashboard/browser/dashboardRegistry';
 import { TabSettingConfig } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 

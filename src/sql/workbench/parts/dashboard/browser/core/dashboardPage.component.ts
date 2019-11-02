@@ -13,7 +13,7 @@ import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/w
 import { WidgetConfig, TabConfig, TabSettingConfig } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
 import { IPropertiesConfig } from 'sql/workbench/parts/dashboard/browser/pages/serverDashboardPage.contribution';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
-import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/platform/dashboard/browser/dashboardRegistry';
+import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/workbench/parts/dashboard/browser/dashboardRegistry';
 import { PinUnpinTabAction, AddFeatureTabAction } from './actions';
 import { TabComponent, TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { AngularEventType, IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
