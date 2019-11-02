@@ -420,7 +420,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.typeSystemVersion.description">
         <source xml:lang="en">Indicates which server type system then provider will expose through the DataReader</source>
-        <target state="translated">Указывает, какую систему серверного типа предоставить поставщик через DataReader</target>
+        <target state="translated">Указывает, какую систему серверного типа предоставит поставщик через DataReader</target>
       </trans-unit>
     </body>
   </file>

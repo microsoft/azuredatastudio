@@ -75,7 +75,7 @@ function registerCommands(context: vscode.ExtensionContext, treeDataProvider: Co
 				info.rememberPassword);
 			await treeDataProvider.saveControllers();
 		}
-		const dashboard: BdcDashboard = new BdcDashboard(title, new BdcDashboardModel(info, treeDataProvider, /*ignoreSslVerification*/true));
+		const dashboard: BdcDashboard = new BdcDashboard(title, new BdcDashboardModel(info, treeDataProvider));
 		dashboard.showDashboard();
 	});
 

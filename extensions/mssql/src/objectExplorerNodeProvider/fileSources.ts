@@ -18,6 +18,7 @@ import { WebHDFS, HdfsError } from '../hdfs/webhdfs';
 import { PermissionStatus } from '../hdfs/aclEntry';
 import { Mount, MountStatus } from '../hdfs/mount';
 import { FileStatus, hdfsFileTypeToFileType } from '../hdfs/fileStatus';
+import { getIgnoreSslVerificationConfigSetting } from '../util/auth';
 
 const localize = nls.loadMessageBundle();
 
@@ -143,12 +144,11 @@ export class FileSourceFactory {
 		options = options && options.host ? FileSourceFactory.removePortFromHost(options) : options;
 		let requestParams: IRequestParams = options.requestParams ? options.requestParams : {};
 		if (requestParams.auth || requestParams.isKerberos) {
-			// TODO Remove handling of unsigned cert once we have real certs in our Knox service
 			let agentOptions = {
 				host: options.host,
 				port: options.port,
 				path: constants.hdfsRootPath,
-				rejectUnauthorized: false
+				rejectUnauthorized: !getIgnoreSslVerificationConfigSetting()
 			};
 			let agent = new https.Agent(agentOptions);
 			requestParams['agent'] = agent;
