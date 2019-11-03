@@ -7,7 +7,6 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
 import * as Utils from 'sql/platform/connection/common/utils';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TestEnvironmentService } from 'vs/workbench/test/workbenchTestServices';
@@ -18,7 +17,7 @@ import { NullLogService } from 'vs/platform/log/common/log';
 let connections: ConnectionStatusManager;
 let capabilitiesService: TestCapabilitiesService;
 let connectionProfileObject: ConnectionProfile;
-let connectionProfile: IConnectionProfile = {
+let connectionProfile: ConnectionProfile = {
 	connectionName: 'new name',
 	serverName: 'new server',
 	databaseName: 'database',
@@ -35,7 +34,7 @@ let connectionProfile: IConnectionProfile = {
 	saveProfile: true,
 	id: undefined
 };
-let editorConnectionProfile: IConnectionProfile = {
+let editorConnectionProfile: ConnectionProfile = {
 	connectionName: 'new name',
 	serverName: 'new server',
 	databaseName: 'database',
@@ -52,7 +51,7 @@ let editorConnectionProfile: IConnectionProfile = {
 	saveProfile: true,
 	id: undefined
 };
-let connectionProfileWithoutDbName: IConnectionProfile = {
+let connectionProfileWithoutDbName: ConnectionProfile = {
 	connectionName: 'new name',
 	serverName: 'new server',
 	databaseName: '',

@@ -16,7 +16,6 @@ import {
 
 import { IConnectionProfile } from 'azdata';
 
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TaskRegistry } from 'sql/platform/tasks/browser/tasksRegistry';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadTasks)
@@ -43,9 +42,6 @@ export class MainThreadTasks implements MainThreadTasksShape {
 		this._disposables.set(
 			id,
 			TaskRegistry.registerTask(id, (accessor, profile: IConnectionProfile, ...args) => {
-				if (profile instanceof ConnectionProfile) {
-					profile = profile.toIConnectionProfile();
-				}
 				this._proxy.$executeContributedTask(id, profile, ...args);
 			})
 		);

@@ -14,7 +14,6 @@ import { Deferred } from 'sql/base/common/promise';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { escape } from 'sql/base/common/strings';
 import * as notebookUtils from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -96,7 +95,6 @@ export class SqlSessionManager implements nb.SessionManager {
 export class SqlSession implements nb.ISession {
 	private _kernel: SqlKernel;
 	private _defaultKernelLoaded = false;
-	private _currentConnection: IConnectionProfile;
 
 	public set defaultKernelLoaded(value) {
 		this._defaultKernelLoaded = value;
@@ -156,7 +154,7 @@ export class SqlSession implements nb.ISession {
 
 class SqlKernel extends Disposable implements nb.IKernel {
 	private _queryRunner: QueryRunner;
-	private _currentConnection: IConnectionProfile;
+	private _currentConnection: ConnectionProfile;
 	private _currentConnectionProfile: ConnectionProfile;
 	static kernelId: number = 0;
 
@@ -257,7 +255,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		return info;
 	}
 
-	public set connection(conn: IConnectionProfile) {
+	public set connection(conn: ConnectionProfile) {
 		this._currentConnection = conn;
 		this._currentConnectionProfile = new ConnectionProfile(this._capabilitiesService, this._currentConnection);
 		this._queryRunner = undefined;

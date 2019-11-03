@@ -9,7 +9,6 @@ import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, V
 import { Router } from '@angular/router';
 
 import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { RefreshWidgetAction, EditDashboardAction } from 'sql/workbench/parts/dashboard/browser/core/actions';
 import { DashboardPage } from 'sql/workbench/parts/dashboard/browser/core/dashboardPage.component';
@@ -19,6 +18,7 @@ import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/theme
 import { IDisposable } from 'vs/base/common/lifecycle';
 import * as themeColors from 'vs/workbench/common/theme';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export const DASHBOARD_SELECTOR: string = 'dashboard-component';
 
@@ -47,7 +47,7 @@ export class DashboardComponent extends AngularDisposable implements OnInit {
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
-		const profile: IConnectionProfile = this._bootstrapService.getOriginalConnectionProfile();
+		const profile: ConnectionProfile = this._bootstrapService.getOriginalConnectionProfile();
 		this.actionbar = new ActionBar(this.actionbarContainer.nativeElement);
 		this.actionbar.push(new RefreshWidgetAction(this.refresh, this), {
 			icon: true,

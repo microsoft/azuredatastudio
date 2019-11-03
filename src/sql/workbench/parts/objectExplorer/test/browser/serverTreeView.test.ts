@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
 import { ConnectionManagementService } from 'sql/platform/connection/browser/connectionManagementService';
 
@@ -13,6 +12,7 @@ import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 
 import * as TypeMoq from 'typemoq';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
@@ -48,7 +48,7 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 	}
 
 	test('onAddConnectionProfile handler selects the new profile when no profile is already selected', async () => {
-		let newProfile = <IConnectionProfile>{
+		let newProfile = <ConnectionProfile>{
 			id: 'test_connection'
 		};
 		await runAddConnectionProfileHandler(undefined, newProfile);
@@ -58,10 +58,10 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 	});
 
 	test('onAddConnectionProfile handler selects the new profile when a different profile is already selected', async () => {
-		let oldProfile = <IConnectionProfile>{
+		let oldProfile = <ConnectionProfile>{
 			id: 'old_connection'
 		};
-		let newProfile = <IConnectionProfile>{
+		let newProfile = <ConnectionProfile>{
 			id: 'test_connection'
 		};
 		await runAddConnectionProfileHandler(oldProfile, newProfile);
@@ -72,10 +72,10 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
 	test('onAddConnectionProfile handler does not clear the selection when the new profile is already selected', async () => {
 		let selectionId = 'test_connection';
-		let oldProfile = <IConnectionProfile>{
+		let oldProfile = <ConnectionProfile>{
 			id: selectionId
 		};
-		let newProfile = <IConnectionProfile>{
+		let newProfile = <ConnectionProfile>{
 			id: selectionId
 		};
 		await runAddConnectionProfileHandler(oldProfile, newProfile);
@@ -85,7 +85,7 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 	});
 
 	test('onAddConnectionProfile handler does not clear the previously selected profile if there is no new one', async () => {
-		let oldProfile = <IConnectionProfile>{
+		let oldProfile = <ConnectionProfile>{
 			id: 'test_connection'
 		};
 		await runAddConnectionProfileHandler(oldProfile, undefined);

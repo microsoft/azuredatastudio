@@ -9,7 +9,6 @@ import { ICapabilitiesService, ProviderFeatures } from 'sql/platform/capabilitie
 import { ConnectionConfig, ISaveGroupResult } from 'sql/platform/connection/common/connectionConfig';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { IConnectionProfile, IConnectionProfileStore } from 'sql/platform/connection/common/interfaces';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
@@ -241,7 +240,7 @@ suite('ConnectionConfig', () => {
 	});
 
 	test('addConnection should add the new profile to user settings', async () => {
-		let newProfile: IConnectionProfile = {
+		let newProfile: ConnectionProfile = {
 			serverName: 'new server',
 			databaseName: 'database',
 			userName: 'user',
@@ -273,7 +272,7 @@ suite('ConnectionConfig', () => {
 
 	test('addConnection should not add the new profile to user settings if already exists', async () => {
 		let existingConnection = testConnections[0];
-		let newProfile: IConnectionProfile = {
+		let newProfile: ConnectionProfile = {
 			serverName: existingConnection.options['serverName'],
 			databaseName: existingConnection.options['databaseName'],
 			userName: existingConnection.options['userName'],
@@ -306,7 +305,7 @@ suite('ConnectionConfig', () => {
 	});
 
 	test('addConnection should add the new group to user settings if does not exist', async () => {
-		let newProfile: IConnectionProfile = {
+		let newProfile: ConnectionProfile = {
 			serverName: 'new server',
 			databaseName: 'database',
 			userName: 'user',
@@ -425,7 +424,7 @@ suite('ConnectionConfig', () => {
 	});
 
 	test('deleteConnection should remove the connection from config', async () => {
-		let newProfile: IConnectionProfile = {
+		let newProfile: ConnectionProfile = {
 			serverName: 'server3',
 			databaseName: 'database',
 			userName: 'user',
@@ -455,7 +454,7 @@ suite('ConnectionConfig', () => {
 	});
 
 	test('deleteConnectionGroup should remove the children connections and subgroups from config', async () => {
-		let newProfile: IConnectionProfile = {
+		let newProfile: ConnectionProfile = {
 			serverName: 'server3',
 			databaseName: 'database',
 			userName: 'user',
@@ -492,7 +491,7 @@ suite('ConnectionConfig', () => {
 	});
 
 	test('deleteConnection should not throw error for connection not in config', async () => {
-		let newProfile: IConnectionProfile = {
+		let newProfile: ConnectionProfile = {
 			serverName: 'connectionNotThere',
 			databaseName: 'database',
 			userName: 'user',
@@ -572,7 +571,7 @@ suite('ConnectionConfig', () => {
 
 
 	test('change group for connection with conflict should throw', async () => {
-		let changingProfile: IConnectionProfile = {
+		let changingProfile: ConnectionProfile = {
 			serverName: 'server3',
 			databaseName: 'database',
 			userName: 'user',
@@ -629,7 +628,7 @@ suite('ConnectionConfig', () => {
 	});
 
 	test('change group(parent) for connection', async () => {
-		let newProfile: IConnectionProfile = {
+		let newProfile: ConnectionProfile = {
 			serverName: 'server3',
 			databaseName: 'database',
 			userName: 'user',

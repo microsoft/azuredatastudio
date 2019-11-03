@@ -23,7 +23,6 @@ import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { QueryModelService } from 'sql/platform/query/common/queryModelService';
 import { ConnectionManagementService } from 'sql/platform/connection/browser/connectionManagementService';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
@@ -31,6 +30,7 @@ import { TestStorageService, TestFileService } from 'vs/workbench/test/workbench
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 let none: void;
 
@@ -479,7 +479,7 @@ suite('SQL QueryAction Tests', () => {
 		let connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, {});
 		connectionManagementService.callBase = true;
 		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAnyString())).returns(() => isConnected);
-		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{
+		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <ConnectionProfile>{
 			databaseName: databaseName
 		});
 
@@ -516,7 +516,7 @@ suite('SQL QueryAction Tests', () => {
 		let cms = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, {});
 		cms.callBase = true;
 		cms.setup(x => x.onConnectionChanged).returns(() => dbChangedEmitter.event);
-		cms.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
+		cms.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <ConnectionProfile>{ databaseName: databaseName });
 
 		// ... Create a database dropdown that has been connected
 		let listItem = new ListDatabasesActionItem(editor.object, undefined, cms.object, undefined, configurationService.object);
@@ -540,7 +540,7 @@ suite('SQL QueryAction Tests', () => {
 		let cms = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, {}, {}, new TestStorageService());
 		cms.callBase = true;
 		cms.setup(x => x.onConnectionChanged).returns(() => dbChangedEmitter.event);
-		cms.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
+		cms.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <ConnectionProfile>{ databaseName: databaseName });
 
 		// ... Create a database dropdown that has been connected
 		let listItem = new ListDatabasesActionItem(editor.object, undefined, cms.object, undefined, configurationService.object);

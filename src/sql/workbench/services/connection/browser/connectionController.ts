@@ -6,7 +6,6 @@
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionComponentCallbacks, IConnectionComponentController, IConnectionValidateResult } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { AdvancedPropertiesController } from 'sql/workbench/parts/connection/browser/advancedPropertiesController';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as Constants from 'sql/platform/connection/common/constants';
 import * as azdata from 'azdata';
@@ -17,10 +16,11 @@ import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/com
 import { ConnectionWidget } from 'sql/workbench/services/connection/browser/connectionWidget';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export class ConnectionController implements IConnectionComponentController {
 	private _advancedController: AdvancedPropertiesController;
-	private _model: IConnectionProfile;
+	private _model: ConnectionProfile;
 	private _providerName: string;
 	protected _callback: IConnectionComponentCallbacks;
 	protected _connectionWidget: ConnectionWidget;
@@ -145,7 +145,7 @@ export class ConnectionController implements IConnectionComponentController {
 		return allGroups;
 	}
 
-	public initDialog(providers: string[], connectionInfo: IConnectionProfile): void {
+	public initDialog(providers: string[], connectionInfo: ConnectionProfile): void {
 		this._connectionWidget.updateServerGroup(this.getAllServerGroups(providers));
 		this._model = connectionInfo;
 		this._model.providerName = this._providerName;
@@ -165,7 +165,7 @@ export class ConnectionController implements IConnectionComponentController {
 		return { isValid: this._connectionWidget.connect(this._model), connection: this._model };
 	}
 
-	public fillInConnectionInputs(connectionInfo: IConnectionProfile): void {
+	public fillInConnectionInputs(connectionInfo: ConnectionProfile): void {
 		this._model = connectionInfo;
 		this._connectionWidget.fillInConnectionInputs(connectionInfo);
 	}

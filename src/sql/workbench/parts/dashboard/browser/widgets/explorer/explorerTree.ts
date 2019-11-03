@@ -5,7 +5,6 @@
 
 import { Router } from '@angular/router';
 
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { MetadataType } from 'sql/platform/connection/common/connectionManagement';
 import { SingleConnectionManagementService, CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
 import { ManageActionContext, BaseActionContext } from 'sql/workbench/browser/actions';
@@ -24,8 +23,9 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
 import { ObjectMetadataWrapper } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/objectMetadataWrapper';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
-export declare type TreeResource = IConnectionProfile | ObjectMetadataWrapper;
+export declare type TreeResource = ConnectionProfile | ObjectMetadataWrapper;
 
 // Empty class just for tree input
 export class ExplorerModel {
@@ -111,7 +111,7 @@ export class ExplorerController extends TreeDefaults.DefaultController {
 		return true;
 	}
 
-	private handleItemDoubleClick(element: IConnectionProfile): void {
+	private handleItemDoubleClick(element: ConnectionProfile): void {
 		this.progressService.showWhile(this._connectionService.changeDatabase(element.databaseName).then(result => {
 			this._router.navigate(['database-dashboard']);
 		}));
@@ -140,7 +140,7 @@ export class ExplorerDataSource implements tree.IDataSource {
 		} else if (element instanceof ExplorerModel) {
 			return ExplorerModel.id;
 		} else {
-			return (element as IConnectionProfile).getOptionsKey();
+			return (element as ConnectionProfile).getOptionsKey();
 		}
 	}
 
@@ -255,7 +255,7 @@ export class ExplorerFilter implements tree.IFilter {
 	}
 
 	// apply filter to databasename of the profile
-	private _doIsVisibleConnectionProfile(element: IConnectionProfile): boolean {
+	private _doIsVisibleConnectionProfile(element: ConnectionProfile): boolean {
 		if (!this._filterString) {
 			return true;
 		}

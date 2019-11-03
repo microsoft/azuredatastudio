@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import * as azdata from 'azdata';
 import { INewProfilerState } from 'sql/workbench/parts/profiler/common/profilerState';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 const PROFILER_SERVICE_ID = 'profilerService';
 export const IProfilerService = createDecorator<IProfilerService>(PROFILER_SERVICE_ID);
@@ -55,7 +55,7 @@ export interface IProfilerService {
 	 * Registers a session with the service that acts as the UI for a profiler session
 	 * @returns An unique id that should be used to make subsequent calls to this service
 	 */
-	registerSession(uri: string, connectionProfile: IConnectionProfile, session: IProfilerSession): Promise<ProfilerSessionID>;
+	registerSession(uri: string, connectionProfile: ConnectionProfile, session: IProfilerSession): Promise<ProfilerSessionID>;
 	/**
 	 * Connects the session specified by the id
 	 */

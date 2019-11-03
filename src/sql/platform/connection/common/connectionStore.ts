@@ -12,7 +12,6 @@ import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/co
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
-import { ConnectionShape } from 'sql/platform/connection/common/connectionShape';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
@@ -39,7 +38,7 @@ interface ConnectionStoreShape {
 export class ConnectionStore {
 	private groupIdMap = new ReverseLookUpMap<string, string | undefined>();
 	private connectionConfig = new ConnectionConfig(this.configurationService, this.capabilitiesService);
-	private mru: Array<ConnectionShape>;
+	private mru: Array<ConnectionProfile>;
 
 	constructor(
 		@IStorageService private readonly storageService: IStorageService,
@@ -64,7 +63,7 @@ export class ConnectionStore {
 	 * @param itemType type of the item (MRU or Profile) - optional
 	 * @returns formatted string with server, DB and username
 	 */
-	private formatCredentialId(shape: ConnectionShape, itemType?: string): string {
+	private formatCredentialId(shape: ConnectionProfile, itemType?: string): string {
 		const connectionProfileInstance = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, shape);
 		const cred: string[] = [CRED_PREFIX];
 		if (!itemType) {
@@ -80,12 +79,12 @@ export class ConnectionStore {
 	 * Returns true if the password is required
 	 * @param connection profile
 	 */
-	public isPasswordRequired(connection: IConnectionProfile): boolean {
+	public isPasswordRequired(connection: ConnectionProfile): boolean {
 		const connectionProfile = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, connection);
 		return connectionProfile.isPasswordRequired();
 	}
 
-	public addSavedPassword(credentialsItem: IConnectionProfile): Promise<{ profile: IConnectionProfile, savedCred: boolean }> {
+	public addSavedPassword(credentialsItem: ConnectionProfile): Promise<{ profile: ConnectionProfile, savedCred: boolean }> {
 		if (credentialsItem.savePassword && this.isPasswordRequired(credentialsItem) && !credentialsItem.password) {
 			const credentialId = this.formatCredentialId(credentialsItem, CRED_PROFILE_USER);
 			return this.credentialService.readCredential(credentialId)
@@ -110,7 +109,7 @@ export class ConnectionStore {
 	 * @param whether the plaintext password should be written to the settings file
 	 * @returns a Promise that returns the original profile, for help in chaining calls
 	 */
-	public saveProfile(profile: IConnectionProfile, forceWritePlaintextPassword?: boolean): Promise<IConnectionProfile> {
+	public saveProfile(profile: ConnectionProfile, forceWritePlaintextPassword?: boolean): Promise<ConnectionProfile> {
 		// Add the profile to the saved list, taking care to clear out the password field if necessary
 		const savedProfile = forceWritePlaintextPassword ? profile : this.getProfileWithoutPassword(profile);
 		return this.saveProfileToConfig(savedProfile)
@@ -127,7 +126,7 @@ export class ConnectionStore {
 			});
 	}
 
-	public savePassword(profile: IConnectionProfile): Promise<boolean> {
+	public savePassword(profile: ConnectionProfile): Promise<boolean> {
 		return this.saveProfilePasswordIfNeeded(profile);
 	}
 
@@ -141,7 +140,7 @@ export class ConnectionStore {
 		return this.connectionConfig.addGroup(profile);
 	}
 
-	private saveProfileToConfig(profile: IConnectionProfile): Promise<IConnectionProfile> {
+	private saveProfileToConfig(profile: ConnectionProfile): Promise<ConnectionProfile> {
 		if (profile.saveProfile) {
 			return this.connectionConfig.addConnection(profile);
 		} else {
@@ -163,7 +162,7 @@ export class ConnectionStore {
 		return this.convertConfigValuesToConnectionProfiles(mru);
 	}
 
-	private convertConfigValuesToConnectionProfiles(configValues: IConnectionProfile[]): ConnectionProfile[] {
+	private convertConfigValuesToConnectionProfiles(configValues: ConnectionProfile[]): ConnectionProfile[] {
 		return configValues.map(c => {
 			const connectionProfile = new ConnectionProfile(this.capabilitiesService, c);
 			if (connectionProfile.saveProfile) {
@@ -180,7 +179,7 @@ export class ConnectionStore {
 		});
 	}
 
-	public getProfileWithoutPassword(conn: IConnectionProfile): ConnectionProfile {
+	public getProfileWithoutPassword(conn: ConnectionProfile): ConnectionProfile {
 		let savedConn = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, conn);
 		savedConn = savedConn.withoutPassword();
 
@@ -196,12 +195,12 @@ export class ConnectionStore {
 	 * @param addToMru Whether to add this connection to the MRU
 	 * @returns a Promise that returns when the connection was saved
 	 */
-	public addRecentConnection(conn: IConnectionProfile): Promise<void> {
+	public addRecentConnection(conn: ConnectionProfile): Promise<void> {
 		const maxConnections = this.getMaxRecentConnectionsCount();
 		return this.addConnectionToState(conn, maxConnections, conn.savePassword);
 	}
 
-	private addConnectionToState(conn: IConnectionProfile, maxConnections?: number, savePassword?: boolean): Promise<void> {
+	private addConnectionToState(conn: ConnectionProfile, maxConnections?: number, savePassword?: boolean): Promise<void> {
 		// Get all profiles
 		const configValues = this.convertConfigValuesToConnectionProfiles(this.mru.slice());
 		let configToSave = this.addToConnectionList(conn, configValues);
@@ -215,7 +214,7 @@ export class ConnectionStore {
 		return savePassword ? this.doSavePassword(conn).then() : Promise.resolve();
 	}
 
-	private addToConnectionList(conn: IConnectionProfile, list: ConnectionProfile[]): IConnectionProfile[] {
+	private addToConnectionList(conn: ConnectionProfile, list: ConnectionProfile[]): ConnectionProfile[] {
 		const savedProfile = this.getProfileWithoutPassword(conn);
 
 		// Remove the connection from the list if it already exists
@@ -230,10 +229,10 @@ export class ConnectionStore {
 
 		list.unshift(savedProfile);
 
-		return list.filter(n => n !== undefined).map(c => c.toIConnectionProfile());
+		return list.filter(n => n !== undefined);
 	}
 
-	private removeFromConnectionList(conn: IConnectionProfile, list: ConnectionProfile[]): IConnectionProfile[] {
+	private removeFromConnectionList(conn: ConnectionProfile, list: ConnectionProfile[]): ConnectionProfile[] {
 		const savedProfile = this.getProfileWithoutPassword(conn);
 
 		// Remove the connection from the list if it already exists
@@ -246,17 +245,17 @@ export class ConnectionStore {
 			return !equal;
 		});
 
-		return list.filter(n => n !== undefined).map(c => c.toIConnectionProfile());
+		return list.filter(n => n !== undefined);
 	}
 
 	/**
 	 * Clear all recently used connections from the MRU list.
 	 */
 	public clearRecentlyUsed(): void {
-		this.mru = new Array<IConnectionProfile>();
+		this.mru = new Array<ConnectionProfile>();
 	}
 
-	public removeRecentConnection(conn: IConnectionProfile): void {
+	public removeRecentConnection(conn: ConnectionProfile): void {
 		// Get all profiles
 		const configValues = this.convertConfigValuesToConnectionProfiles(this.mru.slice());
 		const configToSave = this.removeFromConnectionList(conn, configValues);
@@ -271,7 +270,7 @@ export class ConnectionStore {
 		return this.doSavePassword(profile);
 	}
 
-	private doSavePassword(conn: IConnectionProfile): Promise<boolean> {
+	private doSavePassword(conn: ConnectionProfile): Promise<boolean> {
 		if (conn.password) {
 			const credentialId = this.formatCredentialId(conn);
 			return this.credentialService.saveCredential(credentialId, conn.password);

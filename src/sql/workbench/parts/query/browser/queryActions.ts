@@ -33,7 +33,6 @@ import { Task } from 'sql/platform/tasks/browser/tasksRegistry';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
@@ -111,7 +110,7 @@ export abstract class QueryTaskbarAction extends Action {
 	}
 }
 
-export function openNewQuery(accessor: ServicesAccessor, profile?: IConnectionProfile, initalContent?: string, onConnection?: RunQueryOnConnectionMode): Promise<void> {
+export function openNewQuery(accessor: ServicesAccessor, profile?: ConnectionProfile, initalContent?: string, onConnection?: RunQueryOnConnectionMode): Promise<void> {
 	const editorService = accessor.get(IEditorService);
 	const queryEditorService = accessor.get(IQueryEditorService);
 	const objectExplorerService = accessor.get(IObjectExplorerService);
@@ -150,7 +149,7 @@ export class NewQueryTask extends Task {
 		});
 	}
 
-	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): Promise<void> {
+	public runTask(accessor: ServicesAccessor, profile: ConnectionProfile): Promise<void> {
 		return openNewQuery(accessor, profile);
 	}
 }

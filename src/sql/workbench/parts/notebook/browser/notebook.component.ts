@@ -23,14 +23,13 @@ import * as DOM from 'vs/base/browser/dom';
 
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { CellTypes, CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
-import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { ICellModel, IModelFactory, INotebookModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/parts/notebook/browser/models/modelFactory';
 import * as notebookUtils from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
 import { Deferred } from 'sql/base/common/promise';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
@@ -55,6 +54,7 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -76,7 +76,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	protected isLoading: boolean;
 	private notebookManagers: INotebookManager[] = [];
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
-	private profile: IConnectionProfile;
+	private profile: ConnectionProfile;
 	private _trustedAction: TrustedAction;
 	private _runAllCellsAction: RunAllCellsAction;
 	private _providerRelatedActions: IAction[] = [];
@@ -116,7 +116,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.profile = this.notebookParams ? this.notebookParams.profile : undefined;
 		if (!this.profile) {
 			// Second use global connection if possible
-			let profile: IConnectionProfile = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+			let profile: ConnectionProfile = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
 
 			// TODO use generic method to match kernel with valid connection that's compatible. For now, we only have 1
 			if (profile && profile.providerName) {

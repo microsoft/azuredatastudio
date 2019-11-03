@@ -604,7 +604,7 @@ export class NewNotebookAction extends Action {
 		let connProfile: azdata.IConnectionProfile;
 		if (context && context.nodeInfo) {
 			let node = await this.objectExplorerService.getTreeNode(context.connectionProfile.id, context.nodeInfo.nodePath);
-			connProfile = TreeUpdateUtils.getConnectionProfile(node).toIConnectionProfile();
+			connProfile = TreeUpdateUtils.getConnectionProfile(node);
 		} else if (context && context.connectionProfile) {
 			connProfile = context.connectionProfile;
 		}

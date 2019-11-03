@@ -5,8 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
-import { Emitter, Event } from 'vs/base/common/event';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { Emitter } from 'vs/base/common/event';
 import { FirewallRuleDialog } from 'sql/platform/accounts/browser/firewallRuleDialog';
 import { FirewallRuleViewModel } from 'sql/platform/accounts/common/firewallRuleViewModel';
 import { FirewallRuleDialogController } from 'sql/platform/accounts/browser/firewallRuleDialogController';
@@ -17,10 +16,11 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import { Deferred } from 'sql/base/common/promise';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 // TESTS ///////////////////////////////////////////////////////////////////
 suite('Firewall rule dialog controller tests', () => {
-	let connectionProfile: IConnectionProfile;
+	let connectionProfile: ConnectionProfile;
 	let account: azdata.Account;
 	let IPAddress = '250.222.155.198';
 	let mockOnAddAccountErrorEvent: Emitter<string>;

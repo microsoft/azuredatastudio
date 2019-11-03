@@ -3,15 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-
 import * as types from 'vs/base/common/types';
 import { ILocalizedString, ICommandAction } from 'vs/platform/actions/common/actions';
 import { Event } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { IdGenerator } from 'vs/base/common/idGenerator';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export interface ITaskOptions {
 	id: string;
@@ -40,7 +38,7 @@ export interface ITaskAction {
 }
 
 export interface ITaskHandler {
-	(accessor: ServicesAccessor, profile: IConnectionProfile, ...args: any[]): void;
+	(accessor: ServicesAccessor, profile: ConnectionProfile, ...args: any[]): void;
 }
 
 export interface ITask {

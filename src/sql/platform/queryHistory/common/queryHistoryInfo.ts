@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { generateUuid } from 'vs/base/common/uuid';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export enum QueryStatus {
 	Succeeded = 0,
@@ -25,7 +25,7 @@ export class QueryHistoryInfo {
 
 	constructor(
 		public queryText: string,
-		public connectionProfile: IConnectionProfile,
+		public connectionProfile: ConnectionProfile,
 		public startTime: Date,
 		status?: QueryStatus) {
 		this.database = connectionProfile ? connectionProfile.databaseName : '';

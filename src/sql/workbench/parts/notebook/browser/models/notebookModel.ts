@@ -16,7 +16,6 @@ import * as notebookUtils from 'sql/workbench/parts/notebook/browser/models/note
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookContexts } from 'sql/workbench/parts/notebook/browser/models/notebookContexts';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotification, Severity, INotificationService } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -83,7 +82,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	constructor(
 		private _notebookOptions: INotebookModelOptions,
-		public connectionProfile: IConnectionProfile | undefined,
+		public connectionProfile: ConnectionProfile | undefined,
 		@ILogService private readonly logService: ILogService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService
@@ -242,7 +241,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		});
 	}
 
-	public get activeConnection(): IConnectionProfile {
+	public get activeConnection(): ConnectionProfile {
 		return this._activeConnection;
 	}
 
@@ -525,7 +524,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	private isValidConnection(profile: IConnectionProfile | connection.Connection) {
+	private isValidConnection(profile: ConnectionProfile | connection.Connection) {
 		if (this._standardKernels) {
 			let standardKernels = this._standardKernels.find(kernel => this._defaultKernel && kernel.displayName === this._defaultKernel.display_name);
 			let connectionProviderIds = standardKernels ? standardKernels.connectionProviderIds : undefined;
@@ -698,7 +697,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				}
 				this._activeConnection = newConnection;
 				this.refreshConnections(newConnection);
-				this._activeClientSession.updateConnection(newConnection.toIConnectionProfile()).then(
+				this._activeClientSession.updateConnection(newConnection).then(
 					result => {
 						//Remove 'Select connection' from 'Attach to' drop-down since its a valid connection
 						this._onValidConnectionSelected.fire(true);

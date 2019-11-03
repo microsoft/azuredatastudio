@@ -7,7 +7,6 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
-import { IConnectionProfile, IConnectionProfileStore } from 'sql/platform/connection/common/interfaces';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as nls from 'vs/nls';
@@ -59,7 +58,7 @@ export class ConnectionConfig {
 	/**
 	 * Add a new connection to the connection config.
 	 */
-	public addConnection(profile: IConnectionProfile): Promise<IConnectionProfile> {
+	public addConnection(profile: ConnectionProfile): Promise<ConnectionProfile> {
 		if (profile.saveProfile) {
 			return this.addGroupFromProfile(profile).then(groupId => {
 				let profiles = this.configurationService.inspect<IConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).user;
@@ -91,7 +90,7 @@ export class ConnectionConfig {
 		}
 	}
 
-	private getConnectionProfileInstance(profile: IConnectionProfile, groupId: string): ConnectionProfile {
+	private getConnectionProfileInstance(profile: ConnectionProfile, groupId: string): ConnectionProfile {
 		let connectionProfile = profile as ConnectionProfile;
 		if (connectionProfile === undefined) {
 			connectionProfile = new ConnectionProfile(this._capabilitiesService, profile);
@@ -103,7 +102,7 @@ export class ConnectionConfig {
 	/**
 	 *Returns group id
 	 */
-	public addGroupFromProfile(profile: IConnectionProfile): Promise<string> {
+	public addGroupFromProfile(profile: ConnectionProfile): Promise<string> {
 		if (profile.groupId && profile.groupId !== Utils.defaultGroupId) {
 			return Promise.resolve(profile.groupId);
 		} else {

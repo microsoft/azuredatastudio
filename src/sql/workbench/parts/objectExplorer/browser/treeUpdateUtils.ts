@@ -12,7 +12,6 @@ import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import * as errors from 'vs/base/common/errors';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface IExpandableTree extends ITree {
@@ -152,7 +151,7 @@ export class TreeUpdateUtils {
 	}
 
 	public static async connectIfNotConnected(
-		connection: IConnectionProfile,
+		connection: ConnectionProfile,
 		options: IConnectionCompletionOptions,
 		connectionManagementService: IConnectionManagementService,
 		tree: ITree): Promise<ConnectionProfile | undefined> {
@@ -205,7 +204,7 @@ export class TreeUpdateUtils {
 	 * @param connectionManagementService Connection management service instance
 	 * @param objectExplorerService Object explorer service instance
 	 */
-	public static async  connectAndCreateOeSession(connection: IConnectionProfile, options: IConnectionCompletionOptions,
+	public static async  connectAndCreateOeSession(connection: ConnectionProfile, options: IConnectionCompletionOptions,
 		connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, tree: ITree): Promise<boolean> {
 		const connectedConnection = await TreeUpdateUtils.connectIfNotConnected(connection, options, connectionManagementService, tree);
 		if (connectedConnection) {

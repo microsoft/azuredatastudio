@@ -25,7 +25,6 @@ import { TreeCreationUtils } from 'sql/workbench/parts/objectExplorer/browser/tr
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/workbench/parts/objectExplorer/browser/treeSelectionHandler';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/parts/objectExplorer/common/treeNode';
@@ -148,7 +147,7 @@ export class ServerTreeView extends Disposable {
 		this._register(attachListStyler(this._tree, this._themeService));
 
 		// Refresh Tree when these events are emitted
-		this._register(this._connectionManagementService.onAddConnectionProfile((newProfile: IConnectionProfile) => {
+		this._register(this._connectionManagementService.onAddConnectionProfile((newProfile: ConnectionProfile) => {
 			this.handleAddConnectionProfile(newProfile);
 		}));
 		this._register(this._connectionManagementService.onDeleteConnectionProfile(() => {
@@ -195,7 +194,7 @@ export class ServerTreeView extends Disposable {
 		return uri && uri.startsWith(ConnectionUtils.uriPrefixes.default) && !isBackupRestoreUri;
 	}
 
-	private async handleAddConnectionProfile(newProfile: IConnectionProfile): Promise<void> {
+	private async handleAddConnectionProfile(newProfile: ConnectionProfile): Promise<void> {
 		if (newProfile) {
 			const groups = this._connectionManagementService.getConnectionGroups();
 			const profile = ConnectionUtils.findProfileInGroup(newProfile, groups);
@@ -243,7 +242,7 @@ export class ServerTreeView extends Disposable {
 		return null;
 	}
 
-	private onObjectExplorerSessionCreated(connection: IConnectionProfile) {
+	private onObjectExplorerSessionCreated(connection: ConnectionProfile) {
 		const conn = this.getConnectionInTreeInput(connection.id);
 		if (conn) {
 			this._tree.refresh(conn).then(() => {
@@ -256,7 +255,7 @@ export class ServerTreeView extends Disposable {
 		}
 	}
 
-	public addObjectExplorerNodeAndRefreshTree(connection: IConnectionProfile): void {
+	public addObjectExplorerNodeAndRefreshTree(connection: ConnectionProfile): void {
 		hide(this.messages);
 		if (!this._objectExplorerService.getObjectExplorerNode(connection)) {
 			this._objectExplorerService.updateObjectExplorerNodes(connection).then(() => {
@@ -266,7 +265,7 @@ export class ServerTreeView extends Disposable {
 		}
 	}
 
-	public deleteObjectExplorerNodeAndRefreshTree(connection: IConnectionProfile): Thenable<void> {
+	public deleteObjectExplorerNodeAndRefreshTree(connection: ConnectionProfile): Thenable<void> {
 		if (connection) {
 			const conn = this.getConnectionInTreeInput(connection.id);
 			if (conn) {

@@ -11,7 +11,6 @@ import { ConnectionDialogWidget, OnShowUIResponse } from 'sql/workbench/services
 import { ConnectionController } from 'sql/workbench/services/connection/browser/connectionController';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/platform/connection/common/constants';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { entries } from 'sql/base/common/objects';
@@ -33,7 +32,7 @@ import { CmsConnectionController } from 'sql/workbench/services/connection/brows
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
-	connection: IConnectionProfile;
+	connection: ConnectionProfile;
 }
 
 export interface IConnectionComponentCallbacks {
@@ -46,9 +45,9 @@ export interface IConnectionComponentCallbacks {
 
 export interface IConnectionComponentController {
 	showUiComponent(container: HTMLElement, didChange?: boolean): void;
-	initDialog(providers: string[], model: IConnectionProfile): void;
+	initDialog(providers: string[], model: ConnectionProfile): void;
 	validateConnection(): IConnectionValidateResult;
-	fillInConnectionInputs(connectionInfo: IConnectionProfile): void;
+	fillInConnectionInputs(connectionInfo: ConnectionProfile): void;
 	handleOnConnecting(): void;
 	handleResetConnection(): void;
 	focusOnOpen(): void;
@@ -65,13 +64,13 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _model: ConnectionProfile;
 	private _params: INewConnectionParams;
 	private _options: IConnectionCompletionOptions;
-	private _inputModel: IConnectionProfile;
+	private _inputModel: ConnectionProfile;
 	private _providerNameToDisplayNameMap: { [providerDisplayName: string]: string } = {};
 	private _providerDisplayNames: string[] = [];
 	private _currentProviderType: string = Constants.mssqlProviderName;
 	private _connecting: boolean = false;
 	private _connectionErrorTitle = localize('connectionError', "Connection error");
-	private _dialogDeferredPromise: Deferred<IConnectionProfile>;
+	private _dialogDeferredPromise: Deferred<ConnectionProfile>;
 
 	/**
 	 * This is used to work around the interconnectedness of this code
@@ -80,7 +79,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _connectionManagementService: IConnectionManagementService;
 
 	constructor(
-		@IWorkbenchLayoutService private layoutService: IWorkbenchLayoutService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
@@ -150,7 +148,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		return defaultProvider || Constants.mssqlProviderName;
 	}
 
-	private handleOnConnect(params: INewConnectionParams, profile?: IConnectionProfile): void {
+	private handleOnConnect(params: INewConnectionParams, profile?: ConnectionProfile): void {
 		if (!this._connecting) {
 			this._connecting = true;
 			this.handleProviderOnConnecting();
@@ -220,7 +218,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 	}
 
-	private handleDefaultOnConnect(params: INewConnectionParams, connection: IConnectionProfile): Thenable<void> {
+	private handleDefaultOnConnect(params: INewConnectionParams, connection: ConnectionProfile): Thenable<void> {
 		if (this.ignoreNextConnect) {
 			this._connectionDialog.resetConnection();
 			this._connectionDialog.close();
@@ -332,7 +330,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this.uiController.initDialog(this._params && this._params.providers, this._model);
 	}
 
-	private handleFillInConnectionInputs(connectionInfo: IConnectionProfile): void {
+	private handleFillInConnectionInputs(connectionInfo: ConnectionProfile): void {
 		this._connectionManagementService.addSavedPassword(connectionInfo).then(connectionWithPassword => {
 			if (this._model) {
 				this._model.dispose();
@@ -352,7 +350,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this.uiController.handleOnConnecting();
 	}
 
-	private updateModelServerCapabilities(model: IConnectionProfile) {
+	private updateModelServerCapabilities(model: ConnectionProfile) {
 		if (this._model) {
 			this._model.dispose();
 		}
@@ -365,7 +363,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 	}
 
-	private createModel(model: IConnectionProfile): ConnectionProfile {
+	private createModel(model: ConnectionProfile): ConnectionProfile {
 		const defaultProvider = this.getDefaultProviderName();
 		let providerName = model ? model.providerName : defaultProvider;
 		providerName = providerName ? providerName : defaultProvider;
@@ -393,14 +391,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	public openDialogAndWait(
 		connectionManagementService: IConnectionManagementService,
 		params?: INewConnectionParams,
-		model?: IConnectionProfile,
+		model?: ConnectionProfile,
 		connectionResult?: IConnectionResult,
-		doConnect: boolean = true): Promise<IConnectionProfile> {
+		doConnect: boolean = true): Promise<ConnectionProfile> {
 
 		if (!doConnect) {
 			this.ignoreNextConnect = true;
 		}
-		this._dialogDeferredPromise = new Deferred<IConnectionProfile>();
+		this._dialogDeferredPromise = new Deferred<ConnectionProfile>();
 
 		this.showDialog(connectionManagementService, params,
 			model,
@@ -414,7 +412,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	public showDialog(
 		connectionManagementService: IConnectionManagementService,
 		params?: INewConnectionParams,
-		model?: IConnectionProfile,
+		model?: ConnectionProfile,
 		connectionResult?: IConnectionResult,
 		connectionOptions?: IConnectionCompletionOptions): Promise<void> {
 

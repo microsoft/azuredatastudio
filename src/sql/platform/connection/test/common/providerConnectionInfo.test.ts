@@ -4,18 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as azdata from 'azdata';
 import * as assert from 'assert';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 suite('SQL ProviderConnectionInfo tests', () => {
 	let msSQLCapabilities: any;
 	let capabilitiesService: TestCapabilitiesService;
 
-	let connectionProfile: IConnectionProfile = {
+	let connectionProfile: ConnectionProfile = {
 		connectionName: 'name',
 		serverName: 'new server',
 		databaseName: 'database',

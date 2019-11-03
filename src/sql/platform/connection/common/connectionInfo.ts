@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as interfaces from 'sql/platform/connection/common/interfaces';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 /**
  * Sets sensible defaults for key connection properties, especially
@@ -12,7 +12,7 @@ import * as interfaces from 'sql/platform/connection/common/interfaces';
  * @param connCreds connection to be fixed up
  * @returns the updated connection
  */
-export function fixupConnectionCredentials(connCreds: interfaces.IConnectionProfile): interfaces.IConnectionProfile {
+export function fixupConnectionCredentials(connCreds: ConnectionProfile): ConnectionProfile {
 	if (!connCreds.serverName) {
 		connCreds.serverName = '';
 	}

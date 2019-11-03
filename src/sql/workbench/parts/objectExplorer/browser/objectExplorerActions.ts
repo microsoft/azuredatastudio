@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 
@@ -13,7 +12,6 @@ import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/tree
 import { TreeSelectionHandler } from 'sql/workbench/parts/objectExplorer/browser/treeSelectionHandler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
@@ -47,7 +45,7 @@ export class OEAction extends ExecuteCommandAction {
 	public async run(actionContext: any): Promise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 
-		let profile: IConnectionProfile;
+		let profile: ConnectionProfile;
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			if (actionContext.isConnectionNode) {
 				profile = new ConnectionProfile(this._capabilitiesService, actionContext.connectionProfile);

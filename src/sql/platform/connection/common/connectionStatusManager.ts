@@ -6,7 +6,6 @@
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { StopWatch } from 'vs/base/common/stopwatch';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
@@ -39,7 +38,7 @@ export class ConnectionStatusManager {
 		return Object.values(this._connections).find((connection: ConnectionManagementInfo) => connection.connectionProfile.id === profileId);
 	}
 
-	public findConnectionProfile(connectionProfile: IConnectionProfile): ConnectionManagementInfo | undefined {
+	public findConnectionProfile(connectionProfile: ConnectionProfile): ConnectionManagementInfo | undefined {
 		let id = Utils.generateUri(connectionProfile);
 		return this.findConnection(id);
 	}
@@ -70,7 +69,7 @@ export class ConnectionStatusManager {
 		return connectionInfoForId ? connectionInfoForId.connectionProfile : undefined;
 	}
 
-	public addConnection(connection: IConnectionProfile, id: string): ConnectionManagementInfo {
+	public addConnection(connection: ConnectionProfile, id: string): ConnectionManagementInfo {
 		this._logService.info(`Adding connection ${id}`);
 		// Always create a copy and save that in the list
 		let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
@@ -102,7 +101,7 @@ export class ConnectionStatusManager {
 	 * when the connection is stored, the group id get assigned to the profile and it can change the id
 	 * So for those kind of connections, we need to add the new id and the connection
 	 */
-	public updateConnectionProfile(connection: IConnectionProfile, id: string): string {
+	public updateConnectionProfile(connection: ConnectionProfile, id: string): string {
 		let newId: string = id;
 		let connectionInfo: ConnectionManagementInfo = this._connections[id];
 		if (connectionInfo && connection) {
@@ -178,7 +177,7 @@ export class ConnectionStatusManager {
 		return ownerUriToReturn;
 	}
 
-	public onConnectionChanged(changedConnInfo: azdata.ChangedConnectionInfo): IConnectionProfile | undefined {
+	public onConnectionChanged(changedConnInfo: azdata.ChangedConnectionInfo): ConnectionProfile | undefined {
 		let connection = this._connections[changedConnInfo.connectionUri];
 		if (connection && connection.connectionProfile) {
 			connection.connectionProfile.serverName = changedConnInfo.connection.serverName;

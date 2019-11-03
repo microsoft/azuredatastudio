@@ -6,7 +6,6 @@
 import nls = require('vs/nls');
 import { Action } from 'vs/base/common/actions';
 import { Event, Emitter } from 'vs/base/common/event';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { INotificationService, INotificationActions } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
@@ -18,6 +17,7 @@ import { DashboardInput } from 'sql/workbench/parts/dashboard/browser/dashboardI
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 /**
  * Workbench action to clear the recent connnections list
@@ -118,7 +118,7 @@ export class ClearSingleRecentConnectionAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private _connectionProfile: IConnectionProfile,
+		private _connectionProfile: ConnectionProfile,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 	) {
 		super(id, label);

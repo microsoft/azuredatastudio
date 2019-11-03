@@ -9,7 +9,6 @@ import { localize } from 'vs/nls';
 import { IDefaultConnection, notebookConstants } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export class NotebookContexts {
@@ -49,7 +48,7 @@ export class NotebookContexts {
 	 * @param kernelChangedArgs kernel changed args (both old and new kernel info)
 	 * @param profile current connection profile
 	 */
-	public static getContextsForKernel(connectionService: IConnectionManagementService, connProviderIds: string[], kernelChangedArgs?: nb.IKernelChangedArgs, profile?: IConnectionProfile): IDefaultConnection {
+	public static getContextsForKernel(connectionService: IConnectionManagementService, connProviderIds: string[], kernelChangedArgs?: nb.IKernelChangedArgs, profile?: ConnectionProfile): IDefaultConnection {
 		let connections: IDefaultConnection = this.DefaultContext;
 		if (!profile) {
 			if (!kernelChangedArgs || !kernelChangedArgs.newValue ||
@@ -71,7 +70,7 @@ export class NotebookContexts {
 	 * @param apiWrapper ApiWrapper
 	 * @param profile current connection profile
 	 */
-	public static getActiveContexts(connectionService: IConnectionManagementService, connProviderIds: string[], profile: IConnectionProfile): IDefaultConnection {
+	public static getActiveContexts(connectionService: IConnectionManagementService, connProviderIds: string[], profile: ConnectionProfile): IDefaultConnection {
 		let defaultConnection: ConnectionProfile = NotebookContexts.DefaultContext.defaultConnection;
 		let activeConnections: ConnectionProfile[] = connectionService.getActiveConnections();
 		if (activeConnections && activeConnections.length > 0) {

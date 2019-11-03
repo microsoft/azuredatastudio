@@ -8,7 +8,6 @@ import * as TypeMoq from 'typemoq';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { URI } from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
@@ -17,7 +16,7 @@ import { TestEditorService } from 'vs/workbench/test/workbenchTestServices';
 
 suite('TaskUtilities', function () {
 	test('getCurrentGlobalConnection returns the selected OE server if a server or one of its children is selected', () => {
-		let connectionProfile = { databaseName: 'test_database', id: 'test_id', authenticationType: 'SQL Login', password: 'test_password', serverName: 'test_server', userName: 'test_user' } as IConnectionProfile;
+		let connectionProfile = { databaseName: 'test_database', id: 'test_id', authenticationType: 'SQL Login', password: 'test_password', serverName: 'test_server', userName: 'test_user' } as ConnectionProfile;
 		let mockObjectExplorerService = TypeMoq.Mock.ofInstance({ isFocused: () => undefined, getSelectedProfileAndDatabase: () => undefined } as IObjectExplorerService);
 		let mockConnectionManagementService = TypeMoq.Mock.ofType(TestConnectionManagementService);
 		let mockWorkbenchEditorService = TypeMoq.Mock.ofType(TestEditorService);
@@ -34,7 +33,7 @@ suite('TaskUtilities', function () {
 	});
 
 	test('getCurrentGlobalConnection returns the selected OE database if a database or its children is selected', () => {
-		let connectionProfile = { databaseName: 'test_database', id: 'test_id', authenticationType: 'SQL Login', password: 'test_password', serverName: 'test_server', userName: 'test_user' } as IConnectionProfile;
+		let connectionProfile = { databaseName: 'test_database', id: 'test_id', authenticationType: 'SQL Login', password: 'test_password', serverName: 'test_server', userName: 'test_user' } as ConnectionProfile;
 		let mockObjectExplorerService = TypeMoq.Mock.ofInstance({ isFocused: () => undefined, getSelectedProfileAndDatabase: () => undefined } as IObjectExplorerService);
 		let mockConnectionManagementService = TypeMoq.Mock.ofType(TestConnectionManagementService);
 		let mockWorkbenchEditorService = TypeMoq.Mock.ofType(TestEditorService);
@@ -58,7 +57,7 @@ suite('TaskUtilities', function () {
 	});
 
 	test('getCurrentGlobalConnection returns the connection from the active tab, if there is one and OE is not focused', () => {
-		let connectionProfile = { databaseName: 'test_database', id: 'test_id', authenticationType: 'SQL Login', password: 'test_password', serverName: 'test_server', userName: 'test_user' } as IConnectionProfile;
+		let connectionProfile = { databaseName: 'test_database', id: 'test_id', authenticationType: 'SQL Login', password: 'test_password', serverName: 'test_server', userName: 'test_user' } as ConnectionProfile;
 		let mockObjectExplorerService = TypeMoq.Mock.ofInstance({ isFocused: () => undefined, getSelectedProfileAndDatabase: () => undefined } as IObjectExplorerService);
 		let mockConnectionManagementService = TypeMoq.Mock.ofType(TestConnectionManagementService);
 		let mockWorkbenchEditorService = TypeMoq.Mock.ofType(TestEditorService);
@@ -89,7 +88,7 @@ suite('TaskUtilities', function () {
 	});
 
 	test('getCurrentGlobalConnection returns the connection from OE if there is no active tab, even if OE is not focused', () => {
-		let connectionProfile = { databaseName: 'test_database', id: 'test_id', authenticationType: 'SQL Login', password: 'test_password', serverName: 'test_server', userName: 'test_user' } as IConnectionProfile;
+		let connectionProfile = { databaseName: 'test_database', id: 'test_id', authenticationType: 'SQL Login', password: 'test_password', serverName: 'test_server', userName: 'test_user' } as ConnectionProfile;
 		let mockObjectExplorerService = TypeMoq.Mock.ofInstance({ isFocused: () => undefined, getSelectedProfileAndDatabase: () => undefined } as IObjectExplorerService);
 		let mockConnectionManagementService = TypeMoq.Mock.ofType(TestConnectionManagementService);
 		let mockWorkbenchEditorService = TypeMoq.Mock.ofType(TestEditorService);

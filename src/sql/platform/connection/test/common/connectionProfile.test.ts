@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IConnectionProfile, IConnectionProfileStore } from 'sql/platform/connection/common/interfaces';
 import * as azdata from 'azdata';
 import * as assert from 'assert';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -16,7 +15,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 	let msSQLCapabilities: ConnectionProviderProperties;
 	let capabilitiesService: TestCapabilitiesService;
 
-	let connectionProfile: IConnectionProfile = {
+	let connectionProfile: ConnectionProfile = {
 		connectionName: 'new name',
 		serverName: 'new server',
 		databaseName: 'database',
@@ -217,6 +216,6 @@ suite('SQL ConnectionProfileInfo tests', () => {
 	});
 
 	test('an empty connection profile does not cause issues', () => {
-		assert.doesNotThrow(() => new ConnectionProfile(capabilitiesService, {} as IConnectionProfile));
+		assert.doesNotThrow(() => new ConnectionProfile(capabilitiesService, {} as ConnectionProfile));
 	});
 });

@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { DataService } from 'sql/workbench/parts/grid/common/dataService';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
 import { Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export interface IQueryComponentParams extends IBootstrapParams {
 	dataService: DataService;
@@ -23,7 +23,7 @@ export interface IEditDataComponentParams extends IBootstrapParams {
 }
 
 export interface IDefaultComponentParams extends IBootstrapParams {
-	connection: IConnectionProfile;
+	connection: ConnectionProfile;
 	ownerUri: string;
 	scopedContextService: IContextKeyService;
 	connectionContextKey: ConnectionContextKey;

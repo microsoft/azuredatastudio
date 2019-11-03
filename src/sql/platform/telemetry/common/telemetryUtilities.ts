@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ITelemetryService, ITelemetryData } from 'vs/platform/telemetry/common/telemetry';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export interface IConnectionTelemetryData extends ITelemetryData {
 	provider?: string;
@@ -25,7 +25,7 @@ export function addTelemetry(
 	logService: ILogService,
 	telemetryEventName: string,
 	data?: IConnectionTelemetryData,
-	connection?: IConnectionProfile
+	connection?: ConnectionProfile
 ): Promise<void> {
 	return new Promise<void>(resolve => {
 		try {

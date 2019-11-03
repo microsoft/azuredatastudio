@@ -12,7 +12,6 @@ import { Component, Inject, forwardRef, ViewChild, OnInit, ElementRef } from '@a
 /* SQL imports */
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 /* VS imports */
 import * as themeColors from 'vs/workbench/common/theme';
@@ -28,6 +27,7 @@ import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/commo
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { TaskRegistry } from 'sql/platform/tasks/browser/tasksRegistry';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 interface ITask {
 	name: string;
@@ -43,7 +43,7 @@ const selector = 'tasks-widget';
 export class TasksWidget extends DashboardWidget implements IDashboardWidget, OnInit {
 	private _size: number = 98;
 	private _tasks: Array<ICommandAction> = [];
-	private _profile: IConnectionProfile;
+	private _profile: ConnectionProfile;
 	private _scrollableElement: ScrollableElement;
 	private _tileContainer: HTMLElement;
 	static readonly ICON_PATH_TO_CSS_RULES: Map<string /* path*/, string /* CSS rule */> = new Map<string, string>();

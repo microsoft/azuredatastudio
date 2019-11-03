@@ -17,7 +17,6 @@ import { IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ipcRenderer as ipc } from 'electron';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { localize } from 'vs/nls';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
@@ -92,7 +91,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	// (serverName, null) => Connect object explorer and open a new query editor if no file names are passed. If file names are passed, connect their editors to the server.
 	// (null, null) => Prompt for a connection unless there are registered servers
 	public async processCommandLine(args: SqlArgs): Promise<void> {
-		let profile: IConnectionProfile = undefined;
+		let profile: ConnectionProfile = undefined;
 		let commandName = undefined;
 		if (args) {
 			if (this._commandService) {
@@ -119,7 +118,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 				// Before sending to extensions, we should a) serialize to IConnectionProfile or things will fail,
 				// and b) use the latest version of the profile from the service so most fields are filled in.
 				let updatedProfile = this._connectionManagementService.getConnectionProfileById(profile.id);
-				connectedContext = { connectionProfile: new ConnectionProfile(this._capabilitiesService, updatedProfile).toIConnectionProfile() };
+				connectedContext = { connectionProfile: new ConnectionProfile(this._capabilitiesService, updatedProfile) };
 			} catch (err) {
 				this.logService.warn('Failed to connect due to error' + getErrorMessage(err));
 			}
@@ -199,7 +198,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	}
 
 	// If an open and connectable query editor exists for the given URI, attach it to the connection profile
-	private async processFile(uriString: string, profile: IConnectionProfile, warnOnConnectFailure: boolean): Promise<void> {
+	private async processFile(uriString: string, profile: ConnectionProfile, warnOnConnectFailure: boolean): Promise<void> {
 		let activeEditor = this._editorService.editors.filter(v => v.getResource().toString() === uriString).pop();
 		if (activeEditor) {
 			let queryInput = activeEditor as QueryInput;

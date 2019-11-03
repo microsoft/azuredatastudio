@@ -317,7 +317,7 @@ CommandsRegistry.registerCommand({
 		if (connectionManagementService.isConnected(undefined, connection)) {
 			treeNode = await getTreeNode(args, objectExplorerService);
 			if (treeNode === undefined) {
-				objectExplorerService.updateObjectExplorerNodes(connection.toIConnectionProfile()).then(() => {
+				objectExplorerService.updateObjectExplorerNodes(connection).then(() => {
 					treeNode = objectExplorerService.getObjectExplorerNode(connection);
 				});
 			}

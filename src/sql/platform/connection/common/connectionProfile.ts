@@ -12,7 +12,6 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { isString } from 'vs/base/common/types';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/platform/connection/common/constants';
-import { ConnectionShape } from 'sql/platform/connection/common/connectionShape';
 
 // Concrete implementation of the IConnectionProfile interface
 
@@ -67,7 +66,7 @@ export class ConnectionProfile extends ProviderConnectionInfo {
 		this.options['databaseDisplayName'] = this.databaseName;
 	}
 
-	public matches(shape: ConnectionShape): boolean {
+	public matches(shape: ConnectionProfile): boolean {
 		return shape
 			&& this.providerName === shape.providerName
 			&& this.nullCheckEqualsIgnoreCase(this.serverName, shape.serverName)

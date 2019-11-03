@@ -6,7 +6,6 @@
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTemplate, ProfilerFilter } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ProfilerState } from 'sql/workbench/parts/profiler/common/profilerState';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
@@ -23,6 +22,7 @@ import { URI } from 'vs/base/common/uri';
 import Severity from 'vs/base/common/severity';
 import { FilterData } from 'sql/workbench/services/profiler/browser/profilerFilter';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {
 
@@ -44,8 +44,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	private _filter: ProfilerFilter = { clauses: [] };
 
 	constructor(
-		public connection: IConnectionProfile,
-		@IInstantiationService private _instantiationService: IInstantiationService,
+		public connection: ConnectionProfile,
 		@IProfilerService private _profilerService: IProfilerService,
 		@INotificationService private _notificationService: INotificationService,
 		@IDialogService private _dialogService: IDialogService

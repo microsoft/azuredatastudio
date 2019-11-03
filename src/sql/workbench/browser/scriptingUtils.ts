@@ -9,9 +9,9 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import * as nls from 'vs/nls';
 import Severity from 'vs/base/common/severity';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IScriptingService, ScriptOperation } from 'sql/platform/scripting/common/scriptingService';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 // map for the version of SQL Server (default is 140)
 const scriptCompatibilityOptionMap = {
@@ -40,7 +40,7 @@ const targetDatabaseEngineEditionMap = {
 /**
  * Select the top rows from an object
  */
-export async function scriptSelect(connectionProfile: IConnectionProfile, metadata: azdata.ObjectMetadata, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService, scriptingService: IScriptingService): Promise<boolean> {
+export async function scriptSelect(connectionProfile: ConnectionProfile, metadata: azdata.ObjectMetadata, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService, scriptingService: IScriptingService): Promise<boolean> {
 	const connectionResult = await connectionService.connectIfNotConnected(connectionProfile);
 	let paramDetails: azdata.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
 	const result = await scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails);
@@ -66,7 +66,7 @@ export async function scriptSelect(connectionProfile: IConnectionProfile, metada
 /**
  * Opens a new Edit Data session
  */
-export async function scriptEditSelect(connectionProfile: IConnectionProfile, metadata: azdata.ObjectMetadata, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService, scriptingService: IScriptingService): Promise<boolean> {
+export async function scriptEditSelect(connectionProfile: ConnectionProfile, metadata: azdata.ObjectMetadata, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService, scriptingService: IScriptingService): Promise<boolean> {
 	const connectionResult = await connectionService.connectIfNotConnected(connectionProfile);
 	let paramDetails: azdata.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
 	const result = await scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails);
@@ -113,7 +113,7 @@ export function GetScriptOperationName(operation: ScriptOperation) {
 /**
  * Script the object as a statement based on the provided action (except Select)
  */
-export async function script(connectionProfile: IConnectionProfile, metadata: azdata.ObjectMetadata,
+export async function script(connectionProfile: ConnectionProfile, metadata: azdata.ObjectMetadata,
 	connectionService: IConnectionManagementService,
 	queryEditorService: IQueryEditorService,
 	scriptingService: IScriptingService,

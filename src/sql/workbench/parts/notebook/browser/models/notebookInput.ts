@@ -20,7 +20,6 @@ import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorMo
 import { Schemas } from 'vs/base/common/network';
 import { ITextFileService, ISaveOptions, StateChange } from 'vs/workbench/services/textfile/common/textfiles';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -29,6 +28,7 @@ import { Deferred } from 'sql/base/common/promise';
 import { NotebookTextFileModel } from 'sql/workbench/parts/notebook/browser/models/notebookTextFileModel';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -200,7 +200,7 @@ export class NotebookInput extends EditorInput {
 	private _providerId: string;
 	private _providers: string[];
 	private _standardKernels: IStandardKernelWithProvider[];
-	private _connectionProfile: IConnectionProfile;
+	private _connectionProfile: ConnectionProfile;
 	private _defaultKernel: azdata.nb.IKernelSpec;
 	public hasBootstrapped = false;
 	// Holds the HTML content for the editor when the editor discards this input and loads another
@@ -271,11 +271,11 @@ export class NotebookInput extends EditorInput {
 		};
 	}
 
-	public set connectionProfile(value: IConnectionProfile) {
+	public set connectionProfile(value: ConnectionProfile) {
 		this._connectionProfile = value;
 	}
 
-	public get connectionProfile(): IConnectionProfile {
+	public get connectionProfile(): ConnectionProfile {
 		return this._connectionProfile;
 	}
 

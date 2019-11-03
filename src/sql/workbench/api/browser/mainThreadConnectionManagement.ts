@@ -11,7 +11,6 @@ import { IConnectionManagementService, ConnectionType, IConnectionParams } from 
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -127,7 +126,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		return Promise.resolve(this._connectionManagementService.getServerInfo(connectionId));
 	}
 
-	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Promise<azdata.connection.Connection> {
+	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: ConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Promise<azdata.connection.Connection> {
 		// Here we default to ConnectionType.editor which saves the connecton in the connection store by default
 		let connectionType = ConnectionType.editor;
 
@@ -175,7 +174,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		return Promise.resolve(this._connectionManagementService.getConnectionUriFromId(connectionId));
 	}
 
-	private convertConnection(profile: IConnectionProfile): azdata.connection.Connection {
+	private convertConnection(profile: ConnectionProfile): azdata.connection.Connection {
 		if (!profile) {
 			return undefined;
 		}
@@ -188,7 +187,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		return connection;
 	}
 
-	private convertToConnectionProfile(profile: IConnectionProfile): azdata.connection.ConnectionProfile {
+	private convertToConnectionProfile(profile: ConnectionProfile): azdata.connection.ConnectionProfile {
 		if (!profile) {
 			return undefined;
 		}
@@ -212,7 +211,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		return connection;
 	}
 
-	public $connect(connectionProfile: IConnectionProfile, saveConnection: boolean = true, showDashboard: boolean = true): Thenable<azdata.ConnectionResult> {
+	public $connect(connectionProfile: ConnectionProfile, saveConnection: boolean = true, showDashboard: boolean = true): Thenable<azdata.ConnectionResult> {
 		let profile = new ConnectionProfile(this._capabilitiesService, connectionProfile);
 		profile.id = generateUuid();
 		return this._connectionManagementService.connectAndSaveProfile(profile, undefined, {

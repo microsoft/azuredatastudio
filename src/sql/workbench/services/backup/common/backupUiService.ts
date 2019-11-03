@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Event } from 'vs/base/common/event';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export const UI_SERVICE_ID = 'backupUiService';
 export const IBackupUiService = createDecorator<IBackupUiService>(UI_SERVICE_ID);
@@ -16,12 +16,12 @@ export interface IBackupUiService {
 	/**
 	 * Show backup wizard
 	 */
-	showBackup(connection: IConnectionProfile): Promise<any>;
+	showBackup(connection: ConnectionProfile): Promise<any>;
 
 	/**
 	 * On show backup event
 	 */
-	onShowBackupEvent: Event<{ connection: IConnectionProfile, ownerUri: string }>;
+	onShowBackupEvent: Event<{ connection: ConnectionProfile, ownerUri: string }>;
 
 	/**
 	 * Close backup wizard

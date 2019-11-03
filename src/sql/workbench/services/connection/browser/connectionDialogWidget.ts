@@ -6,7 +6,6 @@ import 'vs/css!./media/connectionDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachModalDialogStyler, attachButtonStyler, attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { IConnectionManagementService, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
@@ -70,15 +69,15 @@ export class ConnectionDialogWidget extends Modal {
 	private _onCancel = new Emitter<void>();
 	public onCancel: Event<void> = this._onCancel.event;
 
-	private _onConnect = new Emitter<IConnectionProfile>();
-	public onConnect: Event<IConnectionProfile> = this._onConnect.event;
+	private _onConnect = new Emitter<ConnectionProfile>();
+	public onConnect: Event<ConnectionProfile> = this._onConnect.event;
 
 	private _onShowUiComponent = new Emitter<OnShowUIResponse>();
 	public onShowUiComponent: Event<OnShowUIResponse> = this._onShowUiComponent.event;
 
-	private _onFillinConnectionInputs = new Emitter<IConnectionProfile>();
+	private _onFillinConnectionInputs = new Emitter<ConnectionProfile>();
 
-	public onFillinConnectionInputs: Event<IConnectionProfile> = this._onFillinConnectionInputs.event;
+	public onFillinConnectionInputs: Event<ConnectionProfile> = this._onFillinConnectionInputs.event;
 	private _onResetConnection = new Emitter<void>();
 	public onResetConnection: Event<void> = this._onResetConnection.event;
 
@@ -267,7 +266,7 @@ export class ConnectionDialogWidget extends Modal {
 		this.initDialog();
 	}
 
-	private connect(element?: IConnectionProfile): void {
+	private connect(element?: ConnectionProfile): void {
 		if (this._connectButton.enabled) {
 			this._connecting = true;
 			this._connectButton.enabled = false;
@@ -369,7 +368,7 @@ export class ConnectionDialogWidget extends Modal {
 		DOM.append(noSavedConnectionContainer, DOM.$('.no-saved-connections')).innerText = noSavedConnectionLabel;
 	}
 
-	private onConnectionClick(event: any, element: IConnectionProfile) {
+	private onConnectionClick(event: any, element: ConnectionProfile) {
 		const isMouseOrigin = event.payload && (event.payload.origin === 'mouse');
 		const isDoubleClick = isMouseOrigin && event.payload.originalEvent && event.payload.originalEvent.detail === 2;
 		if (isDoubleClick) {

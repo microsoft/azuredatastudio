@@ -6,8 +6,7 @@
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 import * as azdata from 'azdata';
-
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export const SERVICE_ID = 'resourceProviderService';
 export const IResourceProviderService = createDecorator<IResourceProviderService>(SERVICE_ID);
@@ -44,5 +43,5 @@ export interface IResourceProviderService {
 	/**
 	 * Show firewall rule dialog
 	 */
-	showFirewallRuleDialog(connection: IConnectionProfile, ipAddress: string, resourceProviderId: string): Promise<boolean>;
+	showFirewallRuleDialog(connection: ConnectionProfile, ipAddress: string, resourceProviderId: string): Promise<boolean>;
 }

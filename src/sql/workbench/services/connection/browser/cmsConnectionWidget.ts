@@ -9,7 +9,6 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { IConnectionComponentCallbacks } from 'sql/workbench/services/connection/browser/connectionDialogService';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -27,6 +26,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ConnectionWidget, AuthenticationType } from 'sql/workbench/services/connection/browser/connectionWidget';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 /**
  * Connection Widget clas for CMS Connections
@@ -157,7 +157,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		return this._serverDescriptionInputBox.value;
 	}
 
-	public connect(model: IConnectionProfile): boolean {
+	public connect(model: ConnectionProfile): boolean {
 		let validInputs = super.connect(model);
 		if (this._serverDescriptionInputBox) {
 			model.options.registeredServerDescription = this._serverDescriptionInputBox.value;
@@ -166,7 +166,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		return validInputs;
 	}
 
-	public fillInConnectionInputs(connectionInfo: IConnectionProfile) {
+	public fillInConnectionInputs(connectionInfo: ConnectionProfile) {
 		super.fillInConnectionInputs(connectionInfo);
 		if (connectionInfo) {
 			let description = connectionInfo.options.registeredServerDescription ? connectionInfo.options.registeredServerDescription : '';

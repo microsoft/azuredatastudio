@@ -13,9 +13,8 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import * as azdata from 'azdata';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
 export class MainThreadQueryEditor extends Disposable implements MainThreadQueryEditorShape {
@@ -66,11 +65,11 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 		});
 	}
 
-	private static connectionProfileToIConnectionProfile(connection: azdata.connection.ConnectionProfile): IConnectionProfile {
+	private static connectionProfileToIConnectionProfile(connection: azdata.connection.ConnectionProfile): ConnectionProfile {
 		let profile: ConnectionProfile = new ConnectionProfile(undefined, undefined);
 		profile.options = connection.options;
 		profile.providerName = connection.options['providerName'];
-		return profile.toIConnectionProfile();
+		return profile;
 	}
 
 	public $connectWithProfile(fileUri: string, connection: azdata.connection.ConnectionProfile): Thenable<void> {
@@ -88,7 +87,7 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 				showFirewallRuleOnError: false,
 			};
 
-			let profile: IConnectionProfile = MainThreadQueryEditor.connectionProfileToIConnectionProfile(connection);
+			let profile = MainThreadQueryEditor.connectionProfileToIConnectionProfile(connection);
 			let connectionResult = await this._connectionManagementService.connect(profile, fileUri, options);
 			if (connectionResult && connectionResult.connected) {
 				console.log(`editor ${fileUri} connected`);

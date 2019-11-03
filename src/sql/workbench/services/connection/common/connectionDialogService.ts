@@ -5,7 +5,7 @@
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { INewConnectionParams, IConnectionResult, IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export const IConnectionDialogService = createDecorator<IConnectionDialogService>('connectionDialogService');
 export interface IConnectionDialogService {
@@ -13,11 +13,11 @@ export interface IConnectionDialogService {
 	/**
 	 * Opens the connection dialog and returns the promise for successfully opening the dialog
 	 */
-	showDialog(connectionManagementService: IConnectionManagementService, params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult, connectionOptions?: IConnectionCompletionOptions): Promise<void>;
+	showDialog(connectionManagementService: IConnectionManagementService, params: INewConnectionParams, model: ConnectionProfile, connectionResult?: IConnectionResult, connectionOptions?: IConnectionCompletionOptions): Promise<void>;
 
 	/**
 	 * Opens the connection dialog and returns the promise when connection is made
 	 * or dialog is closed
 	 */
-	openDialogAndWait(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult, doConnect?: boolean): Promise<IConnectionProfile>;
+	openDialogAndWait(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: ConnectionProfile, connectionResult?: IConnectionResult, doConnect?: boolean): Promise<ConnectionProfile>;
 }

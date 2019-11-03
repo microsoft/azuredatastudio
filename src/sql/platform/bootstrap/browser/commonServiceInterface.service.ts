@@ -14,7 +14,6 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
 
@@ -22,6 +21,7 @@ import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'azdata';
 
 /* VS imports */
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 /* Wrapper for a metadata service that contains the uri string to use on each request */
 export class SingleConnectionMetadataService {
@@ -165,7 +165,7 @@ export class CommonServiceInterface extends AngularDisposable {
 		return this._uri;
 	}
 
-	public getOriginalConnectionProfile(): IConnectionProfile {
+	public getOriginalConnectionProfile(): ConnectionProfile {
 		return this._params.connection;
 	}
 }

@@ -5,7 +5,6 @@
 
 import { localize } from 'vs/nls';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities';
 import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
@@ -18,7 +17,7 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
-export function showRestore(accessor: ServicesAccessor, connection: IConnectionProfile): Promise<void> {
+export function showRestore(accessor: ServicesAccessor, connection: ConnectionProfile): Promise<void> {
 	const restoreDialogService = accessor.get(IRestoreDialogController);
 	return restoreDialogService.showDialog(connection).then();
 }
@@ -39,7 +38,7 @@ export class RestoreAction extends Task {
 		});
 	}
 
-	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): void | Promise<void> {
+	runTask(accessor: ServicesAccessor, profile: ConnectionProfile): void | Promise<void> {
 		const configurationService = accessor.get<IConfigurationService>(IConfigurationService);
 		const previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!previewFeaturesEnabled) {

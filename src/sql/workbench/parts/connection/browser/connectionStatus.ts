@@ -6,12 +6,12 @@
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment } from 'vs/workbench/services/statusbar/common/statusbar';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { localize } from 'vs/nls';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 // Connection status bar showing the current global connection
 export class ConnectionStatusbarItem extends Disposable implements IWorkbenchContribution {
@@ -65,7 +65,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 	}
 
 	// Set connection info to connection status bar
-	private _setConnectionText(connectionProfile: IConnectionProfile): void {
+	private _setConnectionText(connectionProfile: ConnectionProfile): void {
 		let text: string = connectionProfile.serverName;
 		if (text) {
 			if (connectionProfile.databaseName && connectionProfile.databaseName !== '') {

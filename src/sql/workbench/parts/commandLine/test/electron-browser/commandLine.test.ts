@@ -18,7 +18,6 @@ import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionT
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { TestCommandService } from 'vs/editor/test/browser/editorTestServices';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { assertThrowsAsync } from 'sqltest/utils/testUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { TestEditorService, TestDialogService } from 'vs/workbench/test/workbenchTestServices';
@@ -195,7 +194,7 @@ suite('commandLineService tests', () => {
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
 		connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
-		let originalProfile: IConnectionProfile = undefined;
+		let originalProfile: ConnectionProfile = undefined;
 		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.sqlLogin), 'connection', true))
 			.returns((conn) => {
 				originalProfile = conn;
@@ -248,7 +247,7 @@ suite('commandLineService tests', () => {
 		args.server = 'myserver';
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
-		let originalProfile: IConnectionProfile = undefined;
+		let originalProfile: ConnectionProfile = undefined;
 		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver'), 'connection', true))
 			.returns((conn) => {
 				originalProfile = conn;
@@ -299,7 +298,7 @@ suite('commandLineService tests', () => {
 		args.database = 'mydatabase';
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
-		let originalProfile: IConnectionProfile = undefined;
+		let originalProfile: ConnectionProfile = undefined;
 		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.integrated), 'connection', true))
 			.returns((conn) => {
 				originalProfile = conn;
@@ -341,7 +340,7 @@ suite('commandLineService tests', () => {
 		args.database = 'mydatabase';
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
-		let originalProfile: IConnectionProfile = undefined;
+		let originalProfile: ConnectionProfile = undefined;
 		connectionManagementService.setup(c => c.connectIfNotConnected(
 			TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.integrated && p.connectionName === 'Test' && p.id === 'testID'), 'connection', true))
 			.returns((conn) => {
@@ -369,7 +368,7 @@ suite('commandLineService tests', () => {
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
 		connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
-		let originalProfile: IConnectionProfile = undefined;
+		let originalProfile: ConnectionProfile = undefined;
 		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.sqlLogin), 'connection', true))
 			.returns((conn) => {
 				originalProfile = conn;
@@ -433,7 +432,7 @@ suite('commandLineService tests', () => {
 			connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 			connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
 			connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
-			let originalProfile: IConnectionProfile = undefined;
+			let originalProfile: ConnectionProfile = undefined;
 			connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.sqlLogin), 'connection', true))
 				.returns((conn) => {
 					originalProfile = conn;
@@ -464,7 +463,7 @@ suite('commandLineService tests', () => {
 			connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 			connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
 			connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
-			let originalProfile: IConnectionProfile = undefined;
+			let originalProfile: ConnectionProfile = undefined;
 			connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.sqlLogin), 'connection', true))
 				.returns((conn) => {
 					originalProfile = conn;
@@ -525,7 +524,7 @@ suite('commandLineService tests', () => {
 			connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 			connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
 			connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
-			let originalProfile: IConnectionProfile = undefined;
+			let originalProfile: ConnectionProfile = undefined;
 			connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.sqlLogin), 'connection', true))
 				.returns((conn) => {
 					originalProfile = conn;

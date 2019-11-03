@@ -12,8 +12,8 @@ import { URI } from 'vs/base/common/uri';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { createCSSRule, asCSSUrl } from 'vs/base/browser/dom';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IdGenerator } from 'vs/base/common/idGenerator';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 const ids = new IdGenerator('task-icon-');
 
@@ -113,5 +113,5 @@ export abstract class Task {
 		return TaskRegistry.registerTask(this.toITask());
 	}
 
-	public abstract runTask(accessor: ServicesAccessor, profile: IConnectionProfile, args: any): void | Promise<void>;
+	public abstract runTask(accessor: ServicesAccessor, profile: ConnectionProfile, args: any): void | Promise<void>;
 }

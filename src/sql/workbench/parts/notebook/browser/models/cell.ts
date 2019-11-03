@@ -14,7 +14,6 @@ import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/parts/not
 import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
 import { ICellModel, notebookConstants, IOutputChangedEvent, FutureInternal, CellExecutionState, ICellModelOptions } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
@@ -22,6 +21,7 @@ import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 let modelId = 0;
 
 export const HideInputTag = 'hide_input';
@@ -658,7 +658,7 @@ export class CellModel implements ICellModel {
 
 	// Get Knox endpoint from IConnectionProfile
 	// TODO: this will be refactored out into the notebooks extension as a contribution point
-	private getGatewayEndpoint(activeConnection: IConnectionProfile): notebookUtils.IEndpoint {
+	private getGatewayEndpoint(activeConnection: ConnectionProfile): notebookUtils.IEndpoint {
 		let endpoint;
 		if (this._connectionManagementService && activeConnection && activeConnection.providerName.toLowerCase() === notebookConstants.SQL_CONNECTION_PROVIDER.toLowerCase()) {
 			let serverInfo: ServerInfo = this._connectionManagementService.getServerInfo(activeConnection.id);

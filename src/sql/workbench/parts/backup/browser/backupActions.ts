@@ -5,7 +5,6 @@
 
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { localize } from 'vs/nls';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -20,7 +19,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 
 export const BackupFeatureName = 'backup';
 
-export function showBackup(accessor: ServicesAccessor, connection: IConnectionProfile): Promise<void> {
+export function showBackup(accessor: ServicesAccessor, connection: ConnectionProfile): Promise<void> {
 	const backupUiService = accessor.get(IBackupUiService);
 	return backupUiService.showBackup(connection).then();
 }
@@ -39,7 +38,7 @@ export class BackupAction extends Task {
 		});
 	}
 
-	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): void | Promise<void> {
+	runTask(accessor: ServicesAccessor, profile: ConnectionProfile): void | Promise<void> {
 		const configurationService = accessor.get<IConfigurationService>(IConfigurationService);
 		const previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!previewFeaturesEnabled) {

@@ -18,8 +18,6 @@ import { IDashboardComponentParams } from 'sql/platform/bootstrap/common/bootstr
 import { DASHBOARD_SELECTOR } from 'sql/workbench/parts/dashboard/browser/dashboard.component';
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
@@ -58,15 +56,8 @@ export class DashboardEditor extends BaseEditor {
 	 * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
 	 */
 	public focus(): void {
-
-		let profile: IConnectionProfile;
-		if (this.input.connectionProfile instanceof ConnectionProfile) {
-			profile = this.input.connectionProfile.toIConnectionProfile();
-		} else {
-			profile = this.input.connectionProfile;
-		}
 		const serverInfo = this._connMan.getConnectionInfo(this.input.uri).serverInfo;
-		this._dashboardService.changeToDashboard({ profile, serverInfo });
+		this._dashboardService.changeToDashboard({ profile: this.input.connectionProfile, serverInfo });
 	}
 
 	/**
@@ -105,14 +96,8 @@ export class DashboardEditor extends BaseEditor {
 	 */
 	private bootstrapAngular(input: DashboardInput): void {
 		// Get the bootstrap params and perform the bootstrap
-		let profile: IConnectionProfile;
-		if (input.connectionProfile instanceof ConnectionProfile) {
-			profile = input.connectionProfile.toIConnectionProfile();
-		} else {
-			profile = this.input.connectionProfile;
-		}
 		const serverInfo = this._connMan.getConnectionInfo(this.input.uri).serverInfo;
-		this._dashboardService.changeToDashboard({ profile, serverInfo });
+		this._dashboardService.changeToDashboard({ profile: this.input.connectionProfile, serverInfo });
 		const scopedContextService = this._contextKeyService.createScoped(input.container);
 		const connectionContextKey = new ConnectionContextKey(scopedContextService, this.queryManagementService);
 		connectionContextKey.set(input.connectionProfile);

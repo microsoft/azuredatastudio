@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import {
 	IConnectionManagementService,
 	IConnectionCompletionOptions, ConnectionType,
@@ -18,6 +17,7 @@ import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInpu
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export function replaceConnection(oldUri: string, newUri: string, connectionService: IConnectionManagementService): Promise<IConnectionResult> {
 	return new Promise<IConnectionResult>((resolve, reject) => {
@@ -56,7 +56,7 @@ export function replaceConnection(oldUri: string, newUri: string, connectionServ
 	});
 }
 
-export function openInsight(query: IInsightsConfig, profile: IConnectionProfile, insightDialogService: IInsightsDialogService) {
+export function openInsight(query: IInsightsConfig, profile: ConnectionProfile, insightDialogService: IInsightsDialogService) {
 	insightDialogService.show(query, profile);
 }
 
@@ -67,8 +67,8 @@ export function openInsight(query: IInsightsConfig, profile: IConnectionProfile,
  *
  * @param topLevelOnly If true, only return top-level (i.e. connected) Object Explorer connections instead of database connections when appropriate
 */
-export function getCurrentGlobalConnection(objectExplorerService: IObjectExplorerService, connectionManagementService: IConnectionManagementService, workbenchEditorService: IEditorService, topLevelOnly: boolean = false): IConnectionProfile {
-	let connection: IConnectionProfile;
+export function getCurrentGlobalConnection(objectExplorerService: IObjectExplorerService, connectionManagementService: IConnectionManagementService, workbenchEditorService: IEditorService, topLevelOnly: boolean = false): ConnectionProfile {
+	let connection: ConnectionProfile;
 
 	let objectExplorerSelection = objectExplorerService.getSelectedProfileAndDatabase();
 	if (objectExplorerSelection) {

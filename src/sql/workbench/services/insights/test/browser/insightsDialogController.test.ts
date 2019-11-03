@@ -6,7 +6,6 @@
 import { InsightsDialogController } from 'sql/workbench/services/insights/browser/insightsDialogController';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { ConnectionManagementService } from 'sql/platform/connection/browser/connectionManagementService';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 
@@ -17,6 +16,7 @@ import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 import { Emitter } from 'vs/base/common/event';
 import { InsightsDialogModel } from 'sql/workbench/services/insights/browser/insightsDialogModel';
 import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 const testData: string[][] = [
 	['1', '2', '3', '4'],
@@ -53,7 +53,7 @@ suite('Insights Dialog Controller Tests', () => {
 			undefined
 		);
 
-		let profile: IConnectionProfile = {
+		let profile: ConnectionProfile = {
 			connectionName: 'newname',
 			serverName: 'server',
 			databaseName: 'database',

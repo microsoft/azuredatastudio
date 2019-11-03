@@ -9,7 +9,6 @@ import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInpu
 import { Task } from 'sql/platform/tasks/browser/tasksRegistry';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
@@ -282,7 +281,7 @@ export class NewProfilerAction extends Task {
 		});
 	}
 
-	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): Promise<void> {
+	public runTask(accessor: ServicesAccessor, profile: ConnectionProfile): Promise<void> {
 		let profilerInput = accessor.get<IInstantiationService>(IInstantiationService).createInstance(ProfilerInput, profile);
 		return accessor.get<IEditorService>(IEditorService).openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP).then(() => {
 			let options: IConnectionCompletionOptions = {

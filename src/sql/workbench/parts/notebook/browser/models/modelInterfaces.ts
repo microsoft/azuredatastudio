@@ -13,7 +13,6 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 
 import { CellType, NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { INotebookManager, ILanguageMagic } from 'sql/workbench/services/notebook/browser/notebookService';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IStandardKernelWithProvider } from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
@@ -205,7 +204,7 @@ export interface IClientSession extends IDisposable {
 	/**
 	 * Updates the connection
 	 */
-	updateConnection(connection: IConnectionProfile): Promise<void>;
+	updateConnection(connection: ConnectionProfile): Promise<void>;
 
 	/**
 	 * Supports registering a handler to run during kernel change and implement any calls needed to configure
@@ -363,7 +362,7 @@ export interface INotebookModel {
 	/**
 	 * Change the current context (if applicable)
 	 */
-	changeContext(host: string, connection?: IConnectionProfile, hideErrorMessage?: boolean): Promise<void>;
+	changeContext(host: string, connection?: ConnectionProfile, hideErrorMessage?: boolean): Promise<void>;
 
 	/**
 	 * Find a cell's index given its model

@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { BackupModule } from 'sql/workbench/parts/backup/browser/backup.module';
 import { BACKUP_SELECTOR } from 'sql/workbench/parts/backup/browser/backup.component';
 import { attachModalDialogStyler } from 'sql/platform/theme/common/styler';
@@ -20,6 +19,7 @@ import { append, $ } from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export class BackupDialog extends Modal {
 	private _body: HTMLElement;
@@ -94,7 +94,7 @@ export class BackupDialog extends Modal {
 	/**
 	 * Open the dialog
 	 */
-	public open(connection: IConnectionProfile) {
+	public open(connection: ConnectionProfile) {
 		this._backupTitle = 'Backup database - ' + connection.serverName + ':' + connection.databaseName;
 		this.title = this._backupTitle;
 		this.show();

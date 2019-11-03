@@ -12,7 +12,6 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachButtonStyler, attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as BackupConstants from 'sql/workbench/parts/backup/common/constants';
 import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
@@ -34,6 +33,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { ITheme } from 'vs/platform/theme/common/themeService';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -150,7 +150,7 @@ export class BackupComponent extends AngularDisposable {
 	private _uri: string;
 	private _advancedHeaderSize = 32;
 
-	private connection: IConnectionProfile;
+	private connection: ConnectionProfile;
 	private databaseName: string;
 	private defaultNewBackupFolder: string;
 	private recoveryModel: string;
@@ -360,7 +360,7 @@ export class BackupComponent extends AngularDisposable {
 		this._backupUiService.onShowBackupDialog();
 	}
 
-	private onGetBackupConfigInfo(param: { connection: IConnectionProfile, ownerUri: string }) {
+	private onGetBackupConfigInfo(param: { connection: ConnectionProfile, ownerUri: string }) {
 		// Show spinner
 		this.showSpinner();
 		this.backupEnabled = false;

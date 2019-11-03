@@ -123,7 +123,7 @@ suite('SQL Connection Tree Action tests', () => {
 			OEManageConnectionAction.LABEL, connectionManagementService.object, capabilitiesService, instantiationService.object, objectExplorerService.object, viewsService);
 
 		let actionContext = new ObjectExplorerActionsContext();
-		actionContext.connectionProfile = connection.toIConnectionProfile();
+		actionContext.connectionProfile = connection;
 		actionContext.isConnectionNode = true;
 		manageConnectionAction.run(actionContext).then((value) => {
 			connectionManagementService.verify(x => x.connect(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny(), undefined), TypeMoq.Times.once());
@@ -161,7 +161,7 @@ suite('SQL Connection Tree Action tests', () => {
 			OEManageConnectionAction.LABEL, connectionManagementService.object, capabilitiesService, instantiationService.object, objectExplorerService.object, undefined);
 
 		let actionContext = new ObjectExplorerActionsContext();
-		actionContext.connectionProfile = connection.toIConnectionProfile();
+		actionContext.connectionProfile = connection;
 		actionContext.nodeInfo = treeNode.toNodeInfo();
 		manageConnectionAction.run(actionContext).then((value) => {
 			connectionManagementService.verify(x => x.showDashboard(TypeMoq.It.isAny()), TypeMoq.Times.once());
@@ -192,7 +192,7 @@ suite('SQL Connection Tree Action tests', () => {
 		let changeConnectionAction: DisconnectConnectionAction = new DisconnectConnectionAction(DisconnectConnectionAction.ID, DisconnectConnectionAction.LABEL, connection, connectionManagementService.object, objectExplorerService.object, errorMessageService.object);
 
 		let actionContext = new ObjectExplorerActionsContext();
-		actionContext.connectionProfile = connection.toIConnectionProfile();
+		actionContext.connectionProfile = connection;
 		changeConnectionAction.run(actionContext).then((value) => {
 			connectionManagementService.verify(x => x.isProfileConnected(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 			connectionManagementService.verify(x => x.disconnect(TypeMoq.It.isAny()), TypeMoq.Times.once());

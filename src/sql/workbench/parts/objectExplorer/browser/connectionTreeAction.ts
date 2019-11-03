@@ -7,18 +7,13 @@ import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
@@ -33,7 +28,7 @@ export class RefreshAction extends Action {
 		id: string,
 		label: string,
 		tree: ITree,
-		private element: IConnectionProfile | TreeNode,
+		private element: ConnectionProfile | TreeNode,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService
@@ -48,7 +43,7 @@ export class RefreshAction extends Action {
 			if (this._connectionManagementService.isConnected(undefined, connection)) {
 				treeNode = this._objectExplorerService.getObjectExplorerNode(connection);
 				if (treeNode === undefined) {
-					this._objectExplorerService.updateObjectExplorerNodes(connection.toIConnectionProfile()).then(() => {
+					this._objectExplorerService.updateObjectExplorerNodes(connection).then(() => {
 						treeNode = this._objectExplorerService.getObjectExplorerNode(connection);
 					});
 				}
@@ -142,7 +137,7 @@ export class AddServerAction extends Action {
 	}
 
 	public run(element: ConnectionProfileGroup): Promise<boolean> {
-		let connection: IConnectionProfile = element === undefined ? undefined : {
+		let connection: ConnectionProfile = element === undefined ? undefined : {
 			connectionName: undefined,
 			serverName: undefined,
 			databaseName: undefined,
@@ -315,7 +310,7 @@ export class DeleteConnectionAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private element: IConnectionProfile | ConnectionProfileGroup,
+		private element: ConnectionProfile | ConnectionProfileGroup,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		super(id, label);

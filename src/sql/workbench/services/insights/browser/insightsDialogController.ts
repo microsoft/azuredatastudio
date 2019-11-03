@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -22,10 +21,11 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { IInsightsDialogModel } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export class InsightsDialogController {
 	private _queryRunner: QueryRunner;
-	private _connectionProfile: IConnectionProfile;
+	private _connectionProfile: ConnectionProfile;
 	private _connectionUri: string;
 	private _columns: IDbColumn[];
 	private _rows: DbCellValue[][];
@@ -40,7 +40,7 @@ export class InsightsDialogController {
 		@IFileService private readonly fileService: IFileService
 	) { }
 
-	public async update(input: IInsightsConfigDetails, connectionProfile: IConnectionProfile): Promise<void> {
+	public async update(input: IInsightsConfigDetails, connectionProfile: ConnectionProfile): Promise<void> {
 		// execute string
 		if (typeof input === 'object') {
 			if (connectionProfile === undefined) {
@@ -96,7 +96,7 @@ export class InsightsDialogController {
 		return Promise.resolve();
 	}
 
-	private async createQuery(queryString: string, connectionProfile: IConnectionProfile): Promise<void> {
+	private async createQuery(queryString: string, connectionProfile: ConnectionProfile): Promise<void> {
 		if (this._queryRunner) {
 			if (!this._queryRunner.hasCompleted) {
 				await this._queryRunner.cancelQuery();
@@ -120,7 +120,7 @@ export class InsightsDialogController {
 		return this._queryRunner.runQuery(queryString);
 	}
 
-	private async createNewConnection(connectionProfile: IConnectionProfile): Promise<void> {
+	private async createNewConnection(connectionProfile: ConnectionProfile): Promise<void> {
 		// determine if we need to create a new connection
 		if (!this._connectionProfile || connectionProfile.getOptionsKey() !== this._connectionProfile.getOptionsKey()) {
 			if (this._connectionProfile) {

@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export namespace constants {
 	export const userPropName = 'user';
@@ -24,13 +23,13 @@ export class NotebookConnection {
 	private _host: string;
 	private _knoxPort: string;
 
-	constructor(private _connectionProfile: IConnectionProfile) {
+	constructor(private _connectionProfile: ConnectionProfile) {
 		if (!this._connectionProfile) {
 			throw new Error(localize('connectionInfoMissing', "connectionInfo is required"));
 		}
 	}
 
-	public get connectionProfile(): IConnectionProfile {
+	public get connectionProfile(): ConnectionProfile {
 		return this._connectionProfile;
 	}
 
@@ -79,7 +78,7 @@ export class NotebookConnection {
 		return this._knoxPort;
 	}
 
-	private static getKnoxPortOrDefault(connectionProfile: IConnectionProfile): string {
+	private static getKnoxPortOrDefault(connectionProfile: ConnectionProfile): string {
 		let port = connectionProfile.options[constants.knoxPortPropName];
 		if (!port) {
 			port = constants.defaultKnoxPort;

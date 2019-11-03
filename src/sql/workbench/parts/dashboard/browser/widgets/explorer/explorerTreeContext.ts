@@ -5,11 +5,11 @@
 
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { MetadataType } from 'sql/platform/connection/common/connectionManagement';
 import { ObjectMetadataWrapper } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/objectMetadataWrapper';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
-export declare type ContextResource = IConnectionProfile | ObjectMetadataWrapper;
+export declare type ContextResource = ConnectionProfile | ObjectMetadataWrapper;
 
 export interface IContextValue {
 	resource: ContextResource;

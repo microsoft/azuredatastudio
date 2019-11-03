@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { IHandleFirewallRuleResult, IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export class TestResourceProvider implements IResourceProviderService {
 	_serviceBrand: undefined;
@@ -26,7 +26,7 @@ export class TestResourceProvider implements IResourceProviderService {
 		throw new Error('Method not implemented');
 	}
 
-	showFirewallRuleDialog(connection: IConnectionProfile, ipAddress: string, resourceProviderId: string): Promise<boolean> {
+	showFirewallRuleDialog(connection: ConnectionProfile, ipAddress: string, resourceProviderId: string): Promise<boolean> {
 		return Promise.resolve(true);
 	}
 }

@@ -4,25 +4,25 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { INewConnectionParams, IConnectionResult, IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export class TestConnectionDialogService implements IConnectionDialogService {
 	_serviceBrand: undefined;
 
 	public showDialog(connectionManagementService: IConnectionManagementService,
-		params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult, connectionOptions?: IConnectionCompletionOptions): Promise<void> {
+		params: INewConnectionParams, model: ConnectionProfile, connectionResult?: IConnectionResult, connectionOptions?: IConnectionCompletionOptions): Promise<void> {
 		let none: void;
 		return Promise.resolve(none);
 	}
 
 	public openDialogAndWait(connectionManagementService: IConnectionManagementService,
-		params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<IConnectionProfile> {
+		params?: INewConnectionParams, model?: ConnectionProfile, connectionResult?: IConnectionResult): Promise<ConnectionProfile> {
 		return Promise.resolve(undefined);
 	}
 
 	public openDialogAndWaitButDontConnect(connectionManagementService: IConnectionManagementService,
-		params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<IConnectionProfile> {
+		params?: INewConnectionParams, model?: ConnectionProfile, connectionResult?: IConnectionResult): Promise<ConnectionProfile> {
 		return Promise.resolve(undefined);
 	}
 }

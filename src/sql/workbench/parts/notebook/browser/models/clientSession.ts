@@ -14,7 +14,7 @@ import { getErrorMessage } from 'vs/base/common/errors';
 import { IClientSession, IKernelPreference, IClientSessionOptions } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 type KernelChangeHandler = (kernel: nb.IKernelChangedArgs) => Promise<void>;
 /**
@@ -291,7 +291,7 @@ export class ClientSession implements IClientSession {
 		}
 	}
 
-	public async updateConnection(connection: IConnectionProfile): Promise<void> {
+	public async updateConnection(connection: ConnectionProfile): Promise<void> {
 		if (!this.kernel) {
 			// TODO is there any case where skipping causes errors? So far it seems like it gets called twice
 			return;

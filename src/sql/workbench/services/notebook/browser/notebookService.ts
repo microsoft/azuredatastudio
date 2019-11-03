@@ -10,12 +10,12 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { URI } from 'vs/base/common/uri';
 import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/browser/outputs/registry';
 import { ModelFactory } from 'sql/workbench/parts/notebook/browser/models/modelFactory';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ICellModel, INotebookModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -130,7 +130,7 @@ export interface INotebookParams extends IBootstrapParams {
 	notebookUri: URI;
 	input: NotebookInput;
 	providerInfo: Promise<IProviderInfo>;
-	profile?: IConnectionProfile;
+	profile?: ConnectionProfile;
 	modelFactory?: ModelFactory;
 }
 
