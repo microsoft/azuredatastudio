@@ -191,7 +191,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		return this.serverCapabilities && this.title.indexOf('undefined') < 0;
 	}
 
-	public isPasswordRequired(): boolean {
+	public get isPasswordRequired(): boolean {
 		// if there is no provider capabilities metadata assume a password is not required
 		if (!this._serverCapabilities) {
 			return false;

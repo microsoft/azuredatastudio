@@ -4,21 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import * as azdata from 'azdata';
-import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { generateUuid } from 'vs/base/common/uuid';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { isString } from 'vs/base/common/types';
-import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import * as Constants from 'sql/platform/connection/common/constants';
-
-// Concrete implementation of the IConnectionProfile interface
+import { NotImplementedError } from 'vs/base/common/errors';
 
 /**
  * A concrete implementation of an IConnectionProfile with support for profile creation and validation
  */
-export class ConnectionProfile extends ProviderConnectionInfo {
+export class ConnectionProfile implements ConnectionShape {
 
 	public parent?: ConnectionProfileGroup;
 	private _id: string;
@@ -29,44 +22,10 @@ export class ConnectionProfile extends ProviderConnectionInfo {
 
 	public isDisconnecting: boolean = false;
 
-	public constructor(
-		capabilitiesService: ICapabilitiesService,
-		model: string | azdata.IConnectionProfile) {
-		super(capabilitiesService, model);
-		if (model && !isString(model)) {
-			this.groupId = model.groupId;
-			this.groupFullName = model.groupFullName;
-			this.savePassword = model.savePassword;
-			this.saveProfile = model.saveProfile;
-			this._id = model.id;
-			this.azureTenantId = model.azureTenantId;
-			if (this.capabilitiesService && model.providerName) {
-				let capabilities = this.capabilitiesService.getCapabilities(model.providerName);
-				if (capabilities && capabilities.connection && capabilities.connection.connectionOptions) {
-					const options = capabilities.connection.connectionOptions;
-					let appNameOption = options.find(option => option.specialValueType === ConnectionOptionSpecialType.appName);
-					if (appNameOption) {
-						let appNameKey = appNameOption.name;
-						this.options[appNameKey] = Constants.applicationName;
-					}
-				}
-				if (model.options.registeredServerDescription) {
-					this.registeredServerDescription = model.options.registeredServerDescription;
-				}
-			}
-		} else {
-			//Default for a new connection
-			this.savePassword = false;
-			this.saveProfile = true;
-			this._groupName = ConnectionProfile.RootGroupName;
-			this._id = generateUuid();
-		}
-
-		this.options['groupId'] = this.groupId;
-		this.options['databaseDisplayName'] = this.databaseName;
+	protected constructor(shape: ConnectionShape) {
 	}
 
-	public matches(shape: ConnectionProfile): boolean {
+	public matches(shape: ConnectionShape): boolean {
 		return shape
 			&& this.providerName === shape.providerName
 			&& this.nullCheckEqualsIgnoreCase(this.serverName, shape.serverName)
@@ -80,10 +39,6 @@ export class ConnectionProfile extends ProviderConnectionInfo {
 	private nullCheckEqualsIgnoreCase(a: string, b: string) {
 		let bothNull: boolean = !a && !b;
 		return bothNull ? bothNull : equalsIgnoreCase(a, b);
-	}
-
-	public generateNewId() {
-		this._id = generateUuid();
 	}
 
 	public getParent(): ConnectionProfileGroup | undefined {
@@ -129,71 +84,31 @@ export class ConnectionProfile extends ProviderConnectionInfo {
 		return (this._groupName === ConnectionProfile.RootGroupName);
 	}
 
-	public clone(): ConnectionProfile {
-		let instance = new ConnectionProfile(this.capabilitiesService, this);
-		return instance;
-	}
-
-	public cloneWithNewId(): ConnectionProfile {
-		let instance = this.clone();
-		instance.generateNewId();
-		return instance;
-	}
-
-	public cloneWithDatabase(databaseName: string): ConnectionProfile {
-		let instance = this.cloneWithNewId();
-		instance.databaseName = databaseName;
-		return instance;
-	}
-
-	public static readonly RootGroupName: string = '/';
-
-	public withoutPassword(): ConnectionProfile {
-		let clone = this.clone();
-		clone.password = '';
-		return clone;
-	}
-
-	/**
-	 * Returns a key derived the connections options (providerName, authenticationType, serverName, databaseName, userName, groupid)
-	 * This key uniquely identifies a connection in a group
-	 * Example: "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
-	 */
-	public getOptionsKey(): string {
-		let id = super.getOptionsKey();
-		let databaseDisplayName: string = this.options['databaseDisplayName'];
-		if (databaseDisplayName) {
-			id += ProviderConnectionInfo.idSeparator + 'databaseDisplayName' + ProviderConnectionInfo.nameValueSeparator + databaseDisplayName;
-		}
-
-		return id + ProviderConnectionInfo.idSeparator + 'group' + ProviderConnectionInfo.nameValueSeparator + this.groupId;
-	}
-
-	/**
-	 * Returns the unique id for the connection that doesn't include the group name
-	 */
-	public getConnectionInfoId(): string {
-		return super.getOptionsKey();
-	}
-
-	public toConnectionInfo(): azdata.ConnectionInfo {
-		return {
-			options: this.options
-		};
-	}
-
-	/**
-	 * Returns whether this profile is connected to the default database (it doesn't specify a database to connect to)
-	 */
-	public static isConnectionToDefaultDb(profile: azdata.IConnectionProfile): boolean {
-		return !profile.databaseName || profile.databaseName.trim() === '';
-	}
-
-	public static fromIConnectionProfile(capabilitiesService: ICapabilitiesService, profile: azdata.IConnectionProfile): ConnectionProfile {
-		if (profile instanceof ConnectionProfile) {
-			return profile;
+	public static from(profile: ConnectionProfile | undefined | null): ConnectionProfile | undefined;
+	public static from(shape: ConnectionShape | undefined | null): ConnectionProfile | undefined;
+	public static from(from: ConnectionShape | ConnectionProfile | undefined | null): ConnectionProfile | undefined {
+		if (from) {
+			if (from instanceof ConnectionProfile) {
+				return from;
+			}
+			return new _ConnectionProfile(from);
 		} else {
-			return new ConnectionProfile(capabilitiesService, profile);
+			return undefined;
 		}
 	}
+
+	public static with(of: { [T in keyof ConnectionShape]: ConnectionShape[T] }): ConnectionProfile {
+		throw new NotImplementedError();
+	}
+}
+
+// tslint:disable-next-line:class-name
+class _ConnectionProfile extends ConnectionProfile {
+	constructor(shape: ConnectionShape) {
+		super(shape);
+	}
+}
+
+export interface ConnectionShape {
+
 }

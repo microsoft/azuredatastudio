@@ -63,29 +63,19 @@ export class ConnectionStore {
 	 * @param itemType type of the item (MRU or Profile) - optional
 	 * @returns formatted string with server, DB and username
 	 */
-	private formatCredentialId(shape: ConnectionProfile, itemType?: string): string {
-		const connectionProfileInstance = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, shape);
+	private formatCredentialId(profile: ConnectionProfile, itemType?: string): string {
 		const cred: string[] = [CRED_PREFIX];
 		if (!itemType) {
 			itemType = CRED_PROFILE_USER;
 		}
 
 		cred.push(CRED_ITEMTYPE_PREFIX.concat(itemType));
-		cred.push(CRED_ID_PREFIX.concat(connectionProfileInstance.getConnectionInfoId()));
+		cred.push(CRED_ID_PREFIX.concat(profile.getConnectionInfoId()));
 		return cred.join(CRED_SEPARATOR);
 	}
 
-	/**
-	 * Returns true if the password is required
-	 * @param connection profile
-	 */
-	public isPasswordRequired(connection: ConnectionProfile): boolean {
-		const connectionProfile = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, connection);
-		return connectionProfile.isPasswordRequired();
-	}
-
 	public addSavedPassword(credentialsItem: ConnectionProfile): Promise<{ profile: ConnectionProfile, savedCred: boolean }> {
-		if (credentialsItem.savePassword && this.isPasswordRequired(credentialsItem) && !credentialsItem.password) {
+		if (credentialsItem.savePassword && credentialsItem.isPasswordRequired && !credentialsItem.password) {
 			const credentialId = this.formatCredentialId(credentialsItem, CRED_PROFILE_USER);
 			return this.credentialService.readCredential(credentialId)
 				.then(savedCred => {
@@ -111,7 +101,7 @@ export class ConnectionStore {
 	 */
 	public saveProfile(profile: ConnectionProfile, forceWritePlaintextPassword?: boolean): Promise<ConnectionProfile> {
 		// Add the profile to the saved list, taking care to clear out the password field if necessary
-		const savedProfile = forceWritePlaintextPassword ? profile : this.getProfileWithoutPassword(profile);
+		const savedProfile = forceWritePlaintextPassword ? profile : profile.withoutPassword();
 		return this.saveProfileToConfig(savedProfile)
 			.then(savedConnectionProfile => {
 				profile.groupId = savedConnectionProfile.groupId;
@@ -179,13 +169,6 @@ export class ConnectionStore {
 		});
 	}
 
-	public getProfileWithoutPassword(conn: ConnectionProfile): ConnectionProfile {
-		let savedConn = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, conn);
-		savedConn = savedConn.withoutPassword();
-
-		return savedConn;
-	}
-
 	/**
 	 * Adds a connection to the active connections list.
 	 * Connection is only added if there are no other connections with the same connection ID in the list.
@@ -215,7 +198,7 @@ export class ConnectionStore {
 	}
 
 	private addToConnectionList(conn: ConnectionProfile, list: ConnectionProfile[]): ConnectionProfile[] {
-		const savedProfile = this.getProfileWithoutPassword(conn);
+		const savedProfile = conn.withoutPassword();
 
 		// Remove the connection from the list if it already exists
 		list = list.filter(value => {
@@ -233,7 +216,7 @@ export class ConnectionStore {
 	}
 
 	private removeFromConnectionList(conn: ConnectionProfile, list: ConnectionProfile[]): ConnectionProfile[] {
-		const savedProfile = this.getProfileWithoutPassword(conn);
+		const savedProfile = conn.withoutPassword();
 
 		// Remove the connection from the list if it already exists
 		list = list.filter(value => {

@@ -93,7 +93,7 @@ export class OEManageConnectionAction extends Action {
 		let connectionProfile: ConnectionProfile = undefined;
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			// Must use a real connection profile for this action due to lookup
-			connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, actionContext.connectionProfile);
+			connectionProfile = actionContext.connectionProfile;
 			if (!actionContext.isConnectionNode) {
 				treeNode = await getTreeNode(actionContext, this._objectExplorerService);
 				if (TreeUpdateUtils.isDatabaseNode(treeNode)) {

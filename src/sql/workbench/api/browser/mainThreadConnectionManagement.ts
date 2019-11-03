@@ -178,7 +178,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		if (!profile) {
 			return undefined;
 		}
-		profile = this._connectionManagementService.removeConnectionProfileCredentials(profile);
+		profile = profile.withoutPassword();
 		let connection: azdata.connection.Connection = {
 			providerName: profile.providerName,
 			connectionId: profile.id,
@@ -192,7 +192,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			return undefined;
 		}
 
-		profile = this._connectionManagementService.removeConnectionProfileCredentials(profile);
+		profile = profile.withoutPassword();
 		let connection: azdata.connection.ConnectionProfile = {
 			providerId: profile.providerName,
 			connectionId: profile.id,

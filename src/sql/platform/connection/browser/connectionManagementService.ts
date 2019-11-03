@@ -35,7 +35,7 @@ import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import * as errors from 'vs/base/common/errors';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IInstantiationService, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import * as platform from 'vs/platform/registry/common/platform';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -225,7 +225,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			let foundPassword = result.savedCred;
 
 			// If there is no password, try to load it from an existing connection
-			if (!foundPassword && this._connectionStore.isPasswordRequired(newConnection)) {
+			if (!foundPassword && newConnection.isPasswordRequired) {
 				let existingConnection = this._connectionStatusManager.findConnectionProfile(connection);
 				if (existingConnection && existingConnection.connectionProfile) {
 					newConnection.password = existingConnection.connectionProfile.password;
@@ -237,7 +237,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			let tokenFillSuccess = await this.fillInOrClearAzureToken(newConnection);
 
 			// If the password is required and still not loaded show the dialog
-			if ((!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
+			if ((!foundPassword && newConnection.isPasswordRequired && !newConnection.password) || !tokenFillSuccess) {
 				return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options);
 			} else {
 				// Try to connect
@@ -1230,10 +1230,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			return undefined;
 		}
 		return matchingGroup.color;
-	}
-
-	public removeConnectionProfileCredentials(originalProfile: ConnectionProfile): ConnectionProfile {
-		return this._connectionStore.getProfileWithoutPassword(originalProfile);
 	}
 
 	public getActiveConnectionCredentials(profileId: string): { [name: string]: string } {

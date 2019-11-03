@@ -228,13 +228,6 @@ export interface IConnectionManagementService {
 	rebuildIntelliSenseCache(uri: string): Thenable<void>;
 
 	/**
-	 * Get a copy of the connection profile with its passwords removed
-	 * @param profile The connection profile to remove passwords from
-	 * @returns A copy of the connection profile with passwords removed
-	 */
-	removeConnectionProfileCredentials(profile: ConnectionProfile): ConnectionProfile;
-
-	/**
 	 * Get the credentials for a connected connection profile, as they would appear in the options dictionary
 	 * @param profileId The id of the connection profile to get the password for
 	 * @returns A dictionary containing the credentials as they would be included

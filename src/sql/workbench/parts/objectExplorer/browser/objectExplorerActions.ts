@@ -16,7 +16,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export class ObjectExplorerActionsContext implements azdata.ObjectExplorerContext {
-	public connectionProfile: azdata.IConnectionProfile;
+	public connectionProfile: ConnectionProfile;
 	public nodeInfo: azdata.NodeInfo;
 	public isConnectionNode: boolean = false;
 }

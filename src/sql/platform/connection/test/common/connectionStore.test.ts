@@ -266,56 +266,6 @@ suite('ConnectionStore', () => {
 		// Then test is complete
 	});
 
-	test('isPasswordRequired should return true for MSSQL SqlLogin', () => {
-		const storageService = new TestStorageService();
-		const configurationService = new TestConfigurationService();
-		const credentialsService = new TestCredentialsService();
-
-		const connectionStore = new ConnectionStore(storageService, configurationService,
-			credentialsService, capabilitiesService);
-
-		assert.ok(connectionStore.isPasswordRequired(defaultNamedProfile));
-	});
-
-	test('isPasswordRequired should return true for MSSQL SqlLogin for connection profile object', () => {
-		const storageService = new TestStorageService();
-		const configurationService = new TestConfigurationService();
-		const credentialsService = new TestCredentialsService();
-
-		const connectionStore = new ConnectionStore(storageService, configurationService,
-			credentialsService, capabilitiesService);
-		const connectionProfile = new ConnectionProfile(capabilitiesService, defaultNamedProfile);
-
-		assert.ok(connectionStore.isPasswordRequired(connectionProfile));
-	});
-
-	test('isPasswordRequired should return false if the password is not required in capabilities', () => {
-		const storageService = new TestStorageService();
-		const configurationService = new TestConfigurationService();
-		const credentialsService = new TestCredentialsService();
-
-		const providerName: string = 'providername';
-		const connectionProvider = msSQLCapabilities.connectionOptions.map(o => {
-			if (o.name === 'password') {
-				o.isRequired = false;
-			}
-			return o;
-		});
-		const providerCapabilities = {
-			providerId: providerName,
-			displayName: providerName,
-			connectionOptions: connectionProvider
-		};
-
-		capabilitiesService.capabilities[providerName] = { connection: providerCapabilities };
-
-		const connectionStore = new ConnectionStore(storageService, configurationService,
-			credentialsService, capabilitiesService);
-		const connectionProfile: ConnectionProfile = Object.assign({}, defaultNamedProfile, { providerName: providerName });
-
-		assert.ok(!connectionStore.isPasswordRequired(connectionProfile));
-	});
-
 	test('saveProfile should save the password after the profile is saved', async () => {
 		const storageService = new TestStorageService();
 		const configurationService = new TestConfigurationService();
@@ -380,24 +330,6 @@ suite('ConnectionStore', () => {
 		// If I look up the child group using its ID, then I get back the correct group
 		actualGroup = connectionStore.getGroupFromId(childGroupId);
 		assert.equal(actualGroup.id, childGroupId, 'Did not get the child group when looking it up with its ID');
-	});
-
-	test('getProfileWithoutPassword can return the profile without credentials in the password property or options dictionary', () => {
-		const storageService = new TestStorageService();
-		const configurationService = new TestConfigurationService();
-		const credentialsService = new TestCredentialsService();
-
-		const connectionStore = new ConnectionStore(storageService, configurationService,
-			credentialsService, capabilitiesService);
-		const profile = deepClone(defaultNamedProfile);
-		profile.options['password'] = profile.password;
-		profile.id = 'testId';
-		let expectedProfile = Object.assign({}, profile);
-		expectedProfile.password = '';
-		expectedProfile.options['password'] = '';
-		expectedProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, expectedProfile);
-		let profileWithoutCredentials = connectionStore.getProfileWithoutPassword(profile);
-		assert.deepEqual(profileWithoutCredentials, expectedProfile);
 	});
 
 	test('addPassword gets the password from the credentials service', async () => {
