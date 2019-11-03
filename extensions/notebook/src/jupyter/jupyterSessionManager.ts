@@ -26,9 +26,6 @@ const configBase = {
 	'kernel_r_credentials': {
 		'url': ''
 	},
-
-	'ignore_ssl_errors': true,
-
 	'logging_config': {
 		'version': 1,
 		'formatters': {
@@ -69,7 +66,7 @@ export class JupyterSessionManager implements nb.SessionManager {
 	private _sessionManager: Session.IManager;
 	private static _sessions: JupyterSession[] = [];
 
-	constructor() {
+	constructor(private _pythonEnvVarPath?: string) {
 		this._isReady = false;
 		this._ready = new Deferred<void>();
 	}
@@ -117,13 +114,14 @@ export class JupyterSessionManager implements nb.SessionManager {
 		return allKernels;
 	}
 
-	public async startNew(options: nb.ISessionOptions): Promise<nb.ISession> {
+	public async startNew(options: nb.ISessionOptions, skipSettingEnvironmentVars?: boolean): Promise<nb.ISession> {
 		if (!this._isReady) {
 			// no-op
-			return Promise.reject(new Error(localize('errorStartBeforeReady', 'Cannot start a session, the manager is not yet initialized')));
+			return Promise.reject(new Error(localize('errorStartBeforeReady', "Cannot start a session, the manager is not yet initialized")));
 		}
 		let sessionImpl = await this._sessionManager.startNew(options);
-		let jupyterSession = new JupyterSession(sessionImpl);
+		let jupyterSession = new JupyterSession(sessionImpl, skipSettingEnvironmentVars, this._pythonEnvVarPath);
+		await jupyterSession.messagesComplete;
 		let index = JupyterSessionManager._sessions.findIndex(session => session.path === options.path);
 		if (index > -1) {
 			JupyterSessionManager._sessions.splice(index);
@@ -167,8 +165,15 @@ export class JupyterSessionManager implements nb.SessionManager {
 
 export class JupyterSession implements nb.ISession {
 	private _kernel: nb.IKernel;
+	private _messagesComplete: Deferred<void> = new Deferred<void>();
 
-	constructor(private sessionImpl: Session.ISession) {
+	constructor(private sessionImpl: Session.ISession, skipSettingEnvironmentVars?: boolean, private _pythonEnvVarPath?: string) {
+		this.setEnvironmentVars(skipSettingEnvironmentVars).catch(error => {
+			console.error(`Unexpected exception setting Jupyter Session variables : ${error}`);
+			// We don't want callers to hang forever waiting - it's better to continue on even if we weren't
+			// able to set environment variables
+			this._messagesComplete.resolve();
+		});
 	}
 
 	public get canChangeKernels(): boolean {
@@ -203,6 +208,11 @@ export class JupyterSession implements nb.ISession {
 			}
 		}
 		return this._kernel;
+	}
+
+	// Sent when startup messages have been sent
+	public get messagesComplete(): Promise<void> {
+		return this._messagesComplete.promise;
 	}
 
 	public async changeKernel(kernelInfo: nb.IKernelSpec): Promise<nb.IKernel> {
@@ -300,6 +310,7 @@ export class JupyterSession implements nb.ISession {
 		config.kernel_scala_credentials = creds;
 		config.kernel_r_credentials = creds;
 		config.logging_config.handlers.magicsHandler.home_path = homePath;
+		config.ignore_ssl_errors = utils.getIgnoreSslVerificationConfigSetting();
 	}
 
 	private getKnoxPortOrDefault(connectionProfile: IConnectionProfile): string {
@@ -320,6 +331,32 @@ export class JupyterSession implements nb.ISession {
 			return undefined;
 		}
 		return endpoints.find(ep => ep.serviceName.toLowerCase() === serviceName.toLowerCase());
+	}
+
+	private async setEnvironmentVars(skip: boolean = false): Promise<void> {
+		if (!skip && this.sessionImpl) {
+			let allCode: string = '';
+			// Ensure cwd matches notebook path (this follows Jupyter behavior)
+			if (this.path && path.dirname(this.path)) {
+				allCode += `%cd ${path.dirname(this.path)}${EOL}`;
+			}
+			for (let i = 0; i < Object.keys(process.env).length; i++) {
+				let key = Object.keys(process.env)[i];
+				if (key.toLowerCase() === 'path' && this._pythonEnvVarPath) {
+					allCode += `%set_env ${key}=${this._pythonEnvVarPath}${EOL}`;
+				} else {
+					// Jupyter doesn't seem to alow for setting multiple variables at once, so doing it with multiple commands
+					allCode += `%set_env ${key}=${process.env[key]}${EOL}`;
+				}
+			}
+			let future = this.sessionImpl.kernel.requestExecute({
+				code: allCode,
+				silent: true,
+				store_history: false
+			}, true);
+			await future.done;
+		}
+		this._messagesComplete.resolve();
 	}
 }
 

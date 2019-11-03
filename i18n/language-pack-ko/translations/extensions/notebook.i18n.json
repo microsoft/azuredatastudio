@@ -8,7 +8,7 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/notebook/package": {
+		"package": {
 			"displayName": "노트북 핵심 확장",
 			"description": "데이터 프로토톨 기반 노트북 기여와 여러 노트북 명령 및 기여를 정의합니다.",
 			"notebook.configuration.title": "노트북 구성",
@@ -37,11 +37,11 @@
 			"title.configurePython": "노트북용 Python 구성",
 			"title.managePackages": "패키지 관리"
 		},
-		"extensions/notebook/out/dialog/managePackages/managePackagesDialog": {
+		"out/dialog/managePackages/managePackagesDialog": {
 			"managePackages.dialogName": "패키지 관리",
 			"managePackages.cancelButtonText": "닫기"
 		},
-		"extensions/notebook/out/dialog/managePackages/installedPackagesTab": {
+		"out/dialog/managePackages/installedPackagesTab": {
 			"managePackages.installedTabTitle": "설치",
 			"managePackages.pkgNameColumn": "이름",
 			"managePackages.newPkgVersionColumn": "버전",
@@ -53,7 +53,7 @@
 			"managePackages.backgroundUninstallComplete": "{0}의 제거를 완료했습니다.",
 			"managePackages.backgroundUninstallFailed": "{0}을(를) 제거하지 못했습니다. 오류: {1}"
 		},
-		"extensions/notebook/out/dialog/managePackages/addNewPackageTab": {
+		"out/dialog/managePackages/addNewPackageTab": {
 			"managePackages.invalidTextPlaceholder": "N/A",
 			"managePackages.packageNotFound": "지정된 패키지를 찾을 수 없습니다.",
 			"managePackages.searchBarPlaceholder": "{0} 패키지 검색",
@@ -69,31 +69,31 @@
 			"managePackages.backgroundInstallComplete": "{0} {1} 설치 완료",
 			"managePackages.backgroundInstallFailed": "{0} {1}을(를) 설치하지 못했습니다. 오류: {2}"
 		},
-		"extensions/notebook/out/protocol/notebookUriHandler": {
+		"out/protocol/notebookUriHandler": {
 			"notebook.unsupportedAction": "이 처리기에 대해 {0} 작업이 지원되지 않습니다.",
 			"unsupportedScheme": "HTTP 및 HTTPS 링크만 지원되기 때문에 {0} 링크를 열 수 없습니다.",
 			"notebook.confirmOpen": "'{0}'을(를) 다운로드하고 열겠습니까?",
 			"notebook.fileNotFound": "지정한 파일을 찾을 수 없습니다.",
 			"notebook.fileDownloadError": "{0} {1} 오류로 파일 열기 요청 실패"
 		},
-		"extensions/notebook/out/jupyter/serverInstance": {
+		"out/jupyter/serverInstance": {
 			"serverStopError": "노트북 서버 중지 오류: {0}",
 			"notebookStartProcessExitPremature": "노트북 프로세스가 종기에 종료되었습니다(오류: {0}). StdErr 출력: {1}",
 			"jupyterError": "Jupyter에서 보낸 오류: {0}",
 			"jupyterOutputMsgStartSuccessful": "... Jupyter가 {0}에서 실행되고 있습니다.",
 			"jupyterOutputMsgStart": "... 전자 필기장 서버 시작"
 		},
-		"extensions/notebook/out/jupyter/jupyterSettingWriter": {
+		"out/jupyter/jupyterSettingWriter": {
 			"UnexpectedSettingType": "예기치 않은 설정 유형 {0}"
 		},
-		"extensions/notebook/out/jupyter/jupyterSessionManager": {
+		"out/jupyter/jupyterSessionManager": {
 			"errorStartBeforeReady": "세션을 시작할 수 없습니다. 관리자가 아직 초기화되지 않았습니다.",
 			"connectionNotValid": "Spark 커널은 SQL Server 빅 데이터 클러스터 마스터 인스턴스에 연결해야 합니다."
 		},
-		"extensions/notebook/out/jupyter/jupyterServerManager": {
+		"out/jupyter/jupyterServerManager": {
 			"shutdownError": "노트북 서버 종료 실패: {0}"
 		},
-		"extensions/notebook/out/jupyter/jupyterServerInstallation": {
+		"out/jupyter/jupyterServerInstallation": {
 			"msgInstallPkgProgress": "노트북 종속성 설치가 진행 중입니다.",
 			"msgPythonDownloadComplete": "Python 다운로드가 완료되었습니다.",
 			"msgPythonDownloadError": "Python 설정을 다운로드하는 동안 오류가 발생했습니다.",
@@ -113,15 +113,15 @@
 			"msgJupyterInstallDone": "... Jupyter 설치가 완료되었습니다.",
 			"msgInstallingSpark": "SparkMagic을 설치하는 중..."
 		},
-		"extensions/notebook/out/jupyter/jupyterNotebookProvider": {
+		"out/jupyter/jupyterNotebookProvider": {
 			"errNotebookUriMissing": "노트북 경로가 필요합니다."
 		},
-		"extensions/notebook/out/jupyter/jupyterController": {
+		"out/jupyter/jupyterController": {
 			"notebookFileType": "노트북",
 			"unsupportedFileType": ".ipynb 노트북만 지원됩니다.",
 			"confirmReinstall": "다시 설치하시겠습니까?"
 		},
-		"extensions/notebook/out/dialog/configurePythonDialog": {
+		"out/dialog/configurePythonDialog": {
 			"configurePython.dialogName": "노트북용 Python 구성",
 			"configurePython.okButtonText": "설치",
 			"configurePython.cancelButtonText": "취소",
@@ -136,7 +136,7 @@
 			"configurePython.newInstall": "새 Python 설치",
 			"configurePython.existingInstall": "기존 Python 설치 사용"
 		},
-		"extensions/notebook/out/book/bookTreeView": {
+		"out/book/bookTreeView": {
 			"openNotebookError": "{0} 파일 열기 실패: {1}",
 			"openMarkdownError": "{0} 파일 열기 실패: {1}",
 			"openExternalLinkError": "링크 {0} 열기 실패: {1}",
@@ -146,16 +146,16 @@
 			"openMarkdownCommand": "Markdown 열기",
 			"missingFileError": "없는 파일: {0}"
 		},
-		"extensions/notebook/out/common/utils": {
+		"out/common/utils": {
 			"mkdirOutputMsg": "... {0}을(를) 만드는 중",
 			"executeCommandProcessExited": "{0} 코드로 종료된 프로세스"
 		},
-		"extensions/notebook/out/common/localizedConstants": {
+		"out/common/localizedConstants": {
 			"msgYes": "예",
 			"msgNo": "아니요",
 			"msgSampleCodeDataFrame": "이 샘플 코드는 파일을 데이터 프레임에 로드하고 처음 10개의 결과를 표시합니다."
 		},
-		"extensions/notebook/out/extension": {
+		"out/extension": {
 			"msgSampleCodeDataFrame": "이 샘플 코드는 파일을 데이터 프레임에 로드하고 처음 10개의 결과를 보여 줍니다.",
 			"noNotebookVisible": "노트북 편집기가 활성 상태가 아님",
 			"codeCellName": "코드",

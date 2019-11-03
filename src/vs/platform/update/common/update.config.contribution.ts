@@ -26,7 +26,7 @@ configurationRegistry.registerConfiguration({
 				localize('none', "Disable updates."),
 				localize('manual', "Disable automatic background update checks. Updates will be available if you manually check for updates."),
 				localize('start', "Check for updates only on startup. Disable automatic background update checks."),
-				localize('default', "Enable automatic update checks. Code will check for updates automatically and periodically.")
+				localize('default', "Enable automatic update checks. Azure Data Studio will check for updates automatically and periodically.") // {{SQL CARBON EDIT}} Change product name to ADS
 			]
 		},
 		'update.channel': {

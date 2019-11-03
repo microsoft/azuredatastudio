@@ -176,7 +176,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.RunDeploymentPlanExecutors">
         <source xml:lang="en">Run Deployment Plan Executors</source>
-        <target state="translated">Executar executores do plano de implementação</target>
+        <target state="translated">Executar executores do plano de implantação</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.RegisterDataTierApplication">
         <source xml:lang="en">Register DataTier Application</source>
@@ -792,7 +792,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DoNotAlterChangeDataCaptureObjects">
         <source xml:lang="en">If true, Change Data Capture objects are not altered.</source>
-        <target state="translated">Se habilitado, os objetos do Change Data capture não serão alterados.</target>
+        <target state="translated">Se habilitado, os objetos do Change Data Capture não serão alterados.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DisableAndReenableDdlTriggers">
         <source xml:lang="en">Specifies whether Data Definition Language (DDL) triggers are disabled at the beginning of the publish process and re-enabled at the end of the publish action.</source>
@@ -944,7 +944,7 @@
       </trans-unit>
       <trans-unit id="schemaCompareDialog.TargetTitle">
         <source xml:lang="en">Target</source>
-        <target state="translated">destino</target>
+        <target state="translated">Destino</target>
       </trans-unit>
       <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
         <source xml:lang="en">File</source>
@@ -1048,7 +1048,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.addAction">
         <source xml:lang="en">Add</source>
-        <target state="translated">adicionar</target>
+        <target state="translated">Adicionar</target>
       </trans-unit>
       <trans-unit id="schemaCompare.Title">
         <source xml:lang="en">Schema Compare</source>
@@ -1060,7 +1060,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.targetLabel">
         <source xml:lang="en">Target</source>
-        <target state="translated">destino</target>
+        <target state="translated">Destino</target>
       </trans-unit>
       <trans-unit id="schemaCompare.switchLabel">
         <source xml:lang="en">➔</source>

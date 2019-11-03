@@ -22,18 +22,18 @@ import { OpenSparkYarnHistoryTask } from './sparkFeature/historyTask';
 import { MssqlObjectExplorerNodeProvider, mssqlOutputChannel } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import { registerSearchServerCommand } from './objectExplorerNodeProvider/command';
 import { MssqlIconProvider } from './iconProvider';
-import { registerServiceEndpoints } from './dashboard/serviceEndpoints';
+import { registerServiceEndpoints, Endpoint } from './dashboard/serviceEndpoints';
 import { getBookExtensionContributions } from './dashboard/bookExtensions';
 import { registerBooksWidget } from './dashboard/bookWidget';
 import { createMssqlApi } from './mssqlApiFactory';
-
+import { AuthType } from './util/auth';
 import { SqlToolsServer } from './sqlToolsServer';
 import { promises as fs } from 'fs';
 import { IconPathHelper } from './iconHelper';
 import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
-const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
+const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample code loads the file into a data frame and shows the first 10 results.");
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	// lets make sure we support this platform first
@@ -112,14 +112,14 @@ function activateSparkFeatures(appContext: AppContext): void {
 	let outputChannel: vscode.OutputChannel = mssqlOutputChannel;
 	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogCommand(appContext, outputChannel));
 	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogFromFileCommand(appContext, outputChannel));
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivySubmitSparkJobTask, (profile: azdata.IConnectionProfile) => {
-		new OpenSparkJobSubmissionDialogTask(appContext, outputChannel).execute(profile);
+	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivySubmitSparkJobTask, async (profile: azdata.IConnectionProfile) => {
+		await new OpenSparkJobSubmissionDialogTask(appContext, outputChannel).execute(profile);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenSparkHistory, (profile: azdata.IConnectionProfile) => {
-		new OpenSparkYarnHistoryTask(appContext).execute(profile, true);
+	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenSparkHistory, async (profile: azdata.IConnectionProfile) => {
+		await new OpenSparkYarnHistoryTask(appContext).execute(profile, true);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenYarnHistory, (profile: azdata.IConnectionProfile) => {
-		new OpenSparkYarnHistoryTask(appContext).execute(profile, false);
+	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenYarnHistory, async (profile: azdata.IConnectionProfile) => {
+		await new OpenSparkYarnHistoryTask(appContext).execute(profile, false);
 	});
 }
 
@@ -131,8 +131,8 @@ function activateNotebookTask(appContext: AppContext): void {
 	apiWrapper.registerTaskHandler(Constants.mssqlClusterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
 		return handleOpenNotebookTask(profile);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlopenClusterStatusNotebook, (profile: azdata.IConnectionProfile) => {
-		return handleOpenClusterStatusNotebookTask(profile, appContext);
+	apiWrapper.registerTaskHandler(Constants.mssqlOpenClusterDashboard, (profile: azdata.IConnectionProfile) => {
+		return handleOpenClusterDashboardTask(profile, appContext);
 	});
 }
 
@@ -180,7 +180,7 @@ async function handleNewNotebookTask(oeContext?: azdata.ObjectExplorerContext, p
 }
 
 async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promise<void> {
-	let notebookFileTypeName = localize('notebookFileType', 'Notebooks');
+	let notebookFileTypeName = localize('notebookFileType', "Notebooks");
 	let filter = {};
 	filter[notebookFileTypeName] = 'ipynb';
 	let uris = await vscode.window.showOpenDialog({
@@ -193,7 +193,7 @@ async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promi
 		// Verify this is a .ipynb file since this isn't actually filtered on Mac/Linux
 		if (path.extname(fileUri.fsPath) !== '.ipynb') {
 			// in the future might want additional supported types
-			vscode.window.showErrorMessage(localize('unsupportedFileType', 'Only .ipynb Notebooks are supported'));
+			vscode.window.showErrorMessage(localize('unsupportedFileType', "Only .ipynb Notebooks are supported"));
 		} else {
 			await azdata.nb.showNotebookDocument(fileUri, {
 				connectionProfile: profile,
@@ -203,24 +203,22 @@ async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promi
 	}
 }
 
-async function handleOpenClusterStatusNotebookTask(profile: azdata.IConnectionProfile, appContext: AppContext): Promise<void> {
-	const notebookRelativePath: string = 'notebooks/tsg/cluster-status.ipynb';
-	const notebookFullPath: string = path.join(appContext.extensionContext.extensionPath, notebookRelativePath);
-	if (!(await Utils.exists(notebookFullPath))) {
-		vscode.window.showErrorMessage(localize("fileNotFound", "Unable to find the file specified"));
-	} else {
-		const title: string = Utils.findNextUntitledEditorName(notebookFullPath);
-		const untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${title}`);
-		vscode.workspace.openTextDocument(notebookFullPath).then((document) => {
-			let initialContent = document.getText();
-			azdata.nb.showNotebookDocument(untitledFileName, {
-				connectionProfile: profile,
-				preview: true,
-				initialContent: initialContent,
-				initialDirtyState: false
-			});
-		});
+async function handleOpenClusterDashboardTask(profile: azdata.IConnectionProfile, appContext: AppContext): Promise<void> {
+	const serverInfo = await azdata.connection.getServerInfo(profile.id);
+	const controller = Utils.getClusterEndpoints(serverInfo).find(e => e.serviceName === Endpoint.controller);
+	if (!controller) {
+		appContext.apiWrapper.showErrorMessage(localize('noController', "Could not find the controller endpoint for this instance"));
+		return;
 	}
+
+	appContext.apiWrapper.executeCommand('bigDataClusters.command.manageController',
+		{
+			url: controller.endpoint,
+			auth: profile.authenticationType === 'Integrated' ? AuthType.Integrated : AuthType.Basic,
+			username: 'admin', // Default to admin as a best-guess, we'll prompt for re-entering credentials if that fails
+			password: profile.password,
+			rememberPassword: true
+		}, /*addOrUpdateController*/true);
 }
 
 // this method is called when your extension is deactivated

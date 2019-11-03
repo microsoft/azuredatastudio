@@ -80,15 +80,15 @@
       </trans-unit>
       <trans-unit id="createProxy.SSASQueryLabel">
         <source xml:lang="en">SQL Server Analysis Services Query</source>
-        <target state="translated">Sql Server 分析服务查询</target>
+        <target state="translated">SQL Server Analysis Services 查询</target>
       </trans-unit>
       <trans-unit id="createProxy.SSASCommandLabel">
         <source xml:lang="en">SQL Server Analysis Services Command</source>
-        <target state="translated">SQL Server 分析服务命令</target>
+        <target state="translated">SQL Server Analysis Services 命令</target>
       </trans-unit>
       <trans-unit id="createProxy.SSISPackage">
         <source xml:lang="en">SQL Server Integration Services Package</source>
-        <target state="translated">SQL Server 集成服务包</target>
+        <target state="translated">SQL Server Integration Services 包</target>
       </trans-unit>
       <trans-unit id="createProxy.PowerShell">
         <source xml:lang="en">PowerShell</source>
@@ -388,11 +388,11 @@
       </trans-unit>
       <trans-unit id="jobStepDialog.analysisCommand">
         <source xml:lang="en">SQL Server Analysis Services Command</source>
-        <target state="translated">SQL Server 分析服务命令</target>
+        <target state="translated">SQL Server Analysis Services 命令</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.analysisQuery">
         <source xml:lang="en">SQL Server Analysis Services Query</source>
-        <target state="translated">Sql Server 分析服务查询</target>
+        <target state="translated">SQL Server Analysis Services 查询</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.servicesPackage">
         <source xml:lang="en">SQL Server Integration Service Package</source>
@@ -880,7 +880,7 @@
       </trans-unit>
       <trans-unit id="alertData.DefaultAlertTypString">
         <source xml:lang="en">SQL Server event alert</source>
-        <target state="translated">sql server 事件警报</target>
+        <target state="translated">SQL Server 事件警报</target>
       </trans-unit>
       <trans-unit id="alertDialog.PerformanceCondition">
         <source xml:lang="en">SQL Server performance condition alert</source>

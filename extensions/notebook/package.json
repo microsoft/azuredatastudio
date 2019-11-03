@@ -141,8 +141,14 @@
         "category": "%books-preview-category%"
       },
       {
+        "command": "books.command.openLocalizedBooks",
+        "title": "%title.PreviewLocalizedBook%",
+        "category": "%books-preview-category%"
+      },
+      {
         "command": "notebook.command.saveBook",
         "title": "%title.saveJupyterBook%",
+        "category": "%books-preview-category%",
         "icon": {
           "dark": "resources/dark/save_inverse.svg",
           "light": "resources/light/save.svg"
@@ -151,6 +157,16 @@
       {
         "command": "notebook.command.searchBook",
         "title": "%title.searchJupyterBook%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/search_inverse.svg",
+          "light": "resources/light/search.svg"
+        }
+      },
+      {
+        "command": "notebook.command.searchUntitledBook",
+        "title": "%title.searchJupyterBook%",
+        "category": "%books-preview-category%",
         "icon": {
           "dark": "resources/dark/search_inverse.svg",
           "light": "resources/light/search.svg"
@@ -235,7 +251,19 @@
         },
         {
           "command": "books.sqlserver2019",
-          "when": "sqlserver2019 && notebookQuality != stable"
+          "when": "sqlserver2019"
+        },
+        {
+          "command": "notebook.command.saveBook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.searchBook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.searchUntitledBook",
+          "when": "false"
         }
       ],
       "touchBar": [
@@ -270,12 +298,17 @@
       "view/item/context": [
         {
           "command": "notebook.command.searchBook",
-          "when": "view =~ /^(untitledBookTreeView|bookTreeView)$/ && viewItem =~ /^(untitledBook|savedBook)$/ && notebookQuality != stable",
+          "when": "view == bookTreeView && viewItem == savedBook",
+          "group": "inline"
+        },
+        {
+          "command": "notebook.command.searchUntitledBook",
+          "when": "view == unsavedBookTreeView && viewItem == unsavedBook && unsavedBooks",
           "group": "inline"
         },
         {
           "command": "notebook.command.saveBook",
-          "when": "view == untitledBookTreeView && viewItem == untitledBook && untitledBooks && notebookQuality != stable",
+          "when": "view == unsavedBookTreeView && viewItem == unsavedBook && unsavedBooks",
           "group": "inline"
         }
       ],
@@ -397,8 +430,8 @@
           "name": "%title.SavedBooks%"
         },
         {
-          "id": "untitledBookTreeView",
-          "name": "%title.UntitledBooks%"
+          "id": "unsavedBookTreeView",
+          "name": "%title.UnsavedBooks%"
         }
       ]
     }
@@ -415,7 +448,8 @@
     "request": "^2.88.0",
     "temp-write": "^3.4.0",
     "vscode-languageclient": "^5.3.0-next.1",
-    "vscode-nls": "^4.0.0"
+    "vscode-nls": "^4.0.0",
+    "ws": "^7.2.0"
   },
   "devDependencies": {
     "@types/decompress": "^4.2.3",

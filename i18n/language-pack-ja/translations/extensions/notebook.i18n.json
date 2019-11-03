@@ -8,7 +8,7 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/notebook/package": {
+		"package": {
 			"displayName": "ノートブックのコア拡張機能",
 			"description": "データ プロトコル ベースのノートブック コントリビューションと、多くのノートブックのコマンドとコントリビューションを定義します。",
 			"notebook.configuration.title": "ノートブック構成",
@@ -37,11 +37,11 @@
 			"title.configurePython": "ノートブック用 Python の構成",
 			"title.managePackages": "パッケージの管理"
 		},
-		"extensions/notebook/out/dialog/managePackages/managePackagesDialog": {
+		"out/dialog/managePackages/managePackagesDialog": {
 			"managePackages.dialogName": "パッケージの管理",
 			"managePackages.cancelButtonText": "閉じる"
 		},
-		"extensions/notebook/out/dialog/managePackages/installedPackagesTab": {
+		"out/dialog/managePackages/installedPackagesTab": {
 			"managePackages.installedTabTitle": "インストール済み",
 			"managePackages.pkgNameColumn": "名前",
 			"managePackages.newPkgVersionColumn": "バージョン",
@@ -53,7 +53,7 @@
 			"managePackages.backgroundUninstallComplete": "{0} のアンインストールが完了しました",
 			"managePackages.backgroundUninstallFailed": "{0} のアンインストールに失敗しました。エラー: {1}"
 		},
-		"extensions/notebook/out/dialog/managePackages/addNewPackageTab": {
+		"out/dialog/managePackages/addNewPackageTab": {
 			"managePackages.invalidTextPlaceholder": "なし",
 			"managePackages.packageNotFound": "指定されたパッケージが見つかりませんでした",
 			"managePackages.searchBarPlaceholder": "{0} パッケージを検索します",
@@ -69,31 +69,31 @@
 			"managePackages.backgroundInstallComplete": "{0} {1} のインストールが完了しました",
 			"managePackages.backgroundInstallFailed": "{0} {1} のインストールに失敗しました。エラー: {2}"
 		},
-		"extensions/notebook/out/protocol/notebookUriHandler": {
+		"out/protocol/notebookUriHandler": {
 			"notebook.unsupportedAction": "このハンドラーではアクション {0} はサポートされていません",
 			"unsupportedScheme": "HTTP リンクと HTTPS リンクのみがサポートされているため、リンク {0} を開くことができません",
 			"notebook.confirmOpen": "'{0}' をダウンロードして開きますか?",
 			"notebook.fileNotFound": "指定されたファイルが見つかりませんでした",
 			"notebook.fileDownloadError": "ファイルを開く要求に失敗しました。エラー: {0} {1}"
 		},
-		"extensions/notebook/out/jupyter/serverInstance": {
+		"out/jupyter/serverInstance": {
 			"serverStopError": "ノートブック サーバーの停止でエラーが発生しました: {0}",
 			"notebookStartProcessExitPremature": "ノートブック プロセスが途中で終了しました。エラー: {0}。StdErr 出力: {1}",
 			"jupyterError": "Jupyter からの送信でエラーが発生しました: {0}",
 			"jupyterOutputMsgStartSuccessful": "...Jupyter は {0} で実行中です",
 			"jupyterOutputMsgStart": "... ノートブック サーバーを起動しています"
 		},
-		"extensions/notebook/out/jupyter/jupyterSettingWriter": {
+		"out/jupyter/jupyterSettingWriter": {
 			"UnexpectedSettingType": "予期しない設定の種類 {0}"
 		},
-		"extensions/notebook/out/jupyter/jupyterSessionManager": {
+		"out/jupyter/jupyterSessionManager": {
 			"errorStartBeforeReady": "セッションを開始できません。マネージャーがまだ初期化されていません",
 			"connectionNotValid": "Spark カーネルは、SQL Server big data cluster マスター インスタンスへの接続を必要とします。"
 		},
-		"extensions/notebook/out/jupyter/jupyterServerManager": {
+		"out/jupyter/jupyterServerManager": {
 			"shutdownError": "ノートブック サーバーをシャットダウンできませんでした: {0}"
 		},
-		"extensions/notebook/out/jupyter/jupyterServerInstallation": {
+		"out/jupyter/jupyterServerInstallation": {
 			"msgInstallPkgProgress": "ノートブック依存関係のインストールが進行中です",
 			"msgPythonDownloadComplete": "Python ダウンロードが完了しました",
 			"msgPythonDownloadError": "Python セットアップのダウンロード中にエラーが発生しました",
@@ -113,15 +113,15 @@
 			"msgJupyterInstallDone": "... Jupyter インストールが完了しました。",
 			"msgInstallingSpark": "SparkMagic をインストールしています..."
 		},
-		"extensions/notebook/out/jupyter/jupyterNotebookProvider": {
+		"out/jupyter/jupyterNotebookProvider": {
 			"errNotebookUriMissing": "ノートブック パスが必要です"
 		},
-		"extensions/notebook/out/jupyter/jupyterController": {
+		"out/jupyter/jupyterController": {
 			"notebookFileType": "ノートブック",
 			"unsupportedFileType": ".ipynb ノートブックのみがサポートされています",
 			"confirmReinstall": "再インストールしますか?"
 		},
-		"extensions/notebook/out/dialog/configurePythonDialog": {
+		"out/dialog/configurePythonDialog": {
 			"configurePython.dialogName": "ノートブック用の Python の構成",
 			"configurePython.okButtonText": "インストール",
 			"configurePython.cancelButtonText": "キャンセル",
@@ -136,7 +136,7 @@
 			"configurePython.newInstall": "新しい Python インストール",
 			"configurePython.existingInstall": "既存の Python インストールを使用する"
 		},
-		"extensions/notebook/out/book/bookTreeView": {
+		"out/book/bookTreeView": {
 			"openNotebookError": "ファイル {0} を開くことができませんでした: {1}",
 			"openMarkdownError": "ファイル {0} を開くことができませんでした: {1}",
 			"openExternalLinkError": "リンク {0} を開けませんでした。{1}",
@@ -146,16 +146,16 @@
 			"openMarkdownCommand": "マークダウンを開く",
 			"missingFileError": "ファイルが見つかりません: {0}"
 		},
-		"extensions/notebook/out/common/utils": {
+		"out/common/utils": {
 			"mkdirOutputMsg": "... {0} を作成しています",
 			"executeCommandProcessExited": "プロセスがコード {0} で終了しました"
 		},
-		"extensions/notebook/out/common/localizedConstants": {
+		"out/common/localizedConstants": {
 			"msgYes": "はい",
 			"msgNo": "いいえ",
 			"msgSampleCodeDataFrame": "このサンプル コードは、ファイルをデータ フレームに読み込み、最初の 10 件の結果を示します。"
 		},
-		"extensions/notebook/out/extension": {
+		"out/extension": {
 			"msgSampleCodeDataFrame": "このサンプル コードは、ファイルをデータ フレームに読み込み、最初の 10 件の結果を示します。",
 			"noNotebookVisible": "アクティブなノートブック エディターがありません",
 			"codeCellName": "コード",

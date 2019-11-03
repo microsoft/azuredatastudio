@@ -73,10 +73,10 @@ export class WebHDFS {
 	 */
 	private getOperationEndpoint(operation: string, path: string, params?: object): string {
 		let endpoint = this._url;
-		endpoint.pathname = this._opts.path + path;
+		endpoint.pathname = encodeURI(this._opts.path + path);
 		let searchOpts = Object.assign(
 			{ 'op': operation },
-			// this._opts.user ? { 'user.name': this._opts.user } : {},
+			this._opts.user ? { 'user.name': this._opts.user } : {},
 			params || {}
 		);
 		endpoint.search = querystring.stringify(searchOpts);
@@ -779,10 +779,6 @@ export class WebHDFS {
 				canResume = true; // Enable resume
 				stream.pipe(upload);
 				stream.resume();
-			}
-			if (error && !response) {
-				// request failed, and req is not accessible in this case.
-				throw this.parseError(undefined, undefined, error);
 			}
 			if (error || this.isError(response)) {
 				emitError(req, this.parseError(response, body, error));

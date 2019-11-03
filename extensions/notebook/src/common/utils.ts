@@ -22,7 +22,7 @@ export function getLivyUrl(serverName: string, port: string): string {
 export async function mkDir(dirPath: string, outputChannel?: vscode.OutputChannel): Promise<void> {
 	if (!await fs.pathExists(dirPath)) {
 		if (outputChannel) {
-			outputChannel.appendLine(localize('mkdirOutputMsg', '... Creating {0}', dirPath));
+			outputChannel.appendLine(localize('mkdirOutputMsg', "... Creating {0}", dirPath));
 		}
 		await fs.ensureDir(dirPath);
 	}
@@ -66,20 +66,29 @@ export function executeStreamedCommand(cmd: string, options: childProcess.SpawnO
 		let child = childProcess.spawn(cmd, [], options);
 
 		// Add listeners to resolve/reject the promise on exit
-		child.on('error', reject);
+		child.on('error', err => {
+			reject(err);
+		});
+
+		let stdErrLog = '';
 		child.on('exit', (code: number) => {
 			if (code === 0) {
 				resolve();
 			} else {
-				reject(localize('executeCommandProcessExited', 'Process exited with code {0}', code));
+				reject(localize('executeCommandProcessExited', "Process exited with  with error code: {0}. StdErr Output: {1}", code, stdErrLog));
 			}
 		});
 
 		// Add listeners to print stdout and stderr if an output channel was provided
 		if (outputChannel) {
 			child.stdout.on('data', data => { outputDataChunk(data, outputChannel, '    stdout: '); });
-			child.stderr.on('data', data => { outputDataChunk(data, outputChannel, '    stderr: '); });
 		}
+		child.stderr.on('data', data => {
+			if (outputChannel) {
+				outputDataChunk(data, outputChannel, '    stderr: ');
+			}
+			stdErrLog += data.toString();
+		});
 	});
 }
 
@@ -236,4 +245,20 @@ export async function exists(path: string): Promise<boolean> {
 	} catch (e) {
 		return false;
 	}
+}
+
+const bdcConfigSectionName = 'bigDataCluster';
+const ignoreSslConfigName = 'ignoreSslVerification';
+
+/**
+ * Retrieves the current setting for whether to ignore SSL verification errors
+ */
+export function getIgnoreSslVerificationConfigSetting(): boolean {
+	try {
+		const config = vscode.workspace.getConfiguration(bdcConfigSectionName);
+		return config.get<boolean>(ignoreSslConfigName, true);
+	} catch (error) {
+		console.error(`Unexpected error retrieving ${bdcConfigSectionName}.${ignoreSslConfigName} setting : ${error}`);
+	}
+	return true;
 }

@@ -10,6 +10,7 @@ import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/com
 import { ConnectionController } from 'sql/workbench/services/connection/browser/connectionController';
 import { CmsConnectionWidget } from 'sql/workbench/services/connection/browser/cmsConnectionWidget';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
+import { ILogService } from 'vs/platform/log/common/log';
 
 /**
  * Connection Controller for CMS Connections
@@ -22,9 +23,10 @@ export class CmsConnectionController extends ConnectionController {
 		providerName: string,
 		@IConnectionManagementService _connectionManagementService: IConnectionManagementService,
 		@IInstantiationService _instantiationService: IInstantiationService,
-		@IServerGroupController _serverGroupController: IServerGroupController
+		@IServerGroupController _serverGroupController: IServerGroupController,
+		@ILogService _logService: ILogService
 	) {
-		super(connectionProperties, callback, providerName, _connectionManagementService, _instantiationService, _serverGroupController);
+		super(connectionProperties, callback, providerName, _connectionManagementService, _instantiationService, _serverGroupController, _logService);
 		let specialOptions = this._providerOptions.filter(
 			(property) => (property.specialValueType !== null && property.specialValueType !== undefined));
 		this._connectionWidget = this._instantiationService.createInstance(CmsConnectionWidget, specialOptions, {

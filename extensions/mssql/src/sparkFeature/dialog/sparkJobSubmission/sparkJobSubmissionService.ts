@@ -37,8 +37,7 @@ export class SparkJobSubmissionService {
 				uri: livyUrl,
 				method: 'POST',
 				json: true,
-				// TODO, change it back after service's authentication changed.
-				rejectUnauthorized: false,
+				rejectUnauthorized: !auth.getIgnoreSslVerificationConfigSetting(),
 				body: {
 					file: submissionArgs.sparkFile,
 					proxyUser: submissionArgs.user,
@@ -86,8 +85,8 @@ export class SparkJobSubmissionService {
 				return response.id;
 			}
 
-			return Promise.reject(new Error(localize('sparkJobSubmission_LivyNoBatchIdReturned',
-				'No Spark job batch id is returned from response.{0}[Error] {1}', os.EOL, JSON.stringify(response))));
+			return Promise.reject(new Error(localize('sparkJobSubmission.LivyNoBatchIdReturned',
+				"No Spark job batch id is returned from response.{0}[Error] {1}", os.EOL, JSON.stringify(response))));
 		} catch (error) {
 			return Promise.reject(error);
 		}
@@ -114,7 +113,7 @@ export class SparkJobSubmissionService {
 				uri: livyUrl,
 				method: 'GET',
 				json: true,
-				rejectUnauthorized: false,
+				rejectUnauthorized: !auth.getIgnoreSslVerificationConfigSetting(),
 				// authentication headers
 				headers: headers
 			};
@@ -124,8 +123,8 @@ export class SparkJobSubmissionService {
 				return this.extractYarnAppIdFromLog(response.log);
 			}
 
-			return Promise.reject(localize('sparkJobSubmission_LivyNoLogReturned',
-				'No log is returned within response.{0}[Error] {1}', os.EOL, JSON.stringify(response)));
+			return Promise.reject(localize('sparkJobSubmission.LivyNoLogReturned',
+				"No log is returned within response.{0}[Error] {1}", os.EOL, JSON.stringify(response)));
 		} catch (error) {
 			return Promise.reject(error);
 		}

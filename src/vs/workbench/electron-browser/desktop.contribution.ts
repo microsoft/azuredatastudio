@@ -11,16 +11,16 @@ import { IConfigurationRegistry, Extensions as ConfigurationExtensions, Configur
 import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { isWindows, isLinux, isMacintosh } from 'vs/base/common/platform';
-import { ToggleSharedProcessAction, ToggleDevToolsAction } from 'vs/workbench/electron-browser/actions/developerActions';
-import { ZoomResetAction, ZoomOutAction, ZoomInAction, CloseCurrentWindowAction, SwitchWindow, QuickSwitchWindow, RestartWithExtensionsDisabledAction, NewWindowTabHandler, ShowPreviousWindowTabHandler, ShowNextWindowTabHandler, MoveWindowTabToNewWindowHandler, MergeWindowTabsHandlerHandler, ToggleWindowTabsBarHandler } from 'vs/workbench/electron-browser/actions/windowActions';
-import { SaveWorkspaceAsAction, DuplicateWorkspaceInNewWindowAction } from 'vs/workbench/electron-browser/actions/workspaceActions';
+import { ToggleSharedProcessAction, ToggleDevToolsAction, ConfigureRuntimeArgumentsAction } from 'vs/workbench/electron-browser/actions/developerActions';
+import { ZoomResetAction, ZoomOutAction, ZoomInAction, CloseCurrentWindowAction, SwitchWindow, QuickSwitchWindow, ReloadWindowWithExtensionsDisabledAction, NewWindowTabHandler, ShowPreviousWindowTabHandler, ShowNextWindowTabHandler, MoveWindowTabToNewWindowHandler, MergeWindowTabsHandlerHandler, ToggleWindowTabsBarHandler } from 'vs/workbench/electron-browser/actions/windowActions';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { SupportsWorkspacesContext, IsMacContext, HasMacNativeTabsContext, IsDevelopmentContext } from 'vs/workbench/browser/contextkeys';
+import { IsMacContext, HasMacNativeTabsContext } from 'vs/workbench/browser/contextkeys'; // {{SQL CARBON EDIT}} remove import
 import { NoEditorsVisibleContext, SingleEditorGroupsContext } from 'vs/workbench/common/editor';
 import { IElectronService } from 'vs/platform/electron/node/electron';
+import { IJSONContributionRegistry, Extensions as JSONExtensions } from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
 
 import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions'; // {{SQL CARBON EDIT}} add import
 
@@ -67,14 +67,6 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 		});
 	})();
 
-	// Actions: Workspaces
-	(function registerWorkspaceActions(): void {
-		const workspacesCategory = nls.localize('workspaces', "Workspaces");
-
-		registry.registerWorkbenchAction(new SyncActionDescriptor(SaveWorkspaceAsAction, SaveWorkspaceAsAction.ID, SaveWorkspaceAsAction.LABEL), 'Workspaces: Save Workspace As...', workspacesCategory, SupportsWorkspacesContext);
-		registry.registerWorkbenchAction(new SyncActionDescriptor(DuplicateWorkspaceInNewWindowAction, DuplicateWorkspaceInNewWindowAction.ID, DuplicateWorkspaceInNewWindowAction.LABEL), 'Workspaces: Duplicate Workspace in New Window', workspacesCategory, SupportsWorkspacesContext);
-	})();
-
 	// Actions: macOS Native Tabs
 	(function registerMacOSNativeTabsActions(): void {
 		if (isMacintosh) {
@@ -100,13 +92,14 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 	(function registerDeveloperActions(): void {
 		const developerCategory = nls.localize('developer', "Developer");
 		registry.registerWorkbenchAction(new SyncActionDescriptor(ToggleSharedProcessAction, ToggleSharedProcessAction.ID, ToggleSharedProcessAction.LABEL), 'Developer: Toggle Shared Process', developerCategory);
-		registry.registerWorkbenchAction(new SyncActionDescriptor(RestartWithExtensionsDisabledAction, RestartWithExtensionsDisabledAction.ID, RestartWithExtensionsDisabledAction.LABEL), 'Developer: Restart With Extensions Disabled', developerCategory);
+		registry.registerWorkbenchAction(new SyncActionDescriptor(ConfigureRuntimeArgumentsAction, ConfigureRuntimeArgumentsAction.ID, ConfigureRuntimeArgumentsAction.LABEL), 'Developer: Configure Runtime Arguments', developerCategory);
+		registry.registerWorkbenchAction(new SyncActionDescriptor(ReloadWindowWithExtensionsDisabledAction, ReloadWindowWithExtensionsDisabledAction.ID, ReloadWindowWithExtensionsDisabledAction.LABEL), 'Developer: Reload With Extensions Disabled', developerCategory);
 		registry.registerWorkbenchAction(new SyncActionDescriptor(ToggleDevToolsAction, ToggleDevToolsAction.ID, ToggleDevToolsAction.LABEL), 'Developer: Toggle Developer Tools', developerCategory);
 
 		KeybindingsRegistry.registerKeybindingRule({
 			id: ToggleDevToolsAction.ID,
 			weight: KeybindingWeight.WorkbenchContrib + 50,
-			when: IsDevelopmentContext,
+			when: undefined, // {{SQL CARBON EDIT}} allow this toggle in all circumstances
 			primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_I,
 			mac: { primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_I }
 		});
@@ -115,18 +108,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 
 // Menu
 (function registerMenu(): void {
-	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
-		group: '3_workspace',
-		command: {
-			id: SaveWorkspaceAsAction.ID,
-			title: nls.localize('miSaveWorkspaceAs', "Save Workspace As...")
-		},
-		order: 2,
-		when: SupportsWorkspacesContext
-	});
-
-	// {{SQL CARBON EDIT}} - Add install VSIX menu item
-	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
+	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, { // {{SQL CARBON EDIT}} - Add install VSIX menu item
 		group: '5.1_installExtension',
 		command: {
 			id: InstallVSIXAction.ID,
@@ -317,7 +299,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 				'default': false,
 				'scope': ConfigurationScope.APPLICATION,
 				'description': nls.localize('window.nativeTabs', "Enables macOS Sierra window tabs. Note that changes require a full restart to apply and that native tabs will disable a custom title bar style if configured."),
-				'included': isMacintosh && parseFloat(os.release()) >= 16 // Minimum: macOS Sierra (10.12.x = darwin 16.x)
+				'included': isMacintosh && parseFloat(os.release()) >= 17 // Minimum: macOS Sierra (10.13.x = darwin 17.x)
 			},
 			'window.nativeFullScreen': {
 				'type': 'boolean',
@@ -348,6 +330,35 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 				'description': nls.localize('telemetry.enableCrashReporting', "Enable crash reports to be sent to a Microsoft online service. \nThis option requires restart to take effect."),
 				'default': true,
 				'tags': ['usesOnlineServices']
+			}
+		}
+	});
+})();
+
+// JSON Schemas
+(function registerJSONSchemas(): void {
+	const argvDefinitionFileSchemaId = 'vscode://schemas/argv';
+	const jsonRegistry = Registry.as<IJSONContributionRegistry>(JSONExtensions.JSONContribution);
+
+	jsonRegistry.registerSchema(argvDefinitionFileSchemaId, {
+		id: argvDefinitionFileSchemaId,
+		allowComments: true,
+		allowTrailingCommas: true,
+		description: 'VSCode static command line definition file',
+		type: 'object',
+		additionalProperties: false,
+		properties: {
+			locale: {
+				type: 'string',
+				description: nls.localize('argv.locale', 'The display Language to use. Picking a different language requires the associated language pack to be installed.')
+			},
+			'disable-hardware-acceleration': {
+				type: 'boolean',
+				description: nls.localize('argv.disableHardwareAcceleration', 'Disables hardware acceleration. ONLY change this option if you encounter graphic issues.')
+			},
+			'disable-color-correct-rendering': {
+				type: 'boolean',
+				description: nls.localize('argv.disableColorCorrectRendering', 'Resolves issues around color profile selection. ONLY change this option if you encounter graphic issues.')
 			}
 		}
 	});

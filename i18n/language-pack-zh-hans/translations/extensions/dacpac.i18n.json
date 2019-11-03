@@ -8,26 +8,26 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/dacpac/out/wizard/pages/selectOperationpage": {
+		"out/wizard/pages/selectOperationpage": {
 			"dacFx.deployRadioButtonLabel": "将数据层应用程序 .dacpac 文件部署到 SQL Server 的实例 [部署 Dacpac]",
 			"dacFx.extractRadioButtonLabel": "将数据层应用程序从 SQL Server 实例提取到 .dacpac 文件 [提取 Dacpac]",
 			"dacFx.importRadioButtonLabel": "基于 .bacpac 文件创建数据库 [导入 Bacpac]",
 			"dacFx.exportRadioButtonLabel": "将架构和数据从数据库导出到逻辑 .bacpac 文件格式 [导出 Bacpac]"
 		},
-		"extensions/dacpac/out/wizard/pages/importConfigPage": {
+		"out/wizard/pages/importConfigPage": {
 			"dacFxImport.openFile": "打开",
 			"dacFxImport.fileTextboxTitle": "文件位置"
 		},
-		"extensions/dacpac/out/wizard/pages/extractConfigPage": {
+		"out/wizard/pages/extractConfigPage": {
 			"dacfxExtract.saveFile": "保存",
 			"dacFxExtract.fileTextboxTitle": "文件位置",
 			"dacFxExtract.versionTextboxTitle": "版本(采用 x.x.x.x 格式，x 表示数字)"
 		},
-		"extensions/dacpac/out/wizard/pages/exportConfigPage": {
+		"out/wizard/pages/exportConfigPage": {
 			"dacfxExport.saveFile": "保存",
 			"dacFxExport.fileTextboxTitle": "文件位置"
 		},
-		"extensions/dacpac/out/wizard/pages/deployPlanPage": {
+		"out/wizard/pages/deployPlanPage": {
 			"dacfx.dataLossTextWithCount": "列出的部署操作的 {0} 可能会导致数据丢失。请确保在部署出现问题的情况下，你有备份或快照可用。",
 			"dacFx.dataLossCheckbox": "尽管可能会丢失数据，仍要继续",
 			"dacfx.noDataLossText": "列出的部署操作不会导致数据丢失。",
@@ -41,7 +41,7 @@
 			"dacfx.dataLossColumn": "数据丢失",
 			"dacfx.dataLossTooltip": "将对可能导致数据丢失的操作标记警告符号"
 		},
-		"extensions/dacpac/out/wizard/pages/deployConfigPage": {
+		"out/wizard/pages/deployConfigPage": {
 			"dacFx.databaseNameTextBox": "数据库名称",
 			"dacFx.databaseNameDropdown": "数据库名称",
 			"dacFxDeploy.openFile": "打开",
@@ -51,7 +51,7 @@
 			"dacFx.targetDatabaseRadioButtonsTitle": "目标数据库",
 			"dacFx.targetDatabaseDropdownTitle": "数据库名称"
 		},
-		"extensions/dacpac/out/wizard/pages/dacFxSummaryPage": {
+		"out/wizard/pages/dacFxSummaryPage": {
 			"dacfx.targetServerName": "目标服务器",
 			"dacfx.targetDatabaseName": "目标数据库",
 			"dacfx.sourceServerName": "源服务器",
@@ -61,16 +61,16 @@
 			"dacfx.settingColumn": "设置",
 			"dacfx.valueColumn": "值"
 		},
-		"extensions/dacpac/out/wizard/api/dacFxConfigPage": {
+		"out/wizard/api/dacFxConfigPage": {
 			"dacFx.targetServerDropdownTitle": "目标服务器",
 			"dacFx.sourceServerDropdownTitle": "源服务器",
 			"dacFx.databaseNameTextBox": "目标数据库",
 			"dacFx.sourceDatabaseDropdownTitle": "源数据库"
 		},
-		"extensions/dacpac/out/wizard/api/basePage": {
+		"out/wizard/api/basePage": {
 			"basePage.defaultUser": "默认值"
 		},
-		"extensions/dacpac/out/wizard/dataTierApplicationWizard": {
+		"out/wizard/dataTierApplicationWizard": {
 			"dacFx.selectOperationPageName": "选择操作",
 			"dacFx.deployConfigPageName": "选择“部署 Dacpac 设置”",
 			"dacFx.deployPlanPage": "查看部署计划",

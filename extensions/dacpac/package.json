@@ -2,9 +2,9 @@
   "name": "dacpac",
   "displayName": "SQL Server Dacpac",
   "description": "SQL Server Dacpac for Azure Data Studio.",
-  "version": "0.8.0",
+  "version": "1.0.0",
   "publisher": "Microsoft",
-  "preview": true,
+  "preview": false,
   "engines": {
     "vscode": "^1.25.0",
     "azdata": "*"
@@ -35,17 +35,17 @@
       "objectExplorer/item/context": [
         {
           "command": "dacFx.start",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
           "group": "export"
         },
         {
           "command": "dacFx.start",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Server",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
           "group": "export"
         },
         {
           "command": "dacFx.start",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Folder && nodeLabel == 'Databases'",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Folder && nodeLabel == 'Databases' && mssql:engineedition != 11",
           "group": "export"
         }
       ]
@@ -53,15 +53,15 @@
   },
   "dependencies": {
     "htmlparser2": "^3.10.1",
-    "vscode-nls": "^3.2.1"
+    "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",
     "mocha": "^5.2.0",
-    "should": "^13.2.1",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
-    "vscode": "^1.1.26"
+    "should": "^13.2.1",
+    "vscode": "^1.1.36"
   },
   "__metadata": {
     "id": "33",

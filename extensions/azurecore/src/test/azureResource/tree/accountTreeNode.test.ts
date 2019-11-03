@@ -8,7 +8,7 @@ import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import 'mocha';
-import { TokenCredentials } from 'ms-rest';
+import { TokenCredentials } from '@azure/ms-rest-js';
 import { AppContext } from '../../../appContext';
 
 import { azureResource } from '../../../azureResource/azure-resource';

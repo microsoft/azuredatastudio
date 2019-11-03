@@ -14,9 +14,9 @@ import { JobData } from './jobData';
 const localize = nls.loadMessageBundle();
 
 export class AlertData implements IAgentDialogData {
-	public static readonly AlertTypeSqlServerEventString: string = localize('alertData.DefaultAlertTypString', 'SQL Server event alert');
-	public static readonly AlertTypePerformanceConditionString: string = localize('alertDialog.PerformanceCondition', 'SQL Server performance condition alert');
-	public static readonly AlertTypeWmiEventString: string = localize('alertDialog.WmiEvent', 'WMI event alert');
+	public static readonly AlertTypeSqlServerEventString: string = localize('alertData.DefaultAlertTypString', "SQL Server event alert");
+	public static readonly AlertTypePerformanceConditionString: string = localize('alertDialog.PerformanceCondition', "SQL Server performance condition alert");
+	public static readonly AlertTypeWmiEventString: string = localize('alertDialog.WmiEvent', "WMI event alert");
 	public static readonly DefaultAlertTypeString: string = AlertData.AlertTypeSqlServerEventString;
 
 	ownerUri: string;

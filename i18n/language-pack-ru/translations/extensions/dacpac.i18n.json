@@ -8,26 +8,26 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/dacpac/out/wizard/pages/selectOperationpage": {
+		"out/wizard/pages/selectOperationpage": {
 			"dacFx.deployRadioButtonLabel": "Развертывание файла DACPAC приложения уровня данных в экземпляре SQL Server [Развертывание DACPAC]",
 			"dacFx.extractRadioButtonLabel": "Извлечение приложения уровня данных из экземпляра SQL Server в файл DACPAC [Извлечение DACPAC]",
 			"dacFx.importRadioButtonLabel": "Создание базы данных из файла BACPAC [Импорт BACPAC]",
 			"dacFx.exportRadioButtonLabel": "Экспорт схемы и данных из базы данных в логический формат файла BACPAC [Экспорт BACPAC]"
 		},
-		"extensions/dacpac/out/wizard/pages/importConfigPage": {
+		"out/wizard/pages/importConfigPage": {
 			"dacFxImport.openFile": "Открыто",
 			"dacFxImport.fileTextboxTitle": "Расположение файла"
 		},
-		"extensions/dacpac/out/wizard/pages/extractConfigPage": {
+		"out/wizard/pages/extractConfigPage": {
 			"dacfxExtract.saveFile": "Сохранить",
 			"dacFxExtract.fileTextboxTitle": "Расположение файла",
 			"dacFxExtract.versionTextboxTitle": "Версия (используйте формат x.x.x.x, где x — это число)"
 		},
-		"extensions/dacpac/out/wizard/pages/exportConfigPage": {
+		"out/wizard/pages/exportConfigPage": {
 			"dacfxExport.saveFile": "Сохранить",
 			"dacFxExport.fileTextboxTitle": "Расположение файла"
 		},
-		"extensions/dacpac/out/wizard/pages/deployPlanPage": {
+		"out/wizard/pages/deployPlanPage": {
 			"dacfx.dataLossTextWithCount": "{0} из указанных действий развертывания может привести к потере данных. Убедитесь в наличии резервной копии или моментального снимка на случай проблем с развертыванием.",
 			"dacFx.dataLossCheckbox": "Продолжать, несмотря на возможную потерю данных",
 			"dacfx.noDataLossText": "Указанные действия развертывания не приведут к потере данных.",
@@ -41,7 +41,7 @@
 			"dacfx.dataLossColumn": "Потеря данных",
 			"dacfx.dataLossTooltip": "Операции, которые могут привести к потере данных, отмечены предупреждающим знаком"
 		},
-		"extensions/dacpac/out/wizard/pages/deployConfigPage": {
+		"out/wizard/pages/deployConfigPage": {
 			"dacFx.databaseNameTextBox": "Имя базы данных",
 			"dacFx.databaseNameDropdown": "Имя базы данных",
 			"dacFxDeploy.openFile": "Открыто",
@@ -51,7 +51,7 @@
 			"dacFx.targetDatabaseRadioButtonsTitle": "Целевая база данных",
 			"dacFx.targetDatabaseDropdownTitle": "Имя базы данных"
 		},
-		"extensions/dacpac/out/wizard/pages/dacFxSummaryPage": {
+		"out/wizard/pages/dacFxSummaryPage": {
 			"dacfx.targetServerName": "Целевой сервер",
 			"dacfx.targetDatabaseName": "Целевая база данных",
 			"dacfx.sourceServerName": "Исходный сервер",
@@ -61,16 +61,16 @@
 			"dacfx.settingColumn": "Параметр",
 			"dacfx.valueColumn": "Значение"
 		},
-		"extensions/dacpac/out/wizard/api/dacFxConfigPage": {
+		"out/wizard/api/dacFxConfigPage": {
 			"dacFx.targetServerDropdownTitle": "Целевой сервер",
 			"dacFx.sourceServerDropdownTitle": "Исходный сервер",
 			"dacFx.databaseNameTextBox": "Целевая база данных",
 			"dacFx.sourceDatabaseDropdownTitle": "База данных-источник"
 		},
-		"extensions/dacpac/out/wizard/api/basePage": {
+		"out/wizard/api/basePage": {
 			"basePage.defaultUser": "По умолчанию"
 		},
-		"extensions/dacpac/out/wizard/dataTierApplicationWizard": {
+		"out/wizard/dataTierApplicationWizard": {
 			"dacFx.selectOperationPageName": "Выберите операцию",
 			"dacFx.deployConfigPageName": "Выберите параметры развертывания DACPAC",
 			"dacFx.deployPlanPage": "Обзор плана развертывания",

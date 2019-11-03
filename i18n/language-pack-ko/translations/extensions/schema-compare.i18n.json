@@ -8,12 +8,12 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/schema-compare/package": {
+		"package": {
 			"displayName": "SQL Server 스키마 비교",
 			"description": "Azure Data Studio에 대한 SQL Server 스키마 비교는 데이터베이스 및 dacpacs의 스키마 비교를 지원합니다.",
 			"schemaCompare.start": "스키마 비교"
 		},
-		"extensions/schema-compare/out/dialogs/schemaCompareOptionsDialog": {
+		"out/dialogs/schemaCompareOptionsDialog": {
 			"SchemaCompareOptionsDialog.Ok": "확인",
 			"SchemaCompareOptionsDialog.Cancel": "취소",
 			"SchemaCompareOptionsDialog.Reset": "다시 설정",
@@ -242,7 +242,7 @@
 			"SchemaCompare.Description.DropObjectsNotInSource": "데이터베이스에 게시할 때 데이터베이스 스냅숏 파일(.dacpac)에 없는 개체를 대상 데이터베이스에서 삭제할지 여부를 지정합니다. 이 값이 DropExtendedProperties보다 우선합니다.",
 			"SchemaCompare.Description.IgnoreColumnOrder": "데이터베이스에 게시할 때 테이블 열 순서의 차이를 무시해야 할지 아니면 업데이트해야 할지를 지정합니다."
 		},
-		"extensions/schema-compare/out/dialogs/schemaCompareDialog": {
+		"out/dialogs/schemaCompareDialog": {
 			"schemaCompareDialog.ok": "확인",
 			"schemaCompareDialog.cancel": "취소",
 			"schemaCompareDialog.SourceTitle": "소스",
@@ -263,7 +263,7 @@
 			"schemaCompare.openFile": "열기",
 			"schemaCompareDialog.defaultUser": "기본값"
 		},
-		"extensions/schema-compare/out/schemaCompareMainWindow": {
+		"out/schemaCompareMainWindow": {
 			"schemaCompare.CompareDetailsTitle": "세부 정보 비교",
 			"schemaCompare.ApplyConfirmation": "대상을 업데이트하시겠습니까?",
 			"schemaCompare.RecompareToRefresh": "[비교]를 눌러 비교를 새로 고칩니다.",

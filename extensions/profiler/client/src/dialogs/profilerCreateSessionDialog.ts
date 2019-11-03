@@ -13,9 +13,9 @@ const localize = nls.loadMessageBundle();
 
 export class CreateSessionDialog {
 	// Top level
-	private readonly CancelButtonText: string = localize('createSessionDialog.cancel', 'Cancel');
-	private readonly CreateButtonText: string = localize('createSessionDialog.create', 'Start');
-	private readonly DialogTitleText: string = localize('createSessionDialog.title', 'Start New Profiler Session');
+	private readonly CancelButtonText: string = localize('createSessionDialog.cancel', "Cancel");
+	private readonly CreateButtonText: string = localize('createSessionDialog.create', "Start");
+	private readonly DialogTitleText: string = localize('createSessionDialog.title', "Start New Profiler Session");
 
 	// UI Components
 	private dialog: azdata.window.Dialog;

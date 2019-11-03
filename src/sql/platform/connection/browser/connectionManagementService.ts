@@ -246,6 +246,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					if (!connectionResult.connected && !connectionResult.errorHandled) {
 						// If connection fails show the dialog
 						return this.showConnectionDialogOnError(connection, owner, connectionResult, options);
+					} else if (!connectionResult.connected && connectionResult.errorHandled) {
+						// Cancelled firewall dialog
+						return undefined;
 					} else {
 						//Resolve with the connection result
 						return connectionResult;
@@ -584,7 +587,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
-		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.AddServerGroup);
+		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.AddServerGroup).catch((e) => this._logService.error(e));
 		return this._connectionStore.saveProfileGroup(profile).then(groupId => {
 			this._onAddConnectionProfile.fire(undefined);
 			return groupId;
@@ -831,13 +834,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 			extensionConnectionTime: connection.extensionTimer.elapsed() - connection.serviceTimer.elapsed(),
 			serviceConnectionTime: connection.serviceTimer.elapsed()
-		});
+		}).catch((e) => this._logService.error(e));
 	}
 
 	private addTelemetryForConnectionDisconnected(connection: interfaces.IConnectionProfile): void {
 		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.DatabaseDisconnected, {
 			provider: connection.providerName
-		});
+		}).catch((e) => this._logService.error(e));
 	}
 
 	public onConnectionComplete(handle: number, info: azdata.ConnectionInfoSummary): void {
@@ -879,13 +882,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void> {
-		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.MoveServerConnection);
+		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.MoveServerConnection).catch((e) => this._logService.error(e));
 		return this._connectionStore.changeGroupIdForConnectionGroup(source, target);
 	}
 
 	public changeGroupIdForConnection(source: ConnectionProfile, targetGroupId: string): Promise<void> {
 		let id = Utils.generateUri(source);
-		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.MoveServerGroup);
+		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.MoveServerGroup).catch((e) => this._logService.error(e));
 		return this._connectionStore.changeGroupIdForConnection(source, targetGroupId).then(result => {
 			if (id && targetGroupId) {
 				source.groupId = targetGroupId;
@@ -968,7 +971,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			});
 
 			// send connection request
-			self.sendConnectRequest(connection, uri);
+			self.sendConnectRequest(connection, uri).catch((e) => this._logService.error(e));
 		});
 	}
 
@@ -1141,7 +1144,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 */
 	public deleteConnection(connection: ConnectionProfile): Promise<boolean> {
 
-		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.DeleteConnection, {}, connection);
+		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.DeleteConnection, {}, connection).catch((e) => this._logService.error(e));
 		// Disconnect if connected
 		let uri = Utils.generateUri(connection);
 		if (this.isConnected(uri) || this.isConnecting(uri)) {
@@ -1171,7 +1174,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Disconnects a connection before removing from config. If disconnect fails, settings is not modified.
 	 */
 	public deleteConnectionGroup(group: ConnectionProfileGroup): Promise<boolean> {
-		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.DeleteServerGroup);
+		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.DeleteServerGroup).catch((e) => this._logService.error(e));
 		// Get all connections for this group
 		let connections = ConnectionProfileGroup.getConnectionsInGroup(group);
 

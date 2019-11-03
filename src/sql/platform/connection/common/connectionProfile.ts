@@ -24,7 +24,7 @@ export class ConnectionProfile extends ProviderConnectionInfo {
 	public parent?: ConnectionProfileGroup;
 	private _id: string;
 	public savePassword: boolean;
-	private _groupName: string;
+	private _groupName?: string;
 	public groupId: string;
 	public saveProfile: boolean;
 
@@ -118,11 +118,11 @@ export class ConnectionProfile extends ProviderConnectionInfo {
 		this.options['registeredServerDescription'] = value;
 	}
 
-	public get groupFullName(): string {
+	public get groupFullName(): string | undefined {
 		return this._groupName;
 	}
 
-	public set groupFullName(value: string) {
+	public set groupFullName(value: string | undefined) {
 		this._groupName = value;
 	}
 
@@ -190,14 +190,11 @@ export class ConnectionProfile extends ProviderConnectionInfo {
 		return !profile.databaseName || profile.databaseName.trim() === '';
 	}
 
-	public static fromIConnectionProfile(capabilitiesService: ICapabilitiesService, profile: azdata.IConnectionProfile) {
-		if (profile) {
-			if (profile instanceof ConnectionProfile) {
-				return profile;
-			} else {
-				return new ConnectionProfile(capabilitiesService, profile);
-			}
+	public static fromIConnectionProfile(capabilitiesService: ICapabilitiesService, profile: azdata.IConnectionProfile): ConnectionProfile {
+		if (profile instanceof ConnectionProfile) {
+			return profile;
+		} else {
+			return new ConnectionProfile(capabilitiesService, profile);
 		}
-		return undefined;
 	}
 }

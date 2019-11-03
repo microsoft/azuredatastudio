@@ -76,7 +76,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 		);
 	}
 
-	public schemaCompareIncludeExcludeNode(operationId: string, diffEntry: mssql.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+	public schemaCompareIncludeExcludeNode(operationId: string, diffEntry: mssql.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaCompareIncludeExcludeResult> {
 		const params: contracts.SchemaCompareNodeParams = { operationId: operationId, diffEntry, includeRequest, taskExecutionMode: taskExecutionMode };
 		return this.client.sendRequest(contracts.SchemaCompareIncludeExcludeNodeRequest.type, params).then(
 			undefined,

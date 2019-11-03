@@ -98,5 +98,5 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 	public isSystemInitialized: boolean = false;
 	private _onDidChangeTreeData = new EventEmitter<TreeNode>();
 
-	private static readonly loadingLabel = localize('cms.resource.tree.treeProvider.loadingLabel', 'Loading ...');
+	private static readonly loadingLabel = localize('cms.resource.tree.treeProvider.loadingLabel', "Loading ...");
 }

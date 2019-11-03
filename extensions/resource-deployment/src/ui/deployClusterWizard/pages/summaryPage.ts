@@ -33,11 +33,10 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 		if (this.wizard.model.deploymentTarget === BdcDeploymentType.NewAKS) {
 			this.wizard.wizardObject.message = {
 				level: azdata.window.MessageLevel.Information,
-				text: localize('resourceDeployment.NewAKSBrowserWindowPrompt', "A browser window for logging to Azure will be opened during the SQL Server Big Data Cluster deployment.")
+				text: localize('resourceDeployment.NewAKSBrowserWindowPrompt', "A browser window for signing into Azure will be opened during the SQL Server Big Data Cluster deployment.")
 			};
 		}
-		this.wizard.saveConfigButton.hidden = false;
-		this.wizard.scriptToNotebookButton.hidden = false;
+		this.wizard.showCustomButtons();
 		this.formItems.forEach(item => {
 			this.form!.removeFormItem(item);
 		});
@@ -311,8 +310,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 	}
 
 	public onLeave() {
-		this.wizard.saveConfigButton.hidden = true;
-		this.wizard.scriptToNotebookButton.hidden = true;
+		this.wizard.hideCustomButtons();
 		this.wizard.wizardObject.message = { text: '' };
 	}
 
@@ -343,6 +341,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			width: 180
 		};
 		const storageTable = this.view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+			title: localize('deployCluster.StorageSettings', "Storage settings"),
 			data: [
 				[
 					localize('deployCluster.ControllerText', "Controller"),

@@ -15,13 +15,15 @@ import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri,
 import { SchemaCompareDialog } from './dialogs/schemaCompareDialog';
 import { isNullOrUndefined } from 'util';
 const localize = nls.loadMessageBundle();
-const diffEditorTitle = localize('schemaCompare.CompareDetailsTitle', 'Compare Details');
-const applyConfirmation = localize('schemaCompare.ApplyConfirmation', 'Are you sure you want to update the target?');
-const reCompareToRefeshMessage = localize('schemaCompare.RecompareToRefresh', 'Press Compare to refresh the comparison.');
-const generateScriptEnabledMessage = localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target');
-const generateScriptNoChangesMessage = localize('schemaCompare.generateScriptNoChanges', 'No changes to script');
-const applyEnabledMessage = localize('schemaCompare.applyButtonEnabledTitle', 'Apply changes to target');
-const applyNoChangesMessage = localize('schemaCompare.applyNoChanges', 'No changes to apply');
+const diffEditorTitle = localize('schemaCompare.CompareDetailsTitle', "Compare Details");
+const applyConfirmation = localize('schemaCompare.ApplyConfirmation', "Are you sure you want to update the target?");
+const reCompareToRefeshMessage = localize('schemaCompare.RecompareToRefresh', "Press Compare to refresh the comparison.");
+const generateScriptEnabledMessage = localize('schemaCompare.generateScriptEnabledButton', "Generate script to deploy changes to target");
+const generateScriptNoChangesMessage = localize('schemaCompare.generateScriptNoChanges', "No changes to script");
+const applyEnabledMessage = localize('schemaCompare.applyButtonEnabledTitle', "Apply changes to target");
+const applyNoChangesMessage = localize('schemaCompare.applyNoChanges', "No changes to apply");
+const includeExcludeInfoMessage = localize('schemaCompare.includeExcludeInfoMessage', "Please note that include/exclude operations can take a moment to calculate affected dependencies");
+
 // Do not localize this, this is used to decide the icon for the editor.
 // TODO : In future icon should be decided based on language id (scmp) and not resource name
 const schemaCompareResourceName = 'Schema Compare';
@@ -69,17 +71,19 @@ export class SchemaCompareMainWindow {
 	private targetName: string;
 	private scmpSourceExcludes: mssql.SchemaCompareObjectId[];
 	private scmpTargetExcludes: mssql.SchemaCompareObjectId[];
+	private diffEntryRowMap = new Map<string, number>();
+	private showIncludeExcludeWaitingMessage: boolean = true;
 
 	public sourceEndpointInfo: mssql.SchemaCompareEndpointInfo;
 	public targetEndpointInfo: mssql.SchemaCompareEndpointInfo;
 
 	constructor(private schemaCompareService?: mssql.ISchemaCompareService, private extensionContext?: vscode.ExtensionContext) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
-		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Delete] = localize('schemaCompare.deleteAction', 'Delete');
-		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Change] = localize('schemaCompare.changeAction', 'Change');
-		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', 'Add');
+		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Delete] = localize('schemaCompare.deleteAction', "Delete");
+		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Change] = localize('schemaCompare.changeAction', "Change");
+		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', "Add");
 
-		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true, resourceName: schemaCompareResourceName });
+		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', "Schema Compare"), { retainContextWhenHidden: true, supportsSave: true, resourceName: schemaCompareResourceName });
 	}
 
 	public async start(context: any) {
@@ -101,7 +105,6 @@ export class SchemaCompareMainWindow {
 		this.editor.registerContent(async view => {
 			this.differencesTable = view.modelBuilder.table().withProperties({
 				data: [],
-				height: 300,
 				title: localize('schemaCompare.differencesTableTitle', "Comparison between Source and Target")
 			}).component();
 
@@ -159,17 +162,17 @@ export class SchemaCompareMainWindow {
 			}]);
 
 			let sourceLabel = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.sourceLabel', 'Source'),
+				value: localize('schemaCompare.sourceLabel', "Source"),
 				CSSStyles: { 'margin-bottom': '0px' }
 			}).component();
 
 			let targetLabel = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.targetLabel', 'Target'),
+				value: localize('schemaCompare.targetLabel', "Target"),
 				CSSStyles: { 'margin-bottom': '0px' }
 			}).component();
 
 			let arrowLabel = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.switchLabel', '➔')
+				value: localize('schemaCompare.switchLabel', "➔")
 			}).component();
 
 			this.sourceName = getEndpointName(this.sourceEndpointInfo);
@@ -204,15 +207,15 @@ export class SchemaCompareMainWindow {
 
 			this.loader = view.modelBuilder.loadingComponent().component();
 			this.waitText = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.waitText', 'Initializing Comparison. This might take a moment.')
+				value: localize('schemaCompare.waitText', "Initializing Comparison. This might take a moment.")
 			}).component();
 
 			this.startText = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.startText', 'To compare two schemas, first select a source schema and target schema, then press Compare.')
+				value: localize('schemaCompare.startText', "To compare two schemas, first select a source schema and target schema, then press Compare.")
 			}).component();
 
 			this.noDifferencesLabel = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.noDifferences', 'No schema differences were found.')
+				value: localize('schemaCompare.noDifferences', "No schema differences were found.")
 			}).component();
 
 			this.flexModel = view.modelBuilder.flexContainer().component();
@@ -298,29 +301,29 @@ export class SchemaCompareMainWindow {
 			data: data,
 			columns: [
 				{
-					value: localize('schemaCompare.typeColumn', 'Type'),
+					value: localize('schemaCompare.typeColumn', "Type"),
 					cssClass: 'align-with-header',
 					width: 50
 				},
 				{
-					value: localize('schemaCompare.sourceNameColumn', 'Source Name'),
+					value: localize('schemaCompare.sourceNameColumn', "Source Name"),
 					cssClass: 'align-with-header',
 					width: 90
 				},
 				{
-					value: localize('schemaCompare.includeColumnName', 'Include'),
+					value: localize('schemaCompare.includeColumnName', "Include"),
 					cssClass: 'align-with-header',
 					width: 60,
 					type: azdata.ColumnType.checkBox,
 					options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction }
 				},
 				{
-					value: localize('schemaCompare.actionColumn', 'Action'),
+					value: localize('schemaCompare.actionColumn', "Action"),
 					cssClass: 'align-with-header',
 					width: 30
 				},
 				{
-					value: localize('schemaCompare.targetNameColumn', 'Target Name'),
+					value: localize('schemaCompare.targetNameColumn', "Target Name"),
 					cssClass: 'align-with-header',
 					width: 150
 				}
@@ -343,13 +346,18 @@ export class SchemaCompareMainWindow {
 		if (this.comparisonResult.differences.length > 0) {
 			this.flexModel.addItem(this.splitView);
 
+			// create a map of the differences to row numbers
+			for (let i = 0; i < data.length; ++i) {
+				this.diffEntryRowMap.set(this.createDiffEntryKey(this.comparisonResult.differences[i]), i);
+			}
+
 			// only enable generate script button if the target is a db
 			if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
 				this.generateScriptButton.enabled = true;
 				this.applyButton.enabled = true;
 			} else {
-				this.generateScriptButton.title = localize('schemaCompare.generateScriptButtonDisabledTitle', 'Generate script is enabled when the target is a database');
-				this.applyButton.title = localize('schemaCompare.applyButtonDisabledTitle', 'Apply is enabled when the target is a database');
+				this.generateScriptButton.title = localize('schemaCompare.generateScriptButtonDisabledTitle', "Generate script is enabled when the target is a database");
+				this.applyButton.title = localize('schemaCompare.applyButtonDisabledTitle', "Apply is enabled when the target is a database");
 			}
 		} else {
 			this.flexModel.addItem(this.noDifferencesLabel, { CSSStyles: { 'margin': 'auto' } });
@@ -386,9 +394,54 @@ export class SchemaCompareMainWindow {
 		this.tablelistenersToDispose.push(this.differencesTable.onCellAction(async (rowState) => {
 			let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 			if (checkboxState) {
+				// show an info notification the first time when trying to exclude to notify the user that it may take some time to calculate affected dependencies
+				if (this.showIncludeExcludeWaitingMessage) {
+					this.showIncludeExcludeWaitingMessage = false;
+					vscode.window.showInformationMessage(includeExcludeInfoMessage);
+				}
+
 				let diff = this.comparisonResult.differences[checkboxState.row];
-				await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, checkboxState.checked, azdata.TaskExecutionMode.execute);
-				this.saveExcludeState(checkboxState);
+				const result = await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, checkboxState.checked, azdata.TaskExecutionMode.execute);
+				let checkboxesToChange = [];
+				if (result.success) {
+					this.saveExcludeState(checkboxState);
+
+					// dependencies could have been included or excluded as a result, so save their exclude states
+					result.affectedDependencies.forEach(difference => {
+						// find the row of the difference and set its checkbox
+						const diffEntryKey = this.createDiffEntryKey(difference);
+						if (this.diffEntryRowMap.has(diffEntryKey)) {
+							const row = this.diffEntryRowMap.get(diffEntryKey);
+							checkboxesToChange.push({ row: row, column: 2, columnName: 'Include', checked: difference.included });
+							const dependencyCheckBoxState: azdata.ICheckboxCellActionEventArgs = {
+								checked: difference.included,
+								row: row,
+								column: 2,
+								columnName: undefined
+							};
+							this.saveExcludeState(dependencyCheckBoxState);
+						}
+					});
+				} else {
+					// failed because of dependencies
+					if (result.blockingDependencies) {
+						// show the first dependent that caused this to fail in the warning message
+						const diffEntryName = this.createName(diff.sourceValue ? diff.sourceValue : diff.targetValue);
+						const firstDependentName = this.createName(result.blockingDependencies[0].sourceValue ? result.blockingDependencies[0].sourceValue : result.blockingDependencies[0].targetValue);
+						const cannotExcludeMessage = localize('schemaCompare.cannotExcludeMessage', "Cannot exclude {0}. Included dependents exist such as {1}", diffEntryName, firstDependentName);
+						const cannotIncludeMessage = localize('schemaCompare.cannotIncludeMessage', "Cannot include {0}. Excluded dependents exist such as {1}", diffEntryName, firstDependentName);
+						vscode.window.showWarningMessage(checkboxState.checked ? cannotIncludeMessage : cannotExcludeMessage);
+					} else {
+						vscode.window.showWarningMessage(result.errorMessage);
+					}
+
+					// set checkbox back to previous state
+					checkboxesToChange.push({ row: checkboxState.row, column: checkboxState.column, columnName: 'Include', checked: !checkboxState.checked });
+				}
+
+				if (checkboxesToChange.length > 0) {
+					this.differencesTable.updateCells = checkboxesToChange;
+				}
 			}
 		}));
 	}
@@ -396,6 +449,7 @@ export class SchemaCompareMainWindow {
 	// save state based on source name if present otherwise target name (parity with SSDT)
 	private saveExcludeState(rowState: azdata.ICheckboxCellActionEventArgs) {
 		if (rowState) {
+			this.differencesTable.data[rowState.row][2] = rowState.checked;
 			let diff = this.comparisonResult.differences[rowState.row];
 			let key = (diff.sourceValue && diff.sourceValue.length > 0) ? this.createName(diff.sourceValue) : this.createName(diff.targetValue);
 			if (key) {
@@ -460,7 +514,6 @@ export class SchemaCompareMainWindow {
 
 	private removeExcludeEntry(collection: mssql.SchemaCompareObjectId[], entryName: string) {
 		if (collection) {
-			console.error('removing ' + entryName);
 			const index = collection.findIndex(e => this.createName(e.nameParts) === entryName);
 			collection.splice(index, 1);
 		}
@@ -489,6 +542,10 @@ export class SchemaCompareMainWindow {
 			return '';
 		}
 		return nameParts.join('.');
+	}
+
+	private createDiffEntryKey(entry: mssql.DiffEntry): string {
+		return `${this.createName(entry.sourceValue)}_${this.createName(entry.targetValue)}_${entry.updateAction}_${entry.name}`;
 	}
 
 	private getFormattedScript(diffEntry: mssql.DiffEntry, getSourceScript: boolean): string {
@@ -525,6 +582,7 @@ export class SchemaCompareMainWindow {
 		this.flexModel.removeItem(this.startText);
 		this.flexModel.addItem(this.loader, { CSSStyles: { 'margin-top': '30px' } });
 		this.flexModel.addItem(this.waitText, { CSSStyles: { 'margin-top': '30px', 'align-self': 'center' } });
+		this.showIncludeExcludeWaitingMessage = true;
 		this.diffEditor.updateProperties({
 			contentLeft: os.EOL,
 			contentRight: os.EOL,
@@ -541,12 +599,12 @@ export class SchemaCompareMainWindow {
 
 	private createCompareButton(view: azdata.ModelView): void {
 		this.compareButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.compareButton', 'Compare'),
+			label: localize('schemaCompare.compareButton', "Compare"),
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'compare.svg'),
 				dark: path.join(this.extensionContext.extensionPath, 'media', 'compare-inverse.svg')
 			},
-			title: localize('schemaCompare.compareButtonTitle', 'Compare')
+			title: localize('schemaCompare.compareButtonTitle', "Compare")
 		}).component();
 
 		this.compareButton.onDidClick(async (click) => {
@@ -556,12 +614,12 @@ export class SchemaCompareMainWindow {
 
 	private createCancelButton(view: azdata.ModelView): void {
 		this.cancelCompareButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.cancelCompareButton', 'Stop'),
+			label: localize('schemaCompare.cancelCompareButton', "Stop"),
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'stop.svg'),
 				dark: path.join(this.extensionContext.extensionPath, 'media', 'stop-inverse.svg')
 			},
-			title: localize('schemaCompare.cancelCompareButtonTitle', 'Stop')
+			title: localize('schemaCompare.cancelCompareButtonTitle', "Stop")
 		}).component();
 
 		this.cancelCompareButton.onDidClick(async (click) => {
@@ -604,7 +662,7 @@ export class SchemaCompareMainWindow {
 
 	private createGenerateScriptButton(view: azdata.ModelView): void {
 		this.generateScriptButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.generateScriptButton', 'Generate script'),
+			label: localize('schemaCompare.generateScriptButton', "Generate script"),
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'generate-script.svg'),
 				dark: path.join(this.extensionContext.extensionPath, 'media', 'generate-script-inverse.svg')
@@ -635,12 +693,12 @@ export class SchemaCompareMainWindow {
 
 	private createOptionsButton(view: azdata.ModelView) {
 		this.optionsButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.optionsButton', 'Options'),
+			label: localize('schemaCompare.optionsButton', "Options"),
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'options.svg'),
 				dark: path.join(this.extensionContext.extensionPath, 'media', 'options-inverse.svg')
 			},
-			title: localize('schemaCompare.optionsButtonTitle', 'Options')
+			title: localize('schemaCompare.optionsButtonTitle', "Options")
 		}).component();
 
 		this.optionsButton.onDidClick(async (click) => {
@@ -655,7 +713,7 @@ export class SchemaCompareMainWindow {
 	private createApplyButton(view: azdata.ModelView) {
 
 		this.applyButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.updateButton', 'Apply'),
+			label: localize('schemaCompare.updateButton', "Apply"),
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'start.svg'),
 				dark: path.join(this.extensionContext.extensionPath, 'media', 'start-inverse.svg')
@@ -663,7 +721,7 @@ export class SchemaCompareMainWindow {
 		}).component();
 
 		// need only yes button - since the modal dialog has a default cancel
-		const yesString = localize('schemaCompare.ApplyYes', 'Yes');
+		const yesString = localize('schemaCompare.ApplyYes', "Yes");
 		this.applyButton.onDidClick(async (click) => {
 
 			vscode.window.showWarningMessage(applyConfirmation, { modal: true }, yesString).then(async (result) => {
@@ -762,12 +820,12 @@ export class SchemaCompareMainWindow {
 
 	private createSwitchButton(view: azdata.ModelView): void {
 		this.switchButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.switchDirectionButton', 'Switch direction'),
+			label: localize('schemaCompare.switchDirectionButton', "Switch direction"),
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'switch-directions.svg'),
 				dark: path.join(this.extensionContext.extensionPath, 'media', 'switch-directions-inverse.svg')
 			},
-			title: localize('schemaCompare.switchButtonTitle', 'Switch source and target')
+			title: localize('schemaCompare.switchButtonTitle', "Switch source and target")
 		}).component();
 
 		this.switchButton.onDidClick(async (click) => {
@@ -835,12 +893,12 @@ export class SchemaCompareMainWindow {
 
 	private createOpenScmpButton(view: azdata.ModelView) {
 		this.openScmpButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.openScmpButton', 'Open .scmp file'),
+			label: localize('schemaCompare.openScmpButton', "Open .scmp file"),
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'open-scmp.svg'),
 				dark: path.join(this.extensionContext.extensionPath, 'media', 'open-scmp-inverse.svg')
 			},
-			title: localize('schemaCompare.openScmpButtonTitle', 'Load source, target, and options saved in an .scmp file')
+			title: localize('schemaCompare.openScmpButtonTitle', "Load source, target, and options saved in an .scmp file")
 		}).component();
 
 		this.openScmpButton.onDidClick(async (click) => {
@@ -852,7 +910,7 @@ export class SchemaCompareMainWindow {
 					canSelectFolders: false,
 					canSelectMany: false,
 					defaultUri: vscode.Uri.file(rootPath),
-					openLabel: localize('schemaCompare.openFile', 'Open'),
+					openLabel: localize('schemaCompare.openFile', "Open"),
 					filters: {
 						'scmp Files': ['scmp'],
 					}
@@ -932,12 +990,12 @@ export class SchemaCompareMainWindow {
 
 	private createSaveScmpButton(view: azdata.ModelView): void {
 		this.saveScmpButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.saveScmpButton', 'Save .scmp file'),
+			label: localize('schemaCompare.saveScmpButton', "Save .scmp file"),
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'save-scmp.svg'),
 				dark: path.join(this.extensionContext.extensionPath, 'media', 'save-scmp-inverse.svg')
 			},
-			title: localize('schemaCompare.saveScmpButtonTitle', 'Save source and target, options, and excluded elements'),
+			title: localize('schemaCompare.saveScmpButtonTitle', "Save source and target, options, and excluded elements"),
 			enabled: false
 		}).component();
 
@@ -946,7 +1004,7 @@ export class SchemaCompareMainWindow {
 			const filePath = await vscode.window.showSaveDialog(
 				{
 					defaultUri: vscode.Uri.file(rootPath),
-					saveLabel: localize('schemaCompare.saveFile', 'Save'),
+					saveLabel: localize('schemaCompare.saveFile', "Save"),
 					filters: {
 						'scmp Files': ['scmp'],
 					}

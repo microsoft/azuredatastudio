@@ -54,7 +54,7 @@ export class HdfsModel {
 	 * @param type The type of ACL to create
 	 */
 	public createAndAddAclEntry(name: string, type: AclType): void {
-		if (!this.permissionStatus) {
+		if (!this.permissionStatus || !name || name.length < 1) {
 			return;
 		}
 		const newEntry = new AclEntry(type, name, name);

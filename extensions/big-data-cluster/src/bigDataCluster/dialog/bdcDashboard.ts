@@ -3,17 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { BdcDashboardModel } from './bdcDashboardModel';
+import { BdcDashboardModel, getTroubleshootNotebookUrl, BdcErrorEvent } from './bdcDashboardModel';
 import { IconPathHelper, cssStyles } from '../constants';
 import { BdcServiceStatusPage } from './bdcServiceStatusPage';
 import { BdcDashboardOverviewPage } from './bdcDashboardOverviewPage';
 import { BdcStatusModel, ServiceStatusModel } from '../controller/apiGenerated';
-import { getHealthStatusDot, getServiceNameDisplayText } from '../utils';
+import { getHealthStatusDot, getServiceNameDisplayText, showErrorMessage } from '../utils';
+import { HdfsDialogCancelledError } from './hdfsDialogBase';
+import { BdcDashboardPage } from './bdcDashboardPage';
 
 const localize = nls.loadMessageBundle();
 
@@ -22,17 +22,16 @@ const navWidth = '200px';
 const selectedTabCss = { 'font-weight': 'bold' };
 const unselectedTabCss = { 'font-weight': '' };
 
-type NavTab = { div: azdata.DivContainer, dot: azdata.TextComponent, text: azdata.TextComponent };
+type NavTab = { serviceName: string, div: azdata.DivContainer, dot: azdata.TextComponent, text: azdata.TextComponent };
 
-export class BdcDashboard {
+export class BdcDashboard extends BdcDashboardPage {
 
 	private dashboard: azdata.workspace.ModelViewEditor;
-
-	private initialized: boolean = false;
 
 	private modelView: azdata.ModelView;
 	private mainAreaContainer: azdata.FlexContainer;
 	private navContainer: azdata.FlexContainer;
+	private overviewPage: BdcDashboardOverviewPage;
 
 	private currentTab: NavTab;
 	private currentPage: azdata.FlexContainer;
@@ -42,7 +41,9 @@ export class BdcDashboard {
 	private serviceTabPageMapping = new Map<string, { navTab: NavTab, servicePage: azdata.FlexContainer }>();
 
 	constructor(private title: string, private model: BdcDashboardModel) {
-		this.model.onDidUpdateBdcStatus(bdcStatus => this.handleBdcStatusUpdate(bdcStatus));
+		super();
+		this.model.onDidUpdateBdcStatus(bdcStatus => this.eventuallyRunOnInitialized(() => this.handleBdcStatusUpdate(bdcStatus)));
+		this.model.onBdcError(errorEvent => this.eventuallyRunOnInitialized(() => this.handleError(errorEvent)));
 	}
 
 	public showDashboard(): void {
@@ -73,6 +74,7 @@ export class BdcDashboard {
 				}).component();
 
 			this.refreshButton.onDidClick(async () => {
+				this.overviewPage.onRefreshStarted();
 				await this.doRefresh();
 			});
 
@@ -83,7 +85,7 @@ export class BdcDashboard {
 				}).component();
 
 			openTroubleshootNotebookButton.onDidClick(() => {
-				vscode.commands.executeCommand('books.sqlserver2019');
+				vscode.commands.executeCommand('books.sqlserver2019', getTroubleshootNotebookUrl(this.currentTab.serviceName));
 			});
 
 			const toolbarContainer = modelView.modelBuilder.toolbarContainer()
@@ -125,27 +127,28 @@ export class BdcDashboard {
 
 			// Overview nav item - this will be the initial page
 			const overviewNavItemDiv = modelView.modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).withProperties({ clickable: true }).component();
-			const overviewNavItemText = modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.overviewNavTitle', 'Big data cluster overview') }).component();
+			const overviewNavItemText = modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.overviewNavTitle', "Big data cluster overview") }).component();
 			overviewNavItemText.updateCssStyles(selectedTabCss);
 			overviewNavItemDiv.addItem(overviewNavItemText, { CSSStyles: { 'user-select': 'text' } });
-			const overviewPage = new BdcDashboardOverviewPage(this, this.model).create(modelView);
-			this.currentPage = overviewPage;
-			this.currentTab = { div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
-			this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
+			this.overviewPage = new BdcDashboardOverviewPage(this, this.model);
+			const overviewContainer: azdata.FlexContainer = this.overviewPage.create(modelView);
+			this.currentPage = overviewContainer;
+			this.currentTab = { serviceName: undefined, div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
+			this.mainAreaContainer.addItem(overviewContainer, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
 
 			overviewNavItemDiv.onDidClick(() => {
 				if (this.currentTab) {
 					this.currentTab.text.updateCssStyles(unselectedTabCss);
 				}
 				this.mainAreaContainer.removeItem(this.currentPage);
-				this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
-				this.currentPage = overviewPage;
-				this.currentTab = { div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
+				this.mainAreaContainer.addItem(overviewContainer, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
+				this.currentPage = overviewContainer;
+				this.currentTab = { serviceName: undefined, div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
 				this.currentTab.text.updateCssStyles(selectedTabCss);
 			});
 			this.navContainer.addItem(overviewNavItemDiv, { flex: '0 0 auto' });
 
-			const clusterDetailsHeader = modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.clusterDetails', 'Cluster Details'), CSSStyles: { 'margin-block-end': '0px' } }).component();
+			const clusterDetailsHeader = modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.clusterDetails', "Cluster Details"), CSSStyles: { 'margin-block-end': '0px' } }).component();
 			this.navContainer.addItem(clusterDetailsHeader, { CSSStyles: { 'user-select': 'none', 'font-weight': 'bold', 'border-bottom': 'solid 1px #ccc', 'margin-bottom': '10px' } });
 
 			await modelView.initializeModel(rootContainer);
@@ -157,12 +160,22 @@ export class BdcDashboard {
 		});
 	}
 
-	private handleBdcStatusUpdate(bdcStatus: BdcStatusModel): void {
-		if (!this.initialized || !bdcStatus) {
+	private handleBdcStatusUpdate(bdcStatus?: BdcStatusModel): void {
+		if (!bdcStatus) {
 			return;
 		}
-
 		this.updateServiceNavTabs(bdcStatus.services);
+	}
+
+	private handleError(errorEvent: BdcErrorEvent): void {
+		if (errorEvent.errorType !== 'general') {
+			return;
+		}
+		// We don't want to show an error for the connection dialog being
+		// canceled since that's a normal case.
+		if (!(errorEvent.error instanceof HdfsDialogCancelledError)) {
+			showErrorMessage(errorEvent.error.message);
+		}
 	}
 
 	private async doRefresh(): Promise<void> {
@@ -197,7 +210,7 @@ export class BdcDashboard {
 	 * Helper to update the navigation tabs for the services when we get a status update
 	 */
 	private updateServiceNavTabs(services?: ServiceStatusModel[]): void {
-		if (this.initialized && services) {
+		if (services) {
 			// Add a nav item for each service
 			services.forEach(s => {
 				const existingTabPage = this.serviceTabPageMapping[s.serviceName];
@@ -227,5 +240,5 @@ function createServiceNavTab(modelBuilder: azdata.ModelBuilder, serviceStatus: S
 	const text = modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { ...cssStyles.tabHeaderText } }).component();
 	innerContainer.addItem(text, { flex: '0 0 auto' });
 	div.addItem(innerContainer);
-	return { div: div, dot: dot, text: text };
+	return { serviceName: serviceStatus.serviceName, div: div, dot: dot, text: text };
 }
