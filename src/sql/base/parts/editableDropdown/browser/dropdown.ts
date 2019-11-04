@@ -275,7 +275,12 @@ export class Dropdown extends Disposable {
 			let height = this._dataSource.options.length * 22 > this._options.maxHeight! ? this._options.maxHeight! : this._dataSource.options.length * 22;
 
 			this._treeContainer.style.height = height + 'px';
-			this._treeContainer.style.width = `${longestString.length * 8}px`;
+
+			if (longestString.length > 10) {
+				this._treeContainer.style.width = `${longestString.length * 8}px`;
+			} else {
+				this._treeContainer.style.width = DOM.getContentWidth(this._inputContainer) - 2 + 'px';
+			}
 			this._treeContainer.style.maxWidth = `500px`;
 
 			this._tree.setInput(new DropdownModel());
