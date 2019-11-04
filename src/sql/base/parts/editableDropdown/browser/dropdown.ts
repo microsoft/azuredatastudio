@@ -266,13 +266,20 @@ export class Dropdown extends Disposable {
 
 	public set values(vals: string[] | undefined) {
 		if (vals) {
+			const longestString = vals.reduce((previous, current) => {
+				return previous.length > current.length ? previous : current;
+			}, '');
+
 			this._filter.filterString = '';
 			this._dataSource.options = vals.map(i => { return { value: i }; });
 			let height = this._dataSource.options.length * 22 > this._options.maxHeight! ? this._options.maxHeight! : this._dataSource.options.length * 22;
+
 			this._treeContainer.style.height = height + 'px';
-			this._treeContainer.style.width = DOM.getContentWidth(this._inputContainer) - 2 + 'px';
-			this._tree.layout(parseInt(this._treeContainer.style.height));
+			this._treeContainer.style.width = `${longestString.length * 8}px`;
+			this._treeContainer.style.maxWidth = `500px`;
+
 			this._tree.setInput(new DropdownModel());
+			this._tree.layout(parseInt(this._treeContainer.style.height));
 			this._input.validate();
 		}
 	}
@@ -292,6 +299,10 @@ export class Dropdown extends Disposable {
 	public blur() {
 		this._input.blur();
 		this.contextViewService.hideContextView();
+	}
+
+	public get htmlElement() {
+		return this._el;
 	}
 
 	style(style: IListStyles & IInputBoxStyles & IDropdownStyles) {
