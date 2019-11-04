@@ -301,10 +301,6 @@ export class Dropdown extends Disposable {
 		this.contextViewService.hideContextView();
 	}
 
-	public get htmlElement() {
-		return this._el;
-	}
-
 	style(style: IListStyles & IInputBoxStyles & IDropdownStyles) {
 		this._tree.style(style);
 		this._input.style(style);
