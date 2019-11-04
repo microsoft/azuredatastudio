@@ -76,6 +76,7 @@
   "devDependencies": {
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
+    "should": "^13.2.3",
     "vscode": "^1.1.36"
   },
   "__metadata": {

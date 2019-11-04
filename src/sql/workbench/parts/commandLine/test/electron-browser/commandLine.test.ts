@@ -29,6 +29,7 @@ import { TestConfigurationService } from 'vs/platform/configuration/test/common/
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
 class TestParsedArgs implements ParsedArgs {
 	[arg: string]: any;
@@ -233,7 +234,7 @@ suite('commandLineService tests', () => {
 		await contribution.processCommandLine(args);
 		connectionManagementService.verifyAll();
 		commandService.verifyAll();
-		should(capturedArgs).be.undefined();
+		assert(isUndefinedOrNull(capturedArgs));
 	});
 
 
@@ -269,8 +270,8 @@ suite('commandLineService tests', () => {
 		await contribution.processCommandLine(args);
 		connectionManagementService.verifyAll();
 		commandService.verifyAll();
-		should(actualProfile).not.be.undefined();
-		should(actualProfile.connectionProfile.serverName).equal(args.server);
+		assert(!isUndefinedOrNull(actualProfile));
+		assert.equal(actualProfile.connectionProfile.serverName, args.server);
 
 	});
 
