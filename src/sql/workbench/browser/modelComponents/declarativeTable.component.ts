@@ -14,6 +14,7 @@ import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
+import { localize } from 'vs/nls';
 
 export enum DeclarativeDataType {
 	string = 'string',
@@ -35,7 +36,7 @@ export enum DeclarativeDataType {
 			<ng-container *ngFor="let row of data;let r = index">
 				<tr class="declarative-table-row" >
 					<ng-container *ngFor="let cellData of row;let c = index">
-						<td class="declarative-table-cell" tabindex="-1" role="button" [style.width]="getColumnWidth(c)">
+						<td class="declarative-table-cell" tabindex="-1" role="button" [style.width]="getColumnWidth(c)" [attr.aria-label]="getAriaLabel(r, c)" >
 							<checkbox *ngIf="isCheckBox(c)" label="" (onChange)="onCheckBoxChanged($event,r,c)" [enabled]="isControlEnabled(c)" [checked]="isChecked(r,c)"></checkbox>
 							<select-box *ngIf="isSelectBox(c)" [options]="GetOptions(c)" (onDidSelect)="onSelectBoxChanged($event,r,c)" [selectedOption]="GetSelectedOptionDisplayName(r,c)"></select-box>
 							<editable-select-box *ngIf="isEditableSelectBox(c)" [options]="GetOptions(c)" (onDidSelect)="onSelectBoxChanged($event,r,c)" [selectedOption]="GetSelectedOptionDisplayName(r,c)"></editable-select-box>
@@ -177,6 +178,11 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 		} else {
 			return '';
 		}
+	}
+
+	private getAriaLabel(row: number, column: number): string {
+		const cellData = this.data[row][column];
+		return this.isLabel(column) ? (cellData && cellData !== '' ? cellData : localize('blankValue', "blank")) : '';
 	}
 
 	/// IComponent implementation
