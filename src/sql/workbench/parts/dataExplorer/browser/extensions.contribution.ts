@@ -11,7 +11,7 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { localize } from 'vs/nls';
 
-// TODO: Search for mssqlProviderName and make it generic to be for Kusto of SQL
+// TODOKusto: Search for mssqlProviderName and make it generic to be for Kusto of SQL
 
 // Data-Tier Application Wizard
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
