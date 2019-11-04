@@ -463,9 +463,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	protected initNavSection(): void {
 		this._navProvider = this.notebookService.getNavigationProvider(this._notebookParams.notebookUri);
 
-		if (this.environmentService.appQuality !== 'stable' &&
-			this.contextKeyService.getContextKeyValue('bookOpened') &&
-			this._navProvider) {
+		if (this.contextKeyService.getContextKeyValue('bookOpened') && this._navProvider) {
 			this._navProvider.getNavigation(this._notebookParams.notebookUri).then(result => {
 				this.navigationResult = result;
 				this.addButton(localize('previousButtonLabel', "< Previous"),

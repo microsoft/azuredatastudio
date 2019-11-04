@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 
 export enum BdcItemType {
@@ -71,6 +69,7 @@ export namespace cssStyles {
 	export const selectedTabDiv = { 'border-bottom': '2px solid #000' };
 	export const unselectedTabDiv = { 'border-bottom': '1px solid #ccc' };
 	export const lastUpdatedText = { ...text, 'color': '#595959' };
+	export const errorText = { ...text, 'color': 'red' };
 }
 
 export type AuthType = 'integrated' | 'basic';

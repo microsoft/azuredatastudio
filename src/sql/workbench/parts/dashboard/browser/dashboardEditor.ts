@@ -77,7 +77,7 @@ export class DashboardEditor extends BaseEditor {
 		this._dashboardService.layout(dimension);
 	}
 
-	public setInput(input: DashboardInput, options: EditorOptions): Promise<void> {
+	public async setInput(input: DashboardInput, options: EditorOptions): Promise<void> {
 		if (this.input && this.input.matches(input)) {
 			return Promise.resolve(undefined);
 		}
@@ -93,10 +93,10 @@ export class DashboardEditor extends BaseEditor {
 			container.style.height = '100%';
 			this._dashboardContainer = DOM.append(parentElement, container);
 			this.input.container = this._dashboardContainer;
-			return Promise.resolve(input.initializedPromise.then(() => this.bootstrapAngular(input)));
+			await input.initializedPromise;
+			this.bootstrapAngular(input);
 		} else {
 			this._dashboardContainer = DOM.append(parentElement, this.input.container);
-			return Promise.resolve(null);
 		}
 	}
 

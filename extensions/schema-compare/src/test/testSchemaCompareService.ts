@@ -24,7 +24,7 @@ export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 		return Promise.resolve(result);
 	}
 
-	schemaCompareIncludeExcludeNode(operationId: string, diffEntry: mssql.DiffEntry, IncludeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+	schemaCompareIncludeExcludeNode(operationId: string, diffEntry: mssql.DiffEntry, IncludeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaCompareIncludeExcludeResult> {
 		throw new Error('Method not implemented.');
 	}
 

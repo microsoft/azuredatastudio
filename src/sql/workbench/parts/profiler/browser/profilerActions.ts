@@ -197,7 +197,7 @@ export class ProfilerCollapsablePanelAction extends Action {
 	private _collapsed: boolean;
 
 	constructor(id: string, label: string) {
-		super(id, label, 'minimize-panel-action');
+		super(id, label, 'codicon-chevron-down');
 	}
 
 	public run(input: ProfilerInput): Promise<boolean> {
@@ -212,7 +212,7 @@ export class ProfilerCollapsablePanelAction extends Action {
 
 	set collapsed(val: boolean) {
 		this._collapsed = val === false ? false : true;
-		this._setClass(this._collapsed ? 'maximize-panel-action' : 'minimize-panel-action');
+		this._setClass(this._collapsed ? 'codicon-chevron-up' : 'codicon-chevron-down');
 	}
 }
 

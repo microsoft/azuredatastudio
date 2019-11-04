@@ -27,6 +27,8 @@ import { getErrorMessage } from 'vs/base/common/errors';
 import { INotebookModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IFindNotebookController } from 'sql/workbench/parts/notebook/browser/notebookFindWidget';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
@@ -593,14 +595,22 @@ export class NewNotebookAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@ICommandService private commandService: ICommandService
+		@ICommandService private commandService: ICommandService,
+		@IObjectExplorerService private objectExplorerService: IObjectExplorerService
 	) {
 		super(id, label);
 		this.class = 'notebook-action new-notebook';
 	}
 
-	run(context?: azdata.ConnectedContext): Promise<void> {
-		return this.commandService.executeCommand(NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID, context);
+	async run(context?: azdata.ObjectExplorerContext): Promise<void> {
+		let connProfile: azdata.IConnectionProfile;
+		if (context && context.nodeInfo) {
+			let node = await this.objectExplorerService.getTreeNode(context.connectionProfile.id, context.nodeInfo.nodePath);
+			connProfile = TreeUpdateUtils.getConnectionProfile(node).toIConnectionProfile();
+		} else if (context && context.connectionProfile) {
+			connProfile = context.connectionProfile;
+		}
+		return this.commandService.executeCommand(NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID, { connectionProfile: connProfile });
 	}
 }
 

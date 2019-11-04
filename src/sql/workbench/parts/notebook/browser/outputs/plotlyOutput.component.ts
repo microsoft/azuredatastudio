@@ -17,8 +17,8 @@ import { getErrorMessage } from 'vs/base/common/errors';
 type ObjectType = object;
 
 interface FigureLayout extends ObjectType {
-	width?: string | number;
-	height?: string;
+	width?: number;
+	height?: number;
 	autosize?: boolean;
 }
 
@@ -43,14 +43,7 @@ declare class PlotlyHTMLElement extends HTMLDivElement {
 export class PlotlyOutputComponent extends AngularDisposable implements IMimeComponent, OnInit {
 	public static readonly SELECTOR: string = 'plotly-output';
 
-	Plotly!: {
-		newPlot: (
-			div: PlotlyHTMLElement | null | undefined,
-			data: object,
-			layout: FigureLayout
-		) => void;
-		redraw: (div?: PlotlyHTMLElement) => void;
-	};
+	private static Plotly?: Promise<typeof import('plotly.js-dist')>;
 
 	@ViewChild('output', { read: ElementRef }) private output: ElementRef;
 
@@ -88,7 +81,9 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 	}
 
 	ngOnInit() {
-		this.Plotly = require.__$__nodeRequire('plotly.js-dist');
+		if (!PlotlyOutputComponent.Plotly) {
+			PlotlyOutputComponent.Plotly = import('plotly.js-dist');
+		}
 		this._plotDiv = this.output.nativeElement;
 		this.renderPlotly();
 		this._initialized = true;
@@ -116,11 +111,9 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 				// Workaround: to avoid filling up the entire cell, use plotly's default
 				figure.layout.width = Math.min(700, this._plotDiv.clientWidth);
 			}
-			try {
-				this.Plotly.newPlot(this._plotDiv, figure.data, figure.layout);
-			} catch (error) {
-				this.displayError(error);
-			}
+			PlotlyOutputComponent.Plotly.then(plotly => {
+				return plotly.newPlot(this._plotDiv, figure.data, figure.layout);
+			}).catch(e => this.displayError(e));
 		}
 		this._rendered = true;
 	}

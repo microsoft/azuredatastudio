@@ -62,8 +62,19 @@ function registerCommands(context: vscode.ExtensionContext, treeDataProvider: Co
 		treeDataProvider.notifyNodeChanged(node);
 	});
 
-	vscode.commands.registerCommand(ManageControllerCommand, async (info: ControllerNode | BdcDashboardOptions) => {
+	vscode.commands.registerCommand(ManageControllerCommand, async (info: ControllerNode | BdcDashboardOptions, addOrUpdateController: boolean = false) => {
 		const title: string = `${localize('bdc.dashboard.title', "Big Data Cluster Dashboard -")} ${ControllerNode.toIpAndPort(info.url)}`;
+		if (addOrUpdateController) {
+			// The info may be wrong, but if it is then we'll prompt to reconnect when the dashboard is opened
+			// and update with the correct info then
+			treeDataProvider.addOrUpdateController(
+				info.url,
+				info.auth,
+				info.username,
+				info.password,
+				info.rememberPassword);
+			await treeDataProvider.saveControllers();
+		}
 		const dashboard: BdcDashboard = new BdcDashboard(title, new BdcDashboardModel(info, treeDataProvider));
 		dashboard.showDashboard();
 	});

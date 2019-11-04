@@ -15,8 +15,6 @@ module.exports = withDefaults({
 		extension: './src/extension.ts'
 	},
 	externals: {
-		'@azure/ms-rest-azure-js': 'commonjs @azure/ms-rest-azure-js',
-		'@azure/ms-rest-js': 'commonjs @azure/ms-rest-js',
 		'request': 'commonjs request'
 	}
 });
