@@ -29,6 +29,17 @@ const optimist = require('optimist')
 
 const argv = optimist.argv;
 
+// {{SQL CARBON EDIT}}
+// Set test run options. These are NOT used if grep is specified manually - that implies the user has a specific desire to
+// filter the tests beyond the defaults set for ADS_TEST_GREP in the calling scripts.
+const adsTestGrep = process.env['ADS_TEST_GREP'];
+if (adsTestGrep && adsTestGrep !== '' && !argv.grep) {
+	argv.grep = adsTestGrep;
+	if (process.env['ADS_TEST_INVERT_GREP']) {
+		argv.invert = true;
+	}
+}
+
 if (argv.help) {
 	optimist.showHelp();
 	process.exit(0);
