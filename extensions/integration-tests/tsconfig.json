@@ -4,10 +4,12 @@
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"outDir": "out",
-		"noUnusedLocals": true,
 		"lib": [
 			"es2015"
 		],
+		"strict": false,
+		"noUnusedParameters": false,
+		"noImplicitAny": false,
 	},
 	"include": [
 		"src/**/*"
