@@ -7,14 +7,14 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import AccountStore from 'sql/platform/accounts/common/accountStore';
-import { AccountDialogController } from 'sql/platform/accounts/browser/accountDialogController';
+import { AccountDialogController } from 'sql/workbench/parts/accounts/browser/accountDialogController';
 import { AccountManagementService } from 'sql/workbench/services/accountManagement/browser/accountManagementService';
 import { AccountAdditionResult, AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { IAccountStore } from 'sql/platform/accounts/common/interfaces';
 import { AccountProviderStub } from 'sql/platform/accounts/test/common/testAccountManagementService';
-import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
+import { EventVerifierSingle } from 'sql/base/test/common/event';
 
 // SUITE CONSTANTS /////////////////////////////////////////////////////////
 const hasAccountProvider: azdata.AccountProviderMetadata = {

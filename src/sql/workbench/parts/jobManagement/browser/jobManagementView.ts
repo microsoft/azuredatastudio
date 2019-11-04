@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import { ElementRef, AfterContentChecked, ViewChild } from '@angular/core';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/agentView.component';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { IAction, Action } from 'vs/base/common/actions';
 import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';

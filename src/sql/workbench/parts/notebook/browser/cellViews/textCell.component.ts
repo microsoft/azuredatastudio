@@ -27,7 +27,7 @@ import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInt
 import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/parts/notebook/browser/outputs/sanitizer';
 import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/browser/cellToggleMoreActions';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { useInProcMarkdown, convertVscodeResourceToFileInSubDirectories } from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';

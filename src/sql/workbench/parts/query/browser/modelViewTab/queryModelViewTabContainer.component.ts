@@ -6,10 +6,10 @@
 import 'vs/css!./media/dialogModal';
 import { Component, ViewChild, Inject, forwardRef, ElementRef, AfterViewInit } from '@angular/core';
 import { ModelViewContent } from 'sql/workbench/browser/modelComponents/modelViewContent.component';
-import { DialogPane } from 'sql/platform/dialog/browser/dialogPane';
+import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
 import { ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { Event, Emitter } from 'vs/base/common/event';
-import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 
 export interface LayoutRequestParams {
 	modelViewId?: string;

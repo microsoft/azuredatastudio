@@ -674,6 +674,9 @@ export class CellModel implements ICellModel {
 
 
 	private getMultilineSource(source: string | string[]): string | string[] {
+		if (source === undefined) {
+			return [];
+		}
 		if (typeof source === 'string') {
 			let sourceMultiline = source.split('\n');
 			// If source is one line (i.e. no '\n'), return it immediately

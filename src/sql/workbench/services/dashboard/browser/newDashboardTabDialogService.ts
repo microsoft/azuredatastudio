@@ -5,8 +5,8 @@
 
 import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/browser/newDashboardTabDialog';
 import { NewDashboardTabDialog } from 'sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl';
-import { IDashboardTab } from 'sql/platform/dashboard/browser/dashboardRegistry';
-import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
+import { IDashboardTab } from 'sql/workbench/parts/dashboard/browser/dashboardRegistry';
+import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { IDashboardUITab } from 'sql/workbench/services/dashboard/browser/newDashboardTabViewModel';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

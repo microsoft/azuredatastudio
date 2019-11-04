@@ -6,7 +6,7 @@
 import * as assert from 'assert';
 import * as azdata from 'azdata';
 import AccountStore from 'sql/platform/accounts/common/accountStore';
-import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
+import { EventVerifierSingle } from 'sql/base/test/common/event';
 
 suite('Account Store Tests', () => {
 	test('AddOrUpdate - Uninitialized memento', done => {

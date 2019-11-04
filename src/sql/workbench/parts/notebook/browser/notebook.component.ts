@@ -52,7 +52,7 @@ import { LabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/br
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
