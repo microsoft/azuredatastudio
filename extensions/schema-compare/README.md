@@ -2,10 +2,10 @@
 
 Microsoft SQL Server Schema Compare for Azure Data Studio includes:
 
-## Schema Compare *(preview)*
+## Schema Compare
 The Schema Compare extension provides an easy to use experience to compare .dacpac files and databases and apply the changes from source to target.
 
-This experience is currently in its initial preview. Please report issues and feature requests [here.](https://github.com/microsoft/azuredatastudio/issues)
+Please report issues and feature requests [here.](https://github.com/microsoft/azuredatastudio/issues)
 
 ![schemacompare0506](https://user-images.githubusercontent.com/30873802/57342709-fec27a00-70f4-11e9-979b-c933498d9034.gif)
 
