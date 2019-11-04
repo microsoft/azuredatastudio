@@ -9,7 +9,7 @@ import * as assert from 'assert';
 import { URI } from 'vs/base/common/uri';
 import * as tempWrite from 'temp-write';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
-import * as testUtils from '../../../../../../sqltest/utils/testUtils';
+import * as testUtils from '../../../../../base/test/common/async';
 import { CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { TestFileService } from 'vs/workbench/test/workbenchTestServices';

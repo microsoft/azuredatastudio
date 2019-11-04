@@ -126,7 +126,7 @@ registerSingleton(IOpenerService, OpenerService, true);
 //#region -- sql services
 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ConnectionManagementService } from 'sql/platform/connection/browser/connectionManagementService';
+import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ConnectionDialogService } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -134,7 +134,7 @@ import { ErrorMessageService } from 'sql/workbench/services/errorMessage/browser
 import { ServerGroupController } from 'sql/workbench/services/serverGroup/browser/serverGroupController';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesServiceImpl';
+import { CapabilitiesService } from 'sql/workbench/services/capabilities/common/capabilitiesServiceImpl';
 import { ICredentialsService as sqlICredentialsService, CredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { QueryModelService } from 'sql/platform/query/common/queryModelService';
@@ -147,8 +147,8 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { AdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { OEShimService, IOEShimService } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerViewTreeShim';
 import { IObjectExplorerService, ObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
-import { IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
-import { AngularEventingService } from 'sql/platform/angularEventing/node/angularEventingService';
+import { IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
+import { AngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingServiceImpl';
 import { ISerializationService, SerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IMetadataService, MetadataService } from 'sql/platform/metadata/common/metadataService';
 import { ITaskService, TaskService } from 'sql/platform/tasks/common/tasksService';
@@ -174,8 +174,8 @@ import { IAccountManagementService } from 'sql/platform/accounts/common/interfac
 import { AccountManagementService } from 'sql/workbench/services/accountManagement/browser/accountManagementService';
 import { IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ProfilerService } from 'sql/workbench/services/profiler/browser/profilerService';
-import { AccountPickerService } from 'sql/platform/accounts/browser/accountPickerService';
-import { IAccountPickerService } from 'sql/platform/accounts/browser/accountPicker';
+import { AccountPickerService } from 'sql/workbench/parts/accounts/browser/accountPickerService';
+import { IAccountPickerService } from 'sql/workbench/parts/accounts/browser/accountPicker';
 import { IDashboardViewService } from 'sql/platform/dashboard/browser/dashboardViewService';
 import { DashboardViewService } from 'sql/platform/dashboard/browser/dashboardViewServiceImpl';
 import { IModelViewService } from 'sql/platform/modelComponents/browser/modelViewService';
@@ -389,7 +389,7 @@ import 'sql/workbench/parts/queryPlan/browser/queryPlan.contribution';
 
 //acounts
 import 'sql/workbench/parts/accounts/browser/accounts.contribution';
-import 'sql/platform/accounts/browser/accountManagement.contribution';
+import 'sql/workbench/parts/accounts/browser/accountManagement.contribution';
 
 // profiler
 import 'sql/workbench/parts/profiler/browser/profiler.contribution';

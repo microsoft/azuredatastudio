@@ -5,7 +5,7 @@
 
 import { ManageAction, ManageActionContext } from 'sql/workbench/browser/actions';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
+import { IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 
 export class ExplorerManageAction extends ManageAction {

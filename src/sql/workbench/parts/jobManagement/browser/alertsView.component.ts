@@ -15,7 +15,7 @@ import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/ag
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { EditAlertAction, DeleteAlertAction, NewAlertAction } from 'sql/platform/jobManagement/browser/jobActions';
 import { JobManagementView, JobActionContext } from 'sql/workbench/parts/jobManagement/browser/jobManagementView';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IAction } from 'vs/base/common/actions';

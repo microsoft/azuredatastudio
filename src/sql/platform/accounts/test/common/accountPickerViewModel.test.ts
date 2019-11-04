@@ -6,11 +6,11 @@
 import * as azdata from 'azdata';
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
-import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
 import { Emitter } from 'vs/base/common/event';
 import { AccountPickerViewModel } from 'sql/platform/accounts/common/accountPickerViewModel';
 import { UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
+import { EventVerifierSingle } from 'sql/base/test/common/event';
 
 // SUITE STATE /////////////////////////////////////////////////////////////
 let mockUpdateAccountEmitter: Emitter<UpdateAccountListEventParams>;
