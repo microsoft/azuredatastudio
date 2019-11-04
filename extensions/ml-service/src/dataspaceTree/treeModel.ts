@@ -25,7 +25,7 @@ export class TreeModel {
 		}
 		let settings = dataspace.Settings;
 		let datasets = [];
-		if ('datasets' in settings) {
+		if (settings && 'datasets' in settings) {
 			datasets = settings['datasets'];
 		}
 
@@ -45,6 +45,28 @@ export class TreeModel {
 			let datasetNode = this.createNode(nodeInfo.label, nodeInfo.nodeType, null, false);
 			this._nodes.push(Object.assign(node, { 'nodeInfo': nodeInfo }));
 			datasetNode.treeItem = node;
+		}
+		if (this._nodes.length === 0) {
+
+			this._nodes.push({
+				getNodeInfo: () => {
+					return {
+						nodePath: '',
+						nodeStatus: '',
+						nodeType: '',
+						nodeSubType: '',
+						errorMessage: '',
+						isLeaf: false,
+						metadata: undefined,
+						label: '',
+						contextValue: 'root'
+					};
+				},
+				getChildren: () => {
+					return [];
+				}
+			});
+
 		}
 
 		return;

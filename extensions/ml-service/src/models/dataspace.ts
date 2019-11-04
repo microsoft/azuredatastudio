@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 'use strict';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
@@ -27,10 +32,14 @@ export class Dataspace {
 
 	public get Settings(): any {
 		let wsFile = vscode.workspace.workspaceFile;
-		// tslint:disable-next-line:no-sync
-		let content = fs.readFileSync(wsFile.fsPath, 'utf-8');
-		let settings = JSON.parse(content);
-		return settings;
+		if (wsFile) {
+			// tslint:disable-next-line:no-sync
+			let content = fs.readFileSync(wsFile.fsPath, 'utf-8');
+			let settings = JSON.parse(content);
+			return settings;
+		} else {
+			return undefined;
+		}
 	}
 
 	public set Workspace(value: vscode.WorkspaceFolder) {

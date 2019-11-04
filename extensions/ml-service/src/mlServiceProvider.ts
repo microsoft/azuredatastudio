@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 'use strict';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
@@ -23,8 +28,11 @@ export class MlServiceprovider {
 			let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(currentConnection.providerId, azdata.DataProviderType.QueryProvider);
 
 			let result = await queryProvider.runQueryAndReturn(connectionUri, query);
-			vscode.window.setStatusBarMessage(result.rows[0][0].displayValue);
-			return result.rows[0][0].displayValue === '1';
+			let isEnabled = false;
+			if (result.rows.length > 0) {
+				isEnabled = result.rows[0][0].displayValue === '1';
+			}
+			return isEnabled;
 		} catch (error) {
 			vscode.window.setStatusBarMessage(error);
 			return false;
@@ -45,8 +53,12 @@ export class MlServiceprovider {
 			let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(currentConnection.providerId, azdata.DataProviderType.QueryProvider);
 
 			let result = await queryProvider.runQueryAndReturn(connectionUri, query);
-			vscode.window.setStatusBarMessage(result.rows[0][0].displayValue);
-			return result.rows[0][0].displayValue === '1';
+
+			let isInstalled = true;
+			if (result.rows.length > 0) {
+				isInstalled = result.rows[0][0].displayValue === '1';
+			}
+			return isInstalled;
 		} catch (error) {
 			vscode.window.setStatusBarMessage(error);
 			return false;
@@ -58,11 +70,11 @@ export class MlServiceprovider {
 		try {
 			let connection = await azdata.connection.getCurrentConnection();
 			let connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
-			let configValue = enable ? '1': '0';
+			let configValue = enable ? '1' : '0';
 			let query = `
 
 			EXEC sp_configure 'external scripts enabled', ${configValue};
-    		RECONFIGURE WITH OVERRIDE;
+			RECONFIGURE WITH OVERRIDE;
 
 			Declare @tablevar table(name NVARCHAR(MAX), min INT, max INT, config_value bit, run_value bit)
 			insert into @tablevar(name, min, max, config_value, run_value) exec sp_configure

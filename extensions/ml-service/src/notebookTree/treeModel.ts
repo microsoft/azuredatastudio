@@ -80,6 +80,7 @@ export class TreeNode implements azdata.TreeComponentItem {
 
 		// tslint:disable-next-line:no-sync
 		let files = fs.readdirSync(this._folderPath);
+		this._children = new Array<TreeNode>(files.length);
 		for (let index = 0; index < files.length; index++) {
 			const file = files[index];
 			let node = new TreeNode(path.join(this._folderPath, file), file, this);
@@ -91,7 +92,31 @@ export class TreeNode implements azdata.TreeComponentItem {
 				node.type = 'folder';
 			}
 
-			this._children.push(node);
+			if (this._name === 'Deploy MLFlow') {
+				if (file === 'Deploy MLFlow.ipynb') {
+					this._children[0] = node;
+				} else {
+					this._children.push(node);
+				}
+			} else if (this._name === 'Machine Learning Notebooks') {
+				if (file === 'Train, Convert, and Deploy with ONNX.ipynb') {
+					this._children[0] = node;
+				} else if (file === 'Native PREDICT on Azure SQL Database Edge.ipynb') {
+					this._children[1] = node;
+				} else {
+					this._children.push(node);
+				}
+			} else if (this._name === 'root') {
+				if (file === 'Machine Learning Notebooks') {
+					this._children[0] = node;
+				} else if (file === 'Deploy MLFlow') {
+					this._children[1] = node;
+				} else {
+					this._children.push(node);
+				}
+			} else {
+				this._children.push(node);
+			}
 		}
 
 		return this._children;

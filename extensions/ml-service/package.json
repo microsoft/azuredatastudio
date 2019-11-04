@@ -39,12 +39,12 @@
         },
         {
           "command": "notebook.command.analyzeNotebook",
-          "when": "view == dataspaceTreeView",
+          "when": "view == dataspaceTreeView && viewItem != root",
           "group": "1notebook@1"
         },
         {
           "command": "mssqlCluster.previewFile",
-          "when": "view == dataspaceTreeView",
+          "when": "view == dataspaceTreeView && viewItem != root",
           "group": "1mssqlCluster@2"
         }
       ],

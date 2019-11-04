@@ -47,8 +47,8 @@ export function registerMlTasksWidget(dataspace: Dataspace): void {
 		let deployMlFlowButton: azdata.ButtonComponent;
 		if (isBigDataCluster) {
 			deployMlFlowButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-				label: 'Deploy Model Management',
-				title: 'Deploy Model Management'
+				label: 'Deploy MLFlow',
+				title: 'Deploy MLFlow'
 			}).component();
 
 			deployMlFlowButton.onDidClick(async () => {
