@@ -52,7 +52,7 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 		this._changeRef.detectChanges();
 	}
 
-	public route(link: any[]): void {
-		this._router.navigate(link);
+	public route(link: any[]): Promise<boolean> {
+		return this._router.navigate(link);
 	}
 }
