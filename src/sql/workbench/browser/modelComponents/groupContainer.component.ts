@@ -6,7 +6,7 @@ import 'vs/css!./media/groupLayout';
 
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
-	ViewChild, ElementRef, OnDestroy, AfterViewInit
+	ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
@@ -37,8 +37,6 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 	@Input() modelStore: IModelStore;
 
 	private _containerLayout: GroupLayout;
-
-	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -82,7 +80,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 		return this.hasHeader() && this._containerLayout.collapsible === true;
 	}
 
-	private getContainerWidth(): string {
+	public getContainerWidth(): string {
 		if (this._containerLayout && this._containerLayout.width) {
 			let width: string = this._containerLayout.width.toString();
 			if (!width.endsWith('%') && !width.toLowerCase().endsWith('px')) {
@@ -94,11 +92,11 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 		}
 	}
 
-	private getContainerDisplayStyle(): string {
+	public getContainerDisplayStyle(): string {
 		return !this.isCollapsible() || !this.collapsed ? 'block' : 'none';
 	}
 
-	private getHeaderClass(): string {
+	public getHeaderClass(): string {
 		if (this.isCollapsible()) {
 			let modifier = this.collapsed ? 'collapsed' : 'expanded';
 			return `modelview-group-header-collapsible ${modifier}`;
@@ -107,7 +105,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 		}
 	}
 
-	private changeState(): void {
+	public changeState(): void {
 		if (this.isCollapsible()) {
 			this.collapsed = !this.collapsed;
 			this._changeRef.detectChanges();

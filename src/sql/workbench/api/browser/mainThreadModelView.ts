@@ -71,7 +71,6 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 	}
 
 	$registerEvent(handle: number, componentId: string): Thenable<void> {
-		let properties: { [key: string]: any; } = { eventName: this.onEvent };
 		return this.execModelViewAction(handle, (modelView) => {
 			this._register(modelView.onEvent(e => {
 				if (e.componentId && e.componentId === componentId) {

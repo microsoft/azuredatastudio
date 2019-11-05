@@ -60,8 +60,8 @@ import { ExtHostLabelService } from 'vs/workbench/api/common/extHostLabelService
 import { getRemoteName } from 'vs/platform/remote/common/remoteHosts';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IExtHostDecorations } from 'vs/workbench/api/common/extHostDecorations';
-import { IExtHostTask } from 'vs/workbench/api/common/extHostTask';
-import { IExtHostDebugService } from 'vs/workbench/api/common/extHostDebugService';
+// import { IExtHostTask } from 'vs/workbench/api/common/extHostTask';
+// import { IExtHostDebugService } from 'vs/workbench/api/common/extHostDebugService';
 import { IExtHostSearch } from 'vs/workbench/api/common/extHostSearch';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IURITransformerService } from 'vs/workbench/api/common/extHostUriTransformerService';

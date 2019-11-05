@@ -8,7 +8,6 @@ import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { EditDataInput } from 'sql/workbench/parts/editData/browser/editDataInput';
 import { IConnectableInput, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService, IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
 import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/workbench/browser/customInputConverter';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 

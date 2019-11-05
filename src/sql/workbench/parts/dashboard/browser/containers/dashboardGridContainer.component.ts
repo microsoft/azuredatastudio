@@ -54,7 +54,7 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 	public readonly onResize: Event<void> = this._onResize.event;
 	private cellWidth: number = 270;
 	private cellHeight: number = 270;
-	private ScrollbarVisibility = ScrollbarVisibility;
+	public ScrollbarVisibility = ScrollbarVisibility;
 
 	protected SKELETON_WIDTH = 5;
 

@@ -6,9 +6,7 @@
 import { IExtensionPointUser } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
-import { join } from 'vs/base/common/path';
 import { createCSSRule, asCSSUrl } from 'vs/base/browser/dom';
-import { URI } from 'vs/base/common/uri';
 import { IdGenerator } from 'vs/base/common/idGenerator';
 import * as resources from 'vs/base/common/resources';
 

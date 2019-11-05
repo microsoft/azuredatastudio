@@ -450,7 +450,6 @@ export class CellModel implements ICellModel {
 	private handleReply(msg: nb.IShellMessage): void {
 		// TODO #931 we should process this. There can be a payload attached which should be added to outputs.
 		// In all other cases, it is a no-op
-		let output: nb.ICellOutput = msg.content as nb.ICellOutput;
 
 		if (!this._future.inProgress) {
 			this.disposeFuture();
@@ -459,7 +458,6 @@ export class CellModel implements ICellModel {
 
 	private handleIOPub(msg: nb.IIOPubMessage): void {
 		let msgType = msg.header.msg_type;
-		let displayId = this.getDisplayId(msg);
 		let output: nb.ICellOutput;
 		switch (msgType) {
 			case 'execute_result':
@@ -549,11 +547,6 @@ export class CellModel implements ICellModel {
 			}
 			return ret;
 		});
-	}
-
-	private getDisplayId(msg: nb.IIOPubMessage): string | undefined {
-		let transient = (msg.content.transient || {});
-		return transient['display_id'] as string;
 	}
 
 	public setStdInHandler(handler: nb.MessageHandler<nb.IStdinMessage>): void {

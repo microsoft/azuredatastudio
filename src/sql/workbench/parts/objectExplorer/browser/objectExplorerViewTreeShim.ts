@@ -9,7 +9,6 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ITreeItem } from 'sql/workbench/common/views';
-import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { hash } from 'vs/base/common/hash';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -42,7 +41,6 @@ export class OEShimService extends Disposable implements IOEShimService {
 	constructor(
 		@IObjectExplorerService private oe: IObjectExplorerService,
 		@IConnectionManagementService private cm: IConnectionManagementService,
-		@IConnectionDialogService private cd: IConnectionDialogService,
 		@ICapabilitiesService private capabilities: ICapabilitiesService
 	) {
 		super();

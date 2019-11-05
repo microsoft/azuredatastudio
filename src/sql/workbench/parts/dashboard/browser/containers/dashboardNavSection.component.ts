@@ -5,7 +5,7 @@
 
 import 'vs/css!./dashboardNavSection';
 
-import { Component, Inject, Input, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, OnChanges, AfterContentInit } from '@angular/core';
+import { Component, Inject, Input, forwardRef, ViewChild, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, OnChanges, AfterContentInit } from '@angular/core';
 
 import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { WidgetConfig, TabConfig, NavSectionConfig } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';

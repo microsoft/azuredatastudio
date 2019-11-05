@@ -52,17 +52,15 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	private _treeFilter: JobHistoryFilter;
 
 	@ViewChild('table') private _tableContainer: ElementRef;
-	@ViewChild('jobsteps') private _jobStepsView: ElementRef;
 
 	@Input() public agentJobInfo: azdata.AgentJobInfo = undefined;
 	@Input() public agentJobHistories: azdata.AgentJobHistoryInfo[] = undefined;
 	public agentJobHistoryInfo: azdata.AgentJobHistoryInfo = undefined;
 
-	private _isVisible: boolean = false;
 	private _stepRows: JobStepsViewRow[] = [];
 	private _showSteps: boolean = undefined;
 	private _showPreviousRuns: boolean = undefined;
-	private _runStatus: string = undefined;
+	public _runStatus: string = undefined;
 	private _jobCacheObject: JobCacheObject;
 	private _agentJobInfo: azdata.AgentJobInfo;
 	private _noJobsAvailable: boolean = false;
@@ -267,7 +265,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		}
 	}
 
-	private toggleCollapse(): void {
+	public toggleCollapse(): void {
 		let arrow: HTMLElement = jQuery('.resultsViewCollapsible').get(0);
 		let checkbox: any = document.getElementById('accordion');
 		if (arrow.className === 'resultsViewCollapsible' && checkbox.checked === false) {
@@ -277,18 +275,8 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		}
 	}
 
-	private goToJobs(): void {
-		this._isVisible = false;
+	public goToJobs(): void {
 		this._agentViewComponent.showHistory = false;
-	}
-
-	private convertToJobHistoryRow(historyInfo: azdata.AgentJobHistoryInfo): JobHistoryRow {
-		let jobHistoryRow = new JobHistoryRow();
-		jobHistoryRow.runDate = this.formatTime(historyInfo.runDate);
-		jobHistoryRow.runStatus = JobManagementUtilities.convertToStatusString(historyInfo.runStatus);
-		jobHistoryRow.instanceID = historyInfo.instanceId;
-		jobHistoryRow.jobID = historyInfo.jobId;
-		return jobHistoryRow;
 	}
 
 	private formatTime(time: string): string {

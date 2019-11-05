@@ -79,7 +79,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	private rowDetail: RowDetailView<IItem>;
 	private filterPlugin: any;
 	private dataView: any;
-	private _isCloud: boolean;
+	public _isCloud: boolean;
 	private filterStylingMap: { [columnName: string]: [any]; } = {};
 	private filterStack = ['start'];
 	private filterValueMap: { [columnName: string]: string[]; } = {};
@@ -97,7 +97,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IWorkbenchThemeService) private _themeService: IWorkbenchThemeService,

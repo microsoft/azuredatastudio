@@ -4,10 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Range, IRange } from 'vs/editor/common/core/range';
-import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
-import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { FindMatch } from 'vs/editor/common/model';
-import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
 import { NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { BaseTextEditorModel } from 'vs/workbench/common/editor/textEditorModel';

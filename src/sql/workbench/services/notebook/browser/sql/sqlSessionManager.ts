@@ -96,7 +96,6 @@ export class SqlSessionManager implements nb.SessionManager {
 export class SqlSession implements nb.ISession {
 	private _kernel: SqlKernel;
 	private _defaultKernelLoaded = false;
-	private _currentConnection: IConnectionProfile;
 
 	public set defaultKernelLoaded(value) {
 		this._defaultKernelLoaded = value;

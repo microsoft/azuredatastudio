@@ -89,9 +89,7 @@ export class DisconnectConnectionAction extends Action {
 		id: string,
 		label: string,
 		private _connectionProfile: ConnectionProfile,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		super(id, label);
 	}
@@ -269,8 +267,7 @@ export class RecentConnectionsFilterAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private view: ServerTreeView,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		private view: ServerTreeView
 	) {
 		super(id, label);
 		this.class = RecentConnectionsFilterAction.enabledClass;

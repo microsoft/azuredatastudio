@@ -14,7 +14,6 @@ class ComponentDescriptor implements IComponentDescriptor {
 }
 
 export class ModelStore implements IModelStore {
-	private static baseId = 0;
 
 	private _descriptorMappings: { [x: string]: IComponentDescriptor } = {};
 	private _componentMappings: { [x: string]: IComponent } = {};

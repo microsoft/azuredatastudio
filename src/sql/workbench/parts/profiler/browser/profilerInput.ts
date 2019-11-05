@@ -13,7 +13,6 @@ import * as nls from 'vs/nls';
 
 import { EditorInput, ConfirmResult } from 'vs/workbench/common/editor';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -45,7 +44,6 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 
 	constructor(
 		public connection: IConnectionProfile,
-		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@INotificationService private _notificationService: INotificationService,
 		@IDialogService private _dialogService: IDialogService

@@ -15,7 +15,7 @@ import { LocalContentManager } from 'sql/workbench/services/notebook/common/loca
 import { NotebookManagerStub } from './common';
 import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/parts/notebook/browser/models/modelFactory';
-import { IClientSession, ICellModel, INotebookModelOptions, NotebookContentChange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { IClientSession, INotebookModelOptions, NotebookContentChange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { ClientSession } from 'sql/workbench/parts/notebook/browser/models/clientSession';
 import { CellTypes, NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { Deferred } from 'sql/base/common/promise';

@@ -28,7 +28,6 @@ import * as types from 'vs/base/common/types';
 import { trim } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { CmsConnectionController } from 'sql/workbench/services/connection/browser/cmsConnectionController';
 
 export interface IConnectionValidateResult {
@@ -80,7 +79,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _connectionManagementService: IConnectionManagementService;
 
 	constructor(
-		@IWorkbenchLayoutService private layoutService: IWorkbenchLayoutService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,

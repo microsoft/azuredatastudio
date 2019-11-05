@@ -23,7 +23,7 @@ import * as DOM from 'vs/base/browser/dom';
 
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { CellTypes, CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
-import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { ICellModel, IModelFactory, INotebookModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
@@ -54,7 +54,6 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { getErrorMessage } from 'vs/base/common/errors';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -70,8 +69,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	@ViewChild('bookNav', { read: ElementRef }) private bookNav: ElementRef;
 
 	private _model: NotebookModel;
-	private _isInErrorState: boolean = false;
-	private _errorMessage: string;
 	protected _actionBar: Taskbar;
 	protected isLoading: boolean;
 	private notebookManagers: INotebookManager[] = [];
@@ -104,8 +101,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
-		@Inject(ITelemetryService) private telemetryService: ITelemetryService,
-		@Inject(IEnvironmentService) private readonly environmentService: IEnvironmentService
+		@Inject(ITelemetryService) private telemetryService: ITelemetryService
 	) {
 		super();
 		this.updateProfile();
@@ -397,8 +393,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	private setViewInErrorState(error: any): any {
-		this._isInErrorState = true;
-		this._errorMessage = getErrorMessage(error);
 		// For now, send message as error notification #870 covers having dedicated area for this
 		this.notificationService.error(error);
 	}

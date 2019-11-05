@@ -23,7 +23,6 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 	constructor(
 		private readonly _proxy: MainThreadModelViewShape,
 		private readonly _handle: number,
-		private readonly _mainContext: IMainContext,
 		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
 		private readonly _extension: IExtensionDescription
 	) {
@@ -739,14 +738,6 @@ class ComponentWithIconWrapper extends ComponentWrapper {
 	public set iconWidth(v: string | number) {
 		this.setProperty('iconWidth', v);
 	}
-}
-
-class ContainerWrapper<T, U> extends ComponentWrapper implements azdata.Container<T, U> {
-
-	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
-		super(proxy, handle, type, id);
-	}
-
 }
 
 class CardWrapper extends ComponentWrapper implements azdata.CardComponent {
@@ -1579,11 +1570,10 @@ class ModelViewImpl implements azdata.ModelView {
 		private readonly _handle: number,
 		private readonly _connection: azdata.connection.Connection,
 		private readonly _serverInfo: azdata.ServerInfo,
-		private readonly mainContext: IMainContext,
 		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
 		_extension: IExtensionDescription
 	) {
-		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle, this.mainContext, this._extHostModelViewTree, _extension);
+		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle, this._extHostModelViewTree, _extension);
 	}
 
 	public get onClosed(): vscode.Event<any> {
@@ -1636,7 +1626,7 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 	private readonly _handlers = new Map<string, (view: azdata.ModelView) => void>();
 	private readonly _handlerToExtension = new Map<string, IExtensionDescription>();
 	constructor(
-		private _mainContext: IMainContext,
+		_mainContext: IMainContext,
 		private _extHostModelViewTree: ExtHostModelViewTreeViewsShape
 	) {
 		this._proxy = _mainContext.getProxy(SqlMainContext.MainThreadModelView);
@@ -1656,7 +1646,7 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 
 	$registerWidget(handle: number, id: string, connection: azdata.connection.Connection, serverInfo: azdata.ServerInfo): void {
 		let extension = this._handlerToExtension.get(id);
-		let view = new ModelViewImpl(this._proxy, handle, connection, serverInfo, this._mainContext, this._extHostModelViewTree, extension);
+		let view = new ModelViewImpl(this._proxy, handle, connection, serverInfo, this._extHostModelViewTree, extension);
 		this._modelViews.set(handle, view);
 		this._handlers.get(id)(view);
 	}

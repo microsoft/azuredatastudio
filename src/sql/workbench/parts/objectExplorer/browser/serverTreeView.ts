@@ -10,7 +10,7 @@ import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';

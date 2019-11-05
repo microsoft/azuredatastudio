@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 
 import { IGridDataProvider, getResultsString } from 'sql/platform/query/common/gridDataProvider';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IInstantiationService, optional } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';

@@ -455,10 +455,8 @@ suite('Cell Model', function (): void {
 			future.setup(f => f.setStdInHandler(TypeMoq.It.isAny())).callback((handler) => onStdIn = handler);
 
 			let deferred = new Deferred<void>();
-			let stdInMessage: nb.IStdinMessage = undefined;
 			cell.setStdInHandler({
 				handle: (msg: nb.IStdinMessage) => {
-					stdInMessage = msg;
 					return deferred.promise;
 				}
 			});

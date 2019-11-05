@@ -60,7 +60,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 	private _typeKey: string;
 	private _init: boolean = false;
-	private _loading: boolean = true;
+	public _loading: boolean = true;
 	private _intervalTimer: IntervalTimer;
 
 	public error: string;

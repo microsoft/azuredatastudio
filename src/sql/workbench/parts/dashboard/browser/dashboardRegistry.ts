@@ -5,7 +5,7 @@
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IConfigurationRegistry, Extensions as ConfigurationExtension } from 'vs/platform/configuration/common/configurationRegistry';
-import { IJSONSchema, IJSONSchemaMap } from 'vs/base/common/jsonSchema';
+import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 import { IExtensionPointUser, ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 
@@ -41,7 +41,6 @@ class DashboardRegistry implements IDashboardRegistry {
 	private _properties = new Map<string, ProviderProperties>();
 	private _tabs = new Array<IDashboardTab>();
 	private _configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtension.Configuration);
-	private _dashboardTabContentSchemaProperties: IJSONSchemaMap = {};
 
 	/**
 	 * Register a dashboard widget

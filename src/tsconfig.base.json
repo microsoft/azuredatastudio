@@ -5,7 +5,7 @@
 		"noImplicitAny": false,
 		"experimentalDecorators": true,
 		"noImplicitReturns": true,
-		"noUnusedLocals": false,
+		"noUnusedLocals": true,
 		"noImplicitThis": true,
 		"alwaysStrict": true,
 		"strictBindCallApply": true,

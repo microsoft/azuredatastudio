@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
@@ -19,7 +19,6 @@ import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { ISelectionData, ExecutionPlanOptions } from 'azdata';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
 const MAX_SIZE = 13;
 

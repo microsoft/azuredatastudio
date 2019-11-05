@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
-import { ConnectedContext } from 'azdata';
 import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import { BackupAction } from 'sql/workbench/parts/backup/browser/backupActions';
 import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';

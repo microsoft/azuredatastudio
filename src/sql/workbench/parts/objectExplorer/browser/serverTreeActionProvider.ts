@@ -19,7 +19,7 @@ import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectio
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
+import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
 import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';

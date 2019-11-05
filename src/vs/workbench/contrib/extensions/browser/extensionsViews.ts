@@ -1029,7 +1029,7 @@ export class DefaultRecommendedExtensionsView extends ExtensionsListView {
 }
 
 export class RecommendedExtensionsView extends ExtensionsListView {
-	private readonly recommendedExtensionsQuery = '@recommended';
+	// private readonly recommendedExtensionsQuery = '@recommended';
 
 	renderBody(container: HTMLElement): void {
 		super.renderBody(container);
