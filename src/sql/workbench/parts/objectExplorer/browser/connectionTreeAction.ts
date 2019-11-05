@@ -22,6 +22,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class RefreshAction extends Action {
 
@@ -36,7 +37,8 @@ export class RefreshAction extends Action {
 		private element: IConnectionProfile | TreeNode,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService
+		@IErrorMessageService private _errorMessageService: IErrorMessageService,
+		@ILogService private _logService: ILogService
 	) {
 		super(id, label);
 		this._tree = tree;
@@ -63,11 +65,12 @@ export class RefreshAction extends Action {
 					await this._objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode);
 				} catch (error) {
 					this.showError(error);
-					return Promise.resolve(true);
+					return true;
 				}
 				await this._tree.refresh(this.element);
 				return this._tree.expand(this.element);
 			} catch (ex) {
+				this._logService.error(ex);
 				return true;
 			}
 		}
@@ -75,6 +78,7 @@ export class RefreshAction extends Action {
 	}
 
 	private showError(errorMessage: string) {
+		this._logService.error(errorMessage);
 		if (this._errorMessageService) {
 			this._errorMessageService.showDialog(Severity.Error, '', errorMessage);
 		}
