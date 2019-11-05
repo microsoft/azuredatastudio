@@ -31,14 +31,16 @@ import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { DisposableStore } from 'vs/base/common/lifecycle';
+import { DisposableStore, Disposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
+import { Panel } from 'vs/workbench/browser/panel';
+import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 
-export abstract class GridParentComponent {
+export abstract class GridParentComponent extends Disposable {
 	// CONSTANTS
 	// tslint:disable:no-unused-variable
 
@@ -78,9 +80,12 @@ export abstract class GridParentComponent {
 	protected _messageActive = true;
 	protected activeGrid = 0;
 
-	@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
+
+
+	//@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
+	@ViewChildren('table') slickgrids: QueryList<Table<any>>;
 	//need to initialize this
-	protected tablegrids: Table<any>[] = [];
+//	protected tablegrids: Table<any>[] = [];
 
 	set messageActive(input: boolean) {
 		this._messageActive = input;
@@ -105,6 +110,7 @@ export abstract class GridParentComponent {
 		protected queryEditorService: IQueryEditorService,
 		protected logService: ILogService
 	) {
+		super();
 	}
 
 	protected baseInit(): void {

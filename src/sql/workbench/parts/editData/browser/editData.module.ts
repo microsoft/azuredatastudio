@@ -7,6 +7,7 @@
 import { ApplicationRef, ComponentFactoryResolver, NgModule, Inject, forwardRef, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
+import { Table } from 'sql/base/browser/ui/table/table';
 import { SlickGrid } from 'angular2-slickgrid';
 
 import { EditDataComponent } from 'sql/workbench/parts/editData/browser/editData.component';
@@ -21,7 +22,7 @@ export const EditDataModule = (params: IBootstrapParams, selector: string, insta
 
 		imports: [
 			CommonModule,
-			BrowserModule
+			BrowserModule,
 		],
 
 		declarations: [
@@ -30,7 +31,7 @@ export const EditDataModule = (params: IBootstrapParams, selector: string, insta
 		],
 
 		entryComponents: [
-			EditDataComponent
+			EditDataComponent,
 		],
 		providers: [
 			{ provide: IBootstrapParams, useValue: params },

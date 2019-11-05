@@ -19,10 +19,11 @@ import { bootstrapAngular } from 'sql/platform/bootstrap/browser/bootstrapServic
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/parts/query/browser/queryResultsEditor';
 import { IEditDataComponentParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 import { EditDataModule } from 'sql/workbench/parts/editData/browser/editData.module';
-import { EDITDATA_SELECTOR } from 'sql/workbench/parts/editData/browser/editData.component';
+import { EDITDATA_SELECTOR, EditDataComponent } from 'sql/workbench/parts/editData/browser/editData.component';
 import { EditDataResultsInput } from 'sql/workbench/parts/editData/browser/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
+import { EditDataView } from 'sql/workbench/parts/editData/browser/editDataResultsView';
 
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
@@ -32,6 +33,9 @@ export class EditDataResultsEditor extends BaseEditor {
 	public static AngularSelectorString: string = 'slickgrid-container.slickgridContainer';
 	protected _input: EditDataResultsInput;
 	protected _rawOptions: BareResultsGridInfo;
+
+	private resultsView: EditDataView;
+	private styleSheet = DOM.createStyleSheet();
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -52,26 +56,41 @@ export class EditDataResultsEditor extends BaseEditor {
 	}
 
 	public get input(): EditDataResultsInput {
-		return this._input;
+		return this._input as EditDataResultsInput;
 	}
 
 	public createEditor(parent: HTMLElement): void {
+		this.styleSheet.remove();
+		parent.appendChild(this.styleSheet);
+		if (!this.resultsView) {
+			this.resultsView = this._register(this._instantiationService.createInstance(EditDataView, parent));
+		}
 	}
 
 	public dispose(): void {
+		this.styleSheet.remove();
+		this.styleSheet = undefined;
 		super.dispose();
 	}
 
 	public layout(dimension: DOM.Dimension): void {
+		//this.resultsView.layout(dimension);
 	}
 
 	public setInput(input: EditDataResultsInput, options: EditorOptions): Promise<void> {
 		super.setInput(input, options, CancellationToken.None);
 		this._applySettings();
+
+		this.resultsView.input = input;
 		if (!input.hasBootstrapped) {
 			this._bootstrapAngular();
 		}
 		return Promise.resolve<void>(null);
+	}
+
+	clearInput() {
+		this.resultsView.clearInput();
+		super.clearInput();
 	}
 
 	private _applySettings() {
@@ -119,12 +138,16 @@ export class EditDataResultsEditor extends BaseEditor {
 			onRestoreViewState: input.onRestoreViewStateEmitter.event
 		};
 
+
+		//this._instantiationService.createInstance(EditDataComponent, params);
+
 		//comment this out when actually running.
-		let selector = document.createElement(EDITDATA_SELECTOR);
+		/* let selector = document.createElement(EDITDATA_SELECTOR);
 		parent.appendChild(selector);
 		this._instantiationService.invokeFunction((accessor) => {
 			const environmentService = accessor.get(IEnvironmentService);
-		});
+		}); */
+
 
 
 		bootstrapAngular(this._instantiationService,

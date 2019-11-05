@@ -6,10 +6,10 @@
 import 'vs/css!./media/editData';
 
 import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, EventEmitter } from '@angular/core';
-import { VirtualizedCollection } from 'angular2-slickgrid';
-//import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
+//import { VirtualizedCollection } from 'angular2-slickgrid';
+import { VirtualizedCollection } from 'sql/workbench/parts/editData/browser/virtualizedCollection';
 import { Table } from 'sql/base/browser/ui/table/table';
-
+import { DataService } from 'sql/workbench/parts/grid/common/dataService';
 
 import { IGridDataSet } from 'sql/workbench/parts/grid/common/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
@@ -46,8 +46,9 @@ export const EDITDATA_SELECTOR: string = 'editdata-component';
 })
 
 
-
+//rename to EditDataGrid
 export class EditDataComponent extends GridParentComponent implements OnInit, OnDestroy {
+
 	// The time(in milliseconds) we wait before refreshing the grid.
 	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
 	private refreshGridTimeoutInMs = 200;
@@ -105,6 +106,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		@Inject(IQueryEditorService) queryEditorService: IQueryEditorService,
 		@Inject(ILogService) logService: ILogService
 
+		// params : DataService,
 		// @IInstantiationService private instantiationService: IInstantiationService,
 		// @INotificationService private notificationService: INotificationService,
 		// @IContextMenuService contextMenuService: IContextMenuService,
