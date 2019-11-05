@@ -26,6 +26,7 @@ import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilitie
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { invalidProvider } from 'sql/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
+import { find } from 'vs/base/common/arrays';
 
 export class RestoreService implements IRestoreService {
 
@@ -270,7 +271,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 		let providerCapabilities = this._capabilitiesService.getLegacyCapabilities(providerId);
 
 		if (providerCapabilities) {
-			let restoreMetadataProvider = providerCapabilities.features.find(f => f.featureName === this._restoreFeature);
+			let restoreMetadataProvider = find(providerCapabilities.features, f => f.featureName === this._restoreFeature);
 			if (restoreMetadataProvider) {
 				options = restoreMetadataProvider.optionsMetadata;
 			}

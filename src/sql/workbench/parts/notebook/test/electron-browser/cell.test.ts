@@ -19,6 +19,7 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import { startsWith } from 'vs/base/common/strings';
 
 let instantiationService: IInstantiationService;
 
@@ -266,7 +267,7 @@ suite('Cell Model', function (): void {
 
 		let modelJson = model.toJSON();
 		assert(!isUndefinedOrNull(modelJson.metadata.tags));
-		assert(!modelJson.metadata.tags.includes('hide_input'));
+		assert(!modelJson.metadata.tags.some(x => x === 'hide_input'));
 
 		contents.metadata = {
 			tags: ['hide_input']
@@ -281,7 +282,7 @@ suite('Cell Model', function (): void {
 
 		modelJson = model.toJSON();
 		assert(!isUndefinedOrNull(modelJson.metadata.tags));
-		assert(modelJson.metadata.tags.includes('hide_input'));
+		assert(modelJson.metadata.tags.some(x => x === 'hide_input'));
 
 		contents.metadata = {
 			tags: ['not_a_real_tag']
@@ -289,7 +290,7 @@ suite('Cell Model', function (): void {
 		model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
 		modelJson = model.toJSON();
 		assert(!isUndefinedOrNull(modelJson.metadata.tags));
-		assert(!modelJson.metadata.tags.includes('hide_input'));
+		assert(!modelJson.metadata.tags.some(x => x === 'hide_input'));
 
 		contents.metadata = {
 			tags: ['not_a_real_tag', 'hide_input']
@@ -297,7 +298,7 @@ suite('Cell Model', function (): void {
 		model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
 		modelJson = model.toJSON();
 		assert(!isUndefinedOrNull(modelJson.metadata.tags));
-		assert(modelJson.metadata.tags.includes('hide_input'));
+		assert(modelJson.metadata.tags.some(x => x === 'hide_input'));
 	});
 
 	test('Should emit event after collapsing cell', async function (): Promise<void> {
@@ -551,15 +552,15 @@ suite('Cell Model', function (): void {
 			let content = JSON.stringify(cell.toJSON(), undefined, '    ');
 			let contentSplit = content.split('\n');
 			assert.equal(contentSplit.length, 9);
-			assert(contentSplit[0].trim().startsWith('{'));
-			assert(contentSplit[1].trim().startsWith('"cell_type": "code",'));
-			assert(contentSplit[2].trim().startsWith('"source": ""'));
-			assert(contentSplit[3].trim().startsWith('"metadata": {'));
-			assert(contentSplit[4].trim().startsWith('"azdata_cell_guid": "'));
-			assert(contentSplit[5].trim().startsWith('}'));
-			assert(contentSplit[6].trim().startsWith('"outputs": []'));
-			assert(contentSplit[7].trim().startsWith('"execution_count": 0'));
-			assert(contentSplit[8].trim().startsWith('}'));
+			assert(startsWith(contentSplit[0].trim(), '{'));
+			assert(startsWith(contentSplit[1].trim(), '"cell_type": "code",'));
+			assert(startsWith(contentSplit[2].trim(), '"source": ""'));
+			assert(startsWith(contentSplit[3].trim(), '"metadata": {'));
+			assert(startsWith(contentSplit[4].trim(), '"azdata_cell_guid": "'));
+			assert(startsWith(contentSplit[5].trim(), '}'));
+			assert(startsWith(contentSplit[6].trim(), '"outputs": []'));
+			assert(startsWith(contentSplit[7].trim(), '"execution_count": 0'));
+			assert(startsWith(contentSplit[8].trim(), '}'));
 		});
 	});
 

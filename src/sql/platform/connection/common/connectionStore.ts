@@ -13,6 +13,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { find } from 'vs/base/common/arrays';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
@@ -150,7 +151,7 @@ export class ConnectionStore {
 	public getRecentlyUsedConnections(providers?: string[]): ConnectionProfile[] {
 		let mru = this.mru.slice();
 		if (providers && providers.length > 0) {
-			mru = mru.filter(c => providers.includes(c.providerName));
+			mru = mru.filter(c => find(providers, x => x === c.providerName));
 		}
 		return this.convertConfigValuesToConnectionProfiles(mru);
 	}
@@ -277,7 +278,7 @@ export class ConnectionStore {
 		if (!withoutConnections) {
 			profilesInConfiguration = this.connectionConfig.getConnections(true);
 			if (providers && providers.length > 0) {
-				profilesInConfiguration = profilesInConfiguration.filter(x => providers.includes(x.providerName));
+				profilesInConfiguration = profilesInConfiguration.filter(x => find(providers, p => p === x.providerName));
 			}
 		}
 		const groups = this.connectionConfig.getAllGroups();
@@ -315,7 +316,7 @@ export class ConnectionStore {
 
 	public getGroupFromId(groupId: string): IConnectionProfileGroup {
 		const groups = this.connectionConfig.getAllGroups();
-		return groups.find(group => group.id === groupId);
+		return find(groups, group => group.id === groupId);
 	}
 
 	private getMaxRecentConnectionsCount(): number {

@@ -16,6 +16,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import Severity from 'vs/base/common/severity';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { firstIndex } from 'vs/base/common/arrays';
 const $ = dom.$;
 
 /**
@@ -198,7 +199,7 @@ export class ChangeMaxRowsActionItem extends Disposable implements IActionViewIt
 	}
 
 	public set setCurrentOptionIndex(selection: number) {
-		this._currentOptionsIndex = this._options.findIndex(x => x === selection.toString());
+		this._currentOptionsIndex = firstIndex(this._options, x => x === selection.toString());
 		this._refreshOptions();
 	}
 
@@ -216,7 +217,7 @@ export class ChangeMaxRowsActionItem extends Disposable implements IActionViewIt
 
 	private _registerListeners(): void {
 		this._register(this.selectBox.onDidSelect(selection => {
-			this._currentOptionsIndex = this._options.findIndex(x => x === selection.selected);
+			this._currentOptionsIndex = firstIndex(this._options, x => x === selection.selected);
 			this._editor.editDataInput.onRowDropDownSet(Number(selection.selected));
 		}));
 		this._register(attachSelectBoxStyler(this.selectBox, this._themeService));

@@ -18,6 +18,7 @@ import { DashboardInput } from 'sql/workbench/parts/dashboard/browser/dashboardI
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { find } from 'vs/base/common/arrays';
 
 /**
  * Workbench action to clear the recent connnections list
@@ -83,7 +84,7 @@ export class ClearRecentConnectionsAction extends Action {
 			];
 
 			self._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('ClearRecentlyUsedLabel', "Clear List"), ignoreFocusLost: true }).then((choice) => {
-				let confirm = choices.find(x => x.key === choice);
+				let confirm = find(choices, x => x.key === choice);
 				resolve(confirm && confirm.value);
 			});
 		});

@@ -9,6 +9,7 @@ import * as nls from 'vs/nls';
 
 import { generateDashboardGridLayoutSchema } from 'sql/workbench/parts/dashboard/browser/pages/dashboardPageContribution';
 import { registerContainerType, registerNavSectionContainerType } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
+import { find } from 'vs/base/common/arrays';
 
 export const GRID_CONTAINER = 'grid-container';
 
@@ -25,7 +26,7 @@ export function validateGridContainerContribution(extension: IExtensionPointUser
 	let result = true;
 	gridConfigs.forEach(widgetConfig => {
 		const allKeys = Object.keys(widgetConfig);
-		const widgetOrWebviewKey = allKeys.find(key => key === 'widget' || key === 'webview');
+		const widgetOrWebviewKey = find(allKeys, key => key === 'widget' || key === 'webview');
 		if (!widgetOrWebviewKey) {
 			result = false;
 			extension.collector.error(nls.localize('gridContainer.invalidInputs', "widgets or webviews are expected inside widgets-container for extension."));

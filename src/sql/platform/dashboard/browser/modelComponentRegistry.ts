@@ -7,6 +7,7 @@ import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 import * as platform from 'vs/platform/registry/common/platform';
 import { IComponent } from 'sql/workbench/browser/modelComponents/interfaces';
+import { values } from 'vs/base/common/collections';
 
 export type ComponentIdentifier = string;
 
@@ -46,7 +47,7 @@ class ComponentRegistry implements IComponentRegistry {
 	}
 
 	public getAllCtors(): Array<Type<IComponent>> {
-		return Object.values(this._idToCtor);
+		return values(this._idToCtor);
 	}
 
 	public getAllIds(): Array<string> {

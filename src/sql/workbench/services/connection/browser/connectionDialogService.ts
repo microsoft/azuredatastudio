@@ -14,7 +14,6 @@ import * as Constants from 'sql/platform/connection/common/constants';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { entries } from 'sql/base/common/objects';
 import { Deferred } from 'sql/base/common/promise';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
@@ -30,6 +29,8 @@ import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { CmsConnectionController } from 'sql/workbench/services/connection/browser/cmsConnectionController';
+import { entries } from 'sql/base/common/collections';
+import { find } from 'vs/base/common/arrays';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -136,7 +137,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			if (keys && keys.length > 0) {
 				if (this._params && this._params.providers && this._params.providers.length > 0) {
 					//Filter providers from master keys.
-					filteredKeys = keys.filter(key => this._params.providers.includes(key));
+					filteredKeys = keys.filter(key => this._params.providers.some(x => x === key));
 				}
 				if (filteredKeys && filteredKeys.length > 0) {
 					defaultProvider = filteredKeys[0];
@@ -307,7 +308,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				});
 			}
 			if (!isProviderInParams) {
-				this._currentProviderType = Object.keys(this._providerNameToDisplayNameMap).find((key) =>
+				this._currentProviderType = find(Object.keys(this._providerNameToDisplayNameMap), (key) =>
 					this._providerNameToDisplayNameMap[key] === input.selectedProviderDisplayName &&
 					key !== Constants.cmsProviderName
 				);
@@ -472,7 +473,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		// this solves the most common "hard error" that we've noticed
 		const helpLink = 'https://aka.ms/sqlopskerberos';
 		let actions: IAction[] = [];
-		if (!platform.isWindows && types.isString(message) && message.toLowerCase().includes('kerberos') && message.toLowerCase().includes('kinit')) {
+		if (!platform.isWindows && types.isString(message) && message.toLowerCase().indexOf('kerberos') > -1 && message.toLowerCase().indexOf('kinit') > -1) {
 			message = [
 				localize('kerberosErrorStart', "Connection failed due to Kerberos error."),
 				localize('kerberosHelpLink', "Help configuring Kerberos is available at {0}", helpLink),

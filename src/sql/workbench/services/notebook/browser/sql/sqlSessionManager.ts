@@ -25,6 +25,8 @@ import { ILanguageMagic } from 'sql/workbench/services/notebook/browser/notebook
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { URI } from 'vs/base/common/uri';
 import { getUriPrefix, uriPrefixes } from 'sql/platform/connection/common/utils';
+import { firstIndex } from 'vs/base/common/arrays';
+import { startsWith } from 'vs/base/common/strings';
 
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;
@@ -71,7 +73,7 @@ export class SqlSessionManager implements nb.SessionManager {
 
 	startNew(options: nb.ISessionOptions): Thenable<nb.ISession> {
 		let sqlSession = new SqlSession(options, this._instantiationService);
-		let index = SqlSessionManager._sessions.findIndex(session => session.path === options.path);
+		let index = firstIndex(SqlSessionManager._sessions, session => session.path === options.path);
 		if (index > -1) {
 			SqlSessionManager._sessions.splice(index);
 		}
@@ -80,7 +82,7 @@ export class SqlSessionManager implements nb.SessionManager {
 	}
 
 	shutdown(id: string): Thenable<void> {
-		let index = SqlSessionManager._sessions.findIndex(session => session.id === id);
+		let index = firstIndex(SqlSessionManager._sessions, session => session.id === id);
 		if (index > -1) {
 			let sessionManager = SqlSessionManager._sessions[index];
 			SqlSessionManager._sessions.splice(index);
@@ -306,7 +308,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		let code = Array.isArray(content.code) ? content.code.join('') : content.code;
 		let firstLineEnd = code.indexOf(this.textResourcePropertiesService.getEOL(URI.file(this._path)));
 		let firstLine = code.substring(0, (firstLineEnd >= 0) ? firstLineEnd : 0).trimLeft();
-		if (firstLine.startsWith('%%')) {
+		if (startsWith(firstLine, '%%')) {
 			// Strip out the line
 			code = code.substring(firstLineEnd, code.length);
 			// Try and match to an external script magic. If we add more magics later, should handle transforms better

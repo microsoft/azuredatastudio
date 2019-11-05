@@ -5,7 +5,7 @@
 
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
-import { deepClone } from 'vs/base/common/objects';
+import { deepClone, assign } from 'vs/base/common/objects';
 import { URI } from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 
@@ -15,6 +15,7 @@ import * as azdata from 'azdata';
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape, ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, ColumnSizingMode } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { firstIndex } from 'vs/base/common/arrays';
 
 class ModelBuilderImpl implements azdata.ModelBuilder {
 	private nextComponentId: number;
@@ -269,7 +270,7 @@ class ComponentBuilderImpl<T extends azdata.Component> implements azdata.Compone
 
 	withProperties<U>(properties: U): azdata.ComponentBuilder<T> {
 		// Keep any properties that may have been set during initial object construction
-		this._component.properties = Object.assign({}, this._component.properties, properties);
+		this._component.properties = assign({}, this._component.properties, properties);
 		return this;
 	}
 
@@ -343,7 +344,7 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 			});
 		}
 
-		return new InternalItemConfig(componentWrapper, Object.assign({}, itemLayout, {
+		return new InternalItemConfig(componentWrapper, assign({}, itemLayout, {
 			title: formComponent.title,
 			actions: actions,
 			isFormComponent: true,
@@ -409,8 +410,8 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 		let result: boolean = false;
 		if (componentGroup && componentGroup.components !== undefined) {
 			let firstComponent = componentGroup.components[0];
-			let index = this._component.itemConfigs.findIndex(x => x.component.id === firstComponent.component.id);
-			if (index) {
+			let index = firstIndex(this._component.itemConfigs, x => x.component.id === firstComponent.component.id);
+			if (index !== -1) {
 				result = this._component.removeItemAt(index - 1);
 			}
 			componentGroup.components.forEach(element => {
@@ -606,7 +607,7 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public removeItem(item: azdata.Component): boolean {
-		let index = this.itemConfigs.findIndex(c => c.component.id === item.id);
+		let index = firstIndex(this.itemConfigs, c => c.component.id === item.id);
 		if (index >= 0 && index < this.itemConfigs.length) {
 			return this.removeItemAt(index);
 		}
@@ -638,7 +639,7 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public updateProperties(properties: { [key: string]: any }): Thenable<void> {
-		this.properties = Object.assign(this.properties, properties);
+		this.properties = assign(this.properties, properties);
 		return this.notifyPropertyChanged();
 	}
 
@@ -647,7 +648,7 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void> {
-		this.properties.CSSStyles = Object.assign(this.properties.CSSStyles || {}, cssStyles);
+		this.properties.CSSStyles = assign(this.properties.CSSStyles || {}, cssStyles);
 		return this.notifyPropertyChanged();
 	}
 
