@@ -23,6 +23,7 @@ import { inputBackground, inputBorder } from 'vs/platform/theme/common/colorRegi
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
+import { assign } from 'vs/base/common/objects';
 
 @Component({
 	selector: 'modelview-inputBox',
@@ -86,7 +87,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 			this.registerInput(this._input, () => !this.multiline);
 		}
 		if (this._textareaContainer) {
-			let textAreaInputOptions = Object.assign({}, inputOptions, { flexibleHeight: true, type: 'textarea' });
+			let textAreaInputOptions = assign({}, inputOptions, { flexibleHeight: true, type: 'textarea' });
 			this._textAreaInput = new InputBox(this._textareaContainer.nativeElement, this.contextViewService, textAreaInputOptions);
 			this.onkeydown(this._textAreaInput.inputElement, (e: StandardKeyboardEvent) => {
 				if (this.tryHandleKeyEvent(e)) {

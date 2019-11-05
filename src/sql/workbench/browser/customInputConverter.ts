@@ -16,6 +16,7 @@ import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/noteb
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { find } from 'vs/base/common/arrays';
 
 ////// Exported public functions/vars
 
@@ -217,11 +218,11 @@ function hasFileExtension(extensions: string[], input: EditorInput, checkUntitle
 	let lastPeriodIndex = input.getName().lastIndexOf('.');
 	if (lastPeriodIndex > -1) {
 		let extension: string = input.getName().substr(lastPeriodIndex + 1).toUpperCase();
-		return !!extensions.find(x => x === extension);
+		return !!find(extensions, x => x === extension);
 	}
 
 	// Check for untitled file type
-	if (checkUntitledFileType && input.getName().includes(untitledFilePrefix)) {
+	if (checkUntitledFileType && find(input.getName(), x => x === untitledFilePrefix)) {
 		return true;
 	}
 

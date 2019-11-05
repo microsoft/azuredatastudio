@@ -16,6 +16,7 @@ import { NavSectionConfig, IUserFriendlyIcon } from 'sql/workbench/parts/dashboa
 import { registerContainerType, generateNavSectionContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/workbench/parts/dashboard/browser/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/workbench/parts/dashboard/browser/containers/dashboardGridContainer.contribution';
+import { values } from 'vs/base/common/collections';
 
 export const NAV_SECTION = 'nav-section';
 
@@ -120,7 +121,7 @@ export function validateNavSectionContributionAndRegisterIcon(extension: IExtens
 		}
 
 		const containerKey = Object.keys(section.container)[0];
-		const containerValue = Object.values(section.container)[0];
+		const containerValue = values(section.container)[0];
 
 		switch (containerKey) {
 			case WIDGETS_CONTAINER:

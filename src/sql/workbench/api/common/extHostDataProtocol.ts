@@ -12,6 +12,7 @@ import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape }
 import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IURITransformer } from 'vs/base/common/uriIpc';
 import { URI } from 'vs/base/common/uri';
+import { find } from 'vs/base/common/arrays';
 
 export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
@@ -71,7 +72,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		if (!providersForType) {
 			return undefined;
 		}
-		return providersForType.find(provider => provider.providerId === providerId) as T;
+		return find(providersForType, provider => provider.providerId === providerId) as T;
 	}
 
 	public getProvidersByType<T extends azdata.DataProvider>(providerType: azdata.DataProviderType): T[] {

@@ -5,10 +5,10 @@
 
 import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ViewChild } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
+import * as chartjs from 'chart.js';
 
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
-import { memoize, unmemoize } from 'sql/base/common/decorators';
 import { mixin } from 'sql/base/common/objects';
 import { defaultChartConfig, IChartConfig, IDataSet } from 'sql/workbench/parts/dashboard/browser/widgets/insights/views/charts/interfaces';
 
@@ -22,8 +22,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IInsightData, IPointDataSet } from 'sql/workbench/parts/charts/browser/interfaces';
 import { IInsightsView } from 'sql/platform/dashboard/browser/insightRegistry';
 import { ChartType, LegendPosition } from 'sql/workbench/parts/charts/common/interfaces';
-
-declare const Chart: any;
+import { createMemoizer } from 'vs/base/common/decorators';
 
 @Component({
 	template: `	<div style="display: block; width: 100%; height: 100%; position: relative">
@@ -38,6 +37,8 @@ declare const Chart: any;
 				</div>`
 })
 export abstract class ChartInsight extends Disposable implements IInsightsView {
+	protected static readonly MEMOIZER = createMemoizer();
+
 	private _isDataAvailable: boolean = false;
 	protected _hasInit: boolean = false;
 	protected _hasError: boolean = false;
@@ -132,8 +133,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 
 	@Input() set data(data: IInsightData) {
 		// unmemoize chart data as the data needs to be recalced
-		unmemoize(this, 'chartData');
-		unmemoize(this, 'labels');
+		ChartInsight.MEMOIZER.clear();
 		this._data = this.filterToTopNData(data);
 		if (isValidData(data)) {
 			this._isDataAvailable = true;
@@ -172,9 +172,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 
 	protected clearMemoize(): void {
 		// unmemoize getters since their result can be changed by a new config
-		unmemoize(this, 'getChartData');
-		unmemoize(this, 'getLabels');
-		unmemoize(this, 'colors');
+		ChartInsight.MEMOIZER.clear();
 	}
 
 	public setConfig(config: IChartConfig) {
@@ -189,7 +187,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 
 	/* Typescript does not allow you to access getters/setters for super classes.
 		his is a workaround that allows us to still call base getter */
-	@memoize
+	@ChartInsight.MEMOIZER
 	protected getChartData(): Array<IDataSet> {
 		if (this._config.dataDirection === 'horizontal') {
 			if (this._config.labelFirstColumn) {
@@ -230,7 +228,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 		return this.getChartData();
 	}
 
-	@memoize
+	@ChartInsight.MEMOIZER
 	public getLabels(): Array<string> {
 		if (this._config.dataDirection === 'horizontal') {
 			if (this._config.labelFirstColumn) {
@@ -248,7 +246,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	}
 
 
-	@memoize
+	@ChartInsight.MEMOIZER
 	private get colors(): { backgroundColor: string[] }[] {
 		if (this._config && this._config.colorMap) {
 			const backgroundColor = this.labels.map((item) => {
@@ -293,12 +291,12 @@ function isValidData(data: IInsightData): boolean {
 	return true;
 }
 
-Chart.pluginService.register({
+chartjs.Chart.pluginService.register({
 	beforeDraw: function (chart) {
-		if (chart.config.options.viewArea && chart.config.options.viewArea.backgroundColor) {
-			let ctx = chart.chart.ctx;
-			ctx.fillStyle = chart.config.options.viewArea.backgroundColor;
-			ctx.fillRect(0, 0, chart.chart.width, chart.chart.height);
+		if ((chart.config.options as any).viewArea && (chart.config.options as any).viewArea.backgroundColor) {
+			let ctx = (chart as any).chart.ctx;
+			ctx.fillStyle = (chart.config.options as any).viewArea.backgroundColor;
+			ctx.fillRect(0, 0, (chart as any).chart.width, (chart as any).chart.height);
 		}
 	}
 });

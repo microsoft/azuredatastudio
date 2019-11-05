@@ -14,6 +14,7 @@ import { URI } from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { TestEditorService } from 'vs/workbench/test/workbenchTestServices';
+import { assign } from 'vs/base/common/objects';
 
 suite('TaskUtilities', function () {
 	test('getCurrentGlobalConnection returns the selected OE server if a server or one of its children is selected', () => {
@@ -63,7 +64,7 @@ suite('TaskUtilities', function () {
 		let mockConnectionManagementService = TypeMoq.Mock.ofType(TestConnectionManagementService);
 		let mockWorkbenchEditorService = TypeMoq.Mock.ofType(TestEditorService);
 		let oeProfile = new ConnectionProfile(undefined, connectionProfile);
-		let connectionProfile2 = Object.assign({}, connectionProfile);
+		let connectionProfile2 = assign({}, connectionProfile);
 		connectionProfile2.serverName = 'test_server_2';
 		connectionProfile2.id = 'test_id_2';
 		let tabProfile = new ConnectionProfile(undefined, connectionProfile2);

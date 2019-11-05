@@ -8,6 +8,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/browser/insightRegistry';
 import { IInsightOptions, DataDirection, DataType, LegendPosition, ChartType, InsightType } from 'sql/workbench/parts/charts/common/interfaces';
+import { values } from 'vs/base/common/collections';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -66,7 +67,7 @@ const labelFirstColumnInput: IChartOption = {
 const legendInput: IChartOption = {
 	label: localize('legendLabel', "Legend Position"),
 	type: ControlType.combo,
-	options: Object.values(LegendPosition),
+	options: values(LegendPosition),
 	configEntry: 'legendPosition',
 	default: LegendPosition.Top
 };
