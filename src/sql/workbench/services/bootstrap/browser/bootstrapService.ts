@@ -64,7 +64,7 @@ export function bootstrapAngular<T>(service: IInstantiationService, moduleType: 
 		if (callbackSetModule) {
 			callbackSetModule(moduleRef);
 		}
-	});
+	}).catch((e) => console.error(e));
 
 	return uniqueSelectorString;
 }

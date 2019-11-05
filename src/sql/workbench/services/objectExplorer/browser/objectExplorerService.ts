@@ -281,7 +281,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					this._serverTreeView.deleteObjectExplorerNodeAndRefreshTree(connection).then(() => {
 						this.sendUpdateNodeEvent(connection, session.errorMessage);
 						connection.isDisconnecting = true;
-						this._connectionManagementService.disconnect(connection).then((value) => {
+						this._connectionManagementService.disconnect(connection).then(() => {
 							connection.isDisconnecting = false;
 						}).catch((e) => this.logService.error(e));
 					});
