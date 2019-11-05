@@ -6,9 +6,7 @@
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as types from 'vs/base/common/types';
-
 import * as azdata from 'azdata';
-
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IRestoreService, IRestoreDialogController, TaskExecutionMode } from 'sql/platform/restore/common/restoreService';
 import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';

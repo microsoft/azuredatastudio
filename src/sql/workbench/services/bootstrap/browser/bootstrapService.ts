@@ -11,6 +11,7 @@ import { Trace } from 'vs/platform/instantiation/common/instantiationService';
 import { values } from 'vs/base/common/map';
 import { IModuleFactory, IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { ILogService } from 'vs/platform/log/common/log';
 
 const selectorCounter = new Map<string, number>();
 
@@ -64,7 +65,16 @@ export function bootstrapAngular<T>(service: IInstantiationService, moduleType: 
 		if (callbackSetModule) {
 			callbackSetModule(moduleRef);
 		}
-	}).catch((e) => console.error(e));
+	}).catch((e) => {
+		service.invokeFunction((accessor) => {
+			const logService = accessor.get(ILogService);
+			if (!logService) {
+				console.error(e);
+				return;
+			}
+			logService.error(e);
+		});
+	});
 
 	return uniqueSelectorString;
 }
