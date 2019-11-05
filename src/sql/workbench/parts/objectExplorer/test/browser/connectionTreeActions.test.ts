@@ -32,7 +32,7 @@ import { UNSAVED_GROUP_ID, mssqlProviderName } from 'sql/platform/connection/com
 import { $ } from 'vs/base/browser/dom';
 import { OEManageConnectionAction } from 'sql/workbench/parts/dashboard/browser/dashboardActions';
 import { IViewsService, IView, ViewContainer, IViewDescriptorCollection } from 'vs/workbench/common/views';
-import { ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
+import { ConsoleLogService } from 'vs/platform/log/common/log';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -43,6 +43,8 @@ suite('SQL Connection Tree Action tests', () => {
 		callStack: undefined
 	};
 	let capabilitiesService = new TestCapabilitiesService();
+	const logService = new ConsoleLogService();
+
 	setup(() => {
 		errorMessageService = TypeMoq.Mock.ofType(TestErrorMessageService, TypeMoq.MockBehavior.Loose);
 		let nothing: void;
@@ -427,7 +429,8 @@ suite('SQL Connection Tree Action tests', () => {
 			connection,
 			connectionManagementService.object,
 			objectExplorerService.object,
-			undefined);
+			undefined,
+			logService);
 
 		connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.isConnected(undefined, TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
@@ -514,7 +517,8 @@ suite('SQL Connection Tree Action tests', () => {
 			connection,
 			connectionManagementService.object,
 			objectExplorerService.object,
-			undefined);
+			undefined,
+			logService);
 
 		connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.isConnected(undefined, TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
