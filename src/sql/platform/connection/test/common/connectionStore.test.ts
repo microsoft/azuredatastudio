@@ -233,7 +233,7 @@ suite('ConnectionStore', () => {
 		// Then verify that since its password based we save the password
 		assert.equal(credentialsService.credentials.size, 1);
 		assert.strictEqual(recentCredential.password, defaultNamedProfile.password);
-		assert.ok(!!find(recentCredential.credentialId, x => x === 'Profile'), 'Expect credential to be marked as an Profile cred');
+		assert.ok(recentCredential.credentialId.indexOf('Profile') > -1, 'Expect credential to be marked as an Profile cred');
 		assert.ok(!current[0].password);
 		// When add integrated auth connection
 		const integratedCredConnectionProfile = new ConnectionProfile(capabilitiesService, integratedCred);
