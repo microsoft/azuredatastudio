@@ -934,14 +934,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.0.3",
-							"lastUpdated": "11/27/2018",
+							"version": "1.0.0",
+							"lastUpdated": "10/28/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/kevcunnane/azuredatastudio-newdatabase/releases/tag/0.0.3"
+									"source": "https://github.com/kevcunnane/azuredatastudio-newdatabase/releases/tag/1.0.0"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -977,7 +977,7 @@
 						}
 					],
 					"statistics": [],
-					"flags": "preview"
+					"flags": ""
 				},
 				{
 					"extensionId": "28",
