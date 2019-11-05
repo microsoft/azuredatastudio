@@ -317,7 +317,7 @@ export interface IDataSet {
 	columnInfo: azdata.IDbColumn[];
 }
 
-export abstract class GridTableBase<T> extends Disposable implements IView {
+export abstract class GridTableBase<T extends { [field: string]: { displayValue: string, ariaLabel: string, isNull: boolean } }> extends Disposable implements IView {
 	private table: Table<T>;
 	private actionBar: ActionBar;
 	private container = document.createElement('div');
@@ -648,7 +648,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				return [];
 			}
 			return response.resultSubset.rows.map(r => {
-				let dataWithSchema = {};
+				let dataWithSchema: Record<string, { displayValue: string, ariaLabel: string, isNull: boolean }> = {};
 				// skip the first column since its a number column
 				for (let i = 1; i < this.columns.length; i++) {
 					dataWithSchema[this.columns[i].field] = {
@@ -741,7 +741,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 }
 
-class GridTable<T> extends GridTableBase<T> {
+class GridTable<T extends { [field: string]: { displayValue: string, ariaLabel: string, isNull: boolean } }> extends GridTableBase<T> {
 	private _gridDataProvider: IGridDataProvider;
 	constructor(
 		private _runner: QueryRunner,
@@ -764,7 +764,7 @@ class GridTable<T> extends GridTableBase<T> {
 
 	protected getCurrentActions(): IAction[] {
 
-		let actions = [];
+		let actions: IAction[] = [];
 
 		if (this.state.canBeMaximized) {
 			if (this.state.maximized) {

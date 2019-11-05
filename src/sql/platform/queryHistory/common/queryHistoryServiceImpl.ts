@@ -26,7 +26,7 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 	private _infos: QueryHistoryInfo[] = [];
 	private _onInfosUpdated: Emitter<QueryHistoryInfo[]> = new Emitter<QueryHistoryInfo[]>();
 	private _onQueryHistoryCaptureChanged: Emitter<boolean> = new Emitter<boolean>();
-	private _captureEnabled;
+	private _captureEnabled: boolean;
 	// EVENTS //////////////////////////////////////////////////////////////
 	public get onInfosUpdated(): Event<QueryHistoryInfo[]> { return this._onInfosUpdated.event; }
 	public get onQueryHistoryCaptureChanged(): Event<boolean> { return this._onQueryHistoryCaptureChanged.event; }

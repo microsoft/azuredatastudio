@@ -13,15 +13,15 @@ export const SERVICE_ID = 'dashboardViewService';
 export interface IDashboardWebview extends IView {
 	setHtml(html: string): void;
 	onMessage: Event<string>;
-	sendMessage(message: string);
+	sendMessage(message: string): void;
 }
 
 export interface IDashboardViewService {
 	_serviceBrand: undefined;
 	onRegisteredWebview: Event<IDashboardWebview>;
-	registerWebview(widget: IDashboardWebview);
+	registerWebview(widget: IDashboardWebview): void;
 	onRegisteredModelView: Event<IModelView>;
-	registerModelView(widget: IModelView);
+	registerModelView(widget: IModelView): void;
 }
 
 export const IDashboardViewService = createDecorator<IDashboardViewService>(SERVICE_ID);

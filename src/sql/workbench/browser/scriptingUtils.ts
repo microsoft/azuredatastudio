@@ -14,7 +14,7 @@ import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/q
 import { IScriptingService, ScriptOperation } from 'sql/platform/scripting/common/scriptingService';
 
 // map for the version of SQL Server (default is 140)
-const scriptCompatibilityOptionMap = {
+const scriptCompatibilityOptionMap: { [key: number]: string } = {
 	90: 'Script90Compat',
 	100: 'Script100Compat',
 	105: 'Script105Compat',
@@ -25,7 +25,7 @@ const scriptCompatibilityOptionMap = {
 };
 
 // map for the target database engine edition (default is Enterprise)
-const targetDatabaseEngineEditionMap = {
+const targetDatabaseEngineEditionMap: { [key: number]: string } = {
 	0: 'SqlServerEnterpriseEdition',
 	1: 'SqlServerPersonalEdition',
 	2: 'SqlServerStandardEdition',

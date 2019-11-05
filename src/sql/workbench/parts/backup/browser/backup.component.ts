@@ -117,33 +117,33 @@ const LocalizedStrings = {
 	templateUrl: decodeURI(require.toUrl('./backup.component.html'))
 })
 export class BackupComponent extends AngularDisposable {
-	@ViewChild('pathContainer', { read: ElementRef }) pathElement;
-	@ViewChild('backupTypeContainer', { read: ElementRef }) backupTypeElement;
-	@ViewChild('backupsetName', { read: ElementRef }) backupNameElement;
-	@ViewChild('compressionContainer', { read: ElementRef }) compressionElement;
-	@ViewChild('tlogOption', { read: ElementRef }) tlogOptionElement;
-	@ViewChild('algorithmContainer', { read: ElementRef }) encryptionAlgorithmElement;
-	@ViewChild('encryptorContainer', { read: ElementRef }) encryptorElement;
-	@ViewChild('mediaName', { read: ElementRef }) mediaNameElement;
-	@ViewChild('mediaDescription', { read: ElementRef }) mediaDescriptionElement;
-	@ViewChild('recoveryModelContainer', { read: ElementRef }) recoveryModelElement;
-	@ViewChild('backupDaysContainer', { read: ElementRef }) backupDaysElement;
-	@ViewChild('backupButtonContainer', { read: ElementRef }) backupButtonElement;
-	@ViewChild('cancelButtonContainer', { read: ElementRef }) cancelButtonElement;
-	@ViewChild('addPathContainer', { read: ElementRef }) addPathElement;
-	@ViewChild('removePathContainer', { read: ElementRef }) removePathElement;
-	@ViewChild('copyOnlyContainer', { read: ElementRef }) copyOnlyElement;
-	@ViewChild('encryptCheckContainer', { read: ElementRef }) encryptElement;
-	@ViewChild('encryptContainer', { read: ElementRef }) encryptContainerElement;
-	@ViewChild('verifyContainer', { read: ElementRef }) verifyElement;
-	@ViewChild('checksumContainer', { read: ElementRef }) checksumElement;
-	@ViewChild('continueOnErrorContainer', { read: ElementRef }) continueOnErrorElement;
-	@ViewChild('encryptWarningContainer', { read: ElementRef }) encryptWarningElement;
-	@ViewChild('inProgressContainer', { read: ElementRef }) inProgressElement;
-	@ViewChild('modalFooterContainer', { read: ElementRef }) modalFooterElement;
-	@ViewChild('scriptButtonContainer', { read: ElementRef }) scriptButtonElement;
-	@ViewChild('advancedOptionContainer', { read: ElementRef }) advancedOptionElement;
-	@ViewChild('advancedOptionBodyContainer', { read: ElementRef }) advancedOptionBodyElement;
+	@ViewChild('pathContainer', { read: ElementRef }) pathElement: ElementRef;
+	@ViewChild('backupTypeContainer', { read: ElementRef }) backupTypeElement: ElementRef;
+	@ViewChild('backupsetName', { read: ElementRef }) backupNameElement: ElementRef;
+	@ViewChild('compressionContainer', { read: ElementRef }) compressionElement: ElementRef;
+	@ViewChild('tlogOption', { read: ElementRef }) tlogOptionElement: ElementRef;
+	@ViewChild('algorithmContainer', { read: ElementRef }) encryptionAlgorithmElement: ElementRef;
+	@ViewChild('encryptorContainer', { read: ElementRef }) encryptorElement: ElementRef;
+	@ViewChild('mediaName', { read: ElementRef }) mediaNameElement: ElementRef;
+	@ViewChild('mediaDescription', { read: ElementRef }) mediaDescriptionElement: ElementRef;
+	@ViewChild('recoveryModelContainer', { read: ElementRef }) recoveryModelElement: ElementRef;
+	@ViewChild('backupDaysContainer', { read: ElementRef }) backupDaysElement: ElementRef;
+	@ViewChild('backupButtonContainer', { read: ElementRef }) backupButtonElement: ElementRef;
+	@ViewChild('cancelButtonContainer', { read: ElementRef }) cancelButtonElement: ElementRef;
+	@ViewChild('addPathContainer', { read: ElementRef }) addPathElement: ElementRef;
+	@ViewChild('removePathContainer', { read: ElementRef }) removePathElement: ElementRef;
+	@ViewChild('copyOnlyContainer', { read: ElementRef }) copyOnlyElement: ElementRef;
+	@ViewChild('encryptCheckContainer', { read: ElementRef }) encryptElement: ElementRef;
+	@ViewChild('encryptContainer', { read: ElementRef }) encryptContainerElement: ElementRef;
+	@ViewChild('verifyContainer', { read: ElementRef }) verifyElement: ElementRef;
+	@ViewChild('checksumContainer', { read: ElementRef }) checksumElement: ElementRef;
+	@ViewChild('continueOnErrorContainer', { read: ElementRef }) continueOnErrorElement: ElementRef;
+	@ViewChild('encryptWarningContainer', { read: ElementRef }) encryptWarningElement: ElementRef;
+	@ViewChild('inProgressContainer', { read: ElementRef }) inProgressElement: ElementRef;
+	@ViewChild('modalFooterContainer', { read: ElementRef }) modalFooterElement: ElementRef;
+	@ViewChild('scriptButtonContainer', { read: ElementRef }) scriptButtonElement: ElementRef;
+	@ViewChild('advancedOptionContainer', { read: ElementRef }) advancedOptionElement: ElementRef;
+	@ViewChild('advancedOptionBodyContainer', { read: ElementRef }) advancedOptionBodyElement: ElementRef;
 
 	private localizedStrings = LocalizedStrings;
 
@@ -154,7 +154,7 @@ export class BackupComponent extends AngularDisposable {
 	private databaseName: string;
 	private defaultNewBackupFolder: string;
 	private recoveryModel: string;
-	private backupEncryptors;
+	private backupEncryptors: { encryptorName: string, encryptorType: number }[];
 	private containsBackupToUrl: boolean;
 
 	// UI element disable flag
@@ -746,7 +746,7 @@ export class BackupComponent extends AngularDisposable {
 	}
 
 	private populateEncryptorCombo(): string[] {
-		let encryptorCombo = [];
+		let encryptorCombo: string[] = [];
 		this.backupEncryptors.forEach((encryptor) => {
 			let encryptorTypeStr = (encryptor.encryptorType === 0 ? BackupConstants.serverCertificate : BackupConstants.asymmetricKey);
 			encryptorCombo.push(encryptor.encryptorName + '(' + encryptorTypeStr + ')');

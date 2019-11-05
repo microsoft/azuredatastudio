@@ -37,7 +37,7 @@ export class QueryTextEditor extends BaseTextEditor {
 	private _maxHeight: number = 4000;
 	private _selected: boolean;
 	private _hideLineNumbers: boolean;
-	private _editorWorkspaceConfig;
+	private _editorWorkspaceConfig: any;
 	private _scrollbarHeight: number;
 	private _lineHeight: number;
 

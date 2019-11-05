@@ -285,7 +285,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public getApplicableConnectionProviderIds(kernelDisplayName: string): string[] {
-		let ids = [];
+		let ids: string[] = [];
 		if (kernelDisplayName) {
 			ids = this._kernelDisplayNameToConnectionProviderIds.get(kernelDisplayName);
 		}

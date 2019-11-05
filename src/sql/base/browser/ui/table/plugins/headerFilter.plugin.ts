@@ -16,7 +16,7 @@ interface IExtendedColumn<T> extends Slick.Column<T> {
 
 export class HeaderFilter<T extends Slick.SlickData> {
 
-	public onFilterApplied = new Slick.Event();
+	public onFilterApplied = new Slick.Event<{ grid: Slick.Grid<T>, column: Slick.Column<T> }>();
 	public onCommand = new Slick.Event();
 
 	private grid: Slick.Grid<T>;
@@ -316,7 +316,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private handleApply(e: JQuery.Event<HTMLElement, null>, columnDef: Slick.Column<T>) {
 		this.hideMenu();
 
-		this.onFilterApplied.notify({ 'grid': this.grid, 'column': columnDef }, e, self);
+		this.onFilterApplied.notify({ grid: this.grid, column: columnDef }, e, self);
 		e.preventDefault();
 		e.stopPropagation();
 	}

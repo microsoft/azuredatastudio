@@ -31,7 +31,7 @@ export class LinkHandlerDirective {
 		// Note: this logic is taken from the VSCode handling of links in markdown
 		// Untrusted cells will not support commands or raw HTML tags
 		// Finally, we should consider supporting relative paths - created #5238 to track
-		let target: HTMLElement = event.target as HTMLElement;
+		let target = event.target as HTMLElement;
 		if (target.tagName !== 'A') {
 			target = target.parentElement;
 			if (!target || target.tagName !== 'A') {
@@ -39,7 +39,7 @@ export class LinkHandlerDirective {
 			}
 		}
 		try {
-			const href = target['href'];
+			const href = (target as HTMLLinkElement).href;
 			if (href) {
 				this.handleLink(href);
 			}

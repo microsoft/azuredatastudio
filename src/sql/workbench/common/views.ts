@@ -15,7 +15,7 @@ export interface ITreeComponentItem extends vsITreeItem {
 }
 
 export interface IModelViewTreeViewDataProvider extends ITreeViewDataProvider {
-	refresh(itemsToRefreshByHandle: { [treeItemHandle: string]: ITreeComponentItem });
+	refresh(itemsToRefreshByHandle: { [treeItemHandle: string]: ITreeComponentItem }): void;
 }
 
 export interface ITreeItem extends vsITreeItem {

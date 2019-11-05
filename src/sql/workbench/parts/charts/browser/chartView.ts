@@ -28,10 +28,6 @@ import { ChartState, IInsightOptions, ChartType } from 'sql/workbench/parts/char
 import * as nls from 'vs/nls';
 import { find } from 'vs/base/common/arrays';
 
-declare class Proxy {
-	constructor(object, handler);
-}
-
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
 //Map used to store names and alternative names for chart types.
@@ -81,7 +77,7 @@ export class ChartView extends Disposable implements IPanelView {
 	private chartingContainer: HTMLElement;
 
 	private optionDisposables: IDisposable[] = [];
-	private optionMap: { [x: string]: { element: HTMLElement; set: (val) => void } } = {};
+	private optionMap: { [x: string]: { element: HTMLElement; set: (val: any) => void } } = {};
 
 	constructor(
 		@IContextViewService private _contextViewService: IContextViewService,
@@ -106,18 +102,18 @@ export class ChartView extends Disposable implements IPanelView {
 		const self = this;
 		this.options = new Proxy(this.options, {
 			get: function (target, key, receiver) {
-				return target[key];
+				return (target as any)[key];
 			},
 			set: function (target, key, value, receiver) {
 				let change = false;
-				if (target[key] !== value) {
+				if ((target as any)[key] !== value) {
 					change = true;
 				}
 
-				let result = target[key] = value;
+				let result = (target as any)[key] = value;
 				// mirror the change in our state
 				if (self.state) {
-					self.state.options[key] = value;
+					(self.state.options as any)[key] = value;
 				}
 
 				if (change) {
@@ -281,8 +277,8 @@ export class ChartView extends Disposable implements IPanelView {
 		label.innerText = option.label;
 		let optionContainer = DOM.$('div.option-container');
 		optionContainer.appendChild(label);
-		let setFunc: (val) => void;
-		let value = this.state ? this.state.options[option.configEntry] || option.default : option.default;
+		let setFunc: (val: any) => void;
+		let value = this.state ? (this.state.options as any)[option.configEntry] || option.default : option.default;
 		switch (option.type) {
 			case ControlType.checkbox:
 				let checkbox = new Checkbox(optionContainer, {
@@ -290,8 +286,8 @@ export class ChartView extends Disposable implements IPanelView {
 					ariaLabel: option.label,
 					checked: value,
 					onChange: () => {
-						if (this.options[option.configEntry] !== checkbox.checked) {
-							this.options[option.configEntry] = checkbox.checked;
+						if ((this.options as any)[option.configEntry] !== checkbox.checked) {
+							(this.options as any)[option.configEntry] = checkbox.checked;
 							if (this.insight) {
 								this.insight.options = this.options;
 							}
@@ -308,8 +304,8 @@ export class ChartView extends Disposable implements IPanelView {
 				dropdown.select(option.options.indexOf(value));
 				dropdown.render(optionContainer);
 				dropdown.onDidSelect(e => {
-					if (this.options[option.configEntry] !== option.options[e.index]) {
-						this.options[option.configEntry] = option.options[e.index];
+					if ((this.options as any)[option.configEntry] !== option.options[e.index]) {
+						(this.options as any)[option.configEntry] = option.options[e.index];
 						if (this.insight) {
 							this.insight.options = this.options;
 						}
@@ -326,8 +322,8 @@ export class ChartView extends Disposable implements IPanelView {
 				let input = new InputBox(optionContainer, this._contextViewService);
 				input.value = value || '';
 				input.onDidChange(e => {
-					if (this.options[option.configEntry] !== e) {
-						this.options[option.configEntry] = e;
+					if ((this.options as any)[option.configEntry] !== e) {
+						(this.options as any)[option.configEntry] = e;
 						if (this.insight) {
 							this.insight.options = this.options;
 						}
@@ -344,8 +340,8 @@ export class ChartView extends Disposable implements IPanelView {
 				let numberInput = new InputBox(optionContainer, this._contextViewService, { type: 'number' });
 				numberInput.value = value || '';
 				numberInput.onDidChange(e => {
-					if (this.options[option.configEntry] !== Number(e)) {
-						this.options[option.configEntry] = Number(e);
+					if ((this.options as any)[option.configEntry] !== Number(e)) {
+						(this.options as any)[option.configEntry] = Number(e);
 						if (this.insight) {
 							this.insight.options = this.options;
 						}
@@ -362,8 +358,8 @@ export class ChartView extends Disposable implements IPanelView {
 				let dateInput = new InputBox(optionContainer, this._contextViewService, { type: 'datetime-local' });
 				dateInput.value = value || '';
 				dateInput.onDidChange(e => {
-					if (this.options[option.configEntry] !== e) {
-						this.options[option.configEntry] = e;
+					if ((this.options as any)[option.configEntry] !== e) {
+						(this.options as any)[option.configEntry] = e;
 						if (this.insight) {
 							this.insight.options = this.options;
 						}
@@ -379,7 +375,7 @@ export class ChartView extends Disposable implements IPanelView {
 		}
 		this.optionMap[option.configEntry] = { element: optionContainer, set: setFunc };
 		container.appendChild(optionContainer);
-		this.options[option.configEntry] = value;
+		(this.options as any)[option.configEntry] = value;
 	}
 
 	public set state(val: ChartState) {
@@ -387,8 +383,8 @@ export class ChartView extends Disposable implements IPanelView {
 		if (this.state.options) {
 			for (let key in this.state.options) {
 				if (this.state.options.hasOwnProperty(key) && this.optionMap[key]) {
-					this.options[key] = this.state.options[key];
-					this.optionMap[key].set(this.state.options[key]);
+					(this.options as any)[key] = (this.state.options as any)[key];
+					this.optionMap[key].set((this.state.options as any)[key]);
 				}
 			}
 		}

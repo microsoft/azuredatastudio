@@ -103,7 +103,7 @@ export function tryMatchCellMagic(input: string): string {
 	return magicName;
 }
 
-export async function asyncForEach(array: any, callback: any): Promise<any> {
+export async function asyncForEach<T>(array: T[], callback: (param: T, index: number, array: T[]) => Promise<void>): Promise<any> {
 	for (let index = 0; index < array.length; index++) {
 		await callback(array[index], index, array);
 	}

@@ -38,7 +38,7 @@ export class MainThreadExtensionManagement extends Disposable implements MainThr
 			return;
 		}
 
-		let enableObsoleteAPINotification = this._configurationService.getValue('workbench')['enableObsoleteApiUsageNotification'];
+		let enableObsoleteAPINotification = this._configurationService.getValue<boolean>('workbench.enableObsoleteApiUsageNotification');
 		if (enableObsoleteAPINotification !== undefined && !enableObsoleteAPINotification) {
 			return;
 		}

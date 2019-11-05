@@ -1848,7 +1848,7 @@ declare module 'azdata' {
 	export interface BackupConfigInfo {
 		recoveryModel: string;
 		defaultBackupFolder: string;
-		backupEncryptors: {};
+		backupEncryptors: { encryptorName: string, encryptorType: number }[];
 	}
 
 	export interface BackupResponse {

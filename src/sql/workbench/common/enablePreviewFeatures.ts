@@ -23,7 +23,7 @@ export abstract class AbstractEnablePreviewFeatures implements IWorkbenchContrib
 	) { }
 
 	protected async handlePreviewFeatures(): Promise<void> {
-		let previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
+		let previewFeaturesEnabled = this.configurationService.getValue<boolean>('workbench.enablePreviewFeatures');
 		if (previewFeaturesEnabled || this.storageService.get(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, StorageScope.GLOBAL)) {
 			return;
 		}

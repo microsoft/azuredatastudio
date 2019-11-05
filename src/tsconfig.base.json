@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"module": "amd",
 		"moduleResolution": "node",
-		"noImplicitAny": false,
+		"noImplicitAny": true,
 		"experimentalDecorators": true,
 		"noImplicitReturns": true,
 		"noUnusedLocals": false,

@@ -50,7 +50,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 	private _grid: Slick.Grid<T>;
 	private _handler = new Slick.EventHandler();
 	private _selectedRowsLookup: dict.INumberDictionary<boolean> = {};
-	private _selectedCheckBoxLookup = {};
+	private _selectedCheckBoxLookup: Record<number, boolean> = {};
 	private _useState = false;
 
 	private _onChange = new Emitter<ICheckboxCellActionEventArgs>();

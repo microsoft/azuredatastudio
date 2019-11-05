@@ -42,7 +42,14 @@ export const ACTIONBAR_PADDING: number = 10;
 
 interface IItem extends Slick.SlickData {
 	notebookId?: string;
+	lastRun: string;
+	name: string;
+	lastRunOutcome: string;
+	currentExecutionStatus: string;
 	id: string;
+	_child: any; // this is an error item
+	_parent: IItem; // this is if the item is an error
+	message: string; // only applicable on errors
 }
 
 @Component({
@@ -53,7 +60,7 @@ interface IItem extends Slick.SlickData {
 
 export class NotebooksViewComponent extends JobManagementView implements OnInit, OnDestroy {
 
-	private columns: Array<Slick.Column<any>> = [
+	private columns: Array<Slick.Column<IItem>> = [
 		{
 			name: nls.localize('notebookColumns.name', "Name"),
 			field: 'name',
@@ -77,8 +84,8 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 
 	private _notebookCacheObject: NotebookCacheObject;
 	private rowDetail: RowDetailView<IItem>;
-	private filterPlugin: any;
-	private dataView: any;
+	private filterPlugin: HeaderFilter<IItem>;
+	private dataView: Slick.Data.DataView<IItem>;
 	private _isCloud: boolean;
 	private filterStylingMap: { [columnName: string]: [any]; } = {};
 	private filterStack = ['start'];
@@ -180,7 +187,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		});
 		this.rowDetail = rowDetail;
 		columns.unshift(this.rowDetail.getColumnDefinition());
-		let filterPlugin = new HeaderFilter<{ inlineFilters: false }>();
+		let filterPlugin = new HeaderFilter<IItem>();
 		this._register(attachButtonStyler(filterPlugin, this._themeService));
 		this.filterPlugin = filterPlugin;
 		jQuery(this._gridEl.nativeElement).empty();
@@ -318,7 +325,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 						this._table.grid.removeCellCssStyles('notebook-error-row' + i.toString());
 						let item = this.dataView.getItemByIdx(i);
 						// current filter
-						if (!!find(filterValues, x => x === item[args.column.field])) {
+						if (!!find(filterValues, x => x === item[args.column.field as keyof IItem])) {
 							// check all previous filters
 							if (this.checkPreviousFilters(item)) {
 								if (item.lastRunOutcome === 'Failed') {
@@ -418,7 +425,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		this.loadJobHistories();
 	}
 
-	private highlightErrorRows(e) {
+	private highlightErrorRows(e: JQuery.Event<HTMLElement>) {
 		// highlight the error row as well if a failing job row is hovered
 		if (e.currentTarget.children.item(0).classList.contains('job-with-error')) {
 			let target = jQuery(e.currentTarget);
@@ -442,7 +449,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		}
 	}
 
-	private hightlightNonErrorRows(e) {
+	private hightlightNonErrorRows(e: JQuery.Event<HTMLElement>) {
 		// switch back to original background
 		if (e.currentTarget.children.item(0).classList.contains('job-with-error')) {
 			let target = jQuery(e.currentTarget);
@@ -523,7 +530,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		this._table.grid.setCellCssStyles('notebook-error-row' + row.toString(), hash);
 	}
 
-	private renderName(row, cell, value, columnDef, dataContext) {
+	private renderName(row: number, cell: number, value: any, columnDef: Slick.Column<IItem>, dataContext: IItem) {
 		let resultIndicatorClass: string;
 		switch (dataContext.lastRunOutcome) {
 			case ('Succeeded'):
@@ -552,7 +559,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			'</tr></table>';
 	}
 
-	private renderChartsPostHistory(row, cell, value, columnDef, dataContext) {
+	private renderChartsPostHistory(row: number, cell: number, value: any, columnDef: Slick.Column<IItem>, dataContext: IItem) {
 		let runChart = this._notebookCacheObject.getRunChart(dataContext.id);
 		if (runChart && runChart.length > 0) {
 			return `<table class="jobprevruns" id="${dataContext.id}">
@@ -608,10 +615,10 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		return [failing, nonFailing];
 	}
 
-	private checkPreviousFilters(item): boolean {
+	private checkPreviousFilters(item: IItem): boolean {
 		for (let column in this.filterValueMap) {
 			if (column !== 'start' && this.filterValueMap[column][0].length > 0) {
-				if (!find(this.filterValueMap[column][0], x => x === item[JobManagementUtilities.convertColNameToField(column)])) {
+				if (!find(this.filterValueMap[column][0], x => x === item[JobManagementUtilities.convertColNameToField(column) as keyof IItem])) {
 					return false;
 				}
 			}
@@ -789,7 +796,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			case ('Name'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
-				this.dataView.sort((item1, item2) => {
+				this.dataView.sort((item1: IItem, item2: IItem) => {
 					return item1.name.localeCompare(item2.name);
 				}, isAscending);
 				break;
@@ -797,19 +804,19 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			case ('Last Run'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
-				this.dataView.sort((item1, item2) => this.dateCompare(item1, item2, true), isAscending);
+				this.dataView.sort((item1: IItem, item2: IItem) => this.dateCompare(item1, item2, true), isAscending);
 				break;
 			}
 			case ('Next Run'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
-				this.dataView.sort((item1, item2) => this.dateCompare(item1, item2, false), isAscending);
+				this.dataView.sort((item1: IItem, item2: IItem) => this.dateCompare(item1, item2, false), isAscending);
 				break;
 			}
 			case ('Status'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
-				this.dataView.sort((item1, item2) => {
+				this.dataView.sort((item1: IItem, item2: IItem) => {
 					return item1.currentExecutionStatus.localeCompare(item2.currentExecutionStatus);
 				}, isAscending);
 				break;
@@ -817,7 +824,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			case ('Last Run Outcome'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
-				this.dataView.sort((item1, item2) => {
+				this.dataView.sort((item1: IItem, item2: IItem) => {
 					return item1.lastRunOutcome.localeCompare(item2.lastRunOutcome);
 				}, isAscending);
 				break;
@@ -828,7 +835,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		for (let i = 0; i < jobItemsLength; i++) {
 			let item = jobItems[i];
 			if (item._child) {
-				let child = errorItems.find(error => error === item._child);
+				let child = find(errorItems, error => error === item._child);
 				jobItems.splice(i + 1, 0, child);
 				jobItemsLength++;
 			}
@@ -857,7 +864,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		}
 	}
 
-	private dateCompare(item1: any, item2: any, lastRun: boolean): number {
+	private dateCompare(item1: IItem, item2: IItem, lastRun: boolean): number {
 		let exceptionString = lastRun ? 'Never Run' : 'Not Scheduled';
 		if (item2.lastRun === exceptionString && item1.lastRun !== exceptionString) {
 			return -1;
@@ -911,7 +918,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 	}
 
 	protected convertStepsToStepInfos(steps: azdata.AgentJobStep[], job: azdata.AgentJobInfo): azdata.AgentJobStepInfo[] {
-		let result = [];
+		let result: azdata.AgentJobStepInfo[] = [];
 		steps.forEach(step => {
 			let stepInfo: azdata.AgentJobStepInfo = {
 				jobId: job.jobId,

@@ -417,7 +417,7 @@ export interface INotebookModel {
 	 * Updates the model's view of an active cell to the new active cell
 	 * @param cell New active cell
 	 */
-	updateActiveCell(cell: ICellModel);
+	updateActiveCell(cell: ICellModel): void;
 }
 
 export interface NotebookContentChange {
@@ -482,7 +482,7 @@ export interface ICellModel {
 	setFuture(future: FutureInternal): void;
 	setStdInHandler(handler: nb.MessageHandler<nb.IStdinMessage>): void;
 	runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean>;
-	setOverrideLanguage(language: string);
+	setOverrideLanguage(language: string): void;
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICellContents;
 	loaded: boolean;

@@ -41,7 +41,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	public static RootGroupName: string = 'ROOT';
 
 	public toObject(): IConnectionProfileGroup {
-		let subgroups = undefined;
+		let subgroups: IConnectionProfileGroup[] | undefined = undefined;
 		if (this.children) {
 			subgroups = [];
 			this.children.forEach((group) => {
