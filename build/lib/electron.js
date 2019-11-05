@@ -36,13 +36,13 @@ exports.config = {
     productAppName: product.nameLong,
     companyName: 'Microsoft Corporation',
     copyright: 'Copyright (C) 2019 Microsoft. All rights reserved',
-    darwinIcon: 'resources/darwin/code.icns',
+    darwinIcon: product.quality === 'stable' ? 'resources/darwin/code.icns' : 'resources/darwin/code-insiders.icns',
     darwinBundleIdentifier: product.darwinBundleIdentifier,
     darwinApplicationCategoryType: 'public.app-category.developer-tools',
     darwinHelpBookFolder: 'VS Code HelpBook',
     darwinHelpBookName: 'VS Code HelpBook',
     darwinBundleDocumentTypes: [
-        darwinBundleDocumentType(["csv", "json", "sqlplan", "sql", "xml"], 'resources/darwin/code_file.icns'),
+        darwinBundleDocumentType(["csv", "json", "sqlplan", "sql", "xml"], product.quality === 'stable' ? 'resources/darwin/code_file.icns' : 'resources/darwin/code_file-insiders.icns'),
     ],
     darwinBundleURLTypes: [{
             role: 'Viewer',
@@ -52,7 +52,7 @@ exports.config = {
     darwinForceDarkModeSupport: true,
     darwinCredits: darwinCreditsTemplate ? Buffer.from(darwinCreditsTemplate({ commit: commit, date: new Date().toISOString() })) : undefined,
     linuxExecutableName: product.applicationName,
-    winIcon: 'resources/win32/code.ico',
+    winIcon: product.quality === 'stable' ? 'resources/win32/code.ico' : 'resources/win32/code-insiders.ico',
     token: process.env['VSCODE_MIXIN_PASSWORD'] || process.env['GITHUB_TOKEN'] || undefined,
     repo: product.electronRepository || undefined
 };
