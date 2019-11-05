@@ -314,7 +314,7 @@ export class ConnectionStore {
 		return result;
 	}
 
-	public getGroupFromId(groupId: string): IConnectionProfileGroup {
+	public getGroupFromId(groupId: string): IConnectionProfileGroup | undefined {
 		const groups = this.connectionConfig.getAllGroups();
 		return find(groups, group => group.id === groupId);
 	}

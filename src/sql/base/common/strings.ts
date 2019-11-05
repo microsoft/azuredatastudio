@@ -21,7 +21,7 @@ export function escape(html: string): string {
 }
 
 // gotten from https://github.com/59naga/string-raw/blob/master/src/index.js
-export function raw(callSite: any, ...substitutions): string {
+export function raw(callSite: any, ...substitutions: any[]): string {
 	let template;
 	try {
 		template = Array.from(callSite.raw);

@@ -192,7 +192,7 @@ export class TabbedPanel extends Disposable {
 
 		const insertBefore = !isUndefinedOrNull(index) ? this.tabList.children.item(index) : undefined;
 		if (insertBefore) {
-			this._tabOrder.splice(index, 0, tab.tab.identifier);
+			this._tabOrder.splice(index!, 0, tab.tab.identifier);
 			this.tabList.insertBefore(tabHeaderElement, insertBefore);
 		} else {
 			this.tabList.append(tabHeaderElement);

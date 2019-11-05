@@ -38,8 +38,8 @@ export class ConnectionStatusManager {
 		}
 	}
 
-	public findConnectionByProfileId(profileId: string): ConnectionManagementInfo {
-		return find(values(this._connections), (connection: ConnectionManagementInfo) => connection.connectionProfile.id === profileId);
+	public findConnectionByProfileId(profileId: string): ConnectionManagementInfo | undefined {
+		return find(values(this._connections), connection => connection.connectionProfile.id === profileId);
 	}
 
 	public findConnectionProfile(connectionProfile: IConnectionProfile): ConnectionManagementInfo | undefined {

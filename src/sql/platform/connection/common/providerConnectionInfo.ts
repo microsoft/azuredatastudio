@@ -199,8 +199,8 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		}
 
 		let optionMetadata = find(this._serverCapabilities.connectionOptions,
-			option => option.specialValueType === ConnectionOptionSpecialType.password);
-		let isPasswordRequired: boolean = optionMetadata.isRequired;
+			option => option.specialValueType === ConnectionOptionSpecialType.password)!; // i guess we are going to assume there is a password field
+		let isPasswordRequired = optionMetadata.isRequired;
 		if (this.providerName === Constants.mssqlProviderName) {
 			isPasswordRequired = this.authenticationType === ProviderConnectionInfo.SqlAuthentication && optionMetadata.isRequired;
 		}
