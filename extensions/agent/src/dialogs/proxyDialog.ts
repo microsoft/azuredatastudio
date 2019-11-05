@@ -15,26 +15,26 @@ const localize = nls.loadMessageBundle();
 export class ProxyDialog extends AgentDialog<ProxyData>  {
 
 	// Top level
-	private static readonly CreateDialogTitle: string = localize('createProxy.createProxy', 'Create Proxy');
-	private static readonly EditDialogTitle: string = localize('createProxy.editProxy', 'Edit Proxy');
-	private static readonly GeneralTabText: string = localize('createProxy.General', 'General');
+	private static readonly CreateDialogTitle: string = localize('createProxy.createProxy', "Create Proxy");
+	private static readonly EditDialogTitle: string = localize('createProxy.editProxy', "Edit Proxy");
+	private static readonly GeneralTabText: string = localize('createProxy.General', "General");
 
 	// General tab strings
-	private static readonly ProxyNameTextBoxLabel: string = localize('createProxy.ProxyName', 'Proxy name');
-	private static readonly CredentialNameTextBoxLabel: string = localize('createProxy.CredentialName', 'Credential name');
-	private static readonly DescriptionTextBoxLabel: string = localize('createProxy.Description', 'Description');
-	private static readonly SubsystemLabel: string = localize('createProxy.SubsystemName', 'Subsystem');
-	private static readonly OperatingSystemLabel: string = localize('createProxy.OperatingSystem', 'Operating system (CmdExec)');
-	private static readonly ReplicationSnapshotLabel: string = localize('createProxy.ReplicationSnapshot', 'Replication Snapshot');
-	private static readonly ReplicationTransactionLogLabel: string = localize('createProxy.ReplicationTransactionLog', 'Replication Transaction-Log Reader');
-	private static readonly ReplicationDistributorLabel: string = localize('createProxy.ReplicationDistributor', 'Replication Distributor');
-	private static readonly ReplicationMergeLabel: string = localize('createProxy.ReplicationMerge', 'Replication Merge');
-	private static readonly ReplicationQueueReaderLabel: string = localize('createProxy.ReplicationQueueReader', 'Replication Queue Reader');
-	private static readonly SSASQueryLabel: string = localize('createProxy.SSASQueryLabel', 'SQL Server Analysis Services Query');
-	private static readonly SSASCommandLabel: string = localize('createProxy.SSASCommandLabel', 'SQL Server Analysis Services Command');
-	private static readonly SSISPackageLabel: string = localize('createProxy.SSISPackage', 'SQL Server Integration Services Package');
-	private static readonly PowerShellLabel: string = localize('createProxy.PowerShell', 'PowerShell');
-	private static readonly SubSystemHeadingLabel: string = localize('createProxy.subSystemHeading', 'Active to the following subsytems');
+	private static readonly ProxyNameTextBoxLabel: string = localize('createProxy.ProxyName', "Proxy name");
+	private static readonly CredentialNameTextBoxLabel: string = localize('createProxy.CredentialName', "Credential name");
+	private static readonly DescriptionTextBoxLabel: string = localize('createProxy.Description', "Description");
+	private static readonly SubsystemLabel: string = localize('createProxy.SubsystemName', "Subsystem");
+	private static readonly OperatingSystemLabel: string = localize('createProxy.OperatingSystem', "Operating system (CmdExec)");
+	private static readonly ReplicationSnapshotLabel: string = localize('createProxy.ReplicationSnapshot', "Replication Snapshot");
+	private static readonly ReplicationTransactionLogLabel: string = localize('createProxy.ReplicationTransactionLog', "Replication Transaction-Log Reader");
+	private static readonly ReplicationDistributorLabel: string = localize('createProxy.ReplicationDistributor', "Replication Distributor");
+	private static readonly ReplicationMergeLabel: string = localize('createProxy.ReplicationMerge', "Replication Merge");
+	private static readonly ReplicationQueueReaderLabel: string = localize('createProxy.ReplicationQueueReader', "Replication Queue Reader");
+	private static readonly SSASQueryLabel: string = localize('createProxy.SSASQueryLabel', "SQL Server Analysis Services Query");
+	private static readonly SSASCommandLabel: string = localize('createProxy.SSASCommandLabel', "SQL Server Analysis Services Command");
+	private static readonly SSISPackageLabel: string = localize('createProxy.SSISPackage', "SQL Server Integration Services Package");
+	private static readonly PowerShellLabel: string = localize('createProxy.PowerShell', "PowerShell");
+	private static readonly SubSystemHeadingLabel: string = localize('createProxy.subSystemHeading', "Active to the following subsytems");
 
 	private readonly NewProxyDialog = 'NewProxyDialogOpened';
 	private readonly EditProxyDialog = 'EditProxyDialogOpened';

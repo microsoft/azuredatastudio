@@ -150,7 +150,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private doIfInitialized<T>(op: () => Promise<T>): Promise<T> {
 		return this._isInitialized
 			? op()
-			: Promise.reject(localize('accountProviderNotInitialized', 'Account provider not initialized, cannot perform action'));
+			: Promise.reject(localize('accountProviderNotInitialized', "Account provider not initialized, cannot perform action"));
 	}
 
 	private getAccessTokens(account: AzureAccount, resource: azdata.AzureResource): Promise<AzureAccountSecurityTokenCollection> {
@@ -235,8 +235,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		// 2) Begin the acquiring token polling
 		// 3) When that completes via callback, close the auto oauth
 		let title = isAddAccount ?
-			localize('addAccount', 'Add {0} account', self._metadata.displayName) :
-			localize('refreshAccount', 'Refresh {0} account', self._metadata.displayName);
+			localize('addAccount', "Add {0} account", self._metadata.displayName) :
+			localize('refreshAccount', "Refresh {0} account", self._metadata.displayName);
 		return azdata.accounts.beginAutoOAuthDeviceCode(self._metadata.id, title, oAuth.userCodeInfo.message, oAuth.userCodeInfo.userCode, oAuth.userCodeInfo.verificationUrl)
 			.then(() => {
 				return new Promise<adal.TokenResponse | azdata.PromptFailedResult>((resolve, reject) => {
@@ -293,7 +293,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 								userId: userId,
 								displayName: tenantDetails.length && tenantDetails[0].displayName
 									? tenantDetails[0].displayName
-									: localize('azureWorkAccountDisplayName', 'Work or school account')
+									: localize('azureWorkAccountDisplayName', "Work or school account")
 							};
 						});
 				});
@@ -410,7 +410,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 		// Calculate the home tenant display name to use for the contextual display name
 		let contextualDisplayName = msa
-			? localize('microsoftAccountDisplayName', 'Microsoft Account')
+			? localize('microsoftAccountDisplayName', "Microsoft Account")
 			: tenants[0].displayName;
 
 		// Calculate the account type

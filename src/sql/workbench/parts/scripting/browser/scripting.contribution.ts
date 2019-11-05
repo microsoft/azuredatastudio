@@ -11,6 +11,11 @@ import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
+import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
+import { EditDataAction } from 'sql/workbench/browser/scriptingActions';
+import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 //#region -- Data Explorer
 // Script as Create
@@ -21,7 +26,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: commands.SCRIPT_AS_CREATE_COMMAND_ID,
 		title: localize('scriptAsCreate', "Script as Create")
 	},
-	when: MssqlNodeContext.CanScriptAsCreateOrDelete
+	when: ContextKeyExpr.and(MssqlNodeContext.CanScriptAsCreateOrDelete, MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
 // Script as Delete
@@ -76,7 +81,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: commands.EDIT_DATA_COMMAND_ID,
 		title: localize('editData', "Edit Data")
 	},
-	when: MssqlNodeContext.CanEditData
+	when: ContextKeyExpr.and(MssqlNodeContext.CanEditData, MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 //#endregion
 
@@ -99,7 +104,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		id: commands.OE_EDIT_DATA_COMMAND_ID,
 		title: localize('editData', "Edit Data")
 	},
-	when: TreeNodeContextKey.NodeType.isEqualTo('Table')
+	when: ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('Table'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
@@ -110,10 +115,10 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		title: localize('scriptCreate', "Script as Create")
 	},
 	when: ContextKeyExpr.or(
-		TreeNodeContextKey.NodeType.isEqualTo('Table'),
-		TreeNodeContextKey.NodeType.isEqualTo('View'),
-		TreeNodeContextKey.NodeType.isEqualTo('Schema'),
-		TreeNodeContextKey.NodeType.isEqualTo('User'),
+		ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('Table'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
+		ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('View'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
+		ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('Schema'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
+		ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('User'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
 		TreeNodeContextKey.NodeType.isEqualTo('UserDefinedTableType'),
 		TreeNodeContextKey.NodeType.isEqualTo('StoredProcedure'),
 		TreeNodeContextKey.NodeType.isEqualTo('AggregateFunction'),
@@ -202,4 +207,96 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		TreeNodeContextKey.NodeType.isEqualTo(NodeType.TableValuedFunction))
 });
 
+//#endregion
+
+//#region -- explorer widget
+
+CommandsRegistry.registerCommand(commands.ExplorerScriptSelectAction.ID, (accessor, context) => {
+	const instantiationService = accessor.get(IInstantiationService);
+	instantiationService.createInstance(commands.ExplorerScriptSelectAction, commands.ExplorerScriptSelectAction.ID, commands.ExplorerScriptSelectAction.LABEL).run(context);
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: commands.ExplorerScriptSelectAction.ID,
+		title: commands.ExplorerScriptSelectAction.LABEL
+	},
+	when: ContextKeyExpr.or(ItemContextKey.ItemType.isEqualTo('view'), ItemContextKey.ItemType.isEqualTo('table')),
+	order: 2
+});
+
+const ExplorerEditDataActionID = 'explorer.editData';
+CommandsRegistry.registerCommand(ExplorerEditDataActionID, (accessor, context) => {
+	const instantiationService = accessor.get(IInstantiationService);
+	instantiationService.createInstance(EditDataAction, EditDataAction.ID, EditDataAction.LABEL).run(context);
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: ExplorerEditDataActionID,
+		title: EditDataAction.LABEL
+	},
+	when: ContextKeyExpr.and(ItemContextKey.ItemType.isEqualTo('table'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
+	order: 2
+});
+
+CommandsRegistry.registerCommand(commands.ExplorerScriptExecuteAction.ID, (accessor, context) => {
+	const instantiationService = accessor.get(IInstantiationService);
+	instantiationService.createInstance(commands.ExplorerScriptExecuteAction, commands.ExplorerScriptExecuteAction.ID, commands.ExplorerScriptExecuteAction.LABEL).run(context);
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: commands.ExplorerScriptExecuteAction.ID,
+		title: commands.ExplorerScriptExecuteAction.LABEL
+	},
+	when: ItemContextKey.ItemType.isEqualTo('sproc'),
+	order: 2
+});
+
+CommandsRegistry.registerCommand(commands.ExplorerScriptAlterAction.ID, (accessor, context) => {
+	const instantiationService = accessor.get(IInstantiationService);
+	instantiationService.createInstance(commands.ExplorerScriptAlterAction, commands.ExplorerScriptAlterAction.ID, commands.ExplorerScriptAlterAction.LABEL).run(context);
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: commands.ExplorerScriptAlterAction.ID,
+		title: commands.ExplorerScriptAlterAction.LABEL
+	},
+	when: ContextKeyExpr.and(ItemContextKey.ItemType.isEqualTo('sproc'), ItemContextKey.ConnectionProvider.isEqualTo('mssql')),
+	order: 2
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: commands.ExplorerScriptAlterAction.ID,
+		title: commands.ExplorerScriptAlterAction.LABEL
+	},
+	when: ContextKeyExpr.and(ItemContextKey.ItemType.isEqualTo('function'), ItemContextKey.ConnectionProvider.isEqualTo('mssql')),
+	order: 2
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: commands.ExplorerScriptAlterAction.ID,
+		title: commands.ExplorerScriptAlterAction.LABEL
+	},
+	when: ContextKeyExpr.and(ItemContextKey.ItemType.isEqualTo('view'), ItemContextKey.ConnectionProvider.isEqualTo('mssql')),
+	order: 2
+});
+
+CommandsRegistry.registerCommand(commands.ExplorerScriptCreateAction.ID, (accessor, context) => {
+	const instantiationService = accessor.get(IInstantiationService);
+	instantiationService.createInstance(commands.ExplorerScriptCreateAction, commands.ExplorerScriptCreateAction.ID, commands.ExplorerScriptCreateAction.LABEL).run(context);
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: commands.ExplorerScriptCreateAction.ID,
+		title: commands.ExplorerScriptCreateAction.LABEL
+	},
+	when: MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()),
+	order: 2
+});
 //#endregion

@@ -11,7 +11,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import * as Constants from '../constants';
-import { IFileSource, IHdfsOptions, IFile, File, FileSourceFactory } from './fileSources';
+import { IFileSource, IHdfsOptions, IFile, File, FileSourceFactory, FileType } from './fileSources';
 import { CancelableStream } from './cancelableStream';
 import { TreeNode } from './treeNodes';
 import * as utils from '../utils';
@@ -132,14 +132,15 @@ export class FolderNode extends HdfsFileSourceNode {
 				if (files) {
 					// Note: for now, assuming HDFS-provided sorting is sufficient
 					this.children = files.map((file) => {
-						let node: TreeNode = file.isDirectory ? new FolderNode(this.context, file.path, this.fileSource, Constants.MssqlClusterItems.Folder, this.getChildMountStatus(file))
-							: new FileNode(this.context, file.path, this.fileSource, this.getChildMountStatus(file));
+						let node: TreeNode = file.fileType === FileType.File ?
+							new FileNode(this.context, file.path, this.fileSource, this.getChildMountStatus(file)) :
+							new FolderNode(this.context, file.path, this.fileSource, Constants.MssqlClusterItems.Folder, this.getChildMountStatus(file));
 						node.parent = this;
 						return node;
 					});
 				}
 			} catch (error) {
-				this.children = [ErrorNode.create(localize('errorExpanding', 'Error: {0}', utils.getErrorMessage(error)), this, error.statusCode)];
+				this.children = [ErrorNode.create(localize('errorExpanding', "Error: {0}", utils.getErrorMessage(error)), this, error.statusCode)];
 			}
 		}
 		return this.children;
@@ -241,7 +242,7 @@ export class ConnectionNode extends FolderNode {
 	}
 
 	public async delete(): Promise<void> {
-		throw new Error(localize('errDeleteConnectionNode', 'Cannot delete a connection. Only subfolders and files can be deleted.'));
+		throw new Error(localize('errDeleteConnectionNode', "Cannot delete a connection. Only subfolders and files can be deleted."));
 	}
 
 	async getTreeItem(): Promise<vscode.TreeItem> {

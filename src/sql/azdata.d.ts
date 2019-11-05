@@ -285,7 +285,7 @@ declare module 'azdata' {
 		password: string;
 		authenticationType: string;
 		savePassword: boolean;
-		groupFullName: string;
+		groupFullName?: string;
 		groupId: string;
 		providerName: string;
 		saveProfile: boolean;
@@ -427,6 +427,22 @@ declare module 'azdata' {
 		 * options for all new server properties.
 		 */
 		options: { [key: string]: any };
+	}
+
+	/**
+	 * The possible values of the server engine edition
+	 */
+	export enum DatabaseEngineEdition {
+		Unknown = 0,
+		Personal = 1,
+		Standard = 2,
+		Enterprise = 3,
+		Express = 4,
+		SqlDatabase = 5,
+		SqlDataWarehouse = 6,
+		SqlStretchDatabase = 7,
+		SqlManagedInstance = 8,
+		SqlOnDemand = 11
 	}
 
 	export interface DataProvider {
@@ -748,8 +764,6 @@ declare module 'azdata' {
 		deleteCredential(credentialId: string): Thenable<boolean>;
 	}
 
-
-
 	export interface DidChangeLanguageFlavorParams {
 		uri: string;
 		language: string;
@@ -757,7 +771,7 @@ declare module 'azdata' {
 	}
 
 	export interface QueryExecutionOptions {
-		options: Map<string, any>;
+		options: { [option: string]: any; };
 	}
 
 	export interface QueryProvider extends DataProvider {
@@ -836,7 +850,7 @@ declare module 'azdata' {
 	export interface IResultMessage {
 		batchId?: number;
 		isError: boolean;
-		time: string;
+		time?: string;
 		message: string;
 	}
 
@@ -2592,7 +2606,7 @@ declare module 'azdata' {
 		removeFormItem(formComponent: FormComponent | FormComponentGroup): boolean;
 	}
 
-	export interface Component {
+	export interface Component extends ComponentProperties {
 		readonly id: string;
 
 		/**
@@ -2618,7 +2632,6 @@ declare module 'azdata' {
 		 */
 		updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void>;
 
-		enabled: boolean;
 		/**
 		 * Event fired to notify that the component's validity has changed
 		 */
@@ -2721,12 +2734,34 @@ declare module 'azdata' {
 
 	}
 
+	/**
+	 * Valid values for the align-items CSS property
+	 */
 	export type AlignItemsType = 'normal' | 'stretch' | 'center' | 'start' | 'end' | 'flex-start' | 'flex-end' | 'baseline' | 'first baseline' | 'last baseline' | 'safe center' | 'unsafe center' | 'inherit' | 'initial' | 'unset';
+	/**
+	 * Valid values for the justify-content CSS property
+	 */
 	export type JustifyContentType = 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around' | 'initial' | 'inherit';
+	/**
+	 * Valid values for the align-content CSS property
+	 */
 	export type AlignContentType = 'stretch' | 'center' | 'flex-start' | 'flex-end' | 'space-between' | 'space-around' | 'initial' | 'inherit';
+	/**
+	 * Valid values for flex-wrap CSS property
+	 */
 	export type FlexWrapType = 'nowrap' | 'wrap' | 'wrap-reverse';
+	/**
+	 * Valid values for the text-align CSS property
+	 */
 	export type TextAlignType = 'left' | 'right' | 'center' | 'justify' | 'initial' | 'inherit';
+	/**
+	 * Valid values for the position CSS property
+	 */
 	export type PositionType = 'static' | 'absolute' | 'fixed' | 'relative' | 'sticky' | 'initial' | 'inherit';
+	/**
+	 * Valid values for the display CSS property
+	 */
+	export type DisplayType = 'inline' | 'block' | 'contents' | 'flex' | 'grid' | 'inline-block' | 'inline-flex' | 'inline-grid' | 'inline-table' | 'list-item' | 'run-in' | 'table' | 'table-caption' | ' table-column-group' | 'table-header-group' | 'table-footer-group' | 'table-row-group' | 'table-cell' | 'table-column' | 'table-row' | 'none' | 'initial' | 'inherit' | '';
 
 	/**
 	 * The config for a FlexBox-based container. This supports easy
@@ -2874,7 +2909,7 @@ declare module 'azdata' {
 	export interface FormContainer extends Container<FormLayout, FormItemLayout> {
 	}
 
-	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout> {
+	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout>, GroupContainerProperties {
 	}
 
 
@@ -2968,6 +3003,18 @@ declare module 'azdata' {
 		 */
 		position?: PositionType;
 		/**
+		 * Whether the component is enabled in the DOM
+		 */
+		enabled?: boolean;
+		/**
+		 * Corresponds to the display CSS property for the element
+		 */
+		display?: DisplayType;
+		/**
+		 * Corresponds to the aria-label accessibility attribute for this component
+		 */
+		ariaLabel?: string;
+		/**
 		 * Matches the CSS style key and its available values.
 		 */
 		CSSStyles?: { [key: string]: string };
@@ -2981,7 +3028,6 @@ declare module 'azdata' {
 
 	export interface InputBoxProperties extends ComponentProperties {
 		value?: string;
-		ariaLabel?: string;
 		ariaLive?: string;
 		placeHolder?: string;
 		inputType?: InputBoxInputType;
@@ -3043,7 +3089,13 @@ declare module 'azdata' {
 		ariaColumnCount?: number;
 		ariaRole?: string;
 		focused?: boolean;
+		updateCells?: TableCell[];
 		moveFocusOutWithTab?: boolean; //accessibility requirement for tables with no actionable cells
+	}
+
+	export interface CheckBoxCell extends TableCell {
+		checked: boolean;
+		columnName: string;
 	}
 
 	export interface FileBrowserTreeProperties extends ComponentProperties {
@@ -3081,12 +3133,14 @@ declare module 'azdata' {
 		requiredIndicator?: boolean;
 	}
 
-	export interface ImageComponentProperties {
-		src: string;
-		alt?: string;
-		height?: number | string;
-		width?: number | string;
+	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIcon {
+
 	}
+
+	export interface GroupContainerProperties {
+		collapsed: boolean;
+	}
+
 	export interface LinkArea {
 		text: string;
 		url: string;
@@ -3102,7 +3156,6 @@ declare module 'azdata' {
 		values?: string[] | CategoryValue[];
 		editable?: boolean;
 		fireOnTextChange?: boolean;
-		ariaLabel?: string;
 		required?: boolean;
 	}
 
@@ -3181,10 +3234,6 @@ declare module 'azdata' {
 		 * The title for the button. This title will show when hovered over
 		 */
 		title?: string;
-		/**
-		 * The accessibility aria label for this component
-		 */
-		ariaLabel?: string;
 	}
 
 	export interface LoadingComponentProperties {
@@ -3500,7 +3549,7 @@ declare module 'azdata' {
 		 * Create a button which can be included in a dialog
 		 * @param label The label of the button
 		 */
-		export function createButton(label: string): Button;
+		export function createButton(label: string, position?: DialogButtonPosition): Button;
 
 		/**
 		 * Opens the given dialog if it is not already open
@@ -3664,7 +3713,14 @@ declare module 'azdata' {
 			 * Raised when the button is clicked
 			 */
 			readonly onClick: vscode.Event<void>;
+
+			/**
+			 * Position of the button on the dialog footer
+			 */
+			position?: DialogButtonPosition;
 		}
+
+		export type DialogButtonPosition = 'left' | 'right';
 
 		export interface WizardPageChangeInfo {
 			/**
@@ -4414,8 +4470,9 @@ declare module 'azdata' {
 			 *
 			 * @param index The position where the new text should be inserted.
 			 * @param value The new text this operation should insert.
+			 * @param collapsed The collapsed state of the new cell. Default value is `false` if not provided.
 			 */
-			insertCell(value: ICellContents, index?: number): void;
+			insertCell(value: ICellContents, index?: number, collapsed?: boolean): void;
 
 			/**
 			 * Delete a certain cell.

@@ -23,8 +23,7 @@ import * as Constants from 'sql/workbench/contrib/extensions/common/constants';
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceContextService, IWorkspaceFolder, IWorkspace, IWorkspaceFoldersChangeEvent, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IFileService } from 'vs/platform/files/common/files';
-// {{SQL CARBON EDIT}}
-import { IExtensionsConfiguration, ConfigurationKey, ShowRecommendationsOnlyOnDemandKey, IExtensionsViewlet, IExtensionsWorkbenchService, EXTENSIONS_CONFIG, ExtensionsPolicyKey, ExtensionsPolicy } from 'vs/workbench/contrib/extensions/common/extensions';
+import { IExtensionsConfiguration, ConfigurationKey, ShowRecommendationsOnlyOnDemandKey, IExtensionsViewlet, IExtensionsWorkbenchService, EXTENSIONS_CONFIG } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { flatten, distinct, shuffle, coalesce } from 'vs/base/common/arrays';
@@ -40,7 +39,7 @@ import { URI } from 'vs/base/common/uri';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IExperimentService, ExperimentActionType, ExperimentState } from 'vs/workbench/contrib/experiments/common/experimentService';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { ExtensionType } from 'vs/platform/extensions/common/extensions';
+import { ExtensionType, ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
 import { extname } from 'vs/base/common/resources';
 import { IExeBasedExtensionTip, IProductService } from 'vs/platform/product/common/productService';
 import { timeout } from 'vs/base/common/async';
@@ -88,7 +87,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	private _allIgnoredRecommendations: string[] = [];
 	private _globallyIgnoredRecommendations: string[] = [];
 	private _workspaceIgnoredRecommendations: string[] = [];
-	private _extensionsRecommendationsUrl: string;
+	private _extensionsRecommendationsUrl: string | undefined;
 	public loadWorkspaceConfigPromise: Promise<void>;
 	private proactiveRecommendationsFetched: boolean = false;
 
@@ -121,9 +120,10 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	) {
 		super();
 
-		// {{SQL CARBON EDIT}}
-		let extensionPolicy: string = this.configurationService.getValue<string>(ExtensionsPolicyKey);
+		const extensionPolicy = this.configurationService.getValue<string>(ExtensionsPolicyKey); // {{SQL CARBON EDIT}}
 		if (!this.isEnabled() || extensionPolicy === ExtensionsPolicy.allowNone) {
+			this.sessionSeed = 0;
+			this.loadWorkspaceConfigPromise = Promise.resolve();
 			return;
 		}
 
@@ -534,7 +534,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			const tip = this._importantExeBasedRecommendations[extensionId];
 
 			/* __GDPR__
-			exeExtensionRecommendations:alreadyInstalled" : {
+			"exeExtensionRecommendations:alreadyInstalled" : {
 				"extensionId": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" },
 				"exeName": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
 			}

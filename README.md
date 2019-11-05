@@ -2,6 +2,7 @@
 
 [![Join the chat at https://gitter.im/Microsoft/sqlopsstudio](https://badges.gitter.im/Microsoft/sqlopsstudio.svg)](https://gitter.im/Microsoft/sqlopsstudio?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://dev.azure.com/azuredatastudio/azuredatastudio/_apis/build/status/Azure%20Data%20Studio%20CI?branchName=master)](https://dev.azure.com/azuredatastudio/azuredatastudio/_build/latest?definitionId=4&branchName=master)
+[![Twitter Follow](https://img.shields.io/twitter/follow/azuredatastudio?style=social)](https://twitter.com/azuredatastudio)
 
 Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
 
@@ -9,13 +10,13 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 
 Platform | Link
 -- | --
-Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2105135
-Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2105134
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2104938
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2105133
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2105132
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=2104937
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=2105131
+Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2109256
+Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2109085
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2109255
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2109180
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2109179
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=2109178
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=2109254
 
 Go to our [download page](https://aka.ms/azuredatastudio) for more specific instructions.
 
@@ -68,6 +69,9 @@ The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.micro
 ## Contributions and "Thank You"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
+* eulercamposbarros for `Prevent connections from moving on click (#7528)`
+* AlexFsmn for `Fixed issue where task icons got hidden if text was too long`
+* jamesrod817 for `Tempdb (#7022)`
 * dzsquared for `fix(snippets): ads parenthesis to sqlcreateindex snippet #7020`
 * devmattrick for `Update row count as updates are received #6642`
 * mottykohn for `In Message panel onclick scroll to line #6417`

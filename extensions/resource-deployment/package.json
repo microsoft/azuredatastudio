@@ -7,7 +7,7 @@
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
   "icon": "images/sqlserver.png",
-  "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
+  "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
   "engines": {
     "vscode": "*",
     "azdata": ">=1.6.0"
@@ -25,17 +25,24 @@
     "microsoft.notebook"
   ],
   "contributes": {
+    "configuration": [
+      {
+        "title": "%deployment.configuration.title%",
+        "properties": {
+          "deployment.azdataPipInstallUri": {
+            "type": "string",
+            "default": "https://aka.ms/azdata",
+            "description": "%azdata-pip-install-uri-description%"
+          },
+          "deployment.azdataPipInstallArgs": {
+            "type": "string",
+            "default": "",
+            "description": "%azdata-pip-install-args-description%"
+          }
+        }
+      }
+    ],
     "commands": [
-      {
-        "command": "azdata.resource.sql-image.deploy",
-        "title": "%deploy-sql-image-command-name%",
-        "category": "%deploy-resource-command-category%"
-      },
-      {
-        "command": "azdata.resource.sql-bdc.deploy",
-        "title": "%deploy-sql-bdc-command-name%",
-        "category": "%deploy-resource-command-category%"
-      },
       {
         "command": "azdata.resource.deploy",
         "title": "%deploy-resource-command-name%",
@@ -56,14 +63,6 @@
       ],
       "dataExplorer/action": [
         {
-          "command": "azdata.resource.sql-image.deploy",
-          "group": "secondary"
-        },
-        {
-          "command": "azdata.resource.sql-bdc.deploy",
-          "group": "secondary"
-        },
-        {
           "command": "azdata.resource.deploy",
           "group": "secondary"
         }
@@ -72,6 +71,7 @@
     "resourceDeploymentTypes": [
       {
         "name": "sql-image",
+        "displayIndex": 2,
         "displayName": "%resource-type-sql-image-display-name%",
         "description": "%resource-type-sql-image-description%",
         "platforms": "*",
@@ -202,6 +202,7 @@
       },
       {
         "name": "sql-bdc",
+        "displayIndex": 3,
         "displayName": "%resource-type-sql-bdc-display-name%",
         "description": "%resource-type-sql-bdc-description%",
         "platforms": "*",
@@ -250,10 +251,11 @@
                 "name": "kubectl"
               },
               {
-                "name": "azcli"
+                "name": "azure-cli"
               },
               {
-                "name": "azdata"
+                "name": "azdata",
+                "version": "15.0.2070"
               }
             ],
             "when": "target=new-aks&&version=bdc2019"
@@ -309,6 +311,7 @@
       },
       {
         "name": "sql-windows-setup",
+        "displayIndex": 1,
         "displayName": "%resource-type-sql-windows-setup-display-name%",
         "description": "%resource-type-sql-windows-setup-description%",
         "platforms": [
@@ -350,14 +353,16 @@
     ]
   },
   "dependencies": {
+    "promisify-child-process": "^3.1.1",
+    "sudo-prompt": "^9.0.0",
     "vscode-nls": "^4.0.0",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "typemoq": "^2.1.0",
-    "vscode": "^1.1.26",
     "@types/yamljs": "0.2.30",
     "mocha-junit-reporter": "^1.17.0",
-    "mocha-multi-reporters": "^1.1.7"
+    "mocha-multi-reporters": "^1.1.7",
+    "typemoq": "^2.1.0",
+    "vscode": "^1.1.26"
   }
 }

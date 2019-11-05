@@ -101,7 +101,7 @@
 				"restrictions": [
 					"vs/nls",
 					"**/{vs,sql}/base/{common,browser,node}/**",
-					"*" // node modules
+					"!path" // node modules (except path where we have our own impl)
 				]
 			},
 			{
@@ -141,7 +141,7 @@
 					"vs/nls",
 					"**/{vs,sql}/base/{common,browser,node}/**",
 					"**/{vs,sql}/base/parts/*/{common,browser,node}/**",
-					"*" // node modules
+					"!path" // node modules (except path where we have our own impl)
 				]
 			},
 			{
@@ -151,7 +151,7 @@
 					"vs/css!./**/*",
 					"**/{vs,sql}/base/{common,browser,node,electron-browser}/**",
 					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-browser}/**",
-					"*", // node modules
+					"!path", // node modules (except path where we have our own impl)
 					"@angular/*",
 					"rxjs/*"
 				]
@@ -162,9 +162,101 @@
 					"vs/nls",
 					"**/{vs,sql}/base/{common,browser,node,electron-main}/**",
 					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-main}/**",
-					"*", // node modules
+					"!path", // node modules (except path where we have our own impl)
 					"@angular/*",
 					"rxjs/*"
+				]
+			},
+			{
+				"target": "**/{vs,sql}/platform/*/common/**",
+				"restrictions": [
+					"vs/nls",
+					"**/{vs,sql}/base/common/**",
+					"**/{vs,sql}/base/parts/*/common/**",
+					"**/{vs,sql}/{platform,workbench}/**/common/**",
+					"**/vs/editor/common/**",
+					"azdata" // TODO remove
+				]
+			},
+			{
+				"target": "**/{vs,sql}/platform/*/test/common/**",
+				"restrictions": [
+					"assert",
+					"sinon",
+					"vs/nls",
+					"**/{vs,sql}/base/common/**",
+					"**/{vs,sql}/{platform,workbench}/**/common/**",
+					"**/{vs,sql}/{base,platform,workbench}/**/test/common/**",
+					"typemoq",
+					"azdata" // TODO remove
+				]
+			},
+			{
+				"target": "**/{vs,sql}/platform/*/browser/**",
+				"restrictions": [
+					"vs/nls",
+					"vs/css!./**/*",
+					"**/{vs,sql}/base/{common,browser}/**",
+					"**/{vs,sql}/base/parts/*/{common,browser}/**",
+					"**/{vs,sql}/{platform,workbench}/**/{common,browser}/**",
+					"**/vs/editor/{common,browser}/**",
+					"@angular/*",
+					"rxjs/*",
+					"azdata" // TODO remove
+				]
+			},
+			{
+				"target": "**/{vs,sql}/platform/*/node/**",
+				"restrictions": [
+					"vs/nls",
+					"**/{vs,sql}/base/{common,browser,node}/**",
+					"**/{vs,sql}/base/parts/*/{common,browser,node}/**",
+					"**/{vs,sql}/{platform,workbench}/**/{common,browser,node}/**",
+					"**/vs/editor/{common,browser,node}/**",
+					"!path", // node modules (except path where we have our own impl)
+					"azdata" // TODO remove
+				]
+			},
+			{
+				"target": "**/{vs,sql}/platform/*/electron-browser/**",
+				"restrictions": [
+					"vs/nls",
+					"vs/css!./**/*",
+					"**/{vs,sql}/base/{common,browser,node}/**",
+					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-browser}/**",
+					"**/{vs,sql}/{platform,workbench}/**/{common,browser,node,electron-browser}/**",
+					"**/vs/editor/{common,browser,node,electron-browser}/**",
+					"!path", // node modules (except path where we have our own impl)
+					"@angular/*",
+					"rxjs/*",
+					"azdata" // TODO remove
+				]
+			},
+			{
+				"target": "**/{vs,sql}/platform/*/electron-main/**",
+				"restrictions": [
+					"vs/nls",
+					"**/{vs,sql}/base/{common,browser,node}/**",
+					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-browser}/**",
+					"**/{vs,sql}/{platform,workbench}/**/{common,browser,node,electron-main}/**",
+					"**/vs/editor/{common,browser,node,electron-main}/**",
+					"!path", // node modules (except path where we have our own impl)
+					"azdata" // TODO remove
+				]
+			},
+			{
+				"target": "**/{vs,sql}/platform/*/test/browser/**",
+				"restrictions": [
+					"assert",
+					"sinon",
+					"vs/nls",
+					"**/{vs,sql}/base/{common,browser}/**",
+					"**/{vs,sql}/{platform,workbench}/**/{common,browser}/**",
+					"**/{vs,sql}/{base,platform,workbench}/**/test/{common,browser}/**",
+					"typemoq",
+					"@angular/*",
+					"rxjs/*",
+					"azdata" // TODO remove
 				]
 			}
 		],

@@ -315,6 +315,18 @@
 					{
 						"id": "vscode.yaml",
 						"path": "./translations/extensions/yaml.i18n.json"
+					},
+					{
+						"id": "Microsoft.dacpac",
+						"path": "./translations/extensions/dacpac.i18n.json"
+					},
+					{
+						"id": "Microsoft.schema-compare",
+						"path": "./translations/extensions/schema-compare.i18n.json"
+					},
+					{
+						"id": "Microsoft.notebook",
+						"path": "./translations/extensions/notebook.i18n.json"
 					}
 				]
 			}

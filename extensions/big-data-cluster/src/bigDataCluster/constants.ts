@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 
 export enum BdcItemType {
@@ -63,12 +61,18 @@ export namespace cssStyles {
 	export const tableHeader = { 'font-weight': 'bold', 'text-transform': 'uppercase', 'font-size': '10px', 'user-select': 'text' };
 	export const hyperlink = { 'user-select': 'text', 'color': '#0078d4', 'text-decoration': 'underline', 'cursor': 'pointer' };
 	export const text = { 'margin-block-start': '0px', 'margin-block-end': '0px' };
+	export const overflowEllipsisText = { ...text, 'overflow': 'hidden', 'text-overflow': 'ellipsis' };
 	export const nonSelectableText = { ...cssStyles.text, 'user-select': 'none' };
+	export const tabHeaderText = { 'margin-block-start': '2px', 'margin-block-end': '0px', 'user-select': 'none' };
 	export const selectedResourceHeaderTab = { 'font-weight': 'bold', 'color': '' };
 	export const unselectedResourceHeaderTab = { 'font-weight': '', 'color': '#0078d4' };
 	export const selectedTabDiv = { 'border-bottom': '2px solid #000' };
 	export const unselectedTabDiv = { 'border-bottom': '1px solid #ccc' };
 	export const lastUpdatedText = { ...text, 'color': '#595959' };
+	export const errorText = { ...text, 'color': 'red' };
 }
 
 export type AuthType = 'integrated' | 'basic';
+
+export const clusterEndpointsProperty = 'clusterEndpoints';
+export const controllerEndpointName = 'controller';

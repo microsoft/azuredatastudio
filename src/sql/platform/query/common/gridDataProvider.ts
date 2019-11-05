@@ -23,7 +23,7 @@ export interface IGridDataProvider {
 	 * @param resultId The result id of the result to copy from
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
-	copyResults(selection: Slick.Range[], includeHeaders?: boolean): void;
+	copyResults(selection: Slick.Range[], includeHeaders?: boolean): Promise<void>;
 
 	/**
 	 * Gets the EOL terminator to use for this data type.
@@ -34,7 +34,7 @@ export interface IGridDataProvider {
 
 	shouldRemoveNewLines(): boolean;
 
-	getColumnHeaders(range: Slick.Range): string[];
+	getColumnHeaders(range: Slick.Range): string[] | undefined;
 
 	readonly canSerialize: boolean;
 
@@ -43,13 +43,13 @@ export interface IGridDataProvider {
 }
 
 export async function getResultsString(provider: IGridDataProvider, selection: Slick.Range[], includeHeaders?: boolean): Promise<string> {
-	let headers: Map<Number, string> = new Map(); // Maps a column index -> header
-	let rows: Map<Number, Map<Number, string>> = new Map(); // Maps row index -> column index -> actual row value
+	let headers: Map<number, string> = new Map(); // Maps a column index -> header
+	let rows: Map<number, Map<number, string>> = new Map(); // Maps row index -> column index -> actual row value
 	const eol = provider.getEolString();
 
 	// create a mapping of the ranges to get promises
-	let tasks = selection.map((range, i) => {
-		return async () => {
+	let tasks: (() => Promise<void>)[] = selection.map((range) => {
+		return async (): Promise<void> => {
 			let startCol = range.fromCell;
 			let startRow = range.fromRow;
 
@@ -88,22 +88,24 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 		};
 	});
 
-	if (tasks.length > 0) {
-		let p = tasks[0]();
-		for (let i = 1; i < tasks.length; i++) {
-			p = p.then(tasks[i]);
-		}
-		await p;
-	}
+	// Set the tasks gathered above to execute
+	let actionedTasks: Promise<void>[] = tasks.map(t => { return t(); });
+
+	// Make sure all these tasks have executed
+	await Promise.all(actionedTasks);
+
+	const sortResults = (e1: [number, any], e2: [number, any]) => {
+		return e1[0] - e2[0];
+	};
+	headers = new Map([...headers].sort(sortResults));
+	rows = new Map([...rows].sort(sortResults));
 
 	let copyString = '';
 	if (includeHeaders) {
 		copyString = [...headers.values()].join('\t').concat(eol);
 	}
 
-	const rowKeys = [...headers.keys()].sort();
-
-	rows = new Map([...rows.entries()].sort());
+	const rowKeys = [...headers.keys()];
 	for (let rowEntry of rows) {
 		let rowMap = rowEntry[1];
 		for (let rowIdx of rowKeys) {

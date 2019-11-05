@@ -3,25 +3,27 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { BdcDashboardModel } from './bdcDashboardModel';
+import { BdcDashboardModel, BdcErrorEvent } from './bdcDashboardModel';
 import { IconPathHelper, cssStyles } from '../constants';
-import { getStateDisplayText, getHealthStatusDisplayText, getEndpointDisplayText, getHealthStatusIcon, getServiceNameDisplayText, Endpoint } from '../utils';
+import { getStateDisplayText, getHealthStatusDisplayText, getEndpointDisplayText, getHealthStatusIcon, getServiceNameDisplayText, Endpoint, getBdcStatusErrorMessage } from '../utils';
 import { EndpointModel, ServiceStatusModel, BdcStatusModel } from '../controller/apiGenerated';
 import { BdcDashboard } from './bdcDashboard';
+import { createViewDetailsButton } from './commonControls';
+import { HdfsDialogCancelledError } from './hdfsDialogBase';
+import { BdcDashboardPage } from './bdcDashboardPage';
 
 const localize = nls.loadMessageBundle();
 
-const clusterStateColumnWidth = 125;
+const clusterStateLabelColumnWidth = 100;
+const clusterStateValueColumnWidth = 225;
 const healthStatusColumnWidth = 125;
 
 const overviewIconColumnWidthPx = 25;
 const overviewServiceNameCellWidthPx = 175;
-const overviewStateCellWidthPx = 75;
+const overviewStateCellWidthPx = 150;
 const overviewHealthStatusCellWidthPx = 100;
 
 const serviceEndpointRowServiceNameCellWidth = 200;
@@ -29,22 +31,29 @@ const serviceEndpointRowEndpointCellWidth = 350;
 
 const hyperlinkedEndpoints = [Endpoint.metricsui, Endpoint.logsui, Endpoint.sparkHistory, Endpoint.yarnUi];
 
-export class BdcDashboardOverviewPage {
+export class BdcDashboardOverviewPage extends BdcDashboardPage {
 
-	private initialized: boolean = false;
 	private modelBuilder: azdata.ModelBuilder;
 
 	private lastUpdatedLabel: azdata.TextComponent;
+	private propertiesContainer: azdata.DivContainer;
 	private clusterStateLoadingComponent: azdata.LoadingComponent;
 	private clusterHealthStatusLoadingComponent: azdata.LoadingComponent;
 
 	private serviceStatusRowContainer: azdata.FlexContainer;
 
 	private endpointsRowContainer: azdata.FlexContainer;
+	private endpointsDisplayContainer: azdata.DivContainer;
+	private serviceStatusDisplayContainer: azdata.DivContainer;
+	private propertiesErrorMessage: azdata.TextComponent;
+	private endpointsErrorMessage: azdata.TextComponent;
+	private serviceStatusErrorMessage: azdata.TextComponent;
 
 	constructor(private dashboard: BdcDashboard, private model: BdcDashboardModel) {
-		this.model.onDidUpdateEndpoints(endpoints => this.handleEndpointsUpdate(endpoints));
-		this.model.onDidUpdateBdcStatus(bdcStatus => this.handleBdcStatusUpdate(bdcStatus));
+		super();
+		this.model.onDidUpdateEndpoints(endpoints => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdate(endpoints)));
+		this.model.onDidUpdateBdcStatus(bdcStatus => this.eventuallyRunOnInitialized(() => this.handleBdcStatusUpdate(bdcStatus)));
+		this.model.onBdcError(error => this.eventuallyRunOnInitialized(() => this.handleBdcError(error)));
 	}
 
 	public create(view: azdata.ModelView): azdata.FlexContainer {
@@ -65,6 +74,11 @@ export class BdcDashboardOverviewPage {
 			.component();
 		rootContainer.addItem(propertiesLabel, { CSSStyles: { 'margin-top': '15px', 'padding-left': '10px', ...cssStyles.title } });
 
+		this.propertiesErrorMessage = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ display: 'none', CSSStyles: { ...cssStyles.errorText } }).component();
+		rootContainer.addItem(this.propertiesErrorMessage, { flex: '0 0 auto' });
+
+		this.propertiesContainer = view.modelBuilder.divContainer().component();
+
 		// Row 1
 		const row1 = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', height: '30px', alignItems: 'center' }).component();
 
@@ -72,8 +86,8 @@ export class BdcDashboardOverviewPage {
 		const clusterStateLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.clusterState', "Cluster State :") }).component();
 		const clusterStateValue = view.modelBuilder.text().component();
 		this.clusterStateLoadingComponent = view.modelBuilder.loadingComponent().withItem(clusterStateValue).component();
-		row1.addItem(clusterStateLabel, { CSSStyles: { 'width': `${clusterStateColumnWidth}px`, 'min-width': `${clusterStateColumnWidth}px`, 'user-select': 'none', 'font-weight': 'bold' } });
-		row1.addItem(this.clusterStateLoadingComponent, { CSSStyles: { 'width': `${clusterStateColumnWidth}px`, 'min-width': `${clusterStateColumnWidth}px` } });
+		row1.addItem(clusterStateLabel, { CSSStyles: { 'width': `${clusterStateLabelColumnWidth}px`, 'min-width': `${clusterStateLabelColumnWidth}px`, 'user-select': 'none', 'font-weight': 'bold' } });
+		row1.addItem(this.clusterStateLoadingComponent, { CSSStyles: { 'width': `${clusterStateValueColumnWidth}px`, 'min-width': `${clusterStateValueColumnWidth}px` } });
 
 		// Health Status
 		const healthStatusLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.healthStatus', "Health Status :") }).component();
@@ -82,7 +96,9 @@ export class BdcDashboardOverviewPage {
 		row1.addItem(healthStatusLabel, { CSSStyles: { 'width': `${healthStatusColumnWidth}px`, 'min-width': `${healthStatusColumnWidth}px`, 'user-select': 'none', 'font-weight': 'bold' } });
 		row1.addItem(this.clusterHealthStatusLoadingComponent, { CSSStyles: { 'width': `${healthStatusColumnWidth}px`, 'min-width': `${healthStatusColumnWidth}px` } });
 
-		rootContainer.addItem(row1, { CSSStyles: { 'padding-left': '10px', 'border-bottom': 'solid 1px #ccc', 'box-sizing': 'border-box', 'user-select': 'text' } });
+		this.propertiesContainer.addItem(row1, { CSSStyles: { 'padding-left': '10px', 'border-bottom': 'solid 1px #ccc', 'box-sizing': 'border-box', 'user-select': 'text' } });
+
+		rootContainer.addItem(this.propertiesContainer, { flex: '0 0 auto' });
 
 		// ############
 		// # OVERVIEW #
@@ -121,6 +137,8 @@ export class BdcDashboardOverviewPage {
 		serviceStatusHeaderRow.addItem(healthStatusCell, { CSSStyles: { 'width': `${overviewHealthStatusCellWidthPx}px`, 'min-width': `${overviewHealthStatusCellWidthPx}px` } });
 		overviewContainer.addItem(serviceStatusHeaderRow, { CSSStyles: { 'padding-left': '10px', 'box-sizing': 'border-box', 'user-select': 'text' } });
 
+		this.serviceStatusDisplayContainer = view.modelBuilder.divContainer().component();
+
 		// Service Status row container
 		this.serviceStatusRowContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 		// Note we don't give the rows container as a child of the loading component since in order to align the loading component correctly
@@ -131,7 +149,12 @@ export class BdcDashboardOverviewPage {
 			.component();
 		this.serviceStatusRowContainer.addItem(serviceStatusRowContainerLoadingComponent, { flex: '0 0 auto', CSSStyles: { 'padding-left': '150px', width: '30px' } });
 
-		overviewContainer.addItem(this.serviceStatusRowContainer);
+		this.serviceStatusErrorMessage = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ display: 'none', CSSStyles: { ...cssStyles.errorText } }).component();
+		overviewContainer.addItem(this.serviceStatusErrorMessage);
+
+		this.serviceStatusDisplayContainer.addItem(this.serviceStatusRowContainer);
+		overviewContainer.addItem(this.serviceStatusDisplayContainer);
+
 		rootContainer.addItem(overviewContainer, { flex: '0 0 auto' });
 
 		// #####################
@@ -143,6 +166,8 @@ export class BdcDashboardOverviewPage {
 			.component();
 		rootContainer.addItem(endpointsLabel, { CSSStyles: { 'padding-left': '10px', ...cssStyles.title } });
 
+		this.endpointsErrorMessage = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ display: 'none', CSSStyles: { ...cssStyles.errorText } }).component();
+
 		const endpointsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%' }).component();
 
 		// Service endpoints header row
@@ -153,6 +178,7 @@ export class BdcDashboardOverviewPage {
 		endpointsHeaderRow.addItem(endpointsEndpointHeaderCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}px`, 'min-width': `${serviceEndpointRowEndpointCellWidth}px`, ...cssStyles.tableHeader } });
 		endpointsContainer.addItem(endpointsHeaderRow, { CSSStyles: { 'padding-left': '10px', 'box-sizing': 'border-box', 'user-select': 'text' } });
 
+		this.endpointsDisplayContainer = view.modelBuilder.divContainer().component();
 		this.endpointsRowContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 		// Note we don't give the rows container as a child of the loading component since in order to align the loading component correctly
 		// messes up the layout for the row container that we display after loading is finished. Instead we just remove the loading component
@@ -162,8 +188,9 @@ export class BdcDashboardOverviewPage {
 			.component();
 		this.endpointsRowContainer.addItem(endpointRowContainerLoadingComponent, { flex: '0 0 auto', CSSStyles: { 'padding-left': '150px', width: '30px' } });
 
-		endpointsContainer.addItem(this.endpointsRowContainer);
-
+		this.endpointsDisplayContainer.addItem(this.endpointsRowContainer);
+		endpointsContainer.addItem(this.endpointsErrorMessage);
+		endpointsContainer.addItem(this.endpointsDisplayContainer);
 		rootContainer.addItem(endpointsContainer, { flex: '0 0 auto' });
 
 		this.initialized = true;
@@ -175,8 +202,18 @@ export class BdcDashboardOverviewPage {
 		return rootContainer;
 	}
 
-	private handleBdcStatusUpdate(bdcStatus: BdcStatusModel): void {
-		if (!this.initialized || !bdcStatus) {
+	public onRefreshStarted(): void {
+		this.propertiesErrorMessage.display = 'none';
+		this.serviceStatusErrorMessage.display = 'none';
+		this.endpointsErrorMessage.display = 'none';
+
+		this.serviceStatusDisplayContainer.display = undefined;
+		this.propertiesContainer.display = undefined;
+		this.endpointsDisplayContainer.display = undefined;
+	}
+
+	private handleBdcStatusUpdate(bdcStatus?: BdcStatusModel): void {
+		if (!bdcStatus) {
 			return;
 		}
 		this.lastUpdatedLabel.value =
@@ -199,10 +236,6 @@ export class BdcDashboardOverviewPage {
 	}
 
 	private handleEndpointsUpdate(endpoints: EndpointModel[]): void {
-		if (!this.initialized || !endpoints) {
-			return;
-		}
-
 		this.endpointsRowContainer.clearItems();
 
 		// Sort the endpoints. The sort method is that SQL Server Master is first - followed by all
@@ -221,6 +254,44 @@ export class BdcDashboardOverviewPage {
 		});
 	}
 
+	private handleBdcError(errorEvent: BdcErrorEvent): void {
+		if (errorEvent.errorType === 'bdcEndpoints') {
+			const errorMessage = localize('endpointsError', "Unexpected error retrieving BDC Endpoints: {0}", errorEvent.error.message);
+			this.showEndpointsError(errorMessage);
+		} else if (errorEvent.errorType === 'bdcStatus') {
+			this.showBdcStatusError(getBdcStatusErrorMessage(errorEvent.error));
+		} else {
+			this.handleGeneralError(errorEvent.error);
+		}
+	}
+
+	private showBdcStatusError(errorMessage: string): void {
+		this.serviceStatusDisplayContainer.display = 'none';
+		this.propertiesContainer.display = 'none';
+		this.serviceStatusErrorMessage.value = errorMessage;
+		this.serviceStatusErrorMessage.display = undefined;
+		this.propertiesErrorMessage.value = errorMessage;
+		this.propertiesErrorMessage.display = undefined;
+	}
+
+	private showEndpointsError(errorMessage: string): void {
+		this.endpointsDisplayContainer.display = 'none';
+		this.endpointsErrorMessage.display = undefined;
+		this.endpointsErrorMessage.value = errorMessage;
+	}
+
+	private handleGeneralError(error: Error): void {
+		if (error instanceof HdfsDialogCancelledError) {
+			const errorMessage = localize('bdc.dashboard.noConnection', "The dashboard requires a connection. Please click retry to enter your credentials.");
+			this.showBdcStatusError(errorMessage);
+			this.showEndpointsError(errorMessage);
+		} else {
+			const errorMessage = localize('bdc.dashboard.unexpectedError', "Unexpected error occurred: {0}", error.message);
+			this.showBdcStatusError(errorMessage);
+			this.showEndpointsError(errorMessage);
+		}
+	}
+
 	private createServiceStatusRow(container: azdata.FlexContainer, serviceStatus: ServiceStatusModel, isLastRow: boolean): void {
 		const serviceStatusRow = this.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center', height: '30px' }).component();
 		const statusIconCell = this.modelBuilder.text().withProperties({ value: getHealthStatusIcon(serviceStatus.healthStatus), CSSStyles: { 'user-select': 'none' } }).component();
@@ -230,17 +301,15 @@ export class BdcDashboardOverviewPage {
 			this.dashboard.switchToServiceTab(serviceStatus.serviceName);
 		});
 		serviceStatusRow.addItem(nameCell, { CSSStyles: { 'width': `${overviewServiceNameCellWidthPx}px`, 'min-width': `${overviewServiceNameCellWidthPx}px`, ...cssStyles.text } });
-		const stateCell = this.modelBuilder.text().withProperties({ value: getStateDisplayText(serviceStatus.state), CSSStyles: { ...cssStyles.text } }).component();
+		const stateText = getStateDisplayText(serviceStatus.state);
+		const stateCell = this.modelBuilder.text().withProperties({ value: stateText, title: stateText, CSSStyles: { ...cssStyles.overflowEllipsisText } }).component();
 		serviceStatusRow.addItem(stateCell, { CSSStyles: { 'width': `${overviewStateCellWidthPx}px`, 'min-width': `${overviewStateCellWidthPx}px` } });
-		const healthStatusCell = this.modelBuilder.text().withProperties({ value: getHealthStatusDisplayText(serviceStatus.healthStatus), CSSStyles: { ...cssStyles.text } }).component();
+		const healthStatusText = getHealthStatusDisplayText(serviceStatus.healthStatus);
+		const healthStatusCell = this.modelBuilder.text().withProperties({ value: healthStatusText, title: healthStatusText, CSSStyles: { ...cssStyles.overflowEllipsisText } }).component();
 		serviceStatusRow.addItem(healthStatusCell, { CSSStyles: { 'width': `${overviewHealthStatusCellWidthPx}px`, 'min-width': `${overviewHealthStatusCellWidthPx}px` } });
 
 		if (serviceStatus.healthStatus !== 'healthy' && serviceStatus.details && serviceStatus.details.length > 0) {
-			const viewDetailsButton = this.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: localize('bdc.dashboard.viewDetails', "View Details") }).component();
-			viewDetailsButton.onDidClick(() => {
-				vscode.window.showErrorMessage(serviceStatus.details);
-			});
-			serviceStatusRow.addItem(viewDetailsButton, { flex: '0 0 auto' });
+			serviceStatusRow.addItem(createViewDetailsButton(this.modelBuilder, serviceStatus.details), { flex: '0 0 auto' });
 		}
 
 		container.addItem(serviceStatusRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'border-bottom': isLastRow ? 'solid 1px #ccc' : '', 'box-sizing': 'border-box', 'user-select': 'text' } });

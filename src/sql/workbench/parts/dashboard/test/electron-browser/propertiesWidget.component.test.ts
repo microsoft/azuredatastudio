@@ -9,7 +9,7 @@ import 'rxjs/add/observable/of';
 
 import { WidgetConfig } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/browser/services/dashboardServiceInterface.service';
-import { SingleAdminService, SingleConnectionManagementService } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { SingleAdminService, SingleConnectionManagementService } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { PropertiesWidgetComponent } from 'sql/workbench/parts/dashboard/browser/widgets/properties/propertiesWidget.component';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 

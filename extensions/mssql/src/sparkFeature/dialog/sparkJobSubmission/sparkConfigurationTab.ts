@@ -41,7 +41,7 @@ export class SparkConfigurationTab {
 
 	// If path is specified, means the default source setting for this tab is HDFS file, otherwise, it would be local file.
 	constructor(private _dataModel: SparkJobSubmissionModel, private appContext: AppContext, private _path?: string) {
-		this._tab = this.apiWrapper.createTab(localize('sparkJobSubmission_GeneralTabName', 'GENERAL'));
+		this._tab = this.apiWrapper.createTab(localize('sparkJobSubmission.GeneralTabName', "GENERAL"));
 
 		this._tab.registerContent(async (modelView) => {
 			let builder = modelView.modelBuilder;
@@ -53,13 +53,13 @@ export class SparkConfigurationTab {
 			let formContainer = builder.formContainer();
 
 			this._jobNameInputBox = builder.inputBox().withProperties({
-				placeHolder: localize('sparkJobSubmission_JobNamePlaceHolder', 'Enter a name ...'),
+				placeHolder: localize('sparkJobSubmission.JobNamePlaceHolder', "Enter a name ..."),
 				value: (this._path) ? fspath.basename(this._path) : ''
 			}).component();
 
 			formContainer.addFormItem({
 				component: this._jobNameInputBox,
-				title: localize('sparkJobSubmission_JobName', 'Job Name'),
+				title: localize('sparkJobSubmission.JobName', "Job Name"),
 				required: true
 			}, parentLayout);
 
@@ -68,7 +68,7 @@ export class SparkConfigurationTab {
 			}).component();
 			formContainer.addFormItem({
 				component: this._sparkContextLabel,
-				title: localize('sparkJobSubmission_SparkCluster', 'Spark Cluster')
+				title: localize('sparkJobSubmission.SparkCluster', "Spark Cluster")
 			}, parentLayout);
 
 			this._fileSourceDropDown = builder.dropDown().withProperties<azdata.DropDownProperties>({
@@ -102,7 +102,7 @@ export class SparkConfigurationTab {
 
 			this._sparkSourceFileInputBox = builder.inputBox().withProperties({
 				required: true,
-				placeHolder: localize('sparkJobSubmission_FilePathPlaceHolder', 'Path to a .jar or .py file'),
+				placeHolder: localize('sparkJobSubmission.FilePathPlaceHolder', "Path to a .jar or .py file"),
 				value: (this._path) ? this._path : ''
 			}).component();
 			this._sparkSourceFileInputBox.onTextChanged(text => {
@@ -110,8 +110,8 @@ export class SparkConfigurationTab {
 					this._dataModel.updateModelByLocalPath(text);
 					if (this._localUploadDestinationLabel) {
 						if (text) {
-							this._localUploadDestinationLabel.value = localize('sparkJobSubmission_LocalFileDestinationHintWithPath',
-								'The selected local file will be uploaded to HDFS: {0}', this._dataModel.hdfsSubmitFilePath);
+							this._localUploadDestinationLabel.value = localize('sparkJobSubmission.LocalFileDestinationHintWithPath',
+								"The selected local file will be uploaded to HDFS: {0}", this._dataModel.hdfsSubmitFilePath);
 						} else {
 							this._localUploadDestinationLabel.value = LocalizedConstants.sparkLocalFileDestinationHint;
 						}
@@ -167,24 +167,24 @@ export class SparkConfigurationTab {
 
 			formContainer.addFormItem({
 				component: this._sourceFlexContainerWithHint,
-				title: localize('sparkJobSubmission_MainFilePath', 'JAR/py File'),
+				title: localize('sparkJobSubmission.MainFilePath', "JAR/py File"),
 				required: true
 			}, parentLayout);
 
 			this._mainClassInputBox = builder.inputBox().component();
 			formContainer.addFormItem({
 				component: this._mainClassInputBox,
-				title: localize('sparkJobSubmission_MainClass', 'Main Class'),
+				title: localize('sparkJobSubmission.MainClass', "Main Class"),
 				required: true
 			}, parentLayout);
 
 			this._argumentsInputBox = builder.inputBox().component();
 			formContainer.addFormItem({
 				component: this._argumentsInputBox,
-				title: localize('sparkJobSubmission_Arguments', 'Arguments')
+				title: localize('sparkJobSubmission.Arguments', "Arguments")
 			},
 				Object.assign(
-					{ info: localize('sparkJobSubmission_ArgumentsTooltip', 'Command line arguments used in your main class, multiple arguments should be split by space.') },
+					{ info: localize('sparkJobSubmission.ArgumentsTooltip', "Command line arguments used in your main class, multiple arguments should be split by space.") },
 					parentLayout));
 
 			await modelView.initializeModel(formContainer.component());
@@ -193,7 +193,7 @@ export class SparkConfigurationTab {
 
 	public async validate(): Promise<boolean> {
 		if (!this._jobNameInputBox.value) {
-			this._dataModel.showDialogError(localize('sparkJobSubmission_NotSpecifyJobName', 'Property Job Name is not specified.'));
+			this._dataModel.showDialogError(localize('sparkJobSubmission.NotSpecifyJobName', "Property Job Name is not specified."));
 			return false;
 		}
 
@@ -202,7 +202,7 @@ export class SparkConfigurationTab {
 				this._dataModel.isMainSourceFromLocal = true;
 				this._dataModel.updateModelByLocalPath(this._sparkSourceFileInputBox.value);
 			} else {
-				this._dataModel.showDialogError(localize('sparkJobSubmission_NotSpecifyJARPYPath', 'Property JAR/py File is not specified.'));
+				this._dataModel.showDialogError(localize('sparkJobSubmission.NotSpecifyJARPYPath', "Property JAR/py File is not specified."));
 				return false;
 			}
 		} else {
@@ -210,13 +210,13 @@ export class SparkConfigurationTab {
 				this._dataModel.isMainSourceFromLocal = false;
 				this._dataModel.hdfsSubmitFilePath = this._sparkSourceFileInputBox.value;
 			} else {
-				this._dataModel.showDialogError(localize('sparkJobSubmission_NotSpecifyJARPYPath', 'Property JAR/py File is not specified.'));
+				this._dataModel.showDialogError(localize('sparkJobSubmission.NotSpecifyJARPYPath', "Property JAR/py File is not specified."));
 				return false;
 			}
 		}
 
 		if (this._dataModel.isJarFile() && !this._mainClassInputBox.value) {
-			this._dataModel.showDialogError(localize('sparkJobSubmission_NotSpecifyMainClass', 'Property Main Class is not specified.'));
+			this._dataModel.showDialogError(localize('sparkJobSubmission.NotSpecifyMainClass', "Property Main Class is not specified."));
 			return false;
 		}
 
@@ -231,11 +231,11 @@ export class SparkConfigurationTab {
 			try {
 				let isFileExisted = await this._dataModel.isClusterFileExisted(this._dataModel.hdfsSubmitFilePath);
 				if (!isFileExisted) {
-					this._dataModel.showDialogError(localize('sparkJobSubmission_HDFSFileNotExistedWithPath', '{0} does not exist in Cluster or exception thrown. ', this._dataModel.hdfsSubmitFilePath));
+					this._dataModel.showDialogError(localize('sparkJobSubmission.HDFSFileNotExistedWithPath', "{0} does not exist in Cluster or exception thrown. ", this._dataModel.hdfsSubmitFilePath));
 					return false;
 				}
 			} catch (error) {
-				this._dataModel.showDialogError(localize('sparkJobSubmission_HDFSFileNotExisted', 'The specified HDFS file does not exist. '));
+				this._dataModel.showDialogError(localize('sparkJobSubmission.HDFSFileNotExisted', "The specified HDFS file does not exist. "));
 				return false;
 			}
 		}
@@ -261,7 +261,7 @@ export class SparkConfigurationTab {
 				canSelectFiles: true,
 				canSelectFolders: false,
 				canSelectMany: false,
-				openLabel: localize('sparkSelectLocalFile', 'Select'),
+				openLabel: localize('sparkSelectLocalFile', "Select"),
 				filters: filter
 			};
 
@@ -272,7 +272,7 @@ export class SparkConfigurationTab {
 
 			return undefined;
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('sparkJobSubmission_SelectFileError', 'Error in locating the file due to Error: {0}', utils.getErrorMessage(err)));
+			this.apiWrapper.showErrorMessage(localize('sparkJobSubmission.SelectFileError', "Error in locating the file due to Error: {0}", utils.getErrorMessage(err)));
 			return undefined;
 		}
 	}

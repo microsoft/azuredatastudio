@@ -5,7 +5,7 @@
 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
+import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { Task } from 'sql/platform/tasks/browser/tasksRegistry';
 

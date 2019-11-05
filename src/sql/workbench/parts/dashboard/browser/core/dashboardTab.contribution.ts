@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import * as types from 'vs/base/common/types';
 
 import * as Constants from 'sql/platform/connection/common/constants';
-import { registerTab } from 'sql/platform/dashboard/browser/dashboardRegistry';
+import { registerTab } from 'sql/workbench/parts/dashboard/browser/dashboardRegistry';
 import { generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 import { NAV_SECTION, validateNavSectionContributionAndRegisterIcon } from 'sql/workbench/parts/dashboard/browser/containers/dashboardNavSection.contribution';
 import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/workbench/parts/dashboard/browser/containers/dashboardWidgetContainer.contribution';

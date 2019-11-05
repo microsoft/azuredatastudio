@@ -56,7 +56,7 @@ export class TaskHistoryRenderer implements IRenderer {
 	public renderTemplate(tree: ITree, templateId: string, container: HTMLElement): any {
 		const taskTemplate: ITaskHistoryTemplateData = Object.create(null);
 		taskTemplate.root = dom.append(container, $('.task-group'));
-		taskTemplate.icon = dom.append(taskTemplate.root, $('.icon.task-icon'));
+		taskTemplate.icon = dom.append(taskTemplate.root, $('.codicon.task-icon'));
 		taskTemplate.label = dom.append(taskTemplate.root, $('.label'));
 		taskTemplate.description = dom.append(taskTemplate.root, $('.description'));
 		taskTemplate.time = dom.append(taskTemplate.root, $('.time'));

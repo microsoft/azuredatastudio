@@ -13,8 +13,8 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import { DashboardInput } from './dashboardInput';
 import { DashboardModule } from './dashboard.module';
-import { bootstrapAngular } from 'sql/platform/bootstrap/browser/bootstrapService';
-import { IDashboardComponentParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
+import { IDashboardComponentParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { DASHBOARD_SELECTOR } from 'sql/workbench/parts/dashboard/browser/dashboard.component';
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
@@ -77,7 +77,7 @@ export class DashboardEditor extends BaseEditor {
 		this._dashboardService.layout(dimension);
 	}
 
-	public setInput(input: DashboardInput, options: EditorOptions): Promise<void> {
+	public async setInput(input: DashboardInput, options: EditorOptions): Promise<void> {
 		if (this.input && this.input.matches(input)) {
 			return Promise.resolve(undefined);
 		}
@@ -93,10 +93,10 @@ export class DashboardEditor extends BaseEditor {
 			container.style.height = '100%';
 			this._dashboardContainer = DOM.append(parentElement, container);
 			this.input.container = this._dashboardContainer;
-			return Promise.resolve(input.initializedPromise.then(() => this.bootstrapAngular(input)));
+			await input.initializedPromise;
+			this.bootstrapAngular(input);
 		} else {
 			this._dashboardContainer = DOM.append(parentElement, this.input.container);
-			return Promise.resolve(null);
 		}
 	}
 

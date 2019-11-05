@@ -45,6 +45,18 @@
 				{
 					"command": "bigDataClusters.command.manageController",
 					"when": "false"
+				},
+				{
+					"command": "bigDataClusters.command.mount",
+					"when": "false"
+				},
+				{
+					"command": "bigDataClusters.command.refreshmount",
+					"when": "false"
+				},
+				{
+					"command": "bigDataClusters.command.deletemount",
+					"when": "false"
 				}
 			],
 			"view/title": [
@@ -69,6 +81,23 @@
 					"command": "bigDataClusters.command.deleteController",
 					"when": "view == sqlBigDataCluster && viewItem == bigDataClusters.itemType.controllerNode",
 					"group": "navigation@3"
+				}
+			],
+			"objectExplorer/item/context": [
+				{
+					"command": "bigDataClusters.command.mount",
+					"when": "nodeType=~/^mssqlCluster/ && nodeType!=mssqlCluster:message && nodeSubType=~/^(?!:mount).*$/",
+					"group": "1mssqlCluster@10"
+				},
+				{
+					"command": "bigDataClusters.command.refreshmount",
+					"when": "nodeType == mssqlCluster:folder && nodeSubType==:mount:",
+					"group": "1mssqlCluster@11"
+				},
+				{
+					"command": "bigDataClusters.command.deletemount",
+					"when": "nodeType == mssqlCluster:folder && nodeSubType==:mount:",
+					"group": "1mssqlCluster@12"
 				}
 			]
 		},
@@ -97,8 +126,31 @@
 			{
 				"command": "bigDataClusters.command.manageController",
 				"title": "%command.manageController.title%"
+			},
+			{
+				"command": "bigDataClusters.command.mount",
+				"title": "%command.mount.title%"
+			},
+			{
+				"command": "bigDataClusters.command.refreshmount",
+				"title": "%command.refreshmount.title%"
+			},
+			{
+				"command": "bigDataClusters.command.deletemount",
+				"title": "%command.deletemount.title%"
 			}
-		]
+		],
+		"configuration": {
+			"type": "object",
+			"title": "%bdc.configuration.title%",
+			"properties": {
+				"bigDataCluster.ignoreSslVerification": {
+					"type": "boolean",
+					"default": true,
+					"description": "%bdc.ignoreSslVerification.desc%"
+				}
+			}
+		}
 	},
 	"dependencies": {
 		"kerberos": "^1.1.3",
@@ -107,11 +159,6 @@
 	},
 	"devDependencies": {
 		"@types/kerberos": "^1.1.0",
-		"@types/mocha": "^5.2.5",
-		"@types/node": "^8.0.24",
-		"mocha": "^5.2.0",
-		"should": "^13.2.1",
-		"typemoq": "^2.1.0",
-		"vscode": "^1.1.26"
+		"vscode": "^1.1.36"
 	}
 }

@@ -14,12 +14,12 @@ const localize = nls.loadMessageBundle();
 
 export class JobData implements IAgentDialogData {
 
-	private readonly JobCompletionActionCondition_Always: string = localize('jobData.whenJobCompletes', 'When the job completes');
-	private readonly JobCompletionActionCondition_OnFailure: string = localize('jobData.whenJobFails', 'When the job fails');
-	private readonly JobCompletionActionCondition_OnSuccess: string = localize('jobData.whenJobSucceeds', 'When the job succeeds');
+	private readonly JobCompletionActionCondition_Always: string = localize('jobData.whenJobCompletes', "When the job completes");
+	private readonly JobCompletionActionCondition_OnFailure: string = localize('jobData.whenJobFails', "When the job fails");
+	private readonly JobCompletionActionCondition_OnSuccess: string = localize('jobData.whenJobSucceeds', "When the job succeeds");
 
 	// Error Messages
-	private readonly CreateJobErrorMessage_NameIsEmpty = localize('jobData.jobNameRequired', 'Job name must be provided');
+	private readonly CreateJobErrorMessage_NameIsEmpty = localize('jobData.jobNameRequired', "Job name must be provided");
 
 	private _ownerUri: string;
 	private _jobCategories: string[];

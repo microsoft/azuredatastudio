@@ -11,7 +11,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { IOEShimService } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerViewTreeShim';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IProgressService } from 'vs/platform/progress/common/progress';
+import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 import { BaseActionContext } from 'sql/workbench/browser/actions';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ScriptCreateAction, ScriptDeleteAction, ScriptSelectAction, ScriptExecuteAction, ScriptAlterAction, EditDataAction } from 'sql/workbench/browser/scriptingActions';
@@ -342,4 +342,74 @@ CommandsRegistry.registerCommand({
 		return Promise.resolve(true);
 	}
 });
+//#endregion
+
+//#region -- explorer widget
+
+export class ExplorerScriptSelectAction extends ScriptSelectAction {
+	constructor(
+		id: string, label: string,
+		@IQueryEditorService queryEditorService: IQueryEditorService,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IScriptingService scriptingService: IScriptingService,
+		@IProgressService private readonly progressService: IProgressService
+	) {
+		super(id, label, queryEditorService, connectionManagementService, scriptingService);
+	}
+
+	public run(actionContext: BaseActionContext): Promise<boolean> {
+		return this.progressService.withProgress({ location: ProgressLocation.Window }, () => super.run(actionContext));
+	}
+}
+
+export class ExplorerScriptCreateAction extends ScriptCreateAction {
+	constructor(
+		id: string, label: string,
+		@IQueryEditorService queryEditorService: IQueryEditorService,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IScriptingService scriptingService: IScriptingService,
+		@IErrorMessageService errorMessageService: IErrorMessageService,
+		@IProgressService private readonly progressService: IProgressService
+	) {
+		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
+	}
+
+	public run(actionContext: BaseActionContext): Promise<boolean> {
+		return this.progressService.withProgress({ location: ProgressLocation.Window }, () => super.run(actionContext));
+	}
+}
+
+export class ExplorerScriptAlterAction extends ScriptAlterAction {
+	constructor(
+		id: string, label: string,
+		@IQueryEditorService queryEditorService: IQueryEditorService,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IScriptingService scriptingService: IScriptingService,
+		@IErrorMessageService errorMessageService: IErrorMessageService,
+		@IProgressService private readonly progressService: IProgressService
+	) {
+		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
+	}
+
+	public run(actionContext: BaseActionContext): Promise<boolean> {
+		return this.progressService.withProgress({ location: ProgressLocation.Window }, () => super.run(actionContext));
+	}
+}
+
+export class ExplorerScriptExecuteAction extends ScriptExecuteAction {
+	constructor(
+		id: string, label: string,
+		@IQueryEditorService queryEditorService: IQueryEditorService,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IScriptingService scriptingService: IScriptingService,
+		@IErrorMessageService errorMessageService: IErrorMessageService,
+		@IProgressService private readonly progressService: IProgressService
+	) {
+		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
+	}
+
+	public run(actionContext: BaseActionContext): Promise<boolean> {
+		return this.progressService.withProgress({ location: ProgressLocation.Window }, () => super.run(actionContext));
+	}
+}
 //#endregion

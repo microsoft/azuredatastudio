@@ -70,7 +70,7 @@ CommandsRegistry.registerCommand({
 	handler: (accessor, args: TreeViewItemHandleArg) => {
 		const instantiationService = accessor.get(IInstantiationService);
 		const connectedContext: ConnectedContext = { connectionProfile: args.$treeItem.payload };
-		return instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run(connectedContext);
+		return instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run({ connectionProfile: connectedContext.connectionProfile, isConnectionNode: false, nodeInfo: undefined });
 	}
 });
 
@@ -91,10 +91,9 @@ const OE_NEW_NOTEBOOK_COMMAND_ID = 'objectExplorer.newNotebook';
 // New Notebook
 CommandsRegistry.registerCommand({
 	id: OE_NEW_NOTEBOOK_COMMAND_ID,
-	handler: (accessor, args: ObjectExplorerActionsContext) => {
+	handler: (accessor, actionContext: ObjectExplorerActionsContext) => {
 		const instantiationService = accessor.get(IInstantiationService);
-		const connectedContext: ConnectedContext = { connectionProfile: args.connectionProfile };
-		return instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run(connectedContext);
+		return instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run(actionContext);
 	}
 });
 
@@ -112,7 +111,7 @@ const ExplorerNotebookActionID = 'explorer.notebook';
 CommandsRegistry.registerCommand(ExplorerNotebookActionID, (accessor, context: ManageActionContext) => {
 	const instantiationService = accessor.get(IInstantiationService);
 	const connectedContext: ConnectedContext = { connectionProfile: context.profile };
-	instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run(connectedContext);
+	instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run({ connectionProfile: connectedContext.connectionProfile, isConnectionNode: false, nodeInfo: undefined });
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
@@ -156,6 +155,19 @@ configurationRegistry.registerConfiguration({
 			'type': 'boolean',
 			'default': true,
 			'description': localize('notebook.inProcMarkdown', "Use in-process markdown viewer to render text cells more quickly (Experimental).")
+		}
+	}
+});
+
+configurationRegistry.registerConfiguration({
+	'id': 'notebook',
+	'title': 'Notebook',
+	'type': 'object',
+	'properties': {
+		'notebook.sqlStopOnError': {
+			'type': 'boolean',
+			'default': true,
+			'description': localize('notebook.sqlStopOnError', "SQL kernel: stop Notebook execution when error occurs in a cell.")
 		}
 	}
 });
@@ -292,4 +304,17 @@ registerComponentType({
 	selector: MarkdownOutputComponent.SELECTOR
 });
 
+/**
+ * A mime renderer for IPyWidgets
+ */
+registerComponentType({
+	mimeTypes: [
+		'application/vnd.jupyter.widget-view',
+		'application/vnd.jupyter.widget-view+json'
+	],
+	rank: 47,
+	safe: true,
+	ctor: MimeRendererComponent,
+	selector: MimeRendererComponent.SELECTOR
+});
 registerCellComponent(TextCellComponent);

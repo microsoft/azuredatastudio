@@ -24,6 +24,8 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 let modelId = 0;
 
+export const HideInputTag = 'hide_input';
+
 export class CellModel implements ICellModel {
 	public id: string;
 
@@ -51,8 +53,6 @@ export class CellModel implements ICellModel {
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
-
-	private readonly _hideInputTag = 'hide_input';
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -112,7 +112,7 @@ export class CellModel implements ICellModel {
 
 		let tagIndex = -1;
 		if (this._metadata.tags) {
-			tagIndex = this._metadata.tags.findIndex(tag => tag === this._hideInputTag);
+			tagIndex = this._metadata.tags.findIndex(tag => tag === HideInputTag);
 		}
 
 		if (this._isCollapsed) {
@@ -120,7 +120,7 @@ export class CellModel implements ICellModel {
 				if (!this._metadata.tags) {
 					this._metadata.tags = [];
 				}
-				this._metadata.tags.push(this._hideInputTag);
+				this._metadata.tags.push(HideInputTag);
 			}
 		} else {
 			if (tagIndex > -1) {
@@ -295,9 +295,6 @@ export class CellModel implements ICellModel {
 				this.notebookModel.updateActiveCell(this);
 				this.active = true;
 			}
-			if (this.isCollapsed) {
-				this.isCollapsed = false;
-			}
 
 			if (connectionManagementService) {
 				this._connectionManagementService = connectionManagementService;
@@ -314,6 +311,10 @@ export class CellModel implements ICellModel {
 			// If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
 			// This matches the same behavior as JupyterLab
 			if (this.future && this.future.inProgress) {
+				// If stdIn is visible, to prevent a kernel hang, we need to send a dummy input reply
+				if (this._stdInVisible && this._stdInHandler) {
+					this.future.sendInputReply({ value: '' });
+				}
 				this.future.inProgress = false;
 				await kernel.interrupt();
 				this.sendNotification(notificationService, Severity.Info, localize('runCellCancelled', "Cell execution cancelled"));
@@ -608,7 +609,7 @@ export class CellModel implements ICellModel {
 		this._source = this.getMultilineSource(cell.source);
 		this._metadata = cell.metadata || {};
 
-		if (this._metadata.tags && this._metadata.tags.includes(this._hideInputTag)) {
+		if (this._metadata.tags && this._metadata.tags.includes(HideInputTag)) {
 			this._isCollapsed = true;
 		} else {
 			this._isCollapsed = false;
@@ -673,6 +674,9 @@ export class CellModel implements ICellModel {
 
 
 	private getMultilineSource(source: string | string[]): string | string[] {
+		if (source === undefined) {
+			return [];
+		}
 		if (typeof source === 'string') {
 			let sourceMultiline = source.split('\n');
 			// If source is one line (i.e. no '\n'), return it immediately

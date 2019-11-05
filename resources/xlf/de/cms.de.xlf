@@ -76,7 +76,7 @@
       </trans-unit>
       <trans-unit id="cms.format.placeCommasBeforeNextStatement">
         <source xml:lang="en">should commas be placed at the beginning of each statement in a list e.g. ', mycolumn2' instead of at the end e.g. 'mycolumn1,'</source>
-        <target state="translated">Sollen Kommas am Anfang jeder Anweisung in einer Liste platziert werden, z. B. ', mycolumn2' amstatt am Ende, z. B. 'mycolumn1,'</target>
+        <target state="translated">Sollen Kommas am Anfang jeder Anweisung in einer Liste, z. B. ", mycolumn2", statt am Ende, z. B. "mycolumn1," platziert werden</target>
       </trans-unit>
       <trans-unit id="cms.format.placeSelectStatementReferencesOnNewLine">
         <source xml:lang="en">Should references to objects in a select statements be split into separate lines? E.g. for 'SELECT C1, C2 FROM T1' both C1 and C2 will be on separate lines</source>

@@ -19,54 +19,54 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 	// TODO: localize
 	// Top level
-	private static readonly CreateDialogTitle: string = localize('jobDialog.newJob', 'New Job');
-	private static readonly EditDialogTitle: string = localize('jobDialog.editJob', 'Edit Job');
-	private readonly GeneralTabText: string = localize('jobDialog.general', 'General');
-	private readonly StepsTabText: string = localize('jobDialog.steps', 'Steps');
-	private readonly SchedulesTabText: string = localize('jobDialog.schedules', 'Schedules');
-	private readonly AlertsTabText: string = localize('jobDialog.alerts', 'Alerts');
-	private readonly NotificationsTabText: string = localize('jobDialog.notifications', 'Notifications');
-	private readonly BlankJobNameErrorText: string = localize('jobDialog.blankJobNameError', 'The name of the job cannot be blank.');
+	private static readonly CreateDialogTitle: string = localize('jobDialog.newJob', "New Job");
+	private static readonly EditDialogTitle: string = localize('jobDialog.editJob', "Edit Job");
+	private readonly GeneralTabText: string = localize('jobDialog.general', "General");
+	private readonly StepsTabText: string = localize('jobDialog.steps', "Steps");
+	private readonly SchedulesTabText: string = localize('jobDialog.schedules', "Schedules");
+	private readonly AlertsTabText: string = localize('jobDialog.alerts', "Alerts");
+	private readonly NotificationsTabText: string = localize('jobDialog.notifications', "Notifications");
+	private readonly BlankJobNameErrorText: string = localize('jobDialog.blankJobNameError', "The name of the job cannot be blank.");
 
 	// General tab strings
-	private readonly NameTextBoxLabel: string = localize('jobDialog.name', 'Name');
-	private readonly OwnerTextBoxLabel: string = localize('jobDialog.owner', 'Owner');
-	private readonly CategoryDropdownLabel: string = localize('jobDialog.category', 'Category');
-	private readonly DescriptionTextBoxLabel: string = localize('jobDialog.description', 'Description');
-	private readonly EnabledCheckboxLabel: string = localize('jobDialog.enabled', 'Enabled');
+	private readonly NameTextBoxLabel: string = localize('jobDialog.name', "Name");
+	private readonly OwnerTextBoxLabel: string = localize('jobDialog.owner', "Owner");
+	private readonly CategoryDropdownLabel: string = localize('jobDialog.category', "Category");
+	private readonly DescriptionTextBoxLabel: string = localize('jobDialog.description', "Description");
+	private readonly EnabledCheckboxLabel: string = localize('jobDialog.enabled', "Enabled");
 
 	// Steps tab strings
-	private readonly JobStepsTopLabelString: string = localize('jobDialog.jobStepList', 'Job step list');
-	private readonly StepsTable_StepColumnString: string = localize('jobDialog.step', 'Step');
-	private readonly StepsTable_NameColumnString: string = localize('jobDialog.name', 'Name');
-	private readonly StepsTable_TypeColumnString: string = localize('jobDialog.type', 'Type');
-	private readonly StepsTable_SuccessColumnString: string = localize('jobDialog.onSuccess', 'On Success');
-	private readonly StepsTable_FailureColumnString: string = localize('jobDialog.onFailure', 'On Failure');
-	private readonly NewStepButtonString: string = localize('jobDialog.new', 'New Step');
-	private readonly EditStepButtonString: string = localize('jobDialog.edit', 'Edit Step');
-	private readonly DeleteStepButtonString: string = localize('jobDialog.delete', 'Delete Step');
-	private readonly MoveStepUpButtonString: string = localize('jobDialog.moveUp', 'Move Step Up');
-	private readonly MoveStepDownButtonString: string = localize('jobDialog.moveDown', 'Move Step Down');
-	private readonly StartStepDropdownString: string = localize('jobDialog.startStepAt', 'Start step');
+	private readonly JobStepsTopLabelString: string = localize('jobDialog.jobStepList', "Job step list");
+	private readonly StepsTable_StepColumnString: string = localize('jobDialog.step', "Step");
+	private readonly StepsTable_NameColumnString: string = localize('jobDialog.name', "Name");
+	private readonly StepsTable_TypeColumnString: string = localize('jobDialog.type', "Type");
+	private readonly StepsTable_SuccessColumnString: string = localize('jobDialog.onSuccess', "On Success");
+	private readonly StepsTable_FailureColumnString: string = localize('jobDialog.onFailure', "On Failure");
+	private readonly NewStepButtonString: string = localize('jobDialog.new', "New Step");
+	private readonly EditStepButtonString: string = localize('jobDialog.edit', "Edit Step");
+	private readonly DeleteStepButtonString: string = localize('jobDialog.delete', "Delete Step");
+	private readonly MoveStepUpButtonString: string = localize('jobDialog.moveUp', "Move Step Up");
+	private readonly MoveStepDownButtonString: string = localize('jobDialog.moveDown', "Move Step Down");
+	private readonly StartStepDropdownString: string = localize('jobDialog.startStepAt', "Start step");
 
 	// Notifications tab strings
-	private readonly NotificationsTabTopLabelString: string = localize('jobDialog.notificationsTabTop', 'Actions to perform when the job completes');
-	private readonly EmailCheckBoxString: string = localize('jobDialog.email', 'Email');
-	private readonly PagerCheckBoxString: string = localize('jobDialog.page', 'Page');
-	private readonly EventLogCheckBoxString: string = localize('jobDialog.eventLogCheckBoxLabel', 'Write to the Windows Application event log');
-	private readonly DeleteJobCheckBoxString: string = localize('jobDialog.deleteJobLabel', 'Automatically delete job');
+	private readonly NotificationsTabTopLabelString: string = localize('jobDialog.notificationsTabTop', "Actions to perform when the job completes");
+	private readonly EmailCheckBoxString: string = localize('jobDialog.email', "Email");
+	private readonly PagerCheckBoxString: string = localize('jobDialog.page', "Page");
+	private readonly EventLogCheckBoxString: string = localize('jobDialog.eventLogCheckBoxLabel', "Write to the Windows Application event log");
+	private readonly DeleteJobCheckBoxString: string = localize('jobDialog.deleteJobLabel', "Automatically delete job");
 
 	// Schedules tab strings
-	private readonly SchedulesTopLabelString: string = localize('jobDialog.schedulesaLabel', 'Schedules list');
-	private readonly PickScheduleButtonString: string = localize('jobDialog.pickSchedule', 'Pick Schedule');
-	private readonly ScheduleNameLabelString: string = localize('jobDialog.scheduleNameLabel', 'Schedule Name');
+	private readonly SchedulesTopLabelString: string = localize('jobDialog.schedulesaLabel', "Schedules list");
+	private readonly PickScheduleButtonString: string = localize('jobDialog.pickSchedule', "Pick Schedule");
+	private readonly ScheduleNameLabelString: string = localize('jobDialog.scheduleNameLabel', "Schedule Name");
 
 	// Alerts tab strings
-	private readonly AlertsTopLabelString: string = localize('jobDialog.alertsList', 'Alerts list');
-	private readonly NewAlertButtonString: string = localize('jobDialog.newAlert', 'New Alert');
-	private readonly AlertNameLabelString: string = localize('jobDialog.alertNameLabel', 'Alert Name');
-	private readonly AlertEnabledLabelString: string = localize('jobDialog.alertEnabledLabel', 'Enabled');
-	private readonly AlertTypeLabelString: string = localize('jobDialog.alertTypeLabel', 'Type');
+	private readonly AlertsTopLabelString: string = localize('jobDialog.alertsList', "Alerts list");
+	private readonly NewAlertButtonString: string = localize('jobDialog.newAlert', "New Alert");
+	private readonly AlertNameLabelString: string = localize('jobDialog.alertNameLabel', "Alert Name");
+	private readonly AlertEnabledLabelString: string = localize('jobDialog.alertEnabledLabel', "Enabled");
+	private readonly AlertTypeLabelString: string = localize('jobDialog.alertTypeLabel', "Type");
 
 	// Event Name strings
 	private readonly NewJobDialogEvent: string = 'NewJobDialogOpened';

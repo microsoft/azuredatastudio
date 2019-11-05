@@ -9,7 +9,7 @@ const { join } = require('path');
 const path = require('path');
 const mocha = require('mocha');
 const events = require('events');
-const MochaJUnitReporter = require('mocha-junit-reporter');
+// const MochaJUnitReporter = require('mocha-junit-reporter');
 const url = require('url');
 
 const defaultReporterName = process.platform === 'win32' ? 'list' : 'spec';
@@ -28,6 +28,14 @@ const optimist = require('optimist')
 	.describe('help', 'show the help').alias('help', 'h');
 
 const argv = optimist.argv;
+
+// {{SQL CARBON EDIT}}
+// Set test run options. These are NOT used if grep is specified manually - that implies the user has a specific desire to
+// filter the tests beyond the defaults set for ADS_TEST_GREP in the calling scripts.
+if (!argv.grep) {
+	argv.grep = process.env['ADS_TEST_GREP'];
+	argv.invert = Boolean(process.env['ADS_TEST_INVERT_GREP']);
+}
 
 if (argv.help) {
 	optimist.showHelp();
@@ -134,12 +142,13 @@ app.on('ready', () => {
 
 	if (argv.tfs) {
 		new mocha.reporters.Spec(runner);
-		new MochaJUnitReporter(runner, {
-			reporterOptions: {
-				testsuitesTitle: `${argv.tfs} ${process.platform}`,
-				mochaFile: process.env.BUILD_ARTIFACTSTAGINGDIRECTORY ? path.join(process.env.BUILD_ARTIFACTSTAGINGDIRECTORY, `test-results/${process.platform}-${argv.tfs.toLowerCase().replace(/[^\w]/g, '-')}-results.xml`) : undefined
-			}
-		});
+		// TODO@deepak the mocha Junit reporter seems to cause a hang when running with Electron 6 inside docker container
+		// new MochaJUnitReporter(runner, {
+		// 	reporterOptions: {
+		// 		testsuitesTitle: `${argv.tfs} ${process.platform}`,
+		// 		mochaFile: process.env.BUILD_ARTIFACTSTAGINGDIRECTORY ? path.join(process.env.BUILD_ARTIFACTSTAGINGDIRECTORY, `test-results/${process.platform}-${argv.tfs.toLowerCase().replace(/[^\w]/g, '-')}-results.xml`) : undefined
+		// 	}
+		// });
 	} else {
 		const reporterPath = path.join(path.dirname(require.resolve('mocha')), 'lib', 'reporters', argv.reporter);
 		let Reporter;

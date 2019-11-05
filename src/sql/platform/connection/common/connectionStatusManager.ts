@@ -27,7 +27,7 @@ export class ConnectionStatusManager {
 		this._connections = {};
 	}
 
-	public findConnection(uri: string): ConnectionManagementInfo {
+	public findConnection(uri: string): ConnectionManagementInfo | undefined {
 		if (uri in this._connections) {
 			return this._connections[uri];
 		} else {
@@ -39,7 +39,7 @@ export class ConnectionStatusManager {
 		return Object.values(this._connections).find((connection: ConnectionManagementInfo) => connection.connectionProfile.id === profileId);
 	}
 
-	public findConnectionProfile(connectionProfile: IConnectionProfile): ConnectionManagementInfo {
+	public findConnectionProfile(connectionProfile: IConnectionProfile): ConnectionManagementInfo | undefined {
 		let id = Utils.generateUri(connectionProfile);
 		return this.findConnection(id);
 	}
@@ -65,7 +65,7 @@ export class ConnectionStatusManager {
 		}
 	}
 
-	public getConnectionProfile(id: string): ConnectionProfile {
+	public getConnectionProfile(id: string): ConnectionProfile | undefined {
 		let connectionInfoForId = this.findConnection(id);
 		return connectionInfoForId ? connectionInfoForId.connectionProfile : undefined;
 	}
@@ -178,7 +178,7 @@ export class ConnectionStatusManager {
 		return ownerUriToReturn;
 	}
 
-	public onConnectionChanged(changedConnInfo: azdata.ChangedConnectionInfo): IConnectionProfile {
+	public onConnectionChanged(changedConnInfo: azdata.ChangedConnectionInfo): IConnectionProfile | undefined {
 		let connection = this._connections[changedConnInfo.connectionUri];
 		if (connection && connection.connectionProfile) {
 			connection.connectionProfile.serverName = changedConnInfo.connection.serverName;
@@ -190,14 +190,14 @@ export class ConnectionStatusManager {
 	}
 
 	private isSharedSession(fileUri: string): boolean {
-		return fileUri && fileUri.startsWith('vsls:');
+		return !!(fileUri && fileUri.startsWith('vsls:'));
 	}
 
 	public isConnected(id: string): boolean {
 		if (this.isSharedSession(id)) {
 			return true;
 		}
-		return (id in this._connections && this._connections[id].connectionId && !!this._connections[id].connectionId);
+		return !!(id in this._connections && this._connections[id].connectionId && !!this._connections[id].connectionId);
 	}
 
 	public isConnecting(id: string): boolean {
@@ -205,7 +205,7 @@ export class ConnectionStatusManager {
 	}
 
 	public isDefaultTypeUri(uri: string): boolean {
-		return uri && uri.startsWith(Utils.uriPrefixes.default);
+		return !!(uri && uri.startsWith(Utils.uriPrefixes.default));
 	}
 
 	public getProviderIdFromUri(ownerUri: string): string {

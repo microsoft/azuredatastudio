@@ -8,7 +8,7 @@ import 'vs/css!./dashboard';
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { RefreshWidgetAction, EditDashboardAction } from 'sql/workbench/parts/dashboard/browser/core/actions';

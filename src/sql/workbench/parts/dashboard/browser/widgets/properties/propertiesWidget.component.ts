@@ -6,9 +6,9 @@
 import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef, ViewChild } from '@angular/core';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/platform/dashboard/browser/dashboardRegistry';
+import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/workbench/parts/dashboard/browser/dashboardRegistry';
 
 import { DatabaseInfo, ServerInfo } from 'azdata';
 
@@ -18,6 +18,7 @@ import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
+import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
@@ -25,13 +26,16 @@ export interface PropertiesConfig {
 
 export interface FlavorProperties {
 	flavor: string;
-	condition?: {
-		field: string;
-		operator: '==' | '<=' | '>=' | '!=';
-		value: string | boolean;
-	};
+	condition?: ConditionProperties;
+	conditions?: Array<ConditionProperties>;
 	databaseProperties: Array<Property>;
 	serverProperties: Array<Property>;
+}
+
+export interface ConditionProperties {
+	field: string;
+	operator: '==' | '<=' | '>=' | '!=';
+	value: string | boolean;
 }
 
 export interface ProviderProperties {
@@ -98,7 +102,9 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 				this.handleClipping();
 			}
 		}, error => {
-			(<HTMLElement>this._el.nativeElement).innerText = nls.localize('dashboard.properties.error', "Unable to load dashboard properties");
+			if (this._bootstrap.connectionManagementService.connectionInfo.serverInfo.engineEditionId !== DatabaseEngineEdition.SqlOnDemand) {
+				(<HTMLElement>this._el.nativeElement).innerText = nls.localize('dashboard.properties.error', "Unable to load dashboard properties");
+			}
 		})));
 	}
 
@@ -139,20 +145,23 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 				return;
 			} else {
 				const flavorArray = providerProperties.flavors.filter((item) => {
-					const condition = this._connection.serverInfo[item.condition.field];
-					switch (item.condition.operator) {
-						case '==':
-							return condition === item.condition.value;
-						case '!=':
-							return condition !== item.condition.value;
-						case '>=':
-							return condition >= item.condition.value;
-						case '<=':
-							return condition <= item.condition.value;
-						default:
-							this.logService.error('Could not parse operator: "', item.condition.operator,
-								'" on item "', item, '"');
-							return false;
+
+					// For backward compatibility we are supporting array of conditions and single condition.
+					// If nothing is specified, we return false.
+					if (item.conditions) {
+						let conditionResult = true;
+						for (let i = 0; i < item.conditions.length; i++) {
+							conditionResult = conditionResult && this.getConditionResult(item, item.conditions[i]);
+						}
+
+						return conditionResult;
+					}
+					else if (item.condition) {
+						return this.getConditionResult(item, item.condition);
+					}
+					else {
+						this.logService.error('No condition was specified.');
+						return false;
 					}
 				});
 
@@ -221,6 +230,31 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 		if (this._hasInit) {
 			this._changeRef.detectChanges();
+		}
+	}
+
+	private getConditionResult(item: FlavorProperties, conditionItem: ConditionProperties): boolean {
+		let condition = this._connection.serverInfo[conditionItem.field];
+
+		// If we need to compare strings, then we should ensure that condition is string
+		// Otherwise tripple equals/unequals would return false values
+		if (typeof conditionItem.value === 'string') {
+			condition = condition.toString();
+		}
+
+		switch (conditionItem.operator) {
+			case '==':
+				return condition === conditionItem.value;
+			case '!=':
+				return condition !== conditionItem.value;
+			case '>=':
+				return condition >= conditionItem.value;
+			case '<=':
+				return condition <= conditionItem.value;
+			default:
+				this.logService.error('Could not parse operator: "', conditionItem.operator,
+					'" on item "', item, '"');
+				return false;
 		}
 	}
 

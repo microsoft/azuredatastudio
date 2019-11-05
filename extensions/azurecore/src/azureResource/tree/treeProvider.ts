@@ -61,7 +61,7 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 			if (!this.loadingAccountsPromise) {
 				this.loadingAccountsPromise = this.loadAccounts();
 			}
-			return [AzureResourceMessageTreeNode.create(localize('azure.resource.tree.treeProvider.loadingLabel', 'Loading ...'), undefined)];
+			return [AzureResourceMessageTreeNode.create(localize('azure.resource.tree.treeProvider.loadingLabel', "Loading ..."), undefined)];
 		}
 
 		try {

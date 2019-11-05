@@ -15,7 +15,6 @@ module.exports = withDefaults({
 		extension: './src/extension.ts'
 	},
 	externals: {
-		'ms-rest': 'commonjs ms-rest',
 		'request': 'commonjs request'
 	}
 });
