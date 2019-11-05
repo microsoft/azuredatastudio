@@ -8,7 +8,6 @@
 		"noImplicitReturns": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"forceConsistentCasingInFileNames": true,
-		"sourceMap": true
+		"forceConsistentCasingInFileNames": true
 	}
 }
