@@ -30,6 +30,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { ILogService } from 'vs/platform/log/common/log';
+import { assign } from 'vs/base/common/objects';
 
 /**
  * Service wrapper for opening and creating SQL documents as sql editor inputs
@@ -203,7 +204,7 @@ export class QueryEditorService implements IQueryEditorService {
 		let group: IEditorGroup = editor.group;
 		let index: number = group.editors.indexOf(editor.input);
 		let options: IQueryEditorOptions = editor.options ? editor.options : {};
-		options = Object.assign(options, { index: index });
+		options = assign(options, { index: index });
 
 		// Return a promise that will resovle when the old editor has been replaced by a new editor
 		let newEditorInput = this.getNewEditorInput(changingToSql, editor.input, uri);

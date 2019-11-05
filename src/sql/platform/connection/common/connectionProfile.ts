@@ -14,6 +14,7 @@ import { isString } from 'vs/base/common/types';
 import { deepClone } from 'vs/base/common/objects';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/platform/connection/common/constants';
+import { find } from 'vs/base/common/arrays';
 
 // Concrete implementation of the IConnectionProfile interface
 
@@ -46,7 +47,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 				let capabilities = this.capabilitiesService.getCapabilities(model.providerName);
 				if (capabilities && capabilities.connection && capabilities.connection.connectionOptions) {
 					const options = capabilities.connection.connectionOptions;
-					let appNameOption = options.find(option => option.specialValueType === ConnectionOptionSpecialType.appName);
+					let appNameOption = find(options, option => option.specialValueType === ConnectionOptionSpecialType.appName);
 					if (appNameOption) {
 						let appNameKey = appNameOption.name;
 						this.options[appNameKey] = Constants.applicationName;

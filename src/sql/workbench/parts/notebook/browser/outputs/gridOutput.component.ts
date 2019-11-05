@@ -33,6 +33,8 @@ import { ISerializationService, SerializeDataParams } from 'sql/platform/seriali
 import { SaveResultAction } from 'sql/workbench/parts/query/browser/actions';
 import { ResultSerializer, SaveResultsResponse } from 'sql/workbench/parts/query/common/resultSerializer';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { values } from 'vs/base/common/collections';
+import { assign } from 'vs/base/common/objects';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -190,7 +192,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 		this.rows = source.data.map(row => {
 			let rowData: azdata.DbCellValue[] = [];
 			Object.keys(row).forEach((val, index) => {
-				let displayValue = String(Object.values(row)[index]);
+				let displayValue = String(values(row)[index]);
 				// Since the columns[0] represents the row number, start at 1
 				rowData.push({
 					displayValue: displayValue,
@@ -292,7 +294,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 			return result;
 		};
 
-		let serializeRequestParams: SerializeDataParams = <SerializeDataParams>Object.assign(serializer.getBasicSaveParameters(format), <Partial<SerializeDataParams>>{
+		let serializeRequestParams: SerializeDataParams = <SerializeDataParams>assign(serializer.getBasicSaveParameters(format), <Partial<SerializeDataParams>>{
 			saveFormat: format,
 			columns: columns,
 			filePath: filePath,

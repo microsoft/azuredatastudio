@@ -37,6 +37,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ILogService } from 'vs/platform/log/common/log';
+import { firstIndex, find } from 'vs/base/common/arrays';
+import { values } from 'vs/base/common/collections';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 
@@ -151,13 +153,13 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 		this._tabSettingConfigs.forEach(config => {
 			if (config.tabId && types.isBoolean(config.isPinned)) {
-				const tab = allTabs.find(i => i.id === config.tabId);
+				const tab = find(allTabs, i => i.id === config.tabId);
 				if (tab) {
 					if (config.isPinned) {
 						pinnedDashboardTabs.push(tab);
 					} else {
 						// overwrite always show if specify in user settings
-						const index = alwaysShowTabs.findIndex(i => i.id === tab.id);
+						const index = firstIndex(alwaysShowTabs, i => i.id === tab.id);
 						alwaysShowTabs.splice(index, 1);
 					}
 				}
@@ -179,7 +181,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this._cd.detectChanges();
 
 		this._tabsDispose.push(this.dashboardService.onPinUnpinTab(e => {
-			const tabConfig = this._tabSettingConfigs.find(i => i.tabId === e.tabId);
+			const tabConfig = find(this._tabSettingConfigs, i => i.tabId === e.tabId);
 			if (tabConfig) {
 				tabConfig.isPinned = e.isPinned;
 			} else {
@@ -207,7 +209,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			actions: []
 		};
 
-		const homeTabIndex = allTabs.findIndex((tab) => tab.isHomeTab === true);
+		const homeTabIndex = firstIndex(allTabs, (tab) => tab.isHomeTab === true);
 		if (homeTabIndex !== undefined && homeTabIndex > -1) {
 			// Have a tab: get its information and copy over to the home tab definition
 			const homeTab = allTabs.splice(homeTabIndex, 1)[0];
@@ -230,7 +232,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		if (dashboardTabs && dashboardTabs.length > 0) {
 			const selectedTabs = dashboardTabs.map(v => this.initTabComponents(v)).map(v => {
 				const actions = [];
-				const tabSettingConfig = this._tabSettingConfigs.find(i => i.tabId === v.id);
+				const tabSettingConfig = find(this._tabSettingConfigs, i => i.tabId === v.id);
 				let isPinned = false;
 				if (tabSettingConfig) {
 					isPinned = tabSettingConfig.isPinned;
@@ -265,7 +267,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		}
 		const key = Object.keys(containerResult.container)[0];
 		if (key === WIDGETS_CONTAINER || key === GRID_CONTAINER) {
-			let configs = <WidgetConfig[]>Object.values(containerResult.container)[0];
+			let configs = <WidgetConfig[]>values(containerResult.container)[0];
 			this._configModifiers.forEach(cb => {
 				configs = cb.apply(this, [configs, this, this.context]);
 			});
@@ -287,7 +289,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	private addNewTab(tab: TabConfig): void {
-		const existedTab = this.tabs.find(i => i.id === tab.id);
+		const existedTab = find(this.tabs, i => i.id === tab.id);
 		if (!existedTab) {
 			this.tabs.push(tab);
 			this._cd.detectChanges();
@@ -304,7 +306,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			return [this.propertiesWidget];
 		} else if (types.isArray(properties)) {
 			return properties.map((item) => {
-				const retVal = Object.assign({}, this.propertiesWidget);
+				const retVal = objects.assign({}, this.propertiesWidget);
 				retVal.edition = item.edition;
 				retVal.provider = item.provider;
 				retVal.widget = { 'properties-widget': { properties: item.properties } };
@@ -343,7 +345,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	public handleTabClose(tab: TabComponent): void {
-		const index = this.tabs.findIndex(i => i.id === tab.identifier);
+		const index = firstIndex(this.tabs, i => i.id === tab.identifier);
 		this.tabs.splice(index, 1);
 		this.angularEventingService.sendAngularEvent(this.dashboardService.getUnderlyingUri(), AngularEventType.CLOSE_TAB, { id: tab.identifier });
 	}

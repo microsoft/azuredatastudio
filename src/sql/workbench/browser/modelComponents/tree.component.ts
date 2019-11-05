@@ -25,6 +25,7 @@ import { TreeViewDataProvider } from 'sql/workbench/browser/modelComponents/tree
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { values } from 'vs/base/common/collections';
 
 class Root implements ITreeComponentItem {
 	label = {
@@ -86,7 +87,7 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 		}
 
 		if (this._tree) {
-			for (const item of Object.values(itemsToRefreshByHandle)) {
+			for (const item of values(itemsToRefreshByHandle)) {
 				this._tree.refresh(<ITreeComponentItem>item);
 			}
 		}

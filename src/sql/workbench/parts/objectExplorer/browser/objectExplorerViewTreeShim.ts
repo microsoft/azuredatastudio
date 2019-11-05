@@ -18,6 +18,7 @@ import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { localize } from 'vs/nls';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { UserCancelledConnectionError } from 'sql/base/common/errors';
+import { assign } from 'vs/base/common/objects';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
@@ -168,7 +169,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 			const database = node.getDatabaseName();
 			if (database) {
 				databaseChanged = true;
-				updatedPayload = Object.assign(updatedPayload, parentNode.payload);
+				updatedPayload = assign(updatedPayload, parentNode.payload);
 				updatedPayload.databaseName = node.getDatabaseName();
 			}
 		}

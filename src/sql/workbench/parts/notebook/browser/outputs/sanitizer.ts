@@ -2,6 +2,7 @@
 // Distributed under the terms of the Modified BSD License.
 
 import * as sanitizeHtml from 'sanitize-html';
+import { raw } from 'sql/base/common/strings';
 
 export interface ISanitizer {
 	/**
@@ -74,14 +75,14 @@ class CssProp {
 	private static readonly B = {
 		angle: `(${CssProp.N.number}(deg|rad|grad|turn)|0)`,
 		frequency: `${CssProp.N.number}(Hz|kHz)`,
-		ident: String.raw`-?([_a-z]|[\xA0-\xFF]|\\[0-9a-f]{1,6}(\r\n|[ \t\r\n\f])?|\\[^\r\n\f0-9a-f])([_a-z0-9-]|[\xA0-\xFF]|\\[0-9a-f]{1,6}(\r\n|[ \t\r\n\f])?|\\[^\r\n\f0-9a-f])*`,
+		ident: raw`-?([_a-z]|[\xA0-\xFF]|\\[0-9a-f]{1,6}(\r\n|[ \t\r\n\f])?|\\[^\r\n\f0-9a-f])([_a-z0-9-]|[\xA0-\xFF]|\\[0-9a-f]{1,6}(\r\n|[ \t\r\n\f])?|\\[^\r\n\f0-9a-f])*`,
 		len_or_perc: `(0|${CssProp.N.number}(px|em|rem|ex|in|cm|mm|pt|pc|%))`,
 		length: `(${CssProp.N.number}(px|em|rem|ex|in|cm|mm|pt|pc)|0)`,
 		length_pos: `(${CssProp.N.number_pos}(px|em|rem|ex|in|cm|mm|pt|pc)|0)`,
 		percentage: `${CssProp.N.number}%`,
 		percentage_pos: `${CssProp.N.number_pos}%`,
 		percentage_zero_hundred: `${CssProp.N.number_zero_hundred}%`,
-		string: String.raw`(\"([^\n\r\f\\"]|\\\n|\r\n|\r|\f|\\[0-9a-f]{1,6}(\r\n|[ \t\r\n\f])?|\\[^\r\n\f0-9a-f])*\")|(\'([^\n\r\f\\']|\\\n|\r\n|\r|\f|\\[0-9a-f]{1,6}(\r\n|[ \t\r\n\f])?|\\[^\r\n\f0-9a-f])*\')`,
+		string: raw`(\"([^\n\r\f\\"]|\\\n|\r\n|\r|\f|\\[0-9a-f]{1,6}(\r\n|[ \t\r\n\f])?|\\[^\r\n\f0-9a-f])*\")|(\'([^\n\r\f\\']|\\\n|\r\n|\r|\f|\\[0-9a-f]{1,6}(\r\n|[ \t\r\n\f])?|\\[^\r\n\f0-9a-f])*\')`,
 		time: `${CssProp.N.number}(s|ms)`,
 		url: `url\\(.*?\\)`,
 		z_index: `[+-]?[0-9]{1,7}`
@@ -115,8 +116,8 @@ class CssProp {
 	private static readonly _COLOR = {
 		hex: `\\#(0x)?[0-9a-f]+`,
 		name: `aliceblue|antiquewhite|aqua|aquamarine|azure|beige|bisque|black|blanchedalmond|blue|blueviolet|brown|burlywood|cadetblue|chartreuse|chocolate|coral|cornflowerblue|cornsilk|crimson|cyan|darkblue|darkcyan|darkgoldenrod|darkgray|darkgreen|darkkhaki|darkmagenta|darkolivegreen|darkorange|darkorchid|darkred|darksalmon|darkseagreen|darkslateblue|darkslategray|darkturquoise|darkviolet|deeppink|deepskyblue|dimgray|dodgerblue|firebrick|floralwhite|forestgreen|fuchsia|gainsboro|ghostwhite|gold|goldenrod|gray|green|greenyellow|honeydew|hotpink|indianred|indigo|ivory|khaki|lavender|lavenderblush|lawngreen|lemonchiffon|lightblue|lightcoral|lightcyan|lightgoldenrodyellow|lightgreen|lightgrey|lightpink|lightsalmon|lightseagreen|lightskyblue|lightslategray|lightsteelblue|lightyellow|lime|limegreen|linen|magenta|maroon|mediumaquamarine|mediumblue|mediumorchid|mediumpurple|mediumseagreen|mediumslateblue|mediumspringgreen|mediumturquoise|mediumvioletred|midnightblue|mintcream|mistyrose|moccasin|navajowhite|navy|oldlace|olive|olivedrab|orange|orangered|orchid|palegoldenrod|palegreen|paleturquoise|palevioletred|papayawhip|peachpuff|peru|pink|plum|powderblue|purple|red|rosybrown|royalblue|saddlebrown|salmon|sandybrown|seagreen|seashell|sienna|silver|skyblue|slateblue|slategray|snow|springgreen|steelblue|tan|teal|thistle|tomato|turquoise|transparent|violet|wheat|white|whitesmoke|yellow|yellowgreen`,
-		rgb: String.raw`rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)`,
-		rgba: String.raw`rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(${
+		rgb: raw`rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)`,
+		rgba: raw`rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(${
 			CssProp.N.integer_zero_ff
 			}|${CssProp.N.number_zero_one}|${CssProp.B.percentage_zero_hundred})\s*\)`
 	};

@@ -8,6 +8,7 @@ import * as platform from 'vs/platform/registry/common/platform';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 import { IInsightData } from 'sql/workbench/parts/charts/browser/interfaces';
+import { values } from 'vs/base/common/collections';
 
 export type InsightIdentifier = string;
 
@@ -107,7 +108,7 @@ class InsightRegistry implements IInsightRegistry {
 	}
 
 	public getAllCtors(): Array<Type<IInsightsView>> {
-		return Object.values(this._idToCtor);
+		return values(this._idToCtor);
 	}
 
 	public getAllIds(): Array<string> {

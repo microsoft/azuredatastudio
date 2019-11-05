@@ -27,7 +27,7 @@ export interface WidgetConfig {
 	edition: number | Array<number>;
 	when?: string;
 	gridItemConfig?: NgGridItemConfig;
-	widget: Object;
+	widget: { [key: string]: any };
 	background_color?: string;
 	border?: string;
 	fontSize?: string;
@@ -51,7 +51,7 @@ export interface NavSectionConfig {
 	title: string;
 	iconClass?: string;
 	icon?: IUserFriendlyIcon;
-	container: object;
+	container: { [key: string]: any };
 }
 
 export interface TabSettingConfig {

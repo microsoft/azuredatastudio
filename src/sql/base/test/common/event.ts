@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
+import { find } from 'vs/base/common/arrays';
 
 export class EventVerifierSingle<T> {
 	private _eventArgument: T;
@@ -64,13 +65,13 @@ export class EventVerifierMultiple<T> {
 	public assertFired(expectedArgument?: T) {
 		assert.ok(this.eventFired);
 		if (expectedArgument) {
-			assert.ok(this._eventArguments.includes(expectedArgument));
+			assert.ok(this._eventArguments.some(x => x === expectedArgument));
 		}
 	}
 
 	public assertNotFired(expectedArgument?: T) {
 		if (expectedArgument) {
-			assert.ok(!this._eventArguments.includes(expectedArgument));
+			assert.ok(!this._eventArguments.some(x => x === expectedArgument));
 		} else {
 			assert.ok(!this.eventFired);
 		}
