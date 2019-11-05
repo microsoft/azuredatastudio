@@ -6,6 +6,7 @@
 'use strict';
 
 const gulp = require('gulp');
+const rename = require('gulp-rename'); // {{SQL CARBON EDIT}}
 const path = require('path');
 const fs = require('fs');
 const assert = require('assert');
@@ -42,6 +43,11 @@ function packageInnoSetup(iss, options, cb) {
 		definitions['Sign'] = 'true';
 	}
 
+	// {{SQL CARBON EDIT}} Switch file icon for non-stable builds
+	if (product.quality !== 'stable') {
+		gulp.src('resources/win32/code_file-insiders.ico').pipe(rename('resources/win32/code_file.ico')).pipe(gulp.dest('resources/win32'));
+	}
+
 	const keys = Object.keys(definitions);
 
 	keys.forEach(key => assert(typeof definitions[key] === 'string', `Missing value for '${key}' in Inno Setup package step`));
@@ -76,6 +82,15 @@ function buildWin32Setup(arch, target) {
 		const productJson = JSON.parse(fs.readFileSync(originalProductJsonPath, 'utf8'));
 		productJson['target'] = target;
 		fs.writeFileSync(productJsonPath, JSON.stringify(productJson, undefined, '\t'));
+
+		// // {{SQL CARBON EDIT}} Modify installer file based on quality
+		if(product.quality !== 'stable') {
+			fs.writeFileSync(issPath,
+				fs.readFileSync(issPath).toString()
+					.replace(/inno-(small|big)-([\d]*)/g, 'inno-$1-$2-insiders')
+					.replace(/code.ico/g, 'code-insiders.ico'));
+		}
+
 
 		const definitions = {
 			NameLong: product.nameLong,
@@ -138,7 +153,7 @@ function copyInnoUpdater(arch) {
 
 function updateIcon(executablePath) {
 	return cb => {
-		const icon = path.join(repoPath, 'resources', 'win32', 'code.ico');
+		const icon = product.quality === 'stable' ? path.join(repoPath, 'resources', 'win32', 'code-insiders.ico') : path.join(repoPath, 'resources', 'win32', 'code.ico'); // {{SQL CARBON EDIT}} Use separate icons for non-stable
 		rcedit(executablePath, { icon }, cb);
 	};
 }
