@@ -19,7 +19,7 @@ import { bootstrapAngular } from 'sql/platform/bootstrap/browser/bootstrapServic
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/parts/query/browser/queryResultsEditor';
 import { IEditDataComponentParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 import { EditDataModule } from 'sql/workbench/parts/editData/browser/editData.module';
-import { EDITDATA_SELECTOR, EditDataGridPanel } from 'sql/workbench/parts/editData/browser/editData.component';
+import { EDITDATA_SELECTOR, EditDataGridPanel } from 'sql/workbench/parts/editData/browser/editDataGridPanel';
 import { EditDataResultsInput } from 'sql/workbench/parts/editData/browser/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';

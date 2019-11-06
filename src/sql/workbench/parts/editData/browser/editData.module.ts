@@ -11,7 +11,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { SlickGrid } from 'angular2-slickgrid';
 
 //import { EditDataComponent, } from 'sql/workbench/parts/editData/browser/editData.component';
-import { EditDataGridPanel, } from 'sql/workbench/parts/editData/browser/editData.component';
+import { EditDataGridPanel, } from 'sql/workbench/parts/editData/browser/editDataGridPanel';
 import { providerIterator } from 'sql/platform/bootstrap/browser/bootstrapService';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
