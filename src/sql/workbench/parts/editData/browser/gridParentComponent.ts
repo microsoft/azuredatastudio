@@ -13,7 +13,7 @@ import 'vs/css!./media/styles';
 import { Table } from 'sql/base/browser/ui/table/table';
 
 import { Subscription, Subject } from 'rxjs/Rx';
-import { ElementRef, QueryList, ChangeDetectorRef, ViewChildren } from '@angular/core';
+//import { ElementRef, QueryList, ChangeDetectorRef, ViewChildren } from '@angular/core';
 import { SlickGrid } from 'angular2-slickgrid';
 import * as Constants from 'sql/workbench/parts/query/common/constants';
 import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedConstants';
@@ -64,7 +64,6 @@ export abstract class GridParentComponent extends Disposable {
 
 	protected toDispose = new DisposableStore();
 
-
 	// Context keys to set when keybindings are available
 	private resultsVisibleContextKey: IContextKey<boolean>;
 	private gridFocussedContextKey: IContextKey<boolean>;
@@ -83,16 +82,14 @@ export abstract class GridParentComponent extends Disposable {
 
 
 	//@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
-	@ViewChildren('table') slickgrids: QueryList<Table<any>>;
-	//need to initialize this
-//	protected tablegrids: Table<any>[] = [];
+	protected nativeElement: HTMLElement;
+	protected _tables: Table<any>[] = [];
 
 	set messageActive(input: boolean) {
 		this._messageActive = input;
 		if (this.resultActive) {
 			this.resizeGrids();
 		}
-		this._cd.detectChanges();
 	}
 
 	get messageActive(): boolean {
@@ -100,8 +97,6 @@ export abstract class GridParentComponent extends Disposable {
 	}
 
 	constructor(
-		protected _el: ElementRef,
-		protected _cd: ChangeDetectorRef,
 		protected contextMenuService: IContextMenuService,
 		protected keybindingService: IKeybindingService,
 		protected contextKeyService: IContextKeyService,
@@ -193,12 +188,14 @@ export abstract class GridParentComponent extends Disposable {
 		this.toDispose.add(subscriptionToDisposable(sub));
 	}
 
+
+
 	private bindKeys(contextKeyService: IContextKeyService): void {
 		if (contextKeyService) {
 			this.queryEditorVisible = QueryEditorVisibleContext.bindTo(contextKeyService);
 			this.queryEditorVisible.set(true);
 
-			let gridContextKeyService = this.contextKeyService.createScoped(this._el.nativeElement);
+			let gridContextKeyService = this.contextKeyService.createScoped(this.nativeElement);
 			this.toDispose.add(gridContextKeyService);
 			this.resultsVisibleContextKey = ResultsVisibleContext.bindTo(gridContextKeyService);
 			this.resultsVisibleContextKey.set(true);
@@ -217,7 +214,6 @@ export abstract class GridParentComponent extends Disposable {
 		if (this.resultActive) {
 			this.resizeGrids();
 		}
-		this._cd.detectChanges();
 	}
 
 	protected toggleMessagePane(): void {
@@ -241,9 +237,9 @@ export abstract class GridParentComponent extends Disposable {
 	}
 
 	protected getSelection(index?: number): Slick.Range[] {
-		console.log(this.slickgrids.toArray());
-		let selection = this.slickgrids.toArray()[index || this.activeGrid].getSelectedRanges();
-		//let selection = this.tablegrids[index || this.activeGrid].getSelectedRanges();
+
+		//let selection = this.slickgrids.toArray()[index || this.activeGrid].getSelectedRanges();
+		let selection = this._tables[index || this.activeGrid].getSelectedRanges();
 		if (selection) {
 			selection = selection.map(c => { return <Slick.Range>{ fromCell: c.fromCell - 1, toCell: c.toCell - 1, toRow: c.toRow, fromRow: c.fromRow }; });
 			return selection;
@@ -396,9 +392,8 @@ export abstract class GridParentComponent extends Disposable {
 	}
 
 	openContextMenu(event, batchId, resultId, index): void {
-		console.log(this.slickgrids.toArray());
-		let slick: any = this.slickgrids.toArray()[index];
-		//let slick: any  = this.tablegrids[index];
+		//let slick: any = this.slickgrids.toArray()[index];
+		let slick: any = this._tables[index];
 		let grid = slick._grid;
 
 		let selection = this.getSelection(index);
@@ -437,7 +432,7 @@ export abstract class GridParentComponent extends Disposable {
 		let self = this;
 		return (gridIndex: number) => {
 			self.activeGrid = gridIndex;
-			let grid = self.slickgrids.toArray()[self.activeGrid];
+			let grid = self._tables[self.activeGrid];
 			//let grid = self.tablegrids[self.activeGrid];
 			grid.setActive();
 			grid.selection = true;
@@ -445,8 +440,8 @@ export abstract class GridParentComponent extends Disposable {
 	}
 
 	private onSelectAllForActiveGrid(): void {
-		if (this.activeGrid >= 0 && this.slickgrids.length > this.activeGrid) {
-			this.slickgrids.toArray()[this.activeGrid].selection = true;
+		if (this.activeGrid >= 0 && this._tables.length > this.activeGrid) {
+			this._tables[this.activeGrid].selection = true;
 		}
 
 		// if (this.activeGrid >= 0 && this.tablegrids.length > this.activeGrid) {
@@ -468,19 +463,18 @@ export abstract class GridParentComponent extends Disposable {
 		}
 		setTimeout(() => {
 			self.resizeGrids();
-			self.slickgrids.toArray()[0].setActive();
+			self._tables[0].setActive();
 			//self.tablegrids[0].setActive();
-			self._cd.detectChanges();
 		});
 	}
 
 	abstract onScroll(scrollTop): void;
 
 	protected getResultsElement(): any {
-		return this._el.nativeElement.querySelector('#results');
+		return this.nativeElement.querySelector('#results');
 	}
 	protected getMessagesElement(): any {
-		return this._el.nativeElement.querySelector('#messages');
+		return this.nativeElement.querySelector('#messages');
 	}
 	/**
 	 * Force angular to re-render the results grids. Calling this upon unhide (upon focus) fixes UI
@@ -488,10 +482,9 @@ export abstract class GridParentComponent extends Disposable {
 	 */
 	refreshResultsets(): void {
 		let tempRenderedDataSets = this.renderedDataSets;
+
 		this.renderedDataSets = [];
-		this._cd.detectChanges();
 		this.renderedDataSets = tempRenderedDataSets;
-		this._cd.detectChanges();
 	}
 
 	getSelectedRangeUnderMessages(): Selection {
@@ -503,8 +496,8 @@ export abstract class GridParentComponent extends Disposable {
 	}
 
 	selectAllMessages(): void {
-		let msgEl = this._el.nativeElement.querySelector('#messages');
-		this.selectElementContents(msgEl);
+		let msgEl = this.nativeElement.querySelector('#messages');
+		this.selectElementContents(<HTMLElement>msgEl);
 	}
 
 	selectElementContents(el: HTMLElement): void {

@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { EditDataResultsInput } from 'sql/workbench/parts/editData/browser/editDataResultsInput';
-import { EditDataComponent } from 'sql/workbench/parts/editData/browser/editData.component';
 import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 
 

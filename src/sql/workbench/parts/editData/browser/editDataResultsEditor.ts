@@ -19,13 +19,14 @@ import { bootstrapAngular } from 'sql/platform/bootstrap/browser/bootstrapServic
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/parts/query/browser/queryResultsEditor';
 import { IEditDataComponentParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 import { EditDataModule } from 'sql/workbench/parts/editData/browser/editData.module';
-import { EDITDATA_SELECTOR, EditDataComponent } from 'sql/workbench/parts/editData/browser/editData.component';
+import { EDITDATA_SELECTOR, EditDataGridPanel } from 'sql/workbench/parts/editData/browser/editData.component';
 import { EditDataResultsInput } from 'sql/workbench/parts/editData/browser/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { EditDataView } from 'sql/workbench/parts/editData/browser/editDataResultsView';
 
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { Table } from 'sql/base/browser/ui/table/table';
 
 export class EditDataResultsEditor extends BaseEditor {
 
@@ -83,7 +84,7 @@ export class EditDataResultsEditor extends BaseEditor {
 
 		this.resultsView.input = input;
 		if (!input.hasBootstrapped) {
-			this._bootstrapAngular();
+			this.createTable();
 		}
 		return Promise.resolve<void>(null);
 	}
@@ -114,7 +115,7 @@ export class EditDataResultsEditor extends BaseEditor {
 	/**
 	 * Load the angular components and record for this input that we have done so
 	 */
-	private _bootstrapAngular(): void {
+	private createTable(): void {
 		let input = <EditDataResultsInput>this.input;
 		let uri = input.uri;
 
@@ -124,6 +125,14 @@ export class EditDataResultsEditor extends BaseEditor {
 			throw new Error('DataService not found for URI: ' + uri);
 		}
 
+		const parent = input.container;
+
+
+
+
+
+
+		//Stuff afterwards can be ignored
 		// Mark that we have bootstrapped
 		input.setBootstrappedTrue();
 
@@ -131,14 +140,14 @@ export class EditDataResultsEditor extends BaseEditor {
 		// Note: pass in input so on disposal this is cleaned up.
 		// Otherwise many components will be left around and be subscribed
 		// to events from the backing data service
-		const parent = input.container;
+
 		let params: IEditDataComponentParams = {
 			dataService: dataService,
 			onSaveViewState: input.onSaveViewStateEmitter.event,
 			onRestoreViewState: input.onRestoreViewStateEmitter.event
 		};
 
-
+		let currentGrid = new EditDataGridPanel(parent, params);
 		//this._instantiationService.createInstance(EditDataComponent, params);
 
 		//comment this out when actually running.
@@ -150,11 +159,50 @@ export class EditDataResultsEditor extends BaseEditor {
 
 
 
-		bootstrapAngular(this._instantiationService,
-			EditDataModule,
-			parent,
-			EDITDATA_SELECTOR,
-			params,
-			input);
+		// bootstrapAngular(this._instantiationService,
+		// 	EditDataModule,
+		// 	parent,
+		// 	EDITDATA_SELECTOR,
+		// 	params,
+		// 	input);
 	}
+
+	/*
+	 * Add the subscription to the list of things to be disposed on destroy, or else on a new component init
+	 * may get the "destroyed" object still getting called back.
+	 */
+	// 	protected subscribeWithDispose<T>(subject: Subject<T>, event: (value: any) => void): void {
+	// 		let sub: Subscription = subject.subscribe(event);
+	// 		this.toDispose.add(subscriptionToDisposable(sub));
+	// 	}
+
+	// 	initializeTable(): void {
+	// 		const self = this;
+	// 		this.baseInit();
+
+	// 		// Add the subscription to the list of things to be disposed on destroy, or else on a new component init
+	// 		// may get the "destroyed" object still getting called back.
+	// 		this.subscribeWithDispose(this.dataService.queryEventObserver, (event) => {
+	// 			switch (event.type) {
+	// 				case 'start':
+	// 					self.handleStart(self, event);
+	// 					break;
+	// 				case 'complete':
+	// 					self.handleComplete(self, event);
+	// 					break;
+	// 				case 'message':
+	// 					self.handleMessage(self, event);
+	// 					break;
+	// 				case 'resultSet':
+	// 					self.handleResultSet(self, event);
+	// 					break;
+	// 				case 'editSessionReady':
+	// 					self.handleEditSessionReady(self, event);
+	// 					break;
+	// 				default:
+	// 					this.logService.error('Unexpected query event type "' + event.type + '" sent');
+	// 					break;
+	// 			}
+	// 		});
+	// 	}
 }
