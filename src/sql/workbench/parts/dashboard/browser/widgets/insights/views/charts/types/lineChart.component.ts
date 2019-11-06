@@ -6,7 +6,6 @@
 import { mixin, deepClone } from 'vs/base/common/objects';
 
 import BarChart, { IBarChartConfig } from './barChart.component';
-import { memoize, unmemoize } from 'sql/base/common/decorators';
 import { defaultChartConfig, IDataSet } from 'sql/workbench/parts/dashboard/browser/widgets/insights/views/charts/interfaces';
 import { ChangeDetectorRef, Inject, forwardRef } from '@angular/core';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -14,6 +13,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IPointDataSet } from 'sql/workbench/parts/charts/browser/interfaces';
 import { DataType, ChartType } from 'sql/workbench/parts/charts/common/interfaces';
+import { values } from 'vs/base/common/collections';
 
 export interface ILineConfig extends IBarChartConfig {
 	dataType?: DataType;
@@ -52,10 +52,10 @@ export default class LineChart extends BarChart {
 
 	protected clearMemoize() {
 		super.clearMemoize();
-		unmemoize(this, 'getDataAsPoint');
+		LineChart.MEMOIZER.clear();
 	}
 
-	@memoize
+	@LineChart.MEMOIZER
 	protected getDataAsPoint(): Array<IPointDataSet> {
 		const dataSetMap: { [label: string]: IPointDataSet } = {};
 		this._data.rows.map(row => {
@@ -67,7 +67,7 @@ export default class LineChart extends BarChart {
 				dataSetMap[legend].data.push({ x: Number(row[1]), y: Number(row[2]) });
 			}
 		});
-		return Object.values(dataSetMap);
+		return values(dataSetMap);
 	}
 
 	public get labels(): Array<string> {

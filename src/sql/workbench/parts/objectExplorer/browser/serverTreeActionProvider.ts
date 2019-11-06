@@ -26,6 +26,7 @@ import { IQueryManagementService } from 'sql/platform/query/common/queryManageme
 import { ServerInfoContextKey } from 'sql/workbench/parts/connection/common/serverInfoContextKey';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
+import { firstIndex, find } from 'vs/base/common/arrays';
 
 /**
  *  Provides actions for the server tree elements
@@ -94,7 +95,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		const options = { arg: undefined, shouldForwardArgs: true };
 		const groups = menu.getActions(options);
 		let insertIndex: number | undefined = 0;
-		const queryIndex = groups.findIndex(v => {
+		const queryIndex = firstIndex(groups, v => {
 			if (v[0] === '0_query') {
 				return true;
 			} else {
@@ -194,7 +195,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 
 	private isScriptableObject(context: ObjectExplorerContext): boolean {
 		if (context.treeNode) {
-			if (NodeType.SCRIPTABLE_OBJECTS.includes(context.treeNode.nodeTypeId)) {
+			if (find(NodeType.SCRIPTABLE_OBJECTS, x => x === context.treeNode.nodeTypeId)) {
 				return true;
 			}
 		}

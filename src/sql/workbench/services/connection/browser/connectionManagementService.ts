@@ -26,7 +26,6 @@ import { IAngularEventingService, AngularEventType } from 'sql/platform/angularE
 import * as QueryConstants from 'sql/workbench/parts/query/common/constants';
 import { Deferred } from 'sql/base/common/promise';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { values, entries } from 'sql/base/common/objects';
 import { IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
 
@@ -50,6 +49,10 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { Memento } from 'vs/workbench/common/memento';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { entries } from 'sql/base/common/collections';
+import { find } from 'vs/base/common/arrays';
+import { values } from 'vs/base/common/collections';
+import { assign } from 'vs/base/common/objects';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -713,7 +716,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 		let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
 		if (accounts && accounts.length > 0) {
-			let account = accounts.find(account => account.key.accountId === connection.userName);
+			let account = find(accounts, account => account.key.accountId === connection.userName);
 			if (account) {
 				if (account.isStale) {
 					try {
@@ -729,11 +732,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				if (tenantId && tokensByTenant[tenantId]) {
 					token = tokensByTenant[tenantId].token;
 				} else {
-					let tokens = Object.values(tokensByTenant);
+					let tokens = values(tokensByTenant);
 					if (tokens.length === 0) {
 						return false;
 					}
-					token = Object.values(tokensByTenant)[0].token;
+					token = values(tokensByTenant)[0].token;
 				}
 				connection.options['azureAccountToken'] = token;
 				connection.options['password'] = '';
@@ -745,7 +748,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	// Request Senders
 	private async sendConnectRequest(connection: interfaces.IConnectionProfile, uri: string): Promise<boolean> {
-		let connectionInfo = Object.assign({}, {
+		let connectionInfo = assign({}, {
 			options: connection.options
 		});
 
@@ -985,7 +988,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		];
 
 		return this._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('cancelConnectionConfirmation', "Are you sure you want to cancel this connection?"), ignoreFocusLost: true }).then((choice) => {
-			let confirm = choices.find(x => x.key === choice);
+			let confirm = find(choices, x => x.key === choice);
 			return confirm && confirm.value;
 		});
 	}
@@ -1239,13 +1242,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public getActiveConnectionCredentials(profileId: string): { [name: string]: string } {
-		let profile = this.getActiveConnections().find(connectionProfile => connectionProfile.id === profileId);
+		let profile = find(this.getActiveConnections(), connectionProfile => connectionProfile.id === profileId);
 		if (!profile) {
 			return undefined;
 		}
 
 		// Find the password option for the connection provider
-		let passwordOption = this._capabilitiesService.getCapabilities(profile.providerName).connection.connectionOptions.find(
+		let passwordOption = find(this._capabilitiesService.getCapabilities(profile.providerName).connection.connectionOptions,
 			option => option.specialValueType === ConnectionOptionSpecialType.password);
 		if (!passwordOption) {
 			return undefined;
@@ -1326,7 +1329,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		const connections = this.getActiveConnections();
 
 		const connectionExists: (conn: ConnectionProfile) => boolean = (conn) => {
-			return connections.find(existingConnection => existingConnection.id === conn.id) !== undefined;
+			return find(connections, existingConnection => existingConnection.id === conn.id) !== undefined;
 		};
 
 		if (!activeConnectionsOnly) {

@@ -11,6 +11,7 @@ import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/ap
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
+import { assign } from 'vs/base/common/objects';
 
 suite('SQL ConnectionProfileInfo tests', () => {
 	let msSQLCapabilities: ConnectionProviderProperties;
@@ -187,7 +188,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 	});
 
 	test('createFromStoredProfile should set the id to new guid if not set in stored profile', () => {
-		let savedProfile = Object.assign({}, storedProfile, { id: undefined });
+		let savedProfile = assign({}, storedProfile, { id: undefined });
 		let connectionProfile = ConnectionProfile.createFromStoredProfile(savedProfile, capabilitiesService);
 		assert.equal(savedProfile.groupId, connectionProfile.groupId);
 		assert.deepEqual(savedProfile.providerName, connectionProfile.providerName);

@@ -14,11 +14,12 @@ import { generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/co
 import { NAV_SECTION, validateNavSectionContributionAndRegisterIcon } from 'sql/workbench/parts/dashboard/browser/containers/dashboardNavSection.contribution';
 import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/workbench/parts/dashboard/browser/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/workbench/parts/dashboard/browser/containers/dashboardGridContainer.contribution';
+import { values } from 'vs/base/common/collections';
 
 export interface IDashboardTabContrib {
 	id: string;
 	title: string;
-	container: object;
+	container: { [key: string]: any };
 	provider: string | string[];
 	when?: string;
 	description?: string;
@@ -115,7 +116,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 
 		let result = true;
 		const containerkey = Object.keys(container)[0];
-		const containerValue = Object.values(container)[0];
+		const containerValue = values(container)[0];
 
 		switch (containerkey) {
 			case WIDGETS_CONTAINER:

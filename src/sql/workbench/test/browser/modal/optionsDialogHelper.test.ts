@@ -402,8 +402,8 @@ suite('Advanced options helper tests', () => {
 		let optionsList = [categoryOption, booleanOption, numberOption, stringOption, defaultGroupOption];
 		let optionsMap = OptionsDialogHelper.groupOptionsByCategory(optionsList);
 		let categoryNames = Object.keys(optionsMap);
-		assert.equal(categoryNames.includes('Initialization'), true);
-		assert.equal(categoryNames.includes('General'), true);
+		assert.equal(categoryNames.some(x => x === 'Initialization'), true);
+		assert.equal(categoryNames.some(x => x === 'General'), true);
 		assert.equal(categoryNames.length, 2);
 		assert.equal(optionsMap['Initialization'].length, 4);
 		assert.equal(optionsMap['General'].length, 1);

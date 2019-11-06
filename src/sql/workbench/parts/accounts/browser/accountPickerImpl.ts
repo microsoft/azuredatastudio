@@ -23,6 +23,7 @@ import { attachDropdownStyler } from 'sql/platform/theme/common/styler';
 import { AddAccountAction, RefreshAccountAction } from 'sql/platform/accounts/common/accountActions';
 import { AccountPickerListRenderer, AccountListDelegate } from 'sql/workbench/parts/accounts/browser/accountListRenderer';
 import { AccountPickerViewModel } from 'sql/platform/accounts/common/accountPickerViewModel';
+import { firstIndex } from 'vs/base/common/arrays';
 
 export class AccountPicker extends Disposable {
 	public static ACCOUNTPICKERLIST_HEIGHT = 47;
@@ -199,7 +200,7 @@ export class AccountPicker extends Disposable {
 		// find selected index
 		let selectedIndex: number | undefined;
 		if (selectedElements.length > 0 && accounts.length > 0) {
-			selectedIndex = accounts.findIndex((account) => {
+			selectedIndex = firstIndex(accounts, (account) => {
 				return (account.key.accountId === selectedElements[0].key.accountId);
 			});
 		}
