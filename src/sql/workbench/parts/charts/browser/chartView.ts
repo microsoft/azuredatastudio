@@ -105,16 +105,16 @@ export class ChartView extends Disposable implements IPanelView {
 
 		const self = this;
 		this.options = new Proxy(this.options, {
-			get: function (target, key, receiver) {
+			get: function (target, key) {
 				return target[key];
 			},
-			set: function (target, key, value, receiver) {
+			set: function (target, key, value) {
 				let change = false;
 				if (target[key] !== value) {
 					change = true;
 				}
 
-				let result = target[key] = value;
+				target[key] = value;
 				// mirror the change in our state
 				if (self.state) {
 					self.state.options[key] = value;
@@ -129,7 +129,7 @@ export class ChartView extends Disposable implements IPanelView {
 					}
 				}
 
-				return result;
+				return true;
 			}
 		}) as IInsightOptions;
 
