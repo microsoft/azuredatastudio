@@ -51,6 +51,7 @@ import { IClipboardService } from 'sql/platform/clipboard/common/clipboardServic
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { handleCopyRequest } from 'sql/workbench/parts/profiler/browser/profilerCopyHandler';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { find } from 'vs/base/common/arrays';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {
@@ -233,7 +234,7 @@ export class ProfilerEditor extends BaseEditor {
 		this._viewTemplateSelector.setAriaLabel(nls.localize('profiler.viewSelectAccessibleName', "Select View"));
 		this._register(this._viewTemplateSelector.onDidSelect(e => {
 			if (this.input) {
-				this.input.viewTemplate = this._viewTemplates.find(i => i.name === e.selected);
+				this.input.viewTemplate = find(this._viewTemplates, i => i.name === e.selected);
 			}
 		}));
 		let viewTemplateContainer = document.createElement('div');
@@ -458,7 +459,7 @@ export class ProfilerEditor extends BaseEditor {
 			if (input.viewTemplate) {
 				this._viewTemplateSelector.selectWithOptionName(input.viewTemplate.name);
 			} else {
-				input.viewTemplate = this._viewTemplates.find(i => i.name === 'Standard View');
+				input.viewTemplate = find(this._viewTemplates, i => i.name === 'Standard View');
 			}
 
 			this._actionBar.context = input;

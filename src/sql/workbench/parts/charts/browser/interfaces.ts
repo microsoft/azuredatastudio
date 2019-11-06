@@ -13,7 +13,7 @@ export interface IPointDataSet {
 	data: Array<{ x: number | string, y: number }>;
 	label?: string;
 	fill: boolean;
-	backgroundColor?: Color;
+	backgroundColor?: string;
 }
 
 export function customMixin(destination: any, source: any, overwrite?: boolean): any {

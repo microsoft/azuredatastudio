@@ -20,7 +20,7 @@ export interface IAccountManagementService {
 	addAccount(providerId: string): Thenable<void>;
 	getAccountProviderMetadata(): Thenable<azdata.AccountProviderMetadata[]>;
 	getAccountsForProvider(providerId: string): Thenable<azdata.Account[]>;
-	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}>;
+	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{ [key: string]: { token: string } }>;
 	removeAccount(accountKey: azdata.AccountKey): Thenable<boolean>;
 	refreshAccount(account: azdata.Account): Thenable<azdata.Account>;
 

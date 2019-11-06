@@ -15,7 +15,7 @@ import { LocalContentManager } from 'sql/workbench/services/notebook/common/loca
 import { NotebookManagerStub } from './common';
 import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/parts/notebook/browser/models/modelFactory';
-import { IClientSession, ICellModel, INotebookModelOptions, NotebookContentChange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { IClientSession, INotebookModelOptions, NotebookContentChange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { ClientSession } from 'sql/workbench/parts/notebook/browser/models/clientSession';
 import { CellTypes, NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { Deferred } from 'sql/base/common/promise';
@@ -30,6 +30,7 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { NullLogService } from 'vs/platform/log/common/log';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import { assign } from 'vs/base/common/objects';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -238,7 +239,7 @@ suite('notebook model', function (): void {
 		sessionReady.resolve();
 		let actualSession: IClientSession = undefined;
 
-		let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
+		let options: INotebookModelOptions = assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
 			factory: mockModelFactory.object
 		});
 		let model = new NotebookModel(options, undefined, logService, undefined, undefined);
