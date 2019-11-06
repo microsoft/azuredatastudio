@@ -28,10 +28,6 @@ import { ChartState, IInsightOptions, ChartType } from 'sql/workbench/parts/char
 import * as nls from 'vs/nls';
 import { find } from 'vs/base/common/arrays';
 
-declare class Proxy {
-	constructor(object, handler);
-}
-
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
 //Map used to store names and alternative names for chart types.
