@@ -28,7 +28,7 @@ steps:
     git config user.email "andresse@microsoft.com"
     git config user.name "AzureDataStudio"
 
-    git remote add distro "https://github.com/$VSCODE_MIXIN_REPO.git"
+    git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
     git fetch distro
 
     # Push master branch into oss/master
