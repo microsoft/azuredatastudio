@@ -31,11 +31,12 @@ export class SqlToolsServer {
 	public async start(context: AppContext): Promise<SqlOpsDataClient> {
 		try {
 			const installationStart = Date.now();
-			const path = await this.download(context);
+			/* const path =*/ await this.download(context); // TodoKusto: Remove this commented line once the Kusto service layer has been published to Github. Until then copy manually for debugging.
+			const path = "e:\\repos\\azuredatastudio\\extensions\\kusto\\sqltoolsservice\\Windows\\2.0.0-release.15\\MicrosoftSqlToolsServiceLayer.exe"
 			const installationComplete = Date.now();
 			let serverOptions = generateServerOptions(context.extensionContext.logPath, path);
 			let clientOptions = getClientOptions(context);
-			this.client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
+			this.client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions); // TodoKusto: Update constant
 			const processStart = Date.now();
 			const clientReadyPromise = this.client.onReady().then(() => {
 				const processEnd = Date.now();
@@ -66,7 +67,7 @@ export class SqlToolsServer {
 	}
 
 	private async download(context: AppContext): Promise<string> {
-		const rawConfig = await fs.readFile(path.join(context.extensionContext.extensionPath, 'config.json'));
+		const rawConfig = await fs.readFile(path.join(context.extensionContext.extensionPath, 'config.json')); // TodoKusto: Update config.json to refer to the right exe
 		this.config = JSON.parse(rawConfig.toString());
 		this.config.installDirectory = path.join(__dirname, this.config.installDirectory);
 		this.config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
