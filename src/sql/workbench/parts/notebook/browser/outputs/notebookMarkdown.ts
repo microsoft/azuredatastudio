@@ -60,7 +60,7 @@ export class NotebookMarkdownRenderer {
 		const withInnerHTML = new Promise(c => signalInnerHTML = c);
 
 		let notebookFolder = path.dirname(this._notebookURI.fsPath) + '/';
-		if (!this._baseUrls.some(x => x === notebookFolder)) {
+		if (!this._baseUrls.includes(notebookFolder)) {
 			this._baseUrls.push(notebookFolder);
 		}
 		const renderer = new marked.Renderer({ baseUrl: notebookFolder });

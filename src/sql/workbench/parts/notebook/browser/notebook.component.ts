@@ -55,7 +55,6 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { find, firstIndex } from 'vs/base/common/arrays';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -331,7 +330,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 		if (DEFAULT_NOTEBOOK_PROVIDER === providerInfo.providerId) {
 			let providers = notebookUtils.getProvidersForFileName(this._notebookParams.notebookUri.fsPath, this.notebookService);
-			let tsqlProvider = find(providers, provider => provider === SQL_NOTEBOOK_PROVIDER);
+			let tsqlProvider = providers.find(provider => provider === SQL_NOTEBOOK_PROVIDER);
 			providerInfo.providerId = tsqlProvider ? SQL_NOTEBOOK_PROVIDER : providers[0];
 		}
 		if (DEFAULT_NOTEBOOK_PROVIDER === providerInfo.providerId) {
@@ -394,7 +393,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	findCellIndex(cellModel: ICellModel): number {
-		return firstIndex(this._model.cells, (cell) => cell.id === cellModel.id);
+		return this._model.cells.findIndex((cell) => cell.id === cellModel.id);
 	}
 
 	private setViewInErrorState(error: any): any {
@@ -516,7 +515,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private addPrimaryContributedActions(primary: IAction[]) {
 		for (let action of primary) {
 			// Need to ensure that we don't add the same action multiple times
-			let foundIndex = firstIndex(this._providerRelatedActions, act => act.id === action.id);
+			let foundIndex = this._providerRelatedActions.findIndex(act => act.id === action.id);
 			if (foundIndex < 0) {
 				this._actionBar.addAction(action);
 				this._providerRelatedActions.push(action);
@@ -567,7 +566,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	public async runCell(cell: ICellModel): Promise<boolean> {
 		await this.modelReady;
 		let uriString = cell.cellUri.toString();
-		if (firstIndex(this._model.cells, c => c.cellUri.toString() === uriString) > -1) {
+		if (this._model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
 			this.selectCell(cell);
 			return cell.runCell(this.notificationService, this.connectionManagementService);
 		} else {
@@ -583,10 +582,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			let startIndex = 0;
 			let endIndex = codeCells.length;
 			if (!isUndefinedOrNull(startCell)) {
-				startIndex = firstIndex(codeCells, c => c.id === startCell.id);
+				startIndex = codeCells.findIndex(c => c.id === startCell.id);
 			}
 			if (!isUndefinedOrNull(endCell)) {
-				endIndex = firstIndex(codeCells, c => c.id === endCell.id);
+				endIndex = codeCells.findIndex(c => c.id === endCell.id);
 			}
 			for (let i = startIndex; i < endIndex; i++) {
 				let cellStatus = await this.runCell(codeCells[i]);
@@ -602,7 +601,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		try {
 			await this.modelReady;
 			let uriString = cell.cellUri.toString();
-			if (firstIndex(this._model.cells, c => c.cellUri.toString() === uriString) > -1) {
+			if (this._model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
 				this.selectCell(cell);
 				// Clear outputs of the requested cell if cell type is code cell.
 				// If cell is markdown cell, clearOutputs() is a no-op
@@ -672,7 +671,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	navigateToSection(id: string): void {
 		id = id.toLowerCase();
-		let section = find(this.getSectionElements(), s => s.relativeUri && s.relativeUri.toLowerCase() === id);
+		let section = this.getSectionElements().find(s => s.relativeUri && s.relativeUri.toLowerCase() === id);
 		if (section) {
 			// Scroll this section to the top of the header instead of just bringing header into view.
 			let scrollTop = jQuery(section.headerEl).offset().top;

@@ -33,7 +33,6 @@ import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardServi
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { find } from 'vs/base/common/arrays';
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
@@ -201,10 +200,10 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		const self = this;
 		let cachedHistory = self._jobCacheObject.getJobHistory(element.jobID);
 		if (cachedHistory) {
-			self.agentJobHistoryInfo = find(cachedHistory,
+			self.agentJobHistoryInfo = cachedHistory.find(
 				history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
 		} else {
-			self.agentJobHistoryInfo = find(self._treeController.jobHistories,
+			self.agentJobHistoryInfo = self._treeController.jobHistories.find(
 				history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
 		}
 		if (self.agentJobHistoryInfo) {

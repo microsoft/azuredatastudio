@@ -34,8 +34,6 @@ import { nb } from 'azdata';
 import { Emitter } from 'vs/base/common/event';
 import { INotebookEditor, INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
-import { startsWith } from 'vs/base/common/strings';
-import { assign } from 'vs/base/common/objects';
 
 
 class ServiceAccessor {
@@ -550,7 +548,7 @@ suite('Notebook Editor Model', function (): void {
 			assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(10 + i * 21), '            ],');
 			assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14 + i * 21), '            "outputs": [');
 			assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25 + i * 21), '            "execution_count": 0');
-			assert(startsWith(notebookEditorModel.editorModel.textEditorModel.getLineContent(26 + i * 21), '        }'));
+			assert(notebookEditorModel.editorModel.textEditorModel.getLineContent(26 + i * 21).startsWith('        }'));
 		}
 	});
 
@@ -858,7 +856,7 @@ suite('Notebook Editor Model', function (): void {
 	});
 
 	async function createNewNotebookModel() {
-		let options: INotebookModelOptions = assign({}, defaultModelOptions, <Partial<INotebookModelOptions>><unknown>{
+		let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>><unknown>{
 			factory: mockModelFactory.object
 		});
 		notebookModel = new NotebookModel(options, undefined, logService, undefined, undefined);

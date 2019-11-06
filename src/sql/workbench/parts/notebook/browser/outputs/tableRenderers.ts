@@ -15,7 +15,6 @@ import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelT
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/parts/query/common/resultsGridContribution';
-import { values } from 'vs/base/common/collections';
 
 /**
  * Render DataResource as a grid into a host node.
@@ -90,7 +89,7 @@ export function transformData(rows: any[], columns: Slick.Column<any>[]): { [key
 	return rows.map(row => {
 		let dataWithSchema = {};
 		Object.keys(row).forEach((val, index) => {
-			let displayValue = String(values(row)[index]);
+			let displayValue = String(Object.values(row)[index]);
 			// Since the columns[0] represents the row number, start at 1
 			dataWithSchema[columns[index + 1].field] = {
 				displayValue: displayValue,

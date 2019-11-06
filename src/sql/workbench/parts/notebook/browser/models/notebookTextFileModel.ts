@@ -4,11 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Range, IRange } from 'vs/editor/common/core/range';
+import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
+import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { FindMatch } from 'vs/editor/common/model';
+import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
 import { NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { BaseTextEditorModel } from 'vs/workbench/common/editor/textEditorModel';
-import { repeat } from 'vs/base/common/strings';
 
 export class NotebookTextFileModel {
 	// save active cell's line/column in editor model for the beginning of the source property
@@ -95,7 +97,7 @@ export class NotebookTextFileModel {
 					endColumn: computedEndColumn
 				};
 				// Need to subtract one because we're going from 1-based to 0-based
-				let startSpaces: string = repeat(' ', cellGuidRange.startColumn - 1);
+				let startSpaces: string = ' '.repeat(cellGuidRange.startColumn - 1);
 				// The text here transforms a string from 'This is a string\n this is another string' to:
 				//     This is a string
 				//     this is another string
@@ -235,7 +237,7 @@ export class NotebookTextFileModel {
 		if (this._activeCellGuid === cellGuid) {
 			outputsBegin = this._outputBeginRange;
 		}
-		if (!outputsBegin || !(textEditorModel.textEditorModel.getLineContent(outputsBegin.startLineNumber).trim().indexOf('output') > -1)) {
+		if (!outputsBegin || !textEditorModel.textEditorModel.getLineContent(outputsBegin.startLineNumber).trim().includes('output')) {
 			this.updateOutputBeginRange(textEditorModel, cellGuid);
 			outputsBegin = this._outputBeginRange;
 			if (!outputsBegin) {

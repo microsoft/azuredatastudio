@@ -279,7 +279,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			throw new Error('Exactly 1 insight type must be specified');
 		}
 
-		if (!insightRegistry.getAllIds().some(x => x === Object.keys(this.insightConfig.type)[0])) {
+		if (!insightRegistry.getAllIds().includes(Object.keys(this.insightConfig.type)[0])) {
 			throw new Error('The insight type must be a valid registered insight');
 		}
 

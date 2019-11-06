@@ -21,7 +21,6 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { getContentHeight, addDisposableListener, EventType } from 'vs/base/browser/dom';
-import { find, firstIndex } from 'vs/base/common/arrays';
 
 /**
  * Sorting function for dashboard widgets
@@ -209,10 +208,10 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 			this._grid.enableResize();
 			this._grid.enableDrag();
 			this._editDispose.push(this.dashboardService.onDeleteWidget(e => {
-				let index = firstIndex(this.widgets, i => i.id === e);
+				let index = this.widgets.findIndex(i => i.id === e);
 				this.widgets.splice(index, 1);
 
-				index = firstIndex(this.originalConfig, i => i.id === e);
+				index = this.originalConfig.findIndex(i => i.id === e);
 				this.originalConfig.splice(index, 1);
 
 				this._rewriteConfig();
@@ -221,7 +220,7 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 			this._editDispose.push(subscriptionToDisposable(this._grid.onResizeStop.subscribe((e: NgGridItem) => {
 				this._onResize.fire();
 				const event = e.getEventOutput();
-				const config = find(this.originalConfig, i => i.id === event.payload.id);
+				const config = this.originalConfig.find(i => i.id === event.payload.id);
 
 				if (!config.gridItemConfig) {
 					config.gridItemConfig = {};
@@ -239,7 +238,7 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 				this._onResize.fire();
 				const event = e.getEventOutput();
 				this._items.forEach(i => {
-					const config = find(this.originalConfig, j => j.id === i.getEventOutput().payload.id);
+					const config = this.originalConfig.find(j => j.id === i.getEventOutput().payload.id);
 					if ((config.gridItemConfig && config.gridItemConfig.col) || config.id === event.payload.id) {
 						if (!config.gridItemConfig) {
 							config.gridItemConfig = {};

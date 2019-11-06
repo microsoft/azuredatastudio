@@ -30,7 +30,6 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { find } from 'vs/base/common/arrays';
 
 export const DASHBOARD_SELECTOR: string = 'notebookhistory-component';
 export class GridSection {
@@ -170,7 +169,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		const self = this;
 		let cachedHistory = self._notebookCacheObject.getNotebookHistory(element.jobID);
 		if (cachedHistory) {
-			self.agentNotebookHistoryInfo = find(cachedHistory,
+			self.agentNotebookHistoryInfo = cachedHistory.find(
 				history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
 		}
 		if (self.agentNotebookHistoryInfo) {

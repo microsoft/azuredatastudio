@@ -14,7 +14,6 @@ import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
-import { find } from 'vs/base/common/arrays';
 import { localize } from 'vs/nls';
 
 export enum DeclarativeDataType {
@@ -113,7 +112,7 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		if (column.categoryValues) {
 			if (typeof e === 'string') {
-				let category = find(column.categoryValues, c => c.displayName === e);
+				let category = column.categoryValues.find(c => c.displayName === e);
 				if (category) {
 					this.onCellDataChanged(category.name, row, cell);
 				} else {
@@ -168,7 +167,7 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		let cellData = this.data[row][cell];
 		if (cellData && column.categoryValues) {
-			let category = find(column.categoryValues, v => v.name === cellData);
+			let category = column.categoryValues.find(v => v.name === cellData);
 			if (category) {
 				return category.displayName;
 			} else if (this.isEditableSelectBox(cell)) {

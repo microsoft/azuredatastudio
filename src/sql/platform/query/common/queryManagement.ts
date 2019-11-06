@@ -14,7 +14,6 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Event, Emitter } from 'vs/base/common/event';
 import { keys } from 'vs/base/common/map';
 import { ILogService } from 'vs/platform/log/common/log';
-import { assign } from 'vs/base/common/objects';
 
 export const SERVICE_ID = 'queryManagementService';
 
@@ -174,7 +173,7 @@ export class QueryManagementService implements IQueryManagementService {
 			provider: providerId,
 		};
 		if (runOptions) {
-			data = assign({}, data, {
+			data = Object.assign({}, data, {
 				displayEstimatedQueryPlan: runOptions.displayEstimatedQueryPlan,
 				displayActualQueryPlan: runOptions.displayActualQueryPlan
 			});

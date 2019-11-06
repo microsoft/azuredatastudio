@@ -12,9 +12,6 @@ import { NAV_SECTION, validateNavSectionContributionAndRegisterIcon } from 'sql/
 import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/workbench/parts/dashboard/browser/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/workbench/parts/dashboard/browser/containers/dashboardGridContainer.contribution';
 import { WEBVIEW_CONTAINER } from 'sql/workbench/parts/dashboard/browser/containers/dashboardWebviewContainer.contribution';
-import { values } from 'vs/base/common/collections';
-import { find } from 'vs/base/common/arrays';
-import { NavSectionConfig } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
 
 const containerTypes = [
 	WIDGETS_CONTAINER,
@@ -27,7 +24,7 @@ export type IUserFriendlyIcon = string | { light: string; dark: string; };
 
 export interface IDashboardContainerContrib {
 	id: string;
-	container: Record<string, NavSectionConfig[]>;
+	container: object;
 }
 
 const containerSchema: IJSONSchema = {
@@ -76,9 +73,9 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardContainerContrib | IDashboar
 
 		let result = true;
 		const containerkey = Object.keys(container)[0];
-		const containerValue = values(container)[0];
+		const containerValue = Object.values(container)[0];
 
-		const containerTypeFound = find(containerTypes, c => c === containerkey);
+		const containerTypeFound = containerTypes.find(c => (c === containerkey));
 		if (!containerTypeFound) {
 			extension.collector.error(localize('dashboardTab.contribution.unKnownContainerType', "Unknown container type defines in dashboard container for extension."));
 			return;

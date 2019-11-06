@@ -8,7 +8,6 @@ import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ViewChild, OnI
 import { mixin } from 'vs/base/common/objects';
 import { IInsightData } from 'sql/workbench/parts/charts/browser/interfaces';
 import { IInsightsView } from 'sql/platform/dashboard/browser/insightRegistry';
-import { startsWith } from 'vs/base/common/strings';
 
 interface IConfig {
 	encoding?: string;
@@ -71,7 +70,7 @@ export default class ImageInsight implements IInsightsView, OnInit {
 
 	private static _hexToBase64(hexVal: string) {
 
-		if (startsWith(hexVal, '0x')) {
+		if (hexVal.startsWith('0x')) {
 			hexVal = hexVal.slice(2);
 		}
 		// should be able to be replaced with new Buffer(hexVal, 'hex').toString('base64')
