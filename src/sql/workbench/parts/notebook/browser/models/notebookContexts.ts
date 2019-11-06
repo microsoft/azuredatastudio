@@ -11,7 +11,6 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-import { find } from 'vs/base/common/arrays';
 
 export class NotebookContexts {
 
@@ -89,13 +88,13 @@ export class NotebookContexts {
 		// Filter active connections by their provider ids to match kernel's supported connection providers
 		else if (activeConnections.length > 0) {
 			let connections = activeConnections.filter(connection => {
-				return connProviderIds.some(x => x === connection.providerName);
+				return connProviderIds.includes(connection.providerName);
 			});
 			if (connections && connections.length > 0) {
 				defaultConnection = connections[0];
 				if (profile && profile.options) {
-					if (find(connections, connection => connection.serverName === profile.serverName)) {
-						defaultConnection = find(connections, connection => connection.serverName === profile.serverName);
+					if (connections.find(connection => connection.serverName === profile.serverName)) {
+						defaultConnection = connections.find(connection => connection.serverName === profile.serverName);
 					}
 				}
 			} else if (connections.length === 0) {
@@ -129,11 +128,11 @@ export class NotebookContexts {
 		if (specs) {
 			// find the saved kernel (if it exists)
 			if (displayName) {
-				defaultKernel = find(specs.kernels, (kernel) => kernel.display_name === displayName);
+				defaultKernel = specs.kernels.find((kernel) => kernel.display_name === displayName);
 			}
 			// if no saved kernel exists, use the default KernelSpec
 			if (!defaultKernel) {
-				defaultKernel = find(specs.kernels, (kernel) => kernel.name === specs.defaultKernel);
+				defaultKernel = specs.kernels.find((kernel) => kernel.name === specs.defaultKernel);
 			}
 			if (defaultKernel) {
 				return defaultKernel;

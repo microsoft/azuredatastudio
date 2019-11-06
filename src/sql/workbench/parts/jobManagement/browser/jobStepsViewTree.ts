@@ -129,7 +129,7 @@ export class JobStepsViewRenderer implements tree.IRenderer {
 		let stepMessageCol: HTMLElement = DOM.$('div');
 		stepMessageCol.className = 'tree-message-col';
 		stepMessageCol.innerText = element.message;
-		if (element.rowID.indexOf('stepsColumn') !== -1) {
+		if (element.rowID.includes('stepsColumn')) {
 			stepNameCol.className += ' step-column-heading';
 			stepIdCol.className += ' step-column-heading';
 			stepMessageCol.className += ' step-column-heading';

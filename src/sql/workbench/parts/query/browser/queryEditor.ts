@@ -187,7 +187,7 @@ export class QueryEditor extends BaseEditor {
 		this.setTaskbarContent();
 
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration('workbench.enablePreviewFeatures')) {
+			if (e.affectedKeys.includes('workbench.enablePreviewFeatures')) {
 				this.setTaskbarContent();
 			}
 		}));

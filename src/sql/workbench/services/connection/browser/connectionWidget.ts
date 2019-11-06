@@ -35,7 +35,6 @@ import { endsWith, startsWith } from 'vs/base/common/strings';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
-import { find } from 'vs/base/common/arrays';
 
 export class ConnectionWidget extends lifecycle.Disposable {
 	private _previousGroupOption: string;
@@ -382,7 +381,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 		if (this._refreshCredentialsLink) {
 			this._register(DOM.addDisposableListener(this._refreshCredentialsLink, DOM.EventType.CLICK, async () => {
-				let account = find(this._azureAccountList, account => account.key.accountId === this._azureAccountDropdown.value);
+				let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 				if (account) {
 					await this._accountManagementService.refreshAccount(account);
 					await this.fillInAzureAccountOptions();
@@ -471,7 +470,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	private updateRefreshCredentialsLink(): void {
-		let chosenAccount = find(this._azureAccountList, account => account.key.accountId === this._azureAccountDropdown.value);
+		let chosenAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 		if (chosenAccount && chosenAccount.isStale) {
 			DOM.removeClass(this._tableContainer, 'hide-refresh-link');
 		} else {
@@ -492,7 +491,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			await this.fillInAzureAccountOptions();
 
 			// If a new account was added find it and select it, otherwise select the first account
-			let newAccount = find(this._azureAccountList, option => !oldAccountIds.some(oldId => oldId === option.key.accountId));
+			let newAccount = this._azureAccountList.find(option => !oldAccountIds.some(oldId => oldId === option.key.accountId));
 			if (newAccount) {
 				this._azureAccountDropdown.selectWithOptionName(newAccount.key.accountId);
 			} else {
@@ -504,7 +503,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 		// Display the tenant select box if needed
 		const hideTenantsClassName = 'hide-azure-tenants';
-		let selectedAccount = find(this._azureAccountList, account => account.key.accountId === this._azureAccountDropdown.value);
+		let selectedAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 		if (selectedAccount && selectedAccount.properties.tenants && selectedAccount.properties.tenants.length > 1) {
 			// There are multiple tenants available so let the user select one
 			let options = selectedAccount.properties.tenants.map(tenant => tenant.displayName);
@@ -523,7 +522,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 	private onAzureTenantSelected(tenantIndex: number): void {
 		this._azureTenantId = undefined;
-		let account = find(this._azureAccountList, account => account.key.accountId === this._azureAccountDropdown.value);
+		let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 		if (account && account.properties.tenants) {
 			let tenant = account.properties.tenants[tenantIndex];
 			if (tenant) {
@@ -534,7 +533,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 	private serverNameChanged(serverName: string) {
 		this.setConnectButton();
-		if (serverName.toLocaleLowerCase().indexOf('database.windows.net') > -1) {
+		if (serverName.toLocaleLowerCase().includes('database.windows.net')) {
 			this._callbacks.onSetAzureTimeOut();
 		}
 	}
@@ -638,7 +637,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					this._azureAccountDropdown.selectWithOptionName(this.getModelValue(connectionInfo.userName));
 					await this.onAzureAccountSelected();
 					let tenantId = connectionInfo.azureTenantId;
-					let account = find(this._azureAccountList, account => account.key.accountId === this._azureAccountDropdown.value);
+					let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 					if (account && account.properties.tenants.length > 1) {
 						let tenant = account.properties.tenants.find(tenant => tenant.id === tenantId);
 						if (tenant) {
@@ -835,19 +834,19 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private findGroupId(groupFullName: string): string {
 		let group: IConnectionProfileGroup;
 		if (ConnectionProfileGroup.isRoot(groupFullName)) {
-			group = find(this._serverGroupOptions, g => ConnectionProfileGroup.isRoot(g.name));
+			group = this._serverGroupOptions.find(g => ConnectionProfileGroup.isRoot(g.name));
 			if (group === undefined) {
-				group = find(this._serverGroupOptions, g => g.name === this.DefaultServerGroup.name);
+				group = this._serverGroupOptions.find(g => g.name === this.DefaultServerGroup.name);
 			}
 		} else {
-			group = find(this._serverGroupOptions, g => g.name === groupFullName);
+			group = this._serverGroupOptions.find(g => g.name === groupFullName);
 		}
 		return group ? group.id : undefined;
 	}
 
 	private getMatchingAuthType(displayName: string): AuthenticationType {
 		const authType = this._authTypeMap[this._providerName];
-		return authType ? find(authType, authType => this.getAuthTypeDisplayName(authType) === displayName) : undefined;
+		return authType ? authType.find(authType => this.getAuthTypeDisplayName(authType) === displayName) : undefined;
 	}
 
 	public closeDatabaseDropdown(): void {

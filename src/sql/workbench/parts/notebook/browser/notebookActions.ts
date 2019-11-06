@@ -27,7 +27,6 @@ import { getErrorMessage } from 'vs/base/common/errors';
 import { INotebookModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
-import { find, firstIndex } from 'vs/base/common/arrays';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
@@ -344,7 +343,7 @@ export class KernelsDropdown extends SelectBox {
 			let standardKernel = this.model.getStandardKernelFromName(kernel.name);
 
 			if (kernels && standardKernel) {
-				let index = firstIndex(kernels, kernel => kernel === standardKernel.displayName);
+				let index = kernels.findIndex((kernel => kernel === standardKernel.displayName));
 				this.setOptions(kernels, index);
 			}
 		} else if (this.model.clientSession.isInErrorState) {
@@ -431,7 +430,7 @@ export class AttachToDropdown extends SelectBox {
 		let kernelDisplayName: string;
 		if (this.model.clientSession && this.model.clientSession.kernel && this.model.clientSession.kernel.name) {
 			let currentKernelName = this.model.clientSession.kernel.name.toLowerCase();
-			let currentKernelSpec = find(this.model.specs.kernels, kernel => kernel.name && kernel.name.toLowerCase() === currentKernelName);
+			let currentKernelSpec = this.model.specs.kernels.find(kernel => kernel.name && kernel.name.toLowerCase() === currentKernelName);
 			if (currentKernelSpec) {
 				kernelDisplayName = currentKernelSpec.display_name;
 			}
@@ -456,7 +455,7 @@ export class AttachToDropdown extends SelectBox {
 					connections.unshift(msgSelectConnection);
 				}
 				else {
-					if (!find(connections, x => x === msgAddNewConnection)) {
+					if (!connections.includes(msgAddNewConnection)) {
 						connections.push(msgAddNewConnection);
 					}
 				}
@@ -467,11 +466,11 @@ export class AttachToDropdown extends SelectBox {
 
 	private loadWithSelectConnection(connections: string[]): string[] {
 		if (connections && connections.length > 0) {
-			if (!find(connections, x => x === msgSelectConnection)) {
+			if (!connections.includes(msgSelectConnection)) {
 				connections.unshift(msgSelectConnection);
 			}
 
-			if (!find(connections, x => x === msgAddNewConnection)) {
+			if (!connections.includes(msgAddNewConnection)) {
 				connections.push(msgAddNewConnection);
 			}
 			this.setOptions(connections, 0);
@@ -516,7 +515,7 @@ export class AttachToDropdown extends SelectBox {
 		if (connections.length === 1) {
 			return connections[0];
 		} else {
-			return find(this.model.contexts.otherConnections, (c) => selection === c.title);
+			return this.model.contexts.otherConnections.find((c) => selection === c.title);
 		}
 	}
 
@@ -564,7 +563,7 @@ export class AttachToDropdown extends SelectBox {
 			//To ignore n/a after we have at least one valid connection
 			attachToConnections = attachToConnections.filter(val => val !== msgSelectConnection);
 
-			let index = firstIndex(attachToConnections, connection => connection === connectedServer);
+			let index = attachToConnections.findIndex((connection => connection === connectedServer));
 			this.setOptions([]);
 			this.setOptions(attachToConnections);
 			if (!index || index < 0 || index >= attachToConnections.length) {

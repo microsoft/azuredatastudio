@@ -19,8 +19,6 @@ import * as dashboardHelper from 'sql/workbench/parts/dashboard/browser/core/das
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ILogService } from 'vs/platform/log/common/log';
-import { find } from 'vs/base/common/arrays';
-import { values } from 'vs/base/common/collections';
 
 @Component({
 	selector: 'dashboard-nav-section',
@@ -66,7 +64,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 		this.tabs = [];
 		let navSectionContainers: NavSectionConfig[] = [];
 		if (this.tab.container) {
-			navSectionContainers = values(this.tab.container)[0];
+			navSectionContainers = Object.values(this.tab.container)[0];
 			let hasIcon = true;
 			navSectionContainers.forEach(navSection => {
 				if (!navSection.iconClass) {
@@ -102,7 +100,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 
 				const key = Object.keys(containerResult.container)[0];
 				if (key === WIDGETS_CONTAINER || key === GRID_CONTAINER) {
-					let configs = <WidgetConfig[]>values(containerResult.container)[0];
+					let configs = <WidgetConfig[]>Object.values(containerResult.container)[0];
 					this._configModifiers.forEach(cb => {
 						configs = cb.apply(this, [configs, this, this.tab.context]);
 					});
@@ -129,7 +127,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 	}
 
 	private addNewTab(tab: TabConfig): void {
-		const existedTab = find(this.tabs, i => i.id === tab.id);
+		const existedTab = this.tabs.find(i => i.id === tab.id);
 		if (!existedTab) {
 			this.tabs.push(tab);
 			this._cd.detectChanges();

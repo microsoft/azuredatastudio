@@ -26,7 +26,6 @@ import { InputBox } from 'sql/platform/browser/inputbox/inputBox.component';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IBootstrapParams, ISelector } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
-import { startsWith } from 'vs/base/common/strings';
 
 export const DialogModule = (params, selector: string, instantiationService: IInstantiationService): any => {
 
@@ -69,7 +68,7 @@ export const DialogModule = (params, selector: string, instantiationService: IIn
 		}
 
 		ngDoBootstrap(appRef: ApplicationRef) {
-			let componentClass = startsWith(this.selector, WizardNavigation.SELECTOR) ? WizardNavigation : DialogContainer;
+			let componentClass = this.selector.startsWith(WizardNavigation.SELECTOR) ? WizardNavigation : DialogContainer;
 			const factoryWrapper: any = this._resolver.resolveComponentFactory<WizardNavigation | DialogContainer>(componentClass);
 			factoryWrapper.factory.selector = this.selector;
 			appRef.bootstrap(factoryWrapper);
