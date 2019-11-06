@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import { nb } from 'azdata';
+import * as assert from 'assert';
 
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
@@ -15,7 +15,7 @@ import { LocalContentManager } from 'sql/workbench/services/notebook/common/loca
 import { NotebookManagerStub } from './common';
 import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/parts/notebook/browser/models/modelFactory';
-import { IClientSession, ICellModel, INotebookModelOptions, NotebookContentChange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { IClientSession, INotebookModelOptions, NotebookContentChange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { ClientSession } from 'sql/workbench/parts/notebook/browser/models/clientSession';
 import { CellTypes, NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { Deferred } from 'sql/base/common/promise';
@@ -29,6 +29,8 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
+import { isUndefinedOrNull } from 'vs/base/common/types';
+import { assign } from 'vs/base/common/objects';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -141,9 +143,9 @@ suite('notebook model', function (): void {
 		await model.loadContents();
 
 		// Then I expect to have 0 code cell as the contents
-		should(model.cells).have.length(0);
+		assert.equal(model.cells.length, 0);
 		// And Trust should be false by default
-		should(model.trustedMode).be.false();
+		assert(!model.trustedMode);
 	});
 
 	test('Should use trusted state set in model load', async function (): Promise<void> {
@@ -157,7 +159,7 @@ suite('notebook model', function (): void {
 		await model.requestModelLoad();
 
 		// Then Trust should be true
-		should(model.trustedMode).be.true();
+		assert(model.trustedMode);
 	});
 
 	// test('Should throw if model load fails', async function(): Promise<void> {
@@ -237,7 +239,7 @@ suite('notebook model', function (): void {
 		sessionReady.resolve();
 		let actualSession: IClientSession = undefined;
 
-		let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
+		let options: INotebookModelOptions = assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
 			factory: mockModelFactory.object
 		});
 		let model = new NotebookModel(options, undefined, logService, undefined, undefined);
@@ -246,29 +248,27 @@ suite('notebook model', function (): void {
 		await model.startSession(notebookManagers[0]);
 
 		// Then I expect load to succeed
-		should(model.clientSession).not.be.undefined();
+		assert(!isUndefinedOrNull(model.clientSession));
 		// but on server load completion I expect error state to be set
 		// Note: do not expect serverLoad event to throw even if failed
-		let kernelChangedArg: nb.IKernelChangedArgs = undefined;
-		model.kernelChanged((kernel) => kernelChangedArg = kernel);
 		await model.sessionLoadFinished;
-		should(model.inErrorState).be.false();
-		should(actualSession).equal(mockClientSession.object);
-		should(model.clientSession).equal(mockClientSession.object);
+		assert(!model.inErrorState);
+		assert.equal(actualSession, mockClientSession.object);
+		assert.equal(model.clientSession, mockClientSession.object);
 	});
 
 	test('Should sanitize kernel display name when IP is included', async function (): Promise<void> {
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
 		let displayName = 'PySpark (1.1.1.1)';
 		let sanitizedDisplayName = model.sanitizeDisplayName(displayName);
-		should(sanitizedDisplayName).equal('PySpark');
+		assert.equal(sanitizedDisplayName, 'PySpark');
 	});
 
 	test('Should sanitize kernel display name properly when IP is not included', async function (): Promise<void> {
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
 		let displayName = 'PySpark';
 		let sanitizedDisplayName = model.sanitizeDisplayName(displayName);
-		should(sanitizedDisplayName).equal('PySpark');
+		assert.equal(sanitizedDisplayName, 'PySpark');
 	});
 
 	test('Should notify on trust set', async function () {
@@ -285,19 +285,8 @@ suite('notebook model', function (): void {
 		model.trustedMode = true;
 
 		// Then content changed notification should be sent
-		should(model.trustedMode).be.true();
-		should(actualChanged).not.be.undefined();
-		should(actualChanged.changeType).equal(NotebookChangeType.TrustChanged);
+		assert(model.trustedMode);
+		assert(!isUndefinedOrNull(actualChanged));
+		assert.equal(actualChanged.changeType, NotebookChangeType.TrustChanged);
 	});
-
-	function shouldHaveOneCell(model: NotebookModel): void {
-		should(model.cells).have.length(1);
-		verifyCellModel(model.cells[0], { cell_type: CellTypes.Code, source: 'insert into t1 values (c1, c2)', metadata: { language: 'python' }, execution_count: 1 });
-	}
-
-	function verifyCellModel(cellModel: ICellModel, expected: nb.ICellContents): void {
-		should(cellModel.cellType).equal(expected.cell_type);
-		should(cellModel.source).equal(expected.source);
-	}
-
 });

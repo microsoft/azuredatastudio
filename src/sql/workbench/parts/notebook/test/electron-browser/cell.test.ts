@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import { nb } from 'azdata';
+import * as assert from 'assert';
 
 import * as objects from 'vs/base/common/objects';
 
@@ -18,6 +18,8 @@ import { Deferred } from 'sql/base/common/promise';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
+import { isUndefinedOrNull } from 'vs/base/common/types';
+import { startsWith } from 'vs/base/common/strings';
 
 let instantiationService: IInstantiationService;
 
@@ -28,16 +30,16 @@ suite('Cell Model', function (): void {
 	let factory = new ModelFactory(instantiationService);
 	test('Should set default values if none defined', async function (): Promise<void> {
 		let cell = factory.createCell(undefined, undefined);
-		should(cell.cellType).equal(CellTypes.Code);
-		should(cell.source).equal('');
+		assert.equal(cell.cellType, CellTypes.Code);
+		assert.equal(cell.source, '');
 	});
 
 	test('Should update values', async function (): Promise<void> {
 		let cell = factory.createCell(undefined, undefined);
 		cell.setOverrideLanguage('sql');
-		should(cell.language).equal('sql');
+		assert.equal(cell.language, 'sql');
 		cell.source = 'abcd';
-		should(JSON.stringify(cell.source)).equal(JSON.stringify(['abcd']));
+		assert.equal(JSON.stringify(cell.source), JSON.stringify(['abcd']));
 	});
 
 	test('Should match ICell values if defined', async function (): Promise<void> {
@@ -54,11 +56,11 @@ suite('Cell Model', function (): void {
 			execution_count: 1
 		};
 		let cell = factory.createCell(cellData, undefined);
-		should(cell.cellType).equal(cellData.cell_type);
-		should(JSON.stringify(cell.source)).equal(JSON.stringify([cellData.source]));
-		should(cell.outputs).have.length(1);
-		should(cell.outputs[0].output_type).equal('stream');
-		should((<nb.IStreamResult>cell.outputs[0]).text).equal('Some output');
+		assert.equal(cell.cellType, cellData.cell_type);
+		assert.equal(JSON.stringify(cell.source), JSON.stringify([cellData.source]));
+		assert.equal(cell.outputs.length, 1);
+		assert.equal(cell.outputs[0].output_type, 'stream');
+		assert.equal((<nb.IStreamResult>cell.outputs[0]).text, 'Some output');
 	});
 
 
@@ -76,7 +78,7 @@ suite('Cell Model', function (): void {
 			mimetype: ''
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		should(cell.language).equal('python');
+		assert.equal(cell.language, 'python');
 	});
 
 	test('Should set cell language to python if defined as pyspark in languageInfo', async function (): Promise<void> {
@@ -93,7 +95,7 @@ suite('Cell Model', function (): void {
 			mimetype: ''
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		should(cell.language).equal('python');
+		assert.equal(cell.language, 'python');
 	});
 
 	test('Should keep cell language as python if cell has language override', async function (): Promise<void> {
@@ -110,7 +112,7 @@ suite('Cell Model', function (): void {
 			mimetype: ''
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		should(cell.language).equal('python');
+		assert.equal(cell.language, 'python');
 	});
 
 	test('Should set cell language to python if no language defined', async function (): Promise<void> {
@@ -127,7 +129,7 @@ suite('Cell Model', function (): void {
 			mimetype: ''
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		should(cell.language).equal('python');
+		assert.equal(cell.language, 'python');
 	});
 
 	test('Should allow source of type string[] with length 1', async function (): Promise<void> {
@@ -144,9 +146,9 @@ suite('Cell Model', function (): void {
 			mimetype: ''
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		should(Array.isArray(cell.source)).equal(true);
-		should(cell.source.length).equal(1);
-		should(cell.source[0]).equal('print(1)');
+		assert(Array.isArray(cell.source));
+		assert.equal(cell.source.length, 1);
+		assert.equal(cell.source[0], 'print(1)');
 	});
 
 	test('Should allow source of type string', async function (): Promise<void> {
@@ -163,8 +165,8 @@ suite('Cell Model', function (): void {
 			mimetype: ''
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		should(Array.isArray(cell.source)).equal(true);
-		should(JSON.stringify(cell.source)).equal(JSON.stringify(['print(1)']));
+		assert(Array.isArray(cell.source));
+		assert.equal(JSON.stringify(cell.source), JSON.stringify(['print(1)']));
 	});
 
 	test('Should allow source of type string with newline and split it', async function (): Promise<void> {
@@ -181,10 +183,10 @@ suite('Cell Model', function (): void {
 			mimetype: ''
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		should(Array.isArray(cell.source)).equal(true);
-		should(cell.source.length).equal(2);
-		should(cell.source[0]).equal('print(1)\n');
-		should(cell.source[1]).equal('print(2)');
+		assert(Array.isArray(cell.source));
+		assert.equal(cell.source.length, 2);
+		assert.equal(cell.source[0], 'print(1)\n');
+		assert.equal(cell.source[1], 'print(2)');
 	});
 
 	test('Should allow source of type string with Windows style newline and split it', async function (): Promise<void> {
@@ -201,10 +203,10 @@ suite('Cell Model', function (): void {
 			mimetype: ''
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		should(Array.isArray(cell.source)).equal(true);
-		should(cell.source.length).equal(2);
-		should(cell.source[0]).equal('print(1)\r\n');
-		should(cell.source[1]).equal('print(2)');
+		assert(Array.isArray(cell.source));
+		assert.equal(cell.source.length, 2);
+		assert.equal(cell.source[0], 'print(1)\r\n');
+		assert.equal(cell.source[1], 'print(2)');
 	});
 
 	test('Should allow source of type string[] with length 2', async function (): Promise<void> {
@@ -221,10 +223,10 @@ suite('Cell Model', function (): void {
 			mimetype: ''
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		should(Array.isArray(cell.source)).equal(true);
-		should(cell.source.length).equal(2);
-		should(cell.source[0]).equal('print(1)\n');
-		should(cell.source[1]).equal('print(2)');
+		assert(Array.isArray(cell.source));
+		assert.equal(cell.source.length, 2);
+		assert.equal(cell.source[0], 'print(1)\n');
+		assert.equal(cell.source[1], 'print(2)');
 	});
 
 	test('Should allow empty string source', async function (): Promise<void> {
@@ -241,8 +243,8 @@ suite('Cell Model', function (): void {
 			mimetype: ''
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		should(Array.isArray(cell.source)).equal(true);
-		should(JSON.stringify(cell.source)).equal(JSON.stringify(['']));
+		assert(Array.isArray(cell.source));
+		assert.equal(JSON.stringify(cell.source), JSON.stringify(['']));
 	});
 
 	test('Should parse metadata\'s hide_input tag correctly', async function (): Promise<void> {
@@ -257,46 +259,46 @@ suite('Cell Model', function (): void {
 		};
 		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
 
-		should(model.isCollapsed).be.false();
+		assert(!model.isCollapsed);
 		model.isCollapsed = true;
-		should(model.isCollapsed).be.true();
+		assert(model.isCollapsed);
 		model.isCollapsed = false;
-		should(model.isCollapsed).be.false();
+		assert(!model.isCollapsed);
 
 		let modelJson = model.toJSON();
-		should(modelJson.metadata.tags).not.be.undefined();
-		should(modelJson.metadata.tags).not.containEql('hide_input');
+		assert(!isUndefinedOrNull(modelJson.metadata.tags));
+		assert(!modelJson.metadata.tags.some(x => x === 'hide_input'));
 
 		contents.metadata = {
 			tags: ['hide_input']
 		};
 		model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
 
-		should(model.isCollapsed).be.true();
+		assert(model.isCollapsed);
 		model.isCollapsed = false;
-		should(model.isCollapsed).be.false();
+		assert(!model.isCollapsed);
 		model.isCollapsed = true;
-		should(model.isCollapsed).be.true();
+		assert(model.isCollapsed);
 
 		modelJson = model.toJSON();
-		should(modelJson.metadata.tags).not.be.undefined();
-		should(modelJson.metadata.tags).containEql('hide_input');
+		assert(!isUndefinedOrNull(modelJson.metadata.tags));
+		assert(modelJson.metadata.tags.some(x => x === 'hide_input'));
 
 		contents.metadata = {
 			tags: ['not_a_real_tag']
 		};
 		model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
 		modelJson = model.toJSON();
-		should(modelJson.metadata.tags).not.be.undefined();
-		should(modelJson.metadata.tags).not.containEql('hide_input');
+		assert(!isUndefinedOrNull(modelJson.metadata.tags));
+		assert(!modelJson.metadata.tags.some(x => x === 'hide_input'));
 
 		contents.metadata = {
 			tags: ['not_a_real_tag', 'hide_input']
 		};
 		model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
 		modelJson = model.toJSON();
-		should(modelJson.metadata.tags).not.be.undefined();
-		should(modelJson.metadata.tags).containEql('hide_input');
+		assert(!isUndefinedOrNull(modelJson.metadata.tags));
+		assert(modelJson.metadata.tags.some(x => x === 'hide_input'));
 	});
 
 	test('Should emit event after collapsing cell', async function (): Promise<void> {
@@ -310,7 +312,7 @@ suite('Cell Model', function (): void {
 			source: ''
 		};
 		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
-		should(model.isCollapsed).be.false();
+		assert(!model.isCollapsed);
 
 		let createCollapsePromise = () => {
 			return new Promise((resolve, reject) => {
@@ -321,16 +323,16 @@ suite('Cell Model', function (): void {
 			});
 		};
 
-		should(model.isCollapsed).be.false();
+		assert(!model.isCollapsed);
 		let collapsePromise = createCollapsePromise();
 		model.isCollapsed = true;
 		let isCollapsed = await collapsePromise;
-		should(isCollapsed).be.true();
+		assert(isCollapsed);
 
 		collapsePromise = createCollapsePromise();
 		model.isCollapsed = false;
 		isCollapsed = await collapsePromise;
-		should(isCollapsed).be.false();
+		assert(!isCollapsed);
 	});
 
 	suite('Model Future handling', function (): void {
@@ -379,8 +381,8 @@ suite('Cell Model', function (): void {
 			cell.setFuture(future.object);
 
 			// Then I expect outputs to have been cleared
-			should(outputs).have.length(0);
-			should(onReply).not.be.undefined();
+			assert.equal(outputs.length, 0);
+			assert(!isUndefinedOrNull(onReply));
 			// ... And when I send an IoPub message
 			let message: nb.IIOPubMessage = {
 				channel: 'iopub',
@@ -396,13 +398,13 @@ suite('Cell Model', function (): void {
 			};
 			onIopub.handle(message);
 			// Then I expect an output to be added
-			should(outputs).have.length(1);
-			should(outputs[0].output_type).equal('stream');
+			assert.equal(outputs.length, 1);
+			assert.equal(outputs[0].output_type, 'stream');
 
 			message = objects.deepClone(message);
 			message.header.msg_type = 'display_data';
 			onIopub.handle(message);
-			should(outputs[1].output_type).equal('display_data');
+			assert.equal(outputs[1].output_type, 'display_data');
 		});
 
 		test('stdin should return void if no handler registered', async () => {
@@ -414,7 +416,7 @@ suite('Cell Model', function (): void {
 			cell.setFuture(future.object);
 
 			// Then I expect stdIn to have been hooked up
-			should(onStdIn).not.be.undefined();
+			assert(!isUndefinedOrNull(onStdIn));
 			// ... And when I send a stdIn request message
 			let result = onStdIn.handle(stdInDefaultMessage);
 			// Then I expect the promise to resolve
@@ -443,9 +445,9 @@ suite('Cell Model', function (): void {
 			// Then I expect promise to resolve since it should wait on upstream handling
 			await result;
 			// And I expect message to have been passed upstream and no message sent from the cell
-			should(stdInMessage).not.be.undefined();
-			should(stdInMessage.content.prompt).equal(stdInDefaultMessage.content.prompt);
-			should(stdInMessage.content.password).equal(stdInDefaultMessage.content.password);
+			assert(!isUndefinedOrNull(stdInMessage));
+			assert.equal(stdInMessage.content.prompt, stdInDefaultMessage.content.prompt);
+			assert.equal(stdInMessage.content.password, stdInDefaultMessage.content.password);
 			future.verify(f => f.sendInputReply(TypeMoq.It.isAny()), TypeMoq.Times.never());
 		});
 		test('stdin should send default response if there is upstream error', async () => {
@@ -498,8 +500,8 @@ suite('Cell Model', function (): void {
 			onIopub.handle(message);
 			//Output array's length should be 1
 			//'transient' tag should no longer exist in the output
-			should(outputs).have.length(1);
-			should(outputs[0]['transient']).be.undefined();
+			assert.equal(outputs.length, 1);
+			assert(isUndefinedOrNull(outputs[0]['transient']));
 		});
 
 		test('should dispose old future', async () => {
@@ -519,10 +521,10 @@ suite('Cell Model', function (): void {
 			});
 
 			let cell = factory.createCell(undefined, { notebook: notebookModel, isTrusted: false });
-			should(cell.cellGuid).not.be.undefined();
-			should(cell.cellGuid.length).equal(36);
+			assert(!isUndefinedOrNull(cell.cellGuid));
+			assert.equal(cell.cellGuid.length, 36);
 			let cellJson = cell.toJSON();
-			should(cellJson.metadata.azdata_cell_guid).not.be.undefined();
+			assert(!isUndefinedOrNull(cellJson.metadata.azdata_cell_guid));
 		});
 
 		test('should include azdata_cell_guid in metadata', async () => {
@@ -534,7 +536,7 @@ suite('Cell Model', function (): void {
 
 			let cell = factory.createCell(undefined, { notebook: notebookModel, isTrusted: false });
 			let cellJson = cell.toJSON();
-			should(cellJson.metadata.azdata_cell_guid).not.be.undefined();
+			assert(!isUndefinedOrNull(cellJson.metadata.azdata_cell_guid));
 		});
 
 		// This is critical for the notebook editor model to parse changes correctly
@@ -549,16 +551,16 @@ suite('Cell Model', function (): void {
 			let cell = factory.createCell(undefined, { notebook: notebookModel, isTrusted: false });
 			let content = JSON.stringify(cell.toJSON(), undefined, '    ');
 			let contentSplit = content.split('\n');
-			should(contentSplit.length).equal(9);
-			should(contentSplit[0].trim().startsWith('{')).equal(true);
-			should(contentSplit[1].trim().startsWith('"cell_type": "code",')).equal(true);
-			should(contentSplit[2].trim().startsWith('"source": ""')).equal(true);
-			should(contentSplit[3].trim().startsWith('"metadata": {')).equal(true);
-			should(contentSplit[4].trim().startsWith('"azdata_cell_guid": "')).equal(true);
-			should(contentSplit[5].trim().startsWith('}')).equal(true);
-			should(contentSplit[6].trim().startsWith('"outputs": []')).equal(true);
-			should(contentSplit[7].trim().startsWith('"execution_count": 0')).equal(true);
-			should(contentSplit[8].trim().startsWith('}')).equal(true);
+			assert.equal(contentSplit.length, 9);
+			assert(startsWith(contentSplit[0].trim(), '{'));
+			assert(startsWith(contentSplit[1].trim(), '"cell_type": "code",'));
+			assert(startsWith(contentSplit[2].trim(), '"source": ""'));
+			assert(startsWith(contentSplit[3].trim(), '"metadata": {'));
+			assert(startsWith(contentSplit[4].trim(), '"azdata_cell_guid": "'));
+			assert(startsWith(contentSplit[5].trim(), '}'));
+			assert(startsWith(contentSplit[6].trim(), '"outputs": []'));
+			assert(startsWith(contentSplit[7].trim(), '"execution_count": 0'));
+			assert(startsWith(contentSplit[8].trim(), '}'));
 		});
 	});
 

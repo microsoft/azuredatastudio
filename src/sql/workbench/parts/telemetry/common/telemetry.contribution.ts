@@ -25,7 +25,7 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 			commandService.onWillExecuteCommand(
 				(e: ICommandEvent) => {
 					// Filter out high-frequency events
-					if (!['type', 'cursorUp', 'cursorDown', 'cursorRight', 'cursorLeft', 'deleteLeft', 'deleteRight'].find(id => id === e.commandId)) {
+					if (!['type', 'cursorUp', 'cursorDown', 'cursorRight', 'cursorLeft', 'deleteLeft', 'deleteRight'].some(id => id === e.commandId)) {
 						telemetryService.sendActionEvent(TelemetryView.Shell, 'adsCommandExecuted', e.commandId);
 					}
 				}));

@@ -96,7 +96,7 @@ export class DropdownFilter extends TreeDefaults.DefaultFilter {
 	public filterString: string;
 
 	public isVisible(tree: tree.ITree | undefined, element: Resource): boolean {
-		return element.value.toLowerCase().includes(this.filterString.toLowerCase());
+		return element.value.toLowerCase().indexOf(this.filterString.toLowerCase()) !== -1;
 	}
 }
 

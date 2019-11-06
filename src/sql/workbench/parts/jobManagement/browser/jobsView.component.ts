@@ -19,7 +19,7 @@ import { JobManagementUtilities } from 'sql/platform/jobManagement/browser/jobMa
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { JobManagementView, JobActionContext } from 'sql/workbench/parts/jobManagement/browser/jobManagementView';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -32,6 +32,7 @@ import { tableBackground, cellBackground, cellBorderColor } from 'sql/platform/t
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
+import { find, fill } from 'vs/base/common/arrays';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -309,7 +310,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 						this._table.grid.removeCellCssStyles('error-row' + i.toString());
 						let item = this.dataView.getItemByIdx(i);
 						// current filter
-						if (_.contains(filterValues, item[args.column.field])) {
+						if (find(filterValues, x => x === item[args.column.field])) {
 							// check all previous filters
 							if (this.checkPreviousFilters(item)) {
 								if (item.lastRunOutcome === 'Failed') {
@@ -561,7 +562,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	private checkPreviousFilters(item): boolean {
 		for (let column in this.filterValueMap) {
 			if (column !== 'start' && this.filterValueMap[column][0].length > 0) {
-				if (!_.contains(this.filterValueMap[column][0], item[JobManagementUtilities.convertColNameToField(column)])) {
+				if (!find(this.filterValueMap[column][0], x => x === item[JobManagementUtilities.convertColNameToField(column)])) {
 					return false;
 				}
 			}
@@ -670,7 +671,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		// if the durations are all 0 secs, show minimal chart
 		// instead of nothing
 		if (zeroDurationJobCount === jobHistories.length) {
-			return Array(jobHistories.length).fill('5px');
+			return fill(jobHistories.length, '5px');
 		} else {
 			return chartHeights;
 		}
@@ -703,9 +704,9 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			let filterValues = col.filterValues;
 			if (filterValues && filterValues.length > 0) {
 				if (item._parent) {
-					value = value && _.contains(filterValues, item._parent[col.field]);
+					value = value && find(filterValues, x => x === item._parent[col.field]);
 				} else {
-					value = value && _.contains(filterValues, item[col.field]);
+					value = value && find(filterValues, x => x === item[col.field]);
 				}
 			}
 		}

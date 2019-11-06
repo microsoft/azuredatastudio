@@ -4,8 +4,8 @@ steps:
     versionSpec: "10.15.1"
 - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
   inputs:
-    keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
-    targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
+    keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+    targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
     vstsFeed: '$(build-cache)' # {{SQL CARBON EDIT}} update build cache
 - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3 # {{SQL CARBON EDIT}} update version
   inputs:
@@ -18,8 +18,8 @@ steps:
     GITHUB_TOKEN: $(GITHUB_TOKEN) # {{SQL CARBON EDIT}} add github token
 - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
   inputs:
-    keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
-    targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
+    keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+    targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
     vstsFeed: '$(build-cache)' # {{SQL CARBON EDIT}} update build cache
   condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 - script: |
@@ -60,3 +60,8 @@ steps:
     testResultsFiles: '*-results.xml'
     searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
   condition: succeededOrFailed()
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0 # {{SQL CARBON EDIT}} add task
+  displayName: 'Component Detection'
+  inputs:
+    alertWarningLevel: High
+    failOnAlert: true

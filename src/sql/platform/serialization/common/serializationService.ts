@@ -3,12 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { createDecorator, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
+import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
 import { getErrorMessage } from 'vs/base/common/errors';
+import { find } from 'vs/base/common/arrays';
 
 export const SERVICE_ID = 'serializationService';
 
@@ -95,7 +96,7 @@ export class SerializationService implements ISerializationService {
 		let providerCapabilities = this._capabilitiesService.getLegacyCapabilities(providerId);
 
 		if (providerCapabilities) {
-			return providerCapabilities.features.find(f => f.featureName === SERVICE_ID);
+			return find(providerCapabilities.features, f => f.featureName === SERVICE_ID);
 		}
 
 		return undefined;

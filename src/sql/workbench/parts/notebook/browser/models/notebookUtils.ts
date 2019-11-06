@@ -10,6 +10,8 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { URI } from 'vs/base/common/uri';
+import { startsWith } from 'vs/base/common/strings';
+import { assign } from 'vs/base/common/objects';
 
 
 export const clusterEndpointsProperty = 'clusterEndpoints';
@@ -25,7 +27,7 @@ export function getProvidersForFileName(fileName: string, notebookService: INote
 	let fileExt = path.extname(fileName);
 	let providers: string[];
 	// First try to get provider for actual file type
-	if (fileExt && fileExt.startsWith('.')) {
+	if (fileExt && startsWith(fileExt, '.')) {
 		fileExt = fileExt.slice(1, fileExt.length);
 		providers = notebookService.getProvidersForFileType(fileExt);
 	}
@@ -46,7 +48,7 @@ export function getStandardKernelsForProvider(providerId: string, notebookServic
 	}
 	let standardKernels = notebookService.getStandardKernelsForProvider(providerId);
 	standardKernels.forEach(kernel => {
-		Object.assign(<IStandardKernelWithProvider>kernel, {
+		assign(<IStandardKernelWithProvider>kernel, {
 			name: kernel.name,
 			connectionProviderIds: kernel.connectionProviderIds,
 			notebookProvider: providerId
@@ -118,7 +120,7 @@ export function convertVscodeResourceToFileInSubDirectories(htmlContent: string,
 		let pathEndIndex = htmlContentCopy.indexOf('\" ', pathStartIndex);
 		let filePath = htmlContentCopy.substring(pathStartIndex, pathEndIndex);
 		// If the asset is in the same folder or a subfolder, replace 'vscode-resource:' with 'file:', so the image is visible
-		if (!path.relative(path.dirname(cellModel.notebookModel.notebookUri.fsPath), filePath).includes('..')) {
+		if (!(path.relative(path.dirname(cellModel.notebookModel.notebookUri.fsPath), filePath).indexOf('..') > -1)) {
 			// ok to change from vscode-resource: to file:
 			htmlContent = htmlContent.replace('vscode-resource:' + filePath, 'file:' + filePath);
 		}

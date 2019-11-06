@@ -37,8 +37,7 @@ export class SparkJobSubmissionService {
 				uri: livyUrl,
 				method: 'POST',
 				json: true,
-				// TODO, change it back after service's authentication changed.
-				rejectUnauthorized: false,
+				rejectUnauthorized: !auth.getIgnoreSslVerificationConfigSetting(),
 				body: {
 					file: submissionArgs.sparkFile,
 					proxyUser: submissionArgs.user,
@@ -114,7 +113,7 @@ export class SparkJobSubmissionService {
 				uri: livyUrl,
 				method: 'GET',
 				json: true,
-				rejectUnauthorized: false,
+				rejectUnauthorized: !auth.getIgnoreSslVerificationConfigSetting(),
 				// authentication headers
 				headers: headers
 			};

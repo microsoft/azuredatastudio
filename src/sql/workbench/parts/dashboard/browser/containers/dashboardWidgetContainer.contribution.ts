@@ -9,6 +9,7 @@ import * as nls from 'vs/nls';
 
 import { generateDashboardWidgetSchema } from 'sql/workbench/parts/dashboard/browser/pages/dashboardPageContribution';
 import { registerContainerType, registerNavSectionContainerType } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
+import { find } from 'vs/base/common/arrays';
 
 export const WIDGETS_CONTAINER = 'widgets-container';
 
@@ -25,7 +26,7 @@ export function validateWidgetContainerContribution(extension: IExtensionPointUs
 	let result = true;
 	WidgetConfigs.forEach(widgetConfig => {
 		const allKeys = Object.keys(widgetConfig);
-		const widgetKey = allKeys.find(key => key === 'widget');
+		const widgetKey = find(allKeys, key => key === 'widget');
 		if (!widgetKey) {
 			result = false;
 			extension.collector.error(nls.localize('widgetContainer.invalidInputs', "The list of widgets is expected inside widgets-container for extension."));

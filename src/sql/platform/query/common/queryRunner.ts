@@ -27,6 +27,7 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IGridDataProvider, getResultsString } from 'sql/platform/query/common/gridDataProvider';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
+import { find } from 'vs/base/common/arrays';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -346,7 +347,7 @@ export default class QueryRunner extends Disposable {
 			}
 			// handle getting queryPlanxml if we need too
 			// check if this result has show plan, this needs work, it won't work for any other provider
-			let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
+			let hasShowPlan = !!find(result.resultSetSummary.columnInfo, e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 			if (hasShowPlan) {
 				this._isQueryPlan = true;
 
@@ -373,7 +374,7 @@ export default class QueryRunner extends Disposable {
 			batchSet = this._batchSets[resultSet.batchId];
 			// handle getting queryPlanxml if we need too
 			// check if this result has show plan, this needs work, it won't work for any other provider
-			let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
+			let hasShowPlan = !!find(result.resultSetSummary.columnInfo, e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 			if (hasShowPlan) {
 				this._isQueryPlan = true;
 				this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {

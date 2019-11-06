@@ -22,6 +22,7 @@ import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
+import { firstIndex, find } from 'vs/base/common/arrays';
 let modelId = 0;
 
 export const HideInputTag = 'hide_input';
@@ -112,7 +113,7 @@ export class CellModel implements ICellModel {
 
 		let tagIndex = -1;
 		if (this._metadata.tags) {
-			tagIndex = this._metadata.tags.findIndex(tag => tag === HideInputTag);
+			tagIndex = firstIndex(this._metadata.tags, tag => tag === HideInputTag);
 		}
 
 		if (this._isCollapsed) {
@@ -609,7 +610,7 @@ export class CellModel implements ICellModel {
 		this._source = this.getMultilineSource(cell.source);
 		this._metadata = cell.metadata || {};
 
-		if (this._metadata.tags && this._metadata.tags.includes(HideInputTag)) {
+		if (this._metadata.tags && this._metadata.tags.some(x => x === HideInputTag)) {
 			this._isCollapsed = true;
 		} else {
 			this._isCollapsed = false;
@@ -665,7 +666,7 @@ export class CellModel implements ICellModel {
 			if (serverInfo) {
 				let endpoints: notebookUtils.IEndpoint[] = notebookUtils.getClusterEndpoints(serverInfo);
 				if (endpoints && endpoints.length > 0) {
-					endpoint = endpoints.find(ep => ep.serviceName.toLowerCase() === notebookUtils.hadoopEndpointNameGateway);
+					endpoint = find(endpoints, ep => ep.serviceName.toLowerCase() === notebookUtils.hadoopEndpointNameGateway);
 				}
 			}
 		}
@@ -674,6 +675,9 @@ export class CellModel implements ICellModel {
 
 
 	private getMultilineSource(source: string | string[]): string | string[] {
+		if (source === undefined) {
+			return [];
+		}
 		if (typeof source === 'string') {
 			let sourceMultiline = source.split('\n');
 			// If source is one line (i.e. no '\n'), return it immediately

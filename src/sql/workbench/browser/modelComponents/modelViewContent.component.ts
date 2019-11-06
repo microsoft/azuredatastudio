@@ -10,7 +10,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { memoize } from 'vs/base/common/decorators';
 
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { IModelView } from 'sql/platform/model/browser/modelViewService';
 import { ViewBase } from 'sql/workbench/browser/modelComponents/viewBase';
 import { IModelViewService } from 'sql/platform/modelComponents/browser/modelViewService';
