@@ -78,7 +78,7 @@ export class ClientSession implements IClientSession {
 
 	private async startServer(): Promise<void> {
 		let serverManager = this.notebookManager.serverManager;
-		if (serverManager && !serverManager.isStarted) {
+		if (serverManager) {
 			await serverManager.startServer();
 			if (!serverManager.isStarted) {
 				throw new Error(localize('ServerNotStarted', "Server did not start for unknown reason"));

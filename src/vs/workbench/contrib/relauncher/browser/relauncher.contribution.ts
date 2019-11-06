@@ -6,7 +6,7 @@
 import { IDisposable, dispose, Disposable, toDisposable } from 'vs/base/common/lifecycle';
 import { IWorkbenchContributionsRegistry, IWorkbenchContribution, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IWindowService, IWindowsConfiguration } from 'vs/platform/windows/common/windows';
+import { IWindowsConfiguration } from 'vs/platform/windows/common/windows';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { localize } from 'vs/nls';
@@ -26,6 +26,7 @@ interface IConfiguration extends IWindowsConfiguration {
 	telemetry: { enableCrashReporter: boolean };
 	workbench: { list: { horizontalScrolling: boolean } };
 	debug: { console: { wordWrap: boolean } };
+	configurationSync: { enableAuth: boolean };
 }
 
 export class SettingsChangeRelauncher extends Disposable implements IWorkbenchContribution {
@@ -38,10 +39,10 @@ export class SettingsChangeRelauncher extends Disposable implements IWorkbenchCo
 	private enableCrashReporter: boolean | undefined;
 	private treeHorizontalScrolling: boolean | undefined;
 	private debugConsoleWordWrap: boolean | undefined;
+	private enableConfigSyncAuth: boolean | undefined;
 
 	constructor(
 		@IHostService private readonly hostService: IHostService,
-		@IWindowService private readonly windowService: IWindowService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IEnvironmentService private readonly envService: IEnvironmentService,
 		@IDialogService private readonly dialogService: IDialogService
@@ -56,13 +57,13 @@ export class SettingsChangeRelauncher extends Disposable implements IWorkbenchCo
 		let changed = false;
 
 		// Tree horizontal scrolling support
-		if (config.workbench && config.workbench.list && typeof config.workbench.list.horizontalScrolling === 'boolean' && config.workbench.list.horizontalScrolling !== this.treeHorizontalScrolling) {
+		if (typeof config.workbench?.list?.horizontalScrolling === 'boolean' && config.workbench.list.horizontalScrolling !== this.treeHorizontalScrolling) {
 			this.treeHorizontalScrolling = config.workbench.list.horizontalScrolling;
 			changed = true;
 		}
 
 		// Debug console word wrap
-		if (config.debug && typeof config.debug.console.wordWrap === 'boolean' && config.debug.console.wordWrap !== this.debugConsoleWordWrap) {
+		if (typeof config.debug?.console.wordWrap === 'boolean' && config.debug.console.wordWrap !== this.debugConsoleWordWrap) {
 			this.debugConsoleWordWrap = config.debug.console.wordWrap;
 			changed = true;
 		}
@@ -70,40 +71,46 @@ export class SettingsChangeRelauncher extends Disposable implements IWorkbenchCo
 		if (isNative) {
 
 			// Titlebar style
-			if (config.window && config.window.titleBarStyle !== this.titleBarStyle && (config.window.titleBarStyle === 'native' || config.window.titleBarStyle === 'custom')) {
+			if (typeof config.window?.titleBarStyle === 'string' && config.window?.titleBarStyle !== this.titleBarStyle && (config.window.titleBarStyle === 'native' || config.window.titleBarStyle === 'custom')) {
 				this.titleBarStyle = config.window.titleBarStyle;
 				changed = true;
 			}
 
 			// macOS: Native tabs
-			if (isMacintosh && config.window && typeof config.window.nativeTabs === 'boolean' && config.window.nativeTabs !== this.nativeTabs) {
+			if (isMacintosh && typeof config.window?.nativeTabs === 'boolean' && config.window.nativeTabs !== this.nativeTabs) {
 				this.nativeTabs = config.window.nativeTabs;
 				changed = true;
 			}
 
 			// macOS: Native fullscreen
-			if (isMacintosh && config.window && typeof config.window.nativeFullScreen === 'boolean' && config.window.nativeFullScreen !== this.nativeFullScreen) {
+			if (isMacintosh && typeof config.window?.nativeFullScreen === 'boolean' && config.window.nativeFullScreen !== this.nativeFullScreen) {
 				this.nativeFullScreen = config.window.nativeFullScreen;
 				changed = true;
 			}
 
 			// macOS: Click through (accept first mouse)
-			if (isMacintosh && config.window && typeof config.window.clickThroughInactive === 'boolean' && config.window.clickThroughInactive !== this.clickThroughInactive) {
+			if (isMacintosh && typeof config.window?.clickThroughInactive === 'boolean' && config.window.clickThroughInactive !== this.clickThroughInactive) {
 				this.clickThroughInactive = config.window.clickThroughInactive;
 				changed = true;
 			}
 
 			// Update channel
-			if (config.update && typeof config.update.mode === 'string' && config.update.mode !== this.updateMode) {
+			if (typeof config.update?.mode === 'string' && config.update.mode !== this.updateMode) {
 				this.updateMode = config.update.mode;
 				changed = true;
 			}
 
 			// Crash reporter
-			if (config.telemetry && typeof config.telemetry.enableCrashReporter === 'boolean' && config.telemetry.enableCrashReporter !== this.enableCrashReporter) {
+			if (typeof config.telemetry?.enableCrashReporter === 'boolean' && config.telemetry.enableCrashReporter !== this.enableCrashReporter) {
 				this.enableCrashReporter = config.telemetry.enableCrashReporter;
 				changed = true;
 			}
+		}
+
+		// Configuration Sync Auth
+		if (typeof config.configurationSync?.enableAuth === 'boolean' && config.configurationSync.enableAuth !== this.enableConfigSyncAuth) {
+			this.enableConfigSyncAuth = config.configurationSync.enableAuth;
+			changed = true;
 		}
 
 		// Notify only when changed and we are the focused window (avoids notification spam across windows)
@@ -123,23 +130,13 @@ export class SettingsChangeRelauncher extends Disposable implements IWorkbenchCo
 		}
 	}
 
-	private doConfirm(message: string, detail: string, primaryButton: string, confirmed: () => void): void {
-		this.windowService.isFocused().then(focused => {
-			if (focused) {
-				return this.dialogService.confirm({
-					type: 'info',
-					message,
-					detail,
-					primaryButton
-				}).then(res => {
-					if (res.confirmed) {
-						confirmed();
-					}
-				});
+	private async doConfirm(message: string, detail: string, primaryButton: string, confirmed: () => void): Promise<void> {
+		if (this.hostService.hasFocus) {
+			const res = await this.dialogService.confirm({ type: 'info', message, detail, primaryButton });
+			if (res.confirmed) {
+				confirmed();
 			}
-
-			return undefined;
-		});
+		}
 	}
 }
 

@@ -7,11 +7,11 @@ import { NgModule, Inject, forwardRef, ApplicationRef, ComponentFactoryResolver,
 import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { providerIterator } from 'sql/platform/bootstrap/browser/bootstrapService';
+import { providerIterator } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
 import { QueryPlanComponent } from 'sql/workbench/parts/queryPlan/browser/queryPlan.component';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IBootstrapParams, ISelector } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { IBootstrapParams, ISelector } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 
 // Connection Dashboard main angular module
 export const QueryPlanModule = (params: IBootstrapParams, selector: string, instantiationService: IInstantiationService): Type<any> => {

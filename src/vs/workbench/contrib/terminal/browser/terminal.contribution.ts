@@ -196,7 +196,7 @@ configurationRegistry.registerConfiguration({
 			default: 1000
 		},
 		'terminal.integrated.detectLocale': {
-			markdownDescription: nls.localize('terminal.integrated.detectLocale', "Controls whether to detect and set the `$LANG` environment variable to a UTF-8 compliant option since VS Code's terminal only supports UTF-8 encoded data coming from the shell."),
+			markdownDescription: nls.localize('terminal.integrated.detectLocale', "Controls whether to detect and set the `$LANG` environment variable to a UTF-8 compliant option since Azure Data Studio's terminal only supports UTF-8 encoded data coming from the shell."), // {{SQL CARBON EDIT}} Change product name to ADS
 			type: 'string',
 			enum: ['auto', 'off', 'on'],
 			enumDescriptions: [
@@ -210,7 +210,7 @@ configurationRegistry.registerConfiguration({
 			type: 'string',
 			enum: ['auto', 'canvas', 'dom'],
 			enumDescriptions: [
-				nls.localize('terminal.integrated.rendererType.auto', "Let VS Code guess which renderer to use."),
+				nls.localize('terminal.integrated.rendererType.auto', "Let Azure Data Studio guess which renderer to use."),// {{SQL CARBON EDIT}} Change product name to ADS
 				nls.localize('terminal.integrated.rendererType.canvas', "Use the standard GPU/canvas-based renderer"),
 				nls.localize('terminal.integrated.rendererType.dom', "Use the fallback DOM-based renderer.")
 			],
@@ -219,10 +219,11 @@ configurationRegistry.registerConfiguration({
 		},
 		'terminal.integrated.rightClickBehavior': {
 			type: 'string',
-			enum: ['default', 'copyPaste', 'selectWord'],
+			enum: ['default', 'copyPaste', 'paste', 'selectWord'],
 			enumDescriptions: [
 				nls.localize('terminal.integrated.rightClickBehavior.default', "Show the context menu."),
 				nls.localize('terminal.integrated.rightClickBehavior.copyPaste', "Copy when there is a selection, otherwise paste."),
+				nls.localize('terminal.integrated.rightClickBehavior.paste', "Paste on right click."),
 				nls.localize('terminal.integrated.rightClickBehavior.selectWord', "Select the word under the cursor and show the context menu.")
 			],
 			default: platform.isMacintosh ? 'selectWord' : platform.isWindows ? 'copyPaste' : 'default',
@@ -251,13 +252,18 @@ configurationRegistry.registerConfiguration({
 			},
 			default: []
 		},
+		'terminal.integrated.allowChords': {
+			markdownDescription: nls.localize('terminal.integrated.allowChords', "Whether or not to allow chord keybindings in the terminal. Note that when this is true and the keystroke results in a chord it will bypass `terminal.integrated.commandsToSkipShell`, setting this to false is particularly useful when you want ctrl+k to go to your shell (not VS Code)."),
+			type: 'boolean',
+			default: true
+		},
 		'terminal.integrated.inheritEnv': {
-			markdownDescription: nls.localize('terminal.integrated.inheritEnv', "Whether new shells should inherit their environment from VS Code. This is not supported on Windows."),
+			markdownDescription: nls.localize('terminal.integrated.inheritEnv', "Whether new shells should inherit their environment from Azure Data Studio. This is not supported on Windows."), // {{SQL CARBON EDIT}} Change product name to ADS
 			type: 'boolean',
 			default: true
 		},
 		'terminal.integrated.env.osx': {
-			markdownDescription: nls.localize('terminal.integrated.env.osx', "Object with environment variables that will be added to the VS Code process to be used by the terminal on macOS. Set to `null` to delete the environment variable."),
+			markdownDescription: nls.localize('terminal.integrated.env.osx', "Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on macOS. Set to `null` to delete the environment variable."), // {{SQL CARBON EDIT}} Change product name to ADS
 			type: 'object',
 			additionalProperties: {
 				type: ['string', 'null']
@@ -265,7 +271,7 @@ configurationRegistry.registerConfiguration({
 			default: {}
 		},
 		'terminal.integrated.env.linux': {
-			markdownDescription: nls.localize('terminal.integrated.env.linux', "Object with environment variables that will be added to the VS Code process to be used by the terminal on Linux. Set to `null` to delete the environment variable."),
+			markdownDescription: nls.localize('terminal.integrated.env.linux', "Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on Linux. Set to `null` to delete the environment variable."), // {{SQL CARBON EDIT}} Change product name to ADS
 			type: 'object',
 			additionalProperties: {
 				type: ['string', 'null']
@@ -273,7 +279,7 @@ configurationRegistry.registerConfiguration({
 			default: {}
 		},
 		'terminal.integrated.env.windows': {
-			markdownDescription: nls.localize('terminal.integrated.env.windows', "Object with environment variables that will be added to the VS Code process to be used by the terminal on Windows. Set to `null` to delete the environment variable."),
+			markdownDescription: nls.localize('terminal.integrated.env.windows', "Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on Windows. Set to `null` to delete the environment variable."), // {{SQL CARBON EDIT}} Change product name to ADS
 			type: 'object',
 			additionalProperties: {
 				type: ['string', 'null']
@@ -310,6 +316,11 @@ configurationRegistry.registerConfiguration({
 			description: nls.localize('terminal.integrated.experimentalUseTitleEvent', "An experimental setting that will use the terminal title event for the dropdown title. This setting will only apply to new terminals."),
 			type: 'boolean',
 			default: false
+		},
+		'terminal.integrated.enableFileLinks': {
+			description: nls.localize('terminal.integrated.enableFileLinks', "Whether to enable file links in the terminal. Links can be slow when working on a network drive in particular because each file link is verified against the file system."),
+			type: 'boolean',
+			default: true
 		}
 	}
 });
@@ -351,9 +362,7 @@ actionRegistry.registerWorkbenchAction(new SyncActionDescriptor(FocusNextTermina
 actionRegistry.registerWorkbenchAction(new SyncActionDescriptor(FocusPreviousTerminalAction, FocusPreviousTerminalAction.ID, FocusPreviousTerminalAction.LABEL), 'Terminal: Focus Previous Terminal', category);
 actionRegistry.registerWorkbenchAction(new SyncActionDescriptor(TerminalPasteAction, TerminalPasteAction.ID, TerminalPasteAction.LABEL, {
 	primary: KeyMod.CtrlCmd | KeyCode.KEY_V,
-	linux: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_V },
-	// Don't apply to Mac since cmd+v works
-	mac: { primary: 0 }
+	linux: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_V }
 }, KEYBINDING_CONTEXT_TERMINAL_FOCUS), 'Terminal: Paste into Active Terminal', category);
 actionRegistry.registerWorkbenchAction(new SyncActionDescriptor(SelectAllTerminalAction, SelectAllTerminalAction.ID, SelectAllTerminalAction.LABEL, {
 	// Don't use ctrl+a by default as that would override the common go to start

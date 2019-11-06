@@ -11,11 +11,12 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import * as Constants from '../constants';
-import { IFileSource, IHdfsOptions, IFile, File, FileSourceFactory } from './fileSources';
+import { IFileSource, IHdfsOptions, IFile, File, FileSourceFactory, FileType } from './fileSources';
 import { CancelableStream } from './cancelableStream';
 import { TreeNode } from './treeNodes';
 import * as utils from '../utils';
 import { IFileNode } from './types';
+import { MountStatus } from '../hdfs/mount';
 
 export interface ITreeChangeHandler {
 	notifyNodeChanged(node: TreeNode): void;
@@ -75,7 +76,7 @@ export class HdfsProvider implements vscode.TreeDataProvider<TreeNode>, ITreeCha
 }
 
 export abstract class HdfsFileSourceNode extends TreeNode {
-	constructor(protected context: TreeDataContext, protected _path: string, protected fileSource: IFileSource) {
+	constructor(protected context: TreeDataContext, protected _path: string, public readonly fileSource: IFileSource, protected mountStatus?: MountStatus) {
 		super();
 	}
 
@@ -85,6 +86,11 @@ export abstract class HdfsFileSourceNode extends TreeNode {
 
 	public get nodePathValue(): string {
 		return this.getDisplayName();
+	}
+
+
+	protected isMounted(): boolean {
+		return this.mountStatus === MountStatus.Mount || this.mountStatus === MountStatus.Mount_Child;
 	}
 
 	getDisplayName(): string {
@@ -103,8 +109,8 @@ export abstract class HdfsFileSourceNode extends TreeNode {
 export class FolderNode extends HdfsFileSourceNode {
 	private children: TreeNode[];
 	protected _nodeType: string;
-	constructor(context: TreeDataContext, path: string, fileSource: IFileSource, nodeType?: string) {
-		super(context, path, fileSource);
+	constructor(context: TreeDataContext, path: string, fileSource: IFileSource, nodeType?: string, mountStatus?: MountStatus) {
+		super(context, path, fileSource, mountStatus);
 		this._nodeType = nodeType ? nodeType : Constants.MssqlClusterItems.Folder;
 	}
 
@@ -126,17 +132,29 @@ export class FolderNode extends HdfsFileSourceNode {
 				if (files) {
 					// Note: for now, assuming HDFS-provided sorting is sufficient
 					this.children = files.map((file) => {
-						let node: TreeNode = file.isDirectory ? new FolderNode(this.context, file.path, this.fileSource)
-							: new FileNode(this.context, file.path, this.fileSource);
+						let node: TreeNode = file.fileType === FileType.File ?
+							new FileNode(this.context, file.path, this.fileSource, this.getChildMountStatus(file)) :
+							new FolderNode(this.context, file.path, this.fileSource, Constants.MssqlClusterItems.Folder, this.getChildMountStatus(file));
 						node.parent = this;
 						return node;
 					});
 				}
 			} catch (error) {
-				this.children = [ErrorNode.create(localize('errorExpanding', 'Error: {0}', utils.getErrorMessage(error)), this, error.statusCode)];
+				this.children = [ErrorNode.create(localize('errorExpanding', "Error: {0}", utils.getErrorMessage(error)), this, error.statusCode)];
 			}
 		}
 		return this.children;
+	}
+
+	private getChildMountStatus(file: IFile): MountStatus {
+		if (file.mountStatus !== undefined && file.mountStatus !== MountStatus.None) {
+			return file.mountStatus;
+		}
+		else if (this.mountStatus !== undefined && this.mountStatus !== MountStatus.None) {
+			// Any child node of a mount (or subtree) must be a mount child
+			return MountStatus.Mount_Child;
+		}
+		return MountStatus.None;
 	}
 
 	getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {
@@ -161,10 +179,20 @@ export class FolderNode extends HdfsFileSourceNode {
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
 			nodeType: this._nodeType,
-			nodeSubType: undefined,
-			iconType: 'Folder'
+			nodeSubType: this.getSubType(),
+			iconType: this.isMounted() ? 'Folder_mounted' : 'Folder'
 		};
 		return nodeInfo;
+	}
+
+	private getSubType(): string | undefined {
+		if (this.mountStatus === MountStatus.Mount) {
+			return Constants.MssqlClusterItemsSubType.Mount;
+		} else if (this.mountStatus === MountStatus.Mount_Child) {
+			return Constants.MssqlClusterItemsSubType.MountChild;
+		}
+
+		return undefined;
 	}
 
 	public async writeFile(localFile: IFile): Promise<FileNode> {
@@ -214,7 +242,7 @@ export class ConnectionNode extends FolderNode {
 	}
 
 	public async delete(): Promise<void> {
-		throw new Error(localize('errDeleteConnectionNode', 'Cannot delete a connection. Only subfolders and files can be deleted.'));
+		throw new Error(localize('errDeleteConnectionNode', "Cannot delete a connection. Only subfolders and files can be deleted."));
 	}
 
 	async getTreeItem(): Promise<vscode.TreeItem> {
@@ -235,7 +263,7 @@ export class ConnectionNode extends FolderNode {
 			nodeStatus: undefined,
 			nodeType: 'mssqlCluster:hdfs',
 			nodeSubType: undefined,
-			iconType: 'HDFSFolder'
+			iconType: 'Folder'
 		};
 		return nodeInfo;
 	}
@@ -243,8 +271,8 @@ export class ConnectionNode extends FolderNode {
 
 export class FileNode extends HdfsFileSourceNode implements IFileNode {
 
-	constructor(context: TreeDataContext, path: string, fileSource: IFileSource) {
-		super(context, path, fileSource);
+	constructor(context: TreeDataContext, path: string, fileSource: IFileSource, mountStatus?: MountStatus) {
+		super(context, path, fileSource, mountStatus);
 	}
 
 	public onChildRemoved(): void {
@@ -277,7 +305,7 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 			nodeStatus: undefined,
 			nodeType: Constants.MssqlClusterItems.File,
 			nodeSubType: this.getSubType(),
-			iconType: 'FileGroupFile'
+			iconType: this.isMounted() ? 'FileGroupFile_mounted' : 'FileGroupFile'
 		};
 		return nodeInfo;
 	}
@@ -322,12 +350,15 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 		});
 	}
 
-	private getSubType(): string {
+	private getSubType(): string | undefined {
+		let subType = '';
 		if (this.getDisplayName().toLowerCase().endsWith('.jar') || this.getDisplayName().toLowerCase().endsWith('.py')) {
-			return Constants.MssqlClusterItemsSubType.Spark;
+			subType += Constants.MssqlClusterItemsSubType.Spark;
+		} else if (this.mountStatus === MountStatus.Mount_Child) {
+			subType += Constants.MssqlClusterItemsSubType.MountChild;
 		}
 
-		return undefined;
+		return subType.length > 0 ? subType : undefined;
 	}
 }
 

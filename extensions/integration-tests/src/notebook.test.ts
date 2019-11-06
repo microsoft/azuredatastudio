@@ -29,13 +29,11 @@ if (context.RunTest) {
 			await (new NotebookTester()).cleanup(this.currentTest.title);
 		});
 
-		// This test needs to be re-enabled once the SqlClient driver has been updated
-		test.skip('Sql NB test', async function () {
+		test('Sql NB test @UNSTABLE@', async function () {
 			await (new NotebookTester()).sqlNbTest(this.test.title);
 		});
 
-		// This test needs to be re-enabled once the SqlClient driver has been updated
-		test.skip('Sql NB multiple cells test', async function () {
+		test('Sql NB multiple cells test @UNSTABLE@', async function () {
 			await (new NotebookTester()).sqlNbMultipleCellsTest(this.test.title);
 		});
 
@@ -56,7 +54,7 @@ if (context.RunTest) {
 		});
 
 		// TODO: Need to make this test more reliable.
-		test.skip('should not be dirty after saving notebook test', async function () {
+		test('should not be dirty after saving notebook test @UNSTABLE@', async function () {
 			await (new NotebookTester().shouldNotBeDirtyAfterSavingNotebookTest(this.test.title));
 		});
 
@@ -163,14 +161,23 @@ class NotebookTester {
 		for (let i = 0; i < 3; i++) {
 			let cellOutputs = notebook.document.cells[i].contents.outputs;
 			console.log(`Got cell outputs --- ${i}`);
+
 			if (cellOutputs) {
-				cellOutputs.forEach(o => console.log(o));
+				cellOutputs.forEach(console.log);
 			}
+
 			assert(cellOutputs.length === 3, `Expected length: 3, Actual: '${cellOutputs.length}'`);
 			let actualOutput0 = (<azdata.nb.IDisplayData>cellOutputs[0]).data['text/html'];
 			console.log('Got first output');
 			assert(actualOutput0 === expectedOutput0, `Expected row count: '${expectedOutput0}', Actual: '${actualOutput0}'`);
-			let actualOutput2 = (<azdata.nb.IExecuteResult>cellOutputs[2]).data['application/vnd.dataresource+json'].data[0];
+
+			const executeResult = cellOutputs[2] as azdata.nb.IExecuteResult;
+			assert(Object.keys(executeResult).includes('data'), `Execute result did not include data key. It included ${Object.keys(executeResult)}`);
+			const applicationDataResource = executeResult.data['application/vnd.dataresource+json'];
+
+			assert(Object.keys(applicationDataResource).includes('data'), `Execute result did not include data key. It included ${Object.keys(applicationDataResource)}`);
+			const actualOutput2 = applicationDataResource.data[0];
+
 			assert(actualOutput2[0] === i.toString(), `Expected result: ${i.toString()}, Actual: '${actualOutput2[0]}'`);
 			console.log('Sql multiple cells NB done');
 		}

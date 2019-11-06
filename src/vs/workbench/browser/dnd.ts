@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { hasWorkspaceFileExtension, IWorkspaceFolderCreationData } from 'vs/platform/workspaces/common/workspaces';
+import { hasWorkspaceFileExtension, IWorkspaceFolderCreationData, IRecentFile, IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 import { normalize } from 'vs/base/common/path';
 import { basename } from 'vs/base/common/resources';
 import { IFileService } from 'vs/platform/files/common/files';
-import { IWindowService, IURIToOpen } from 'vs/platform/windows/common/windows';
+import { IWindowOpenable } from 'vs/platform/windows/common/windows';
 import { URI } from 'vs/base/common/uri';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
@@ -28,10 +28,10 @@ import { IEditorService, IResourceEditor } from 'vs/workbench/services/editor/co
 import { Disposable } from 'vs/base/common/lifecycle';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { IRecentFile } from 'vs/platform/history/common/history';
-import { IWorkspaceEditingService } from 'vs/workbench/services/workspace/common/workspaceEditing';
+import { IWorkspaceEditingService } from 'vs/workbench/services/workspaces/common/workspaceEditing';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 
 export interface IDraggedResource {
 	resource: URI;
@@ -113,7 +113,7 @@ export function extractResources(e: DragEvent, externalOnly?: boolean): Array<ID
 		if (e.dataTransfer && e.dataTransfer.files) {
 			for (let i = 0; i < e.dataTransfer.files.length; i++) {
 				const file = e.dataTransfer.files[i];
-				if (file && file.path /* Electron only */ && !resources.some(r => r.resource.fsPath === file.path) /* prevent duplicates */) {
+				if (file?.path /* Electron only */ && !resources.some(r => r.resource.fsPath === file.path) /* prevent duplicates */) {
 					try {
 						resources.push({ resource: URI.file(file.path), isExternal: true });
 					} catch (error) {
@@ -160,13 +160,14 @@ export class ResourcesDropHandler {
 	constructor(
 		private options: IResourcesDropHandlerOptions,
 		@IFileService private readonly fileService: IFileService,
-		@IWindowService private readonly windowService: IWindowService,
+		@IWorkspacesService private readonly workspacesService: IWorkspacesService,
 		@ITextFileService private readonly textFileService: ITextFileService,
 		@IBackupFileService private readonly backupFileService: IBackupFileService,
 		@IUntitledEditorService private readonly untitledEditorService: IUntitledEditorService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IWorkspaceEditingService private readonly workspaceEditingService: IWorkspaceEditingService
+		@IWorkspaceEditingService private readonly workspaceEditingService: IWorkspaceEditingService,
+		@IHostService private readonly hostService: IHostService
 	) {
 	}
 
@@ -177,7 +178,7 @@ export class ResourcesDropHandler {
 		}
 
 		// Make the window active to handle the drop properly within
-		await this.windowService.focusWindow();
+		await this.hostService.focus();
 
 		// Check for special things being dropped
 		const isWorkspaceOpening = await this.doHandleDrop(untitledOrFileResources);
@@ -187,9 +188,9 @@ export class ResourcesDropHandler {
 		}
 
 		// Add external ones to recently open list unless dropped resource is a workspace
-		const recents: IRecentFile[] = untitledOrFileResources.filter(d => d.isExternal && d.resource.scheme === Schemas.file).map(d => ({ fileUri: d.resource }));
-		if (recents.length) {
-			this.windowService.addRecentlyOpened(recents);
+		const recentFiles: IRecentFile[] = untitledOrFileResources.filter(d => d.isExternal && d.resource.scheme === Schemas.file).map(d => ({ fileUri: d.resource }));
+		if (recentFiles.length) {
+			this.workspacesService.addRecentlyOpened(recentFiles);
 		}
 
 		const editors: IResourceEditor[] = untitledOrFileResources.map(untitledOrFileResource => ({
@@ -242,11 +243,13 @@ export class ResourcesDropHandler {
 		}
 
 		// Resolve the contents of the dropped dirty resource from source
-		try {
-			const content = await this.backupFileService.resolveBackupContent((droppedDirtyEditor.backupResource!));
-			await this.backupFileService.backupResource(droppedDirtyEditor.resource, content.value.create(this.getDefaultEOL()).createSnapshot(true));
-		} catch (e) {
-			// Ignore error
+		if (droppedDirtyEditor.backupResource) {
+			try {
+				const content = await this.backupFileService.resolveBackupContent((droppedDirtyEditor.backupResource));
+				await this.backupFileService.backupResource(droppedDirtyEditor.resource, content.value.create(this.getDefaultEOL()).createSnapshot(true));
+			} catch (e) {
+				// Ignore error
+			}
 		}
 
 		return false;
@@ -262,14 +265,14 @@ export class ResourcesDropHandler {
 	}
 
 	private async handleWorkspaceFileDrop(fileOnDiskResources: URI[]): Promise<boolean> {
-		const urisToOpen: IURIToOpen[] = [];
+		const toOpen: IWindowOpenable[] = [];
 		const folderURIs: IWorkspaceFolderCreationData[] = [];
 
 		await Promise.all(fileOnDiskResources.map(async fileOnDiskResource => {
 
 			// Check for Workspace
 			if (hasWorkspaceFileExtension(fileOnDiskResource)) {
-				urisToOpen.push({ workspaceUri: fileOnDiskResource });
+				toOpen.push({ workspaceUri: fileOnDiskResource });
 
 				return;
 			}
@@ -278,7 +281,7 @@ export class ResourcesDropHandler {
 			try {
 				const stat = await this.fileService.resolve(fileOnDiskResource);
 				if (stat.isDirectory) {
-					urisToOpen.push({ folderUri: stat.resource });
+					toOpen.push({ folderUri: stat.resource });
 					folderURIs.push({ uri: stat.resource });
 				}
 			} catch (error) {
@@ -287,16 +290,16 @@ export class ResourcesDropHandler {
 		}));
 
 		// Return early if no external resource is a folder or workspace
-		if (urisToOpen.length === 0) {
+		if (toOpen.length === 0) {
 			return false;
 		}
 
 		// Pass focus to window
-		this.windowService.focusWindow();
+		this.hostService.focus();
 
 		// Open in separate windows if we drop workspaces or just one folder
-		if (urisToOpen.length > folderURIs.length || folderURIs.length === 1) {
-			await this.windowService.openWindow(urisToOpen, { forceReuseWindow: true });
+		if (toOpen.length > folderURIs.length || folderURIs.length === 1) {
+			await this.hostService.openWindow(toOpen, { forceReuseWindow: true });
 		}
 
 		// folders.length > 1: Multiple folders: Create new workspace with folders and open
@@ -357,7 +360,7 @@ export function fillResourceDataTransfers(accessor: ServicesAccessor, resources:
 		for (const textEditorWidget of textEditorWidgets) {
 			if (isCodeEditor(textEditorWidget)) {
 				const model = textEditorWidget.getModel();
-				if (model && model.uri && model.uri.toString() === file.resource.toString()) {
+				if (model?.uri?.toString() === file.resource.toString()) {
 					viewState = textEditorWidget.saveViewState();
 					break;
 				}

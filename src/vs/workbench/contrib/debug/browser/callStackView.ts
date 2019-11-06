@@ -34,6 +34,7 @@ import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { isSessionAttach } from 'vs/workbench/contrib/debug/common/debugUtils';
 import { STOP_ID, STOP_LABEL, DISCONNECT_ID, DISCONNECT_LABEL, RESTART_SESSION_ID, RESTART_LABEL, STEP_OVER_ID, STEP_OVER_LABEL, STEP_INTO_LABEL, STEP_INTO_ID, STEP_OUT_LABEL, STEP_OUT_ID, PAUSE_ID, PAUSE_LABEL, CONTINUE_ID, CONTINUE_LABEL } from 'vs/workbench/contrib/debug/browser/debugCommands';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { CollapseAction } from 'vs/workbench/browser/viewlet';
 
 const $ = dom.$;
 
@@ -82,8 +83,16 @@ export class CallStackView extends ViewletPanel {
 				this.pauseMessageLabel.title = thread.stoppedDetails.text || '';
 				dom.toggleClass(this.pauseMessageLabel, 'exception', thread.stoppedDetails.reason === 'exception');
 				this.pauseMessage.hidden = false;
+				if (this.toolbar) {
+					this.toolbar.setActions([])();
+				}
+
 			} else {
 				this.pauseMessage.hidden = true;
+				if (this.toolbar) {
+					const collapseAction = new CollapseAction(this.tree, true, 'explorer-action collapse-explorer');
+					this.toolbar.setActions([collapseAction])();
+				}
 			}
 
 			this.needsRefresh = false;
@@ -312,12 +321,12 @@ export class CallStackView extends ViewletPanel {
 		}
 
 		const actions: IAction[] = [];
-		const actionsDisposable = createAndFillInContextMenuActions(this.contributedContextMenu, { arg: this.getContextForContributedActions(element), shouldForwardArgs: false }, actions, this.contextMenuService);
+		const actionsDisposable = createAndFillInContextMenuActions(this.contributedContextMenu, { arg: this.getContextForContributedActions(element), shouldForwardArgs: true }, actions, this.contextMenuService);
 
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => e.anchor,
 			getActions: () => actions,
-			getActionsContext: () => element,
+			getActionsContext: () => element && element instanceof StackFrame ? element.getId() : undefined,
 			onHide: () => dispose(actionsDisposable)
 		});
 	}

@@ -24,7 +24,7 @@ import { TasksWidget } from 'sql/workbench/parts/dashboard/browser/widgets/tasks
 import { InsightsWidget } from 'sql/workbench/parts/dashboard/browser/widgets/insights/insightsWidget.component';
 import { WebviewWidget } from 'sql/workbench/parts/dashboard/browser/widgets/webview/webviewWidget.component';
 
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
@@ -36,6 +36,7 @@ import { memoize } from 'vs/base/common/decorators';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ILogService } from 'vs/platform/log/common/log';
+import { values } from 'vs/base/common/collections';
 
 const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 	'properties-widget': PropertiesWidgetComponent,
@@ -159,7 +160,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 
 		// If _config.name is not set, set it to _config.widget.name
 		if (!this._config.name) {
-			const widget = Object.values(this._config.widget)[0];
+			const widget = values(this._config.widget)[0];
 			if (widget.name) {
 				this._config.name = widget.name;
 			}

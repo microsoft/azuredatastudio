@@ -58,8 +58,8 @@ export const TaskRegistry: ITaskRegistry = new class implements ITaskRegistry {
 			iconClass = this.taskIdToIconClassNameMap.get(item.id);
 		} else if (item.iconLocation) {
 			iconClass = ids.nextId();
-			createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(item.iconLocation.light || item.iconLocation.dark)}`);
-			createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: ${asCSSUrl(item.iconLocation.dark)}`);
+			createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(item.iconLocation.light || item.iconLocation.dark)}`);
+			createCSSRule(`.vs-dark .codicon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(item.iconLocation.dark)}`);
 			this.taskIdToIconClassNameMap.set(item.id, iconClass);
 		}
 		return iconClass;

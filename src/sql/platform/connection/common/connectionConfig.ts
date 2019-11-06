@@ -12,13 +12,14 @@ import * as Utils from 'sql/platform/connection/common/utils';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as nls from 'vs/nls';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { find, firstIndex } from 'vs/base/common/arrays';
 
 const GROUPS_CONFIG_KEY = 'datasource.connectionGroups';
 const CONNECTIONS_CONFIG_KEY = 'datasource.connections';
 
 export interface ISaveGroupResult {
 	groups: IConnectionProfileGroup[];
-	newGroupId: string;
+	newGroupId?: string;
 }
 
 /**
@@ -37,11 +38,13 @@ export class ConnectionConfig {
 	public getAllGroups(): IConnectionProfileGroup[] {
 
 		let allGroups: IConnectionProfileGroup[] = [];
-		let { user, workspace } = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY);
+		const config = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY);
+		let { user } = config;
+		const { workspace } = config;
 
 		if (user) {
 			if (workspace) {
-				user = user.filter(x => workspace.find(f => this.isSameGroupName(f, x)) === undefined);
+				user = user.filter(x => find(workspace, f => this.isSameGroupName(f, x)) === undefined);
 				allGroups = allGroups.concat(workspace);
 			}
 			allGroups = allGroups.concat(user);
@@ -69,12 +72,12 @@ export class ConnectionConfig {
 				let newProfile = ConnectionProfile.convertToProfileStore(this._capabilitiesService, connectionProfile);
 
 				// Remove the profile if already set
-				let sameProfileInList = profiles.find(value => {
+				let sameProfileInList = find(profiles, value => {
 					let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
 					return providerConnectionProfile.matches(connectionProfile);
 				});
 				if (sameProfileInList) {
-					let profileIndex = profiles.findIndex(value => value === sameProfileInList);
+					let profileIndex = firstIndex(profiles, value => value === sameProfileInList);
 					newProfile.id = sameProfileInList.id;
 					connectionProfile.id = sameProfileInList.id;
 					profiles[profileIndex] = newProfile;
@@ -109,7 +112,7 @@ export class ConnectionConfig {
 			let result = this.saveGroup(groups, profile.groupFullName, undefined, undefined);
 			groups = result.groups;
 
-			return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER).then(() => result.newGroupId);
+			return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER).then(() => result.newGroupId!);
 		}
 	}
 
@@ -121,7 +124,7 @@ export class ConnectionConfig {
 			return Promise.resolve(profileGroup.id);
 		} else {
 			let groups = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).user;
-			let sameNameGroup = groups ? groups.find(group => group.name === profileGroup.name) : undefined;
+			let sameNameGroup = groups ? find(groups, group => group.name === profileGroup.name) : undefined;
 			if (sameNameGroup) {
 				let errMessage: string = nls.localize('invalidServerName', "A server group with the same name already exists.");
 				return Promise.reject(errMessage);
@@ -129,7 +132,7 @@ export class ConnectionConfig {
 				let result = this.saveGroup(groups, profileGroup.name, profileGroup.color, profileGroup.description);
 				groups = result.groups;
 
-				return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER).then(() => result.newGroupId);
+				return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER).then(() => result.newGroupId!);
 			}
 		}
 	}
@@ -138,18 +141,22 @@ export class ConnectionConfig {
 		let configs = this.configurationService.inspect<IConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY);
 		let profiles: IConnectionProfileStore[];
 		if (configs) {
+			let fromConfig: IConnectionProfileStore[] | undefined;
 			if (configTarget === ConfigurationTarget.USER) {
-				profiles = configs.user;
+				fromConfig = configs.user;
 			} else if (configTarget === ConfigurationTarget.WORKSPACE) {
-				profiles = configs.workspace;
+				fromConfig = configs.workspace || [];
 			}
-			if (profiles) {
+			if (fromConfig) {
+				profiles = fromConfig;
 				if (this.fixConnectionIds(profiles)) {
 					this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, configTarget);
 				}
 			} else {
 				profiles = [];
 			}
+		} else {
+			profiles = [];
 		}
 
 		return profiles;
@@ -270,7 +277,7 @@ export class ConnectionConfig {
 	 */
 	public canChangeConnectionConfig(profile: ConnectionProfile, newGroupID: string): boolean {
 		let profiles = this.getConnections(true);
-		let existingProfile = profiles.find(p => p.getConnectionInfoId() === profile.getConnectionInfoId()
+		let existingProfile = find(profiles, p => p.getConnectionInfoId() === profile.getConnectionInfoId()
 			&& p.groupId === newGroupID);
 		return existingProfile === undefined;
 	}
@@ -315,14 +322,14 @@ export class ConnectionConfig {
 		}
 	}
 
-	public saveGroup(groups: IConnectionProfileGroup[], groupFullName: string, color: string, description: string): ISaveGroupResult {
+	public saveGroup(groups: IConnectionProfileGroup[], groupFullName?: string, color?: string, description?: string): ISaveGroupResult {
 		let groupNames = ConnectionProfileGroup.getGroupFullNameParts(groupFullName);
 		return this.saveGroupInTree(groups, undefined, groupNames, color, description, 0);
 	}
 
 	public editGroup(source: ConnectionProfileGroup): Promise<void> {
 		let groups = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).user;
-		let sameNameGroup = groups ? groups.find(group => group.name === source.name && group.id !== source.id) : undefined;
+		let sameNameGroup = groups ? find(groups, group => group.name === source.name && group.id !== source.id) : undefined;
 		if (sameNameGroup) {
 			let errMessage: string = nls.localize('invalidServerName', "A server group with the same name already exists.");
 			return Promise.reject(errMessage);
@@ -348,22 +355,22 @@ export class ConnectionConfig {
 		return sameGroupName;
 	}
 
-	private saveGroupInTree(groupTree: IConnectionProfileGroup[], parentId: string, groupNames: string[], color: string, description: string, index: number): ISaveGroupResult {
+	private saveGroupInTree(groupTree: IConnectionProfileGroup[], parentId: string | undefined, groupNames: string[], color: string | undefined, description: string | undefined, index: number): ISaveGroupResult {
 		if (!groupTree) {
 			groupTree = [];
 		}
-		let newGroupId: string;
+		let newGroupId: string | undefined;
 
 		if (index < groupNames.length) {
 			let groupName: string = groupNames[index];
-			let newGroup: IConnectionProfileGroup = {
+			let newGroup = <unknown>{ // workaround to make this work properly
 				name: groupName,
 				id: undefined,
 				parentId: parentId,
 				color: color,
 				description: description
-			};
-			let found = groupTree.find(group => this.isSameGroupName(group, newGroup));
+			} as IConnectionProfileGroup;
+			let found = find(groupTree, group => this.isSameGroupName(group, newGroup));
 			if (found) {
 				if (index === groupNames.length - 1) {
 					newGroupId = found.id;

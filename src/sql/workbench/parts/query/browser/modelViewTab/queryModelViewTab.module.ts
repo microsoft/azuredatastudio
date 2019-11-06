@@ -9,13 +9,13 @@ import { forwardRef, NgModule, ComponentFactoryResolver, Inject, ApplicationRef 
 import { FormsModule } from '@angular/forms';
 import { CommonModule, APP_BASE_HREF } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
-import { WizardNavigation } from 'sql/platform/dialog/browser/wizardNavigation.component';
+import { WizardNavigation } from 'sql/workbench/services/dialog/browser/wizardNavigation.component';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/browser/modelComponentRegistry';
 import { ModelViewContent } from 'sql/workbench/browser/modelComponents/modelViewContent.component';
 import { ModelComponentWrapper } from 'sql/workbench/browser/modelComponents/modelComponentWrapper.component';
 import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/browser/core/componentHost.directive';
-import { providerIterator } from 'sql/platform/bootstrap/browser/bootstrapService';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { providerIterator } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { EditableDropDown } from 'sql/platform/browser/editableDropdown/editableDropdown.component';
 import { QueryModelViewTabContainer } from 'sql/workbench/parts/query/browser/modelViewTab/queryModelViewTabContainer.component';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
@@ -24,7 +24,7 @@ import { InputBox } from 'sql/platform/browser/inputbox/inputBox.component';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IBootstrapParams, ISelector } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { IBootstrapParams, ISelector } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 
 export const QueryModelViewTabModule = (params, selector: string, instantiationService: IInstantiationService): any => {
 

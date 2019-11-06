@@ -11,7 +11,7 @@ import { Schemas } from 'vs/base/common/network';
 
 export const FILE_SCHEMA: string = 'file';
 
-export function resolveCurrentDirectory(uri: string, rootPath: string): string | undefined {
+export function resolveCurrentDirectory(uri: string, rootPath?: string): string | undefined {
 	let sqlUri = URI.parse(uri);
 	let currentDirectory: string | undefined;
 
@@ -30,7 +30,7 @@ export function resolveCurrentDirectory(uri: string, rootPath: string): string |
 	return currentDirectory;
 }
 
-export function resolveFilePath(uri: string, filePath: string, rootPath: string): string | undefined {
+export function resolveFilePath(uri: string, filePath: string, rootPath?: string): string | undefined {
 	let currentDirectory = resolveCurrentDirectory(uri, rootPath);
 	if (currentDirectory) {
 		return normalize(join(currentDirectory, filePath));

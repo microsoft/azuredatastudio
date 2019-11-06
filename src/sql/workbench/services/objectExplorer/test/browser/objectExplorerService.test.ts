@@ -20,6 +20,7 @@ import { NullLogService } from 'vs/platform/log/common/log';
 import { TestObjectExplorerProvider } from 'sql/workbench/services/objectExplorer/test/common/testObjectExplorerProvider';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
+import { find } from 'vs/base/common/arrays';
 
 suite('SQL Object Explorer Service tests', () => {
 	let sqlOEProvider: TypeMoq.Mock<TestObjectExplorerProvider>;
@@ -553,7 +554,7 @@ suite('SQL Object Explorer Service tests', () => {
 				sqlOEProvider.setup(x => x.expandNode(TypeMoq.It.isAny())).callback(() => {
 					objectExplorerService.onNodeExpanded(tableExpandInfo);
 				}).returns(() => Promise.resolve(true));
-				let tableNode = childNodes.find(node => node.nodePath === table1NodePath);
+				let tableNode = find(childNodes, node => node.nodePath === table1NodePath);
 				objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, tableNode).then(() => {
 					// If I check whether the table is expanded, the answer should be yes
 					tableNode.isExpanded().then(isExpanded => {
@@ -579,7 +580,7 @@ suite('SQL Object Explorer Service tests', () => {
 			objectExplorerService.onSessionCreated(1, objectExplorerSession);
 			objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, objectExplorerService.getObjectExplorerNode(connection)).then(childNodes => {
 				// If I check whether the table is expanded, the answer should be no because only its parent node is expanded
-				let tableNode = childNodes.find(node => node.nodePath === table1NodePath);
+				let tableNode = find(childNodes, node => node.nodePath === table1NodePath);
 				tableNode.isExpanded().then(isExpanded => {
 					try {
 						assert.equal(isExpanded, false);
@@ -611,9 +612,9 @@ suite('SQL Object Explorer Service tests', () => {
 				sqlOEProvider.setup(x => x.expandNode(TypeMoq.It.isAny())).callback(() => {
 					objectExplorerService.onNodeExpanded(tableExpandInfo);
 				}).returns(() => Promise.resolve(true));
-				objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, childNodes.find(node => node.nodePath === table1NodePath)).then(() => {
+				objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, find(childNodes, node => node.nodePath === table1NodePath)).then(() => {
 					// If I check whether the table is expanded, the answer should be yes
-					let tableNode = childNodes.find(node => node.nodePath === table1NodePath);
+					let tableNode = find(childNodes, node => node.nodePath === table1NodePath);
 					tableNode.isExpanded().then(isExpanded => {
 						try {
 							assert.equal(isExpanded, false);

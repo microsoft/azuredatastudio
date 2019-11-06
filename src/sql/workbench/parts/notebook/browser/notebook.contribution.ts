@@ -21,8 +21,7 @@ import { registerComponentType } from 'sql/workbench/parts/notebook/browser/outp
 import { MimeRendererComponent } from 'sql/workbench/parts/notebook/browser/outputs/mimeRenderer.component';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { URI } from 'vs/base/common/uri';
-import { IWorkspaceEditingService } from 'vs/workbench/services/workspace/common/workspaceEditing';
-import { IWindowService } from 'vs/platform/windows/common/windows';
+import { IWorkspaceEditingService } from 'vs/workbench/services/workspaces/common/workspaceEditing';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/browser/nodeContext';
 import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/browser/mssqlNodeContext';
@@ -71,7 +70,7 @@ CommandsRegistry.registerCommand({
 	handler: (accessor, args: TreeViewItemHandleArg) => {
 		const instantiationService = accessor.get(IInstantiationService);
 		const connectedContext: ConnectedContext = { connectionProfile: args.$treeItem.payload };
-		return instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run(connectedContext);
+		return instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run({ connectionProfile: connectedContext.connectionProfile, isConnectionNode: false, nodeInfo: undefined });
 	}
 });
 
@@ -92,10 +91,9 @@ const OE_NEW_NOTEBOOK_COMMAND_ID = 'objectExplorer.newNotebook';
 // New Notebook
 CommandsRegistry.registerCommand({
 	id: OE_NEW_NOTEBOOK_COMMAND_ID,
-	handler: (accessor, args: ObjectExplorerActionsContext) => {
+	handler: (accessor, actionContext: ObjectExplorerActionsContext) => {
 		const instantiationService = accessor.get(IInstantiationService);
-		const connectedContext: ConnectedContext = { connectionProfile: args.connectionProfile };
-		return instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run(connectedContext);
+		return instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run(actionContext);
 	}
 });
 
@@ -113,7 +111,7 @@ const ExplorerNotebookActionID = 'explorer.notebook';
 CommandsRegistry.registerCommand(ExplorerNotebookActionID, (accessor, context: ManageActionContext) => {
 	const instantiationService = accessor.get(IInstantiationService);
 	const connectedContext: ConnectedContext = { connectionProfile: context.profile };
-	instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run(connectedContext);
+	instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run({ connectionProfile: connectedContext.connectionProfile, isConnectionNode: false, nodeInfo: undefined });
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
@@ -130,7 +128,6 @@ registerAction({
 	handler: async (accessor, options: { forceNewWindow: boolean, folderPath: URI }) => {
 		const viewletService = accessor.get(IViewletService);
 		const workspaceEditingService = accessor.get(IWorkspaceEditingService);
-		const windowService = accessor.get(IWindowService);
 		const hostService = accessor.get(IHostService);
 		let folders = [];
 		if (!options.folderPath) {
@@ -140,7 +137,7 @@ registerAction({
 		await workspaceEditingService.addFolders(folders.map(folder => ({ uri: folder })));
 		await viewletService.openViewlet(viewletService.getDefaultViewletId(), true);
 		if (options.forceNewWindow) {
-			return windowService.openWindow([{ folderUri: folders[0] }], { forceNewWindow: options.forceNewWindow });
+			return hostService.openWindow([{ folderUri: folders[0] }], { forceNewWindow: options.forceNewWindow });
 		}
 		else {
 			return hostService.reload();
@@ -158,6 +155,19 @@ configurationRegistry.registerConfiguration({
 			'type': 'boolean',
 			'default': true,
 			'description': localize('notebook.inProcMarkdown', "Use in-process markdown viewer to render text cells more quickly (Experimental).")
+		}
+	}
+});
+
+configurationRegistry.registerConfiguration({
+	'id': 'notebook',
+	'title': 'Notebook',
+	'type': 'object',
+	'properties': {
+		'notebook.sqlStopOnError': {
+			'type': 'boolean',
+			'default': true,
+			'description': localize('notebook.sqlStopOnError', "SQL kernel: stop Notebook execution when error occurs in a cell.")
 		}
 	}
 });
@@ -294,4 +304,17 @@ registerComponentType({
 	selector: MarkdownOutputComponent.SELECTOR
 });
 
+/**
+ * A mime renderer for IPyWidgets
+ */
+registerComponentType({
+	mimeTypes: [
+		'application/vnd.jupyter.widget-view',
+		'application/vnd.jupyter.widget-view+json'
+	],
+	rank: 47,
+	safe: true,
+	ctor: MimeRendererComponent,
+	selector: MimeRendererComponent.SELECTOR
+});
 registerCellComponent(TextCellComponent);

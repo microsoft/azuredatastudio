@@ -9,7 +9,7 @@ import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, Elemen
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 
 import * as azdata from 'azdata';
 import { memoize } from 'vs/base/common/decorators';

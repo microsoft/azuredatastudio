@@ -11,7 +11,7 @@ import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/co
 import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ResourceMap } from 'vs/base/common/map';
-import { coalesce } from 'vs/base/common/arrays';
+import { coalesce, firstIndex } from 'vs/base/common/arrays';
 
 // {{SQL CARBON EDIT}}
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
@@ -109,7 +109,7 @@ export class EditorGroup extends Disposable {
 	private focusRecentEditorAfterClose: boolean | undefined;
 
 	constructor(
-		labelOrSerializedGroup: ISerializedEditorGroup,
+		labelOrSerializedGroup: ISerializedEditorGroup | undefined,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
@@ -156,7 +156,7 @@ export class EditorGroup extends Disposable {
 
 		for (const editor of this.editors) {
 			const editorResource = toResource(editor, { supportSideBySide: SideBySideEditor.MASTER });
-			if (editorResource && editorResource.toString() === resource.toString()) {
+			if (editorResource?.toString() === resource.toString()) {
 				return editor;
 			}
 		}
@@ -183,8 +183,8 @@ export class EditorGroup extends Disposable {
 	openEditor(editor: EditorInput, options?: IEditorOpenOptions): void {
 		const index = this.indexOf(editor);
 
-		const makePinned = options && options.pinned;
-		const makeActive = (options && options.active) || !this.activeEditor || (!makePinned && this.matches(this.preview, this.activeEditor));
+		const makePinned = options?.pinned;
+		const makeActive = options?.active || !this.activeEditor || (!makePinned && this.matches(this.preview, this.activeEditor));
 
 		// New editor
 		if (index === -1) {
@@ -740,7 +740,7 @@ export class EditorGroup extends Disposable {
 			if (editor instanceof QueryInput && editor.matchInputInstanceType(FileEditorInput) && !editor.isDirty() && await editor.inputFileExists() === false && this.editors.length > 1) {
 				// remove from editors list so that they do not get restored
 				this.editors.splice(n, 1);
-				let index = this.mru.findIndex(e => e.matches(editor));
+				let index = firstIndex(this.mru, e => e.matches(editor));
 
 				// remove from MRU list otherwise later if we try to close them it leaves a sticky active editor with no data
 				this.mru.splice(index, 1);

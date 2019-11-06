@@ -3,19 +3,20 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as should from 'should';
 import { nb } from 'azdata';
+import * as assert from 'assert';
 
 import { URI } from 'vs/base/common/uri';
 import * as tempWrite from 'temp-write';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
-import * as testUtils from '../../../../../../sqltest/utils/testUtils';
+import * as testUtils from '../../../../../base/test/common/async';
 import { CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { TestFileService } from 'vs/workbench/test/workbenchTestServices';
 import { IFileService, IReadFileOptions, IFileContent, IWriteFileOptions, IFileStatWithMetadata } from 'vs/platform/files/common/files';
 import * as pfs from 'vs/base/node/pfs';
 import { VSBuffer, VSBufferReadable } from 'vs/base/common/buffer';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -36,12 +37,12 @@ let expectedNotebookContent: nb.INotebookContents = {
 let notebookContentString = JSON.stringify(expectedNotebookContent);
 
 function verifyMatchesExpectedNotebook(notebook: nb.INotebookContents): void {
-	should(notebook.cells).have.length(1, 'Expected 1 cell');
-	should(notebook.cells[0].cell_type).equal(CellTypes.Code);
-	should(notebook.cells[0].source).equal(expectedNotebookContent.cells[0].source);
-	should(notebook.metadata.kernelspec.name).equal(expectedNotebookContent.metadata.kernelspec.name);
-	should(notebook.nbformat).equal(expectedNotebookContent.nbformat);
-	should(notebook.nbformat_minor).equal(expectedNotebookContent.nbformat_minor);
+	assert.equal(notebook.cells.length, 1, 'Expected 1 cell');
+	assert.equal(notebook.cells[0].cell_type, CellTypes.Code);
+	assert.equal(notebook.cells[0].source, expectedNotebookContent.cells[0].source);
+	assert.equal(notebook.metadata.kernelspec.name, expectedNotebookContent.metadata.kernelspec.name);
+	assert.equal(notebook.nbformat, expectedNotebookContent.nbformat);
+	assert.equal(notebook.nbformat_minor, expectedNotebookContent.nbformat_minor);
 }
 
 suite('Local Content Manager', function (): void {
@@ -65,10 +66,10 @@ suite('Local Content Manager', function (): void {
 
 	test('Should return undefined if path is undefined', async function (): Promise<void> {
 		let content = await contentManager.getNotebookContents(undefined);
-		should(content).be.undefined();
+		assert(isUndefinedOrNull(content));
 		// tslint:disable-next-line:no-null-keyword
 		content = await contentManager.getNotebookContents(null);
-		should(content).be.undefined();
+		assert(isUndefinedOrNull(content));
 	});
 
 	test('Should throw if file does not exist', async function (): Promise<void> {
@@ -126,6 +127,6 @@ suite('Local Content Manager', function (): void {
 		let notebook = await contentManager.getNotebookContents(URI.file(localFile));
 		// then I expect output to have been normalized into a single string
 		let displayOutput = <nb.IDisplayData>notebook.cells[0].outputs[0];
-		should(displayOutput.data['text/html']).equal('<div></div>');
+		assert.equal(displayOutput.data['text/html'], '<div></div>');
 	});
 });

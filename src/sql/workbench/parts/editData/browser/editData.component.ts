@@ -10,7 +10,7 @@ import { VirtualizedCollection } from 'angular2-slickgrid';
 
 import { IGridDataSet } from 'sql/workbench/parts/grid/common/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
-import { IEditDataComponentParams, IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { IEditDataComponentParams, IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { GridParentComponent } from 'sql/workbench/parts/editData/browser/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/workbench/parts/editData/browser/editDataGridActions';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
@@ -31,7 +31,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { EditUpdateCellResult } from 'azdata';
 import { ILogService } from 'vs/platform/log/common/log';
-import { deepClone } from 'vs/base/common/objects';
+import { deepClone, assign } from 'vs/base/common/objects';
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
 @Component({
@@ -207,31 +207,29 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 		// Setup a function for generating a promise to lookup result subsets
 		this.loadDataFunction = (offset: number, count: number): Promise<{}[]> => {
-			return new Promise<{}[]>((resolve, reject) => {
-				self.dataService.getEditRows(offset, count).subscribe(result => {
-					let gridData = result.subset.map(r => {
-						let dataWithSchema = {};
-						// skip the first column since its a number column
-						for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
-							dataWithSchema[this.dataSet.columnDefinitions[i].field] = {
-								displayValue: r.cells[i - 1].displayValue,
-								ariaLabel: escape(r.cells[i - 1].displayValue),
-								isNull: r.cells[i - 1].isNull
-							};
-						}
-						return dataWithSchema;
-					});
-
-					// should add null row?
-					if (offset + count > this.dataSet.totalRows - 1) {
-						gridData.push(this.dataSet.columnDefinitions.reduce((p, c) => {
-							p[c.field] = 'NULL';
-							return p;
-						}, {}));
+			return self.dataService.getEditRows(offset, count).then(result => {
+				let gridData = result.subset.map(r => {
+					let dataWithSchema = {};
+					// skip the first column since its a number column
+					for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
+						dataWithSchema[this.dataSet.columnDefinitions[i].field] = {
+							displayValue: r.cells[i - 1].displayValue,
+							ariaLabel: escape(r.cells[i - 1].displayValue),
+							isNull: r.cells[i - 1].isNull
+						};
 					}
-
-					resolve(gridData);
+					return dataWithSchema;
 				});
+
+				// should add null row?
+				if (offset + count > this.dataSet.totalRows - 1) {
+					gridData.push(this.dataSet.columnDefinitions.reduce((p, c) => {
+						p[c.field] = 'NULL';
+						return p;
+					}, {}));
+				}
+
+				return gridData;
 			});
 		};
 	}
@@ -339,7 +337,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 	handleResultSet(self: EditDataComponent, event: any): void {
 		// Clone the data before altering it to avoid impacting other subscribers
-		let resultSet = Object.assign({}, event.data);
+		let resultSet = assign({}, event.data);
 		if (!resultSet.complete) {
 			return;
 		}

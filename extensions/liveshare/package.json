@@ -2,7 +2,7 @@
   "name": "liveshare",
   "version": "0.1.0",
   "publisher": "Microsoft",
-  "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
+  "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
   "activationEvents": [
     "*"
   ],
@@ -10,6 +10,10 @@
     "vscode": "*"
   },
   "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
   "extensionDependencies": [
     "vscode.sql"
   ],
@@ -20,8 +24,7 @@
     "@types/node": "12.0.9",
     "ts-loader": "^5.3.3",
     "tslint": "^5.12.1",
-    "typescript": "^3.3.1",
-    "vscode": "^1.1.33"
+    "typescript": "^3.3.1"
   },
   "dependencies": {
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.3.0",

@@ -42,6 +42,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { find, firstIndex } from 'vs/base/common/arrays';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -169,8 +170,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		lifecycleService.onWillShutdown(() => this.shutdown());
 		this.hookContextKeyListeners();
 		this.hookNotebookThemesAndConfigListener();
-		// Temporary (issue #6427 will remove): Add a product quality key so we can only show books on Insiders
-		this._contextKeyService.createKey<string>('notebookQuality', environmentService.appQuality);
 
 	}
 
@@ -214,7 +213,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		let sqlNotebookProvider = this._providerToStandardKernels.get(notebookConstants.SQL);
 		if (sqlNotebookProvider) {
 			let sqlConnectionTypes = this._queryManagementService.getRegisteredProviders();
-			let provider = sqlNotebookProvider.find(p => p.name === notebookConstants.SQL);
+			let provider = find(sqlNotebookProvider, p => p.name === notebookConstants.SQL);
 			if (provider) {
 				this._providerToStandardKernels.set(notebookConstants.SQL, [{
 					name: notebookConstants.SQL,
@@ -355,7 +354,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		let managers: INotebookManager[] = this._managersMap.get(uriString);
 		// If manager already exists for a given notebook, return it
 		if (managers) {
-			let index = managers.findIndex(m => m.providerId === providerId);
+			let index = firstIndex(managers, m => m.providerId === providerId);
 			if (index && index >= 0) {
 				return managers[index];
 			}
@@ -406,7 +405,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			return undefined;
 		}
 		let uriString = notebookUri.toString();
-		let editor = this.listNotebookEditors().find(n => n.id === uriString);
+		let editor = find(this.listNotebookEditors(), n => n.id === uriString);
 		return editor;
 	}
 
@@ -455,7 +454,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			if (!providerDescriptor.instance) {
 				// Await extension registration before awaiting provider registration
 				try {
-					await this._extensionService.whenInstalledExtensionsRegistered;
+					await this._extensionService.whenInstalledExtensionsRegistered();
 				} catch (error) {
 					console.error(error);
 				}
@@ -514,7 +513,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		let knownProviders = Object.keys(notebookRegistry.providers);
 		let cache = this.providersMemento.notebookProviderCache;
 		for (let key in cache) {
-			if (!knownProviders.includes(key)) {
+			if (!knownProviders.some(x => x === key)) {
 				this._providers.delete(key);
 				delete cache[key];
 			}
@@ -534,7 +533,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private removeContributedProvidersFromCache(identifier: IExtensionIdentifier, extensionService: IExtensionService) {
 		const notebookProvider = 'notebookProvider';
 		extensionService.getExtensions().then(i => {
-			let extension = i.find(c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
+			let extension = find(i, c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
 			if (extension && extension.contributes
 				&& extension.contributes[notebookProvider]
 				&& extension.contributes[notebookProvider].providerId) {
@@ -586,9 +585,9 @@ export class NotebookService extends Disposable implements INotebookService {
 			// 3. Not already saving (e.g. isn't in the queue to be cached)
 			// 4. Notebook is trusted. Don't need to save state of untrusted notebooks
 			let notebookUriString = notebookUri.toString();
-			if (changeType === NotebookChangeType.Saved && this._trustedCacheQueue.findIndex(uri => uri.toString() === notebookUriString) < 0) {
+			if (changeType === NotebookChangeType.Saved && firstIndex(this._trustedCacheQueue, uri => uri.toString() === notebookUriString) < 0) {
 				// Only save if it's trusted
-				let notebook = this.listNotebookEditors().find(n => n.id === notebookUriString);
+				let notebook = find(this.listNotebookEditors(), n => n.id === notebookUriString);
 				if (notebook && notebook.model.trustedMode) {
 					this._trustedCacheQueue.push(notebookUri);
 					this._updateTrustCacheScheduler.schedule();

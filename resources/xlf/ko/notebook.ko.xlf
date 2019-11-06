@@ -30,6 +30,10 @@
         <source xml:lang="en">Maximum number of rows returned per table in the Notebook editor</source>
         <target state="translated">전자 필기장 편집기에서 테이블당 반환된 최대 행 수</target>
       </trans-unit>
+      <trans-unit id="notebook.maxBookSearchDepth.description">
+        <source xml:lang="en">Maximum depth of subdirectories to search for Books (Enter 0 for infinite)</source>
+        <target state="translated">책을 검색할 하위 디렉터리의 최대 깊이(무한의 경우 0 입력)</target>
+      </trans-unit>
       <trans-unit id="notebook.command.new">
         <source xml:lang="en">New Notebook</source>
         <target state="translated">새 전자 필기장</target>
@@ -110,9 +114,293 @@
         <source xml:lang="en">Manage Packages</source>
         <target state="translated">패키지 관리</target>
       </trans-unit>
+      <trans-unit id="title.SQL19PreviewBook">
+        <source xml:lang="en">SQL Server 2019 Guide</source>
+        <target state="translated">SQL Server 2019 가이드</target>
+      </trans-unit>
+      <trans-unit id="books-preview-category">
+        <source xml:lang="en">Jupyter Books</source>
+        <target state="translated">Jupyter 책</target>
+      </trans-unit>
+      <trans-unit id="title.saveJupyterBook">
+        <source xml:lang="en">Save Book</source>
+        <target state="translated">책 저장</target>
+      </trans-unit>
+      <trans-unit id="title.searchJupyterBook">
+        <source xml:lang="en">Search Book</source>
+        <target state="translated">책 검색</target>
+      </trans-unit>
+      <trans-unit id="title.SavedBooks">
+        <source xml:lang="en">Saved Books</source>
+        <target state="translated">저장된 책</target>
+      </trans-unit>
+      <trans-unit id="title.UntitledBooks">
+        <source xml:lang="en">Untitled Books</source>
+        <target state="translated">제목 없는 책</target>
+      </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/out/dialog/managePackages/managePackagesDialog" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/notebook/dist/common/utils" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="mkdirOutputMsg">
+        <source xml:lang="en">... Creating {0}</source>
+        <target state="translated">... {0}을(를) 만드는 중</target>
+      </trans-unit>
+      <trans-unit id="executeCommandProcessExited">
+        <source xml:lang="en">Process exited with code {0}</source>
+        <target state="translated">{0} 코드로 종료된 프로세스</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/common/localizedConstants" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="msgYes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">예</target>
+      </trans-unit>
+      <trans-unit id="msgNo">
+        <source xml:lang="en">No</source>
+        <target state="translated">아니요</target>
+      </trans-unit>
+      <trans-unit id="msgSampleCodeDataFrame">
+        <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
+        <target state="translated">이 샘플 코드는 파일을 데이터 프레임에 로드하고 처음 10개의 결과를 표시합니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/jupyter/jupyterServerInstallation" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="msgInstallPkgProgress">
+        <source xml:lang="en">Notebook dependencies installation is in progress</source>
+        <target state="translated">노트북 종속성 설치가 진행 중입니다.</target>
+      </trans-unit>
+      <trans-unit id="msgPythonDownloadComplete">
+        <source xml:lang="en">Python download is complete</source>
+        <target state="translated">Python 다운로드가 완료되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="msgPythonDownloadError">
+        <source xml:lang="en">Error while downloading python setup</source>
+        <target state="translated">Python 설정을 다운로드하는 동안 오류가 발생했습니다.</target>
+      </trans-unit>
+      <trans-unit id="msgPythonDownloadPending">
+        <source xml:lang="en">Downloading python package</source>
+        <target state="translated">Python 패키지 다운로드</target>
+      </trans-unit>
+      <trans-unit id="msgPythonUnpackPending">
+        <source xml:lang="en">Unpacking python package</source>
+        <target state="translated">Python 패키지 압축 풀기</target>
+      </trans-unit>
+      <trans-unit id="msgPythonDirectoryError">
+        <source xml:lang="en">Error while creating python installation directory</source>
+        <target state="translated">Python 설치 디렉터리를 만드는 동안 오류가 발생했습니다.</target>
+      </trans-unit>
+      <trans-unit id="msgPythonUnpackError">
+        <source xml:lang="en">Error while unpacking python bundle</source>
+        <target state="translated">Python 번들의 압축을 푸는 동안 오류가 발생했습니다.</target>
+      </trans-unit>
+      <trans-unit id="msgTaskName">
+        <source xml:lang="en">Installing Notebook dependencies</source>
+        <target state="translated">노트북 종속성 설치</target>
+      </trans-unit>
+      <trans-unit id="msgInstallPkgStart">
+        <source xml:lang="en">Installing Notebook dependencies, see Tasks view for more information</source>
+        <target state="translated">노트북 종속성을 설치합니다. 자세한 내용은 작업 보기를 참조하세요.</target>
+      </trans-unit>
+      <trans-unit id="msgInstallPkgFinish">
+        <source xml:lang="en">Notebook dependencies installation is complete</source>
+        <target state="translated">노트북 종속성 설치가 완료되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="msgPythonRunningError">
+        <source xml:lang="en">Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.</source>
+        <target state="translated">Python이 실행되는 동안 기존 Python 설치를 덮어쓸 수 없습니다. 계속하기 전에 활성 Notebook을 닫으세요.</target>
+      </trans-unit>
+      <trans-unit id="msgSkipPythonInstall">
+        <source xml:lang="en">Python already exists at the specific location. Skipping install.</source>
+        <target state="translated">Python이 특정 위치에 이미 있습니다. 설치를 건너뜁니다.</target>
+      </trans-unit>
+      <trans-unit id="msgWaitingForInstall">
+        <source xml:lang="en">Another Python installation is currently in progress. Waiting for it to complete.</source>
+        <target state="translated">다른 Python 설치가 현재 진행 중입니다. 완료될 때까지 기다리는 중입니다.</target>
+      </trans-unit>
+      <trans-unit id="msgDependenciesInstallationFailed">
+        <source xml:lang="en">Installing Notebook dependencies failed with error: {0}</source>
+        <target state="translated">노트북 종속성 설치에 실패했습니다(오류: {0}).</target>
+      </trans-unit>
+      <trans-unit id="msgDownloadPython">
+        <source xml:lang="en">Downloading local python for platform: {0} to {1}</source>
+        <target state="translated">{0} 플랫폼용 로컬 python을 {1}(으)로 다운로드하는 중</target>
+      </trans-unit>
+      <trans-unit id="confirmPackageUpgrade">
+        <source xml:lang="en">Some installed python packages need to be upgraded. Would you like to upgrade them now?</source>
+        <target state="translated">설치된 일부 Python 패키지를 업그레이드해야 합니다. 지금 업그레이드하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="upgradePackages.pipInstall">
+        <source xml:lang="en">Installing {0}</source>
+        <target state="translated">{0}을(를) 설치하는 중</target>
+      </trans-unit>
+      <trans-unit id="msgInstallStart">
+        <source xml:lang="en">Installing required packages to run Notebooks...</source>
+        <target state="translated">노트북을 실행하는 데 필요한 패키지를 설치하는 중...</target>
+      </trans-unit>
+      <trans-unit id="msgJupyterInstallDone">
+        <source xml:lang="en">... Jupyter installation complete.</source>
+        <target state="translated">... Jupyter 설치가 완료되었습니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/dialog/configurePythonDialog" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="configurePython.dialogName">
+        <source xml:lang="en">Configure Python for Notebooks</source>
+        <target state="translated">노트북용 Python 구성</target>
+      </trans-unit>
+      <trans-unit id="configurePython.okButtonText">
+        <source xml:lang="en">Install</source>
+        <target state="translated">설치</target>
+      </trans-unit>
+      <trans-unit id="configurePython.cancelButtonText">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
+      </trans-unit>
+      <trans-unit id="configurePython.browseButtonText">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">찾아보기</target>
+      </trans-unit>
+      <trans-unit id="configurePython.locationTextBoxText">
+        <source xml:lang="en">Python Install Location</source>
+        <target state="translated">Python 설치 위치</target>
+      </trans-unit>
+      <trans-unit id="configurePython.selectFileLabel">
+        <source xml:lang="en">Select</source>
+        <target state="translated">선택</target>
+      </trans-unit>
+      <trans-unit id="configurePython.installNote">
+        <source xml:lang="en">This installation will take some time. It is recommended to not close the application until the installation is complete.</source>
+        <target state="translated">이 설치에는 다소 시간이 걸릴 수 있습니다. 설치가 완료될 때까지 애플리케이션을 닫지 않는 것이 좋습니다.</target>
+      </trans-unit>
+      <trans-unit id="configurePython.invalidLocationMsg">
+        <source xml:lang="en">The specified install location is invalid.</source>
+        <target state="translated">지정된 설치 위치가 잘못되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="configurePython.pythonNotFoundMsg">
+        <source xml:lang="en">No python installation was found at the specified location.</source>
+        <target state="translated">지정된 위치에서 Python 설치를 찾을 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="configurePython.pythonInstallDeclined">
+        <source xml:lang="en">Python installation was declined.</source>
+        <target state="translated">Python 설치가 거부되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="configurePython.installationType">
+        <source xml:lang="en">Installation Type</source>
+        <target state="translated">설치 유형</target>
+      </trans-unit>
+      <trans-unit id="configurePython.newInstall">
+        <source xml:lang="en">New Python installation</source>
+        <target state="translated">새 Python 설치</target>
+      </trans-unit>
+      <trans-unit id="configurePython.existingInstall">
+        <source xml:lang="en">Use existing Python installation</source>
+        <target state="translated">기존 Python 설치 사용</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/extension" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="msgSampleCodeDataFrame">
+        <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
+        <target state="translated">이 샘플 코드는 파일을 데이터 프레임에 로드하고 처음 10개의 결과를 표시합니다.</target>
+      </trans-unit>
+      <trans-unit id="noNotebookVisible">
+        <source xml:lang="en">No notebook editor is active</source>
+        <target state="translated">노트북 편집기가 활성 상태가 아님</target>
+      </trans-unit>
+      <trans-unit id="codeCellName">
+        <source xml:lang="en">Code</source>
+        <target state="translated">코드</target>
+      </trans-unit>
+      <trans-unit id="textCellName">
+        <source xml:lang="en">Text</source>
+        <target state="translated">텍스트</target>
+      </trans-unit>
+      <trans-unit id="selectCellType">
+        <source xml:lang="en">What type of cell do you want to add?</source>
+        <target state="translated">어떤 유형의 셀을 추가하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="notebookFiles">
+        <source xml:lang="en">Notebooks</source>
+        <target state="translated">노트북</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/jupyter/jupyterController" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="notebookFileType">
+        <source xml:lang="en">Notebooks</source>
+        <target state="translated">노트북</target>
+      </trans-unit>
+      <trans-unit id="unsupportedFileType">
+        <source xml:lang="en">Only .ipynb Notebooks are supported</source>
+        <target state="translated">.ipynb 노트북만 지원됩니다.</target>
+      </trans-unit>
+      <trans-unit id="confirmReinstall">
+        <source xml:lang="en">Are you sure you want to reinstall?</source>
+        <target state="translated">다시 설치하시겠습니까?</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/jupyter/jupyterServerManager" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="shutdownError">
+        <source xml:lang="en">Shutdown of Notebook server failed: {0}</source>
+        <target state="translated">노트북 서버 종료 실패: {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/jupyter/serverInstance" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="serverStopError">
+        <source xml:lang="en">Error stopping Notebook Server: {0}</source>
+        <target state="translated">노트북 서버 중지 오류: {0}</target>
+      </trans-unit>
+      <trans-unit id="notebookStartProcessExitPremature">
+        <source xml:lang="en">Notebook process exited prematurely with error: {0}, StdErr Output: {1}</source>
+        <target state="translated">노트북 프로세스가 종기에 종료되었습니다(오류: {0}). StdErr 출력: {1}</target>
+      </trans-unit>
+      <trans-unit id="jupyterError">
+        <source xml:lang="en">Error sent from Jupyter: {0}</source>
+        <target state="translated">Jupyter에서 보낸 오류: {0}</target>
+      </trans-unit>
+      <trans-unit id="jupyterOutputMsgStartSuccessful">
+        <source xml:lang="en">... Jupyter is running at {0}</source>
+        <target state="translated">... Jupyter가 {0}에서 실행되고 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="jupyterOutputMsgStart">
+        <source xml:lang="en">... Starting Notebook server</source>
+        <target state="translated">... 전자 필기장 서버 시작</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/jupyter/jupyterNotebookProvider" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="errNotebookUriMissing">
+        <source xml:lang="en">A notebook path is required</source>
+        <target state="translated">노트북 경로가 필요합니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/jupyter/jupyterSessionManager" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="errorStartBeforeReady">
+        <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
+        <target state="translated">세션을 시작할 수 없습니다. 관리자가 아직 초기화되지 않았습니다.</target>
+      </trans-unit>
+      <trans-unit id="connectionNotValid">
+        <source xml:lang="en">Spark kernels require a connection to a SQL Server Big Data Cluster master instance.</source>
+        <target state="translated">Spark 커널은 SQL Server 빅 데이터 클러스터 마스터 인스턴스에 연결해야 합니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/dialog/managePackages/managePackagesDialog" source-language="en" target-language="ko" datatype="plaintext">
     <body>
       <trans-unit id="managePackages.dialogName">
         <source xml:lang="en">Manage Packages</source>
@@ -124,7 +412,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/out/dialog/managePackages/installedPackagesTab" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/notebook/dist/dialog/managePackages/installedPackagesTab" source-language="en" target-language="ko" datatype="plaintext">
     <body>
       <trans-unit id="managePackages.installedTabTitle">
         <source xml:lang="en">Installed</source>
@@ -168,7 +456,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/out/dialog/managePackages/addNewPackageTab" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/notebook/dist/dialog/managePackages/addNewPackageTab" source-language="en" target-language="ko" datatype="plaintext">
     <body>
       <trans-unit id="managePackages.invalidTextPlaceholder">
         <source xml:lang="en">N/A</source>
@@ -228,7 +516,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/out/protocol/notebookUriHandler" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/notebook/dist/protocol/notebookUriHandler" source-language="en" target-language="ko" datatype="plaintext">
     <body>
       <trans-unit id="notebook.unsupportedAction">
         <source xml:lang="en">Action {0} is not supported for this handler</source>
@@ -252,236 +540,60 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/out/jupyter/serverInstance" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/notebook/dist/book/bookTreeView" source-language="en" target-language="ko" datatype="plaintext">
     <body>
-      <trans-unit id="serverStopError">
-        <source xml:lang="en">Error stopping Notebook Server: {0}</source>
-        <target state="translated">노트북 서버 중지 오류: {0}</target>
+      <trans-unit id="openBookError">
+        <source xml:lang="en">Open book {0} failed: {1}</source>
+        <target state="translated">{0} 책을 열지 못함: {1}</target>
       </trans-unit>
-      <trans-unit id="notebookStartProcessExitPremature">
-        <source xml:lang="en">Notebook process exited prematurely with error: {0}, StdErr Output: {1}</source>
-        <target state="translated">노트북 프로세스가 종기에 종료되었습니다(오류: {0}). StdErr 출력: {1}</target>
-      </trans-unit>
-      <trans-unit id="jupyterError">
-        <source xml:lang="en">Error sent from Jupyter: {0}</source>
-        <target state="translated">Jupyter에서 보낸 오류: {0}</target>
-      </trans-unit>
-      <trans-unit id="jupyterOutputMsgStartSuccessful">
-        <source xml:lang="en">... Jupyter is running at {0}</source>
-        <target state="translated">... Jupyter가 {0}에서 실행되고 있습니다.</target>
-      </trans-unit>
-      <trans-unit id="jupyterOutputMsgStart">
-        <source xml:lang="en">... Starting Notebook server</source>
-        <target state="translated">... 전자 필기장 서버 시작</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/jupyter/jupyterSettingWriter" source-language="en" target-language="ko" datatype="plaintext">
-    <body>
-      <trans-unit id="UnexpectedSettingType">
-        <source xml:lang="en">Unexpected setting type {0}</source>
-        <target state="translated">예기치 않은 설정 유형 {0}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/jupyter/jupyterSessionManager" source-language="en" target-language="ko" datatype="plaintext">
-    <body>
-      <trans-unit id="errorStartBeforeReady">
-        <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
-        <target state="translated">세션을 시작할 수 없습니다. 관리자가 아직 초기화되지 않았습니다.</target>
-      </trans-unit>
-      <trans-unit id="connectionNotValid">
-        <source xml:lang="en">Spark kernels require a connection to a SQL Server big data cluster master instance.</source>
-        <target state="translated">Spark 커널은 SQL Server 빅 데이터 클러스터 마스터 인스턴스에 연결해야 합니다.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/jupyter/jupyterServerManager" source-language="en" target-language="ko" datatype="plaintext">
-    <body>
-      <trans-unit id="shutdownError">
-        <source xml:lang="en">Shutdown of Notebook server failed: {0}</source>
-        <target state="translated">노트북 서버 종료 실패: {0}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/jupyter/jupyterServerInstallation" source-language="en" target-language="ko" datatype="plaintext">
-    <body>
-      <trans-unit id="msgInstallPkgProgress">
-        <source xml:lang="en">Notebook dependencies installation is in progress</source>
-        <target state="translated">노트북 종속성 설치가 진행 중입니다.</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDownloadComplete">
-        <source xml:lang="en">Python download is complete</source>
-        <target state="translated">Python 다운로드가 완료되었습니다.</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDownloadError">
-        <source xml:lang="en">Error while downloading python setup</source>
-        <target state="translated">Python 설정을 다운로드하는 동안 오류가 발생했습니다.</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDownloadPending">
-        <source xml:lang="en">Downloading python package</source>
-        <target state="translated">Python 패키지 다운로드</target>
-      </trans-unit>
-      <trans-unit id="msgPythonUnpackPending">
-        <source xml:lang="en">Unpacking python package</source>
-        <target state="translated">Python 패키지 압축 풀기</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDirectoryError">
-        <source xml:lang="en">Error while creating python installation directory</source>
-        <target state="translated">Python 설치 디렉터리를 만드는 동안 오류가 발생했습니다.</target>
-      </trans-unit>
-      <trans-unit id="msgPythonUnpackError">
-        <source xml:lang="en">Error while unpacking python bundle</source>
-        <target state="translated">Python 번들의 압축을 푸는 동안 오류가 발생했습니다.</target>
-      </trans-unit>
-      <trans-unit id="msgTaskName">
-        <source xml:lang="en">Installing Notebook dependencies</source>
-        <target state="translated">노트북 종속성 설치</target>
-      </trans-unit>
-      <trans-unit id="msgInstallPkgStart">
-        <source xml:lang="en">Installing Notebook dependencies, see Tasks view for more information</source>
-        <target state="translated">노트북 종속성을 설치합니다. 자세한 내용은 작업 보기를 참조하세요.</target>
-      </trans-unit>
-      <trans-unit id="msgInstallPkgFinish">
-        <source xml:lang="en">Notebook dependencies installation is complete</source>
-        <target state="translated">노트북 종속성 설치가 완료되었습니다.</target>
-      </trans-unit>
-      <trans-unit id="msgPythonRunningError">
-        <source xml:lang="en">Cannot overwrite existing Python installation while python is running.</source>
-        <target state="translated">Python이 실행되는 동안 기존 Python 설치를 덮어 쓸 수 없습니다.</target>
-      </trans-unit>
-      <trans-unit id="msgPendingInstallError">
-        <source xml:lang="en">Another Python installation is currently in progress.</source>
-        <target state="translated">다른 Python 설치가 현재 진행 중입니다.</target>
-      </trans-unit>
-      <trans-unit id="msgSkipPythonInstall">
-        <source xml:lang="en">Python already exists at the specific location. Skipping install.</source>
-        <target state="translated">Python이 특정 위치에 이미 있습니다. 설치를 건너뜁니다.</target>
-      </trans-unit>
-      <trans-unit id="msgDependenciesInstallationFailed">
-        <source xml:lang="en">Installing Notebook dependencies failed with error: {0}</source>
-        <target state="translated">노트북 종속성 설치에 실패했습니다(오류: {0}).</target>
-      </trans-unit>
-      <trans-unit id="msgDownloadPython">
-        <source xml:lang="en">Downloading local python for platform: {0} to {1}</source>
-        <target state="translated">{0} 플랫폼용 로컬 python을 {1}(으)로 다운로드하는 중</target>
-      </trans-unit>
-      <trans-unit id="msgInstallStart">
-        <source xml:lang="en">Installing required packages to run Notebooks...</source>
-        <target state="translated">노트북을 실행하는 데 필요한 패키지를 설치하는 중...</target>
-      </trans-unit>
-      <trans-unit id="msgJupyterInstallDone">
-        <source xml:lang="en">... Jupyter installation complete.</source>
-        <target state="translated">... Jupyter 설치가 완료되었습니다.</target>
-      </trans-unit>
-      <trans-unit id="msgInstallingSpark">
-        <source xml:lang="en">Installing SparkMagic...</source>
-        <target state="translated">SparkMagic을 설치하는 중...</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/jupyter/jupyterNotebookProvider" source-language="en" target-language="ko" datatype="plaintext">
-    <body>
-      <trans-unit id="errNotebookUriMissing">
-        <source xml:lang="en">A notebook path is required</source>
-        <target state="translated">노트북 경로가 필요합니다.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/jupyter/jupyterController" source-language="en" target-language="ko" datatype="plaintext">
-    <body>
-      <trans-unit id="notebookFileType">
-        <source xml:lang="en">Notebooks</source>
-        <target state="translated">노트북</target>
-      </trans-unit>
-      <trans-unit id="unsupportedFileType">
-        <source xml:lang="en">Only .ipynb Notebooks are supported</source>
-        <target state="translated">.ipynb 노트북만 지원됩니다.</target>
-      </trans-unit>
-      <trans-unit id="confirmReinstall">
-        <source xml:lang="en">Are you sure you want to reinstall?</source>
-        <target state="translated">다시 설치하시겠습니까?</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/dialog/configurePythonDialog" source-language="en" target-language="ko" datatype="plaintext">
-    <body>
-      <trans-unit id="configurePython.dialogName">
-        <source xml:lang="en">Configure Python for Notebooks</source>
-        <target state="translated">노트북용 Python 구성</target>
-      </trans-unit>
-      <trans-unit id="configurePython.okButtonText">
-        <source xml:lang="en">Install</source>
-        <target state="translated">설치</target>
-      </trans-unit>
-      <trans-unit id="configurePython.cancelButtonText">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">취소</target>
-      </trans-unit>
-      <trans-unit id="configurePython.browseButtonText">
-        <source xml:lang="en">Browse</source>
-        <target state="translated">찾아보기</target>
-      </trans-unit>
-      <trans-unit id="configurePython.locationTextBoxText">
-        <source xml:lang="en">Python Install Location</source>
-        <target state="translated">Python 설치 위치</target>
-      </trans-unit>
-      <trans-unit id="configurePython.selectFileLabel">
-        <source xml:lang="en">Select</source>
-        <target state="translated">선택</target>
-      </trans-unit>
-      <trans-unit id="configurePython.installNote">
-        <source xml:lang="en">This installation will take some time. It is recommended to not close the application until the installation is complete.</source>
-        <target state="translated">이 설치에는 다소 시간이 걸릴 수 있습니다. 설치가 완료될 때까지 애플리케이션을 닫지 않는 것이 좋습니다.</target>
-      </trans-unit>
-      <trans-unit id="configurePython.invalidLocationMsg">
-        <source xml:lang="en">The specified install location is invalid.</source>
-        <target state="translated">지정된 설치 위치가 잘못되었습니다.</target>
-      </trans-unit>
-      <trans-unit id="configurePython.pythonNotFoundMsg">
-        <source xml:lang="en">No python installation was found at the specified location.</source>
-        <target state="translated">지정된 위치에서 Python 설치를 찾을 수 없습니다.</target>
-      </trans-unit>
-      <trans-unit id="configurePython.pythonInstallDeclined">
-        <source xml:lang="en">Python installation was declined.</source>
-        <target state="translated">Python 설치가 거부되었습니다.</target>
-      </trans-unit>
-      <trans-unit id="configurePython.installationType">
-        <source xml:lang="en">Installation Type</source>
-        <target state="translated">설치 유형</target>
-      </trans-unit>
-      <trans-unit id="configurePython.newInstall">
-        <source xml:lang="en">New Python installation</source>
-        <target state="translated">새 Python 설치</target>
-      </trans-unit>
-      <trans-unit id="configurePython.existingInstall">
-        <source xml:lang="en">Use existing Python installation</source>
-        <target state="translated">기존 Python 설치 사용</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/book/bookTreeView" source-language="en" target-language="ko" datatype="plaintext">
-    <body>
       <trans-unit id="openNotebookError">
-        <source xml:lang="en">Open file {0} failed: {1}</source>
-        <target state="translated">{0} 파일 열기 실패: {1}</target>
+        <source xml:lang="en">Open notebook {0} failed: {1}</source>
+        <target state="translated">Notebook {0}을(를) 열지 못함: {1}</target>
       </trans-unit>
       <trans-unit id="openMarkdownError">
-        <source xml:lang="en">Open file {0} failed: {1}</source>
-        <target state="translated">{0} 파일 열기 실패: {1}</target>
+        <source xml:lang="en">Open markdown {0} failed: {1}</source>
+        <target state="translated">markdown {0}을(를) 열지 못함: {1}</target>
+      </trans-unit>
+      <trans-unit id="openUntitledNotebookError">
+        <source xml:lang="en">Open untitled notebook {0} as untitled failed: {1}</source>
+        <target state="translated">제목 없는 Notebook {0}을(를) 제목 없음으로 열지 못함: {1}</target>
+      </trans-unit>
+      <trans-unit id="allFiles">
+        <source xml:lang="en">All Files</source>
+        <target state="translated">모든 파일</target>
+      </trans-unit>
+      <trans-unit id="labelPickFolder">
+        <source xml:lang="en">Pick Folder</source>
+        <target state="translated">폴더 선택</target>
       </trans-unit>
       <trans-unit id="openExternalLinkError">
         <source xml:lang="en">Open link {0} failed: {1}</source>
         <target state="translated">링크 {0} 열기 실패: {1}</target>
       </trans-unit>
-      <trans-unit id="openConfigFileError">
-        <source xml:lang="en">Open file {0} failed: {1}</source>
-        <target state="translated">{0} 파일 열기 실패: {1}</target>
+      <trans-unit id="confirmReplace">
+        <source xml:lang="en">Folder already exists. Are you sure you want to delete and replace this folder?</source>
+        <target state="translated">폴더가 이미 있습니다. 이 폴더를 삭제하고 바꾸시겠습니까?</target>
       </trans-unit>
-      <trans-unit id="openExternalLinkCommand">
-        <source xml:lang="en">Open External Link</source>
-        <target state="translated">외부 링크 열기</target>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/book/bookModel" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="missingFileError">
+        <source xml:lang="en">Missing file : {0}</source>
+        <target state="translated">없는 파일: {0}</target>
       </trans-unit>
+      <trans-unit id="InvalidError.tocFile">
+        <source xml:lang="en">{0}</source>
+        <target state="translated">{0}</target>
+      </trans-unit>
+      <trans-unit id="Invalid toc.yml">
+        <source xml:lang="en">Error: {0} has an incorrect toc.yml file</source>
+        <target state="translated">오류: {0}에 잘못된 toc.yml 파일이 있음</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/book/bookTreeItem" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
       <trans-unit id="openNotebookCommand">
         <source xml:lang="en">Open Notebook</source>
         <target state="translated">노트북 열기</target>
@@ -490,65 +602,9 @@
         <source xml:lang="en">Open Markdown</source>
         <target state="translated">Markdown 열기</target>
       </trans-unit>
-      <trans-unit id="missingFileError">
-        <source xml:lang="en">Missing file : {0}</source>
-        <target state="translated">없는 파일: {0}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/common/utils" source-language="en" target-language="ko" datatype="plaintext">
-    <body>
-      <trans-unit id="mkdirOutputMsg">
-        <source xml:lang="en">... Creating {0}</source>
-        <target state="translated">... {0}을(를) 만드는 중</target>
-      </trans-unit>
-      <trans-unit id="executeCommandProcessExited">
-        <source xml:lang="en">Process exited with code {0}</source>
-        <target state="translated">{0} 코드로 종료된 프로세스</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/common/localizedConstants" source-language="en" target-language="ko" datatype="plaintext">
-    <body>
-      <trans-unit id="msgYes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">예</target>
-      </trans-unit>
-      <trans-unit id="msgNo">
-        <source xml:lang="en">No</source>
-        <target state="translated">아니요</target>
-      </trans-unit>
-      <trans-unit id="msgSampleCodeDataFrame">
-        <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
-        <target state="translated">이 샘플 코드는 파일을 데이터 프레임에 로드하고 처음 10개의 결과를 표시합니다.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/extension" source-language="en" target-language="ko" datatype="plaintext">
-    <body>
-      <trans-unit id="msgSampleCodeDataFrame">
-        <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
-        <target state="translated">이 샘플 코드는 파일을 데이터 프레임에 로드하고 처음 10개의 결과를 보여 줍니다.</target>
-      </trans-unit>
-      <trans-unit id="noNotebookVisible">
-        <source xml:lang="en">No notebook editor is active</source>
-        <target state="translated">노트북 편집기가 활성 상태가 아님</target>
-      </trans-unit>
-      <trans-unit id="codeCellName">
-        <source xml:lang="en">Code</source>
-        <target state="translated">코드</target>
-      </trans-unit>
-      <trans-unit id="textCellName">
-        <source xml:lang="en">Text</source>
-        <target state="translated">텍스트</target>
-      </trans-unit>
-      <trans-unit id="selectCellType">
-        <source xml:lang="en">What type of cell do you want to add?</source>
-        <target state="translated">어떤 유형의 셀을 추가하시겠습니까?</target>
-      </trans-unit>
-      <trans-unit id="notebookFiles">
-        <source xml:lang="en">Notebooks</source>
-        <target state="translated">노트북</target>
+      <trans-unit id="openExternalLinkCommand">
+        <source xml:lang="en">Open External Link</source>
+        <target state="translated">외부 링크 열기</target>
       </trans-unit>
     </body>
   </file>

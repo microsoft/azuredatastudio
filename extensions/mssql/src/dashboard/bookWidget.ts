@@ -15,14 +15,12 @@ export function registerBooksWidget(bookContributionProvider: BookContributionPr
 		const container = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: '100%',
-			height: '100%',
-			alignItems: 'left'
+			height: '100%'
 		}).component();
 		const bookslocationContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: '270px',
 			height: '100%',
-			alignItems: 'left',
 			position: 'absolute'
 		}).component();
 

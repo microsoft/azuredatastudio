@@ -38,6 +38,10 @@ export class ManagePackagesDialog {
 
 		this.dialog.content = [this.installedPkgTab.tab, this.addNewPkgTab.tab];
 
+		this.dialog.registerCloseValidator(() => {
+			return false; // Blocks Enter key from closing dialog.
+		});
+
 		azdata.window.openDialog(this.dialog);
 	}
 

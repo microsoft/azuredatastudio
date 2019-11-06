@@ -2,7 +2,7 @@
   "name": "mssql",
   "version": "0.1.0",
   "publisher": "Microsoft",
-  "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
+  "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
   "activationEvents": [
     "*"
   ],
@@ -45,6 +45,10 @@
         "title": "%mssqlCluster.copyPath%"
       },
       {
+        "command": "mssqlCluster.manageAccess",
+        "title": "%mssqlCluster.manageAccess%"
+      },
+      {
         "command": "mssqlCluster.task.newNotebook",
         "title": "%notebook.command.new%",
         "icon": {
@@ -73,8 +77,8 @@
         }
       },
       {
-        "command": "mssqlCluster.task.openClusterStatusNotebook",
-        "title": "%title.openClusterStatusNotebook%",
+        "command": "mssqlCluster.task.openClusterDashboard",
+        "title": "%title.openClusterDashboard%",
         "icon": {
           "dark": "resources/dark/cluster_status_inverse.svg",
           "light": "resources/light/cluster_status.svg"
@@ -123,6 +127,11 @@
           "type": "boolean",
           "default": true,
           "description": "%mssql.query.displayBitAsNumber%"
+        },
+        "mssql.query.maxXmlCharsToStore": {
+          "type": "number",
+          "default": 2097152,
+          "description": "%mssql.query.maxXmlCharsToStore%"
         },
         "mssql.format.alignColumnDefinitionsInColumns": {
           "type": "boolean",
@@ -222,6 +231,10 @@
           "when": "false"
         },
         {
+          "command": "mssqlCluster.manageAccess",
+          "when": "false"
+        },
+        {
           "command": "mssqlCluster.task.newNotebook",
           "when": "false"
         },
@@ -238,19 +251,19 @@
           "when": "false"
         },
         {
-          "command": "mssqlCluster.task.openClusterStatusNotebook",
+          "command": "mssqlCluster.task.openClusterDashboard",
           "when": "false"
         }
       ],
       "objectExplorer/item/context": [
         {
           "command": "mssqlCluster.uploadFiles",
-          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:message && nodeType != mssqlCluster:file",
+          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:message && nodeType != mssqlCluster:file && nodeSubType=~/^(?!:mount).*$/",
           "group": "1mssqlCluster@1"
         },
         {
           "command": "mssqlCluster.mkdir",
-          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:message && nodeType != mssqlCluster:file",
+          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:message && nodeType != mssqlCluster:file && nodeSubType=~/^(?!:mount).*$/",
           "group": "1mssqlCluster@1"
         },
         {
@@ -269,18 +282,23 @@
           "group": "1mssqlCluster@3"
         },
         {
+          "command": "mssqlCluster.manageAccess",
+          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:connection && nodeType != mssqlCluster:message",
+          "group": "1mssqlCluster@3"
+        },
+        {
           "command": "mssqlCluster.deleteFiles",
-          "when": "nodeType=~/^mssqlCluster/ && viewItem != mssqlCluster:connection && nodeType != mssqlCluster:message",
+          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:hdfs && nodeType != mssqlCluster:connection && viewItem != mssqlCluster:connection && nodeType != mssqlCluster:message && nodeSubType=~/^(?!:mount).*$/",
           "group": "1mssqlCluster@4"
         },
         {
           "command": "mssqlCluster.livy.cmd.submitSparkJob",
           "when": "nodeType == mssqlCluster:hdfs",
-          "group": "1root@1"
+          "group": "1mssqlCluster@7"
         },
         {
           "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
-          "when": "nodeType == mssqlCluster:file && nodeSubType == mssqlCluster:spark",
+          "when": "nodeType == mssqlCluster:file && nodeSubType =~/:spark:/",
           "group": "1mssqlCluster@6"
         }
       ]
@@ -290,11 +308,18 @@
       "flavors": [
         {
           "flavor": "on_prem",
-          "condition": {
-            "field": "isCloud",
-            "operator": "!=",
-            "value": true
-          },
+          "conditions": [
+            {
+              "field": "isCloud",
+              "operator": "!=",
+              "value": true
+            },
+            {
+              "field": "engineEditionId",
+              "operator": "!=",
+              "value": "11"
+            }
+          ],
           "databaseProperties": [
             {
               "displayName": "%onprem.databaseProperties.recoveryModel%",
@@ -344,11 +369,13 @@
         },
         {
           "flavor": "cloud",
-          "condition": {
-            "field": "isCloud",
-            "operator": "==",
-            "value": true
-          },
+          "conditions": [
+            {
+              "field": "isCloud",
+              "operator": "==",
+              "value": true
+            }
+          ],
           "databaseProperties": [
             {
               "displayName": "%cloud.databaseProperties.azureEdition%",
@@ -358,6 +385,36 @@
               "displayName": "%cloud.databaseProperties.serviceLevelObjective%",
               "value": "serviceLevelObjective"
             },
+            {
+              "displayName": "%cloud.databaseProperties.compatibilityLevel%",
+              "value": "compatibilityLevel"
+            },
+            {
+              "displayName": "%cloud.databaseProperties.owner%",
+              "value": "owner"
+            }
+          ],
+          "serverProperties": [
+            {
+              "displayName": "%cloud.serverProperties.serverVersion%",
+              "value": "serverVersion"
+            },
+            {
+              "displayName": "%cloud.serverProperties.serverEdition%",
+              "value": "serverEdition"
+            }
+          ]
+        },
+        {
+          "flavor": "on_demand",
+          "conditions": [
+            {
+              "field": "engineEditionId",
+              "operator": "==",
+              "value": "11"
+            }
+          ],
+          "databaseProperties": [
             {
               "displayName": "%cloud.databaseProperties.compatibilityLevel%",
               "value": "compatibilityLevel"
@@ -399,7 +456,7 @@
                   "mssqlCluster.task.newNotebook",
                   "mssqlCluster.task.openNotebook",
                   "mssqlCluster.livy.task.submitSparkJob",
-                  "mssqlCluster.task.openClusterStatusNotebook"
+                  "mssqlCluster.task.openClusterDashboard"
                 ]
               }
             },
@@ -417,7 +474,6 @@
             },
             {
               "name": "%title.books%",
-              "when": "notebookQuality != stable",
               "row": 0,
               "col": 2,
               "colspan": 1,
@@ -944,7 +1000,7 @@
     "kerberos": "^1.1.3",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
-    "service-downloader": "github:anthonydresser/service-downloader#0.1.6",
+    "service-downloader": "github:anthonydresser/service-downloader#0.1.7",
     "stream-meter": "^1.0.4",
     "through2": "^3.0.1",
     "tough-cookie": "^3.0.1",

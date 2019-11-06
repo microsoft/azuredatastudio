@@ -13,7 +13,8 @@ import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/bro
 import { FormLayout, FormItemLayout } from 'azdata';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
+import { find } from 'vs/base/common/arrays';
 
 export interface TitledFormItemLayout {
 	title: string;
@@ -27,10 +28,6 @@ export interface TitledFormItemLayout {
 	info?: string;
 	isInGroup?: boolean;
 	isGroupLabel?: boolean;
-}
-
-export interface FormLayout {
-	width: number;
 }
 
 class FormItem {
@@ -52,7 +49,7 @@ class FormItem {
 					<ng-container *ngIf="isHorizontal(item)">
 						<div *ngIf="hasItemTitle(item)" class="form-cell form-cell-title" [style.font-size]="getItemTitleFontSize(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
 							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
-							<span class="icon help form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
+							<span class="codicon help form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
 						</div>
 						<div class="form-cell">
 							<div class="form-component-container">
@@ -72,7 +69,7 @@ class FormItem {
 					<div class="form-vertical-container" *ngIf="isVertical(item)" [style.height]="getRowHeight(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
 						<div class="form-item-row" [style.font-size]="getItemTitleFontSize(item)">
 							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
-							<span class="icon help form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
+							<span class="codicon help form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
 						</div>
 						<div class="form-item-row" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
 							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
@@ -193,7 +190,7 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		let itemConfig = item.config;
 		if (itemConfig && itemConfig.actions) {
 			let resultItems = itemConfig.actions.map(x => {
-				let actionComponent = items.find(i => i.descriptor.id === x);
+				let actionComponent = find(items, i => i.descriptor.id === x);
 				return <FormItem>actionComponent;
 			});
 

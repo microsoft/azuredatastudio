@@ -15,13 +15,10 @@ import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator'
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { generateUuid, isUUID } from 'vs/base/common/uuid';
 import { values } from 'vs/base/common/map';
-// {{SQL CARBON EDIT}}
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/workbench/contrib/extensions/common/extensions';
-// {{SQL CARBON EDIT}} - End
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration'; // {{SQL CARBON EDIT}}
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IExtensionManifest } from 'vs/platform/extensions/common/extensions';
+import { IExtensionManifest, ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}} add imports
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { joinPath } from 'vs/base/common/resources';
@@ -29,6 +26,7 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { optional } from 'vs/platform/instantiation/common/instantiation';
+import { find } from 'vs/base/common/arrays';
 
 interface IRawGalleryExtensionFile {
 	assetType: string;
@@ -387,8 +385,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		@ILogService private readonly logService: ILogService,
 		@IEnvironmentService private readonly environmentService: IEnvironmentService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
-		// {{SQL CARBON EDIT}}
-		@IConfigurationService private configurationService: IConfigurationService,
+		@IConfigurationService private configurationService: IConfigurationService, // {{SQL CARBON EDIT}}
 		@IFileService private readonly fileService: IFileService,
 		@IProductService private readonly productService: IProductService,
 		@optional(IStorageService) private readonly storageService: IStorageService,
@@ -554,16 +551,16 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		if (query.criteria) {
 			const ids = query.criteria.filter(x => x.filterType === FilterType.ExtensionId).map(v => v.value ? v.value.toLocaleLowerCase() : undefined);
 			if (ids && ids.length > 0) {
-				filteredExtensions = filteredExtensions.filter(e => e.extensionId && ids.includes(e.extensionId.toLocaleLowerCase()));
+				filteredExtensions = filteredExtensions.filter(e => e.extensionId && find(ids, x => x === e.extensionId.toLocaleLowerCase()));
 			}
 			const names = query.criteria.filter(x => x.filterType === FilterType.ExtensionName).map(v => v.value ? v.value.toLocaleLowerCase() : undefined);
 			if (names && names.length > 0) {
-				filteredExtensions = filteredExtensions.filter(e => e.extensionName && e.publisher.publisherName && names.includes(`${e.publisher.publisherName.toLocaleLowerCase()}.${e.extensionName.toLocaleLowerCase()}`));
+				filteredExtensions = filteredExtensions.filter(e => e.extensionName && e.publisher.publisherName && find(names, x => x === `${e.publisher.publisherName.toLocaleLowerCase()}.${e.extensionName.toLocaleLowerCase()}`));
 			}
 			const categoryFilters = query.criteria.filter(x => x.filterType === FilterType.Category).map(v => v.value ? v.value.toLowerCase() : undefined);
 			if (categoryFilters && categoryFilters.length > 0) {
 				// Implement the @category: "language packs" filtering
-				if (categoryFilters.includes('language packs')) {
+				if (find(categoryFilters, x => x === 'language packs')) {
 					filteredExtensions = filteredExtensions.filter(e => {
 						// we only have 1 version for our extensions in the gallery file, so this should always be the case
 						if (e.versions.length === 1) {
@@ -615,12 +612,12 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		}
 		let text = searchText.toLocaleLowerCase();
 		return !!extension
-			&& !!(extension.extensionName && extension.extensionName.toLocaleLowerCase().includes(text) ||
-				extension.publisher && extension.publisher.publisherName && extension.publisher.publisherName.toLocaleLowerCase().includes(text) ||
-				extension.publisher && extension.publisher.displayName && extension.publisher.displayName.toLocaleLowerCase().includes(text) ||
-				extension.displayName && extension.displayName.toLocaleLowerCase().includes(text) ||
-				extension.shortDescription && extension.shortDescription.toLocaleLowerCase().includes(text) ||
-				extension.extensionId && extension.extensionId.toLocaleLowerCase().includes(text));
+			&& !!(extension.extensionName && extension.extensionName.toLocaleLowerCase().indexOf(text) > -1 ||
+				extension.publisher && extension.publisher.publisherName && extension.publisher.publisherName.toLocaleLowerCase().indexOf(text) > -1 ||
+				extension.publisher && extension.publisher.displayName && extension.publisher.displayName.toLocaleLowerCase().indexOf(text) > -1 ||
+				extension.displayName && extension.displayName.toLocaleLowerCase().indexOf(text) > -1 ||
+				extension.shortDescription && extension.shortDescription.toLocaleLowerCase().indexOf(text) > -1 ||
+				extension.extensionId && extension.extensionId.toLocaleLowerCase().indexOf(text) > -1);
 	}
 
 	public static compareByField(a: any, b: any, fieldName: string): number {

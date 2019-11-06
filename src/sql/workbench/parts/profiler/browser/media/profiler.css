@@ -12,10 +12,10 @@
 	display: inline-block;
 }
 
-.vs .icon.clear-results {
+.vs .codicon.clear-results {
 	background-image: url('clear.svg');
 }
 
-.vs-dark .icon.clear-results {
+.vs-dark .codicon.clear-results {
 	background-image: url('clear_inverse.svg');
 }

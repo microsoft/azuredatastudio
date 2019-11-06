@@ -60,7 +60,7 @@ export class NotebookMarkdownRenderer {
 		const withInnerHTML = new Promise(c => signalInnerHTML = c);
 
 		let notebookFolder = path.dirname(this._notebookURI.fsPath) + '/';
-		if (!this._baseUrls.includes(notebookFolder)) {
+		if (!this._baseUrls.some(x => x === notebookFolder)) {
 			this._baseUrls.push(notebookFolder);
 		}
 		const renderer = new marked.Renderer({ baseUrl: notebookFolder });
@@ -190,7 +190,9 @@ export class NotebookMarkdownRenderer {
 			}
 		}
 		try {
-			if (URI.parse(href)) {
+			// The call to resolveUrl() (where relative hrefs are converted to absolute ones) comes after this point
+			// Therefore, we only want to return immediately if the path is absolute here
+			if (URI.parse(href) && path.isAbsolute(href)) {
 				return href;
 			}
 		} catch {
@@ -201,7 +203,7 @@ export class NotebookMarkdownRenderer {
 			href = this.resolveUrl(base, href);
 		}
 		try {
-			href = encodeURI(href).replace(/%25/g, '%');
+			href = encodeURI(href).replace(/%5C/g, '\\').replace(/%25/g, '%');
 		} catch (e) {
 			return null;
 		}

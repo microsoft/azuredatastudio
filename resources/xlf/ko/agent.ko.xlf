@@ -60,7 +60,7 @@
       </trans-unit>
       <trans-unit id="createProxy.ReplicationSnapshot">
         <source xml:lang="en">Replication Snapshot</source>
-        <target state="translated">복제 스냅숏</target>
+        <target state="translated">복제 스냅샷</target>
       </trans-unit>
       <trans-unit id="createProxy.ReplicationTransactionLog">
         <source xml:lang="en">Replication Transaction-Log Reader</source>
@@ -228,7 +228,7 @@
     <body>
       <trans-unit id="jobStepDialog.fileBrowserTitle">
         <source xml:lang="en">Locate Database Files - </source>
-        <target state="translated">데이터베이스 파일 위치 -</target>
+        <target state="translated">데이터베이스 파일 찾기 - </target>
       </trans-unit>
       <trans-unit id="jobStepDialog.ok">
         <source xml:lang="en">OK</source>
@@ -380,7 +380,7 @@
       </trans-unit>
       <trans-unit id="jobStepDialog.replicationSnapshot">
         <source xml:lang="en">Replication Snapshot</source>
-        <target state="translated">복제 스냅숏</target>
+        <target state="translated">복제 스냅샷</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.replicationTransactionLogReader">
         <source xml:lang="en">Replication Transaction-Log Reader</source>
@@ -520,7 +520,7 @@
       </trans-unit>
       <trans-unit id="jobDialog.eventLogCheckBoxLabel">
         <source xml:lang="en">Write to the Windows Application event log</source>
-        <target state="translated">Windows 응용 프로그램 이벤트 로그에 쓰기</target>
+        <target state="translated">Windows 애플리케이션 이벤트 로그에 쓰기</target>
       </trans-unit>
       <trans-unit id="jobDialog.deleteJobLabel">
         <source xml:lang="en">Automatically delete job</source>
@@ -876,7 +876,7 @@
     <body>
       <trans-unit id="alertData.saveErrorMessage">
         <source xml:lang="en">Alert update failed '{0}'</source>
-        <target state="translated">' {0} ' 업데이트 실패  경고</target>
+        <target state="translated">'{0}' 업데이트 실패 경고</target>
       </trans-unit>
       <trans-unit id="alertData.DefaultAlertTypString">
         <source xml:lang="en">SQL Server event alert</source>

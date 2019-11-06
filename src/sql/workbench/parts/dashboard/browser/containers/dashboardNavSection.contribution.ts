@@ -16,6 +16,7 @@ import { NavSectionConfig, IUserFriendlyIcon } from 'sql/workbench/parts/dashboa
 import { registerContainerType, generateNavSectionContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/workbench/parts/dashboard/browser/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/workbench/parts/dashboard/browser/containers/dashboardGridContainer.contribution';
+import { values } from 'vs/base/common/collections';
 
 export const NAV_SECTION = 'nav-section';
 
@@ -102,12 +103,12 @@ export function validateNavSectionContributionAndRegisterIcon(extension: IExtens
 	navSectionConfigs.forEach(section => {
 		if (!section.title) {
 			result = false;
-			extension.collector.error(nls.localize('navSection.missingTitle_error', "No title in nav section specified for extension."));
+			extension.collector.error(nls.localize('navSection.missingTitle.error', "No title in nav section specified for extension."));
 		}
 
 		if (!section.container) {
 			result = false;
-			extension.collector.error(nls.localize('navSection.missingContainer_error', "No container in nav section specified for extension."));
+			extension.collector.error(nls.localize('navSection.missingContainer.error', "No container in nav section specified for extension."));
 		}
 
 		if (Object.keys(section.container).length !== 1) {
@@ -120,7 +121,7 @@ export function validateNavSectionContributionAndRegisterIcon(extension: IExtens
 		}
 
 		const containerKey = Object.keys(section.container)[0];
-		const containerValue = Object.values(section.container)[0];
+		const containerValue = values(section.container)[0];
 
 		switch (containerKey) {
 			case WIDGETS_CONTAINER:
@@ -131,7 +132,7 @@ export function validateNavSectionContributionAndRegisterIcon(extension: IExtens
 				break;
 			case NAV_SECTION:
 				result = false;
-				extension.collector.error(nls.localize('navSection.invalidContainer_error', "NAV_SECTION within NAV_SECTION is an invalid container for extension."));
+				extension.collector.error(nls.localize('navSection.invalidContainer.error', "NAV_SECTION within NAV_SECTION is an invalid container for extension."));
 				break;
 		}
 

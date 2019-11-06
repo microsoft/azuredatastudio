@@ -248,7 +248,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.connectTimeout.description">
         <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
-        <target state="translated">시도를 종료하고 오류를 생성하기 전에 서버의 연결을 기다리는 시간(초)입니다.</target>
+        <target state="translated">시도를 마치고 오류를 생성하기 전까지 서버 연결을 기다리는 시간(초)입니다.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.currentLanguage.displayName">
         <source xml:lang="en">Current language</source>
@@ -328,7 +328,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.applicationName.displayName">
         <source xml:lang="en">Application name</source>
-        <target state="translated">응용 프로그램 이름</target>
+        <target state="translated">애플리케이션 이름</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.applicationName.description">
         <source xml:lang="en">The name of the application</source>
@@ -348,7 +348,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.pooling.description">
         <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
-        <target state="translated">true이면 연결 개체를 적절한 풀에서 가져오거나 필요한 경우 만들어서 적당한 풀에 추가합니다.</target>
+        <target state="translated">true이면 연결 개체를 적절한 풀에서 가져오거나 필요한 경우 만들어 적절한 풀에 추가합니다.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.maxPoolSize.displayName">
         <source xml:lang="en">Max pool size</source>
@@ -372,7 +372,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.loadBalanceTimeout.description">
         <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
-        <target state="translated">이 연결이 삭제되기 전에 풀에 유지되는 최소 시간(초)입니다.</target>
+        <target state="translated">이 연결이 삭제되기 전에 풀에서 유지되는 최소 시간(초)입니다.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.replication.displayName">
         <source xml:lang="en">Replication</source>
@@ -392,7 +392,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.failoverPartner.description">
         <source xml:lang="en">The name or network address of the instance of SQL Server that acts as a failover partner</source>
-        <target state="translated">장애 조치(failover) 파트너역할을 하는 SQL Server 인스턴스의 이름 또는 네트워크 주소</target>
+        <target state="translated">장애 조치(failover) 파트너 역할을 하는 SQL Server 인스턴스의 이름 또는 네트워크 주소</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.multiSubnetFailover.displayName">
         <source xml:lang="en">Multi subnet failover</source>

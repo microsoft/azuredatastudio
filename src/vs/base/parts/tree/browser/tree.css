@@ -60,8 +60,14 @@
 	display: none;
 }
 
-/* Expansion */
+/* Highlighted */
 
+.monaco-tree.highlighted .monaco-tree-rows > .monaco-tree-row:not(.highlighted) {
+	opacity: 0.3;
+}
+
+/* {{SQL CARBON EDIT}} lower css settings
+/* Expansion */
 .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before {
 	content: ' ';
 	position: absolute;
@@ -90,13 +96,6 @@
 .monaco-tree .monaco-tree-rows > .monaco-tree-row.has-children.loading > .content:before {
 	background-image: url('loading.svg');
 }
-
-/* Highlighted */
-
-.monaco-tree.highlighted .monaco-tree-rows > .monaco-tree-row:not(.highlighted) {
-	opacity: 0.3;
-}
-
 .vs-dark .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before {
 	background-image: url('tree-collapsed-dark.svg');
 }

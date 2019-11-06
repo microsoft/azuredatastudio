@@ -10,17 +10,9 @@
         <source xml:lang="en">Provides a notebook-based experience to deploy Microsoft SQL Server</source>
         <target state="translated">Microsoft SQL Server 배포를 위한 전자 필기장 기반 환경 제공</target>
       </trans-unit>
-      <trans-unit id="deploy-sql-image-command-name">
-        <source xml:lang="en">Deploy SQL Server on Docker…</source>
-        <target state="translated">Docker에 SQL Server 배포...</target>
-      </trans-unit>
-      <trans-unit id="deploy-sql-bdc-command-name">
-        <source xml:lang="en">Deploy SQL Server big data cluster…</source>
-        <target state="translated">SQL Server 빅 데이터 클러스터 배포...</target>
-      </trans-unit>
       <trans-unit id="deploy-resource-command-name">
         <source xml:lang="en">Deploy SQL Server…</source>
-        <target state="translated">SQL 서버 배포...</target>
+        <target state="translated">SQL Server 배포...</target>
       </trans-unit>
       <trans-unit id="deploy-resource-command-category">
         <source xml:lang="en">Deployment</source>
@@ -31,15 +23,15 @@
         <target state="translated">SQL Server 컨테이너 이미지</target>
       </trans-unit>
       <trans-unit id="resource-type-sql-image-description">
-        <source xml:lang="en">Run SQL Server container image with Docker</source>
+        <source xml:lang="en">Run SQL Server container image with docker</source>
         <target state="translated">Docker를 사용하여 SQL Server 컨테이너 이미지 실행</target>
       </trans-unit>
       <trans-unit id="resource-type-sql-bdc-display-name">
-        <source xml:lang="en">SQL Server big data cluster</source>
+        <source xml:lang="en">SQL Server Big Data Cluster</source>
         <target state="translated">SQL Server 빅 데이터 클러스터</target>
       </trans-unit>
       <trans-unit id="resource-type-sql-bdc-description">
-        <source xml:lang="en">SQL Server big data cluster allows you to deploy scalable clusters of SQL Server, Spark, and HDFS containers running on Kubernetes</source>
+        <source xml:lang="en">SQL Server Big Data Cluster allows you to deploy scalable clusters of SQL Server, Spark, and HDFS containers running on Kubernetes</source>
         <target state="translated">SQL Server 빅 데이터 클러스터를 사용하면 Kubernetes에서 실행되는 SQL Server, Spark 및 HDFS 컨테이너의 확장 가능한 클러스터를 배포할 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="version-display-name">
@@ -51,8 +43,8 @@
         <target state="translated">SQL Server 2017</target>
       </trans-unit>
       <trans-unit id="sql-2019-display-name">
-        <source xml:lang="en">SQL Server 2019</source>
-        <target state="translated">SQL Server 2019</target>
+        <source xml:lang="en">SQL Server 2019 RC</source>
+        <target state="translated">SQL Server 2019 RC</target>
       </trans-unit>
       <trans-unit id="sql-2017-docker-notebook">
         <source xml:lang="en">./notebooks/docker/2017/deploy-sql2017-image.ipynb</source>
@@ -62,69 +54,1093 @@
         <source xml:lang="en">./notebooks/docker/2019/deploy-sql2019-image.ipynb</source>
         <target state="translated">./notebooks/docker/2019/deploy-sql2019-image.ipynb</target>
       </trans-unit>
-      <trans-unit id="sql-2019ctp31-display-name">
-        <source xml:lang="en">SQL Server 2019 big data cluster CTP 3.1</source>
-        <target state="translated">SQL Server 2019 빅 데이터 클러스터 CTP 3.1</target>
+      <trans-unit id="bdc-2019-display-name">
+        <source xml:lang="en">SQL Server 2019 RC</source>
+        <target state="translated">SQL Server 2019 RC</target>
       </trans-unit>
       <trans-unit id="bdc-deployment-target">
         <source xml:lang="en">Deployment target</source>
         <target state="translated">배포 대상</target>
       </trans-unit>
-      <trans-unit id="bdc-deployment-target-aks">
+      <trans-unit id="bdc-deployment-target-new-aks">
         <source xml:lang="en">New Azure Kubernetes Service Cluster</source>
         <target state="translated">새 Azure Kubernetes Service 클러스터</target>
       </trans-unit>
-      <trans-unit id="bdc-deployment-target-existing-cluster">
-        <source xml:lang="en">Existing Kubernetes Cluster</source>
-        <target state="translated">기존 Kubernetes 클러스터</target>
+      <trans-unit id="bdc-deployment-target-existing-aks">
+        <source xml:lang="en">Existing Azure Kubernetes Service Cluster</source>
+        <target state="translated">기존 Azure Kubernetes Service 클러스터</target>
       </trans-unit>
-      <trans-unit id="bdc-ctp31-aks-notebook">
-        <source xml:lang="en">./notebooks/bdc/2019/ctp3-1/deploy-bdc-aks.ipynb</source>
-        <target state="translated">./notebooks/bdc/2019/ctp3-1/deploy-bdc-aks.ipynb</target>
+      <trans-unit id="bdc-deployment-target-existing-kubeadm">
+        <source xml:lang="en">Existing Kubernetes Cluster (kubeadm)</source>
+        <target state="translated">기존 Kubernetes 클러스터(kubeadm)</target>
       </trans-unit>
-      <trans-unit id="bdc-ctp31-existing-cluster-notebook">
-        <source xml:lang="en">./notebooks/bdc/2019/ctp3-1/deploy-bdc-existing-cluster.ipynb</source>
-        <target state="translated">./notebooks/bdc/2019/ctp3-1/deploy-bdc-existing-cluster.ipynb</target>
+      <trans-unit id="bdc-2019-aks-notebook">
+        <source xml:lang="en">./notebooks/bdc/2019/deploy-bdc-aks.ipynb</source>
+        <target state="translated">./notebooks/bdc/2019/deploy-bdc-aks.ipynb</target>
+      </trans-unit>
+      <trans-unit id="bdc-2019-existing-aks-notebook">
+        <source xml:lang="en">./notebooks/bdc/2019/deploy-bdc-existing-aks.ipynb</source>
+        <target state="translated">./notebooks/bdc/2019/deploy-bdc-existing-aks.ipynb</target>
+      </trans-unit>
+      <trans-unit id="bdc-2019-existing-kubeadm-notebook">
+        <source xml:lang="en">./notebooks/bdc/2019/deploy-bdc-existing-kubeadm.ipynb</source>
+        <target state="translated">./notebooks/bdc/2019/deploy-bdc-existing-kubeadm.ipynb</target>
+      </trans-unit>
+      <trans-unit id="azdata-bdc-2019-aks-notebook">
+        <source xml:lang="en">./notebooks/bdc/2019/azdata/deploy-bdc-aks.ipynb</source>
+        <target state="translated">./notebooks/bdc/2019/azdata/deploy-bdc-aks.ipynb</target>
+      </trans-unit>
+      <trans-unit id="azdata-bdc-2019-existing-aks-notebook">
+        <source xml:lang="en">./notebooks/bdc/2019/azdata/deploy-bdc-existing-aks.ipynb</source>
+        <target state="translated">./notebooks/bdc/2019/azdata/deploy-bdc-existing-aks.ipynb</target>
+      </trans-unit>
+      <trans-unit id="azdata-bdc-2019-existing-kubeadm-notebook">
+        <source xml:lang="en">./notebooks/bdc/2019/azdata/deploy-bdc-existing-kubeadm.ipynb</source>
+        <target state="translated">./notebooks/bdc/2019/azdata/deploy-bdc-existing-kubeadm.ipynb</target>
+      </trans-unit>
+      <trans-unit id="docker-sql-2017-title">
+        <source xml:lang="en">Deploy SQL Server 2017 container images with docker</source>
+        <target state="translated">Docker를 사용하여 SQL Server 2017 컨테이너 이미지 배포</target>
+      </trans-unit>
+      <trans-unit id="docker-sql-2019-title">
+        <source xml:lang="en">Deploy SQL Server 2019 container images with docker</source>
+        <target state="translated">Docker를 사용하여 SQL Server 2019 컨테이너 이미지 배포</target>
+      </trans-unit>
+      <trans-unit id="docker-container-name-field">
+        <source xml:lang="en">Container name</source>
+        <target state="translated">컨테이너 이름</target>
+      </trans-unit>
+      <trans-unit id="docker-sql-password-field">
+        <source xml:lang="en">SQL Server password</source>
+        <target state="translated">SQL Server 암호</target>
+      </trans-unit>
+      <trans-unit id="docker-confirm-sql-password-field">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">암호 확인</target>
+      </trans-unit>
+      <trans-unit id="docker-sql-port-field">
+        <source xml:lang="en">Port</source>
+        <target state="translated">포트</target>
+      </trans-unit>
+      <trans-unit id="bdc-new-aks-dialog-title">
+        <source xml:lang="en">Deployment target: new AKS cluster</source>
+        <target state="translated">배포 대상: 새 AKS 클러스터</target>
+      </trans-unit>
+      <trans-unit id="bdc-existing-aks-dialog-title">
+        <source xml:lang="en">Deployment target: existing AKS cluster</source>
+        <target state="translated">배포 대상: 기존 AKS 클러스터</target>
+      </trans-unit>
+      <trans-unit id="bdc-cluster-settings-section-title">
+        <source xml:lang="en">SQL Server Big Data Cluster settings</source>
+        <target state="translated">SQL Server 빅 데이터 클러스터 설정</target>
+      </trans-unit>
+      <trans-unit id="bdc-cluster-name-field">
+        <source xml:lang="en">Cluster name</source>
+        <target state="translated">클러스터 이름</target>
+      </trans-unit>
+      <trans-unit id="bdc-controller-username-field">
+        <source xml:lang="en">Controller username</source>
+        <target state="translated">컨트롤러 사용자 이름</target>
+      </trans-unit>
+      <trans-unit id="bdc-password-field">
+        <source xml:lang="en">Password</source>
+        <target state="translated">암호</target>
+      </trans-unit>
+      <trans-unit id="bdc-confirm-password-field">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">암호 확인</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-settings-section-title">
+        <source xml:lang="en">Azure settings</source>
+        <target state="translated">Azure 설정</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-subscription-id-field">
+        <source xml:lang="en">Subscription id</source>
+        <target state="translated">구독 ID</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-subscription-id-placeholder">
+        <source xml:lang="en">Use my default Azure subscription</source>
+        <target state="translated">내 기본 Azure 구독 사용</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-resource-group-field">
+        <source xml:lang="en">Resource group name</source>
+        <target state="translated">리소스 그룹 이름</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-region-field">
+        <source xml:lang="en">Region</source>
+        <target state="translated">지역</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-aks-name-field">
+        <source xml:lang="en">AKS cluster name</source>
+        <target state="translated">AKS 클러스터 이름</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-vm-size-field">
+        <source xml:lang="en">VM size</source>
+        <target state="translated">VM 크기</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-vm-count-field">
+        <source xml:lang="en">VM count</source>
+        <target state="translated">VM 수</target>
+      </trans-unit>
+      <trans-unit id="bdc-existing-kubeadm-dialog-title">
+        <source xml:lang="en">Deployment target: existing Kubernetes cluster (kubeadm)</source>
+        <target state="translated">배포 대상: 기존 Kubernetes 클러스터(kubeadm)</target>
+      </trans-unit>
+      <trans-unit id="bdc-storage-class-field">
+        <source xml:lang="en">Storage class name</source>
+        <target state="translated">스토리지 클래스 이름</target>
+      </trans-unit>
+      <trans-unit id="bdc-data-size-field">
+        <source xml:lang="en">Capacity for data (GB)</source>
+        <target state="translated">데이터 용량(GB)</target>
+      </trans-unit>
+      <trans-unit id="bdc-log-size-field">
+        <source xml:lang="en">Capacity for logs (GB)</source>
+        <target state="translated">로그 용량(GB)</target>
+      </trans-unit>
+      <trans-unit id="resource-type-sql-windows-setup-display-name">
+        <source xml:lang="en">SQL Server on Windows</source>
+        <target state="translated">SQL Server on Windows</target>
+      </trans-unit>
+      <trans-unit id="resource-type-sql-windows-setup-description">
+        <source xml:lang="en">Run SQL Server on Windows, select a version to get started.</source>
+        <target state="translated">Windows에서 SQL Server를 실행하고 시작할 버전을 선택합니다.</target>
+      </trans-unit>
+      <trans-unit id="bdc-agreement">
+        <source xml:lang="en">I accept {0}, {1} and {2}.</source>
+        <target state="translated">{0}, {1} 및 {2}에 동의합니다.</target>
+      </trans-unit>
+      <trans-unit id="bdc-agreement-privacy-statement">
+        <source xml:lang="en">Microsoft Privacy Statement</source>
+        <target state="translated">Microsoft 개인정보처리방침</target>
+      </trans-unit>
+      <trans-unit id="bdc-agreement-azdata-eula">
+        <source xml:lang="en">azdata License Terms</source>
+        <target state="translated">azdata 사용 조건</target>
+      </trans-unit>
+      <trans-unit id="bdc-agreement-bdc-eula">
+        <source xml:lang="en">SQL Server License Terms</source>
+        <target state="translated">SQL Server 사용 조건</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/out/services/tools/mssqlCtlTool" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/modelViewUtils" source-language="en" target-language="ko" datatype="plaintext">
     <body>
-      <trans-unit id="resourceDeployment.MssqlCtlDescription">
-        <source xml:lang="en">A command-line utility written in Python that enables cluster administrators to bootstrap and manage the big data cluster via REST APIs</source>
-        <target state="translated">클러스터 관리자가 REST API를 통해 빅 데이터 클러스터를 부트스트랩하고 관리할 수 있도록 Python으로 작성된 명령줄 유틸리티</target>
+      <trans-unit id="UnknownFieldTypeError">
+        <source xml:lang="en">Unknown field type: "{0}"</source>
+        <target state="translated">알 수 없는 필드 형식: "{0}"</target>
       </trans-unit>
-      <trans-unit id="resourceDeployment.MssqlCtlDisplayName">
-        <source xml:lang="en">mssqlctl</source>
-        <target state="translated">mssqlctl</target>
+      <trans-unit id="invalidSQLPassword">
+        <source xml:lang="en">{0} doesn't meet the password complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
+        <target state="translated">{0}이(가) 암호 복잡성 요구 사항을 충족하지 않습니다. 자세한 정보: https://docs.microsoft.com/sql/relational-databases/security/password-policy</target>
+      </trans-unit>
+      <trans-unit id="passwordNotMatch">
+        <source xml:lang="en">{0} doesn't match the confirmation password</source>
+        <target state="translated">{0}이(가) 확인 암호와 일치하지 않음</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.MissingRequiredInfoError">
+        <source xml:lang="en">Please fill out the required fields marked with red asterisks.</source>
+        <target state="translated">빨간색 별표가 표시된 필수 필드를 입력하세요.</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/out/services/tools/kubeCtlTool" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/services/tools/toolBase" source-language="en" target-language="ko" datatype="plaintext">
     <body>
-      <trans-unit id="resourceDeployment.KubeCtlDescription">
-        <source xml:lang="en">A command-line tool allows you to run commands against Kubernetes clusters</source>
-        <target state="translated">명령줄 도구를 사용하면 Kubernetes 클러스터에 대한 명령을 실행할 수 있습니다.</target>
+      <trans-unit id="deployCluster.InvalidToolVersionOutput">
+        <source xml:lang="en">Invalid output received.</source>
+        <target state="translated">잘못된 출력이 수신되었습니다.</target>
       </trans-unit>
-      <trans-unit id="resourceDeployment.KubeCtlDisplayName">
-        <source xml:lang="en">kubectl</source>
-        <target state="translated">kubectl</target>
+      <trans-unit id="deployCluster.GetToolVersionError">
+        <source xml:lang="en">Error retrieving version information.{0}Error: {1}{0}stdout: {2} </source>
+        <target state="translated">버전 정보 검색 오류입니다.{0}오류: {1}{0}stdout: {2}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/out/services/tools/dockerTool" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/deploymentInputDialog" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="deploymentDialog.OKButtonText">
+        <source xml:lang="en">Open Notebook</source>
+        <target state="translated">노트북 열기</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/resource-deployment/dist/main" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="resourceDeployment.FailedToLoadExtension">
+        <source xml:lang="en">Failed to load extension: {0}, Error detected in the resource type definition in package.json, check debug console for details.</source>
+        <target state="translated">확장을 로드하지 못했습니다. {0}. package.json의 리소스 종류 정의에서 오류가 발생했습니다. 자세한 내용은 디버그 콘솔을 참조하세요.</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.UnknownResourceType">
+        <source xml:lang="en">The resource type: {0} is not defined</source>
+        <target state="translated">리소스 유형 {0}이(가) 정의되지 않았습니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/resource-deployment/dist/services/notebookService" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="resourceDeployment.notebookNotFound">
+        <source xml:lang="en">The notebook {0} does not exist</source>
+        <target state="translated">{0} 노트북이 없습니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/resource-deployment/dist/services/resourceTypeService" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="resourceDeployment.DownloadAndLaunchTaskName">
+        <source xml:lang="en">Download and launch installer, URL: {0}</source>
+        <target state="translated">설치 관리자 다운로드 및 시작, URL: {0}</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.DownloadingText">
+        <source xml:lang="en">Downloading from: {0}</source>
+        <target state="translated">{0}에서 다운로드</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.DownloadCompleteText">
+        <source xml:lang="en">Successfully downloaded: {0}</source>
+        <target state="translated">다운로드됨: {0}</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.LaunchingProgramText">
+        <source xml:lang="en">Launching: {0}</source>
+        <target state="translated">시작: {0}</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.ProgramLaunchedText">
+        <source xml:lang="en">Successfully launched: {0}</source>
+        <target state="translated">시작됨: {0}</target>
+      </trans-unit>
+      <trans-unit id="downloadError">
+        <source xml:lang="en">Download failed, status code: {0}, message: {1}</source>
+        <target state="translated">다운로드 실패, 상태 코드: {0}, 메시지: {1}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/deployClusterWizard" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="deployCluster.SaveConfigFiles">
+        <source xml:lang="en">Save config files</source>
+        <target state="translated">구성 파일 저장</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ScriptToNotebook">
+        <source xml:lang="en">Script to Notebook</source>
+        <target state="translated">스크립트에서 Notebook으로</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.Deploy">
+        <source xml:lang="en">Deploy</source>
+        <target state="translated">배포</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.DeployBDCTask">
+        <source xml:lang="en">Deploy SQL Server Big Data Cluster "{0}"</source>
+        <target state="translated">SQL Server 빅 데이터 클러스터 "{0}" 배포</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.ConnectToMasterSQLServer">
+        <source xml:lang="en">Connect to Master SQL Server</source>
+        <target state="translated">마스터 SQL Server에 연결</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.DeploymentSucceeded">
+        <source xml:lang="en">Successfully deployed SQL Server Big Data Cluster: {0}</source>
+        <target state="translated">배포된 SQL Server 빅 데이터 클러스터: {0}</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.ErroRetrievingEndpoints">
+        <source xml:lang="en">Failed to retrieve the endpoint list. {0}{1}</source>
+        <target state="translated">엔드포인트 목록을 검색하지 못했습니다. {0} {1}</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.NoSQLEndpointFound">
+        <source xml:lang="en">Master SQL Server endpoint is not found.</source>
+        <target state="translated">마스터 SQL Server 엔드포인트를 찾을 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.ViewErrorDetail">
+        <source xml:lang="en">View error detail</source>
+        <target state="translated">오류 세부 정보 보기</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.DeployFailed">
+        <source xml:lang="en">Failed to deploy SQL Server Big Data Cluster "{0}".</source>
+        <target state="translated">SQL Server 빅 데이터 클러스터 "{0}"을(를) 배포하지 못했습니다.</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.FailedToOpenNotebook">
+        <source xml:lang="en">An error occured launching the output notebook. {1}{2}.</source>
+        <target state="translated">출력 Notebook을 시작하는 동안 오류가 발생했습니다. {1}{2}.</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.DeployFailedNoOutputNotebook">
+        <source xml:lang="en">Failed to deploy SQL Server Big Data Cluster and no output notebook was generated.</source>
+        <target state="translated">SQL Server 빅 데이터 클러스터를 배포하지 못했으며 출력 Notebook이 생성되지 않았습니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.SelectConfigFileFolder">
+        <source xml:lang="en">Save config files</source>
+        <target state="translated">구성 파일 저장</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.SaveConfigFileSucceeded">
+        <source xml:lang="en">Config files saved to {0}</source>
+        <target state="translated">{0}에 저장된 구성 파일</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.NewAKSWizardTitle">
+        <source xml:lang="en">Deploy SQL Server 2019 Big Data Cluster on a new AKS cluster</source>
+        <target state="translated">새로운 AKS 클러스터에 SQL Server 2019 빅 데이터 클러스터 배포</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ExistingAKSWizardTitle">
+        <source xml:lang="en">Deploy SQL Server 2019 Big Data Cluster on an existing AKS cluster</source>
+        <target state="translated">기존 AKS 클러스터에 SQL Server 2019 빅 데이터 클러스터 배포</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ExistingKubeAdm">
+        <source xml:lang="en">Deploy SQL Server 2019 Big Data Cluster on an existing kubeadm cluster</source>
+        <target state="translated">기존 kubeadm 클러스터에 SQL Server 2019 빅 데이터 클러스터 배포</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/summaryPage" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="deployCluster.summaryPageTitle">
+        <source xml:lang="en">Summary</source>
+        <target state="translated">요약</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.NewAKSBrowserWindowPrompt">
+        <source xml:lang="en">A browser window for logging to Azure will be opened during the SQL Server Big Data Cluster deployment.</source>
+        <target state="translated">SQL Server 빅 데이터 클러스터 배포 중에 Azure에 로깅하기 위한 브라우저 창이 열립니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DeploymentTarget">
+        <source xml:lang="en">Deployment target</source>
+        <target state="translated">배포 대상</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.Kubeconfig">
+        <source xml:lang="en">Kube config</source>
+        <target state="translated">Kube 구성</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ClusterContext">
+        <source xml:lang="en">Cluster context</source>
+        <target state="translated">클러스터 컨텍스트</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ClusterSettings">
+        <source xml:lang="en">Cluster settings</source>
+        <target state="translated">클러스터 설정</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DeploymentProfile">
+        <source xml:lang="en">Deployment profile</source>
+        <target state="translated">배포 프로필</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ClusterName">
+        <source xml:lang="en">Cluster name</source>
+        <target state="translated">클러스터 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ControllerUsername">
+        <source xml:lang="en">Controller username</source>
+        <target state="translated">컨트롤러 사용자 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AuthenticationMode">
+        <source xml:lang="en">Authentication mode</source>
+        <target state="translated">인증 모드</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AuthenticationMode.ActiveDirectory">
+        <source xml:lang="en">Active Directory</source>
+        <target state="translated">Active Directory</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AuthenticationMode.Basic">
+        <source xml:lang="en">Basic</source>
+        <target state="translated">기본</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.OuDistinguishedName">
+        <source xml:lang="en">Organizational unit</source>
+        <target state="translated">조직 구성 단위</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DomainControllerFQDNs">
+        <source xml:lang="en">Domain controller FQDNs</source>
+        <target state="translated">도메인 컨트롤러 FQDN</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DomainDNSIPAddresses">
+        <source xml:lang="en">Domain DNS IP addresses</source>
+        <target state="translated">도메인 DNS IP 주소</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DomainDNSName">
+        <source xml:lang="en">Domain DNS name</source>
+        <target state="translated">도메인 DNS 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ClusterAdmins">
+        <source xml:lang="en">Cluster admin group</source>
+        <target state="translated">클러스터 관리자 그룹</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ClusterUsers">
+        <source xml:lang="en">Cluster users</source>
+        <target state="translated">클러스터 사용자</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AppOwers">
+        <source xml:lang="en">App owners</source>
+        <target state="translated">앱 소유자</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AppReaders">
+        <source xml:lang="en">App readers</source>
+        <target state="translated">앱 읽기 권한자</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DomainServiceAccountUserName">
+        <source xml:lang="en">Service account username</source>
+        <target state="translated">서비스 계정 사용자 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AzureSettings">
+        <source xml:lang="en">Azure settings</source>
+        <target state="translated">Azure 설정</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.SubscriptionId">
+        <source xml:lang="en">Subscription id</source>
+        <target state="translated">구독 ID</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DefaultSubscription">
+        <source xml:lang="en">Default Azure Subscription</source>
+        <target state="translated">기본 Azure 구독</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ResourceGroup">
+        <source xml:lang="en">Resource group</source>
+        <target state="translated">리소스 그룹</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.Location">
+        <source xml:lang="en">Location</source>
+        <target state="translated">위치</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AksClusterName">
+        <source xml:lang="en">AKS cluster name</source>
+        <target state="translated">AKS 클러스터 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.VMSize">
+        <source xml:lang="en">VM size</source>
+        <target state="translated">VM 크기</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.VMCount">
+        <source xml:lang="en">VM count</source>
+        <target state="translated">VM 수</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ScaleSettings">
+        <source xml:lang="en">Scale settings</source>
+        <target state="translated">크기 조정 설정</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.MasterSqlServerInstances">
+        <source xml:lang="en">SQL Server master instances</source>
+        <target state="translated">SQL Server 마스터 인스턴스</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ComputePoolInstances">
+        <source xml:lang="en">Compute pool instances</source>
+        <target state="translated">풀 인스턴스 계산</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DataPoolInstances">
+        <source xml:lang="en">Data pool instances</source>
+        <target state="translated">데이터 풀 인스턴스</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.SparkPoolInstances">
+        <source xml:lang="en">Spark pool instances</source>
+        <target state="translated">Spark 풀 인스턴스</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.StoragePoolInstances">
+        <source xml:lang="en">Storage pool (HDFS) instances</source>
+        <target state="translated">스토리지 풀(HDFS) 인스턴스</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.WithSpark">
+        <source xml:lang="en">(Spark included)</source>
+        <target state="translated">(Spark 포함됨)</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DataStorageClassName">
+        <source xml:lang="en">Storage class for data</source>
+        <target state="translated">데이터용 스토리지 클래스</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DataClaimSize">
+        <source xml:lang="en">Claim size for data (GB)</source>
+        <target state="translated">데이터의 클레임 크기(GB)</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.LogStorageClassName">
+        <source xml:lang="en">Storage class for logs</source>
+        <target state="translated">로그용 스토리지 클래스</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.LogsClaimSize">
+        <source xml:lang="en">Claim size for logs (GB)</source>
+        <target state="translated">로그의 클레임 크기(GB)</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ControllerText">
+        <source xml:lang="en">Controller</source>
+        <target state="translated">컨트롤러</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.StoragePool">
+        <source xml:lang="en">Storage pool (HDFS)</source>
+        <target state="translated">스토리지 풀(HDFS)</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DataText">
+        <source xml:lang="en">Data</source>
+        <target state="translated">데이터</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.MasterSqlText">
+        <source xml:lang="en">SQL Server Master</source>
+        <target state="translated">SQL Server 마스터</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.StorageSettings">
+        <source xml:lang="en">Storage settings</source>
+        <target state="translated">스토리지 설정</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.SqlServerText">
+        <source xml:lang="en">SQL Server Master</source>
+        <target state="translated">SQL Server 마스터</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.GatewayText">
+        <source xml:lang="en">Gateway</source>
+        <target state="translated">게이트웨이</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AppServiceProxyText">
+        <source xml:lang="en">Application proxy</source>
+        <target state="translated">애플리케이션 프록시</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ServiceProxyText">
+        <source xml:lang="en">Management proxy</source>
+        <target state="translated">관리 프록시</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ReadableSecondaryText">
+        <source xml:lang="en">Readable secondary</source>
+        <target state="translated">읽을 수 있는 보조</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.EndpointSettings">
+        <source xml:lang="en">Endpoint settings</source>
+        <target state="translated">엔드포인트 설정</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/resource-deployment/dist/ui/wizardBase" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="resourceDeployment.DisposableError">
+        <source xml:lang="en">Error occured while closing the wizard: {0}, open 'Debugger Console' for more information.</source>
+        <target state="translated">마법사를 닫는 동안 오류가 발생했습니다. {0}, 자세한 내용을 보려면 '디버거 콘솔'을 엽니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/azureSettingsPage" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="deployCluster.AzureSettingsPageTitle">
+        <source xml:lang="en">Azure settings</source>
+        <target state="translated">Azure 설정</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AzureSettingsPageDescription">
+        <source xml:lang="en">Configure the settings to create an Azure Kubernetes Service cluster</source>
+        <target state="translated">Azure Kubernetes Service 클러스터를 만들기 위한 설정 구성</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.SubscriptionField">
+        <source xml:lang="en">Subscription id</source>
+        <target state="translated">구독 ID</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.SubscriptionPlaceholder">
+        <source xml:lang="en">Use my default Azure subscription</source>
+        <target state="translated">내 기본 Azure 구독 사용</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.SubscriptionDescription">
+        <source xml:lang="en">The default subscription will be used if you leave this field blank.</source>
+        <target state="translated">이 필드를 비워 두면 기본 구독이 사용됩니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.SubscriptionHelpText">
+        <source xml:lang="en">{0}</source>
+        <target state="translated">{0}</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.SubscriptionHelpLink">
+        <source xml:lang="en">View available Azure subscriptions</source>
+        <target state="translated">사용 가능한 Azure 구독 보기</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ResourceGroupName">
+        <source xml:lang="en">New resource group name</source>
+        <target state="translated">새 리소스 그룹 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.Location">
+        <source xml:lang="en">Location</source>
+        <target state="translated">위치</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.LocationHelpText">
+        <source xml:lang="en">{0}</source>
+        <target state="translated">{0}</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AzureLocationHelpLink">
+        <source xml:lang="en">View available Azure locations</source>
+        <target state="translated">사용 가능한 Azure 위치 보기</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AksName">
+        <source xml:lang="en">AKS cluster name</source>
+        <target state="translated">AKS 클러스터 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.VMCount">
+        <source xml:lang="en">VM count</source>
+        <target state="translated">VM 수</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.VMSize">
+        <source xml:lang="en">VM size</source>
+        <target state="translated">VM 크기</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.VMSizeHelpText">
+        <source xml:lang="en">{0}</source>
+        <target state="translated">{0}</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.VMSizeHelpLink">
+        <source xml:lang="en">View available VM sizes</source>
+        <target state="translated">사용 가능한 VM 크기 보기</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/clusterSettingsPage" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="deployCluster.ClusterSettingsPageTitle">
+        <source xml:lang="en">Cluster settings</source>
+        <target state="translated">클러스터 설정</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ClusterSettingsPageDescription">
+        <source xml:lang="en">Configure the SQL Server Big Data Cluster settings</source>
+        <target state="translated">SQL Server 빅 데이터 클러스터 설정 구성</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ClusterName">
+        <source xml:lang="en">Cluster name</source>
+        <target state="translated">클러스터 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AdminUsername">
+        <source xml:lang="en">Admin username</source>
+        <target state="translated">관리자 사용자 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AdminUsernameDescription">
+        <source xml:lang="en">This username will be used for controller and SQL Server. Username for the gateway will be root.</source>
+        <target state="translated">이 사용자 이름은 컨트롤러 및 SQL Server에 사용됩니다. 게이트웨이의 사용자 이름은 루트가 됩니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AdminPassword">
+        <source xml:lang="en">Password</source>
+        <target state="translated">암호</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AdminPasswordDescription">
+        <source xml:lang="en">This password can be used to access the controller, SQL Server and gateway.</source>
+        <target state="translated">이 암호를 사용하여 컨트롤러, SQL Server 및 게이트웨이에 액세스할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ConfirmPassword">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">암호 확인</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AuthenticationMode">
+        <source xml:lang="en">Authentication mode</source>
+        <target state="translated">인증 모드</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AuthenticationMode.Basic">
+        <source xml:lang="en">Basic</source>
+        <target state="translated">기본</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AuthenticationMode.ActiveDirectory">
+        <source xml:lang="en">Active Directory</source>
+        <target state="translated">Active Directory</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DockerSettings">
+        <source xml:lang="en">Docker settings</source>
+        <target state="translated">Docker 설정</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DockerRegistry">
+        <source xml:lang="en">Registry</source>
+        <target state="translated">레지스트리</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DockerRepository">
+        <source xml:lang="en">Repository</source>
+        <target state="translated">저장소</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DockerImageTag">
+        <source xml:lang="en">Image tag</source>
+        <target state="translated">이미지 태그</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DockerUsername">
+        <source xml:lang="en">Username</source>
+        <target state="translated">사용자 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DockerPassword">
+        <source xml:lang="en">Password</source>
+        <target state="translated">암호</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ActiveDirectorySettings">
+        <source xml:lang="en">Active Directory settings</source>
+        <target state="translated">Active Directory 설정</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.OuDistinguishedName">
+        <source xml:lang="en">Organizational unit</source>
+        <target state="translated">조직 구성 단위</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.OuDistinguishedNameDescription">
+        <source xml:lang="en">Distinguished name for the organizational unit. For example: OU=bdc,DC=contoso,DC=com.</source>
+        <target state="translated">조직 구성 단위의 고유 이름입니다. 예: OU=bdc,DC=contoso,DC=com.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DomainControllerFQDNs">
+        <source xml:lang="en">Domain controller FQDNs</source>
+        <target state="translated">도메인 컨트롤러 FQDN</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DomainControllerFQDNsPlaceHolder">
+        <source xml:lang="en">Use comma to separate the values.</source>
+        <target state="translated">쉼표를 사용하여 값을 구분합니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DomainControllerFQDNDescription">
+        <source xml:lang="en">Fully qualified domain names for the domain controller. For example: DC1.CONTOSO.COM. Use comma to separate multiple FQDNs.</source>
+        <target state="translated">도메인 컨트롤러의 정규화된 도메인 이름입니다. 예: DC1. CONTOSO.COM. 쉼표를 사용하여 여러 FQDN을 구분합니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DomainDNSIPAddresses">
+        <source xml:lang="en">Domain DNS IP addresses</source>
+        <target state="translated">도메인 DNS IP 주소</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DomainDNSIPAddressesPlaceHolder">
+        <source xml:lang="en">Use comma to separate the values.</source>
+        <target state="translated">쉼표를 사용하여 값을 구분합니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DomainDNSIPAddressesDescription">
+        <source xml:lang="en">Domain DNS servers' IP Addresses. Use comma to separate multiple IP addresses.</source>
+        <target state="translated">도메인 DNS 서버의 IP 주소입니다. 쉼표를 사용하여 여러 IP 주소를 구분합니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DomainDNSName">
+        <source xml:lang="en">Domain DNS name</source>
+        <target state="translated">도메인 DNS 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ClusterAdmins">
+        <source xml:lang="en">Cluster admin group</source>
+        <target state="translated">클러스터 관리자 그룹</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ClusterAdminsDescription">
+        <source xml:lang="en">The Active Directory group for cluster admin.</source>
+        <target state="translated">클러스터 관리자의 Active Directory 그룹입니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ClusterUsers">
+        <source xml:lang="en">Cluster users</source>
+        <target state="translated">클러스터 사용자</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ClusterUsersPlaceHolder">
+        <source xml:lang="en">Use comma to separate the values.</source>
+        <target state="translated">쉼표를 사용하여 값을 구분합니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ClusterUsersDescription">
+        <source xml:lang="en">The Active Directory users/groups with cluster users role. Use comma to separate multiple users/groups.</source>
+        <target state="translated">클러스터 사용자 역할을 가진 Active Directory 사용자/그룹입니다. 쉼표를 사용하여 여러 사용자/그룹을 구분합니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DomainServiceAccountUserName">
+        <source xml:lang="en">Service account username</source>
+        <target state="translated">서비스 계정 사용자 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DomainServiceAccountUserNameDescription">
+        <source xml:lang="en">Domain service account for Big Data Cluster</source>
+        <target state="translated">빅 데이터 클러스터의 도메인 서비스 계정</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DomainServiceAccountPassword">
+        <source xml:lang="en">Service account password</source>
+        <target state="translated">서비스 계정 암호</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AppOwers">
+        <source xml:lang="en">App owners</source>
+        <target state="translated">앱 소유자</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AppOwnersPlaceHolder">
+        <source xml:lang="en">Use comma to separate the values.</source>
+        <target state="translated">쉼표를 사용하여 값을 구분합니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AppOwnersDescription">
+        <source xml:lang="en">The Active Directory users or groups with app owners role. Use comma to separate multiple users/groups.</source>
+        <target state="translated">앱 소유자 역할을 가진 Active Directory 사용자 또는 그룹입니다. 쉼표를 사용하여 여러 사용자/그룹을 구분합니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AppReaders">
+        <source xml:lang="en">App readers</source>
+        <target state="translated">앱 읽기 권한자</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AppReadersPlaceHolder">
+        <source xml:lang="en">Use comma to separate the values.</source>
+        <target state="translated">쉼표를 사용하여 값을 구분합니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AppReadersDescription">
+        <source xml:lang="en">The Active Directory users or groups of app readers. Use comma as separator them if there are multiple users/groups.</source>
+        <target state="translated">앱 읽기 권한자의 Active Directory 사용자 또는 그룹입니다. 여러 사용자/그룹이 있는 경우 쉼표를 구분 기호로 사용합니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AdminPasswordField">
+        <source xml:lang="en">Password</source>
+        <target state="translated">암호</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ValidationError">
+        <source xml:lang="en">There are some errors on this page, click 'Show Details' to view the errors.</source>
+        <target state="translated">이 페이지에 오류가 있습니다. 오류를 보려면 '세부 정보 표시'를 클릭합니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/serviceSettingsPage" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="deployCluster.ServiceSettingsPageTitle">
+        <source xml:lang="en">Service settings</source>
+        <target state="translated">서비스 설정</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.scaleSectionTitle">
+        <source xml:lang="en">Scale settings</source>
+        <target state="translated">크기 조정 설정</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.MasterSqlServerInstances">
+        <source xml:lang="en">SQL Server master instances</source>
+        <target state="translated">SQL Server 마스터 인스턴스</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ComputePoolInstances">
+        <source xml:lang="en">Compute pool instances</source>
+        <target state="translated">풀 인스턴스 계산</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DataPoolInstances">
+        <source xml:lang="en">Data pool instances</source>
+        <target state="translated">데이터 풀 인스턴스</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.SparkPoolInstances">
+        <source xml:lang="en">Spark pool instances</source>
+        <target state="translated">Spark 풀 인스턴스</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.StoragePoolInstances">
+        <source xml:lang="en">Storage pool (HDFS) instances</source>
+        <target state="translated">스토리지 풀(HDFS) 인스턴스</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.IncludeSparkInStoragePool">
+        <source xml:lang="en">Include Spark in storage pool</source>
+        <target state="translated">스토리지 풀에 Spark 포함</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.storageFieldTooltip">
+        <source xml:lang="en">Use controller settings</source>
+        <target state="translated">컨트롤러 설정 사용</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DataStorageClassName">
+        <source xml:lang="en">Storage class for data</source>
+        <target state="translated">데이터용 스토리지 클래스</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DataClaimSize">
+        <source xml:lang="en">Claim size for data (GB)</source>
+        <target state="translated">데이터의 클레임 크기(GB)</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.LogStorageClassName">
+        <source xml:lang="en">Storage class for logs</source>
+        <target state="translated">로그용 스토리지 클래스</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.LogsClaimSize">
+        <source xml:lang="en">Claim size for logs (GB)</source>
+        <target state="translated">로그의 클레임 크기(GB)</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ControllerText">
+        <source xml:lang="en">Controller</source>
+        <target state="translated">컨트롤러</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AdvancedStorageDescription">
+        <source xml:lang="en">By default Controller storage settings will be applied to other services as well, you can expand the advanced storage settings to configure storage for other services.</source>
+        <target state="translated">기본적으로 컨트롤러 스토리지 설정은 다른 서비스에도 적용되며 고급 스토리지 설정을 확장하여 다른 서비스용으로 스토리지를 구성할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AdvancedStorageSectionTitle">
+        <source xml:lang="en">Advanced storage settings</source>
+        <target state="translated">고급 스토리지 설정</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.StoragePool">
+        <source xml:lang="en">Storage pool (HDFS)</source>
+        <target state="translated">스토리지 풀(HDFS)</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DataPool">
+        <source xml:lang="en">Data pool</source>
+        <target state="translated">데이터 풀</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.MasterSqlText">
+        <source xml:lang="en">SQL Server Master</source>
+        <target state="translated">SQL Server 마스터</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.StorageSectionTitle">
+        <source xml:lang="en">Storage settings</source>
+        <target state="translated">스토리지 설정</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.DNSNameHeader">
+        <source xml:lang="en">DNS name</source>
+        <target state="translated">DNS 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.PortHeader">
+        <source xml:lang="en">Port</source>
+        <target state="translated">포트</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ControllerDNSName">
+        <source xml:lang="en">Controller DNS name</source>
+        <target state="translated">컨트롤러 DNS 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ControllerPortName">
+        <source xml:lang="en">Controller port</source>
+        <target state="translated">컨트롤러 포트</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.MasterSQLServerDNSName">
+        <source xml:lang="en">SQL Server Master DNS name</source>
+        <target state="translated">SQL Server 마스터 DNS 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.MasterSQLServerPortName">
+        <source xml:lang="en">SQL Server Master port</source>
+        <target state="translated">SQL Server 마스터 포트</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.GatewayText">
+        <source xml:lang="en">Gateway</source>
+        <target state="translated">게이트웨이</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.GatewayDNSName">
+        <source xml:lang="en">Gateway DNS name</source>
+        <target state="translated">게이트웨이 DNS 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.GatewayPortName">
+        <source xml:lang="en">Gateway port</source>
+        <target state="translated">게이트웨이 포트</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ServiceProxyText">
+        <source xml:lang="en">Management proxy</source>
+        <target state="translated">관리 프록시</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ServiceProxyDNSName">
+        <source xml:lang="en">Management proxy DNS name</source>
+        <target state="translated">관리 프록시 DNS 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ServiceProxyPortName">
+        <source xml:lang="en">Management proxy port</source>
+        <target state="translated">관리 프록시 포트</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AppServiceProxyText">
+        <source xml:lang="en">Application proxy</source>
+        <target state="translated">애플리케이션 프록시</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AppServiceProxyDNSName">
+        <source xml:lang="en">Application proxy DNS name</source>
+        <target state="translated">애플리케이션 프록시 DNS 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.AppServiceProxyPortName">
+        <source xml:lang="en">Application proxy port</source>
+        <target state="translated">애플리케이션 프록시 포트</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ReadableSecondaryText">
+        <source xml:lang="en">Readable secondary</source>
+        <target state="translated">읽을 수 있는 보조</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ReadableSecondaryDNSName">
+        <source xml:lang="en">Readable secondary DNS name</source>
+        <target state="translated">읽을 수 있는 보조 DNS 이름</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ReadableSecondaryPortName">
+        <source xml:lang="en">Readable secondary port</source>
+        <target state="translated">읽을 수 있는 보조 포트</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.EndpointSettings">
+        <source xml:lang="en">Endpoint settings</source>
+        <target state="translated">엔드포인트 설정</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.SparkMustBeIncluded">
+        <source xml:lang="en">Invalid Spark configuration, you must check the 'Include Spark' checkbox or set the 'Spark pool instances' to at least 1.</source>
+        <target state="translated">잘못된 Spark 구성입니다. 'Spark 포함' 확인란을 선택하거나 'Spark 풀 인스턴스'를 1 이상으로 설정해야 합니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/targetClusterPage" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="deployCluster.TargetClusterContextPageTitle">
+        <source xml:lang="en">Target cluster context</source>
+        <target state="translated">대상 클러스터 컨텍스트</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.TargetClusterContextPageDescription">
+        <source xml:lang="en">Select the kube config file and then select a cluster context from the list</source>
+        <target state="translated">kube 구성 파일을 선택한 후 목록에서 클러스터 컨텍스트 선택</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ClusterContextNotSelectedMessage">
+        <source xml:lang="en">Please select a cluster context.</source>
+        <target state="translated">클러스터 컨텍스트를 선택하세요.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.kubeConfigFileLabelText">
+        <source xml:lang="en">Kube config file path</source>
+        <target state="translated">Kube 구성 파일 경로</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.browseText">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">찾아보기</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.clusterContextsLabelText">
+        <source xml:lang="en">Cluster Contexts</source>
+        <target state="translated">클러스터 컨텍스트</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.errorLoadingClustersText">
+        <source xml:lang="en">No cluster information is found in the config file or an error ocurred while loading the config file</source>
+        <target state="translated">구성 파일에서 클러스터 정보를 찾지 못했거나 구성 파일을 로드하는 동안 오류가 발생했습니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.selectKubeConfigFileText">
+        <source xml:lang="en">Select</source>
+        <target state="translated">선택</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ConfigParseError">
+        <source xml:lang="en">Failed to load the config file</source>
+        <target state="translated">구성 파일을 로드하지 못함</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/deploymentProfilePage" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="deployCluster.summaryPageTitle">
+        <source xml:lang="en">Deployment configuration template</source>
+        <target state="translated">배포 구성 템플릿</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.summaryPageDescription">
+        <source xml:lang="en">Select the target configuration template</source>
+        <target state="translated">대상 구성 템플릿 선택</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ProfileHintText">
+        <source xml:lang="en">Note: The settings of the deployment profile can be customized in later steps.</source>
+        <target state="translated">참고: 배포 프로필의 설정은 이후 단계에서 사용자 지정할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.loadProfileFailed">
+        <source xml:lang="en">Failed to load the deployment profiles: {0}</source>
+        <target state="translated">배포 프로필을 로드하지 못했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.serviceLabel">
+        <source xml:lang="en">Service</source>
+        <target state="translated">서비스</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.instancesLabel">
+        <source xml:lang="en">Instances</source>
+        <target state="translated">인스턴스</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.masterPoolLabel">
+        <source xml:lang="en">SQL Server Master</source>
+        <target state="translated">SQL Server 마스터</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.computePoolLable">
+        <source xml:lang="en">Compute</source>
+        <target state="translated">계산</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.dataPoolLabel">
+        <source xml:lang="en">Data</source>
+        <target state="translated">데이터</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.hdfsLabel">
+        <source xml:lang="en">HDFS + Spark</source>
+        <target state="translated">HDFS + Spark</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.storageSize">
+        <source xml:lang="en">Storage size</source>
+        <target state="translated">스토리지 크기</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.gbPerInstance">
+        <source xml:lang="en">GB per Instance</source>
+        <target state="translated">인스턴스당 GB</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.defaultDataStorage">
+        <source xml:lang="en">Data storage</source>
+        <target state="translated">데이터 스토리지</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.defaultLogStorage">
+        <source xml:lang="en">Log storage</source>
+        <target state="translated">로그 스토리지</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.features">
+        <source xml:lang="en">Features</source>
+        <target state="translated">기능</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.basicAuthentication">
+        <source xml:lang="en">Basic authentication</source>
+        <target state="translated">기본 인증</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.activeDirectoryAuthentication">
+        <source xml:lang="en">Active Directory authentication</source>
+        <target state="translated">Active Directory 인증</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.hadr">
+        <source xml:lang="en">High Availability</source>
+        <target state="translated">고가용성</target>
+      </trans-unit>
+      <trans-unit id="deployCluster.ProfileNotSelectedError">
+        <source xml:lang="en">Please select a deployment profile.</source>
+        <target state="translated">배포 프로필을 선택하세요.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/resource-deployment/dist/services/tools/dockerTool" source-language="en" target-language="ko" datatype="plaintext">
     <body>
       <trans-unit id="resourceDeployment.DockerDescription">
         <source xml:lang="en">Provides the ability to package and run an application in isolated containers</source>
         <target state="translated">격리 컨테이너에서 애플리케이션을 패키지하고 실행하는 기능을 제공합니다.</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.DockerDisplayName">
-        <source xml:lang="en">Docker</source>
+        <source xml:lang="en">docker</source>
         <target state="translated">Docker</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/out/services/tools/azCliTool" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/services/tools/azCliTool" source-language="en" target-language="ko" datatype="plaintext">
     <body>
       <trans-unit id="resourceDeployment.AzCLIDescription">
         <source xml:lang="en">A command-line tool for managing Azure resources</source>
@@ -136,15 +1152,43 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/out/ui/resourceDeploymentDialog" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/services/tools/azdataTool" source-language="en" target-language="ko" datatype="plaintext">
     <body>
-      <trans-unit id="deploymentDialog.title">
+      <trans-unit id="resourceDeployment.AzdataDescription">
+        <source xml:lang="en">A command-line utility written in Python that enables cluster administrators to bootstrap and manage the Big Data Cluster via REST APIs</source>
+        <target state="translated">클러스터 관리자가 REST API를 통해 빅 데이터 클러스터를 부트스트랩하고 관리할 수 있도록 Python으로 작성된 명령줄 유틸리티</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.AzdataDisplayName">
+        <source xml:lang="en">azdata</source>
+        <target state="translated">azdata</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/resource-deployment/dist/services/tools/kubeCtlTool" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="resourceDeployment.KubeCtlDescription">
+        <source xml:lang="en">A command-line tool allows you to run commands against Kubernetes clusters</source>
+        <target state="translated">명령줄 도구를 사용하면 Kubernetes 클러스터에 대한 명령을 실행할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.KubeCtlDisplayName">
+        <source xml:lang="en">kubectl</source>
+        <target state="translated">kubectl</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/resource-deployment/dist/ui/resourceTypePickerDialog" source-language="en" target-language="ko" datatype="plaintext">
+    <body>
+      <trans-unit id="resourceTypePickerDialog.title">
         <source xml:lang="en">Select the deployment options</source>
         <target state="translated">배포 옵션 선택</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.OKButtonText">
-        <source xml:lang="en">Open Notebook</source>
-        <target state="translated">노트북 열기</target>
+        <source xml:lang="en">Select</source>
+        <target state="translated">선택</target>
+      </trans-unit>
+      <trans-unit id="deploymentDialog.AcceptAgreements">
+        <source xml:lang="en">You must agree to the license agreements in order to proceed.</source>
+        <target state="translated">계속하려면 사용권 계약에 동의해야 합니다.</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.toolNameColumnHeader">
         <source xml:lang="en">Tool</source>
@@ -154,6 +1198,14 @@
         <source xml:lang="en">Description</source>
         <target state="translated">설명</target>
       </trans-unit>
+      <trans-unit id="deploymentDialog.toolStatusColumnHeader">
+        <source xml:lang="en">Installed</source>
+        <target state="translated">설치</target>
+      </trans-unit>
+      <trans-unit id="deploymentDialog.toolVersionColumnHeader">
+        <source xml:lang="en">Version</source>
+        <target state="translated">버전</target>
+      </trans-unit>
       <trans-unit id="deploymentDialog.OptionsTitle">
         <source xml:lang="en">Options</source>
         <target state="translated">옵션</target>
@@ -162,33 +1214,33 @@
         <source xml:lang="en">Required tools</source>
         <target state="translated">필요한 도구</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/resource-deployment/out/services/resourceTypeService" source-language="en" target-language="ko" datatype="plaintext">
-    <body>
-      <trans-unit id="resourceDeployment.extensionFullNameError">
-        <source xml:lang="en">Could not find package.json or the name/publisher is not set</source>
-        <target state="translated">package.json을 찾을 수 없거나 이름/게시자가 설정되지 않았습니다.</target>
+      <trans-unit id="deploymentDialog.NoRequiredTool">
+        <source xml:lang="en">No tools required</source>
+        <target state="translated">도구가 필요하지 않음</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/resource-deployment/out/services/notebookService" source-language="en" target-language="ko" datatype="plaintext">
-    <body>
-      <trans-unit id="resourceDeployment.notebookNotFound">
-        <source xml:lang="en">The notebook {0} does not exist</source>
-        <target state="translated">{0} 노트북이 없습니다.</target>
+      <trans-unit id="deploymentDialog.ToolInformation">
+        <source xml:lang="en">{0}: {1}</source>
+        <target state="translated">{0}: {1}</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/resource-deployment/out/main" source-language="en" target-language="ko" datatype="plaintext">
-    <body>
-      <trans-unit id="resourceDeployment.FailedToLoadExtension">
-        <source xml:lang="en">Failed to load extension: {0}, Error detected in the resource type definition in package.json, check debug console for details.</source>
-        <target state="translated">확장을 로드하지 못했습니다. {0}. package.json의 리소스 종류 정의에서 오류가 발생했습니다. 자세한 내용은 디버그 콘솔을 참조하세요.</target>
+      <trans-unit id="deploymentDialog.DetailToolStatusDescription">
+        <source xml:lang="en">Additional status information for tool: {0}. {1}</source>
+        <target state="translated">도구의 추가 상태 정보: {0}. {1}</target>
       </trans-unit>
-      <trans-unit id="resourceDeployment.UnknownResourceType">
-        <source xml:lang="en">The resource type: {0} is not defined</source>
-        <target state="translated">리소스 유형 {0}이(가) 정의되지 않았습니다.</target>
+      <trans-unit id="deploymentDialog.YesText">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">예</target>
+      </trans-unit>
+      <trans-unit id="deploymentDialog.NoText">
+        <source xml:lang="en">No</source>
+        <target state="translated">아니요</target>
+      </trans-unit>
+      <trans-unit id="deploymentDialog.VersionInformationDebugHint">
+        <source xml:lang="en">You will need to restart Azure Data Studio if the tools are installed after Azure Data Studio is launched to pick up the updated PATH environment variable. You may find additional details in the debug console.</source>
+        <target state="translated">업데이트된 PATH 환경 변수를 선택하려면 도구가 Azure Data Studio를 시작한 후 설치된 경우 Azure Data Studio를 다시 시작해야 합니다. 디버그 콘솔에서 추가 세부 정보를 찾을 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="deploymentDialog.ToolCheckFailed">
+        <source xml:lang="en">Some required tools are not installed or do not meet the minimum version requirement.</source>
+        <target state="translated">일부 필수 도구가 설치되지 않았거나 최소 버전 요구 사항을 충족하지 않습니다.</target>
       </trans-unit>
     </body>
   </file>

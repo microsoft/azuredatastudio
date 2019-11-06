@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 
 import { IGridDataProvider, getResultsString } from 'sql/platform/query/common/gridDataProvider';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IInstantiationService, optional } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -33,6 +33,8 @@ import { ISerializationService, SerializeDataParams } from 'sql/platform/seriali
 import { SaveResultAction } from 'sql/workbench/parts/query/browser/actions';
 import { ResultSerializer, SaveResultsResponse } from 'sql/workbench/parts/query/common/resultSerializer';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { values } from 'vs/base/common/collections';
+import { assign } from 'vs/base/common/objects';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -138,7 +140,7 @@ class DataResourceTable extends GridTableBase<any> {
 		@IEditorService editorService: IEditorService,
 		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@optional(ISerializationService) private _serializationService: ISerializationService
+		@ISerializationService private _serializationService: ISerializationService
 	) {
 		super(state, createResultSet(source), contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, documentUri);
@@ -153,7 +155,7 @@ class DataResourceTable extends GridTableBase<any> {
 	}
 
 	protected getContextActions(): IAction[] {
-		if (!this._serializationService || !this._serializationService.hasProvider()) {
+		if (!this._serializationService.hasProvider()) {
 			return [];
 		}
 		return [
@@ -180,7 +182,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService,
-		@optional(ISerializationService) private _serializationService: ISerializationService,
+		@ISerializationService private _serializationService: ISerializationService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		this.transformSource(source);
@@ -190,7 +192,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 		this.rows = source.data.map(row => {
 			let rowData: azdata.DbCellValue[] = [];
 			Object.keys(row).forEach((val, index) => {
-				let displayValue = String(Object.values(row)[index]);
+				let displayValue = String(values(row)[index]);
 				// Since the columns[0] represents the row number, start at 1
 				rowData.push({
 					displayValue: displayValue,
@@ -217,8 +219,8 @@ class DataResourceDataProvider implements IGridDataProvider {
 		return Promise.resolve(resultSubset);
 	}
 
-	copyResults(selection: Slick.Range[], includeHeaders?: boolean): void {
-		this.copyResultsAsync(selection, includeHeaders);
+	async copyResults(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
+		return this.copyResultsAsync(selection, includeHeaders);
 	}
 
 	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
@@ -248,7 +250,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	get canSerialize(): boolean {
-		return this._serializationService && this._serializationService.hasProvider();
+		return this._serializationService.hasProvider();
 	}
 
 
@@ -292,7 +294,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 			return result;
 		};
 
-		let serializeRequestParams: SerializeDataParams = <SerializeDataParams>Object.assign(serializer.getBasicSaveParameters(format), <Partial<SerializeDataParams>>{
+		let serializeRequestParams: SerializeDataParams = <SerializeDataParams>assign(serializer.getBasicSaveParameters(format), <Partial<SerializeDataParams>>{
 			saveFormat: format,
 			columns: columns,
 			filePath: filePath,

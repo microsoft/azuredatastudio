@@ -5,7 +5,7 @@
 
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
-import { deepClone } from 'vs/base/common/objects';
+import { deepClone, assign } from 'vs/base/common/objects';
 import { URI } from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 
@@ -15,6 +15,7 @@ import * as azdata from 'azdata';
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape, ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, ColumnSizingMode } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { firstIndex } from 'vs/base/common/arrays';
 
 class ModelBuilderImpl implements azdata.ModelBuilder {
 	private nextComponentId: number;
@@ -74,7 +75,7 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 
 	groupContainer(): azdata.GroupBuilder {
 		let id = this.getNextComponentId();
-		let container: GenericContainerBuilder<azdata.GroupContainer, any, any> = new GenericContainerBuilder<azdata.GroupContainer, azdata.GroupLayout, azdata.GroupItemLayout>(this._proxy, this._handle, ModelComponentTypes.Group, id);
+		let container = new GroupContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Group, id);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
@@ -269,7 +270,7 @@ class ComponentBuilderImpl<T extends azdata.Component> implements azdata.Compone
 
 	withProperties<U>(properties: U): azdata.ComponentBuilder<T> {
 		// Keep any properties that may have been set during initial object construction
-		this._component.properties = Object.assign({}, this._component.properties, properties);
+		this._component.properties = assign({}, this._component.properties, properties);
 		return this;
 	}
 
@@ -329,6 +330,12 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 		if (formComponent.required && componentWrapper) {
 			componentWrapper.required = true;
 		}
+		if (formComponent.title && componentWrapper) {
+			componentWrapper.ariaLabel = formComponent.title;
+			if (componentWrapper instanceof LoadingComponentWrapper) {
+				componentWrapper.component.ariaLabel = formComponent.title;
+			}
+		}
 		let actions: string[] = undefined;
 		if (formComponent.actions) {
 			actions = formComponent.actions.map(action => {
@@ -337,7 +344,7 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 			});
 		}
 
-		return new InternalItemConfig(componentWrapper, Object.assign({}, itemLayout, {
+		return new InternalItemConfig(componentWrapper, assign({}, itemLayout || {}, {
 			title: formComponent.title,
 			actions: actions,
 			isFormComponent: true,
@@ -403,8 +410,8 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 		let result: boolean = false;
 		if (componentGroup && componentGroup.components !== undefined) {
 			let firstComponent = componentGroup.components[0];
-			let index = this._component.itemConfigs.findIndex(x => x.component.id === firstComponent.component.id);
-			if (index) {
+			let index = firstIndex(this._component.itemConfigs, x => x.component.id === firstComponent.component.id);
+			if (index !== -1) {
 				result = this._component.removeItemAt(index - 1);
 			}
 			componentGroup.components.forEach(element => {
@@ -419,6 +426,12 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 			}
 		}
 		return result;
+	}
+}
+
+class GroupContainerBuilder extends ContainerBuilderImpl<azdata.GroupContainer, azdata.GroupLayout, azdata.GroupItemLayout> {
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(new GroupContainerComponentWrapper(proxy, handle, type, id));
 	}
 }
 
@@ -539,6 +552,21 @@ class ComponentWrapper implements azdata.Component {
 		this.setProperty('required', v);
 	}
 
+	public get display(): azdata.DisplayType {
+		return this.properties['display'];
+	}
+	public set display(v: azdata.DisplayType) {
+		this.setProperty('display', v);
+	}
+
+	public get ariaLabel(): string {
+		return this.properties['ariaLabel'];
+	}
+
+	public set ariaLabel(v: string) {
+		this.setProperty('ariaLabel', v);
+	}
+
 	public get CSSStyles(): { [key: string]: string } {
 		return this.properties['CSSStyles'];
 	}
@@ -579,7 +607,7 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public removeItem(item: azdata.Component): boolean {
-		let index = this.itemConfigs.findIndex(c => c.component.id === item.id);
+		let index = firstIndex(this.itemConfigs, c => c.component.id === item.id);
 		if (index >= 0 && index < this.itemConfigs.length) {
 			return this.removeItemAt(index);
 		}
@@ -611,7 +639,7 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public updateProperties(properties: { [key: string]: any }): Thenable<void> {
-		this.properties = Object.assign(this.properties, properties);
+		this.properties = assign(this.properties, properties);
 		return this.notifyPropertyChanged();
 	}
 
@@ -620,7 +648,7 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void> {
-		this.properties.CSSStyles = Object.assign(this.properties.CSSStyles || {}, cssStyles);
+		this.properties.CSSStyles = assign(this.properties.CSSStyles || {}, cssStyles);
 		return this.notifyPropertyChanged();
 	}
 
@@ -683,6 +711,34 @@ class ComponentWrapper implements azdata.Component {
 
 	public get valid(): boolean {
 		return this._valid;
+	}
+}
+
+class ComponentWithIconWrapper extends ComponentWrapper {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(proxy, handle, type, id);
+	}
+
+	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
+		return this.properties['iconPath'];
+	}
+	public set iconPath(v: string | URI | { light: string | URI; dark: string | URI }) {
+		this.setProperty('iconPath', v);
+	}
+
+	public get iconHeight(): string | number {
+		return this.properties['iconHeight'];
+	}
+	public set iconHeight(v: string | number) {
+		this.setProperty('iconHeight', v);
+	}
+
+	public get iconWidth(): string | number {
+		return this.properties['iconWidth'];
+	}
+	public set iconWidth(v: string | number) {
+		this.setProperty('iconWidth', v);
 	}
 }
 
@@ -769,6 +825,7 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		super(proxy, handle, ModelComponentTypes.InputBox, id);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onEnterKeyPressed, new Emitter<string>());
 	}
 
 	public get value(): string {
@@ -778,18 +835,11 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		this.setProperty('value', v);
 	}
 
-	public get ariaLabel(): string {
-		return this.properties['ariaLabel'];
-	}
-	public set ariaLabel(v: string) {
-		this.setProperty('ariaLabel', v);
-	}
-
 	public get ariaLive(): string {
 		return this.properties['ariaLive'];
 	}
 	public set ariaLive(v: string) {
-		this.setProperty('ariaLabel', v);
+		this.setProperty('ariaLive', v);
 	}
 
 	public get placeHolder(): string {
@@ -841,8 +891,20 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		this.setProperty('inputType', v);
 	}
 
+	public get stopEnterPropagation(): boolean {
+		return this.properties['stopEnterPropagation'];
+	}
+	public set stopEnterPropagation(v: boolean) {
+		this.setProperty('stopEnterPropagation', v);
+	}
+
 	public get onTextChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+
+	public get onEnterKeyPressed(): vscode.Event<string> {
+		const emitter = this._emitterMap.get(ComponentEventType.onEnterKeyPressed);
 		return emitter && emitter.event;
 	}
 }
@@ -1119,45 +1181,24 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 		this.setProperty('value', v);
 	}
 
+	public get title(): string {
+		return this.properties['title'];
+	}
+	public set title(title: string) {
+		this.setProperty('title', title);
+	}
+
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
 	}
 }
 
-class ImageComponentWrapper extends ComponentWrapper implements azdata.ImageComponentProperties {
+class ImageComponentWrapper extends ComponentWithIconWrapper implements azdata.ImageComponentProperties {
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Image, id);
 		this.properties = {};
-	}
-
-	public get src(): string {
-		return this.properties['src'];
-	}
-	public set src(v: string) {
-		this.setProperty('src', v);
-	}
-
-	public get alt(): string {
-		return this.properties['alt'];
-	}
-	public set alt(v: string) {
-		this.setProperty('alt', v);
-	}
-
-	public get height(): number | string {
-		return this.properties['height'];
-	}
-	public set height(v: number | string) {
-		this.setProperty('height', v);
-	}
-
-	public get width(): number | string {
-		return this.properties['width'];
-	}
-	public set width(v: number | string) {
-		this.setProperty('width', v);
 	}
 }
 
@@ -1241,6 +1282,14 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		this.setProperty('focused', v);
 	}
 
+	public get updateCells(): azdata.TableCell[] {
+		return this.properties['updateCells'];
+	}
+
+	public set updateCells(v: azdata.TableCell[]) {
+		this.setProperty('updateCells', v);
+	}
+
 	public get onRowSelected(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
 		return emitter && emitter.event;
@@ -1264,7 +1313,7 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 
 	public get value(): string | azdata.CategoryValue {
 		let val = this.properties['value'];
-		if (!val && this.values && this.values.length > 0) {
+		if (!this.editable && !val && this.values && this.values.length > 0) {
 			val = this.values[0];
 		}
 		return val;
@@ -1292,13 +1341,6 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 	}
 	public set fireOnTextChange(v: boolean) {
 		this.setProperty('fireOnTextChange', v);
-	}
-
-	public get ariaLabel(): string {
-		return this.properties['ariaLabel'];
-	}
-	public set ariaLabel(v: string) {
-		this.setProperty('ariaLabel', v);
 	}
 
 	public get onValueChanged(): vscode.Event<any> {
@@ -1364,7 +1406,7 @@ class ListBoxWrapper extends ComponentWrapper implements azdata.ListBoxComponent
 	}
 }
 
-class ButtonWrapper extends ComponentWrapper implements azdata.ButtonComponent {
+class ButtonWrapper extends ComponentWithIconWrapper implements azdata.ButtonComponent {
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Button, id);
@@ -1379,39 +1421,11 @@ class ButtonWrapper extends ComponentWrapper implements azdata.ButtonComponent {
 		this.setProperty('label', v);
 	}
 
-	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
-		return this.properties['iconPath'];
-	}
-	public set iconPath(v: string | URI | { light: string | URI; dark: string | URI }) {
-		this.setProperty('iconPath', v);
-	}
-
-	public get iconHeight(): string | number {
-		return this.properties['iconHeight'];
-	}
-	public set iconHeight(v: string | number) {
-		this.setProperty('iconHeight', v);
-	}
-
-	public get iconWidth(): string | number {
-		return this.properties['iconWidth'];
-	}
-	public set iconWidth(v: string | number) {
-		this.setProperty('iconWidth', v);
-	}
-
 	public get title(): string {
 		return this.properties['title'];
 	}
 	public set title(v: string) {
 		this.setProperty('title', v);
-	}
-
-	public get ariaLabel(): string {
-		return this.properties['ariaLabel'];
-	}
-	public set ariaLabel(v: string) {
-		this.setProperty('ariaLabel', v);
 	}
 
 	public get onDidClick(): vscode.Event<any> {
@@ -1536,6 +1550,19 @@ class HyperlinkComponentWrapper extends ComponentWrapper implements azdata.Hyper
 	}
 	public set url(v: string) {
 		this.setProperty('url', v);
+	}
+}
+
+class GroupContainerComponentWrapper extends ComponentWrapper implements azdata.GroupContainer {
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(proxy, handle, type, id);
+		this.properties = {};
+	}
+	public get collapsed(): boolean {
+		return this.properties['collapsed'];
+	}
+	public set collapsed(v: boolean) {
+		this.setProperty('collapsed', v);
 	}
 }
 

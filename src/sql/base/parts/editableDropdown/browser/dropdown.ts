@@ -227,7 +227,7 @@ export class Dropdown extends Disposable {
 	}
 
 	private _showList(): void {
-		if (this._input.isEnabled) {
+		if (this._input.isEnabled()) {
 			this._onFocus.fire();
 			this._filter.filterString = '';
 			this.contextViewService.showContextView({
@@ -297,12 +297,12 @@ export class Dropdown extends Disposable {
 	style(style: IListStyles & IInputBoxStyles & IDropdownStyles) {
 		this._tree.style(style);
 		this._input.style(style);
-		this._treeContainer.style.backgroundColor = style.contextBackground ? style.contextBackground.toString() : null;
+		this._treeContainer.style.backgroundColor = style.contextBackground ? style.contextBackground.toString() : '';
 		this._treeContainer.style.outline = `1px solid ${style.contextBorder || this._options.contextBorder}`;
 	}
 
 	private _inputValidator(value: string): IMessage | null {
-		if (!this._input.hasFocus() && !this._tree.isDOMFocused() && this._dataSource.options && !this._dataSource.options.find(i => i.value === value)) {
+		if (!this._input.hasFocus() && !this._tree.isDOMFocused() && this._dataSource.options && !this._dataSource.options.some(i => i.value === value)) {
 			if (this._options.strictSelection && this._options.errorMessage) {
 				return {
 					content: this._options.errorMessage,

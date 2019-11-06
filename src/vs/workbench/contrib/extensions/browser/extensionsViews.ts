@@ -34,7 +34,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { distinct, coalesce } from 'vs/base/common/arrays';
+import { distinct, coalesce, firstIndex } from 'vs/base/common/arrays';
 import { IExperimentService, IExperiment, ExperimentActionType } from 'vs/workbench/contrib/experiments/common/experimentService';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { IListContextMenuEvent } from 'vs/base/browser/ui/list/list';
@@ -47,7 +47,6 @@ import { CancelablePromise, createCancelablePromise } from 'vs/base/common/async
 import { IProductService } from 'vs/platform/product/common/productService';
 import { SeverityIcon } from 'vs/platform/severityIcon/common/severityIcon';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IUserDataSyncService } from 'vs/platform/userDataSync/common/userDataSync';
 
 
 class ExtensionsViewState extends Disposable implements IExtensionsViewState {
@@ -105,7 +104,6 @@ export class ExtensionsListView extends ViewletPanel {
 		@IExtensionManagementServerService protected readonly extensionManagementServerService: IExtensionManagementServerService,
 		@IProductService protected readonly productService: IProductService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IUserDataSyncService private readonly userDataSyncService: IUserDataSyncService,
 	) {
 		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: options.title, showActionsAlways: true }, keybindingService, contextMenuService, configurationService, contextKeyService);
 		this.server = options.server;
@@ -457,11 +455,8 @@ export class ExtensionsListView extends ViewletPanel {
 			return this.getAllRecommendationsModel(query, options, token);
 		} else if (ExtensionsListView.isRecommendedExtensionsQuery(query.value)) {
 			return this.getRecommendationsModel(query, options, token);
-			// {{SQL CARBON EDIT}}
 		} else if (ExtensionsListView.isAllMarketplaceExtensionsQuery(query.value)) { // {{SQL CARBON EDIT}} add if
 			return this.getAllMarketplaceModel(query, options, token);
-		} else if (ExtensionsListView.isSyncedExtensionsQuery(query.value)) {
-			return this.getSyncedExtensionsModel(query, options, token);
 		}
 
 		if (/\bcurated:([^\s]+)\b/.test(query.value)) {
@@ -658,8 +653,8 @@ export class ExtensionsListView extends ViewletPanel {
 
 						// sort the marketplace extensions
 						pager.firstPage.sort((a, b) => {
-							let isRecommendedA: boolean = recommmended.findIndex(ext => ext.extensionId === `${a.publisher}.${a.name}`) > -1;
-							let isRecommendedB: boolean = recommmended.findIndex(ext => ext.extensionId === `${b.publisher}.${b.name}`) > -1;
+							let isRecommendedA: boolean = firstIndex(recommmended, ext => ext.extensionId === `${a.publisher}.${a.name}`) > -1;
+							let isRecommendedB: boolean = firstIndex(recommmended, ext => ext.extensionId === `${b.publisher}.${b.name}`) > -1;
 
 							// sort recommeded extensions before other extensions
 							if (isRecommendedA !== isRecommendedB) {
@@ -691,7 +686,7 @@ export class ExtensionsListView extends ViewletPanel {
 						// filter out installed extensions and the extensions not in the recommended list
 						pager.firstPage = pager.firstPage.filter((p) => {
 							const extensionId = `${p.publisher}.${p.name}`;
-							return installedExtensions.indexOf(extensionId) === -1 && recommmended.findIndex(ext => ext.extensionId === extensionId) !== -1;
+							return installedExtensions.indexOf(extensionId) === -1 && firstIndex(recommmended, ext => ext.extensionId === extensionId) !== -1;
 						});
 						pager.total = pager.firstPage.length;
 						pager.pageSize = pager.firstPage.length;
@@ -703,28 +698,28 @@ export class ExtensionsListView extends ViewletPanel {
 	// {{SQL CARBON EDIT}} - End
 
 	// Given all recommendations, trims and returns recommendations in the relevant order after filtering out installed extensions
-	private getTrimmedRecommendations(installedExtensions: IExtension[], value: string, fileBasedRecommendations: IExtensionRecommendation[], otherRecommendations: IExtensionRecommendation[], workpsaceRecommendations: IExtensionRecommendation[]): string[] {
+	private getTrimmedRecommendations(installedExtensions: IExtension[], value: string, fileBasedRecommendations: IExtensionRecommendation[], otherRecommendations: IExtensionRecommendation[], workspaceRecommendations: IExtensionRecommendation[]): string[] {
 		const totalCount = 8;
-		workpsaceRecommendations = workpsaceRecommendations
+		workspaceRecommendations = workspaceRecommendations
 			.filter(recommendation => {
 				return !this.isRecommendationInstalled(recommendation, installedExtensions)
 					&& recommendation.extensionId.toLowerCase().indexOf(value) > -1;
 			});
 		fileBasedRecommendations = fileBasedRecommendations.filter(recommendation => {
 			return !this.isRecommendationInstalled(recommendation, installedExtensions)
-				&& workpsaceRecommendations.every(workspaceRecommendation => workspaceRecommendation.extensionId !== recommendation.extensionId)
+				&& workspaceRecommendations.every(workspaceRecommendation => workspaceRecommendation.extensionId !== recommendation.extensionId)
 				&& recommendation.extensionId.toLowerCase().indexOf(value) > -1;
 		});
 		otherRecommendations = otherRecommendations.filter(recommendation => {
 			return !this.isRecommendationInstalled(recommendation, installedExtensions)
 				&& fileBasedRecommendations.every(fileBasedRecommendation => fileBasedRecommendation.extensionId !== recommendation.extensionId)
-				&& workpsaceRecommendations.every(workspaceRecommendation => workspaceRecommendation.extensionId !== recommendation.extensionId)
+				&& workspaceRecommendations.every(workspaceRecommendation => workspaceRecommendation.extensionId !== recommendation.extensionId)
 				&& recommendation.extensionId.toLowerCase().indexOf(value) > -1;
 		});
 
 		const otherCount = Math.min(2, otherRecommendations.length);
-		const fileBasedCount = Math.min(fileBasedRecommendations.length, totalCount - workpsaceRecommendations.length - otherCount);
-		const recommendations = workpsaceRecommendations;
+		const fileBasedCount = Math.min(fileBasedRecommendations.length, totalCount - workspaceRecommendations.length - otherCount);
+		const recommendations = workspaceRecommendations;
 		recommendations.push(...fileBasedRecommendations.splice(0, fileBasedCount));
 		recommendations.push(...otherRecommendations.splice(0, otherCount));
 
@@ -769,23 +764,6 @@ export class ExtensionsListView extends ViewletPanel {
 			.then(result => this.getPagedModel(result));
 	}
 
-	private async getSyncedExtensionsModel(query: Query, options: IQueryOptions, token: CancellationToken): Promise<IPagedModel<IExtension>> {
-		const syncedExtensions = await this.userDataSyncService.getRemoteExtensions();
-		if (!syncedExtensions.length) {
-			return this.showEmptyModel();
-		}
-		const ids: string[] = [], names: string[] = [];
-		for (const installed of syncedExtensions) {
-			if (installed.identifier.uuid) {
-				ids.push(installed.identifier.uuid);
-			} else {
-				names.push(installed.identifier.id);
-			}
-		}
-		const pager = await this.extensionsWorkbenchService.queryGallery({ ids, names, pageSize: ids.length }, token);
-		return this.getPagedModel(pager || []);
-	}
-
 	// Sorts the firstPage of the pager in the same order as given array of extension ids
 	private sortFirstPage(pager: IPager<IExtension>, ids: string[]) {
 		ids = ids.map(x => x.toLowerCase());
@@ -809,10 +787,10 @@ export class ExtensionsListView extends ViewletPanel {
 				if (count === 0 && this.isBodyVisible()) {
 					if (error) {
 						if (error instanceof ExtensionListViewWarning) {
-							this.bodyTemplate.messageSeverityIcon.className = SeverityIcon.className(Severity.Warning);
+							this.bodyTemplate.messageSeverityIcon.className = `codicon ${SeverityIcon.className(Severity.Warning)}`;
 							this.bodyTemplate.messageBox.textContent = getErrorMessage(error);
 						} else {
-							this.bodyTemplate.messageSeverityIcon.className = SeverityIcon.className(Severity.Error);
+							this.bodyTemplate.messageSeverityIcon.className = `codicon ${SeverityIcon.className(Severity.Error)}`;
 							this.bodyTemplate.messageBox.textContent = localize('error', "Error while loading extensions. {0}", getErrorMessage(error));
 						}
 					} else {
@@ -925,10 +903,6 @@ export class ExtensionsListView extends ViewletPanel {
 		return /@recommended:keymaps/i.test(query);
 	}
 
-	static isSyncedExtensionsQuery(query: string): boolean {
-		return /@myaccount/i.test(query);
-	}
-
 	focus(): void {
 		super.focus();
 		if (!this.list) {
@@ -969,11 +943,10 @@ export class ServerExtensionsView extends ExtensionsListView {
 		@IExtensionsWorkbenchService extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IExtensionManagementServerService extensionManagementServerService: IExtensionManagementServerService,
 		@IProductService productService: IProductService,
-		@IContextKeyService contextKeyService: IContextKeyService,
-		@IUserDataSyncService userDataSyncService: IUserDataSyncService
+		@IContextKeyService contextKeyService: IContextKeyService
 	) {
 		options.server = server;
-		super(options, notificationService, keybindingService, contextMenuService, instantiationService, themeService, extensionService, extensionsWorkbenchService, editorService, tipsService, telemetryService, configurationService, contextService, experimentService, workbenchThemeService, extensionManagementServerService, productService, contextKeyService, userDataSyncService);
+		super(options, notificationService, keybindingService, contextMenuService, instantiationService, themeService, extensionService, extensionsWorkbenchService, editorService, tipsService, telemetryService, configurationService, contextService, experimentService, workbenchThemeService, extensionManagementServerService, productService, contextKeyService);
 		this._register(onDidChangeTitle(title => this.updateTitle(title)));
 	}
 
@@ -988,7 +961,7 @@ export class ServerExtensionsView extends ExtensionsListView {
 	getActions(): IAction[] {
 		if (this.extensionManagementServerService.remoteExtensionManagementServer && this.extensionManagementServerService.localExtensionManagementServer === this.server) {
 			const installLocalExtensionsInRemoteAction = this._register(this.instantiationService.createInstance(InstallLocalExtensionsInRemoteAction));
-			installLocalExtensionsInRemoteAction.class = 'octicon octicon-cloud-download';
+			installLocalExtensionsInRemoteAction.class = 'codicon codicon-cloud-download';
 			return [installLocalExtensionsInRemoteAction];
 		}
 		return [];
@@ -1026,14 +999,6 @@ export class BuiltInThemesExtensionsView extends ExtensionsListView {
 export class BuiltInBasicsExtensionsView extends ExtensionsListView {
 	async show(query: string): Promise<IPagedModel<IExtension>> {
 		return (query && query.trim() !== '@builtin') ? this.showEmptyModel() : super.show('@builtin:basics');
-	}
-}
-
-export class SyncedExtensionsView extends ExtensionsListView {
-
-	async show(query: string): Promise<IPagedModel<IExtension>> {
-		query = query || '@myaccount';
-		return ExtensionsListView.isSyncedExtensionsQuery(query) ? super.show(query) : this.showEmptyModel();
 	}
 }
 
@@ -1095,11 +1060,11 @@ export class WorkspaceRecommendedExtensionsView extends ExtensionsListView {
 	getActions(): IAction[] {
 		if (!this.installAllAction) {
 			this.installAllAction = this._register(this.instantiationService.createInstance(InstallWorkspaceRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction.ID, InstallWorkspaceRecommendedExtensionsAction.LABEL, []));
-			this.installAllAction.class = 'octicon octicon-cloud-download';
+			this.installAllAction.class = 'codicon codicon-cloud-download';
 		}
 
 		const configureWorkspaceFolderAction = this._register(this.instantiationService.createInstance(ConfigureWorkspaceFolderRecommendedExtensionsAction, ConfigureWorkspaceFolderRecommendedExtensionsAction.ID, ConfigureWorkspaceFolderRecommendedExtensionsAction.LABEL));
-		configureWorkspaceFolderAction.class = 'octicon octicon-pencil';
+		configureWorkspaceFolderAction.class = 'codicon codicon-pencil';
 		return [this.installAllAction, configureWorkspaceFolderAction];
 	}
 

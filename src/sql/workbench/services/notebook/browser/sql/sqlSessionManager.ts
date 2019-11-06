@@ -25,11 +25,14 @@ import { ILanguageMagic } from 'sql/workbench/services/notebook/browser/notebook
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { URI } from 'vs/base/common/uri';
 import { getUriPrefix, uriPrefixes } from 'sql/platform/connection/common/utils';
+import { firstIndex } from 'vs/base/common/arrays';
+import { startsWith } from 'vs/base/common/strings';
 
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;
 export const NotebookConfigSectionName = 'notebook';
 export const MaxTableRowsConfigName = 'maxTableRows';
+export const SqlStopOnErrorConfigName = 'sqlStopOnError';
 
 const languageMagics: ILanguageMagic[] = [{
 	language: 'Python',
@@ -70,7 +73,7 @@ export class SqlSessionManager implements nb.SessionManager {
 
 	startNew(options: nb.ISessionOptions): Thenable<nb.ISession> {
 		let sqlSession = new SqlSession(options, this._instantiationService);
-		let index = SqlSessionManager._sessions.findIndex(session => session.path === options.path);
+		let index = firstIndex(SqlSessionManager._sessions, session => session.path === options.path);
 		if (index > -1) {
 			SqlSessionManager._sessions.splice(index);
 		}
@@ -79,7 +82,7 @@ export class SqlSessionManager implements nb.SessionManager {
 	}
 
 	shutdown(id: string): Thenable<void> {
-		let index = SqlSessionManager._sessions.findIndex(session => session.id === id);
+		let index = firstIndex(SqlSessionManager._sessions, session => session.id === id);
 		if (index > -1) {
 			let sessionManager = SqlSessionManager._sessions[index];
 			SqlSessionManager._sessions.splice(index);
@@ -305,7 +308,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		let code = Array.isArray(content.code) ? content.code.join('') : content.code;
 		let firstLineEnd = code.indexOf(this.textResourcePropertiesService.getEOL(URI.file(this._path)));
 		let firstLine = code.substring(0, (firstLineEnd >= 0) ? firstLineEnd : 0).trimLeft();
-		if (firstLine.startsWith('%%')) {
+		if (startsWith(firstLine, '%%')) {
 			// Strip out the line
 			code = code.substring(firstLineEnd, code.length);
 			// Try and match to an external script magic. If we add more magics later, should handle transforms better
@@ -378,6 +381,9 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private doneDeferred = new Deferred<nb.IShellMessage>();
 	private configuredMaxRows: number = MAX_ROWS;
 	private _outputAddedPromises: Promise<void>[] = [];
+	private _querySubsetResultMap: Map<number, QueryExecuteSubsetResult> = new Map<number, QueryExecuteSubsetResult>();
+	private _errorOccurred: boolean = false;
+	private _stopOnError: boolean = true;
 	constructor(
 		private _queryRunner: QueryRunner,
 		private _executionCount: number | undefined,
@@ -391,6 +397,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			if (maxRows && maxRows > 0) {
 				this.configuredMaxRows = maxRows;
 			}
+			this._stopOnError = !!config[SqlStopOnErrorConfigName];
 		}
 	}
 
@@ -425,7 +432,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			channel: 'shell',
 			type: 'execute_reply',
 			content: {
-				status: 'ok',
+				status: this._errorOccurred && this._stopOnError ? 'error' : 'ok',
 				execution_count: this._executionCount
 			},
 			header: undefined,
@@ -437,6 +444,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			this.doneHandler.handle(msg);
 		}
 		this.doneDeferred.resolve(msg);
+		this._querySubsetResultMap.clear();
 	}
 
 	sendInputReply(content: nb.IInputReply): void {
@@ -475,12 +483,20 @@ export class SQLFuture extends Disposable implements FutureInternal {
 
 	private async processResultSets(batch: BatchSummary): Promise<void> {
 		try {
+			let queryRowsPromises: Promise<void>[] = [];
 			for (let resultSet of batch.resultSetSummaries) {
 				let rowCount = resultSet.rowCount > this.configuredMaxRows ? this.configuredMaxRows : resultSet.rowCount;
 				if (rowCount === this.configuredMaxRows) {
 					this.handleMessage(localize('sqlMaxRowsDisplayed', "Displaying Top {0} rows.", rowCount));
 				}
-				await this.sendResultSetAsIOPub(rowCount, resultSet);
+				queryRowsPromises.push(this.getAllQueryRows(rowCount, resultSet));
+			}
+			// We want to display table in the same order
+			let i = 0;
+			for (let resultSet of batch.resultSetSummaries) {
+				await queryRowsPromises[i];
+				this.sendResultSetAsIOPub(resultSet);
+				i++;
 			}
 		} catch (err) {
 			// TODO should we output this somewhere else?
@@ -488,13 +504,31 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		}
 	}
 
-	private async sendResultSetAsIOPub(rowCount: number, resultSet: ResultSetSummary): Promise<void> {
-		let subsetResult: QueryExecuteSubsetResult;
+	private async getAllQueryRows(rowCount: number, resultSet: ResultSetSummary): Promise<void> {
+		let deferred: Deferred<void> = new Deferred<void>();
 		if (rowCount > 0) {
-			subsetResult = await this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id);
+			this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id).then((result) => {
+				this._querySubsetResultMap.set(resultSet.id, result);
+				deferred.resolve();
+			}, (err) => {
+				this._querySubsetResultMap.set(resultSet.id, { message: '', resultSubset: { rowCount: 0, rows: [] } });
+				deferred.reject(err);
+			});
 		} else {
-			subsetResult = { message: '', resultSubset: { rowCount: 0, rows: [] } };
+			this._querySubsetResultMap.set(resultSet.id, { message: '', resultSubset: { rowCount: 0, rows: [] } });
+			deferred.resolve();
 		}
+		return deferred;
+	}
+
+	private sendResultSetAsIOPub(resultSet: ResultSetSummary): void {
+		if (this._querySubsetResultMap && this._querySubsetResultMap.get(resultSet.id)) {
+			let subsetResult = this._querySubsetResultMap.get(resultSet.id);
+			this.sendIOPubMessage(subsetResult, resultSet);
+		}
+	}
+
+	private sendIOPubMessage(subsetResult: QueryExecuteSubsetResult, resultSet: ResultSetSummary): void {
 		let msg: nb.IIOPubMessage = {
 			channel: 'iopub',
 			type: 'iopub',
@@ -515,6 +549,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			parent_header: undefined
 		};
 		this.ioHandler.handle(msg);
+		this._querySubsetResultMap.delete(resultSet.id);
 	}
 
 	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {
@@ -590,6 +625,8 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	}
 
 	private convertToError(msg: IResultMessage | string): nb.IIOPubMessage {
+		this._errorOccurred = true;
+
 		if (msg) {
 			let msgData = typeof msg === 'string' ? msg : msg.message;
 			return {

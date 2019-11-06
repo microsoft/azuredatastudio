@@ -22,10 +22,9 @@ import { StandaloneCodeEditor } from 'vs/editor/standalone/browser/standaloneCod
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
-import { IWindowService } from 'vs/platform/windows/common/windows';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
@@ -51,14 +50,13 @@ export class QueryTextEditor extends BaseTextEditor {
 		@ITextFileService textFileService: ITextFileService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IEditorService protected editorService: IEditorService,
-		@IWindowService windowService: IWindowService,
+		@IHostService hostService: IHostService,
 		@IConfigurationService private workspaceConfigurationService: IConfigurationService,
-		@IAccessibilityService private accessibilityService: IAccessibilityService
 
 	) {
 		super(
 			QueryTextEditor.ID, telemetryService, instantiationService, storageService,
-			configurationService, themeService, textFileService, editorService, editorGroupService, windowService);
+			configurationService, themeService, textFileService, editorService, editorGroupService, hostService);
 	}
 
 	public createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
@@ -129,7 +127,7 @@ export class QueryTextEditor extends BaseTextEditor {
 		return editorWidget.getScrollHeight();
 	}
 
-	public setHeightToScrollHeight(configChanged?: boolean): void {
+	public setHeightToScrollHeight(configChanged?: boolean, isEditorCollapsed?: boolean, ) {
 		let editorWidget = this.getControl() as ICodeEditor;
 		let layoutInfo = editorWidget.getLayoutInfo();
 		if (!this._scrollbarHeight) {
@@ -140,7 +138,12 @@ export class QueryTextEditor extends BaseTextEditor {
 			// Not ready yet
 			return;
 		}
-		let lineCount = editorWidgetModel.getLineCount();
+		let lineCount: number;
+		if (!!isEditorCollapsed) {
+			lineCount = 1;
+		} else {
+			lineCount = editorWidgetModel.getLineCount();
+		}
 		// Need to also keep track of lines that wrap; if we just keep into account line count, then the editor's height would not be
 		// tall enough and we would need to show a scrollbar. Unfortunately, it looks like there isn't any metadata saved in a ICodeEditor
 		// around max column length for an editor (which we could leverage to see if we need to loop through every line to determine

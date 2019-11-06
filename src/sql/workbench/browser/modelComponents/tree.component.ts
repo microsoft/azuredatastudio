@@ -14,7 +14,7 @@ import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { TreeComponentRenderer } from 'sql/workbench/browser/modelComponents/treeComponentRenderer';
 import { TreeComponentDataSource } from 'sql/workbench/browser/modelComponents/treeDataSource';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -24,7 +24,10 @@ import { DefaultFilter, DefaultAccessibilityProvider, DefaultController } from '
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { TreeViewDataProvider } from 'sql/workbench/browser/modelComponents/treeViewDataProvider';
-import { getContentHeight, getContentWidth } from 'vs/base/browser/dom';
+import * as DOM from 'vs/base/browser/dom';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { values } from 'vs/base/common/collections';
 
 class Root implements ITreeComponentItem {
 	label = {
@@ -88,7 +91,7 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 		}
 
 		if (this._tree) {
-			for (const item of Object.values(itemsToRefreshByHandle)) {
+			for (const item of values(itemsToRefreshByHandle)) {
 				this._tree.refresh(<ITreeComponentItem>item);
 			}
 		}
@@ -119,6 +122,15 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 			this._register(this._tree.onDidChangeSelection(e => {
 				this._dataProvider.onNodeSelected(e.selection);
 			}));
+			this.onkeydown(this._inputContainer.nativeElement, (e: StandardKeyboardEvent) => {
+				// Enter on a tree will select the currently selected item as the default behavior
+				// but if not stopped here then will propagate up.
+				// This might have unintended effects such as a dialog closing.
+				if (e.keyCode === KeyCode.Enter) {
+					this._tree.toggleExpansion(this._tree.getFocus());
+					DOM.EventHelper.stop(e, true);
+				}
+			});
 			this._tree.refresh();
 			this.layout();
 		}
@@ -138,8 +150,8 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 		let width: number = this.convertSizeToNumber(this.width);
 		let height: number = this.convertSizeToNumber(this.height);
 		this._tree.layout(
-			height && height > 0 ? height : getContentHeight(this._inputContainer.nativeElement),
-			width && width > 0 ? width : getContentWidth(this._inputContainer.nativeElement));
+			height && height > 0 ? height : DOM.getContentHeight(this._inputContainer.nativeElement),
+			width && width > 0 ? width : DOM.getContentWidth(this._inputContainer.nativeElement));
 	}
 
 	public setLayout(layout: any): void {

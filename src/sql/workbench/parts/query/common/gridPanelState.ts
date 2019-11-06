@@ -30,7 +30,7 @@ export class GridTableState extends Disposable {
 	/* The top row of the current scroll */
 	public scrollPositionY = 0;
 	public scrollPositionX = 0;
-	public columnSizes: number[] = undefined;
+	public columnSizes?: number[] = undefined;
 	public selection: Slick.Range[];
 	public activeCell: Slick.Cell;
 

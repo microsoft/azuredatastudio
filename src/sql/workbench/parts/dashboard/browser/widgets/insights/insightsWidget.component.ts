@@ -10,7 +10,7 @@ import {
 import { Observable } from 'rxjs/Observable';
 
 import { DashboardWidget, IDashboardWidget, WIDGET_CONFIG, WidgetConfig } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/browser/core/componentHost.directive';
 import { InsightAction, InsightActionContext } from 'sql/workbench/browser/actions';
 import { Extensions, IInsightRegistry, IInsightsConfig, IInsightsView, getWidgetAutoRefreshState } from 'sql/platform/dashboard/browser/insightRegistry';
@@ -279,7 +279,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			throw new Error('Exactly 1 insight type must be specified');
 		}
 
-		if (!insightRegistry.getAllIds().includes(Object.keys(this.insightConfig.type)[0])) {
+		if (!insightRegistry.getAllIds().some(x => x === Object.keys(this.insightConfig.type)[0])) {
 			throw new Error('The insight type must be a valid registered insight');
 		}
 

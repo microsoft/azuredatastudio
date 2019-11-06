@@ -7,7 +7,7 @@ import 'vs/css!./dashboardGridContainer';
 
 import { Component, Inject, Input, forwardRef, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, ContentChild } from '@angular/core';
 
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { TabConfig, WidgetConfig } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
 import { DashboardWidgetWrapper } from 'sql/workbench/parts/dashboard/browser/contents/dashboardWidgetWrapper.component';
 import { DashboardTab } from 'sql/workbench/parts/dashboard/browser/core/interfaces';
@@ -17,6 +17,8 @@ import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ScrollbarVisibility } from 'vs/editor/common/standalone/standaloneEnums';
 import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
+import { values } from 'vs/base/common/collections';
+import { fill } from 'vs/base/common/arrays';
 
 export interface GridCellConfig {
 	id?: string;
@@ -192,7 +194,7 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 
 	ngOnInit() {
 		if (this.tab.container) {
-			this._contents = Object.values(this.tab.container)[0];
+			this._contents = values(this.tab.container)[0];
 			this._contents.forEach(widget => {
 				if (!widget.row) {
 					widget.row = 0;
@@ -214,7 +216,7 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 
 	private createIndexes(indexes: number[]) {
 		const max = Math.max(...indexes) + 1;
-		return Array(max).fill(0).map((x, i) => i);
+		return fill(max, 0).map((x, i) => i);
 	}
 
 	ngOnDestroy() {

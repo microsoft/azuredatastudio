@@ -17,6 +17,7 @@ import { BackupDialog } from 'sql/workbench/parts/backup/browser/backupDialog';
 import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
 import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
+import { find } from 'vs/base/common/arrays';
 
 export class BackupUiService implements IBackupUiService {
 	public _serviceBrand: undefined;
@@ -50,7 +51,7 @@ export class BackupUiService implements IBackupUiService {
 	}
 
 	private getOptions(provider: string): azdata.ServiceOption[] {
-		let feature = this._capabilitiesService.getLegacyCapabilities(this._currentProvider).features.find(f => f.featureName === 'backup');
+		let feature = find(this._capabilitiesService.getLegacyCapabilities(this._currentProvider).features, f => f.featureName === 'backup');
 		if (feature) {
 			return feature.optionsMetadata;
 		} else {
@@ -108,7 +109,7 @@ export class BackupUiService implements IBackupUiService {
 	public onShowBackupDialog() {
 		let backupDialog = this._backupDialogs[this._currentProvider];
 		if (backupDialog) {
-			backupDialog.setFocusableElements();
+			backupDialog.setInitialFocusedElement();
 		}
 	}
 

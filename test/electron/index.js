@@ -16,6 +16,7 @@ const defaultReporterName = process.platform === 'win32' ? 'list' : 'spec';
 
 const optimist = require('optimist')
 	.describe('grep', 'only run tests matching <pattern>').alias('grep', 'g').alias('grep', 'f').string('grep')
+	.describe('invert', 'uses the inverse of the match specified by grep').alias('invert', 'i').string('invert')
 	.describe('run', 'only run tests from <file>').string('run')
 	.describe('runGlob', 'only run tests matching <file_pattern>').alias('runGlob', 'runGrep').string('runGlob')
 	.describe('build', 'run with build output (out-build)').boolean('build')
@@ -27,6 +28,14 @@ const optimist = require('optimist')
 	.describe('help', 'show the help').alias('help', 'h');
 
 const argv = optimist.argv;
+
+// {{SQL CARBON EDIT}}
+// Set test run options. These are NOT used if grep is specified manually - that implies the user has a specific desire to
+// filter the tests beyond the defaults set for ADS_TEST_GREP in the calling scripts.
+if (!argv.grep) {
+	argv.grep = process.env['ADS_TEST_GREP'];
+	argv.invert = Boolean(process.env['ADS_TEST_INVERT_GREP']);
+}
 
 if (argv.help) {
 	optimist.showHelp();

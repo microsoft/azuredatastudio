@@ -210,7 +210,7 @@ export class ExtensionHostProcessManager extends Disposable {
 		// Check that no named customers are missing
 		// {{SQL CARBON EDIT}} filter out services we don't expose
 		const filtered: ProxyIdentifier<any>[] = [MainContext.MainThreadDebugService, MainContext.MainThreadTask];
-		const expected: ProxyIdentifier<any>[] = Object.keys(MainContext).map((key) => (<any>MainContext)[key]).filter(v => !filtered.includes(v));
+		const expected: ProxyIdentifier<any>[] = Object.keys(MainContext).map((key) => (<any>MainContext)[key]).filter(v => !filtered.some(x => x === v));
 		this._extensionHostProcessRPCProtocol.assertRegistered(expected);
 
 		return this._extensionHostProcessRPCProtocol.getProxy(ExtHostContext.ExtHostExtensionService);
@@ -240,18 +240,17 @@ export class ExtensionHostProcessManager extends Disposable {
 		});
 	}
 
-	public getInspectPort(): number {
+	public async getInspectPort(tryEnableInspector: boolean): Promise<number> {
 		if (this._extensionHostProcessWorker) {
+			if (tryEnableInspector) {
+				await this._extensionHostProcessWorker.enableInspectPort();
+			}
 			let port = this._extensionHostProcessWorker.getInspectPort();
 			if (port) {
 				return port;
 			}
 		}
 		return 0;
-	}
-
-	public canProfileExtensionHost(): boolean {
-		return this._extensionHostProcessWorker && Boolean(this._extensionHostProcessWorker.getInspectPort());
 	}
 
 	public async resolveAuthority(remoteAuthority: string): Promise<ResolverResult> {

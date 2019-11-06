@@ -5,7 +5,7 @@
 
 import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { ToggleAutoSaveAction, GlobalNewUntitledFileAction, ShowOpenedFileInNewWindow, FocusFilesExplorer, GlobalCompareResourcesAction, SaveAllAction, ShowActiveFileInExplorer, CollapseExplorerView, RefreshExplorerView, CompareWithClipboardAction, NEW_FILE_COMMAND_ID, NEW_FILE_LABEL, NEW_FOLDER_COMMAND_ID, NEW_FOLDER_LABEL, TRIGGER_RENAME_LABEL, MOVE_FILE_TO_TRASH_LABEL, COPY_FILE_LABEL, PASTE_FILE_LABEL, FileCopiedContext, renameHandler, moveFileToTrashHandler, copyFileHandler, pasteFileHandler, deleteFileHandler, cutFileHandler, DOWNLOAD_COMMAND_ID, GlobalNewUntitledPlainFileAction, openFilePreserveFocusHandler } from 'vs/workbench/contrib/files/browser/fileActions';
+import { ToggleAutoSaveAction, GlobalNewUntitledFileAction, FocusFilesExplorer, GlobalCompareResourcesAction, SaveAllAction, ShowActiveFileInExplorer, CollapseExplorerView, RefreshExplorerView, CompareWithClipboardAction, NEW_FILE_COMMAND_ID, NEW_FILE_LABEL, NEW_FOLDER_COMMAND_ID, NEW_FOLDER_LABEL, TRIGGER_RENAME_LABEL, MOVE_FILE_TO_TRASH_LABEL, COPY_FILE_LABEL, PASTE_FILE_LABEL, FileCopiedContext, renameHandler, moveFileToTrashHandler, copyFileHandler, pasteFileHandler, deleteFileHandler, cutFileHandler, DOWNLOAD_COMMAND_ID, openFilePreserveFocusHandler, GlobalNewUntitledPlainFileAction } from 'vs/workbench/contrib/files/browser/fileActions'; // {{SQL CARBON EDIT}} -- Add 'New File' command for plain untitled files
 import { revertLocalChangesCommand, acceptLocalChangesCommand, CONFLICT_RESOLUTION_CONTEXT } from 'vs/workbench/contrib/files/browser/saveErrorHandler';
 import { SyncActionDescriptor, MenuId, MenuRegistry, ILocalizedString } from 'vs/platform/actions/common/actions';
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
@@ -23,7 +23,7 @@ import { ResourceContextKey } from 'vs/workbench/common/resources';
 import { WorkbenchListDoubleSelection } from 'vs/platform/list/browser/listService';
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
-import { SupportsWorkspacesContext, IsWebContext, WorkspaceFolderCountContext } from 'vs/workbench/browser/contextkeys';
+import { IsWebContext, WorkspaceFolderCountContext } from 'vs/workbench/browser/contextkeys';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { OpenFileFolderAction, OpenFileAction, OpenFolderAction, OpenWorkspaceAction } from 'vs/workbench/browser/actions/workspaceActions';
 import { ActiveEditorIsSaveableContext } from 'vs/workbench/common/editor';
@@ -41,12 +41,9 @@ registry.registerWorkbenchAction(new SyncActionDescriptor(ShowActiveFileInExplor
 registry.registerWorkbenchAction(new SyncActionDescriptor(CollapseExplorerView, CollapseExplorerView.ID, CollapseExplorerView.LABEL), 'File: Collapse Folders in Explorer', category.value);
 registry.registerWorkbenchAction(new SyncActionDescriptor(RefreshExplorerView, RefreshExplorerView.ID, RefreshExplorerView.LABEL), 'File: Refresh Explorer', category.value);
 registry.registerWorkbenchAction(new SyncActionDescriptor(GlobalNewUntitledFileAction, GlobalNewUntitledFileAction.ID, GlobalNewUntitledFileAction.LABEL, { primary: KeyMod.CtrlCmd | KeyCode.KEY_N }), 'File: New Untitled File', category.value);
-// {{SQL CARBON EDIT}} -- Add 'New File' command for plain untitled files
-registry.registerWorkbenchAction(new SyncActionDescriptor(GlobalNewUntitledPlainFileAction, GlobalNewUntitledPlainFileAction.ID, GlobalNewUntitledPlainFileAction.LABEL), 'File: New Plain Text File', category.value);
-registry.registerWorkbenchAction(new SyncActionDescriptor(ShowOpenedFileInNewWindow, ShowOpenedFileInNewWindow.ID, ShowOpenedFileInNewWindow.LABEL, { primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyCode.KEY_O) }), 'File: Open Active File in New Window', category.value);
 registry.registerWorkbenchAction(new SyncActionDescriptor(CompareWithClipboardAction, CompareWithClipboardAction.ID, CompareWithClipboardAction.LABEL, { primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyCode.KEY_C) }), 'File: Compare Active File with Clipboard', category.value);
 registry.registerWorkbenchAction(new SyncActionDescriptor(ToggleAutoSaveAction, ToggleAutoSaveAction.ID, ToggleAutoSaveAction.LABEL), 'File: Toggle Auto Save', category.value);
-
+registry.registerWorkbenchAction(new SyncActionDescriptor(GlobalNewUntitledPlainFileAction, GlobalNewUntitledPlainFileAction.ID, GlobalNewUntitledPlainFileAction.LABEL), 'File: New Plain Text File', category.value); // {{SQL CARBON EDIT}} -- Add 'New File' command for plain untitled files
 
 const workspacesCategory = nls.localize('workspaces', "Workspaces");
 registry.registerWorkbenchAction(new SyncActionDescriptor(OpenWorkspaceAction, OpenWorkspaceAction.ID, OpenWorkspaceAction.LABEL), 'Workspaces: Open Workspace...', workspacesCategory);
@@ -499,7 +496,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerContext, {
 		id: ADD_ROOT_FOLDER_COMMAND_ID,
 		title: ADD_ROOT_FOLDER_LABEL
 	},
-	when: ContextKeyExpr.and(ExplorerRootContext, SupportsWorkspacesContext)
+	when: ContextKeyExpr.and(ExplorerRootContext)
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerContext, {
@@ -509,7 +506,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerContext, {
 		id: REMOVE_ROOT_FOLDER_COMMAND_ID,
 		title: REMOVE_ROOT_FOLDER_LABEL
 	},
-	when: ContextKeyExpr.and(ExplorerRootContext, ExplorerFolderContext, SupportsWorkspacesContext)
+	when: ContextKeyExpr.and(ExplorerRootContext, ExplorerFolderContext)
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerContext, {

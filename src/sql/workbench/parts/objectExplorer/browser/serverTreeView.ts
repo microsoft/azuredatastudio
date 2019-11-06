@@ -35,6 +35,7 @@ import { ServerTreeActionProvider } from 'sql/workbench/parts/objectExplorer/bro
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isHidden } from 'sql/base/browser/dom';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { startsWith } from 'vs/base/common/strings';
 
 /**
  * ServerTreeview implements the dynamic tree view.
@@ -172,7 +173,7 @@ export class ServerTreeView extends Disposable {
 		}
 
 		return new Promise<void>(async (resolve, reject) => {
-			this.refreshTree();
+			await this.refreshTree();
 			const root = <ConnectionProfileGroup>this._tree.getInput();
 
 			const expandGroups: boolean = this._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_AUTOEXPAND_CONFIG];
@@ -192,7 +193,7 @@ export class ServerTreeView extends Disposable {
 	public isObjectExplorerConnectionUri(uri: string): boolean {
 		let isBackupRestoreUri: boolean = uri.indexOf(ConnectionUtils.ConnectionUriBackupIdAttributeName) >= 0 ||
 			uri.indexOf(ConnectionUtils.ConnectionUriRestoreIdAttributeName) >= 0;
-		return uri && uri.startsWith(ConnectionUtils.uriPrefixes.default) && !isBackupRestoreUri;
+		return uri && startsWith(uri, ConnectionUtils.uriPrefixes.default) && !isBackupRestoreUri;
 	}
 
 	private async handleAddConnectionProfile(newProfile: IConnectionProfile): Promise<void> {
@@ -216,7 +217,7 @@ export class ServerTreeView extends Disposable {
 		}
 		await this.refreshTree();
 		if (newProfile && !newProfileIsSelected) {
-			this._tree.reveal(newProfile);
+			await this._tree.reveal(newProfile);
 			this._tree.select(newProfile);
 		}
 	}
@@ -416,7 +417,7 @@ export class ServerTreeView extends Disposable {
 
 	private checkIncludes(searchString: string, candidate: string): boolean {
 		if (candidate && searchString) {
-			return candidate.toLocaleUpperCase().includes(searchString);
+			return candidate.toLocaleUpperCase().indexOf(searchString) > -1;
 		}
 		return false;
 	}

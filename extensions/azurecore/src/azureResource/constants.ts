@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 export enum AzureResourceItemType {
 	account = 'azure.resource.itemType.account',
 	subscription = 'azure.resource.itemType.subscription',
@@ -14,6 +12,7 @@ export enum AzureResourceItemType {
 	databaseServer = 'azure.resource.itemType.databaseServer',
 	azureDataExplorerContainer = 'azure.resource.itemType.azureDataExplorerContainer',
 	azureDataExplorer = 'azure.resource.itemType.azureDataExplorer',
+	sqlInstance = 'azure.resource.itemType.sqlInstance',
 	message = 'azure.resource.itemType.message'
 }
 

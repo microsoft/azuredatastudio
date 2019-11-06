@@ -67,6 +67,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IURITransformerService } from 'vs/workbench/api/common/extHostUriTransformerService';
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitDataService';
+import { find } from 'vs/base/common/arrays';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -101,11 +102,11 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostTerminalService = rpcProtocol.set(ExtHostContext.ExtHostTerminalService, accessor.get(IExtHostTerminalService));
 	// const extHostDebugService = rpcProtocol.set(ExtHostContext.ExtHostDebugService, accessor.get(IExtHostDebugService)); {{SQL CARBON EDIT}} remove debug service
 	const extHostSearch = rpcProtocol.set(ExtHostContext.ExtHostSearch, accessor.get(IExtHostSearch));
-	const extHostTask = rpcProtocol.set(ExtHostContext.ExtHostTask, accessor.get(IExtHostTask));
+	// const extHostTask = rpcProtocol.set(ExtHostContext.ExtHostTask, accessor.get(IExtHostTask)); {{SQL CARBON EDIT}} remove tasks service
 	const extHostOutputService = rpcProtocol.set(ExtHostContext.ExtHostOutputService, accessor.get(IExtHostOutputService));
 
 	// manually create and register addressable instances
-	const extHostWebviews = rpcProtocol.set(ExtHostContext.ExtHostWebviews, new ExtHostWebviews(rpcProtocol, initData.environment));
+	const extHostWebviews = rpcProtocol.set(ExtHostContext.ExtHostWebviews, new ExtHostWebviews(rpcProtocol, initData.environment, extHostWorkspace));
 	const extHostUrls = rpcProtocol.set(ExtHostContext.ExtHostUrls, new ExtHostUrls(rpcProtocol));
 	const extHostDocuments = rpcProtocol.set(ExtHostContext.ExtHostDocuments, new ExtHostDocuments(rpcProtocol, extHostDocumentsAndEditors));
 	const extHostDocumentContentProviders = rpcProtocol.set(ExtHostContext.ExtHostDocumentContentProviders, new ExtHostDocumentContentProvider(rpcProtocol, extHostDocumentsAndEditors, extHostLogService));
@@ -127,7 +128,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	// Check that no named customers are missing
 	// {{SQL CARBON EDIT}} filter out the services we don't expose
 	const filtered: ProxyIdentifier<any>[] = [ExtHostContext.ExtHostDebugService, ExtHostContext.ExtHostTask];
-	const expected: ProxyIdentifier<any>[] = values(ExtHostContext).filter(v => !filtered.includes(v));
+	const expected: ProxyIdentifier<any>[] = values(ExtHostContext).filter(v => !find(filtered, x => x === v));
 	rpcProtocol.assertRegistered(expected);
 
 	// Other instances
@@ -249,15 +250,13 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			openExternal(uri: URI) {
 				return extHostWindow.openUri(uri, { allowTunneling: !!initData.remote.isRemote });
 			},
-			resolveExternalUri(uri: URI) {
-				checkProposedApiEnabled(extension);
-				return extHostWindow.resolveExternalUri(uri, { allowTunneling: !!initData.remote.isRemote });
+			asExternalUri(uri: URI) {
+				return extHostWindow.asExternalUri(uri, { allowTunneling: !!initData.remote.isRemote });
 			},
 			get remoteName() {
 				return getRemoteName(initData.remote.authority);
 			},
 			get uiKind() {
-				checkProposedApiEnabled(extension);
 				return initData.uiKind;
 			}
 		};
@@ -533,11 +532,11 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				return extHostTreeViews.createTreeView(viewId, options, extension);
 			},
 			registerWebviewPanelSerializer: (viewType: string, serializer: vscode.WebviewPanelSerializer) => {
-				return extHostWebviews.registerWebviewPanelSerializer(viewType, serializer);
+				return extHostWebviews.registerWebviewPanelSerializer(extension, viewType, serializer);
 			},
-			registerWebviewEditorProvider: (viewType: string, provider: vscode.WebviewEditorProvider) => {
+			registerWebviewEditorProvider: (viewType: string, provider: vscode.WebviewEditorProvider, options?: vscode.WebviewPanelOptions) => {
 				checkProposedApiEnabled(extension);
-				return extHostWebviews.registerWebviewEditorProvider(viewType, provider);
+				return extHostWebviews.registerWebviewEditorProvider(extension, viewType, provider, options);
 			},
 			registerDecorationProvider(provider: vscode.DecorationProvider) {
 				checkProposedApiEnabled(extension);
@@ -635,7 +634,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				const options = uriOrFileNameOrOptions as { language?: string; content?: string; };
 				if (typeof uriOrFileNameOrOptions === 'string') {
 					uriPromise = Promise.resolve(URI.file(uriOrFileNameOrOptions));
-				} else if (uriOrFileNameOrOptions instanceof URI) {
+				} else if (URI.isUri(uriOrFileNameOrOptions)) {
 					uriPromise = Promise.resolve(uriOrFileNameOrOptions);
 				} else if (!options || typeof options === 'object') {
 					uriPromise = extHostDocuments.createDocumentData(options);
@@ -675,7 +674,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				return extHostDocumentContentProviders.registerTextDocumentContentProvider(scheme, provider);
 			},
 			registerTaskProvider: (type: string, provider: vscode.TaskProvider) => {
-				return extHostTask.registerTaskProvider(extension, type, provider);
+				return undefined; // {{SQL CARBON EDIT}} disable task
 			},
 			registerFileSystemProvider(scheme, provider, options) {
 				return extHostFileSystem.registerFileSystemProvider(scheme, provider, options);
@@ -774,30 +773,30 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			}
 		};
 
-		const tasks: typeof vscode.tasks = {
+		const tasks: typeof vscode.tasks = { // {{SQL CARBON EDIT}} disable tasks api
 			registerTaskProvider: (type: string, provider: vscode.TaskProvider) => {
-				return extHostTask.registerTaskProvider(extension, type, provider);
+				return undefined;
 			},
 			fetchTasks: (filter?: vscode.TaskFilter): Thenable<vscode.Task[]> => {
-				return extHostTask.fetchTasks(filter);
+				return undefined;
 			},
 			executeTask: (task: vscode.Task): Thenable<vscode.TaskExecution> => {
-				return extHostTask.executeTask(extension, task);
+				return undefined;
 			},
 			get taskExecutions(): vscode.TaskExecution[] {
-				return extHostTask.taskExecutions;
+				return undefined;
 			},
 			onDidStartTask: (listeners, thisArgs?, disposables?) => {
-				return extHostTask.onDidStartTask(listeners, thisArgs, disposables);
+				return undefined;
 			},
 			onDidEndTask: (listeners, thisArgs?, disposables?) => {
-				return extHostTask.onDidEndTask(listeners, thisArgs, disposables);
+				return undefined;
 			},
 			onDidStartTaskProcess: (listeners, thisArgs?, disposables?) => {
-				return extHostTask.onDidStartTaskProcess(listeners, thisArgs, disposables);
+				return undefined;
 			},
 			onDidEndTaskProcess: (listeners, thisArgs?, disposables?) => {
-				return extHostTask.onDidEndTaskProcess(listeners, thisArgs, disposables);
+				return undefined;
 			}
 		};
 
@@ -850,7 +849,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			EndOfLine: extHostTypes.EndOfLine,
 			EventEmitter: Emitter,
 			ExtensionKind: extHostTypes.ExtensionKind,
-			CustomExecution2: extHostTypes.CustomExecution2,
+			CustomExecution: extHostTypes.CustomExecution,
 			FileChangeType: extHostTypes.FileChangeType,
 			FileSystemError: extHostTypes.FileSystemError,
 			FileType: files.FileType,
@@ -912,7 +911,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			CallHierarchyItem: extHostTypes.CallHierarchyItem,
 			DebugConsoleMode: extHostTypes.DebugConsoleMode,
 			Decoration: extHostTypes.Decoration,
-			WebviewEditorState: extHostTypes.WebviewEditorState,
+			WebviewContentState: extHostTypes.WebviewContentState,
 			UIKind: UIKind
 		};
 	};

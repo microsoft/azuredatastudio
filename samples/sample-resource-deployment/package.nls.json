@@ -1,0 +1,20 @@
+{
+	"extension-displayName": "Sample resource deployment extension for Azure Data Studio",
+	"extension-description": "You can contribute a resource deployment type without any coding",
+	"resource-type-display-name": "X Data Service",
+	"resource-type-description": "X Data Service provides a full set of features...",
+	"option-display-name": "Edition",
+	"option-value-name-1": "Evaluation",
+	"option-value-name-2": "Standard",
+	"dialog-title-1": "Start Evaluation of X Data Service",
+	"dialog-title-2": "Deploy X Data Service",
+	"deployment-notebook-1": "./notebooks/deploy-x-data-service-1.ipynb",
+	"deployment-notebook-2": "./notebooks/deploy-x-data-service-2.ipynb",
+	"text-field": "text field",
+	"password-field": "password field",
+	"number-field": "numeric field",
+	"confirm-password": "confirm password",
+	"agreement": "I accept {0} and {1}.",
+	"agreement-1-name": "Agreement 1",
+	"agreement-2-name": "Agreement 2"
+}

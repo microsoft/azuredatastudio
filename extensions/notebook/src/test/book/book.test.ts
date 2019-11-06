@@ -34,7 +34,7 @@ export function equalBookItems(book: BookTreeItem, expectedBook: ExpectedBookIte
 	}
 }
 
-describe.skip('BookTreeViewProviderTests', function() {
+describe('BookTreeViewProviderTests @UNSTABLE@', function() {
 
 	describe('BookTreeViewProvider.getChildren', function (): void {
 		let rootFolderPath: string;

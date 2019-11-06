@@ -9,7 +9,6 @@ import { IClipboardService } from 'sql/platform/clipboard/common/clipboardServic
 
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
-import { IWindowsService, FileFilter } from 'vs/platform/windows/common/windows';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
@@ -18,9 +17,10 @@ import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
 import { IInsightOptions } from 'sql/workbench/parts/charts/common/interfaces';
 import { IFileService } from 'vs/platform/files/common/files';
-import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IFileDialogService, FileFilter } from 'vs/platform/dialogs/common/dialogs';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { assign } from 'vs/base/common/objects';
 
 export interface IChartActionContext {
 	options: IInsightOptions;
@@ -51,7 +51,7 @@ export class CreateInsightAction extends Action {
 		let queryFile: string = uri.fsPath;
 		let query: string = undefined;
 		let type = {};
-		let options = Object.assign({}, context.options);
+		let options = assign({}, context.options);
 		delete options.type;
 		type[context.options.type] = options;
 		// create JSON

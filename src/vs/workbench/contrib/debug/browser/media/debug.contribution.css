@@ -14,6 +14,7 @@
 
 .debug-breakpoint-hint {
 	background: url('breakpoint-hint.svg') center center no-repeat;
+	cursor: pointer;
 }
 
 .debug-breakpoint-disabled,
@@ -50,7 +51,7 @@
 .monaco-editor .debug-breakpoint-placeholder::before,
 .monaco-editor .debug-top-stack-frame-column::before {
 	content: " ";
-	width: 1.3em;
+	width: 0.9em;
 	display: inline-block;
 	vertical-align: text-bottom;
 	margin-right: 2px;
@@ -62,9 +63,6 @@
 }
 
 .monaco-editor .inline-breakpoint-widget {
-	width: 1.3em;
-	height: 1.3em;
-	margin-left: 0.61em;
 	cursor: pointer;
 }
 
@@ -167,18 +165,18 @@
 
 /* Links */
 
-.monaco-workbench .monaco-list-row .expression .value a {
+.monaco-workbench .monaco-list-row .expression .value a.link {
 	text-decoration: underline;
 }
 
-.monaco-workbench .monaco-list-row .expression .value a.pointer {
+.monaco-workbench .monaco-list-row .expression .value a.link.pointer {
 	cursor: pointer;
 }
 
 /* White color when element is selected and list is focused. White looks better on blue selection background. */
 .monaco-workbench .monaco-list:focus .monaco-list-row.selected .expression .name,
 .monaco-workbench .monaco-list:focus .monaco-list-row.selected .expression .value {
-	color: white;
+	color: inherit;
 }
 
 .monaco-workbench .monaco-list-row .expression .name {

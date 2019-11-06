@@ -20,9 +20,10 @@ import { MODELVIEW_CONTAINER } from 'sql/workbench/parts/dashboard/browser/conta
 import { CONTROLHOST_CONTAINER } from 'sql/workbench/parts/dashboard/browser/containers/dashboardControlHostContainer.contribution';
 import { NAV_SECTION } from 'sql/workbench/parts/dashboard/browser/containers/dashboardNavSection.contribution';
 import { IDashboardContainerRegistry, Extensions as DashboardContainerExtensions } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
-import { SingleConnectionManagementService } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { SingleConnectionManagementService } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ILogService } from 'vs/platform/log/common/log';
+import { find } from 'vs/base/common/arrays';
 
 const dashboardcontainerRegistry = Registry.as<IDashboardContainerRegistry>(DashboardContainerExtensions.dashboardContainerContributions);
 const containerTypes = [
@@ -163,7 +164,7 @@ function hasCompatibleProvider(provider: string | string[], contextKeyService: I
 	const connectionProvider = contextKeyService.getContextKeyValue<string>(Constants.connectionProviderContextKey);
 	if (connectionProvider) {
 		const providers = (provider instanceof Array) ? provider : [provider];
-		const matchingProvider = providers.find((p) => p === connectionProvider || p === Constants.anyProviderName);
+		const matchingProvider = find(providers, (p) => p === connectionProvider || p === Constants.anyProviderName);
 		isCompatible = (matchingProvider !== undefined);
 	}	// Else there's no connection context so skip the check
 	return isCompatible;
@@ -173,9 +174,9 @@ function hasCompatibleProvider(provider: string | string[], contextKeyService: I
  * Get registered container if it is specified as the key
  * @param container dashboard container
  */
-export function getDashboardContainer(container: object, logService: ILogService): { result: boolean, message: string, container: object } {
+export function getDashboardContainer(container: object, logService: ILogService): { result: boolean, message: string, container: { [key: string]: any } } {
 	const key = Object.keys(container)[0];
-	const containerTypeFound = containerTypes.find(c => (c === key));
+	const containerTypeFound = find(containerTypes, c => (c === key));
 	if (!containerTypeFound) {
 		const dashboardContainer = dashboardcontainerRegistry.getRegisteredContainer(key);
 		if (!dashboardContainer) {
