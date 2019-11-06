@@ -8,12 +8,6 @@
 	flex-direction: row;
 	height: 100%;
 	width: 100%;
-	min-width: 500px;
-	min-height: 600px;
-}
-
-.modal.wide .dialogModal-body {
-	min-width: 800px;
 }
 
 .dialog-message-and-page-container {
@@ -33,8 +27,8 @@
 	flex-direction: column;
 	width: 100%;
 	height: 100%;
-	overflow-x: hidden;
-	overflow-y: scroll;
+	overflow-x: auto;
+	overflow-y: auto;
 }
 
 .dialogModal-hidden {
@@ -55,8 +49,7 @@
 	background-image: url("loading.svg");
 }
 
-.vs-dark .footer-button .validating,
-.hc-black .footer-button .validating {
+.vs-dark .footer-button .validating, .hc-black .footer-button .validating {
 	background-image: url("loading_inverse.svg");
 }
 

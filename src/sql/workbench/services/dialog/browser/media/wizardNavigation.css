@@ -8,6 +8,7 @@
 	flex-direction: column;
 	width: 80px;
 	height: 100%;
+	overflow: auto;
 }
 
 .hc-black .wizardNavigation-container {
