@@ -17,8 +17,6 @@ import { AzureResourceDatabaseServerProvider } from './azureResource/providers/d
 import { AzureResourceDatabaseServerService } from './azureResource/providers/databaseServer/databaseServerService';
 import { AzureResourceDatabaseProvider } from './azureResource/providers/database/databaseProvider';
 import { AzureResourceDatabaseService } from './azureResource/providers/database/databaseService';
-import { AzureResourceAzureDataExplorerProvider } from './azureResource/providers/AzureDataExplorer/azureDataExplorerProvider';
-import { AzureResourceAzureDataExplorerService } from './azureResource/providers/AzureDataExplorer/azureDataExplorerService';
 import { AzureResourceService } from './azureResource/resourceService';
 import { IAzureResourceCacheService, IAzureResourceAccountService, IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureResourceTenantService } from './azureResource/interfaces';
 import { AzureResourceServiceNames } from './azureResource/constants';
@@ -28,10 +26,11 @@ import { AzureResourceSubscriptionFilterService } from './azureResource/services
 import { AzureResourceCacheService } from './azureResource/services/cacheService';
 import { AzureResourceTenantService } from './azureResource/services/tenantService';
 import { registerAzureResourceCommands } from './azureResource/commands';
-import { registerAzureResourceAzureDataExplorerCommands } from './azureResource/providers/AzureDataExplorer/commands';
 import { AzureResourceTreeProvider } from './azureResource/tree/treeProvider';
 import { SqlInstanceResourceService } from './azureResource/providers/sqlinstance/sqlInstanceService';
 import { SqlInstanceProvider } from './azureResource/providers/sqlinstance/sqlInstanceProvider';
+import { KustoResourceService } from './azureResource/providers/kusto/kustoService';
+import { KustoProvider } from './azureResource/providers/kusto/kustoProvider';
 import { PostgresServerProvider } from './azureResource/providers/postgresServer/postgresServerProvider';
 import { PostgresServerService } from './azureResource/providers/postgresServer/postgresServerService';
 
@@ -82,7 +81,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			return [
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), apiWrapper, extensionContext),
 				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext),
-				new AzureResourceAzureDataExplorerProvider(new AzureResourceAzureDataExplorerService(), apiWrapper, extensionContext),
+				new KustoProvider(new KustoResourceService(), apiWrapper, extensionContext),
 				new SqlInstanceProvider(new SqlInstanceResourceService(), apiWrapper, extensionContext),
 				new PostgresServerProvider(new PostgresServerService(), apiWrapper, extensionContext)
 			];
