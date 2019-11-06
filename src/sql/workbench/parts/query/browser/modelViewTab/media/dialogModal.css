@@ -49,7 +49,8 @@
 	background-image: url("loading.svg");
 }
 
-.vs-dark .footer-button .validating, .hc-black .footer-button .validating {
+.vs-dark .footer-button .validating,
+.hc-black .footer-button .validating {
 	background-image: url("loading_inverse.svg");
 }
 
