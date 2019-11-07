@@ -38,7 +38,7 @@ export class SparkJobSubmissionModel {
 		private readonly _sqlClusterConnection: SqlClusterConnection,
 		private readonly _dialog: azdata.window.Dialog,
 		private readonly _appContext: AppContext,
-		requestService?: (args: any) => any) {
+		requestService?: typeof import('request-promise')) {
 
 		if (!this._sqlClusterConnection || !this._dialog || !this._appContext) {
 			throw new Error(localize('sparkJobSubmission.SparkJobSubmissionModelInitializeError',

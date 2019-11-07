@@ -240,7 +240,7 @@ export class HdfsFileSource implements IFileSource {
 	public readFile(path: string, maxBytes?: number): Promise<Buffer> {
 		return new Promise((resolve, reject) => {
 			let error: HdfsError = undefined;
-			let remoteFileStream = this.client.createReadStream(path);
+			let remoteFileStream: fs.ReadStream | meter.StreamMeter = this.client.createReadStream(path);
 			remoteFileStream.on('error', (err) => {
 				error = <HdfsError>err;
 				reject(error);
