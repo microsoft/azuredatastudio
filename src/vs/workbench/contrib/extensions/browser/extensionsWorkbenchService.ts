@@ -118,11 +118,15 @@ class Extension implements IExtension {
 	}
 
 	get url(): string | undefined {
+		// {{SQL CARBON EDIT}} - ADS doesn't have a marketplace website.
+		return undefined;
+		/*
 		if (!this.productService.extensionsGallery || !this.gallery) {
 			return undefined;
 		}
 
 		return `${this.productService.extensionsGallery.itemUrl}?itemName=${this.publisher}.${this.name}`;
+		*/
 	}
 
 	// {{SQL CARBON EDIT}}

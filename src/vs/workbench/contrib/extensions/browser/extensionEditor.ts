@@ -358,7 +358,7 @@ export class ExtensionEditor extends BaseEditor {
 		this.telemetryService.publicLog('extensionGallery:openExtension', assign(extension.telemetryData, recommendationsData));
 
 		toggleClass(template.name, 'clickable', !!extension.url);
-		toggleClass(template.publisher, 'clickable', !!extension.url);
+		toggleClass(template.publisher, 'clickable', !!extension.publisher); // {{SQL CARBON EDIT}} !!extension.url -> !!extension.publisher, for ADS we don't have marketplace website, but still want to make it clickable and filter extensions by publisher
 		toggleClass(template.rating, 'clickable', !!extension.url);
 		if (extension.url) {
 			this.transientDisposables.add(this.onClick(template.name, () => this.openerService.open(URI.parse(extension.url!))));
@@ -387,6 +387,16 @@ export class ExtensionEditor extends BaseEditor {
 			template.license.onclick = null;
 			template.license.style.display = 'none';
 		}
+
+		// copied from the the extension.url condition block above
+		// for ADS the extension.url will be empty but we still want to make the publisher text clickable and filter extensions by publisher
+
+		this.transientDisposables.add(this.onClick(template.publisher, () => {
+			this.viewletService.openViewlet(VIEWLET_ID, true)
+				.then(viewlet => viewlet as IExtensionsViewlet)
+				.then(viewlet => viewlet.search(`publisher:"${extension.publisherDisplayName}"`));
+		}));
+
 		// {{SQL CARBON EDIT}} - End
 
 		if (extension.repository) {
