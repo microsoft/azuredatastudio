@@ -34,6 +34,8 @@ steps:
     git config user.email "andresse@microsoft.com"
     git config user.name "AzureDataStudio"
 
+    git checkout serverupdate
+
     git remote add vsdistro https://github.com/microsoft/vscode-distro.git
     git fetch vsdistro
 
