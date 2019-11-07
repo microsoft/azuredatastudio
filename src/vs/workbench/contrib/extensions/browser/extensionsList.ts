@@ -73,7 +73,7 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 		const header = append(headerContainer, $('.header'));
 		const name = append(header, $('span.name'));
 		const version = append(header, $('span.version'));
-		// const installCount = append(header, $('span.install-count'));
+		// const installCount = append(header, $('span.install-count')); {{SQL CARBON EDIT}} no unused
 		const ratings = append(header, $('span.ratings'));
 		const headerRemoteBadgeWidget = this.instantiationService.createInstance(RemoteBadgeWidget, header, false);
 		const description = append(details, $('.description.ellipsis'));

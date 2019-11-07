@@ -96,7 +96,7 @@ export async function resolveCommonProperties(
 	return result;
 }
 
-/*function verifyMicrosoftInternalDomain(domainList: readonly string[]): boolean { {{SQL CARBON EDIT}} comment out function
+/*function verifyMicrosoftInternalDomain(domainList: readonly string[]): boolean { {{SQL CARBON EDIT}} comment out for no unused
 	if (!process || !process.env || !process.env['USERDNSDOMAIN']) {
 		return false;
 	}

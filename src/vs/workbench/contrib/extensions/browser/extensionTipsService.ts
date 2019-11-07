@@ -52,8 +52,8 @@ import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/
 
 const milliSecondsInADay = 1000 * 60 * 60 * 24;
 const choiceNever = localize('neverShowAgain', "Don't Show Again");
-// const searchMarketplace = localize('searchMarketplace', "Search Marketplace"); {{SQL CARBON EDIT}} comment out
-// const processedFileExtensions: string[] = []; {{SQL CARBON EDIT}} comment out
+// const searchMarketplace = localize('searchMarketplace', "Search Marketplace"); {{SQL CARBON EDIT}} comment out for no unused
+// const processedFileExtensions: string[] = []; {{SQL CARBON EDIT}} comment out for no unused
 
 interface IDynamicWorkspaceRecommendations {
 	remoteSet: string[];
@@ -97,7 +97,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 
 	constructor(
 		@IExtensionGalleryService private readonly _galleryService: IExtensionGalleryService,
-		// @IModelService private readonly _modelService: IModelService, {{SQL CARBON EDIT}} comment out
+		// @IModelService private readonly _modelService: IModelService, {{SQL CARBON EDIT}} comment out for no unused
 		@IStorageService private readonly storageService: IStorageService,
 		@IExtensionManagementService private readonly extensionsService: IExtensionManagementService,
 		@IExtensionEnablementService private readonly extensionEnablementService: IExtensionEnablementService,
@@ -107,13 +107,13 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService,
-		// @IExtensionService private readonly extensionService: IExtensionService, {{SQL CARBON EDIT}} comment out
+		// @IExtensionService private readonly extensionService: IExtensionService, {{SQL CARBON EDIT}} comment out for no unused
 		@IRequestService private readonly requestService: IRequestService,
-		// @IViewletService private readonly viewletService: IViewletService, {{SQL CARBON EDIT}} comment out
+		// @IViewletService private readonly viewletService: IViewletService, {{SQL CARBON EDIT}} comment out for no unused
 		@INotificationService private readonly notificationService: INotificationService,
 		@IExtensionManagementService private readonly extensionManagementService: IExtensionManagementService,
-		// @IExtensionsWorkbenchService private readonly extensionWorkbenchService: IExtensionsWorkbenchService, {{SQL CARBON EDIT}} comment out
-		// @IExperimentService private readonly experimentService: IExperimentService, {{SQL CARBON EDIT}} comment out
+		// @IExtensionsWorkbenchService private readonly extensionWorkbenchService: IExtensionsWorkbenchService, {{SQL CARBON EDIT}} comment out for no unused
+		// @IExperimentService private readonly experimentService: IExperimentService, {{SQL CARBON EDIT}} comment out for no unused
 		@IAdsTelemetryService private readonly adsTelemetryService: IAdsTelemetryService, // {{SQL CARBON EDIT}}
 		@IWorkspaceStatsService private readonly workspaceStatsService: IWorkspaceStatsService,
 		@IProductService private readonly productService: IProductService
@@ -709,7 +709,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	 * Prompt the user to either install the recommended extension for the file type in the current editor model
 	 * or prompt to search the marketplace if it has extensions that can support the file type
 	 */
-	/*private promptFiletypeBasedRecommendations(model: ITextModel): void { {{SQL CARBON EDIT}} comment out
+	/*private promptFiletypeBasedRecommendations(model: ITextModel): void { {{SQL CARBON EDIT}} comment out for no unused
 		const uri = model.uri;
 		if (!uri || !this.fileService.canHandleResource(uri)) {
 			return;
@@ -778,7 +778,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 		});
 	}*/
 
-	/*private async promptRecommendedExtensionForFileType(recommendationsToSuggest: string[], installed: ILocalExtension[]): Promise<boolean> { {{SQL CARBON EDIT}} comment out
+	/*private async promptRecommendedExtensionForFileType(recommendationsToSuggest: string[], installed: ILocalExtension[]): Promise<boolean> { {{SQL CARBON EDIT}} comment out for no unused
 
 		recommendationsToSuggest = this.filterIgnoredOrNotAllowed(recommendationsToSuggest);
 		if (recommendationsToSuggest.length === 0) {
@@ -871,7 +871,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 		return true;
 	}*/
 
-	/*private async promptRecommendedExtensionForFileExtension(fileExtension: string, installed: ILocalExtension[]): Promise<void> {
+	/*private async promptRecommendedExtensionForFileExtension(fileExtension: string, installed: ILocalExtension[]): Promise<void> { {{SQL CARBON EDIT}} no unused
 		const fileExtensionSuggestionIgnoreList = <string[]>JSON.parse(this.storageService.get('extensionsAssistant/fileExtensionsSuggestionIgnore', StorageScope.GLOBAL, '[]'));
 		if (fileExtensionSuggestionIgnoreList.indexOf(fileExtension) > -1) {
 			return;

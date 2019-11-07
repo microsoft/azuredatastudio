@@ -33,7 +33,7 @@ export class SelectColorThemeAction extends Action {
 		label: string,
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
 		@IWorkbenchThemeService private readonly themeService: IWorkbenchThemeService,
-		// @IExtensionGalleryService private readonly extensionGalleryService: IExtensionGalleryService,
+		// @IExtensionGalleryService private readonly extensionGalleryService: IExtensionGalleryService, {{SQL CARBON EDIT}} no unused
 		@IViewletService private readonly viewletService: IViewletService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
@@ -106,7 +106,7 @@ class SelectIconThemeAction extends Action {
 		label: string,
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
 		@IWorkbenchThemeService private readonly themeService: IWorkbenchThemeService,
-		// @IExtensionGalleryService private readonly extensionGalleryService: IExtensionGalleryService,
+		// @IExtensionGalleryService private readonly extensionGalleryService: IExtensionGalleryService, {{SQL CARBON EDIT}} no unused
 		@IViewletService private readonly viewletService: IViewletService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
 
@@ -166,7 +166,7 @@ class SelectIconThemeAction extends Action {
 	}
 }
 
-/*function configurationEntries(extensionGalleryService: IExtensionGalleryService, label: string): QuickPickInput<ThemeItem>[] { {{SQL CARBON EDIT}} comment out function
+/*function configurationEntries(extensionGalleryService: IExtensionGalleryService, label: string): QuickPickInput<ThemeItem>[] { {{SQL CARBON EDIT}} comment out function for no unused
 	if (extensionGalleryService.isEnabled()) {
 		return [
 			{

@@ -36,7 +36,7 @@ import { IElectronEnvironmentService } from 'vs/workbench/services/electron/elec
 
 const CONTEXT_UPDATE_STATE = new RawContextKey<string>('updateState', StateType.Uninitialized);
 
-/*let releaseNotesManager: ReleaseNotesManager | undefined = undefined; {{SQL CARBON EDIT}} comment out
+/*let releaseNotesManager: ReleaseNotesManager | undefined = undefined; {{SQL CARBON EDIT}} comment out for no unused
 
 function showReleaseNotes(instantiationService: IInstantiationService, version: string) {
 	if (!releaseNotesManager) {
@@ -69,7 +69,7 @@ export abstract class AbstractShowReleaseNotesAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		/*private */version: string,
+		/*private */version: string, // {{SQL CARBON EDIT}} no unused
 		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super(id, label, undefined, true);
