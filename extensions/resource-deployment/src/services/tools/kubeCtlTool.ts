@@ -65,7 +65,7 @@ export class KubeCtlTool extends ToolBase {
 	protected async getSearchPaths(): Promise<string[]> {
 		switch (this.osType) {
 			case OsType.win32:
-				return [this.storagePath];
+				return [await this.getStoragePath()];
 			default:
 				return [defaultInstallationRoot];
 		}
