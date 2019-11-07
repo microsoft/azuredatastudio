@@ -8,6 +8,9 @@ schedules:
     include:
     - serverupdate
 
+trigger: none
+pr: none
+
 steps:
 - task: NodeTool@0
   inputs:
