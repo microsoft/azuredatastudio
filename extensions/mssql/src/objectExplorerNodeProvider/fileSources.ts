@@ -106,10 +106,11 @@ export interface IFileSource {
 	exists(path: string): Promise<boolean>;
 }
 
-export interface IHttpAuthentication {
+interface IHttpAuthentication {
 	user: string;
 	pass: string;
 }
+
 export interface IHdfsOptions {
 	host?: string;
 	port?: number;
@@ -176,7 +177,7 @@ export class FileSourceFactory {
 	}
 }
 
-export class HdfsFileSource implements IFileSource {
+class HdfsFileSource implements IFileSource {
 	private mounts: Map<string, Mount>;
 	constructor(private client: WebHDFS) {
 	}

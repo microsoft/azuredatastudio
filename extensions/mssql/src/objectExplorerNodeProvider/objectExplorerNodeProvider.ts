@@ -233,7 +233,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 	}
 }
 
-export class SqlClusterSession {
+class SqlClusterSession {
 	private _rootNode: SqlClusterRootNode;
 
 	constructor(

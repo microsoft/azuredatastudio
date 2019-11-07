@@ -30,13 +30,13 @@ const resolveBookResources = (extension: vscode.Extension<any>, books: BookContr
 	return result;
 };
 
-export interface BookContribution {
+interface BookContribution {
 	name: string;
 	path: string;
 	when?: string;
 }
 
-export namespace BookContributions {
+namespace BookContributions {
 
 	export function merge(a: BookContribution[], b: BookContribution[]): BookContribution[] {
 		if (!a) {

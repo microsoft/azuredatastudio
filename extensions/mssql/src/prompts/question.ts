@@ -42,12 +42,6 @@ export interface INameValueChoice {
 	value: any;
 }
 
-// Generic object that can be used to define a set of questions and handle the result
-export interface IQuestionHandler {
-	// Set of questions to be answered
-	questions: IQuestion[];
-}
-
 export interface IPrompter {
 	promptSingle<T>(question: IQuestion, ignoreFocusOut?: boolean): Promise<T>;
 	/**
