@@ -167,10 +167,10 @@ export class ExtensionHostConnection {
 			this._log(`<${pid}> Launched Extension Host Process.`);
 
 			// Catch all output coming from the extension host process
-			this._extensionHostProcess.stdout.setEncoding('utf8');
-			this._extensionHostProcess.stderr.setEncoding('utf8');
-			const onStdout = Event.fromNodeEventEmitter<string>(this._extensionHostProcess.stdout, 'data');
-			const onStderr = Event.fromNodeEventEmitter<string>(this._extensionHostProcess.stderr, 'data');
+			this._extensionHostProcess.stdout!.setEncoding('utf8');
+			this._extensionHostProcess.stderr!.setEncoding('utf8');
+			const onStdout = Event.fromNodeEventEmitter<string>(this._extensionHostProcess.stdout!, 'data');
+			const onStderr = Event.fromNodeEventEmitter<string>(this._extensionHostProcess.stderr!, 'data');
 			onStdout((e) => console.log(`EXTHOST-STDOUT::::::::` + e));
 			onStderr((e) => console.log(`EXTHOST-STDERR::::::::` + e));
 

@@ -1,0 +1,44 @@
+trigger:
+  branches:
+    include: ['master', 'release/*']
+pr:
+  branches:
+    include: ['master', 'release/*']
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: "10.15.1"
+
+- task: AzureKeyVault@1
+  displayName: 'Azure Key Vault: Get Secrets'
+  inputs:
+    azureSubscription: 'azuredatastudio-adointegration'
+    KeyVaultName: ado-secrets
+
+- script: |
+    set -e
+
+    cat << EOF > ~/.netrc
+    machine github.com
+    login vscode
+    password $(github-distro-mixin-password)
+    EOF
+
+    git config user.email "andresse@microsoft.com"
+    git config user.name "AzureDataStudio"
+
+    git remote add vsdistro https://github.com/microsoft/vscode-distro.git
+    git fetch vsdistro
+
+    git checkout vsdistro/distro -- src/vs/server
+
+    git apply --ignore-space-change --ignore-whitespace build/patches/server.patch
+
+    git add -A
+    git commit -m "update vscode server";
+
+    git checkout distro
+    git merge serverupdate
+
+  displayName: Sync & Merge Distro
