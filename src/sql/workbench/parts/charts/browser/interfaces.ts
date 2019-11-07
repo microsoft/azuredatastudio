@@ -6,7 +6,6 @@
 import { Dimension } from 'vs/base/browser/dom';
 import { mixin } from 'sql/base/common/objects';
 import * as types from 'vs/base/common/types';
-import { Color } from 'vs/base/common/color';
 import { IInsightOptions, InsightType, ChartType } from 'sql/workbench/parts/charts/common/interfaces';
 
 export interface IPointDataSet {

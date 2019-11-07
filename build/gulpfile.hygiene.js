@@ -246,6 +246,7 @@ const tslintHygieneFilter = [
 	'src/**/*.ts',
 	'test/**/*.ts',
 	'extensions/**/*.ts',
+	'!src/vs/workbench/contrib/extensions/browser/extensionTipsService.ts', // {{SQL CARBON EDIT}} known formatting issue do to commenting out code
 	...tslintBaseFilter
 ];
 

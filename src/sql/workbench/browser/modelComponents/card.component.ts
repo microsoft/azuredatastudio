@@ -186,7 +186,7 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		this._changeRef.detectChanges();
 	}
 
-	private onDidActionClick(action: ActionDescriptor): void {
+	public onDidActionClick(action: ActionDescriptor): void {
 		this.fireEvent({
 			eventType: ComponentEventType.onDidClick,
 			args: action

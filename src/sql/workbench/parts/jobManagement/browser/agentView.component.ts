@@ -10,7 +10,6 @@ import { Component, Inject, forwardRef, ChangeDetectorRef, ViewChild, Injectable
 import { AgentJobInfo, AgentNotebookInfo } from 'azdata';
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
-import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 
 
 export const DASHBOARD_SELECTOR: string = 'agentview-component';
@@ -40,14 +39,13 @@ export class AgentViewComponent {
 	public proxiesIconClass: string = 'proxiesview-icon';
 	public operatorsIconClass: string = 'operatorsview-icon';
 
-	private readonly jobsComponentTitle: string = nls.localize('jobview.Jobs', "Jobs");
-	private readonly notebooksComponentTitle: string = nls.localize('jobview.Notebooks', "Notebooks");
-	private readonly alertsComponentTitle: string = nls.localize('jobview.Alerts', "Alerts");
-	private readonly proxiesComponentTitle: string = nls.localize('jobview.Proxies', "Proxies");
-	private readonly operatorsComponentTitle: string = nls.localize('jobview.Operators', "Operators");
+	public readonly jobsComponentTitle: string = nls.localize('jobview.Jobs', "Jobs");
+	public readonly notebooksComponentTitle: string = nls.localize('jobview.Notebooks', "Notebooks");
+	public readonly alertsComponentTitle: string = nls.localize('jobview.Alerts', "Alerts");
+	public readonly proxiesComponentTitle: string = nls.localize('jobview.Proxies', "Proxies");
+	public readonly operatorsComponentTitle: string = nls.localize('jobview.Operators', "Operators");
 
-	// tslint:disable-next-line:no-unused-variable
-	private readonly panelOpt: IPanelOptions = {
+	public readonly panelOpt: IPanelOptions = {
 		showTabsWhenOne: true,
 		layout: NavigationBarLayout.vertical,
 		showIcon: true
@@ -55,8 +53,7 @@ export class AgentViewComponent {
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(IJobManagementService) jobManagementService: IJobManagementService,
-		@Inject(IDashboardService) dashboardService: IDashboardService, ) {
+		@Inject(IJobManagementService) jobManagementService: IJobManagementService) {
 		this._expanded = new Map<string, string>();
 
 		let self = this;

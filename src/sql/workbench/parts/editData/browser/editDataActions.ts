@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Action, IActionViewItem, IActionRunner } from 'vs/base/common/actions';
-import { DisposableStore, Disposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -133,7 +133,6 @@ export class ChangeMaxRowsAction extends EditDataAction {
 	public static ID = 'changeMaxRowsAction';
 
 	constructor(editor: EditDataEditor,
-		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IConnectionManagementService _connectionManagementService: IConnectionManagementService
 	) {
 		super(editor, ChangeMaxRowsAction.ID, undefined, _connectionManagementService);
@@ -158,7 +157,6 @@ export class ChangeMaxRowsActionItem extends Disposable implements IActionViewIt
 	private container: HTMLElement;
 	private start: HTMLElement;
 	private selectBox: SelectBox;
-	private context: any;
 	private _options: string[];
 	private _currentOptionsIndex: number;
 
@@ -183,7 +181,6 @@ export class ChangeMaxRowsActionItem extends Disposable implements IActionViewIt
 	}
 
 	public setActionContext(context: any): void {
-		this.context = context;
 	}
 
 	public isEnabled(): boolean {
@@ -235,7 +232,6 @@ export class ShowQueryPaneAction extends EditDataAction {
 	private readonly closeSqlLabel = nls.localize('editData.closeSql', "Close SQL Pane");
 
 	constructor(editor: EditDataEditor,
-		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IConnectionManagementService _connectionManagementService: IConnectionManagementService
 	) {
 		super(editor, ShowQueryPaneAction.ID, ShowQueryPaneAction.EnabledClass, _connectionManagementService);

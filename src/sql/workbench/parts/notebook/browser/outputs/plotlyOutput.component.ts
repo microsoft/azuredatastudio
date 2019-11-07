@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { OnInit, Component, Input, Inject, ElementRef, ViewChild } from '@angular/core';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { OnInit, Component, Input, ElementRef, ViewChild } from '@angular/core';
 import { localize } from 'vs/nls';
 import * as types from 'vs/base/common/types';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
@@ -54,9 +53,7 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 	private _plotDiv: PlotlyHTMLElement;
 	public errorText: string;
 
-	constructor(
-		@Inject(IThemeService) private readonly themeService: IThemeService
-	) {
+	constructor() {
 		super();
 	}
 

@@ -78,7 +78,7 @@ export abstract class Task {
 	private readonly _iconClass?: string;
 	private readonly _description?: ITaskHandlerDescription;
 
-	constructor(private opts: ITaskOptions) {
+	constructor(opts: ITaskOptions) {
 		this.id = opts.id;
 		this.title = opts.title;
 		if (opts.iconPath) {
