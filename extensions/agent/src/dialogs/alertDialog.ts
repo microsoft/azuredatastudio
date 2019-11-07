@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import { AgentDialog } from './agentDialog';
@@ -112,7 +110,6 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private static readonly IncludeErrorInEmailCheckBoxLabel: string = localize('alertDialog.IncludeErrorInEmail', "Include alert error text in e-mail");
 	private static readonly IncludeErrorInPagerCheckBoxLabel: string = localize('alertDialog.IncludeErrorInPager', "Include alert error text in pager");
 	private static readonly AdditionalMessageTextBoxLabel: string = localize('alertDialog.AdditionalNotification', "Additional notification message to send");
-	private static readonly DelayBetweenResponsesTextBoxLabel: string = localize('alertDialog.DelayBetweenResponse', "Delay between responses");
 	private static readonly DelayMinutesTextBoxLabel: string = localize('alertDialog.DelayMinutes', "Delay Minutes");
 	private static readonly DelaySecondsTextBoxLabel: string = localize('alertDialog.DelaySeconds', "Delay Seconds");
 
@@ -526,7 +523,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		return severityNumber;
 	}
 
-	protected updateModel() {
+	protected async updateModel(): Promise<void> {
 		this.model.name = this.nameTextBox.value;
 		this.model.isEnabled = this.enabledCheckBox.checked;
 		this.model.jobId = this.jobId;

@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
@@ -60,7 +59,7 @@ export class ExtractConfigPage extends DacFxConfigPage {
 		return true;
 	}
 
-	public setupNavigationValidator() {
+	public setupNavigationValidator(): void {
 		this.instance.registerNavigationValidator(() => {
 			if (this.databaseLoader.loading) {
 				return false;

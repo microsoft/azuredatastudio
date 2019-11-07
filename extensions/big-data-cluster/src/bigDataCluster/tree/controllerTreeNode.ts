@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
@@ -129,7 +127,7 @@ export class ControllerRootNode extends ControllerTreeNode {
 		}
 	}
 
-	public deleteControllerNode(url: string, auth: AuthType, username: string): ControllerNode {
+	public deleteControllerNode(url: string, auth: AuthType, username: string): ControllerNode[] {
 		if (!url || (auth === 'basic' && !username)) {
 			return undefined;
 		}
@@ -169,7 +167,7 @@ export class ControllerNode extends ControllerTreeNode {
 		this.description = description;
 	}
 
-	public async getChildren(): Promise<ControllerTreeNode[]> {
+	public async getChildren(): Promise<ControllerTreeNode[] | undefined> {
 		if (this.children && this.children.length > 0) {
 			this.clearChildren();
 		}
@@ -178,11 +176,12 @@ export class ControllerNode extends ControllerTreeNode {
 			vscode.commands.executeCommand('bigDataClusters.command.addController', this);
 			return this.children as ControllerTreeNode[];
 		}
+		return undefined;
 	}
 
-	public static toIpAndPort(url: string): string {
+	public static toIpAndPort(url: string): string | undefined {
 		if (!url) {
-			return;
+			return undefined;
 		}
 		return url.trim().replace(/ /g, '').replace(/^.+\:\/\//, '');
 	}
@@ -245,4 +244,3 @@ export class ControllerNode extends ControllerTreeNode {
 function isControllerMatch(node: ControllerNode, url: string, auth: string, username: string): unknown {
 	return node.url === url && node.auth === auth && node.username === username;
 }
-

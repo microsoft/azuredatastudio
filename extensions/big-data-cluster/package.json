@@ -153,6 +153,7 @@
 		}
 	},
 	"dependencies": {
+		"@types/request": "^2.48.3",
 		"kerberos": "^1.1.3",
 		"request": "^2.88.0",
 		"vscode-nls": "^4.0.0"

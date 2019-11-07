@@ -192,7 +192,7 @@ export class BdcDashboard extends BdcDashboardPage {
 	 * @param serviceName The name of the service to switch to the tab of
 	 */
 	public switchToServiceTab(serviceName: string): void {
-		const tabPageMapping = this.serviceTabPageMapping[serviceName];
+		const tabPageMapping = this.serviceTabPageMapping.get(serviceName);
 		if (!tabPageMapping) {
 			return;
 		}
@@ -213,7 +213,7 @@ export class BdcDashboard extends BdcDashboardPage {
 		if (services) {
 			// Add a nav item for each service
 			services.forEach(s => {
-				const existingTabPage = this.serviceTabPageMapping[s.serviceName];
+				const existingTabPage = this.serviceTabPageMapping.get(s.serviceName);
 				if (existingTabPage) {
 					// We've already created the tab and page for this service, just update the tab health status dot
 					existingTabPage.navTab.dot.value = getHealthStatusDot(s.healthStatus);
@@ -221,7 +221,7 @@ export class BdcDashboard extends BdcDashboardPage {
 					// New service - create the page and tab
 					const navItem = createServiceNavTab(this.modelView.modelBuilder, s);
 					const serviceStatusPage = new BdcServiceStatusPage(s.serviceName, this.model, this.modelView).container;
-					this.serviceTabPageMapping[s.serviceName] = { navTab: navItem, servicePage: serviceStatusPage };
+					this.serviceTabPageMapping.set(s.serviceName, { navTab: navItem, servicePage: serviceStatusPage });
 					navItem.div.onDidClick(() => {
 						this.switchToServiceTab(s.serviceName);
 					});

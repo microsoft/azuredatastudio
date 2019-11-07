@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
@@ -156,14 +154,14 @@ async function lookupController(explorerContext?: azdata.ObjectExplorerContext):
 }
 
 function addBdcController(treeDataProvider: ControllerTreeDataProvider, node?: TreeNode): void {
-	let model = new AddControllerDialogModel(treeDataProvider, node);
+	let model = new AddControllerDialogModel(treeDataProvider, node as ControllerNode);
 	let dialog = new AddControllerDialog(model);
 	dialog.showDialog();
 }
 
-async function deleteBdcController(treeDataProvider: ControllerTreeDataProvider, node: TreeNode): Promise<boolean> {
+async function deleteBdcController(treeDataProvider: ControllerTreeDataProvider, node: TreeNode): Promise<boolean | undefined> {
 	if (!node && !(node instanceof ControllerNode)) {
-		return;
+		return undefined;
 	}
 
 	let controllerNode = node as ControllerNode;

@@ -22,7 +22,7 @@ function convertCredsToJson(creds: string): { credentials: {} } {
 	if (!creds) {
 		return undefined;
 	}
-	let credObj = { 'credentials': {} };
+	let credObj: { 'credentials': { [key: string]: any } } = { 'credentials': {} };
 	let pairs = creds.split(',');
 	let validPairs: string[] = [];
 	for (let i = 0; i < pairs.length; i++) {

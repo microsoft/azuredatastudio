@@ -15,10 +15,7 @@
 			"./node_modules/@types"
 		],
 		"strict": false,
-		"noImplicitAny": false,
 		"noUnusedParameters": false,
-		"noImplicitReturns": false,
-		"noUnusedLocals": false,
 	},
 	"exclude": [
 		"node_modules"

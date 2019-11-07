@@ -73,7 +73,7 @@ export function showErrorMessage(error: any, prefixText?: string): void {
  * Mappings of the different expected state values to their localized friendly names.
  * These are defined in aris/projects/controller/src/Microsoft.SqlServer.Controller/StateMachines
  */
-const stateToDisplayTextMap = {
+const stateToDisplayTextMap: { [key: string]: string } = {
 	// K8sScaledSetStateMachine
 	'creating': localize('state.creating', "Creating"),
 	'waiting': localize('state.waiting', "Waiting"),
@@ -287,5 +287,3 @@ export function getIgnoreSslVerificationConfigSetting(): boolean {
 	}
 	return true;
 }
-
-

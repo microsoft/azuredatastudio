@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { DacFxDataModel } from '../api/models';
@@ -65,7 +64,7 @@ export class DacFxSummaryPage extends BasePage {
 		return true;
 	}
 
-	public setupNavigationValidator() {
+	public setupNavigationValidator(): void {
 		this.instance.registerNavigationValidator(() => {
 			if (this.loader.loading) {
 				return false;

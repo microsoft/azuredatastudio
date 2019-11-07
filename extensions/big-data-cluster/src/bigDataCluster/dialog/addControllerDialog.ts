@@ -3,17 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { ClusterController, ControllerError } from '../controller/clusterControllerApi';
 import { ControllerTreeDataProvider } from '../tree/controllerTreeDataProvider';
-import { TreeNode } from '../tree/treeNode';
 import { AuthType } from '../constants';
 import { ManageControllerCommand } from '../../extension';
 import { BdcDashboardOptions } from './bdcDashboardModel';
+import { ControllerNode } from '../tree/controllerTreeNode';
 
 const localize = nls.loadMessageBundle();
 
@@ -33,7 +31,7 @@ export class AddControllerDialogModel {
 	private _authTypes: azdata.CategoryValue[];
 	constructor(
 		public treeDataProvider: ControllerTreeDataProvider,
-		public node?: TreeNode,
+		public node?: ControllerNode,
 		public prefilledUrl?: string,
 		public prefilledAuth?: azdata.CategoryValue,
 		public prefilledUsername?: string,
