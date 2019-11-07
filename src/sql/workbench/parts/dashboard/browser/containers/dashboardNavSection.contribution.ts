@@ -85,12 +85,12 @@ function createCSSRuleForIcon(icon: IUserFriendlyIcon, extension: IExtensionPoin
 		iconClass = ids.nextId();
 		if (typeof icon === 'string') {
 			const path = resources.joinPath(extension.description.extensionLocation, icon);
-			createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(path)}`);
+			createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(path)}`);
 		} else {
 			const light = resources.joinPath(extension.description.extensionLocation, icon.light);
 			const dark = resources.joinPath(extension.description.extensionLocation, icon.dark);
-			createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(light)}`);
-			createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: ${asCSSUrl(dark)}`);
+			createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(light)}`);
+			createCSSRule(`.vs-dark .codicon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(dark)}`);
 		}
 	}
 	return iconClass;
