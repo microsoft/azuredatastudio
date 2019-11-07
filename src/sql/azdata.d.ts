@@ -3238,6 +3238,9 @@ declare module 'azdata' {
 
 	export interface LoadingComponentProperties {
 		loading?: boolean;
+		showText?: boolean;
+		loadingText?: string;
+		loadingCompletedText?: string;
 	}
 
 	export interface DivContainerProperties extends ComponentProperties {
