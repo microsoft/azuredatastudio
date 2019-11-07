@@ -14,7 +14,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/agentView.component';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { EditAlertAction, DeleteAlertAction, NewAlertAction } from 'sql/platform/jobManagement/browser/jobActions';
-import { JobManagementView, JobActionContext } from 'sql/workbench/parts/jobManagement/browser/jobManagementView';
+import { JobManagementView } from 'sql/workbench/parts/jobManagement/browser/jobManagementView';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -58,7 +58,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 	};
 
 	private dataView: any;
-	private _isCloud: boolean;
+	public _isCloud: boolean;
 	private _alertsCacheObject: AlertsCacheObject;
 
 	private _didTabChange: boolean;
@@ -69,7 +69,6 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(ICommandService) private _commandService: ICommandService,

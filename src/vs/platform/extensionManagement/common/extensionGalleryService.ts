@@ -673,8 +673,8 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					if (result) {
 						const r = result.results[0];
 						const galleryExtensions = r.extensions;
-						const resultCount = r.resultMetadata && r.resultMetadata.filter(m => m.metadataType === 'ResultCount')[0];
-						const total = resultCount && resultCount.metadataItems.filter(i => i.name === 'TotalCount')[0].count || 0;
+						// const resultCount = r.resultMetadata && r.resultMetadata.filter(m => m.metadataType === 'ResultCount')[0]; {{SQL CARBON EDIT}} comment out for no unused
+						// const total = resultCount && resultCount.metadataItems.filter(i => i.name === 'TotalCount')[0].count || 0; {{SQL CARBON EDIT}} comment out for no unused
 
 						// {{SQL CARBON EDIT}}
 						let filteredExtensionsResult = this.createQueryResult(query, galleryExtensions);

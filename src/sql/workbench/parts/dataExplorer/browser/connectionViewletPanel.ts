@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/connectionViewletPanel';
 import * as DOM from 'vs/base/browser/dom';
-import { IDisposable } from 'vs/base/common/lifecycle';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

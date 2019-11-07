@@ -6,7 +6,7 @@
 import 'vs/css!./media/jobStepsView';
 import * as nls from 'vs/nls';
 import * as dom from 'vs/base/browser/dom';
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
+import { OnInit, Component, Inject, forwardRef, ElementRef, ViewChild, AfterContentChecked } from '@angular/core';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
@@ -44,8 +44,6 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 	@ViewChild('table') private _tableContainer: ElementRef;
 
 	constructor(
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => JobHistoryComponent)) private _jobHistoryComponent: JobHistoryComponent,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,

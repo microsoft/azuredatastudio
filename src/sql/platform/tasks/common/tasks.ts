@@ -10,7 +10,6 @@ import { ILocalizedString, ICommandAction } from 'vs/platform/actions/common/act
 import { Event } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { IdGenerator } from 'vs/base/common/idGenerator';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 
 export interface ITaskOptions {

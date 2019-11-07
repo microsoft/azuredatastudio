@@ -42,10 +42,8 @@ suite('MainThreadNotebook Tests', () => {
 
 	suite('On registering a provider', () => {
 		let provider: INotebookProvider;
-		let registeredProviderId: string;
 		setup(() => {
 			mockNotebookService.setup(s => s.registerProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((id, providerImpl) => {
-				registeredProviderId = id;
 				provider = providerImpl;
 			});
 		});

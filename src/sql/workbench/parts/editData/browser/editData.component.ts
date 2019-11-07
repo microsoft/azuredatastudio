@@ -55,8 +55,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	// All datasets
 	private dataSet: IGridDataSet;
 	private firstRender = true;
-	private totalElapsedTimeSpan: number;
-	private complete = false;
 	// Current selected cell state
 	private currentCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
 	private currentEditCellValue: string;
@@ -153,8 +151,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		self.placeHolderDataSets = [];
 		self.renderedDataSets = self.placeHolderDataSets;
 		this._cd.detectChanges();
-		self.totalElapsedTimeSpan = undefined;
-		self.complete = false;
 
 		// Hooking up edit functions
 		this.onIsCellEditValid = (row, column, value): boolean => {
@@ -318,8 +314,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	}
 
 	handleComplete(self: EditDataComponent, event: any): void {
-		self.totalElapsedTimeSpan = event.data;
-		self.complete = true;
 	}
 
 	handleEditSessionReady(self, event): void {
@@ -441,8 +435,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 	protected tryHandleKeyEvent(e: StandardKeyboardEvent): boolean {
 		let handled: boolean = false;
-		// If the esc key was pressed while in a create session
-		let currentNewRowIndex = this.dataSet.totalRows - 2;
 
 		if (e.keyCode === KeyCode.Escape) {
 			this.revertCurrentRow();

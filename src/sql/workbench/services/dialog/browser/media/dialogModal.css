@@ -71,6 +71,13 @@
 	font-weight: bold;
 }
 
+.dialogContainer .dialogModal-wizardHeader h1.wizardPageNumber {
+	margin-block-start: 0px;
+	margin-block-end: 0px;
+	font-weight: normal;
+	font-size: 11px;
+}
+
 .dialogContainer {
 	display: flex;
 	flex-direction: column;

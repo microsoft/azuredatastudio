@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/qp';
 
-import { ElementRef, Component, Inject, forwardRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ElementRef, Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as QP from 'html-query-plan';
 
 import { IQueryPlanParams, IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
@@ -30,7 +30,6 @@ export class QueryPlanComponent implements OnDestroy, OnInit {
 	@ViewChild('container', { read: ElementRef }) _container: ElementRef;
 
 	constructor(
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(IBootstrapParams) private _params: IQueryPlanParams
 	) { }
 

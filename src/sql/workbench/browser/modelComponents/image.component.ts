@@ -65,7 +65,7 @@ export default class ImageComponent extends ComponentWithIconBase implements ICo
 	/**
 	 * Helper to get the size string for the background-size CSS property
 	 */
-	private getImageSize(): string {
+	public getImageSize(): string {
 		return `${this.getIconWidth()} ${this.getIconHeight()}`;
 	}
 }

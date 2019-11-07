@@ -73,7 +73,7 @@ const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.Noteb
 
 class ProviderDescriptor {
 	private _instanceReady = new Deferred<INotebookProvider>();
-	constructor(private providerId: string, private _instance?: INotebookProvider) {
+	constructor(private _instance?: INotebookProvider) {
 		if (_instance) {
 			this._instanceReady.resolve(_instance);
 		}
@@ -243,7 +243,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		let registration = p.registration;
 
 		if (!this._providers.has(p.id)) {
-			this._providers.set(p.id, new ProviderDescriptor(p.id));
+			this._providers.set(p.id, new ProviderDescriptor());
 		}
 		if (registration.fileExtensions) {
 			if (Array.isArray<string>(registration.fileExtensions)) {
@@ -266,7 +266,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			// Update, which will resolve the promise for anyone waiting on the instance to be registered
 			providerDescriptor.instance = instance;
 		} else {
-			this._providers.set(providerId, new ProviderDescriptor(providerId, instance));
+			this._providers.set(providerId, new ProviderDescriptor(instance));
 		}
 	}
 
