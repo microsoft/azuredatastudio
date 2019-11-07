@@ -7,12 +7,12 @@ import { SemVer } from 'semver';
 import * as nls from 'vscode-nls';
 import { Command, OsType, ToolType } from '../../interfaces';
 import { IPlatformService } from '../platformService';
-import { AzCliToolName } from './../../ui/deployClusterWizard/constants';
 import { dependencyType, ToolBase } from './toolBase';
 
 const localize = nls.loadMessageBundle();
 const defaultInstallationRoot = '~/.local/bin';
 const win32InstallationRoot = `${process.env['ProgramFiles(x86)']}\\Microsoft SDKs\\Azure\\CLI2\\wbin`;
+export const AzCliToolName = 'azure-cli';
 
 export class AzCliTool extends ToolBase {
 	constructor(platformService: IPlatformService) {
