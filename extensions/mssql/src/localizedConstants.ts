@@ -11,7 +11,7 @@ export const msgMissingNodeContext = localize('msgMissingNodeContext', "Node Com
 
 // HDFS Manage Access Dialog Constants ////////////////////////////////////
 
-export const manageAccessTitle = localize('mssql.manageAccessTitle', "Manage Access");
+export const manageAccessTitle = localize('mssql.manageAccessTitle', "Manage Access (preview)");
 export const locationTitle = localize('mssql.locationTitle', "Location : ");
 export const permissionsHeader = localize('mssql.permissionsTitle', "Permissions");
 export const ownerPostfix = localize('mssql.ownerPostfix', " - Owner");
