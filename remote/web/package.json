@@ -22,7 +22,7 @@
     "rxjs": "5.4.0",
     "sanitize-html": "^1.19.1",
 		"semver-umd": "^5.5.3",
-    "slickgrid": "github:anthonydresser/SlickGrid#2.3.31",
+    "slickgrid": "github:anthonydresser/SlickGrid#2.3.32",
 		"vscode-textmate": "^4.2.2",
     "xterm": "^4.2.0-beta20",
     "xterm-addon-search": "0.3.0-beta5",
