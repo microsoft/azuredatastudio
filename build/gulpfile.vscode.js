@@ -280,8 +280,12 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			], { base: '.' }));
 		} else if (platform === 'linux') {
 			// {{SQL CARBON EDIT}} use separate icons for non-stable
+			console.log(`packageTask quality = ${quality}`);
+			/*
 			const icon = gulp.src(quality !== 'stable' ? 'resources/linux/code-insiders.png' : 'resources/linux/code.png', { base: '.' }).pipe(rename('code.png'));
 			all = es.merge(all, icon);
+			*/
+			all = es.merge(all, gulp.src('resources/linux/code.png', { base: '.' }));
 		} else if (platform === 'darwin') {
 			const shortcut = gulp.src('resources/darwin/bin/code.sh')
 				.pipe(rename('bin/code'));
