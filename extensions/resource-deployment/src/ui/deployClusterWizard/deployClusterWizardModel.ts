@@ -165,7 +165,7 @@ export class DeployClusterWizardModel extends Model {
 			statements.push(`os.environ["DOCKER_PASSWORD"] = os.environ["${VariableNames.DockerPassword_VariableName}"]`);
 		}
 		const kubeCtlEnvVarName: string = getRuntimeBinaryPathEnvironmentVariableName(VariableNames.KubeCtlToolName);
-		statements.push(`os.environ[${kubeCtlEnvVarName}] = '${this.escapeForNotebookCodeCell(process.env[kubeCtlEnvVarName]!)}'`);
+		statements.push(`os.environ["${kubeCtlEnvVarName}"] = "${this.escapeForNotebookCodeCell(process.env[kubeCtlEnvVarName]!)}"`);
 		statements.push(`os.environ["PATH"] = os.environ["PATH"] + "${delimiter}" + "${this.escapeForNotebookCodeCell(process.env[VariableNames.ToolsInstallPath]!)}"`);
 		statements.push(`print('Variables have been set successfully.')`);
 		return statements.map(line => line + EOL);
