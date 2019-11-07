@@ -191,7 +191,7 @@ export class WebClientServer {
 			})))
 			.replace('{{REMOTE_USER_DATA_URI}}', escapeAttribute(JSON.stringify(transformer.transformOutgoing(webUserDataHome))));
 
-		const cspDirectives = [
+		/*const cspDirectives = [
 			'default-src \'self\';',
 			'img-src \'self\' https: data: blob:;',
 			'media-src \'none\';',
@@ -205,7 +205,7 @@ export class WebClientServer {
 			'connect-src \'self\' ws: wss: https:;',
 			'font-src \'self\' blob:;',
 			'manifest-src \'self\';'
-		].join(' ');
+		].join(' ');*/
 
 		res.writeHead(200, {
 			'Content-Type': 'text/html',
