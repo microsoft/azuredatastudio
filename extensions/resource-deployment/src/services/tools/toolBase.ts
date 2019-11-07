@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { EOL } from 'os';
-import { delimiter } from 'path';
+import * as path from 'path';
 import { SemVer, compare } from 'semver';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
@@ -155,6 +155,7 @@ export abstract class ToolBase implements ITool {
 	public get installationPath(): string {
 		return this._installationPath;
 	}
+
 	protected get installationCommands(): Command[] | undefined {
 		return this.allInstallationCommands.get(this.osType);
 	}
@@ -232,9 +233,9 @@ export abstract class ToolBase implements ITool {
 		this.logToOutputChannel(localize('toolBase.addInstallationSearchPathsToSystemPath.SearchPaths', "Search Paths for tool '{0}': {1}", this.displayName, JSON.stringify(searchPaths, undefined, '\t'))); //this.displayName is localized and searchPaths are OS filesystem paths.
 		searchPaths.forEach(searchPath => {
 			if (process.env.PATH) {
-				if (!`${delimiter}${process.env.PATH}${delimiter}`.includes(`${delimiter}${searchPath}${delimiter}`)) {
-					process.env.PATH += `${delimiter}${searchPath}`;
-					console.log(`Appending to Path -> '${delimiter}${searchPath}'`);
+				if (!`${path.delimiter}${process.env.PATH}${path.delimiter}`.includes(`${path.delimiter}${searchPath}${path.delimiter}`)) {
+					process.env.PATH += `${path.delimiter}${searchPath}`;
+					console.log(`Appending to Path -> '${path.delimiter}${searchPath}'`);
 				}
 			} else {
 				process.env.PATH = searchPath;
@@ -299,7 +300,7 @@ export abstract class ToolBase implements ITool {
 		if (!commandOutput) {
 			throw new Error(`Install location of tool:'${this.displayName}' could not be discovered`);
 		} else {
-			this._installationPath = commandOutput.split(EOL)[0];
+			this._installationPath = path.resolve(commandOutput.split(EOL)[0]);
 		}
 	}
 

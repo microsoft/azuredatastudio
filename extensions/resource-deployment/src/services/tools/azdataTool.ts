@@ -10,6 +10,7 @@ import * as nls from 'vscode-nls';
 import { azdataPipInstallArgsKey, AzdataPipInstallUriKey, DeploymentConfigurationKey } from '../../constants';
 import { Command, OsType, ToolType } from '../../interfaces';
 import { IPlatformService } from '../platformService';
+import { AzdataToolName } from './../../ui/deployClusterWizard/constants';
 import { dependencyType, ToolBase } from './toolBase';
 
 const localize = nls.loadMessageBundle();
@@ -20,7 +21,7 @@ export class AzdataTool extends ToolBase {
 	}
 
 	get name(): string {
-		return 'azdata';
+		return AzdataToolName;
 	}
 
 	get description(): string {

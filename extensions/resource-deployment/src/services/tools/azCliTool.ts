@@ -7,7 +7,8 @@ import { SemVer } from 'semver';
 import * as nls from 'vscode-nls';
 import { Command, OsType, ToolType } from '../../interfaces';
 import { IPlatformService } from '../platformService';
-import { ToolBase, dependencyType } from './toolBase';
+import { AzCliToolName } from './../../ui/deployClusterWizard/constants';
+import { dependencyType, ToolBase } from './toolBase';
 
 const localize = nls.loadMessageBundle();
 const defaultInstallationRoot = '~/.local/bin';
@@ -19,7 +20,7 @@ export class AzCliTool extends ToolBase {
 	}
 
 	get name(): string {
-		return 'azure-cli';
+		return AzCliToolName;
 	}
 
 	get description(): string {
