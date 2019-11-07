@@ -76,8 +76,8 @@ export abstract class ToolBase implements ITool {
 		return [];
 	}
 
-	protected async getDownloadPath(): Promise<string> {
-		return await this.getStoragePath();
+	protected get downloadPath(): string {
+		return this.storagePath;
 	}
 
 	protected logToOutputChannel(data: string | Buffer, header?: string): void {
@@ -121,13 +121,8 @@ export abstract class ToolBase implements ITool {
 		return this.status !== ToolStatus.Installed;
 	}
 
-	public async getStoragePath(): Promise<string> {
-		const storagePath = this._platformService.storagePath();
-		if (!this._storagePathEnsured) {
-			await this._platformService.ensureDirectoryExists(storagePath);
-			this._storagePathEnsured = true;
-		}
-		return storagePath;
+	public get storagePath(): string {
+		return this._platformService.storagePath();
 	}
 
 	public get osType(): OsType {
@@ -218,7 +213,7 @@ export abstract class ToolBase implements ITool {
 		for (let i: number = 0; i < installationCommands.length; i++) {
 			await this._platformService.runCommand(installationCommands[i].command,
 				{
-					workingDirectory: installationCommands[i].workingDirectory || await this.getDownloadPath(),
+					workingDirectory: installationCommands[i].workingDirectory || this.downloadPath,
 					additionalEnvironmentVariables: installationCommands[i].additionalEnvironmentVariables,
 					sudo: installationCommands[i].sudo,
 					commandTitle: installationCommands[i].comment,
@@ -229,7 +224,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	protected async addInstallationSearchPathsToSystemPath(): Promise<void> {
-		const searchPaths = [...await this.getSearchPaths(), await this.getStoragePath()].filter(path => !!path);
+		const searchPaths = [...await this.getSearchPaths(), this.storagePath].filter(path => !!path);
 		this.logToOutputChannel(localize('toolBase.addInstallationSearchPathsToSystemPath.SearchPaths', "Search Paths for tool '{0}': {1}", this.displayName, JSON.stringify(searchPaths, undefined, '\t'))); //this.displayName is localized and searchPaths are OS filesystem paths.
 		searchPaths.forEach(searchPath => {
 			if (process.env.PATH) {
@@ -308,7 +303,6 @@ export abstract class ToolBase implements ITool {
 		return this._version ? compare(this._version, new SemVer(version)) >= 0 : false;
 	}
 
-	private _storagePathEnsured: boolean = false;
 	private _status: ToolStatus = ToolStatus.NotInstalled;
 	private _osType: OsType;
 	private _version?: SemVer;
