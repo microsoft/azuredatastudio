@@ -37,7 +37,7 @@ export interface IQuestion {
 }
 
 // Pair used to display simple choices to the user
-export interface INameValueChoice {
+interface INameValueChoice {
 	name: string;
 	value: any;
 }

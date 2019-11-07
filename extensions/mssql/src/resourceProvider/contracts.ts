@@ -24,7 +24,7 @@ export interface CreateFirewallRuleParams {
 	securityTokenMappings: {};
 }
 
-export interface CreateFirewallRuleResponse {
+interface CreateFirewallRuleResponse {
 	result: boolean;
 	errorMessage: string;
 }
@@ -35,7 +35,7 @@ export interface HandleFirewallRuleParams {
 	connectionTypeId: string;
 }
 
-export interface HandleFirewallRuleResponse {
+interface HandleFirewallRuleResponse {
 	result: boolean;
 	ipAddress: string;
 }
