@@ -44,7 +44,7 @@ steps:
     git add -A
     git diff --quiet && git diff --staged --quiet || git commit -m "update vscode server";
 
-    git checkout distro
+    git checkout origin/distro
     git merge serverupdate
 
   displayName: Sync & Merge Server
