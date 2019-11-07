@@ -127,20 +127,20 @@ export class ControllerRootNode extends ControllerTreeNode {
 		}
 	}
 
-	public deleteControllerNode(url: string, auth: AuthType, username: string): ControllerNode[] {
+	public deleteControllerNode(url: string, auth: AuthType, username: string): ControllerNode[] | undefined {
 		if (!url || (auth === 'basic' && !username)) {
 			return undefined;
 		}
 		let nodes = this.children as ControllerNode[];
 		let index = nodes.findIndex(e => isControllerMatch(e, url, auth, username));
-		let deleted = undefined;
+		let deleted: ControllerNode[] | undefined;
 		if (index >= 0) {
 			deleted = nodes.splice(index, 1);
 		}
 		return deleted;
 	}
 
-	private getExistingControllerNode(url: string, auth: AuthType, username: string): ControllerNode {
+	private getExistingControllerNode(url: string, auth: AuthType, username: string): ControllerNode | undefined {
 		if (!url || !username) {
 			return undefined;
 		}
