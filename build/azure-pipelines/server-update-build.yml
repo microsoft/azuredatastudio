@@ -1,3 +1,6 @@
+pool:
+  vmImage: 'Ubuntu-16.04'
+
 schedules:
 - cron: "0 5 * * Mon-Fri"
   displayName: Mon-Fri at 7:00
