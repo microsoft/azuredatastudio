@@ -39,7 +39,7 @@ steps:
     git apply --ignore-space-change --ignore-whitespace build/patches/server.patch
 
     git add -A
-    git commit -m "update vscode server";
+    git diff --quiet && git diff --staged --quiet || git commit -m "update vscode server";
 
     git checkout distro
     git merge serverupdate
