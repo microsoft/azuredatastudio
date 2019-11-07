@@ -25,7 +25,7 @@ export class AzdataTool extends ToolBase {
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.AzdataDescription', "A command-line utility written in Python that enables cluster administrators to bootstrap and manage the Big Data Cluster via REST APIs");
+		return localize('resourceDeployment.AzdataDescription', "A command-line utility written in Python that enables cluster administrators to bootstrap and manage Big Data Clusters and ARC clusters via REST APIs");
 	}
 
 	get type(): ToolType {
