@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
+
 import * as nls from 'vscode-nls';
 import * as path from 'path';
 import * as azdata from 'azdata';
@@ -17,7 +17,6 @@ const localize = nls.loadMessageBundle();
 const CreateDialogTitle: string = localize('notebookDialog.newJob', "New Notebook Job");
 const EditDialogTitle: string = localize('notebookDialog.editJob', "Edit Notebook Job");
 const GeneralTabText: string = localize('notebookDialog.general', "General");
-const BlankJobNameErrorText: string = localize('notebookDialog.blankJobNameError', "The name of the job cannot be blank.");
 
 // Notebook details strings
 const NotebookDetailsSeparatorTitle: string = localize('notebookDialog.notebookSection', "Notebook Details");
@@ -33,7 +32,6 @@ const OwnerTextBoxLabel: string = localize('notebookDialog.owner', "Owner");
 const SchedulesTopLabelString: string = localize('notebookDialog.schedulesaLabel', "Schedules list");
 const PickScheduleButtonString: string = localize('notebookDialog.pickSchedule', "Pick Schedule");
 const RemoveScheduleButtonString: string = localize('notebookDialog.removeSchedule', "Remove Schedule");
-const ScheduleNameLabelString: string = localize('notebookDialog.scheduleNameLabel', "Schedule Name");
 const DescriptionTextBoxLabel: string = localize('notebookDialog.description', "Description");
 
 // Event Name strings
@@ -69,7 +67,6 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 	private isEdit: boolean = false;
 
 	// Job objects
-	private steps: azdata.AgentJobStepInfo[];
 	private schedules: azdata.AgentJobScheduleInfo[];
 
 	constructor(ownerUri: string, options: NotebookDialogOptions = undefined) {
@@ -77,7 +74,6 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 			ownerUri,
 			new NotebookData(ownerUri, options),
 			options.notebookInfo ? EditDialogTitle : CreateDialogTitle);
-		this.steps = this.model.jobSteps ? this.model.jobSteps : [];
 		this.schedules = this.model.jobSchedules ? this.model.jobSchedules : [];
 		this.isEdit = options.notebookInfo ? true : false;
 		this.dialogName = this.isEdit ? EditJobDialogEvent : NewJobDialogEvent;
@@ -280,10 +276,6 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 			else {
 				this.templateFilePathBox.required = true;
 			}
-			let idx: number = undefined;
-			if (this.model.category && this.model.category !== '') {
-				idx = this.model.jobCategories.indexOf(this.model.category);
-			}
 			this.descriptionTextBox.value = this.model.description;
 			this.openTemplateFileButton.onDidClick(e => {
 			});
@@ -298,14 +290,8 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 
 	}
 
-	private createRowContainer(view: azdata.ModelView): azdata.FlexBuilder {
-		return view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'row',
-			justifyContent: 'space-between'
-		});
-	}
-	private convertSchedulesToData(jobSchedules: azdata.AgentJobScheduleInfo[]): any[][] {
-		let result = [];
+	private convertSchedulesToData(jobSchedules: azdata.AgentJobScheduleInfo[]): Array<string | number>[] {
+		let result: Array<string | number>[] = [];
 		jobSchedules.forEach(schedule => {
 			let cols = [];
 			cols.push(schedule.id);
@@ -316,7 +302,7 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 		return result;
 	}
 
-	protected updateModel() {
+	protected async updateModel(): Promise<void> {
 		this.model.name = this.nameTextBox.value;
 		this.model.owner = this.ownerTextBox.value;
 		this.model.description = this.descriptionTextBox.value;

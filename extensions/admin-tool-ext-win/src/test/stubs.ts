@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
@@ -26,7 +24,7 @@ export class ExtHostObjectExplorerNodeStub implements azdata.objectexplorer.Obje
 	public metadata: azdata.ObjectMetadata;
 	public errorMessage: string;
 
-	constructor(nodeName: string, nodeSchema: string, nodeType, parent: azdata.objectexplorer.ObjectExplorerNode) {
+	constructor(nodeName: string, nodeSchema: string, nodeType: string, parent: azdata.objectexplorer.ObjectExplorerNode) {
 		this.parent = parent;
 		this.nodeType = nodeType;
 		this.metadata = { metadataType: undefined, metadataTypeName: undefined, name: nodeName, schema: nodeSchema, urn: undefined };

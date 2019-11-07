@@ -2,16 +2,13 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import 'mocha';
 import * as azdata from 'azdata';
-import { JobData } from '../../data/jobData';
 
 const testOwnerUri = 'agent://testuri';
-let mockJobData: TypeMoq.IMock<JobData>;
 let mockAgentService: TypeMoq.IMock<azdata.AgentServicesProvider>;
 
 describe('Agent extension create job objects', function (): void {
@@ -37,7 +34,6 @@ describe('Agent extension create job objects', function (): void {
 		should.strictEqual(createJobResult, undefined);
 		createJobResult = mockAgentService.object.createJob(testOwnerUri, TypeMoq.It.isAny());
 		should.notEqual(createJobResult, undefined);
-		mockJobData = TypeMoq.Mock.ofType<JobData>(JobData, TypeMoq.MockBehavior.Loose, false, [TypeMoq.It.isAnyString(), undefined, mockAgentService]);
 	});
 
 	it('Create Alert Data', async () => {

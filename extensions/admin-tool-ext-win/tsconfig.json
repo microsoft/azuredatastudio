@@ -13,9 +13,7 @@
 		"experimentalDecorators": true,
 		"moduleResolution": "node",
 		"strict": false,
-		"noImplicitAny": false,
 		"noUnusedParameters": false,
-		"noImplicitReturns": false,
 	},
 	"exclude": [
 		"node_modules"

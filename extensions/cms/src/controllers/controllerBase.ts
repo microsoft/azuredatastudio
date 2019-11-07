@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 
 import { AppContext } from '../appContext';
@@ -31,4 +29,3 @@ export default abstract class ControllerBase implements vscode.Disposable {
 		this.deactivate();
 	}
 }
-

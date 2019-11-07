@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { TreeDataProvider, EventEmitter, Event, TreeItem } from 'vscode';
 import { AppContext } from '../../appContext';
 import * as nls from 'vscode-nls';
@@ -14,7 +13,6 @@ import { CmsResourceEmptyTreeNode } from './cmsResourceEmptyTreeNode';
 import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
 import { CmsResourceMessageTreeNode } from '../messageTreeNode';
 import { CmsResourceTreeNode } from './cmsResourceTreeNode';
-import { ICmsResourceNodeInfo } from './baseTreeNodes';
 
 export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICmsResourceTreeChangeHandler {
 
@@ -38,7 +36,7 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 				// to determine whether the system has been initialized.
 				const cachedServers = this._appContext.cmsUtils.getSavedServers();
 				if (cachedServers && cachedServers.length > 0) {
-					const servers = [];
+					const servers: CmsResourceTreeNode[] = [];
 					cachedServers.forEach(async (server) => {
 						servers.push(new CmsResourceTreeNode(
 							server.name,

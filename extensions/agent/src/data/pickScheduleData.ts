@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import { AgentUtils } from '../agentUtils';
@@ -21,7 +20,7 @@ export class PickScheduleData implements IAgentDialogData {
 		this.jobName = jobName;
 	}
 
-	public async initialize(): Promise<azdata.AgentJobScheduleInfo[]> {
+	public async initialize(): Promise<azdata.AgentJobScheduleInfo[] | undefined> {
 		let agentService = await AgentUtils.getAgentService();
 		try {
 			let result = await agentService.getJobSchedules(this.ownerUri);
@@ -30,6 +29,7 @@ export class PickScheduleData implements IAgentDialogData {
 				this.schedules = result.schedules;
 				return this.schedules;
 			}
+			return undefined;
 		} catch (error) {
 			throw error;
 		}
