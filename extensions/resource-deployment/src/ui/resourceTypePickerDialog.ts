@@ -97,11 +97,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 			const toolsTableWrapper = view.modelBuilder.divContainer().withLayout({ width: tableWidth }).component();
 			toolsTableWrapper.addItem(this._toolsTable, { CSSStyles: { 'border-left': '1px solid silver', 'border-top': '1px solid silver' } });
-			this._toolsLoadingComponent = view.modelBuilder.loadingComponent().withItem(toolsTableWrapper).withProperties<azdata.LoadingComponentProperties>({
-				loadingText: 'loading tool information',
-				loadingCompletedText: 'tool information loaded',
-				showText: true
-			}).component();
+			this._toolsLoadingComponent = view.modelBuilder.loadingComponent().withItem(toolsTableWrapper).component();
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
@@ -282,7 +278,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 						text: infoText.join(EOL)
 					};
 				}
-				//this._toolsLoadingComponent.loading = false;
+				this._toolsLoadingComponent.loading = false;
 			});
 		}
 	}
