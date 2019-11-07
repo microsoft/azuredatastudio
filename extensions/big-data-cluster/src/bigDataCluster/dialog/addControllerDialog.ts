@@ -9,9 +9,9 @@ import * as nls from 'vscode-nls';
 import { ClusterController, ControllerError } from '../controller/clusterControllerApi';
 import { ControllerTreeDataProvider } from '../tree/controllerTreeDataProvider';
 import { AuthType } from '../constants';
-import { ManageControllerCommand } from '../../extension';
 import { BdcDashboardOptions } from './bdcDashboardModel';
 import { ControllerNode } from '../tree/controllerTreeNode';
+import { ManageControllerCommand } from '../../commands';
 
 const localize = nls.loadMessageBundle();
 

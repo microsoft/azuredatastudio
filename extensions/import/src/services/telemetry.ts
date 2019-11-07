@@ -74,7 +74,7 @@ export class LanguageClientErrorHandler {
 /**
  * Filters error paths to only include source files. Exported to support testing
  */
-export function FilterErrorPath(line: string): string | undefined {
+function FilterErrorPath(line: string): string | undefined {
 	if (line) {
 		let values: string[] = line.split('/out/');
 		if (values.length <= 1) {

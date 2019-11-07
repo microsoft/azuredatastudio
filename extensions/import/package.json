@@ -51,7 +51,7 @@
 				}
 			]
 		},
-		"configuration":{
+		"configuration": {
 			"type": "object",
 			"title": "%flatfileimport.configuration.title%",
 			"properties": {
@@ -70,7 +70,9 @@
 		"vscode-extension-telemetry": "0.0.18",
 		"vscode-nls": "^3.2.1"
 	},
-	"devDependencies": {},
+	"devDependencies": {
+		"@types/node": "10"
+	},
 	"__metadata": {
 		"id": "23",
 		"publisherDisplayName": "Microsoft",

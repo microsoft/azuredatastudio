@@ -10,17 +10,17 @@ export enum ApiType {
 	FlatFileProvider = 'FlatFileProvider'
 }
 
-export interface IServiceApi {
+interface IServiceApi {
 	onRegisteredApi<T>(type: ApiType): vscode.Event<T>;
 	registerApi<T>(type: ApiType, feature: T): vscode.Disposable;
 }
 
-export interface IModelViewDefinition {
+interface IModelViewDefinition {
 	id: string;
 	modelView: azdata.ModelView;
 }
 
-export class ServiceApiManager implements IServiceApi {
+class ServiceApiManager implements IServiceApi {
 	private featureEventChannels: { [type: string]: vscode.EventEmitter<any> } = {};
 	private _onRegisteredModelView = new vscode.EventEmitter<IModelViewDefinition>();
 
