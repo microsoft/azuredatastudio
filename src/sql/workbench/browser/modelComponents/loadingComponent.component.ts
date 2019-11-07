@@ -95,7 +95,7 @@ export default class LoadingComponent extends ComponentBase implements IComponen
 		this.layout();
 	}
 
-	private getStatusText(): string {
+	public getStatusText(): string {
 		return this.loading ? this.loadingText : this.loadingCompletedText;
 	}
 }
