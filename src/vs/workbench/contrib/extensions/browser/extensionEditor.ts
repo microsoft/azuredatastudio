@@ -379,24 +379,22 @@ export class ExtensionEditor extends BaseEditor {
 			template.license.style.display = 'none';
 		}
 
-		// {{SQL CARBON EDIT}} add license url
-		if (extension.licenseUrl) {
-			template.license.onclick = finalHandler(() => window.open(extension.licenseUrl));
-			template.license.style.display = 'initial';
-		} else {
-			template.license.onclick = null;
-			template.license.style.display = 'none';
-		}
-
+		// {{SQL CARBON EDIT}}
 		// copied from the the extension.url condition block above
-		// for ADS the extension.url will be empty but we still want to make the publisher text clickable and filter extensions by publisher
-
-		this.transientDisposables.add(this.onClick(template.publisher, () => {
-			this.viewletService.openViewlet(VIEWLET_ID, true)
-				.then(viewlet => viewlet as IExtensionsViewlet)
-				.then(viewlet => viewlet.search(`publisher:"${extension.publisherDisplayName}"`));
-		}));
-
+		// for ADS the extension.url will be empty but we still want to make the publisher and license controls to be clickable
+		if (!extension.url) {
+			if (extension.licenseUrl) {
+				this.transientDisposables.add(this.onClick(template.license, () => this.openerService.open(URI.parse(extension.licenseUrl!))));
+				template.license.style.display = 'initial';
+			} else {
+				template.license.style.display = 'none';
+			}
+			this.transientDisposables.add(this.onClick(template.publisher, () => {
+				this.viewletService.openViewlet(VIEWLET_ID, true)
+					.then(viewlet => viewlet as IExtensionsViewlet)
+					.then(viewlet => viewlet.search(`publisher:"${extension.publisherDisplayName}"`));
+			}));
+		}
 		// {{SQL CARBON EDIT}} - End
 
 		if (extension.repository) {
