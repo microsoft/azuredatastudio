@@ -204,7 +204,7 @@ export interface NotebookInfo {
 export enum OsType {
 	win32 = 'win32',
 	darwin = 'darwin',
-	linux = 'linux',
+	debian = 'debian',
 	others = 'others'
 }
 

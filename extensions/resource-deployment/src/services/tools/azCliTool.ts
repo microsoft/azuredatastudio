@@ -52,7 +52,7 @@ export class AzCliTool extends ToolBase {
 	}
 
 	protected readonly allInstallationCommands: Map<OsType, Command[]> = new Map<OsType, Command[]>([
-		[OsType.linux, linuxInstallationCommands],
+		[OsType.debian, debianInstallationCommands],
 		[OsType.win32, win32InstallationCommands],
 		[OsType.darwin, macOsInstallationCommands],
 		[OsType.others, defaultInstallationCommands]
@@ -73,7 +73,7 @@ export class AzCliTool extends ToolBase {
 	}
 
 	protected dependenciesByOsType: Map<OsType, dependencyType[]> = new Map<OsType, dependencyType[]>([
-		[OsType.linux, []],
+		[OsType.debian, []],
 		[OsType.win32, []],
 		[OsType.darwin, [dependencyType.Brew]],
 		[OsType.others, [dependencyType.Curl]]
@@ -98,12 +98,11 @@ const win32InstallationCommands = [
 	},
 	{
 		comment: localize('resourceDeployment.AziCli.DisplayingInstallationLog', "displaying the installation log …"),
-		command: `type AzureCliInstall.log | findstr /i /v /c:"cached product context" | findstr /i /v /c:"has no eligible binary patches" `,
+		command: `type ADS_AzureCliInstall.log | findstr /i /v /c:"cached product context" | findstr /i /v /c:"has no eligible binary patches" `,
 		ignoreError: true
 	}
 ];
 const macOsInstallationCommands = [
-	// try to install brew ourselves
 	{
 		comment: localize('resourceDeployment.AziCli.UpdatingBrewRepository', "updating your brew repository for azure-cli installation …"),
 		command: 'brew update'
@@ -113,7 +112,7 @@ const macOsInstallationCommands = [
 		command: 'brew install azure-cli'
 	}
 ];
-const linuxInstallationCommands = [
+const debianInstallationCommands = [
 	{
 		sudo: true,
 		comment: localize('resourceDeployment.AziCli.AptGetUpdate', "updating repository information before installing azure-cli …"),

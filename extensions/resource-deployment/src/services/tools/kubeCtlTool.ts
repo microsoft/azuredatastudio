@@ -70,14 +70,14 @@ export class KubeCtlTool extends ToolBase {
 		}
 	}
 	protected readonly allInstallationCommands: Map<OsType, Command[]> = new Map<OsType, Command[]>([
-		[OsType.linux, linuxInstallationCommands],
+		[OsType.debian, debianInstallationCommands],
 		[OsType.win32, win32InstallationCommands],
 		[OsType.darwin, macOsInstallationCommands],
 		[OsType.others, defaultInstallationCommands]
 	]);
 
 	protected dependenciesByOsType: Map<OsType, dependencyType[]> = new Map<OsType, dependencyType[]>([
-		[OsType.linux, []],
+		[OsType.debian, []],
 		[OsType.win32, []],
 		[OsType.darwin, [dependencyType.Brew]],
 		[OsType.others, [dependencyType.Curl]]
@@ -94,7 +94,7 @@ const macOsInstallationCommands = [
 		command: 'brew install kubectl'
 	}
 ];
-const linuxInstallationCommands = [
+const debianInstallationCommands = [
 	{
 		sudo: true,
 		comment: localize('resourceDeployment.Kubectl.AptGetUpdate', "updating repository information …"),

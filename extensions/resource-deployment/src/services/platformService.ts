@@ -4,8 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as fs from 'fs';
+import * as getos from 'getos';
 import * as cp from 'promisify-child-process';
 import * as sudo from 'sudo-prompt';
+import { promisify } from 'util';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { OsType } from '../interfaces';
@@ -57,7 +59,12 @@ export class PlatformService implements IPlatformService {
 
 	private _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(extensionOutputChannel);
 
+	private _osType?: OsType = undefined;
+
 	constructor(private _storagePath: string = '') {
+		this.getOsType().then((value: OsType) => {
+			this._osType = value;
+		});
 	}
 
 	storagePath(): string {
@@ -76,12 +83,22 @@ export class PlatformService implements IPlatformService {
 		this._outputChannel.show(preserveFocus);
 	}
 
-	osType(platform: string = this.platform()): OsType {
+	osType(): OsType {
+		if (!this._osType) {
+			throw new Error('platformService was not initialized');
+		}
+		return this._osType;
+	}
+	private async getOsType(platform: string = this.platform()): Promise<OsType> {
 		if (Object.values(OsType).includes(<OsType>platform)) {
 			return <OsType>platform;
-		} else {
-			return OsType.others;
+		} else if (/^linux$/i.test(platform)) {
+			const os = <getos.LinuxOs>await promisify(getos)();
+			if (/^(ubuntu|debian)/i.test(os.dist)) {
+				return OsType.darwin;
+			}
 		}
+		return OsType.others;
 	}
 
 	async copyFile(source: string, target: string): Promise<void> {
