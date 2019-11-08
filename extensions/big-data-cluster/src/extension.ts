@@ -16,6 +16,7 @@ import { BdcDashboardModel, BdcDashboardOptions } from './bigDataCluster/dialog/
 import { MountHdfsDialogModel as MountHdfsModel, MountHdfsProperties, MountHdfsDialog, DeleteMountDialog, DeleteMountModel, RefreshMountDialog, RefreshMountModel } from './bigDataCluster/dialog/mountHdfsDialog';
 import { getControllerEndpoint } from './bigDataCluster/utils';
 import * as commands from './commands';
+import { HdfsDialogCancelledError } from './bigDataCluster/dialog/hdfsDialogBase';
 
 const localize = nls.loadMessageBundle();
 
@@ -54,7 +55,7 @@ function registerCommands(context: vscode.ExtensionContext, treeDataProvider: Co
 	});
 
 	vscode.commands.registerCommand(commands.ManageControllerCommand, async (info: ControllerNode | BdcDashboardOptions, addOrUpdateController: boolean = false) => {
-		const title: string = `${localize('bdc.dashboard.title', "Big Data Cluster Dashboard -")} ${ControllerNode.toIpAndPort(info.url)}`;
+		const title: string = `${localize('bdc.dashboard.title', "Big Data Cluster Dashboard (preview) -")} ${ControllerNode.toIpAndPort(info.url)}`;
 		if (addOrUpdateController) {
 			// The info may be wrong, but if it is then we'll prompt to reconnect when the dashboard is opened
 			// and update with the correct info then
@@ -85,7 +86,14 @@ async function mountHdfs(explorerContext?: azdata.ObjectExplorerContext): Promis
 	const mountProps = await getMountProps(explorerContext);
 	if (mountProps) {
 		const dialog = new MountHdfsDialog(new MountHdfsModel(mountProps));
-		await dialog.showDialog();
+		try {
+			await dialog.showDialog();
+		} catch (error) {
+			if (!(error instanceof HdfsDialogCancelledError)) {
+				throw error;
+			}
+		}
+
 	}
 }
 

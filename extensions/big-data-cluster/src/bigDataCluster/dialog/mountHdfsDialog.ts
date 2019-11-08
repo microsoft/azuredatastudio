@@ -149,7 +149,7 @@ export class MountHdfsDialog extends HdfsDialogBase<MountHdfsProperties, void> {
 	private credentialsInputBox: azdata.InputBoxComponent;
 
 	constructor(model: MountHdfsDialogModel) {
-		super(localize('mount.dialog.title', "Mount HDFS Folder"), model);
+		super(localize('mount.dialog.title', "Mount HDFS Folder (preview)"), model);
 	}
 
 	protected getMainSectionComponents(): (azdata.FormComponentGroup | azdata.FormComponent)[] {

@@ -119,7 +119,7 @@ export class AddControllerDialog {
 	}
 
 	private createDialog(): void {
-		this.dialog = azdata.window.createModelViewDialog(localize('textAddNewController', "Add New Controller"));
+		this.dialog = azdata.window.createModelViewDialog(localize('textAddNewController', "Add New Controller (preview)"));
 		this.dialog.registerContent(async view => {
 			this.uiModelBuilder = view.modelBuilder;
 
