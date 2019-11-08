@@ -6,7 +6,6 @@
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { IntervalTimer } from 'vs/base/common/async';
-import { IStatusbarService, StatusbarAlignment, IStatusbarEntryAccessor } from 'vs/platform/statusbar/common/statusbar';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { localize } from 'vs/nls';
@@ -14,6 +13,7 @@ import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { parseNumAsTimeString } from 'sql/platform/connection/common/utils';
 import { Event } from 'vs/base/common/event';
+import { IStatusbarService, IStatusbarEntryAccessor, StatusbarAlignment } from 'vs/workbench/services/statusbar/common/statusbar';
 
 export class TimeElapsedStatusBarContributions extends Disposable implements IWorkbenchContribution {
 
@@ -158,11 +158,19 @@ export class RowCountStatusBarContributions extends Disposable implements IWorkb
 				this.disposable.add(runner.onQueryStart(e => {
 					this._displayValue(runner);
 				}));
+				this.disposable.add(runner.onResultSetUpdate(e => {
+					this._displayValue(runner);
+				}));
 				this.disposable.add(runner.onQueryEnd(e => {
 					this._displayValue(runner);
 				}));
 			} else {
 				this.disposable.add(this.queryModelService.onRunQueryStart(e => {
+					if (e === uri) {
+						this._displayValue(this.queryModelService.getQueryRunner(uri));
+					}
+				}));
+				this.disposable.add(this.queryModelService.onRunQueryUpdate(e => {
 					if (e === uri) {
 						this._displayValue(this.queryModelService.getQueryRunner(uri));
 					}

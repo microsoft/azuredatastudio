@@ -28,7 +28,7 @@
       </trans-unit>
       <trans-unit id="adminToolExtWin.noOENode">
         <source xml:lang="en">Could not determine Object Explorer node from connectionContext : {0}</source>
-        <target state="translated">Não foi possível determinar o nó do pesquisador de objetos de connectionContext: {0}</target>
+        <target state="translated">Não foi possível determinar o nó do Pesquisador de Objetos de connectionContext: {0}</target>
       </trans-unit>
       <trans-unit id="adminToolExtWin.noConnectionContextForGsw">
         <source xml:lang="en">No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand</source>

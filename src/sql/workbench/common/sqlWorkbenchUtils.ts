@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import ConnectionConstants = require('sql/platform/connection/common/constants');
+import * as ConnectionConstants from 'sql/platform/connection/common/constants';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';

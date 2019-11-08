@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
@@ -72,7 +70,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 
 	private async doExpandNode(nodeInfo: azdata.ExpandNodeInfo, isRefresh: boolean = false): Promise<boolean> {
 		let session = this.sessionMap.get(nodeInfo.sessionId);
-		let response = {
+		let response: azdata.ObjectExplorerExpandInfo = {
 			sessionId: nodeInfo.sessionId,
 			nodePath: nodeInfo.nodePath,
 			errorMessage: undefined,
@@ -120,10 +118,10 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 					if (children.length === 1 && this.hasExpansionError(children)) {
 						if (children[0].errorStatusCode === 401) {
 							//Prompt for password
-							let password: string = await this.promptPassword(localize('prmptPwd', 'Please provide the password to connect to HDFS:'));
+							let password: string = await this.promptPassword(localize('prmptPwd', "Please provide the password to connect to HDFS:"));
 							if (password && password.length > 0) {
 								session.sqlClusterConnection.updatePassword(password);
-								node.updateFileSource(session.sqlClusterConnection);
+								await node.updateFileSource(session.sqlClusterConnection);
 								children = await node.getChildren(true);
 							}
 						}
@@ -181,7 +179,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 		try {
 			let session = this.getSqlClusterSessionForNode(node);
 			if (!session) {
-				this.appContext.apiWrapper.showErrorMessage(localize('sessionNotFound', 'Session for node {0} does not exist', node.nodePathValue));
+				this.appContext.apiWrapper.showErrorMessage(localize('sessionNotFound', "Session for node {0} does not exist", node.nodePathValue));
 			} else {
 				let nodeInfo = node.getNodeInfo();
 				let expandInfo: azdata.ExpandNodeInfo = {
@@ -191,14 +189,14 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 				await this.refreshNode(expandInfo);
 			}
 		} catch (err) {
-			mssqlOutputChannel.appendLine(localize('notifyError', 'Error notifying of node change: {0}', err));
+			mssqlOutputChannel.appendLine(localize('notifyError', "Error notifying of node change: {0}", err));
 		}
 	}
 
 	private getSqlClusterSessionForNode(node: TreeNode): SqlClusterSession {
 		let sqlClusterSession: SqlClusterSession = undefined;
 		while (node !== undefined) {
-			if (node instanceof DataServicesNode) {
+			if (node instanceof SqlClusterRootNode) {
 				sqlClusterSession = node.session;
 				break;
 			} else {
@@ -235,7 +233,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 	}
 }
 
-export class SqlClusterSession {
+class SqlClusterSession {
 	private _rootNode: SqlClusterRootNode;
 
 	constructor(
@@ -281,11 +279,17 @@ class SqlClusterRootNode extends TreeNode {
 
 	public getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]> {
 		if (refreshChildren || !this._children) {
-			this._children = [];
-			let dataServicesNode = new DataServicesNode(this._session, this._treeDataContext, this._nodePathValue);
-			dataServicesNode.parent = this;
-			this._children.push(dataServicesNode);
+			return this.refreshChildren();
 		}
+		return this._children;
+	}
+
+	private async refreshChildren(): Promise<TreeNode[]> {
+		this._children = [];
+		let fileSource: IFileSource = await this.session.sqlClusterConnection.createHdfsFileSource();
+		let hdfsNode = new ConnectionNode(this._treeDataContext, localize('hdfsFolder', "HDFS"), fileSource);
+		hdfsNode.parent = this;
+		this._children.push(hdfsNode);
 		return this._children;
 	}
 
@@ -295,58 +299,13 @@ class SqlClusterRootNode extends TreeNode {
 
 	getNodeInfo(): azdata.NodeInfo {
 		let nodeInfo: azdata.NodeInfo = {
-			label: localize('rootLabel', 'Root'),
+			label: localize('rootLabel', "Root"),
 			isLeaf: false,
 			errorMessage: undefined,
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
 			nodeType: 'sqlCluster:root',
-			nodeSubType: undefined,
-			iconType: 'folder'
-		};
-		return nodeInfo;
-	}
-}
-
-class DataServicesNode extends TreeNode {
-	private _children: TreeNode[];
-	constructor(private _session: SqlClusterSession, private _context: TreeDataContext, private _nodePath: string) {
-		super();
-	}
-
-	public get session(): SqlClusterSession {
-		return this._session;
-	}
-
-	public get nodePathValue(): string {
-		return this._nodePath;
-	}
-
-	public getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]> {
-		if (refreshChildren || !this._children) {
-			this._children = [];
-			let fileSource: IFileSource = this.session.sqlClusterConnection.createHdfsFileSource();
-			let hdfsNode = new ConnectionNode(this._context, localize('hdfsFolder', 'HDFS'), fileSource);
-			hdfsNode.parent = this;
-			this._children.push(hdfsNode);
-		}
-		return this._children;
-	}
-
-	getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {
-		throw new Error('Not intended for use in a file explorer view.');
-	}
-
-	getNodeInfo(): azdata.NodeInfo {
-		let nodeInfo: azdata.NodeInfo = {
-			label: localize('dataServicesLabel', 'Data Services'),
-			isLeaf: false,
-			errorMessage: undefined,
-			metadata: undefined,
-			nodePath: this.generateNodePath(),
-			nodeStatus: undefined,
-			nodeType: 'dataservices',
 			nodeSubType: undefined,
 			iconType: 'folder'
 		};

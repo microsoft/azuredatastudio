@@ -19,6 +19,8 @@ import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { find } from 'vs/base/common/arrays';
 
 @Component({
 	selector: 'modelview-dropdown',
@@ -35,6 +37,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	@Input() modelStore: IModelStore;
 	private _editableDropdown: Dropdown;
 	private _selectBox: SelectBox;
+	private _isInAccessibilityMode: boolean;
 
 	@ViewChild('editableDropDown', { read: ElementRef }) private _editableDropDownContainer: ElementRef;
 	@ViewChild('dropDown', { read: ElementRef }) private _dropDownContainer: ElementRef;
@@ -42,9 +45,14 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(IConfigurationService) private readonly configurationService: IConfigurationService
 	) {
 		super(changeRef, el);
+
+		if (this.configurationService) {
+			this._isInAccessibilityMode = this.configurationService.getValue('editor.accessibilitySupport') === 'on';
+		}
 	}
 
 	ngOnInit(): void {
@@ -106,7 +114,13 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		if (this.editable) {
+
+		if (this.ariaLabel !== '') {
+			this._selectBox.setAriaLabel(this.ariaLabel);
+			this._editableDropdown.ariaLabel = this.ariaLabel;
+		}
+
+		if (this.editable && !this._isInAccessibilityMode) {
 			this._editableDropdown.values = this.getValues();
 			if (this.value) {
 				this._editableDropdown.value = this.getSelectedValue();
@@ -142,7 +156,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	private getSelectedValue(): string {
 		if (this.values && this.values.length > 0 && this.valuesHaveDisplayName()) {
 			let selectedValue = <azdata.CategoryValue>this.value || <azdata.CategoryValue>this.values[0];
-			let valueCategory = (<azdata.CategoryValue[]>this.values).find(v => v.name === selectedValue.name);
+			let valueCategory = find(<azdata.CategoryValue[]>this.values, v => v.name === selectedValue.name);
 			return valueCategory && valueCategory.displayName;
 		} else {
 			if (!this.value && this.values && this.values.length > 0) {
@@ -154,7 +168,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	private setSelectedValue(newValue: string): void {
 		if (this.values && this.valuesHaveDisplayName()) {
-			let valueCategory = (<azdata.CategoryValue[]>this.values).find(v => v.displayName === newValue);
+			let valueCategory = find((<azdata.CategoryValue[]>this.values), v => v.displayName === newValue);
 			this.value = valueCategory;
 		} else {
 			this.value = newValue;
@@ -176,11 +190,11 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	}
 
 	public getEditableDisplay(): string {
-		return this.editable ? '' : 'none';
+		return this.editable && !this._isInAccessibilityMode ? '' : 'none';
 	}
 
 	public getNotEditableDisplay(): string {
-		return !this.editable ? '' : 'none';
+		return !this.editable || this._isInAccessibilityMode ? '' : 'none';
 	}
 
 	private set value(newValue: string | azdata.CategoryValue) {

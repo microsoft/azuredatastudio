@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import { NodeInfo } from 'azdata';
 import * as nls from 'vscode-nls';
@@ -47,5 +45,5 @@ export class CmsResourceEmptyTreeNode extends TreeNode {
 		return 'message_cmsTreeNode';
 	}
 
-	private static readonly addCmsServerLabel = localize('cms.resource.tree.CmsTreeNode.addCmsServerLabel', 'Add Central Management Server...');
+	private static readonly addCmsServerLabel = localize('cms.resource.tree.CmsTreeNode.addCmsServerLabel', "Add Central Management Server...");
 }

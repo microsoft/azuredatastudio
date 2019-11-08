@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import {
 	SqlExtHostContext, ExtHostDataProtocolShape,
 	MainThreadDataProtocolShape, SqlMainContext
@@ -13,32 +13,29 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import * as azdata from 'azdata';
 import { IMetadataService } from 'sql/platform/metadata/common/metadataService';
-import { IObjectExplorerService, NodeExpandInfoWithProviderId } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService, NodeExpandInfoWithProviderId } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { IRestoreService } from 'sql/platform/restore/common/restoreService';
 import { ITaskService } from 'sql/platform/tasks/common/tasksService';
-import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
+import { IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ISerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { IDacFxService } from 'sql/platform/dacfx/common/dacFxService';
-import { ISchemaCompareService } from 'sql/platform/schemaCompare/common/schemaCompareService';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
+import { assign } from 'vs/base/common/objects';
 
 /**
  * Main thread class for handling data protocol management registration.
  */
 @extHostNamedCustomer(SqlMainContext.MainThreadDataProtocol)
-export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
+export class MainThreadDataProtocol extends Disposable implements MainThreadDataProtocolShape {
 
 	private _proxy: ExtHostDataProtocolShape;
 
-	private _toDispose: IDisposable[];
-
-	private _capabilitiesRegistrations: { [handle: number]: IDisposable; } = Object.create(null);
+	private _capabilitiesRegistrations: { [handle: number]: IDisposable; } = Object.create(null); // should we be registering these?
 
 	constructor(
 		extHostContext: IExtHostContext,
@@ -55,20 +52,15 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		@ITaskService private _taskService: ITaskService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@ISerializationService private _serializationService: ISerializationService,
-		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
-		@IDacFxService private _dacFxService: IDacFxService,
-		@ISchemaCompareService private _schemaCompareService: ISchemaCompareService,
+		@IFileBrowserService private _fileBrowserService: IFileBrowserService
 	) {
+		super();
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostDataProtocol);
 		}
 		if (this._connectionManagementService) {
-			this._connectionManagementService.onLanguageFlavorChanged(e => this._proxy.$languageFlavorChanged(e), this, this._toDispose);
+			this._register(this._connectionManagementService.onLanguageFlavorChanged(e => this._proxy.$languageFlavorChanged(e)));
 		}
-	}
-
-	public dispose(): void {
-		this._toDispose = dispose(this._toDispose);
 	}
 
 	public $registerConnectionProvider(providerId: string, handle: number): Promise<any> {
@@ -106,71 +98,71 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	public $registerQueryProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._queryManagementService.addQueryRequestHandler(providerId, {
-			cancelQuery(ownerUri: string): Thenable<azdata.QueryCancelResult> {
-				return self._proxy.$cancelQuery(handle, ownerUri);
+			cancelQuery(ownerUri: string): Promise<azdata.QueryCancelResult> {
+				return Promise.resolve(self._proxy.$cancelQuery(handle, ownerUri));
 			},
-			runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Thenable<void> {
-				return self._proxy.$runQuery(handle, ownerUri, selection, runOptions);
+			runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void> {
+				return Promise.resolve(self._proxy.$runQuery(handle, ownerUri, selection, runOptions));
 			},
-			runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void> {
-				return self._proxy.$runQueryStatement(handle, ownerUri, line, column);
+			runQueryStatement(ownerUri: string, line: number, column: number): Promise<void> {
+				return Promise.resolve(self._proxy.$runQueryStatement(handle, ownerUri, line, column));
 			},
-			runQueryString(ownerUri: string, queryString: string): Thenable<void> {
-				return self._proxy.$runQueryString(handle, ownerUri, queryString);
+			runQueryString(ownerUri: string, queryString: string): Promise<void> {
+				return Promise.resolve(self._proxy.$runQueryString(handle, ownerUri, queryString));
 			},
-			runQueryAndReturn(ownerUri: string, queryString: string): Thenable<azdata.SimpleExecuteResult> {
-				return self._proxy.$runQueryAndReturn(handle, ownerUri, queryString);
+			runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult> {
+				return Promise.resolve(self._proxy.$runQueryAndReturn(handle, ownerUri, queryString));
 			},
-			parseSyntax(ownerUri: string, query: string): Thenable<azdata.SyntaxParseResult> {
-				return self._proxy.$parseSyntax(handle, ownerUri, query);
+			parseSyntax(ownerUri: string, query: string): Promise<azdata.SyntaxParseResult> {
+				return Promise.resolve(self._proxy.$parseSyntax(handle, ownerUri, query));
 			},
-			getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult> {
-				return self._proxy.$getQueryRows(handle, rowData);
+			getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<azdata.QueryExecuteSubsetResult> {
+				return Promise.resolve(self._proxy.$getQueryRows(handle, rowData));
 			},
-			setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void> {
-				return self._proxy.$setQueryExecutionOptions(handle, ownerUri, options);
+			setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Promise<void> {
+				return Promise.resolve(self._proxy.$setQueryExecutionOptions(handle, ownerUri, options));
 			},
-			disposeQuery(ownerUri: string): Thenable<void> {
-				return self._proxy.$disposeQuery(handle, ownerUri);
+			disposeQuery(ownerUri: string): Promise<void> {
+				return Promise.resolve(self._proxy.$disposeQuery(handle, ownerUri));
 			},
-			saveResults(requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult> {
-				let serializationProvider = self._serializationService.getSerializationFeatureMetadataProvider(requestParams.ownerUri);
-				if (serializationProvider && serializationProvider.enabled) {
-					return self._proxy.$saveResults(handle, requestParams);
+			saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult> {
+				let saveResultsFeatureInfo = self._serializationService.getSaveResultsFeatureMetadataProvider(requestParams.ownerUri);
+				if (saveResultsFeatureInfo && saveResultsFeatureInfo.enabled) {
+					return Promise.resolve(self._proxy.$saveResults(handle, requestParams));
 				}
-				else if (serializationProvider && !serializationProvider.enabled) {
-					return self._serializationService.disabledSaveAs();
+				else if (saveResultsFeatureInfo && !saveResultsFeatureInfo.enabled) {
+					return Promise.resolve(self._serializationService.disabledSaveAs());
 				}
 				else {
-					return self._serializationService.saveAs(requestParams.resultFormat, requestParams.filePath, undefined, true);
+					return Promise.resolve(self._serializationService.saveAs(requestParams.resultFormat, requestParams.filePath, undefined, true));
 				}
 			},
-			initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Thenable<void> {
-				return self._proxy.$initializeEdit(handle, ownerUri, schemaName, objectName, objectType, rowLimit, queryString);
+			initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Promise<void> {
+				return Promise.resolve(self._proxy.$initializeEdit(handle, ownerUri, schemaName, objectName, objectType, rowLimit, queryString));
 			},
-			updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<azdata.EditUpdateCellResult> {
-				return self._proxy.$updateCell(handle, ownerUri, rowId, columnId, newValue);
+			updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Promise<azdata.EditUpdateCellResult> {
+				return Promise.resolve(self._proxy.$updateCell(handle, ownerUri, rowId, columnId, newValue));
 			},
-			commitEdit(ownerUri): Thenable<void> {
-				return self._proxy.$commitEdit(handle, ownerUri);
+			commitEdit(ownerUri): Promise<void> {
+				return Promise.resolve(self._proxy.$commitEdit(handle, ownerUri));
 			},
-			createRow(ownerUri: string): Thenable<azdata.EditCreateRowResult> {
-				return self._proxy.$createRow(handle, ownerUri);
+			createRow(ownerUri: string): Promise<azdata.EditCreateRowResult> {
+				return Promise.resolve(self._proxy.$createRow(handle, ownerUri));
 			},
-			deleteRow(ownerUri: string, rowId: number): Thenable<void> {
-				return self._proxy.$deleteRow(handle, ownerUri, rowId);
+			deleteRow(ownerUri: string, rowId: number): Promise<void> {
+				return Promise.resolve(self._proxy.$deleteRow(handle, ownerUri, rowId));
 			},
-			disposeEdit(ownerUri: string): Thenable<void> {
-				return self._proxy.$disposeEdit(handle, ownerUri);
+			disposeEdit(ownerUri: string): Promise<void> {
+				return Promise.resolve(self._proxy.$disposeEdit(handle, ownerUri));
 			},
-			revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<azdata.EditRevertCellResult> {
-				return self._proxy.$revertCell(handle, ownerUri, rowId, columnId);
+			revertCell(ownerUri: string, rowId: number, columnId: number): Promise<azdata.EditRevertCellResult> {
+				return Promise.resolve(self._proxy.$revertCell(handle, ownerUri, rowId, columnId));
 			},
-			revertRow(ownerUri: string, rowId: number): Thenable<void> {
-				return self._proxy.$revertRow(handle, ownerUri, rowId);
+			revertRow(ownerUri: string, rowId: number): Promise<void> {
+				return Promise.resolve(self._proxy.$revertRow(handle, ownerUri, rowId));
 			},
-			getEditRows(rowData: azdata.EditSubsetParams): Thenable<azdata.EditSubsetResult> {
-				return self._proxy.$getEditRows(handle, rowData);
+			getEditRows(rowData: azdata.EditSubsetParams): Promise<azdata.EditSubsetResult> {
+				return Promise.resolve(self._proxy.$getEditRows(handle, rowData));
 			}
 		});
 
@@ -404,6 +396,30 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			deleteJobStep(connectionUri: string, stepInfo: azdata.AgentJobStepInfo): Thenable<azdata.ResultStatus> {
 				return self._proxy.$deleteJobStep(handle, connectionUri, stepInfo);
 			},
+			getNotebooks(connectionUri: string): Thenable<azdata.AgentNotebooksResult> {
+				return self._proxy.$getNotebooks(handle, connectionUri);
+			},
+			getNotebookHistory(connectionUri: string, jobID: string, jobName: string, targetDatabase: string): Thenable<azdata.AgentNotebookHistoryResult> {
+				return self._proxy.$getNotebookHistory(handle, connectionUri, jobID, jobName, targetDatabase);
+			},
+			getMaterializedNotebook(connectionUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> {
+				return self._proxy.$getMaterializedNotebook(handle, connectionUri, targetDatabase, notebookMaterializedId);
+			},
+			updateNotebookMaterializedName(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> {
+				return self._proxy.$updateNotebookMaterializedName(handle, connectionUri, agentNotebookHistory, targetDatabase, name);
+			},
+			deleteMaterializedNotebook(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus> {
+				return self._proxy.$deleteMaterializedNotebook(handle, connectionUri, agentNotebookHistory, targetDatabase);
+			},
+			updateNotebookMaterializedPin(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> {
+				return self._proxy.$updateNotebookMaterializedPin(handle, connectionUri, agentNotebookHistory, targetDatabase, pin);
+			},
+			getTemplateNotebook(connectionUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult> {
+				return self._proxy.$getTemplateNotebook(handle, connectionUri, targetDatabase, jobId);
+			},
+			deleteNotebook(connectionUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus> {
+				return self._proxy.$deleteNotebook(handle, connectionUri, notebook);
+			},
 			getAlerts(connectionUri: string): Thenable<azdata.AgentAlertsResult> {
 				return self._proxy.$getAlerts(handle, connectionUri);
 			},
@@ -441,59 +457,15 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
-	public $registerDacFxServicesProvider(providerId: string, handle: number): Promise<any> {
+	public $registerSerializationProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
-		this._dacFxService.registerProvider(providerId, <azdata.DacFxServicesProvider>{
-			exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
-				return self._proxy.$exportBacpac(handle, databaseName, packageFilePath, ownerUri, taskExecutionMode);
+		this._serializationService.registerProvider(providerId, <azdata.SerializationProvider>{
+			startSerialization(requestParams: azdata.SerializeDataStartRequestParams): Thenable<azdata.SerializeDataResult> {
+				return self._proxy.$startSerialization(handle, requestParams);
 			},
-			importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
-				return self._proxy.$importBacpac(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
+			continueSerialization(requestParams: azdata.SerializeDataContinueRequestParams): Thenable<azdata.SerializeDataResult> {
+				return self._proxy.$continueSerialization(handle, requestParams);
 			},
-			extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
-				return self._proxy.$extractDacpac(handle, databaseName, packageFilePath, applicationName, applicationVersion, ownerUri, taskExecutionMode);
-			},
-			deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
-				return self._proxy.$deployDacpac(handle, packageFilePath, databaseName, upgradeExisting, ownerUri, taskExecutionMode);
-			},
-			generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
-				return self._proxy.$generateDeployScript(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
-			},
-			generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.GenerateDeployPlanResult> {
-				return self._proxy.$generateDeployPlan(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
-			}
-		});
-
-		return undefined;
-	}
-
-	public $registerSchemaCompareServicesProvider(providerId: string, handle: number): Promise<any> {
-		const self = this;
-		this._schemaCompareService.registerProvider(providerId, <azdata.SchemaCompareServicesProvider>{
-			schemaCompare(operationId: string, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaComapareOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> {
-				return self._proxy.$schemaCompare(handle, operationId, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode, schemaComapareOptions);
-			},
-			schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-				return self._proxy.$schemaCompareGenerateScript(handle, operationId, targetServerName, targetDatabaseName, taskExecutionMode);
-			},
-			schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-				return self._proxy.$schemaComparePublishChanges(handle, operationId, targetServerName, targetDatabaseName, taskExecutionMode);
-			},
-			schemaCompareGetDefaultOptions(): Thenable<azdata.SchemaCompareOptionsResult> {
-				return self._proxy.$schemaCompareGetDefaultOptions(handle);
-			},
-			schemaCompareIncludeExcludeNode(operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-				return self._proxy.$schemaCompareIncludeExcludeNode(handle, operationId, diffEntry, includeRequest, taskExecutionMode);
-			},
-			schemaCompareOpenScmp(filePath: string): Thenable<azdata.SchemaCompareOpenScmpResult> {
-				return self._proxy.$schemaCompareOpenScmp(handle, filePath);
-			},
-			schemaCompareSaveScmp(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: azdata.SchemaCompareObjectId[], excludedTargetObjects: azdata.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> {
-				return self._proxy.$schemaCompareSaveScmp(handle, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode, deploymentOptions, scmpFilePath, excludedSourceObjects, excludedTargetObjects);
-			},
-			schemaCompareCancel(operationId: string): Thenable<azdata.ResultStatus> {
-				return self._proxy.$schemaCompareCancel(handle, operationId);
-			}
 		});
 
 		return undefined;
@@ -550,7 +522,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	}
 
 	public $onObjectExplorerNodeExpanded(providerId: string, expandResponse: azdata.ObjectExplorerExpandInfo): void {
-		let expandInfo: NodeExpandInfoWithProviderId = Object.assign({ providerId: providerId }, expandResponse);
+		let expandInfo: NodeExpandInfoWithProviderId = assign({ providerId: providerId }, expandResponse);
 		this._objectExplorerService.onNodeExpanded(expandInfo);
 	}
 

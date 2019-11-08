@@ -2,10 +2,12 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as os from 'os';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { Schemas } from 'vs/base/common/network';
+import { URI } from 'vs/base/common/uri';
 
-export function handleCopyRequest(clipboardService: IClipboardService, range: Slick.Range, getCellValue: (row, cell) => string): void {
+export function handleCopyRequest(clipboardService: IClipboardService, textResourcePropertiesService: ITextResourcePropertiesService, range: Slick.Range, getCellValue: (row, cell) => string): void {
 	if (range) {
 		let results = '';
 		for (let i = range.fromRow; i <= range.toRow; i++) {
@@ -18,7 +20,7 @@ export function handleCopyRequest(clipboardService: IClipboardService, range: Sl
 			}
 
 			if (i !== range.toRow) {
-				results += os.EOL;
+				results += textResourcePropertiesService.getEOL(URI.from({ scheme: Schemas.untitled }));
 			}
 		}
 		clipboardService.writeText(results);

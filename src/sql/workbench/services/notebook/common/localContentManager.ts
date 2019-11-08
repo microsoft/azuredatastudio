@@ -25,8 +25,12 @@ export class LocalContentManager implements nb.ContentManager {
 	constructor(@IFileService private readonly fileService: IFileService) { }
 
 	public async loadFromContentString(contentString: string): Promise<nb.INotebookContents> {
-		let contents: JSONObject = json.parse(contentString);
-
+		let contents: JSONObject;
+		if (contentString === '' || contentString === undefined) {
+			return v4.createEmptyNotebook();
+		} else {
+			contents = this.parseFromJson(contentString);
+		}
 		if (contents) {
 			if (contents.nbformat === 4) {
 				return v4.readNotebook(<any>contents);
@@ -34,11 +38,8 @@ export class LocalContentManager implements nb.ContentManager {
 				return v3.readNotebook(<any>contents);
 			}
 			if (contents.nbformat) {
-				throw new TypeError(localize('nbformatNotRecognized', 'nbformat v{0}.{1} not recognized', contents.nbformat as any, contents.nbformat_minor as any));
+				throw new TypeError(localize('nbformatNotRecognized', "nbformat v{0}.{1} not recognized", contents.nbformat as any, contents.nbformat_minor as any));
 			}
-		} else if (contentString === '' || contentString === undefined) {
-			// Empty?
-			return v4.createEmptyNotebook();
 		}
 
 		// else, fallthrough condition
@@ -53,7 +54,13 @@ export class LocalContentManager implements nb.ContentManager {
 		// Note: intentionally letting caller handle exceptions
 		let notebookFileBuffer = await this.fileService.readFile(notebookUri);
 		let stringContents = notebookFileBuffer.value.toString();
-		let contents: JSONObject = json.parse(stringContents);
+		let contents: JSONObject;
+		if (stringContents === '' || stringContents === undefined) {
+			// Empty?
+			return v4.createEmptyNotebook();
+		} else {
+			contents = this.parseFromJson(stringContents);
+		}
 
 		if (contents) {
 			if (contents.nbformat === 4) {
@@ -62,11 +69,8 @@ export class LocalContentManager implements nb.ContentManager {
 				return v3.readNotebook(<any>contents);
 			}
 			if (contents.nbformat) {
-				throw new TypeError(localize('nbformatNotRecognized', 'nbformat v{0}.{1} not recognized', contents.nbformat as any, contents.nbformat_minor as any));
+				throw new TypeError(localize('nbformatNotRecognized', "nbformat v{0}.{1} not recognized", contents.nbformat as any, contents.nbformat_minor as any));
 			}
-		} else if (stringContents === '' || stringContents === undefined) {
-			// Empty?
-			return v4.createEmptyNotebook();
 		}
 
 		// else, fallthrough condition
@@ -81,6 +85,15 @@ export class LocalContentManager implements nb.ContentManager {
 		return notebook;
 	}
 
+	private parseFromJson(contentString: string): JSONObject {
+		let contents: JSONObject;
+		try {
+			contents = JSON.parse(contentString);
+		} catch {
+			contents = json.parse(contentString);
+		}
+		return contents;
+	}
 }
 
 namespace v4 {
@@ -118,7 +131,7 @@ namespace v4 {
 			case 'code':
 				return createCodeCell(cell);
 			default:
-				throw new TypeError(localize('unknownCellType', 'Cell type {0} unknown', cell.cell_type));
+				throw new TypeError(localize('unknownCellType', "Cell type {0} unknown", cell.cell_type));
 		}
 	}
 
@@ -177,7 +190,7 @@ namespace v4 {
 				};
 			default:
 				// Should never get here
-				throw new TypeError(localize('unrecognizedOutput', 'Output type {0} not recognized', (<any>output).output_type));
+				throw new TypeError(localize('unrecognizedOutput', "Output type {0} not recognized", (<any>output).output_type));
 		}
 	}
 
@@ -209,7 +222,7 @@ namespace v4 {
 			return demultiline(data);
 		}
 
-		throw new TypeError(localize('invalidMimeData', 'Data for {0} is expected to be a string or an Array of strings', key));
+		throw new TypeError(localize('invalidMimeData', "Data for {0} is expected to be a string or an Array of strings", key));
 	}
 
 	export function demultiline(value: nb.MultilineString): string {
@@ -301,7 +314,7 @@ namespace v3 {
 					traceback: output.traceback
 				};
 			default:
-				throw new TypeError(localize('unrecognizedOutputType', 'Output type {0} not recognized', output.output_type));
+				throw new TypeError(localize('unrecognizedOutputType', "Output type {0} not recognized", output.output_type));
 		}
 	};
 

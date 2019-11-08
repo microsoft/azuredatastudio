@@ -152,7 +152,6 @@ export class JobHistoryRenderer implements tree.IRenderer {
 }
 
 export class JobHistoryFilter implements tree.IFilter {
-	private _filterString: string;
 
 	public isVisible(tree: tree.ITree, element: JobHistoryRow): boolean {
 		return this._isJobVisible();
@@ -163,6 +162,5 @@ export class JobHistoryFilter implements tree.IFilter {
 	}
 
 	public set filterString(val: string) {
-		this._filterString = val;
 	}
 }

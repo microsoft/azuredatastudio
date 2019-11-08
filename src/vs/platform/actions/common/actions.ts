@@ -87,19 +87,21 @@ export const enum MenuId {
 	ProblemsPanelContext,
 	SCMChangeContext,
 	SCMResourceContext,
+	SCMResourceFolderContext,
 	SCMResourceGroupContext,
 	SCMSourceControl,
 	SCMTitle,
 	SearchContext,
 	StatusBarWindowIndicatorMenu,
 	TouchBarContext,
+	TitleBarContext,
 	ViewItemContext,
 	ViewTitle,
-	// {{SQL CARBON EDIT}}
-	ObjectExplorerItemContext,
-	NotebookToolbar,
-	DataExplorerContext,
-	DataExplorerAction,
+	ObjectExplorerItemContext, // {{SQL CARBON EDIT}}
+	NotebookToolbar, // {{SQL CARBON EDIT}}
+	DataExplorerContext, // {{SQL CARBON EDIT}}
+	DataExplorerAction, // {{SQL CARBON EDIT}}
+	ExplorerWidgetContext,  // {{SQL CARBON EDIT}}
 	CommentThreadTitle,
 	CommentThreadActions,
 	CommentTitle,
@@ -121,7 +123,7 @@ export const IMenuService = createDecorator<IMenuService>('menuService');
 
 export interface IMenuService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	createMenu(id: MenuId, scopedKeybindingService: IContextKeyService): IMenu;
 }
@@ -290,13 +292,13 @@ export class MenuItemAction extends ExecuteCommandAction {
 
 export class SyncActionDescriptor {
 
-	private _descriptor: SyncDescriptor0<Action>;
+	private readonly _descriptor: SyncDescriptor0<Action>;
 
-	private _id: string;
-	private _label?: string;
-	private _keybindings: IKeybindings | undefined;
-	private _keybindingContext: ContextKeyExpr | undefined;
-	private _keybindingWeight: number | undefined;
+	private readonly _id: string;
+	private readonly _label?: string;
+	private readonly _keybindings: IKeybindings | undefined;
+	private readonly _keybindingContext: ContextKeyExpr | undefined;
+	private readonly _keybindingWeight: number | undefined;
 
 	constructor(ctor: IConstructorSignature2<string, string, Action>,
 		id: string, label: string | undefined, keybindings?: IKeybindings, keybindingContext?: ContextKeyExpr, keybindingWeight?: number

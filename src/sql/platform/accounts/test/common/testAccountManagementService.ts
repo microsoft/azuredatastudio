@@ -9,22 +9,22 @@ import { IAccountManagementService } from 'sql/platform/accounts/common/interfac
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 
 export class TestAccountManagementService implements IAccountManagementService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
-	public get addAccountProviderEvent(): Event<AccountProviderAddedEventParams> { return () => { return undefined; }; }
-	public get removeAccountProviderEvent(): Event<azdata.AccountProviderMetadata> { return () => { return undefined; }; }
-	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> { return () => { return undefined; }; }
+	public get addAccountProviderEvent(): Event<AccountProviderAddedEventParams> { return Event.None; }
+	public get removeAccountProviderEvent(): Event<azdata.AccountProviderMetadata> { return Event.None; }
+	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> { return Event.None; }
 
 	accountUpdated(account: azdata.Account): Thenable<void> {
-		return undefined;
+		return Promise.resolve();
 	}
 
 	addAccount(providerId: string): Thenable<void> {
-		return undefined;
+		return Promise.resolve();
 	}
 
 	beginAutoOAuthDeviceCode(title: string, message: string, userCode: string, uri: string): Thenable<void> {
-		return undefined;
+		return Promise.resolve();
 	}
 
 	cancelAutoOAuthDeviceCode(providerId: string): void {
@@ -40,27 +40,27 @@ export class TestAccountManagementService implements IAccountManagementService {
 	}
 
 	getAccountProviderMetadata(): Thenable<azdata.AccountProviderMetadata[]> {
-		return undefined;
+		return Promise.resolve([]);
 	}
 
 	getAccountsForProvider(providerId: string): Thenable<azdata.Account[]> {
-		return undefined;
+		return Promise.resolve([]);
 	}
 
 	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}> {
-		return undefined;
+		return Promise.resolve([]);
 	}
 
 	removeAccount(accountKey: azdata.AccountKey): Thenable<boolean> {
-		return undefined;
+		throw new Error('Method not implemented');
 	}
 
 	refreshAccount(account: azdata.Account): Thenable<azdata.Account> {
-		return undefined;
+		throw new Error('Method not implemented');
 	}
 
 	openAccountListDialog(): Promise<any> {
-		return undefined;
+		return Promise.resolve();
 	}
 
 	registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): void {
@@ -94,7 +94,7 @@ export class AccountProviderStub implements azdata.AccountProvider {
 	}
 
 	prompt(): Thenable<azdata.Account> {
-		return Promise.resolve(undefined);
+		throw new Error('Method not implemented');
 	}
 
 	refresh(account: azdata.Account): Thenable<azdata.Account> {

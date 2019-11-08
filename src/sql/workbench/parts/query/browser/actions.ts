@@ -18,9 +18,11 @@ import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
 import { IGridDataProvider } from 'sql/platform/query/common/gridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
-import product from 'vs/platform/product/node/product';
 import { GridTableState } from 'sql/workbench/parts/query/common/gridPanelState';
-import * as Constants from 'sql/workbench/contrib/extensions/constants';
+import * as Constants from 'sql/workbench/contrib/extensions/common/constants';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { getErrorMessage } from 'vs/base/common/errors';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
@@ -77,7 +79,12 @@ export class SaveResultAction extends Action {
 		if (!context.gridDataProvider.canSerialize) {
 			this.notificationService.warn(localize('saveToFileNotSupported', "Save to file is not supported by the backing data source"));
 		}
-		await context.gridDataProvider.serializeResults(this.format, mapForNumberColumn(context.selection));
+		try {
+			await context.gridDataProvider.serializeResults(this.format, mapForNumberColumn(context.selection));
+		} catch (error) {
+			this.notificationService.error(getErrorMessage(error));
+			return false;
+		}
 		return true;
 	}
 }
@@ -210,10 +217,10 @@ export class ChartDataAction extends Action {
 	}
 
 	public run(context: IGridActionContext): Promise<boolean> {
+		// show the visualizer extension recommendation notification
+		this.extensionTipsService.promptRecommendedExtensionsByScenario(Constants.visualizerExtensions);
+
 		const activeEditor = this.editorService.activeControl as QueryEditor;
-		if (product.quality !== 'stable') {
-			this.extensionTipsService.promptRecommendedExtensionsByScenario(Constants.visualizerExtensions);
-		}
 		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
 		return Promise.resolve(true);
 	}
@@ -226,13 +233,18 @@ export class VisualizerDataAction extends Action {
 
 	constructor(
 		private runner: QueryRunner,
-		@IEditorService private editorService: IEditorService,
-
+		@IAdsTelemetryService private adsTelemetryService: IAdsTelemetryService
 	) {
 		super(VisualizerDataAction.ID, VisualizerDataAction.LABEL, VisualizerDataAction.ICON);
 	}
 
 	public run(context: IGridActionContext): Promise<boolean> {
+		this.adsTelemetryService.sendActionEvent(
+			TelemetryKeys.TelemetryView.ResultsPanel,
+			TelemetryKeys.TelemetryAction.Click,
+			'VisualizerButton',
+			'VisualizerDataAction'
+		);
 		this.runner.notifyVisualizeRequested(context.batchId, context.resultId);
 		return Promise.resolve(true);
 	}

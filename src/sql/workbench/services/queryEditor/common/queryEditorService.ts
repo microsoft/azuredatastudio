@@ -8,6 +8,9 @@ import { IConnectableInput } from 'sql/platform/connection/common/connectionMana
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
 
 import { URI } from 'vs/base/common/uri';
+import { ITextModel } from 'vs/editor/common/model';
+import { ILanguageSelection } from 'vs/editor/common/services/modeService';
+import { IEditor } from 'vs/workbench/common/editor';
 
 export interface IQueryEditorOptions extends IEditorOptions {
 
@@ -20,13 +23,10 @@ export const IQueryEditorService = createDecorator<IQueryEditorService>('QueryEd
 
 export interface IQueryEditorService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	// Creates new untitled document for SQL queries and opens it in a new editor tab
 	newSqlEditor(sqlContent?: string, connectionProviderName?: string, isDirty?: boolean, objectName?: string): Promise<IConnectableInput>;
-
-	// Creates a new query plan document
-	newQueryPlanEditor(xmlShowPlan: string): Promise<any>;
 
 	// Creates new edit data session
 	newEditDataEditor(schemaName: string, tableName: string, queryString: string): Promise<IConnectableInput>;
@@ -38,4 +38,6 @@ export interface IQueryEditorService {
 	 * @param newResource URI of the file after the save as operation was completed
 	 */
 	onSaveAsCompleted(oldResource: URI, newResource: URI): void;
+
+	sqlLanguageModeCheck(model: ITextModel, languageSelection: ILanguageSelection, editor: IEditor): Promise<ITextModel>;
 }

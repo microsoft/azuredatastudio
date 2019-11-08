@@ -12,7 +12,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
  * File browser dialog service
  */
 export class FileBrowserDialogController implements IFileBrowserDialogController {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	private _fileBrowserDialog: FileBrowserDialog;
 
 	constructor(

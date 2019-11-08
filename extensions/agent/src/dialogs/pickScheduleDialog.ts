@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
@@ -15,13 +14,13 @@ export class PickScheduleDialog {
 
 	// TODO: localize
 	// Top level
-	private readonly DialogTitle: string = localize('pickSchedule.jobSchedules', 'Job Schedules');
-	private readonly OkButtonText: string = localize('pickSchedule.ok', 'OK');
-	private readonly CancelButtonText: string = localize('pickSchedule.cancel', 'Cancel');
-	private readonly SchedulesLabelText: string = localize('pickSchedule.availableSchedules', 'Available Schedules:');
-	public static readonly ScheduleNameLabelText: string = localize('pickSchedule.scheduleName', 'Name');
-	public static readonly SchedulesIDText: string = localize('pickSchedule.scheduleID', 'ID');
-	public static readonly ScheduleDescription: string = localize('pickSchedule.description', 'Description');
+	private readonly DialogTitle: string = localize('pickSchedule.jobSchedules', "Job Schedules");
+	private readonly OkButtonText: string = localize('pickSchedule.ok', "OK");
+	private readonly CancelButtonText: string = localize('pickSchedule.cancel', "Cancel");
+	private readonly SchedulesLabelText: string = localize('pickSchedule.availableSchedules', "Available Schedules:");
+	public static readonly ScheduleNameLabelText: string = localize('pickSchedule.scheduleName', "Name");
+	public static readonly SchedulesIDText: string = localize('pickSchedule.scheduleID', "ID");
+	public static readonly ScheduleDescription: string = localize('pickSchedule.description', "Description");
 
 
 	// UI Components
@@ -40,7 +39,9 @@ export class PickScheduleDialog {
 
 	public async showDialog() {
 		this.model.initialize().then((result) => {
-			this.loadingComponent.loading = false;
+			if (this.loadingComponent) {
+				this.loadingComponent.loading = false;
+			}
 			if (this.model.schedules) {
 				let data: any[][] = [];
 				for (let i = 0; i < this.model.schedules.length; ++i) {
@@ -81,8 +82,21 @@ export class PickScheduleDialog {
 
 			this.loadingComponent = view.modelBuilder.loadingComponent().withItem(formModel).component();
 			this.loadingComponent.loading = true;
+			this.model.initialize().then((result) => {
+				this.loadingComponent.loading = false;
+				if (this.model.schedules) {
+					let data: any[][] = [];
+					for (let i = 0; i < this.model.schedules.length; ++i) {
+						let schedule = this.model.schedules[i];
+						data[i] = [schedule.id, schedule.name, schedule.description];
+					}
+					this.schedulesTable.data = data;
+				}
+			});
+			this.loadingComponent.loading = !this.model.isInitialized();
 			await view.initializeModel(this.loadingComponent);
 		});
+
 	}
 
 	private async execute() {

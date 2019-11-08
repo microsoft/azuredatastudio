@@ -23,7 +23,7 @@ class DivItem {
 
 @Component({
 	template: `
-		<div #divContainer *ngIf="items" class="divContainer" [style.height]="height" [style.width]="width"  (click)="onClick()" (keyup)="onKey($event)" [tabIndex]="tabIndex">
+		<div #divContainer *ngIf="items" class="divContainer" [style.height]="height" [style.width]="width" [style.display]="display" (click)="onClick()" (keyup)="onKey($event)">
 			<div *ngFor="let item of items" [style.order]="getItemOrder(item)" [ngStyle]="getItemStyles(item)">
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
@@ -70,6 +70,7 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout> im
 			this.updateOverflowY();
 		}
 		this.updateScroll();
+		this.updateClickable();
 	}
 
 	private updateOverflowY() {
@@ -84,6 +85,17 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout> im
 		let element = <HTMLElement>this.divContainer.nativeElement;
 		element.scrollTop = element.scrollTop - this.yOffsetChange;
 		element.dispatchEvent(new Event('scroll'));
+	}
+
+	private updateClickable(): void {
+		const element = <HTMLElement>this.divContainer.nativeElement;
+		if (this.clickable) {
+			element.tabIndex = 0;
+			element.style.cursor = 'pointer';
+		} else {
+			element.removeAttribute('tabIndex');
+			element.style.cursor = 'default';
+		}
 	}
 
 	private onClick() {
@@ -121,11 +133,7 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout> im
 		return this.getPropertyOrDefault<azdata.DivContainerProperties, boolean>((props) => props.clickable, false);
 	}
 
-	public get tabIndex(): number {
-		return this.clickable ? 0 : -1;
-	}
-
-	private onKey(e: KeyboardEvent) {
+	public onKey(e: KeyboardEvent) {
 		let event = new StandardKeyboardEvent(e);
 		if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 			this.onClick();
@@ -133,10 +141,10 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout> im
 		}
 	}
 
-	private getItemOrder(item: DivItem): number {
+	public getItemOrder(item: DivItem): number {
 		return item.config ? item.config.order : 0;
 	}
-	private getItemStyles(item: DivItem): { [key: string]: string } {
+	public getItemStyles(item: DivItem): { [key: string]: string } {
 		return item.config && item.config.CSSStyles ? item.config.CSSStyles : {};
 	}
 }

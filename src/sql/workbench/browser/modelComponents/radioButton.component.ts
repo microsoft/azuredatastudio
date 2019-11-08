@@ -74,8 +74,8 @@ export default class RadioButtonComponent extends ComponentBase implements IComp
 		this._input.value = this.value;
 		this._input.label = this.label;
 		this._input.enabled = this.enabled;
-
 		this._input.checked = this.checked;
+		this.focused ? this._input.focus() : this._input.blur();
 	}
 
 	// CSS-bound properties
@@ -114,5 +114,13 @@ export default class RadioButtonComponent extends ComponentBase implements IComp
 
 	public set name(newValue: string) {
 		this.setPropertyFromUI<azdata.RadioButtonProperties, string>((properties, label) => { properties.name = label; }, newValue);
+	}
+
+	public get focused(): boolean {
+		return this.getPropertyOrDefault<azdata.RadioButtonProperties, boolean>((props) => props.focused, false);
+	}
+
+	public set focused(newValue: boolean) {
+		this.setPropertyFromUI<azdata.RadioButtonProperties, boolean>((properties, value) => { properties.focused = value; }, newValue);
 	}
 }

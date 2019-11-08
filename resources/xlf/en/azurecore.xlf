@@ -53,27 +53,17 @@
       <source xml:lang="en">Should Azure Germany integration be enabled</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/azurecore/out/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel">
-      <source xml:lang="en">SQL Servers</source>
+  <file original="extensions/azurecore/dist/azureResource/utils" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.error">
+      <source xml:lang="en">Error: {0}</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/azurecore/out/azureResource/providers/database/databaseTreeDataProvider" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
-      <source xml:lang="en">SQL Databases</source>
+  <file original="extensions/azurecore/dist/constants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="extensionName">
+      <source xml:lang="en">Azure Accounts</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/azurecore/out/azureResource/tree/treeProvider" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="azure.resource.tree.treeProvider.loadingLabel">
-      <source xml:lang="en">Loading ...</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/azurecore/out/azureResource/tree/subscriptionTreeNode" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="azure.resource.tree.subscriptionTreeNode.noResourcesLabel">
-      <source xml:lang="en">No Resources found.</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/azurecore/out/azureResource/tree/accountTreeNode" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/azurecore/dist/azureResource/tree/accountTreeNode" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.tree.accountTreeNode.credentialError">
       <source xml:lang="en">Failed to get credential for account {0}. Please refresh the account.</source>
     </trans-unit>
@@ -81,32 +71,7 @@
       <source xml:lang="en">No Subscriptions found.</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/azurecore/out/azureResource/tree/accountNotSignedInTreeNode" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="azure.resource.tree.accountNotSignedInTreeNode.signInLabel">
-      <source xml:lang="en">Sign in to Azure...</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/azurecore/out/azureResource/utils" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="azure.resource.error">
-      <source xml:lang="en">Error: {0}</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/azurecore/out/azureResource/resourceTreeNode" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="azure.resource.resourceTreeNode.noResourcesLabel">
-      <source xml:lang="en">No Resources found</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/azurecore/out/azureResource/commands" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="azure.resource.selectsubscriptions.credentialError">
-      <source xml:lang="en">Failed to get credential for account {0}. Please refresh the account.</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/azurecore/out/account-provider/providerSettings" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="publicCloudDisplayName">
-      <source xml:lang="en">Azure</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/azurecore/out/account-provider/azureAccountProviderService" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/azurecore/dist/account-provider/azureAccountProviderService" source-language="en" datatype="plaintext"><body>
     <trans-unit id="clearTokenCacheSuccess">
       <source xml:lang="en">Token cache successfully cleared</source>
     </trans-unit>
@@ -114,7 +79,12 @@
       <source xml:lang="en">Failed to clear token cache</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/azurecore/out/account-provider/azureAccountProvider" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/azurecore/dist/account-provider/providerSettings" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="publicCloudDisplayName">
+      <source xml:lang="en">Azure</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/azurecore/dist/account-provider/azureAccountProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="accountProviderNotInitialized">
       <source xml:lang="en">Account provider not initialized, cannot perform action</source>
     </trans-unit>
@@ -131,9 +101,39 @@
       <source xml:lang="en">Microsoft Account</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/azurecore/out/constants" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="extensionName">
-      <source xml:lang="en">Azure Accounts</source>
+  <file original="extensions/azurecore/dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel">
+      <source xml:lang="en">SQL Servers</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/azurecore/dist/azureResource/providers/database/databaseTreeDataProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
+      <source xml:lang="en">SQL Databases</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/azurecore/dist/azureResource/commands" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.selectsubscriptions.credentialError">
+      <source xml:lang="en">Failed to get credential for account {0}. Please refresh the account.</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/azurecore/dist/azureResource/tree/subscriptionTreeNode" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.tree.subscriptionTreeNode.noResourcesLabel">
+      <source xml:lang="en">No Resources found.</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/azurecore/dist/azureResource/resourceTreeNode" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.resourceTreeNode.noResourcesLabel">
+      <source xml:lang="en">No Resources found</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/azurecore/dist/azureResource/tree/treeProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.tree.treeProvider.loadingLabel">
+      <source xml:lang="en">Loading ...</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/azurecore/dist/azureResource/tree/accountNotSignedInTreeNode" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.tree.accountNotSignedInTreeNode.signInLabel">
+      <source xml:lang="en">Sign in to Azure...</source>
     </trans-unit>
   </body></file>
 </xliff>

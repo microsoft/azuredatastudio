@@ -6,7 +6,7 @@
 import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 
 // import { IProgressRunner, IProgressService } from 'vs/platform/progress/common/progress';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
@@ -15,8 +15,9 @@ import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/tree
 export class TreeSelectionHandler {
 	// progressRunner: IProgressRunner;
 
-	private _clicks: number = 0;
-	private _doubleClickTimeoutTimer: NodeJS.Timer = undefined;
+	private _lastClicked: any[];
+	private _clickTimer: any = undefined;
+	private _otherTimer: any = undefined;
 
 	// constructor(@IProgressService private _progressService: IProgressService) {
 
@@ -38,33 +39,54 @@ export class TreeSelectionHandler {
 		return event && event.payload && event.payload.origin === 'mouse';
 	}
 
+	private isKeyboardEvent(event: any): boolean {
+		return event && event.payload && event.payload.origin === 'keyboard';
+	}
+
 	/**
-	 * Handle selection of tree element
+	 * Handle select	ion of tree element
 	 */
 	public onTreeSelect(event: any, tree: ITree, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, connectionCompleteCallback: () => void) {
-		if (this.isMouseEvent(event)) {
-			this._clicks++;
-		}
+		let sendSelectionEvent = ((event: any, selection: any, isDoubleClick: boolean, userInteraction: boolean) => {
+			// userInteraction: defensive - don't touch this something else is handling it.
+			if (userInteraction === true && this._lastClicked && this._lastClicked[0] === selection[0]) {
+				this._lastClicked = undefined;
+			}
+			if (!TreeUpdateUtils.isInDragAndDrop) {
+				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback);
+			}
+		});
 
-		// clear pending click timeouts to avoid sending multiple events on double-click
-		if (this._doubleClickTimeoutTimer) {
-			clearTimeout(this._doubleClickTimeoutTimer);
-		}
-
-		let isKeyboard = event && event.payload && event.payload.origin === 'keyboard';
-
-		// grab the current selection for use later
 		let selection = tree.getSelection();
 
-		this._doubleClickTimeoutTimer = setTimeout(() => {
-			// don't send tree update events while dragging
-			if (!TreeUpdateUtils.isInDragAndDrop) {
-				let isDoubleClick = this._clicks > 1;
-				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, isDoubleClick, isKeyboard, selection, tree, connectionCompleteCallback);
+		if (!selection || selection.length === 0) {
+			return;
+		}
+		let specificSelection = selection[0];
+
+		if (this.isMouseEvent(event) || this.isKeyboardEvent(event)) {
+			if (this._lastClicked !== undefined) {
+				clearTimeout(this._clickTimer);
+				let lastSpecificClick = this._lastClicked[0];
+
+				if (lastSpecificClick === specificSelection) {
+					sendSelectionEvent(event, selection, true, true);
+					return;
+				} else {
+					sendSelectionEvent(event, this._lastClicked, false, true);
+				}
 			}
-			this._clicks = 0;
-			this._doubleClickTimeoutTimer = undefined;
-		}, 300);
+			this._lastClicked = selection;
+
+			this._clickTimer = setTimeout(() => {
+				sendSelectionEvent(event, selection, false, true);
+			}, 400);
+		} else {
+			clearTimeout(this._otherTimer);
+			this._otherTimer = setTimeout(() => {
+				sendSelectionEvent(event, selection, false, false);
+			}, 400);
+		}
 	}
 
 	/**

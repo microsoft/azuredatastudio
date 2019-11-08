@@ -9,7 +9,7 @@ import { Event } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import { SingleConnectionManagementService } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { SingleConnectionManagementService } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 
 export abstract class DashboardTab extends TabChild implements OnDestroy {
 	public abstract layout(): void;

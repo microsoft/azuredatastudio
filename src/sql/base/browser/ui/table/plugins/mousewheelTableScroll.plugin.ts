@@ -6,7 +6,7 @@
 import * as DOM from 'vs/base/browser/dom';
 import * as Platform from 'vs/base/common/platform';
 import { StandardWheelEvent, IMouseWheelEvent } from 'vs/base/browser/mouseEvent';
-import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { DisposableStore } from 'vs/base/common/lifecycle';
 import { mixin } from 'vs/base/common/objects';
 
 const SCROLL_WHEEL_SENSITIVITY = 50;
@@ -25,7 +25,7 @@ export class MouseWheelSupport implements Slick.Plugin<any> {
 	private canvas: HTMLElement;
 	private options: IMouseWheelSupportOptions;
 
-	private _disposables: IDisposable[] = [];
+	private _disposables = new DisposableStore();
 
 	constructor(options: IMouseWheelSupportOptions = {}) {
 		this.options = defaultOptions;
@@ -39,8 +39,8 @@ export class MouseWheelSupport implements Slick.Plugin<any> {
 			let e = new StandardWheelEvent(browserEvent);
 			this._onMouseWheel(e);
 		};
-		this._disposables.push(DOM.addDisposableListener(this.viewport, 'mousewheel', onMouseWheel));
-		this._disposables.push(DOM.addDisposableListener(this.viewport, 'DOMMouseScroll', onMouseWheel));
+		this._disposables.add(DOM.addDisposableListener(this.viewport, 'mousewheel', onMouseWheel));
+		this._disposables.add(DOM.addDisposableListener(this.viewport, 'DOMMouseScroll', onMouseWheel));
 	}
 
 	private _onMouseWheel(e: StandardWheelEvent) {
@@ -111,6 +111,6 @@ export class MouseWheelSupport implements Slick.Plugin<any> {
 	}
 
 	destroy() {
-		dispose(this._disposables);
+		this._disposables.dispose();
 	}
 }

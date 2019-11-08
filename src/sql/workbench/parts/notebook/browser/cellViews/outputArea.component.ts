@@ -6,7 +6,7 @@ import 'vs/css!./code';
 import 'vs/css!./outputArea';
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, forwardRef, ChangeDetectorRef } from '@angular/core';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import * as themeColors from 'vs/workbench/common/theme';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { URI } from 'vs/base/common/uri';
@@ -54,7 +54,9 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 	}
 
 	private setFocusAndScroll(node: HTMLElement): void {
-		if (node) {
+		// If offsetParent is null, the element isn't visible
+		// In this case, we don't want a cell to grab focus for an editor that isn't in the foreground
+		if (node && node.offsetParent) {
 			node.focus();
 			node.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 		}

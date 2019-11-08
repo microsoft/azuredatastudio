@@ -8,20 +8,22 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
+import * as mssql from '../../mssql';
 import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
 import { Telemetry } from './telemetry';
-import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri } from './utils';
+import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri, getRootPath } from './utils';
 import { SchemaCompareDialog } from './dialogs/schemaCompareDialog';
 import { isNullOrUndefined } from 'util';
 const localize = nls.loadMessageBundle();
-const msSqlProvider = 'MSSQL';
-const diffEditorTitle = localize('schemaCompare.CompareDetailsTitle', 'Compare Details');
-const applyConfirmation = localize('schemaCompare.ApplyConfirmation', 'Are you sure you want to update the target?');
-const reCompareToRefeshMessage = localize('schemaCompare.RecompareToRefresh', 'Press Compare to refresh the comparison.');
-const generateScriptEnabledMessage = localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target');
-const generateScriptNoChangesMessage = localize('schemaCompare.generateScriptNoChanges', 'No changes to script');
-const applyEnabledMessage = localize('schemaCompare.applyButtonEnabledTitle', 'Apply changes to target');
-const applyNoChangesMessage = localize('schemaCompare.applyNoChanges', 'No changes to apply');
+const diffEditorTitle = localize('schemaCompare.CompareDetailsTitle', "Compare Details");
+const applyConfirmation = localize('schemaCompare.ApplyConfirmation', "Are you sure you want to update the target?");
+const reCompareToRefeshMessage = localize('schemaCompare.RecompareToRefresh', "Press Compare to refresh the comparison.");
+const generateScriptEnabledMessage = localize('schemaCompare.generateScriptEnabledButton', "Generate script to deploy changes to target");
+const generateScriptNoChangesMessage = localize('schemaCompare.generateScriptNoChanges', "No changes to script");
+const applyEnabledMessage = localize('schemaCompare.applyButtonEnabledTitle', "Apply changes to target");
+const applyNoChangesMessage = localize('schemaCompare.applyNoChanges', "No changes to apply");
+const includeExcludeInfoMessage = localize('schemaCompare.includeExcludeInfoMessage', "Please note that include/exclude operations can take a moment to calculate affected dependencies");
+
 // Do not localize this, this is used to decide the icon for the editor.
 // TODO : In future icon should be decided based on language id (scmp) and not resource name
 const schemaCompareResourceName = 'Schema Compare';
@@ -56,30 +58,32 @@ export class SchemaCompareMainWindow {
 	private saveScmpButton: azdata.ButtonComponent;
 	private SchemaCompareActionMap: Map<Number, string>;
 	private operationId: string;
-	private comparisonResult: azdata.SchemaCompareResult;
+	private comparisonResult: mssql.SchemaCompareResult;
 	private sourceNameComponent: azdata.TableComponent;
 	private targetNameComponent: azdata.TableComponent;
-	private deploymentOptions: azdata.DeploymentOptions;
+	private deploymentOptions: mssql.DeploymentOptions;
 	private schemaCompareOptionDialog: SchemaCompareOptionsDialog;
 	private tablelistenersToDispose: vscode.Disposable[] = [];
-	private originalSourceExcludes = new Map<string, azdata.DiffEntry>();
-	private originalTargetExcludes = new Map<string, azdata.DiffEntry>();
+	private originalSourceExcludes = new Map<string, mssql.DiffEntry>();
+	private originalTargetExcludes = new Map<string, mssql.DiffEntry>();
 	private sourceTargetSwitched = false;
 	private sourceName: string;
 	private targetName: string;
-	private scmpSourceExcludes: azdata.SchemaCompareObjectId[];
-	private scmpTargetExcludes: azdata.SchemaCompareObjectId[];
+	private scmpSourceExcludes: mssql.SchemaCompareObjectId[];
+	private scmpTargetExcludes: mssql.SchemaCompareObjectId[];
+	private diffEntryRowMap = new Map<string, number>();
+	private showIncludeExcludeWaitingMessage: boolean = true;
 
-	public sourceEndpointInfo: azdata.SchemaCompareEndpointInfo;
-	public targetEndpointInfo: azdata.SchemaCompareEndpointInfo;
+	public sourceEndpointInfo: mssql.SchemaCompareEndpointInfo;
+	public targetEndpointInfo: mssql.SchemaCompareEndpointInfo;
 
-	constructor() {
+	constructor(private schemaCompareService?: mssql.ISchemaCompareService, private extensionContext?: vscode.ExtensionContext) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
-		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Delete] = localize('schemaCompare.deleteAction', 'Delete');
-		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Change] = localize('schemaCompare.changeAction', 'Change');
-		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', 'Add');
+		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Delete] = localize('schemaCompare.deleteAction', "Delete");
+		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Change] = localize('schemaCompare.changeAction', "Change");
+		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', "Add");
 
-		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true, resourceName: schemaCompareResourceName });
+		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', "Schema Compare"), { retainContextWhenHidden: true, supportsSave: true, resourceName: schemaCompareResourceName });
 	}
 
 	public async start(context: any) {
@@ -88,7 +92,7 @@ export class SchemaCompareMainWindow {
 		if (profile) {
 			let ownerUri = await azdata.connection.getUriForConnection((profile.id));
 			this.sourceEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.Database,
+				endpointType: mssql.SchemaCompareEndpointType.Database,
 				serverDisplayName: `${profile.serverName} ${profile.userName}`,
 				serverName: profile.serverName,
 				databaseName: profile.databaseName,
@@ -101,7 +105,7 @@ export class SchemaCompareMainWindow {
 		this.editor.registerContent(async view => {
 			this.differencesTable = view.modelBuilder.table().withProperties({
 				data: [],
-				height: 300
+				title: localize('schemaCompare.differencesTableTitle', "Comparison between Source and Target")
 			}).component();
 
 			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
@@ -158,17 +162,17 @@ export class SchemaCompareMainWindow {
 			}]);
 
 			let sourceLabel = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.sourceLabel', 'Source'),
+				value: localize('schemaCompare.sourceLabel', "Source"),
 				CSSStyles: { 'margin-bottom': '0px' }
 			}).component();
 
 			let targetLabel = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.targetLabel', 'Target'),
+				value: localize('schemaCompare.targetLabel', "Target"),
 				CSSStyles: { 'margin-bottom': '0px' }
 			}).component();
 
 			let arrowLabel = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.switchLabel', '➔')
+				value: localize('schemaCompare.switchLabel', "➔")
 			}).component();
 
 			this.sourceName = getEndpointName(this.sourceEndpointInfo);
@@ -203,15 +207,15 @@ export class SchemaCompareMainWindow {
 
 			this.loader = view.modelBuilder.loadingComponent().component();
 			this.waitText = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.waitText', 'Initializing Comparison. This might take a moment.')
+				value: localize('schemaCompare.waitText', "Initializing Comparison. This might take a moment.")
 			}).component();
 
 			this.startText = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.startText', 'To compare two schemas, first select a source schema and target schema, then press Compare.')
+				value: localize('schemaCompare.startText', "To compare two schemas, first select a source schema and target schema, then press Compare.")
 			}).component();
 
 			this.noDifferencesLabel = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.noDifferences', 'No schema differences were found.')
+				value: localize('schemaCompare.noDifferences', "No schema differences were found.")
 			}).component();
 
 			this.flexModel = view.modelBuilder.flexContainer().component();
@@ -257,18 +261,22 @@ export class SchemaCompareMainWindow {
 	}
 
 	// only for test
-	public getComparisonResult(): azdata.SchemaCompareResult {
+	public getComparisonResult(): mssql.SchemaCompareResult {
 		return this.comparisonResult;
 	}
 
 	// only for test
-	public getDeploymentOptions(): azdata.DeploymentOptions {
+	public getDeploymentOptions(): mssql.DeploymentOptions {
 		return this.deploymentOptions;
+	}
+
+	public setDeploymentOptions(deploymentOptions: mssql.DeploymentOptions): void {
+		this.deploymentOptions = deploymentOptions;
 	}
 
 	public async execute(): Promise<void> {
 		Telemetry.sendTelemetryEvent('SchemaComparisonStarted');
-		const service = await SchemaCompareMainWindow.getService(msSqlProvider);
+		const service = await this.getService();
 		if (!this.operationId) {
 			// create once per page
 			this.operationId = generateGuid();
@@ -293,34 +301,29 @@ export class SchemaCompareMainWindow {
 			data: data,
 			columns: [
 				{
-					value: localize('schemaCompare.typeColumn', 'Type'),
-					toolTip: localize('schemaCompare.typeColumn', 'Type'),
+					value: localize('schemaCompare.typeColumn', "Type"),
 					cssClass: 'align-with-header',
 					width: 50
 				},
 				{
-					value: localize('schemaCompare.sourceNameColumn', 'Source Name'),
-					toolTip: localize('schemaCompare.sourceNameColumn', 'Source Name'),
+					value: localize('schemaCompare.sourceNameColumn', "Source Name"),
 					cssClass: 'align-with-header',
 					width: 90
 				},
 				{
-					value: localize('schemaCompare.includeColumnName', 'Include'),
-					toolTip: localize('schemaCompare.includeColumnName', 'Include'),
+					value: localize('schemaCompare.includeColumnName', "Include"),
 					cssClass: 'align-with-header',
 					width: 60,
 					type: azdata.ColumnType.checkBox,
 					options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction }
 				},
 				{
-					value: localize('schemaCompare.actionColumn', 'Action'),
-					toolTip: localize('schemaCompare.actionColumn', 'Action'),
+					value: localize('schemaCompare.actionColumn', "Action"),
 					cssClass: 'align-with-header',
 					width: 30
 				},
 				{
-					value: localize('schemaCompare.targetNameColumn', 'Target Name'),
-					toolTip: localize('schemaCompare.targetNameColumn', 'Target Name'),
+					value: localize('schemaCompare.targetNameColumn', "Target Name"),
 					cssClass: 'align-with-header',
 					width: 150
 				}
@@ -341,15 +344,20 @@ export class SchemaCompareMainWindow {
 		this.resetButtons(ResetButtonState.afterCompareComplete);
 
 		if (this.comparisonResult.differences.length > 0) {
-			this.flexModel.addItem(this.splitView, { CSSStyles: { 'overflow': 'hidden' } });
+			this.flexModel.addItem(this.splitView);
+
+			// create a map of the differences to row numbers
+			for (let i = 0; i < data.length; ++i) {
+				this.diffEntryRowMap.set(this.createDiffEntryKey(this.comparisonResult.differences[i]), i);
+			}
 
 			// only enable generate script button if the target is a db
-			if (this.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
+			if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
 				this.generateScriptButton.enabled = true;
 				this.applyButton.enabled = true;
 			} else {
-				this.generateScriptButton.title = localize('schemaCompare.generateScriptButtonDisabledTitle', 'Generate script is enabled when the target is a database');
-				this.applyButton.title = localize('schemaCompare.applyButtonDisabledTitle', 'Apply is enabled when the target is a database');
+				this.generateScriptButton.title = localize('schemaCompare.generateScriptButtonDisabledTitle', "Generate script is enabled when the target is a database");
+				this.applyButton.title = localize('schemaCompare.applyButtonDisabledTitle', "Apply is enabled when the target is a database");
 			}
 		} else {
 			this.flexModel.addItem(this.noDifferencesLabel, { CSSStyles: { 'margin': 'auto' } });
@@ -386,9 +394,54 @@ export class SchemaCompareMainWindow {
 		this.tablelistenersToDispose.push(this.differencesTable.onCellAction(async (rowState) => {
 			let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 			if (checkboxState) {
+				// show an info notification the first time when trying to exclude to notify the user that it may take some time to calculate affected dependencies
+				if (this.showIncludeExcludeWaitingMessage) {
+					this.showIncludeExcludeWaitingMessage = false;
+					vscode.window.showInformationMessage(includeExcludeInfoMessage);
+				}
+
 				let diff = this.comparisonResult.differences[checkboxState.row];
-				await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, checkboxState.checked, azdata.TaskExecutionMode.execute);
-				this.saveExcludeState(checkboxState);
+				const result = await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, checkboxState.checked, azdata.TaskExecutionMode.execute);
+				let checkboxesToChange = [];
+				if (result.success) {
+					this.saveExcludeState(checkboxState);
+
+					// dependencies could have been included or excluded as a result, so save their exclude states
+					result.affectedDependencies.forEach(difference => {
+						// find the row of the difference and set its checkbox
+						const diffEntryKey = this.createDiffEntryKey(difference);
+						if (this.diffEntryRowMap.has(diffEntryKey)) {
+							const row = this.diffEntryRowMap.get(diffEntryKey);
+							checkboxesToChange.push({ row: row, column: 2, columnName: 'Include', checked: difference.included });
+							const dependencyCheckBoxState: azdata.ICheckboxCellActionEventArgs = {
+								checked: difference.included,
+								row: row,
+								column: 2,
+								columnName: undefined
+							};
+							this.saveExcludeState(dependencyCheckBoxState);
+						}
+					});
+				} else {
+					// failed because of dependencies
+					if (result.blockingDependencies) {
+						// show the first dependent that caused this to fail in the warning message
+						const diffEntryName = this.createName(diff.sourceValue ? diff.sourceValue : diff.targetValue);
+						const firstDependentName = this.createName(result.blockingDependencies[0].sourceValue ? result.blockingDependencies[0].sourceValue : result.blockingDependencies[0].targetValue);
+						const cannotExcludeMessage = localize('schemaCompare.cannotExcludeMessage', "Cannot exclude {0}. Included dependents exist such as {1}", diffEntryName, firstDependentName);
+						const cannotIncludeMessage = localize('schemaCompare.cannotIncludeMessage', "Cannot include {0}. Excluded dependents exist such as {1}", diffEntryName, firstDependentName);
+						vscode.window.showWarningMessage(checkboxState.checked ? cannotIncludeMessage : cannotExcludeMessage);
+					} else {
+						vscode.window.showWarningMessage(result.errorMessage);
+					}
+
+					// set checkbox back to previous state
+					checkboxesToChange.push({ row: checkboxState.row, column: checkboxState.column, columnName: 'Include', checked: !checkboxState.checked });
+				}
+
+				if (checkboxesToChange.length > 0) {
+					this.differencesTable.updateCells = checkboxesToChange;
+				}
 			}
 		}));
 	}
@@ -396,6 +449,7 @@ export class SchemaCompareMainWindow {
 	// save state based on source name if present otherwise target name (parity with SSDT)
 	private saveExcludeState(rowState: azdata.ICheckboxCellActionEventArgs) {
 		if (rowState) {
+			this.differencesTable.data[rowState.row][2] = rowState.checked;
 			let diff = this.comparisonResult.differences[rowState.row];
 			let key = (diff.sourceValue && diff.sourceValue.length > 0) ? this.createName(diff.sourceValue) : this.createName(diff.targetValue);
 			if (key) {
@@ -431,7 +485,7 @@ export class SchemaCompareMainWindow {
 		}
 	}
 
-	private shouldDiffBeIncluded(diff: azdata.DiffEntry): boolean {
+	private shouldDiffBeIncluded(diff: mssql.DiffEntry): boolean {
 		let key = (diff.sourceValue && diff.sourceValue.length > 0) ? this.createName(diff.sourceValue) : this.createName(diff.targetValue);
 		if (key) {
 			if (this.sourceTargetSwitched === true
@@ -449,7 +503,7 @@ export class SchemaCompareMainWindow {
 		return true;
 	}
 
-	private hasExcludeEntry(collection: azdata.SchemaCompareObjectId[], entryName: string): boolean {
+	private hasExcludeEntry(collection: mssql.SchemaCompareObjectId[], entryName: string): boolean {
 		let found = false;
 		if (collection) {
 			const index = collection.findIndex(e => this.createName(e.nameParts) === entryName);
@@ -458,20 +512,19 @@ export class SchemaCompareMainWindow {
 		return found;
 	}
 
-	private removeExcludeEntry(collection: azdata.SchemaCompareObjectId[], entryName: string) {
+	private removeExcludeEntry(collection: mssql.SchemaCompareObjectId[], entryName: string) {
 		if (collection) {
-			console.error('removing ' + entryName);
 			const index = collection.findIndex(e => this.createName(e.nameParts) === entryName);
 			collection.splice(index, 1);
 		}
 	}
 
-	private getAllDifferences(differences: azdata.DiffEntry[]): string[][] {
+	private getAllDifferences(differences: mssql.DiffEntry[]): string[][] {
 		let data = [];
-		let finalDifferences: azdata.DiffEntry[] = [];
+		let finalDifferences: mssql.DiffEntry[] = [];
 		if (differences) {
 			differences.forEach(difference => {
-				if (difference.differenceType === azdata.SchemaDifferenceType.Object) {
+				if (difference.differenceType === mssql.SchemaDifferenceType.Object) {
 					if ((difference.sourceValue !== null && difference.sourceValue.length > 0) || (difference.targetValue !== null && difference.targetValue.length > 0)) {
 						finalDifferences.push(difference); // Add only non-null changes to ensure index does not mismatch between dictionay and UI - #6234
 						let state: boolean = this.shouldDiffBeIncluded(difference);
@@ -491,7 +544,11 @@ export class SchemaCompareMainWindow {
 		return nameParts.join('.');
 	}
 
-	private getFormattedScript(diffEntry: azdata.DiffEntry, getSourceScript: boolean): string {
+	private createDiffEntryKey(entry: mssql.DiffEntry): string {
+		return `${this.createName(entry.sourceValue)}_${this.createName(entry.targetValue)}_${entry.updateAction}_${entry.name}`;
+	}
+
+	private getFormattedScript(diffEntry: mssql.DiffEntry, getSourceScript: boolean): string {
 		// if there is no entry, the script has to be \n because an empty string shows up as a difference but \n doesn't
 		if ((getSourceScript && diffEntry.sourceScript === null)
 			|| (!getSourceScript && diffEntry.targetScript === null)) {
@@ -502,7 +559,7 @@ export class SchemaCompareMainWindow {
 		return script;
 	}
 
-	private getAggregatedScript(diffEntry: azdata.DiffEntry, getSourceScript: boolean): string {
+	private getAggregatedScript(diffEntry: mssql.DiffEntry, getSourceScript: boolean): string {
 		let script = '';
 		if (diffEntry !== null) {
 			let diffEntryScript = getSourceScript ? diffEntry.sourceScript : diffEntry.targetScript;
@@ -525,6 +582,7 @@ export class SchemaCompareMainWindow {
 		this.flexModel.removeItem(this.startText);
 		this.flexModel.addItem(this.loader, { CSSStyles: { 'margin-top': '30px' } });
 		this.flexModel.addItem(this.waitText, { CSSStyles: { 'margin-top': '30px', 'align-self': 'center' } });
+		this.showIncludeExcludeWaitingMessage = true;
 		this.diffEditor.updateProperties({
 			contentLeft: os.EOL,
 			contentRight: os.EOL,
@@ -541,12 +599,12 @@ export class SchemaCompareMainWindow {
 
 	private createCompareButton(view: azdata.ModelView): void {
 		this.compareButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.compareButton', 'Compare'),
+			label: localize('schemaCompare.compareButton', "Compare"),
 			iconPath: {
-				light: path.join(__dirname, 'media', 'compare.svg'),
-				dark: path.join(__dirname, 'media', 'compare-inverse.svg')
+				light: path.join(this.extensionContext.extensionPath, 'media', 'compare.svg'),
+				dark: path.join(this.extensionContext.extensionPath, 'media', 'compare-inverse.svg')
 			},
-			title: localize('schemaCompare.compareButtonTitle', 'Compare')
+			title: localize('schemaCompare.compareButtonTitle', "Compare")
 		}).component();
 
 		this.compareButton.onDidClick(async (click) => {
@@ -556,12 +614,12 @@ export class SchemaCompareMainWindow {
 
 	private createCancelButton(view: azdata.ModelView): void {
 		this.cancelCompareButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.cancelCompareButton', 'Stop'),
+			label: localize('schemaCompare.cancelCompareButton', "Stop"),
 			iconPath: {
-				light: path.join(__dirname, 'media', 'stop.svg'),
-				dark: path.join(__dirname, 'media', 'stop-inverse.svg')
+				light: path.join(this.extensionContext.extensionPath, 'media', 'stop.svg'),
+				dark: path.join(this.extensionContext.extensionPath, 'media', 'stop-inverse.svg')
 			},
-			title: localize('schemaCompare.cancelCompareButtonTitle', 'Stop')
+			title: localize('schemaCompare.cancelCompareButtonTitle', "Stop")
 		}).component();
 
 		this.cancelCompareButton.onDidClick(async (click) => {
@@ -584,7 +642,7 @@ export class SchemaCompareMainWindow {
 
 		// cancel compare
 		if (this.operationId) {
-			const service = await SchemaCompareMainWindow.getService(msSqlProvider);
+			const service = await this.getService();
 			const result = await service.schemaCompareCancel(this.operationId);
 
 			if (!result || !result.success) {
@@ -604,10 +662,10 @@ export class SchemaCompareMainWindow {
 
 	private createGenerateScriptButton(view: azdata.ModelView): void {
 		this.generateScriptButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.generateScriptButton', 'Generate script'),
+			label: localize('schemaCompare.generateScriptButton', "Generate script"),
 			iconPath: {
-				light: path.join(__dirname, 'media', 'generate-script.svg'),
-				dark: path.join(__dirname, 'media', 'generate-script-inverse.svg')
+				light: path.join(this.extensionContext.extensionPath, 'media', 'generate-script.svg'),
+				dark: path.join(this.extensionContext.extensionPath, 'media', 'generate-script-inverse.svg')
 			},
 		}).component();
 
@@ -616,7 +674,7 @@ export class SchemaCompareMainWindow {
 				'startTime:': Date.now().toString(),
 				'operationId': this.comparisonResult.operationId
 			});
-			const service = await SchemaCompareMainWindow.getService(msSqlProvider);
+			const service = await this.getService();
 			const result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.script);
 			if (!result || !result.success) {
 				Telemetry.sendTelemetryEvent('SchemaCompareGenerateScriptFailed', {
@@ -635,12 +693,12 @@ export class SchemaCompareMainWindow {
 
 	private createOptionsButton(view: azdata.ModelView) {
 		this.optionsButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.optionsButton', 'Options'),
+			label: localize('schemaCompare.optionsButton', "Options"),
 			iconPath: {
-				light: path.join(__dirname, 'media', 'options.svg'),
-				dark: path.join(__dirname, 'media', 'options-inverse.svg')
+				light: path.join(this.extensionContext.extensionPath, 'media', 'options.svg'),
+				dark: path.join(this.extensionContext.extensionPath, 'media', 'options-inverse.svg')
 			},
-			title: localize('schemaCompare.optionsButtonTitle', 'Options')
+			title: localize('schemaCompare.optionsButtonTitle', "Options")
 		}).component();
 
 		this.optionsButton.onDidClick(async (click) => {
@@ -649,22 +707,21 @@ export class SchemaCompareMainWindow {
 			// create fresh every time
 			this.schemaCompareOptionDialog = new SchemaCompareOptionsDialog(this.deploymentOptions, this);
 			await this.schemaCompareOptionDialog.openDialog();
-			this.deploymentOptions = this.schemaCompareOptionDialog.deploymentOptions;
 		});
 	}
 
 	private createApplyButton(view: azdata.ModelView) {
 
 		this.applyButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.updateButton', 'Apply'),
+			label: localize('schemaCompare.updateButton', "Apply"),
 			iconPath: {
-				light: path.join(__dirname, 'media', 'start.svg'),
-				dark: path.join(__dirname, 'media', 'start-inverse.svg')
+				light: path.join(this.extensionContext.extensionPath, 'media', 'start.svg'),
+				dark: path.join(this.extensionContext.extensionPath, 'media', 'start-inverse.svg')
 			},
 		}).component();
 
 		// need only yes button - since the modal dialog has a default cancel
-		const yesString = localize('schemaCompare.ApplyYes', 'Yes');
+		const yesString = localize('schemaCompare.ApplyYes', "Yes");
 		this.applyButton.onDidClick(async (click) => {
 
 			vscode.window.showWarningMessage(applyConfirmation, { modal: true }, yesString).then(async (result) => {
@@ -677,7 +734,7 @@ export class SchemaCompareMainWindow {
 					// disable apply and generate script buttons because the results are no longer valid after applying the changes
 					this.setButtonsForRecompare();
 
-					const service = await SchemaCompareMainWindow.getService(msSqlProvider);
+					const service = await this.getService();
 					const result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
 					if (!result || !result.success) {
 						Telemetry.sendTelemetryEvent('SchemaCompareApplyFailed', {
@@ -763,12 +820,12 @@ export class SchemaCompareMainWindow {
 
 	private createSwitchButton(view: azdata.ModelView): void {
 		this.switchButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.switchDirectionButton', 'Switch direction'),
+			label: localize('schemaCompare.switchDirectionButton', "Switch direction"),
 			iconPath: {
-				light: path.join(__dirname, 'media', 'switch-directions.svg'),
-				dark: path.join(__dirname, 'media', 'switch-directions-inverse.svg')
+				light: path.join(this.extensionContext.extensionPath, 'media', 'switch-directions.svg'),
+				dark: path.join(this.extensionContext.extensionPath, 'media', 'switch-directions-inverse.svg')
 			},
-			title: localize('schemaCompare.switchButtonTitle', 'Switch source and target')
+			title: localize('schemaCompare.switchButtonTitle', "Switch source and target")
 		}).component();
 
 		this.switchButton.onDidClick(async (click) => {
@@ -811,7 +868,8 @@ export class SchemaCompareMainWindow {
 	private createSourceAndTargetButtons(view: azdata.ModelView): void {
 		this.selectSourceButton = view.modelBuilder.button().withProperties({
 			label: '•••',
-			title: localize('schemaCompare.sourceButtonTitle', 'Select Source')
+			title: localize('schemaCompare.sourceButtonTitle', "Select Source"),
+			ariaLabel: localize('schemaCompare.sourceButtonTitle', "Select Source")
 		}).component();
 
 		this.selectSourceButton.onDidClick(() => {
@@ -822,7 +880,8 @@ export class SchemaCompareMainWindow {
 
 		this.selectTargetButton = view.modelBuilder.button().withProperties({
 			label: '•••',
-			title: localize('schemaCompare.targetButtonTitle', 'Select Target')
+			title: localize('schemaCompare.targetButtonTitle', "Select Target"),
+			ariaLabel: localize('schemaCompare.targetButtonTitle', "Select Target")
 		}).component();
 
 		this.selectTargetButton.onDidClick(() => {
@@ -834,24 +893,24 @@ export class SchemaCompareMainWindow {
 
 	private createOpenScmpButton(view: azdata.ModelView) {
 		this.openScmpButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.openScmpButton', 'Open .scmp file'),
+			label: localize('schemaCompare.openScmpButton', "Open .scmp file"),
 			iconPath: {
-				light: path.join(__dirname, 'media', 'open-scmp.svg'),
-				dark: path.join(__dirname, 'media', 'open-scmp-inverse.svg')
+				light: path.join(this.extensionContext.extensionPath, 'media', 'open-scmp.svg'),
+				dark: path.join(this.extensionContext.extensionPath, 'media', 'open-scmp-inverse.svg')
 			},
-			title: localize('schemaCompare.openScmpButtonTitle', 'Load source, target, and options saved in an .scmp file')
+			title: localize('schemaCompare.openScmpButtonTitle', "Load source, target, and options saved in an .scmp file")
 		}).component();
 
 		this.openScmpButton.onDidClick(async (click) => {
 			Telemetry.sendTelemetryEvent('SchemaCompareOpenScmpStarted');
-			const rootPath = vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+			const rootPath = getRootPath();
 			let fileUris = await vscode.window.showOpenDialog(
 				{
 					canSelectFiles: true,
 					canSelectFolders: false,
 					canSelectMany: false,
 					defaultUri: vscode.Uri.file(rootPath),
-					openLabel: localize('schemaCompare.openFile', 'Open'),
+					openLabel: localize('schemaCompare.openFile', "Open"),
 					filters: {
 						'scmp Files': ['scmp'],
 					}
@@ -863,7 +922,7 @@ export class SchemaCompareMainWindow {
 			}
 
 			let fileUri = fileUris[0];
-			const service = await SchemaCompareMainWindow.getService('MSSQL');
+			const service = await this.getService();
 			let startTime = Date.now();
 			const result = await service.schemaCompareOpenScmp(fileUri.fsPath);
 			if (!result || !result.success) {
@@ -875,7 +934,7 @@ export class SchemaCompareMainWindow {
 				return;
 			}
 
-			if (result.sourceEndpointInfo && result.sourceEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
+			if (result.sourceEndpointInfo && result.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
 				// only set endpoint info if able to connect to the database
 				const ownerUri = await verifyConnectionAndGetOwnerUri(result.sourceEndpointInfo);
 				if (ownerUri) {
@@ -885,7 +944,7 @@ export class SchemaCompareMainWindow {
 			} else {
 				// need to do this instead of just setting it to the result.sourceEndpointInfo because some fields are null which will cause an error when sending the compare request
 				this.sourceEndpointInfo = {
-					endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+					endpointType: mssql.SchemaCompareEndpointType.Dacpac,
 					serverDisplayName: '',
 					serverName: '',
 					databaseName: '',
@@ -895,7 +954,7 @@ export class SchemaCompareMainWindow {
 				};
 			}
 
-			if (result.targetEndpointInfo && result.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
+			if (result.targetEndpointInfo && result.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
 				const ownerUri = await verifyConnectionAndGetOwnerUri(result.targetEndpointInfo);
 				if (ownerUri) {
 					this.targetEndpointInfo = result.targetEndpointInfo;
@@ -904,7 +963,7 @@ export class SchemaCompareMainWindow {
 			} else {
 				// need to do this instead of just setting it to the result.targetEndpointInfo because some fields are null which will cause an error when sending the compare request
 				this.targetEndpointInfo = {
-					endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+					endpointType: mssql.SchemaCompareEndpointType.Dacpac,
 					serverDisplayName: '',
 					serverName: '',
 					databaseName: '',
@@ -915,7 +974,7 @@ export class SchemaCompareMainWindow {
 			}
 
 			this.updateSourceAndTarget();
-			this.deploymentOptions = result.deploymentOptions;
+			this.setDeploymentOptions(result.deploymentOptions);
 			this.scmpSourceExcludes = result.excludedSourceElements;
 			this.scmpTargetExcludes = result.excludedTargetElements;
 			this.sourceTargetSwitched = result.originalTargetName !== this.targetEndpointInfo.databaseName;
@@ -931,21 +990,21 @@ export class SchemaCompareMainWindow {
 
 	private createSaveScmpButton(view: azdata.ModelView): void {
 		this.saveScmpButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.saveScmpButton', 'Save .scmp file'),
+			label: localize('schemaCompare.saveScmpButton', "Save .scmp file"),
 			iconPath: {
-				light: path.join(__dirname, 'media', 'save-scmp.svg'),
-				dark: path.join(__dirname, 'media', 'save-scmp-inverse.svg')
+				light: path.join(this.extensionContext.extensionPath, 'media', 'save-scmp.svg'),
+				dark: path.join(this.extensionContext.extensionPath, 'media', 'save-scmp-inverse.svg')
 			},
-			title: localize('schemaCompare.saveScmpButtonTitle', 'Save source and target, options, and excluded elements'),
+			title: localize('schemaCompare.saveScmpButtonTitle', "Save source and target, options, and excluded elements"),
 			enabled: false
 		}).component();
 
 		this.saveScmpButton.onDidClick(async (click) => {
-			const rootPath = vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+			const rootPath = getRootPath();
 			const filePath = await vscode.window.showSaveDialog(
 				{
 					defaultUri: vscode.Uri.file(rootPath),
-					saveLabel: localize('schemaCompare.saveFile', 'Save'),
+					saveLabel: localize('schemaCompare.saveFile', "Save"),
 					filters: {
 						'scmp Files': ['scmp'],
 					}
@@ -957,12 +1016,12 @@ export class SchemaCompareMainWindow {
 			}
 
 			// convert include/exclude maps to arrays of object ids
-			let sourceExcludes: azdata.SchemaCompareObjectId[] = this.convertExcludesToObjectIds(this.originalSourceExcludes);
-			let targetExcludes: azdata.SchemaCompareObjectId[] = this.convertExcludesToObjectIds(this.originalTargetExcludes);
+			let sourceExcludes: mssql.SchemaCompareObjectId[] = this.convertExcludesToObjectIds(this.originalSourceExcludes);
+			let targetExcludes: mssql.SchemaCompareObjectId[] = this.convertExcludesToObjectIds(this.originalTargetExcludes);
 
 			let startTime = Date.now();
 			Telemetry.sendTelemetryEvent('SchemaCompareSaveScmp');
-			const service = await SchemaCompareMainWindow.getService(msSqlProvider);
+			const service = await this.getService();
 			const result = await service.schemaCompareSaveScmp(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions, filePath.fsPath, sourceExcludes, targetExcludes);
 			if (!result || !result.success) {
 				Telemetry.sendTelemetryEvent('SchemaCompareSaveScmpFailed', {
@@ -983,9 +1042,9 @@ export class SchemaCompareMainWindow {
 	/**
 	 * Converts excluded diff entries into object ids which are needed to save them in an scmp
 	*/
-	private convertExcludesToObjectIds(excludedDiffEntries: Map<string, azdata.DiffEntry>): azdata.SchemaCompareObjectId[] {
+	private convertExcludesToObjectIds(excludedDiffEntries: Map<string, mssql.DiffEntry>): mssql.SchemaCompareObjectId[] {
 		let result = [];
-		excludedDiffEntries.forEach((value: azdata.DiffEntry) => {
+		excludedDiffEntries.forEach((value: mssql.DiffEntry) => {
 			result.push({
 				nameParts: value.sourceValue ? value.sourceValue : value.targetValue,
 				sqlObjectType: `Microsoft.Data.Tools.Schema.Sql.SchemaModel.${value.name}`
@@ -997,7 +1056,7 @@ export class SchemaCompareMainWindow {
 
 	private setButtonStatesForNoChanges(enableButtons: boolean): void {
 		// generate script and apply can only be enabled if the target is a database
-		if (this.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
+		if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
 			this.applyButton.enabled = enableButtons;
 			this.generateScriptButton.enabled = enableButtons;
 			this.applyButton.title = enableButtons ? applyEnabledMessage : applyNoChangesMessage;
@@ -1005,16 +1064,18 @@ export class SchemaCompareMainWindow {
 		}
 	}
 
-	private static async getService(providerName: string): Promise<azdata.SchemaCompareServicesProvider> {
-		let service = azdata.dataprotocol.getProvider<azdata.SchemaCompareServicesProvider>(providerName, azdata.DataProviderType.SchemaCompareServicesProvider);
-		return service;
+	private async getService(): Promise<mssql.ISchemaCompareService> {
+		if (isNullOrUndefined(this.schemaCompareService)) {
+			this.schemaCompareService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
+		}
+		return this.schemaCompareService;
 	}
 
 	private async GetDefaultDeploymentOptions(): Promise<void> {
 		// Same as dacfx default options
-		const service = await SchemaCompareMainWindow.getService(msSqlProvider);
+		const service = await this.getService();
 		let result = await service.schemaCompareGetDefaultOptions();
-		this.deploymentOptions = result.defaultDeploymentOptions;
+		this.setDeploymentOptions(result.defaultDeploymentOptions);
 	}
 }
 

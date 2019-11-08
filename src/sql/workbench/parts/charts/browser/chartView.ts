@@ -25,12 +25,25 @@ import { CreateInsightAction, CopyAction, SaveImageAction, IChartActionContext }
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { ChartState, IInsightOptions, ChartType } from 'sql/workbench/parts/charts/common/interfaces';
-
-declare class Proxy {
-	constructor(object, handler);
-}
+import * as nls from 'vs/nls';
+import { find } from 'vs/base/common/arrays';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
+
+//Map used to store names and alternative names for chart types.
+//This is mainly used for comparison when options are parsed into the constructor.
+const altNameHash: { [oldName: string]: string } = {
+	'horizontalBar': nls.localize('horizontalBarAltName', "Horizontal Bar"),
+	'bar': nls.localize('barAltName', "Bar"),
+	'line': nls.localize('lineAltName', "Line"),
+	'pie': nls.localize('pieAltName', "Pie"),
+	'scatter': nls.localize('scatterAltName', "Scatter"),
+	'timeSeries': nls.localize('timeSeriesAltName', "Time Series"),
+	'image': nls.localize('imageAltName', "Image"),
+	'count': nls.localize('countAltName', "Count"),
+	'table': nls.localize('tableAltName', "Table"),
+	'doughnut': nls.localize('doughnutAltName', "Doughnut")
+};
 
 export class ChartView extends Disposable implements IPanelView {
 	private insight: Insight;
@@ -48,6 +61,7 @@ export class ChartView extends Disposable implements IPanelView {
 	private options: IInsightOptions = {
 		type: ChartType.Bar
 	};
+
 
 	/** parent container */
 	private container: HTMLElement;
@@ -87,19 +101,19 @@ export class ChartView extends Disposable implements IPanelView {
 
 		const self = this;
 		this.options = new Proxy(this.options, {
-			get: function (target, key, receiver) {
-				return Reflect.get(target, key, receiver);
+			get: function (target, key) {
+				return target[key];
 			},
-			set: function (target, key, value, receiver) {
+			set: function (target, key, value) {
 				let change = false;
 				if (target[key] !== value) {
 					change = true;
 				}
 
-				let result = Reflect.set(target, key, value, receiver);
+				target[key] = value;
 				// mirror the change in our state
 				if (self.state) {
-					Reflect.set(self.state.options, key, value);
+					self.state.options[key] = value;
 				}
 
 				if (change) {
@@ -111,9 +125,10 @@ export class ChartView extends Disposable implements IPanelView {
 					}
 				}
 
-				return result;
+				return true;
 			}
 		}) as IInsightOptions;
+
 
 		ChartOptions.general[0].options = insightRegistry.getAllIds();
 		ChartOptions.general.map(o => {
@@ -124,6 +139,14 @@ export class ChartView extends Disposable implements IPanelView {
 
 	public clear() {
 
+	}
+
+	/**
+	 * Function used to generate list of alternative names for use with SelectBox
+	 * @param option - the original option names.
+	 */
+	private changeToAltNames(option: string[]): string[] {
+		return option.map(o => altNameHash[o] || o);
 	}
 
 	public dispose() {
@@ -200,7 +223,7 @@ export class ChartView extends Disposable implements IPanelView {
 	private buildOptions() {
 		// The first element in the disposables list is for the chart type: the master dropdown that controls other option controls.
 		// whiling rebuilding the options we should not dispose it, otherwise it would react to the theme change event
-		if (this.optionDisposables.length > 1) {
+		if (this.optionDisposables.length > 1) { // this logic needs to be rewritten
 			dispose(this.optionDisposables.slice(1));
 			this.optionDisposables.splice(1);
 		}
@@ -224,7 +247,7 @@ export class ChartView extends Disposable implements IPanelView {
 		this.updateActionbar();
 		for (let key in this.optionMap) {
 			if (this.optionMap.hasOwnProperty(key)) {
-				let option = ChartOptions[this.options.type].find(e => e.configEntry === key);
+				let option = find(ChartOptions[this.options.type], e => e.configEntry === key);
 				if (option && option.if) {
 					if (option.if(this.options)) {
 						DOM.show(this.optionMap[key].element);
@@ -276,7 +299,8 @@ export class ChartView extends Disposable implements IPanelView {
 				};
 				break;
 			case ControlType.combo:
-				let dropdown = new SelectBox(option.displayableOptions || option.options, undefined, this._contextViewService);
+				//pass options into changeAltNames in order for SelectBox to show user-friendly names.
+				let dropdown = new SelectBox(option.displayableOptions || this.changeToAltNames(option.options), undefined, this._contextViewService);
 				dropdown.select(option.options.indexOf(value));
 				dropdown.render(optionContainer);
 				dropdown.onDidSelect(e => {

@@ -20,11 +20,14 @@ import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilitie
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { localize } from 'vs/nls';
 import { MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
-import * as os from 'os';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { URI } from 'vs/base/common/uri';
+import { Schemas } from 'vs/base/common/network';
+import { find, firstIndex } from 'vs/base/common/arrays';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
@@ -41,6 +44,10 @@ export interface IModalDialogStyles {
 	dialogBorder?: Color;
 	dialogHeaderAndFooterBackground?: Color;
 	dialogBodyBackground?: Color;
+	footerBackgroundColor?: Color;
+	footerBorderTopWidth?: Color;
+	footerBorderTopStyle?: Color;
+	footerBorderTopColor?: Color;
 }
 
 export interface IModalOptions {
@@ -51,14 +58,6 @@ export interface IModalOptions {
 	hasTitleIcon?: boolean;
 	hasErrors?: boolean;
 	hasSpinner?: boolean;
-}
-
-// Needed for angular component dialogs to style modal footer
-export class ModalFooterStyle {
-	public static backgroundColor;
-	public static borderTopWidth;
-	public static borderTopStyle;
-	public static borderTopColor;
 }
 
 const defaultOptions: IModalOptions = {
@@ -86,15 +85,14 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _messageDetailText: string;
 
 	private _spinnerElement: HTMLElement;
-	private _focusableElements: NodeListOf<Element>;
-	private _firstFocusableElement: HTMLElement;
-	private _lastFocusableElement: HTMLElement;
+	private _firstTabbableElement: HTMLElement; // The first element in the dialog the user could tab to
+	private _lastTabbableElement: HTMLElement; // The last element in the dialog the user could tab to
 	private _focusedElementBeforeOpen: HTMLElement;
 
-	private _dialogForeground: Color;
-	private _dialogBorder: Color;
-	private _dialogHeaderAndFooterBackground: Color;
-	private _dialogBodyBackground: Color;
+	private _dialogForeground?: Color;
+	private _dialogBorder?: Color;
+	private _dialogHeaderAndFooterBackground?: Color;
+	private _dialogBodyBackground?: Color;
 
 	private _modalDialog: HTMLElement;
 	private _modalHeaderSection: HTMLElement;
@@ -142,11 +140,12 @@ export abstract class Modal extends Disposable implements IThemable {
 	constructor(
 		private _title: string,
 		private _name: string,
-		private _telemetryService: ITelemetryService,
-		protected layoutService: IWorkbenchLayoutService,
-		protected _clipboardService: IClipboardService,
-		protected _themeService: IThemeService,
-		protected logService: ILogService,
+		private readonly _telemetryService: ITelemetryService,
+		protected readonly layoutService: IWorkbenchLayoutService,
+		protected readonly _clipboardService: IClipboardService,
+		protected readonly _themeService: IThemeService,
+		protected readonly logService: ILogService,
+		protected readonly textResourcePropertiesService: ITextResourcePropertiesService,
 		_contextKeyService: IContextKeyService,
 		options?: IModalOptions
 	) {
@@ -174,7 +173,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		this._bodyContainer = DOM.$(`.${builderClass}`, { role: 'dialog', 'aria-label': this._title });
 		const top = this.layoutService.getTitleBarOffset();
 		this._bodyContainer.style.top = `${top}px`;
-		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog', { role: 'document' }));
+		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
 		const modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
 
 		if (!isUndefinedOrNull(this._title)) {
@@ -241,7 +240,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		if (!this._modalOptions.isAngular) {
 			this._modalFooterSection = DOM.append(modalContent, DOM.$('.modal-footer'));
 			if (this._modalOptions.hasSpinner) {
-				this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.icon.in-progress'));
+				this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.codicon.in-progress'));
 				DOM.hide(this._spinnerElement);
 			}
 			this._leftFooter = DOM.append(this._modalFooterSection, DOM.$('.left-footer'));
@@ -270,21 +269,24 @@ export abstract class Modal extends Disposable implements IThemable {
 	}
 
 	private handleBackwardTab(e: KeyboardEvent) {
-		if (this._firstFocusableElement && this._lastFocusableElement && document.activeElement === this._firstFocusableElement) {
+		this.setFirstLastTabbableElement(); // called every time to get the current elements
+		if (this._firstTabbableElement && this._lastTabbableElement && document.activeElement === this._firstTabbableElement) {
 			e.preventDefault();
-			this._lastFocusableElement.focus();
+			this._lastTabbableElement.focus();
 		}
 	}
 
 	private handleForwardTab(e: KeyboardEvent) {
-		if (this._firstFocusableElement && this._lastFocusableElement && document.activeElement === this._lastFocusableElement) {
+		this.setFirstLastTabbableElement(); // called everytime to get the current elements
+		if (this._firstTabbableElement && this._lastTabbableElement && document.activeElement === this._lastTabbableElement) {
 			e.preventDefault();
-			this._firstFocusableElement.focus();
+			this._firstTabbableElement.focus();
 		}
 	}
 
 	private getTextForClipboard(): string {
-		return this._messageDetailText === '' ? this._messageSummaryText : `${this._messageSummaryText}${os.EOL}========================${os.EOL}${this._messageDetailText}`;
+		const eol = this.textResourcePropertiesService.getEOL(URI.from({ scheme: Schemas.untitled }));
+		return this._messageDetailText === '' ? this._messageSummaryText : `${this._messageSummaryText}${eol}========================${eol}${this._messageDetailText}`;
 	}
 
 	private updateExpandMessageState() {
@@ -316,28 +318,43 @@ export abstract class Modal extends Disposable implements IThemable {
 	}
 
 	/**
+	 * Figures out the first and last elements which the user can tab to in the dialog
+	 */
+	public setFirstLastTabbableElement() {
+		let tabbableElements = this._bodyContainer.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
+		if (tabbableElements && tabbableElements.length > 0) {
+			this._firstTabbableElement = <HTMLElement>tabbableElements[0];
+			this._lastTabbableElement = <HTMLElement>tabbableElements[tabbableElements.length - 1];
+		}
+	}
+
+	/**
 	 * Set focusable elements in the modal dialog
 	 */
-	public setFocusableElements() {
-		this._focusableElements = this._bodyContainer.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
-		if (this._focusableElements && this._focusableElements.length > 0) {
-			this._firstFocusableElement = <HTMLElement>this._focusableElements[0];
-			this._lastFocusableElement = <HTMLElement>this._focusableElements[this._focusableElements.length - 1];
-		}
+	public setInitialFocusedElement() {
+		// Try to find focusable element in dialog pane rather than overall container. _modalBodySection contains items in the pane for a wizard.
+		// This ensures that we are setting the focus on a useful element in the form when possible.
+		let focusableElements = this._modalBodySection ?
+			this._modalBodySection.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]') :
+			this._bodyContainer.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
 
 		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
+
+		if (focusableElements && focusableElements.length > 0) {
+			(<HTMLElement>focusableElements[0]).focus();
+		}
 	}
 
 	/**
 	 * Shows the modal and attaches key listeners
 	 */
 	protected show() {
-		this._modalShowingContext.get().push(this._staticKey);
+		this._modalShowingContext.get()!.push(this._staticKey);
 		DOM.append(this.layoutService.container, this._bodyContainer);
-		this.setFocusableElements();
+		this.setInitialFocusedElement();
 
 		this._keydownListener = DOM.addDisposableListener(document, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
-			let context = this._modalShowingContext.get();
+			let context = this._modalShowingContext.get()!;
 			if (context[context.length - 1] === this._staticKey) {
 				let event = new StandardKeyboardEvent(e);
 				if (event.equals(KeyCode.Enter)) {
@@ -368,7 +385,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Hides the modal and removes key listeners
 	 */
 	protected hide() {
-		this._modalShowingContext.get().pop();
+		this._modalShowingContext.get()!.pop();
 		this._bodyContainer.remove();
 		if (this._focusedElementBeforeOpen) {
 			this._focusedElementBeforeOpen.focus();
@@ -403,7 +420,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * @param onSelect The callback to call when the button is selected
 	 */
 	protected findFooterButton(label: string): Button {
-		return this._footerButtons.find(e => {
+		return find(this._footerButtons, e => {
 			try {
 				return e && e.element.innerText === label;
 			} catch {
@@ -417,7 +434,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	* @param label Label on the button
 	*/
 	protected removeFooterButton(label: string): void {
-		let buttonIndex = this._footerButtons.findIndex(e => {
+		let buttonIndex = firstIndex(this._footerButtons, e => {
 			return e && e.element && e.element.innerText === label;
 		});
 		if (buttonIndex > -1 && buttonIndex < this._footerButtons.length) {
@@ -434,7 +451,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * @param level Severity level of the message
 	 * @param description Description of the message
 	 */
-	protected setError(message: string, level: MessageLevel = MessageLevel.Error, description: string = '') {
+	protected setError(message: string | undefined, level: MessageLevel = MessageLevel.Error, description: string = '') {
 		if (this._modalOptions.hasErrors) {
 			this._messageSummaryText = message ? message : '';
 			this._messageDetailText = description ? description : '';
@@ -457,8 +474,8 @@ export abstract class Modal extends Disposable implements IThemable {
 
 				this._messageIcon.title = severityText;
 				this._messageSeverity.innerText = severityText;
-				this._messageSummary.innerText = message;
-				this._messageSummary.title = message;
+				this._messageSummary.innerText = message!;
+				this._messageSummary.title = message!;
 				this._messageDetail.innerText = description;
 			}
 			DOM.hide(this._messageDetail);
@@ -487,7 +504,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Return background color of header and footer
 	 */
-	protected get headerAndFooterBackground(): string {
+	protected get headerAndFooterBackground(): string | null {
 		return this._dialogHeaderAndFooterBackground ? this._dialogHeaderAndFooterBackground.toString() : null;
 	}
 
@@ -529,10 +546,8 @@ export abstract class Modal extends Disposable implements IThemable {
 		const border = this._dialogBorder ? this._dialogBorder.toString() : null;
 		const headerAndFooterBackground = this._dialogHeaderAndFooterBackground ? this._dialogHeaderAndFooterBackground.toString() : null;
 		const bodyBackground = this._dialogBodyBackground ? this._dialogBodyBackground.toString() : null;
-		ModalFooterStyle.backgroundColor = headerAndFooterBackground;
-		ModalFooterStyle.borderTopWidth = border ? '1px' : null;
-		ModalFooterStyle.borderTopStyle = border ? 'solid' : null;
-		ModalFooterStyle.borderTopColor = border;
+		const footerBorderTopWidth = border ? '1px' : null;
+		const footerBorderTopStyle = border ? 'solid' : null;
 
 		if (this._closeButtonInHeader) {
 			this._closeButtonInHeader.style.color = foreground;
@@ -563,10 +578,10 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 
 		if (this._modalFooterSection) {
-			this._modalFooterSection.style.backgroundColor = ModalFooterStyle.backgroundColor;
-			this._modalFooterSection.style.borderTopWidth = ModalFooterStyle.borderTopWidth;
-			this._modalFooterSection.style.borderTopStyle = ModalFooterStyle.borderTopStyle;
-			this._modalFooterSection.style.borderTopColor = ModalFooterStyle.borderTopColor;
+			this._modalFooterSection.style.backgroundColor = headerAndFooterBackground;
+			this._modalFooterSection.style.borderTopWidth = footerBorderTopWidth;
+			this._modalFooterSection.style.borderTopStyle = footerBorderTopStyle;
+			this._modalFooterSection.style.borderTopColor = border;
 		}
 	}
 

@@ -3,11 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as mssql from '../../mssql/src/api/mssqlapis';
+import * as mssql from '../../mssql';
 import * as Utils from './cmsResource/utils';
 import { ICmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
 
@@ -17,7 +16,7 @@ const mssqlProvider: string = 'MSSQL';
 const CredentialNamespace = 'cmsCredentials';
 const sqlLoginAuthType: string = 'SqlLogin';
 
-export interface CreateCmsResult {
+interface CreateCmsResult {
 	listRegisteredServersResult: mssql.ListRegisteredServersResult;
 	connection: azdata.connection.Connection;
 	ownerUri: string;
@@ -32,8 +31,12 @@ export interface CreateCmsResult {
  */
 export class CmsUtils {
 
+	constructor(private _memento: vscode.Memento) {
+		this._registeredCmsServers = this.getSavedServers();
+	}
+
 	private _credentialProvider: azdata.CredentialProvider;
-	private _cmsService: mssql.CmsService;
+	private _cmsService: mssql.ICmsService;
 	private _registeredCmsServers: ICmsResourceNodeInfo[] = [];
 
 	public async savePassword(username: string, password: string): Promise<boolean> {
@@ -52,17 +55,12 @@ export class CmsUtils {
 		return vscode.window.showErrorMessage(message, ...items);
 	}
 
-	/**
-	 * Get the configuration for a extensionName
-	 * @param extensionName The string name of the extension to get the configuration for
-	 * @param resource The optional URI, as a URI object or a string, to use to get resource-scoped configurations
-	 */
-	public getConfiguration(): vscode.WorkspaceConfiguration {
-		return vscode.workspace.getConfiguration('centralManagementServers');
+	public getSavedServers(): ICmsResourceNodeInfo[] {
+		return this._memento.get('centralManagementServers') || [];
 	}
 
-	public async setConfiguration(value: any): Promise<void> {
-		await vscode.workspace.getConfiguration('centralManagementServers').update('servers', value, true);
+	public async saveServers(servers: ICmsResourceNodeInfo[]): Promise<void> {
+		await this._memento.update('centralManagementServers', servers);
 	}
 
 	// Connection APIs
@@ -83,20 +81,20 @@ export class CmsUtils {
 	}
 
 	// CMS APIs
-	public async getCmsService(): Promise<mssql.CmsService> {
+	public async getCmsService(): Promise<mssql.ICmsService> {
 		if (!this._cmsService) {
-			let extensionApi: mssql.MssqlExtensionApi = vscode.extensions.getExtension('Microsoft.mssql').exports;
-			this._cmsService = await extensionApi.getCmsServiceProvider();
+			this._cmsService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).cmsService;
 		}
 		return this._cmsService;
 	}
 
-	public async getRegisteredServers(ownerUri: string, relativePath: string): Promise<mssql.ListRegisteredServersResult> {
+	public async getRegisteredServers(ownerUri: string, relativePath: string): Promise<mssql.ListRegisteredServersResult | undefined> {
 		const cmsService = await this.getCmsService();
 		const result = await cmsService.getRegisteredServers(ownerUri, relativePath);
 		if (result && result.registeredServersList && result.registeredServersList) {
 			return result;
 		}
+		return undefined;
 	}
 
 	public async createCmsServer(connection: azdata.connection.Connection,
@@ -128,12 +126,12 @@ export class CmsUtils {
 	}
 
 	public async deleteCmsServer(cmsServerName: string, connection: azdata.connection.Connection): Promise<void> {
-		let config = this.getConfiguration();
-		if (config && config.servers) {
-			let newServers = config.servers.filter((cachedServer) => {
+		const servers: ICmsResourceNodeInfo[] = this._memento.get('centralManagementServers');
+		if (servers) {
+			const newServers: ICmsResourceNodeInfo[] = servers.filter((cachedServer) => {
 				return cachedServer.name !== cmsServerName;
 			});
-			await this.setConfiguration(newServers);
+			await this.saveServers(newServers);
 			this._registeredCmsServers = this._registeredCmsServers.filter((cachedServer) => {
 				return cachedServer.name !== cmsServerName;
 			});
@@ -164,11 +162,11 @@ export class CmsUtils {
 			// don't save password in config
 			server.connection.options.password = '';
 		});
-		await this.setConfiguration(toSaveCmsServers);
+		await this.saveServers(toSaveCmsServers);
 	}
 
 	public async addRegisteredServer(relativePath: string, ownerUri: string,
-		parentServerName?: string): Promise<boolean> {
+		parentServerName?: string): Promise<boolean | undefined> {
 		let provider = await this.getCmsService();
 		// Initial profile to disallow SQL Login without
 		// changing provider.
@@ -193,7 +191,7 @@ export class CmsUtils {
 		if (connection && connection.options) {
 			if (connection.options.server === parentServerName) {
 				// error out for same server registration
-				let errorText = localize('cms.errors.sameServerUnderCms', 'You cannot add a shared registered server with the same name as the Configuration Server');
+				let errorText = localize('cms.errors.sameServerUnderCms', "You cannot add a shared registered server with the same name as the Configuration Server");
 				this.showErrorMessage(errorText);
 				throw new Error(errorText);
 			} else {
@@ -202,6 +200,7 @@ export class CmsUtils {
 				return result;
 			}
 		}
+		return undefined;
 	}
 
 	public async removeRegisteredServer(registeredServerName: string, relativePath: string, ownerUri: string): Promise<boolean> {
@@ -234,7 +233,7 @@ export class CmsUtils {
 		return this._credentialProvider;
 	}
 
-	public async makeConnection(initialConnectionProfile?: azdata.IConnectionProfile): Promise<azdata.connection.Connection> {
+	public async makeConnection(initialConnectionProfile?: azdata.IConnectionProfile): Promise<azdata.connection.Connection | undefined> {
 		if (!initialConnectionProfile) {
 			initialConnectionProfile = {
 				connectionName: undefined,
@@ -263,6 +262,7 @@ export class CmsUtils {
 			}
 			return connection;
 		}
+		return undefined;
 	}
 
 	// Static Functions
@@ -284,11 +284,6 @@ export class CmsUtils {
 			options: connection.options
 		};
 		return connectionProfile;
-	}
-
-	public didConnectionChange(connectionA: azdata.connection.Connection, connectionB: azdata.connection.Connection): boolean {
-		return (connectionA !== connectionB) || ((connectionA.connectionId === connectionB.connectionId) &&
-			(connectionA.options.savePassword !== connectionA.options.savePassword));
 	}
 
 }

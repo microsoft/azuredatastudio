@@ -8,6 +8,7 @@ import * as platform from 'vs/platform/registry/common/platform';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 import { IInsightData } from 'sql/workbench/parts/charts/browser/interfaces';
+import { values } from 'vs/base/common/collections';
 
 export type InsightIdentifier = string;
 
@@ -25,6 +26,7 @@ export interface IInsightsConfig {
 	queryFile?: string;
 	details?: IInsightsConfigDetails;
 	autoRefreshInterval?: number;
+	id?: string;
 }
 
 export interface IInsightsLabel {
@@ -106,7 +108,7 @@ class InsightRegistry implements IInsightRegistry {
 	}
 
 	public getAllCtors(): Array<Type<IInsightsView>> {
-		return Object.values(this._idToCtor);
+		return values(this._idToCtor);
 	}
 
 	public getAllIds(): Array<string> {
@@ -123,4 +125,15 @@ platform.Registry.add(Extensions.InsightContribution, insightRegistry);
 
 export function registerInsight(id: string, description: string, schema: IJSONSchema, ctor: Type<IInsightsView>): InsightIdentifier {
 	return insightRegistry.registerInsight(id, description, schema, ctor);
+}
+
+const WidgetAutoRefreshState: { [key: string]: boolean } = {};
+
+export function getWidgetAutoRefreshState(widgetId: string, connectionId: string): boolean {
+	const key = widgetId + connectionId;
+	return Object.keys(WidgetAutoRefreshState).indexOf(key) === -1 || WidgetAutoRefreshState[key];
+}
+
+export function setWidgetAutoRefreshState(widgetId: string, connectionId: string, state: boolean): void {
+	WidgetAutoRefreshState[widgetId + connectionId] = state;
 }

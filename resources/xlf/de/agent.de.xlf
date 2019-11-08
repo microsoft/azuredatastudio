@@ -76,7 +76,7 @@
       </trans-unit>
       <trans-unit id="createProxy.ReplicationQueueReader">
         <source xml:lang="en">Replication Queue Reader</source>
-        <target state="translated">Replikation-Warteschlangenleser</target>
+        <target state="translated">Replikations-Warteschlangenleser</target>
       </trans-unit>
       <trans-unit id="createProxy.SSASQueryLabel">
         <source xml:lang="en">SQL Server Analysis Services Query</source>
@@ -196,11 +196,11 @@
       </trans-unit>
       <trans-unit id="createOperator.workdayBegin">
         <source xml:lang="en">Workday begin</source>
-        <target state="translated">Arbeitstag - Beginn</target>
+        <target state="translated">Beginn des Arbeitstags</target>
       </trans-unit>
       <trans-unit id="createOperator.workdayEnd">
         <source xml:lang="en">Workday end</source>
-        <target state="translated">Arbeitstag - Ende</target>
+        <target state="translated">Ende des Arbeitstagstags</target>
       </trans-unit>
       <trans-unit id="createOperator.PagerDutySchedule">
         <source xml:lang="en">Pager on duty schedule</source>
@@ -228,7 +228,7 @@
     <body>
       <trans-unit id="jobStepDialog.fileBrowserTitle">
         <source xml:lang="en">Locate Database Files - </source>
-        <target state="translated">Datenbankdateien finden -</target>
+        <target state="translated">Datenbankdateien finden:</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.ok">
         <source xml:lang="en">OK</source>
@@ -260,7 +260,7 @@
       </trans-unit>
       <trans-unit id="jobStepDialog.failParse">
         <source xml:lang="en">The command failed.</source>
-        <target state="translated">Der Befehl ist fehlgeschlagen.</target>
+        <target state="translated">Fehler bei Befehl.</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.blankStepName">
         <source xml:lang="en">The step name cannot be left blank</source>
@@ -376,7 +376,7 @@
       </trans-unit>
       <trans-unit id="jobStepDialog.replicationQueueReader">
         <source xml:lang="en">Replication Queue Reader</source>
-        <target state="translated">Replikation-Warteschlangenleser</target>
+        <target state="translated">Replikations-Warteschlangenleser</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.replicationSnapshot">
         <source xml:lang="en">Replication Snapshot</source>
@@ -424,7 +424,7 @@
       </trans-unit>
       <trans-unit id="jobDialog.steps">
         <source xml:lang="en">Steps</source>
-        <target state="translated">Steps</target>
+        <target state="translated">Schritte</target>
       </trans-unit>
       <trans-unit id="jobDialog.schedules">
         <source xml:lang="en">Schedules</source>
@@ -628,35 +628,35 @@
       </trans-unit>
       <trans-unit id="alertDialog.Severity001">
         <source xml:lang="en">001 - Miscellaneous System Information</source>
-        <target state="translated">001 - Verschiedene Systemangaben</target>
+        <target state="translated">001: Verschiedene Systemangaben</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity002">
         <source xml:lang="en">002 - Reserved</source>
-        <target state="translated">002 - Reserviert</target>
+        <target state="translated">002: Reserviert</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity003">
         <source xml:lang="en">003 - Reserved</source>
-        <target state="translated">003 - Reserviert</target>
+        <target state="translated">003: Reserviert</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity004">
         <source xml:lang="en">004 - Reserved</source>
-        <target state="translated">004 - Reserviert</target>
+        <target state="translated">004: Reserviert</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity005">
         <source xml:lang="en">005 - Reserved</source>
-        <target state="translated">005 - Reserviert</target>
+        <target state="translated">005: Reserviert</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity006">
         <source xml:lang="en">006 - Reserved</source>
-        <target state="translated">006 - Reserviert</target>
+        <target state="translated">006: Reserviert</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity007">
         <source xml:lang="en">007 - Notification: Status Information</source>
-        <target state="translated">007 - Benachrichtigung: Statusangaben</target>
+        <target state="translated">007: Benachrichtigung: Statusangaben</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity008">
         <source xml:lang="en">008 - Notification: User Intervention Required</source>
-        <target state="translated">008 - Benachrichtigung: Benutzereingriff erforderlich</target>
+        <target state="translated">008: Benachrichtigung: Benutzereingriff erforderlich</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity009">
         <source xml:lang="en">009 - User Defined</source>
@@ -668,63 +668,63 @@
       </trans-unit>
       <trans-unit id="alertDialog.Severity011">
         <source xml:lang="en">011 - Specified Database Object Not Found</source>
-        <target state="translated">011 - Angegebenes Datenbankobjekt nicht gefunden</target>
+        <target state="translated">011: Angegebenes Datenbankobjekt nicht gefunden</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity012">
         <source xml:lang="en">012 - Unused</source>
-        <target state="translated">012 - Nicht verwendet</target>
+        <target state="translated">012: Nicht verwendet</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity013">
         <source xml:lang="en">013 - User Transaction Syntax Error</source>
-        <target state="translated">013 - Syntaxfehler in Benutzertransaktion</target>
+        <target state="translated">013: Syntaxfehler in Benutzertransaktion</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity014">
         <source xml:lang="en">014 - Insufficient Permission</source>
-        <target state="translated">014 - Unzureichende Berechtigung</target>
+        <target state="translated">014: Unzureichende Berechtigung</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity015">
         <source xml:lang="en">015 - Syntax Error in SQL Statements</source>
-        <target state="translated">015 - Syntaxfehler in SQL-Anweisungen</target>
+        <target state="translated">015: Syntaxfehler in SQL-Anweisungen</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity016">
         <source xml:lang="en">016 - Miscellaneous User Error</source>
-        <target state="translated">016 - Sonstiger Benutzerfehler</target>
+        <target state="translated">016: Sonstiger Benutzerfehler</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity017">
         <source xml:lang="en">017 - Insufficient Resources</source>
-        <target state="translated">017 - Unzureichende Ressourcen</target>
+        <target state="translated">017: Unzureichende Ressourcen</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity018">
         <source xml:lang="en">018 - Nonfatal Internal Error</source>
-        <target state="translated">018 - Mittelschwerer interner Fehler</target>
+        <target state="translated">018: Mittelschwerer interner Fehler</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity019">
         <source xml:lang="en">019 - Fatal Error in Resource</source>
-        <target state="translated">019 - Schwerwiegender Fehler bei Ressource</target>
+        <target state="translated">019: Schwerwiegender Fehler bei Ressource</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity020">
         <source xml:lang="en">020 - Fatal Error in Current Process</source>
-        <target state="translated">020 - Schwerwiegender Fehler im aktuellen Prozess</target>
+        <target state="translated">020: Schwerwiegender Fehler im aktuellen Prozess</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity021">
         <source xml:lang="en">021 - Fatal Error in Database Processes</source>
-        <target state="translated">021 - Schwerwiegender Fehler in Datenbankprozessen</target>
+        <target state="translated">021: Schwerwiegender Fehler in Datenbankprozessen</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity022">
         <source xml:lang="en">022 - Fatal Error: Table Integrity Suspect</source>
-        <target state="translated">022 - Schwerwiegender Fehler: Tabellenintegrität zweifelhaft</target>
+        <target state="translated">022: Schwerwiegender Fehler: Tabellenintegrität zweifelhaft</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity023">
         <source xml:lang="en">023 - Fatal Error: Database Integrity Suspect</source>
-        <target state="translated">023 - Schwerwiegender Fehler: Datenbankintegrität zweifelhaft</target>
+        <target state="translated">023: Schwerwiegender Fehler: Datenbankintegrität zweifelhaft</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity024">
         <source xml:lang="en">024 - Fatal Error: Hardware Error</source>
-        <target state="translated">024 - Schwerwiegender Fehler: Hardwarefehler</target>
+        <target state="translated">024: Schwerwiegender Fehler: Hardwarefehler</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity025">
         <source xml:lang="en">025 - Fatal Error</source>
-        <target state="translated">025 - Schwerwiegender Fehler</target>
+        <target state="translated">025: Schwerwiegender Fehler</target>
       </trans-unit>
       <trans-unit id="alertDialog.AllDatabases">
         <source xml:lang="en">&lt;all databases&gt;</source>
@@ -808,7 +808,7 @@
     <body>
       <trans-unit id="proxyData.saveErrorMessage">
         <source xml:lang="en">Proxy update failed '{0}'</source>
-        <target state="translated">Proxyupdate fehlgeschlagen "{0}"</target>
+        <target state="translated">Fehler bei Proxyaktualisierung: "{0}"</target>
       </trans-unit>
       <trans-unit id="proxyData.saveSucessMessage">
         <source xml:lang="en">Proxy '{0}' updated successfully</source>
@@ -824,7 +824,7 @@
     <body>
       <trans-unit id="jobStepData.saveErrorMessage">
         <source xml:lang="en">Step update failed '{0}'</source>
-        <target state="translated">Update des Schritts fehlgeschlagen "{0}"</target>
+        <target state="translated">Fehler beim Aktualisieren des Schritts: "{0}"</target>
       </trans-unit>
       <trans-unit id="stepData.jobNameRequired">
         <source xml:lang="en">Job name must be provided</source>
@@ -856,11 +856,11 @@
       </trans-unit>
       <trans-unit id="jobData.saveErrorMessage">
         <source xml:lang="en">Job update failed '{0}'</source>
-        <target state="translated">Job-Update fehlgeschlagen '{0}'</target>
+        <target state="translated">Fehler bei der Aktualisierung des Auftrags {0}</target>
       </trans-unit>
       <trans-unit id="jobData.newJobErrorMessage">
         <source xml:lang="en">Job creation failed '{0}'</source>
-        <target state="translated">Die Erstellung des Auftrags ist fehlgeschlagen "{0}".</target>
+        <target state="translated">Fehler beim Erstellen des Auftrags: "{0}"</target>
       </trans-unit>
       <trans-unit id="jobData.saveSucessMessage">
         <source xml:lang="en">Job '{0}' updated successfully</source>
@@ -876,7 +876,7 @@
     <body>
       <trans-unit id="alertData.saveErrorMessage">
         <source xml:lang="en">Alert update failed '{0}'</source>
-        <target state="translated">Warungsaktualisierung fehlgeschlagen "{0}"</target>
+        <target state="translated">Fehler bei Warnungsaktualisierung: "{0}"</target>
       </trans-unit>
       <trans-unit id="alertData.DefaultAlertTypString">
         <source xml:lang="en">SQL Server event alert</source>

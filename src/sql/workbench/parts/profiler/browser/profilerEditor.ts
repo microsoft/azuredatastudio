@@ -7,7 +7,7 @@ import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInpu
 import { TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { IProfilerService, IProfilerViewTemplate } from 'sql/workbench/services/profiler/common/interfaces';
+import { IProfilerService, IProfilerViewTemplate } from 'sql/workbench/services/profiler/browser/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { attachTableStyler, attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { IProfilerStateChangedEvent } from 'sql/workbench/parts/profiler/common/profilerState';
@@ -50,6 +50,8 @@ import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugi
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { handleCopyRequest } from 'sql/workbench/parts/profiler/browser/profilerCopyHandler';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { find } from 'vs/base/common/arrays';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {
@@ -161,7 +163,8 @@ export class ProfilerEditor extends BaseEditor {
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IEditorService editorService: IEditorService,
 		@IStorageService storageService: IStorageService,
-		@IClipboardService private _clipboardService: IClipboardService
+		@IClipboardService private _clipboardService: IClipboardService,
+		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(ProfilerEditor.ID, telemetryService, themeService, storageService);
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
@@ -231,7 +234,7 @@ export class ProfilerEditor extends BaseEditor {
 		this._viewTemplateSelector.setAriaLabel(nls.localize('profiler.viewSelectAccessibleName', "Select View"));
 		this._register(this._viewTemplateSelector.onDidSelect(e => {
 			if (this.input) {
-				this.input.viewTemplate = this._viewTemplates.find(i => i.name === e.selected);
+				this.input.viewTemplate = find(this._viewTemplates, i => i.name === e.selected);
 			}
 		}));
 		let viewTemplateContainer = document.createElement('div');
@@ -380,9 +383,9 @@ export class ProfilerEditor extends BaseEditor {
 				}
 			]
 		}, {
-				forceFitColumns: true,
-				dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
-			});
+			forceFitColumns: true,
+			dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
+		});
 
 		this._detailTableData.onRowCountChange(() => {
 			this._detailTable.updateRowCount();
@@ -392,7 +395,7 @@ export class ProfilerEditor extends BaseEditor {
 		detailTableCopyKeybind.onCopy((ranges: Slick.Range[]) => {
 			// we always only get 1 item in the ranges
 			if (ranges && ranges.length === 1) {
-				handleCopyRequest(this._clipboardService, ranges[0], (row, cell) => {
+				handleCopyRequest(this._clipboardService, this.textResourcePropertiesService, ranges[0], (row, cell) => {
 					const item = this._detailTableData.getItem(row);
 					// only 2 columns in this table
 					return cell === 0 ? item.label : item.value;
@@ -456,7 +459,7 @@ export class ProfilerEditor extends BaseEditor {
 			if (input.viewTemplate) {
 				this._viewTemplateSelector.selectWithOptionName(input.viewTemplate.name);
 			} else {
-				input.viewTemplate = this._viewTemplates.find(i => i.name === 'Standard View');
+				input.viewTemplate = find(this._viewTemplates, i => i.name === 'Standard View');
 			}
 
 			this._actionBar.context = input;

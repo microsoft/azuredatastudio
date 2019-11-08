@@ -84,11 +84,11 @@
       </trans-unit>
       <trans-unit id="createProxy.SSASCommandLabel">
         <source xml:lang="en">SQL Server Analysis Services Command</source>
-        <target state="translated">Comando de servicios de análisis de SQL Server</target>
+        <target state="translated">Comando de SQL Server Analysis Services</target>
       </trans-unit>
       <trans-unit id="createProxy.SSISPackage">
         <source xml:lang="en">SQL Server Integration Services Package</source>
-        <target state="translated">Paquete de servicios de integración de SQL Server</target>
+        <target state="translated">Paquete de SQL Server Integration Services</target>
       </trans-unit>
       <trans-unit id="createProxy.PowerShell">
         <source xml:lang="en">PowerShell</source>
@@ -388,7 +388,7 @@
       </trans-unit>
       <trans-unit id="jobStepDialog.analysisCommand">
         <source xml:lang="en">SQL Server Analysis Services Command</source>
-        <target state="translated">Comando de servicios de análisis de SQL Server</target>
+        <target state="translated">Comando de SQL Server Analysis Services</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.analysisQuery">
         <source xml:lang="en">SQL Server Analysis Services Query</source>

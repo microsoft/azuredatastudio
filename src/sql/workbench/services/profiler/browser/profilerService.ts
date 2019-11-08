@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
-import { ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerViewTemplate, IProfilerSessionTemplate, PROFILER_SETTINGS, IProfilerSettings, EngineType, ProfilerFilter, PROFILER_FILTER_SETTINGS } from '../common/interfaces';
+import { ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerViewTemplate, IProfilerSessionTemplate, PROFILER_SETTINGS, IProfilerSettings, EngineType, ProfilerFilter, PROFILER_FILTER_SETTINGS } from './interfaces';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
 import { ProfilerColumnEditorDialog } from 'sql/workbench/parts/profiler/browser/profilerColumnEditorDialog';
@@ -46,7 +46,7 @@ class TwoWayMap<T, K> {
 
 export class ProfilerService implements IProfilerService {
 	private static readonly PROFILER_SERVICE_UI_STATE_STORAGE_KEY = 'profileservice.uiState';
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 	private _providers = new Map<string, azdata.ProfilerProvider>();
 	private _idMap = new TwoWayMap<ProfilerSessionID, string>();
 	private _sessionMap = new Map<ProfilerSessionID, IProfilerSession>();
@@ -230,7 +230,7 @@ export class ProfilerService implements IProfilerService {
 			// only use the templates that matches the following criteria:
 			// 1. the template doesn't have any engine types specified - for backward compatibility (user with custom templates) or the templates applicable to both AzureSQLDB and standalone server
 			// 2. the template supports the current engine type
-			templates = templates.filter(template => !template.engineTypes || template.engineTypes.length === 0 || template.engineTypes.includes(engineType));
+			templates = templates.filter(template => !template.engineTypes || template.engineTypes.length === 0 || template.engineTypes.some(x => x === engineType));
 		}
 		return this._commandService.executeCommand('profiler.openCreateSessionDialog', input.id, input.providerType, templates);
 	}

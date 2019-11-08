@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTemplate, ProfilerFilter } from 'sql/workbench/services/profiler/common/interfaces';
+import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTemplate, ProfilerFilter } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ProfilerState } from 'sql/workbench/parts/profiler/common/profilerState';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
@@ -13,15 +13,16 @@ import * as nls from 'vs/nls';
 
 import { EditorInput, ConfirmResult } from 'vs/workbench/common/editor';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
-import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IDialogService, IShowResult } from 'vs/platform/dialogs/common/dialogs';
 import * as types from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import Severity from 'vs/base/common/severity';
-import { FilterData } from 'sql/workbench/services/profiler/common/profilerFilter';
+import { FilterData } from 'sql/workbench/services/profiler/browser/profilerFilter';
+import { uriPrefixes } from 'sql/platform/connection/common/utils';
+import { find } from 'vs/base/common/arrays';
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {
 
@@ -44,7 +45,6 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 
 	constructor(
 		public connection: IConnectionProfile,
-		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@INotificationService private _notificationService: INotificationService,
 		@IDialogService private _dialogService: IDialogService
@@ -60,7 +60,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			autoscroll: true
 		});
 
-		this._profilerService.registerSession(generateUuid(), connection, this).then((id) => {
+		this._profilerService.registerSession(uriPrefixes.connection + generateUuid(), connection, this).then((id) => {
 			this._id = id;
 			this.state.change({ isConnected: true });
 		});
@@ -68,7 +68,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			let ret = new Array<number>();
 			for (let i = 0; i < this._columns.length; i++) {
 				let colVal = val[this._columns[i]];
-				if (colVal && colVal.toLocaleLowerCase().includes(exp.toLocaleLowerCase())) {
+				if (colVal && colVal.toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) > -1) {
 					ret.push(i);
 				}
 			}
@@ -212,11 +212,11 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			this._notificationService.error(nls.localize("profiler.sessionCreationError", "Error while starting new session"));
 		} else {
 			this._sessionName = params.sessionName;
-			let sessionTemplate = this._profilerService.getSessionTemplates().find((template) => {
+			let sessionTemplate = find(this._profilerService.getSessionTemplates(), (template) => {
 				return template.name === params.templateName;
 			});
 			if (!types.isUndefinedOrNull(sessionTemplate)) {
-				let newView = this._profilerService.getViewTemplates().find((view) => {
+				let newView = find(this._profilerService.getViewTemplates(), (view) => {
 					return view.name === sessionTemplate.defaultView;
 				});
 				if (!types.isUndefinedOrNull(newView)) {
@@ -290,11 +290,11 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 					nls.localize('profilerClosingActions.yes', "Yes"),
 					nls.localize('profilerClosingActions.no', "No"),
 					nls.localize('profilerClosingActions.cancel', "Cancel")
-				]).then((selection: number) => {
-					if (selection === 0) {
+				]).then((selection: IShowResult) => {
+					if (selection.choice === 0) {
 						this._profilerService.stopSession(this.id);
 						return ConfirmResult.DONT_SAVE;
-					} else if (selection === 1) {
+					} else if (selection.choice === 1) {
 						return ConfirmResult.DONT_SAVE;
 					} else {
 						return ConfirmResult.CANCEL;

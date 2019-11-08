@@ -3,14 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as os from 'os';
 import { DacFxDataModel } from '../api/models';
-import { DataTierApplicationWizard, DeployOperationPath, Operation } from '../dataTierApplicationWizard';
+import { DataTierApplicationWizard, DeployOperationPath, Operation, DeployNewOperationPath, PageName } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
 
 const localize = nls.loadMessageBundle();
@@ -28,16 +26,15 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 	public constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
 		super(instance, wizardPage, model, view);
-		this.fileExtension = '.bacpac';
+		this.fileExtension = '.dacpac';
 	}
 
 	async start(): Promise<boolean> {
 		let serverComponent = await this.createServerDropdown(true);
 		let fileBrowserComponent = await this.createFileBrowser();
-		this.databaseComponent = await this.createDatabaseTextBox();
-		this.databaseComponent.title = localize('dacFx.databaseNameTextBox', 'Database Name');
+		this.databaseComponent = await this.createDatabaseTextBox(localize('dacFx.databaseNameTextBox', "Database Name"));
 		this.databaseDropdownComponent = await this.createDeployDatabaseDropdown();
-		this.databaseDropdownComponent.title = localize('dacFx.databaseNameDropdown', 'Database Name');
+		this.databaseDropdownComponent.title = localize('dacFx.databaseNameDropdown', "Database Name");
 		let radioButtons = await this.createRadiobuttons();
 
 		this.formBuilder = this.view.modelBuilder.formContainer()
@@ -48,9 +45,9 @@ export class DeployConfigPage extends DacFxConfigPage {
 					radioButtons,
 					this.databaseDropdownComponent
 				], {
-					horizontal: true,
-					componentWidth: 400
-				});
+				horizontal: true,
+				componentWidth: 400
+			});
 
 		this.form = this.formBuilder.component();
 		await this.view.initializeModel(this.form);
@@ -73,7 +70,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 					canSelectFolders: false,
 					canSelectMany: false,
 					defaultUri: vscode.Uri.file(this.getRootPath()),
-					openLabel: localize('dacFxDeploy.openFile', 'Open'),
+					openLabel: localize('dacFxDeploy.openFile', "Open"),
 					filters: {
 						'dacpac Files': ['dacpac'],
 					}
@@ -99,7 +96,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxDeploy.fileTextboxTitle', 'File Location'),
+			title: localize('dacFxDeploy.fileTextboxTitle', "File Location"),
 			actions: [this.fileButton]
 		};
 	}
@@ -108,13 +105,13 @@ export class DeployConfigPage extends DacFxConfigPage {
 		let upgradeRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'updateExisting',
-				label: localize('dacFx.upgradeRadioButtonLabel', 'Upgrade Existing Database'),
+				label: localize('dacFx.upgradeRadioButtonLabel', "Upgrade Existing Database"),
 			}).component();
 
 		let newRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'updateExisting',
-				label: localize('dacFx.newRadioButtonLabel', 'New Database'),
+				label: localize('dacFx.newRadioButtonLabel', "New Database"),
 			}).component();
 
 		upgradeRadioButton.onDidClick(() => {
@@ -123,9 +120,12 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.formBuilder.addFormItem(this.databaseDropdownComponent, { horizontal: true, componentWidth: 400 });
 			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
 
-			// add deploy plan page
-			let deployPlanPage = this.instance.pages.get('deployPlan');
+			// add deploy plan page and remove and re-add summary page so that it has the correct page number
+			this.instance.wizard.removePage(DeployNewOperationPath.summary);
+			let deployPlanPage = this.instance.pages.get(PageName.deployPlan);
+			let summaryPage = this.instance.pages.get(PageName.summary);
 			this.instance.wizard.addPage(deployPlanPage.wizardPage, DeployOperationPath.deployPlan);
+			this.instance.wizard.addPage(summaryPage.wizardPage, DeployOperationPath.summary);
 		});
 
 		newRadioButton.onDidClick(() => {
@@ -135,8 +135,11 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.model.database = this.databaseTextBox.value;
 			this.instance.setDoneButton(Operation.deploy);
 
-			// remove deploy plan page
+			// remove deploy plan page and readd summary page so that it has the correct page number
+			this.instance.wizard.removePage(DeployOperationPath.summary);
 			this.instance.wizard.removePage(DeployOperationPath.deployPlan);
+			let summaryPage = this.instance.pages.get(PageName.summary);
+			this.instance.wizard.addPage(summaryPage.wizardPage, DeployNewOperationPath.summary);
 		});
 
 		//Initialize with upgrade existing true
@@ -152,12 +155,15 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		return {
 			component: flexRadioButtonsModel,
-			title: localize('dacFx.targetDatabaseRadioButtonsTitle', 'Target Database')
+			title: localize('dacFx.targetDatabaseRadioButtonsTitle', "Target Database")
 		};
 	}
 
 	protected async createDeployDatabaseDropdown(): Promise<azdata.FormComponent> {
-		this.databaseDropdown = this.view.modelBuilder.dropDown().component();
+		const targetDatabaseTitle = localize('dacFx.targetDatabaseDropdownTitle', "Database Name");
+		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+			ariaLabel: targetDatabaseTitle
+		}).component();
 
 		//Handle database changes
 		this.databaseDropdown.onValueChanged(async () => {
@@ -170,7 +176,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		return {
 			component: this.databaseLoader,
-			title: localize('dacFx.targetDatabaseDropdownTitle', 'Database Name')
+			title: targetDatabaseTitle
 		};
 	}
 

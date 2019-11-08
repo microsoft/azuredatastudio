@@ -5,27 +5,30 @@
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { isUndefinedOrNull } from 'vs/base/common/types';
+import { assign } from 'vs/base/common/objects';
+import { find } from 'vs/base/common/arrays';
 
 export interface IConnectionProfileGroup {
 	id: string;
-	parentId: string;
+	parentId?: string;
 	name: string;
-	color: string;
-	description: string;
+	color?: string;
+	description?: string;
 }
 
 export class ConnectionProfileGroup extends Disposable implements IConnectionProfileGroup {
 
 	public children: ConnectionProfileGroup[];
 	public connections: ConnectionProfile[];
-	public parentId: string;
+	public parentId?: string;
 	private _isRenamed: boolean;
 	public constructor(
 		public name: string,
-		public parent: ConnectionProfileGroup,
+		public parent: ConnectionProfileGroup | undefined,
 		public id: string,
-		public color: string,
-		public description: string
+		public color?: string,
+		public description?: string
 	) {
 		super();
 		this.parentId = parent ? parent.id : undefined;
@@ -46,15 +49,15 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 			});
 		}
 
-		return Object.assign({}, { name: this.name, id: this.id, parentId: this.parentId, children: subgroups, color: this.color, description: this.description });
+		return assign({}, { name: this.name, id: this.id, parentId: this.parentId, children: subgroups, color: this.color, description: this.description });
 	}
 
 	public get groupName(): string {
 		return this.name;
 	}
 
-	public get fullName(): string {
-		let fullName: string = (this.id === 'root') ? undefined : this.name;
+	public get fullName(): string | undefined {
+		let fullName: string | undefined = (this.id === 'root') ? undefined : this.name;
 		if (this.parent) {
 			let parentFullName = this.parent.fullName;
 			if (parentFullName) {
@@ -84,7 +87,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	 */
 	public get hasValidConnections(): boolean {
 		if (this.connections) {
-			let invalidConnections = this.connections.find(c => !c.isConnectionOptionsValid);
+			let invalidConnections = find(this.connections, c => !c.isConnectionOptionsValid);
 			if (invalidConnections !== undefined) {
 				return false;
 			} else {
@@ -150,13 +153,13 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		});
 	}
 
-	public getParent(): ConnectionProfileGroup {
+	public getParent(): ConnectionProfileGroup | undefined {
 		return this.parent;
 	}
 
 	public isAncestorOf(node: ConnectionProfileGroup | ConnectionProfile): boolean {
 		let isAncestor = false;
-		let currentNode = node;
+		let currentNode: ConnectionProfileGroup | ConnectionProfile | undefined = node;
 		while (currentNode) {
 			if (currentNode.parent && currentNode.parent.id === this.id) {
 				isAncestor = true;
@@ -167,7 +170,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		return isAncestor;
 	}
 
-	public static getGroupFullNameParts(groupFullName: string): string[] {
+	public static getGroupFullNameParts(groupFullName?: string): string[] {
 		groupFullName = groupFullName ? groupFullName : '';
 		let groupNames: string[] = groupFullName.split(ConnectionProfileGroup.GroupNameSeparator);
 		groupNames = groupNames.filter(g => !!g);
@@ -185,17 +188,23 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 			name === ConnectionProfileGroup.GroupNameSeparator);
 	}
 
-	public static sameGroupName(name1: string, name2: string): boolean {
-		let sameGroupName: boolean =
-			(!name1 && !name2) ||
-			name1.toUpperCase() === name2.toUpperCase() ||
-			(ConnectionProfileGroup.isRoot(name1) && ConnectionProfileGroup.isRoot(name2));
-
-		return sameGroupName;
+	public static sameGroupName(name1?: string, name2?: string): boolean {
+		const isName1Undefined = isUndefinedOrNull(name1);
+		const isName2Undefined = isUndefinedOrNull(name2);
+		if (isName1Undefined && isName2Undefined) {
+			return true;
+		}
+		if ((isName1Undefined && !isName2Undefined) || !isName1Undefined && isName2Undefined) {
+			return false;
+		}
+		if (name1!.toUpperCase() === name2!.toUpperCase()) {
+			return true;
+		}
+		return ConnectionProfileGroup.isRoot(name1!) && ConnectionProfileGroup.isRoot(name2!);
 	}
 
 	public static getConnectionsInGroup(group: ConnectionProfileGroup): ConnectionProfile[] {
-		let connections = [];
+		let connections: ConnectionProfile[] = [];
 		if (group && group.connections) {
 			group.connections.forEach((con) => connections.push(con));
 		}
@@ -208,7 +217,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	}
 
 	public static getSubgroups(group: ConnectionProfileGroup): ConnectionProfileGroup[] {
-		let subgroups = [];
+		let subgroups: ConnectionProfileGroup[] = [];
 		if (group && group.children) {
 			group.children.forEach((grp) => subgroups.push(grp));
 			group.children.forEach((subgroup) => {

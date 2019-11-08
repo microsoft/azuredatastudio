@@ -6,7 +6,7 @@
 /**
  * Deferred promise
  */
-export class Deferred<T> {
+export class Deferred<T> implements Promise<T> {
 	promise: Promise<T>;
 	resolve: (value?: T | PromiseLike<T>) => void;
 	reject: (reason?: any) => void;
@@ -17,9 +17,20 @@ export class Deferred<T> {
 		});
 	}
 
-	then<TResult>(onfulfilled?: (value: T) => TResult | Thenable<TResult>, onrejected?: (reason: any) => TResult | Thenable<TResult>): Thenable<TResult>;
-	then<TResult>(onfulfilled?: (value: T) => TResult | Thenable<TResult>, onrejected?: (reason: any) => void): Thenable<TResult>;
-	then<TResult>(onfulfilled?: (value: T) => TResult | Thenable<TResult>, onrejected?: (reason: any) => TResult | Thenable<TResult> | void): Thenable<TResult> {
-		return this.promise.then(onfulfilled, onrejected);
+	then<TResult1 = T, TResult2 = never>(onfulfilled?: (value: T) => TResult1 | PromiseLike<TResult1>, onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2>;
+	then<U>(onFulfilled?: (value: T) => U | Thenable<U>, onRejected?: (error: any) => U | Thenable<U>): Promise<U>;
+	then<U>(onFulfilled?: (value: T) => U | Thenable<U>, onRejected?: (error: any) => void): Promise<U>;
+	then(onFulfilled?: any, onRejected?: any) {
+		return this.promise.then(onFulfilled, onRejected);
+	}
+
+	catch<TResult = never>(onrejected?: (reason: any) => TResult | PromiseLike<TResult>): Promise<T | TResult>;
+	catch<U>(onRejected?: (error: any) => U | Thenable<U>): Promise<U>;
+	catch(onRejected?: any) {
+		return this.promise.catch(onRejected);
+	}
+
+	finally(onfinally?: () => void): Promise<T> {
+		return this.promise.finally(onfinally);
 	}
 }

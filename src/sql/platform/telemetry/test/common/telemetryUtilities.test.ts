@@ -22,7 +22,7 @@ suite('SQL Telemetry Utilities tests', () => {
 		serverName: '',
 		authenticationType: '',
 		getOptionsKey: () => '',
-		matches: undefined,
+		matches: () => false,
 		groupFullName: '',
 		groupId: '',
 		id: '',
@@ -44,7 +44,7 @@ suite('SQL Telemetry Utilities tests', () => {
 		};
 		const logService = new NullLogService();
 		TelemetryUtils.addTelemetry(telemetryService.object, logService, telemetryKey, data, connectionProfile).then(() => {
-			telemetryService.verify(x => x.publicLog(TypeMoq.It.is(a => a === telemetryKey), TypeMoq.It.is(b => b.provider === providerName)), TypeMoq.Times.once());
+			telemetryService.verify(x => x.publicLog(TypeMoq.It.is(a => a === telemetryKey), TypeMoq.It.is(b => b!.provider === providerName)), TypeMoq.Times.once());
 			done();
 		}).catch(err => {
 			assert.fail(err);
@@ -63,11 +63,11 @@ suite('SQL Telemetry Utilities tests', () => {
 		TelemetryUtils.addTelemetry(telemetryService.object, logService, telemetryKey, data, connectionProfile).then(() => {
 			telemetryService.verify(x => x.publicLog(
 				TypeMoq.It.is(a => a === telemetryKey),
-				TypeMoq.It.is(b => b.provider === providerName
-					&& b.from === data.from
-					&& b.target === data.target
-					&& b.test1 === data.test1
-					&& b.connection === undefined)), TypeMoq.Times.once());
+				TypeMoq.It.is(b => b!.provider === providerName
+					&& b!.from === data.from
+					&& b!.target === data.target
+					&& b!.test1 === data.test1
+					&& b!.connection === undefined)), TypeMoq.Times.once());
 			done();
 		}).catch(err => {
 			assert.fail(err);
@@ -97,7 +97,7 @@ suite('SQL Telemetry Utilities tests', () => {
 
 		const logService = new NullLogService();
 		TelemetryUtils.addTelemetry(telemetryService.object, logService, telemetryKey, data, connectionProfile).then(() => {
-			telemetryService.verify(x => x.publicLog(TypeMoq.It.is(a => a === telemetryKey), TypeMoq.It.is(b => b.provider === data.provider)), TypeMoq.Times.once());
+			telemetryService.verify(x => x.publicLog(TypeMoq.It.is(a => a === telemetryKey), TypeMoq.It.is(b => b!.provider === data.provider)), TypeMoq.Times.once());
 			done();
 		}).catch(err => {
 			assert.fail(err);

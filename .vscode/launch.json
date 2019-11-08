@@ -16,6 +16,7 @@
 			"request": "attach",
 			"name": "Attach to Extension Host",
 			"port": 5870,
+			"timeout": 30000,
 			"restart": true,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
@@ -67,15 +68,15 @@
 			"name": "Launch azuredatastudio",
 			"windows": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat",
-				"timeout": 20000
+				"timeout": 45000
 			},
 			"osx": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
-				"timeout": 20000
+				"timeout": 45000
 			},
 			"linux": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
-				"timeout": 20000
+				"timeout": 45000
 			},
 			"env": {
 				"VSCODE_EXTHOST_WILL_SEND_SOCKET": null
@@ -128,6 +129,33 @@
 			"timeout": 45000
 		},
 		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Launch ADS (Web) (TBD)",
+			"runtimeExecutable": "yarn",
+			"runtimeArgs": [
+				"web"
+			],
+		},
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Launch ADS (Web, Chrome) (TBD)",
+			"url": "http://localhost:8080",
+			"preLaunchTask": "Run web"
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Git Unit Tests",
+			"program": "${workspaceFolder}/extensions/git/node_modules/mocha/bin/_mocha",
+			"stopOnEntry": false,
+			"cwd": "${workspaceFolder}/extensions/git",
+			"outFiles": [
+				"${workspaceFolder}/extensions/git/out/**/*.js"
+			]
+		},
+		{
 			"name": "Launch Built-in Extension",
 			"type": "extensionHost",
 			"request": "launch",
@@ -165,7 +193,10 @@
 			"cwd": "${workspaceFolder}",
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
-			]
+			],
+			"env": {
+				"MOCHA_COLORS": "true"
+			}
 		},
 		{
 			"type": "chrome",
@@ -179,6 +210,22 @@
 			},
 			"linux": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.sh"
+			},
+			"webRoot": "${workspaceFolder}",
+			"timeout": 45000
+		},
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Run Extension Integration Tests",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql-test-integration.bat"
+			},
+			"osx": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql-test-integration.sh"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql-test-integration.sh"
 			},
 			"webRoot": "${workspaceFolder}",
 			"timeout": 45000
@@ -200,6 +247,13 @@
 			]
 		},
 		{
+			"name": "Debug Extension Integration Tests",
+			"configurations": [
+				"Attach to Extension Host",
+				"Run Extension Integration Tests"
+			]
+		},
+		{
 			"name": "Debug azuredatastudio Main and Renderer",
 			"configurations": [
 				"Launch azuredatastudio",
@@ -207,16 +261,23 @@
 			]
 		},
 		{
-			"name": "Search and Renderer processes",
+			"name": "Debug Renderer and search processes",
 			"configurations": [
 				"Launch azuredatastudio",
 				"Attach to Search Process"
 			]
 		},
 		{
-			"name": "Renderer and Extension Host processes",
+			"name": "Debug Renderer and Extension Host processes",
 			"configurations": [
 				"Launch azuredatastudio",
+				"Attach to Extension Host"
+			]
+		},
+		{
+			"name": "Attach Renderer and Extension Host",
+			"configurations": [
+				"Attach to azuredatastudio",
 				"Attach to Extension Host"
 			]
 		}

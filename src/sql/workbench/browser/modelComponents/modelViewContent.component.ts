@@ -6,14 +6,13 @@
 import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef } from '@angular/core';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { IDisposable } from 'vs/base/common/lifecycle';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { memoize } from 'vs/base/common/decorators';
 
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
-import { IModelView } from 'sql/platform/model/common/modelViewService';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
+import { IModelView } from 'sql/platform/model/browser/modelViewService';
 import { ViewBase } from 'sql/workbench/browser/modelComponents/viewBase';
-import { IModelViewService } from 'sql/platform/modelComponents/common/modelViewService';
+import { IModelViewService } from 'sql/platform/modelComponents/browser/modelViewService';
 
 import * as azdata from 'azdata';
 
@@ -33,8 +32,6 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 	public readonly onResize: Event<void> = this._onResize.event;
 	private _onMessage = new Emitter<string>();
 	public readonly onMessage: Event<string> = this._onMessage.event;
-
-	private _onMessageDisposable: IDisposable;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,

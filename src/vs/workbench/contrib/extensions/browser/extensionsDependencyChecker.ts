@@ -13,7 +13,7 @@ import { values } from 'vs/base/common/map';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { Action } from 'vs/base/common/actions';
-import { IWindowService } from 'vs/platform/windows/common/windows';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { CancellationToken } from 'vs/base/common/cancellation';
 
@@ -23,7 +23,7 @@ export class ExtensionDependencyChecker extends Disposable implements IWorkbench
 		@IExtensionService private readonly extensionService: IExtensionService,
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@IWindowService private readonly windowService: IWindowService
+		@IHostService private readonly hostService: IHostService
 	) {
 		super();
 		CommandsRegistry.registerCommand('workbench.extensions.installMissingDepenencies', () => this.installMissingDependencies());
@@ -68,8 +68,8 @@ export class ExtensionDependencyChecker extends Disposable implements IWorkbench
 					severity: Severity.Info,
 					message: localize('finished installing missing deps', "Finished installing missing dependencies. Please reload the window now."),
 					actions: {
-						primary: [new Action('realod', localize('reload', "Realod Window"), '', true,
-							() => this.windowService.reloadWindow())]
+						primary: [new Action('realod', localize('reload', "Reload Window"), '', true,
+							() => this.hostService.reload())]
 					}
 				});
 			}

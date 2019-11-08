@@ -2,14 +2,13 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
-import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
+import { DataTierApplicationWizard, Operation } from '../dataTierApplicationWizard';
 import { DacFxDataModel } from './models';
 import { BasePage } from './basePage';
 import { sanitizeStringForFilename, isValidBasename } from './utils';
@@ -38,15 +37,17 @@ export abstract class DacFxConfigPage extends BasePage {
 		this.view = view;
 	}
 
-	public setupNavigationValidator() {
+	public setupNavigationValidator(): void {
 		this.instance.registerNavigationValidator(() => {
 			return true;
 		});
 	}
 
 	protected async createServerDropdown(isTargetServer: boolean): Promise<azdata.FormComponent> {
+		const serverDropDownTitle = isTargetServer ? localize('dacFx.targetServerDropdownTitle', "Target Server") : localize('dacFx.sourceServerDropdownTitle', "Source Server");
 		this.serverDropdown = this.view.modelBuilder.dropDown().withProperties({
-			required: true
+			required: true,
+			ariaLabel: serverDropDownTitle
 		}).component();
 
 		// Handle server changes
@@ -56,12 +57,9 @@ export abstract class DacFxConfigPage extends BasePage {
 			await this.populateDatabaseDropdown();
 		});
 
-		let targetServerTitle = localize('dacFx.targetServerDropdownTitle', 'Target Server');
-		let sourceServerTitle = localize('dacFx.sourceServerDropdownTitle', 'Source Server');
-
 		return {
 			component: this.serverDropdown,
-			title: isTargetServer ? targetServerTitle : sourceServerTitle
+			title: serverDropDownTitle
 		};
 	}
 
@@ -80,23 +78,27 @@ export abstract class DacFxConfigPage extends BasePage {
 		return true;
 	}
 
-	protected async createDatabaseTextBox(): Promise<azdata.FormComponent> {
+	protected async createDatabaseTextBox(title: string): Promise<azdata.FormComponent> {
 		this.databaseTextBox = this.view.modelBuilder.inputBox().withProperties({
 			required: true
 		}).component();
 
+		this.databaseTextBox.ariaLabel = title;
 		this.databaseTextBox.onTextChanged(async () => {
 			this.model.database = this.databaseTextBox.value;
 		});
 
 		return {
 			component: this.databaseTextBox,
-			title: localize('dacFx.databaseNameTextBox', 'Target Database')
+			title: title
 		};
 	}
 
 	protected async createDatabaseDropdown(): Promise<azdata.FormComponent> {
-		this.databaseDropdown = this.view.modelBuilder.dropDown().component();
+		const databaseDropdownTitle = localize('dacFx.sourceDatabaseDropdownTitle', "Source Database");
+		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+			ariaLabel: databaseDropdownTitle
+		}).component();
 
 		// Handle database changes
 		this.databaseDropdown.onValueChanged(async () => {
@@ -109,9 +111,10 @@ export abstract class DacFxConfigPage extends BasePage {
 			required: true
 		}).component();
 
+
 		return {
 			component: this.databaseLoader,
-			title: localize('dacFx.sourceDatabaseDropdownTitle', 'Source Database')
+			title: databaseDropdownTitle
 		};
 	}
 
@@ -128,9 +131,15 @@ export abstract class DacFxConfigPage extends BasePage {
 
 		// only update values and regenerate filepath if this is the first time and database isn't set yet
 		if (this.model.database !== values[0].name) {
-			this.model.database = values[0].name;
-			this.model.filePath = this.generateFilePathFromDatabaseAndTimestamp();
-			this.fileTextBox.value = this.model.filePath;
+			// db should only get set to the dropdown value if it isn't deploy with create database
+			if (!(this.instance.selectedOperation === Operation.deploy && !this.model.upgradeExisting)) {
+				this.model.database = values[0].name;
+			}
+			// filename shouldn't change for deploy because the file exists and isn't being generated as for extract and export
+			if (this.instance.selectedOperation !== Operation.deploy) {
+				this.model.filePath = this.generateFilePathFromDatabaseAndTimestamp();
+				this.fileTextBox.value = this.model.filePath;
+			}
 		}
 
 		this.databaseDropdown.updateProperties({
@@ -146,11 +155,15 @@ export abstract class DacFxConfigPage extends BasePage {
 			component => isValidBasename(component.value)
 		)
 			.withProperties({
-				required: true
+				required: true,
+				ariaLive: 'polite'
 			}).component();
 
+		this.fileTextBox.ariaLabel = localize('dacfx.fileLocationAriaLabel', "File Location");
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: '•••',
+			title: localize('dacfx.selectFile', "Select file"),
+			ariaLabel: localize('dacfx.selectFile', "Select file")
 		}).component();
 	}
 
@@ -164,8 +177,12 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected getRootPath(): string {
-		// return rootpath of opened folder in file explorer if one is open, otherwise default to user home directory
-		return vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+		// use previous file location if there was one
+		if (this.fileTextBox.value && path.dirname(this.fileTextBox.value)) {
+			return path.dirname(this.fileTextBox.value);
+		} else { // otherwise use the folder open in the Explorer or the home directory
+			return vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : os.homedir();
+		}
 	}
 
 	protected appendFileExtensionIfNeeded() {
@@ -180,4 +197,3 @@ export abstract class DacFxConfigPage extends BasePage {
 interface ConnectionDropdownValue extends azdata.CategoryValue {
 	connection: azdata.connection.ConnectionProfile;
 }
-

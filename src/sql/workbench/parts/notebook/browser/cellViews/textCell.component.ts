@@ -7,7 +7,6 @@ import 'vs/css!./media/markdown';
 import 'vs/css!./media/highlight';
 
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener } from '@angular/core';
-import * as path from 'path';
 
 import { localize } from 'vs/nls';
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -21,15 +20,13 @@ import * as DOM from 'vs/base/browser/dom';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
-import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { NotebookMarkdownRenderer } from 'sql/workbench/parts/notebook/browser/outputs/notebookMarkdown';
 import { CellView } from 'sql/workbench/parts/notebook/browser/cellViews/interfaces';
-import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
-import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebookModel';
+import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/parts/notebook/browser/outputs/sanitizer';
 import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/browser/cellToggleMoreActions';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
-import { useInProcMarkdown, convertVscodeResourceToFileInSubDirectories } from 'sql/workbench/parts/notebook/common/models/notebookUtils';
+import { useInProcMarkdown, convertVscodeResourceToFileInSubDirectories } from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -66,7 +63,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			this.toggleEditMode(false);
 		}
 		this.cellModel.active = false;
-		this._model.activeCell = undefined;
+		this._model.updateActiveCell(undefined);
 	}
 
 	private _content: string | string[];
@@ -83,12 +80,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private markdownResult: IMarkdownRenderResult;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(ICommandService) private _commandService: ICommandService,
-		@Inject(IOpenerService) private readonly openerService: IOpenerService,
 		@Inject(IConfigurationService) private configurationService: IConfigurationService,
 
 	) {
@@ -165,10 +160,12 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	 */
 	private updatePreview(): void {
 		let trustedChanged = this.cellModel && this._lastTrustedMode !== this.cellModel.trustedMode;
-		let contentChanged = this._content !== this.cellModel.source || this.cellModel.source.length === 0;
+		let cellModelSourceJoined = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
+		let contentJoined = Array.isArray(this._content) ? this._content.join('') : this._content;
+		let contentChanged = contentJoined !== cellModelSourceJoined || cellModelSourceJoined.length === 0;
 		if (trustedChanged || contentChanged) {
 			this._lastTrustedMode = this.cellModel.trustedMode;
-			if (!this.cellModel.source && !this.isEditMode) {
+			if ((!cellModelSourceJoined) && !this.isEditMode) {
 				this._content = localize('doubleClickEdit', "Double-click to edit");
 			} else {
 				this._content = this.cellModel.source;

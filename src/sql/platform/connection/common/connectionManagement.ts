@@ -10,10 +10,7 @@ import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/co
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import { IServerGroupDialogCallbacks } from 'sql/platform/serverGroup/common/serverGroupController';
-import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
-
-export const VIEWLET_ID = 'workbench.view.connections';
+import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 
 /**
  * Options for the actions that could happen after connecting is complete
@@ -67,7 +64,7 @@ export const SERVICE_ID = 'connectionManagementService';
 export const IConnectionManagementService = createDecorator<IConnectionManagementService>(SERVICE_ID);
 
 export interface IConnectionManagementService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	// Event Emitters
 	onAddConnectionProfile: Event<IConnectionProfile>;
@@ -81,16 +78,6 @@ export interface IConnectionManagementService {
 	 * Opens the connection dialog to create new connection
 	 */
 	showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void>;
-
-	/**
-	 * Opens the add server group dialog
-	 */
-	showCreateServerGroupDialog(callbacks?: IServerGroupDialogCallbacks): Promise<void>;
-
-	/**
-	 * Opens the edit server group dialog
-	 */
-	showEditServerGroupDialog(group: ConnectionProfileGroup): Promise<void>;
 
 	/**
 	 * Load the password and opens a new connection
@@ -122,7 +109,7 @@ export interface IConnectionManagementService {
 
 	onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
 
-	onConnectionChangedNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo);
+	onConnectionChangedNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void;
 
 	getConnectionGroups(providers?: string[]): ConnectionProfileGroup[];
 
@@ -289,6 +276,8 @@ export interface IConnectionManagementService {
 	 * @returns array of connections
 	 */
 	getConnections(activeConnectionsOnly?: boolean): ConnectionProfile[];
+
+	getConnection(uri: string): ConnectionProfile;
 }
 
 export enum RunQueryOnConnectionMode {

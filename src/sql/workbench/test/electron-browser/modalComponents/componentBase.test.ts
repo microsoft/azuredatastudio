@@ -134,107 +134,103 @@ suite('ComponentBase Tests', () => {
 		testComponent.validate();
 	});
 
-	test('Inserting a component to a container adds the component to the right place', done => {
+	test('Inserting a component to a container adds the component to the right place', () => {
 		testContainer.addToContainer(testComponent.descriptor, undefined);
-		assert.equal(testContainer.TestItems.length, 1);
+		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 		testContainer.addToContainer(testComponent2.descriptor, undefined, 0);
-		assert.equal(testContainer.TestItems.length, 2);
+		assert.equal(testContainer.TestItems.length, 2, `Unexpected number of items. Expected 2 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 		assert.equal(testContainer.TestItems[0].descriptor.id, testComponent2.descriptor.id);
-		done();
 	});
 
-	test('Inserting a component to a container given negative index fails', done => {
+	test('Inserting a component to a container given negative index fails', () => {
 		testContainer.addToContainer(testComponent.descriptor, undefined);
-		assert.equal(testContainer.TestItems.length, 1);
+		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 		assert.throws(() => testContainer.addToContainer(testComponent2.descriptor, undefined, -1));
-		done();
 	});
 
-	test('Inserting a component to a container given wrong index fails', done => {
+	test('Inserting a component to a container given wrong index fails', () => {
 		testContainer.addToContainer(testComponent.descriptor, undefined);
-		assert.equal(testContainer.TestItems.length, 1);
+		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 		assert.throws(() => testContainer.addToContainer(testComponent2.descriptor, undefined, 10));
-		done();
 	});
 
-	test('Inserting a component to a container given end of list fails', done => {
+	test('Inserting a component to a container given end of list succeeds', () => {
 		testContainer.addToContainer(testComponent.descriptor, undefined);
-		assert.equal(testContainer.TestItems.length, 1);
-		assert.throws(() => testContainer.addToContainer(testComponent2.descriptor, undefined, 1));
-		done();
+		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
+		testContainer.addToContainer(testComponent2.descriptor, undefined, 1);
+		assert.equal(testContainer.TestItems.length, 2, `Unexpected number of items. Expected 2 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 	});
 
-	test('Removing a component the does not exist does not make change in the items', done => {
+	test('Removing a component the does not exist does not make change in the items', () => {
 		testContainer.addToContainer(testComponent.descriptor, undefined);
-		assert.equal(testContainer.TestItems.length, 1);
+		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 		testContainer.removeFromContainer(testComponent2.descriptor);
-		assert.equal(testContainer.TestItems.length, 1);
-		done();
+		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 	});
 
-	test('Removing a component removes it from items', done => {
+	test('Removing a component removes it from items', () => {
 		testContainer.addToContainer(testComponent.descriptor, undefined);
 		testContainer.addToContainer(testComponent2.descriptor, undefined);
-		assert.equal(testContainer.TestItems.length, 2);
+		assert.equal(testContainer.TestItems.length, 2, `Unexpected number of items. Expected 2 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 		testContainer.removeFromContainer(testComponent.descriptor);
-		assert.equal(testContainer.TestItems.length, 1);
+		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 		assert.equal(testContainer.TestItems[0].descriptor.id, testComponent2.descriptor.id);
-		done();
 	});
 
-	test('Container dost not add same component twice', done => {
+	test('Container dost not add same component twice', () => {
 		testContainer.addToContainer(testComponent.descriptor, undefined);
-		assert.equal(testContainer.TestItems.length, 1);
+		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 		testContainer.addToContainer(testComponent.descriptor, 0);
-		assert.equal(testContainer.TestItems.length, 1);
-		done();
+		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 	});
 
 
-	test('Component convert size should add px', done => {
-		let expected = '100px';
-		let actual = testComponent.convertSize(100);
+	test('Component convert size should add px', () => {
+		const expected = '100px';
+		const actual = testComponent.convertSize(100);
 		assert.equal(expected, actual);
-
-		actual = testComponent.convertSize('100px');
-		assert.equal(expected, actual);
-
-		expected = '100%';
-		actual = testComponent.convertSize('100%');
-		assert.equal(expected, actual);
-		done();
 	});
 
-	test('Component convert size should keep value if ends with %', done => {
-		let expected = '100%';
-		let actual = testComponent.convertSize('100%');
+	test('Component convert size should not add px if it already has it', () => {
+		const expected = '100px';
+		const actual = testComponent.convertSize('100px');
 		assert.equal(expected, actual);
-		done();
 	});
 
-	test('Component convert size should return the default value given undefined value %', done => {
-		let expected = '200';
-		let actual = testComponent.convertSize(undefined, '200');
+	test('Component convert size should not add px if it is a percent value', () => {
+		const expected = '100%';
+		const actual = testComponent.convertSize('100%');
 		assert.equal(expected, actual);
-		done();
 	});
 
-	test('Component convert to number should return size without px', done => {
-		let expected = 200;
-		let actual = testComponent.convertSizeToNumber('200px');
+	test('Component convert size should keep value if ends with %', () => {
+		const expected = '100%';
+		const actual = testComponent.convertSize('100%');
 		assert.equal(expected, actual);
-
-		actual = testComponent.convertSizeToNumber('200');
-		assert.equal(expected, actual);
-		done();
 	});
 
-	test('Component convert to number should return 0 given undefined', done => {
-		let expected = 0;
-		let actual = testComponent.convertSizeToNumber(undefined);
+	test('Component convert size should return the default value given undefined value %', () => {
+		const expected = '200';
+		const actual = testComponent.convertSize(undefined, '200');
 		assert.equal(expected, actual);
+	});
 
-		done();
+	test('Component convert to number should return size without px', () => {
+		const expected = 200;
+		const actual = testComponent.convertSizeToNumber('200px');
+		assert.equal(expected, actual);
+	});
+
+	test('Component convert to number should return same value if already plain number', () => {
+		const expected = 200;
+		const actual = testComponent.convertSizeToNumber('200');
+		assert.equal(expected, actual);
+	});
+
+	test('Component convert to number should return 0 given undefined', () => {
+		const expected = 0;
+		const actual = testComponent.convertSizeToNumber(undefined);
+		assert.equal(expected, actual);
 	});
 
 });

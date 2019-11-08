@@ -6,9 +6,9 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
-import { SyncActionDescriptor, registerAction } from 'vs/platform/actions/common/actions';
+import { SyncActionDescriptor, registerAction, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 
-import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
+import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
 import { NotebookEditor } from 'sql/workbench/parts/notebook/browser/notebookEditor';
 import { NewNotebookAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
 import { KeyMod } from 'vs/editor/common/standalone/standaloneBase';
@@ -19,11 +19,25 @@ import { GridOutputComponent } from 'sql/workbench/parts/notebook/browser/output
 import { PlotlyOutputComponent } from 'sql/workbench/parts/notebook/browser/outputs/plotlyOutput.component';
 import { registerComponentType } from 'sql/workbench/parts/notebook/browser/outputs/mimeRegistry';
 import { MimeRendererComponent } from 'sql/workbench/parts/notebook/browser/outputs/mimeRenderer.component';
-import { MarkdownOutputComponent } from 'sql/workbench/parts/notebook/browser/outputs/markdownOutput.component';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { URI } from 'vs/base/common/uri';
-import { IWorkspaceEditingService } from 'vs/workbench/services/workspace/common/workspaceEditing';
-import { IWindowService } from 'vs/platform/windows/common/windows';
+import { IWorkspaceEditingService } from 'vs/workbench/services/workspaces/common/workspaceEditing';
+import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/browser/nodeContext';
+import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/browser/mssqlNodeContext';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
+import { ConnectedContext } from 'azdata';
+import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
+import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
+import { ManageActionContext } from 'sql/workbench/browser/actions';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
+import { MarkdownOutputComponent } from 'sql/workbench/parts/notebook/browser/outputs/markdownOutput.component';
+import { registerCellComponent } from 'sql/platform/notebooks/common/outputRegistry';
+import { TextCellComponent } from 'sql/workbench/parts/notebook/browser/cellViews/textCell.component';
 
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(
@@ -49,12 +63,72 @@ actionRegistry.registerWorkbenchAction(
 	NewNotebookAction.LABEL
 );
 
+const DE_NEW_NOTEBOOK_COMMAND_ID = 'dataExplorer.newNotebook';
+// New Notebook
+CommandsRegistry.registerCommand({
+	id: DE_NEW_NOTEBOOK_COMMAND_ID,
+	handler: (accessor, args: TreeViewItemHandleArg) => {
+		const instantiationService = accessor.get(IInstantiationService);
+		const connectedContext: ConnectedContext = { connectionProfile: args.$treeItem.payload };
+		return instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run({ connectionProfile: connectedContext.connectionProfile, isConnectionNode: false, nodeInfo: undefined });
+	}
+});
+
+// New Notebook
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: '0_query',
+	order: 3,
+	command: {
+		id: DE_NEW_NOTEBOOK_COMMAND_ID,
+		title: localize('newNotebook', "New Notebook")
+	},
+	when: ContextKeyExpr.and(NodeContextKey.IsConnectable,
+		MssqlNodeContext.IsDatabaseOrServer,
+		MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName))
+});
+
+const OE_NEW_NOTEBOOK_COMMAND_ID = 'objectExplorer.newNotebook';
+// New Notebook
+CommandsRegistry.registerCommand({
+	id: OE_NEW_NOTEBOOK_COMMAND_ID,
+	handler: (accessor, actionContext: ObjectExplorerActionsContext) => {
+		const instantiationService = accessor.get(IInstantiationService);
+		return instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run(actionContext);
+	}
+});
+
+MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
+	group: '0_query',
+	order: 3,
+	command: {
+		id: OE_NEW_NOTEBOOK_COMMAND_ID,
+		title: localize('newQuery', "New Notebook")
+	},
+	when: ContextKeyExpr.or(ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Server')), ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Database')))
+});
+
+const ExplorerNotebookActionID = 'explorer.notebook';
+CommandsRegistry.registerCommand(ExplorerNotebookActionID, (accessor, context: ManageActionContext) => {
+	const instantiationService = accessor.get(IInstantiationService);
+	const connectedContext: ConnectedContext = { connectionProfile: context.profile };
+	instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run({ connectionProfile: connectedContext.connectionProfile, isConnectionNode: false, nodeInfo: undefined });
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: ExplorerNotebookActionID,
+		title: NewNotebookAction.LABEL
+	},
+	when: ItemContextKey.ItemType.isEqualTo('database'),
+	order: 1
+});
+
 registerAction({
 	id: 'workbench.action.setWorkspaceAndOpen',
 	handler: async (accessor, options: { forceNewWindow: boolean, folderPath: URI }) => {
 		const viewletService = accessor.get(IViewletService);
 		const workspaceEditingService = accessor.get(IWorkspaceEditingService);
-		const windowService = accessor.get(IWindowService);
+		const hostService = accessor.get(IHostService);
 		let folders = [];
 		if (!options.folderPath) {
 			return;
@@ -63,10 +137,10 @@ registerAction({
 		await workspaceEditingService.addFolders(folders.map(folder => ({ uri: folder })));
 		await viewletService.openViewlet(viewletService.getDefaultViewletId(), true);
 		if (options.forceNewWindow) {
-			return windowService.openWindow([{ folderUri: folders[0] }], { forceNewWindow: options.forceNewWindow });
+			return hostService.openWindow([{ folderUri: folders[0] }], { forceNewWindow: options.forceNewWindow });
 		}
 		else {
-			return windowService.reloadWindow();
+			return hostService.reload();
 		}
 	}
 });
@@ -82,6 +156,27 @@ configurationRegistry.registerConfiguration({
 			'default': true,
 			'description': localize('notebook.inProcMarkdown', "Use in-process markdown viewer to render text cells more quickly (Experimental).")
 		}
+	}
+});
+
+configurationRegistry.registerConfiguration({
+	'id': 'notebook',
+	'title': 'Notebook',
+	'type': 'object',
+	'properties': {
+		'notebook.sqlStopOnError': {
+			'type': 'boolean',
+			'default': true,
+			'description': localize('notebook.sqlStopOnError', "SQL kernel: stop Notebook execution when error occurs in a cell.")
+		}
+	}
+});
+
+registerAction({
+	id: 'workbench.books.action.focusBooksExplorer',
+	handler: async (accessor) => {
+		const viewletService = accessor.get(IViewletService);
+		viewletService.openViewlet('workbench.view.extension.books-explorer', true);
 	}
 });
 
@@ -176,17 +271,6 @@ registerComponentType({
 });
 
 /**
- * A mime renderer component for Markdown.
- */
-registerComponentType({
-	mimeTypes: ['text/markdown'],
-	rank: 60,
-	safe: true,
-	ctor: MarkdownOutputComponent,
-	selector: MarkdownOutputComponent.SELECTOR
-});
-
-/**
  * A mime renderer component for Plotly graphs.
  */
 registerComponentType({
@@ -208,3 +292,29 @@ registerComponentType({
 	ctor: PlotlyOutputComponent,
 	selector: PlotlyOutputComponent.SELECTOR
 });
+
+/**
+ * A mime renderer component for Markdown.
+ */
+registerComponentType({
+	mimeTypes: ['text/markdown'],
+	rank: 60,
+	safe: true,
+	ctor: MarkdownOutputComponent,
+	selector: MarkdownOutputComponent.SELECTOR
+});
+
+/**
+ * A mime renderer for IPyWidgets
+ */
+registerComponentType({
+	mimeTypes: [
+		'application/vnd.jupyter.widget-view',
+		'application/vnd.jupyter.widget-view+json'
+	],
+	rank: 47,
+	safe: true,
+	ctor: MimeRendererComponent,
+	selector: MimeRendererComponent.SELECTOR
+});
+registerCellComponent(TextCellComponent);

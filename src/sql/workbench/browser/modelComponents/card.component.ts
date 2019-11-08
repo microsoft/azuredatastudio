@@ -15,7 +15,10 @@ import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/theme
 
 import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
-import { StatusIndicator, CardProperties, ActionDescriptor } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { StatusIndicator, CardProperties, ActionDescriptor, CardDescriptionItem } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import * as DOM from 'vs/base/browser/dom';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('./card.component.html'))
@@ -37,6 +40,12 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		this.baseInit();
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
+		this.onkeydown(this._el.nativeElement, (e: StandardKeyboardEvent) => {
+			if (e.keyCode === KeyCode.Enter) {
+				this.onCardClick();
+				DOM.EventHelper.stop(e, true);
+			}
+		});
 
 	}
 
@@ -145,8 +154,8 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		return this.selectable && this.selected;
 	}
 
-	public get descriptions(): string[] {
-		return this.getPropertyOrDefault<CardProperties, string[]>((props) => props.descriptions, []);
+	public get descriptions(): CardDescriptionItem[] {
+		return this.getPropertyOrDefault<CardProperties, CardDescriptionItem[]>((props) => props.descriptions, []);
 	}
 
 	public get actions(): ActionDescriptor[] {
@@ -177,7 +186,7 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		this._changeRef.detectChanges();
 	}
 
-	private onDidActionClick(action: ActionDescriptor): void {
+	public onDidActionClick(action: ActionDescriptor): void {
 		this.fireEvent({
 			eventType: ComponentEventType.onDidClick,
 			args: action

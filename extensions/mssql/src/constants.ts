@@ -4,18 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-export const serviceName = 'SqlToolsService';
+export const serviceName = 'SQL Tools Service';
 export const providerId = 'MSSQL';
-export const serviceCrashMessage = 'SQL Tools Service component exited unexpectedly. Please restart Azure Data Studio.';
-export const serviceCrashButton = 'View Known Issues';
 export const serviceCrashLink = 'https://github.com/Microsoft/vscode-mssql/wiki/SqlToolsService-Known-Issues';
 export const extensionConfigSectionName = 'mssql';
 
 // DATA PROTOCOL VALUES ///////////////////////////////////////////////////////////
 export const mssqlClusterProviderName = 'mssqlCluster';
-export const hadoopEndpointNameKnox = 'Knox';
 export const hadoopEndpointNameGateway = 'gateway';
 export const protocolVersion = '1.0';
+export const authenticationTypePropName = 'authenticationType';
+export const integratedAuth = 'integrated';
 export const hostPropName = 'host';
 export const userPropName = 'user';
 export const knoxPortPropName = 'knoxport';
@@ -24,10 +23,7 @@ export const groupIdPropName = 'groupId';
 export const defaultKnoxPort = 30443;
 export const groupIdName = 'groupId';
 export const sqlProviderName = 'MSSQL';
-export const dataService = 'Data Services';
 
-export const hdfsHost = 'host';
-export const hdfsUser = 'user';
 export const UNTITLED_SCHEMA = 'untitled';
 
 export const hadoopConnectionTimeoutSeconds = 15;
@@ -39,6 +35,8 @@ export const isBigDataClusterProperty = 'isBigDataCluster';
 // SERVICE NAMES //////////////////////////////////////////////////////////
 export const ObjectExplorerService = 'objectexplorer';
 export const CmsService = 'cmsService';
+export const DacFxService = 'dacfxService';
+export const SchemaCompareService = 'schemaCompareService';
 export const objectExplorerPrefix: string = 'objectexplorer://';
 export const ViewType = 'view';
 
@@ -58,13 +56,15 @@ export enum MssqlClusterItems {
 }
 
 export enum MssqlClusterItemsSubType {
-	Spark = 'mssqlCluster:spark'
+	Mount = ':mount:',
+	MountChild = ':mountChild:',
+	Spark = ':spark:'
 }
 
 // SPARK JOB SUBMISSION //////////////////////////////////////////////////////////
 export const mssqlClusterNewNotebookTask = 'mssqlCluster.task.newNotebook';
 export const mssqlClusterOpenNotebookTask = 'mssqlCluster.task.openNotebook';
-export const mssqlopenClusterStatusNotebook = 'mssqlCluster.task.openClusterStatusNotebook';
+export const mssqlOpenClusterDashboard = 'mssqlCluster.task.openClusterDashboard';
 export const mssqlClusterLivySubmitSparkJobCommand = 'mssqlCluster.livy.cmd.submitSparkJob';
 export const mssqlClusterLivySubmitSparkJobFromFileCommand = 'mssqlCluster.livy.cmd.submitFileToSparkJob';
 export const mssqlClusterLivySubmitSparkJobTask = 'mssqlCluster.livy.task.submitSparkJob';

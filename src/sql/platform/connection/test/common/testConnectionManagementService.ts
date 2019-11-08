@@ -11,12 +11,12 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
-import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
+import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 
 // Test stubs for commonly used objects
 
 export class TestConnectionManagementService implements IConnectionManagementService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	onAddConnectionProfile = undefined;
 	onDeleteConnectionProfile = undefined;
 	onConnectionChanged = undefined;
@@ -293,5 +293,9 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	getConnections(activeConnectionsOnly?: boolean): ConnectionProfile[] {
 		return [];
+	}
+
+	getConnection(uri: string): ConnectionProfile {
+		return undefined;
 	}
 }

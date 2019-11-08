@@ -6,95 +6,24 @@
 import { Router } from '@angular/router';
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { MetadataType, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { SingleConnectionManagementService } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
-import {
-	NewQueryAction, ScriptSelectAction, EditDataAction, ScriptCreateAction, ScriptExecuteAction, ScriptAlterAction,
-	BackupAction, ManageActionContext, BaseActionContext, ManageAction, RestoreAction
-} from 'sql/workbench/common/actions';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import * as Constants from 'sql/platform/connection/common/constants';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
-import { IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
-import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-
-import { ObjectMetadata } from 'azdata';
+import { MetadataType } from 'sql/platform/connection/common/connectionManagement';
+import { SingleConnectionManagementService, CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
+import { ManageActionContext, BaseActionContext } from 'sql/workbench/browser/actions';
 
 import * as tree from 'vs/base/parts/tree/browser/tree';
 import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IAction } from 'vs/base/common/actions';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { generateUuid } from 'vs/base/common/uuid';
 import { $ } from 'vs/base/browser/dom';
-import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
+import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
-import { NewNotebookAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
-
-export class ObjectMetadataWrapper implements ObjectMetadata {
-	public metadataType: MetadataType;
-	public metadataTypeName: string;
-	public urn: string;
-	public name: string;
-	public schema: string;
-
-	constructor(from?: ObjectMetadata) {
-		if (from) {
-			this.metadataType = from.metadataType;
-			this.metadataTypeName = from.metadataTypeName;
-			this.urn = from.urn;
-			this.name = from.name;
-			this.schema = from.schema;
-		}
-	}
-
-	public matches(other: ObjectMetadataWrapper): boolean {
-		if (!other) {
-			return false;
-		}
-
-		return this.metadataType === other.metadataType
-			&& this.schema === other.schema
-			&& this.name === other.name;
-	}
-
-	public static createFromObjectMetadata(objectMetadata: ObjectMetadata[]): ObjectMetadataWrapper[] {
-		if (!objectMetadata) {
-			return undefined;
-		}
-
-		return objectMetadata.map(m => new ObjectMetadataWrapper(m));
-	}
-
-	// custom sort : Table > View > Stored Procedures > Function
-	public static sort(metadata1: ObjectMetadataWrapper, metadata2: ObjectMetadataWrapper): number {
-		// compare the object type
-		if (metadata1.metadataType < metadata2.metadataType) {
-			return -1;
-		} else if (metadata1.metadataType > metadata2.metadataType) {
-			return 1;
-
-			// otherwise compare the schema
-		} else {
-			const schemaCompare: number = metadata1.schema && metadata2.schema
-				? metadata1.schema.localeCompare(metadata2.schema)
-				// schemas are not expected to be undefined, but if they are then compare using object names
-				: 0;
-
-			if (schemaCompare !== 0) {
-				return schemaCompare;
-
-				// otherwise compare the object name
-			} else {
-				return metadata1.name.localeCompare(metadata2.name);
-			}
-		}
-	}
-}
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
+import { ObjectMetadataWrapper } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/objectMetadataWrapper';
 
 export declare type TreeResource = IConnectionProfile | ObjectMetadataWrapper;
 
@@ -104,15 +33,18 @@ export class ExplorerModel {
 }
 
 export class ExplorerController extends TreeDefaults.DefaultController {
+	private readonly contextKey = new ItemContextKey(this.contextKeyService);
+
 	constructor(
 		// URI for the dashboard for managing, should look into some other way of doing this
 		private _uri,
 		private _connectionService: SingleConnectionManagementService,
 		private _router: Router,
-		private _contextMenuService: IContextMenuService,
-		private _capabilitiesService: ICapabilitiesService,
-		private _instantiationService: IInstantiationService,
-		private _progressService: IEditorProgressService
+		private readonly bootStrapService: CommonServiceInterface,
+		@IContextMenuService private readonly contextMenuService: IContextMenuService,
+		@IEditorProgressService private readonly progressService: IEditorProgressService,
+		@IMenuService private readonly menuService: IMenuService,
+		@IContextKeyService private readonly contextKeyService: IContextKeyService
 	) {
 		super();
 	}
@@ -143,6 +75,13 @@ export class ExplorerController extends TreeDefaults.DefaultController {
 	}
 
 	public onContextMenu(tree: tree.ITree, element: TreeResource, event: tree.ContextMenuEvent): boolean {
+		this.contextKey.set({
+			resource: element,
+			providerName: this.bootStrapService.connectionManagementService.connectionInfo.providerId,
+			isCloud: this.bootStrapService.connectionManagementService.connectionInfo.serverInfo.isCloud,
+			engineEdition: this.bootStrapService.connectionManagementService.connectionInfo.serverInfo.engineEditionId
+		});
+
 		let context: ManageActionContext | BaseActionContext;
 
 		if (element instanceof ObjectMetadataWrapper) {
@@ -157,9 +96,15 @@ export class ExplorerController extends TreeDefaults.DefaultController {
 			};
 		}
 
-		this._contextMenuService.showContextMenu({
+		const menu = this.menuService.createMenu(MenuId.ExplorerWidgetContext, this.contextKeyService);
+		const primary: IAction[] = [];
+		const secondary: IAction[] = [];
+		const result = { primary, secondary };
+		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, this.contextMenuService, g => g === 'inline');
+
+		this.contextMenuService.showContextMenu({
 			getAnchor: () => { return { x: event.posx, y: event.posy }; },
-			getActions: () => getExplorerActions(element, this._instantiationService, this._capabilitiesService, this._connectionService.connectionInfo),
+			getActions: () => result.secondary,
 			getActionsContext: () => context
 		});
 
@@ -167,7 +112,7 @@ export class ExplorerController extends TreeDefaults.DefaultController {
 	}
 
 	private handleItemDoubleClick(element: IConnectionProfile): void {
-		this._progressService.showWhile(this._connectionService.changeDatabase(element.databaseName).then(result => {
+		this.progressService.showWhile(this._connectionService.changeDatabase(element.databaseName).then(result => {
 			this._router.navigate(['database-dashboard']);
 		}));
 	}
@@ -276,7 +221,7 @@ export class ExplorerRenderer implements tree.IRenderer {
 					templateData.icon.className = 'icon scalarvaluedfunction';
 					break;
 				case MetadataType.SProc:
-					templateData.icon.className = 'icon stored-procedure';
+					templateData.icon.className = 'icon storedprocedure';
 					break;
 				case MetadataType.Table:
 					templateData.icon.className = 'icon table';
@@ -315,7 +260,7 @@ export class ExplorerFilter implements tree.IFilter {
 			return true;
 		}
 		const filterString = this._filterString.trim().toLowerCase();
-		return element.databaseName.toLowerCase().includes(filterString);
+		return element.databaseName.toLowerCase().indexOf(filterString) > -1;
 	}
 
 	// apply filter for objectmetadatawrapper
@@ -330,7 +275,7 @@ export class ExplorerFilter implements tree.IFilter {
 		// determine if a filter is applied
 		let metadataType: MetadataType;
 
-		if (filterString.includes(':')) {
+		if (filterString.indexOf(':') > -1) {
 			const filterArray = filterString.split(':');
 
 			if (filterArray.length > 2) {
@@ -360,154 +305,13 @@ export class ExplorerFilter implements tree.IFilter {
 		}
 
 		if (metadataType !== undefined) {
-			return element.metadataType === metadataType && (element.schema + '.' + element.name).toLowerCase().includes(filterString);
+			return element.metadataType === metadataType && (element.schema + '.' + element.name).toLowerCase().indexOf(filterString) > -1;
 		} else {
-			return (element.schema + '.' + element.name).toLowerCase().includes(filterString);
+			return (element.schema + '.' + element.name).toLowerCase().indexOf(filterString) > -1;
 		}
 	}
 
 	public set filterString(val: string) {
 		this._filterString = val;
-	}
-}
-
-function getExplorerActions(element: TreeResource, instantiationService: IInstantiationService, capabilitiesService: ICapabilitiesService, info: ConnectionManagementInfo): IAction[] {
-	const actions: IAction[] = [];
-
-	if (element instanceof ObjectMetadataWrapper) {
-		if (element.metadataType === MetadataType.View || element.metadataType === MetadataType.Table) {
-			actions.push(instantiationService.createInstance(ExplorerScriptSelectAction, ScriptSelectAction.ID, ScriptSelectAction.LABEL));
-		}
-
-		if (element.metadataType === MetadataType.Table) {
-			actions.push(instantiationService.createInstance(EditDataAction, EditDataAction.ID, EditDataAction.LABEL));
-		}
-
-		if (element.metadataType === MetadataType.SProc && info.connectionProfile.providerName === Constants.mssqlProviderName) {
-			actions.push(instantiationService.createInstance(ExplorerScriptExecuteAction, ScriptExecuteAction.ID, ScriptExecuteAction.LABEL));
-		}
-
-		if ((element.metadataType === MetadataType.SProc || element.metadataType === MetadataType.Function || element.metadataType === MetadataType.View)
-			&& info.connectionProfile.providerName === Constants.mssqlProviderName) {
-			actions.push(instantiationService.createInstance(ExplorerScriptAlterAction, ScriptAlterAction.ID, ScriptAlterAction.LABEL));
-		}
-	} else {
-		actions.push(instantiationService.createInstance(CustomExecuteCommandAction, NewQueryAction.ID, NewQueryAction.LABEL));
-		actions.push(instantiationService.createInstance(CustomExecuteCommandAction, NewNotebookAction.ID, NewNotebookAction.LABEL));
-
-		let action: IAction = instantiationService.createInstance(CustomExecuteCommandAction, RestoreAction.ID, RestoreAction.LABEL);
-		if (capabilitiesService.isFeatureAvailable(action, info)) {
-			actions.push(action);
-		}
-
-		action = instantiationService.createInstance(CustomExecuteCommandAction, BackupAction.ID, BackupAction.LABEL);
-		if (capabilitiesService.isFeatureAvailable(action, info)) {
-			actions.push(action);
-		}
-
-		actions.push(instantiationService.createInstance(ExplorerManageAction, ManageAction.ID, ManageAction.LABEL));
-		return actions;
-	}
-
-	actions.push(instantiationService.createInstance(ExplorerScriptCreateAction, ScriptCreateAction.ID, ScriptCreateAction.LABEL));
-
-	return actions;
-}
-
-class CustomExecuteCommandAction extends ExecuteCommandAction {
-	run(context: ManageActionContext): Promise<any> {
-		return super.run(context.profile);
-	}
-}
-
-class ExplorerScriptSelectAction extends ScriptSelectAction {
-	constructor(
-		id: string, label: string,
-		@IQueryEditorService queryEditorService: IQueryEditorService,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IScriptingService scriptingService: IScriptingService,
-		@IEditorProgressService private progressService: IEditorProgressService
-	) {
-		super(id, label, queryEditorService, connectionManagementService, scriptingService);
-	}
-
-	public run(actionContext: BaseActionContext): Promise<boolean> {
-		const promise = super.run(actionContext);
-		this.progressService.showWhile(promise);
-		return promise;
-	}
-}
-
-class ExplorerScriptCreateAction extends ScriptCreateAction {
-	constructor(
-		id: string, label: string,
-		@IQueryEditorService queryEditorService: IQueryEditorService,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IScriptingService scriptingService: IScriptingService,
-		@IErrorMessageService errorMessageService: IErrorMessageService,
-		@IEditorProgressService private progressService: IEditorProgressService
-	) {
-		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
-	}
-
-	public run(actionContext: BaseActionContext): Promise<boolean> {
-		const promise = super.run(actionContext);
-		this.progressService.showWhile(promise);
-		return promise;
-	}
-}
-
-class ExplorerScriptAlterAction extends ScriptAlterAction {
-	constructor(
-		id: string, label: string,
-		@IQueryEditorService queryEditorService: IQueryEditorService,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IScriptingService scriptingService: IScriptingService,
-		@IErrorMessageService errorMessageService: IErrorMessageService,
-		@IEditorProgressService private progressService: IEditorProgressService
-	) {
-		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
-	}
-
-	public run(actionContext: BaseActionContext): Promise<boolean> {
-		const promise = super.run(actionContext);
-		this.progressService.showWhile(promise);
-		return promise;
-	}
-}
-
-class ExplorerScriptExecuteAction extends ScriptExecuteAction {
-	constructor(
-		id: string, label: string,
-		@IQueryEditorService queryEditorService: IQueryEditorService,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IScriptingService scriptingService: IScriptingService,
-		@IErrorMessageService errorMessageService: IErrorMessageService,
-		@IEditorProgressService private progressService: IEditorProgressService
-	) {
-		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
-	}
-
-	public run(actionContext: BaseActionContext): Promise<boolean> {
-		const promise = super.run(actionContext);
-		this.progressService.showWhile(promise);
-		return promise;
-	}
-}
-
-class ExplorerManageAction extends ManageAction {
-	constructor(
-		id: string, label: string,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IAngularEventingService angularEventingService: IAngularEventingService,
-		@IEditorProgressService private _progressService: IEditorProgressService
-	) {
-		super(id, label, connectionManagementService, angularEventingService);
-	}
-
-	public run(actionContext: ManageActionContext): Promise<boolean> {
-		const promise = super.run(actionContext);
-		this._progressService.showWhile(promise);
-		return promise;
 	}
 }

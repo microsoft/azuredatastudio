@@ -6,14 +6,13 @@
 import { Dimension } from 'vs/base/browser/dom';
 import { mixin } from 'sql/base/common/objects';
 import * as types from 'vs/base/common/types';
-import { Color } from 'vs/base/common/color';
 import { IInsightOptions, InsightType, ChartType } from 'sql/workbench/parts/charts/common/interfaces';
 
 export interface IPointDataSet {
 	data: Array<{ x: number | string, y: number }>;
 	label?: string;
 	fill: boolean;
-	backgroundColor?: Color;
+	backgroundColor?: string;
 }
 
 export function customMixin(destination: any, source: any, overwrite?: boolean): any {
@@ -47,6 +46,6 @@ export interface IInsight {
 }
 
 export interface IInsightCtor {
-	new(container: HTMLElement, options: IInsightOptions, ...services: { _serviceBrand: any; }[]): IInsight;
+	new(container: HTMLElement, options: IInsightOptions, ...services: { _serviceBrand: undefined; }[]): IInsight;
 	readonly types: Array<InsightType | ChartType>;
 }

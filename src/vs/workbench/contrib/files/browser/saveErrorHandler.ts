@@ -83,7 +83,7 @@ export class SaveErrorHandler extends Disposable implements ISaveErrorHandler, I
 		const activeInput = this.editorService.activeEditor;
 		if (activeInput instanceof DiffEditorInput && activeInput.originalInput instanceof ResourceEditorInput && activeInput.modifiedInput instanceof FileEditorInput) {
 			const resource = activeInput.originalInput.getResource();
-			if (resource && resource.scheme === CONFLICT_RESOLUTION_SCHEME) {
+			if (resource?.scheme === CONFLICT_RESOLUTION_SCHEME) {
 				isActiveEditorSaveConflictResolution = true;
 				activeConflictResolutionResource = activeInput.modifiedInput.getResource();
 			}
@@ -141,7 +141,7 @@ export class SaveErrorHandler extends Disposable implements ISaveErrorHandler, I
 
 			// Save Elevated
 			if (canHandlePermissionOrReadonlyErrors && (isPermissionDenied || triedToMakeWriteable)) {
-				primaryActions.push(this.instantiationService.createInstance(SaveElevatedAction, model, triedToMakeWriteable));
+				primaryActions.push(this.instantiationService.createInstance(SaveElevatedAction, model, !!triedToMakeWriteable));
 			}
 
 			// Overwrite
@@ -236,7 +236,6 @@ class ResolveSaveConflictAction extends Action {
 		@IEditorService private readonly editorService: IEditorService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@IStorageService private readonly storageService: IStorageService,
 		@IEnvironmentService private readonly environmentService: IEnvironmentService
 	) {
 		super('workbench.files.action.resolveConflict', nls.localize('compareChanges', "Compare"));
@@ -250,21 +249,15 @@ class ResolveSaveConflictAction extends Action {
 
 			await TextFileContentProvider.open(resource, CONFLICT_RESOLUTION_SCHEME, editorLabel, this.editorService, { pinned: true });
 
-			if (this.storageService.getBoolean(LEARN_MORE_DIRTY_WRITE_IGNORE_KEY, StorageScope.GLOBAL)) {
-				return; // return if this message is ignored
-			}
-
 			// Show additional help how to resolve the save conflict
-			const primaryActions: IAction[] = [
-				this.instantiationService.createInstance(ResolveConflictLearnMoreAction)
-			];
-			const secondaryActions: IAction[] = [
-				this.instantiationService.createInstance(DoNotShowResolveConflictLearnMoreAction)
-			];
-
-			const actions: INotificationActions = { primary: primaryActions, secondary: secondaryActions };
-			const handle = this.notificationService.notify({ severity: Severity.Info, message: conflictEditorHelp, actions });
-			Event.once(handle.onDidClose)(() => { dispose(primaryActions); dispose(secondaryActions); });
+			const actions: INotificationActions = { primary: [this.instantiationService.createInstance(ResolveConflictLearnMoreAction)] };
+			const handle = this.notificationService.notify({
+				severity: Severity.Info,
+				message: conflictEditorHelp,
+				actions,
+				neverShowAgain: { id: LEARN_MORE_DIRTY_WRITE_IGNORE_KEY, isSecondary: true }
+			});
+			Event.once(handle.onDidClose)(() => dispose(actions.primary!));
 			pendingResolveSaveConflictMessages.push(handle);
 		}
 
@@ -310,7 +303,7 @@ class OverwriteReadonlyAction extends Action {
 	}
 }
 
-export const acceptLocalChangesCommand = (accessor: ServicesAccessor, resource: URI) => {
+export const acceptLocalChangesCommand = async (accessor: ServicesAccessor, resource: URI) => {
 	const editorService = accessor.get(IEditorService);
 	const resolverService = accessor.get(ITextModelService);
 	const modelService = accessor.get(IModelService);
@@ -319,35 +312,35 @@ export const acceptLocalChangesCommand = (accessor: ServicesAccessor, resource: 
 	if (!control) {
 		return;
 	}
+
 	const editor = control.input;
 	const group = control.group;
 
-	resolverService.createModelReference(resource).then(async reference => {
-		const model = reference.object as IResolvedTextFileEditorModel;
-		const localModelSnapshot = model.createSnapshot();
+	const reference = await resolverService.createModelReference(resource);
+	const model = reference.object as IResolvedTextFileEditorModel;
+	const localModelSnapshot = model.createSnapshot();
 
-		clearPendingResolveSaveConflictMessages(); // hide any previously shown message about how to use these actions
+	clearPendingResolveSaveConflictMessages(); // hide any previously shown message about how to use these actions
 
-		// Revert to be able to save
-		await model.revert();
+	// Revert to be able to save
+	await model.revert();
 
-		// Restore user value (without loosing undo stack)
-		modelService.updateModel(model.textEditorModel, createTextBufferFactoryFromSnapshot(localModelSnapshot));
+	// Restore user value (without loosing undo stack)
+	modelService.updateModel(model.textEditorModel, createTextBufferFactoryFromSnapshot(localModelSnapshot));
 
-		// Trigger save
-		await model.save();
+	// Trigger save
+	await model.save();
 
-		// Reopen file input
-		await editorService.openEditor({ resource: model.getResource() }, group);
+	// Reopen file input
+	await editorService.openEditor({ resource: model.getResource() }, group);
 
-		// Clean up
-		group.closeEditor(editor);
-		editor.dispose();
-		reference.dispose();
-	});
+	// Clean up
+	group.closeEditor(editor);
+	editor.dispose();
+	reference.dispose();
 };
 
-export const revertLocalChangesCommand = (accessor: ServicesAccessor, resource: URI) => {
+export const revertLocalChangesCommand = async (accessor: ServicesAccessor, resource: URI) => {
 	const editorService = accessor.get(IEditorService);
 	const resolverService = accessor.get(ITextModelService);
 
@@ -355,23 +348,23 @@ export const revertLocalChangesCommand = (accessor: ServicesAccessor, resource: 
 	if (!control) {
 		return;
 	}
+
 	const editor = control.input;
 	const group = control.group;
 
-	resolverService.createModelReference(resource).then(async reference => {
-		const model = reference.object as ITextFileEditorModel;
+	const reference = await resolverService.createModelReference(resource);
+	const model = reference.object as ITextFileEditorModel;
 
-		clearPendingResolveSaveConflictMessages(); // hide any previously shown message about how to use these actions
+	clearPendingResolveSaveConflictMessages(); // hide any previously shown message about how to use these actions
 
-		// Revert on model
-		await model.revert();
+	// Revert on model
+	await model.revert();
 
-		// Reopen file input
-		await editorService.openEditor({ resource: model.getResource() }, group);
+	// Reopen file input
+	await editorService.openEditor({ resource: model.getResource() }, group);
 
-		// Clean up
-		group.closeEditor(editor);
-		editor.dispose();
-		reference.dispose();
-	});
+	// Clean up
+	group.closeEditor(editor);
+	editor.dispose();
+	reference.dispose();
 };

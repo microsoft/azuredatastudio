@@ -3,19 +3,20 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'mocha';
 import * as azdata from 'azdata';
 import * as utils from './utils';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
+import * as mssql from '../../mssql';
+import * as vscode from 'vscode';
 import { context } from './testContext';
 import { getStandaloneServer } from './testConfig';
-import assert = require('assert');
+import * as assert from 'assert';
 
 const retryCount = 24; // 2 minutes
+const dacpac1: string = path.join(__dirname, '../testData/Database1.dacpac');
 if (context.RunTest) {
 	suite('Dacpac integration test suite', () => {
 		suiteSetup(async function () {
@@ -23,7 +24,7 @@ if (context.RunTest) {
 			console.log(`Start dacpac tests`);
 		});
 
-		test('Deploy and extract dacpac', async function () {
+		test('Deploy and extract dacpac @UNSTABLE@ @REL@', async function () {
 			const server = await getStandaloneServer();
 			await utils.connectToServer(server);
 
@@ -34,11 +35,11 @@ if (context.RunTest) {
 			const databaseName = 'ADS_deployDacpac_' + now.getTime().toString();
 
 			try {
-				const dacfxService = await azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>('MSSQL', azdata.DataProviderType.DacFxServicesProvider);
+				const dacfxService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).dacFx;
 				assert(dacfxService, 'DacFx Service Provider is not available');
 
 				// Deploy dacpac
-				const deployResult = await dacfxService.deployDacpac(path.join(__dirname, 'testData/Database1.dacpac'), databaseName, false, ownerUri, azdata.TaskExecutionMode.execute);
+				const deployResult = await dacfxService.deployDacpac(dacpac1, databaseName, false, ownerUri, azdata.TaskExecutionMode.execute);
 				await utils.assertDatabaseCreationResult(databaseName, ownerUri, retryCount);
 				await utils.assertTableCreationResult(databaseName, 'dbo', 'Table1', ownerUri, retryCount);
 				await utils.assertTableCreationResult(databaseName, 'dbo', 'Table2', ownerUri, retryCount);
@@ -55,11 +56,15 @@ if (context.RunTest) {
 
 				assert(extractResult.success === true && extractResult.errorMessage === '', `Extract dacpac should succeed. Expected: there should be no error. Actual Error message: "${extractResult.errorMessage}"`);
 			} finally {
-				await utils.deleteDB(databaseName, ownerUri);
+				await utils.deleteDB(server, databaseName, ownerUri);
 			}
 		});
 
-		test('Import and export bacpac', async function () {
+		// Disabling due to intermittent failure with error Editor is not connected
+		// Tracking bug https://github.com/microsoft/azuredatastudio/issues/7323
+
+		const bacpac1: string = path.join(__dirname, '..', 'testData', 'Database1.bacpac');
+		test('Import and export bacpac @UNSTABLE@', async function () {
 			const server = await getStandaloneServer();
 			await utils.connectToServer(server);
 
@@ -70,11 +75,11 @@ if (context.RunTest) {
 			const databaseName = 'ADS_importBacpac_' + now.getTime().toString();
 
 			try {
-				let dacfxService = await azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>('MSSQL', azdata.DataProviderType.DacFxServicesProvider);
+				let dacfxService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).dacFx;
 				assert(dacfxService, 'DacFx Service Provider is not available');
 
 				// Import bacpac
-				const importResult = await dacfxService.importBacpac(path.join(__dirname, 'testData/Database1.bacpac'), databaseName, ownerUri, azdata.TaskExecutionMode.execute);
+				const importResult = await dacfxService.importBacpac(bacpac1, databaseName, ownerUri, azdata.TaskExecutionMode.execute);
 				await utils.assertDatabaseCreationResult(databaseName, ownerUri, retryCount);
 				await utils.assertTableCreationResult(databaseName, 'dbo', 'Table1', ownerUri, retryCount, true);
 				await utils.assertTableCreationResult(databaseName, 'dbo', 'Table2', ownerUri, retryCount, true);
@@ -90,7 +95,7 @@ if (context.RunTest) {
 				await utils.assertFileGenerationResult(packageFilePath, retryCount);
 				assert(exportResult.success === true && exportResult.errorMessage === '', `Expected: Export bacpac should succeed and there should be no error. Actual Error message: "${exportResult.errorMessage}"`);
 			} finally {
-				await utils.deleteDB(databaseName, ownerUri);
+				await utils.deleteDB(server, databaseName, ownerUri);
 			}
 		});
 	});

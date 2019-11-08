@@ -9,8 +9,11 @@ import { ErrorAction, ErrorHandler, Message, CloseAction } from 'vscode-language
 
 import * as Utils from './utils';
 import * as Constants from './constants';
+import * as nls from 'vscode-nls';
 
+const localize = nls.loadMessageBundle();
 const packageJson = require('../package.json');
+const viewKnownIssuesAction = localize('viewKnownIssuesText', "View Known Issues");
 
 export interface ITelemetryEventProperties {
 	[key: string]: string;
@@ -23,7 +26,7 @@ export interface ITelemetryEventMeasures {
 /**
  * Filters error paths to only include source files. Exported to support testing
  */
-export function FilterErrorPath(line: string): string {
+function FilterErrorPath(line: string): string {
 	if (line) {
 		let values: string[] = line.split('/out/');
 		if (values.length <= 1) {
@@ -125,9 +128,9 @@ export class LanguageClientErrorHandler implements ErrorHandler {
 	showOnErrorPrompt(): void {
 		Telemetry.sendTelemetryEvent(Constants.serviceName + 'Crash');
 		vscode.window.showErrorMessage(
-			Constants.serviceCrashMessage,
-			Constants.serviceCrashButton).then(action => {
-				if (action && action === Constants.serviceCrashButton) {
+			localize('serviceCrashMessage', "{0} component exited unexpectedly. Please restart Azure Data Studio.", Constants.serviceName),
+			viewKnownIssuesAction).then(action => {
+				if (action && action === viewKnownIssuesAction) {
 					vscode.env.openExternal(vscode.Uri.parse(Constants.serviceCrashLink));
 				}
 			});

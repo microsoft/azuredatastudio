@@ -1,0 +1,173 @@
+{
+  "name": "sample-resource-deployment",
+  "displayName": "%extension-displayName%",
+  "description": "%extension-description%",
+  "version": "0.0.1",
+  "publisher": "Contoso",
+  "preview": true,
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
+  "icon": "images/sqlserver.png",
+  "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
+  "engines": {
+    "vscode": "*",
+    "azdata": ">1.10.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "extensionDependencies": [
+    "microsoft.mssql",
+    "microsoft.notebook",
+    "microsoft.resource-deployment"
+  ],
+  "contributes": {
+    "resourceDeploymentTypes": [
+      {
+        "name": "x-data-service",
+        "displayName": "%resource-type-display-name%",
+        "description": "%resource-type-description%",
+        "platforms": [
+          "darwin",
+          "win32",
+          "linux"
+        ],
+        "icon": {
+          "light": "./images/book.svg",
+          "dark": "./images/book_inverse.svg"
+        },
+        "options": [
+          {
+            "name": "edition",
+            "displayName": "%option-display-name%",
+            "values": [
+              {
+                "name": "evaluation",
+                "displayName": "%option-value-name-1%"
+              },
+              {
+                "name": "standard",
+                "displayName": "%option-value-name-2%"
+              }
+            ]
+          }
+        ],
+        "providers": [
+          {
+            "dialog": {
+              "notebook": "%deployment-notebook-1%",
+              "title": "%dialog-title-1%",
+              "name": "dialog1",
+              "tabs": [
+                {
+                  "title": "",
+                  "sections": [
+                    {
+                      "title": "",
+                      "fields": [
+                        {
+                          "label": "%text-field%",
+                          "variableName": "AZDATA_NB_VAR_TEXT",
+                          "type": "text",
+                          "defaultValue": "abc",
+                          "required": true
+                        },
+                        {
+                          "label": "%password-field%",
+                          "variableName": "AZDATA_NB_VAR_PASSWORD",
+                          "type": "password",
+                          "confirmationRequired": true,
+                          "confirmationLabel": "%confirm-password%",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "%number-field%",
+                          "variableName": "AZDATA_NB_VAR_NUMBER",
+                          "type": "number",
+                          "defaultValue": "100",
+                          "required": true,
+                          "min": 1,
+                          "max": 65535
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "requiredTools": [
+              {
+                "name": "kubectl"
+              }
+            ],
+            "when": "edition=evaluation"
+          },
+          {
+            "dialog": {
+              "notebook": "%deployment-notebook-2%",
+              "title": "%dialog-title-2%",
+              "name": "dialog2",
+              "tabs": [
+                {
+                  "title": "",
+                  "sections": [
+                    {
+                      "title": "",
+                      "fields": [
+                        {
+                          "label": "%text-field%",
+                          "variableName": "AZDATA_NB_VAR_TEXT",
+                          "type": "text",
+                          "defaultValue": "abc",
+                          "required": true
+                        },
+                        {
+                          "label": "%password-field%",
+                          "variableName": "AZDATA_NB_VAR_PASSWORD",
+                          "type": "password",
+                          "confirmationRequired": true,
+                          "confirmationLabel": "%confirm-password%",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "%number-field%",
+                          "variableName": "AZDATA_NB_VAR_NUMBER",
+                          "type": "number",
+                          "defaultValue": "100",
+                          "required": true,
+                          "min": 1,
+                          "max": 65535
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "requiredTools": [
+              {
+                "name": "docker"
+              }
+            ],
+            "when": "edition=standard"
+          }
+        ],
+        "agreement": {
+          "template": "%agreement%",
+          "links": [
+            {
+              "text": "%agreement-1-name%",
+              "url": "https://www.microsoft.com"
+            },
+            {
+              "text": "%agreement-2-name%",
+              "url": "https://portal.azure.com"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

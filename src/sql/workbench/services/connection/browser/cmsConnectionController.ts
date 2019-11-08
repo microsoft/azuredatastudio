@@ -6,9 +6,11 @@
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionComponentCallbacks } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { ConnectionController } from 'sql/workbench/services/connection/browser/connectionController';
 import { CmsConnectionWidget } from 'sql/workbench/services/connection/browser/cmsConnectionWidget';
+import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
+import { ILogService } from 'vs/platform/log/common/log';
+import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 
 /**
  * Connection Controller for CMS Connections
@@ -16,12 +18,15 @@ import { CmsConnectionWidget } from 'sql/workbench/services/connection/browser/c
 export class CmsConnectionController extends ConnectionController {
 
 	constructor(
-		connectionManagementService: IConnectionManagementService,
 		connectionProperties: ConnectionProviderProperties,
 		callback: IConnectionComponentCallbacks,
 		providerName: string,
-		@IInstantiationService _instantiationService: IInstantiationService) {
-		super(connectionManagementService, connectionProperties, callback, providerName, _instantiationService);
+		@IConnectionManagementService _connectionManagementService: IConnectionManagementService,
+		@IInstantiationService _instantiationService: IInstantiationService,
+		@IServerGroupController _serverGroupController: IServerGroupController,
+		@ILogService _logService: ILogService
+	) {
+		super(connectionProperties, callback, providerName, _connectionManagementService, _instantiationService, _serverGroupController, _logService);
 		let specialOptions = this._providerOptions.filter(
 			(property) => (property.specialValueType !== null && property.specialValueType !== undefined));
 		this._connectionWidget = this._instantiationService.createInstance(CmsConnectionWidget, specialOptions, {

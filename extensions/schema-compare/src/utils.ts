@@ -5,6 +5,8 @@
 'use strict';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as mssql from '../../mssql';
+import * as os from 'os';
 
 export interface IPackageInfo {
 	name: string;
@@ -39,12 +41,12 @@ export function getTelemetryErrorType(msg: string): string {
  * Return the appropriate endpoint name depending on if the endpoint is a dacpac or a database
  * @param endpoint endpoint to get the name of
  */
-export function getEndpointName(endpoint: azdata.SchemaCompareEndpointInfo): string {
+export function getEndpointName(endpoint: mssql.SchemaCompareEndpointInfo): string {
 	if (!endpoint) {
 		return ' ';
 	}
 
-	if (endpoint.endpointType === azdata.SchemaCompareEndpointType.Database) {
+	if (endpoint.endpointType === mssql.SchemaCompareEndpointType.Database) {
 		if (!endpoint.serverName && endpoint.connectionDetails) {
 			endpoint.serverName = endpoint.connectionDetails['serverName'];
 		}
@@ -72,8 +74,8 @@ function connectionInfoToConnectionProfile(details: azdata.ConnectionInfo): azda
 	};
 }
 
-export async function verifyConnectionAndGetOwnerUri(endpoint: azdata.SchemaCompareEndpointInfo): Promise<string> {
-	if (endpoint.endpointType === azdata.SchemaCompareEndpointType.Database && endpoint.connectionDetails) {
+export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompareEndpointInfo): Promise<string> {
+	if (endpoint.endpointType === mssql.SchemaCompareEndpointType.Database && endpoint.connectionDetails) {
 		let connection = await azdata.connection.connect(connectionInfoToConnectionProfile(endpoint.connectionDetails), false, false);
 
 		// show error message if the can't connect to the database
@@ -83,4 +85,11 @@ export async function verifyConnectionAndGetOwnerUri(endpoint: azdata.SchemaComp
 		return await azdata.connection.getUriForConnection(connection.connectionId);
 	}
 	return undefined;
+}
+
+/**
+ * Returns the folder open in Explorer if there is one, otherwise returns the home directory
+ */
+export function getRootPath(): string {
+	return vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : os.homedir();
 }

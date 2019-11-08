@@ -11,15 +11,14 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 
 import { MainThreadNotebook } from 'sql/workbench/api/browser/mainThreadNotebook';
-import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
-import { INotebookProvider } from 'sql/workbench/services/notebook/common/notebookService';
+import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
+import { INotebookProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
-import { TestLifecycleService } from 'vs/workbench/test/workbenchTestServices';
+import { TestLifecycleService, TestEnvironmentService } from 'vs/workbench/test/workbenchTestServices';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { ExtHostNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 suite('MainThreadNotebook Tests', () => {
 
@@ -35,17 +34,16 @@ suite('MainThreadNotebook Tests', () => {
 			getProxy: proxyType => mockProxy.object
 		};
 		const instantiationService = new TestInstantiationService();
-		mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, new TestLifecycleService(), undefined, undefined, undefined, instantiationService, new MockContextKeyService());
+		mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, new TestLifecycleService(), undefined, undefined, undefined, instantiationService, new MockContextKeyService(),
+			undefined, undefined, undefined, undefined, undefined, undefined, TestEnvironmentService);
 		notebookUri = URI.parse('file:/user/default/my.ipynb');
 		mainThreadNotebook = new MainThreadNotebook(extContext, mockNotebookService.object, instantiationService);
 	});
 
 	suite('On registering a provider', () => {
 		let provider: INotebookProvider;
-		let registeredProviderId: string;
 		setup(() => {
 			mockNotebookService.setup(s => s.registerProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((id, providerImpl) => {
-				registeredProviderId = id;
 				provider = providerImpl;
 			});
 		});

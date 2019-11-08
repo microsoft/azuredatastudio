@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as parser from 'htmlparser2';
@@ -13,7 +12,7 @@ import { DacFxConfigPage } from '../api/dacFxConfigPage';
 
 const localize = nls.loadMessageBundle();
 
-export enum deployPlanXml {
+enum deployPlanXml {
 	AlertElement = 'Alert',
 	OperationElement = 'Operation',
 	ItemElement = 'Item',
@@ -24,14 +23,14 @@ export enum deployPlanXml {
 	DataIssueAttribute = 'DataIssue'
 }
 
-export class TableObject {
+class TableObject {
 	operation: string;
 	object: string;
 	type: string;
 	dataloss: boolean;
 }
 
-export class DeployPlanResult {
+class DeployPlanResult {
 	columnData: Array<Array<string>>;
 	dataLossAlerts: Set<string>;
 }
@@ -69,8 +68,8 @@ export class DeployPlanPage extends DacFxConfigPage {
 					},
 					this.dataLossComponentGroup
 				], {
-					horizontal: true,
-				});
+				horizontal: true,
+			});
 		this.form = this.formBuilder.component();
 		await this.view.initializeModel(this.form);
 
@@ -99,13 +98,14 @@ export class DeployPlanPage extends DacFxConfigPage {
 			data: this.getColumnData(result),
 			columns: this.getTableColumns(result.dataLossAlerts.size > 0),
 			width: 875,
-			height: 300
+			height: 300,
+			ariaRole: 'alert'
 		});
 
 		if (result.dataLossAlerts.size > 0) {
 			// update message to list how many operations could result in data loss
 			this.dataLossText.updateProperties({
-				value: localize('dacfx.dataLossTextWithCount', '{0} of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.', result.dataLossAlerts.size)
+				value: localize('dacfx.dataLossTextWithCount', "{0} of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.", result.dataLossAlerts.size)
 			});
 			this.dataLossCheckbox.enabled = true;
 		} else {
@@ -120,7 +120,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 		this.dataLossCheckbox = this.view.modelBuilder.checkBox()
 			.withValidation(component => component.checked === true)
 			.withProperties({
-				label: localize('dacFx.dataLossCheckbox', 'Proceed despite possible data loss'),
+				label: localize('dacFx.dataLossCheckbox', "Proceed despite possible data loss"),
 			}).component();
 
 		return {
@@ -133,7 +133,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 	private async createNoDataLossText(): Promise<azdata.FormComponent> {
 		let noDataLossText = this.view.modelBuilder.text()
 			.withProperties({
-				value: localize('dacfx.noDataLossText', 'No data loss will occur from the listed deploy actions.')
+				value: localize('dacfx.noDataLossText', "No data loss will occur from the listed deploy actions.")
 			}).component();
 
 		return {
@@ -146,7 +146,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 		let dataLossComponent = await this.createDataLossCheckbox();
 		this.dataLossText = this.view.modelBuilder.text()
 			.withProperties({
-				value: localize('dacfx.dataLossText', 'The deploy actions may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.')
+				value: localize('dacfx.dataLossText', "The deploy actions may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.")
 			}).component();
 
 		return {
@@ -179,31 +179,31 @@ export class DeployPlanPage extends DacFxConfigPage {
 	private getTableColumns(dataloss: boolean): azdata.TableColumn[] {
 		let columns: azdata.TableColumn[] = [
 			{
-				value: localize('dacfx.operationColumn', 'Operation'),
+				value: localize('dacfx.operationColumn', "Operation"),
 				width: 75,
 				cssClass: 'align-with-header',
-				toolTip: localize('dacfx.operationTooltip', 'Operation(Create, Alter, Delete) that will occur during deployment')
+				toolTip: localize('dacfx.operationTooltip', "Operation(Create, Alter, Delete) that will occur during deployment")
 			},
 			{
-				value: localize('dacfx.typeColumn', 'Type'),
+				value: localize('dacfx.typeColumn', "Type"),
 				width: 100,
 				cssClass: 'align-with-header',
-				toolTip: localize('dacfx.typeTooltip', 'Type of object that will be affected by deployment')
+				toolTip: localize('dacfx.typeTooltip', "Type of object that will be affected by deployment")
 			},
 			{
-				value: localize('dacfx.objectColumn', 'Object'),
+				value: localize('dacfx.objectColumn', "Object"),
 				width: 300,
 				cssClass: 'align-with-header',
-				toolTip: localize('dacfx.objecTooltip', 'Name of object that will be affected by deployment')
+				toolTip: localize('dacfx.objecTooltip', "Name of object that will be affected by deployment")
 			}];
 
 		if (dataloss) {
 			columns.unshift(
 				{
-					value: localize('dacfx.dataLossColumn', 'Data Loss'),
+					value: localize('dacfx.dataLossColumn', "Data Loss"),
 					width: 50,
 					cssClass: 'center-align',
-					toolTip: localize('dacfx.dataLossTooltip', 'Operations that may result in data loss are marked with a warning sign')
+					toolTip: localize('dacfx.dataLossTooltip', "Operations that may result in data loss are marked with a warning sign")
 				});
 		}
 		return columns;

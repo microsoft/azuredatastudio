@@ -2,7 +2,7 @@
 	"name": "import",
 	"displayName": "SQL Server Import",
 	"description": "SQL Server Import for Azure Data Studio supports importing CSV or JSON files into SQL Server.",
-	"version": "0.9.0",
+	"version": "0.12.0",
 	"publisher": "Microsoft",
 	"preview": true,
 	"engines": {
@@ -11,7 +11,7 @@
 	},
 	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx",
 	"icon": "images/sqlserver.png",
-	"aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
+	"aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
 	"activationEvents": [
 		"*"
 	],
@@ -46,20 +46,33 @@
 			"objectExplorer/item/context": [
 				{
 					"command": "flatFileImport.start",
-					"when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
+					"when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
 					"group": "import"
 				}
 			]
+		},
+		"configuration": {
+			"type": "object",
+			"title": "%flatfileimport.configuration.title%",
+			"properties": {
+				"flatFileImport.logDebugInfo": {
+					"type": "boolean",
+					"default": false,
+					"description": "%flatfileimport.logDebugInfo%"
+				}
+			}
 		}
 	},
 	"dependencies": {
 		"dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.3.0",
 		"htmlparser2": "^3.10.1",
-		"service-downloader": "github:anthonydresser/service-downloader#0.1.5",
+		"service-downloader": "github:anthonydresser/service-downloader#0.1.7",
 		"vscode-extension-telemetry": "0.0.18",
 		"vscode-nls": "^3.2.1"
 	},
-	"devDependencies": {},
+	"devDependencies": {
+		"@types/node": "10"
+	},
 	"__metadata": {
 		"id": "23",
 		"publisherDisplayName": "Microsoft",

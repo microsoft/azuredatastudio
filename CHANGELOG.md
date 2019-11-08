@@ -1,5 +1,55 @@
 # Change Log
 
+## Version 1.13.0
+* Release date: November 4, 2019
+* Release status: General Availability
+* General Availability release for Schema Compare and DACPAC extensions
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/43?closed=1).
+
+## Version 1.12.2
+* Release date: October 11, 2019
+* Release status: General Availability
+* Hotfix release (1.12.2): `Disable automatically starting the EH in inspect mode` https://github.com/microsoft/azuredatastudio/commit/c9bef82ace6c67190d0e83820011a2bbd1f793c1
+
+## Version 1.12.1
+* Release date: October 7, 2019
+* Release status: General Availability
+* Hotfix release: `Notebooks: Ensure quotes and backslashes are escaped properly in text editor model` https://github.com/microsoft/azuredatastudio/pull/7540
+
+## Version 1.12.0
+* Release date: October 2, 2019
+* Release status: General Availability
+
+## What's new in this version
+* Announcing the Query History panel
+* Improved Query Results Grid copy selection support
+* TempDB page added to Server Reports extension
+* PowerShell extension update
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/42?closed=1).
+
+## Version 1.11.0
+* Release date: September 10, 2019
+* Release status: General Availability
+
+## What's new in this version
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/41?closed=1).
+
+## Version 1.10.0
+* Release date: August 14, 2019
+* Release status: General Availability
+
+## What's new in this version
+* [SandDance](https://github.com/microsoft/SandDance) integration — A new way to interact with data. Download the extension [here](https://docs.microsoft.com/sql/azure-data-studio/sanddance-extension)
+* Notebook improvements
+   * Better loading performance
+   * Ability to right click SQL results grid to save your results as CSV, JSON, etc.
+   * Buttons to add code or text cells in-line
+   * [Other fixes and improvements](https://github.com/microsoft/azuredatastudio/issues?q=is%3Aissue+label%3A%22Area%3A+Notebooks%22+milestone%3A%22August+2019+Release%22+is%3Aclosed)
+* SQL Server Dacpac extension can support Azure Active Directory authentication
+* Updated SQL Server 2019 extension
+* Visual Studio Code May Release Merge 1.37 - this includes changes from [1.36](https://code.visualstudio.com/updates/v1_37) and [1.37](https://code.visualstudio.com/updates/v1_37)
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/39?closed=1).
+
 ## Version 1.9.0
 * Release date: July 11, 2019
 * Release status: General Availability
@@ -181,7 +231,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 
 ## What's new in this version
 * Announcing the SQL Server 2019 Preview extension.
-  * Support for SQL Server 2019 preview features including big data cluster support.
+  * Support for SQL Server 2019 preview features including Big Data Cluster support.
   * Azure Data Studio Notebooks
   * The Azure Resource Explorer viewlets you browse data-related endpoints for your Azure accounts and create connections to them in Object Explorer. In this release Azure SQL Databases and servers are supported.
   * SQL Server Polybase Create External Table Wizard

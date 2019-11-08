@@ -13,7 +13,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/agentView.component';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { EditProxyAction, DeleteProxyAction, NewProxyAction } from 'sql/platform/jobManagement/browser/jobActions';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { JobManagementView } from 'sql/workbench/parts/jobManagement/browser/jobManagementView';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -35,9 +35,6 @@ export const ROW_HEIGHT: number = 45;
 })
 
 export class ProxiesViewComponent extends JobManagementView implements OnInit, OnDestroy {
-
-	private NewProxyText: string = nls.localize('jobProxyToolbar-NewItem', "New Proxy");
-	private RefreshText: string = nls.localize('jobProxyToolbar-Refresh', "Refresh");
 
 	private columns: Array<Slick.Column<any>> = [
 		{
@@ -61,7 +58,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 	};
 
 	private dataView: any;
-	private _isCloud: boolean;
+	public _isCloud: boolean;
 	private _proxiesCacheObject: ProxiesCacheObject;
 
 	public proxies: azdata.AgentProxyInfo[];
@@ -72,7 +69,6 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(ICommandService) private _commandService: ICommandService,

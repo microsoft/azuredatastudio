@@ -64,5 +64,11 @@ export const DeleteAgentProxy = 'DeleteAgentProxy';
 export const NotebookMarkdownRendered = 'NotebookMarkdownRendered';
 
 export enum TelemetryView {
-	Shell = 'Shell'
+	Shell = 'Shell',
+	ExtensionRecommendationDialog = 'ExtensionRecommendationDialog',
+	ResultsPanel = 'ResultsPanel'
+}
+
+export enum TelemetryAction {
+	Click = 'Click'
 }

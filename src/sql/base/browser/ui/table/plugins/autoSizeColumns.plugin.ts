@@ -100,7 +100,7 @@ export class AutoColumnSize<T extends Object> implements Slick.Plugin<T> {
 		}
 	}
 
-	private handleDoubleClick(e: JQuery.Event<HTMLElement, string>) {
+	private handleDoubleClick(e: JQuery.Event<HTMLElement, unknown>) {
 		let headerEl = jQuery(e.currentTarget).closest('.slick-header-column');
 		let columnDef = headerEl.data('column');
 

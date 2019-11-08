@@ -1,0 +1,21 @@
+{
+	"extends": "../shared.tsconfig.json",
+	"compileOnSave": true,
+	"compilerOptions": {
+		"outDir": "./out",
+		"lib": [
+			"es6", "es2015.promise"
+		],
+		"typeRoots": [
+			"./node_modules/@types"
+		],
+		"sourceMap": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"moduleResolution": "node",
+		"noUnusedParameters": false,
+	},
+	"exclude": [
+		"node_modules"
+	]
+}

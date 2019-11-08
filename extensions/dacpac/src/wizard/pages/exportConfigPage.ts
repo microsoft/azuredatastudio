@@ -39,9 +39,9 @@ export class ExportConfigPage extends DacFxConfigPage {
 					databaseComponent,
 					fileBrowserComponent,
 				], {
-					horizontal: true,
-					componentWidth: 400
-				}).component();
+				horizontal: true,
+				componentWidth: 400
+			}).component();
 		await this.view.initializeModel(this.form);
 		return true;
 	}
@@ -78,7 +78,7 @@ export class ExportConfigPage extends DacFxConfigPage {
 			let fileUri = await vscode.window.showSaveDialog(
 				{
 					defaultUri: vscode.Uri.file(this.fileTextBox.value),
-					saveLabel: localize('dacfxExport.saveFile', 'Save'),
+					saveLabel: localize('dacfxExport.saveFile', "Save"),
 					filters: {
 						'bacpac Files': ['bacpac'],
 					}
@@ -99,7 +99,7 @@ export class ExportConfigPage extends DacFxConfigPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxExport.fileTextboxTitle', 'File Location'),
+			title: localize('dacFxExport.fileTextboxTitle', "File Location"),
 			actions: [this.fileButton]
 		};
 	}

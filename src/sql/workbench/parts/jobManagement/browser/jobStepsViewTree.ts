@@ -129,7 +129,7 @@ export class JobStepsViewRenderer implements tree.IRenderer {
 		let stepMessageCol: HTMLElement = DOM.$('div');
 		stepMessageCol.className = 'tree-message-col';
 		stepMessageCol.innerText = element.message;
-		if (element.rowID.includes('stepsColumn')) {
+		if (element.rowID.indexOf('stepsColumn') !== -1) {
 			stepNameCol.className += ' step-column-heading';
 			stepIdCol.className += ' step-column-heading';
 			stepMessageCol.className += ' step-column-heading';
@@ -162,7 +162,6 @@ export class JobStepsViewRenderer implements tree.IRenderer {
 }
 
 export class JobStepsViewFilter implements tree.IFilter {
-	private _filterString: string;
 
 	public isVisible(tree: tree.ITree, element: JobStepsViewRow): boolean {
 		return this._isJobVisible();
@@ -173,6 +172,5 @@ export class JobStepsViewFilter implements tree.IFilter {
 	}
 
 	public set filterString(val: string) {
-		this._filterString = val;
 	}
 }

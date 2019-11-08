@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IAdsTelemetryService } from 'sql/platform/telemetry/telemetry';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { Extensions as WorkbenchExtensions, IWorkbenchContributionsRegistry, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
@@ -25,7 +25,7 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 			commandService.onWillExecuteCommand(
 				(e: ICommandEvent) => {
 					// Filter out high-frequency events
-					if (!['type', 'cursorUp', 'cursorDown', 'cursorRight', 'cursorLeft', 'deleteLeft', 'deleteRight'].find(id => id === e.commandId)) {
+					if (!['type', 'cursorUp', 'cursorDown', 'cursorRight', 'cursorLeft', 'deleteLeft', 'deleteRight'].some(id => id === e.commandId)) {
 						telemetryService.sendActionEvent(TelemetryView.Shell, 'adsCommandExecuted', e.commandId);
 					}
 				}));

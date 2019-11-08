@@ -10,13 +10,12 @@ import { ILocalizedString, ICommandAction } from 'vs/platform/actions/common/act
 import { Event } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { IdGenerator } from 'vs/base/common/idGenerator';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 
 export interface ITaskOptions {
 	id: string;
 	title: string;
-	iconPath: { dark: string; light: string; };
+	iconPath: { dark: string; light?: string; };
 	description?: ITaskHandlerDescription;
 	iconClass?: string;
 }
@@ -55,6 +54,6 @@ export interface ITaskRegistry {
 	registerTask(id: string, command: ITaskHandler): IDisposable;
 	registerTask(command: ITask): IDisposable;
 	getTasks(): string[];
-	getOrCreateTaskIconClassName(item: ICommandAction): string;
+	getOrCreateTaskIconClassName(item: ICommandAction): string | undefined;
 	onTaskRegistered: Event<string>;
 }

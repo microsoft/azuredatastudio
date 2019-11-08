@@ -3,38 +3,56 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
-import { ServiceClientCredentials } from 'ms-rest';
-import { SqlManagementClient } from 'azure-arm-sql';
-
+import { ServiceClientCredentials } from '@azure/ms-rest-js';
 import { azureResource } from '../../azure-resource';
-import { IAzureResourceDatabaseService } from './interfaces';
-import { AzureResourceDatabase } from './models';
+import { IAzureResourceService, AzureResourceDatabase } from '../../interfaces';
+import { serversQuery, DbServerGraphData } from '../databaseServer/databaseServerService';
+import { ResourceGraphClient } from '@azure/arm-resourcegraph';
+import { queryGraphResources, GraphData } from '../resourceTreeDataProviderBase';
 
-export class AzureResourceDatabaseService implements IAzureResourceDatabaseService {
-	public async getDatabases(subscription: azureResource.AzureResourceSubscription, credential: ServiceClientCredentials): Promise<AzureResourceDatabase[]> {
+interface DatabaseGraphData extends GraphData {
+	kind: string;
+}
+export class AzureResourceDatabaseService implements IAzureResourceService<AzureResourceDatabase> {
+	public async getResources(subscription: azureResource.AzureResourceSubscription, credential: ServiceClientCredentials): Promise<AzureResourceDatabase[]> {
 		const databases: AzureResourceDatabase[] = [];
-		const sqlManagementClient = new SqlManagementClient(credential, subscription.id);
-		const svrs = await sqlManagementClient.servers.list();
-		for (const svr of svrs) {
-			// Extract resource group name from svr.id
-			const svrIdRegExp = new RegExp(`\/subscriptions\/${subscription.id}\/resourceGroups\/(.+)\/providers\/Microsoft\.Sql\/servers\/${svr.name}`);
-			if (!svrIdRegExp.test(svr.id)) {
-				continue;
+		const resourceClient = new ResourceGraphClient(credential);
+
+		// Query servers and databases in parallel (start both promises before waiting on the 1st)
+		let serverQueryPromise = queryGraphResources<GraphData>(resourceClient, subscription.id, serversQuery);
+		let dbQueryPromise = queryGraphResources<GraphData>(resourceClient, subscription.id, 'where type == "microsoft.sql/servers/databases"');
+		let servers: DbServerGraphData[] = await serverQueryPromise as DbServerGraphData[];
+		let dbByGraph: DatabaseGraphData[] = await dbQueryPromise as DatabaseGraphData[];
+
+		// Group servers by resource group, then merge DB results with servers so we
+		// can get the login name and server fully qualified name to use for connections
+		let rgMap = new Map<string, DbServerGraphData[]>();
+		servers.forEach(s => {
+			let serversForRg = rgMap.get(s.resourceGroup) || [];
+			serversForRg.push(s);
+			rgMap.set(s.resourceGroup, serversForRg);
+		});
+
+		// Match database ID. When calling exec [0] is full match, [1] is resource group name, [2] is server name
+		const svrIdRegExp = new RegExp(`\/subscriptions\/${subscription.id}\/resourceGroups\/(.+)\/providers\/Microsoft\.Sql\/servers\/(.+)\/databases\/.+`);
+
+		dbByGraph.forEach(db => {
+			// Filter master DBs, and for all others find their server to get login info
+			let serversForRg = rgMap.get(db.resourceGroup);
+			if (serversForRg && !db.kind.endsWith('system') && svrIdRegExp.test(db.id)) {
+				const founds = svrIdRegExp.exec(db.id);
+				const serverName = founds[2];
+				let server = servers.find(s => s.name === serverName);
+				if (server) {
+					databases.push({
+						name: db.name,
+						serverName: server.name,
+						serverFullName: server.properties.fullyQualifiedDomainName,
+						loginName: server.properties.administratorLogin
+					});
+				}
 			}
-
-			const founds = svrIdRegExp.exec(svr.id);
-			const resouceGroup = founds[1];
-
-			const dbs = await sqlManagementClient.databases.listByServer(resouceGroup, svr.name);
-			dbs.forEach((db) => databases.push({
-				name: db.name,
-				serverName: svr.name,
-				serverFullName: svr.fullyQualifiedDomainName,
-				loginName: svr.administratorLogin
-			}));
-		}
+		});
 
 		return databases;
 	}

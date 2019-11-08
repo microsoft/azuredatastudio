@@ -11,8 +11,8 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
 import { QueryPlanModule } from 'sql/workbench/parts/queryPlan/browser/queryPlan.module';
-import { bootstrapAngular } from 'sql/platform/bootstrap/browser/bootstrapService';
-import { IQueryPlanParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
+import { IQueryPlanParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { QUERYPLAN_SELECTOR } from 'sql/workbench/parts/queryPlan/browser/queryPlan.component';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
@@ -60,11 +60,11 @@ export class QueryPlanEditor extends BaseEditor {
 	public layout(dimension: DOM.Dimension): void {
 	}
 
-	public setInput(input: QueryPlanInput, options: EditorOptions): Promise<void> {
+	public async setInput(input: QueryPlanInput, options: EditorOptions): Promise<void> {
 		if (this.input instanceof QueryPlanInput && this.input.matches(input)) {
 			return Promise.resolve(undefined);
 		}
-
+		await input.resolve();
 		if (!input.hasInitialized) {
 			this.bootstrapAngular(input);
 		}

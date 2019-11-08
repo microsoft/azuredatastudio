@@ -23,10 +23,11 @@ import { Modal } from 'sql/workbench/browser/modal/modal';
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { NewDashboardTabViewModel, IDashboardUITab } from 'sql/workbench/services/dashboard/browser/newDashboardTabViewModel';
-import { IDashboardTab } from 'sql/platform/dashboard/browser/dashboardRegistry';
+import { IDashboardTab } from 'sql/workbench/parts/dashboard/browser/dashboardRegistry';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 class ExtensionListDelegate implements IListVirtualDelegate<IDashboardUITab> {
 
@@ -52,7 +53,7 @@ interface ExtensionListTemplate {
 class ExtensionListRenderer implements IListRenderer<IDashboardUITab, ExtensionListTemplate> {
 	public static TEMPLATE_ID = 'extensionListRenderer';
 	private static readonly OPENED_TAB_CLASS = 'success';
-	private static readonly ICON_CLASS = 'extension-status-icon icon';
+	private static readonly ICON_CLASS = 'extension-status-icon codicon';
 
 	public get templateId(): string {
 		return ExtensionListRenderer.TEMPLATE_ID;
@@ -61,7 +62,7 @@ class ExtensionListRenderer implements IListRenderer<IDashboardUITab, ExtensionL
 	public renderTemplate(container: HTMLElement): ExtensionListTemplate {
 		const tableTemplate: ExtensionListTemplate = Object.create(null);
 		tableTemplate.root = DOM.append(container, DOM.$('div.list-row.extensionTab-list'));
-		tableTemplate.icon = DOM.append(tableTemplate.root, DOM.$('div.icon'));
+		tableTemplate.icon = DOM.append(tableTemplate.root, DOM.$('div.codicon'));
 		let titleContainer = DOM.append(tableTemplate.root, DOM.$('div.extension-details'));
 		tableTemplate.title = DOM.append(titleContainer, DOM.$('div.title'));
 		tableTemplate.description = DOM.append(titleContainer, DOM.$('div.description'));
@@ -112,7 +113,8 @@ export class NewDashboardTabDialog extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(
 			localize('newDashboardTab.openDashboardExtensions', "Open dashboard extensions"),
@@ -122,6 +124,7 @@ export class NewDashboardTabDialog extends Modal {
 			clipboardService,
 			themeService,
 			logService,
+			textResourcePropertiesService,
 			contextKeyService,
 			{ hasSpinner: true }
 		);
@@ -166,7 +169,7 @@ export class NewDashboardTabDialog extends Modal {
 		let extensionTabViewContainer = DOM.$('.extensionTab-view');
 		let delegate = new ExtensionListDelegate();
 		let extensionTabRenderer = new ExtensionListRenderer();
-		this._extensionList = new List<IDashboardUITab>(extensionTabViewContainer, delegate, [extensionTabRenderer]);
+		this._extensionList = new List<IDashboardUITab>('NewDashboardTabExtentionList', extensionTabViewContainer, delegate, [extensionTabRenderer]);
 
 		this._extensionList.onMouseDblClick(e => this.onAccept());
 		this._extensionList.onKeyDown(e => {

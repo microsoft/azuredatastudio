@@ -3,19 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'mocha';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as mssql from '../../mssql/src/api/mssqlapis';
+import * as mssql from '../../mssql';
 import * as utils from './utils';
-import * as uuid from 'uuid';
+import * as uuid from './uuid';
 import { context } from './testContext';
 import assert = require('assert');
 import { getStandaloneServer, TestServerProfile, getBdcServer } from './testConfig';
 
-let cmsService: mssql.CmsService;
+let cmsService: mssql.ICmsService;
 let server: TestServerProfile;
 let connectionId: string;
 let ownerUri: string;
@@ -31,8 +29,7 @@ if (context.RunTest) {
 		setup(async function () {
 			// Set up CMS provider
 			if (!cmsService) {
-				let api: mssql.MssqlExtensionApi = vscode.extensions.getExtension('Microsoft.mssql').exports;
-				cmsService = await api.getCmsServiceProvider();
+				cmsService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).cmsService;
 				assert(cmsService !== undefined);
 			}
 
@@ -48,7 +45,7 @@ if (context.RunTest) {
 			}
 		});
 
-		test('Create CMS Server', async function () {
+		test('Create CMS Server @UNSTABLE@ @REL@', async function () {
 			// Should fail
 			await utils.assertThrowsAsync(
 				async () => await cmsService.createCmsServer(undefined, 'test_description', undefined, ownerUri),
@@ -69,7 +66,7 @@ if (context.RunTest) {
 			await cmsService.createCmsServer(TEST_CMS_NAME, 'test_description', connection, ownerUri);
 		});
 
-		test('Add and delete registered group to/from CMS server', async function () {
+		test('Add and delete registered group to/from CMS server @UNSTABLE@ @REL@', async function () {
 			await utils.assertThrowsAsync(
 				async () => await cmsService.addServerGroup(ownerUri, '', undefined, 'test_description'),
 				'Cannot add a server group without a name');
@@ -98,7 +95,7 @@ if (context.RunTest) {
 				`The server group ${TEST_CMS_GROUP} was not removed successfully. Groups : [${cmsResources.registeredServerGroups.map(g => g.name).join(', ')}]`);
 		});
 
-		test('Add and delete registered server to/from CMS server', async function () {
+		test('Add and delete registered server to/from CMS server @UNSTABLE@ @REL@', async function () {
 
 			await utils.assertThrowsAsync(
 				async () => cmsService.addRegisteredServer(ownerUri, '', undefined, 'test_description', undefined),
@@ -131,7 +128,7 @@ if (context.RunTest) {
 			assert(deleteResult === true, `Registered server ${TEST_CMS_SERVER} was not removed correctly`);
 		});
 
-		test('Add and delete registered server to/from server group', async function () {
+		test('Add and delete registered server to/from server group @UNSTABLE@ @REL@', async function () {
 
 			// Should create a server group
 			let result = await cmsService.addServerGroup(ownerUri, '', TEST_CMS_GROUP, 'test_description');
@@ -166,4 +163,3 @@ if (context.RunTest) {
 		});
 	});
 }
-

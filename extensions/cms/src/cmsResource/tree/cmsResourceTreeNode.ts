@@ -3,10 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { TreeItemCollapsibleState, TreeItem } from 'vscode';
+import { TreeItemCollapsibleState } from 'vscode';
 import { AppContext } from '../../appContext';
 import { TreeNode } from '../treeNode';
 import { CmsResourceTreeNodeBase } from './baseTreeNodes';
@@ -43,13 +42,12 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 					this.connection.options.password = await this.appContext.cmsUtils.getPassword(this.connection.options.user);
 				}
 			}
-			return this.appContext.cmsUtils.createCmsServer(this.connection, this.name, this.description).then((result) => {
-				// cache new connection is different from old one
-				if (this.appContext.cmsUtils.didConnectionChange(this._connection, result.connection)) {
-					this._connection = result.connection;
-					this._ownerUri = result.ownerUri;
-					this.appContext.cmsUtils.cacheRegisteredCmsServer(this.name, this.description, this.ownerUri, this.connection);
-				}
+			return this.appContext.cmsUtils.createCmsServer(this.connection, this.name, this.description).then(async (result) => {
+				// update the owner uri and the connection
+				this._ownerUri = result.ownerUri;
+				this._connection = result.connection;
+				await this.appContext.cmsUtils.cacheRegisteredCmsServer(this.name, this.description, this.ownerUri, this.connection);
+
 				if (result.listRegisteredServersResult.registeredServersList) {
 					result.listRegisteredServersResult.registeredServersList.forEach((registeredServer) => {
 						nodes.push(new RegisteredServerTreeNode(
@@ -129,5 +127,5 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 		return this._serverGroupNodes;
 	}
 
-	public static readonly noResourcesLabel = localize('cms.resource.cmsResourceTreeNode.noResourcesLabel', 'No resources found');
+	public static readonly noResourcesLabel = localize('cms.resource.cmsResourceTreeNode.noResourcesLabel', "No resources found");
 }

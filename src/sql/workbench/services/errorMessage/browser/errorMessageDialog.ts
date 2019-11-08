@@ -22,6 +22,7 @@ import { IAction } from 'vs/base/common/actions';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 const maxActions = 1;
 
@@ -47,9 +48,10 @@ export class ErrorMessageDialog extends Modal {
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super('', TelemetryKeys.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
+		super('', TelemetryKeys.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
 		this._okLabel = localize('errorMessageDialog.ok', "OK");
 		this._closeLabel = localize('errorMessageDialog.close', "Close");
 	}
@@ -73,7 +75,7 @@ export class ErrorMessageDialog extends Modal {
 	private createCopyButton() {
 		let copyButtonLabel = localize('copyDetails', "Copy details");
 		this._copyButton = this.addFooterButton(copyButtonLabel, () => this._clipboardService.writeText(this._messageDetails), 'left');
-		this._copyButton.icon = 'icon scriptToClipboard';
+		this._copyButton.icon = 'codicon scriptToClipboard';
 		this._copyButton.element.title = copyButtonLabel;
 		this._register(attachButtonStyler(this._copyButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_FOREGROUND }));
 	}
@@ -105,13 +107,13 @@ export class ErrorMessageDialog extends Modal {
 	private updateIconTitle(): void {
 		switch (this._severity) {
 			case Severity.Error:
-				this.titleIconClassName = 'sql icon error';
+				this.titleIconClassName = 'sql codicon error';
 				break;
 			case Severity.Warning:
-				this.titleIconClassName = 'sql icon warning';
+				this.titleIconClassName = 'sql codicon warning';
 				break;
 			case Severity.Info:
-				this.titleIconClassName = 'sql icon info';
+				this.titleIconClassName = 'sql codicon info';
 				break;
 		}
 	}

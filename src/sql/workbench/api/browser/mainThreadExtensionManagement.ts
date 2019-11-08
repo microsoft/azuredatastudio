@@ -6,27 +6,52 @@
 import { SqlMainContext, MainThreadExtensionManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IExtensionManagementService, ILocalExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { URI } from 'vs/base/common/uri';
+import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { localize } from 'vs/nls';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadExtensionManagement)
-export class MainThreadExtensionManagement implements MainThreadExtensionManagementShape {
+export class MainThreadExtensionManagement extends Disposable implements MainThreadExtensionManagementShape {
 
-	private _toDispose: IDisposable[];
+	private _obsoleteExtensionApiUsageNotificationShown: boolean = false;
 
 	constructor(
 		extHostContext: IExtHostContext,
-		@IExtensionManagementService private _extensionService: IExtensionManagementService
+		@IExtensionManagementService private _extensionService: IExtensionManagementService,
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@INotificationService private _notificationService: INotificationService
 	) {
-		this._toDispose = [];
-	}
-
-	public dispose(): void {
-		this._toDispose = dispose(this._toDispose);
+		super();
 	}
 
 	public $install(vsixPath: string): Thenable<string> {
 		return this._extensionService.install(URI.file(vsixPath)).then((value: ILocalExtension) => { return undefined; }, (reason: any) => { return reason ? reason.toString() : undefined; });
+	}
+
+	public $showObsoleteExtensionApiUsageNotification(message: string): void {
+		console.warn(message);
+
+		if (this._obsoleteExtensionApiUsageNotificationShown) {
+			return;
+		}
+
+		let enableObsoleteAPINotification = this._configurationService.getValue('workbench')['enableObsoleteApiUsageNotification'];
+		if (enableObsoleteAPINotification !== undefined && !enableObsoleteAPINotification) {
+			return;
+		}
+
+		this._notificationService.prompt(Severity.Warning,
+			localize('workbench.generalObsoleteApiNotification', "Some of the loaded extensions are using obsolete APIs, please find the detailed information in the Console tab of Developer Tools window"),
+			[{
+				label: localize('dontShowAgain', "Don't Show Again"),
+				run: () => {
+					this._configurationService.updateValue('workbench.enableObsoleteApiUsageNotification', false, ConfigurationTarget.USER);
+				},
+				isSecondary: true
+			}]);
+		this._obsoleteExtensionApiUsageNotificationShown = true;
 	}
 }

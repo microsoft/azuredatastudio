@@ -10,6 +10,9 @@ import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IURITransformer } from 'vs/base/common/uriIpc';
+import { URI } from 'vs/base/common/uri';
+import { find } from 'vs/base/common/arrays';
 
 export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
@@ -24,7 +27,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	private _providersByType = new Map<azdata.DataProviderType, azdata.DataProvider[]>();
 
 	constructor(
-		mainContext: IMainContext
+		mainContext: IMainContext,
+		private uriTransformer: IURITransformer | null
 	) {
 		super();
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadDataProtocol);
@@ -68,7 +72,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		if (!providersForType) {
 			return undefined;
 		}
-		return providersForType.find(provider => provider.providerId === providerId) as T;
+		return find(providersForType, provider => provider.providerId === providerId) as T;
 	}
 
 	public getProvidersByType<T extends azdata.DataProvider>(providerType: azdata.DataProviderType): T[] {
@@ -166,15 +170,9 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
-	$registerDacFxServiceProvider(provider: azdata.DacFxServicesProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider, DataProviderType.DacFxServicesProvider);
-		this._proxy.$registerDacFxServicesProvider(provider.providerId, provider.handle);
-		return rt;
-	}
-
-	$registerSchemaCompareServiceProvider(provider: azdata.SchemaCompareServicesProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider, DataProviderType.SchemaCompareServicesProvider);
-		this._proxy.$registerSchemaCompareServicesProvider(provider.providerId, provider.handle);
+	$registerSerializationProvider(provider: azdata.SerializationProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.QueryProvider);
+		this._proxy.$registerSerializationProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
@@ -185,6 +183,9 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	// Connection Management handlers
 	$connect(handle: number, connectionUri: string, connection: azdata.ConnectionInfo): Thenable<boolean> {
+		if (this.uriTransformer) {
+			connectionUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(connectionUri))).toString(true);
+		}
 		return this._resolveProvider<azdata.ConnectionProvider>(handle).connect(connectionUri, connection);
 	}
 
@@ -222,6 +223,9 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	$onConnectComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
+		if (this.uriTransformer) {
+			connectionInfoSummary.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(connectionInfoSummary.ownerUri))).toString(true);
+		}
 		this._proxy.$onConnectionComplete(handle, connectionInfoSummary);
 	}
 
@@ -245,6 +249,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	$runQuery(handle: number, ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Thenable<void> {
+		if (this.uriTransformer) {
+			ownerUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(ownerUri))).toString(true);
+		}
+
 		return this._resolveProvider<azdata.QueryProvider>(handle).runQuery(ownerUri, selection, runOptions);
 	}
 
@@ -268,34 +276,62 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		}
 	}
 
+	$connectWithProfile(handle: number, ownerUri: string, profile: azdata.connection.ConnectionProfile): Thenable<void> {
+		return new Promise((r) => r());
+	}
+
 	$parseSyntax(handle: number, ownerUri: string, query: string): Thenable<azdata.SyntaxParseResult> {
 		return this._resolveProvider<azdata.QueryProvider>(handle).parseSyntax(ownerUri, query);
 	}
 
 	$getQueryRows(handle: number, rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult> {
+		if (this.uriTransformer) {
+			rowData.ownerUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(rowData.ownerUri))).toString(true);
+		}
 		return this._resolveProvider<azdata.QueryProvider>(handle).getQueryRows(rowData);
 	}
 
 	$disposeQuery(handle: number, ownerUri: string): Thenable<void> {
+		if (this.uriTransformer) {
+			ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(ownerUri))).toString(true);
+		}
 		return this._resolveProvider<azdata.QueryProvider>(handle).disposeQuery(ownerUri);
 	}
 
 	$onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void {
+		if (this.uriTransformer) {
+			result.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(result.ownerUri))).toString(true);
+		}
 		this._proxy.$onQueryComplete(handle, result);
 	}
 	$onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
+		if (this.uriTransformer) {
+			batchInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(batchInfo.ownerUri))).toString(true);
+		}
 		this._proxy.$onBatchStart(handle, batchInfo);
 	}
 	$onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
+		if (this.uriTransformer) {
+			batchInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(batchInfo.ownerUri))).toString(true);
+		}
 		this._proxy.$onBatchComplete(handle, batchInfo);
 	}
 	$onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
+		if (this.uriTransformer) {
+			resultSetInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(resultSetInfo.ownerUri))).toString(true);
+		}
 		this._proxy.$onResultSetAvailable(handle, resultSetInfo);
 	}
 	$onResultSetUpdated(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
+		if (this.uriTransformer) {
+			resultSetInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(resultSetInfo.ownerUri))).toString(true);
+		}
 		this._proxy.$onResultSetUpdated(handle, resultSetInfo);
 	}
 	$onQueryMessage(handle: number, message: azdata.QueryExecuteMessageParams): void {
+		if (this.uriTransformer) {
+			message.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(message.ownerUri))).toString(true);
+		}
 		this._proxy.$onQueryMessage(handle, message);
 	}
 
@@ -649,14 +685,14 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 * Deletes a job
 	 */
 	$deleteJob(handle: number, ownerUri: string, job: azdata.AgentJobInfo): Thenable<azdata.ResultStatus> {
-		throw this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteJob(ownerUri, job);
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteJob(ownerUri, job);
 	}
 
 	/**
 	 * Deletes a job step
 	 */
 	$deleteJobStep(handle: number, ownerUri: string, step: azdata.AgentJobStepInfo): Thenable<azdata.ResultStatus> {
-		throw this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteJobStep(ownerUri, step);
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteJobStep(ownerUri, step);
 	}
 
 	/**
@@ -671,6 +707,62 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 */
 	$deleteAlert(handle: number, ownerUri: string, alert: azdata.AgentAlertInfo): Thenable<azdata.ResultStatus> {
 		return this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteAlert(ownerUri, alert);
+	}
+
+	/**
+	 * Get Agent Notebook list
+	 */
+	public $getNotebooks(handle: number, ownerUri: string): Thenable<azdata.AgentNotebooksResult> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).getNotebooks(ownerUri);
+	}
+
+	/**
+	 * Get a Agent Notebook's history
+	 */
+	public $getNotebookHistory(handle: number, ownerUri: string, jobID: string, jobName: string, targetDatabase: string): Thenable<azdata.AgentNotebookHistoryResult> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).getNotebookHistory(ownerUri, jobID, jobName, targetDatabase);
+	}
+
+	/**
+	 * Get a Agent Materialized Notebook
+	 */
+	public $getMaterializedNotebook(handle: number, ownerUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).getMaterializedNotebook(ownerUri, targetDatabase, notebookMaterializedId);
+	}
+
+	/**
+	 * Get a Agent Template Notebook
+	 */
+	public $getTemplateNotebook(handle: number, ownerUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).getTemplateNotebook(ownerUri, targetDatabase, jobId);
+	}
+
+	/**
+	 * Delete a Agent Notebook
+	 */
+	public $deleteNotebook(handle: number, ownerUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteNotebook(ownerUri, notebook);
+	}
+
+	/**
+	 * Update a Agent Materialized Notebook Name
+	 */
+	public $updateNotebookMaterializedName(handle: number, ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).updateNotebookMaterializedName(ownerUri, agentNotebookHistory, targetDatabase, name);
+	}
+
+	/**
+	 * Get a Agent Materialized Notebook
+	 */
+	public $deleteMaterializedNotebook(handle: number, ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteMaterializedNotebook(ownerUri, agentNotebookHistory, targetDatabase);
+	}
+
+	/**
+	 * Update a Agent Materialized Notebook Pin
+	 */
+	public $updateNotebookMaterializedPin(handle: number, ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).updateNotebookMaterializedPin(ownerUri, agentNotebookHistory, targetDatabase, pin);
 	}
 
 	/**
@@ -713,5 +805,14 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 */
 	public $onJobDataUpdated(handle: Number): void {
 		this._proxy.$onJobDataUpdated(handle);
+	}
+
+	// Serialization methods
+	public $startSerialization(handle: number, requestParams: azdata.SerializeDataStartRequestParams): Thenable<azdata.SerializeDataResult> {
+		return this._resolveProvider<azdata.SerializationProvider>(handle).startSerialization(requestParams);
+	}
+
+	public $continueSerialization(handle: number, requestParams: azdata.SerializeDataContinueRequestParams): Thenable<azdata.SerializeDataResult> {
+		return this._resolveProvider<azdata.SerializationProvider>(handle).continueSerialization(requestParams);
 	}
 }

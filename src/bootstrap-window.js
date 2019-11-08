@@ -21,7 +21,7 @@ exports.assign = function assign(destination, source) {
  *
  * @param {string[]} modulePaths
  * @param {(result, configuration: object) => any} resultCallback
- * @param {{ forceEnableDeveloperKeybindings?: boolean, removeDeveloperKeybindingsAfterLoad?: boolean, canModifyDOM?: (config: object) => void, beforeLoaderConfig?: (config: object, loaderConfig: object) => void, beforeRequire?: () => void }=} options
+ * @param {{ forceEnableDeveloperKeybindings?: boolean, disallowReloadKeybinding?: boolean, removeDeveloperKeybindingsAfterLoad?: boolean, canModifyDOM?: (config: object) => void, beforeLoaderConfig?: (config: object, loaderConfig: object) => void, beforeRequire?: () => void }=} options
  */
 exports.load = function (modulePaths, resultCallback, options) {
 
@@ -34,7 +34,7 @@ exports.load = function (modulePaths, resultCallback, options) {
 	 * // configuration: IWindowConfiguration
 	 * @type {{
 	 * zoomLevel?: number,
-	 * extensionDevelopmentPath?: string | string[],
+	 * extensionDevelopmentPath?: string[],
 	 * extensionTestsPath?: string,
 	 * userEnv?: { [key: string]: string | undefined },
 	 * appRoot?: string,
@@ -58,7 +58,7 @@ exports.load = function (modulePaths, resultCallback, options) {
 	const enableDeveloperTools = (process.env['VSCODE_DEV'] || !!configuration.extensionDevelopmentPath) && !configuration.extensionTestsPath;
 	let developerToolsUnbind;
 	if (enableDeveloperTools || (options && options.forceEnableDeveloperKeybindings)) {
-		developerToolsUnbind = registerDeveloperKeybindings();
+		developerToolsUnbind = registerDeveloperKeybindings(options && options.disallowReloadKeybinding);
 	}
 
 	// Correctly inherit the parent's environment
@@ -103,9 +103,6 @@ exports.load = function (modulePaths, resultCallback, options) {
 		nodeModules: [/*BUILD->INSERT_NODE_MODULES*/]
 	};
 
-	// {{SQL CARBON EDIT}}
-	require('reflect-metadata');
-	require('chart.js');
 	loaderConfig.nodeModules = loaderConfig.nodeModules.concat([
 		'@angular/common',
 		'@angular/core',
@@ -115,7 +112,13 @@ exports.load = function (modulePaths, resultCallback, options) {
 		'@angular/router',
 		'rxjs/Observable',
 		'rxjs/Subject',
-		'rxjs/Observer'
+		'rxjs/Observer',
+		'slickgrid/lib/jquery.event.drag-2.3.0',
+		'slickgrid/lib/jquery-ui-1.9.2',
+		'slickgrid/slick.core',
+		'slickgrid/slick.grid',
+		'slickgrid/slick.editors',
+		'slickgrid/slick.dataview'
 	]);
 	// {{SQL CARBON EDIT}} - End
 
@@ -175,9 +178,10 @@ function parseURLQueryArgs() {
 }
 
 /**
+ * @param {boolean} disallowReloadKeybinding
  * @returns {() => void}
  */
-function registerDeveloperKeybindings() {
+function registerDeveloperKeybindings(disallowReloadKeybinding) {
 
 	// @ts-ignore
 	const ipc = require('electron').ipcRenderer;
@@ -201,7 +205,7 @@ function registerDeveloperKeybindings() {
 		const key = extractKey(e);
 		if (key === TOGGLE_DEV_TOOLS_KB || key === TOGGLE_DEV_TOOLS_KB_ALT) {
 			ipc.send('vscode:toggleDevTools');
-		} else if (key === RELOAD_KB) {
+		} else if (key === RELOAD_KB && !disallowReloadKeybinding) {
 			ipc.send('vscode:reloadWindow');
 		}
 	};

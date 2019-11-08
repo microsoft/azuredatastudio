@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
@@ -88,19 +87,6 @@ export class ApiWrapper {
 	}
 
 	/**
-	 * Get the configuration for a extensionName
-	 * @param extensionName The string name of the extension to get the configuration for
-	 * @param resource The optional URI, as a URI object or a string, to use to get resource-scoped configurations
-	 */
-	public getConfiguration(): vscode.WorkspaceConfiguration {
-		return vscode.workspace.getConfiguration('centralManagementServers');
-	}
-
-	public async setConfiguration(value: any): Promise<void> {
-		await vscode.workspace.getConfiguration('centralManagementServers').update('servers', value, true);
-	}
-
-	/**
 	 * Parse uri
 	 */
 	public parseUri(uri: string): vscode.Uri {
@@ -129,7 +115,7 @@ export class ApiWrapper {
 
 	public openTextDocument(uri: vscode.Uri): Thenable<vscode.TextDocument>;
 	public openTextDocument(options: { language?: string; content?: string; }): Thenable<vscode.TextDocument>;
-	public openTextDocument(uriOrOptions): Thenable<vscode.TextDocument> {
+	public openTextDocument(uriOrOptions: any): Thenable<vscode.TextDocument> {
 		return vscode.workspace.openTextDocument(uriOrOptions);
 	}
 

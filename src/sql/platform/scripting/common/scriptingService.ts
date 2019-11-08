@@ -3,20 +3,29 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
 import * as azdata from 'azdata';
 import { ILogService } from 'vs/platform/log/common/log';
+
 export const SERVICE_ID = 'scriptingService';
 
 export const IScriptingService = createDecorator<IScriptingService>(SERVICE_ID);
 
-export interface IScriptingService {
-	_serviceBrand: any;
+export enum ScriptOperation {
+	Select = 0,
+	Create = 1,
+	Insert = 2,
+	Update = 3,
+	Delete = 4,
+	Execute = 5,
+	Alter = 6
+}
 
-	script(connectionUri: string, metadata: azdata.ObjectMetadata, operation: ScriptOperation, paramDetails: azdata.ScriptingParamDetails): Thenable<azdata.ScriptingResult>;
+export interface IScriptingService {
+	_serviceBrand: undefined;
+
+	script(connectionUri: string, metadata: azdata.ObjectMetadata, operation: ScriptOperation, paramDetails: azdata.ScriptingParamDetails): Thenable<azdata.ScriptingResult | undefined>;
 
 	/**
 	 * Register a scripting provider
@@ -36,14 +45,12 @@ export interface IScriptingService {
 	/**
 	 * Returns the result for an operation if the operation failed
 	 */
-	getOperationFailedResult(operationId: string): azdata.ScriptingCompleteResult;
+	getOperationFailedResult(operationId: string): azdata.ScriptingCompleteResult | undefined;
 }
 
 export class ScriptingService implements IScriptingService {
 
-	public _serviceBrand: any;
-
-	private disposables: IDisposable[] = [];
+	_serviceBrand: undefined;
 
 	private _providers: { [handle: string]: azdata.ScriptingProvider; } = Object.create(null);
 
@@ -56,7 +63,7 @@ export class ScriptingService implements IScriptingService {
 	/**
 	 * Call the service for scripting based on provider and scripting operation
 	 */
-	public script(connectionUri: string, metadata: azdata.ObjectMetadata, operation: ScriptOperation, paramDetails: azdata.ScriptingParamDetails): Thenable<azdata.ScriptingResult> {
+	public script(connectionUri: string, metadata: azdata.ObjectMetadata, operation: ScriptOperation, paramDetails: azdata.ScriptingParamDetails): Thenable<azdata.ScriptingResult | undefined> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 
 		if (providerId) {
@@ -84,7 +91,7 @@ export class ScriptingService implements IScriptingService {
 	 * Returns the result for an operation if the operation failed
 	 * @param operationId Operation Id
 	 */
-	public getOperationFailedResult(operationId: string): azdata.ScriptingCompleteResult {
+	public getOperationFailedResult(operationId: string): azdata.ScriptingCompleteResult | undefined {
 		if (operationId && operationId in this.failedScriptingOperations) {
 			return this.failedScriptingOperations[operationId];
 		} else {
@@ -102,9 +109,5 @@ export class ScriptingService implements IScriptingService {
 	public isProviderRegistered(providerId: string): boolean {
 		let provider = this._providers[providerId];
 		return !!provider;
-	}
-
-	public dispose(): void {
-		this.disposables = dispose(this.disposables);
 	}
 }

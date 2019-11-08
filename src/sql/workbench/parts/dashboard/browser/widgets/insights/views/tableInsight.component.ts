@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnInit } from '@angular/core';
+import { Component, Input, Inject, forwardRef, ElementRef, OnInit } from '@angular/core';
 
 import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -25,7 +25,6 @@ export default class TableInsight extends Disposable implements IInsightsView, O
 	private columns: Slick.Column<any>[];
 
 	constructor(
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _elementRef: ElementRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {

@@ -3,20 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
 import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
 import { TreeNode } from './treeNode';
-import { IconPath, BdcItemType } from '../constants';
-import { IEndPoint, IControllerError, getEndPoints } from '../controller/clusterControllerApi';
-import { showErrorMessage } from '../utils';
+import { IconPathHelper, BdcItemType, IconPath, AuthType } from '../constants';
 
-const localize = nls.loadMessageBundle();
-
-export abstract class ControllerTreeNode extends TreeNode {
+abstract class ControllerTreeNode extends TreeNode {
 
 	constructor(
 		label: string,
@@ -24,7 +17,7 @@ export abstract class ControllerTreeNode extends TreeNode {
 		private _treeChangeHandler: IControllerTreeChangeHandler,
 		private _description?: string,
 		private _nodeType?: string,
-		private _iconPath?: { dark: string, light: string }
+		private _iconPath?: IconPath
 	) {
 		super(label, parent);
 		this._description = this._description || this.label;
@@ -43,9 +36,7 @@ export abstract class ControllerTreeNode extends TreeNode {
 		let item: vscode.TreeItem = {};
 		item.id = this.id;
 		item.label = this.label;
-		item.collapsibleState = this.isLeaf ?
-			vscode.TreeItemCollapsibleState.None :
-			vscode.TreeItemCollapsibleState.Collapsed;
+		item.collapsibleState = vscode.TreeItemCollapsibleState.None;
 		item.iconPath = this._iconPath;
 		item.contextValue = this._nodeType;
 		item.tooltip = this._description;
@@ -83,11 +74,11 @@ export abstract class ControllerTreeNode extends TreeNode {
 		this._nodeType = nodeType;
 	}
 
-	public set iconPath(iconPath: { dark: string, light: string }) {
+	public set iconPath(iconPath: IconPath) {
 		this._iconPath = iconPath;
 	}
 
-	public get iconPath(): { dark: string, light: string } {
+	public get iconPath(): IconPath {
 		return this._iconPath;
 	}
 
@@ -102,70 +93,67 @@ export abstract class ControllerTreeNode extends TreeNode {
 
 export class ControllerRootNode extends ControllerTreeNode {
 
-	private _masterNodeFactory: SqlMasterNodeFactory;
-
 	constructor(treeChangeHandler: IControllerTreeChangeHandler) {
 		super('root', undefined, treeChangeHandler, undefined, BdcItemType.controllerRoot);
-		this._masterNodeFactory = new SqlMasterNodeFactory();
 	}
 
 	public async getChildren(): Promise<ControllerNode[]> {
 		return this.children as ControllerNode[];
 	}
 
-	public addControllerNode(clusterName: string,
+	/**
+	 * Creates or updates a node in the tree with the specified connection information
+	 * @param url The URL for the BDC management endpoint
+	 * @param auth The type of auth to use
+	 * @param username The username (if basic auth)
+	 * @param password The password (if basic auth)
+	 * @param rememberPassword Whether to store the password in the password store when saving
+	 */
+	public addOrUpdateControllerNode(
 		url: string,
+		auth: AuthType,
 		username: string,
 		password: string,
-		rememberPassword: boolean,
-		masterInstance?: IEndPoint
+		rememberPassword: boolean
 	): void {
-		let controllerNode = this.getExistingControllerNode(url, username);
+		let controllerNode = this.getExistingControllerNode(url, auth, username);
 		if (controllerNode) {
 			controllerNode.password = password;
 			controllerNode.rememberPassword = rememberPassword;
 			controllerNode.clearChildren();
 		} else {
-			controllerNode = new ControllerNode(clusterName, url, username, password, rememberPassword, undefined, this, this.treeChangeHandler, undefined);
+			controllerNode = new ControllerNode(url, auth, username, password, rememberPassword, undefined, this, this.treeChangeHandler, undefined);
 			this.addChild(controllerNode);
-		}
-
-		if (masterInstance) {
-			controllerNode.addSqlMasterNode(masterInstance.endpoint, masterInstance.description);
 		}
 	}
 
-	public deleteControllerNode(url: string, username: string): ControllerNode {
-		if (!url || !username) {
+	public deleteControllerNode(url: string, auth: AuthType, username: string): ControllerNode[] | undefined {
+		if (!url || (auth === 'basic' && !username)) {
 			return undefined;
 		}
 		let nodes = this.children as ControllerNode[];
-		let index = nodes.findIndex(e => e.url === url && e.username === username);
-		let deleted = undefined;
+		let index = nodes.findIndex(e => isControllerMatch(e, url, auth, username));
+		let deleted: ControllerNode[] | undefined;
 		if (index >= 0) {
 			deleted = nodes.splice(index, 1);
 		}
 		return deleted;
 	}
 
-	private getExistingControllerNode(url: string, username: string): ControllerNode {
+	private getExistingControllerNode(url: string, auth: AuthType, username: string): ControllerNode | undefined {
 		if (!url || !username) {
 			return undefined;
 		}
 		let nodes = this.children as ControllerNode[];
-		return nodes.find(e => e.url === url && e.username === username);
-	}
-
-	public get sqlMasterNodeFactory(): SqlMasterNodeFactory {
-		return this._masterNodeFactory;
+		return nodes.find(e => isControllerMatch(e, url, auth, username));
 	}
 }
 
 export class ControllerNode extends ControllerTreeNode {
 
 	constructor(
-		private _clusterName: string,
 		private _url: string,
+		private _auth: AuthType,
 		private _username: string,
 		private _password: string,
 		private _rememberPassword: boolean,
@@ -174,13 +162,12 @@ export class ControllerNode extends ControllerTreeNode {
 		treeChangeHandler: IControllerTreeChangeHandler,
 		description?: string,
 	) {
-		super(label, parent, treeChangeHandler, description, BdcItemType.controller, IconPath.controllerNode);
+		super(label, parent, treeChangeHandler, description, BdcItemType.controller, IconPathHelper.controllerNode);
 		this.label = label;
 		this.description = description;
-
 	}
 
-	public async getChildren(): Promise<ControllerTreeNode[]> {
+	public async getChildren(): Promise<ControllerTreeNode[] | undefined> {
 		if (this.children && this.children.length > 0) {
 			this.clearChildren();
 		}
@@ -189,80 +176,40 @@ export class ControllerNode extends ControllerTreeNode {
 			vscode.commands.executeCommand('bigDataClusters.command.addController', this);
 			return this.children as ControllerTreeNode[];
 		}
-
-		try {
-			let response = await getEndPoints(this._clusterName, this._url, this._username, this._password, true);
-			if (response && response.endPoints) {
-				let master = response.endPoints.find(e => e.name && e.name === 'sql-server-master');
-				this.addSqlMasterNode(master.endpoint, master.description);
-			}
-			return this.children as ControllerTreeNode[];
-		} catch (error) {
-			showErrorMessage(error);
-			return this.children as ControllerTreeNode[];
-		}
+		return undefined;
 	}
 
-	private static toIpAndPort(url: string): string {
+	public static toIpAndPort(url: string): string | undefined {
 		if (!url) {
-			return;
+			return undefined;
 		}
-		return url.trim().replace(/ /g, '').replace(/^.+\:\/\//, '').replace(/:(\d+)$/, ',$1');
+		return url.trim().replace(/ /g, '').replace(/^.+\:\/\//, '');
 	}
 
-	public addSqlMasterNode(endPointAddress: string, description: string): void {
-		let epFolder = this.getEndPointFolderNode();
-		let node = (this.root as ControllerRootNode).sqlMasterNodeFactory
-			.getSqlMasterNode(endPointAddress, epFolder, undefined, this.treeChangeHandler, description);
-		epFolder.addChild(node);
-	}
-
-	private getEndPointFolderNode(): FolderNode {
-		let label = localize('textSqlServers', 'SQL Servers');
-		let epFolderNode = this.children.find(e => e instanceof FolderNode && e.label === label);
-		if (!epFolderNode) {
-			epFolderNode = new FolderNode(label, this, this.treeChangeHandler);
-			this.addChild(epFolderNode);
-		}
-		return epFolderNode as FolderNode;
-	}
-
-	public getTreeItem(): vscode.TreeItem {
-		let item: vscode.TreeItem = super.getTreeItem();
-		item.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
-		return item;
-	}
-
-	public get clusterName() {
-		return this._clusterName;
-	}
-
-	public set clusterName(clusterName: string) {
-		this._clusterName = clusterName;
-	}
-
-	public get url() {
+	public get url(): string {
 		return this._url;
 	}
 
-	public set url(url: string) {
-		this._url = url;
+
+	public get auth(): AuthType {
+		return this._auth;
 	}
 
-	public get username() {
+
+	public get username(): string {
 		return this._username;
 	}
 
-	public set username(username: string) {
-		this._username = username;
-	}
-
-	public get password() {
+	public get password(): string {
 		return this._password;
 	}
 
 	public set password(pw: string) {
 		this._password = pw;
+	}
+
+	public set label(label: string) {
+		super.label = label || this.generateLabel();
 	}
 
 	public get rememberPassword() {
@@ -273,8 +220,12 @@ export class ControllerNode extends ControllerTreeNode {
 		this._rememberPassword = rememberPassword;
 	}
 
-	public set label(label: string) {
-		super.label = label || `controller: ${ControllerNode.toIpAndPort(this._url)} (${this._username})`;
+	private generateLabel(): string {
+		let label = `controller: ${ControllerNode.toIpAndPort(this._url)}`;
+		if (this._auth === 'basic') {
+			label += ` (${this._username})`;
+		}
+		return label;
 	}
 
 	public get label(): string {
@@ -290,122 +241,6 @@ export class ControllerNode extends ControllerTreeNode {
 	}
 }
 
-export class FolderNode extends ControllerTreeNode {
-	constructor(
-		label: string,
-		parent: ControllerTreeNode,
-		treeChangeHandler: IControllerTreeChangeHandler
-	) {
-		super(label, parent, treeChangeHandler, label, BdcItemType.folder, IconPath.folderNode);
-	}
-}
-
-export class SqlMasterNode extends ControllerTreeNode {
-	private static readonly _role: string = 'sql-server-master';
-	private _username: string;
-	private _password: string;
-
-	constructor(
-		private _endPointAddress: string,
-		parent: ControllerTreeNode,
-		label: string,
-		treeChangeHandler: IControllerTreeChangeHandler,
-		description?: string,
-	) {
-		super(label, parent, treeChangeHandler, description, BdcItemType.sqlMaster, IconPath.sqlMasterNode);
-		this._username = 'sa';
-		this.label = label;
-		this.description = description;
-	}
-
-	private getControllerPassword(): string {
-		if (!this._password) {
-			let current: TreeNode = this;
-			while (current && !(current instanceof ControllerNode)) {
-				current = current.parent;
-			}
-			this._password = current && current instanceof ControllerNode ? current.password : undefined;
-		}
-		return this._password;
-	}
-
-	public getTreeItem(): vscode.TreeItem {
-		let item = super.getTreeItem();
-		let connectionProfile: azdata.IConnectionProfile = {
-			id: this.id,
-			connectionName: '',
-			serverName: this._endPointAddress,
-			databaseName: '',
-			userName: this._username,
-			password: this.getControllerPassword(),
-			authenticationType: 'SqlLogin',
-			savePassword: false,
-			groupFullName: '',
-			groupId: '',
-			providerName: 'MSSQL',
-			saveProfile: false,
-			options: {}
-		};
-		return Object.assign(item, {
-			payload: connectionProfile,
-			childProvider: 'MSSQL',
-			type: 'Server'
-		});
-	}
-
-	public get role() {
-		return SqlMasterNode._role;
-	}
-
-	public get endPointAddress() {
-		return this._endPointAddress;
-	}
-
-	public set endPointAddress(endPointAddress: string) {
-		this._endPointAddress = endPointAddress;
-	}
-
-	public set label(label: string) {
-		super.label = label || `master: ${this._endPointAddress} (${this._username})`;
-	}
-
-	public get label(): string {
-		return super.label;
-	}
-
-	public set description(description: string) {
-		super.description = description || super.label;
-	}
-
-	public get description(): string {
-		return super.description;
-	}
-}
-
-export class SqlMasterNodeFactory {
-	private registry: {} = {};
-
-	public getSqlMasterNode(
-		endPointAddress: string,
-		parent: ControllerTreeNode,
-		label: string,
-		treeChangeHandler: IControllerTreeChangeHandler,
-		description?: string
-	): SqlMasterNode {
-		let id = this.createRegistryId(endPointAddress, 'sa');
-		if (!this.registry[id]) {
-			this.registry[id] = new SqlMasterNode(endPointAddress, parent, label, treeChangeHandler, description);
-		} else {
-			let node = this.registry[id] as SqlMasterNode;
-			node.parent = parent;
-			node.label = label;
-			node.treeChangeHandler = treeChangeHandler;
-			description = description;
-		}
-		return this.registry[id] as SqlMasterNode;
-	}
-
-	private createRegistryId(endPointAddress: string, username: string): string {
-		return `${endPointAddress}::${username}`;
-	}
+function isControllerMatch(node: ControllerNode, url: string, auth: string, username: string): unknown {
+	return node.url === url && node.auth === auth && node.username === username;
 }

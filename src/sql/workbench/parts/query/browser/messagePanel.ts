@@ -21,7 +21,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { OpenMode, ClickBehavior, ICancelableEvent, IControllerOptions } from 'vs/base/parts/tree/browser/treeDefaults';
 import { WorkbenchTreeController } from 'vs/platform/list/browser/listService';
 import { isArray } from 'vs/base/common/types';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -68,7 +68,7 @@ export class MessagePanel extends Disposable {
 	private container = $('.message-tree');
 	private styleElement = createStyleSheet(this.container);
 
-	private queryRunnerDisposables: IDisposable[] = [];
+	private queryRunnerDisposables = this._register(new DisposableStore());
 	private _state: MessagePanelState | undefined;
 
 	private tree: ITree;
@@ -175,11 +175,10 @@ export class MessagePanel extends Disposable {
 	}
 
 	public set queryRunner(runner: QueryRunner) {
-		dispose(this.queryRunnerDisposables);
-		this.queryRunnerDisposables = [];
+		this.queryRunnerDisposables.clear();
 		this.reset();
-		this.queryRunnerDisposables.push(runner.onQueryStart(() => this.reset()));
-		this.queryRunnerDisposables.push(runner.onMessage(e => this.onMessage(e)));
+		this.queryRunnerDisposables.add(runner.onQueryStart(() => this.reset()));
+		this.queryRunnerDisposables.add(runner.onMessage(e => this.onMessage(e)));
 		this.onMessage(runner.messages);
 	}
 
@@ -246,7 +245,6 @@ export class MessagePanel extends Disposable {
 	}
 
 	public dispose() {
-		dispose(this.queryRunnerDisposables);
 		if (this.container) {
 			this.container.remove();
 			this.container = undefined;

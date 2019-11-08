@@ -14,6 +14,9 @@ import { join } from 'vs/base/common/path';
 import * as Utils from 'sql/platform/connection/common/utils';
 import * as azdata from 'azdata';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { startsWith } from 'vs/base/common/strings';
+import { values } from 'vs/base/common/collections';
+import { firstIndex, find } from 'vs/base/common/arrays';
 
 export class ConnectionStatusManager {
 
@@ -27,7 +30,7 @@ export class ConnectionStatusManager {
 		this._connections = {};
 	}
 
-	public findConnection(uri: string): ConnectionManagementInfo {
+	public findConnection(uri: string): ConnectionManagementInfo | undefined {
 		if (uri in this._connections) {
 			return this._connections[uri];
 		} else {
@@ -35,11 +38,11 @@ export class ConnectionStatusManager {
 		}
 	}
 
-	public findConnectionByProfileId(profileId: string): ConnectionManagementInfo {
-		return Object.values(this._connections).find((connection: ConnectionManagementInfo) => connection.connectionProfile.id === profileId);
+	public findConnectionByProfileId(profileId: string): ConnectionManagementInfo | undefined {
+		return find(values(this._connections), connection => connection.connectionProfile.id === profileId);
 	}
 
-	public findConnectionProfile(connectionProfile: IConnectionProfile): ConnectionManagementInfo {
+	public findConnectionProfile(connectionProfile: IConnectionProfile): ConnectionManagementInfo | undefined {
 		let id = Utils.generateUri(connectionProfile);
 		return this.findConnection(id);
 	}
@@ -65,7 +68,7 @@ export class ConnectionStatusManager {
 		}
 	}
 
-	public getConnectionProfile(id: string): ConnectionProfile {
+	public getConnectionProfile(id: string): ConnectionProfile | undefined {
 		let connectionInfoForId = this.findConnection(id);
 		return connectionInfoForId ? connectionInfoForId.connectionProfile : undefined;
 	}
@@ -178,7 +181,7 @@ export class ConnectionStatusManager {
 		return ownerUriToReturn;
 	}
 
-	public onConnectionChanged(changedConnInfo: azdata.ChangedConnectionInfo): IConnectionProfile {
+	public onConnectionChanged(changedConnInfo: azdata.ChangedConnectionInfo): IConnectionProfile | undefined {
 		let connection = this._connections[changedConnInfo.connectionUri];
 		if (connection && connection.connectionProfile) {
 			connection.connectionProfile.serverName = changedConnInfo.connection.serverName;
@@ -189,8 +192,15 @@ export class ConnectionStatusManager {
 		return undefined;
 	}
 
+	private isSharedSession(fileUri: string): boolean {
+		return !!(fileUri && startsWith(fileUri, 'vsls:'));
+	}
+
 	public isConnected(id: string): boolean {
-		return (id in this._connections && this._connections[id].connectionId && !!this._connections[id].connectionId);
+		if (this.isSharedSession(id)) {
+			return true;
+		}
+		return !!(id in this._connections && this._connections[id].connectionId && !!this._connections[id].connectionId);
 	}
 
 	public isConnecting(id: string): boolean {
@@ -198,7 +208,7 @@ export class ConnectionStatusManager {
 	}
 
 	public isDefaultTypeUri(uri: string): boolean {
-		return uri && uri.startsWith(Utils.uriPrefixes.default);
+		return !!(uri && startsWith(uri, Utils.uriPrefixes.default));
 	}
 
 	public getProviderIdFromUri(ownerUri: string): string {
@@ -218,12 +228,12 @@ export class ConnectionStatusManager {
 	 * Get a list of the active connection profiles managed by the status manager
 	*/
 	public getActiveConnectionProfiles(providers?: string[]): ConnectionProfile[] {
-		let profiles = Object.values(this._connections).map((connectionInfo: ConnectionManagementInfo) => connectionInfo.connectionProfile);
+		let profiles = values(this._connections).map((connectionInfo: ConnectionManagementInfo) => connectionInfo.connectionProfile);
 		// Remove duplicate profiles that may be listed multiple times under different URIs by filtering for profiles that don't have the same ID as an earlier profile in the list
-		profiles = profiles.filter((profile, index) => profiles.findIndex(otherProfile => otherProfile.id === profile.id) === index);
+		profiles = profiles.filter((profile, index) => firstIndex(profiles, otherProfile => otherProfile.id === profile.id) === index);
 
 		if (providers) {
-			profiles = profiles.filter(f => providers.includes(f.providerName));
+			profiles = profiles.filter(f => find(providers, x => x === f.providerName));
 		}
 		return profiles;
 	}

@@ -15,11 +15,11 @@ import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/ag
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
 import { EditJobAction, DeleteJobAction, NewJobAction, RunJobAction } from 'sql/platform/jobManagement/browser/jobActions';
-import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
+import { JobManagementUtilities } from 'sql/platform/jobManagement/browser/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { JobManagementView, JobActionContext } from 'sql/workbench/parts/jobManagement/browser/jobManagementView';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -32,6 +32,7 @@ import { tableBackground, cellBackground, cellBorderColor } from 'sql/platform/t
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
+import { find, fill } from 'vs/base/common/arrays';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -79,7 +80,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	private rowDetail: RowDetailView<IItem>;
 	private filterPlugin: any;
 	private dataView: any;
-	private _isCloud: boolean;
+	public _isCloud: boolean;
 	private filterStylingMap: { [columnName: string]: [any]; } = {};
 	private filterStack = ['start'];
 	private filterValueMap: { [columnName: string]: string[]; } = {};
@@ -97,7 +98,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IWorkbenchThemeService) private _themeService: IWorkbenchThemeService,
@@ -309,7 +309,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 						this._table.grid.removeCellCssStyles('error-row' + i.toString());
 						let item = this.dataView.getItemByIdx(i);
 						// current filter
-						if (_.contains(filterValues, item[args.column.field])) {
+						if (find(filterValues, x => x === item[args.column.field])) {
 							// check all previous filters
 							if (this.checkPreviousFilters(item)) {
 								if (item.lastRunOutcome === 'Failed') {
@@ -507,11 +507,11 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		if (runChart && runChart.length > 0) {
 			return `<table class="jobprevruns" id="${dataContext.id}">
 				<tr>
-					<td>${runChart[0] ? runChart[0] : '<div></div>'}</td>
-					<td>${runChart[1] ? runChart[1] : '<div></div>'}</td>
-					<td>${runChart[2] ? runChart[2] : '<div></div>'}</td>
-					<td>${runChart[3] ? runChart[3] : '<div></div>'}</td>
-					<td>${runChart[4] ? runChart[4] : '<div></div>'}</td>
+					<td>${runChart[0] ? runChart[0] : '<div class="bar0"></div>'}</td>
+					<td>${runChart[1] ? runChart[1] : '<div class="bar1"></div>'}</td>
+					<td>${runChart[2] ? runChart[2] : '<div class="bar2"></div>'}</td>
+					<td>${runChart[3] ? runChart[3] : '<div class="bar3"></div>'}</td>
+					<td>${runChart[4] ? runChart[4] : '<div class="bar4"></div>'}</td>
 				</tr>
 			</table>`;
 		} else {
@@ -561,7 +561,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	private checkPreviousFilters(item): boolean {
 		for (let column in this.filterValueMap) {
 			if (column !== 'start' && this.filterValueMap[column][0].length > 0) {
-				if (!_.contains(this.filterValueMap[column][0], item[JobManagementUtilities.convertColNameToField(column)])) {
+				if (!find(this.filterValueMap[column][0], x => x === item[JobManagementUtilities.convertColNameToField(column)])) {
 					return false;
 				}
 			}
@@ -670,7 +670,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		// if the durations are all 0 secs, show minimal chart
 		// instead of nothing
 		if (zeroDurationJobCount === jobHistories.length) {
-			return Array(jobHistories.length).fill('5px');
+			return fill(jobHistories.length, '5px');
 		} else {
 			return chartHeights;
 		}
@@ -703,9 +703,9 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			let filterValues = col.filterValues;
 			if (filterValues && filterValues.length > 0) {
 				if (item._parent) {
-					value = value && _.contains(filterValues, item._parent[col.field]);
+					value = value && find(filterValues, x => x === item._parent[col.field]);
 				} else {
-					value = value && _.contains(filterValues, item[col.field]);
+					value = value && find(filterValues, x => x === item[col.field]);
 				}
 			}
 		}

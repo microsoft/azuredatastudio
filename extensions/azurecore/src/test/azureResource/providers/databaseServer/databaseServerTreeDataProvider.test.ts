@@ -11,13 +11,12 @@ import 'mocha';
 
 import { azureResource } from '../../../../azureResource/azure-resource';
 import { ApiWrapper } from '../../../../apiWrapper';
-import { IAzureResourceDatabaseServerService } from '../../../../azureResource/providers/databaseServer/interfaces';
 import { AzureResourceDatabaseServerTreeDataProvider } from '../../../../azureResource/providers/databaseServer/databaseServerTreeDataProvider';
-import { AzureResourceDatabaseServer } from '../../../../azureResource/providers/databaseServer/models';
 import { AzureResourceItemType } from '../../../../azureResource/constants';
+import { IAzureResourceService, AzureResourceDatabaseServer } from '../../../../azureResource/interfaces';
 
 // Mock services
-let mockDatabaseServerService: TypeMoq.IMock<IAzureResourceDatabaseServerService>;
+let mockDatabaseServerService: TypeMoq.IMock<IAzureResourceService<AzureResourceDatabaseServer>>;
 let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 
@@ -80,7 +79,7 @@ const mockDatabaseServers: AzureResourceDatabaseServer[] = [
 
 describe('AzureResourceDatabaseServerTreeDataProvider.info', function (): void {
 	beforeEach(() => {
-		mockDatabaseServerService = TypeMoq.Mock.ofType<IAzureResourceDatabaseServerService>();
+		mockDatabaseServerService = TypeMoq.Mock.ofType<IAzureResourceService<AzureResourceDatabaseServer>>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 	});
@@ -98,12 +97,12 @@ describe('AzureResourceDatabaseServerTreeDataProvider.info', function (): void {
 
 describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function (): void {
 	beforeEach(() => {
-		mockDatabaseServerService = TypeMoq.Mock.ofType<IAzureResourceDatabaseServerService>();
+		mockDatabaseServerService = TypeMoq.Mock.ofType<IAzureResourceService<AzureResourceDatabaseServer>>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 
 		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
-		mockDatabaseServerService.setup((o) => o.getDatabaseServers(mockSubscription, TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabaseServers));
+		mockDatabaseServerService.setup((o) => o.getResources(mockSubscription, TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabaseServers));
 		mockExtensionContext.setup((o) => o.asAbsolutePath(TypeMoq.It.isAnyString())).returns(() => TypeMoq.It.isAnyString());
 	});
 

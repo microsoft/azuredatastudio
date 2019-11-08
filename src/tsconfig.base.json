@@ -3,10 +3,9 @@
 		"module": "amd",
 		"moduleResolution": "node",
 		"noImplicitAny": false,
-		"target": "es5",
 		"experimentalDecorators": true,
 		"noImplicitReturns": true,
-		"noUnusedLocals": false,
+		"noUnusedLocals": true,
 		"noImplicitThis": true,
 		"alwaysStrict": true,
 		"strictBindCallApply": true,
@@ -19,18 +18,7 @@
 			],
 			"sql/*": [
 				"./sql/*"
-			],
-			"sqltest/*": [
-				"./sqltest/*"
 			]
-		},
-		"types": [
-			"keytar",
-			"minimist",
-			"mocha",
-			"semver",
-			"sinon",
-			"winreg"
-		]
+		}
 	}
 }

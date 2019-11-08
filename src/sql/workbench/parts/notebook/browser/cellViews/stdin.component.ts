@@ -6,7 +6,7 @@
 import 'vs/css!./stdin';
 
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef,
+	Component, Input, Inject,
 	ViewChild, ElementRef, AfterViewInit, HostListener
 } from '@angular/core';
 import { nb } from 'azdata';
@@ -16,14 +16,14 @@ import { IInputOptions } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { inputBackground, inputBorder } from 'vs/platform/theme/common/colorRegistry';
-import { StandardKeyboardEvent, IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { Deferred } from 'sql/base/common/promise';
-import { ICellModel, CellExecutionState } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { ICellModel, CellExecutionState } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 
 export const STDIN_SELECTOR: string = 'stdin-component';
 @Component({
@@ -43,10 +43,8 @@ export class StdInComponent extends AngularDisposable implements AfterViewInit {
 
 
 	constructor(
-		@Inject(forwardRef(() => ChangeDetectorRef)) private changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(forwardRef(() => ElementRef)) private el: ElementRef
+		@Inject(IContextViewService) private contextViewService: IContextViewService
 	) {
 		super();
 	}

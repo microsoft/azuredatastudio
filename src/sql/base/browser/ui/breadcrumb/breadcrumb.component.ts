@@ -19,12 +19,12 @@ import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 				<span style="display: flex; flex-flow: row; align-items: center; margin: 10px">
 					<ng-template ngFor let-item let-first="first" let-last="last" [ngForOf]="menuItems">
 						<span style="padding: 5px; display: flex; align-items: center">
-							<span *ngIf="item.icon" class="icon" style="display: inline-block; margin-right: 5px" [ngClass]="item.icon"></span>
+							<span *ngIf="item.icon" class="codicon" style="display: inline-block; margin-right: 5px" [ngClass]="item.icon"></span>
 							<span *ngIf="first">{{item.label}}</span>
 							<span *ngIf="last" style="">{{item.label}}</span>
 							<a class="router-link" *ngIf="!last && !first" (click)="route(item.routerLink)" >{{item.label}}</a>
 						</span>
-						<span *ngIf="!last" class="icon chevron-right"></span>
+						<span *ngIf="!last" class="codicon chevron-right"></span>
 					</ng-template>
 				</span>
 				`
@@ -52,7 +52,7 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 		this._changeRef.detectChanges();
 	}
 
-	public route(link: any[]): void {
-		this._router.navigate(link);
+	public route(link: any[]): Promise<boolean> {
+		return this._router.navigate(link);
 	}
 }

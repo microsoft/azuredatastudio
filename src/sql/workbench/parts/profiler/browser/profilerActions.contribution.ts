@@ -8,8 +8,8 @@ import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiati
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
-import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
-import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
+import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
+import { IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ProfilerEditor } from 'sql/workbench/parts/profiler/browser/profilerEditor';
 import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
@@ -17,7 +17,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 
 CommandsRegistry.registerCommand({

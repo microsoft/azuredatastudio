@@ -14,31 +14,14 @@ const bootstrapWindow = require('../../../../bootstrap-window');
 // Setup shell environment
 process['lazyEnv'] = getLazyEnv();
 
-// {{SQL CARBON EDIT}}
-
-/* eslint-disable */
-
-// SQL global imports
-const jQuery = require('jquery');
-const $ = jQuery;
-require('slickgrid/lib/jquery.event.drag-2.3.0');
-require('slickgrid/lib/jquery-ui-1.9.2');
-const _ = require('underscore')._;
-require('slickgrid/slick.core');
-const Slick = window.Slick;
-require('slickgrid/slick.grid');
-require('slickgrid/slick.editors');
-require('slickgrid/slick.dataview');
-require('reflect-metadata');
-require('zone.js');
-global['Zone']["__zone_symbol__ignoreConsoleErrorUncaughtError"] = true;
-// {{SQL CARBON EDIT}} - End
-
-// Load workbench main
+// Load workbench main JS, CSS and NLS all in parallel. This is an
+// optimization to prevent a waterfall of loading to happen, because
+// we know for a fact that workbench.desktop.main will depend on
+// the related CSS and NLS counterparts.
 bootstrapWindow.load([
-	'vs/workbench/workbench.main',
-	'vs/nls!vs/workbench/workbench.main',
-	'vs/css!vs/workbench/workbench.main'
+	'vs/workbench/workbench.desktop.main',
+	'vs/nls!vs/workbench/workbench.desktop.main',
+	'vs/css!vs/workbench/workbench.desktop.main'
 ],
 	function (workbench, configuration) {
 		perf.mark('didLoadWorkbenchMain');
@@ -47,7 +30,7 @@ bootstrapWindow.load([
 			perf.mark('main/startup');
 
 			// @ts-ignore
-			return require('vs/workbench/electron-browser/main').main(configuration);
+			return require('vs/workbench/electron-browser/desktop.main').main(configuration);
 		});
 	}, {
 		removeDeveloperKeybindingsAfterLoad: true,
@@ -66,7 +49,7 @@ bootstrapWindow.load([
  * @param {{
  *	partsSplashPath?: string,
  *	highContrast?: boolean,
- *	extensionDevelopmentPath?: string | string[],
+ *	extensionDevelopmentPath?: string[],
  *	folderUri?: object,
  *	workspace?: object
  * }} configuration

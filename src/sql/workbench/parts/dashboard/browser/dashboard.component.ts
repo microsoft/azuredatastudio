@@ -5,10 +5,10 @@
 
 import 'vs/css!./dashboard';
 
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { OnInit, Component, Inject, forwardRef, ElementRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { RefreshWidgetAction, EditDashboardAction } from 'sql/workbench/parts/dashboard/browser/core/actions';
@@ -38,7 +38,6 @@ export class DashboardComponent extends AngularDisposable implements OnInit {
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
 		@Inject(forwardRef(() => Router)) private _router: Router,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
 		super();

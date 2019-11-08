@@ -24,7 +24,7 @@
     <body>
       <trans-unit id="adminToolExtWin.noConnectionContextForProp">
         <source xml:lang="en">No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand</source>
-        <target state="translated">handleLaunchSsmsMinPropertiesDialogCommand に提供された ConnectionContext がありません</target>
+        <target state="translated">handleLaunchSsmsMinPropertiesDialogCommand に提供された ConnectionContext はありません</target>
       </trans-unit>
       <trans-unit id="adminToolExtWin.noOENode">
         <source xml:lang="en">Could not determine Object Explorer node from connectionContext : {0}</source>

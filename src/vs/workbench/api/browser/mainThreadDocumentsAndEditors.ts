@@ -109,7 +109,7 @@ class DocumentAndEditorStateDelta {
 
 class DocumentAndEditorState {
 
-	static compute(before: DocumentAndEditorState, after: DocumentAndEditorState): DocumentAndEditorStateDelta {
+	static compute(before: DocumentAndEditorState | undefined, after: DocumentAndEditorState): DocumentAndEditorStateDelta {
 		if (!before) {
 			return new DocumentAndEditorStateDelta(
 				[], values(after.documents),
@@ -146,7 +146,7 @@ class MainThreadDocumentAndEditorStateComputer {
 
 	private readonly _toDispose = new DisposableStore();
 	private _toDisposeOnEditorRemove = new Map<string, IDisposable>();
-	private _currentState: DocumentAndEditorState;
+	private _currentState?: DocumentAndEditorState;
 	private _activeEditorOrder: ActiveEditorOrder = ActiveEditorOrder.Editor;
 
 	constructor(
@@ -308,10 +308,10 @@ export class MainThreadDocumentsAndEditors {
 	private readonly _proxy: ExtHostDocumentsAndEditorsShape;
 	private readonly _textEditors = new Map<string, MainThreadTextEditor>();
 
-	private _onTextEditorAdd = new Emitter<MainThreadTextEditor[]>();
-	private _onTextEditorRemove = new Emitter<string[]>();
-	private _onDocumentAdd = new Emitter<ITextModel[]>();
-	private _onDocumentRemove = new Emitter<URI[]>();
+	private readonly _onTextEditorAdd = new Emitter<MainThreadTextEditor[]>();
+	private readonly _onTextEditorRemove = new Emitter<string[]>();
+	private readonly _onDocumentAdd = new Emitter<ITextModel[]>();
+	private readonly _onDocumentRemove = new Emitter<URI[]>();
 
 	readonly onTextEditorAdd: Event<MainThreadTextEditor[]> = this._onTextEditorAdd.event;
 	readonly onTextEditorRemove: Event<string[]> = this._onTextEditorRemove.event;

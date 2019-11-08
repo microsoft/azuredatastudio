@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as fs from 'fs';
 import * as glob from 'glob';
 
 import * as utils from '../common/utils';
@@ -25,7 +24,7 @@ export class PythonPathLookup {
 				`${userFolder}/*conda*/bin/python3`
 			];
 		} else {
-			let userFolder = process.env['USERPROFILE'].replace('\\', '/').replace('C:', '');
+			let userFolder = process.env['USERPROFILE'].replace(/\\/g, '/').replace('C:', '');
 			this.condaLocations = [
 				'/ProgramData/[Mm]iniconda*/python.exe',
 				'/ProgramData/[Aa]naconda*/python.exe',
@@ -92,7 +91,7 @@ export class PythonPathLookup {
 			const cmd = `"${options.command}" ${args.join(' ')}`;
 			let output = await utils.executeBufferedCommand(cmd, {});
 			let value = output ? output.trim() : '';
-			if (value.length > 0 && fs.existsSync(value)) {
+			if (value.length > 0 && await utils.exists(value)) {
 				return value;
 			}
 		} catch (err) {

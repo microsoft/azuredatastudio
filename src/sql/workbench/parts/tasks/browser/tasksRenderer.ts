@@ -29,7 +29,6 @@ export interface ITaskHistoryTemplateData {
 export class TaskHistoryRenderer implements IRenderer {
 
 	public static readonly TASKOBJECT_HEIGHT = 22;
-	private static readonly TASKOBJECT_TEMPLATE_ID = 'carbonTask';
 	private static readonly FAIL_CLASS = 'error';
 	private static readonly SUCCESS_CLASS = 'success';
 	private static readonly INPROGRESS_CLASS = 'in-progress';
@@ -56,7 +55,7 @@ export class TaskHistoryRenderer implements IRenderer {
 	public renderTemplate(tree: ITree, templateId: string, container: HTMLElement): any {
 		const taskTemplate: ITaskHistoryTemplateData = Object.create(null);
 		taskTemplate.root = dom.append(container, $('.task-group'));
-		taskTemplate.icon = dom.append(taskTemplate.root, $('.icon.task-icon'));
+		taskTemplate.icon = dom.append(taskTemplate.root, $('.codicon.task-icon'));
 		taskTemplate.label = dom.append(taskTemplate.root, $('.label'));
 		taskTemplate.description = dom.append(taskTemplate.root, $('.description'));
 		taskTemplate.time = dom.append(taskTemplate.root, $('.time'));

@@ -18,10 +18,7 @@ import { domEvent } from 'vs/base/browser/event';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { ISelectBoxDelegate, ISelectOptionItem, ISelectBoxOptions, ISelectBoxStyles, ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { isMacintosh } from 'vs/base/common/platform';
-import { renderMarkdown } from 'vs/base/browser/htmlContentRenderer';
-
-// {{SQL CARBON EDIT}} import color
-import { Color } from 'vs/base/common/color';
+import { renderMarkdown } from 'vs/base/browser/markdownRenderer';
 
 const $ = dom.$;
 
@@ -38,8 +35,6 @@ interface ISelectListTemplateData {
 class SelectListRenderer implements IListRenderer<ISelectOptionItem, ISelectListTemplateData> {
 
 	get templateId(): string { return SELECT_OPTION_ENTRY_TEMPLATE_ID; }
-
-	constructor() { }
 
 	renderTemplate(container: HTMLElement): ISelectListTemplateData {
 		const data: ISelectListTemplateData = Object.create(null);
@@ -93,23 +88,23 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 
 	private _isVisible: boolean;
 	private selectBoxOptions: ISelectBoxOptions;
-	// {{SQL CARBON EDIT}}
-	public selectElement: HTMLSelectElement;
-	private options: ISelectOptionItem[];
+
+	public selectElement: HTMLSelectElement; // {{SQL CARBON EDIT}}
+	private options: ISelectOptionItem[] = [];
 	private selected: number;
 	private readonly _onDidSelect: Emitter<ISelectData>;
 	private styles: ISelectBoxStyles;
-	private listRenderer: SelectListRenderer;
-	private contextViewProvider: IContextViewProvider;
-	private selectDropDownContainer: HTMLElement;
-	private styleElement: HTMLStyleElement;
-	private selectList: List<ISelectOptionItem>;
-	private selectDropDownListContainer: HTMLElement;
-	private widthControlElement: HTMLElement;
-	private _currentSelection: number;
-	private _dropDownPosition: AnchorPosition;
+	private listRenderer!: SelectListRenderer;
+	private contextViewProvider!: IContextViewProvider;
+	public selectDropDownContainer!: HTMLElement; // {{SQL CARBON EDIT}} Make public so we can hook into keyboard events
+	private styleElement!: HTMLStyleElement;
+	private selectList!: List<ISelectOptionItem>;
+	private selectDropDownListContainer!: HTMLElement;
+	private widthControlElement!: HTMLElement;
+	private _currentSelection = 0;
+	private _dropDownPosition!: AnchorPosition;
 	private _hasDetails: boolean = false;
-	private selectionDetailsPane: HTMLElement;
+	private selectionDetailsPane!: HTMLElement;
 	private _skipLayout: boolean = false;
 
 	private _sticky: boolean = false; // for dev purposes only
@@ -247,7 +242,7 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 	}
 
 	public setOptions(options: ISelectOptionItem[], selected?: number): void {
-		if (!this.options || !arrays.equals(this.options, options)) {
+		if (!arrays.equals(this.options, options)) {
 			this.options = options;
 			this.selectElement.options.length = 0;
 			this._hasDetails = false;
@@ -272,7 +267,7 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 
 		// Mirror options in drop-down
 		// Populate select list for non-native select mode
-		if (this.selectList && !!this.options) {
+		if (this.selectList) {
 			this.selectList.splice(0, this.selectList.length, this.options);
 		}
 	}
@@ -382,22 +377,22 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 		// Style parent select
 
 		// {{SQL CARBON EDIT}}
-		let background: Color | undefined = undefined;
-		let foreground: Color | undefined = undefined;
-		let border: Color | undefined = undefined;
+		let background = '';
+		let foreground = '';
+		let border = '';
 
 		if (this.selectElement) {
 			if (this.selectElement.disabled) {
-				background = (<any>this.styles).disabledSelectBackground;
-				foreground = (<any>this.styles).disabledSelectForeground;
+				background = (<any>this.styles).disabledSelectBackground ? (<any>this.styles).disabledSelectBackground.toString() : '';
+				foreground = (<any>this.styles).disabledSelectForeground ? (<any>this.styles).disabledSelectForeground.toString() : '';
 			} else {
-				background = this.styles.selectBackground;
-				foreground = this.styles.selectForeground;
-				border = this.styles.selectBorder;
+				background = this.styles.selectBackground ? this.styles.selectBackground.toString() : '';
+				foreground = this.styles.selectForeground ? this.styles.selectForeground.toString() : '';
+				border = this.styles.selectBorder ? this.styles.selectBorder.toString() : '';
 			}
-			this.selectElement.style.backgroundColor = background ? background.toString() : null;
-			this.selectElement.style.color = foreground ? foreground.toString() : null;
-			this.selectElement.style.borderColor = border ? border.toString() : null;
+			this.selectElement.style.backgroundColor = background;
+			this.selectElement.style.color = foreground;
+			this.selectElement.style.borderColor = border;
 		}
 
 		// Style drop down select list (non-native mode only)
@@ -409,10 +404,10 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 
 	private styleList() {
 		if (this.selectList) {
-			let background = this.styles.selectBackground ? this.styles.selectBackground.toString() : null;
+			const background = this.styles.selectBackground ? this.styles.selectBackground.toString() : '';
 			this.selectList.style({});
 
-			let listBackground = this.styles.selectListBackground ? this.styles.selectListBackground.toString() : background;
+			const listBackground = this.styles.selectListBackground ? this.styles.selectListBackground.toString() : background;
 			this.selectDropDownListContainer.style.backgroundColor = listBackground;
 			this.selectionDetailsPane.style.backgroundColor = listBackground;
 			const optionsBorder = this.styles.focusBorder ? this.styles.focusBorder.toString() : '';
@@ -704,7 +699,7 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 	private setWidthControlElement(container: HTMLElement): number {
 		let elementWidth = 0;
 
-		if (container && !!this.options) {
+		if (container) {
 			let longest = 0;
 			let longestLength = 0;
 
@@ -736,7 +731,7 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 
 		this.listRenderer = new SelectListRenderer();
 
-		this.selectList = new List(this.selectDropDownListContainer, this, [this.listRenderer], {
+		this.selectList = new List('SelectBoxCustom', this.selectDropDownListContainer, this, [this.listRenderer], {
 			ariaLabel: this.selectBoxOptions.ariaLabel,
 			useShadows: false,
 			verticalScrollMode: ScrollbarVisibility.Visible,

@@ -3,9 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
+import * as msRest from '@azure/ms-rest-js';
 
-import { ServiceClientCredentials } from 'ms-rest';
 import { Account, DidChangeAccountsParams } from 'azdata';
 import { Event } from 'vscode';
 
@@ -13,17 +12,15 @@ import { azureResource } from './azure-resource';
 
 export interface IAzureResourceAccountService {
 	getAccounts(): Promise<Account[]>;
-
 	readonly onDidChangeAccounts: Event<DidChangeAccountsParams>;
 }
 
 export interface IAzureResourceSubscriptionService {
-	getSubscriptions(account: Account, credential: ServiceClientCredentials): Promise<azureResource.AzureResourceSubscription[]>;
+	getSubscriptions(account: Account, credential: msRest.ServiceClientCredentials): Promise<azureResource.AzureResourceSubscription[]>;
 }
 
 export interface IAzureResourceSubscriptionFilterService {
 	getSelectedSubscriptions(account: Account): Promise<azureResource.AzureResourceSubscription[]>;
-
 	saveSelectedSubscriptions(account: Account, selectedSubscriptions: azureResource.AzureResourceSubscription[]): Promise<void>;
 }
 
@@ -42,4 +39,25 @@ export interface IAzureResourceTenantService {
 export interface IAzureResourceNodeWithProviderId {
 	resourceProviderId: string;
 	resourceNode: azureResource.IAzureResourceNode;
+}
+
+export interface AzureSqlResource {
+	name: string;
+	loginName: string;
+}
+
+export interface IAzureResourceService<T extends AzureSqlResource> {
+	getResources(subscription: azureResource.AzureResourceSubscription, credential: msRest.ServiceClientCredentials): Promise<T[]>;
+}
+
+
+export interface AzureResourceDatabase extends AzureSqlResource {
+	serverName: string;
+	serverFullName: string;
+}
+
+export interface AzureResourceDatabaseServer extends AzureSqlResource {
+	id?: string;
+	fullName: string;
+	defaultDatabaseName: string;
 }

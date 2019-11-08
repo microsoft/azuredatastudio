@@ -1,0 +1,164 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<div class="jobhistory-heading-container">
+	<h1 class="job-heading">Notebook Jobs| {{ this._agentNotebookInfo?.name }}</h1>
+	<div class="codicon in-progress" *ngIf="showProgressWheel()"></div>
+</div>
+
+<!-- Back -->
+<div
+	class="all-jobs"
+	tabindex="0"
+	(click)="goToJobs()"
+	(keyup.enter)="goToJobs()"
+>
+	<div
+		class="back-button-icon"
+		(click)="goToJobs()"
+		(keyup.enter)="goToJobs()"
+	></div>
+	All Notebooks
+</div>
+
+<!-- Actions -->
+<div #actionbarContainer class="agent-actionbar-container"></div>
+
+<!-- Overview  -->
+<div class="overview-container">
+	<div class="overview-tab" (click)="toggleCollapse()">
+		<input id="accordion" type="checkbox" />
+		<label for="accordion" tabindex="0">
+			<div
+				class="resultsViewCollapsible collapsed"
+				(click)="toggleCollapse()"
+			></div>
+			Overview
+		</label>
+		<div class="accordion-content">
+			<table align="left">
+				<tr>
+					<td id="col1">
+						TargetDatabase:
+					</td>
+					<td id="col2">
+						{{ this._agentNotebookInfo?.targetDatabase }}
+					</td>
+					<td id="col3">
+						Has Schedule:
+					</td>
+					<td id="col4">
+						{{ this._agentNotebookInfo?.hasSchedule }}
+					</td>
+				</tr>
+				<tr>
+					<td id="col1">
+						Last Run:
+					</td>
+					<td id="col2">
+						{{ this._agentNotebookInfo?.lastRun }}
+					</td>
+					<td id="col3">
+						Next Run:
+					</td>
+					<td id="col4">
+						{{ this._agentNotebookInfo?.nextRun }}
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+<!-- Overview  -->
+<div class="history-container">
+	<div
+		class="overview-container"
+		*ngFor="let grid of this._grids; let i = index"
+	>
+		<div
+			class="overview-tab"
+			(click)="toggleGridCollapse(i)"
+			*ngIf="grid.histories?.length"
+		>
+			<input id="accordion{{ i }}" type="checkbox" class="grid-arrow"/>
+			<label for="accordion{{ i }}" tabindex="0">
+				<div id= "history-grid-icon{{i}}" (click)="toggleGridCollapse(i)"
+				class="resultsViewCollapsible"></div>
+				{{ grid.title }}
+			</label>
+			<div id="notebook-grid{{ i }}" class="notebook-grid {{ i }}" >
+				<div
+					*ngFor="let history of grid.histories"
+					class="notebook-grid-item"
+					tabindex="0"
+					(dblclick)="openNotebook(history)"
+					title="{{ createdTooltip(history) }}"
+					(contextmenu)="
+						openHistoryContextMenu($event, history, grid.contextMenuType)
+					"
+					(keydown.enter)="openNotebook(history)"
+				>
+					<div
+						*ngIf="history.materializedNotebookErrorInfo"
+						class="img-error"
+					></div>
+					<div
+						*ngIf="
+							history.runStatus === 1 && !history.materializedNotebookErrorInfo
+						"
+						class="img-success"
+					></div>
+					<div
+						*ngIf="
+							history.runStatus === 0 && !history.materializedNotebookErrorInfo
+						"
+						class="img-failure"
+					></div>
+					<div
+						*ngIf="
+						!history.materializedNotebookName || history.materializedNotebookName === '';
+							else notebookRunName
+						"
+					>
+						<p style="text-align: center;">
+							{{ formatDateTimetoLocaleDate(history.runDate) }}
+							<br />
+							{{ formatDateTimetoLocaleTime(history.runDate) }}
+						</p>
+					</div>
+					<div
+						*ngIf="
+							history.materializedNotebookName !== '';
+							else notebookRunName
+						"
+					>
+						<p
+							style="text-align: center;  text-overflow: ellipsis; overflow:hidden; white-space: nowrap"
+						>
+							{{ history.materializedNotebookName }}
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Job History details -->
+<div class="history-details">
+	<!-- Previous run list -->
+	<div class="prev-run-list-container" style="min-width: 270px">
+		<h3 *ngIf="_showPreviousRuns === false" style="text-align: center">
+			No Previous Runs Available
+		</h3>
+		<div
+			class="step-table prev-run-list"
+			style="position: relative; width: 100%"
+		>
+			<div #table style="position: absolute; width: 100%; height: 100%"></div>
+		</div>
+	</div>
+</div>

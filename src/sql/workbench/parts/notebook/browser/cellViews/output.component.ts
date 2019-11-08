@@ -9,8 +9,8 @@ import { OnInit, Component, Input, Inject, ElementRef, ViewChild, SimpleChange, 
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { Event } from 'vs/base/common/event';
 import { nb } from 'azdata';
-import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
-import * as outputProcessor from 'sql/workbench/parts/notebook/common/models/outputProcessor';
+import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import * as outputProcessor from 'sql/workbench/parts/notebook/browser/models/outputProcessor';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
 import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/browser/core/componentHost.directive';

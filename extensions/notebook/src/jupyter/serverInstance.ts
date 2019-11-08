@@ -62,8 +62,13 @@ export class ServerInstanceUtils {
 	public copy(src: string, dest: string): Promise<void> {
 		return fs.copy(src, dest);
 	}
-	public existsSync(dirPath: string): boolean {
-		return fs.existsSync(dirPath);
+	public async exists(path: string): Promise<boolean> {
+		try {
+			await fs.access(path);
+			return true;
+		} catch (e) {
+			return false;
+		}
 	}
 	public generateUuid(): string {
 		return UUID.generateUuid();
@@ -94,7 +99,7 @@ export class ServerInstanceUtils {
 	}
 }
 
-export class PerNotebookServerInstance implements IServerInstance {
+export class PerFolderServerInstance implements IServerInstance {
 
 	/**
 	 * Root of the jupyter directory structure. Config and data roots will be
@@ -118,6 +123,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 	private _port: string;
 	private _uri: vscode.Uri;
 	private _isStarted: boolean = false;
+	private _isStopping: boolean = false;
 	private utils: ServerInstanceUtils;
 	private childProcess: ChildProcess;
 	private errorHandler: ErrorHandler = new ErrorHandler();
@@ -127,7 +133,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 	}
 
 	public get isStarted(): boolean {
-		return this._isStarted;
+		return this._isStarted && !this._isStopping;
 	}
 
 	public get port(): string {
@@ -148,24 +154,26 @@ export class PerNotebookServerInstance implements IServerInstance {
 
 	public async stop(): Promise<void> {
 		try {
+			this._isStopping = true;
 			if (this.baseDir) {
 				let exists = await this.utils.pathExists(this.baseDir);
 				if (exists) {
 					await this.utils.removeDir(this.baseDir);
 				}
 			}
-			if (this.isStarted) {
+			if (this._isStarted) {
 				let install = this.options.install;
 				let stopCommand = `"${install.pythonExecutable}" -m jupyter notebook stop ${this._port}`;
 				await this.utils.executeBufferedCommand(stopCommand, install.execOptions, install.outputChannel);
 			}
 		} catch (error) {
 			// For now, we don't care as this is non-critical
-			this.notify(this.options.install, localize('serverStopError', 'Error stopping Notebook Server: {0}', utils.getErrorMessage(error)));
+			this.notify(this.options.install, localize('serverStopError', "Error stopping Notebook Server: {0}", utils.getErrorMessage(error)));
 		} finally {
 			this._isStarted = false;
 			this.utils.ensureProcessEnded(this.childProcess);
 			this.handleConnectionClosed();
+
 		}
 	}
 
@@ -204,7 +212,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 	private async copyKernelsToSystemJupyterDirs(): Promise<void> {
 		let kernelsExtensionSource = path.join(this.options.install.extensionPath, 'kernels');
 		this._systemJupyterDir = path.join(this.getSystemJupyterHomeDir(), 'kernels');
-		if (!this.utils.existsSync(this._systemJupyterDir)) {
+		if (!(await this.utils.exists(this._systemJupyterDir))) {
 			await this.utils.mkDir(this._systemJupyterDir, this.options.install.outputChannel);
 		}
 		await this.utils.copy(kernelsExtensionSource, this._systemJupyterDir);
@@ -236,7 +244,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 		let token = await notebookUtils.getRandomToken();
 		this._uri = vscode.Uri.parse(`http://localhost:${port}/?token=${token}`);
 		this._port = port.toString();
-		let startCommand = `"${this.options.install.pythonExecutable}" -m jupyter notebook --no-browser --notebook-dir "${notebookDirectory}" --port=${port} --NotebookApp.token=${token}`;
+		let startCommand = `"${this.options.install.pythonExecutable}" -m jupyter notebook --no-browser --no-mathjax --notebook-dir "${notebookDirectory}" --port=${port} --NotebookApp.token=${token}`;
 		this.notifyStarting(this.options.install, startCommand);
 
 		// Execute the command
@@ -252,7 +260,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 			let onErrorBeforeStartup = (err: any) => reject(err);
 			let onExitBeforeStart = (err: any) => {
 				if (!this.isStarted) {
-					reject(localize('notebookStartProcessExitPremature', 'Notebook process exited prematurely with error: {0}, StdErr Output: {1}', err, stdErrLog));
+					reject(localize('notebookStartProcessExitPremature', "Notebook process exited prematurely with error code: {0}. StdErr Output: {1}", err, stdErrLog));
 				}
 			};
 			this.childProcess.on('error', onErrorBeforeStartup);
@@ -301,7 +309,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 	private handleConnectionError(error: Error): void {
 		let action = this.errorHandler.handleError(error);
 		if (action === ErrorAction.Shutdown) {
-			this.notify(this.options.install, localize('jupyterError', 'Error sent from Jupyter: {0}', utils.getErrorMessage(error)));
+			this.notify(this.options.install, localize('jupyterError', "Error sent from Jupyter: {0}", utils.getErrorMessage(error)));
 			this.stop();
 		}
 	}
@@ -341,14 +349,14 @@ export class PerNotebookServerInstance implements IServerInstance {
 	}
 
 	private notifyStarted(install: JupyterServerInstallation, jupyterUri: string): void {
-		install.outputChannel.appendLine(localize('jupyterOutputMsgStartSuccessful', '... Jupyter is running at {0}', jupyterUri));
+		install.outputChannel.appendLine(localize('jupyterOutputMsgStartSuccessful', "... Jupyter is running at {0}", jupyterUri));
 	}
 	private notify(install: JupyterServerInstallation, message: string): void {
 		install.outputChannel.appendLine(message);
 	}
 
 	private notifyStarting(install: JupyterServerInstallation, startCommand: string): void {
-		install.outputChannel.appendLine(localize('jupyterOutputMsgStart', '... Starting Notebook server'));
+		install.outputChannel.appendLine(localize('jupyterOutputMsgStart', "... Starting Notebook server"));
 		install.outputChannel.appendLine(`    > ${startCommand}`);
 	}
 

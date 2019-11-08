@@ -17,9 +17,9 @@ export const SERVICE_ID = 'backupService';
 export const IBackupService = createDecorator<IBackupService>(SERVICE_ID);
 
 export interface IBackupService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
-	getBackupConfigInfo(connectionUri: string): Thenable<azdata.BackupConfigInfo>;
+	getBackupConfigInfo(connectionUri: string): Promise<azdata.BackupConfigInfo | undefined>;
 
 	/**
 	 * Backup a data source using the provided connection

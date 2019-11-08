@@ -6,8 +6,8 @@
 import { nb } from 'azdata';
 import { OnInit, Component, Input, Inject, forwardRef, ChangeDetectorRef, SimpleChange, OnChanges, HostListener } from '@angular/core';
 import { CellView } from 'sql/workbench/parts/notebook/browser/cellViews/interfaces';
-import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
-import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebookModel';
+import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
 import { Deferred } from 'sql/base/common/promise';
 
 
@@ -30,7 +30,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	@HostListener('document:keydown.escape', ['$event'])
 	handleKeyboardEvent() {
 		this.cellModel.active = false;
-		this._model.activeCell = undefined;
+		this._model.updateActiveCell(undefined);
 	}
 
 	private _model: NotebookModel;
@@ -47,6 +47,9 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 
 	ngOnInit() {
 		if (this.cellModel) {
+			this._register(this.cellModel.onCollapseStateChanged((state) => {
+				this._changeRef.detectChanges();
+			}));
 			this._register(this.cellModel.onOutputsChanged(() => {
 				this._changeRef.detectChanges();
 			}));
@@ -73,6 +76,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	get activeCellId(): string {
 		return this._activeCellId;
 	}
+
 	public layout() {
 
 	}

@@ -17,8 +17,7 @@ import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel
 import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/workbench/parts/connection/browser/recentConnectionTreeController';
 import { SavedConnectionTreeController } from 'sql/workbench/parts/connection/browser/savedConnectionTreeController';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { ClearRecentConnectionsAction } from 'sql/workbench/parts/connection/common/connectionActions';
-import * as Constants from 'sql/platform/connection/common/constants';
+import { ClearRecentConnectionsAction } from 'sql/workbench/parts/connection/browser/connectionActions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -37,6 +36,7 @@ import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -97,9 +97,10 @@ export class ConnectionDialogWidget extends Modal {
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(localize('connection', "Connection"), TelemetryKeys.Connection, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, { hasSpinner: true, hasErrors: true });
+		super(localize('connection', "Connection"), TelemetryKeys.Connection, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasSpinner: true, hasErrors: true });
 	}
 
 	/**
@@ -120,7 +121,7 @@ export class ConnectionDialogWidget extends Modal {
 		if (this._newConnectionParams && this._newConnectionParams.providers) {
 			const validProviderNames = Object.keys(this.providerNameToDisplayNameMap).filter(x => this.includeProvider(x, this._newConnectionParams));
 			if (validProviderNames && validProviderNames.length > 0) {
-				filteredProviderDisplayNames = filteredProviderDisplayNames.filter(x => validProviderNames.find(
+				filteredProviderDisplayNames = filteredProviderDisplayNames.filter(x => validProviderNames.some(
 					v => this.providerNameToDisplayNameMap[v] === x) !== undefined
 				);
 			}
@@ -133,7 +134,7 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	private includeProvider(providerName: string, params?: INewConnectionParams): Boolean {
-		return params === undefined || params.providers === undefined || params.providers.find(x => x === providerName) !== undefined;
+		return params === undefined || params.providers === undefined || params.providers.some(x => x === providerName);
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -322,12 +323,14 @@ export class ConnectionDialogWidget extends Modal {
 		const controller = new RecentConnectionTreeController(leftClick, actionProvider, this._connectionManagementService, this._contextMenuService);
 		actionProvider.onRecentConnectionRemoved(() => {
 			const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections();
-			this.open(recentConnections.length > 0);
+			this.open(recentConnections.length > 0).catch(err => this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from action provider: ${err}`));
+			// We're just using the connections to determine if there are connections to show, dispose them right after to clean up their handlers
 			recentConnections.forEach(conn => conn.dispose());
 		});
 		controller.onRecentConnectionRemoved(() => {
 			const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections();
-			this.open(recentConnections.length > 0);
+			this.open(recentConnections.length > 0).catch(err => this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from controller : ${err}`));
+			// We're just using the connections to determine if there are connections to show, dispose them right after to clean up their handlers
 			recentConnections.forEach(conn => conn.dispose());
 		});
 		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this._instantiationService, controller);
@@ -398,7 +401,7 @@ export class ConnectionDialogWidget extends Modal {
 		await TreeUpdateUtils.structuralTreeUpdate(this._recentConnectionTree, 'recent', this._connectionManagementService, this._providers);
 
 		// reset saved connection tree
-		this._savedConnectionTree.setInput([]);
+		await this._savedConnectionTree.setInput([]);
 
 		// call layout with view height
 		this.layout();

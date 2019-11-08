@@ -38,7 +38,7 @@ export abstract class ExtHostAccountManagementShape {
 }
 
 export abstract class ExtHostConnectionManagementShape {
-	$onConnectionOpened(handleId: string, connection: azdata.connection.Connection): void { throw ni; }
+	$onConnectionEvent(handle: number, type: azdata.connection.ConnectionEventType, ownerUri: string, profile: azdata.IConnectionProfile): void { throw ni(); }
 }
 
 export abstract class ExtHostDataProtocolShape {
@@ -179,6 +179,11 @@ export abstract class ExtHostDataProtocolShape {
 	 * Sets the query execution options for a query editor document
 	 */
 	$setQueryExecutionOptions(handle: number, ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void> { throw ni(); }
+
+	/**
+	 * Connect the editor document to the given profile
+	 */
+	$connectWithProfile(handle: number, ownerUri: string, profile: azdata.connection.ConnectionProfile): Thenable<void> { throw ni(); }
 
 	/**
 	 * Disposes the cached information regarding a query
@@ -398,6 +403,47 @@ export abstract class ExtHostDataProtocolShape {
 	$deleteJobStep(handle: number, ownerUri: string, step: azdata.AgentJobStepInfo): Thenable<azdata.ResultStatus> { throw ni(); }
 
 	/**
+	 * Get Agent Notebook list
+	 */
+	$getNotebooks(handle: number, ownerUri: string): Thenable<azdata.AgentNotebooksResult> { throw ni(); }
+
+	/**
+	 * Get a Agent Notebook's history
+	 */
+	$getNotebookHistory(handle: number, ownerUri: string, jobID: string, jobName: string, targetDatabase: string): Thenable<azdata.AgentNotebookHistoryResult> { throw ni(); }
+
+	/**
+	 * Get a Agent materialized notebook
+	 */
+	$getMaterializedNotebook(handle: number, ownerUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> { throw ni(); }
+
+	/**
+	 * Get a Agent Template notebook
+	 */
+	$getTemplateNotebook(handle: number, ownerUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult> { throw ni(); }
+
+	/**
+	 * Deletes a notebook
+	 */
+	$deleteNotebook(handle: number, ownerUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus> { throw ni(); }
+
+	/**
+	 * Update materialzied Notebook Name
+	 */
+	$updateNotebookMaterializedName(handle: number, ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> { throw ni(); }
+
+	/**
+	 * Update materialzied Notebook Name
+	 */
+	$deleteMaterializedNotebook(handle: number, ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus> { throw ni(); }
+
+	/**
+	 * Update materialzied Notebook Pin
+	 */
+	$updateNotebookMaterializedPin(handle: number, ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> { throw ni(); }
+
+
+	/**
 	 * Get Agent Alerts list
 	 */
 	$getAlerts(handle: number, connectionUri: string): Thenable<azdata.AgentAlertsResult> { throw ni(); }
@@ -433,77 +479,14 @@ export abstract class ExtHostDataProtocolShape {
 	$getCredentials(handle: number, connectionUri: string): Thenable<azdata.GetCredentialsResult> { throw ni(); }
 
 	/**
-	 * DacFx export bacpac
+	 * Serialization start request
 	 */
-	$exportBacpac(handle: number, databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
+	$startSerialization(handle: number, requestParams: azdata.SerializeDataStartRequestParams): Thenable<azdata.SerializeDataResult> { throw ni(); }
 
 	/**
-	 * DacFx import bacpac
+	 * Serialization continuation request
 	 */
-	$importBacpac(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
-
-	/**
-	 * DacFx extract dacpac
-	 */
-	$extractDacpac(handle: number, databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
-
-	/**
-	 * DacFx deploy dacpac
-	 */
-	$deployDacpac(handle: number, packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
-
-	/**
-	 * DacFx generate deploy script
-	 */
-	$generateDeployScript(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
-
-	/**
-	 * DacFx generate deploy plan
-	 */
-	$generateDeployPlan(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.GenerateDeployPlanResult> { throw ni(); }
-
-	/**
-	 * Schema compare
-	 */
-	$schemaCompare(handle: number, operationId: string, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaComapareOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> { throw ni(); }
-
-	/**
-	 * Schema compare generate script
-	 */
-	$schemaCompareGenerateScript(handle: number, operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> { throw ni(); }
-
-	/**
-	 * Schema compare publish changes
-	 */
-	$schemaComparePublishChanges(handle: number, operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> { throw ni(); }
-
-	/**
-	 * Schema compare get default options
-	 */
-	$schemaCompareGetDefaultOptions(handle: number): Thenable<azdata.SchemaCompareOptionsResult> { throw ni(); }
-
-
-	/**
-	 * Schema compare Include node
-	 */
-	$schemaCompareIncludeExcludeNode(handle: number, operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> { throw ni(); }
-
-	/**
-	 * Schema compare open scmp
-	 */
-	$schemaCompareOpenScmp(handle: number, filePath: string): Thenable<azdata.SchemaCompareOpenScmpResult> { throw ni(); }
-
-
-	/**
-	 * Schema compare save scmp
-	 */
-	$schemaCompareSaveScmp(handle: number, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: azdata.SchemaCompareObjectId[], excludedTargetObjects: azdata.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> { throw ni(); }
-
-	/**
-	 * Schema compare cancel
-	 */
-	$schemaCompareCancel(handle: number, operationId: string): Thenable<azdata.ResultStatus> { throw ni(); }
-
+	$continueSerialization(handle: number, requestParams: azdata.SerializeDataContinueRequestParams): Thenable<azdata.SerializeDataResult> { throw ni(); }
 }
 
 /**
@@ -531,13 +514,6 @@ export abstract class ExtHostCredentialManagementShape {
 	$readCredential(credentialId: string): Thenable<azdata.Credential> { throw ni(); }
 
 	$deleteCredential(credentialId: string): Thenable<boolean> { throw ni(); }
-}
-
-/**
- * Serialization provider extension host class.
- */
-export abstract class ExtHostSerializationProviderShape {
-	$saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<azdata.SaveResultRequestResult> { throw ni(); }
 }
 
 export interface MainThreadAccountManagementShape extends IDisposable {
@@ -573,8 +549,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerCapabilitiesServiceProvider(providerId: string, handle: number): Promise<any>;
 	$registerAdminServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerAgentServicesProvider(providerId: string, handle: number): Promise<any>;
-	$registerDacFxServicesProvider(providerId: string, handle: number): Promise<any>;
-	$registerSchemaCompareServicesProvider(providerId: string, handle: number): Promise<any>;
+	$registerSerializationProvider(providerId: string, handle: number): Promise<any>;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
@@ -606,7 +581,9 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 }
 
 export interface MainThreadConnectionManagementShape extends IDisposable {
+	$registerConnectionEventListener(handle: number, providerId: string): void;
 	$getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]>;
+	$getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile>;
 	$getActiveConnections(): Thenable<azdata.connection.Connection[]>;
 	$getCurrentConnection(): Thenable<azdata.connection.Connection>;
 	$getCurrentConnectionProfile(): Thenable<azdata.connection.ConnectionProfile>;
@@ -624,11 +601,6 @@ export interface MainThreadCredentialManagementShape extends IDisposable {
 	$unregisterCredentialProvider(handle: number): Promise<any>;
 }
 
-export interface MainThreadSerializationProviderShape extends IDisposable {
-	$registerSerializationProvider(handle: number): Promise<any>;
-	$unregisterSerializationProvider(handle: number): Promise<any>;
-}
-
 function ni() { return new Error('Not implemented'); }
 
 // --- proxy identifiers
@@ -641,7 +613,6 @@ export const SqlMainContext = {
 	MainThreadDataProtocol: createMainId<MainThreadDataProtocolShape>('MainThreadDataProtocol'),
 	MainThreadObjectExplorer: createMainId<MainThreadObjectExplorerShape>('MainThreadObjectExplorer'),
 	MainThreadBackgroundTaskManagement: createMainId<MainThreadBackgroundTaskManagementShape>('MainThreadBackgroundTaskManagement'),
-	MainThreadSerializationProvider: createMainId<MainThreadSerializationProviderShape>('MainThreadSerializationProvider'),
 	MainThreadResourceProvider: createMainId<MainThreadResourceProviderShape>('MainThreadResourceProvider'),
 	MainThreadModalDialog: createMainId<MainThreadModalDialogShape>('MainThreadModalDialog'),
 	MainThreadTasks: createMainId<MainThreadTasksShape>('MainThreadTasks'),
@@ -661,7 +632,6 @@ export const SqlExtHostContext = {
 	ExtHostCredentialManagement: createExtId<ExtHostCredentialManagementShape>('ExtHostCredentialManagement'),
 	ExtHostDataProtocol: createExtId<ExtHostDataProtocolShape>('ExtHostDataProtocol'),
 	ExtHostObjectExplorer: createExtId<ExtHostObjectExplorerShape>('ExtHostObjectExplorer'),
-	ExtHostSerializationProvider: createExtId<ExtHostSerializationProviderShape>('ExtHostSerializationProvider'),
 	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
 	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs'),
 	ExtHostTasks: createExtId<ExtHostTasksShape>('ExtHostTasks'),
@@ -816,7 +786,8 @@ export interface ExtHostQueryEditorShape {
 
 export interface MainThreadQueryEditorShape extends IDisposable {
 	$connect(fileUri: string, connectionId: string): Thenable<void>;
-	$runQuery(fileUri: string): void;
+	$connectWithProfile(fileUri: string, connectionProfile: azdata.connection.ConnectionProfile): Thenable<void>;
+	$runQuery(fileUri: string, runCurrentQuery?: boolean): void;
 	$createQueryTab(fileUri: string, title: string, content: string): void;
 	$setQueryExecutionOptions(fileUri: string, options: azdata.QueryExecutionOptions): Thenable<void>;
 	$registerQueryInfoListener(handle: number, providerId: string): void;
@@ -931,8 +902,10 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 
 export interface ExtHostExtensionManagementShape {
 	$install(vsixPath: string): Thenable<string>;
+	$showObsoleteExtensionApiUsageNotification(message: string): void;
 }
 
 export interface MainThreadExtensionManagementShape extends IDisposable {
 	$install(vsixPath: string): Thenable<string>;
+	$showObsoleteExtensionApiUsageNotification(message: string): void;
 }

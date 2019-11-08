@@ -10,8 +10,8 @@ import { IMessage, MessageType, defaultOpts } from 'vs/base/browser/ui/inputbox/
 import * as dom from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
-import { RenderOptions, renderFormattedText, renderText } from 'vs/base/browser/htmlContentRenderer';
 import { Emitter } from 'vs/base/common/event';
+import { renderFormattedText, renderText, FormattedTextRenderOptions } from 'vs/base/browser/formattedTextRenderer';
 
 const $ = dom.$;
 
@@ -120,7 +120,7 @@ export class ListBox extends SelectBox {
 			this.selectElement.style.border = `1px solid ${this.selectBorder}`;
 		} else if (this.message) {
 			const styles = this.stylesForType(this.message.type);
-			this.selectElement.style.border = styles.border ? `1px solid ${styles.border}` : null;
+			this.selectElement.style.border = styles.border ? `1px solid ${styles.border}` : '';
 		}
 	}
 
@@ -212,7 +212,7 @@ export class ListBox extends SelectBox {
 				div = dom.append(container, $('.monaco-inputbox-container'));
 				layout();
 
-				const renderOptions: RenderOptions = {
+				const renderOptions: FormattedTextRenderOptions = {
 					inline: true,
 					className: 'monaco-inputbox-message'
 				};
@@ -224,8 +224,8 @@ export class ListBox extends SelectBox {
 					dom.addClass(spanElement, this.classForType(this.message.type));
 
 					const styles = this.stylesForType(this.message.type);
-					spanElement.style.backgroundColor = styles.background ? styles.background.toString() : null;
-					spanElement.style.border = styles.border ? `1px solid ${styles.border}` : null;
+					spanElement.style.backgroundColor = styles.background ? styles.background.toString() : '';
+					spanElement.style.border = styles.border ? `1px solid ${styles.border}` : '';
 
 					dom.append(div, spanElement);
 				}

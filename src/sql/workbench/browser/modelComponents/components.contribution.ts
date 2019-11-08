@@ -19,6 +19,7 @@ import RadioButtonComponent from './radioButton.component';
 import WebViewComponent from './webview.component';
 import TableComponent from './table.component';
 import TextComponent from './text.component';
+import ImageComponent from './image.component';
 import LoadingComponent from './loadingComponent.component';
 import FileBrowserTreeComponent from './fileBrowserTree.component';
 import EditorComponent from './editor.component';
@@ -77,6 +78,9 @@ registerComponentType(WEBVIEW_COMPONENT, ModelComponentTypes.WebView, WebViewCom
 
 export const TEXT_COMPONENT = 'text-component';
 registerComponentType(TEXT_COMPONENT, ModelComponentTypes.Text, TextComponent);
+
+export const IMAGE_COMPONENT = 'image-component';
+registerComponentType(IMAGE_COMPONENT, ModelComponentTypes.Image, ImageComponent);
 
 export const TABLE_COMPONENT = 'table-component';
 registerComponentType(TABLE_COMPONENT, ModelComponentTypes.Table, TableComponent);

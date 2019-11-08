@@ -14,12 +14,13 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
-import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
+import { toDisposable } from 'vs/base/common/lifecycle';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IWebviewService, WebviewElement } from 'vs/workbench/contrib/webview/common/webview';
+import { IWebviewService, WebviewElement } from 'vs/workbench/contrib/webview/browser/webview';
 import { generateUuid } from 'vs/base/common/uuid';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 export class WebViewDialog extends Modal {
 
@@ -35,7 +36,6 @@ export class WebViewDialog extends Modal {
 	public onOk: Event<void> = this._onOk.event;
 	private _onClosed = new Emitter<void>();
 	public onClosed: Event<void> = this._onClosed.event;
-	private contentDisposables: IDisposable[] = [];
 	private _onMessage = new Emitter<any>();
 
 	private readonly id = generateUuid();
@@ -47,9 +47,10 @@ export class WebViewDialog extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
-		@IWebviewService private readonly webviewService: IWebviewService
+		@IWebviewService private readonly webviewService: IWebviewService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super('', TelemetryKeys.WebView, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
+		super('', TelemetryKeys.WebView, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
 		this._okLabel = localize('webViewDialog.ok', "OK");
 		this._closeLabel = localize('webViewDialog.close', "Close");
 	}
@@ -97,12 +98,10 @@ export class WebViewDialog extends Modal {
 
 		this._webview.mountTo(this._body);
 
-		this._webview.onMessage(message => {
-			this._onMessage.fire(message);
-		}, null, this.contentDisposables);
+		this._register(this._webview.onMessage(message => this._onMessage.fire(message)));
 
-		this.contentDisposables.push(this._webview);
-		this.contentDisposables.push(toDisposable(() => this._webview = null));
+		this._register(this._webview);
+		this._register(toDisposable(() => this._webview = null));
 	}
 
 	get onMessage(): Event<any> {
@@ -154,11 +153,5 @@ export class WebViewDialog extends Modal {
 		this.updateDialogBody();
 		this.show();
 		this._okButton.focus();
-	}
-
-	public dispose(): void {
-		this.contentDisposables.forEach(element => {
-			element.dispose();
-		});
 	}
 }

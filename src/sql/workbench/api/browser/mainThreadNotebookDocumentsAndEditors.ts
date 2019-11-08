@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as path from 'path';
+import * as path from 'vs/base/common/path';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IExtHostContext, IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
@@ -16,23 +16,24 @@ import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { Schemas } from 'vs/base/common/network';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as types from 'vs/base/common/types';
-
 import {
 	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData, INotebookModelChangedData
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
-import { INotebookService, INotebookEditor, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
+import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
+import { INotebookService, INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ISingleNotebookEditOperation, NotebookChangeKind } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
-import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
-import { notebookModeId } from 'sql/workbench/common/customInputConverter';
+import { notebookModeId } from 'sql/workbench/browser/customInputConverter';
 import { localize } from 'vs/nls';
+import { IFileService } from 'vs/platform/files/common/files';
+import { find } from 'vs/base/common/arrays';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -97,7 +98,7 @@ class MainThreadNotebookEditor extends Disposable {
 		if (!input) {
 			return false;
 		}
-		return input === this.editor.notebookParams.input;
+		return input.notebookUri.toString() === this.editor.notebookParams.input.notebookUri.toString();
 	}
 
 	public applyEdits(versionIdCheck: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): boolean {
@@ -320,7 +321,7 @@ class MainThreadNotebookDocumentAndEditorStateComputer extends Disposable {
 export class MainThreadNotebookDocumentsAndEditors extends Disposable implements MainThreadNotebookDocumentsAndEditorsShape {
 	private _proxy: ExtHostNotebookDocumentsAndEditorsShape;
 	private _notebookEditors = new Map<string, MainThreadNotebookEditor>();
-	private _modelToDisposeMap = new Map<string, IDisposable[]>();
+	private _modelToDisposeMap = new Map<string, DisposableStore>();
 	constructor(
 		extHostContext: IExtHostContext,
 		@IUntitledEditorService private _untitledEditorService: IUntitledEditorService,
@@ -328,7 +329,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		@IEditorService private _editorService: IEditorService,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@INotebookService private readonly _notebookService: INotebookService
+		@INotebookService private readonly _notebookService: INotebookService,
+		@IFileService private readonly _fileService: IFileService
 	) {
 		super();
 		if (extHostContext) {
@@ -371,7 +373,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let cell: ICellModel;
 		if (cellUri) {
 			let uriString = URI.revive(cellUri).toString();
-			cell = editor.cells.find(c => c.cellUri.toString() === uriString);
+			cell = find(editor.cells, c => c.cellUri.toString() === uriString);
 			// If it's markdown what should we do? Show notification??
 		} else {
 			// Use the active cell in this case, or 1st cell if there's none active
@@ -393,11 +395,11 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let endCell: ICellModel;
 		if (startCellUri) {
 			let uriString = URI.revive(startCellUri).toString();
-			startCell = editor.cells.find(c => c.cellUri.toString() === uriString);
+			startCell = find(editor.cells, c => c.cellUri.toString() === uriString);
 		}
 		if (endCellUri) {
 			let uriString = URI.revive(endCellUri).toString();
-			endCell = editor.cells.find(c => c.cellUri.toString() === uriString);
+			endCell = find(editor.cells, c => c.cellUri.toString() === uriString);
 		}
 		return editor.runAllCells(startCell, endCell);
 	}
@@ -411,7 +413,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let cell: ICellModel;
 		if (cellUri) {
 			let uriString = URI.revive(cellUri).toString();
-			cell = editor.cells.find(c => c.cellUri.toString() === uriString);
+			cell = find(editor.cells, c => c.cellUri.toString() === uriString);
 			// If it's markdown what should we do? Show notification??
 		} else {
 			// Use the active cell in this case, or 1st cell if there's none active
@@ -558,11 +560,9 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			return;
 		}
 		removedDocuments.forEach(removedDoc => {
-			let listeners = this._modelToDisposeMap.get(removedDoc.toString());
-			if (listeners && listeners.length) {
-				listeners.forEach(listener => {
-					listener.dispose();
-				});
+			const store = this._modelToDisposeMap.get(removedDoc.toString());
+			if (store) {
+				store.dispose();
 				this._modelToDisposeMap.delete(removedDoc.toString());
 			}
 		});
@@ -574,9 +574,14 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		}
 		addedEditors.forEach(editor => {
 			let modelUrl = editor.uri;
-			this._modelToDisposeMap.set(editor.uri.toString(), [editor.contentChanged((e) => {
-				this._proxy.$acceptModelChanged(modelUrl, this._toNotebookChangeData(e, editor));
-			})]);
+			const store = new DisposableStore();
+			store.add(editor.contentChanged((e) => {
+				// Cell source updates are handled by vscode editor updates in main/extHost Documents
+				if (e.changeType !== NotebookChangeType.CellSourceUpdated) {
+					this._proxy.$acceptModelChanged(modelUrl, this._toNotebookChangeData(e, editor));
+				}
+			}));
+			this._modelToDisposeMap.set(editor.uri.toString(), store);
 		});
 	}
 
@@ -627,6 +632,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			case NotebookChangeType.CellOutputUpdated:
 			case NotebookChangeType.CellSourceUpdated:
 			case NotebookChangeType.DirtyStateChanged:
+			case NotebookChangeType.CellInputVisibilityChanged:
+			case NotebookChangeType.CellOutputCleared:
 				return NotebookChangeKind.ContentUpdated;
 			case NotebookChangeType.KernelChanged:
 			case NotebookChangeType.TrustChanged:
@@ -655,7 +662,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 						cell_type: cell.cellType,
 						execution_count: cell.executionCount,
 						metadata: {
-							language: cell.language
+							language: cell.language,
+							azdata_cell_guid: cell.cellGuid
 						},
 						source: undefined,
 						outputs: [...cell.outputs]
@@ -670,7 +678,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 					cell_type: cells.cellType,
 					execution_count: undefined,
 					metadata: {
-						language: cells.language
+						language: cells.language,
+						azdata_cell_guid: cells.cellGuid
 					},
 					source: undefined
 				}
@@ -680,13 +689,13 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 	}
 
 	private async doChangeKernel(editor: MainThreadNotebookEditor, displayName: string): Promise<boolean> {
-		let listeners = this._modelToDisposeMap.get(editor.id);
+		const store = this._modelToDisposeMap.get(editor.id);
 		editor.model.changeKernel(displayName);
 		return new Promise((resolve) => {
-			listeners.push(editor.model.kernelChanged((kernel) => {
+			store.add(editor.model.kernelChanged((kernel) => {
 				resolve(true);
 			}));
-			this._modelToDisposeMap.set(editor.id, listeners);
+			this._modelToDisposeMap.set(editor.id, store);
 		});
 	}
 
@@ -700,13 +709,27 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			onNext: async (uri) => {
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
-					this.doOpenEditor(result.next, {});
+					if (result.next.scheme === Schemas.untitled) {
+						let untitledNbName: URI = URI.parse(`untitled:${result.next.path}`);
+						let content = await this._fileService.readFile(URI.file(result.next.path));
+						await this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
+					}
+					else {
+						await this.doOpenEditor(result.next, {});
+					}
 				}
 			},
 			onPrevious: async (uri) => {
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
-					this.doOpenEditor(result.previous, {});
+					if (result.previous.scheme === Schemas.untitled) {
+						let untitledNbName: URI = URI.parse(`untitled:${result.previous.path}`);
+						let content = await this._fileService.readFile(URI.file(result.previous.path));
+						await this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
+					}
+					else {
+						await this.doOpenEditor(result.previous, {});
+					}
 				}
 			}
 		});

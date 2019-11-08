@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
-import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import {
 	ExtHostAccountManagementShape,
 	MainThreadAccountManagementShape,
@@ -15,29 +15,30 @@ import {
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
+import { values } from 'vs/base/common/collections';
+import { firstIndex } from 'vs/base/common/arrays';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadAccountManagement)
-export class MainThreadAccountManagement implements MainThreadAccountManagementShape {
+export class MainThreadAccountManagement extends Disposable implements MainThreadAccountManagementShape {
 	private _providerMetadata: { [handle: number]: azdata.AccountProviderMetadata };
 	private _proxy: ExtHostAccountManagementShape;
-	private _toDispose: IDisposable[];
 
 	constructor(
 		extHostContext: IExtHostContext,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
+		super();
 		this._providerMetadata = {};
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostAccountManagement);
 		}
-		this._toDispose = [];
 
 		this._accountManagementService.updateAccountListEvent((e: UpdateAccountListEventParams) => {
 			if (!e) {
 				return;
 			}
 
-			const providerMetadataIndex = Object.values(this._providerMetadata).findIndex((providerMetadata: azdata.AccountProviderMetadata) => providerMetadata.id === e.providerId);
+			const providerMetadataIndex = firstIndex(values(this._providerMetadata), (providerMetadata: azdata.AccountProviderMetadata) => providerMetadata.id === e.providerId);
 			if (providerMetadataIndex === -1) {
 				return;
 			}
@@ -96,9 +97,5 @@ export class MainThreadAccountManagement implements MainThreadAccountManagementS
 	public $unregisterAccountProvider(handle: number): Thenable<any> {
 		this._accountManagementService.unregisterProvider(this._providerMetadata[handle]);
 		return Promise.resolve(null);
-	}
-
-	public dispose(): void {
-		this._toDispose = dispose(this._toDispose);
 	}
 }

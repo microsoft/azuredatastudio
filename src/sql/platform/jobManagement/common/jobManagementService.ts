@@ -10,7 +10,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { Event, Emitter } from 'vs/base/common/event';
 
 export class JobManagementService implements IJobManagementService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private _onDidChange = new Emitter<void>();
 	public readonly onDidChange: Event<void> = this._onDidChange.event;
@@ -20,7 +20,7 @@ export class JobManagementService implements IJobManagementService {
 	private _operatorsCacheObjectMap: { [server: string]: OperatorsCacheObject; } = {};
 	private _alertsCacheObject: { [server: string]: AlertsCacheObject; } = {};
 	private _proxiesCacheObjectMap: { [server: string]: ProxiesCacheObject; } = {};
-
+	private _notebookCacheObjectMap: { [server: string]: NotebookCacheObject; } = {};
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService
 	) {
@@ -62,6 +62,54 @@ export class JobManagementService implements IJobManagementService {
 		});
 	}
 
+	// Notebooks
+	public getNotebooks(connectionUri: string): Thenable<azdata.AgentNotebooksResult> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.getNotebooks(connectionUri);
+		});
+	}
+
+	public getNotebookHistory(connectionUri: string, jobID: string, jobName: string, targetDatabase: string): Thenable<azdata.AgentNotebookHistoryResult> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.getNotebookHistory(connectionUri, jobID, jobName, targetDatabase);
+		});
+	}
+
+	public getMaterialziedNotebook(connectionUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.getMaterializedNotebook(connectionUri, targetDatabase, notebookMaterializedId);
+		});
+	}
+
+	public getTemplateNotebook(connectionUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.getTemplateNotebook(connectionUri, targetDatabase, jobId);
+		});
+	}
+
+	public deleteNotebook(connectionUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.deleteNotebook(connectionUri, notebook);
+		});
+	}
+
+	public deleteMaterializedNotebook(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.deleteMaterializedNotebook(connectionUri, agentNotebookHistory, targetDatabase);
+		});
+	}
+
+	public updateNotebookMaterializedName(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.updateNotebookMaterializedName(connectionUri, agentNotebookHistory, targetDatabase, name);
+		});
+	}
+
+	public updateNotebookMaterializedPin(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.updateNotebookMaterializedPin(connectionUri, agentNotebookHistory, targetDatabase, pin);
+		});
+	}
 
 	// Alerts
 	public getAlerts(connectionUri: string): Thenable<azdata.AgentAlertsResult> {
@@ -134,6 +182,10 @@ export class JobManagementService implements IJobManagementService {
 		return this._alertsCacheObject;
 	}
 
+	public get notebookCacheObjectMap(): { [server: string]: NotebookCacheObject; } {
+		return this._notebookCacheObjectMap;
+	}
+
 	public get proxiesCacheObjectMap(): { [server: string]: ProxiesCacheObject; } {
 		return this._proxiesCacheObjectMap;
 	}
@@ -142,7 +194,7 @@ export class JobManagementService implements IJobManagementService {
 		return this._operatorsCacheObjectMap;
 	}
 
-	public addToCache(server: string, cacheObject: JobCacheObject | OperatorsCacheObject | ProxiesCacheObject | AlertsCacheObject) {
+	public addToCache(server: string, cacheObject: JobCacheObject | OperatorsCacheObject | ProxiesCacheObject | AlertsCacheObject | NotebookCacheObject) {
 		if (cacheObject instanceof JobCacheObject) {
 			this._jobCacheObjectMap[server] = cacheObject;
 		} else if (cacheObject instanceof OperatorsCacheObject) {
@@ -151,6 +203,8 @@ export class JobManagementService implements IJobManagementService {
 			this._alertsCacheObject[server] = cacheObject;
 		} else if (cacheObject instanceof ProxiesCacheObject) {
 			this._proxiesCacheObjectMap[server] = cacheObject;
+		} else if (cacheObject instanceof NotebookCacheObject) {
+			this._notebookCacheObjectMap[server] = cacheObject;
 		}
 	}
 }
@@ -159,7 +213,7 @@ export class JobManagementService implements IJobManagementService {
  * Server level caching of jobs/job histories and their views
  */
 export class JobCacheObject {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	private _jobs: azdata.AgentJobInfo[] = [];
 	private _jobHistories: { [jobID: string]: azdata.AgentJobHistoryInfo[]; } = {};
 	private _jobSteps: { [jobID: string]: azdata.AgentJobStepInfo[]; } = {};
@@ -252,12 +306,100 @@ export class JobCacheObject {
 		this._jobSchedules[jobID] = value;
 	}
 }
+/**
+ * Server level caching of Operators
+ */
+export class NotebookCacheObject {
+	_serviceBrand: any;
+	private _notebooks: azdata.AgentNotebookInfo[] = [];
+	private _notebookHistories: { [jobID: string]: azdata.AgentNotebookHistoryInfo[]; } = {};
+	private _jobSteps: { [jobID: string]: azdata.AgentJobStepInfo[]; } = {};
+	private _jobSchedules: { [jobID: string]: azdata.AgentJobScheduleInfo[]; } = {};
+	private _runCharts: { [jobID: string]: string[]; } = {};
+	private _prevJobID: string;
+	private _serverName: string;
+	private _dataView: Slick.Data.DataView<any>;
+
+	/* Getters */
+	public get notebooks(): azdata.AgentNotebookInfo[] {
+		return this._notebooks;
+	}
+
+	public get notebookHistories(): { [jobID: string]: azdata.AgentNotebookHistoryInfo[] } {
+		return this._notebookHistories;
+	}
+
+	public get prevJobID(): string {
+		return this._prevJobID;
+	}
+
+	public getNotebookHistory(jobID: string): azdata.AgentNotebookHistoryInfo[] {
+		return this._notebookHistories[jobID];
+	}
+
+	public get serverName(): string {
+		return this._serverName;
+	}
+
+	public get dataView(): Slick.Data.DataView<any> {
+		return this._dataView;
+	}
+
+	public getRunChart(jobID: string): string[] {
+		return this._runCharts[jobID];
+	}
+
+	public getJobSteps(jobID: string): azdata.AgentJobStepInfo[] {
+		return this._jobSteps[jobID];
+	}
+
+	public getJobSchedules(jobID: string): azdata.AgentJobScheduleInfo[] {
+		return this._jobSchedules[jobID];
+	}
+
+	/* Setters */
+	public set notebooks(value: azdata.AgentNotebookInfo[]) {
+		this._notebooks = value;
+	}
+
+	public set notebookHistories(value: { [jobID: string]: azdata.AgentNotebookHistoryInfo[]; }) {
+		this._notebookHistories = value;
+	}
+
+	public set prevJobID(value: string) {
+		this._prevJobID = value;
+	}
+
+	public setNotebookHistory(jobID: string, value: azdata.AgentNotebookHistoryInfo[]) {
+		this._notebookHistories[jobID] = value;
+	}
+
+	public setRunChart(jobID: string, value: string[]) {
+		this._runCharts[jobID] = value;
+	}
+
+	public set serverName(value: string) {
+		this._serverName = value;
+	}
+
+	public set dataView(value: Slick.Data.DataView<any>) {
+		this._dataView = value;
+	}
+
+	public setJobSteps(jobID: string, value: azdata.AgentJobStepInfo[]) {
+		this._jobSteps[jobID] = value;
+	}
+
+	public setJobSchedules(jobID: string, value: azdata.AgentJobScheduleInfo[]) {
+		this._jobSchedules[jobID] = value;
+	}
+}
 
 /**
  * Server level caching of Operators
  */
 export class OperatorsCacheObject {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	private _operators: azdata.AgentOperatorInfo[];
 	private _dataView: Slick.Data.DataView<any>;
 	private _serverName: string;
@@ -294,7 +436,7 @@ export class OperatorsCacheObject {
 * Server level caching of job alerts and the alerts view
 */
 export class AlertsCacheObject {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	private _alerts: azdata.AgentAlertInfo[];
 	private _dataView: Slick.Data.DataView<any>;
 	private _serverName: string;
@@ -331,7 +473,7 @@ export class AlertsCacheObject {
  * Server level caching of job proxies and proxies view
  */
 export class ProxiesCacheObject {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	private _proxies: azdata.AgentProxyInfo[];
 	private _dataView: Slick.Data.DataView<any>;
 	private _serverName: string;

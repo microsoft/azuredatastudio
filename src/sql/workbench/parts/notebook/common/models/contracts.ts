@@ -44,5 +44,7 @@ export enum NotebookChangeType {
 	KernelChanged,
 	TrustChanged,
 	Saved,
-	CellExecuted
+	CellExecuted,
+	CellInputVisibilityChanged,
+	CellOutputCleared
 }

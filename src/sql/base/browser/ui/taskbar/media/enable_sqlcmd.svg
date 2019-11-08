@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 11 11">
+  <title>ADS_SQLCMD_Mode</title>
+  <rect width="11" height="11" fill="none"/>
+  <rect y="2" width="10" height="1"/>
+  <rect x="2" y="6" width="2" height="1"/>
+  <rect x="2" y="4" width="3" height="1"/>
+  <path d="M7,6.766,9.056,8,7,9.234V6.766M6,5v6l5-3L6,5Z"/>
+  <polygon points="5 9 1 9 1 1 9 1 9 5.634 10 6.234 10 0 0 0 0 10 5 10 5 9"/>
+  <path d="M7,6.766,9.056,8,7,9.234V6.766M6,5v6l5-3L6,5Z"/>
+</svg>

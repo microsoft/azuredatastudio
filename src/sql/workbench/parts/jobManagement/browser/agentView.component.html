@@ -17,6 +17,17 @@
 				</div>
 			</ng-template>
 		</tab>
+		<tab [title]="notebooksComponentTitle" class="fullsize" [identifier]="notebooksTabIdentifier"
+			[iconClass]="notebooksIconClass">
+			<ng-template>
+				<div id="notebooksDiv" class="fullsize" *ngIf="showNotebookHistory === false">
+					<notebooksview-component></notebooksview-component>
+				</div>
+				<div id="historyDiv" class="fullsize" *ngIf="showNotebookHistory === true">
+					<notebookhistory-component></notebookhistory-component>
+				</div>
+			</ng-template>
+		</tab>
 		<tab [title]="alertsComponentTitle" class="fullsize" [identifier]="alertsTabIdentifier"
 			[iconClass]="alertsIconClass">
 			<ng-template>

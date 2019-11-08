@@ -58,7 +58,7 @@ export class TabHeaderComponent extends Disposable implements AfterContentInit, 
 
 		let tabLabelcontainer = this._tabLabelRef.nativeElement as HTMLElement;
 		if (this.showIcon && this.tab.iconClass) {
-			tabLabelcontainer.className = 'tabLabel icon';
+			tabLabelcontainer.className = 'tabLabel codicon';
 			tabLabelcontainer.classList.add(this.tab.iconClass);
 		} else {
 			tabLabelcontainer.className = 'tabLabel';

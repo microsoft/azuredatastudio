@@ -1,0 +1,25 @@
+{
+	"downloadUrl": "https://sqlopsextensions.blob.core.windows.net/extensions/import/service/{#version#}/{#fileName#}",
+	"useDefaultLinuxRuntime": true,
+	"version": "0.0.3",
+	"downloadFileNames": {
+		"Windows_64": "win-x64.zip",
+		"Windows_86": "win-x86.zip",
+		"OSX": "osx.tar.gz",
+		"Linux_64": "linux-x64.tar.gz",
+		"CentOS_7": "linux-x64.tar.gz",
+		"Debian_8": "linux-x64.tar.gz",
+		"Fedora_23": "linux-x64.tar.gz",
+		"OpenSUSE_13_2": "linux-x64.tar.gz",
+		"RHEL_7": "linux-x64.tar.gz",
+		"SLES_12_2": "linux-x64.tar.gz",
+		"Ubuntu_14": "linux-x64.tar.gz",
+		"Ubuntu_16": "linux-x64.tar.gz",
+		"Ubuntu_18": "linux-x64.tar.gz"
+	},
+	"installDirectory": "flatfileimportservice/{#platform#}/{#version#}",
+	"executableFiles": [
+		"MicrosoftSqlToolsFlatFileImport",
+		"MicrosoftSqlToolsFlatFileImport.exe"
+	]
+}

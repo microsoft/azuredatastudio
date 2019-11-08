@@ -34,8 +34,10 @@ import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { endsWith, startsWith } from 'vs/base/common/strings';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ILogService } from 'vs/platform/log/common/log';
+import { find } from 'vs/base/common/arrays';
 
-export class ConnectionWidget {
+export class ConnectionWidget extends lifecycle.Disposable {
 	private _previousGroupOption: string;
 	private _serverGroupOptions: IConnectionProfileGroup[];
 	private _serverNameInputBox: InputBox;
@@ -60,7 +62,6 @@ export class ConnectionWidget {
 	protected _container: HTMLElement;
 	protected _serverGroupSelectBox: SelectBox;
 	protected _authTypeSelectBox: SelectBox;
-	protected _toDispose: lifecycle.IDisposable[];
 	protected _optionsMaps: { [optionType: number]: azdata.ConnectionOption };
 	protected _tableContainer: HTMLElement;
 	protected _providerName: string;
@@ -101,10 +102,11 @@ export class ConnectionWidget {
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@IAccountManagementService private _accountManagementService: IAccountManagementService
+		@IAccountManagementService private _accountManagementService: IAccountManagementService,
+		@ILogService protected _logService: ILogService,
 	) {
+		super();
 		this._callbacks = callbacks;
-		this._toDispose = [];
 		this._optionsMaps = {};
 		for (let i = 0; i < options.length; i++) {
 			let option = options[i];
@@ -136,7 +138,7 @@ export class ConnectionWidget {
 		}
 
 		DOM.addDisposableListener(container, 'paste', e => {
-			this._handleClipboard();
+			this._handleClipboard().catch(err => this._logService.error(`Unexpected error parsing clipboard contents for connection widget : ${err}`));
 		});
 	}
 
@@ -193,9 +195,9 @@ export class ConnectionWidget {
 			validationOptions: {
 				validation: (value: string) => {
 					if (!value) {
-						return ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', '{0} is required.', serverNameOption.displayName) });
+						return ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", serverNameOption.displayName) });
 					} else if (startsWith(value, ' ') || endsWith(value, ' ')) {
-						return ({ type: MessageType.WARNING, content: localize('connectionWidget.fieldWillBeTrimmed', '{0} will be trimmed.', serverNameOption.displayName) });
+						return ({ type: MessageType.WARNING, content: localize('connectionWidget.fieldWillBeTrimmed', "{0} will be trimmed.", serverNameOption.displayName) });
 					}
 					return undefined;
 				}
@@ -211,7 +213,7 @@ export class ConnectionWidget {
 		let userName = DialogHelper.appendRow(this._tableContainer, userNameOption.displayName, 'connection-label', 'connection-input', 'username-password-row');
 		this._userNameInputBox = new InputBox(userName, this._contextViewService, {
 			validationOptions: {
-				validation: (value: string) => self.validateUsername(value, userNameOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', '{0} is required.', userNameOption.displayName) }) : null
+				validation: (value: string) => self.validateUsername(value, userNameOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", userNameOption.displayName) }) : null
 			},
 			ariaLabel: userNameOption.displayName
 		});
@@ -313,22 +315,22 @@ export class ConnectionWidget {
 
 	protected registerListeners(): void {
 		// Theme styler
-		this._toDispose.push(styler.attachInputBoxStyler(this._serverNameInputBox, this._themeService));
-		this._toDispose.push(styler.attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
-		this._toDispose.push(styler.attachInputBoxStyler(this._userNameInputBox, this._themeService));
-		this._toDispose.push(styler.attachInputBoxStyler(this._passwordInputBox, this._themeService));
-		this._toDispose.push(styler.attachButtonStyler(this._advancedButton, this._themeService));
-		this._toDispose.push(styler.attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
-		this._toDispose.push(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
+		this._register(styler.attachInputBoxStyler(this._serverNameInputBox, this._themeService));
+		this._register(styler.attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
+		this._register(styler.attachInputBoxStyler(this._userNameInputBox, this._themeService));
+		this._register(styler.attachInputBoxStyler(this._passwordInputBox, this._themeService));
+		this._register(styler.attachButtonStyler(this._advancedButton, this._themeService));
+		this._register(styler.attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
+		this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 		if (this._serverGroupSelectBox) {
-			this._toDispose.push(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
-			this._toDispose.push(this._serverGroupSelectBox.onDidSelect(selectedGroup => {
+			this._register(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
+			this._register(this._serverGroupSelectBox.onDidSelect(selectedGroup => {
 				this.onGroupSelected(selectedGroup.selected);
 			}));
 		}
 		if (this._databaseNameInputBox) {
-			this._toDispose.push(styler.attachEditableDropdownStyler(this._databaseNameInputBox, this._themeService));
-			this._toDispose.push(this._databaseNameInputBox.onFocus(() => {
+			this._register(styler.attachEditableDropdownStyler(this._databaseNameInputBox, this._themeService));
+			this._register(this._databaseNameInputBox.onFocus(() => {
 				this._databaseDropdownExpanded = true;
 				if (this.serverName) {
 					this._databaseNameInputBox.values = [this._loadingDatabaseName];
@@ -346,7 +348,7 @@ export class ConnectionWidget {
 				}
 			}));
 
-			this._toDispose.push(this._databaseNameInputBox.onValueChange(s => {
+			this._register(this._databaseNameInputBox.onValueChange(s => {
 				if (s === this._defaultDatabaseName || s === this._loadingDatabaseName) {
 					this._databaseNameInputBox.value = '';
 				} else {
@@ -357,46 +359,46 @@ export class ConnectionWidget {
 
 		if (this._authTypeSelectBox) {
 			// Theme styler
-			this._toDispose.push(styler.attachSelectBoxStyler(this._authTypeSelectBox, this._themeService));
-			this._toDispose.push(this._authTypeSelectBox.onDidSelect(selectedAuthType => {
+			this._register(styler.attachSelectBoxStyler(this._authTypeSelectBox, this._themeService));
+			this._register(this._authTypeSelectBox.onDidSelect(selectedAuthType => {
 				this.onAuthTypeSelected(selectedAuthType.selected);
 				this.setConnectButton();
 			}));
 		}
 
 		if (this._azureAccountDropdown) {
-			this._toDispose.push(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
-			this._toDispose.push(this._azureAccountDropdown.onDidSelect(() => {
-				this.onAzureAccountSelected();
+			this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
+			this._register(this._azureAccountDropdown.onDidSelect(() => {
+				this.onAzureAccountSelected().catch(err => this._logService.error(`Unexpeted error handling Azure Account dropdown click : ${err}`));
 			}));
 		}
 
 		if (this._azureTenantDropdown) {
-			this._toDispose.push(styler.attachSelectBoxStyler(this._azureTenantDropdown, this._themeService));
-			this._toDispose.push(this._azureTenantDropdown.onDidSelect((selectInfo) => {
+			this._register(styler.attachSelectBoxStyler(this._azureTenantDropdown, this._themeService));
+			this._register(this._azureTenantDropdown.onDidSelect((selectInfo) => {
 				this.onAzureTenantSelected(selectInfo.index);
 			}));
 		}
 
 		if (this._refreshCredentialsLink) {
-			this._toDispose.push(DOM.addDisposableListener(this._refreshCredentialsLink, DOM.EventType.CLICK, async () => {
-				let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
+			this._register(DOM.addDisposableListener(this._refreshCredentialsLink, DOM.EventType.CLICK, async () => {
+				let account = find(this._azureAccountList, account => account.key.accountId === this._azureAccountDropdown.value);
 				if (account) {
 					await this._accountManagementService.refreshAccount(account);
-					this.fillInAzureAccountOptions();
+					await this.fillInAzureAccountOptions();
 				}
 			}));
 		}
 
-		this._toDispose.push(this._serverNameInputBox.onDidChange(serverName => {
+		this._register(this._serverNameInputBox.onDidChange(serverName => {
 			this.serverNameChanged(serverName);
 		}));
 
-		this._toDispose.push(this._userNameInputBox.onDidChange(userName => {
+		this._register(this._userNameInputBox.onDidChange(userName => {
 			this.setConnectButton();
 		}));
 
-		this._toDispose.push(this._passwordInputBox.onDidChange(passwordInput => {
+		this._register(this._passwordInputBox.onDidChange(passwordInput => {
 			this._password = passwordInput;
 		}));
 	}
@@ -440,8 +442,11 @@ export class ConnectionWidget {
 		}
 
 		if (currentAuthType === AuthenticationType.AzureMFA) {
-			this.fillInAzureAccountOptions();
-			this._azureAccountDropdown.enable();
+			this.fillInAzureAccountOptions().then(() => {
+				// Don't enable the control until we've populated it
+				this._azureAccountDropdown.enable();
+			}).catch(err => this._logService.error(`Unexpected error populating Azure Account dropdown : ${err}`));
+			// Immediately show/hide appropriate elements though so user gets immediate feedback while we load accounts
 			DOM.addClass(this._tableContainer, 'hide-username-password');
 			DOM.removeClass(this._tableContainer, 'hide-azure-accounts');
 		} else {
@@ -465,8 +470,8 @@ export class ConnectionWidget {
 		this._azureAccountDropdown.selectWithOptionName(oldSelection);
 	}
 
-	private async updateRefreshCredentialsLink(): Promise<void> {
-		let chosenAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
+	private updateRefreshCredentialsLink(): void {
+		let chosenAccount = find(this._azureAccountList, account => account.key.accountId === this._azureAccountDropdown.value);
 		if (chosenAccount && chosenAccount.isStale) {
 			DOM.removeClass(this._tableContainer, 'hide-refresh-link');
 		} else {
@@ -487,7 +492,7 @@ export class ConnectionWidget {
 			await this.fillInAzureAccountOptions();
 
 			// If a new account was added find it and select it, otherwise select the first account
-			let newAccount = this._azureAccountList.find(option => !oldAccountIds.some(oldId => oldId === option.key.accountId));
+			let newAccount = find(this._azureAccountList, option => !oldAccountIds.some(oldId => oldId === option.key.accountId));
 			if (newAccount) {
 				this._azureAccountDropdown.selectWithOptionName(newAccount.key.accountId);
 			} else {
@@ -499,7 +504,7 @@ export class ConnectionWidget {
 
 		// Display the tenant select box if needed
 		const hideTenantsClassName = 'hide-azure-tenants';
-		let selectedAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
+		let selectedAccount = find(this._azureAccountList, account => account.key.accountId === this._azureAccountDropdown.value);
 		if (selectedAccount && selectedAccount.properties.tenants && selectedAccount.properties.tenants.length > 1) {
 			// There are multiple tenants available so let the user select one
 			let options = selectedAccount.properties.tenants.map(tenant => tenant.displayName);
@@ -518,7 +523,7 @@ export class ConnectionWidget {
 
 	private onAzureTenantSelected(tenantIndex: number): void {
 		this._azureTenantId = undefined;
-		let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
+		let account = find(this._azureAccountList, account => account.key.accountId === this._azureAccountDropdown.value);
 		if (account && account.properties.tenants) {
 			let tenant = account.properties.tenants[tenantIndex];
 			if (tenant) {
@@ -529,7 +534,7 @@ export class ConnectionWidget {
 
 	private serverNameChanged(serverName: string) {
 		this.setConnectButton();
-		if (serverName.toLocaleLowerCase().includes('database.windows.net')) {
+		if (serverName.toLocaleLowerCase().indexOf('database.windows.net') > -1) {
 			this._callbacks.onSetAzureTimeOut();
 		}
 	}
@@ -548,7 +553,12 @@ export class ConnectionWidget {
 		if (this._serverGroupSelectBox) {
 			this._serverGroupOptions = connectionGroups;
 			this._serverGroupOptions.push(this._addNewServerGroup);
-			this._serverGroupSelectBox.setOptions(this._serverGroupOptions.map(g => g.name));
+			this._serverGroupSelectBox.setOptions(this._serverGroupOptions.map(g => {
+				if (g instanceof ConnectionProfileGroup) {
+					return g.fullName;
+				}
+				return g.name;
+			}));
 			if (groupName) {
 				this._serverGroupSelectBox.selectWithOptionName(groupName);
 				this._previousGroupOption = this._serverGroupSelectBox.value;
@@ -561,7 +571,7 @@ export class ConnectionWidget {
 	}
 
 	public focusOnOpen(): void {
-		this._handleClipboard();
+		this._handleClipboard().catch(err => this._logService.error(`Unexpected error parsing clipboard contents for connection widget : ${err}`));
 		this._serverNameInputBox.focus();
 		this.focusPasswordIfNeeded();
 		this.clearValidationMessages();
@@ -628,7 +638,7 @@ export class ConnectionWidget {
 					this._azureAccountDropdown.selectWithOptionName(this.getModelValue(connectionInfo.userName));
 					await this.onAzureAccountSelected();
 					let tenantId = connectionInfo.azureTenantId;
-					let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
+					let account = find(this._azureAccountList, account => account.key.accountId === this._azureAccountDropdown.value);
 					if (account && account.properties.tenants.length > 1) {
 						let tenant = account.properties.tenants.find(tenant => tenant.id === tenantId);
 						if (tenant) {
@@ -636,7 +646,7 @@ export class ConnectionWidget {
 						}
 						this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
 					}
-				});
+				}).catch(err => this._logService.error(`Unexpected error populating initial Azure Account options : ${err}`));
 			}
 
 			// Disable connect button if -
@@ -825,23 +835,19 @@ export class ConnectionWidget {
 	private findGroupId(groupFullName: string): string {
 		let group: IConnectionProfileGroup;
 		if (ConnectionProfileGroup.isRoot(groupFullName)) {
-			group = this._serverGroupOptions.find(g => ConnectionProfileGroup.isRoot(g.name));
+			group = find(this._serverGroupOptions, g => ConnectionProfileGroup.isRoot(g.name));
 			if (group === undefined) {
-				group = this._serverGroupOptions.find(g => g.name === this.DefaultServerGroup.name);
+				group = find(this._serverGroupOptions, g => g.name === this.DefaultServerGroup.name);
 			}
 		} else {
-			group = this._serverGroupOptions.find(g => g.name === groupFullName);
+			group = find(this._serverGroupOptions, g => g.name === groupFullName);
 		}
 		return group ? group.id : undefined;
 	}
 
-	public dispose(): void {
-		this._toDispose = lifecycle.dispose(this._toDispose);
-	}
-
 	private getMatchingAuthType(displayName: string): AuthenticationType {
 		const authType = this._authTypeMap[this._providerName];
-		return authType ? authType.find(authType => this.getAuthTypeDisplayName(authType) === displayName) : undefined;
+		return authType ? find(authType, authType => this.getAuthTypeDisplayName(authType) === displayName) : undefined;
 	}
 
 	public closeDatabaseDropdown(): void {

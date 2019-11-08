@@ -34,7 +34,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		let adapter = this.findManagerForUri(uriString);
 		if (!adapter) {
 			adapter = await this._withProvider(providerHandle, (provider) => {
-				return this.createManager(provider, uri);
+				return this.getOrCreateManager(provider, uri);
 			});
 		}
 
@@ -242,7 +242,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return undefined;
 	}
 
-	private async createManager(provider: azdata.nb.NotebookProvider, notebookUri: URI): Promise<NotebookManagerAdapter> {
+	private async getOrCreateManager(provider: azdata.nb.NotebookProvider, notebookUri: URI): Promise<NotebookManagerAdapter> {
 		let manager = await provider.getNotebookManager(notebookUri);
 		let uriString = notebookUri.toString();
 		let adapter = new NotebookManagerAdapter(provider, manager, uriString);
@@ -285,31 +285,31 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		}
 	}
 
-	private _withServerManager<R>(handle: number, callback: (manager: azdata.nb.ServerManager) => R | PromiseLike<R>): Promise<R> {
+	private _withServerManager<R>(handle: number, callback: (manager: azdata.nb.ServerManager) => PromiseLike<R>): Promise<R> {
 		return this._withNotebookManager(handle, (notebookManager) => {
 			let serverManager = notebookManager.serverManager;
 			if (!serverManager) {
-				return Promise.reject(new Error(localize('noServerManager', 'Notebook Manager for notebook {0} does not have a server manager. Cannot perform operations on it', notebookManager.uriString)));
+				return Promise.reject(new Error(localize('noServerManager', "Notebook Manager for notebook {0} does not have a server manager. Cannot perform operations on it", notebookManager.uriString)));
 			}
 			return callback(serverManager);
 		});
 	}
 
-	private _withContentManager<R>(handle: number, callback: (manager: azdata.nb.ContentManager) => R | PromiseLike<R>): Promise<R> {
+	private _withContentManager<R>(handle: number, callback: (manager: azdata.nb.ContentManager) => PromiseLike<R>): Promise<R> {
 		return this._withNotebookManager(handle, (notebookManager) => {
 			let contentManager = notebookManager.contentManager;
 			if (!contentManager) {
-				return Promise.reject(new Error(localize('noContentManager', 'Notebook Manager for notebook {0} does not have a content manager. Cannot perform operations on it', notebookManager.uriString)));
+				return Promise.reject(new Error(localize('noContentManager', "Notebook Manager for notebook {0} does not have a content manager. Cannot perform operations on it", notebookManager.uriString)));
 			}
 			return callback(contentManager);
 		});
 	}
 
-	private _withSessionManager<R>(handle: number, callback: (manager: azdata.nb.SessionManager) => R | PromiseLike<R>): Promise<R> {
+	private _withSessionManager<R>(handle: number, callback: (manager: azdata.nb.SessionManager) => PromiseLike<R>): Promise<R> {
 		return this._withNotebookManager(handle, (notebookManager) => {
 			let sessionManager = notebookManager.sessionManager;
 			if (!sessionManager) {
-				return Promise.reject(new Error(localize('noSessionManager', 'Notebook Manager for notebook {0} does not have a session manager. Cannot perform operations on it', notebookManager.uriString)));
+				return Promise.reject(new Error(localize('noSessionManager', "Notebook Manager for notebook {0} does not have a session manager. Cannot perform operations on it", notebookManager.uriString)));
 			}
 			return callback(sessionManager);
 		});

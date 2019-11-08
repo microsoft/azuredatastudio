@@ -21,7 +21,7 @@ import { PeekContext } from 'vs/editor/contrib/referenceSearch/peekViewWidget';
 import { ReferencesController } from 'vs/editor/contrib/referenceSearch/referencesController';
 import { ReferencesModel } from 'vs/editor/contrib/referenceSearch/referencesModel';
 import * as nls from 'vs/nls';
-import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
+// import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -30,6 +30,8 @@ import { getDefinitionsAtPosition, getImplementationsAtPosition, getTypeDefiniti
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { EditorStateCancellationTokenSource, CodeEditorStateFlag } from 'vs/editor/browser/core/editorState';
 import { ISymbolNavigationService } from 'vs/editor/contrib/goToDefinition/goToDefinitionResultsNavigation';
+import { EditorOption } from 'vs/editor/common/config/editorOptions';
+import { isEqual } from 'vs/base/common/resources';
 
 export class DefinitionActionConfig {
 
@@ -83,7 +85,7 @@ export class DefinitionAction extends EditorAction {
 				}
 				const newLen = result.push(reference);
 				if (this._configuration.filterCurrent
-					&& reference.uri.toString() === model.uri.toString()
+					&& isEqual(reference.uri, model.uri)
 					&& Range.containsPosition(reference.range, pos)
 					&& idxOfCurrent === -1
 				) {
@@ -137,7 +139,7 @@ export class DefinitionAction extends EditorAction {
 		const msg = model.getAriaMessage();
 		alert(msg);
 
-		const { gotoLocation } = editor.getConfiguration().contribInfo;
+		const gotoLocation = editor.getOption(EditorOption.gotoLocation);
 		if (this._configuration.openInPeek || (gotoLocation.multiple === 'peek' && model.references.length > 1)) {
 			this._openInPeek(editorService, editor, model);
 

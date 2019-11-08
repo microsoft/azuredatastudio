@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import * as constants from './constants';
@@ -26,15 +26,17 @@ import { AzureResourceSubscriptionFilterService } from './azureResource/services
 import { AzureResourceCacheService } from './azureResource/services/cacheService';
 import { AzureResourceTenantService } from './azureResource/services/tenantService';
 import { registerAzureResourceCommands } from './azureResource/commands';
-import { registerAzureResourceDatabaseServerCommands } from './azureResource/providers/databaseServer/commands';
-import { registerAzureResourceDatabaseCommands } from './azureResource/providers/database/commands';
 import { AzureResourceTreeProvider } from './azureResource/tree/treeProvider';
+import { SqlInstanceResourceService } from './azureResource/providers/sqlinstance/sqlInstanceService';
+import { SqlInstanceProvider } from './azureResource/providers/sqlinstance/sqlInstanceProvider';
+import { PostgresServerProvider } from './azureResource/providers/postgresServer/postgresServerProvider';
+import { PostgresServerService } from './azureResource/providers/postgresServer/postgresServerService';
 
 let extensionContext: vscode.ExtensionContext;
 
 // The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't
 // work for now because the extension is running in different process.
-export function getAppDataPath() {
+function getAppDataPath() {
 	let platform = process.platform;
 	switch (platform) {
 		case 'win32': return process.env['APPDATA'] || path.join(process.env['USERPROFILE'], 'AppData', 'Roaming');
@@ -44,7 +46,7 @@ export function getAppDataPath() {
 	}
 }
 
-export function getDefaultLogLocation() {
+function getDefaultLogLocation() {
 	return path.join(getAppDataPath(), 'azuredatastudio');
 }
 
@@ -54,47 +56,61 @@ function pushDisposable(disposable: vscode.Disposable): void {
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
 	extensionContext = context;
 	const apiWrapper = new ApiWrapper();
 	let appContext = new AppContext(extensionContext, apiWrapper);
 
-	let storagePath = findOrMakeStoragePath();
+	let storagePath = await findOrMakeStoragePath();
 	if (!storagePath) {
 		return undefined;
 	}
 
 	// Create the provider service and activate
-	initAzureAccountProvider(extensionContext, storagePath);
+	initAzureAccountProvider(extensionContext, storagePath).catch((err) => console.log(err));
 
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
 	pushDisposable(apiWrapper.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
-	registerCommands(appContext, azureResourceTree);
+	registerAzureResourceCommands(appContext, azureResourceTree);
 
 	return {
 		provideResources() {
 			return [
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), apiWrapper, extensionContext),
-				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext)
+				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext),
+				new SqlInstanceProvider(new SqlInstanceResourceService(), apiWrapper, extensionContext),
+				new PostgresServerProvider(new PostgresServerService(), apiWrapper, extensionContext)
 			];
 		}
 	};
 }
 
 // Create the folder for storing the token caches
-function findOrMakeStoragePath() {
-	let storagePath = path.join(getDefaultLogLocation(), constants.extensionName);
+async function findOrMakeStoragePath() {
+	let defaultLogLocation = getDefaultLogLocation();
+	let storagePath = path.join(defaultLogLocation, constants.extensionName);
+
 	try {
-		if (!fs.existsSync(storagePath)) {
-			fs.mkdirSync(storagePath);
-			console.log('Initialized Azure account extension storage.');
+		await fs.mkdir(defaultLogLocation, { recursive: true });
+	} catch (e) {
+		if (e.code !== 'EEXIST') {
+			console.log(`Creating the base directory failed... ${e}`);
+			return undefined;
 		}
 	}
-	catch (e) {
-		console.error(`Initialization of Azure account extension storage failed: ${e}`);
-		console.error('Azure accounts will not be available');
+
+	try {
+		await fs.mkdir(storagePath, { recursive: true });
+	} catch (e) {
+		if (e.code !== 'EEXIST') {
+			console.error(`Initialization of Azure account extension storage failed: ${e}`);
+			console.error('Azure accounts will not be available');
+			return undefined;
+		}
 	}
+
+	console.log('Initialized Azure account extension storage.');
 	return storagePath;
 }
 
@@ -116,12 +132,3 @@ function registerAzureServices(appContext: AppContext): void {
 	appContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, new AzureResourceSubscriptionFilterService(new AzureResourceCacheService(extensionContext)));
 	appContext.registerService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService, new AzureResourceTenantService());
 }
-
-function registerCommands(appContext: AppContext, azureResourceTree: AzureResourceTreeProvider): void {
-	registerAzureResourceCommands(appContext, azureResourceTree);
-
-	registerAzureResourceDatabaseServerCommands(appContext);
-
-	registerAzureResourceDatabaseCommands(appContext);
-}
-

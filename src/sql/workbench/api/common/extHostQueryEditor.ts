@@ -26,6 +26,10 @@ class ExtHostQueryDocument implements azdata.queryeditor.QueryDocument {
 	public createQueryTab(tab: azdata.window.DialogTab): void {
 		this._proxy.$createQueryTab(this.uri, tab.title, tab.content);
 	}
+
+	public connect(connectionProfile: azdata.connection.ConnectionProfile): Thenable<void> {
+		return this._proxy.$connectWithProfile(this.uri, connectionProfile);
+	}
 }
 
 export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
@@ -44,8 +48,8 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
 		return this._proxy.$connect(fileUri, connectionId);
 	}
 
-	public $runQuery(fileUri: string): void {
-		return this._proxy.$runQuery(fileUri);
+	public $runQuery(fileUri: string, runCurrentQuery: boolean = true): void {
+		return this._proxy.$runQuery(fileUri, runCurrentQuery);
 	}
 
 	public $registerQueryInfoListener(providerId: string, listener: azdata.queryeditor.QueryEventListener): void {

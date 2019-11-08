@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
@@ -42,9 +41,9 @@ export class ExtractConfigPage extends DacFxConfigPage {
 					versionComponent,
 					fileBrowserComponent,
 				], {
-					horizontal: true,
-					componentWidth: 400
-				}).component();
+				horizontal: true,
+				componentWidth: 400
+			}).component();
 		await this.view.initializeModel(this.form);
 		return true;
 	}
@@ -60,7 +59,7 @@ export class ExtractConfigPage extends DacFxConfigPage {
 		return true;
 	}
 
-	public setupNavigationValidator() {
+	public setupNavigationValidator(): void {
 		this.instance.registerNavigationValidator(() => {
 			if (this.databaseLoader.loading) {
 				return false;
@@ -80,7 +79,7 @@ export class ExtractConfigPage extends DacFxConfigPage {
 			let fileUri = await vscode.window.showSaveDialog(
 				{
 					defaultUri: vscode.Uri.file(this.fileTextBox.value),
-					saveLabel: localize('dacfxExtract.saveFile', 'Save'),
+					saveLabel: localize('dacfxExtract.saveFile', "Save"),
 					filters: {
 						'dacpac Files': ['dacpac'],
 					}
@@ -101,17 +100,18 @@ export class ExtractConfigPage extends DacFxConfigPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxExtract.fileTextboxTitle', 'File Location'),
+			title: localize('dacFxExtract.fileTextboxTitle', "File Location"),
 			actions: [this.fileButton]
 		};
 	}
 
 	private async createVersionTextBox(): Promise<azdata.FormComponent> {
 		this.versionTextBox = this.view.modelBuilder.inputBox().withProperties({
-			required: true
+			required: true,
+			ariaLabel: localize('dacFxExtract.versionTextBoxAriaLabel', "Version")
 		}).component();
 
-		// default filepath
+		// default version
 		this.versionTextBox.value = '1.0.0.0';
 		this.model.version = this.versionTextBox.value;
 
@@ -121,7 +121,7 @@ export class ExtractConfigPage extends DacFxConfigPage {
 
 		return {
 			component: this.versionTextBox,
-			title: localize('dacFxExtract.versionTextboxTitle', 'Version (use x.x.x.x where x is a number)'),
+			title: localize('dacFxExtract.versionTextboxTitle', "Version (use x.x.x.x where x is a number)"),
 		};
 	}
 }

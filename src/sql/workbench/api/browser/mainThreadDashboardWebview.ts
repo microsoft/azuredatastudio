@@ -6,7 +6,8 @@
 import { MainThreadDashboardWebviewShape, SqlMainContext, ExtHostDashboardWebviewsShape, SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { IDashboardViewService, IDashboardWebview } from 'sql/platform/dashboard/common/dashboardViewService';
+import { IDashboardViewService, IDashboardWebview } from 'sql/platform/dashboard/browser/dashboardViewService';
+import { find } from 'vs/base/common/arrays';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadDashboardWebview)
 export class MainThreadDashboardWebview implements MainThreadDashboardWebviewShape {
@@ -23,7 +24,7 @@ export class MainThreadDashboardWebview implements MainThreadDashboardWebviewSha
 	) {
 		this._proxy = context.getProxy(SqlExtHostContext.ExtHostDashboardWebviews);
 		viewService.onRegisteredWebview(e => {
-			if (this.knownWidgets.includes(e.id)) {
+			if (find(this.knownWidgets, x => x === e.id)) {
 				let handle = MainThreadDashboardWebview._handlePool++;
 				this._dialogs.set(handle, e);
 				this._proxy.$registerWidget(handle, e.id, e.connection, e.serverInfo);

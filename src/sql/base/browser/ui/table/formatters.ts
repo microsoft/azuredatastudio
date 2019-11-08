@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { escape } from 'sql/base/common/strings';
+import { localize } from 'vs/nls';
 
 export class DBCellValue {
 	displayValue: string;
@@ -18,7 +19,7 @@ export class DBCellValue {
 /**
  * Format xml field into a hyperlink and performs HTML entity encoding
  */
-export function hyperLinkFormatter(row: number, cell: any, value: any, columnDef: any, dataContext: any): string {
+export function hyperLinkFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
 	let cellClasses = 'grid-cell-value-container';
 	let valueToDisplay: string = '';
 
@@ -38,7 +39,7 @@ export function hyperLinkFormatter(row: number, cell: any, value: any, columnDef
 /**
  * Format all text to replace all new lines with spaces and performs HTML entity encoding
  */
-export function textFormatter(row: number, cell: any, value: any, columnDef: any, dataContext: any): string {
+export function textFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
 	let cellClasses = 'grid-cell-value-container';
 	let valueToDisplay = '';
 	let titleValue = '';
@@ -74,6 +75,19 @@ export function slickGridDataItemColumnValueExtractor(value: any, columnDef: any
 	return {
 		text: displayValue,
 		ariaLabel: displayValue ? escape(displayValue) : displayValue
+	};
+}
+
+/**
+ * Alternate function to provide slick grid cell with ariaLabel and plain text
+ * In this case, for no display value ariaLabel will be set to specific string "no data available" for accessibily support for screen readers
+ * Set 'no data' lable only if cell is present and has no value (so that checkbox and other custom plugins do not get 'no data' label)
+ */
+export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: any): { text: string; ariaLabel: string; } {
+	let displayValue = value[columnDef.field];
+	return {
+		text: displayValue,
+		ariaLabel: displayValue ? escape(displayValue) : ((displayValue !== undefined) ? localize("tableCell.NoDataAvailable", "no data available") : displayValue)
 	};
 }
 

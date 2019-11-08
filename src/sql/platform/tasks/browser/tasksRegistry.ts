@@ -10,7 +10,7 @@ import * as types from 'vs/base/common/types';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
-import { createCSSRule } from 'vs/base/browser/dom';
+import { createCSSRule, asCSSUrl } from 'vs/base/browser/dom';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IdGenerator } from 'vs/base/common/idGenerator';
@@ -28,7 +28,7 @@ export const TaskRegistry: ITaskRegistry = new class implements ITaskRegistry {
 		let disposable: IDisposable;
 		let id: string;
 		if (types.isString(idOrTask)) {
-			disposable = CommandsRegistry.registerCommand(idOrTask, handler);
+			disposable = CommandsRegistry.registerCommand(idOrTask, handler!);
 			id = idOrTask;
 		} else {
 			if (idOrTask.iconClass) {
@@ -52,14 +52,14 @@ export const TaskRegistry: ITaskRegistry = new class implements ITaskRegistry {
 		};
 	}
 
-	getOrCreateTaskIconClassName(item: ICommandAction): string {
-		let iconClass = null;
+	getOrCreateTaskIconClassName(item: ICommandAction): string | undefined {
+		let iconClass: string | undefined;
 		if (this.taskIdToIconClassNameMap.has(item.id)) {
 			iconClass = this.taskIdToIconClassNameMap.get(item.id);
 		} else if (item.iconLocation) {
 			iconClass = ids.nextId();
-			createCSSRule(`.icon.${iconClass}`, `background-image: url("${(item.iconLocation.light || item.iconLocation.dark).toString()}")`);
-			createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${(item.iconLocation.dark).toString()}")`);
+			createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(item.iconLocation.light || item.iconLocation.dark)}`);
+			createCSSRule(`.vs-dark .codicon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(item.iconLocation.dark)}`);
 			this.taskIdToIconClassNameMap.set(item.id, iconClass);
 		}
 		return iconClass;
@@ -74,17 +74,19 @@ export abstract class Task {
 	public readonly id: string;
 	public readonly title: string;
 	public readonly iconPathDark: string;
-	public readonly iconPath: { dark: URI; light?: URI; };
-	private readonly _iconClass: string;
-	private readonly _description: ITaskHandlerDescription;
+	public readonly iconPath?: { dark: URI; light?: URI; };
+	private readonly _iconClass?: string;
+	private readonly _description?: ITaskHandlerDescription;
 
-	constructor(private opts: ITaskOptions) {
+	constructor(opts: ITaskOptions) {
 		this.id = opts.id;
 		this.title = opts.title;
-		this.iconPath = {
-			dark: opts.iconPath ? URI.parse(opts.iconPath.dark) : undefined,
-			light: opts.iconPath ? URI.parse(opts.iconPath.light) : undefined,
-		};
+		if (opts.iconPath) {
+			this.iconPath = {
+				dark: URI.parse(opts.iconPath.dark),
+				light: opts.iconPath.light ? URI.parse(opts.iconPath.light) : undefined,
+			};
+		}
 		this._iconClass = opts.iconClass;
 		this._description = opts.description;
 	}

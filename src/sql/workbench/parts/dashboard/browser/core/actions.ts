@@ -7,12 +7,12 @@ import { Action, IAction } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { IDisposable } from 'vs/base/common/lifecycle';
 
-import { IAngularEventingService, AngularEventType, IAngularEvent } from 'sql/platform/angularEventing/common/angularEventingService';
+import { IAngularEventingService, AngularEventType, IAngularEvent } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/browser/newDashboardTabDialog';
-import { IDashboardTab } from 'sql/platform/dashboard/browser/dashboardRegistry';
+import { IDashboardTab } from 'sql/workbench/parts/dashboard/browser/dashboardRegistry';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
+import { find, firstIndex } from 'vs/base/common/arrays';
 
 export class EditDashboardAction extends Action {
 
@@ -157,8 +157,6 @@ export class AddFeatureTabAction extends Action {
 	private static readonly LABEL = nls.localize('addFeatureAction.openInstalledFeatures', "Open installed features");
 	private static readonly ICON = 'new';
 
-	private _disposables: IDisposable[] = [];
-
 	constructor(
 		private _dashboardTabs: Array<IDashboardTab>,
 		private _openedTabs: Array<IDashboardTab>,
@@ -167,7 +165,7 @@ export class AddFeatureTabAction extends Action {
 		@IAngularEventingService private _angularEventService: IAngularEventingService
 	) {
 		super(AddFeatureTabAction.ID, AddFeatureTabAction.LABEL, AddFeatureTabAction.ICON);
-		this._disposables.push(subscriptionToDisposable(this._angularEventService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
+		this._register(subscriptionToDisposable(this._angularEventService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
 	}
 
 	run(): Promise<boolean> {
@@ -175,24 +173,19 @@ export class AddFeatureTabAction extends Action {
 		return Promise.resolve(true);
 	}
 
-	dispose() {
-		super.dispose();
-		this._disposables.forEach((item) => item.dispose());
-	}
-
 	private handleDashboardEvent(event: IAngularEvent): void {
 		switch (event.event) {
 			case AngularEventType.NEW_TABS:
 				const openedTabs = <IDashboardTab[]>event.payload.dashboardTabs;
 				openedTabs.forEach(tab => {
-					const existedTab = this._openedTabs.find(i => i === tab);
+					const existedTab = find(this._openedTabs, i => i === tab);
 					if (!existedTab) {
 						this._openedTabs.push(tab);
 					}
 				});
 				break;
 			case AngularEventType.CLOSE_TAB:
-				const index = this._openedTabs.findIndex(i => i.id === event.payload.id);
+				const index = firstIndex(this._openedTabs, i => i.id === event.payload.id);
 				this._openedTabs.splice(index, 1);
 				break;
 		}

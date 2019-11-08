@@ -8,7 +8,7 @@ import 'vs/css!./selectBox';
 import { Event } from 'vs/base/common/event';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { Color } from 'vs/base/common/color';
-import { deepClone, mixin } from 'vs/base/common/objects';
+import { deepClone } from 'vs/base/common/objects';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
 import { SelectBoxNative } from 'vs/base/browser/ui/selectBox/selectBoxNative';
@@ -72,21 +72,17 @@ export interface ISelectData {
 }
 
 export class SelectBox extends Widget implements ISelectBoxDelegate {
-	// {{SQL CARBON EDIT}}
-	protected selectElement: HTMLSelectElement;
+	protected selectElement: HTMLSelectElement; // {{SQL CARBON EDIT}}
 	protected selectBackground?: Color;
 	protected selectForeground?: Color;
 	protected selectBorder?: Color;
-	private styles: ISelectBoxStyles;
-	private selectBoxDelegate: ISelectBoxDelegate;
+	protected selectBoxDelegate: ISelectBoxDelegate; // {{SQL CARBON EDIT}} Make protected so we can hook into keyboard events
 
 	constructor(options: ISelectOptionItem[], selected: number, contextViewProvider: IContextViewProvider, styles: ISelectBoxStyles = deepClone(defaultStyles), selectBoxOptions?: ISelectBoxOptions) {
 		super();
 
-		mixin(this.styles, defaultStyles, false);
-
 		// Default to native SelectBox for OSX unless overridden
-		if (isMacintosh && !(selectBoxOptions && selectBoxOptions.useCustomDrawn)) {
+		if (isMacintosh && !selectBoxOptions?.useCustomDrawn) {
 			this.selectBoxDelegate = new SelectBoxNative(options, selected, styles, selectBoxOptions);
 		} else {
 			this.selectBoxDelegate = new SelectBoxList(options, selected, contextViewProvider, styles, selectBoxOptions);

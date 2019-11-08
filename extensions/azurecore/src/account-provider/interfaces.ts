@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 
 /**
@@ -30,7 +28,7 @@ export interface Tenant {
 /**
  * Represents a resource exposed by an Azure Active Directory
  */
-export interface Resource {
+interface Resource {
 	/**
 	 * Identifier of the resource
 	 */
@@ -43,24 +41,9 @@ export interface Resource {
 }
 
 /**
- * Represents the arguments that identify an instantiation of the AAD account provider
- */
-export interface Arguments {
-	/**
-	 * Host of the authority
-	 */
-	host: string;
-
-	/**
-	 * Identifier of the client application
-	 */
-	clientId: string;
-}
-
-/**
  * Represents settings for an AAD account provider
  */
-export interface Settings {
+interface Settings {
 	/**
 	 * Host of the authority
 	 */
@@ -138,7 +121,7 @@ export interface AzureAccountProviderMetadata extends azdata.AccountProviderMeta
 /**
  * Properties specific to an Azure account
  */
-export interface AzureAccountProperties {
+interface AzureAccountProperties {
 	/**
 	 * Whether or not the account is a Microsoft account
 	 */
@@ -163,7 +146,7 @@ export interface AzureAccount extends azdata.Account {
 /**
  * Token returned from a request for an access token
  */
-export interface AzureAccountSecurityToken {
+interface AzureAccountSecurityToken {
 	/**
 	 * Access token, itself
 	 */

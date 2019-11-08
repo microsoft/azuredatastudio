@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { TreeDataProvider, EventEmitter, Event, TreeItem } from 'vscode';
 import { AppContext } from '../../appContext';
 import * as nls from 'vscode-nls';
@@ -14,7 +13,6 @@ import { CmsResourceEmptyTreeNode } from './cmsResourceEmptyTreeNode';
 import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
 import { CmsResourceMessageTreeNode } from '../messageTreeNode';
 import { CmsResourceTreeNode } from './cmsResourceTreeNode';
-import { ICmsResourceNodeInfo } from './baseTreeNodes';
 
 export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICmsResourceTreeChangeHandler {
 
@@ -36,10 +34,9 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 			try {
 				// Call to collect all locally saved CMS servers
 				// to determine whether the system has been initialized.
-				let cmsConfig = this._appContext.cmsUtils.getConfiguration();
-				let cachedServers = cmsConfig.servers ? cmsConfig.servers : [];
+				const cachedServers = this._appContext.cmsUtils.getSavedServers();
 				if (cachedServers && cachedServers.length > 0) {
-					let servers = [];
+					const servers: CmsResourceTreeNode[] = [];
 					cachedServers.forEach(async (server) => {
 						servers.push(new CmsResourceTreeNode(
 							server.name,
@@ -47,7 +44,7 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 							server.ownerUri,
 							server.connection,
 							this._appContext, this, null));
-						this.appContext.cmsUtils.cacheRegisteredCmsServer(server.name, server.description,
+						await this.appContext.cmsUtils.cacheRegisteredCmsServer(server.name, server.description,
 							server.ownerUri, server.connection);
 					});
 					return servers;
@@ -99,5 +96,5 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 	public isSystemInitialized: boolean = false;
 	private _onDidChangeTreeData = new EventEmitter<TreeNode>();
 
-	private static readonly loadingLabel = localize('cms.resource.tree.treeProvider.loadingLabel', 'Loading ...');
+	private static readonly loadingLabel = localize('cms.resource.tree.treeProvider.loadingLabel', "Loading ...");
 }
