@@ -6,6 +6,7 @@
 import 'vs/css!./media/flexbox';
 import 'vs/css!./media/styles';
 
+
 //import 'vs/css!./media/slick.grid';
 //import 'vs/css!./media/slickColorTheme';
 //import 'vs/css!./media/slickGrid';
@@ -37,8 +38,8 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
-import { Panel } from 'vs/workbench/browser/panel';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { fstat } from 'fs';
+
 
 export abstract class GridParentComponent extends Disposable {
 	// CONSTANTS
@@ -85,6 +86,7 @@ export abstract class GridParentComponent extends Disposable {
 	protected nativeElement: HTMLElement;
 	protected _tables: Table<any>[] = [];
 
+
 	set messageActive(input: boolean) {
 		this._messageActive = input;
 		if (this.resultActive) {
@@ -97,13 +99,13 @@ export abstract class GridParentComponent extends Disposable {
 	}
 
 	constructor(
-		protected contextMenuService: IContextMenuService,
-		protected keybindingService: IKeybindingService,
-		protected contextKeyService: IContextKeyService,
-		protected configurationService: IConfigurationService,
-		protected clipboardService: IClipboardService,
-		protected queryEditorService: IQueryEditorService,
-		protected logService: ILogService
+		@IContextMenuService protected contextMenuService: IContextMenuService,
+		@IKeybindingService protected keybindingService: IKeybindingService,
+		@IContextKeyService protected contextKeyService: IContextKeyService,
+		@IConfigurationService protected configurationService: IConfigurationService,
+		@IClipboardService protected clipboardService: IClipboardService,
+		@IQueryEditorService protected queryEditorService: IQueryEditorService,
+		@ILogService protected logService: ILogService
 	) {
 		super();
 	}
@@ -534,4 +536,57 @@ export abstract class GridParentComponent extends Disposable {
 	}
 
 	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
+
+	//own helper functions
+	public render(container: HTMLElement): void {
+		this.nativeElement.style.width = '100%';
+		this.nativeElement.style.height = '100%';
+
+		container.appendChild(this.nativeElement);
+	}
+
+	// private addResultSet(resultSet: azdata.ResultSetSummary[]) {
+	// 	let tables: Table<any>[] = [];
+
+	// 	for (let set of resultSet) {
+	// 		// ensure we aren't adding a resultSet that is already visible
+	// 		if (this.tables.find(t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id)) {
+	// 			continue;
+	// 		}
+	// 		let tableState: GridTableState;
+	// 		if (this.state) {
+	// 			tableState = this.state.tableStates.find(e => e.batchId === set.batchId && e.resultId === set.id);
+	// 		}
+	// 		if (!tableState) {
+	// 			tableState = new GridTableState(set.id, set.batchId);
+	// 			if (this.state) {
+	// 				this.state.tableStates.push(tableState);
+	// 			}
+	// 		}
+	// 		let table = this.instantiationService.createInstance(GridTable, this.runner, set, tableState);
+	// 		this.tableDisposable.add(tableState.onMaximizedChange(e => {
+	// 			if (e) {
+	// 				this.maximizeTable(table.id);
+	// 			} else {
+	// 				this.minimizeTables();
+	// 			}
+	// 		}));
+	// 		this.tableDisposable.add(attachTableStyler(table, this.themeService));
+
+	// 		tables.push(table);
+	// 	}
+
+	// 	this.tables = this.tables.concat(tables);
+
+	// 	// turn-off special-case process when only a single table is being displayed
+	// 	if (this.tables.length > 1) {
+	// 		for (let i = 0; i < this.tables.length; ++i) {
+	// 			this.tables[i].isOnlyTable = false;
+	// 		}
+	// 	}
+
+	// 	if (isUndefinedOrNull(this.maximizedGrid)) {
+	// 		this.splitView.addViews(tables, tables.map(i => i.minimumSize), this.splitView.length);
+	// 	}
+	// }
 }

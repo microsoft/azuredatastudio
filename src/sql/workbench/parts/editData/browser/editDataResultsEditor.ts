@@ -23,10 +23,12 @@ import { EDITDATA_SELECTOR, EditDataGridPanel } from 'sql/workbench/parts/editDa
 import { EditDataResultsInput } from 'sql/workbench/parts/editData/browser/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { EditDataView } from 'sql/workbench/parts/editData/browser/editDataResultsView';
+
 
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { Table } from 'sql/base/browser/ui/table/table';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+
 
 export class EditDataResultsEditor extends BaseEditor {
 
@@ -35,8 +37,11 @@ export class EditDataResultsEditor extends BaseEditor {
 	protected _input: EditDataResultsInput;
 	protected _rawOptions: BareResultsGridInfo;
 
-	private resultsView: EditDataView;
+
 	private styleSheet = DOM.createStyleSheet();
+
+	//my own reference to the new grid panel
+	private editGridPanel: EditDataGridPanel;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -63,9 +68,6 @@ export class EditDataResultsEditor extends BaseEditor {
 	public createEditor(parent: HTMLElement): void {
 		this.styleSheet.remove();
 		parent.appendChild(this.styleSheet);
-		if (!this.resultsView) {
-			this.resultsView = this._register(this._instantiationService.createInstance(EditDataView, parent));
-		}
 	}
 
 	public dispose(): void {
@@ -75,14 +77,13 @@ export class EditDataResultsEditor extends BaseEditor {
 	}
 
 	public layout(dimension: DOM.Dimension): void {
-		//this.resultsView.layout(dimension);
 	}
 
 	public setInput(input: EditDataResultsInput, options: EditorOptions): Promise<void> {
 		super.setInput(input, options, CancellationToken.None);
 		this._applySettings();
 
-		this.resultsView.input = input;
+
 		if (!input.hasBootstrapped) {
 			this.createTable();
 		}
@@ -90,7 +91,6 @@ export class EditDataResultsEditor extends BaseEditor {
 	}
 
 	clearInput() {
-		this.resultsView.clearInput();
 		super.clearInput();
 	}
 
@@ -146,8 +146,12 @@ export class EditDataResultsEditor extends BaseEditor {
 			onSaveViewState: input.onSaveViewStateEmitter.event,
 			onRestoreViewState: input.onRestoreViewStateEmitter.event
 		};
+		console.log(params.dataService);
 
-		let currentGrid = new EditDataGridPanel(parent, params);
+		this._applySettings();
+
+		let editGridPanel = this._register(this._instantiationService.createInstance(EditDataGridPanel, params));
+
 		//this._instantiationService.createInstance(EditDataComponent, params);
 
 		//comment this out when actually running.

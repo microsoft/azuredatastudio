@@ -13,7 +13,6 @@ import { IDisposableDataProvider, ITableSorter, ITableMouseEvent, ITableConfigur
 
 
 //Angular components used to make it compatible for editData.
-import {Component, Input, Output, Inject, forwardRef, OnChanges, OnInit, OnDestroy, ElementRef, SimpleChange, EventEmitter, ViewEncapsulation, HostListener, AfterViewInit} from '@angular/core';
 import { Observable, Subscription } from 'rxjs/Rx';
 
 import * as DOM from 'vs/base/browser/dom';
@@ -33,101 +32,9 @@ function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	};
 }
 
-//my code here.
-
-interface ISlickGridData {
-    // https://github.com/mleibman/SlickGrid/wiki/DataView
-    getLength(): number;
-    getItem(index: number): any;
-    getRange(start: number, end: number): any; // only available in the forked SlickGrid
-    getItemMetadata(index: number): any;
-}
-
-export enum CollectionChange {
-    ItemsReplaced = 0,
-}
-
-export interface IObservableCollection<T> {
-    getLength(): number;
-    at(index: number): T;
-    getRange(start: number, end: number): T[];
-    setCollectionChangedCallback(callback: (change: CollectionChange, startIndex: number, count: number) => void): void;
-    resetWindowsAroundIndex(index: number): void;
-}
-
-//Component for compatability with angular.
-@Component({
-
-    selector: 'table',
-
-    template: '<div class="grid" (window:resize)="onResize()"></div>',
-
-    encapsulation: ViewEncapsulation.None
-
-})
 
 
 export class Table<T extends Slick.SlickData> extends Widget implements IDisposable {
-	//need to add input injectors for Angular to run this.
-
-	//invalid.
-	@Input() columnDefinitions: Slick.Column<any>[];
-
-    @Input() dataRows: IObservableCollection<{}>;
-
-    @Input() resized: Observable<any>;
-
-    @Input() highlightedCells: { row: number, column: number }[] = [];
-
-    @Input() blurredColumns: string[] = [];
-
-    @Input() contextColumns: string[] = [];
-
-    @Input() columnsLoading: string[] = [];
-
-    @Input() showHeader: boolean = true;
-
-    @Input() enableColumnReorder: boolean = false;
-
-    @Input() enableAsyncPostRender: boolean = false;
-
-    @Input() selectionModel: string | Slick.SelectionModel<any, any> = '';
-
-    @Input() plugins: Array<string | Slick.Plugin<any>> = [];
-
-    @Input() enableEditing: boolean = false;
-
-    @Input() topRowNumber: number;
-
-
-
-    @Input() overrideCellFn: (rowNumber, columnId, value?, data?) => string;
-
-    @Input() isCellEditValid: (row: number, column: number, newValue: any) => boolean;
-
-    @Input() BeforeAppendCell: (row: number, column: number) => string;
-
-
-
-    @Output() onScroll: EventEmitter<Slick.OnScrollEventArgs<any>> = new EventEmitter<Slick.OnScrollEventArgs<any>>();
-
-    @Output() onActiveCellChanged: EventEmitter<Slick.OnActiveCellChangedEventArgs<any>> = new EventEmitter<Slick.OnActiveCellChangedEventArgs<any>>();
-
-    @Output() onBeforeEditCell: EventEmitter<Slick.OnBeforeEditCellEventArgs<any>> = new EventEmitter<Slick.OnBeforeEditCellEventArgs<any>>();
-
-    @Output() onCellChange: EventEmitter<Slick.OnCellChangeEventArgs<any>> = new EventEmitter<Slick.OnCellChangeEventArgs<any>>();
-
-    @Output() onRendered: EventEmitter<Slick.OnRenderedEventArgs<any>> = new EventEmitter<Slick.OnRenderedEventArgs<any>>();
-
-	@Output() loadFinished: EventEmitter<void> = new EventEmitter<void>();
-
-
-	private _resizeSubscription: Subscription;
-	private _gridSyncSubscription: Subscription;
-	private _columnNameToIndex: any;
-	private _gridData: ISlickGridData;
-
-	//old inputs
 	private styleElement: HTMLStyleElement;
 	private idPrefix: string;
 
@@ -218,47 +125,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	//own code begins here:
 
 
-	private changeEditSession(enabled: boolean): void {
-        this.enableEditing = enabled;
-        let options: any = this._grid.getOptions();
-        options.editable = enabled;
-        options.enableAddRow = false; // TODO change to " options.enableAddRow = false;" when we support enableAddRow
-        this._grid.setOptions(options);
-    }
-
-
-
-
-	private updateSchema(): void {
-        if (!this.columnDefinitions) {
-            return;
-        }
-        this._columns = this.columnDefinitions;
-    }
-
-	private setCallbackOnDataRowsChanged(): void {
-
-        if (this.dataRows) {
-
-            // We must wait until we get the first set of dataRows before we enable editing or slickgrid will complain
-
-            if (this.enableEditing) {
-
-                this.enterEditSession();
-
-            }
-
-
-
-            this.dataRows.setCollectionChangedCallback((change: CollectionChange, startIndex: number, count: number) => {
-
-                this.renderGridDataRowsRange(startIndex, count);
-
-            });
-
-        }
-
-    }
 
 	private invalidateRange(start: number, end: number): void {
         let refreshedRows = _.range(start, end);
@@ -287,173 +153,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
             // this will make sure the grid header and body to be re-rendered\
             this._grid.resizeCanvas();
         }
-    }
-
-
-
-	ngOnInit(): void {
-
-        // ngOnInit() will be called *after* the first time ngOnChanges() is called
-
-        // so, grid must be there already
-
-        if (this.topRowNumber === undefined) {
-            this.topRowNumber = 0;
-        }
-
-        if (this.dataRows && this.dataRows.getLength() > 0) {
-            this._grid.scrollRowToTop(this.topRowNumber);
-        }
-
-
-
-        if (this.resized) {
-            // Re-rendering the grid is expensive. Throttle so we only do so every 100ms.
-            this.resized.throttleTime(100).subscribe(() => this.onResize());
-        }
-
-
-
-        // subscribe to slick events
-
-        // https://github.com/mleibman/SlickGrid/wiki/Grid-Events
-        this.setupEvents();
-    }
-
-	private setupEvents(): void {
-
-        this._grid.onScroll.subscribe((e, args) => {
-
-            this.onScroll.emit(args);
-
-        });
-
-        this._grid.onCellChange.subscribe((e, args) => {
-
-            this.onCellChange.emit(args);
-
-        });
-
-        this._grid.onBeforeEditCell.subscribe((e, args) => {
-
-            this.onBeforeEditCell.emit(args);
-
-        });
-
-        // Subscribe to all active cell changes to be able to catch when we tab to the header on the next row
-
-        this._grid.onActiveCellChanged.subscribe((e, args) => {
-
-            // Emit that we've changed active cells
-
-            this.onActiveCellChanged.emit(args);
-
-        });
-
-        /*this._grid.onContextMenu.subscribe((e, args) => {
-
-            this.onContextMenu.emit(e);
-
-        });*/
-
-        this.onBeforeEditCell.subscribe((e, args) => {
-            // Since we need to return a string here, we are using calling a function instead of event emitter like other events handlers
-            return this.BeforeAppendCell ? this.BeforeAppendCell(args.row, args.cell) : undefined;
-        });
-
-        this._grid.onRendered.subscribe((e, args) => {
-            this.onRendered.emit(args);
-        });
-    }
-
-
-    ngAfterViewInit(): void {
-        this.loadFinished.emit();
-    }
-
-
-
-    ngOnDestroy(): void {
-        if (this._resizeSubscription !== undefined) {
-            this._resizeSubscription.unsubscribe();
-		}
-
-        if (this._gridSyncSubscription !== undefined) {
-            this._gridSyncSubscription.unsubscribe();
-        }
-    }
-
-	ngOnChanges(changes: { [propName: string]: SimpleChange }): void {
-        let columnDefinitionChanges = changes['columnDefinitions'];
-        let activeCell = this._grid ? this._grid.getActiveCell() : undefined;
-        let hasGridStructureChanges = false;
-        let wasEditing = this._grid ? !!this._grid.getCellEditor() : false;
-        if (columnDefinitionChanges && !_.isEqual(columnDefinitionChanges.previousValue, columnDefinitionChanges.currentValue)) {
-            this.updateSchema();
-            if (!this._grid) {
-				//this.initGrid();
-				console.log('Grid failed to be initialized');
-            } else {
-                this._grid.resetActiveCell();
-                this._grid.setColumns(this._columns);
-            }
-            hasGridStructureChanges = true;
-            if (!columnDefinitionChanges.currentValue || columnDefinitionChanges.currentValue.length === 0) {
-                activeCell = undefined;
-            }
-
-            if (activeCell) {
-                let columnThatContainedActiveCell = columnDefinitionChanges.previousValue[Math.max(activeCell.cell - 1, 0)];
-                let newActiveColumnIndex = columnThatContainedActiveCell ? columnDefinitionChanges.currentValue.findIndex(c => c.id === columnThatContainedActiveCell.id) : -1;
-                activeCell.cell = newActiveColumnIndex !== -1 ? newActiveColumnIndex + 1 : 0;
-            }
-		}
-
-        if (changes['dataRows']
-
-            || (changes['highlightedCells'] && !_.isEqual(changes['highlightedCells'].currentValue, changes['highlightedCells'].previousValue))
-
-            || (changes['blurredColumns'] && !_.isEqual(changes['blurredColumns'].currentValue, changes['blurredColumns'].previousValue))
-
-            || (changes['columnsLoading'] && !_.isEqual(changes['columnsLoading'].currentValue, changes['columnsLoading'].previousValue))) {
-
-            this.setCallbackOnDataRowsChanged();
-
-            this._grid.updateRowCount();
-
-            this._grid.setColumns(this._grid.getColumns());
-
-            this._grid.invalidateAllRows();
-
-			this._grid.render();
-
-            hasGridStructureChanges = true;
-        }
-
-
-
-        if (hasGridStructureChanges) {
-
-            if (activeCell) {
-
-                this._grid.setActiveCell(activeCell.row, activeCell.cell);
-
-            } else {
-
-                this._grid.resetActiveCell();
-
-            }
-
-        }
-
-
-
-        if (wasEditing && hasGridStructureChanges) {
-
-            this._grid.editActiveCell(this._grid.getCellEditor());
-
-        }
-
     }
 
 //my code ends here.
@@ -720,19 +419,4 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	public set ariaRole(value: string) {
 		this._tableContainer.setAttribute('role', value);
 	}
-
-	//Additional public functions here:
-	// Enables editing on the grid
-
-    public enterEditSession(): void {
-        this.changeEditSession(true);
-    }
-
-    // Disables editing on the grid
-
-    public endEditSession(): void {
-        this.changeEditSession(false);
-    }
-
-
 }

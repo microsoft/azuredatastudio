@@ -37,8 +37,9 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { deepClone } from 'vs/base/common/objects';
 
 import { Event, Emitter } from 'vs/base/common/event';
+import { Disposable } from 'vs/base/common/lifecycle';
 
-export const EDITDATA_SELECTOR: string = 'editdata-component';
+export const EDITDATA_SELECTOR: string = 'editdatagridpanel';
 
 // @Component({
 // 	selector: EDITDATA_SELECTOR,
@@ -67,6 +68,11 @@ export class EditDataGridPanel extends GridParentComponent {
 	private firstRender = true;
 	private totalElapsedTimeSpan: number;
 	private complete = false;
+
+	//my fields:
+	private templateHTML: any;
+
+
 	// Current selected cell state
 	private currentCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
 	private currentEditCellValue: string;
@@ -106,26 +112,34 @@ export class EditDataGridPanel extends GridParentComponent {
 		// @Inject(IClipboardService) clipboardService: IClipboardService,
 		// @Inject(IQueryEditorService) queryEditorService: IQueryEditorService,
 		// @Inject(ILogService) logService: ILogService,
-		nativeElement: HTMLElement,
 		params: IEditDataComponentParams,
-		@IInstantiationService private instantiationService?: IInstantiationService,
-		@INotificationService private notificationService?: INotificationService,
-		@IContextMenuService contextMenuService?: IContextMenuService,
-		@IKeybindingService keybindingService?: IKeybindingService,
-		@IContextKeyService contextKeyService?: IContextKeyService,
-		@IConfigurationService configurationService?: IConfigurationService,
-		@IClipboardService clipboardService?: IClipboardService,
-		@IQueryEditorService queryEditorService?: IQueryEditorService,
-		@ILogService logService?: ILogService
+		@IInstantiationService private instantiationService: IInstantiationService,
+		@INotificationService private notificationService: INotificationService,
+		@IContextMenuService contextMenuService: IContextMenuService,
+		@IKeybindingService keybindingService: IKeybindingService,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IConfigurationService configurationService: IConfigurationService,
+		@IClipboardService clipboardService: IClipboardService,
+		@IQueryEditorService queryEditorService: IQueryEditorService,
+		@ILogService logService: ILogService
 	) {
 		super(contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, logService);
-
-
+		this.nativeElement = document.createElement('div');
 		this.nativeElement.className = 'slickgridContainer';
+
+
+
 		this.dataService = params.dataService;
+		console.log(this.dataService);
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
 		params.onRestoreViewState(() => this.restoreViewState());
 		params.onSaveViewState(() => this.saveViewState());
+
+
+		//console.log(this.templateHTML);
+
+
+		//this.onInit();
 	}
 
 	/**
@@ -163,6 +177,15 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		//this.dataService.onAngularLoaded();
 	}
+
+
+	public render(container: HTMLElement): void {
+		this.nativeElement.style.width = '100%';
+		this.nativeElement.style.height = '100%';
+
+		container.appendChild(this.nativeElement);
+	}
+
 
 	protected initShortcuts(shortcuts: { [name: string]: Function }): void {
 		// TODO add any Edit Data-specific shortcuts here

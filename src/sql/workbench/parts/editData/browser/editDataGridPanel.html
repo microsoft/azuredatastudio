@@ -5,7 +5,7 @@
  *--------------------------------------------------------------------------------------------*/
 -->
 
-<div class="fullsize vertBox editdata-component">
+<div class="fullsize vertBox editdatagridpanel">
 	<div id="results" *ngIf="renderedDataSets.length > 0" class="results vertBox scrollable"
 		(onScroll)="onScroll($event)" [class.hidden]="!resultActive">
 		<div class="boxRow content horzBox slickgrid editable" *ngFor="let dataSet of renderedDataSets; let i = index"
