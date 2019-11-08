@@ -113,13 +113,13 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 		return this._flexWrap;
 	}
 
-	private getItemFlex(item: FlexItem): string {
+	public getItemFlex(item: FlexItem): string {
 		return item.config ? item.config.flex : '1 1 auto';
 	}
-	private getItemOrder(item: FlexItem): number {
+	public getItemOrder(item: FlexItem): number {
 		return item.config ? item.config.order : 0;
 	}
-	private getItemStyles(item: FlexItem): { [key: string]: string } {
+	public getItemStyles(item: FlexItem): { [key: string]: string } {
 		return item.config && item.config.CSSStyles ? item.config.CSSStyles : {};
 	}
 }

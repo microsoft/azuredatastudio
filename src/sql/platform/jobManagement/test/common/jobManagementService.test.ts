@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { JobManagementService } from 'sql/platform/jobManagement/common/jobManagementService';
+import * as assert from 'assert';
 
 // TESTS ///////////////////////////////////////////////////////////////////
 suite('Job Management service tests', () => {
@@ -13,5 +14,6 @@ suite('Job Management service tests', () => {
 	test('Construction - Job Service Initialization', () => {
 		// ... Create instance of the service and reder account picker
 		let service = new JobManagementService(undefined);
+		assert(service);
 	});
 });

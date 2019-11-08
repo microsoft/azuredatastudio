@@ -2,16 +2,15 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
+
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import { JobStepData } from '../data/jobStepData';
 import { AgentUtils } from '../agentUtils';
 import { JobData } from '../data/jobData';
 import { AgentDialog } from './agentDialog';
 import { AgentDialogMode } from '../interfaces';
-const path = require('path');
+import * as path from 'path';
 
 const localize = nls.loadMessageBundle();
 
@@ -153,7 +152,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		this.dialog.content = [this.generalTab, this.advancedTab];
 	}
 
-	private createCommands(view, queryProvider: azdata.QueryProvider) {
+	private createCommands(view: azdata.ModelView, queryProvider: azdata.QueryProvider) {
 		this.openButton = view.modelBuilder.button()
 			.withProperties({
 				label: this.OpenCommandText,
@@ -396,9 +395,9 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		});
 	}
 
-	private createRetryCounters(view) {
+	private createRetryCounters(view: azdata.ModelView) {
 		this.retryAttemptsBox = view.modelBuilder.inputBox()
-			.withValidation(component => component.value >= 0)
+			.withValidation(component => Number(component.value) >= 0)
 			.withProperties({
 				inputType: 'number',
 				width: '100%',
@@ -406,7 +405,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 			})
 			.component();
 		this.retryIntervalBox = view.modelBuilder.inputBox()
-			.withValidation(component => component.value >= 0)
+			.withValidation(component => Number(component.value) >= 0)
 			.withProperties({
 				inputType: 'number',
 				width: '100%',
@@ -491,7 +490,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		azdata.window.openDialog(this.fileBrowserDialog);
 	}
 
-	private createTSQLOptions(view) {
+	private createTSQLOptions(view: azdata.ModelView) {
 		this.outputFileBrowserButton = view.modelBuilder.button()
 			.withProperties({ width: '20px', label: '...' }).component();
 		this.outputFileBrowserButton.onDidClick(() => this.openFileBrowserDialog());
@@ -536,7 +535,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		return outputFileForm;
 	}
 
-	protected updateModel() {
+	protected async updateModel(): Promise<void> {
 		this.model.stepName = this.nameTextBox.value;
 		if (!this.model.stepName || this.model.stepName.length === 0) {
 			this.dialog.message = this.dialog.message = { text: this.BlankStepNameErrorText };

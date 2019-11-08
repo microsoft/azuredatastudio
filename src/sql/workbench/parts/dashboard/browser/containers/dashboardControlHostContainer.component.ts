@@ -5,7 +5,7 @@
 
 import 'vs/css!./dashboardControlHostContainer';
 
-import { Component, forwardRef, Input, AfterContentInit, ViewChild, OnChanges } from '@angular/core';
+import { Component, forwardRef, Input, AfterContentInit, ViewChild } from '@angular/core';
 
 import { Event, Emitter } from 'vs/base/common/event';
 

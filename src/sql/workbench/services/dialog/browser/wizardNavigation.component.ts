@@ -41,7 +41,6 @@ export class WizardNavigation implements AfterViewInit {
 
 	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 	constructor(
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IBootstrapParams) private _params: WizardNavigationParams,
 		@Inject(IWorkbenchThemeService) private _themeService: IWorkbenchThemeService) {

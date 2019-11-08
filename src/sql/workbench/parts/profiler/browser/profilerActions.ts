@@ -15,9 +15,7 @@ import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
-import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export class ProfilerConnect extends Action {
 	private static readonly ConnectText = nls.localize('profilerAction.connect', "Connect");
@@ -88,9 +86,7 @@ export class ProfilerCreate extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ICommandService private _commandService: ICommandService,
-		@IProfilerService private _profilerService: IProfilerService,
-		@INotificationService private _notificationService: INotificationService
+		@IProfilerService private _profilerService: IProfilerService
 	) {
 		super(id, label, 'add');
 	}

@@ -22,7 +22,7 @@ function convertCredsToJson(creds: string): { credentials: {} } {
 	if (!creds) {
 		return undefined;
 	}
-	let credObj = { 'credentials': {} };
+	let credObj: { 'credentials': { [key: string]: any } } = { 'credentials': {} };
 	let pairs = creds.split(',');
 	let validPairs: string[] = [];
 	for (let i = 0; i < pairs.length; i++) {
@@ -149,7 +149,7 @@ export class MountHdfsDialog extends HdfsDialogBase<MountHdfsProperties, void> {
 	private credentialsInputBox: azdata.InputBoxComponent;
 
 	constructor(model: MountHdfsDialogModel) {
-		super(localize('mount.dialog.title', "Mount HDFS Folder"), model);
+		super(localize('mount.dialog.title', "Mount HDFS Folder (preview)"), model);
 	}
 
 	protected getMainSectionComponents(): (azdata.FormComponentGroup | azdata.FormComponent)[] {

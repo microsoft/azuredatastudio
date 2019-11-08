@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Action, IActionViewItem, IActionRunner } from 'vs/base/common/actions';
-import { DisposableStore, Disposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -16,6 +16,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import Severity from 'vs/base/common/severity';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { firstIndex } from 'vs/base/common/arrays';
 const $ = dom.$;
 
 /**
@@ -132,7 +133,6 @@ export class ChangeMaxRowsAction extends EditDataAction {
 	public static ID = 'changeMaxRowsAction';
 
 	constructor(editor: EditDataEditor,
-		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IConnectionManagementService _connectionManagementService: IConnectionManagementService
 	) {
 		super(editor, ChangeMaxRowsAction.ID, undefined, _connectionManagementService);
@@ -157,7 +157,6 @@ export class ChangeMaxRowsActionItem extends Disposable implements IActionViewIt
 	private container: HTMLElement;
 	private start: HTMLElement;
 	private selectBox: SelectBox;
-	private context: any;
 	private _options: string[];
 	private _currentOptionsIndex: number;
 
@@ -182,7 +181,6 @@ export class ChangeMaxRowsActionItem extends Disposable implements IActionViewIt
 	}
 
 	public setActionContext(context: any): void {
-		this.context = context;
 	}
 
 	public isEnabled(): boolean {
@@ -198,7 +196,7 @@ export class ChangeMaxRowsActionItem extends Disposable implements IActionViewIt
 	}
 
 	public set setCurrentOptionIndex(selection: number) {
-		this._currentOptionsIndex = this._options.findIndex(x => x === selection.toString());
+		this._currentOptionsIndex = firstIndex(this._options, x => x === selection.toString());
 		this._refreshOptions();
 	}
 
@@ -216,7 +214,7 @@ export class ChangeMaxRowsActionItem extends Disposable implements IActionViewIt
 
 	private _registerListeners(): void {
 		this._register(this.selectBox.onDidSelect(selection => {
-			this._currentOptionsIndex = this._options.findIndex(x => x === selection.selected);
+			this._currentOptionsIndex = firstIndex(this._options, x => x === selection.selected);
 			this._editor.editDataInput.onRowDropDownSet(Number(selection.selected));
 		}));
 		this._register(attachSelectBoxStyler(this.selectBox, this._themeService));
@@ -234,7 +232,6 @@ export class ShowQueryPaneAction extends EditDataAction {
 	private readonly closeSqlLabel = nls.localize('editData.closeSql', "Close SQL Pane");
 
 	constructor(editor: EditDataEditor,
-		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IConnectionManagementService _connectionManagementService: IConnectionManagementService
 	) {
 		super(editor, ShowQueryPaneAction.ID, ShowQueryPaneAction.EnabledClass, _connectionManagementService);

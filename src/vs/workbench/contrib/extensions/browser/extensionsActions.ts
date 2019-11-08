@@ -81,7 +81,7 @@ const promptDownloadManually = (extension: IGalleryExtension | undefined, messag
 	if (!extension || error.name === INSTALL_ERROR_INCOMPATIBLE || error.name === INSTALL_ERROR_MALICIOUS || !productService.extensionsGallery) {
 		return Promise.reject(error);
 	} else {
-		const downloadUrl = `${productService.extensionsGallery.serviceUrl}/publishers/${extension.publisher}/vsextensions/${extension.name}/${extension.version}/vspackage`;
+		const downloadUrl = (extension.assets.downloadPage && extension.assets.downloadPage.uri) || extension.assets.download.uri; // {{SQL CARBON EDIT}} Use the URI directly since we don't have a marketplace hosting the packages
 		notificationService.prompt(Severity.Error, message, [{
 			label: localize('download', "Download Manually"),
 			run: () => openerService.open(URI.parse(downloadUrl)).then(() => {

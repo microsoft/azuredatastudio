@@ -36,9 +36,6 @@ export const ROW_HEIGHT: number = 45;
 
 export class ProxiesViewComponent extends JobManagementView implements OnInit, OnDestroy {
 
-	private NewProxyText: string = nls.localize('jobProxyToolbar-NewItem', "New Proxy");
-	private RefreshText: string = nls.localize('jobProxyToolbar-Refresh', "Refresh");
-
 	private columns: Array<Slick.Column<any>> = [
 		{
 			name: nls.localize('jobProxiesView.accountName', "Account Name"),
@@ -61,7 +58,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 	};
 
 	private dataView: any;
-	private _isCloud: boolean;
+	public _isCloud: boolean;
 	private _proxiesCacheObject: ProxiesCacheObject;
 
 	public proxies: azdata.AgentProxyInfo[];
@@ -72,7 +69,6 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(ICommandService) private _commandService: ICommandService,

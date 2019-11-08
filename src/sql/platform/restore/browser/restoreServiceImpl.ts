@@ -6,9 +6,7 @@
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as types from 'vs/base/common/types';
-
 import * as azdata from 'azdata';
-
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IRestoreService, IRestoreDialogController, TaskExecutionMode } from 'sql/platform/restore/common/restoreService';
 import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
@@ -26,6 +24,7 @@ import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilitie
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { invalidProvider } from 'sql/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
+import { find } from 'vs/base/common/arrays';
 
 export class RestoreService implements IRestoreService {
 
@@ -64,7 +63,7 @@ export class RestoreService implements IRestoreService {
 		return new Promise<azdata.RestoreResponse>((resolve, reject) => {
 			const providerResult = this.getProvider(connectionUri);
 			if (providerResult) {
-				TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.RestoreRequested, { provider: providerResult.providerName });
+				TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.RestoreRequested, { provider: providerResult.providerName }).catch((e) => this.logService.error(e));
 				providerResult.provider.restore(connectionUri, restoreInfo).then(result => {
 					resolve(result);
 				}, error => {
@@ -149,7 +148,8 @@ export class RestoreDialogController implements IRestoreDialogController {
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
-		@ITaskService private _taskService: ITaskService
+		@ITaskService private _taskService: ITaskService,
+		@ILogService private _logService: ILogService,
 	) {
 	}
 
@@ -165,11 +165,14 @@ export class RestoreDialogController implements IRestoreDialogController {
 			const self = this;
 			let connectionProfile = self._connectionService.getConnectionProfile(self._ownerUri);
 			let activeNode = self._objectExplorerService.getObjectExplorerNode(connectionProfile);
-			this._taskService.onTaskComplete(response => {
+			this._taskService.onTaskComplete(async response => {
 				if (result.taskId === response.id && this.isSuccessfulRestore(response) && activeNode) {
-					self._objectExplorerService.refreshTreeNode(activeNode.getSession(), activeNode).then(result => {
-						self._objectExplorerService.getServerTreeView().refreshTree();
-					});
+					try {
+						await self._objectExplorerService.refreshTreeNode(activeNode.getSession(), activeNode);
+						await self._objectExplorerService.getServerTreeView().refreshTree();
+					} catch (e) {
+						this._logService.error(e);
+					}
 				}
 			});
 			let restoreDialog = this._restoreDialogs[this._currentProvider];
@@ -270,7 +273,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 		let providerCapabilities = this._capabilitiesService.getLegacyCapabilities(providerId);
 
 		if (providerCapabilities) {
-			let restoreMetadataProvider = providerCapabilities.features.find(f => f.featureName === this._restoreFeature);
+			let restoreMetadataProvider = find(providerCapabilities.features, f => f.featureName === this._restoreFeature);
 			if (restoreMetadataProvider) {
 				options = restoreMetadataProvider.optionsMetadata;
 			}
@@ -279,7 +282,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 	}
 
 	private handleOnClose(): void {
-		this._connectionService.disconnect(this._ownerUri);
+		this._connectionService.disconnect(this._ownerUri).catch((e) => this._logService.error(e));
 	}
 
 	private handleOnCancel(): void {

@@ -14,11 +14,9 @@ import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { TreeComponentRenderer } from 'sql/workbench/browser/modelComponents/treeComponentRenderer';
 import { TreeComponentDataSource } from 'sql/workbench/browser/modelComponents/treeDataSource';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { DefaultFilter, DefaultAccessibilityProvider, DefaultController } from 'vs/base/parts/tree/browser/treeDefaults';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -27,6 +25,7 @@ import { TreeViewDataProvider } from 'sql/workbench/browser/modelComponents/tree
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { values } from 'vs/base/common/collections';
 
 class Root implements ITreeComponentItem {
 	label = {
@@ -54,10 +53,8 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {
@@ -90,7 +87,7 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 		}
 
 		if (this._tree) {
-			for (const item of Object.values(itemsToRefreshByHandle)) {
+			for (const item of values(itemsToRefreshByHandle)) {
 				this._tree.refresh(<ITreeComponentItem>item);
 			}
 		}

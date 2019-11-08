@@ -39,7 +39,7 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 	@ViewChild('propertiesClass') private _propertiesClass: DashboardWidgetWrapper;
 	@ContentChild(ScrollableDirective) private _scrollable: ScrollableDirective;
 
-	private ScrollbarVisibility = ScrollbarVisibility;
+	public ScrollbarVisibility = ScrollbarVisibility;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,

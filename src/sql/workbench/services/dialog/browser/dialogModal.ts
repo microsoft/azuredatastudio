@@ -31,7 +31,6 @@ export class DialogModal extends Modal {
 	private _onCancel = new Emitter<void>();
 
 	// Buttons
-	private _cancelButton: Button;
 	private _doneButton: Button;
 
 	constructor(
@@ -75,7 +74,7 @@ export class DialogModal extends Modal {
 		this._dialog.onValidityChanged(valid => {
 			this._doneButton.enabled = valid && this._dialog.okButton.enabled;
 		});
-		this._cancelButton = this.addDialogButton(this._dialog.cancelButton, () => this.cancel(), false);
+		this.addDialogButton(this._dialog.cancelButton, () => this.cancel(), false);
 		this._dialog.cancelButton.registerClickEvent(this._onCancel.event);
 
 		let messageChangeHandler = (message: DialogMessage) => {

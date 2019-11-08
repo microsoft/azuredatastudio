@@ -3,9 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
-import { Observer } from 'rxjs/Observer';
 
 import { EditUpdateCellResult, EditSubsetResult, EditCreateRowResult } from 'azdata';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';

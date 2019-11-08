@@ -43,9 +43,9 @@ export abstract class BasePage {
 	 * Sets up a navigation validator.
 	 * This will be called right before onPageEnter().
 	 */
-	public abstract setupNavigationValidator();
+	public abstract setupNavigationValidator(): void;
 
-	protected async getServerValues(): Promise<{ connection, displayName, name }[]> {
+	protected async getServerValues(): Promise<{ connection: azdata.connection.ConnectionProfile, displayName: string, name: string }[]> {
 		let cons = await azdata.connection.getConnections(/* activeConnectionsOnly */ true);
 		// This user has no active connections ABORT MISSION
 		if (!cons || cons.length === 0) {
@@ -105,7 +105,7 @@ export abstract class BasePage {
 		return values;
 	}
 
-	protected async getDatabaseValues(): Promise<{ displayName, name }[]> {
+	protected async getDatabaseValues(): Promise<{ displayName: string, name: string }[]> {
 		let idx = -1;
 		let count = -1;
 		let values = (await azdata.connection.listDatabases(this.model.server.connectionId)).map(db => {

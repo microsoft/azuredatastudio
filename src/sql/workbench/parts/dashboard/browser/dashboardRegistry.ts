@@ -5,7 +5,7 @@
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IConfigurationRegistry, Extensions as ConfigurationExtension } from 'vs/platform/configuration/common/configurationRegistry';
-import { IJSONSchema, IJSONSchemaMap } from 'vs/base/common/jsonSchema';
+import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 import { IExtensionPointUser, ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 
@@ -13,6 +13,7 @@ import { ProviderProperties } from 'sql/workbench/parts/dashboard/browser/widget
 import { DATABASE_DASHBOARD_TABS } from 'sql/workbench/parts/dashboard/browser/pages/databaseDashboardPage.contribution';
 import { SERVER_DASHBOARD_TABS } from 'sql/workbench/parts/dashboard/browser/pages/serverDashboardPage.contribution';
 import { DASHBOARD_CONFIG_ID, DASHBOARD_TABS_KEY_PROPERTY } from 'sql/workbench/parts/dashboard/browser/pages/dashboardPageContribution';
+import { find } from 'vs/base/common/arrays';
 
 export const Extensions = {
 	DashboardContributions: 'dashboard.contributions'
@@ -24,7 +25,7 @@ export interface IDashboardTab {
 	provider: string | string[];
 	publisher: string;
 	description?: string;
-	container?: object;
+	container?: { [key: string]: any };
 	when?: string;
 	alwaysShow?: boolean;
 	isHomeTab?: boolean;
@@ -41,7 +42,6 @@ class DashboardRegistry implements IDashboardRegistry {
 	private _properties = new Map<string, ProviderProperties>();
 	private _tabs = new Array<IDashboardTab>();
 	private _configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtension.Configuration);
-	private _dashboardTabContentSchemaProperties: IJSONSchemaMap = {};
 
 	/**
 	 * Register a dashboard widget
@@ -57,7 +57,7 @@ class DashboardRegistry implements IDashboardRegistry {
 
 	public registerTab(tab: IDashboardTab): void {
 		this._tabs.push(tab);
-		let dashboardConfig = this._configurationRegistry.getConfigurations().find(c => c.id === DASHBOARD_CONFIG_ID);
+		let dashboardConfig = find(this._configurationRegistry.getConfigurations(), c => c.id === DASHBOARD_CONFIG_ID);
 
 		if (dashboardConfig) {
 			let dashboardDatabaseTabProperty = (<IJSONSchema>dashboardConfig.properties[DATABASE_DASHBOARD_TABS].items).properties[DASHBOARD_TABS_KEY_PROPERTY];

@@ -64,7 +64,7 @@ export interface DisplayProperty {
 export class PropertiesWidgetComponent extends DashboardWidget implements IDashboardWidget, OnInit {
 	private _connection: ConnectionManagementInfo;
 	private _databaseInfo: DatabaseInfo;
-	private _clipped: boolean;
+	public _clipped: boolean;
 	private properties: Array<DisplayProperty>;
 	private _hasInit = false;
 

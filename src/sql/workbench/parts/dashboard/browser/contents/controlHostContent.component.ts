@@ -5,10 +5,9 @@
 
 import 'vs/css!./controlHostContent';
 
-import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
+import { Component, forwardRef, Input, Inject, ChangeDetectorRef, ViewChild } from '@angular/core';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { IDisposable } from 'vs/base/common/lifecycle';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 
 import * as azdata from 'azdata';
@@ -27,7 +26,6 @@ export class ControlHostContent {
 	private _onMessage = new Emitter<string>();
 	public readonly onMessage: Event<string> = this._onMessage.event;
 
-	private _onMessageDisposable: IDisposable;
 	private _type: string;
 
 	/* Children components */
@@ -35,8 +33,7 @@ export class ControlHostContent {
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: CommonServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
 	) {
 	}
 

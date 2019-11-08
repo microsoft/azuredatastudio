@@ -15,6 +15,7 @@ import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Color } from 'vs/base/common/color';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import * as map from 'vs/base/common/map';
+import { firstIndex } from 'vs/base/common/arrays';
 
 export interface ITabbedPanelStyles {
 	titleActiveForeground?: Color;
@@ -171,11 +172,11 @@ export class TabbedPanel extends Disposable {
 				e.stopImmediatePropagation();
 			}
 			if (event.equals(KeyCode.RightArrow)) {
-				let currentIndex = this._tabOrder.findIndex(x => x === tab.tab.identifier);
+				let currentIndex = firstIndex(this._tabOrder, x => x === tab.tab.identifier);
 				this.focusNextTab(currentIndex + 1);
 			}
 			if (event.equals(KeyCode.LeftArrow)) {
-				let currentIndex = this._tabOrder.findIndex(x => x === tab.tab.identifier);
+				let currentIndex = firstIndex(this._tabOrder, x => x === tab.tab.identifier);
 				this.focusNextTab(currentIndex - 1);
 			}
 			if (event.equals(KeyCode.Tab)) {
@@ -191,8 +192,7 @@ export class TabbedPanel extends Disposable {
 
 		const insertBefore = !isUndefinedOrNull(index) ? this.tabList.children.item(index) : undefined;
 		if (insertBefore) {
-			this._tabOrder.copyWithin(index! + 1, index!);
-			this._tabOrder[index!] = tab.tab.identifier;
+			this._tabOrder.splice(index!, 0, tab.tab.identifier);
 			this.tabList.insertBefore(tabHeaderElement, insertBefore);
 		} else {
 			this.tabList.append(tabHeaderElement);
@@ -267,7 +267,7 @@ export class TabbedPanel extends Disposable {
 		}
 		actualTab.disposables.dispose();
 		this._tabMap.delete(tab);
-		let index = this._tabOrder.findIndex(t => t === tab);
+		let index = firstIndex(this._tabOrder, t => t === tab);
 		this._tabOrder.splice(index, 1);
 		if (this._shownTabId === tab) {
 			this._shownTabId = undefined;
