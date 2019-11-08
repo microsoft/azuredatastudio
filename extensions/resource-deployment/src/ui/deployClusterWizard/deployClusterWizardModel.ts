@@ -2,13 +2,15 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
-import { Model } from '../model';
-import * as VariableNames from './constants';
-import { BigDataClusterDeploymentProfile, DataResource, SqlServerMasterResource, HdfsResource } from '../../services/bigDataClusterDeploymentProfile';
-import { BdcDeploymentType } from '../../interfaces';
 import { EOL } from 'os';
 import { delimiter } from 'path';
+import { BdcDeploymentType } from '../../interfaces';
+import { BigDataClusterDeploymentProfile, DataResource, HdfsResource, SqlServerMasterResource } from '../../services/bigDataClusterDeploymentProfile';
+import { KubeCtlToolName } from '../../services/tools/kubeCtlTool';
+import { getRuntimeBinaryPathEnvironmentVariableName } from '../../utils';
+import { Model } from '../model';
+import * as VariableNames from './constants';
+
 
 export class DeployClusterWizardModel extends Model {
 	constructor(public deploymentTarget: BdcDeploymentType) {
@@ -163,6 +165,8 @@ export class DeployClusterWizardModel extends Model {
 			statements.push(`os.environ["DOCKER_USERNAME"] = '${this.getStringValue(VariableNames.DockerUsername_VariableName)}'`);
 			statements.push(`os.environ["DOCKER_PASSWORD"] = os.environ["${VariableNames.DockerPassword_VariableName}"]`);
 		}
+		const kubeCtlEnvVarName: string = getRuntimeBinaryPathEnvironmentVariableName(KubeCtlToolName);
+		statements.push(`os.environ["${kubeCtlEnvVarName}"] = "${this.escapeForNotebookCodeCell(process.env[kubeCtlEnvVarName]!)}"`);
 		statements.push(`os.environ["PATH"] = os.environ["PATH"] + "${delimiter}" + "${this.escapeForNotebookCodeCell(process.env[VariableNames.ToolsInstallPath]!)}"`);
 		statements.push(`print('Variables have been set successfully.')`);
 		return statements.map(line => line + EOL);
