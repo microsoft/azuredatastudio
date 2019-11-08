@@ -8,14 +8,14 @@ import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase'
 import { AzureResourceDatabaseServer } from '../../interfaces';
 
 
-export interface DbServerGraphData extends GraphData {
+interface DbServerGraphData extends GraphData {
 	properties: {
 		fullyQualifiedDomainName: string;
 		administratorLogin: string;
 	};
 }
 
-export const serversQuery = 'where type == "microsoft.dbforpostgresql/servers"';
+const serversQuery = 'where type == "microsoft.dbforpostgresql/servers"';
 
 export class PostgresServerService extends ResourceServiceBase<DbServerGraphData, AzureResourceDatabaseServer> {
 

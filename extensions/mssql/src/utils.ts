@@ -107,7 +107,7 @@ export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileNa
 	return launchArgs;
 }
 
-export function ensure(target: object, key: string): any {
+export function ensure(target: { [key: string]: any }, key: string): any {
 	if (target[key] === void 0) {
 		target[key] = {} as any;
 	}

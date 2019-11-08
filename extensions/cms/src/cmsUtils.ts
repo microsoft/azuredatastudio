@@ -16,7 +16,7 @@ const mssqlProvider: string = 'MSSQL';
 const CredentialNamespace = 'cmsCredentials';
 const sqlLoginAuthType: string = 'SqlLogin';
 
-export interface CreateCmsResult {
+interface CreateCmsResult {
 	listRegisteredServersResult: mssql.ListRegisteredServersResult;
 	connection: azdata.connection.Connection;
 	ownerUri: string;

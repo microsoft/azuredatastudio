@@ -15,17 +15,10 @@ import { BdcDashboard } from './bigDataCluster/dialog/bdcDashboard';
 import { BdcDashboardModel, BdcDashboardOptions } from './bigDataCluster/dialog/bdcDashboardModel';
 import { MountHdfsDialogModel as MountHdfsModel, MountHdfsProperties, MountHdfsDialog, DeleteMountDialog, DeleteMountModel, RefreshMountDialog, RefreshMountModel } from './bigDataCluster/dialog/mountHdfsDialog';
 import { getControllerEndpoint } from './bigDataCluster/utils';
+import * as commands from './commands';
 import { HdfsDialogCancelledError } from './bigDataCluster/dialog/hdfsDialogBase';
 
 const localize = nls.loadMessageBundle();
-
-export const AddControllerCommand = 'bigDataClusters.command.addController';
-export const DeleteControllerCommand = 'bigDataClusters.command.deleteController';
-export const RefreshControllerCommand = 'bigDataClusters.command.refreshController';
-export const ManageControllerCommand = 'bigDataClusters.command.manageController';
-export const MountHdfsCommand = 'bigDataClusters.command.mount';
-export const RefreshMountCommand = 'bigDataClusters.command.refreshmount';
-export const DeleteMountCommand = 'bigDataClusters.command.deletemount';
 
 const endpointNotFoundError = localize('mount.error.endpointNotFound', "Controller endpoint information was not found");
 
@@ -46,22 +39,22 @@ function registerTreeDataProvider(treeDataProvider: ControllerTreeDataProvider):
 }
 
 function registerCommands(context: vscode.ExtensionContext, treeDataProvider: ControllerTreeDataProvider): void {
-	vscode.commands.registerCommand(AddControllerCommand, (node?: TreeNode) => {
-		runThrottledAction(AddControllerCommand, () => addBdcController(treeDataProvider, node));
+	vscode.commands.registerCommand(commands.AddControllerCommand, (node?: TreeNode) => {
+		runThrottledAction(commands.AddControllerCommand, () => addBdcController(treeDataProvider, node));
 	});
 
-	vscode.commands.registerCommand(DeleteControllerCommand, async (node: TreeNode) => {
+	vscode.commands.registerCommand(commands.DeleteControllerCommand, async (node: TreeNode) => {
 		await deleteBdcController(treeDataProvider, node);
 	});
 
-	vscode.commands.registerCommand(RefreshControllerCommand, (node: TreeNode) => {
+	vscode.commands.registerCommand(commands.RefreshControllerCommand, (node: TreeNode) => {
 		if (!node) {
 			return;
 		}
 		treeDataProvider.notifyNodeChanged(node);
 	});
 
-	vscode.commands.registerCommand(ManageControllerCommand, async (info: ControllerNode | BdcDashboardOptions, addOrUpdateController: boolean = false) => {
+	vscode.commands.registerCommand(commands.ManageControllerCommand, async (info: ControllerNode | BdcDashboardOptions, addOrUpdateController: boolean = false) => {
 		const title: string = `${localize('bdc.dashboard.title', "Big Data Cluster Dashboard (preview) -")} ${ControllerNode.toIpAndPort(info.url)}`;
 		if (addOrUpdateController) {
 			// The info may be wrong, but if it is then we'll prompt to reconnect when the dashboard is opened
@@ -78,13 +71,13 @@ function registerCommands(context: vscode.ExtensionContext, treeDataProvider: Co
 		dashboard.showDashboard();
 	});
 
-	vscode.commands.registerCommand(MountHdfsCommand, e => mountHdfs(e).catch(error => {
+	vscode.commands.registerCommand(commands.MountHdfsCommand, e => mountHdfs(e).catch(error => {
 		vscode.window.showErrorMessage(error instanceof Error ? error.message : error);
 	}));
-	vscode.commands.registerCommand(RefreshMountCommand, e => refreshMount(e).catch(error => {
+	vscode.commands.registerCommand(commands.RefreshMountCommand, e => refreshMount(e).catch(error => {
 		vscode.window.showErrorMessage(error instanceof Error ? error.message : error);
 	}));
-	vscode.commands.registerCommand(DeleteMountCommand, e => deleteMount(e).catch(error => {
+	vscode.commands.registerCommand(commands.DeleteMountCommand, e => deleteMount(e).catch(error => {
 		vscode.window.showErrorMessage(error instanceof Error ? error.message : error);
 	}));
 }

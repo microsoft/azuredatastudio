@@ -35,7 +35,7 @@ export class StatusProvider {
 				if (args && args.ownerUri && args.profile) {
 					let queryDocument = await azdata.queryeditor.getQueryDocument(args.ownerUri);
 					if (queryDocument) {
-						let connectionOptions: Map<string, any> = new Map<string, any>();
+						let connectionOptions: { [key: string]: any } = {};
 						connectionOptions['providerName'] = LiveShareProviderId;
 						connectionOptions['serverName'] = args.profile.options['server'];
 						connectionOptions['databaseName'] = args.profile.options['database'];
