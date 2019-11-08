@@ -15,6 +15,7 @@ import { BdcDashboard } from './bigDataCluster/dialog/bdcDashboard';
 import { BdcDashboardModel, BdcDashboardOptions } from './bigDataCluster/dialog/bdcDashboardModel';
 import { MountHdfsDialogModel as MountHdfsModel, MountHdfsProperties, MountHdfsDialog, DeleteMountDialog, DeleteMountModel, RefreshMountDialog, RefreshMountModel } from './bigDataCluster/dialog/mountHdfsDialog';
 import { getControllerEndpoint } from './bigDataCluster/utils';
+import { HdfsDialogCancelledError } from './bigDataCluster/dialog/hdfsDialogBase';
 
 const localize = nls.loadMessageBundle();
 
@@ -92,7 +93,14 @@ async function mountHdfs(explorerContext?: azdata.ObjectExplorerContext): Promis
 	const mountProps = await getMountProps(explorerContext);
 	if (mountProps) {
 		const dialog = new MountHdfsDialog(new MountHdfsModel(mountProps));
-		await dialog.showDialog();
+		try {
+			await dialog.showDialog();
+		} catch (error) {
+			if (!(error instanceof HdfsDialogCancelledError)) {
+				throw error;
+			}
+		}
+
 	}
 }
 
