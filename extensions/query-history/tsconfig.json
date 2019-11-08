@@ -9,10 +9,8 @@
 		"typeRoots": [
 			"./node_modules/@types"
 		],
-		"sourceMap": true,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
-		"moduleResolution": "node",
 		"noUnusedParameters": false,
 	},
 	"exclude": [

@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as vscode from 'vscode';
 import TelemetryReporter from 'vscode-extension-telemetry';
 
@@ -17,21 +16,6 @@ export interface ITelemetryEventProperties {
 
 export interface ITelemetryEventMeasures {
 	[key: string]: number;
-}
-
-/**
- * Filters error paths to only include source files. Exported to support testing
- */
-export function filterErrorPath(line: string): string {
-	if (line) {
-		let values: string[] = line.split('/out/');
-		if (values.length <= 1) {
-			// Didn't match expected format
-			return line;
-		} else {
-			return values[1];
-		}
-	}
 }
 
 export class Telemetry {

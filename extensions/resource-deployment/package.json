@@ -359,6 +359,7 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
+    "@types/node": "10",
     "@types/yamljs": "0.2.30",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",

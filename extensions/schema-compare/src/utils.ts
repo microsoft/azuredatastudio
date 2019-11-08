@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
+
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../mssql';
@@ -14,7 +14,7 @@ export interface IPackageInfo {
 	aiKey: string;
 }
 
-export function getPackageInfo(packageJson: any): IPackageInfo {
+export function getPackageInfo(packageJson?: any): IPackageInfo | undefined {
 	if (packageJson) {
 		return {
 			name: packageJson.name,
@@ -22,6 +22,7 @@ export function getPackageInfo(packageJson: any): IPackageInfo {
 			aiKey: packageJson.aiKey
 		};
 	}
+	return undefined;
 }
 
 /**
@@ -48,7 +49,7 @@ export function getEndpointName(endpoint: mssql.SchemaCompareEndpointInfo): stri
 
 	if (endpoint.endpointType === mssql.SchemaCompareEndpointType.Database) {
 		if (!endpoint.serverName && endpoint.connectionDetails) {
-			endpoint.serverName = endpoint.connectionDetails['serverName'];
+			endpoint.serverName = endpoint.connectionDetails.options['serverName'];
 		}
 		return `${endpoint.serverName}.${endpoint.databaseName}`;
 	} else {
@@ -58,13 +59,13 @@ export function getEndpointName(endpoint: mssql.SchemaCompareEndpointInfo): stri
 
 function connectionInfoToConnectionProfile(details: azdata.ConnectionInfo): azdata.IConnectionProfile {
 	return {
-		serverName: details['serverName'],
-		databaseName: details['databaseName'],
-		authenticationType: details['authenticationType'],
+		serverName: details.options['serverName'],
+		databaseName: details.options['databaseName'],
+		authenticationType: details.options['authenticationType'],
 		providerName: 'MSSQL',
 		connectionName: '',
-		userName: details['userName'],
-		password: details['password'],
+		userName: details.options['userName'],
+		password: details.options['password'],
 		savePassword: false,
 		groupFullName: undefined,
 		saveProfile: true,

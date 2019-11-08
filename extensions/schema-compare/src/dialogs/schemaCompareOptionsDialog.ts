@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
@@ -263,8 +262,8 @@ export class SchemaCompareOptionsDialog {
 	private descriptionText: azdata.TextComponent;
 	private optionsTable: azdata.TableComponent;
 	private objectsTable: azdata.TableComponent;
-	private optionsLookup = {};
-	private objectsLookup = {};
+	private optionsLookup: { [key: string]: boolean } = {};
+	private objectsLookup: { [key: string]: boolean } = {};
 	private disposableListeners: vscode.Disposable[] = [];
 
 	private excludedObjectTypes: mssql.SchemaObjectType[] = [];
@@ -615,8 +614,8 @@ export class SchemaCompareOptionsDialog {
 		});
 	}
 
-	private getOptionsData(): string[][] {
-		let data = [];
+	private getOptionsData(): [boolean, string][] {
+		let data: [boolean, string][] = [];
 		this.optionsLookup = {};
 		this.optionsLabels.forEach(l => {
 			let checked: boolean = this.GetSchemaCompareOptionUtil(l);
@@ -626,8 +625,8 @@ export class SchemaCompareOptionsDialog {
 		return data;
 	}
 
-	private getObjectsData(): string[][] {
-		let data = [];
+	private getObjectsData(): [boolean, string][] {
+		let data: [boolean, string][] = [];
 		this.objectsLookup = {};
 		this.objectTypeLabels.forEach(l => {
 			let checked: boolean = this.GetSchemaCompareIncludedObjectsUtil(l);
@@ -876,7 +875,7 @@ export class SchemaCompareOptionsDialog {
 		}
 	}
 
-	private GetSchemaCompareOptionUtil(label): boolean {
+	private GetSchemaCompareOptionUtil(label: string): boolean {
 		switch (label) {
 			case SchemaCompareOptionsDialog.IgnoreTableOptions:
 				return this.deploymentOptions.ignoreTableOptions;
@@ -1116,7 +1115,7 @@ export class SchemaCompareOptionsDialog {
 		this.deploymentOptions.excludeObjectTypes = this.excludedObjectTypes;
 	}
 
-	private GetSchemaCompareIncludedObjectsUtil(label): boolean {
+	private GetSchemaCompareIncludedObjectsUtil(label: string): boolean {
 		switch (label) {
 			case SchemaCompareOptionsDialog.Aggregates:
 				return !isNullOrUndefined(this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Aggregates)) ? false : true;
@@ -1596,7 +1595,7 @@ export class SchemaCompareOptionsDialog {
 		}
 	}
 
-	private GetDescription(label: string): string {
+	private GetDescription(label: string): string | undefined {
 		switch (label) {
 			case SchemaCompareOptionsDialog.IgnoreTableOptions:
 				return SchemaCompareOptionsDialog.descriptionIgnoreTableOptions;
@@ -1825,6 +1824,9 @@ export class SchemaCompareOptionsDialog {
 
 			case SchemaCompareOptionsDialog.IgnoreColumnOrder:
 				return SchemaCompareOptionsDialog.descriptionIgnoreColumnOrder;
+
+			default:
+				return undefined;
 		}
 	}
 }

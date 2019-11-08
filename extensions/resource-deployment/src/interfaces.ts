@@ -112,10 +112,6 @@ export function instanceOfNotebookBasedDialogInfo(obj: any): obj is NotebookBase
 	return obj && 'notebook' in obj;
 }
 
-export function instanceOfCommandBasedDialogInfo(obj: any): obj is CommandBasedDialogInfo {
-	return obj && 'command' in obj;
-}
-
 export interface DialogInfoBase {
 	title: string;
 	name: string;

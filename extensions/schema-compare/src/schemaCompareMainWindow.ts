@@ -79,9 +79,9 @@ export class SchemaCompareMainWindow {
 
 	constructor(private schemaCompareService?: mssql.ISchemaCompareService, private extensionContext?: vscode.ExtensionContext) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
-		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Delete] = localize('schemaCompare.deleteAction', "Delete");
-		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Change] = localize('schemaCompare.changeAction', "Change");
-		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', "Add");
+		this.SchemaCompareActionMap.set(mssql.SchemaUpdateAction.Delete, localize('schemaCompare.deleteAction', "Delete"));
+		this.SchemaCompareActionMap.set(mssql.SchemaUpdateAction.Change, localize('schemaCompare.changeAction', "Change"));
+		this.SchemaCompareActionMap.set(mssql.SchemaUpdateAction.Add, localize('schemaCompare.addAction', "Add"));
 
 		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', "Schema Compare"), { retainContextWhenHidden: true, supportsSave: true, resourceName: schemaCompareResourceName });
 	}
@@ -519,8 +519,8 @@ export class SchemaCompareMainWindow {
 		}
 	}
 
-	private getAllDifferences(differences: mssql.DiffEntry[]): string[][] {
-		let data = [];
+	private getAllDifferences(differences: mssql.DiffEntry[]): Array<string | boolean>[] {
+		let data: Array<string | boolean>[] = [];
 		let finalDifferences: mssql.DiffEntry[] = [];
 		if (differences) {
 			differences.forEach(difference => {
@@ -528,7 +528,7 @@ export class SchemaCompareMainWindow {
 					if ((difference.sourceValue !== null && difference.sourceValue.length > 0) || (difference.targetValue !== null && difference.targetValue.length > 0)) {
 						finalDifferences.push(difference); // Add only non-null changes to ensure index does not mismatch between dictionay and UI - #6234
 						let state: boolean = this.shouldDiffBeIncluded(difference);
-						data.push([difference.name, this.createName(difference.sourceValue), state, this.SchemaCompareActionMap[difference.updateAction], this.createName(difference.targetValue)]);
+						data.push([difference.name, this.createName(difference.sourceValue), state, this.SchemaCompareActionMap.get(difference.updateAction), this.createName(difference.targetValue)]);
 					}
 				}
 			});
@@ -1043,7 +1043,7 @@ export class SchemaCompareMainWindow {
 	 * Converts excluded diff entries into object ids which are needed to save them in an scmp
 	*/
 	private convertExcludesToObjectIds(excludedDiffEntries: Map<string, mssql.DiffEntry>): mssql.SchemaCompareObjectId[] {
-		let result = [];
+		let result: mssql.SchemaCompareObjectId[] = [];
 		excludedDiffEntries.forEach((value: mssql.DiffEntry) => {
 			result.push({
 				nameParts: value.sourceValue ? value.sourceValue : value.targetValue,

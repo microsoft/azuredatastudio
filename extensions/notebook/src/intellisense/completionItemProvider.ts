@@ -189,7 +189,7 @@ interface IRelativePosition {
 }
 
 
-export interface INewIntellisenseInfo {
+interface INewIntellisenseInfo {
 	editorUri: string;
 	cell: nb.NotebookCell;
 	notebook: nb.NotebookDocument;

@@ -2,12 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as os from 'os';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { promises as fs } from 'fs';
 import { Telemetry } from '../telemetry';
@@ -461,9 +459,9 @@ export class SchemaCompareDialog {
 	private async shouldEnableOkayButton(): Promise<boolean> {
 
 		let sourcefilled = (this.sourceIsDacpac && await this.existsDacpac(this.sourceTextBox.value))
-			|| (!this.sourceIsDacpac && !isNullOrUndefined(this.sourceDatabaseDropdown.value) && this.sourceDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.sourceDbEditable)) !== -1);
+			|| (!this.sourceIsDacpac && !isNullOrUndefined(this.sourceDatabaseDropdown.value) && this.sourceDatabaseDropdown.values.findIndex((x: string | azdata.CategoryValue) => this.matchesValue(x, this.sourceDbEditable)) !== -1);
 		let targetfilled = (this.targetIsDacpac && await this.existsDacpac(this.targetTextBox.value))
-			|| (!this.targetIsDacpac && !isNullOrUndefined(this.targetDatabaseDropdown.value) && this.targetDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.targetDbEditable)) !== -1);
+			|| (!this.targetIsDacpac && !isNullOrUndefined(this.targetDatabaseDropdown.value) && this.targetDatabaseDropdown.values.findIndex((x: string | azdata.CategoryValue) => this.matchesValue(x, this.targetDbEditable)) !== -1);
 
 		return sourcefilled && targetfilled;
 	}
@@ -481,7 +479,7 @@ export class SchemaCompareDialog {
 			}
 		).component();
 		this.sourceServerDropdown.onValueChanged(async (value) => {
-			if (this.sourceServerDropdown.values.findIndex(x => this.matchesValue(x, value)) === -1) {
+			if (this.sourceServerDropdown.values.findIndex((x: string | azdata.CategoryValue) => this.matchesValue(x, value)) === -1) {
 				this.sourceDatabaseDropdown.updateProperties({
 					values: [],
 					value: '  '
@@ -507,7 +505,7 @@ export class SchemaCompareDialog {
 			}
 		).component();
 		this.targetServerDropdown.onValueChanged(async (value) => {
-			if (this.targetServerDropdown.values.findIndex(x => this.matchesValue(x, value)) === -1) {
+			if (this.targetServerDropdown.values.findIndex((x: string | azdata.CategoryValue) => this.matchesValue(x, value)) === -1) {
 				this.targetDatabaseDropdown.updateProperties({
 					values: [],
 					value: '  '
@@ -651,7 +649,7 @@ export class SchemaCompareDialog {
 		}
 	}
 
-	protected async getDatabaseValues(connectionId: string, isTarget: boolean): Promise<{ displayName, name }[]> {
+	protected async getDatabaseValues(connectionId: string, isTarget: boolean): Promise<{ displayName: string, name: string }[]> {
 		let endpointInfo = isTarget ? this.schemaCompareResult.targetEndpointInfo : this.schemaCompareResult.sourceEndpointInfo;
 
 		let idx = -1;

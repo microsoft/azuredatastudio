@@ -7,16 +7,10 @@
 			"es6",
 			"es2015.promise"
 		],
-		"sourceMap": true,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
-		"moduleResolution": "node",
-		"declaration": false,
 		"strict": false,
-		"noImplicitAny": false,
-		"noUnusedParameters": false,
-		"noImplicitReturns": false,
-		"noUnusedLocals": false,
+		"noUnusedParameters": false
 	},
 	"exclude": [
 		"node_modules"

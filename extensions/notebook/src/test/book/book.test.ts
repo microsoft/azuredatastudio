@@ -14,7 +14,7 @@ import * as uuid from 'uuid';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { BookTreeItem } from '../../book/bookTreeItem';
 
-export interface ExpectedBookItem {
+interface ExpectedBookItem {
 	title: string;
 	url?: string;
 	sections?: any[];
@@ -23,7 +23,7 @@ export interface ExpectedBookItem {
 	nextUri?: string | undefined;
 }
 
-export function equalBookItems(book: BookTreeItem, expectedBook: ExpectedBookItem): void {
+function equalBookItems(book: BookTreeItem, expectedBook: ExpectedBookItem): void {
 	should(book.title).equal(expectedBook.title);
 	should(book.uri).equal(expectedBook.url);
 	if (expectedBook.previousUri || expectedBook.nextUri) {

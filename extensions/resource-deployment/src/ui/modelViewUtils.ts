@@ -35,12 +35,6 @@ export interface DialogContext extends CreateContext {
 	container: azdata.window.Dialog;
 }
 
-export interface WizardPageContext extends CreateContext {
-	sections: SectionInfo[];
-	page: azdata.window.WizardPage;
-	container: azdata.window.Wizard;
-}
-
 export interface SectionContext extends CreateContext {
 	sectionInfo: SectionInfo;
 	view: azdata.ModelView;
@@ -144,32 +138,6 @@ export function initializeDialog(dialogContext: DialogContext): void {
 		tabs.push(tab);
 	});
 	dialogContext.container.content = tabs;
-}
-
-export function initializeWizardPage(context: WizardPageContext): void {
-	context.page.registerContent((view: azdata.ModelView) => {
-		const sections = context.sections.map(sectionInfo => {
-			sectionInfo.inputWidth = sectionInfo.inputWidth || DefaultInputComponentWidth;
-			sectionInfo.labelWidth = sectionInfo.labelWidth || DefaultLabelComponentWidth;
-			return createSection({
-				view: view,
-				container: context.container,
-				onNewDisposableCreated: context.onNewDisposableCreated,
-				onNewInputComponentCreated: context.onNewInputComponentCreated,
-				onNewValidatorCreated: context.onNewValidatorCreated,
-				sectionInfo: sectionInfo
-			});
-		});
-		const formBuilder = view.modelBuilder.formContainer().withFormItems(
-			sections.map(section => { return { title: '', component: section }; }),
-			{
-				horizontal: false,
-				componentWidth: '100%'
-			}
-		);
-		const form = formBuilder.withLayout({ width: '100%' }).component();
-		return view.initializeModel(form);
-	});
 }
 
 export function createSection(context: SectionContext): azdata.GroupContainer {
@@ -434,10 +402,6 @@ export function setModelValues(inputComponents: InputComponents, model: Model): 
 
 		model.setPropertyValue(key, value);
 	});
-}
-
-export function isInputBoxEmpty(input: azdata.InputBoxComponent): boolean {
-	return input.value === undefined || input.value === '';
 }
 
 export const MissingRequiredInformationErrorMessage = localize('deployCluster.MissingRequiredInfoError', "Please fill out the required fields marked with red asterisks.");
