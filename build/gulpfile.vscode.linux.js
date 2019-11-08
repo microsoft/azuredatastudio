@@ -54,7 +54,8 @@ function prepareDebPackage(arch) {
 			.pipe(rename('usr/share/appdata/' + product.applicationName + '.appdata.xml'));
 
 		console.log(`prepare Deb package quality = ${product.quality}`);
-		const icon = gulp.src(product.quality !== 'stable' ? 'resources/linux/code-insiders.png' : 'resources/linux/code.png', { base: '.' }) // {{SQL CARBON EDIT}} Use separate icons for non-stable
+		// const icon = gulp.src(product.quality !== 'stable' ? 'resources/linux/code-insiders.png' : 'resources/linux/code.png', { base: '.' }) // {{SQL CARBON EDIT}} Use separate icons for non-stable
+		const icon = gulp.src('resources/linux/code.png', { base: '.' })
 			.pipe(rename('usr/share/pixmaps/' + product.linuxIconName + '.png'));
 
 		const bash_completion = gulp.src('resources/completions/bash/code')
