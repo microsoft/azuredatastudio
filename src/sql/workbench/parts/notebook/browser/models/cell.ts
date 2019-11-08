@@ -518,8 +518,8 @@ export class CellModel implements ICellModel {
 						let gatewayEndpointInfo = this.getGatewayEndpoint(model.activeConnection);
 						if (gatewayEndpointInfo) {
 							let hostAndIp = notebookUtils.getHostAndPortFromEndpoint(gatewayEndpointInfo.endpoint);
-							let host = gatewayEndpointInfo && hostAndIp.host ? hostAndIp.host : model.activeConnection.serverName;
-							let port = gatewayEndpointInfo && hostAndIp.port ? ':' + hostAndIp.port : defaultPort;
+							let host = hostAndIp.host ? hostAndIp.host : model.activeConnection.serverName;
+							let port = hostAndIp.port ? ':' + hostAndIp.port : defaultPort;
 							let html = result.data['text/html'];
 							// CTP 3.1 and earlier Spark link
 							html = this.rewriteUrlUsingRegex(/(https?:\/\/master.*\/proxy)(.*)/g, html, host, port, yarnUi);
