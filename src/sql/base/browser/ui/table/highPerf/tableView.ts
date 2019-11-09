@@ -552,7 +552,7 @@ export class TableView<T> implements IDisposable {
 	}
 
 	indexOfColumn(columnId: string): number | undefined {
-		return this.columns.findIndex(v => v.id === columnId);
+		return firstIndex(this.columns, v => v.id === columnId);
 	}
 
 	get renderHeight(): number {

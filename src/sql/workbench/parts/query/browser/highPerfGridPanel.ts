@@ -8,7 +8,7 @@ import 'vs/css!./media/optimizedGridPanel';
 import * as azdata from 'azdata';
 
 import { ITableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
-import { Table } from 'sql/base/browser/ui/table/highPerf/tableWidget';
+import { Table, ITableStyles } from 'sql/base/browser/ui/table/highPerf/tableWidget';
 import { IView, Orientation } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { VirtualizedWindow } from 'sql/base/browser/ui/table/highPerf/virtualizedWindow';
 import { IColumn } from 'sql/base/browser/ui/table/highPerf/tableView';
@@ -158,5 +158,8 @@ export class GridTable<T> extends Disposable implements IView {
 	public dispose() {
 		this.element.remove();
 		super.dispose();
+	}
+
+	public style(styles: ITableStyles): void {
 	}
 }

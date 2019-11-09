@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ITableEvent, ITableRenderer, ITableMouseEvent, ITableContextMenuEvent, ITableDataSource, IStaticTableRenderer, ITableDragEvent } from 'sql/base/browser/ui/table/highPerf/table';
+import { ITableEvent, ITableRenderer, ITableMouseEvent, ITableContextMenuEvent, ITableDataSource, IStaticTableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
 
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { memoize } from 'vs/base/common/decorators';
 import { Event, Emitter, EventBufferer } from 'vs/base/common/event';
-import { firstIndex } from 'vs/base/common/arrays';
+import { firstIndex, find } from 'vs/base/common/arrays';
 import * as DOM from 'vs/base/browser/dom';
 import { TableView, ITableViewOptions, IColumn, IStaticColumn } from 'sql/base/browser/ui/table/highPerf/tableView';
 import { ScrollEvent } from 'vs/base/common/scrollable';
@@ -22,7 +22,7 @@ import { getOrDefault } from 'vs/base/common/objects';
 import { isNumber } from 'vs/base/common/types';
 import { clamp } from 'vs/base/common/numbers';
 import { GlobalMouseMoveMonitor } from 'vs/base/browser/globalMouseMoveMonitor';
-import { GridPosition, IGridPosition } from 'sql/base/common/gridPosition';
+import { GridPosition } from 'sql/base/common/gridPosition';
 import { GridRange, IGridRange } from 'sql/base/common/gridRange';
 
 interface ITraitChangeEvent {
@@ -68,7 +68,7 @@ class TraitRenderer<T> implements ITableRenderer<T, ITraitTemplateData>
 
 	renderIndexes(indexes: IGridRange[]): void {
 		for (const { index, templateData } of this.renderedElements) {
-			if (!!indexes.find(v => GridRange.containsPosition(v, index))) {
+			if (!!find(indexes, v => GridRange.containsPosition(v, index))) {
 				this.trait.renderIndex(index, templateData);
 			}
 		}
@@ -194,7 +194,7 @@ class Trait<T> implements IDisposable {
 	}
 
 	contains(index: GridPosition): boolean {
-		return !!this.indexes.find(v => GridRange.containsPosition(v, index));
+		return !!find(this.indexes, v => GridRange.containsPosition(v, index));
 	}
 
 	dispose() {

@@ -363,8 +363,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		@IInstantiationService protected readonly instantiationService: IInstantiationService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IUntitledEditorService private readonly untitledEditorService: IUntitledEditorService,
-		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IThemeService private readonly themeService: IThemeService
+		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		super();
 		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
@@ -479,7 +478,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.table.registerPlugin(new AdditionalKeyBindings());
 		this._register(this.table.onContextMenu(this.contextMenu, this));
 		this._register(this.table.onClick(this.onTableClick, this));
-		this._register(attachTableStyler(this.table, this.themeService));
 
 		if (this.styles) {
 			this.table.style(this.styles);
@@ -760,10 +758,9 @@ class GridTable<T> extends GridTableBase<T> {
 		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IEditorService editorService: IEditorService,
 		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@IThemeService themeService: IThemeService
+		@IConfigurationService configurationService: IConfigurationService
 	) {
-		super(state, resultSet, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, themeService);
+		super(state, resultSet, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 	}
 

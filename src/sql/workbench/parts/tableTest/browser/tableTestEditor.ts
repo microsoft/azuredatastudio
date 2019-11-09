@@ -91,7 +91,7 @@ export class SlickGridTableTest extends BaseEditor {
 	}
 
 	async setInput(input: SlickGridTableTestInput): Promise<void> {
-		for (const index of range(input.count)) {
+		range(input.count).forEach(() => {
 			const container = DOM.append(this.getContainer(), DOM.$('div'));
 			const columns = [
 				{
@@ -179,7 +179,8 @@ export class SlickGridTableTest extends BaseEditor {
 				minimumSize: 176,
 				onDidChange: Event.None
 			}, Sizing.Distribute);
-		}
+		});
+
 		this.layout(this.dimension);
 	}
 
@@ -208,7 +209,7 @@ export class AsyncTableTestEditor extends BaseEditor {
 	}
 
 	async setInput(input: AsyncTableTestInput): Promise<void> {
-		for (const count of range(input.count)) {
+		range(input.count).forEach(() => {
 			const container = DOM.append(this.getContainer(), DOM.$('div'));
 			const renderer = new ColumnRenderer<IDataShape>();
 			const columns: Array<IColumn<IDataShape, { element: HTMLElement }>> = [
@@ -286,7 +287,7 @@ export class AsyncTableTestEditor extends BaseEditor {
 				minimumSize: 176,
 				onDidChange: Event.None
 			}, 176);
-		}
+		});
 		this.layout(this.dimension);
 	}
 
