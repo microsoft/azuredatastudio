@@ -26,10 +26,7 @@ import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { ChartState, IInsightOptions, ChartType } from 'sql/workbench/parts/charts/common/interfaces';
 import * as nls from 'vs/nls';
-
-declare class Proxy {
-	constructor(object, handler);
-}
+import { find } from 'vs/base/common/arrays';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -104,19 +101,19 @@ export class ChartView extends Disposable implements IPanelView {
 
 		const self = this;
 		this.options = new Proxy(this.options, {
-			get: function (target, key, receiver) {
-				return Reflect.get(target, key, receiver);
+			get: function (target, key) {
+				return target[key];
 			},
-			set: function (target, key, value, receiver) {
+			set: function (target, key, value) {
 				let change = false;
 				if (target[key] !== value) {
 					change = true;
 				}
 
-				let result = Reflect.set(target, key, value, receiver);
+				target[key] = value;
 				// mirror the change in our state
 				if (self.state) {
-					Reflect.set(self.state.options, key, value);
+					self.state.options[key] = value;
 				}
 
 				if (change) {
@@ -128,7 +125,7 @@ export class ChartView extends Disposable implements IPanelView {
 					}
 				}
 
-				return result;
+				return true;
 			}
 		}) as IInsightOptions;
 
@@ -250,7 +247,7 @@ export class ChartView extends Disposable implements IPanelView {
 		this.updateActionbar();
 		for (let key in this.optionMap) {
 			if (this.optionMap.hasOwnProperty(key)) {
-				let option = ChartOptions[this.options.type].find(e => e.configEntry === key);
+				let option = find(ChartOptions[this.options.type], e => e.configEntry === key);
 				if (option && option.if) {
 					if (option.if(this.options)) {
 						DOM.show(this.optionMap[key].element);

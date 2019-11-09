@@ -9,14 +9,13 @@ import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { MainThreadModelViewDialogShape, SqlMainContext, ExtHostModelViewDialogShape, SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { Dialog, DialogTab, DialogButton, WizardPage, Wizard } from 'sql/platform/dialog/common/dialogTypes';
-import { CustomDialogService } from 'sql/platform/dialog/browser/customDialogService';
+import { Dialog, DialogTab, DialogButton, WizardPage, Wizard } from 'sql/workbench/services/dialog/common/dialogTypes';
+import { CustomDialogService } from 'sql/workbench/services/dialog/browser/customDialogService';
 import { IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails, IModelViewWizardPageDetails, IModelViewWizardDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ModelViewInput, ModelViewInputModel, ModeViewSaveHandler } from 'sql/workbench/browser/modelComponents/modelViewInput';
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelViewDialog)
 export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape {
@@ -33,8 +32,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	constructor(
 		context: IExtHostContext,
 		@IInstantiationService private _instatiationService: IInstantiationService,
-		@IEditorService private _editorService: IEditorService,
-		@ITelemetryService private _telemetryService: ITelemetryService
+		@IEditorService private _editorService: IEditorService
 	) {
 		this._proxy = context.getProxy(SqlExtHostContext.ExtHostModelViewDialog);
 		this._dialogService = new CustomDialogService(_instatiationService);

@@ -10,7 +10,7 @@ import { VirtualizedCollection } from 'angular2-slickgrid';
 
 import { IGridDataSet } from 'sql/workbench/parts/grid/common/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
-import { IEditDataComponentParams, IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { IEditDataComponentParams, IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { GridParentComponent } from 'sql/workbench/parts/editData/browser/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/workbench/parts/editData/browser/editDataGridActions';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
@@ -31,7 +31,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { EditUpdateCellResult } from 'azdata';
 import { ILogService } from 'vs/platform/log/common/log';
-import { deepClone } from 'vs/base/common/objects';
+import { deepClone, assign } from 'vs/base/common/objects';
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
 @Component({
@@ -55,8 +55,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	// All datasets
 	private dataSet: IGridDataSet;
 	private firstRender = true;
-	private totalElapsedTimeSpan: number;
-	private complete = false;
 	// Current selected cell state
 	private currentCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
 	private currentEditCellValue: string;
@@ -153,8 +151,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		self.placeHolderDataSets = [];
 		self.renderedDataSets = self.placeHolderDataSets;
 		this._cd.detectChanges();
-		self.totalElapsedTimeSpan = undefined;
-		self.complete = false;
 
 		// Hooking up edit functions
 		this.onIsCellEditValid = (row, column, value): boolean => {
@@ -318,8 +314,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	}
 
 	handleComplete(self: EditDataComponent, event: any): void {
-		self.totalElapsedTimeSpan = event.data;
-		self.complete = true;
 	}
 
 	handleEditSessionReady(self, event): void {
@@ -337,7 +331,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 	handleResultSet(self: EditDataComponent, event: any): void {
 		// Clone the data before altering it to avoid impacting other subscribers
-		let resultSet = Object.assign({}, event.data);
+		let resultSet = assign({}, event.data);
 		if (!resultSet.complete) {
 			return;
 		}
@@ -441,8 +435,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 	protected tryHandleKeyEvent(e: StandardKeyboardEvent): boolean {
 		let handled: boolean = false;
-		// If the esc key was pressed while in a create session
-		let currentNewRowIndex = this.dataSet.totalRows - 2;
 
 		if (e.keyCode === KeyCode.Escape) {
 			this.revertCurrentRow();

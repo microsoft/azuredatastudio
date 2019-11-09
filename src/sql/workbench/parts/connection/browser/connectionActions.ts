@@ -16,7 +16,7 @@ import { EditDataInput } from 'sql/workbench/parts/editData/browser/editDataInpu
 import { DashboardInput } from 'sql/workbench/parts/dashboard/browser/dashboardInput';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { find } from 'vs/base/common/arrays';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 /**
@@ -83,7 +83,7 @@ export class ClearRecentConnectionsAction extends Action {
 			];
 
 			self._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('ClearRecentlyUsedLabel', "Clear List"), ignoreFocusLost: true }).then((choice) => {
-				let confirm = choices.find(x => x.key === choice);
+				let confirm = find(choices, x => x.key === choice);
 				resolve(confirm && confirm.value);
 			});
 		});
@@ -146,7 +146,6 @@ export class GetCurrentConnectionStringAction extends Action {
 		label: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IEditorService private _editorService: IEditorService,
-		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@INotificationService private readonly _notificationService: INotificationService,
 		@IClipboardService private _clipboardService: IClipboardService,
 	) {

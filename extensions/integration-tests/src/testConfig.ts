@@ -41,8 +41,8 @@ export enum EngineType {
 	BigDataCluster
 }
 
-let connectionProviderMapping = {};
-let authenticationTypeMapping = {};
+let connectionProviderMapping: { [key: string]: { name: string; displayName: string } } = {};
+let authenticationTypeMapping: { [key: string]: { name: string; displayName: string } } = {};
 connectionProviderMapping[ConnectionProvider.SQLServer] = { name: 'MSSQL', displayName: 'Microsoft SQL Server' };
 
 authenticationTypeMapping[AuthenticationType.SqlLogin] = { name: 'SqlLogin', displayName: 'SQL Login' };

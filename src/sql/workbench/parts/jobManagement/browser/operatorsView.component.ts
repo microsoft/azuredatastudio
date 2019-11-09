@@ -14,7 +14,7 @@ import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/ag
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { EditOperatorAction, DeleteOperatorAction, NewOperatorAction } from 'sql/platform/jobManagement/browser/jobActions';
 import { JobManagementView } from 'sql/workbench/parts/jobManagement/browser/jobManagementView';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -57,7 +57,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 	};
 
 	private dataView: any;
-	private _isCloud: boolean;
+	public _isCloud: boolean;
 	private _operatorsCacheObject: OperatorsCacheObject;
 
 	private _didTabChange: boolean;
@@ -68,7 +68,6 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(ICommandService) private _commandService: ICommandService,

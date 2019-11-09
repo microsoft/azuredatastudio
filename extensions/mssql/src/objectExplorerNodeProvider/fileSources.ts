@@ -106,10 +106,11 @@ export interface IFileSource {
 	exists(path: string): Promise<boolean>;
 }
 
-export interface IHttpAuthentication {
+interface IHttpAuthentication {
 	user: string;
 	pass: string;
 }
+
 export interface IHdfsOptions {
 	host?: string;
 	port?: number;
@@ -176,7 +177,7 @@ export class FileSourceFactory {
 	}
 }
 
-export class HdfsFileSource implements IFileSource {
+class HdfsFileSource implements IFileSource {
 	private mounts: Map<string, Mount>;
 	constructor(private client: WebHDFS) {
 	}
@@ -240,7 +241,7 @@ export class HdfsFileSource implements IFileSource {
 	public readFile(path: string, maxBytes?: number): Promise<Buffer> {
 		return new Promise((resolve, reject) => {
 			let error: HdfsError = undefined;
-			let remoteFileStream = this.client.createReadStream(path);
+			let remoteFileStream: fs.ReadStream | meter.StreamMeter = this.client.createReadStream(path);
 			remoteFileStream.on('error', (err) => {
 				error = <HdfsError>err;
 				reject(error);

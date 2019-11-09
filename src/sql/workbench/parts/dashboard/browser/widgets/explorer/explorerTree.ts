@@ -6,7 +6,7 @@
 import { Router } from '@angular/router';
 
 import { MetadataType } from 'sql/platform/connection/common/connectionManagement';
-import { SingleConnectionManagementService, CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { SingleConnectionManagementService, CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { ManageActionContext, BaseActionContext } from 'sql/workbench/browser/actions';
 
 import * as tree from 'vs/base/parts/tree/browser/tree';
@@ -260,7 +260,7 @@ export class ExplorerFilter implements tree.IFilter {
 			return true;
 		}
 		const filterString = this._filterString.trim().toLowerCase();
-		return element.databaseName.toLowerCase().includes(filterString);
+		return element.databaseName.toLowerCase().indexOf(filterString) > -1;
 	}
 
 	// apply filter for objectmetadatawrapper
@@ -275,7 +275,7 @@ export class ExplorerFilter implements tree.IFilter {
 		// determine if a filter is applied
 		let metadataType: MetadataType;
 
-		if (filterString.includes(':')) {
+		if (filterString.indexOf(':') > -1) {
 			const filterArray = filterString.split(':');
 
 			if (filterArray.length > 2) {
@@ -305,9 +305,9 @@ export class ExplorerFilter implements tree.IFilter {
 		}
 
 		if (metadataType !== undefined) {
-			return element.metadataType === metadataType && (element.schema + '.' + element.name).toLowerCase().includes(filterString);
+			return element.metadataType === metadataType && (element.schema + '.' + element.name).toLowerCase().indexOf(filterString) > -1;
 		} else {
-			return (element.schema + '.' + element.name).toLowerCase().includes(filterString);
+			return (element.schema + '.' + element.name).toLowerCase().indexOf(filterString) > -1;
 		}
 	}
 

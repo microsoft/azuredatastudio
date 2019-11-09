@@ -337,7 +337,7 @@ export class InsightsDialogView extends Modal {
 		if (this._insight.actions && this._insight.actions.types) {
 			let tasks = TaskRegistry.getTasks();
 			for (let action of this._insight.actions.types) {
-				let task = tasks.includes(action);
+				let task = tasks.some(x => x === action);
 				let commandAction = MenuRegistry.getCommand(action);
 				let commandLabel = types.isString(commandAction.title) ? commandAction.title : commandAction.title.value;
 				if (task) {
@@ -396,7 +396,7 @@ export class InsightsDialogView extends Modal {
 		let actions = this._insight.actions.types;
 		let returnActions: IAction[] = [];
 		for (let action of actions) {
-			let task = tasks.includes(action);
+			let task = tasks.some(x => x === action);
 			let commandAction = MenuRegistry.getCommand(action);
 			if (task) {
 				returnActions.push(this._instantiationService.createInstance(ExecuteCommandAction, commandAction.id, commandAction.title));

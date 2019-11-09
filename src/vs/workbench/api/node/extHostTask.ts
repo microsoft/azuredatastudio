@@ -3,18 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as path from 'vs/base/common/path';
+// import * as path from 'vs/base/common/path';
 
-import { URI, UriComponents } from 'vs/base/common/uri';
-import { win32 } from 'vs/base/node/processes';
+import { /*URI,*/ UriComponents } from 'vs/base/common/uri';
+// import { win32 } from 'vs/base/node/processes';
 import * as types from 'vs/workbench/api/common/extHostTypes';
 import { IExtHostWorkspace } from 'vs/workbench/api/common/extHostWorkspace';
 import * as vscode from 'vscode';
 import * as tasks from '../common/shared/tasks';
-import { ExtHostVariableResolverService } from 'vs/workbench/api/node/extHostDebugService';
+// import { ExtHostVariableResolverService } from 'vs/workbench/api/node/extHostDebugService';
 import { IExtHostDocumentsAndEditors } from 'vs/workbench/api/common/extHostDocumentsAndEditors';
 import { IExtHostConfiguration } from 'vs/workbench/api/common/extHostConfiguration';
-import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
+// import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { IExtHostTerminalService } from 'vs/workbench/api/common/extHostTerminalService';
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';

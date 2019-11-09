@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
-import { ConnectionManagementService } from 'sql/platform/connection/browser/connectionManagementService';
+import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';

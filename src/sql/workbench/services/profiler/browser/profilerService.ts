@@ -230,7 +230,7 @@ export class ProfilerService implements IProfilerService {
 			// only use the templates that matches the following criteria:
 			// 1. the template doesn't have any engine types specified - for backward compatibility (user with custom templates) or the templates applicable to both AzureSQLDB and standalone server
 			// 2. the template supports the current engine type
-			templates = templates.filter(template => !template.engineTypes || template.engineTypes.length === 0 || template.engineTypes.includes(engineType));
+			templates = templates.filter(template => !template.engineTypes || template.engineTypes.length === 0 || template.engineTypes.some(x => x === engineType));
 		}
 		return this._commandService.executeCommand('profiler.openCreateSessionDialog', input.id, input.providerType, templates);
 	}

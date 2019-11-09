@@ -7,7 +7,7 @@ import { InjectionToken, OnDestroy } from '@angular/core';
 import { NgGridItemConfig } from 'angular2-grid';
 import { Action } from 'vs/base/common/actions';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IDashboardTab } from 'sql/platform/dashboard/browser/dashboardRegistry';
+import { IDashboardTab } from 'sql/workbench/parts/dashboard/browser/dashboardRegistry';
 
 export interface IDashboardWidget {
 	actions: Array<Action>;
@@ -27,7 +27,7 @@ export interface WidgetConfig {
 	edition: number | Array<number>;
 	when?: string;
 	gridItemConfig?: NgGridItemConfig;
-	widget: Object;
+	widget: { [key: string]: any };
 	background_color?: string;
 	border?: string;
 	fontSize?: string;
@@ -51,7 +51,7 @@ export interface NavSectionConfig {
 	title: string;
 	iconClass?: string;
 	icon?: IUserFriendlyIcon;
-	container: object;
+	container: { [key: string]: any };
 }
 
 export interface TabSettingConfig {

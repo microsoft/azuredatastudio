@@ -10,7 +10,7 @@ import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -34,6 +34,7 @@ import { ServerTreeActionProvider } from 'sql/workbench/parts/objectExplorer/bro
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isHidden } from 'sql/base/browser/dom';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { startsWith } from 'vs/base/common/strings';
 
 /**
  * ServerTreeview implements the dynamic tree view.
@@ -191,7 +192,7 @@ export class ServerTreeView extends Disposable {
 	public isObjectExplorerConnectionUri(uri: string): boolean {
 		let isBackupRestoreUri: boolean = uri.indexOf(ConnectionUtils.ConnectionUriBackupIdAttributeName) >= 0 ||
 			uri.indexOf(ConnectionUtils.ConnectionUriRestoreIdAttributeName) >= 0;
-		return uri && uri.startsWith(ConnectionUtils.uriPrefixes.default) && !isBackupRestoreUri;
+		return uri && startsWith(uri, ConnectionUtils.uriPrefixes.default) && !isBackupRestoreUri;
 	}
 
 	private async handleAddConnectionProfile(newProfile: ConnectionProfile): Promise<void> {
@@ -415,7 +416,7 @@ export class ServerTreeView extends Disposable {
 
 	private checkIncludes(searchString: string, candidate: string): boolean {
 		if (candidate && searchString) {
-			return candidate.toLocaleUpperCase().includes(searchString);
+			return candidate.toLocaleUpperCase().indexOf(searchString) > -1;
 		}
 		return false;
 	}

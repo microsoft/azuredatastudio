@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import ControllerBase from './controllerBase';
 import { CmsResourceTreeProvider } from '../cmsResource/tree/treeProvider';
 import { registerCmsResourceCommands } from '../cmsResource/commands';

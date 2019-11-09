@@ -8,7 +8,6 @@ import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { EditDataInput } from 'sql/workbench/parts/editData/browser/editDataInput';
 import { IConnectableInput, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService, IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
 import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/workbench/browser/customInputConverter';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 
@@ -31,6 +30,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { ILogService } from 'vs/platform/log/common/log';
+import { assign } from 'vs/base/common/objects';
 
 /**
  * Service wrapper for opening and creating SQL documents as sql editor inputs
@@ -204,7 +204,7 @@ export class QueryEditorService implements IQueryEditorService {
 		let group: IEditorGroup = editor.group;
 		let index: number = group.editors.indexOf(editor.input);
 		let options: IQueryEditorOptions = editor.options ? editor.options : {};
-		options = Object.assign(options, { index: index });
+		options = assign(options, { index: index });
 
 		// Return a promise that will resovle when the old editor has been replaced by a new editor
 		let newEditorInput = this.getNewEditorInput(changingToSql, editor.input, uri);

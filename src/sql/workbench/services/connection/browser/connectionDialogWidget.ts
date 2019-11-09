@@ -120,7 +120,7 @@ export class ConnectionDialogWidget extends Modal {
 		if (this._newConnectionParams && this._newConnectionParams.providers) {
 			const validProviderNames = Object.keys(this.providerNameToDisplayNameMap).filter(x => this.includeProvider(x, this._newConnectionParams));
 			if (validProviderNames && validProviderNames.length > 0) {
-				filteredProviderDisplayNames = filteredProviderDisplayNames.filter(x => validProviderNames.find(
+				filteredProviderDisplayNames = filteredProviderDisplayNames.filter(x => validProviderNames.some(
 					v => this.providerNameToDisplayNameMap[v] === x) !== undefined
 				);
 			}
@@ -133,7 +133,7 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	private includeProvider(providerName: string, params?: INewConnectionParams): Boolean {
-		return params === undefined || params.providers === undefined || params.providers.find(x => x === providerName) !== undefined;
+		return params === undefined || params.providers === undefined || params.providers.some(x => x === providerName);
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -322,12 +322,14 @@ export class ConnectionDialogWidget extends Modal {
 		const controller = new RecentConnectionTreeController(leftClick, actionProvider, this._connectionManagementService, this._contextMenuService);
 		actionProvider.onRecentConnectionRemoved(() => {
 			const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections();
-			this.open(recentConnections.length > 0);
+			this.open(recentConnections.length > 0).catch(err => this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from action provider: ${err}`));
+			// We're just using the connections to determine if there are connections to show, dispose them right after to clean up their handlers
 			recentConnections.forEach(conn => conn.dispose());
 		});
 		controller.onRecentConnectionRemoved(() => {
 			const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections();
-			this.open(recentConnections.length > 0);
+			this.open(recentConnections.length > 0).catch(err => this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from controller : ${err}`));
+			// We're just using the connections to determine if there are connections to show, dispose them right after to clean up their handlers
 			recentConnections.forEach(conn => conn.dispose());
 		});
 		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this._instantiationService, controller);
@@ -398,7 +400,7 @@ export class ConnectionDialogWidget extends Modal {
 		await TreeUpdateUtils.structuralTreeUpdate(this._recentConnectionTree, 'recent', this._connectionManagementService, this._providers);
 
 		// reset saved connection tree
-		this._savedConnectionTree.setInput([]);
+		await this._savedConnectionTree.setInput([]);
 
 		// call layout with view height
 		this.layout();

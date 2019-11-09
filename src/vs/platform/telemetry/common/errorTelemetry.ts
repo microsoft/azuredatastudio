@@ -9,7 +9,7 @@ import { toDisposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { safeStringify } from 'vs/base/common/objects';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
-type ErrorEventFragment = {
+/*type ErrorEventFragment = { {{SQL CARBON EDIT}} comment out for no unused
 	callstack: { classification: 'CallstackOrException', purpose: 'PerformanceAndHealth' };
 	msg?: { classification: 'CallstackOrException', purpose: 'PerformanceAndHealth' };
 	file?: { classification: 'CallstackOrException', purpose: 'PerformanceAndHealth' };
@@ -18,7 +18,7 @@ type ErrorEventFragment = {
 	uncaught_error_name?: { classification: 'CallstackOrException', purpose: 'PerformanceAndHealth' };
 	uncaught_error_msg?: { classification: 'CallstackOrException', purpose: 'PerformanceAndHealth' };
 	count?: { classification: 'CallstackOrException', purpose: 'PerformanceAndHealth', isMeasurement: true };
-};
+};*/
 export interface ErrorEvent {
 	callstack: string;
 	msg?: string;
@@ -45,14 +45,14 @@ export default abstract class BaseErrorTelemetry {
 
 	public static ERROR_FLUSH_TIMEOUT: number = 5 * 1000;
 
-	private _telemetryService: ITelemetryService;
+	// private _telemetryService: ITelemetryService; {{SQL CARBON EDIT}} comment out for no unused
 	private _flushDelay: number;
 	private _flushHandle: any = -1;
 	private _buffer: ErrorEvent[] = [];
 	protected readonly _disposables = new DisposableStore();
 
 	constructor(telemetryService: ITelemetryService, flushDelay = BaseErrorTelemetry.ERROR_FLUSH_TIMEOUT) {
-		this._telemetryService = telemetryService;
+		// this._telemetryService = telemetryService; {{SQL CARBON EDIT}} comment out for no unused
 		this._flushDelay = flushDelay;
 
 		// (1) check for unexpected but handled errors
@@ -118,10 +118,10 @@ export default abstract class BaseErrorTelemetry {
 	}
 
 	private _flushBuffer(): void {
-		for (let error of this._buffer) {
+		/*for (let error of this._buffer) { {{SQL CARBON EDIT}} don't log errors
 			type UnhandledErrorClassification = {} & ErrorEventFragment;
-			// this._telemetryService.publicLog2<ErrorEvent, UnhandledErrorClassification>('UnhandledError', error, true); {{SQL CARBON EDIT}} comment out log
-		}
+			this._telemetryService.publicLog2<ErrorEvent, UnhandledErrorClassification>('UnhandledError', error, true);
+		}*/
 		this._buffer.length = 0;
 	}
 }

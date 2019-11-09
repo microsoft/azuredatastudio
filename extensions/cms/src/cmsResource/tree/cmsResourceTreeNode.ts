@@ -3,10 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { TreeItemCollapsibleState, TreeItem } from 'vscode';
+import { TreeItemCollapsibleState } from 'vscode';
 import { AppContext } from '../../appContext';
 import { TreeNode } from '../treeNode';
 import { CmsResourceTreeNodeBase } from './baseTreeNodes';

@@ -41,6 +41,6 @@ export enum PythonPkgType {
 	Anaconda = 'Anaconda'
 }
 
-export const pythonWindowsInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2109051';
-export const pythonMacInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2109050';
-export const pythonLinuxInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2109049';
+export const pythonWindowsInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2110625';
+export const pythonMacInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2110525';
+export const pythonLinuxInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2110524';

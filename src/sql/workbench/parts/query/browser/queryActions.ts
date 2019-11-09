@@ -6,7 +6,7 @@
 import 'vs/css!./media/queryActions';
 import * as nls from 'vs/nls';
 import { Action, IActionViewItem, IActionRunner } from 'vs/base/common/actions';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -543,10 +543,6 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 		// show option to disable sql cmd mode if already enabled
 		this.label = this.isSqlCmdMode ? this._disablesqlcmdLabel : this._enablesqlcmdLabel;
 		this.isSqlCmdMode ? this.updateCssClass(ToggleSqlCmdModeAction.DisableSqlcmdClass) : this.updateCssClass(ToggleSqlCmdModeAction.EnableSqlcmdClass);
-	}
-
-	private setSqlCmdModeFalse() {
-
 	}
 
 	public async run(): Promise<void> {

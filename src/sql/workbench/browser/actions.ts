@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
-import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
+import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { Task } from 'sql/platform/tasks/browser/tasksRegistry';
 
 import { ObjectMetadata } from 'azdata';
@@ -17,6 +16,7 @@ import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry'
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
 
 export interface BaseActionContext {
 	object?: ObjectMetadata;

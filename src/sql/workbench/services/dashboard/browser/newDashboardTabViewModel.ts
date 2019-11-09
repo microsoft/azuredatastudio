@@ -5,7 +5,8 @@
 
 import { Event, Emitter } from 'vs/base/common/event';
 
-import { IDashboardTab } from 'sql/platform/dashboard/browser/dashboardRegistry';
+import { IDashboardTab } from 'sql/workbench/parts/dashboard/browser/dashboardRegistry';
+import { find } from 'vs/base/common/arrays';
 
 
 export interface IDashboardUITab {
@@ -34,7 +35,7 @@ export class NewDashboardTabViewModel {
 			tabList.push({ tabConfig: tab });
 		});
 		openedTabs.forEach(tab => {
-			let uiTab = tabList.find(i => i.tabConfig === tab);
+			let uiTab = find(tabList, i => i.tabConfig === tab);
 			if (uiTab) {
 				uiTab.isOpened = true;
 			}

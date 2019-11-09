@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
+import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 
 /**
  * Options for the actions that could happen after connecting is complete

@@ -9,7 +9,7 @@ import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
-import { MenuId } from 'vs/platform/actions/common/actions';
+// import { MenuId } from 'vs/platform/actions/common/actions';
 
 class ExpandAbbreviationAction extends EmmetEditorAction {
 

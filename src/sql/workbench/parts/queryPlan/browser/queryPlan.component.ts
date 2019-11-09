@@ -5,10 +5,10 @@
 
 import 'vs/css!./media/qp';
 
-import { ElementRef, Component, Inject, forwardRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ElementRef, Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as QP from 'html-query-plan';
 
-import { IQueryPlanParams, IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { IQueryPlanParams, IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { registerThemingParticipant, ICssStyleCollector, ITheme } from 'vs/platform/theme/common/themeService';
@@ -30,7 +30,6 @@ export class QueryPlanComponent implements OnDestroy, OnInit {
 	@ViewChild('container', { read: ElementRef }) _container: ElementRef;
 
 	constructor(
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(IBootstrapParams) private _params: IQueryPlanParams
 	) { }
 

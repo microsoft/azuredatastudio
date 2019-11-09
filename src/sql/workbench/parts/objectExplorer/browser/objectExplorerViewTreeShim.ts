@@ -9,7 +9,6 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ITreeItem } from 'sql/workbench/common/views';
-import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { hash } from 'vs/base/common/hash';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -19,6 +18,7 @@ import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { localize } from 'vs/nls';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { UserCancelledConnectionError } from 'sql/base/common/errors';
+import { assign } from 'vs/base/common/objects';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
@@ -42,7 +42,6 @@ export class OEShimService extends Disposable implements IOEShimService {
 	constructor(
 		@IObjectExplorerService private oe: IObjectExplorerService,
 		@IConnectionManagementService private cm: IConnectionManagementService,
-		@IConnectionDialogService private cd: IConnectionDialogService,
 		@ICapabilitiesService private capabilities: ICapabilitiesService
 	) {
 		super();
@@ -170,7 +169,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 			const database = node.getDatabaseName();
 			if (database) {
 				databaseChanged = true;
-				updatedPayload = Object.assign(updatedPayload, parentNode.payload);
+				updatedPayload = assign(updatedPayload, parentNode.payload);
 				updatedPayload.databaseName = node.getDatabaseName();
 			}
 		}

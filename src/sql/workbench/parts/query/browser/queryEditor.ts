@@ -6,7 +6,7 @@
 import 'vs/css!./media/queryEditor';
 
 import * as DOM from 'vs/base/browser/dom';
-import { EditorOptions, IEditorControl, IEditorMemento, IEditorCloseEvent } from 'vs/workbench/common/editor';
+import { EditorOptions, IEditorControl, IEditorMemento } from 'vs/workbench/common/editor';
 import { BaseEditor, EditorMemento } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -187,7 +187,7 @@ export class QueryEditor extends BaseEditor {
 		this.setTaskbarContent();
 
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
-			if (e.affectedKeys.includes('workbench.enablePreviewFeatures')) {
+			if (e.affectsConfiguration('workbench.enablePreviewFeatures')) {
 				this.setTaskbarContent();
 			}
 		}));

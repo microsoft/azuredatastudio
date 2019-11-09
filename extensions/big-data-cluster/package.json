@@ -159,6 +159,7 @@
 	},
 	"devDependencies": {
 		"@types/kerberos": "^1.1.0",
+		"@types/request": "^2.48.3",
 		"vscode": "^1.1.36"
 	}
 }

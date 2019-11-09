@@ -6,9 +6,9 @@
 import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef, ViewChild } from '@angular/core';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/platform/dashboard/browser/dashboardRegistry';
+import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/workbench/parts/dashboard/browser/dashboardRegistry';
 
 import { DatabaseInfo, ServerInfo } from 'azdata';
 
@@ -64,7 +64,7 @@ export interface DisplayProperty {
 export class PropertiesWidgetComponent extends DashboardWidget implements IDashboardWidget, OnInit {
 	private _connection: ConnectionManagementInfo;
 	private _databaseInfo: DatabaseInfo;
-	private _clipped: boolean;
+	public _clipped: boolean;
 	private properties: Array<DisplayProperty>;
 	private _hasInit = false;
 
