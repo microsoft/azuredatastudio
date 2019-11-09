@@ -12,9 +12,6 @@ import { TableDataView } from './tableDataView';
 import { IDisposableDataProvider, ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 
 
-//Angular components used to make it compatible for editData.
-import { Observable, Subscription } from 'rxjs/Rx';
-
 import * as DOM from 'vs/base/browser/dom';
 import { mixin } from 'vs/base/common/objects';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -127,35 +124,35 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 
 	private invalidateRange(start: number, end: number): void {
-        let refreshedRows = _.range(start, end);
-        this._grid.invalidateRows(refreshedRows, true);
-        this._grid.render();
-    }
+		let refreshedRows = _.range(start, end);
+		this._grid.invalidateRows(refreshedRows, true);
+		this._grid.render();
+	}
 
-    private renderGridDataRowsRange(startIndex: number, count: number): void {
+	private renderGridDataRowsRange(startIndex: number, count: number): void {
 
-        let editor = this._grid.getCellEditor();
-        let oldValue = editor ? (<Slick.Editors.Text<T>> editor).getValue() : undefined;
-        let wasValueChanged = editor ? editor.isValueChanged() : false;
+		let editor = this._grid.getCellEditor();
+		let oldValue = editor ? (<Slick.Editors.Text<T>>editor).getValue() : undefined;
+		let wasValueChanged = editor ? editor.isValueChanged() : false;
 		this.invalidateRange(startIndex, startIndex + count);
 
-        let activeCell = this.activeCell;
-        if (editor && activeCell.row >= startIndex && activeCell.row < startIndex + count) {
-            if (oldValue && wasValueChanged) {
-                (<Slick.Editors.Text<T>> editor).setValue(oldValue);
-            }
-        }
+		let activeCell = this.activeCell;
+		if (editor && activeCell.row >= startIndex && activeCell.row < startIndex + count) {
+			if (oldValue && wasValueChanged) {
+				(<Slick.Editors.Text<T>>editor).setValue(oldValue);
+			}
+		}
 	}
 
 
 	private onResize(): void {
 		if (this._grid !== undefined) {
-            // this will make sure the grid header and body to be re-rendered\
-            this._grid.resizeCanvas();
-        }
-    }
+			// this will make sure the grid header and body to be re-rendered\
+			this._grid.resizeCanvas();
+		}
+	}
 
-//my code ends here.
+	//my code ends here.
 
 	private mapMouseEvent(slickEvent: Slick.Event<any>, emitter: Emitter<ITableMouseEvent>) {
 		slickEvent.subscribe((e: JQuery.Event) => {

@@ -545,6 +545,14 @@ export abstract class GridParentComponent extends Disposable {
 		container.appendChild(this.nativeElement);
 	}
 
+	public createNewTable(): void {
+		//this.nativeElement.style.maxHeight = this.placeHolderDataSets[0].maxHeight.toString();
+		//this.nativeElement.style.minHeight = this.placeHolderDataSets[0].minHeight.toString();
+		console.log(this._tables[0]);
+
+
+	}
+
 	// private addResultSet(resultSet: azdata.ResultSetSummary[]) {
 	// 	let tables: Table<any>[] = [];
 

@@ -7,7 +7,7 @@ import 'vs/css!./media/editData';
 
 //import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, EventEmitter } from '@angular/core';
 //import { VirtualizedCollection } from 'angular2-slickgrid';
-import { VirtualizedCollection } from 'sql/base/browser/ui/table/asyncDataView';
+import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { DataService } from 'sql/workbench/parts/grid/common/dataService';
 
@@ -130,7 +130,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 
 		this.dataService = params.dataService;
-		console.log(this.dataService);
+
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
 		params.onRestoreViewState(() => this.restoreViewState());
 		params.onSaveViewState(() => this.saveViewState());
@@ -139,7 +139,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		//console.log(this.templateHTML);
 
 
-		//this.onInit();
+		this.onInit();
+
+		// this.createNewTable();
 	}
 
 	/**
@@ -175,7 +177,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			//self._cd.detectChanges();
 		});
 
-		//this.dataService.onAngularLoaded();
+		this.dataService.onAngularLoaded();
 	}
 
 
@@ -463,13 +465,40 @@ export class EditDataGridPanel extends GridParentComponent {
 			clearTimeout(self.refreshGridTimeoutHandle);
 			this.refreshGridTimeoutHandle = setTimeout(() => {
 				for (let i = 0; i < self.placeHolderDataSets.length; i++) {
-					self.placeHolderDataSets[i].dataRows = self.dataSet.dataRows;
-					self.placeHolderDataSets[i].resized.emit();
+					// TODO figure out why these values can now be null in some cases
+					if (self.dataSet && self.placeHolderDataSets[i].resized) {
+						self.placeHolderDataSets[i].dataRows = self.dataSet.dataRows;
+						console.log(self.placeHolderDataSets[i].resized);
+						let emitternew = new Emitter();
+						self.placeHolderDataSets[i].resized.fire();
+					}
 				}
 
 				//self._cd.detectChanges();
 
 				if (self.firstRender) {
+
+					if (self.placeHolderDataSets.length > 0) {
+						let dataSet = self.placeHolderDataSets[0];
+						if (dataSet.columnDefinitions) {
+
+
+
+
+							let t = new Table(self.nativeElement, { dataProvider: new AsyncDataProvider(dataSet.dataRows), columns: dataSet.columnDefinitions }, { showRowNumber: true });
+							self._tables[0] = t;
+							self.createNewTable();
+
+							// self._tables[0] = new Table(
+							// 	self.nativeElement,
+							// 	{ dataProvider: dataSet.dataRows, columns: dataSet.columnDefinition },
+							// 	{ showRowNumber: true });
+
+
+						}
+					}
+
+
 					let setActive = function () {
 						if (self.firstRender && self._tables.length > 0) {
 							self._tables[0].setActive();

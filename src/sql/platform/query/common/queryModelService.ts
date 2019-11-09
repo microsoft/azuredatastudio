@@ -121,6 +121,7 @@ export class QueryModelService implements IQueryModelService {
 	 * any further events. This prevents QueryEvents from getting lost if they are sent before
 	 * angular is listening for them.
 	 */
+	// TODO: rename to remove reference to Angular
 	public onAngularLoaded(uri: string) {
 		if (this._queryInfoMap.has(uri)) {
 			let info = this._getQueryInfo(uri)!;

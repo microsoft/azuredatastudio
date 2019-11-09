@@ -151,6 +151,7 @@ export class EditDataResultsEditor extends BaseEditor {
 		this._applySettings();
 
 		let editGridPanel = this._register(this._instantiationService.createInstance(EditDataGridPanel, params));
+		editGridPanel.render(this.getContainer());
 
 		//this._instantiationService.createInstance(EditDataComponent, params);
 
