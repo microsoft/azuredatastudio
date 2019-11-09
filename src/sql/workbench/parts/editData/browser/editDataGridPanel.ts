@@ -177,7 +177,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			//self._cd.detectChanges();
 		});
 
-		this.dataService.onAngularLoaded();
+		this.dataService.onComponentLoaded();
 	}
 
 

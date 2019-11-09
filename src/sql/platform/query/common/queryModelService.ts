@@ -116,13 +116,13 @@ export class QueryModelService implements IQueryModelService {
 	}
 
 	/**
-	 * To be called by an angular component's DataService when the component has finished loading.
+	 * To be called by a component's DataService when the component has finished loading.
 	 * Sends all previously enqueued query events to the DataService and signals to stop enqueuing
 	 * any further events. This prevents QueryEvents from getting lost if they are sent before
 	 * angular is listening for them.
 	 */
 	// TODO: rename to remove reference to Angular
-	public onAngularLoaded(uri: string) {
+	public onComponentLoaded(uri: string) {
 		if (this._queryInfoMap.has(uri)) {
 			let info = this._getQueryInfo(uri)!;
 			info.dataServiceReady = true;

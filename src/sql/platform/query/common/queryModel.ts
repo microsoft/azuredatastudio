@@ -63,7 +63,7 @@ export interface IQueryModelService {
 	refreshResultsets(uri: string): void;
 	sendGridContentEvent(uri: string, eventName: string): void;
 	resizeResultsets(uri: string): void;
-	onAngularLoaded(uri: string): void;
+	onComponentLoaded(uri: string): void;
 
 	copyResults(uri: string, selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): void;
 	setEditorSelection(uri: string, index: number): void;
