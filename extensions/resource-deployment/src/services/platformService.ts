@@ -59,7 +59,6 @@ export class PlatformService implements IPlatformService {
 
 	private _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(extensionOutputChannel);
 	private _initializationEnsurer: Promise<void[]>;
-
 	private _osType?: OsType = undefined;
 
 	constructor(private _storagePath: string) {
@@ -103,9 +102,11 @@ export class PlatformService implements IPlatformService {
 		} else if (/^linux$/i.test(platform)) {
 			const os = <getos.LinuxOs>await promisify(getos)();
 			if (/^(ubuntu|debian)/i.test(os.dist)) {
-				return OsType.darwin;
+				// return debian for ubuntu or debian distributions
+				return OsType.debian;
 			}
 		}
+		// all other unrecognized oses/distributions are treated as OsType.others
 		return OsType.others;
 	}
 

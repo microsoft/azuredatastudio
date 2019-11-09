@@ -140,11 +140,11 @@ const win32InstallationCommands = [
 ];
 const macOsInstallationCommands = [
 	{
-		comment: localize('resourceDeployment.Azdata.TappingBrewRepository', "tapping into your brew repository for azdata-cli …"),
+		comment: localize('resourceDeployment.Azdata.TappingBrewRepository', "tapping into the brew repository for azdata-cli …"),
 		command: 'brew tap microsoft/azdata-cli-release'
 	},
 	{
-		comment: localize('resourceDeployment.Azdata.UpdatingBrewRepository', "updating your brew repository for azdata-cli installation …"),
+		comment: localize('resourceDeployment.Azdata.UpdatingBrewRepository', "updating the brew repository for azdata-cli installation …"),
 		command: 'brew update'
 	},
 	{
