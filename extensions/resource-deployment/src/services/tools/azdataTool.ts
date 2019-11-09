@@ -14,6 +14,7 @@ import { dependencyType, ToolBase } from './toolBase';
 
 const localize = nls.loadMessageBundle();
 export const AzdataToolName = 'azdata';
+const win32InstallationRoot = `${process.env['ProgramFiles(x86)']}\\Microsoft SDKs\\Azdata\\CLI\\wbin`;
 
 export class AzdataTool extends ToolBase {
 	constructor(platformService: IPlatformService) {
@@ -66,6 +67,8 @@ export class AzdataTool extends ToolBase {
 
 	protected async getSearchPaths(): Promise<string[]> {
 		switch (this.osType) {
+			case OsType.win32:
+				return [win32InstallationRoot];
 			default:
 				const azdataCliInstallLocation = await this.getPip3InstallLocation('azdata-cli');
 				if (azdataCliInstallLocation) {
@@ -134,7 +137,7 @@ const win32InstallationCommands = [
 	},
 	{
 		comment: localize('resourceDeployment.Azdata.DisplayingInstallationLog', "displaying the installation log …"),
-		command: `type ADS_AzdataInstall.log | findstr /i /v /c:"cached product context" | findstr /i /v /c:"has no eligible binary patches" `,
+		command: `type ADS_AzdataInstall.log | findstr /i /v ^MSI"`,
 		ignoreError: true
 	}
 ];

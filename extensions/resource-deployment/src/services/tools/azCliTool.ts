@@ -99,7 +99,7 @@ const win32InstallationCommands = [
 	},
 	{
 		comment: localize('resourceDeployment.AziCli.DisplayingInstallationLog', "displaying the installation log …"),
-		command: `type ADS_AzureCliInstall.log | findstr /i /v /c:"cached product context" | findstr /i /v /c:"has no eligible binary patches" `,
+		command: `type ADS_AzureCliInstall.log | findstr /i /v "^MSI"`,
 		ignoreError: true
 	}
 ];
