@@ -7,8 +7,8 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import { ICapabilitiesService, ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionConfig, ISaveGroupResult } from 'sql/platform/connection/common/connectionConfig';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
+import { ConnectionGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionGroup';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
@@ -487,8 +487,8 @@ suite('ConnectionConfig', () => {
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		connectionProfile.options['databaseDisplayName'] = 'database';
 
-		let connectionProfileGroup = new ConnectionProfileGroup('g3', undefined, 'g3', undefined, undefined);
-		let childGroup = new ConnectionProfileGroup('g3-1', connectionProfileGroup, 'g3-1', undefined, undefined);
+		let connectionProfileGroup = new ConnectionGroup('g3', undefined, 'g3', undefined, undefined);
+		let childGroup = new ConnectionGroup('g3-1', connectionProfileGroup, 'g3-1', undefined, undefined);
 		connectionProfileGroup.addGroups([childGroup]);
 		connectionProfileGroup.addConnections([connectionProfile]);
 
@@ -531,7 +531,7 @@ suite('ConnectionConfig', () => {
 		let configurationService = new TestConfigurationService();
 		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
 
-		let connectionProfileGroup = new ConnectionProfileGroup('g-renamed', undefined, 'g2', undefined, undefined);
+		let connectionProfileGroup = new ConnectionGroup('g-renamed', undefined, 'g2', undefined, undefined);
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.editGroup(connectionProfileGroup);
 
@@ -547,7 +547,7 @@ suite('ConnectionConfig', () => {
 		let configurationService = new TestConfigurationService();
 		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
 
-		let sameNameGroup = new ConnectionProfileGroup('g3', undefined, 'g2', undefined, undefined);
+		let sameNameGroup = new ConnectionGroup('g3', undefined, 'g2', undefined, undefined);
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 
 		try {
@@ -565,8 +565,8 @@ suite('ConnectionConfig', () => {
 		let configurationService = new TestConfigurationService();
 		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
 
-		let sourceProfileGroup = new ConnectionProfileGroup('g2', undefined, 'g2', undefined, undefined);
-		let targetProfileGroup = new ConnectionProfileGroup('g3', undefined, 'g3', undefined, undefined);
+		let sourceProfileGroup = new ConnectionGroup('g2', undefined, 'g2', undefined, undefined);
+		let targetProfileGroup = new ConnectionGroup('g3', undefined, 'g3', undefined, undefined);
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.changeGroupIdForConnectionGroup(sourceProfileGroup, targetProfileGroup);
 

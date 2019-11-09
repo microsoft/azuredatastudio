@@ -15,7 +15,7 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 import { Task } from 'sql/platform/tasks/browser/tasksRegistry';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 export function showRestore(accessor: ServicesAccessor, connection: ConnectionProfile): Promise<void> {
 	const restoreDialogService = accessor.get(IRestoreDialogController);

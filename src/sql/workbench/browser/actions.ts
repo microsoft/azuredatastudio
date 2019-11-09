@@ -15,7 +15,7 @@ import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation
 import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
 
 export interface BaseActionContext {

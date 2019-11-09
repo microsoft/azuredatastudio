@@ -8,7 +8,7 @@ import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInpu
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import * as azdata from 'azdata';
 import { INewProfilerState } from 'sql/workbench/parts/profiler/common/profilerState';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 const PROFILER_SERVICE_ID = 'profilerService';
 export const IProfilerService = createDecorator<IProfilerService>(PROFILER_SERVICE_ID);

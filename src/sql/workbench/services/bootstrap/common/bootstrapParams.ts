@@ -8,7 +8,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
 import { Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 export interface IQueryComponentParams extends IBootstrapParams {
 	dataService: DataService;

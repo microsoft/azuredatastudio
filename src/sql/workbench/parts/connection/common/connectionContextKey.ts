@@ -4,21 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { RawContextKey, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { IConnectionProfile } from 'azdata';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
-export class ConnectionContextKey implements IContextKey<IConnectionProfile> {
+export class ConnectionContextKey implements IContextKey<ConnectionProfile> {
 
 	static Provider = new RawContextKey<string>('connectionProvider', undefined);
 	static Server = new RawContextKey<string>('serverName', undefined);
 	static Database = new RawContextKey<string>('databaseName', undefined);
-	static Connection = new RawContextKey<IConnectionProfile>('connection', undefined);
+	static Connection = new RawContextKey<ConnectionProfile>('connection', undefined);
 	static IsQueryProvider = new RawContextKey<boolean>('isQueryProvider', false);
 
 	private _providerKey: IContextKey<string>;
 	private _serverKey: IContextKey<string>;
 	private _databaseKey: IContextKey<string>;
-	private _connectionKey: IContextKey<IConnectionProfile>;
+	private _connectionKey: IContextKey<ConnectionProfile>;
 	private _isQueryProviderKey: IContextKey<boolean>;
 
 	constructor(
@@ -32,7 +32,7 @@ export class ConnectionContextKey implements IContextKey<IConnectionProfile> {
 		this._isQueryProviderKey = ConnectionContextKey.IsQueryProvider.bindTo(contextKeyService);
 	}
 
-	set(value: IConnectionProfile) {
+	set(value: ConnectionProfile) {
 		let queryProviders = this.queryManagementService.getRegisteredProviders();
 		this._connectionKey.set(value);
 		this._providerKey.set(value && value.providerName);
@@ -49,7 +49,7 @@ export class ConnectionContextKey implements IContextKey<IConnectionProfile> {
 		this._isQueryProviderKey.reset();
 	}
 
-	public get(): IConnectionProfile {
+	public get(): ConnectionProfile {
 		return this._connectionKey.get();
 	}
 }

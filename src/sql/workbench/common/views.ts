@@ -5,7 +5,7 @@
 
 import { ITreeViewDataProvider, ITreeItem as vsITreeItem, IViewDescriptor, ITreeView as vsITreeView } from 'vs/workbench/common/views';
 import { ExtensionNodeType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 export interface ITreeComponentItem extends vsITreeItem {
 	checked?: boolean;

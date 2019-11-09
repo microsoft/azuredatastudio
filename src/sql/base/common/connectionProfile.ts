@@ -3,21 +3,33 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { equalsIgnoreCase } from 'vs/base/common/strings';
-import { NotImplementedError } from 'vs/base/common/errors';
-import { deepClone } from 'vs/base/common/objects';
+import { deepClone, assign } from 'vs/base/common/objects';
+import { areIffyStringsEqual } from 'sql/base/common/strings';
 
 /**
  * A concrete implementation of an IConnectionProfile with support for profile creation and validation
  */
 export class ConnectionProfile implements ConnectionShape {
 
+	public static from(profile: ConnectionProfile | undefined | null): ConnectionProfile | undefined;
+	public static from(shape: ConnectionShape | undefined | null): ConnectionProfile | undefined;
+	public static from(from: ConnectionShape | ConnectionProfile | undefined | null): ConnectionProfile | undefined {
+		if (from) {
+			if (from instanceof ConnectionProfile) {
+				return from;
+			}
+			return new _ConnectionProfile(from);
+		} else {
+			return undefined;
+		}
+	}
+
 	public readonly databaseName?: string;
 	public readonly serverName: string;
-	public readonly userName: string;
+	public readonly userName?: string;
 	public readonly password?: string;
 	public readonly providerName: string;
-	public readonly options: { readonly [name: string]: any };
+	public readonly options?: { readonly [name: string]: boolean | string | number };
 	public readonly authenticationType: string;
 	public readonly connectionName: string;
 
@@ -35,40 +47,27 @@ export class ConnectionProfile implements ConnectionShape {
 	public matches(shape: ConnectionShape): boolean {
 		return shape
 			&& this.providerName === shape.providerName
-			&& this.nullCheckEqualsIgnoreCase(this.serverName, shape.serverName)
-			&& this.nullCheckEqualsIgnoreCase(this.databaseName, shape.databaseName)
-			&& this.nullCheckEqualsIgnoreCase(this.userName, shape.userName)
-			&& this.nullCheckEqualsIgnoreCase(this.options['databaseDisplayName'], shape.options['databaseDisplayName'])
+			&& this.serverName === shape.serverName
+			&& areIffyStringsEqual(this.databaseName, shape.databaseName)
+			&& areIffyStringsEqual(this.userName, shape.userName)
 			&& this.authenticationType === shape.authenticationType;
 	}
 
-	private nullCheckEqualsIgnoreCase(a: string, b: string) {
-		let bothNull: boolean = !a && !b;
-		return bothNull ? bothNull : equalsIgnoreCase(a, b);
+	public with(of: Partial<ConnectionShape>): ConnectionProfile {
+		return new _ConnectionProfile(assign({}, of, this.toShape()));
 	}
 
-	public static from(profile: ConnectionProfile | undefined | null): ConnectionProfile | undefined;
-	public static from(shape: ConnectionShape | undefined | null): ConnectionProfile | undefined;
-	public static from(from: ConnectionShape | ConnectionProfile | undefined | null): ConnectionProfile | undefined {
-		if (from) {
-			if (from instanceof ConnectionProfile) {
-				return from;
-			}
-			return new _ConnectionProfile(from);
-		} else {
-			return undefined;
-		}
-	}
-
-	public static with(of: { [T in keyof ConnectionShape]: ConnectionShape[T] }): ConnectionProfile {
-		throw new NotImplementedError();
-	}
-
-	/**
-	 * Creates a string repsentation of this profile
-	 */
-	public toString(): string {
-		throw new NotImplementedError();
+	public toShape(): ConnectionShape {
+		return {
+			providerName: this.providerName,
+			connectionName: this.connectionName,
+			serverName: this.serverName,
+			databaseName: this.databaseName,
+			userName: this.userName,
+			password: this.password,
+			authenticationType: this.authenticationType,
+			options: deepClone(this.options)
+		};
 	}
 }
 
@@ -84,8 +83,13 @@ export interface ConnectionShape {
 	connectionName: string;
 	serverName: string;
 	databaseName?: string;
-	userName: string;
+	userName?: string;
 	password?: string;
 	authenticationType: string;
-	options: { [name: string]: any };
+	/**
+	 * Represent *ADDITIONAL* options we may not know about;
+	 * If it is a property of the interface inheritly, don't put it in the options bag
+	 */
+	options?: { [name: string]: boolean | string | number };
 }
+

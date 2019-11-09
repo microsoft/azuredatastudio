@@ -16,7 +16,7 @@ import { INotebookManager, ILanguageMagic } from 'sql/workbench/services/noteboo
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IStandardKernelWithProvider } from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { localize } from 'vs/nls';
 import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';

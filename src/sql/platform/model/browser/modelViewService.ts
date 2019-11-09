@@ -7,10 +7,11 @@ import * as azdata from 'azdata';
 import { IItemConfig, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IComponentEventArgs } from 'sql/workbench/browser/modelComponents/interfaces';
 import { Event } from 'vs/base/common/event';
+import { Connection } from 'sql/base/common/connection';
 
 export interface IView {
 	readonly id: string;
-	readonly connection: azdata.connection.Connection;
+	readonly connection: Connection;
 	readonly serverInfo: azdata.ServerInfo;
 }
 

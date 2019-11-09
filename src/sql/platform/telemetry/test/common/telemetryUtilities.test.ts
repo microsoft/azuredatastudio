@@ -9,7 +9,7 @@ import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { TelemetryService } from 'vs/platform/telemetry/common/telemetryService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 suite('SQL Telemetry Utilities tests', () => {
 	let telemetryService: TypeMoq.Mock<ITelemetryService>;

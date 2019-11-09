@@ -5,7 +5,7 @@
 
 import { INewConnectionParams, IConnectionResult, IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 export class TestConnectionDialogService implements IConnectionDialogService {
 	_serviceBrand: undefined;

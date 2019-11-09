@@ -4,29 +4,30 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
+import { ConnectionGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionGroup';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as nls from 'vs/nls';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { find, firstIndex } from 'vs/base/common/arrays';
+import { Connection, ConnectionState } from 'sql/base/common/connection';
 
 const GROUPS_CONFIG_KEY = 'datasource.connectionGroups';
 const CONNECTIONS_CONFIG_KEY = 'datasource.connections';
 
-interface ConnectionProfileStore {
+interface StoredConnection {
 	options: {};
 	groupId: string;
 	providerName: string;
-	savePassword: boolean;
+	savePassword?: boolean;
 	id: string;
 }
 
-export interface ISaveGroupResult {
-	groups: IConnectionProfileGroup[];
-	newGroupId?: string;
+interface StoredGroup {
+	id: string;
+	color: string;
 }
 
 /**
@@ -67,44 +68,29 @@ export class ConnectionConfig {
 	/**
 	 * Add a new connection to the connection config.
 	 */
-	public addConnection(profile: ConnectionProfile): Promise<ConnectionProfile> {
-		if (profile.saveProfile) {
-			return this.addGroupFromProfile(profile).then(groupId => {
-				const profiles = this.configurationService.inspect<ConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).user || [];
-				const connectionProfile = this.getConnectionProfileInstance(profile, groupId);
-				const newProfile = profileToStore(connectionProfile);
+	public async addConnection(connection: Connection): Promise<void> {
+		const groupId = await this.addGroupFromProfile(profile);
+		const profiles = this.configurationService.inspect<StoredConnection[]>(CONNECTIONS_CONFIG_KEY).user || [];
+		const newProfile = profileToStore(connectionProfile);
 
-				// Remove the profile if already set
-				const indexInProfiles = firstIndex(profiles, value => storeToProfile(value, this.capabilitiesService).matches(connectionProfile));
-				if (indexInProfiles >= 0) {
-					const sameProfile = profiles[indexInProfiles];
-					newProfile.id = sameProfile.id;
-					connectionProfile.id = sameProfile.id;
-					profiles[indexInProfiles] = newProfile;
-				} else {
-					profiles.push(newProfile);
-				}
-
-				return this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, ConfigurationTarget.USER).then(() => connectionProfile);
-			});
+		// Remove the profile if already set
+		const indexInProfiles = firstIndex(profiles, value => storeToProfile(value, this.capabilitiesService).matches(connectionProfile));
+		if (indexInProfiles >= 0) {
+			const sameProfile = profiles[indexInProfiles];
+			newProfile.id = sameProfile.id;
+			connectionProfile.id = sameProfile.id;
+			profiles[indexInProfiles] = newProfile;
 		} else {
-			return Promise.resolve(profile);
+			profiles.push(newProfile);
 		}
-	}
 
-	private getConnectionProfileInstance(profile: ConnectionProfile, groupId: string): ConnectionProfile {
-		let connectionProfile = profile as ConnectionProfile;
-		if (connectionProfile === undefined) {
-			connectionProfile = new ConnectionProfile(this.capabilitiesService, profile);
-		}
-		connectionProfile.groupId = groupId;
-		return connectionProfile;
+		this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, ConfigurationTarget.USER).then(() => connectionProfile);
 	}
 
 	/**
 	 *Returns group id
 	 */
-	public addGroupFromProfile(profile: ConnectionProfile): Promise<string> {
+	public addGroupFromProfile(connection: Connection): Promise<string> {
 		if (profile.groupId && profile.groupId !== Utils.defaultGroupId) {
 			return Promise.resolve(profile.groupId);
 		} else {
@@ -137,49 +123,24 @@ export class ConnectionConfig {
 		}
 	}
 
-	private getConnectionProfilesForTarget(configTarget: ConfigurationTarget): ConnectionProfileStore[] {
-		let configs = this.configurationService.inspect<ConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY);
-		let profiles: ConnectionProfileStore[];
-		if (configs) {
-			let fromConfig: ConnectionProfileStore[] | undefined;
-			if (configTarget === ConfigurationTarget.USER) {
-				fromConfig = configs.user;
-			} else if (configTarget === ConfigurationTarget.WORKSPACE) {
-				fromConfig = configs.workspace || [];
-			}
-			if (fromConfig) {
-				profiles = fromConfig;
-				if (this.fixConnectionIds(profiles)) {
-					this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, configTarget);
-				}
-			} else {
-				profiles = [];
-			}
-		} else {
-			profiles = [];
+	private getConnectionsForTarget(configTarget: ConfigurationTarget.USER | ConfigurationTarget.WORKSPACE): StoredConnection[] {
+		const configs = this.configurationService.inspect<StoredConnection[]>(CONNECTIONS_CONFIG_KEY);
+		switch (configTarget) {
+			case ConfigurationTarget.USER:
+				return configs.user || [];
+			case ConfigurationTarget.WORKSPACE:
+				return configs.workspace || [];
 		}
-
-		return profiles;
 	}
 
-	/**
-	 * Replace duplicate ids with new ones. Sets id for the profiles without id
-	 */
-	private fixConnectionIds(profiles: ConnectionProfileStore[]): boolean {
-		let idsCache: { [label: string]: boolean } = {};
-		let changed: boolean = false;
-		for (let profile of profiles) {
-			if (!profile.id) {
-				profile.id = generateUuid();
-				changed = true;
-			}
-			if (profile.id in idsCache) {
-				profile.id = generateUuid();
-				changed = true;
-			}
-			idsCache[profile.id] = true;
+	private getConnectionGroupsForTarget(configTarget: ConfigurationTarget.USER | ConfigurationTarget.WORKSPACE): StoredGroup[] {
+		const configs = this.configurationService.inspect<StoredGroup[]>(CONNECTIONS_CONFIG_KEY);
+		switch (configTarget) {
+			case ConfigurationTarget.USER:
+				return configs.user || [];
+			case ConfigurationTarget.WORKSPACE:
+				return configs.workspace || [];
 		}
-		return changed;
 	}
 
 	/**
@@ -187,23 +148,19 @@ export class ConnectionConfig {
 	 * are sorted first by whether they were found in the user/workspace settings,
 	 * and next alphabetically by profile/server name.
 	 */
-	public getConnections(getWorkspaceConnections: boolean): ConnectionProfile[] {
-		let profiles: ConnectionProfileStore[] = [];
+	public getConnections(getWorkspaceConnections: boolean): Connection[] {
+		let profiles: StoredConnection[] = [];
 		//TODO: have to figure out how to sort connections for all provider
 		// Read from user settings
 
-		const userProfiles = this.getConnectionProfilesForTarget(ConfigurationTarget.USER);
-		if (userProfiles !== undefined) {
-			profiles = profiles.concat(userProfiles);
-		}
+		const userProfiles = this.getConnectionsForTarget(ConfigurationTarget.USER);
+		profiles = profiles.concat(userProfiles);
 
 		if (getWorkspaceConnections) {
 			// Read from workspace settings
 
-			const workspaceProfiles = this.getConnectionProfilesForTarget(ConfigurationTarget.WORKSPACE);
-			if (workspaceProfiles !== undefined) {
-				profiles = profiles.concat(workspaceProfiles);
-			}
+			const workspaceProfiles = this.getConnectionsForTarget(ConfigurationTarget.WORKSPACE);
+			profiles = profiles.concat(workspaceProfiles);
 		}
 
 		return profiles.map(p => storeToProfile(p, this.capabilitiesService));
@@ -212,11 +169,11 @@ export class ConnectionConfig {
 	/**
 	 * Delete a connection profile from settings.
 	 */
-	public deleteConnection(profile: ConnectionProfile): Promise<void> {
+	public deleteConnection(connection: Connection): Promise<void> {
 		// Get all connections in the settings
-		let profiles = this.configurationService.inspect<ConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).user;
+		let profiles = this.getConnectionsForTarget(ConfigurationTarget.USER);
 		// Remove the profile from the connections
-		profiles = profiles.filter(value => storeToProfile(value, this.capabilitiesService).getOptionsKey() !== profile.getOptionsKey());
+		profiles = profiles.filter(v => v.id !== connection.id);
 
 		// Write connections back to settings
 		return this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, ConfigurationTarget.USER);
@@ -226,13 +183,13 @@ export class ConnectionConfig {
 	 *  Delete a group and all its child connections and groups from settings.
 	 * 	Fails if writing to settings fails.
 	 */
-	public deleteGroup(group: ConnectionProfileGroup): Promise<void> {
-		let connections = ConnectionProfileGroup.getConnectionsInGroup(group);
-		let subgroups = ConnectionProfileGroup.getSubgroups(group);
+	public deleteGroup(group: ConnectionGroup): Promise<void> {
+		let connections = ConnectionGroup.getConnectionsInGroup(group);
+		let subgroups = ConnectionGroup.getSubgroups(group);
 		// Add selected group to subgroups list
 		subgroups.push(group);
 		// Get all connections in the settings
-		let profiles = this.configurationService.inspect<ConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).user;
+		let profiles = this.getConnectionsForTarget(ConfigurationTarget.USER);
 		// Remove the profiles from the connections
 		profiles = profiles.filter(value => {
 			const providerConnectionProfile = storeToProfile(value, this.capabilitiesService);
@@ -240,7 +197,7 @@ export class ConnectionConfig {
 		});
 
 		// Get all groups in the settings
-		let groups = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).user;
+		let groups = this.getConnectionGroupsForTarget(ConfigurationTarget.USER);
 		// Remove subgroups in the settings
 		groups = groups.filter((grp) => {
 			return !subgroups.some((item) => item.id === grp.id);
@@ -254,7 +211,7 @@ export class ConnectionConfig {
 	/**
 	 * Moves the source group under the target group.
 	 */
-	public changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void> {
+	public changeGroupIdForConnectionGroup(source: ConnectionGroup, target: ConnectionGroup): Promise<void> {
 		let groups = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).user;
 		groups = groups.map(g => {
 			if (g.id === source.id) {
@@ -278,8 +235,8 @@ export class ConnectionConfig {
 	 * Moves the connection under the target group with the new ID.
 	 */
 	private changeGroupIdForConnectionInSettings(profile: ConnectionProfile, newGroupID: string, target: ConfigurationTarget = ConfigurationTarget.USER): Promise<void> {
-		const profiles = target === ConfigurationTarget.USER ? this.configurationService.inspect<ConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).user :
-			this.configurationService.inspect<ConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).workspace;
+		const profiles = target === ConfigurationTarget.USER ? this.configurationService.inspect<StoredConnection[]>(CONNECTIONS_CONFIG_KEY).user :
+			this.configurationService.inspect<StoredConnection[]>(CONNECTIONS_CONFIG_KEY).workspace;
 		if (profiles) {
 			if (profile.parent && profile.parent.id === UNSAVED_GROUP_ID) {
 				profile.groupId = newGroupID;
@@ -315,11 +272,11 @@ export class ConnectionConfig {
 	}
 
 	public saveGroup(groups: IConnectionProfileGroup[], groupFullName?: string, color?: string, description?: string): ISaveGroupResult {
-		const groupNames = ConnectionProfileGroup.getGroupFullNameParts(groupFullName);
+		const groupNames = ConnectionGroup.getGroupFullNameParts(groupFullName);
 		return this.saveGroupInTree(groups, undefined, groupNames, color, description, 0);
 	}
 
-	public editGroup(source: ConnectionProfileGroup): Promise<void> {
+	public editGroup(source: ConnectionGroup): Promise<void> {
 		let groups = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).user;
 		const sameNameGroup = groups ? find(groups, group => group.name === source.name && group.id !== source.id) : undefined;
 		if (sameNameGroup) {
@@ -373,7 +330,7 @@ export class ConnectionConfig {
 				}
 
 			} else {
-				if (ConnectionProfileGroup.isRoot(newGroup.name)) {
+				if (ConnectionGroup.isRoot(newGroup.name)) {
 					newGroup.id = Utils.defaultGroupId;
 				} else {
 					newGroup.id = generateUuid();
@@ -395,10 +352,18 @@ export class ConnectionConfig {
 	}
 }
 
-function storeToProfile(store: ConnectionProfileStore, capabilitiesService: ICapabilitiesService): ConnectionProfile {
-	return new ConnectionProfile(capabilitiesService, store);
+function storeToProfile(store: StoredConnection, capabilitiesService: ICapabilitiesService): Connection | undefined {
+	const shape = capabilitiesService.createConnectionShapeFromOptions(store.options, store.providerName);
+	if (shape) {
+		return new Connection(ConnectionProfile.from(shape), ConnectionState.disconnected, store.id, store.groupId);
+	}
+	return undefined;
 }
 
-function profileToStore(profile: ConnectionProfile): ConnectionProfileStore{
-
+function profileToStore(connection: Connection, capabilitiesService: ICapabilitiesService): StoredConnection | undefined {
+	const options = capabilitiesService.createOptionsFromConnectionShape(connection.profile);
+	if (options) {
+		return { options, providerName: connection.profile.providerName, id: connection.id, groupId: connection.groupId || 'ROOT' };
+	}
+	return undefined;
 }

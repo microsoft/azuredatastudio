@@ -5,7 +5,7 @@
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
-import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
 
 export interface IServerGroupDialogCallbacks {
 	onAddGroup(groupName: string): void;
@@ -15,5 +15,5 @@ export const IServerGroupController = createDecorator<IServerGroupController>('s
 export interface IServerGroupController {
 	_serviceBrand: undefined;
 	showCreateGroupDialog(callbacks?: IServerGroupDialogCallbacks): Promise<void>;
-	showEditGroupDialog(group: ConnectionProfileGroup): Promise<void>;
+	showEditGroupDialog(group: ConnectionGroup): Promise<void>;
 }

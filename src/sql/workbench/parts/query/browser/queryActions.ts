@@ -39,7 +39,7 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { OEAction } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
 import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 
 /**

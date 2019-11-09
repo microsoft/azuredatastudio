@@ -6,7 +6,7 @@
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 import * as azdata from 'azdata';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 export const SERVICE_ID = 'resourceProviderService';
 export const IResourceProviderService = createDecorator<IResourceProviderService>(SERVICE_ID);

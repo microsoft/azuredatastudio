@@ -3,54 +3,33 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { assign } from 'vs/base/common/objects';
 import { find } from 'vs/base/common/arrays';
 
-export interface IConnectionProfileGroup {
-	id: string;
-	parentId?: string;
-	name: string;
-	color?: string;
-	description?: string;
-}
+export class ConnectionGroup extends Disposable {
 
-export class ConnectionProfileGroup extends Disposable implements IConnectionProfileGroup {
-
-	public children: ConnectionProfileGroup[];
+	public children: ConnectionGroup[];
 	public connections: ConnectionProfile[];
 	public parentId?: string;
 	private _isRenamed: boolean;
 	public constructor(
 		public name: string,
-		public parent: ConnectionProfileGroup | undefined,
+		public parent: ConnectionGroup | undefined,
 		public id: string,
 		public color?: string,
 		public description?: string
 	) {
 		super();
 		this.parentId = parent ? parent.id : undefined;
-		if (this.name === ConnectionProfileGroup.RootGroupName) {
+		if (this.name === ConnectionGroup.RootGroupName) {
 			this.name = '';
 		}
 	}
 
 	public static GroupNameSeparator: string = '/';
 	public static RootGroupName: string = 'ROOT';
-
-	public toObject(): IConnectionProfileGroup {
-		let subgroups = undefined;
-		if (this.children) {
-			subgroups = [];
-			this.children.forEach((group) => {
-				subgroups.push(group.toObject());
-			});
-		}
-
-		return assign({}, { name: this.name, id: this.id, parentId: this.parentId, children: subgroups, color: this.color, description: this.description });
-	}
 
 	public get groupName(): string {
 		return this.name;
@@ -61,7 +40,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		if (this.parent) {
 			let parentFullName = this.parent.fullName;
 			if (parentFullName) {
-				fullName = parentFullName + ConnectionProfileGroup.GroupNameSeparator + this.name;
+				fullName = parentFullName + ConnectionGroup.GroupNameSeparator + this.name;
 			}
 		}
 		return fullName;
@@ -105,8 +84,8 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		}
 	}
 
-	public getChildren(): (ConnectionProfile | ConnectionProfileGroup)[] {
-		let allChildren: (ConnectionProfile | ConnectionProfileGroup)[] = [];
+	public getChildren(): (ConnectionProfile | ConnectionGroup)[] {
+		let allChildren: (ConnectionProfile | ConnectionGroup)[] = [];
 		if (this.connections) {
 			this.connections.forEach((conn) => {
 				allChildren.push(conn);
@@ -122,7 +101,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	}
 
 	public equals(other: any): boolean {
-		if (!(other instanceof ConnectionProfileGroup)) {
+		if (!(other instanceof ConnectionGroup)) {
 			return false;
 		}
 		return other.id === this.id;
@@ -141,7 +120,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 
 	}
 
-	public addGroups(groups: ConnectionProfileGroup[]): void {
+	public addGroups(groups: ConnectionGroup[]): void {
 		if (!this.children) {
 			this.children = [];
 		}
@@ -153,13 +132,13 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		});
 	}
 
-	public getParent(): ConnectionProfileGroup | undefined {
+	public getParent(): ConnectionGroup | undefined {
 		return this.parent;
 	}
 
-	public isAncestorOf(node: ConnectionProfileGroup | ConnectionProfile): boolean {
+	public isAncestorOf(node: ConnectionGroup | ConnectionProfile): boolean {
 		let isAncestor = false;
-		let currentNode: ConnectionProfileGroup | ConnectionProfile | undefined = node;
+		let currentNode: ConnectionGroup | ConnectionProfile | undefined = node;
 		while (currentNode) {
 			if (currentNode.parent && currentNode.parent.id === this.id) {
 				isAncestor = true;
@@ -172,7 +151,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 
 	public static getGroupFullNameParts(groupFullName?: string): string[] {
 		groupFullName = groupFullName ? groupFullName : '';
-		let groupNames: string[] = groupFullName.split(ConnectionProfileGroup.GroupNameSeparator);
+		let groupNames: string[] = groupFullName.split(ConnectionGroup.GroupNameSeparator);
 		groupNames = groupNames.filter(g => !!g);
 		if (groupNames.length === 0) {
 			groupNames.push('ROOT');
@@ -184,8 +163,8 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	}
 
 	public static isRoot(name: string): boolean {
-		return (!name || name.toUpperCase() === ConnectionProfileGroup.RootGroupName ||
-			name === ConnectionProfileGroup.GroupNameSeparator);
+		return (!name || name.toUpperCase() === ConnectionGroup.RootGroupName ||
+			name === ConnectionGroup.GroupNameSeparator);
 	}
 
 	public static sameGroupName(name1?: string, name2?: string): boolean {
@@ -200,10 +179,10 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		if (name1!.toUpperCase() === name2!.toUpperCase()) {
 			return true;
 		}
-		return ConnectionProfileGroup.isRoot(name1!) && ConnectionProfileGroup.isRoot(name2!);
+		return ConnectionGroup.isRoot(name1!) && ConnectionGroup.isRoot(name2!);
 	}
 
-	public static getConnectionsInGroup(group: ConnectionProfileGroup): ConnectionProfile[] {
+	public static getConnectionsInGroup(group: ConnectionGroup): ConnectionProfile[] {
 		let connections: ConnectionProfile[] = [];
 		if (group && group.connections) {
 			group.connections.forEach((con) => connections.push(con));
@@ -216,8 +195,8 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		return connections;
 	}
 
-	public static getSubgroups(group: ConnectionProfileGroup): ConnectionProfileGroup[] {
-		let subgroups: ConnectionProfileGroup[] = [];
+	public static getSubgroups(group: ConnectionGroup): ConnectionGroup[] {
+		let subgroups: ConnectionGroup[] = [];
 		if (group && group.children) {
 			group.children.forEach((grp) => subgroups.push(grp));
 			group.children.forEach((subgroup) => {

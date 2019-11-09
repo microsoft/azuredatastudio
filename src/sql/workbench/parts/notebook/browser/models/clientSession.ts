@@ -14,7 +14,7 @@ import { getErrorMessage } from 'vs/base/common/errors';
 import { IClientSession, IKernelPreference, IClientSessionOptions } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 type KernelChangeHandler = (kernel: nb.IKernelChangedArgs) => Promise<void>;
 /**

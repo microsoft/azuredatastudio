@@ -14,7 +14,7 @@ import { FirewallRuleDialogController } from 'sql/workbench/parts/accounts/brows
 import * as azdata from 'azdata';
 import { invalidProvider } from 'sql/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 export class ResourceProviderService implements IResourceProviderService {
 

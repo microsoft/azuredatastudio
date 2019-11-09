@@ -16,7 +16,7 @@ import { BackupDialog } from 'sql/workbench/parts/backup/browser/backupDialog';
 import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
 import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { find } from 'vs/base/common/arrays';
 
 export class BackupUiService implements IBackupUiService {

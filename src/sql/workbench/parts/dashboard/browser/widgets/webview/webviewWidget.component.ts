@@ -16,6 +16,7 @@ import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard
 
 import * as azdata from 'azdata';
 import { WebviewElement, IWebviewService } from 'vs/workbench/contrib/webview/browser/webview';
+import { Connection } from 'sql/base/common/connection';
 
 interface IWebviewWidgetConfig {
 	id: string;
@@ -64,7 +65,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 	}
 
 	@memoize
-	public get connection(): azdata.connection.Connection {
+	public get connection(): Connection {
 		const currentConnection = this._dashboardService.connectionManagementService.connectionInfo.connectionProfile;
 		const connection: azdata.connection.Connection = {
 			providerName: currentConnection.providerName,

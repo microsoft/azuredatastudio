@@ -6,7 +6,7 @@
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionComponentCallbacks, IConnectionComponentController, IConnectionValidateResult } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { AdvancedPropertiesController } from 'sql/workbench/parts/connection/browser/advancedPropertiesController';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionGroup';
 import * as Constants from 'sql/platform/connection/common/constants';
 import * as azdata from 'azdata';
 import * as Utils from 'sql/platform/connection/common/utils';
@@ -15,7 +15,7 @@ import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHost
 import { ConnectionWidget } from 'sql/workbench/services/connection/browser/connectionWidget';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { assign } from 'vs/base/common/objects';
 import { find } from 'vs/base/common/arrays';
@@ -118,7 +118,7 @@ export class ConnectionController implements IConnectionComponentController {
 		this._connectionWidget.createConnectionWidget(container);
 	}
 
-	private flattenGroups(group: ConnectionProfileGroup, allGroups: IConnectionProfileGroup[]): void {
+	private flattenGroups(group: ConnectionGroup, allGroups: IConnectionProfileGroup[]): void {
 		if (group) {
 			if (group.fullName !== '') {
 				allGroups.push(group);
@@ -136,7 +136,7 @@ export class ConnectionController implements IConnectionComponentController {
 			this.flattenGroups(connectionGroupRoot[0], allGroups);
 		}
 		let defaultGroupId: string;
-		if (connectionGroupRoot && connectionGroupRoot.length > 0 && ConnectionProfileGroup.isRoot(connectionGroupRoot[0].name)) {
+		if (connectionGroupRoot && connectionGroupRoot.length > 0 && ConnectionGroup.isRoot(connectionGroupRoot[0].name)) {
 			defaultGroupId = connectionGroupRoot[0].id;
 		} else {
 			defaultGroupId = Utils.defaultGroupId;

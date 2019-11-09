@@ -14,7 +14,7 @@ import { localize } from 'vs/nls';
 import { ConnectionStatusbarItem } from 'sql/workbench/parts/connection/browser/connectionStatus';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { integrated, azureMFA } from 'sql/platform/connection/common/constants';
 import { AuthenticationType } from 'sql/workbench/services/connection/browser/connectionWidget';

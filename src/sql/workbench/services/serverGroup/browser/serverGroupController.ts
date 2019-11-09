@@ -13,14 +13,14 @@ import { IServerGroupController, IServerGroupDialogCallbacks } from 'sql/platfor
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ServerGroupDialog } from 'sql/workbench/parts/objectExplorer/browser/serverGroupDialog';
 import { ServerGroupViewModel } from 'sql/workbench/parts/objectExplorer/common/serverGroupViewModel';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionGroup';
 
 export class ServerGroupController implements IServerGroupController {
 	_serviceBrand: undefined;
 
 	private _serverGroupDialog: ServerGroupDialog;
 	private _callbacks: IServerGroupDialogCallbacks;
-	private _group: ConnectionProfileGroup;
+	private _group: ConnectionGroup;
 	private _viewModel: ServerGroupViewModel;
 
 	constructor(
@@ -33,7 +33,7 @@ export class ServerGroupController implements IServerGroupController {
 
 	private handleOnAddServerGroup(): void {
 		if (this._group) {
-			let tempGroup: ConnectionProfileGroup = this.copyConnectionProfileGroup(this._group);
+			let tempGroup: ConnectionGroup = this.copyConnectionProfileGroup(this._group);
 			this._group.name = this._viewModel.groupName;
 			this._group.color = this._viewModel.groupColor;
 			this._group.description = this._viewModel.groupDescription;
@@ -64,8 +64,8 @@ export class ServerGroupController implements IServerGroupController {
 		}
 	}
 
-	private copyConnectionProfileGroup(group: ConnectionProfileGroup): ConnectionProfileGroup {
-		return new ConnectionProfileGroup(group.name, group.parent, group.id, group.color, group.description);
+	private copyConnectionProfileGroup(group: ConnectionGroup): ConnectionGroup {
+		return new ConnectionGroup(group.name, group.parent, group.id, group.color, group.description);
 	}
 
 	private handleOnClose(): void {
@@ -82,7 +82,7 @@ export class ServerGroupController implements IServerGroupController {
 		return this.openServerGroupDialog();
 	}
 
-	public showEditGroupDialog(group: ConnectionProfileGroup): Promise<void> {
+	public showEditGroupDialog(group: ConnectionGroup): Promise<void> {
 		this._group = group;
 		this._viewModel = new ServerGroupViewModel(group, this._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_COLORS_CONFIG]);
 		return this.openServerGroupDialog();

@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { ConnectionProfile, ConnectionShape } from 'sql/base/common/connectionProfile';
 
 export const SERVICE_ID = 'capabilitiesService';
 export const HOST_NAME = 'azdata';
@@ -18,13 +19,13 @@ export const clientCapabilities = {
 };
 
 export interface ConnectionProviderProperties {
-	providerId: string;
-	displayName: string;
-	connectionOptions: azdata.ConnectionOption[];
+	readonly providerId: string;
+	readonly displayName: string;
+	readonly connectionOptions: azdata.ConnectionOption[];
 }
 
 export interface ProviderFeatures {
-	connection: ConnectionProviderProperties;
+	readonly connection: ConnectionProviderProperties;
 }
 
 
@@ -59,6 +60,17 @@ export interface ICapabilitiesService {
 	/**
 	 * Get an array of all known providers
 	 */
-	readonly providers: { [id: string]: ProviderFeatures };
+	readonly providers: { readonly [id: string]: ProviderFeatures };
 
+	isPasswordRequired(profile: ConnectionProfile): boolean;
+
+	/**
+	 * Given a object from key value pairs and a provider; with construct a connection shape using the provider's supplied connection properties
+	 */
+	createConnectionShapeFromOptions(options: { [key: string]: string | number | boolean }, provider: string): ConnectionShape;
+
+	/**
+	 * Inverse of {@link ICapabilitiesService#createConnectionShapeFromOptions}
+	 */
+	createOptionsFromConnectionShape(shape: ConnectionShape): { [key: string]: string | number | boolean };
 }

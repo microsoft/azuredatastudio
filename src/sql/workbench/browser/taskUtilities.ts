@@ -17,9 +17,9 @@ import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInpu
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
-export function replaceConnection(oldUri: string, newUri: string, connectionService: IConnectionManagementService): Promise<IConnectionResult> {
+export function replaceConnection(oldUri: string, connectionService: IConnectionManagementService): Promise<IConnectionResult> {
 	return new Promise<IConnectionResult>((resolve, reject) => {
 		let defaultResult: IConnectionResult = {
 			connected: false,
@@ -38,7 +38,7 @@ export function replaceConnection(oldUri: string, newUri: string, connectionServ
 					showFirewallRuleOnError: true
 				};
 				connectionService.disconnect(oldUri).then(() => {
-					connectionService.connect(connectionProfile, newUri, options).then(result => {
+					connectionService.connect(connectionProfile, options).then(result => {
 						resolve(result);
 					}, connectError => {
 						reject(connectError);
@@ -75,7 +75,7 @@ export function getCurrentGlobalConnection(objectExplorerService: IObjectExplore
 		let objectExplorerProfile = objectExplorerSelection.profile;
 		if (connectionManagementService.isProfileConnected(objectExplorerProfile)) {
 			if (objectExplorerSelection.databaseName && !topLevelOnly) {
-				connection = objectExplorerProfile.cloneWithDatabase(objectExplorerSelection.databaseName);
+				connection = objectExplorerProfile.with({ databaseName: objectExplorerSelection.databaseName });
 			} else {
 				connection = objectExplorerProfile;
 			}

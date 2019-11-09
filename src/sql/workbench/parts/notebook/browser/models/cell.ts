@@ -22,7 +22,7 @@ import { getErrorMessage } from 'vs/base/common/errors';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import { firstIndex, find } from 'vs/base/common/arrays';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 let modelId = 0;
 
 export const HideInputTag = 'hide_input';

@@ -13,7 +13,7 @@ import { IProfilerService } from 'sql/workbench/services/profiler/browser/interf
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ProfilerEditor } from 'sql/workbench/parts/profiler/browser/profilerEditor';
 import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';

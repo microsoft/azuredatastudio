@@ -7,7 +7,7 @@ import { IConnectionProfile } from 'azdata';
 import * as assert from 'assert';
 
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 

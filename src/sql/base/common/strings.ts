@@ -3,6 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { isUndefinedOrNull } from 'vs/base/common/types';
+import { equalsIgnoreCase } from 'vs/base/common/strings';
+
 /**
  * Converts HTML characters inside the string to use entities instead. Makes the string safe from
  * being used e.g. in HTMLElement.innerHTML.
@@ -35,4 +38,13 @@ export function raw(callSite: any, ...substitutions: any[]): string {
 		}
 		return substitutions[i - 1] ? substitutions[i - 1] + chunk : chunk;
 	}).join('');
+}
+
+/**
+ * Tests is a and b are equal value (including if both are undefined)
+ */
+export function areIffyStringsEqual(a: string | undefined | null, b: string | undefined | null): boolean {
+	const aUndefined = isUndefinedOrNull(a);
+	const bUndefined = isUndefinedOrNull(b);
+	return (aUndefined && bUndefined) || (!aUndefined && !bUndefined ? equalsIgnoreCase(a, b) : false);
 }

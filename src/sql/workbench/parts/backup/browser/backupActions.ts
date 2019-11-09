@@ -15,7 +15,7 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
 import { Task } from 'sql/platform/tasks/browser/tasksRegistry';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 export const BackupFeatureName = 'backup';
 

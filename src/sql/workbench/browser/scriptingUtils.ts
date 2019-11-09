@@ -11,7 +11,7 @@ import Severity from 'vs/base/common/severity';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IScriptingService, ScriptOperation } from 'sql/platform/scripting/common/scriptingService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 // map for the version of SQL Server (default is 140)
 const scriptCompatibilityOptionMap = {
@@ -54,7 +54,7 @@ export async function scriptSelect(connectionProfile: ConnectionProfile, metadat
 			showConnectionDialogOnError: true,
 			showFirewallRuleOnError: true
 		};
-		const innerConnectionResult = await connectionService.connect(connectionProfile, owner.uri, options);
+		const innerConnectionResult = await connectionService.connect(connectionProfile, options);
 
 		return Boolean(innerConnectionResult) && innerConnectionResult.connected;
 	} else {
@@ -80,7 +80,7 @@ export async function scriptEditSelect(connectionProfile: ConnectionProfile, met
 			showConnectionDialogOnError: true,
 			showFirewallRuleOnError: true
 		};
-		const innerConnectionResult = await connectionService.connect(connectionProfile, owner.uri, options);
+		const innerConnectionResult = await connectionService.connect(connectionProfile, options);
 
 		return Boolean(innerConnectionResult) && innerConnectionResult.connected;
 	} else {
@@ -136,7 +136,7 @@ export async function script(connectionProfile: ConnectionProfile, metadata: azd
 				showConnectionDialogOnError: true,
 				showFirewallRuleOnError: true
 			};
-			const innerConnectionResult = await connectionService.connect(connectionProfile, owner.uri, options);
+			const innerConnectionResult = await connectionService.connect(connectionProfile, options);
 
 			return Boolean(innerConnectionResult) && innerConnectionResult.connected;
 

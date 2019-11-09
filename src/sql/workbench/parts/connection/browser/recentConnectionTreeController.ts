@@ -11,7 +11,7 @@ import { ClearSingleRecentConnectionAction } from 'sql/workbench/parts/connectio
 import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { IAction } from 'vs/base/common/actions';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as mouse from 'vs/base/browser/mouseEvent';

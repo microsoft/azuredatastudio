@@ -7,8 +7,7 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { generateUri } from 'sql/platform/connection/common/utils';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { TreeSelectionHandler } from 'sql/workbench/parts/objectExplorer/browser/treeSelectionHandler';
@@ -28,7 +27,6 @@ CommandsRegistry.registerCommand({
 	handler: (accessor, args: TreeViewItemHandleArg) => {
 		if (args.$treeItem) {
 			const connectionService = accessor.get(IConnectionManagementService);
-			const capabilitiesService = accessor.get(ICapabilitiesService);
 			let options = {
 				showDashboard: true,
 				saveTheConnection: false,
@@ -36,9 +34,8 @@ CommandsRegistry.registerCommand({
 				showConnectionDialogOnError: true,
 				showFirewallRuleOnError: true
 			};
-			let profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-			let uri = generateUri(profile, 'dashboard');
-			return connectionService.connect(new ConnectionProfile(capabilitiesService, args.$treeItem.payload), uri, options);
+			const profile = ConnectionProfile.from(args.$treeItem.payload);
+			return connectionService.connect(profile, options);
 		}
 		return Promise.resolve(true);
 	}

@@ -26,7 +26,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ConnectionWidget, AuthenticationType } from 'sql/workbench/services/connection/browser/connectionWidget';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { ILogService } from 'vs/platform/log/common/log';
 
 /**

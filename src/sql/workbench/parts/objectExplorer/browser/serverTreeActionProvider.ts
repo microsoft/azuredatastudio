@@ -15,8 +15,8 @@ import {
 } from 'sql/workbench/parts/objectExplorer/browser/connectionTreeAction';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
-import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';
@@ -44,7 +44,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 	}
 
 	public hasActions(tree: ITree, element: any): boolean {
-		return element instanceof ConnectionProfileGroup || (element instanceof ConnectionProfile) || (element instanceof TreeNode);
+		return element instanceof ConnectionGroup || (element instanceof ConnectionProfile) || (element instanceof TreeNode);
 	}
 
 	/**
@@ -54,7 +54,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		if (element instanceof ConnectionProfile) {
 			return this.getConnectionActions(tree, element);
 		}
-		if (element instanceof ConnectionProfileGroup) {
+		if (element instanceof ConnectionGroup) {
 			return this.getConnectionProfileGroupActions(tree, element);
 		}
 		if (element instanceof TreeNode) {
@@ -160,7 +160,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 	/**
 	 * Return actions for connection group elements
 	 */
-	public getConnectionProfileGroupActions(tree: ITree, element: ConnectionProfileGroup): IAction[] {
+	public getConnectionProfileGroupActions(tree: ITree, element: ConnectionGroup): IAction[] {
 		return [
 			this._instantiationService.createInstance(AddServerAction, AddServerAction.ID, AddServerAction.LABEL),
 			this._instantiationService.createInstance(EditServerGroupAction, EditServerGroupAction.ID, EditServerGroupAction.LABEL, element),

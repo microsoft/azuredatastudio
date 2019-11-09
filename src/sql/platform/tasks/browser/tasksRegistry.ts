@@ -13,7 +13,7 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { createCSSRule, asCSSUrl } from 'vs/base/browser/dom';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IdGenerator } from 'vs/base/common/idGenerator';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 const ids = new IdGenerator('task-icon-');
 

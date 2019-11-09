@@ -8,8 +8,8 @@ import 'vs/css!sql/media/icons/common-icons';
 
 import * as dom from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
-import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
@@ -70,7 +70,7 @@ export class ServerTreeRenderer implements IRenderer {
 	 * Returns the element's height in the tree, in pixels.
 	 */
 	public getHeight(tree: ITree, element: any): number {
-		if (element instanceof ConnectionProfileGroup) {
+		if (element instanceof ConnectionGroup) {
 			return ServerTreeRenderer.CONNECTION_GROUP_HEIGHT;
 		} else if (element instanceof ConnectionProfile) {
 			return ServerTreeRenderer.CONNECTION_HEIGHT;
@@ -82,7 +82,7 @@ export class ServerTreeRenderer implements IRenderer {
 	 * Returns a template ID for a given element.
 	 */
 	public getTemplateId(tree: ITree, element: any): string {
-		if (element instanceof ConnectionProfileGroup) {
+		if (element instanceof ConnectionGroup) {
 			return ServerTreeRenderer.CONNECTION_GROUP_TEMPLATE_ID;
 		} else if (element instanceof ConnectionProfile) {
 			return ServerTreeRenderer.CONNECTION_TEMPLATE_ID;
@@ -231,7 +231,7 @@ export class ServerTreeRenderer implements IRenderer {
 		templateData.connectionProfile = connection;
 	}
 
-	private renderConnectionProfileGroup(connectionProfileGroup: ConnectionProfileGroup, templateData: IConnectionProfileGroupTemplateData): void {
+	private renderConnectionProfileGroup(connectionProfileGroup: ConnectionGroup, templateData: IConnectionProfileGroupTemplateData): void {
 
 		let rowElement = this.findParentElement(templateData.root, 'monaco-tree-row');
 		if (rowElement) {

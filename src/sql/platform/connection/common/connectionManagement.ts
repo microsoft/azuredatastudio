@@ -6,10 +6,12 @@
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
 import * as azdata from 'azdata';
-import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { IConnectionProfileGroup, ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
+import { Connection, ConnectionState } from 'sql/base/common/connection';
+import { URI } from 'vs/base/common/uri';
 
 /**
  * Options for the actions that could happen after connecting is complete
@@ -58,6 +60,31 @@ export interface IConnectionCallbacks {
 	onConnectCanceled(): void;
 }
 
+export interface ConnectOptions {
+	/**
+	 * Associate a uri to the connection; used for connection coming from editors
+	 */
+	associateUri?: URI;
+	/**
+	 * Attempt to use an existing connection for the profile if it exists
+	 */
+	useExisting?: boolean;
+	/**
+	 * Should save the connection to the user's config
+	 */
+	saveToConfig?: boolean;
+}
+
+/**
+ * Represents a connection (though not necessarily connected)
+ */
+export interface IConnection {
+	readonly state: ConnectionState;
+	readonly profile: ConnectionProfile;
+	readonly id: string;
+	readonly onStateChange: Event<ConnectionState>;
+}
+
 export const SERVICE_ID = 'connectionManagementService';
 
 export const IConnectionManagementService = createDecorator<IConnectionManagementService>(SERVICE_ID);
@@ -81,25 +108,13 @@ export interface IConnectionManagementService {
 	/**
 	 * Load the password and opens a new connection
 	 */
-	connect(connection: ConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult>;
-
-	/**
-	 * Opens a new connection and save the profile in settings
-	 */
-	connectAndSaveProfile(connection: ConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult>;
+	connect(connection: ConnectionProfile, options?: ConnectOptions): Promise<IConnection>;
 
 	/**
 	 * Finds existing connection for given profile and purpose is any exists.
 	 * The purpose is connection by default
 	 */
-	findExistingConnection(connection: ConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection'): ConnectionProfile;
-
-	/**
-	 * If there's already a connection for given profile and purpose, returns the ownerUri for the connection
-	 * otherwise tries to make a connection and returns the owner uri when connection is complete
-	 * The purpose is connection by default
-	 */
-	connectIfNotConnected(connection: ConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection', saveConnection?: boolean): Promise<string>;
+	findExistingConnection(connection: ConnectionProfile): IConnection | undefined;
 
 	/**
 	 * Adds the successful connection to MRU and send the connection error back to the connection handler for failed connections
@@ -110,7 +125,7 @@ export interface IConnectionManagementService {
 
 	onConnectionChangedNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void;
 
-	getConnectionGroups(providers?: string[]): ConnectionProfileGroup[];
+	getConnectionGroups(providers?: string[]): ConnectionGroup[];
 
 	getRecentConnections(providers?: string[]): ConnectionProfile[];
 
@@ -128,7 +143,7 @@ export interface IConnectionManagementService {
 
 	deleteConnection(connection: ConnectionProfile): Promise<boolean>;
 
-	deleteConnectionGroup(group: ConnectionProfileGroup): Promise<boolean>;
+	deleteConnectionGroup(group: ConnectionGroup): Promise<boolean>;
 
 	getAdvancedProperties(): azdata.ConnectionOption[];
 
@@ -171,7 +186,7 @@ export interface IConnectionManagementService {
 
 	registerIconProvider(providerId: string, provider: azdata.IconProvider): void;
 
-	editGroup(group: ConnectionProfileGroup): Promise<void>;
+	editGroup(group: ConnectionGroup): Promise<void>;
 
 	getConnectionProfile(fileUri: string): ConnectionProfile;
 

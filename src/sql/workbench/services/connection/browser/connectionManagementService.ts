@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import {
 	IConnectionManagementService, INewConnectionParams,
@@ -38,7 +38,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import * as platform from 'vs/platform/registry/common/platform';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionGroup';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
@@ -46,12 +46,12 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { ILogService } from 'vs/platform/log/common/log';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { Memento } from 'vs/workbench/common/memento';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { entries } from 'sql/base/common/collections';
 import { find } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
 import { assign } from 'vs/base/common/objects';
+import { Connection } from 'sql/base/common/connection';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -88,8 +88,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IAngularEventingService private _angularEventing: IAngularEventingService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@ILogService private _logService: ILogService,
-		@IStorageService private _storageService: IStorageService,
-		@IEnvironmentService private _environmentService: IEnvironmentService
+		@IStorageService private _storageService: IStorageService
 	) {
 		super();
 
@@ -97,7 +96,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			this._connectionStore = _instantiationService.createInstance(ConnectionStore);
 		}
 		if (!this._connectionStatusManager) {
-			this._connectionStatusManager = new ConnectionStatusManager(this._capabilitiesService, this._logService, this._environmentService, this._notificationService);
+			this._connectionStatusManager = new ConnectionStatusManager(this._logService);
 		}
 
 		if (this._storageService) {
@@ -291,7 +290,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param options to be used after the connection is completed
 	 * @param callbacks to call after the connection is completed
 	 */
-	public connect(connection: ConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
+	public connect(connection: ConnectionProfile, options: IConnectOptions): Promise<Connection> {
 		if (!uri) {
 			uri = Utils.generateUri(connection);
 		}
@@ -557,7 +556,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	}
 
-	public getConnectionGroups(providers?: string[]): ConnectionProfileGroup[] {
+	public getConnectionGroups(providers?: string[]): ConnectionGroup[] {
 		return this._connectionStore.getConnectionProfileGroups(false, providers);
 	}
 
@@ -611,13 +610,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public hasRegisteredServers(): boolean {
-		const groups: ConnectionProfileGroup[] = this.getConnectionGroups();
+		const groups: ConnectionGroup[] = this.getConnectionGroups();
 		const hasRegisteredServers: boolean = this.doHasRegisteredServers(groups);
 		groups.forEach(cpg => cpg.dispose());
 		return hasRegisteredServers;
 	}
 
-	private doHasRegisteredServers(root: ConnectionProfileGroup[]): boolean {
+	private doHasRegisteredServers(root: ConnectionGroup[]): boolean {
 
 		if (!root || root.length === 0) {
 			return false;
@@ -882,7 +881,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public onIntelliSenseCacheComplete(handle: number, connectionUri: string): void {
 	}
 
-	public changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void> {
+	public changeGroupIdForConnectionGroup(source: ConnectionGroup, target: ConnectionGroup): Promise<void> {
 		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.MoveServerConnection).catch((e) => this._logService.error(e));
 		return this._connectionStore.changeGroupIdForConnectionGroup(source, target);
 	}
@@ -1133,7 +1132,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return Promise.resolve(false);
 	}
 
-	public editGroup(group: ConnectionProfileGroup): Promise<void> {
+	public editGroup(group: ConnectionGroup): Promise<void> {
 		return this._connectionStore.editGroup(group).then(groupId => {
 			this._onAddConnectionProfile.fire(undefined);
 		});
@@ -1174,10 +1173,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Deletes a group with all its children groups and connections from registered servers.
 	 * Disconnects a connection before removing from config. If disconnect fails, settings is not modified.
 	 */
-	public deleteConnectionGroup(group: ConnectionProfileGroup): Promise<boolean> {
+	public deleteConnectionGroup(group: ConnectionGroup): Promise<boolean> {
 		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.DeleteServerGroup).catch((e) => this._logService.error(e));
 		// Get all connections for this group
-		let connections = ConnectionProfileGroup.getConnectionsInGroup(group);
+		let connections = ConnectionGroup.getConnectionsInGroup(group);
 
 		// Disconnect all these connections
 		let disconnected = [];
@@ -1363,7 +1362,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return undefined;
 	}
 
-	private getConnectionsInGroup(group: ConnectionProfileGroup): ConnectionProfile[] {
+	private getConnectionsInGroup(group: ConnectionGroup): ConnectionProfile[] {
 		const connections = [];
 		if (group) {
 			if (group.connections && group.connections.length > 0) {

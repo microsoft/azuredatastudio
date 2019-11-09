@@ -6,8 +6,8 @@
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
+import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
 import { CommandLineWorkbenchContribution } from 'sql/workbench/parts/commandLine/electron-browser/commandLine';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ParsedArgs } from 'vs/platform/environment/common/environment';
@@ -334,7 +334,7 @@ suite('commandLineService tests', () => {
 			saveProfile: true,
 			id: 'testID'
 		});
-		let conProfGroup = new ConnectionProfileGroup('testGroup', undefined, 'testGroup', undefined, undefined);
+		let conProfGroup = new ConnectionGroup('testGroup', undefined, 'testGroup', undefined, undefined);
 		conProfGroup.connections = [connection];
 		const args: TestParsedArgs = new TestParsedArgs();
 		args.server = 'myserver';

@@ -5,8 +5,8 @@
 
 import { IConnectionManagementService, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks, IConnectionResult, INewConnectionParams }
 	from 'sql/platform/connection/common/connectionManagement';
-import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { IConnectionProfileGroup, ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -47,7 +47,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
-	showEditServerGroupDialog(group: ConnectionProfileGroup): Promise<void> {
+	showEditServerGroupDialog(group: ConnectionGroup): Promise<void> {
 		return undefined;
 	}
 
@@ -67,7 +67,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
-	getConnectionGroups(providers?: string[]): ConnectionProfileGroup[] {
+	getConnectionGroups(providers?: string[]): ConnectionGroup[] {
 		return [];
 	}
 
@@ -109,7 +109,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		});
 	}
 
-	deleteConnectionGroup(group: ConnectionProfileGroup): Promise<boolean> {
+	deleteConnectionGroup(group: ConnectionGroup): Promise<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
 			resolve(true);
 		});
@@ -208,7 +208,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return new Promise(() => true);
 	}
 
-	editGroup(group: ConnectionProfileGroup): Promise<void> {
+	editGroup(group: ConnectionGroup): Promise<void> {
 		return Promise.resolve();
 	}
 

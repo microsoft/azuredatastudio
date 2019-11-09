@@ -13,7 +13,7 @@ import Severity from 'vs/base/common/severity';
 import { Deferred } from 'sql/base/common/promise';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { escape } from 'sql/base/common/strings';
 import * as notebookUtils from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';

@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { ITreeItem } from 'sql/workbench/common/views';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { hash } from 'vs/base/common/hash';

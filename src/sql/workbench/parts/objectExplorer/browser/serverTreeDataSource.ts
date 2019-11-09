@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
@@ -31,7 +31,7 @@ export class ServerTreeDataSource implements IDataSource {
 	 */
 	public getId(tree: ITree, element: any): string {
 		if (element instanceof ConnectionProfile
-			|| element instanceof ConnectionProfileGroup
+			|| element instanceof ConnectionGroup
 			|| element instanceof TreeNode) {
 			return element.id;
 		} else {
@@ -45,7 +45,7 @@ export class ServerTreeDataSource implements IDataSource {
 	public hasChildren(tree: ITree, element: any): boolean {
 		if (element instanceof ConnectionProfile) {
 			return true;
-		} else if (element instanceof ConnectionProfileGroup) {
+		} else if (element instanceof ConnectionGroup) {
 			return element.hasChildren();
 		} else if (element instanceof TreeNode) {
 			return !element.isAlwaysLeaf;
@@ -56,11 +56,11 @@ export class ServerTreeDataSource implements IDataSource {
 	/**
 	 * Returns the element's children as an array in a promise.
 	 */
-	public async getChildren(tree: ITree, element: any): Promise<(ConnectionProfile | ConnectionProfileGroup | TreeNode)[]> {
+	public async getChildren(tree: ITree, element: any): Promise<(ConnectionProfile | ConnectionGroup | TreeNode)[]> {
 		if (element instanceof ConnectionProfile) {
 			return TreeUpdateUtils.getObjectExplorerNode(<ConnectionProfile>element, this._connectionManagementService, this._objectExplorerService);
-		} else if (element instanceof ConnectionProfileGroup) {
-			return (element as ConnectionProfileGroup).getChildren();
+		} else if (element instanceof ConnectionGroup) {
+			return (element as ConnectionGroup).getChildren();
 		} else if (element instanceof TreeNode) {
 			let node = element;
 			if (node.children) {
@@ -89,7 +89,7 @@ export class ServerTreeDataSource implements IDataSource {
 	public getParent(tree: ITree, element: any): Promise<any> {
 		if (element instanceof ConnectionProfile) {
 			return Promise.resolve(element.getParent());
-		} else if (element instanceof ConnectionProfileGroup) {
+		} else if (element instanceof ConnectionGroup) {
 			return Promise.resolve(element.getParent());
 		} else if (element instanceof TreeNode) {
 			return Promise.resolve(TreeUpdateUtils.getObjectExplorerParent(element, this._connectionManagementService));

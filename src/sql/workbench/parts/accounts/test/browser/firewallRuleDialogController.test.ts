@@ -16,7 +16,7 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import { Deferred } from 'sql/base/common/promise';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 // TESTS ///////////////////////////////////////////////////////////////////
 suite('Firewall rule dialog controller tests', () => {

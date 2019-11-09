@@ -24,8 +24,8 @@ import * as azdata from 'azdata';
 
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
-import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { IConnectionProfileGroup, ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
 import { TestStorageService, TestEnvironmentService, TestEditorService } from 'vs/workbench/test/workbenchTestServices';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
@@ -87,7 +87,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		let resourceProviderStub = new TestResourceProvider();
 		resourceProviderStubMock = TypeMoq.Mock.ofInstance(resourceProviderStub);
 		accountManagementService = TypeMoq.Mock.ofType(TestAccountManagementService);
-		let root = new ConnectionProfileGroup(ConnectionProfileGroup.RootGroupName, undefined, ConnectionProfileGroup.RootGroupName, undefined, undefined);
+		let root = new ConnectionGroup(ConnectionGroup.RootGroupName, undefined, ConnectionGroup.RootGroupName, undefined, undefined);
 		root.connections = [connectionProfile];
 
 		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined)).returns(() => Promise.resolve(none));
@@ -987,6 +987,6 @@ function createConnectionProfile(id: string): ConnectionProfile {
 	});
 }
 
-function createConnectionGroup(id: string): ConnectionProfileGroup {
-	return new ConnectionProfileGroup(id, undefined, id, undefined, undefined);
+function createConnectionGroup(id: string): ConnectionGroup {
+	return new ConnectionGroup(id, undefined, id, undefined, undefined);
 }

@@ -13,7 +13,7 @@ import { TreeSelectionHandler } from 'sql/workbench/parts/objectExplorer/browser
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 export class ObjectExplorerActionsContext implements azdata.ObjectExplorerContext {
 	public connectionProfile: ConnectionProfile;

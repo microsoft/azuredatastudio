@@ -13,11 +13,11 @@ import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { IConnectionComponentCallbacks } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/platform/connection/common/constants';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionGroup';
 import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import * as styler from 'sql/platform/theme/common/styler';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
@@ -553,7 +553,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._serverGroupOptions = connectionGroups;
 			this._serverGroupOptions.push(this._addNewServerGroup);
 			this._serverGroupSelectBox.setOptions(this._serverGroupOptions.map(g => {
-				if (g instanceof ConnectionProfileGroup) {
+				if (g instanceof ConnectionGroup) {
 					return g.fullName;
 				}
 				return g.name;
@@ -833,8 +833,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 	private findGroupId(groupFullName: string): string {
 		let group: IConnectionProfileGroup;
-		if (ConnectionProfileGroup.isRoot(groupFullName)) {
-			group = find(this._serverGroupOptions, g => ConnectionProfileGroup.isRoot(g.name));
+		if (ConnectionGroup.isRoot(groupFullName)) {
+			group = find(this._serverGroupOptions, g => ConnectionGroup.isRoot(g.name));
 			if (group === undefined) {
 				group = find(this._serverGroupOptions, g => g.name === this.DefaultServerGroup.name);
 			}

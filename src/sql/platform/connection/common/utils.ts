@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
+import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 // CONSTANTS //////////////////////////////////////////////////////////////////////////////////////
@@ -114,7 +114,7 @@ export function generateUriWithPrefix(connection: ConnectionProfile, prefix: str
 	return uri;
 }
 
-export function findProfileInGroup(og: ConnectionProfile, groups: ConnectionProfileGroup[]): ConnectionProfile | undefined {
+export function findProfileInGroup(og: ConnectionProfile, groups: ConnectionGroup[]): ConnectionProfile | undefined {
 	for (let group of groups) {
 		for (let conn of group.connections) {
 			if (conn.id === og.id) {

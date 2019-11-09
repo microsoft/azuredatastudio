@@ -17,7 +17,7 @@ import { DashboardInput } from 'sql/workbench/parts/dashboard/browser/dashboardI
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { find } from 'vs/base/common/arrays';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 /**
  * Workbench action to clear the recent connnections list

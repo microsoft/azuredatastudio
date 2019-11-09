@@ -21,7 +21,7 @@ import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'azdata';
 
 /* VS imports */
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 /* Wrapper for a metadata service that contains the uri string to use on each request */
 export class SingleConnectionMetadataService {

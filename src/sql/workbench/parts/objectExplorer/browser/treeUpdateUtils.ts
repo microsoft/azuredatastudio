@@ -3,10 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
 import { IConnectionManagementService, IConnectionCompletionOptions, IConnectionCallbacks } from 'sql/platform/connection/common/connectionManagement';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 
@@ -62,7 +62,7 @@ export class TreeUpdateUtils {
 			targetsToExpand = expandableTree.getExpandedElements();
 		}
 		let groups;
-		let treeInput = new ConnectionProfileGroup('root', null, undefined, undefined, undefined);
+		let treeInput = new ConnectionGroup('root', null, undefined, undefined, undefined);
 		if (viewKey === 'recent') {
 			groups = connectionManagementService.getRecentConnections(providers);
 			treeInput.addConnections(groups);
@@ -132,7 +132,7 @@ export class TreeUpdateUtils {
 		return Promise.resolve();
 	}
 
-	public static getTreeInput(connectionManagementService: IConnectionManagementService, providers?: string[]): ConnectionProfileGroup {
+	public static getTreeInput(connectionManagementService: IConnectionManagementService, providers?: string[]): ConnectionGroup {
 
 		let groups = connectionManagementService.getConnectionGroups(providers);
 		if (groups && groups.length > 0) {
@@ -254,7 +254,7 @@ export class TreeUpdateUtils {
 
 				// get connection profile from connection profile groups
 				let root = TreeUpdateUtils.getTreeInput(connectionManagementService);
-				let connections = ConnectionProfileGroup.getConnectionsInGroup(root);
+				let connections = ConnectionGroup.getConnectionsInGroup(root);
 				let results = connections.filter(con => {
 					if (connectionId === con.id) {
 						return true;

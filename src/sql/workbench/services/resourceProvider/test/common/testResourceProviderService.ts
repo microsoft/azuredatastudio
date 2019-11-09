@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { IHandleFirewallRuleResult, IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 export class TestResourceProvider implements IResourceProviderService {
 	_serviceBrand: undefined;

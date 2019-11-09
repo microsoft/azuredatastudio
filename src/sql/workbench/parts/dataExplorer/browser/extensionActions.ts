@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
 import { IOEShimService } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerViewTreeShim';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 export const DATA_TIER_WIZARD_COMMAND_ID = 'dataExplorer.dataTierWizard';
 export const PROFILER_COMMAND_ID = 'dataExplorer.profiler';

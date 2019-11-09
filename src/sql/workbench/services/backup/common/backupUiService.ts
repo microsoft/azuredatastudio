@@ -5,7 +5,7 @@
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 export const UI_SERVICE_ID = 'backupUiService';
 export const IBackupUiService = createDecorator<IBackupUiService>(UI_SERVICE_ID);

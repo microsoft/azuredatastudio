@@ -16,7 +16,7 @@ import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 import { Emitter } from 'vs/base/common/event';
 import { InsightsDialogModel } from 'sql/workbench/services/insights/browser/insightsDialogModel';
 import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 const testData: string[][] = [
 	['1', '2', '3', '4'],

@@ -11,7 +11,7 @@ import { IConnectionManagementService, INewConnectionParams } from 'sql/platform
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { TreeCreationUtils } from 'sql/workbench/parts/objectExplorer/browser/treeCreationUtils';
 import { TreeUpdateUtils, IExpandableTree } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
 import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/workbench/parts/connection/browser/recentConnectionTreeController';
 import { SavedConnectionTreeController } from 'sql/workbench/parts/connection/browser/savedConnectionTreeController';

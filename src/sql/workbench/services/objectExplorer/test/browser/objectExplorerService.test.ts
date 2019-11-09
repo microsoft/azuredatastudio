@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
+import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
 import { ObjectExplorerService, NodeExpandInfoWithProviderId } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/parts/objectExplorer/common/treeNode';
@@ -27,7 +27,7 @@ suite('SQL Object Explorer Service tests', () => {
 	let connectionManagementService: TypeMoq.Mock<TestConnectionManagementService>;
 	let connection: ConnectionProfile;
 	let connectionToFail: ConnectionProfile;
-	let conProfGroup: ConnectionProfileGroup;
+	let conProfGroup: ConnectionGroup;
 	let objectExplorerService: ObjectExplorerService;
 	let objectExplorerSession: azdata.ObjectExplorerSession;
 	let objectExplorerFailedSession: azdata.ObjectExplorerSession;
@@ -236,7 +236,7 @@ suite('SQL Object Explorer Service tests', () => {
 			saveProfile: true,
 			id: 'testID'
 		});
-		conProfGroup = new ConnectionProfileGroup('testGroup', undefined, 'testGroup', undefined, undefined);
+		conProfGroup = new ConnectionGroup('testGroup', undefined, 'testGroup', undefined, undefined);
 
 		connectionToFail = new ConnectionProfile(capabilitiesService, {
 			connectionName: 'newName2',
@@ -253,7 +253,7 @@ suite('SQL Object Explorer Service tests', () => {
 			saveProfile: true,
 			id: 'testID2'
 		});
-		conProfGroup = new ConnectionProfileGroup('testGroup', undefined, 'testGroup', undefined, undefined);
+		conProfGroup = new ConnectionGroup('testGroup', undefined, 'testGroup', undefined, undefined);
 		conProfGroup.connections = [connection];
 		connectionManagementService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 		connectionManagementService.setup(x => x.getConnectionGroups()).returns(() => [conProfGroup]);

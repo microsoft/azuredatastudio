@@ -8,7 +8,7 @@ import { nb } from 'azdata';
 import { localize } from 'vs/nls';
 import { IDefaultConnection, notebookConstants } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { find } from 'vs/base/common/arrays';
 

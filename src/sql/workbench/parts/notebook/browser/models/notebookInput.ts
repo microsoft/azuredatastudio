@@ -28,7 +28,7 @@ import { Deferred } from 'sql/base/common/promise';
 import { NotebookTextFileModel } from 'sql/workbench/parts/notebook/browser/models/notebookTextFileModel';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 

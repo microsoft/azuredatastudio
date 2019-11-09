@@ -6,7 +6,7 @@
 import * as path from 'vs/base/common/path';
 import { nb, ServerInfo } from 'azdata';
 import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { URI } from 'vs/base/common/uri';

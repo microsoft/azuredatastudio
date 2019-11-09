@@ -22,7 +22,7 @@ import Severity from 'vs/base/common/severity';
 import { FilterData } from 'sql/workbench/services/profiler/browser/profilerFilter';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { find } from 'vs/base/common/arrays';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {
 

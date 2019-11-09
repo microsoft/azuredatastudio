@@ -18,7 +18,7 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { Memento } from 'vs/workbench/common/memento';
 import { ProfilerFilterDialog } from 'sql/workbench/parts/profiler/browser/profilerFilterDialog';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 class TwoWayMap<T, K> {
 	private forwardMap: Map<T, K>;

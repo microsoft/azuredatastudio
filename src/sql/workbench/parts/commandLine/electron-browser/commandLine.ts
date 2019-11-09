@@ -5,8 +5,8 @@
 
 import * as querystring from 'querystring';
 import * as azdata from 'azdata';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
+import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -241,7 +241,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		let groups = this._connectionManagementService.getConnectionGroups([Constants.mssqlProviderName]);
 		if (groups && groups.length > 0) {
 			let rootGroup = groups[0];
-			let connections = ConnectionProfileGroup.getConnectionsInGroup(rootGroup);
+			let connections = ConnectionGroup.getConnectionsInGroup(rootGroup);
 			match = find(connections, (c) => this.matchProfile(profile, c));
 		}
 		return match ? match : profile;

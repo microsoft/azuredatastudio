@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
 
 /**
@@ -19,8 +19,8 @@ export class RecentConnectionDataSource implements IDataSource {
 	public getId(tree: ITree, element: any): string {
 		if (element instanceof ConnectionProfile) {
 			return (<ConnectionProfile>element).id;
-		} else if (element instanceof ConnectionProfileGroup) {
-			return (<ConnectionProfileGroup>element).id;
+		} else if (element instanceof ConnectionGroup) {
+			return (<ConnectionGroup>element).id;
 		} else {
 			return undefined;
 		}
@@ -32,8 +32,8 @@ export class RecentConnectionDataSource implements IDataSource {
 	public hasChildren(tree: ITree, element: any): boolean {
 		if (element instanceof ConnectionProfile) {
 			return false;
-		} else if (element instanceof ConnectionProfileGroup) {
-			return (<ConnectionProfileGroup>element).hasChildren();
+		} else if (element instanceof ConnectionGroup) {
+			return (<ConnectionGroup>element).hasChildren();
 		}
 		return false;
 	}
@@ -44,8 +44,8 @@ export class RecentConnectionDataSource implements IDataSource {
 	public getChildren(tree: ITree, element: any): Promise<any> {
 		if (element instanceof ConnectionProfile) {
 			return Promise.resolve(null);
-		} else if (element instanceof ConnectionProfileGroup) {
-			return Promise.resolve((<ConnectionProfileGroup>element).getChildren());
+		} else if (element instanceof ConnectionGroup) {
+			return Promise.resolve((<ConnectionGroup>element).getChildren());
 		} else {
 			return Promise.resolve(null);
 		}
@@ -57,8 +57,8 @@ export class RecentConnectionDataSource implements IDataSource {
 	public getParent(tree: ITree, element: any): Promise<any> {
 		if (element instanceof ConnectionProfile) {
 			return Promise.resolve((<ConnectionProfile>element).getParent());
-		} else if (element instanceof ConnectionProfileGroup) {
-			return Promise.resolve((<ConnectionProfileGroup>element).getParent());
+		} else if (element instanceof ConnectionGroup) {
+			return Promise.resolve((<ConnectionGroup>element).getParent());
 		} else {
 			return Promise.resolve(null);
 		}

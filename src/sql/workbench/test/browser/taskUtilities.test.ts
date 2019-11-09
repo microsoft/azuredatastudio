@@ -8,7 +8,7 @@ import * as TypeMoq from 'typemoq';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { TestEditorService } from 'vs/workbench/test/workbenchTestServices';
 import { assign } from 'vs/base/common/objects';
 

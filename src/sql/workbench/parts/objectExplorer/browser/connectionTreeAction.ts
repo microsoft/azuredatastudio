@@ -5,10 +5,10 @@
 
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
-import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
@@ -129,7 +129,7 @@ export class AddServerAction extends Action {
 		this.class = 'add-server-action';
 	}
 
-	public async run(element: ConnectionProfileGroup): Promise<boolean> {
+	public async run(element: ConnectionGroup): Promise<boolean> {
 		let connection: ConnectionProfile = element === undefined ? undefined : {
 			connectionName: undefined,
 			serverName: undefined,
@@ -184,7 +184,7 @@ export class EditServerGroupAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private _group: ConnectionProfileGroup,
+		private _group: ConnectionGroup,
 		@IServerGroupController private readonly serverGroupController: IServerGroupController
 	) {
 		super(id, label);
@@ -302,17 +302,17 @@ export class DeleteConnectionAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private element: ConnectionProfile | ConnectionProfileGroup,
+		private element: ConnectionProfile | ConnectionGroup,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		super(id, label);
 		this.class = 'delete-connection-action';
-		if (element instanceof ConnectionProfileGroup && element.id === UNSAVED_GROUP_ID) {
+		if (element instanceof ConnectionGroup && element.id === UNSAVED_GROUP_ID) {
 			this.enabled = false;
 		}
 
 		if (element instanceof ConnectionProfile) {
-			let parent: ConnectionProfileGroup = element.parent;
+			let parent: ConnectionGroup = element.parent;
 			if (parent && parent.id === UNSAVED_GROUP_ID) {
 				this.enabled = false;
 			}
@@ -322,7 +322,7 @@ export class DeleteConnectionAction extends Action {
 	public run(): Promise<boolean> {
 		if (this.element instanceof ConnectionProfile) {
 			this._connectionManagementService.deleteConnection(this.element);
-		} else if (this.element instanceof ConnectionProfileGroup) {
+		} else if (this.element instanceof ConnectionGroup) {
 			this._connectionManagementService.deleteConnectionGroup(this.element);
 		}
 		return Promise.resolve(true);

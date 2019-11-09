@@ -23,7 +23,7 @@ import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilitie
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { invalidProvider } from 'sql/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { find } from 'vs/base/common/arrays';
 
 export class RestoreService implements IRestoreService {

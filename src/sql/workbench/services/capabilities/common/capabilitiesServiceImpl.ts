@@ -18,6 +18,9 @@ import { IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 
 import { ICapabilitiesService, ProviderFeatures, clientCapabilities, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { find } from 'vs/base/common/arrays';
 import { entries } from 'sql/base/common/collections';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
+import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
 
 const connectionRegistry = Registry.as<IConnectionProviderRegistry>(ConnectionExtensions.ConnectionProviderContributions);
 
@@ -118,6 +121,24 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 			this.capabilities.connectionProviderCache[e.id] = e.properties;
 			this._onCapabilitiesRegistered.fire(provider);
 		}
+	}
+
+	public isPasswordRequired(profile: ConnectionProfile): boolean {
+		const provider = this.providers[profile.providerName];
+		if (!provider) {
+			return false;
+		}
+
+		const optionMetadata = find(provider.connection.connectionOptions,
+			option => option.specialValueType === ConnectionOptionSpecialType.password)!; // i guess we are going to assume there is a password field
+
+		let isPasswordRequired = optionMetadata.isRequired;
+
+		if (profile.providerName === 'mssql') {
+			isPasswordRequired = profile.authenticationType === 'SqlLogin' && optionMetadata.isRequired;
+		}
+
+		return isPasswordRequired;
 	}
 
 	/**

@@ -16,8 +16,8 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { Event, Emitter } from 'vs/base/common/event';
 import { append, $, hide, show } from 'vs/base/browser/dom';
 
-import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import * as ConnectionUtils from 'sql/platform/connection/common/utils';
 import { ActiveConnectionsFilterAction } from 'sql/workbench/parts/objectExplorer/browser/connectionTreeAction';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -173,11 +173,11 @@ export class ServerTreeView extends Disposable {
 
 		return new Promise<void>(async (resolve, reject) => {
 			await this.refreshTree();
-			const root = <ConnectionProfileGroup>this._tree.getInput();
+			const root = <ConnectionGroup>this._tree.getInput();
 
 			const expandGroups: boolean = this._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_AUTOEXPAND_CONFIG];
 			if (expandGroups) {
-				await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(root));
+				await this._tree.expandAll(ConnectionGroup.getSubgroups(root));
 			}
 
 			if (root && !root.hasValidConnections) {
@@ -229,7 +229,7 @@ export class ServerTreeView extends Disposable {
 
 	private getConnectionInTreeInput(connectionId: string): ConnectionProfile {
 		const root = TreeUpdateUtils.getTreeInput(this._connectionManagementService);
-		const connections = ConnectionProfileGroup.getConnectionsInGroup(root);
+		const connections = ConnectionGroup.getConnectionsInGroup(root);
 		const results = connections.filter(con => {
 			if (connectionId === con.id) {
 				return true;
@@ -292,7 +292,7 @@ export class ServerTreeView extends Disposable {
 	/**
 	 * Filter connections based on view (recent/active)
 	 */
-	private filterConnections(treeInput: ConnectionProfileGroup[], view: string): ConnectionProfileGroup[] {
+	private filterConnections(treeInput: ConnectionGroup[], view: string): ConnectionGroup[] {
 		if (!treeInput || treeInput.length === 0) {
 			return undefined;
 		}
@@ -332,7 +332,7 @@ export class ServerTreeView extends Disposable {
 		// Clear other action views if user switched between two views
 		this.clearOtherActions(view);
 		const root = TreeUpdateUtils.getTreeInput(this._connectionManagementService);
-		let treeInput: ConnectionProfileGroup = null;
+		let treeInput: ConnectionGroup = null;
 		if (root) {
 			// Filter results based on view
 			const filteredResults = this.filterConnections([root], view);
@@ -345,7 +345,7 @@ export class ServerTreeView extends Disposable {
 			this._tree.setInput(treeInput).then(async () => {
 				if (isHidden(this.messages)) {
 					this._tree.getFocus();
-					await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
+					await this._tree.expandAll(ConnectionGroup.getSubgroups(treeInput));
 				} else {
 					this._tree.clearFocus();
 				}
@@ -372,12 +372,12 @@ export class ServerTreeView extends Disposable {
 			this.messages.focus();
 		}
 		// Add all connections to tree root and set tree input
-		const treeInput = new ConnectionProfileGroup('searchroot', undefined, 'searchroot', undefined, undefined);
+		const treeInput = new ConnectionGroup('searchroot', undefined, 'searchroot', undefined, undefined);
 		treeInput.addConnections(filteredResults);
 		this._tree.setInput(treeInput).then(async () => {
 			if (isHidden(this.messages)) {
 				this._tree.getFocus();
-				await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
+				await this._tree.expandAll(ConnectionGroup.getSubgroups(treeInput));
 			} else {
 				this._tree.clearFocus();
 			}
@@ -390,7 +390,7 @@ export class ServerTreeView extends Disposable {
 	private searchConnections(searchString: string): ConnectionProfile[] {
 
 		const root = TreeUpdateUtils.getTreeInput(this._connectionManagementService);
-		const connections = ConnectionProfileGroup.getConnectionsInGroup(root);
+		const connections = ConnectionGroup.getConnectionsInGroup(root);
 		const results = connections.filter(con => {
 			if (searchString && (searchString.length > 0)) {
 				return this.isMatch(con, searchString);

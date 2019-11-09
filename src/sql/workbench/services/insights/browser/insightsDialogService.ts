@@ -7,7 +7,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 
 import { BaseActionContext } from 'sql/workbench/browser/actions';
 import { IInsightsConfigDetails, IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 export interface IInsightsDialogModel {
 	rows: string[][];

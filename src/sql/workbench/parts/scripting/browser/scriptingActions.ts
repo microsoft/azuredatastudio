@@ -13,7 +13,7 @@ import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/q
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 import { BaseActionContext } from 'sql/workbench/browser/actions';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { ScriptCreateAction, ScriptDeleteAction, ScriptSelectAction, ScriptExecuteAction, ScriptAlterAction, EditDataAction } from 'sql/workbench/browser/scriptingActions';
 import { ObjectExplorerActionsContext, getTreeNode } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

@@ -30,7 +30,7 @@ import { TestStorageService, TestFileService } from 'vs/workbench/test/workbench
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 let none: void;
 

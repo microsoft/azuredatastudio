@@ -6,9 +6,8 @@
 import { ReverseLookUpMap } from 'sql/base/common/map';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionConfig } from 'sql/platform/connection/common/connectionConfig';
-import { fixupConnectionCredentials } from 'sql/platform/connection/common/connectionInfo';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
+import { ConnectionGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionGroup';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
@@ -206,7 +205,7 @@ export class ConnectionStore {
 			let equal = value && value.getConnectionInfoId() === savedProfile.getConnectionInfoId();
 			if (equal && savedProfile.saveProfile) {
 				equal = value.groupId === savedProfile.groupId ||
-					ConnectionProfileGroup.sameGroupName(value.groupFullName, savedProfile.groupFullName);
+					ConnectionGroup.sameGroupName(value.groupFullName, savedProfile.groupFullName);
 			}
 			return !equal;
 		});
@@ -224,7 +223,7 @@ export class ConnectionStore {
 			let equal = value && value.getConnectionInfoId() === savedProfile.getConnectionInfoId();
 			if (equal && savedProfile.saveProfile) {
 				equal = value.groupId === savedProfile.groupId ||
-					ConnectionProfileGroup.sameGroupName(value.groupFullName, savedProfile.groupFullName);
+					ConnectionGroup.sameGroupName(value.groupFullName, savedProfile.groupFullName);
 			}
 			return !equal;
 		});
@@ -263,7 +262,7 @@ export class ConnectionStore {
 		}
 	}
 
-	public getConnectionProfileGroups(withoutConnections?: boolean, providers?: string[]): ConnectionProfileGroup[] {
+	public getConnectionProfileGroups(withoutConnections?: boolean, providers?: string[]): ConnectionGroup[] {
 		let profilesInConfiguration: ConnectionProfile[] | undefined;
 		if (!withoutConnections) {
 			profilesInConfiguration = this.connectionConfig.getConnections(true);
@@ -276,12 +275,12 @@ export class ConnectionStore {
 		return this.convertToConnectionGroup(groups, profilesInConfiguration);
 	}
 
-	private convertToConnectionGroup(groups: IConnectionProfileGroup[], connections?: ConnectionProfile[], parent?: ConnectionProfileGroup): ConnectionProfileGroup[] {
-		const result: ConnectionProfileGroup[] = [];
+	private convertToConnectionGroup(groups: IConnectionProfileGroup[], connections?: ConnectionProfile[], parent?: ConnectionGroup): ConnectionGroup[] {
+		const result: ConnectionGroup[] = [];
 		const children = groups.filter(g => g.parentId === (parent ? parent.id : undefined));
 		if (children) {
 			children.map(group => {
-				let connectionGroup = new ConnectionProfileGroup(group.name, parent, group.id, group.color, group.description);
+				let connectionGroup = new ConnectionGroup(group.name, parent, group.id, group.color, group.description);
 				this.addGroupFullNameToMap(group.id, connectionGroup.fullName);
 				if (connections) {
 					let connectionsForGroup = connections.filter(conn => conn.groupId === connectionGroup.id);
@@ -313,7 +312,7 @@ export class ConnectionStore {
 		return this.configurationService.getValue('sql.maxRecentConnections') || MAX_CONNECTIONS_DEFAULT;
 	}
 
-	public editGroup(group: ConnectionProfileGroup): Promise<void> {
+	public editGroup(group: ConnectionGroup): Promise<void> {
 		return this.connectionConfig.editGroup(group).then();
 	}
 
@@ -321,11 +320,11 @@ export class ConnectionStore {
 		return this.connectionConfig.deleteConnection(connection);
 	}
 
-	public deleteGroupFromConfiguration(group: ConnectionProfileGroup): Promise<void> {
+	public deleteGroupFromConfiguration(group: ConnectionGroup): Promise<void> {
 		return this.connectionConfig.deleteGroup(group);
 	}
 
-	public changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void> {
+	public changeGroupIdForConnectionGroup(source: ConnectionGroup, target: ConnectionGroup): Promise<void> {
 		return this.connectionConfig.changeGroupIdForConnectionGroup(source, target);
 	}
 
@@ -355,7 +354,7 @@ export class ConnectionStore {
 	}
 
 	private getGroupId(groupFullName: string): string {
-		if (groupFullName === ConnectionProfileGroup.GroupNameSeparator) {
+		if (groupFullName === ConnectionGroup.GroupNameSeparator) {
 			groupFullName = '';
 		}
 		const key = groupFullName.toUpperCase();

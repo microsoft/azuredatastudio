@@ -9,7 +9,7 @@ import { IInsightsDialogModel, IInsightsDialogService } from 'sql/workbench/serv
 import { InsightsDialogModel } from 'sql/workbench/services/insights/browser/insightsDialogModel';
 import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
 import { InsightsDialogController } from 'sql/workbench/services/insights/browser/insightsDialogController';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 export class InsightsDialogService implements IInsightsDialogService {
 	_serviceBrand: undefined;

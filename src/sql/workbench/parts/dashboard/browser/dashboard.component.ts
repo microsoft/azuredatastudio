@@ -18,7 +18,7 @@ import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/theme
 import { IDisposable } from 'vs/base/common/lifecycle';
 import * as themeColors from 'vs/workbench/common/theme';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 export const DASHBOARD_SELECTOR: string = 'dashboard-component';
 

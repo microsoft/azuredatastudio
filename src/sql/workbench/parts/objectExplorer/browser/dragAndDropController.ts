@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ITree, IDragAndDrop, IDragOverReaction, DRAG_OVER_ACCEPT_BUBBLE_DOWN, DRAG_OVER_REJECT } from 'vs/base/parts/tree/browser/tree';
 import { DragMouseEvent } from 'vs/base/browser/mouseEvent';
@@ -30,8 +30,8 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		if (element instanceof ConnectionProfile) {
 			return (<ConnectionProfile>element).id;
 		}
-		else if (element instanceof ConnectionProfileGroup) {
-			return (<ConnectionProfileGroup>element).id;
+		else if (element instanceof ConnectionGroup) {
+			return (<ConnectionGroup>element).id;
 		}
 		return null;
 	}
@@ -42,8 +42,8 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	public getDragLabel(tree: ITree, elements: any[]): string {
 		if (elements[0] instanceof ConnectionProfile) {
 			return (<ConnectionProfile>elements[0]).serverName;
-		} else if (elements[0] instanceof ConnectionProfileGroup) {
-			return (<ConnectionProfileGroup>elements[0]).name;
+		} else if (elements[0] instanceof ConnectionGroup) {
+			return (<ConnectionGroup>elements[0]).name;
 		} else {
 			return undefined;
 		}
@@ -65,7 +65,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	public onDragOver(tree: ITree, data: IDragAndDropData, targetElement: any, originalEvent: DragMouseEvent): IDragOverReaction {
 
 		let canDragOver: boolean = true;
-		if (targetElement instanceof ConnectionProfile || targetElement instanceof ConnectionProfileGroup) {
+		if (targetElement instanceof ConnectionProfile || targetElement instanceof ConnectionGroup) {
 			let targetConnectionProfileGroup = this.getTargetGroup(targetElement);
 			// Verify if the connection can be moved to the target group
 			const source = data.getData()[0];
@@ -73,7 +73,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 				if (!this._connectionManagementService.canChangeConnectionConfig(source, targetConnectionProfileGroup.id)) {
 					canDragOver = false;
 				}
-			} else if (source instanceof ConnectionProfileGroup) {
+			} else if (source instanceof ConnectionGroup) {
 				// Dropping a group to itself or its descendants nodes is not allowed
 				// to avoid creating a circular structure.
 				canDragOver = source.id !== targetElement.id && !source.isAncestorOf(targetElement);
@@ -96,11 +96,11 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	public drop(tree: ITree, data: IDragAndDropData, targetElement: any, originalEvent: DragMouseEvent): void {
 		TreeUpdateUtils.isInDragAndDrop = false;
 
-		let targetConnectionProfileGroup: ConnectionProfileGroup = this.getTargetGroup(targetElement);
+		let targetConnectionProfileGroup: ConnectionGroup = this.getTargetGroup(targetElement);
 
 		const source = data.getData()[0];
 		if (source && source.getParent) {
-			let oldParent: ConnectionProfileGroup = source.getParent();
+			let oldParent: ConnectionGroup = source.getParent();
 			const self = this;
 			if (this.isDropAllowed(targetConnectionProfileGroup, oldParent, source)) {
 
@@ -109,7 +109,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 					this._connectionManagementService.changeGroupIdForConnection(source, targetConnectionProfileGroup.id).then(() => {
 						TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService, targetConnectionProfileGroup);
 					});
-				} else if (source instanceof ConnectionProfileGroup) {
+				} else if (source instanceof ConnectionGroup) {
 					// Change parent id of group
 					this._connectionManagementService.changeGroupIdForConnectionGroup(source, targetConnectionProfileGroup).then(() => {
 						TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService);
@@ -123,25 +123,25 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		TreeUpdateUtils.isInDragAndDrop = false;
 	}
 
-	private getTargetGroup(targetElement: any): ConnectionProfileGroup {
-		let targetConnectionProfileGroup: ConnectionProfileGroup;
+	private getTargetGroup(targetElement: any): ConnectionGroup {
+		let targetConnectionProfileGroup: ConnectionGroup;
 		if (targetElement instanceof ConnectionProfile) {
 			targetConnectionProfileGroup = (<ConnectionProfile>targetElement).getParent();
 		}
 		else {
-			targetConnectionProfileGroup = <ConnectionProfileGroup>targetElement;
+			targetConnectionProfileGroup = <ConnectionGroup>targetElement;
 		}
 
 		return targetConnectionProfileGroup;
 	}
 
-	private isDropAllowed(targetConnectionProfileGroup: ConnectionProfileGroup,
-		oldParent: ConnectionProfileGroup,
-		source: ConnectionProfile | ConnectionProfileGroup): boolean {
+	private isDropAllowed(targetConnectionProfileGroup: ConnectionGroup,
+		oldParent: ConnectionGroup,
+		source: ConnectionProfile | ConnectionGroup): boolean {
 
-		let isDropToItself = source && targetConnectionProfileGroup && (source instanceof ConnectionProfileGroup) && source.name === targetConnectionProfileGroup.name;
+		let isDropToItself = source && targetConnectionProfileGroup && (source instanceof ConnectionGroup) && source.name === targetConnectionProfileGroup.name;
 		let isDropToSameLevel = oldParent && oldParent.equals(targetConnectionProfileGroup);
-		let isUnsavedDrag = source && (source instanceof ConnectionProfileGroup) && (source.id === UNSAVED_GROUP_ID);
+		let isUnsavedDrag = source && (source instanceof ConnectionGroup) && (source.id === UNSAVED_GROUP_ID);
 		return (!isDropToSameLevel && !isDropToItself && !isUnsavedDrag);
 	}
 }
@@ -159,8 +159,8 @@ export class RecentConnectionsDragAndDrop implements IDragAndDrop {
 		if (element instanceof ConnectionProfile) {
 			return (<ConnectionProfile>element).id;
 		}
-		else if (element instanceof ConnectionProfileGroup) {
-			return (<ConnectionProfileGroup>element).id;
+		else if (element instanceof ConnectionGroup) {
+			return (<ConnectionGroup>element).id;
 		}
 		return null;
 	}
@@ -172,8 +172,8 @@ export class RecentConnectionsDragAndDrop implements IDragAndDrop {
 		if (elements[0] instanceof ConnectionProfile) {
 			return (<ConnectionProfile>elements[0]).serverName;
 		}
-		else if (elements[0] instanceof ConnectionProfileGroup) {
-			return (<ConnectionProfileGroup>elements[0]).name;
+		else if (elements[0] instanceof ConnectionGroup) {
+			return (<ConnectionGroup>elements[0]).name;
 		}
 		return undefined;
 	}
