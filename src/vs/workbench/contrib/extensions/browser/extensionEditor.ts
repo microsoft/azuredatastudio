@@ -60,6 +60,7 @@ import { renderMarkdownDocument } from 'vs/workbench/contrib/markdown/common/mar
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { TokenizationRegistry } from 'vs/editor/common/modes';
 import { generateTokensCSSForColorMap } from 'vs/editor/common/modes/supports/tokenization';
+import { ExtensionsViewlet } from 'vs/workbench/contrib/extensions/browser/extensionsViewlet';
 
 function removeEmbeddedSVGs(documentContent: string): string {
 	const newDocument = new DOMParser().parseFromString(documentContent, 'text/html');
@@ -391,8 +392,7 @@ export class ExtensionEditor extends BaseEditor {
 			}
 			this.transientDisposables.add(this.onClick(template.publisher, () => {
 				this.viewletService.openViewlet(VIEWLET_ID, true)
-					.then(viewlet => viewlet as IExtensionsViewlet)
-					.then(viewlet => viewlet.search(`publisher:"${extension.publisherDisplayName}"`));
+					.then((viewlet: ExtensionsViewlet) => viewlet.search(`publisher:"${extension.publisherDisplayName}"`));
 			}));
 		}
 		// {{SQL CARBON EDIT}} - End
