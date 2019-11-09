@@ -15,6 +15,8 @@ import { dependencyType, ToolBase } from './toolBase';
 const localize = nls.loadMessageBundle();
 export const AzdataToolName = 'azdata';
 const win32InstallationRoot = `${process.env['ProgramFiles(x86)']}\\Microsoft SDKs\\Azdata\\CLI\\wbin`;
+const macInstallationRoot = '/usr/local/bin';
+const debianInstallationRoot = '/usr/local/bin';
 
 export class AzdataTool extends ToolBase {
 	constructor(platformService: IPlatformService) {
@@ -69,6 +71,10 @@ export class AzdataTool extends ToolBase {
 		switch (this.osType) {
 			case OsType.win32:
 				return [win32InstallationRoot];
+			case OsType.darwin:
+				return [macInstallationRoot];
+			case OsType.debian:
+				return [debianInstallationRoot];
 			default:
 				const azdataCliInstallLocation = await this.getPip3InstallLocation('azdata-cli');
 				if (azdataCliInstallLocation) {
