@@ -15,8 +15,9 @@ import { ResourceTypePickerDialog } from './ui/resourceTypePickerDialog';
 
 const localize = nls.loadMessageBundle();
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	const platformService = new PlatformService(context.globalStoragePath);
+	await platformService.initialize();
 	const toolsService = new ToolsService(platformService);
 	const notebookService = new NotebookService(platformService, context.extensionPath);
 	const resourceTypeService = new ResourceTypeService(platformService, toolsService, notebookService);

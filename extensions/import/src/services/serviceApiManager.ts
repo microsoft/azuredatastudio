@@ -3,29 +3,24 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as contracts from './contracts';
-import { SqlOpsDataClient } from 'dataprotocol-client/lib/main';
 
 export enum ApiType {
 	FlatFileProvider = 'FlatFileProvider'
 }
 
-export interface IServiceApi {
+interface IServiceApi {
 	onRegisteredApi<T>(type: ApiType): vscode.Event<T>;
 	registerApi<T>(type: ApiType, feature: T): vscode.Disposable;
 }
 
-export interface IModelViewDefinition {
+interface IModelViewDefinition {
 	id: string;
 	modelView: azdata.ModelView;
 }
 
-export class ServiceApiManager implements IServiceApi {
-	private modelViewRegistrations: { [id: string]: boolean } = {};
+class ServiceApiManager implements IServiceApi {
 	private featureEventChannels: { [type: string]: vscode.EventEmitter<any> } = {};
 	private _onRegisteredModelView = new vscode.EventEmitter<IModelViewDefinition>();
 

@@ -13,6 +13,7 @@ import { IPlatformService } from '../platformService';
 import { dependencyType, ToolBase } from './toolBase';
 
 const localize = nls.loadMessageBundle();
+export const AzdataToolName = 'azdata';
 
 export class AzdataTool extends ToolBase {
 	constructor(platformService: IPlatformService) {
@@ -20,7 +21,7 @@ export class AzdataTool extends ToolBase {
 	}
 
 	get name(): string {
-		return 'azdata';
+		return AzdataToolName;
 	}
 
 	get description(): string {

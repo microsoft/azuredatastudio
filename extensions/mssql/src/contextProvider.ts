@@ -2,18 +2,18 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
+
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
 import * as types from './types';
 import * as Constants from './constants';
 
-export enum BuiltInCommands {
+enum BuiltInCommands {
 	SetContext = 'setContext',
 }
 
-export enum ContextKeys {
+enum ContextKeys {
 	ISCLOUD = 'mssql:iscloud',
 	EDITIONID = 'mssql:engineedition',
 	ISCLUSTER = 'mssql:iscluster',
@@ -26,7 +26,7 @@ const isCloudEditions = [
 	11
 ];
 
-export function setCommandContext(key: ContextKeys | string, value: any) {
+function setCommandContext(key: ContextKeys | string, value: any) {
 	return vscode.commands.executeCommand(BuiltInCommands.SetContext, key, value);
 }
 

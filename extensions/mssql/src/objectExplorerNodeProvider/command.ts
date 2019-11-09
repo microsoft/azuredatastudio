@@ -15,12 +15,12 @@ import * as utils from '../utils';
 import * as constants from '../constants';
 import { AppContext } from '../appContext';
 
-export interface ICommandContextParsingOptions {
+interface ICommandContextParsingOptions {
 	editor: boolean;
 	uri: boolean;
 }
 
-export interface ICommandBaseContext {
+interface ICommandBaseContext {
 	command: string;
 	editor?: vscode.TextEditor;
 	uri?: vscode.Uri;
@@ -30,7 +30,7 @@ export interface ICommandUnknownContext extends ICommandBaseContext {
 	type: 'unknown';
 }
 
-export interface ICommandUriContext extends ICommandBaseContext {
+interface ICommandUriContext extends ICommandBaseContext {
 	type: 'uri';
 }
 
@@ -44,7 +44,7 @@ export interface ICommandObjectExplorerContext extends ICommandBaseContext {
 	explorerContext: azdata.ObjectExplorerContext;
 }
 
-export type CommandContext = ICommandObjectExplorerContext | ICommandViewContext | ICommandUriContext | ICommandUnknownContext;
+type CommandContext = ICommandObjectExplorerContext | ICommandViewContext | ICommandUriContext | ICommandUnknownContext;
 
 function isTextEditor(editor: any): editor is vscode.TextEditor {
 	if (editor === undefined) { return false; }

@@ -15,7 +15,7 @@ export async function authenticateKerberos(hostname: string): Promise<string> {
 }
 
 
-export type HostAndIp = { host: string, port: string };
+type HostAndIp = { host: string, port: string };
 
 export function getHostAndPortFromEndpoint(endpoint: string): HostAndIp {
 	let authority = vscode.Uri.parse(endpoint).authority;
@@ -32,4 +32,3 @@ export function getHostAndPortFromEndpoint(endpoint: string): HostAndIp {
 		port: undefined
 	};
 }
-

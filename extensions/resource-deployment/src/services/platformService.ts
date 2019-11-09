@@ -23,6 +23,7 @@ export interface IPlatformService {
 	osType(): OsType;
 	platform(): string;
 	storagePath(): string;
+	initialize(): Promise<void>;
 	copyFile(source: string, target: string): Promise<void>;
 	fileExists(file: string): Promise<boolean>;
 	openFile(filePath: string): void;
@@ -32,7 +33,6 @@ export interface IPlatformService {
 	showOutputChannel(preserveFocus?: boolean): void;
 	isNotebookNameUsed(title: string): boolean;
 	makeDirectory(path: string): Promise<void>;
-	ensureDirectoryExists(directory: string): Promise<void>;
 	readTextFile(filePath: string): Promise<string>;
 	runCommand(command: string, options?: CommandOptions): Promise<string>;
 	saveTextFile(content: string, path: string): Promise<void>;
@@ -58,13 +58,21 @@ export interface CommandOptions {
 export class PlatformService implements IPlatformService {
 
 	private _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(extensionOutputChannel);
+	private _initializationEnsurer: Promise<void[]>;
 
 	private _osType?: OsType = undefined;
 
-	constructor(private _storagePath: string = '') {
-		this.getOsType().then((value: OsType) => {
-			this._osType = value;
-		});
+	constructor(private _storagePath: string) {
+		this._initializationEnsurer = Promise.all([
+			this.ensureDirectoryExists(_storagePath),
+			this.getOsType().then((value: OsType) => {
+				this._osType = value;
+			})
+		]);
+	}
+
+	async initialize(): Promise<void> {
+		await this._initializationEnsurer;
 	}
 
 	storagePath(): string {
@@ -137,7 +145,7 @@ export class PlatformService implements IPlatformService {
 	 *This function ensures that the given {@link directory} does not exist it creates it. It creates only the most leaf folder so if any ancestor folders are missing then this command throws an error.
 	 * @param directory - the path to ensure
 	 */
-	async ensureDirectoryExists(directory: string): Promise<void> {
+	private async ensureDirectoryExists(directory: string): Promise<void> {
 		if (!await this.fileExists(directory)) {
 			await this.makeDirectory(directory);
 		}

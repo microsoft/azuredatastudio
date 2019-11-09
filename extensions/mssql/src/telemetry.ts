@@ -26,7 +26,7 @@ export interface ITelemetryEventMeasures {
 /**
  * Filters error paths to only include source files. Exported to support testing
  */
-export function FilterErrorPath(line: string): string {
+function FilterErrorPath(line: string): string {
 	if (line) {
 		let values: string[] = line.split('/out/');
 		if (values.length <= 1) {

@@ -9,7 +9,7 @@ import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
 import { TreeNode } from './treeNode';
 import { IconPathHelper, BdcItemType, IconPath, AuthType } from '../constants';
 
-export abstract class ControllerTreeNode extends TreeNode {
+abstract class ControllerTreeNode extends TreeNode {
 
 	constructor(
 		label: string,

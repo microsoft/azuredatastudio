@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { ServerProvider, Events } from 'service-downloader';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
@@ -17,7 +15,6 @@ import { EventAndListener } from 'eventemitter2';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import * as Constants from '../constants';
 import { TelemetryFeature, FlatFileImportFeature } from './features';
-import * as serviceUtils from './serviceUtils';
 import { promises as fs } from 'fs';
 
 export class ServiceClient {
