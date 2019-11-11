@@ -345,7 +345,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		let actionItem = this._items[this._focusedItem];
 		if (actionItem instanceof BaseActionViewItem) {
 			const context = (actionItem._context === null || actionItem._context === undefined) ? event : actionItem._context;
-			this.run(actionItem._action, context).catch(onUnexpectedError);
+			this.run(actionItem._action, context).catch(e => onUnexpectedError(e));
 		}
 	}
 

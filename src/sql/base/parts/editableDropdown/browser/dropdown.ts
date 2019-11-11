@@ -261,7 +261,7 @@ export class Dropdown extends Disposable {
 			this._treeContainer.style.height = height + 'px';
 			this._treeContainer.style.width = DOM.getContentWidth(this._inputContainer) - 2 + 'px';
 			this._tree.layout(parseInt(this._treeContainer.style.height));
-			this._tree.refresh().catch(onUnexpectedError);
+			this._tree.refresh().catch(e => onUnexpectedError(e));
 		}
 	}
 
@@ -273,7 +273,7 @@ export class Dropdown extends Disposable {
 			this._treeContainer.style.height = height + 'px';
 			this._treeContainer.style.width = DOM.getContentWidth(this._inputContainer) - 2 + 'px';
 			this._tree.layout(parseInt(this._treeContainer.style.height));
-			this._tree.setInput(new DropdownModel()).catch(onUnexpectedError);
+			this._tree.setInput(new DropdownModel()).catch(e => onUnexpectedError(e));
 			this._input.validate();
 		}
 	}

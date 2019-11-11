@@ -43,25 +43,24 @@ export abstract class AbstractEnablePreviewFeatures implements IWorkbenchContrib
 				[{
 					label: localize('enablePreviewFeatures.yes', "Yes"),
 					run: () => {
-						this.configurationService.updateValue('workbench.enablePreviewFeatures', true).catch(onUnexpectedError);
+						this.configurationService.updateValue('workbench.enablePreviewFeatures', true).catch(e => onUnexpectedError(e));
 						this.storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL);
 					}
 				}, {
 					label: localize('enablePreviewFeatures.no', "No"),
 					run: () => {
-						this.configurationService.updateValue('workbench.enablePreviewFeatures', false).catch(onUnexpectedError);
+						this.configurationService.updateValue('workbench.enablePreviewFeatures', false).catch(e => onUnexpectedError(e));
 					}
 				}, {
 					label: localize('enablePreviewFeatures.never', "No, don't show again"),
 					run: () => {
-						this.configurationService.updateValue('workbench.enablePreviewFeatures', false).catch(onUnexpectedError);
+						this.configurationService.updateValue('workbench.enablePreviewFeatures', false).catch(e => onUnexpectedError(e));
 						this.storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL);
 					},
 					isSecondary: true
 				}]
 			);
-		})
-			.then(null, onUnexpectedError);
+		}).catch(e => onUnexpectedError(e));
 	}
 
 	protected abstract getWindowCount(): Promise<number>;
