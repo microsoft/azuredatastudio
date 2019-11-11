@@ -448,7 +448,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 
 	public $registerCapabilitiesServiceProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
-		this._capabilitiesService.registerProvider(<azdata.CapabilitiesProvider>{
+		this._capabilitiesService.registerLegacyProvider(<azdata.CapabilitiesProvider>{
 			getServerCapabilities(client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> {
 				return self._proxy.$getServerCapabilities(handle, client);
 			}

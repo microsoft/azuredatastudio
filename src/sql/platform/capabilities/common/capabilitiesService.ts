@@ -67,7 +67,7 @@ export interface ICapabilitiesService {
 	/**
 	 * Given a object from key value pairs and a provider; with construct a connection shape using the provider's supplied connection properties
 	 */
-	createConnectionShapeFromOptions(options: { [key: string]: string | number | boolean }, provider: string): ConnectionShape;
+	createConnectionShapeFromOptions(options: { [key: string]: string | number | boolean }, provider: string): ConnectionShape | undefined;
 
 	/**
 	 * Inverse of {@link ICapabilitiesService#createConnectionShapeFromOptions}

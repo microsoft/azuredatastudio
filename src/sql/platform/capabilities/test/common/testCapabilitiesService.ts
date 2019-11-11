@@ -11,6 +11,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { Action } from 'vs/base/common/actions';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ConnectionShape, ConnectionProfile } from 'sql/base/common/connectionProfile';
+import { find } from 'vs/base/common/arrays';
 
 export class TestCapabilitiesService implements ICapabilitiesService {
 
@@ -112,12 +113,6 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 	isPasswordRequired(profile: ConnectionProfile): boolean {
 		throw new Error('Method not implemented.');
 	}
-	createConnectionShapeFromOptions(options: { [key: string]: string | number | boolean; }, provider: string): ConnectionShape {
-		throw new Error('Method not implemented.');
-	}
-	createOptionsFromConnectionShape(shape: ConnectionShape): { [key: string]: string | number | boolean; } {
-		throw new Error('Method not implemented.');
-	}
 
 	public getLegacyCapabilities(provider: string): azdata.DataProtocolServerCapabilities {
 		throw new Error('Method not implemented.');
@@ -152,4 +147,43 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 
 	private _onCapabilitiesRegistered = new Emitter<ProviderFeatures>();
 	public readonly onCapabilitiesRegistered = this._onCapabilitiesRegistered.event;
+
+	createConnectionShapeFromOptions(options: { [key: string]: any; }, providerName: string): ConnectionShape | undefined {
+		const provider = this.getCapabilities(providerName);
+		if (!provider) {
+			return undefined;
+		}
+		const connectionOptions = provider.connection.connectionOptions;
+		const serverName = filterOutFromOptions(options, ConnectionOptionSpecialType.serverName, connectionOptions);
+		const userName = filterOutFromOptions(options, ConnectionOptionSpecialType.userName, connectionOptions);
+		const databaseName = filterOutFromOptions(options, ConnectionOptionSpecialType.databaseName, connectionOptions);
+		const password = filterOutFromOptions(options, ConnectionOptionSpecialType.password, connectionOptions);
+		const authenticationType = filterOutFromOptions(options, ConnectionOptionSpecialType.authType, connectionOptions);
+		const connectionName = filterOutFromOptions(options, ConnectionOptionSpecialType.connectionName, connectionOptions);
+
+		return {
+			connectionName,
+			serverName,
+			databaseName,
+			userName,
+			password,
+			authenticationType,
+			providerName,
+			options
+		};
+	}
+
+	createOptionsFromConnectionShape(shape: ConnectionShape): { [key: string]: string | number | boolean; } {
+		throw new Error('Method not implemented.');
+	}
+}
+
+/**
+ * filters out the given option from the options provider AND IN PLACE DELETES THE KEY
+ */
+function filterOutFromOptions(options: { [key: string]: any; }, type: ConnectionOptionSpecialType, connectionOptions: azdata.ConnectionOption[]): any {
+	const key = find(connectionOptions, o => o.specialValueType === type);
+	const value = options[key.name];
+	delete options[key.name];
+	return value;
 }

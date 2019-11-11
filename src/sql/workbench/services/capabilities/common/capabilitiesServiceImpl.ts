@@ -18,9 +18,8 @@ import { IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 
 import { ICapabilitiesService, ProviderFeatures, clientCapabilities, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { find } from 'vs/base/common/arrays';
 import { entries } from 'sql/base/common/collections';
-import { ConnectionProfile } from 'sql/base/common/connectionProfile';
+import { ConnectionProfile, ConnectionShape } from 'sql/base/common/connectionProfile';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
 
 const connectionRegistry = Registry.as<IConnectionProviderRegistry>(ConnectionExtensions.ConnectionProviderContributions);
 
@@ -173,4 +172,43 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	private shutdown(): void {
 		this._momento.saveMemento();
 	}
+
+	createConnectionShapeFromOptions(options: { [key: string]: any; }, providerName: string): ConnectionShape | undefined {
+		const provider = this._providers.get(providerName);
+		if (!provider) {
+			return undefined;
+		}
+		const connectionOptions = provider.connection.connectionOptions;
+		const serverName = filterOutFromOptions(options, ConnectionOptionSpecialType.serverName, connectionOptions);
+		const userName = filterOutFromOptions(options, ConnectionOptionSpecialType.userName, connectionOptions);
+		const databaseName = filterOutFromOptions(options, ConnectionOptionSpecialType.databaseName, connectionOptions);
+		const password = filterOutFromOptions(options, ConnectionOptionSpecialType.password, connectionOptions);
+		const authenticationType = filterOutFromOptions(options, ConnectionOptionSpecialType.authType, connectionOptions);
+		const connectionName = filterOutFromOptions(options, ConnectionOptionSpecialType.connectionName, connectionOptions);
+
+		return {
+			connectionName,
+			serverName,
+			databaseName,
+			userName,
+			password,
+			authenticationType,
+			providerName,
+			options
+		};
+	}
+
+	createOptionsFromConnectionShape(shape: ConnectionShape): { [key: string]: string | number | boolean; } {
+		throw new Error('Method not implemented.');
+	}
+}
+
+/**
+ * filters out the given option from the options provider AND IN PLACE DELETES THE KEY
+ */
+function filterOutFromOptions(options: { [key: string]: any; }, type: ConnectionOptionSpecialType, connectionOptions: azdata.ConnectionOption[]): any {
+	const key = find(connectionOptions, o => o.specialValueType === type);
+	const value = options[key.name];
+	delete options[key.name];
+	return value;
 }
