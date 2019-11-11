@@ -49,8 +49,7 @@ export class ResourceProviderService implements IResourceProviderService {
 				this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.FirewallRuleRequested)
 					.withAdditionalProperties({
 						provider: resourceProviderId
-					})
-					.send();
+					}).send();
 				provider.createFirewallRule(selectedAccount, firewallruleInfo).then(result => {
 					resolve(result);
 				}, error => {

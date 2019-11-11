@@ -76,7 +76,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 			this._hasError = true;
 			this._changeRef.detectChanges();
 		}
-		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ModalDialogOpened)
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ChartCreated)
 			.withAdditionalProperties({ type: this.chartType })
 			.send();
 	}

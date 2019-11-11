@@ -64,8 +64,7 @@ export class RestoreService implements IRestoreService {
 				this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.RestoreRequested)
 					.withAdditionalProperties({
 						provider: providerResult.providerName
-					})
-					.send();
+					}).send();
 				providerResult.provider.restore(connectionUri, restoreInfo).then(result => {
 					resolve(result);
 				}, error => {

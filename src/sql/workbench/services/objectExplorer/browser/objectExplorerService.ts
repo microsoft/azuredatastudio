@@ -351,8 +351,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					.withAdditionalProperties({
 						refresh: false,
 						provider: providerId
-					})
-					.send();
+					}).send();
 				this.expandOrRefreshNode(providerId, session, nodePath).then(result => {
 					resolve(result);
 				}, error => {
@@ -494,8 +493,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				.withAdditionalProperties({
 					refresh: true,
 					provider: providerId
-				})
-				.send();
+				}).send();
 			return this.expandOrRefreshNode(providerId, session, nodePath, true);
 		}
 		return Promise.resolve(undefined);
