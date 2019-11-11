@@ -13,7 +13,7 @@ import { IServerGroupController, IServerGroupDialogCallbacks } from 'sql/platfor
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ServerGroupDialog } from 'sql/workbench/parts/objectExplorer/browser/serverGroupDialog';
 import { ServerGroupViewModel } from 'sql/workbench/parts/objectExplorer/common/serverGroupViewModel';
-import { ConnectionGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionGroup, IConnectionProfileGroup } from 'sql/base/common/connectionGroup';
 
 export class ServerGroupController implements IServerGroupController {
 	_serviceBrand: undefined;

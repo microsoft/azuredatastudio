@@ -15,7 +15,7 @@ import {
 } from 'sql/workbench/parts/objectExplorer/browser/connectionTreeAction';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
-import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionGroup } from 'sql/base/common/connectionGroup';
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';

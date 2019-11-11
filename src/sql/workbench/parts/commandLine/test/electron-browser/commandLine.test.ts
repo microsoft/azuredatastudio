@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
-import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionGroup } from 'sql/base/common/connectionGroup';
 import { CommandLineWorkbenchContribution } from 'sql/workbench/parts/commandLine/electron-browser/commandLine';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ParsedArgs } from 'vs/platform/environment/common/environment';

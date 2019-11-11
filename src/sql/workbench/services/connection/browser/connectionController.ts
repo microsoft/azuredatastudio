@@ -6,7 +6,7 @@
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionComponentCallbacks, IConnectionComponentController, IConnectionValidateResult } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { AdvancedPropertiesController } from 'sql/workbench/parts/connection/browser/advancedPropertiesController';
-import { ConnectionGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionGroup, IConnectionProfileGroup } from 'sql/base/common/connectionGroup';
 import * as Constants from 'sql/platform/connection/common/constants';
 import * as azdata from 'azdata';
 import * as Utils from 'sql/platform/connection/common/utils';

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
-import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionGroup } from 'sql/base/common/connectionGroup';
 import { ObjectExplorerService, NodeExpandInfoWithProviderId } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/parts/objectExplorer/common/treeNode';

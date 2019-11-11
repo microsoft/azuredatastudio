@@ -8,7 +8,7 @@ import { Action } from 'vs/base/common/actions';
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
-import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionGroup } from 'sql/base/common/connectionGroup';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';

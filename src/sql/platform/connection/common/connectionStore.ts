@@ -7,7 +7,7 @@ import { ReverseLookUpMap } from 'sql/base/common/map';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionConfig } from 'sql/platform/connection/common/connectionConfig';
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
-import { ConnectionGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionGroup } from 'sql/base/common/connectionGroup';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
@@ -21,14 +21,6 @@ const CRED_SEPARATOR = '|';
 const CRED_ID_PREFIX = 'id:';
 const CRED_ITEMTYPE_PREFIX = 'itemtype:';
 const CRED_PROFILE_USER = 'Profile';
-
-interface ConnectionStoreShape {
-	options: {};
-	groupId: string;
-	providerName: string;
-	savePassword: boolean;
-	id: string;
-}
 
 /**
  * Manages the connections list including saved profiles and the most recently used connections

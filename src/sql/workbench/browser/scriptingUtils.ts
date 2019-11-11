@@ -41,8 +41,8 @@ const targetDatabaseEngineEditionMap = {
  * Select the top rows from an object
  */
 export async function scriptSelect(connectionProfile: ConnectionProfile, metadata: azdata.ObjectMetadata, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService, scriptingService: IScriptingService): Promise<boolean> {
-	const connectionResult = await connectionService.connectIfNotConnected(connectionProfile);
-	let paramDetails: azdata.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
+	const connectionResult = await connectionService.connect(connectionProfile, { useExisting: true });
+	const paramDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
 	const result = await scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails);
 	if (result && result.script) {
 		const owner = await queryEditorService.newSqlEditor(result.script);
@@ -160,8 +160,8 @@ export async function script(connectionProfile: ConnectionProfile, metadata: azd
 	}
 }
 
-function getScriptingParamDetails(connectionService: IConnectionManagementService, ownerUri: string, metadata: azdata.ObjectMetadata): azdata.ScriptingParamDetails {
-	let serverInfo: azdata.ServerInfo = getServerInfo(connectionService, ownerUri);
+function getScriptingParamDetails(connectionService: IConnectionManagementService): azdata.ScriptingParamDetails {
+	let serverInfo: azdata.ServerInfo = getServerInfo(connectionService);
 	let paramDetails: azdata.ScriptingParamDetails = {
 		filePath: undefined,
 		scriptCompatibilityOption: scriptCompatibilityOptionMap[serverInfo.serverMajorVersion],
@@ -171,7 +171,7 @@ function getScriptingParamDetails(connectionService: IConnectionManagementServic
 	return paramDetails;
 }
 
-function getServerInfo(connectionService: IConnectionManagementService, ownerUri: string): azdata.ServerInfo {
+function getServerInfo(connectionService: IConnectionManagementService): azdata.ServerInfo {
 	let connection: ConnectionManagementInfo = connectionService.getConnectionInfo(ownerUri);
 	return connection.serverInfo;
 }

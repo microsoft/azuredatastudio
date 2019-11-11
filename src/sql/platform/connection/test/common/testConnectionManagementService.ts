@@ -5,7 +5,7 @@
 
 import { IConnectionManagementService, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks, IConnectionResult, INewConnectionParams }
 	from 'sql/platform/connection/common/connectionManagement';
-import { IConnectionProfileGroup, ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { IConnectionProfileGroup, ConnectionGroup } from 'sql/base/common/connectionGroup';
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import * as azdata from 'azdata';

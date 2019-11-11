@@ -13,7 +13,7 @@ import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { IConnectionComponentCallbacks } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/platform/connection/common/constants';
-import { ConnectionGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionGroup, IConnectionProfileGroup } from 'sql/base/common/connectionGroup';
 import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';

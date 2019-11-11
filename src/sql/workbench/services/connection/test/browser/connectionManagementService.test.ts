@@ -24,7 +24,7 @@ import * as azdata from 'azdata';
 
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
-import { IConnectionProfileGroup, ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { IConnectionProfileGroup, ConnectionGroup } from 'sql/base/common/connectionGroup';
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
 import { TestStorageService, TestEnvironmentService, TestEditorService } from 'vs/workbench/test/workbenchTestServices';

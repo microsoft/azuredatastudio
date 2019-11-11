@@ -16,7 +16,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { Event, Emitter } from 'vs/base/common/event';
 import { append, $, hide, show } from 'vs/base/browser/dom';
 
-import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionGroup } from 'sql/base/common/connectionGroup';
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import * as ConnectionUtils from 'sql/platform/connection/common/utils';
 import { ActiveConnectionsFilterAction } from 'sql/workbench/parts/objectExplorer/browser/connectionTreeAction';

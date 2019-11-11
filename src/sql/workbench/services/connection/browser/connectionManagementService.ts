@@ -4,113 +4,50 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
-import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
-import {
-	IConnectionManagementService, INewConnectionParams,
-	ConnectionType, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks,
-	IConnectionParams, IConnectionResult, RunQueryOnConnectionMode
-} from 'sql/platform/connection/common/connectionManagement';
-import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
-import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import * as Utils from 'sql/platform/connection/common/utils';
-import * as Constants from 'sql/platform/connection/common/constants';
-import { ICapabilitiesService, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
-import * as ConnectionContracts from 'sql/workbench/parts/connection/common/connection';
-import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
-import { DashboardInput } from 'sql/workbench/parts/dashboard/browser/dashboardInput';
-import { ConnectionGlobalStatus } from 'sql/workbench/parts/connection/common/connectionGlobalStatus';
-import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
-import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
-import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/browser/angularEventingService';
-import * as QueryConstants from 'sql/workbench/parts/query/common/constants';
+import { IConnectionManagementService, IConnection, ConnectOptions, IConnectionProvider } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { Deferred } from 'sql/base/common/promise';
-import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
-import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
 
-import * as azdata from 'azdata';
-
-import * as nls from 'vs/nls';
 import * as errors from 'vs/base/common/errors';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import * as platform from 'vs/platform/registry/common/platform';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { ConnectionGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionGroup';
-import { Event, Emitter } from 'vs/base/common/event';
-import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ILogService } from 'vs/platform/log/common/log';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
-import { Memento } from 'vs/workbench/common/memento';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 import { entries } from 'sql/base/common/collections';
-import { find } from 'vs/base/common/arrays';
-import { values } from 'vs/base/common/collections';
 import { assign } from 'vs/base/common/objects';
-import { Connection } from 'sql/base/common/connection';
+import { ILogService } from 'vs/platform/log/common/log';
+
+const defaultConnectOptions: ConnectOptions = {
+	saveToConfig: false,
+	useExisting: false
+};
+
+interface InternalConnectOptions extends ConnectOptions {
+	saveToConfig: boolean;
+	useExisting: boolean;
+}
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
 	_serviceBrand: undefined;
 
-	private _providers = new Map<string, { onReady: Promise<azdata.ConnectionProvider>, properties: ConnectionProviderProperties }>();
-	private _iconProviders = new Map<string, azdata.IconProvider>();
-	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
-	private _onAddConnectionProfile = new Emitter<ConnectionProfile>();
-	private _onDeleteConnectionProfile = new Emitter<void>();
-	private _onConnect = new Emitter<IConnectionParams>();
-	private _onDisconnect = new Emitter<IConnectionParams>();
-	private _onConnectRequestSent = new Emitter<void>();
-	private _onConnectionChanged = new Emitter<IConnectionParams>();
-	private _onLanguageFlavorChanged = new Emitter<azdata.DidChangeLanguageFlavorParams>();
-	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._notificationService);
+	private _providers = new Map<string, { readonly onReady: Promise<IConnectionProvider>, readonly properties: ConnectionProviderProperties }>();
 
-	private _mementoContext: Memento;
-	private _mementoObj: any;
-	private static readonly CONNECTION_MEMENTO = 'ConnectionManagement';
+	/*private readonly connectionStore = this.instantiationService.createInstance(ConnectionStore);
+	private readonly connectionStatusManager = this.instantiationService.createInstance(ConnectionStatusManager);*/
 
 	constructor(
-		private _connectionStore: ConnectionStore,
-		private _connectionStatusManager: ConnectionStatusManager,
-		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
-		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IEditorService private _editorService: IEditorService,
-		@ITelemetryService private _telemetryService: ITelemetryService,
-		@IConfigurationService private _configurationService: IConfigurationService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@IQuickInputService private _quickInputService: IQuickInputService,
-		@INotificationService private _notificationService: INotificationService,
-		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
-		@IAngularEventingService private _angularEventing: IAngularEventingService,
-		@IAccountManagementService private _accountManagementService: IAccountManagementService,
-		@ILogService private _logService: ILogService,
-		@IStorageService private _storageService: IStorageService
+		// @IInstantiationService private readonly instantiationService: IInstantiationService
+		@ILogService private readonly logService: ILogService
 	) {
 		super();
 
-		if (!this._connectionStore) {
-			this._connectionStore = _instantiationService.createInstance(ConnectionStore);
-		}
-		if (!this._connectionStatusManager) {
-			this._connectionStatusManager = new ConnectionStatusManager(this._logService);
-		}
-
-		if (this._storageService) {
-			this._mementoContext = new Memento(ConnectionManagementService.CONNECTION_MEMENTO, this._storageService);
-			this._mementoObj = this._mementoContext.getMemento(StorageScope.GLOBAL);
-		}
-
 		const registry = platform.Registry.as<IConnectionProviderRegistry>(ConnectionProviderExtensions.ConnectionProviderContributions);
 
-		let providerRegistration = (p: { id: string, properties: ConnectionProviderProperties }) => {
-			let provider = {
-				onReady: new Deferred<azdata.ConnectionProvider>(),
+		const providerRegistration = (p: { id: string, properties: ConnectionProviderProperties }) => {
+			const provider = Object.freeze({
+				onReady: new Deferred<IConnectionProvider>(),
 				properties: p.properties
-			};
+			});
 			this._providers.set(p.id, provider);
 		};
 
@@ -118,22 +55,43 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		entries(registry.providers).map(v => {
 			providerRegistration({ id: v[0], properties: v[1] });
 		});
-
-		this._register(this._onAddConnectionProfile);
-		this._register(this._onDeleteConnectionProfile);
 	}
 
+	public async connect(connection: ConnectionProfile, options: ConnectOptions = {}): Promise<IConnection> {
+		if (options.useExisting) {
+			const existing = this.findExistingConnection(connection);
+			if (existing) {
+				return existing;
+			}
+		}
+		return this.tryConnect(connection, assign(options, defaultConnectOptions) as InternalConnectOptions);
+	}
+
+	public findExistingConnection(connection: ConnectionProfile): IConnection | undefined {
+		throw new errors.NotImplementedError();
+	}
+
+	private async tryConnect(connection: ConnectionProfile, options: InternalConnectOptions): Promise<IConnection> {
+		throw new errors.NotImplementedError();
+	}
+
+	public registerProvider(providerId: string, provider: IConnectionProvider): void {
+		if (!this._providers.has(providerId)) {
+			this.logService.warn('Provider', providerId, 'attempted to register but has no metadata');
+			const providerType = Object.freeze({
+				onReady: new Deferred<IConnectionProvider>(),
+				properties: undefined
+			});
+			this._providers.set(providerId, providerType);
+		}
+
+		// we know this is a deferred promise because we made it
+		(this._providers.get(providerId).onReady as Deferred<IConnectionProvider>).resolve(provider);
+	}
+
+	/*
 	public providerRegistered(providerId: string): boolean {
 		return !!this._providers.get(providerId);
-	}
-
-	// Event Emitters
-	public get onAddConnectionProfile(): Event<ConnectionProfile> {
-		return this._onAddConnectionProfile.event;
-	}
-
-	public get onDeleteConnectionProfile(): Event<void> {
-		return this._onDeleteConnectionProfile.event;
 	}
 
 	public get onConnect(): Event<IConnectionParams> {
@@ -148,38 +106,16 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._onConnectionChanged.event;
 	}
 
-	public get onConnectionRequestSent(): Event<void> {
-		return this._onConnectRequestSent.event;
-	}
-
 	public get onLanguageFlavorChanged(): Event<azdata.DidChangeLanguageFlavorParams> {
 		return this._onLanguageFlavorChanged.event;
 	}
 
 	// Connection Provider Registration
-	public registerProvider(providerId: string, provider: azdata.ConnectionProvider): void {
-		if (!this._providers.has(providerId)) {
-			console.error('Provider', providerId, 'attempted to register but has no metadata');
-			let providerType = {
-				onReady: new Deferred<azdata.ConnectionProvider>(),
-				properties: undefined
-			};
-			this._providers.set(providerId, providerType);
-		}
-
-		// we know this is a deferred promise because we made it
-		(this._providers.get(providerId).onReady as Deferred<azdata.ConnectionProvider>).resolve(provider);
-	}
 
 	public registerIconProvider(providerId: string, iconProvider: azdata.IconProvider): void {
 		this._iconProviders.set(providerId, iconProvider);
 	}
 
-	/**
-	 * Opens the connection dialog
-	 * @param params Include the uri, type of connection
-	 * @param model the existing connection profile to create a new one from
-	 */
 	public showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: ConnectionProfile, connectionResult?: IConnectionResult): Promise<void> {
 		if (!params) {
 			params = { connectionType: ConnectionType.default };
@@ -193,18 +129,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	/**
-	 * Load the password for the profile
-	 * @param connectionProfile Connection Profile
-	 */
 	public async addSavedPassword(connectionProfile: ConnectionProfile): Promise<ConnectionProfile> {
 		await this.fillInOrClearAzureToken(connectionProfile);
 		return this._connectionStore.addSavedPassword(connectionProfile).then(result => result.profile);
 	}
 
-	/**
-	 * Get the connections provider ID from an connection URI
-	 */
 	public getProviderIdFromUri(ownerUri: string): string {
 		let providerId = this._uriToProvider[ownerUri];
 		if (!providerId) {
@@ -214,13 +143,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return providerId;
 	}
 
-	/**
-	 * Loads the  password and try to connect. If fails, shows the dialog so user can change the connection
-	 * @param Connection Profile
-	 * @param owner of the connection. Can be the editors
-	 * @param options to use after the connection is complete
-	 */
-	private tryConnect(connection: ConnectionProfile, owner: IConnectableInput, options?: IConnectionCompletionOptions): Promise<IConnectionResult> {
+	private tryConnect(connection: ConnectionProfile, options: InternalConnectOptions): Promise<IConnection> {
 		// Load the password if it's not already loaded
 		return this._connectionStore.addSavedPassword(connection).then(async result => {
 			let newConnection = result.profile;
@@ -259,10 +182,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	/**
-	 * If showing the dialog on error is set to true in the options, shows the dialog with the error
-	 * otherwise does nothing
-	 */
 	private showConnectionDialogOnError(
 		connection: ConnectionProfile,
 		owner: IConnectableInput,
@@ -283,42 +202,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	/**
-	 * Load the password and opens a new connection
-	 * @param Connection Profile
-	 * @param uri assigned to the profile (used only when connecting from an editor)
-	 * @param options to be used after the connection is completed
-	 * @param callbacks to call after the connection is completed
-	 */
-	public connect(connection: ConnectionProfile, options: IConnectOptions): Promise<Connection> {
-		if (!uri) {
-			uri = Utils.generateUri(connection);
-		}
-		let input: IConnectableInput = options && options.params ? options.params.input : undefined;
-		if (!input) {
-			input = {
-				onConnectReject: callbacks ? callbacks.onConnectReject : undefined,
-				onConnectStart: callbacks ? callbacks.onConnectStart : undefined,
-				onConnectSuccess: callbacks ? callbacks.onConnectSuccess : undefined,
-				onDisconnect: callbacks ? callbacks.onDisconnect : undefined,
-				onConnectCanceled: callbacks ? callbacks.onConnectCanceled : undefined,
-				uri: uri
-			};
-		}
-
-
-		if (uri !== input.uri) {
-			//TODO: this should never happen. If the input is already passed, it should have the uri
-			this._logService.warn(`the given uri is different that the input uri. ${uri}|${input.uri}`);
-		}
-		return this.tryConnect(connection, input, options);
-	}
-
-	/**
-	 * If there's already a connection for given profile and purpose, returns the ownerUri for the connection
-	 * otherwise tries to make a connection and returns the owner uri when connection is complete
-	 * The purpose is connection by default
-	 */
 	public connectIfNotConnected(connection: ConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection' | 'notebook', saveConnection: boolean = false): Promise<string> {
 		let ownerUri: string = Utils.generateUri(connection, purpose);
 		if (this._connectionStatusManager.isConnected(ownerUri)) {
@@ -341,11 +224,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	/**
-	 * Opens a new connection and saves the profile in the settings.
-	 * This method doesn't load the password because it only gets called from the
-	 * connection dialog and password should be already in the profile
-	 */
 	public connectAndSaveProfile(connection: ConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks):
 		Promise<IConnectionResult> {
 		if (!options) {
@@ -645,10 +523,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStatusManager.getOriginalOwnerUri(Utils.generateUri(connectionProfile));
 	}
 
-	/**
-	 * Returns a formatted URI in case the database field is empty for the original
-	 * URI, which happens when the connected database is master or the default database
-	 */
 	public getFormattedUri(uri: string, connectionProfile: ConnectionProfile): string {
 		if (this._connectionStatusManager.isDefaultTypeUri(uri)) {
 			return this.getConnectionUri(connectionProfile);
@@ -657,15 +531,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	/**
-	 * Sends a notification that the language flavor for a given URI has changed.
-	 * For SQL, this would be the specific SQL implementation being used.
-	 *
-	 * @param uri the URI of the resource whose language has changed
-	 * @param language the base language
-	 * @param flavor the specific language flavor that's been set
-	 * @throws {Error} if the provider is not in the list of registered providers
-	 */
 	public doChangeLanguageFlavor(uri: string, language: string, provider: string): void {
 		if (this._providers.has(provider)) {
 			this._onLanguageFlavorChanged.fire({
@@ -678,10 +543,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	/**
-	 * Ensures that a default language flavor is set for a URI, if none has already been defined.
-	 * @param uri document identifier
-	 */
 	public ensureDefaultLanguageFlavor(uri: string): void {
 		if (!this.getProviderIdFromUri(uri)) {
 			// Lookup the default settings and use this
@@ -693,16 +554,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	public getDefaultProviderId(): string {
-		let defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultEngine);
-		return defaultProvider && this._providers.has(defaultProvider) ? defaultProvider : undefined;
-	}
-
-	/**
-	 * Fills in the Azure account token if it's needed for this connection and doesn't already have one
-	 * and clears it if it isn't.
-	 * @param connection The connection to fill in or update
-	 */
 	private async fillInOrClearAzureToken(connection: ConnectionProfile): Promise<boolean> {
 		if (connection.authenticationType !== Constants.azureMFA) {
 			connection.options['azureAccountToken'] = undefined;
@@ -809,9 +660,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	/**
-	 * Add a connection to the active connections list.
-	 */
 	private tryAddActiveConnection(connectionManagementInfo: ConnectionManagementInfo, newConnection: ConnectionProfile, addToMru: boolean): void {
 		if (newConnection && addToMru) {
 			this._connectionStore.addRecentConnection(newConnection)
@@ -896,9 +744,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	/**
-	 * Returns true if the connection can be moved to another group
-	 */
 	public canChangeConnectionConfig(profile: ConnectionProfile, newGroupID: string): boolean {
 		return this._connectionStore.canChangeConnectionConfig(profile, newGroupID);
 	}
@@ -942,10 +787,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		owner.onDisconnect();
 		return Promise.resolve(true);
 	}
-
-	/**
-	 * Functions to handle the connecting life cycle
-	 */
 
 	// Connect an open URI to a connection profile
 	private createNewConnection(uri: string, connection: ConnectionProfile): Promise<IConnectionResult> {
@@ -1069,42 +910,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStatusManager.isConnected(fileUri);
 	}
 
-	/**
-	 * Finds existing connection for given profile and purpose is any exists.
-	 * The purpose is connection by default
-	 */
-	public findExistingConnection(connection: ConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection' | 'notebook'): ConnectionProfile {
-		let connectionUri = Utils.generateUri(connection, purpose);
-		let existingConnection = this._connectionStatusManager.findConnection(connectionUri);
-		if (existingConnection && this._connectionStatusManager.isConnected(connectionUri)) {
-			return existingConnection.connectionProfile;
-		} else {
-			return undefined;
-		}
-	}
-
-	public isProfileConnected(connectionProfile: ConnectionProfile): boolean {
-		let connectionManagement = this._connectionStatusManager.findConnectionProfile(connectionProfile);
-		return connectionManagement && !connectionManagement.connecting;
-	}
-
-	public isProfileConnecting(connectionProfile: ConnectionProfile): boolean {
-		let connectionManagement = this._connectionStatusManager.findConnectionProfile(connectionProfile);
-		return connectionManagement && connectionManagement.connecting;
-	}
-
-	private isConnecting(fileUri: string): boolean {
-		return this._connectionStatusManager.isConnecting(fileUri);
-	}
-
-	public getConnectionProfile(fileUri: string): ConnectionProfile {
-		return this._connectionStatusManager.isConnected(fileUri) ? this._connectionStatusManager.getConnectionProfile(fileUri) : undefined;
-	}
-
-	public getConnectionInfo(fileUri: string): ConnectionManagementInfo {
-		return this._connectionStatusManager.isConnected(fileUri) ? this._connectionStatusManager.findConnection(fileUri) : undefined;
-	}
-
 	public listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult> {
 		const self = this;
 		if (self.isConnected(connectionUri)) {
@@ -1138,10 +943,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	/**
-	 * Deletes a connection from registered servers.
-	 * Disconnects a connection before removing from settings.
-	 */
 	public deleteConnection(connection: ConnectionProfile): Promise<boolean> {
 
 		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.DeleteConnection, {}, connection).catch((e) => this._logService.error(e));
@@ -1169,10 +970,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	/**
-	 * Deletes a group with all its children groups and connections from registered servers.
-	 * Disconnects a connection before removing from config. If disconnect fails, settings is not modified.
-	 */
 	public deleteConnectionGroup(group: ConnectionGroup): Promise<boolean> {
 		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.DeleteServerGroup).catch((e) => this._logService.error(e));
 		// Get all connections for this group
@@ -1204,9 +1001,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	/**
-	 * Rebuild the IntelliSense cache for the connection with the given URI
-	 */
 	public rebuildIntelliSenseCache(connectionUri: string): Thenable<void> {
 		if (this.isConnected(connectionUri)) {
 			let providerId: string = this.getProviderIdFromUri(connectionUri);
@@ -1271,9 +1065,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return profile.connectionProfile;
 	}
 
-	/**
-	 * Get the connection string for the provided connection ID
-	 */
 	public getConnectionString(connectionId: string, includePassword: boolean = false): Thenable<string> {
 		let ownerUri = this.getConnectionUriFromId(connectionId);
 
@@ -1293,10 +1084,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	/**
-	 * Serialize connection with options provider
-	 * TODO this could be a map reduce operation
-	 */
 	public buildConnectionInfo(connectionString: string, provider: string): Thenable<azdata.ConnectionInfo> {
 		let connectionProvider = this._providers.get(provider);
 		if (connectionProvider) {
@@ -1312,11 +1099,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return connectionProvider && connectionProvider.properties;
 	}
 
-	/**
-	 * Get known connection profiles including active connections, recent connections and saved connections.
-	 * @param activeConnectionsOnly Indicates whether only get the active connections, default value is false.
-	 * @returns array of connections
-	 **/
 	public getConnections(activeConnectionsOnly?: boolean): ConnectionProfile[] {
 		// 1. Active Connections
 		const connections = this.getActiveConnections();
@@ -1373,5 +1155,5 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			}
 		}
 		return connections;
-	}
+	}*/
 }

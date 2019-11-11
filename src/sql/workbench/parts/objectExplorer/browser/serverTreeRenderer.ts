@@ -8,7 +8,7 @@ import 'vs/css!sql/media/icons/common-icons';
 
 import * as dom from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
-import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionGroup } from 'sql/base/common/connectionGroup';
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';

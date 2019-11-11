@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConnectionProfileGroup } from 'sql/platform/connection/common/connectionGroup';
+import { IConnectionProfileGroup } from 'sql/base/common/connectionGroup';
 
 import * as TypeChecker from 'vs/base/common/types';
 import { localize } from 'vs/nls';

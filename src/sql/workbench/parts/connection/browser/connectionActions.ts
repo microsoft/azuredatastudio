@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import nls = require('vs/nls');
+import * as nls from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';

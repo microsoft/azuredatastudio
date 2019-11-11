@@ -5,14 +5,15 @@
 
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
-import { ConnectionGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionGroup';
-import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
-import * as Utils from 'sql/platform/connection/common/utils';
-import { generateUuid } from 'vs/base/common/uuid';
 import * as nls from 'vs/nls';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { Connection, ConnectionState } from 'sql/base/common/connection';
+import { Disposable } from 'vs/base/common/lifecycle';
+import { ConnectionGroup } from 'sql/base/common/connectionGroup';
+import { ILogService } from 'vs/platform/log/common/log';
+import { isUndefined } from 'vs/base/common/types';
+import { createMemoizer } from 'vs/base/common/decorators';
 
 const GROUPS_CONFIG_KEY = 'datasource.connectionGroups';
 const CONNECTIONS_CONFIG_KEY = 'datasource.connections';
@@ -27,42 +28,137 @@ interface StoredConnection {
 
 interface StoredGroup {
 	id: string;
-	color: string;
+	name: string;
+	parentId?: string;
+	color?: string;
+	description?: string;
 }
 
 /**
  * Implements connection profile file storage.
  */
-export class ConnectionConfig {
+export class ConnectionConfig extends Disposable {
+
+	private static readonly CONNECTION_CONFIG_MEMOIZE = createMemoizer();
+
+	private _rootItems = new Set<ConnectionGroup | Connection>();
 
 	public constructor(
-		private readonly configurationService: IConfigurationService,
-		private readonly capabilitiesService: ICapabilitiesService
-	) { }
-
-	/**
-	 * Returns connection groups from user and workspace settings.
-	 */
-	public getAllGroups(): IConnectionProfileGroup[] {
-
-		let allGroups: IConnectionProfileGroup[] = [];
-		const config = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY);
-		let { user } = config;
-		const { workspace } = config;
-
-		if (user) {
-			if (workspace) {
-				user = user.filter(x => find(workspace, f => this.isSameGroupName(f, x)) === undefined);
-				allGroups = allGroups.concat(workspace);
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService,
+		@ILogService private readonly logService: ILogService
+	) {
+		super();
+		this._register(configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration(GROUPS_CONFIG_KEY) || e.affectsConfiguration(CONNECTIONS_CONFIG_KEY)) {
+				this.generateGroups();
 			}
-			allGroups = allGroups.concat(user);
+		}));
+		this.generateGroups();
+	}
+
+	private generateGroups(): void {
+		const toBeAdded = new Map<string, Set<Connection | ConnectionGroup>>();
+		const groupConfig = this.configurationService.inspect<StoredGroup[] | undefined>(GROUPS_CONFIG_KEY);
+		const connectionConfig = this.configurationService.inspect<StoredConnection[] | undefined>(CONNECTIONS_CONFIG_KEY);
+		const groups = (groupConfig.user || []).concat(groupConfig.workspace || []).map(storeToGroup);
+		const connections = (connectionConfig.user || []).concat(connectionConfig.workspace || []).map(c => storeToConnection(c, this.capabilitiesService));
+
+		for (const group of groups) {
+			const existing = this.findInTree<ConnectionGroup>(i => i.id === group.id);
+			if (existing) {
+
+			} else if (group.parent) {
+				const existingParent = this.findInTree<ConnectionGroup>(i => i.id === group.parent);
+				if (existingParent) {
+					existingParent.add(group);
+				} else {
+					if (!toBeAdded.has(group.parent)) {
+						toBeAdded.set(group.parent, new Set<Connection | ConnectionGroup>());
+					}
+					toBeAdded.get(group.parent).add(group);
+				}
+			} else {
+				// new group and a top level group
+				this._rootItems.add(group);
+			}
+
+			if (toBeAdded.has(group.id)) {
+				const children = toBeAdded.get(group.id);
+				toBeAdded.delete(group.id);
+				for (const child of children) {
+					group.add(child);
+				}
+			}
 		}
-		return allGroups.map(g => {
-			if (g.parentId === '' || !g.parentId) {
-				g.parentId = undefined;
+
+		for (const connection of connections) {
+			const existing = this.findInTree<Connection>(i => i.id === connection.id);
+			if (existing) {
+
+			} else if (connection.groupId) {
+				const existingParent = this.findInTree<ConnectionGroup>(i => i.id === connection.groupId);
+				if (existingParent) {
+					existingParent.add(connection);
+				} else {
+					if (!toBeAdded.has(connection.groupId)) {
+						toBeAdded.set(connection.groupId, new Set<Connection | ConnectionGroup>());
+					}
+					toBeAdded.get(connection.groupId).add(connection);
+				}
+			} else {
+				// new group and a top level group
+				this._rootItems.add(connection);
 			}
-			return g;
-		});
+		}
+
+		ConnectionConfig.CONNECTION_CONFIG_MEMOIZE.clear();
+	}
+
+	@ConnectionConfig.CONNECTION_CONFIG_MEMOIZE
+	public get groups(): ReadonlyArray<ConnectionGroup> {
+		return this.filterAndFlattenTree(item => item instanceof ConnectionGroup) as ReadonlyArray<ConnectionGroup>;
+	}
+
+	@ConnectionConfig.CONNECTION_CONFIG_MEMOIZE
+	public get connections(): ReadonlyArray<Connection> {
+		return this.filterAndFlattenTree(item => item instanceof Connection) as ReadonlyArray<Connection>;
+	}
+
+	private filterAndFlattenTree(predicate: (item: ConnectionGroup | Connection) => boolean): Array<ConnectionGroup | Connection> {
+		const reduce = (items: Array<ConnectionGroup | Connection>): Array<ConnectionGroup | Connection> => {
+			const array = new Array<ConnectionGroup | Connection>();
+			for (const item of items) {
+				if (predicate(item)) {
+					array.push(item);
+				}
+
+				if (item instanceof ConnectionGroup) {
+					array.push(...reduce(item.children));
+				}
+			}
+			return array;
+		};
+
+		return reduce(Array.from(this._rootItems));
+	}
+
+	private findInTree<T extends ConnectionGroup | Connection>(predicate: (item: ConnectionGroup | Connection) => boolean): T | undefined {
+		const find = (items: Array<ConnectionGroup | Connection>): T | undefined => {
+			for (const item of items) {
+				if (predicate(item)) {
+					return item as T;
+				} else if (item instanceof ConnectionGroup) {
+					const sub = find(item.children);
+					if (!isUndefined(sub)) {
+						return sub;
+					}
+				}
+			}
+			return undefined;
+		};
+
+		return find(Array.from(this._rootItems));
 	}
 
 	/**
@@ -90,22 +186,7 @@ export class ConnectionConfig {
 	/**
 	 *Returns group id
 	 */
-	public addGroupFromProfile(connection: Connection): Promise<string> {
-		if (profile.groupId && profile.groupId !== Utils.defaultGroupId) {
-			return Promise.resolve(profile.groupId);
-		} else {
-			let groups = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).user;
-			let result = this.saveGroup(groups, profile.groupFullName, undefined, undefined);
-			groups = result.groups;
-
-			return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER).then(() => result.newGroupId!);
-		}
-	}
-
-	/**
-	 *Returns group id
-	 */
-	public addGroup(profileGroup: IConnectionProfileGroup): Promise<string> {
+	public addGroup(profileGroup: ConnectionGroup): Promise<string> {
 		if (profileGroup.id) {
 			return Promise.resolve(profileGroup.id);
 		} else {
@@ -141,29 +222,6 @@ export class ConnectionConfig {
 			case ConfigurationTarget.WORKSPACE:
 				return configs.workspace || [];
 		}
-	}
-
-	/**
-	 * Get a list of all connections in the connection config. Connections returned
-	 * are sorted first by whether they were found in the user/workspace settings,
-	 * and next alphabetically by profile/server name.
-	 */
-	public getConnections(getWorkspaceConnections: boolean): Connection[] {
-		let profiles: StoredConnection[] = [];
-		//TODO: have to figure out how to sort connections for all provider
-		// Read from user settings
-
-		const userProfiles = this.getConnectionsForTarget(ConfigurationTarget.USER);
-		profiles = profiles.concat(userProfiles);
-
-		if (getWorkspaceConnections) {
-			// Read from workspace settings
-
-			const workspaceProfiles = this.getConnectionsForTarget(ConfigurationTarget.WORKSPACE);
-			profiles = profiles.concat(workspaceProfiles);
-		}
-
-		return profiles.map(p => storeToProfile(p, this.capabilitiesService));
 	}
 
 	/**
@@ -207,152 +265,9 @@ export class ConnectionConfig {
 			this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER)
 		]).then(() => Promise.resolve());
 	}
-
-	/**
-	 * Moves the source group under the target group.
-	 */
-	public changeGroupIdForConnectionGroup(source: ConnectionGroup, target: ConnectionGroup): Promise<void> {
-		let groups = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).user;
-		groups = groups.map(g => {
-			if (g.id === source.id) {
-				g.parentId = target.id;
-			}
-			return g;
-		});
-		return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER);
-	}
-
-	/**
-	 * Returns true if connection can be moved to another group
-	 */
-	public canChangeConnectionConfig(profile: ConnectionProfile, newGroupID: string): boolean {
-		const profiles = this.getConnections(true);
-		const existingProfile = find(profiles, p => p.getConnectionInfoId() === profile.getConnectionInfoId() && p.groupId === newGroupID);
-		return existingProfile === undefined;
-	}
-
-	/**
-	 * Moves the connection under the target group with the new ID.
-	 */
-	private changeGroupIdForConnectionInSettings(profile: ConnectionProfile, newGroupID: string, target: ConfigurationTarget = ConfigurationTarget.USER): Promise<void> {
-		const profiles = target === ConfigurationTarget.USER ? this.configurationService.inspect<StoredConnection[]>(CONNECTIONS_CONFIG_KEY).user :
-			this.configurationService.inspect<StoredConnection[]>(CONNECTIONS_CONFIG_KEY).workspace;
-		if (profiles) {
-			if (profile.parent && profile.parent.id === UNSAVED_GROUP_ID) {
-				profile.groupId = newGroupID;
-				profiles.push(profileToStore(profile));
-			} else {
-				profiles.forEach((value) => {
-					const configProf = storeToProfile(value, this.capabilitiesService);
-					if (configProf.getOptionsKey() === profile.getOptionsKey()) {
-						value.groupId = newGroupID;
-					}
-				});
-			}
-
-			return this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, target);
-		} else {
-			return Promise.resolve();
-		}
-	}
-
-	/**
-	 * Moves the connection under the target group with the new ID.
-	 */
-	public changeGroupIdForConnection(profile: ConnectionProfile, newGroupID: string): Promise<void> {
-		if (!this.canChangeConnectionConfig(profile, newGroupID)) {
-			// Same connection already exists in this group
-			return Promise.reject('Same connection already exists in the group');
-		} else {
-			return Promise.all([
-				this.changeGroupIdForConnectionInSettings(profile, newGroupID, ConfigurationTarget.USER),
-				this.changeGroupIdForConnectionInSettings(profile, newGroupID, ConfigurationTarget.WORKSPACE)
-			]).then(() => Promise.resolve());
-		}
-	}
-
-	public saveGroup(groups: IConnectionProfileGroup[], groupFullName?: string, color?: string, description?: string): ISaveGroupResult {
-		const groupNames = ConnectionGroup.getGroupFullNameParts(groupFullName);
-		return this.saveGroupInTree(groups, undefined, groupNames, color, description, 0);
-	}
-
-	public editGroup(source: ConnectionGroup): Promise<void> {
-		let groups = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).user;
-		const sameNameGroup = groups ? find(groups, group => group.name === source.name && group.id !== source.id) : undefined;
-		if (sameNameGroup) {
-			return Promise.reject(nls.localize('invalidServerName', "A server group with the same name already exists."));
-		}
-		groups = groups.map(g => {
-			if (g.id === source.id) {
-				g.name = source.name;
-				g.description = source.description;
-				g.color = source.color;
-				source.isRenamed = false;
-			}
-			return g;
-		});
-		return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER);
-	}
-
-	private isSameGroupName(group1: IConnectionProfileGroup, group2: IConnectionProfileGroup): boolean {
-		let sameGroupName: boolean = false;
-		if (group1 && group2) {
-			sameGroupName = ((!group1.name && !group2.name) || group1.name.toUpperCase() === group2.name.toUpperCase()) &&
-				(group1.parentId === group2.parentId || (!group1.parentId && !group2.parentId));
-		}
-		return sameGroupName;
-	}
-
-	private saveGroupInTree(groupTree: IConnectionProfileGroup[], parentId: string | undefined, groupNames: string[], color: string | undefined, description: string | undefined, index: number): ISaveGroupResult {
-		if (!groupTree) {
-			groupTree = [];
-		}
-		let newGroupId: string | undefined;
-
-		if (index < groupNames.length) {
-			let groupName: string = groupNames[index];
-			let newGroup = <unknown>{ // workaround to make this work properly
-				name: groupName,
-				id: undefined,
-				parentId: parentId,
-				color: color,
-				description: description
-			} as IConnectionProfileGroup;
-			let found = find(groupTree, group => this.isSameGroupName(group, newGroup));
-			if (found) {
-				if (index === groupNames.length - 1) {
-					newGroupId = found.id;
-					//Found the group full name
-				} else {
-					let result = this.saveGroupInTree(groupTree, found.id, groupNames, color, description, index + 1);
-					groupTree = result.groups;
-					newGroupId = result.newGroupId;
-				}
-
-			} else {
-				if (ConnectionGroup.isRoot(newGroup.name)) {
-					newGroup.id = Utils.defaultGroupId;
-				} else {
-					newGroup.id = generateUuid();
-				}
-				let result = this.saveGroupInTree(groupTree, newGroup.id, groupNames, color, description, index + 1);
-				newGroupId = result.newGroupId;
-				groupTree = result.groups;
-				groupTree.push(newGroup);
-				if (index === groupNames.length - 1) {
-					newGroupId = newGroup.id;
-				}
-			}
-		}
-		let groupResult: ISaveGroupResult = {
-			groups: groupTree,
-			newGroupId: newGroupId
-		};
-		return groupResult;
-	}
 }
 
-function storeToProfile(store: StoredConnection, capabilitiesService: ICapabilitiesService): Connection | undefined {
+function storeToConnection(store: StoredConnection, capabilitiesService: ICapabilitiesService): Connection | undefined {
 	const shape = capabilitiesService.createConnectionShapeFromOptions(store.options, store.providerName);
 	if (shape) {
 		return new Connection(ConnectionProfile.from(shape), ConnectionState.disconnected, store.id, store.groupId);
@@ -360,10 +275,24 @@ function storeToProfile(store: StoredConnection, capabilitiesService: ICapabilit
 	return undefined;
 }
 
-function profileToStore(connection: Connection, capabilitiesService: ICapabilitiesService): StoredConnection | undefined {
+function connectionToStore(connection: Connection, capabilitiesService: ICapabilitiesService): StoredConnection | undefined {
 	const options = capabilitiesService.createOptionsFromConnectionShape(connection.profile);
 	if (options) {
 		return { options, providerName: connection.profile.providerName, id: connection.id, groupId: connection.groupId || 'ROOT' };
 	}
 	return undefined;
+}
+
+function storeToGroup(store: StoredGroup): ConnectionGroup {
+	return new ConnectionGroup(store.name, store.id, store.parentId, store.color, store.description);
+}
+
+function groupToStore(group: ConnectionGroup): StoredGroup {
+	return {
+		id: group.id,
+		name: group.name,
+		color: group.color,
+		description: group.description,
+		parentId: group.parent
+	};
 }

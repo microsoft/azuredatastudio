@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { ICapabilitiesService, ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { Action } from 'vs/base/common/actions';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { ConnectionShape, ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 export class TestCapabilitiesService implements ICapabilitiesService {
 
@@ -109,6 +109,16 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 		return this.capabilities[provider];
 	}
 
+	isPasswordRequired(profile: ConnectionProfile): boolean {
+		throw new Error('Method not implemented.');
+	}
+	createConnectionShapeFromOptions(options: { [key: string]: string | number | boolean; }, provider: string): ConnectionShape {
+		throw new Error('Method not implemented.');
+	}
+	createOptionsFromConnectionShape(shape: ConnectionShape): { [key: string]: string | number | boolean; } {
+		throw new Error('Method not implemented.');
+	}
+
 	public getLegacyCapabilities(provider: string): azdata.DataProtocolServerCapabilities {
 		throw new Error('Method not implemented.');
 	}
@@ -128,7 +138,7 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 		return Event.None;
 	}
 
-	public isFeatureAvailable(featureName: Action, connectionManagementInfo: ConnectionManagementInfo): boolean {
+	public isFeatureAvailable(featureName: Action, connectionManagementInfo: any): boolean {
 		return true;
 	}
 

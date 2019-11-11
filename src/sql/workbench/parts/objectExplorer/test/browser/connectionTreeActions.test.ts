@@ -5,7 +5,7 @@
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionGroup } from 'sql/base/common/connectionGroup';
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import {
 	RefreshAction, AddServerAction, DeleteConnectionAction, DisconnectConnectionAction,

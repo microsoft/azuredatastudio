@@ -6,7 +6,7 @@
 import * as querystring from 'querystring';
 import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
-import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionGroup } from 'sql/base/common/connectionGroup';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';

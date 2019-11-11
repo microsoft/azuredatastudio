@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
-import { ConnectionGroup } from 'sql/platform/connection/common/connectionGroup';
+import { ConnectionGroup } from 'sql/base/common/connectionGroup';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 // CONSTANTS //////////////////////////////////////////////////////////////////////////////////////
