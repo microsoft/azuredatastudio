@@ -228,7 +228,7 @@ const excludedExtensions = [
 const sqlExtensions = [
 	// This is the list of SQL extensions which the source code is included in this repository, but
 	// they get packaged separately. Adding extension name here, will make the build to create
-	// a separate vsix package for the extension and the exception will be excluded from the main package.
+	// a separate vsix package for the extension and the extension will be excluded from the main package.
 	// Any extension not included here, will be installed by default.
 	'admin-tool-ext-win',
 	'agent',
