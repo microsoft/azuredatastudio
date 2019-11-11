@@ -36,7 +36,7 @@ export class QueryInfo {
 	public queryEventQueue: QueryEvent[];
 	public selection: Array<azdata.ISelectionData>;
 	public queryInput: QueryInput;
-	public selectionSnippet: string;
+	public selectionSnippet?: string;
 
 	// Notes if the angular components have obtained the DataService. If not, all messages sent
 	// via the data service will be lost.
@@ -85,7 +85,10 @@ export class QueryModelService implements IQueryModelService {
 
 	// IQUERYMODEL /////////////////////////////////////////////////////////
 	public getDataService(uri: string): DataService {
-		let dataService = this._getQueryInfo(uri).dataService;
+		let dataService: DataService | undefined;
+		if (this._queryInfoMap.has(uri)) {
+			dataService = this._getQueryInfo(uri)!.dataService;
+		}
 		if (!dataService) {
 			throw new Error('Could not find data service for uri: ' + uri);
 		}
@@ -119,40 +122,44 @@ export class QueryModelService implements IQueryModelService {
 	 * angular is listening for them.
 	 */
 	public onAngularLoaded(uri: string) {
-		let info = this._getQueryInfo(uri);
-		info.dataServiceReady = true;
-		this._sendQueuedEvents(uri);
+		if (this._queryInfoMap.has(uri)) {
+			let info = this._getQueryInfo(uri)!;
+			info.dataServiceReady = true;
+			this._sendQueuedEvents(uri);
+		}
 	}
 
 	/**
 	 * Get more data rows from the current resultSets from the service layer
 	 */
-	public getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Thenable<azdata.ResultSetSubset> {
-		return this._getQueryInfo(uri).queryRunner.getQueryRows(rowStart, numberOfRows, batchId, resultId).then(results => {
-			return results.resultSubset;
-		});
+	public getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Promise<azdata.ResultSetSubset | undefined> {
+		if (this._queryInfoMap.has(uri)) {
+			return this._getQueryInfo(uri)!.queryRunner.getQueryRows(rowStart, numberOfRows, batchId, resultId).then(results => {
+				return results.resultSubset;
+			});
+		} else {
+			return Promise.resolve(undefined);
+		}
 	}
 
-	public getEditRows(uri: string, rowStart: number, numberOfRows: number): Thenable<azdata.EditSubsetResult> {
-		return this._queryInfoMap.get(uri).queryRunner.getEditRows(rowStart, numberOfRows).then(results => {
-			return results;
-		});
+	public getEditRows(uri: string, rowStart: number, numberOfRows: number): Promise<azdata.EditSubsetResult | undefined> {
+		if (this._queryInfoMap.has(uri)) {
+			return this._queryInfoMap.get(uri)!.queryRunner.getEditRows(rowStart, numberOfRows).then(results => {
+				return results;
+			});
+		} else {
+			return Promise.resolve(undefined);
+		}
 	}
 
-	public getConfig(): Promise<{ [key: string]: any }> {
-		return undefined;
-	}
-
-	public getShortcuts(): Promise<any> {
-		return undefined;
-	}
-
-	public copyResults(uri: string, selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): void {
-		this._queryInfoMap.get(uri).queryRunner.copyResults(selection, batchId, resultId, includeHeaders);
+	public async copyResults(uri: string, selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<void> {
+		if (this._queryInfoMap.has(uri)) {
+			return this._queryInfoMap.get(uri)!.queryRunner.copyResults(selection, batchId, resultId, includeHeaders);
+		}
 	}
 
 	public setEditorSelection(uri: string, index: number): void {
-		let info: QueryInfo = this._queryInfoMap.get(uri);
+		let info = this._queryInfoMap.get(uri);
 		if (info && info.queryInput) {
 			info.queryInput.updateSelection(info.selection[index]);
 		}
@@ -174,41 +181,41 @@ export class QueryModelService implements IQueryModelService {
 	public isRunningQuery(uri: string): boolean {
 		return !this._queryInfoMap.has(uri)
 			? false
-			: this._getQueryInfo(uri).queryRunner.isExecuting;
+			: this._getQueryInfo(uri)!.queryRunner.isExecuting;
 	}
 
 	/**
 	 * Run a query for the given URI with the given text selection
 	 */
-	public runQuery(uri: string, selection: azdata.ISelectionData, queryInput: QueryInput, runOptions?: azdata.ExecutionPlanOptions): void {
-		this.doRunQuery(uri, selection, queryInput, false, runOptions);
+	public async runQuery(uri: string, selection: azdata.ISelectionData, queryInput: QueryInput, runOptions?: azdata.ExecutionPlanOptions): Promise<void> {
+		return this.doRunQuery(uri, selection, queryInput, false, runOptions);
 	}
 
 	/**
 	 * Run the current SQL statement for the given URI
 	 */
-	public runQueryStatement(uri: string, selection: azdata.ISelectionData, queryInput: QueryInput): void {
-		this.doRunQuery(uri, selection, queryInput, true);
+	public async runQueryStatement(uri: string, selection: azdata.ISelectionData, queryInput: QueryInput): Promise<void> {
+		return this.doRunQuery(uri, selection, queryInput, true);
 	}
 
 	/**
 	 * Run the current SQL statement for the given URI
 	 */
-	public runQueryString(uri: string, selection: string, queryInput: QueryInput): void {
-		this.doRunQuery(uri, selection, queryInput, true);
+	public async runQueryString(uri: string, selection: string, queryInput: QueryInput): Promise<void> {
+		return this.doRunQuery(uri, selection, queryInput, true);
 	}
 
 	/**
 	 * Run Query implementation
 	 */
-	private doRunQuery(uri: string, selection: azdata.ISelectionData | string, queryInput: QueryInput,
-		runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): void {
+	private async doRunQuery(uri: string, selection: azdata.ISelectionData | string, queryInput: QueryInput,
+		runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): Promise<void> {
 		// Reuse existing query runner if it exists
-		let queryRunner: QueryRunner;
+		let queryRunner: QueryRunner | undefined;
 		let info: QueryInfo;
 
 		if (this._queryInfoMap.has(uri)) {
-			info = this._getQueryInfo(uri);
+			info = this._getQueryInfo(uri)!;
 			let existingRunner: QueryRunner = info.queryRunner;
 
 			// If the query is already in progress, don't attempt to send it
@@ -236,11 +243,11 @@ export class QueryModelService implements IQueryModelService {
 			} else {
 				info.selectionSnippet = selection.substring(0, selectionSnippetMaxLen - 3) + '...';
 			}
-			queryRunner.runQuery(selection, runOptions);
+			return queryRunner.runQuery(selection, runOptions);
 		} else if (runCurrentStatement) {
-			queryRunner.runQueryStatement(selection);
+			return queryRunner.runQueryStatement(selection);
 		} else {
-			queryRunner.runQuery(selection, runOptions);
+			return queryRunner.runQuery(selection, runOptions);
 		}
 	}
 
@@ -365,11 +372,11 @@ export class QueryModelService implements IQueryModelService {
 	}
 
 	public cancelQuery(input: QueryRunner | string): void {
-		let queryRunner: QueryRunner;
+		let queryRunner: QueryRunner | undefined;
 
 		if (typeof input === 'string') {
 			if (this._queryInfoMap.has(input)) {
-				queryRunner = this._getQueryInfo(input).queryRunner;
+				queryRunner = this._getQueryInfo(input)!.queryRunner;
 			}
 		} else {
 			queryRunner = input;
@@ -391,16 +398,16 @@ export class QueryModelService implements IQueryModelService {
 				severity: Severity.Error,
 				message: strings.format(LocalizedConstants.msgCancelQueryFailed, error)
 			});
-			this._fireQueryEvent(queryRunner.uri, 'complete', 0);
+			this._fireQueryEvent(queryRunner!.uri, 'complete', 0);
 		});
 
 	}
 
-	public disposeQuery(ownerUri: string): void {
+	public async disposeQuery(ownerUri: string): Promise<void> {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
-			queryRunner.disposeQuery();
+			await queryRunner.disposeQuery();
 		}
 		// remove our info map
 		if (this._queryInfoMap.has(ownerUri)) {
@@ -409,13 +416,13 @@ export class QueryModelService implements IQueryModelService {
 	}
 
 	// EDIT DATA METHODS /////////////////////////////////////////////////////
-	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): void {
+	async initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Promise<void> {
 		// Reuse existing query runner if it exists
 		let queryRunner: QueryRunner;
 		let info: QueryInfo;
 
 		if (this._queryInfoMap.has(ownerUri)) {
-			info = this._getQueryInfo(ownerUri);
+			info = this._getQueryInfo(ownerUri)!;
 			let existingRunner: QueryRunner = info.queryRunner;
 
 			// If the initialization is already in progress
@@ -515,23 +522,23 @@ export class QueryModelService implements IQueryModelService {
 			}
 		}
 
-		queryRunner.initializeEdit(ownerUri, schemaName, objectName, objectType, rowLimit, queryString);
+		return queryRunner.initializeEdit(ownerUri, schemaName, objectName, objectType, rowLimit, queryString);
 	}
 
 	public cancelInitializeEdit(input: QueryRunner | string): void {
 		// TODO: Implement query cancellation service
 	}
 
-	public disposeEdit(ownerUri: string): Thenable<void> {
+	public disposeEdit(ownerUri: string): Promise<void> {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
 			return queryRunner.disposeEdit(ownerUri);
 		}
-		return Promise.resolve(null);
+		return Promise.resolve();
 	}
 
-	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<azdata.EditUpdateCellResult> {
+	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Promise<azdata.EditUpdateCellResult | undefined> {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
@@ -543,10 +550,10 @@ export class QueryModelService implements IQueryModelService {
 				return Promise.reject(error);
 			});
 		}
-		return Promise.resolve(null);
+		return Promise.resolve(undefined);
 	}
 
-	public commitEdit(ownerUri): Thenable<void> {
+	public commitEdit(ownerUri: string): Promise<void> {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
@@ -558,49 +565,49 @@ export class QueryModelService implements IQueryModelService {
 				return Promise.reject(error);
 			});
 		}
-		return Promise.resolve(null);
+		return Promise.resolve();
 	}
 
-	public createRow(ownerUri: string): Thenable<azdata.EditCreateRowResult> {
+	public createRow(ownerUri: string): Promise<azdata.EditCreateRowResult | undefined> {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
 			return queryRunner.createRow(ownerUri);
 		}
-		return Promise.resolve(null);
+		return Promise.resolve(undefined);
 	}
 
-	public deleteRow(ownerUri: string, rowId: number): Thenable<void> {
+	public deleteRow(ownerUri: string, rowId: number): Promise<void> {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
 			return queryRunner.deleteRow(ownerUri, rowId);
 		}
-		return Promise.resolve(null);
+		return Promise.resolve();
 	}
 
-	public revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<azdata.EditRevertCellResult> {
+	public revertCell(ownerUri: string, rowId: number, columnId: number): Promise<azdata.EditRevertCellResult | undefined> {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
 			return queryRunner.revertCell(ownerUri, rowId, columnId);
 		}
-		return Promise.resolve(null);
+		return Promise.resolve(undefined);
 	}
 
-	public revertRow(ownerUri: string, rowId: number): Thenable<void> {
+	public revertRow(ownerUri: string, rowId: number): Promise<void> {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
 			return queryRunner.revertRow(ownerUri, rowId);
 		}
-		return Promise.resolve(null);
+		return Promise.resolve();
 	}
 
-	public getQueryRunner(ownerUri): QueryRunner {
-		let queryRunner: QueryRunner = undefined;
+	public getQueryRunner(ownerUri: string): QueryRunner | undefined {
+		let queryRunner: QueryRunner | undefined = undefined;
 		if (this._queryInfoMap.has(ownerUri)) {
-			queryRunner = this._getQueryInfo(ownerUri).queryRunner;
+			queryRunner = this._getQueryInfo(ownerUri)!.queryRunner;
 		}
 		// return undefined if not found or is already executing
 		return queryRunner;
@@ -608,13 +615,13 @@ export class QueryModelService implements IQueryModelService {
 
 	// PRIVATE METHODS //////////////////////////////////////////////////////
 
-	private internalGetQueryRunner(ownerUri): QueryRunner {
-		let queryRunner: QueryRunner = undefined;
+	private internalGetQueryRunner(ownerUri: string): QueryRunner | undefined {
+		let queryRunner: QueryRunner | undefined;
 		if (this._queryInfoMap.has(ownerUri)) {
-			let existingRunner = this._getQueryInfo(ownerUri).queryRunner;
+			let existingRunner = this._getQueryInfo(ownerUri)!.queryRunner;
 			// If the query is not already executing then set it up
 			if (!existingRunner.isExecuting) {
-				queryRunner = this._getQueryInfo(ownerUri).queryRunner;
+				queryRunner = this._getQueryInfo(ownerUri)!.queryRunner;
 			}
 		}
 		// return undefined if not found or is already executing
@@ -622,7 +629,7 @@ export class QueryModelService implements IQueryModelService {
 	}
 
 	private _fireGridContentEvent(uri: string, type: string): void {
-		let info: QueryInfo = this._getQueryInfo(uri);
+		let info = this._getQueryInfo(uri);
 
 		if (info && info.dataServiceReady) {
 			let service: DataService = this.getDataService(uri);
@@ -635,29 +642,29 @@ export class QueryModelService implements IQueryModelService {
 	}
 
 	private _fireQueryEvent(uri: string, type: string, data?: any) {
-		let info: QueryInfo = this._getQueryInfo(uri);
+		let info = this._getQueryInfo(uri);
 
-		if (info.dataServiceReady) {
+		if (info && info.dataServiceReady) {
 			let service: DataService = this.getDataService(uri);
 			service.queryEventObserver.next({
 				type: type,
 				data: data
 			});
-		} else {
+		} else if (info) {
 			let queueItem: QueryEvent = { type: type, data: data };
 			info.queryEventQueue.push(queueItem);
 		}
 	}
 
 	private _sendQueuedEvents(uri: string): void {
-		let info: QueryInfo = this._getQueryInfo(uri);
-		while (info.queryEventQueue.length > 0) {
-			let event: QueryEvent = info.queryEventQueue.shift();
+		let info = this._getQueryInfo(uri);
+		while (info && info.queryEventQueue.length > 0) {
+			let event = info.queryEventQueue.shift()!;
 			this._fireQueryEvent(uri, event.type, event.data);
 		}
 	}
 
-	public _getQueryInfo(uri: string): QueryInfo {
+	public _getQueryInfo(uri: string): QueryInfo | undefined {
 		return this._queryInfoMap.get(uri);
 	}
 

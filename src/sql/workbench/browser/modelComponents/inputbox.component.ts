@@ -20,9 +20,10 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import * as nls from 'vs/nls';
 import { inputBackground, inputBorder } from 'vs/platform/theme/common/colorRegistry';
-import * as DomUtils from 'vs/base/browser/dom';
-import { StandardKeyboardEvent, IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import * as DOM from 'vs/base/browser/dom';
+import { assign } from 'vs/base/common/objects';
 
 @Component({
 	selector: 'modelview-inputBox',
@@ -72,14 +73,34 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		};
 		if (this._inputContainer) {
 			this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
+			this.onkeydown(this._input.inputElement, (e: StandardKeyboardEvent) => {
+				if (e.keyCode === KeyCode.Enter) {
+					this.fireEvent({
+						eventType: ComponentEventType.onEnterKeyPressed,
+						args: this._input.value
+					});
+					if (this.stopEnterPropagation) {
+						DOM.EventHelper.stop(e, true);
+					}
+				}
+			});
 			this.registerInput(this._input, () => !this.multiline);
 		}
 		if (this._textareaContainer) {
-			let textAreaInputOptions = Object.assign({}, inputOptions, { flexibleHeight: true, type: 'textarea' });
+			let textAreaInputOptions = assign({}, inputOptions, { flexibleHeight: true, type: 'textarea' });
 			this._textAreaInput = new InputBox(this._textareaContainer.nativeElement, this.contextViewService, textAreaInputOptions);
 			this.onkeydown(this._textAreaInput.inputElement, (e: StandardKeyboardEvent) => {
 				if (this.tryHandleKeyEvent(e)) {
-					e.stopPropagation();
+					DOM.EventHelper.stop(e, true);
+				}
+				if (e.keyCode === KeyCode.Enter) {
+					this.fireEvent({
+						eventType: ComponentEventType.onEnterKeyPressed,
+						args: this._textAreaInput.value
+					});
+					if (this.stopEnterPropagation) {
+						DOM.EventHelper.stop(e, true);
+					}
 				}
 				// Else assume that keybinding service handles routing this to a command
 			});
@@ -87,10 +108,6 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 			this.registerInput(this._textAreaInput, () => this.multiline);
 		}
 		this.inputElement.hideErrors = true;
-	}
-
-	private onkeydown(domNode: HTMLElement, listener: (e: IKeyboardEvent) => void): void {
-		this._register(DomUtils.addDisposableListener(domNode, DomUtils.EventType.KEY_DOWN, (e: KeyboardEvent) => listener(new StandardKeyboardEvent(e))));
 	}
 
 	private tryHandleKeyEvent(e: StandardKeyboardEvent): boolean {
@@ -233,14 +250,6 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		this.setPropertyFromUI<azdata.InputBoxProperties, string>((props, value) => props.value = value, newValue);
 	}
 
-	public get ariaLabel(): string {
-		return this.getPropertyOrDefault<azdata.InputBoxProperties, string>((props) => props.ariaLabel, '');
-	}
-
-	public set ariaLabel(newValue: string) {
-		this.setPropertyFromUI<azdata.InputBoxProperties, string>((props, value) => props.ariaLabel = value, newValue);
-	}
-
 	public get ariaLive() {
 		return this.getPropertyOrDefault<azdata.InputBoxProperties, string>((props) => props.ariaLive, '');
 	}
@@ -307,5 +316,13 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public set required(newValue: boolean) {
 		this.setPropertyFromUI<azdata.InputBoxProperties, boolean>((props, value) => props.required = value, newValue);
+	}
+
+	public get stopEnterPropagation(): boolean {
+		return this.getPropertyOrDefault<azdata.InputBoxProperties, boolean>((props) => props.stopEnterPropagation, false);
+	}
+
+	public set stopEnterPropagation(newValue: boolean) {
+		this.setPropertyFromUI<azdata.InputBoxProperties, boolean>((props, value) => props.stopEnterPropagation = value, newValue);
 	}
 }

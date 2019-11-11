@@ -1,8 +1,13 @@
 {
-	"description": "Support for managing SQL Server big data clusters",
-	"text.sqlServerBigDataClusters": "SQL Server big data clusters",
+	"description": "Support for managing SQL Server Big Data Clusters",
+	"text.sqlServerBigDataClusters": "SQL Server Big Data Clusters",
 	"command.addController.title": "Connect to Controller",
 	"command.deleteController.title" : "Delete",
 	"command.refreshController.title" : "Refresh",
-	"command.manageController.title" : "Manage"
+	"command.manageController.title" : "Manage",
+	"command.mount.title" : "Mount HDFS",
+	"command.refreshmount.title" : "Refresh Mount",
+	"command.deletemount.title" : "Delete Mount",
+	"bdc.configuration.title" : "Big Data Cluster",
+	"bdc.ignoreSslVerification.desc" : "Ignore SSL verification errors against SQL Server Big Data Cluster endpoints such as HDFS, Spark, and Controller if true"
 }

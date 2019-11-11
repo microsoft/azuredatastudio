@@ -4,49 +4,64 @@ steps:
     versionSpec: "10.15.1"
 - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
   inputs:
-    keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
-    targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-    vstsFeed: '$(ArtifactFeed)'
-- task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@2
+    keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+    targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
+    vstsFeed: '$(build-cache)' # {{SQL CARBON EDIT}} update build cache
+- task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3 # {{SQL CARBON EDIT}} update version
   inputs:
     versionSpec: "1.x"
 - script: |
-    yarn --frozen-lockfile
+    CHILD_CONCURRENCY=1 yarn --frozen-lockfile
   displayName: Install Dependencies
   condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+  env:
+    GITHUB_TOKEN: $(GITHUB_TOKEN) # {{SQL CARBON EDIT}} add github token
 - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
   inputs:
-    keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
-    targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-    vstsFeed: '$(ArtifactFeed)'
+    keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+    targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
+    vstsFeed: '$(build-cache)' # {{SQL CARBON EDIT}} update build cache
   condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 - script: |
-    yarn gulp electron-x64
+    yarn electron x64
   displayName: Download Electron
+  env:
+    GITHUB_TOKEN: $(GITHUB_TOKEN) # {{SQL CARBON EDIT}} add github token
 - script: |
     yarn gulp hygiene --skip-tslint
   displayName: Run Hygiene Checks
 - script: |
     yarn gulp tslint
   displayName: Run TSLint Checks
-- script: |
-    yarn monaco-compile-check
-  displayName: Run Monaco Editor Checks
+- script: | # {{SQL CARBON EDIT}} add step
+    yarn strict-null-check
+  displayName: Run Strict Null Check.
+- script: | # {{SQL CARBON EDIT}} add step
+    yarn tslint
+  displayName: Run TSLint (gci)
+# - script: | {{SQL CARBON EDIT}} remove step
+#     yarn monaco-compile-check
+#   displayName: Run Monaco Editor Checks
 - script: |
     yarn compile
   displayName: Compile Sources
-- script: |
-    yarn download-builtin-extensions
-  displayName: Download Built-in Extensions
+# - script: | {{SQL CARBON EDIT}} remove step
+#     yarn download-builtin-extensions
+#   displayName: Download Built-in Extensions
 - script: |
     ./scripts/test.sh --tfs "Unit Tests"
   displayName: Run Unit Tests
-- script: |
-    ./scripts/test-integration.sh --tfs "Integration Tests"
-  displayName: Run Integration Tests
+# - script: | {{SQL CARBON EDIT}} remove step
+#     ./scripts/test-integration.sh --tfs "Integration Tests"
+#   displayName: Run Integration Tests
 - task: PublishTestResults@2
   displayName: Publish Tests Results
   inputs:
     testResultsFiles: '*-results.xml'
     searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
   condition: succeededOrFailed()
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0 # {{SQL CARBON EDIT}} add task
+  displayName: 'Component Detection'
+  inputs:
+    alertWarningLevel: High
+    failOnAlert: true

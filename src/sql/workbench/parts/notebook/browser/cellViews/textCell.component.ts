@@ -20,14 +20,12 @@ import * as DOM from 'vs/base/browser/dom';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
-import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { NotebookMarkdownRenderer } from 'sql/workbench/parts/notebook/browser/outputs/notebookMarkdown';
 import { CellView } from 'sql/workbench/parts/notebook/browser/cellViews/interfaces';
 import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/parts/notebook/browser/outputs/sanitizer';
 import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/browser/cellToggleMoreActions';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
 import { useInProcMarkdown, convertVscodeResourceToFileInSubDirectories } from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
@@ -82,12 +80,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private markdownResult: IMarkdownRenderResult;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(ICommandService) private _commandService: ICommandService,
-		@Inject(IOpenerService) private readonly openerService: IOpenerService,
 		@Inject(IConfigurationService) private configurationService: IConfigurationService,
 
 	) {

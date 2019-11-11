@@ -9,6 +9,7 @@ import * as TypeMoq from 'typemoq';
 
 import { MainThreadObjectExplorerShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ExtHostObjectExplorerNode } from 'sql/workbench/api/common/extHostObjectExplorer';
+import { find } from 'vs/base/common/arrays';
 
 const nodes: { [nodeName: string]: azdata.NodeInfo } =
 {
@@ -74,7 +75,7 @@ suite('ExtHostObjectExplorer Tests', () => {
 		mockProxy.setup(p =>
 			p.$getNode(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 			.returns((connectionId, nodePath) => {
-				return Promise.resolve<azdata.NodeInfo>(nodes[Object.keys(nodes).find(key =>
+				return Promise.resolve<azdata.NodeInfo>(nodes[find(Object.keys(nodes), key =>
 					nodes[key].nodePath === nodePath)]);
 			});
 	});

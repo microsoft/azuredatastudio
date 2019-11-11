@@ -206,7 +206,10 @@ function runTests(opts) {
 	return loadTests(opts).then(() => {
 
 		if (opts.grep) {
-			mocha.grep(opts.grep);
+			mocha.grep(new RegExp(opts.grep));
+			if (opts.invert) {
+				mocha.invert();
+			}
 		}
 
 		if (!opts.debug) {

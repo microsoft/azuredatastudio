@@ -3,16 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as os from 'os';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard, DeployOperationPath, Operation, DeployNewOperationPath, PageName } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
-import { DacFxSummaryPage } from './dacFxSummaryPage';
 
 const localize = nls.loadMessageBundle();
 
@@ -35,10 +32,9 @@ export class DeployConfigPage extends DacFxConfigPage {
 	async start(): Promise<boolean> {
 		let serverComponent = await this.createServerDropdown(true);
 		let fileBrowserComponent = await this.createFileBrowser();
-		this.databaseComponent = await this.createDatabaseTextBox();
-		this.databaseComponent.title = localize('dacFx.databaseNameTextBox', 'Database Name');
+		this.databaseComponent = await this.createDatabaseTextBox(localize('dacFx.databaseNameTextBox', "Database Name"));
 		this.databaseDropdownComponent = await this.createDeployDatabaseDropdown();
-		this.databaseDropdownComponent.title = localize('dacFx.databaseNameDropdown', 'Database Name');
+		this.databaseDropdownComponent.title = localize('dacFx.databaseNameDropdown', "Database Name");
 		let radioButtons = await this.createRadiobuttons();
 
 		this.formBuilder = this.view.modelBuilder.formContainer()
@@ -74,7 +70,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 					canSelectFolders: false,
 					canSelectMany: false,
 					defaultUri: vscode.Uri.file(this.getRootPath()),
-					openLabel: localize('dacFxDeploy.openFile', 'Open'),
+					openLabel: localize('dacFxDeploy.openFile', "Open"),
 					filters: {
 						'dacpac Files': ['dacpac'],
 					}
@@ -100,7 +96,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxDeploy.fileTextboxTitle', 'File Location'),
+			title: localize('dacFxDeploy.fileTextboxTitle', "File Location"),
 			actions: [this.fileButton]
 		};
 	}
@@ -109,13 +105,13 @@ export class DeployConfigPage extends DacFxConfigPage {
 		let upgradeRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'updateExisting',
-				label: localize('dacFx.upgradeRadioButtonLabel', 'Upgrade Existing Database'),
+				label: localize('dacFx.upgradeRadioButtonLabel', "Upgrade Existing Database"),
 			}).component();
 
 		let newRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'updateExisting',
-				label: localize('dacFx.newRadioButtonLabel', 'New Database'),
+				label: localize('dacFx.newRadioButtonLabel', "New Database"),
 			}).component();
 
 		upgradeRadioButton.onDidClick(() => {
@@ -159,7 +155,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		return {
 			component: flexRadioButtonsModel,
-			title: localize('dacFx.targetDatabaseRadioButtonsTitle', 'Target Database')
+			title: localize('dacFx.targetDatabaseRadioButtonsTitle', "Target Database")
 		};
 	}
 

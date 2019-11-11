@@ -12,7 +12,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { memoize } from 'vs/base/common/decorators';
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/browser/services/dashboardServiceInterface.service';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard/browser/dashboardViewService';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 
@@ -53,7 +53,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	}
 
 	public layout(): void {
-		this._webview.layout();
+		// no op
 	}
 
 	public get id(): string {
@@ -80,7 +80,6 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 		this._html = html;
 		if (this._webview) {
 			this._webview.html = html;
-			this._webview.layout();
 		}
 	}
 
@@ -113,6 +112,5 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 		if (this._html) {
 			this._webview.html = this._html;
 		}
-		this._webview.layout();
 	}
 }

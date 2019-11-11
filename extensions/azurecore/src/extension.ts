@@ -26,15 +26,17 @@ import { AzureResourceSubscriptionFilterService } from './azureResource/services
 import { AzureResourceCacheService } from './azureResource/services/cacheService';
 import { AzureResourceTenantService } from './azureResource/services/tenantService';
 import { registerAzureResourceCommands } from './azureResource/commands';
-import { registerAzureResourceDatabaseServerCommands } from './azureResource/providers/databaseServer/commands';
-import { registerAzureResourceDatabaseCommands } from './azureResource/providers/database/commands';
 import { AzureResourceTreeProvider } from './azureResource/tree/treeProvider';
+import { SqlInstanceResourceService } from './azureResource/providers/sqlinstance/sqlInstanceService';
+import { SqlInstanceProvider } from './azureResource/providers/sqlinstance/sqlInstanceProvider';
+import { PostgresServerProvider } from './azureResource/providers/postgresServer/postgresServerProvider';
+import { PostgresServerService } from './azureResource/providers/postgresServer/postgresServerService';
 
 let extensionContext: vscode.ExtensionContext;
 
 // The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't
 // work for now because the extension is running in different process.
-export function getAppDataPath() {
+function getAppDataPath() {
 	let platform = process.platform;
 	switch (platform) {
 		case 'win32': return process.env['APPDATA'] || path.join(process.env['USERPROFILE'], 'AppData', 'Roaming');
@@ -44,7 +46,7 @@ export function getAppDataPath() {
 	}
 }
 
-export function getDefaultLogLocation() {
+function getDefaultLogLocation() {
 	return path.join(getAppDataPath(), 'azuredatastudio');
 }
 
@@ -65,18 +67,20 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 
 	// Create the provider service and activate
-	initAzureAccountProvider(extensionContext, storagePath);
+	initAzureAccountProvider(extensionContext, storagePath).catch((err) => console.log(err));
 
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
 	pushDisposable(apiWrapper.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
-	registerCommands(appContext, azureResourceTree);
+	registerAzureResourceCommands(appContext, azureResourceTree);
 
 	return {
 		provideResources() {
 			return [
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), apiWrapper, extensionContext),
-				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext)
+				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext),
+				new SqlInstanceProvider(new SqlInstanceResourceService(), apiWrapper, extensionContext),
+				new PostgresServerProvider(new PostgresServerService(), apiWrapper, extensionContext)
 			];
 		}
 	};
@@ -127,12 +131,4 @@ function registerAzureServices(appContext: AppContext): void {
 	appContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, new AzureResourceSubscriptionService());
 	appContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, new AzureResourceSubscriptionFilterService(new AzureResourceCacheService(extensionContext)));
 	appContext.registerService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService, new AzureResourceTenantService());
-}
-
-function registerCommands(appContext: AppContext, azureResourceTree: AzureResourceTreeProvider): void {
-	registerAzureResourceCommands(appContext, azureResourceTree);
-
-	registerAzureResourceDatabaseServerCommands(appContext);
-
-	registerAzureResourceDatabaseCommands(appContext);
 }

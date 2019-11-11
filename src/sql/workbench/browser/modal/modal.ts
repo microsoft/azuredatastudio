@@ -27,6 +27,7 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
+import { find, firstIndex } from 'vs/base/common/arrays';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
@@ -84,9 +85,8 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _messageDetailText: string;
 
 	private _spinnerElement: HTMLElement;
-	private _focusableElements: NodeListOf<Element>;
-	private _firstFocusableElement: HTMLElement;
-	private _lastFocusableElement: HTMLElement;
+	private _firstTabbableElement: HTMLElement; // The first element in the dialog the user could tab to
+	private _lastTabbableElement: HTMLElement; // The last element in the dialog the user could tab to
 	private _focusedElementBeforeOpen: HTMLElement;
 
 	private _dialogForeground?: Color;
@@ -173,7 +173,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		this._bodyContainer = DOM.$(`.${builderClass}`, { role: 'dialog', 'aria-label': this._title });
 		const top = this.layoutService.getTitleBarOffset();
 		this._bodyContainer.style.top = `${top}px`;
-		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog', { role: 'document' }));
+		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
 		const modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
 
 		if (!isUndefinedOrNull(this._title)) {
@@ -240,7 +240,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		if (!this._modalOptions.isAngular) {
 			this._modalFooterSection = DOM.append(modalContent, DOM.$('.modal-footer'));
 			if (this._modalOptions.hasSpinner) {
-				this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.icon.in-progress'));
+				this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.codicon.in-progress'));
 				DOM.hide(this._spinnerElement);
 			}
 			this._leftFooter = DOM.append(this._modalFooterSection, DOM.$('.left-footer'));
@@ -269,16 +269,18 @@ export abstract class Modal extends Disposable implements IThemable {
 	}
 
 	private handleBackwardTab(e: KeyboardEvent) {
-		if (this._firstFocusableElement && this._lastFocusableElement && document.activeElement === this._firstFocusableElement) {
+		this.setFirstLastTabbableElement(); // called every time to get the current elements
+		if (this._firstTabbableElement && this._lastTabbableElement && document.activeElement === this._firstTabbableElement) {
 			e.preventDefault();
-			this._lastFocusableElement.focus();
+			this._lastTabbableElement.focus();
 		}
 	}
 
 	private handleForwardTab(e: KeyboardEvent) {
-		if (this._firstFocusableElement && this._lastFocusableElement && document.activeElement === this._lastFocusableElement) {
+		this.setFirstLastTabbableElement(); // called everytime to get the current elements
+		if (this._firstTabbableElement && this._lastTabbableElement && document.activeElement === this._lastTabbableElement) {
 			e.preventDefault();
-			this._firstFocusableElement.focus();
+			this._firstTabbableElement.focus();
 		}
 	}
 
@@ -316,29 +318,30 @@ export abstract class Modal extends Disposable implements IThemable {
 	}
 
 	/**
-	 * Set focusable elements in the modal dialog
+	 * Figures out the first and last elements which the user can tab to in the dialog
 	 */
-	public setFocusableElements() {
-		// try to find focusable element in dialog pane rather than overall container
-		this._focusableElements = this._modalBodySection ?
-			this._modalBodySection.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]') :
-			this._bodyContainer.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
-		if (this._focusableElements && this._focusableElements.length > 0) {
-			this._firstFocusableElement = <HTMLElement>this._focusableElements[0];
-			this._lastFocusableElement = <HTMLElement>this._focusableElements[this._focusableElements.length - 1];
+	public setFirstLastTabbableElement() {
+		let tabbableElements = this._bodyContainer.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
+		if (tabbableElements && tabbableElements.length > 0) {
+			this._firstTabbableElement = <HTMLElement>tabbableElements[0];
+			this._lastTabbableElement = <HTMLElement>tabbableElements[tabbableElements.length - 1];
 		}
-
-		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
-		this.focus();
 	}
 
 	/**
-	 * Focuses the modal
-	 * Default behavior: focus the first focusable element
+	 * Set focusable elements in the modal dialog
 	 */
-	protected focus() {
-		if (this._firstFocusableElement) {
-			this._firstFocusableElement.focus();
+	public setInitialFocusedElement() {
+		// Try to find focusable element in dialog pane rather than overall container. _modalBodySection contains items in the pane for a wizard.
+		// This ensures that we are setting the focus on a useful element in the form when possible.
+		let focusableElements = this._modalBodySection ?
+			this._modalBodySection.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]') :
+			this._bodyContainer.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
+
+		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
+
+		if (focusableElements && focusableElements.length > 0) {
+			(<HTMLElement>focusableElements[0]).focus();
 		}
 	}
 
@@ -348,7 +351,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	protected show() {
 		this._modalShowingContext.get()!.push(this._staticKey);
 		DOM.append(this.layoutService.container, this._bodyContainer);
-		this.setFocusableElements();
+		this.setInitialFocusedElement();
 
 		this._keydownListener = DOM.addDisposableListener(document, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			let context = this._modalShowingContext.get()!;
@@ -417,7 +420,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * @param onSelect The callback to call when the button is selected
 	 */
 	protected findFooterButton(label: string): Button {
-		return this._footerButtons.find(e => {
+		return find(this._footerButtons, e => {
 			try {
 				return e && e.element.innerText === label;
 			} catch {
@@ -431,7 +434,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	* @param label Label on the button
 	*/
 	protected removeFooterButton(label: string): void {
-		let buttonIndex = this._footerButtons.findIndex(e => {
+		let buttonIndex = firstIndex(this._footerButtons, e => {
 			return e && e.element && e.element.innerText === label;
 		});
 		if (buttonIndex > -1 && buttonIndex < this._footerButtons.length) {

@@ -11,7 +11,7 @@ import { Component, Inject, forwardRef, ViewChild, OnInit, ElementRef } from '@a
 
 /* SQL imports */
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 /* VS imports */
@@ -66,11 +66,11 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 		if (types.isArray(tasksConfig) && tasksConfig.length > 0) {
 			tasks = tasksConfig.map(i => {
 				if (types.isString(i)) {
-					if (tasks.includes(i)) {
+					if (tasks.some(x => x === i)) {
 						return i;
 					}
 				} else {
-					if (tasks.includes(i.name) && contextKeyService.contextMatchesRules(ContextKeyExpr.deserialize(i.when))) {
+					if (tasks.some(x => x === i.name) && contextKeyService.contextMatchesRules(ContextKeyExpr.deserialize(i.when))) {
 						return i.name;
 					}
 				}

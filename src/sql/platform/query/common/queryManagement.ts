@@ -14,6 +14,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Event, Emitter } from 'vs/base/common/event';
 import { keys } from 'vs/base/common/map';
 import { ILogService } from 'vs/platform/log/common/log';
+import { assign } from 'vs/base/common/objects';
 
 export const SERVICE_ID = 'queryManagementService';
 
@@ -29,16 +30,16 @@ export interface IQueryManagementService {
 	getRegisteredProviders(): string[];
 	registerRunner(runner: QueryRunner, uri: string): void;
 
-	cancelQuery(ownerUri: string): Thenable<azdata.QueryCancelResult>;
-	runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Thenable<void>;
-	runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
-	runQueryString(ownerUri: string, queryString: string): Thenable<void>;
-	runQueryAndReturn(ownerUri: string, queryString: string): Thenable<azdata.SimpleExecuteResult>;
-	parseSyntax(ownerUri: string, query: string): Thenable<azdata.SyntaxParseResult>;
-	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult>;
-	disposeQuery(ownerUri: string): Thenable<void>;
-	saveResults(requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult>;
-	setQueryExecutionOptions(uri: string, options: azdata.QueryExecutionOptions): Thenable<void>;
+	cancelQuery(ownerUri: string): Promise<azdata.QueryCancelResult>;
+	runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void>;
+	runQueryStatement(ownerUri: string, line: number, column: number): Promise<void>;
+	runQueryString(ownerUri: string, queryString: string): Promise<void>;
+	runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult>;
+	parseSyntax(ownerUri: string, query: string): Promise<azdata.SyntaxParseResult>;
+	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<azdata.QueryExecuteSubsetResult>;
+	disposeQuery(ownerUri: string): Promise<void>;
+	saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult>;
+	setQueryExecutionOptions(uri: string, options: azdata.QueryExecutionOptions): Promise<void>;
 
 	// Callbacks
 	onQueryComplete(result: azdata.QueryExecuteCompleteNotificationResult): void;
@@ -52,42 +53,42 @@ export interface IQueryManagementService {
 	onEditSessionReady(ownerUri: string, success: boolean, message: string): void;
 
 	// Edit Data Functions
-	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Thenable<void>;
-	disposeEdit(ownerUri: string): Thenable<void>;
-	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<azdata.EditUpdateCellResult>;
-	commitEdit(ownerUri): Thenable<void>;
-	createRow(ownerUri: string): Thenable<azdata.EditCreateRowResult>;
-	deleteRow(ownerUri: string, rowId: number): Thenable<void>;
-	revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<azdata.EditRevertCellResult>;
-	revertRow(ownerUri: string, rowId: number): Thenable<void>;
-	getEditRows(rowData: azdata.EditSubsetParams): Thenable<azdata.EditSubsetResult>;
+	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Promise<void>;
+	disposeEdit(ownerUri: string): Promise<void>;
+	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Promise<azdata.EditUpdateCellResult>;
+	commitEdit(ownerUri: string): Promise<void>;
+	createRow(ownerUri: string): Promise<azdata.EditCreateRowResult>;
+	deleteRow(ownerUri: string, rowId: number): Promise<void>;
+	revertCell(ownerUri: string, rowId: number, columnId: number): Promise<azdata.EditRevertCellResult>;
+	revertRow(ownerUri: string, rowId: number): Promise<void>;
+	getEditRows(rowData: azdata.EditSubsetParams): Promise<azdata.EditSubsetResult>;
 }
 
 /*
  * An object that can handle basic request-response actions related to queries
  */
 export interface IQueryRequestHandler {
-	cancelQuery(ownerUri: string): Thenable<azdata.QueryCancelResult>;
-	runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Thenable<void>;
-	runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
-	runQueryString(ownerUri: string, queryString: string): Thenable<void>;
-	runQueryAndReturn(ownerUri: string, queryString: string): Thenable<azdata.SimpleExecuteResult>;
-	parseSyntax(ownerUri: string, query: string): Thenable<azdata.SyntaxParseResult>;
-	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult>;
-	disposeQuery(ownerUri: string): Thenable<void>;
-	saveResults(requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult>;
-	setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void>;
+	cancelQuery(ownerUri: string): Promise<azdata.QueryCancelResult>;
+	runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void>;
+	runQueryStatement(ownerUri: string, line: number, column: number): Promise<void>;
+	runQueryString(ownerUri: string, queryString: string): Promise<void>;
+	runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult>;
+	parseSyntax(ownerUri: string, query: string): Promise<azdata.SyntaxParseResult>;
+	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<azdata.QueryExecuteSubsetResult>;
+	disposeQuery(ownerUri: string): Promise<void>;
+	saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult>;
+	setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Promise<void>;
 
 	// Edit Data actions
-	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Thenable<void>;
-	disposeEdit(ownerUri: string): Thenable<void>;
-	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<azdata.EditUpdateCellResult>;
-	commitEdit(ownerUri): Thenable<void>;
-	createRow(ownerUri: string): Thenable<azdata.EditCreateRowResult>;
-	deleteRow(ownerUri: string, rowId: number): Thenable<void>;
-	revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<azdata.EditRevertCellResult>;
-	revertRow(ownerUri: string, rowId: number): Thenable<void>;
-	getEditRows(rowData: azdata.EditSubsetParams): Thenable<azdata.EditSubsetResult>;
+	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Promise<void>;
+	disposeEdit(ownerUri: string): Promise<void>;
+	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Promise<azdata.EditUpdateCellResult>;
+	commitEdit(ownerUri: string): Promise<void>;
+	createRow(ownerUri: string): Promise<azdata.EditCreateRowResult>;
+	deleteRow(ownerUri: string, rowId: number): Promise<void>;
+	revertCell(ownerUri: string, rowId: number, columnId: number): Promise<azdata.EditRevertCellResult>;
+	revertRow(ownerUri: string, rowId: number): Promise<void>;
+	getEditRows(rowData: azdata.EditSubsetParams): Promise<azdata.EditSubsetResult>;
 }
 
 export class QueryManagementService implements IQueryManagementService {
@@ -117,7 +118,7 @@ export class QueryManagementService implements IQueryManagementService {
 		// _handlerCallbackQueue will be non-empty. Run all handlers in the queue first
 		// so that notifications are handled in order they arrived
 		while (this._handlerCallbackQueue.length > 0) {
-			let handler = this._handlerCallbackQueue.shift();
+			let handler = this._handlerCallbackQueue.shift()!;
 			handler(runner);
 		}
 
@@ -141,7 +142,7 @@ export class QueryManagementService implements IQueryManagementService {
 
 	private _notify(ownerUri: string, sendNotification: (runner: QueryRunner) => void): void {
 		let runner = this._queryRunners.get(ownerUri);
-		this.enqueueOrRun(sendNotification, runner);
+		this.enqueueOrRun(sendNotification, runner!);
 	}
 
 	public addQueryRequestHandler(queryType: string, handler: IQueryRequestHandler): IDisposable {
@@ -173,15 +174,16 @@ export class QueryManagementService implements IQueryManagementService {
 			provider: providerId,
 		};
 		if (runOptions) {
-			data = Object.assign({}, data, {
+			data = assign({}, data, {
 				displayEstimatedQueryPlan: runOptions.displayEstimatedQueryPlan,
 				displayActualQueryPlan: runOptions.displayActualQueryPlan
 			});
 		}
+		// tslint:disable-next-line:no-floating-promises
 		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, eventName, data);
 	}
 
-	private _runAction<T>(uri: string, action: (handler: IQueryRequestHandler) => Thenable<T>, fallBackToDefaultProvider: boolean = false): Thenable<T> {
+	private _runAction<T>(uri: string, action: (handler: IQueryRequestHandler) => Promise<T>, fallBackToDefaultProvider: boolean = false): Promise<T> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
 
 		if (!providerId && fallBackToDefaultProvider) {
@@ -199,58 +201,58 @@ export class QueryManagementService implements IQueryManagementService {
 		}
 	}
 
-	public cancelQuery(ownerUri: string): Thenable<azdata.QueryCancelResult> {
+	public cancelQuery(ownerUri: string): Promise<azdata.QueryCancelResult> {
 		this.addTelemetry(TelemetryKeys.CancelQuery, ownerUri);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.cancelQuery(ownerUri);
 		});
 	}
-	public runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Thenable<void> {
+	public runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void> {
 		this.addTelemetry(TelemetryKeys.RunQuery, ownerUri, runOptions);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQuery(ownerUri, selection, runOptions);
 		});
 	}
-	public runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void> {
+	public runQueryStatement(ownerUri: string, line: number, column: number): Promise<void> {
 		this.addTelemetry(TelemetryKeys.RunQueryStatement, ownerUri);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQueryStatement(ownerUri, line, column);
 		});
 	}
-	public runQueryString(ownerUri: string, queryString: string): Thenable<void> {
+	public runQueryString(ownerUri: string, queryString: string): Promise<void> {
 		this.addTelemetry(TelemetryKeys.RunQueryString, ownerUri);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQueryString(ownerUri, queryString);
 		});
 	}
-	public runQueryAndReturn(ownerUri: string, queryString: string): Thenable<azdata.SimpleExecuteResult> {
+	public runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQueryAndReturn(ownerUri, queryString);
 		});
 	}
-	public parseSyntax(ownerUri: string, query: string): Thenable<azdata.SyntaxParseResult> {
+	public parseSyntax(ownerUri: string, query: string): Promise<azdata.SyntaxParseResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.parseSyntax(ownerUri, query);
 		});
 	}
-	public getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult> {
+	public getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<azdata.QueryExecuteSubsetResult> {
 		return this._runAction(rowData.ownerUri, (runner) => {
 			return runner.getQueryRows(rowData);
 		});
 	}
-	public disposeQuery(ownerUri: string): Thenable<void> {
+	public disposeQuery(ownerUri: string): Promise<void> {
 		this._queryRunners.delete(ownerUri);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.disposeQuery(ownerUri);
 		});
 	}
-	public setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void> {
+	public setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Promise<void> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.setQueryExecutionOptions(ownerUri, options);
 		}, true);
 	}
 
-	public saveResults(requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult> {
+	public saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult> {
 		return this._runAction(requestParams.ownerUri, (runner) => {
 			return runner.saveResults(requestParams);
 		});
@@ -292,7 +294,7 @@ export class QueryManagementService implements IQueryManagementService {
 	}
 
 	// Edit Data Functions
-	public initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Thenable<void> {
+	public initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Promise<void> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.initializeEdit(ownerUri, schemaName, objectName, objectType, rowLimit, queryString);
 		});
@@ -304,49 +306,49 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<azdata.EditUpdateCellResult> {
+	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Promise<azdata.EditUpdateCellResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.updateCell(ownerUri, rowId, columnId, newValue);
 		});
 	}
 
-	public commitEdit(ownerUri: string): Thenable<void> {
+	public commitEdit(ownerUri: string): Promise<void> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.commitEdit(ownerUri);
 		});
 	}
 
-	public createRow(ownerUri: string): Thenable<azdata.EditCreateRowResult> {
+	public createRow(ownerUri: string): Promise<azdata.EditCreateRowResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.createRow(ownerUri);
 		});
 	}
 
-	public deleteRow(ownerUri: string, rowId: number): Thenable<void> {
+	public deleteRow(ownerUri: string, rowId: number): Promise<void> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.deleteRow(ownerUri, rowId);
 		});
 	}
 
-	public disposeEdit(ownerUri: string): Thenable<void> {
+	public disposeEdit(ownerUri: string): Promise<void> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.disposeEdit(ownerUri);
 		});
 	}
 
-	public revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<azdata.EditRevertCellResult> {
+	public revertCell(ownerUri: string, rowId: number, columnId: number): Promise<azdata.EditRevertCellResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.revertCell(ownerUri, rowId, columnId);
 		});
 	}
 
-	public revertRow(ownerUri: string, rowId: number): Thenable<void> {
+	public revertRow(ownerUri: string, rowId: number): Promise<void> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.revertRow(ownerUri, rowId);
 		});
 	}
 
-	public getEditRows(rowData: azdata.EditSubsetParams): Thenable<azdata.EditSubsetResult> {
+	public getEditRows(rowData: azdata.EditSubsetParams): Promise<azdata.EditSubsetResult> {
 		return this._runAction(rowData.ownerUri, (runner) => {
 			return runner.getEditRows(rowData);
 		});

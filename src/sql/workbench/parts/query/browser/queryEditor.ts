@@ -6,7 +6,7 @@
 import 'vs/css!./media/queryEditor';
 
 import * as DOM from 'vs/base/browser/dom';
-import { EditorOptions, IEditorControl, IEditorMemento, IEditorCloseEvent } from 'vs/workbench/common/editor';
+import { EditorOptions, IEditorControl, IEditorMemento } from 'vs/workbench/common/editor';
 import { BaseEditor, EditorMemento } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -187,7 +187,7 @@ export class QueryEditor extends BaseEditor {
 		this.setTaskbarContent();
 
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
-			if (e.affectedKeys.includes('workbench.enablePreviewFeatures')) {
+			if (e.affectsConfiguration('workbench.enablePreviewFeatures')) {
 				this.setTaskbarContent();
 			}
 		}));
@@ -578,29 +578,29 @@ export class QueryEditor extends BaseEditor {
 	/**
 	 * Calls the runCurrent method of this editor's RunQueryAction
 	 */
-	public runCurrentQuery(): void {
-		this._runQueryAction.runCurrent();
+	public async runCurrentQuery(): Promise<void> {
+		return this._runQueryAction.runCurrent();
 	}
 
 	/**
 	 * Calls the runCurrentQueryWithActualPlan method of this editor's ActualQueryPlanAction
 	 */
-	public runCurrentQueryWithActualPlan(): void {
-		this._actualQueryPlanAction.run();
+	public async runCurrentQueryWithActualPlan(): Promise<void> {
+		return this._actualQueryPlanAction.run();
 	}
 
 	/**
 	 * Calls the run method of this editor's RunQueryAction
 	 */
-	public runQuery(): void {
-		this._runQueryAction.run();
+	public async runQuery(): Promise<void> {
+		return this._runQueryAction.run();
 	}
 
 	/**
 	 * Calls the run method of this editor's CancelQueryAction
 	 */
-	public cancelQuery(): void {
-		this._cancelQueryAction.run();
+	public async cancelQuery(): Promise<void> {
+		return this._cancelQueryAction.run();
 	}
 
 	public registerQueryModelViewTab(title: string, componentId: string): void {

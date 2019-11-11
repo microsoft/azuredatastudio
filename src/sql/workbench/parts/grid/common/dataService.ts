@@ -3,9 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
-import { Observer } from 'rxjs/Observer';
 
 import { EditUpdateCellResult, EditSubsetResult, EditCreateRowResult } from 'azdata';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
@@ -40,13 +38,8 @@ export class DataService {
 	 * @param rowStart	The row to start retrieving from (inclusive)
 	 * @param numberOfRows	The maximum number of rows to return
 	 */
-	getEditRows(rowStart: number, numberOfRows: number): Observable<EditSubsetResult> {
-		const self = this;
-		return Observable.create(function (observer: Observer<EditSubsetResult>) {
-			self._queryModel.getEditRows(self._uri, rowStart, numberOfRows).then(results => {
-				observer.next(results);
-			});
-		});
+	getEditRows(rowStart: number, numberOfRows: number): Promise<EditSubsetResult | undefined> {
+		return this._queryModel.getEditRows(this._uri, rowStart, numberOfRows);
 	}
 
 	updateCell(rowId: number, columnId: number, newValue: string): Thenable<EditUpdateCellResult> {

@@ -6,9 +6,7 @@
 import { IExtensionPointUser } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
-import { join } from 'vs/base/common/path';
 import { createCSSRule, asCSSUrl } from 'vs/base/browser/dom';
-import { URI } from 'vs/base/common/uri';
 import { IdGenerator } from 'vs/base/common/idGenerator';
 import * as resources from 'vs/base/common/resources';
 
@@ -16,6 +14,7 @@ import { NavSectionConfig, IUserFriendlyIcon } from 'sql/workbench/parts/dashboa
 import { registerContainerType, generateNavSectionContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/workbench/parts/dashboard/browser/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/workbench/parts/dashboard/browser/containers/dashboardGridContainer.contribution';
+import { values } from 'vs/base/common/collections';
 
 export const NAV_SECTION = 'nav-section';
 
@@ -86,12 +85,12 @@ function createCSSRuleForIcon(icon: IUserFriendlyIcon, extension: IExtensionPoin
 		iconClass = ids.nextId();
 		if (typeof icon === 'string') {
 			const path = resources.joinPath(extension.description.extensionLocation, icon);
-			createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(path)}`);
+			createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(path)}`);
 		} else {
 			const light = resources.joinPath(extension.description.extensionLocation, icon.light);
 			const dark = resources.joinPath(extension.description.extensionLocation, icon.dark);
-			createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(light)}`);
-			createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: ${asCSSUrl(dark)}`);
+			createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(light)}`);
+			createCSSRule(`.vs-dark .codicon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(dark)}`);
 		}
 	}
 	return iconClass;
@@ -102,12 +101,12 @@ export function validateNavSectionContributionAndRegisterIcon(extension: IExtens
 	navSectionConfigs.forEach(section => {
 		if (!section.title) {
 			result = false;
-			extension.collector.error(nls.localize('navSection.missingTitle_error', "No title in nav section specified for extension."));
+			extension.collector.error(nls.localize('navSection.missingTitle.error', "No title in nav section specified for extension."));
 		}
 
 		if (!section.container) {
 			result = false;
-			extension.collector.error(nls.localize('navSection.missingContainer_error', "No container in nav section specified for extension."));
+			extension.collector.error(nls.localize('navSection.missingContainer.error', "No container in nav section specified for extension."));
 		}
 
 		if (Object.keys(section.container).length !== 1) {
@@ -120,7 +119,7 @@ export function validateNavSectionContributionAndRegisterIcon(extension: IExtens
 		}
 
 		const containerKey = Object.keys(section.container)[0];
-		const containerValue = Object.values(section.container)[0];
+		const containerValue = values(section.container)[0];
 
 		switch (containerKey) {
 			case WIDGETS_CONTAINER:
@@ -131,7 +130,7 @@ export function validateNavSectionContributionAndRegisterIcon(extension: IExtens
 				break;
 			case NAV_SECTION:
 				result = false;
-				extension.collector.error(nls.localize('navSection.invalidContainer_error', "NAV_SECTION within NAV_SECTION is an invalid container for extension."));
+				extension.collector.error(nls.localize('navSection.invalidContainer.error', "NAV_SECTION within NAV_SECTION is an invalid container for extension."));
 				break;
 		}
 

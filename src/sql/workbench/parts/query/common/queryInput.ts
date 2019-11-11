@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
@@ -19,7 +19,7 @@ import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { ISelectionData, ExecutionPlanOptions } from 'azdata';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { startsWith } from 'vs/base/common/strings';
 
 const MAX_SIZE = 13;
 
@@ -29,7 +29,7 @@ function trimTitle(title: string): string {
 	const length = title.length;
 	const diff = length - MAX_SIZE;
 
-	if (Math.sign(diff) <= 0) {
+	if (diff <= 0) {
 		return title;
 	} else {
 		const start = (length / 2) - (diff / 2);
@@ -183,7 +183,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 		if (this._configurationService) {
 			this._register(this._configurationService.onDidChangeConfiguration(e => {
-				if (e.affectedKeys.includes('sql.showConnectionInfoInTitle')) {
+				if (e.affectsConfiguration('sql.showConnectionInfoInTitle')) {
 					this._onDidChangeLabel.fire();
 				}
 			}));
@@ -276,12 +276,12 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	}
 
 	// State update funtions
-	public runQuery(selection: ISelectionData, executePlanOptions?: ExecutionPlanOptions): void {
+	public runQuery(selection?: ISelectionData, executePlanOptions?: ExecutionPlanOptions): void {
 		this._queryModelService.runQuery(this.uri, selection, this, executePlanOptions);
 		this.state.executing = true;
 	}
 
-	public runQueryStatement(selection: ISelectionData): void {
+	public runQueryStatement(selection?: ISelectionData): void {
 		this._queryModelService.runQueryStatement(this.uri, selection, this);
 		this.state.executing = true;
 	}
@@ -316,7 +316,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 		let isRunningQuery = this._queryModelService.isRunningQuery(this.uri);
 		if (!isRunningQuery && params && params.runQueryOnCompletion) {
-			let selection: ISelectionData = params ? params.querySelection : undefined;
+			let selection: ISelectionData | undefined = params ? params.querySelection : undefined;
 			if (params.runQueryOnCompletion === RunQueryOnConnectionMode.executeCurrentQuery) {
 				this.runQueryStatement(selection);
 			} else if (params.runQueryOnCompletion === RunQueryOnConnectionMode.executeQuery) {
@@ -361,6 +361,6 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	}
 
 	public get isSharedSession(): boolean {
-		return this.uri && this.uri.startsWith('vsls:');
+		return !!(this.uri && startsWith(this.uri, 'vsls:'));
 	}
 }

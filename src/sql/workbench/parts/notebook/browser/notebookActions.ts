@@ -25,6 +25,9 @@ import { CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { NotebookComponent } from 'sql/workbench/parts/notebook/browser/notebook.component';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { INotebookModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
+import { find, firstIndex } from 'vs/base/common/arrays';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
@@ -341,7 +344,7 @@ export class KernelsDropdown extends SelectBox {
 			let standardKernel = this.model.getStandardKernelFromName(kernel.name);
 
 			if (kernels && standardKernel) {
-				let index = kernels.findIndex((kernel => kernel === standardKernel.displayName));
+				let index = firstIndex(kernels, kernel => kernel === standardKernel.displayName);
 				this.setOptions(kernels, index);
 			}
 		} else if (this.model.clientSession.isInErrorState) {
@@ -428,7 +431,7 @@ export class AttachToDropdown extends SelectBox {
 		let kernelDisplayName: string;
 		if (this.model.clientSession && this.model.clientSession.kernel && this.model.clientSession.kernel.name) {
 			let currentKernelName = this.model.clientSession.kernel.name.toLowerCase();
-			let currentKernelSpec = this.model.specs.kernels.find(kernel => kernel.name && kernel.name.toLowerCase() === currentKernelName);
+			let currentKernelSpec = find(this.model.specs.kernels, kernel => kernel.name && kernel.name.toLowerCase() === currentKernelName);
 			if (currentKernelSpec) {
 				kernelDisplayName = currentKernelSpec.display_name;
 			}
@@ -453,7 +456,7 @@ export class AttachToDropdown extends SelectBox {
 					connections.unshift(msgSelectConnection);
 				}
 				else {
-					if (!connections.includes(msgAddNewConnection)) {
+					if (!find(connections, x => x === msgAddNewConnection)) {
 						connections.push(msgAddNewConnection);
 					}
 				}
@@ -464,11 +467,11 @@ export class AttachToDropdown extends SelectBox {
 
 	private loadWithSelectConnection(connections: string[]): string[] {
 		if (connections && connections.length > 0) {
-			if (!connections.includes(msgSelectConnection)) {
+			if (!find(connections, x => x === msgSelectConnection)) {
 				connections.unshift(msgSelectConnection);
 			}
 
-			if (!connections.includes(msgAddNewConnection)) {
+			if (!find(connections, x => x === msgAddNewConnection)) {
 				connections.push(msgAddNewConnection);
 			}
 			this.setOptions(connections, 0);
@@ -513,7 +516,7 @@ export class AttachToDropdown extends SelectBox {
 		if (connections.length === 1) {
 			return connections[0];
 		} else {
-			return this.model.contexts.otherConnections.find((c) => selection === c.title);
+			return find(this.model.contexts.otherConnections, (c) => selection === c.title);
 		}
 	}
 
@@ -561,7 +564,7 @@ export class AttachToDropdown extends SelectBox {
 			//To ignore n/a after we have at least one valid connection
 			attachToConnections = attachToConnections.filter(val => val !== msgSelectConnection);
 
-			let index = attachToConnections.findIndex((connection => connection === connectedServer));
+			let index = firstIndex(attachToConnections, connection => connection === connectedServer);
 			this.setOptions([]);
 			this.setOptions(attachToConnections);
 			if (!index || index < 0 || index >= attachToConnections.length) {
@@ -591,14 +594,22 @@ export class NewNotebookAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@ICommandService private commandService: ICommandService
+		@ICommandService private commandService: ICommandService,
+		@IObjectExplorerService private objectExplorerService: IObjectExplorerService
 	) {
 		super(id, label);
 		this.class = 'notebook-action new-notebook';
 	}
 
-	run(context?: azdata.ConnectedContext): Promise<void> {
-		return this.commandService.executeCommand(NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID, context);
+	async run(context?: azdata.ObjectExplorerContext): Promise<void> {
+		let connProfile: azdata.IConnectionProfile;
+		if (context && context.nodeInfo) {
+			let node = await this.objectExplorerService.getTreeNode(context.connectionProfile.id, context.nodeInfo.nodePath);
+			connProfile = TreeUpdateUtils.getConnectionProfile(node).toIConnectionProfile();
+		} else if (context && context.connectionProfile) {
+			connProfile = context.connectionProfile;
+		}
+		return this.commandService.executeCommand(NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID, { connectionProfile: connProfile });
 	}
 
 }

@@ -9,7 +9,6 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ITreeItem } from 'sql/workbench/common/views';
-import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { hash } from 'vs/base/common/hash';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -18,6 +17,8 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { localize } from 'vs/nls';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
+import { UserCancelledConnectionError } from 'sql/base/common/errors';
+import { assign } from 'vs/base/common/objects';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
@@ -41,7 +42,6 @@ export class OEShimService extends Disposable implements IOEShimService {
 	constructor(
 		@IObjectExplorerService private oe: IObjectExplorerService,
 		@IConnectionManagementService private cm: IConnectionManagementService,
-		@IConnectionDialogService private cd: IConnectionDialogService,
 		@ICapabilitiesService private capabilities: ICapabilitiesService
 	) {
 		super();
@@ -82,7 +82,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 	private async connectOrPrompt(connProfile: ConnectionProfile): Promise<ConnectionProfile> {
 		connProfile = await new Promise(async (resolve, reject) => {
-			await this.cm.connect(connProfile, undefined, { showConnectionDialogOnError: true, showFirewallRuleOnError: true, saveTheConnection: false, showDashboard: false, params: undefined }, {
+			let result = await this.cm.connect(connProfile, undefined, { showConnectionDialogOnError: true, showFirewallRuleOnError: true, saveTheConnection: false, showDashboard: false, params: undefined }, {
 				onConnectSuccess: async (e, profile) => {
 					let existingConnection = this.cm.findExistingConnection(profile);
 					connProfile = new ConnectionProfile(this.capabilities, existingConnection);
@@ -90,12 +90,16 @@ export class OEShimService extends Disposable implements IOEShimService {
 					resolve(connProfile);
 				},
 				onConnectCanceled: () => {
-					reject(new Error(localize('loginCanceled', "User canceled")));
+					reject(new UserCancelledConnectionError(localize('loginCanceled', "User canceled")));
 				},
 				onConnectReject: undefined,
 				onConnectStart: undefined,
 				onDisconnect: undefined
 			});
+			// connection cancelled from firewall dialog
+			if (!result) {
+				reject(new UserCancelledConnectionError(localize('firewallCanceled', "Firewall dialog canceled")));
+			}
 		});
 		return connProfile;
 	}
@@ -165,7 +169,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 			const database = node.getDatabaseName();
 			if (database) {
 				databaseChanged = true;
-				updatedPayload = Object.assign(updatedPayload, parentNode.payload);
+				updatedPayload = assign(updatedPayload, parentNode.payload);
 				updatedPayload.databaseName = node.getDatabaseName();
 			}
 		}

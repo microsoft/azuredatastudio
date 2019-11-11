@@ -9,8 +9,8 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 // General Constants ///////////////////////////////////////////////////////
-export const msgYes = localize('msgYes', 'Yes');
-export const msgNo = localize('msgNo', 'No');
+export const msgYes = localize('msgYes', "Yes");
+export const msgNo = localize('msgNo', "No");
 
 // Jupyter Constants ///////////////////////////////////////////////////////
-export const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
+export const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample code loads the file into a data frame and shows the first 10 results.");

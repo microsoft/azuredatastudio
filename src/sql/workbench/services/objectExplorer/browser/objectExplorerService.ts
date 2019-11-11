@@ -18,8 +18,10 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as Utils from 'sql/platform/connection/common/utils';
-import { entries } from 'sql/base/common/objects';
 import { ILogService } from 'vs/platform/log/common/log';
+import { entries } from 'sql/base/common/collections';
+import { values } from 'vs/base/common/collections';
+import { startsWith } from 'vs/base/common/strings';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -228,7 +230,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	 */
 	public onSessionCreated(handle: number, session: azdata.ObjectExplorerSession): void {
 		if (session && session.success) {
-			this.handleSessionCreated(session);
+			this.handleSessionCreated(session).catch((e) => this.logService.error(e));
 		} else {
 			let errorMessage = session && session.errorMessage ? session.errorMessage : errSessionCreateFailed;
 			this.logService.error(errorMessage);
@@ -281,9 +283,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					this._serverTreeView.deleteObjectExplorerNodeAndRefreshTree(connection).then(() => {
 						this.sendUpdateNodeEvent(connection, session.errorMessage);
 						connection.isDisconnecting = true;
-						this._connectionManagementService.disconnect(connection).then((value) => {
+						this._connectionManagementService.disconnect(connection).then(() => {
 							connection.isDisconnecting = false;
-						});
+						}).catch((e) => this.logService.error(e));
 					});
 				}
 			}
@@ -346,7 +348,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
 			let provider = this._providers[providerId];
 			if (provider) {
-				TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId });
+				TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId }).catch((e) => this.logService.error(e));
 				this.expandOrRefreshNode(providerId, session, nodePath).then(result => {
 					resolve(result);
 				}, error => {
@@ -484,7 +486,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Thenable<azdata.ObjectExplorerExpandInfo> {
 		let provider = this._providers[providerId];
 		if (provider) {
-			TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.ObjectExplorerExpand, { refresh: 1, provider: providerId });
+			TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.ObjectExplorerExpand, { refresh: 1, provider: providerId }).catch((e) => this.logService.error(e));
 			return this.expandOrRefreshNode(providerId, session, nodePath, true);
 		}
 		return Promise.resolve(undefined);
@@ -669,7 +671,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	public getActiveConnectionNodes(): TreeNode[] {
-		return Object.values(this._activeObjectExplorerNodes);
+		return values(this._activeObjectExplorerNodes);
 	}
 
 	/**
@@ -788,7 +790,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			}
 			if (currentNode.children) {
 				// Look at the next node in the path, which is the child object with the longest path where the desired path starts with the child path
-				let children = currentNode.children.filter(child => nodePath.startsWith(child.nodePath));
+				let children = currentNode.children.filter(child => startsWith(nodePath, child.nodePath));
 				if (children.length > 0) {
 					nextNode = children.reduce((currentMax, candidate) => currentMax.nodePath.length < candidate.nodePath.length ? candidate : currentMax);
 				}

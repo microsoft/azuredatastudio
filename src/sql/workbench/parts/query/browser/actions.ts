@@ -22,7 +22,6 @@ import { GridTableState } from 'sql/workbench/parts/query/common/gridPanelState'
 import * as Constants from 'sql/workbench/contrib/extensions/common/constants';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { getErrorMessage } from 'vs/base/common/errors';
 
 export interface IGridActionContext {
@@ -212,8 +211,7 @@ export class ChartDataAction extends Action {
 
 	constructor(
 		@IEditorService private editorService: IEditorService,
-		@IExtensionTipsService private readonly extensionTipsService: IExtensionTipsService,
-		@IEnvironmentService private readonly environmentService: IEnvironmentService
+		@IExtensionTipsService private readonly extensionTipsService: IExtensionTipsService
 	) {
 		super(ChartDataAction.ID, ChartDataAction.LABEL, ChartDataAction.ICON);
 	}

@@ -1,7 +1,7 @@
 {
-	"downloadUrl": "https://sqlopsextensions.blob.core.windows.net/extensions/import/{#fileName#}",
+	"downloadUrl": "https://sqlopsextensions.blob.core.windows.net/extensions/import/service/{#version#}/{#fileName#}",
 	"useDefaultLinuxRuntime": true,
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"downloadFileNames": {
 		"Windows_64": "win-x64.zip",
 		"Windows_86": "win-x86.zip",
@@ -14,7 +14,8 @@
 		"RHEL_7": "linux-x64.tar.gz",
 		"SLES_12_2": "linux-x64.tar.gz",
 		"Ubuntu_14": "linux-x64.tar.gz",
-		"Ubuntu_16": "linux-x64.tar.gz"
+		"Ubuntu_16": "linux-x64.tar.gz",
+		"Ubuntu_18": "linux-x64.tar.gz"
 	},
 	"installDirectory": "flatfileimportservice/{#platform#}/{#version#}",
 	"executableFiles": [

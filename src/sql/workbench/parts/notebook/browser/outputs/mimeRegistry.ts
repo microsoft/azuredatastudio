@@ -9,6 +9,7 @@ import { ReadonlyJSONObject } from 'sql/workbench/parts/notebook/common/models/j
 import { MimeModel } from 'sql/workbench/parts/notebook/browser/models/mimemodel';
 import * as types from 'vs/base/common/types';
 import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { values } from 'vs/base/common/collections';
 
 export type FactoryIdentifier = string;
 
@@ -146,10 +147,10 @@ class MimeComponentRegistry implements IMimeComponentRegistry {
 
 	public getAllCtors(): Array<Type<IMimeComponent>> {
 		let addedCtors = [];
-		let ctors = Object.values(this._componentDefinitions)
+		let ctors = values(this._componentDefinitions)
 			.map((c: IMimeComponentDefinition) => c.ctor)
 			.filter(ctor => {
-				let shouldAdd = !addedCtors.find((ctor2) => ctor === ctor2);
+				let shouldAdd = !addedCtors.some((ctor2) => ctor === ctor2);
 				if (shouldAdd) {
 					addedCtors.push(ctor);
 				}

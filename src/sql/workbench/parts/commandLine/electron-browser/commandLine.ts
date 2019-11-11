@@ -30,6 +30,7 @@ import { openNewQuery } from 'sql/workbench/parts/query/browser/queryActions';
 import { IURLService, IURLHandler } from 'vs/platform/url/common/url';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { find } from 'vs/base/common/arrays';
 
 const connectAuthority = 'connect';
 
@@ -134,7 +135,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 			// we want to connect the given profile to to it.
 			// If more than one file was passed, only show the connection dialog error on one of them.
 			if (args._ && args._.length > 0) {
-				await args._.forEach((f, i) => this.processFile(URI.file(f).toString(), profile, i === 0));
+				await Promise.all(args._.map((f, i) => this.processFile(URI.file(f).toString(), profile, i === 0)));
 			}
 			else {
 				// Default to showing new query
@@ -242,7 +243,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		if (groups && groups.length > 0) {
 			let rootGroup = groups[0];
 			let connections = ConnectionProfileGroup.getConnectionsInGroup(rootGroup);
-			match = connections.find((c) => this.matchProfile(profile, c));
+			match = find(connections, (c) => this.matchProfile(profile, c));
 		}
 		return match ? match : profile;
 	}

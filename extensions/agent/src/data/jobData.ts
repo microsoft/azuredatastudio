@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
@@ -14,12 +13,12 @@ const localize = nls.loadMessageBundle();
 
 export class JobData implements IAgentDialogData {
 
-	private readonly JobCompletionActionCondition_Always: string = localize('jobData.whenJobCompletes', 'When the job completes');
-	private readonly JobCompletionActionCondition_OnFailure: string = localize('jobData.whenJobFails', 'When the job fails');
-	private readonly JobCompletionActionCondition_OnSuccess: string = localize('jobData.whenJobSucceeds', 'When the job succeeds');
+	private readonly JobCompletionActionCondition_Always: string = localize('jobData.whenJobCompletes', "When the job completes");
+	private readonly JobCompletionActionCondition_OnFailure: string = localize('jobData.whenJobFails', "When the job fails");
+	private readonly JobCompletionActionCondition_OnSuccess: string = localize('jobData.whenJobSucceeds', "When the job succeeds");
 
 	// Error Messages
-	private readonly CreateJobErrorMessage_NameIsEmpty = localize('jobData.jobNameRequired', 'Job name must be provided');
+	private readonly CreateJobErrorMessage_NameIsEmpty = localize('jobData.jobNameRequired', "Job name must be provided");
 
 	private _ownerUri: string;
 	private _jobCategories: string[];

@@ -22,7 +22,7 @@ import {
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { QueryModelService } from 'sql/platform/query/common/queryModelService';
-import { ConnectionManagementService } from 'sql/platform/connection/browser/connectionManagementService';
+import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import * as TypeMoq from 'typemoq';
@@ -112,7 +112,6 @@ suite('SQL QueryAction Tests', () => {
 		// ... Create assert variables
 		let isConnected: boolean = undefined;
 		let connectionParams: INewConnectionParams = undefined;
-		let calledRunQuery: boolean = false;
 		let countCalledShowDialog: number = 0;
 
 		// ... Mock "showDialog" ConnectionDialogService
@@ -131,9 +130,7 @@ suite('SQL QueryAction Tests', () => {
 
 		// ... Mock QueryModelService
 		let queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose);
-		queryModelService.setup(x => x.runQuery(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).callback(() => {
-			calledRunQuery = true;
-		});
+		queryModelService.setup(x => x.runQuery(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny()));
 
 		// If I call run on RunQueryAction when I am not connected
 		let queryAction: RunQueryAction = new RunQueryAction(editor.object, queryModelService.object, connectionManagementService.object);

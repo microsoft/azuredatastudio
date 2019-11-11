@@ -6,7 +6,7 @@
 import { ElementRef } from '@angular/core';
 
 import { localize } from 'vs/nls';
-import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { ActionBar, ActionsOrientation, Separator } from 'vs/base/browser/ui/actionbar/actionbar';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -19,26 +19,33 @@ import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/noteb
 import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { ToggleMoreWidgetAction } from 'sql/workbench/parts/dashboard/browser/core/actions';
 import { CellModel } from 'sql/workbench/parts/notebook/browser/models/cell';
+import { Action } from 'vs/base/common/actions';
+import { firstIndex } from 'vs/base/common/arrays';
 
 export const HIDDEN_CLASS = 'actionhidden';
 
 export class CellToggleMoreActions {
-	private _actions: CellActionBase[] = [];
+	private _actions: (Action | CellActionBase)[] = [];
 	private _moreActions: ActionBar;
 	private _moreActionsElement: HTMLElement;
 	constructor(
 		@IInstantiationService private instantiationService: IInstantiationService) {
 		this._actions.push(
-			instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', "Delete")),
-			instantiationService.createInstance(AddCellFromContextAction, 'codeBefore', localize('codeBefore', "Insert Code Before"), CellTypes.Code, false),
-			instantiationService.createInstance(AddCellFromContextAction, 'codeAfter', localize('codeAfter', "Insert Code After"), CellTypes.Code, true),
-			instantiationService.createInstance(AddCellFromContextAction, 'markdownBefore', localize('markdownBefore', "Insert Text Before"), CellTypes.Markdown, false),
-			instantiationService.createInstance(AddCellFromContextAction, 'markdownAfter', localize('markdownAfter', "Insert Text After"), CellTypes.Markdown, true),
 			instantiationService.createInstance(RunCellsAction, 'runAllBefore', localize('runAllBefore', "Run Cells Before"), false),
 			instantiationService.createInstance(RunCellsAction, 'runAllAfter', localize('runAllAfter', "Run Cells After"), true),
-			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', "Clear Output")),
+			new Separator(),
+			instantiationService.createInstance(AddCellFromContextAction, 'codeBefore', localize('codeBefore', "Insert Code Before"), CellTypes.Code, false),
+			instantiationService.createInstance(AddCellFromContextAction, 'codeAfter', localize('codeAfter', "Insert Code After"), CellTypes.Code, true),
+			new Separator(),
+			instantiationService.createInstance(AddCellFromContextAction, 'markdownBefore', localize('markdownBefore', "Insert Text Before"), CellTypes.Markdown, false),
+			instantiationService.createInstance(AddCellFromContextAction, 'markdownAfter', localize('markdownAfter', "Insert Text After"), CellTypes.Markdown, true),
+			new Separator(),
 			instantiationService.createInstance(CollapseCellAction, 'collapseCell', localize('collapseCell', "Collapse Cell"), true),
-			instantiationService.createInstance(CollapseCellAction, 'expandCell', localize('expandCell', "Expand Cell"), false)
+			instantiationService.createInstance(CollapseCellAction, 'expandCell', localize('expandCell', "Expand Cell"), false),
+			new Separator(),
+			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', "Clear Result")),
+			new Separator(),
+			instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', "Delete")),
 		);
 	}
 
@@ -50,7 +57,8 @@ export class CellToggleMoreActions {
 		}
 		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
 		this._moreActions.context = { target: this._moreActionsElement };
-		let validActions = this._actions.filter(a => a.canRun(context));
+		let validActions = this._actions.filter(a => a instanceof Separator || a instanceof CellActionBase && a.canRun(context));
+		this.removeDuplicatedAndStartingSeparators(validActions);
 		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, validActions, context), { icon: true, label: false });
 	}
 
@@ -62,6 +70,25 @@ export class CellToggleMoreActions {
 			DOM.addClass(this._moreActionsElement, HIDDEN_CLASS);
 		} else {
 			DOM.removeClass(this._moreActionsElement, HIDDEN_CLASS);
+		}
+	}
+
+	private removeDuplicatedAndStartingSeparators(actions: (Action | CellActionBase)[]): void {
+		let indexesToRemove: number[] = [];
+		for (let i = 0; i < actions.length; i++) {
+			// Never should have a separator at the beginning of the list
+			if (i === 0 && actions[i] instanceof Separator) {
+				indexesToRemove.push(0);
+			}
+			// Handle multiple separators in a row
+			if (i > 0 && actions[i] instanceof Separator && actions[i - 1] instanceof Separator) {
+				indexesToRemove.push(i);
+			}
+		}
+		if (indexesToRemove.length > 0) {
+			for (let i = indexesToRemove.length - 1; i >= 0; i--) {
+				actions.splice(indexesToRemove[i], 1);
+			}
 		}
 	}
 }
@@ -77,7 +104,7 @@ export class AddCellFromContextAction extends CellActionBase {
 	doRun(context: CellContext): Promise<void> {
 		try {
 			let model = context.model;
-			let index = model.cells.findIndex((cell) => cell.id === context.cell.id);
+			let index = firstIndex(model.cells, (cell) => cell.id === context.cell.id);
 			if (index !== undefined && this.isAfter) {
 				index += 1;
 			}

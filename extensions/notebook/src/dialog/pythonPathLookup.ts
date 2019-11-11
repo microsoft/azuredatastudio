@@ -24,7 +24,7 @@ export class PythonPathLookup {
 				`${userFolder}/*conda*/bin/python3`
 			];
 		} else {
-			let userFolder = process.env['USERPROFILE'].replace('\\', '/').replace('C:', '');
+			let userFolder = process.env['USERPROFILE'].replace(/\\/g, '/').replace('C:', '');
 			this.condaLocations = [
 				'/ProgramData/[Mm]iniconda*/python.exe',
 				'/ProgramData/[Aa]naconda*/python.exe',

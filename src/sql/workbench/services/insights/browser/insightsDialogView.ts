@@ -45,6 +45,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/resour
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
+const iconClass = 'codicon';
 
 class InsightTableView<T> extends ViewletPanel {
 	private _table: Table<T>;
@@ -88,22 +89,22 @@ function stateFormatter(row: number, cell: number, value: any, columnDef: Slick.
 
 	// render icon if passed
 	if (resource.icon) {
-		icon.classList.add('icon');
+		icon.classList.add(iconClass);
 		icon.classList.add(resource.icon);
 	} else {
-		icon.classList.remove('icon');
+		icon.classList.remove(iconClass);
 	}
 
 	//render state badge if present
 	if (resource.stateColor) {
 		badgeContent.style.backgroundColor = resource.stateColor;
-		badgeContent.classList.remove('icon');
+		badgeContent.classList.remove(iconClass);
 	} else if (resource.stateIcon) {
 		badgeContent.style.backgroundColor = '';
-		badgeContent.classList.add('icon');
+		badgeContent.classList.add(iconClass);
 		badgeContent.classList.add(resource.stateIcon);
 	} else {
-		badgeContent.classList.remove('icon');
+		badgeContent.classList.remove(iconClass);
 		badgeContent.style.backgroundColor = '';
 	}
 
@@ -337,7 +338,7 @@ export class InsightsDialogView extends Modal {
 		if (this._insight.actions && this._insight.actions.types) {
 			let tasks = TaskRegistry.getTasks();
 			for (let action of this._insight.actions.types) {
-				let task = tasks.includes(action);
+				let task = tasks.some(x => x === action);
 				let commandAction = MenuRegistry.getCommand(action);
 				let commandLabel = types.isString(commandAction.title) ? commandAction.title : commandAction.title.value;
 				if (task) {
@@ -396,7 +397,7 @@ export class InsightsDialogView extends Modal {
 		let actions = this._insight.actions.types;
 		let returnActions: IAction[] = [];
 		for (let action of actions) {
-			let task = tasks.includes(action);
+			let task = tasks.some(x => x === action);
 			let commandAction = MenuRegistry.getCommand(action);
 			if (task) {
 				returnActions.push(this._instantiationService.createInstance(ExecuteCommandAction, commandAction.id, commandAction.title));

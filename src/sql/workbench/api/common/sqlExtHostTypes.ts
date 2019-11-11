@@ -203,6 +203,12 @@ export enum ExtensionNodeType {
 	Database = 'Database'
 }
 
+export interface CheckBoxInfo {
+	row: number;
+	columnName: string;
+	checked: boolean;
+}
+
 export interface IComponentShape {
 	type: ModelComponentTypes;
 	id: string;
@@ -225,6 +231,7 @@ export enum ComponentEventType {
 	onSelectedRowChanged,
 	onComponentCreated,
 	onCellAction,
+	onEnterKeyPressed
 }
 
 export interface IComponentEventArgs {
@@ -252,6 +259,7 @@ export interface IModelViewButtonDetails {
 	enabled: boolean;
 	hidden: boolean;
 	focused?: boolean;
+	position?: 'left' | 'right';
 }
 
 export interface IModelViewWizardPageDetails {
@@ -353,6 +361,22 @@ export enum CardType {
 export enum Orientation {
 	Horizontal = 'horizontal',
 	Vertical = 'vertial'
+}
+
+/**
+ * The possible values of the server engine edition
+ */
+export enum DatabaseEngineEdition {
+	Unknown = 0,
+	Personal = 1,
+	Standard = 2,
+	Enterprise = 3,
+	Express = 4,
+	SqlDatabase = 5,
+	SqlDataWarehouse = 6,
+	SqlStretchDatabase = 7,
+	SqlManagedInstance = 8,
+	SqlOnDemand = 11
 }
 
 export interface ToolbarLayout {
@@ -547,7 +571,7 @@ export class CellRange {
 	}
 
 	constructor(start: number, end: number) {
-		if (typeof (start) !== 'number' || typeof (start) !== 'number' || start < 0 || end < 0) {
+		if (typeof (start) !== 'number' || typeof (end) !== 'number' || start < 0 || end < 0) {
 			throw new Error('Invalid arguments');
 		}
 
@@ -673,9 +697,9 @@ export class ConnectionProfile {
 		this.options['azureTenantId'] = value;
 	}
 
-	options: Map<string, any> = new Map<string, any>();
+	options: { [key: string]: any } = {};
 
-	static createFrom(options: Map<string, any>): ConnectionProfile {
+	static createFrom(options: { [key: string]: any }): ConnectionProfile {
 		let profile = new ConnectionProfile();
 		profile.options = options;
 		return profile;

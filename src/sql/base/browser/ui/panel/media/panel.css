@@ -72,7 +72,7 @@ panel {
 	line-height: 45px;
 }
 
-.tabbedPanel .tabList .tab .tabLabel.icon {
+.tabbedPanel .tabList .tab .tabLabel.codicon {
 	background-repeat: no-repeat;
 	background-position: center center;
 	background-size: 20px;

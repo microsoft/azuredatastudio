@@ -23,7 +23,7 @@ import * as DOM from 'vs/base/browser/dom';
 
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { CellTypes, CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
-import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { ICellModel, IModelFactory, INotebookModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
@@ -52,9 +52,9 @@ import { LabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/br
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { getErrorMessage } from 'vs/base/common/errors';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { find, firstIndex } from 'vs/base/common/arrays';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -70,8 +70,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	@ViewChild('bookNav', { read: ElementRef }) private bookNav: ElementRef;
 
 	private _model: NotebookModel;
-	private _isInErrorState: boolean = false;
-	private _errorMessage: string;
 	protected _actionBar: Taskbar;
 	protected isLoading: boolean;
 	private notebookManagers: INotebookManager[] = [];
@@ -104,8 +102,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
-		@Inject(ITelemetryService) private telemetryService: ITelemetryService,
-		@Inject(IEnvironmentService) private readonly environmentService: IEnvironmentService
+		@Inject(ITelemetryService) private telemetryService: ITelemetryService
 	) {
 		super();
 		this.updateProfile();
@@ -330,7 +327,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 		if (DEFAULT_NOTEBOOK_PROVIDER === providerInfo.providerId) {
 			let providers = notebookUtils.getProvidersForFileName(this._notebookParams.notebookUri.fsPath, this.notebookService);
-			let tsqlProvider = providers.find(provider => provider === SQL_NOTEBOOK_PROVIDER);
+			let tsqlProvider = find(providers, provider => provider === SQL_NOTEBOOK_PROVIDER);
 			providerInfo.providerId = tsqlProvider ? SQL_NOTEBOOK_PROVIDER : providers[0];
 		}
 		if (DEFAULT_NOTEBOOK_PROVIDER === providerInfo.providerId) {
@@ -393,12 +390,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	findCellIndex(cellModel: ICellModel): number {
-		return this._model.cells.findIndex((cell) => cell.id === cellModel.id);
+		return firstIndex(this._model.cells, (cell) => cell.id === cellModel.id);
 	}
 
 	private setViewInErrorState(error: any): any {
-		this._isInErrorState = true;
-		this._errorMessage = getErrorMessage(error);
 		// For now, send message as error notification #870 covers having dedicated area for this
 		this.notificationService.error(error);
 	}
@@ -447,9 +442,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	protected initNavSection(): void {
 		this._navProvider = this.notebookService.getNavigationProvider(this._notebookParams.notebookUri);
 
-		if (this.environmentService.appQuality !== 'stable' &&
-			this.contextKeyService.getContextKeyValue('bookOpened') &&
-			this._navProvider) {
+		if (this.contextKeyService.getContextKeyValue('bookOpened') && this._navProvider) {
 			this._navProvider.getNavigation(this._notebookParams.notebookUri).then(result => {
 				this.navigationResult = result;
 				this.addButton(localize('previousButtonLabel', "< Previous"),
@@ -517,7 +510,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private addPrimaryContributedActions(primary: IAction[]) {
 		for (let action of primary) {
 			// Need to ensure that we don't add the same action multiple times
-			let foundIndex = this._providerRelatedActions.findIndex(act => act.id === action.id);
+			let foundIndex = firstIndex(this._providerRelatedActions, act => act.id === action.id);
 			if (foundIndex < 0) {
 				this._actionBar.addAction(action);
 				this._providerRelatedActions.push(action);
@@ -568,7 +561,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	public async runCell(cell: ICellModel): Promise<boolean> {
 		await this.modelReady;
 		let uriString = cell.cellUri.toString();
-		if (this._model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
+		if (firstIndex(this._model.cells, c => c.cellUri.toString() === uriString) > -1) {
 			this.selectCell(cell);
 			return cell.runCell(this.notificationService, this.connectionManagementService);
 		} else {
@@ -584,10 +577,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			let startIndex = 0;
 			let endIndex = codeCells.length;
 			if (!isUndefinedOrNull(startCell)) {
-				startIndex = codeCells.findIndex(c => c.id === startCell.id);
+				startIndex = firstIndex(codeCells, c => c.id === startCell.id);
 			}
 			if (!isUndefinedOrNull(endCell)) {
-				endIndex = codeCells.findIndex(c => c.id === endCell.id);
+				endIndex = firstIndex(codeCells, c => c.id === endCell.id);
 			}
 			for (let i = startIndex; i < endIndex; i++) {
 				let cellStatus = await this.runCell(codeCells[i]);
@@ -603,7 +596,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		try {
 			await this.modelReady;
 			let uriString = cell.cellUri.toString();
-			if (this._model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
+			if (firstIndex(this._model.cells, c => c.cellUri.toString() === uriString) > -1) {
 				this.selectCell(cell);
 				// Clear outputs of the requested cell if cell type is code cell.
 				// If cell is markdown cell, clearOutputs() is a no-op
@@ -673,7 +666,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	navigateToSection(id: string): void {
 		id = id.toLowerCase();
-		let section = this.getSectionElements().find(s => s.relativeUri && s.relativeUri.toLowerCase() === id);
+		let section = find(this.getSectionElements(), s => s.relativeUri && s.relativeUri.toLowerCase() === id);
 		if (section) {
 			// Scroll this section to the top of the header instead of just bringing header into view.
 			let scrollTop = jQuery(section.headerEl).offset().top;

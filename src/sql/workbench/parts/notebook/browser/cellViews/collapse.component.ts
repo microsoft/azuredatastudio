@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, SimpleChange, OnChanges } from '@angular/core';
+import { OnInit, Component, Input, ElementRef, ViewChild, SimpleChange, OnChanges } from '@angular/core';
 import { CellView } from 'sql/workbench/parts/notebook/browser/cellViews/interfaces';
 import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 
@@ -22,9 +22,7 @@ export class CollapseComponent extends CellView implements OnInit, OnChanges {
 	@Input() cellModel: ICellModel;
 	@Input() activeCellId: string;
 
-	constructor(
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
-	) {
+	constructor() {
 		super();
 	}
 

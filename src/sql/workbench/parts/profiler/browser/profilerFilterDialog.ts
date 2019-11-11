@@ -26,6 +26,7 @@ import { ProfilerFilter, ProfilerFilterClause, ProfilerFilterClauseOperator, IPr
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { find, firstIndex } from 'vs/base/common/arrays';
 
 
 const ClearText: string = localize('profilerFilterDialog.clear', "Clear all");
@@ -220,7 +221,7 @@ export class ProfilerFilterDialog extends Modal {
 
 	private addClauseRow(setInitialValue: boolean, field?: string, operator?: string, value?: string): void {
 		const columns = this._input.columns.map(column => column.name);
-		if (field && !columns.includes(field)) {
+		if (field && !find(columns, x => x === field)) {
 			return;
 		}
 
@@ -235,7 +236,7 @@ export class ProfilerFilterDialog extends Modal {
 		this._register(attachInputBoxStyler(valueText, this._themeService));
 
 		const removeCell = DOM.append(row, DOM.$('td'));
-		const removeClauseButton = DOM.append(removeCell, DOM.$('.profiler-filter-remove-condition.icon.remove', {
+		const removeClauseButton = DOM.append(removeCell, DOM.$('.profiler-filter-remove-condition.codicon.remove', {
 			'tabIndex': '0',
 			'aria-label': RemoveText,
 			'title': RemoveText,
@@ -269,7 +270,7 @@ export class ProfilerFilterDialog extends Modal {
 	}
 
 	private removeRow(clauseId: string) {
-		const idx = this._clauseRows.findIndex((entry) => { return entry.id === clauseId; });
+		const idx = firstIndex(this._clauseRows, (entry) => { return entry.id === clauseId; });
 		if (idx !== -1) {
 			this._clauseRows[idx].row.remove();
 			this._clauseRows.splice(idx, 1);

@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
@@ -17,8 +16,8 @@ const localize = nls.loadMessageBundle();
 export class JobStepData implements IAgentDialogData {
 
 	// Error Messages
-	private static readonly CreateStepErrorMessage_JobNameIsEmpty = localize('stepData.jobNameRequired', 'Job name must be provided');
-	private static readonly CreateStepErrorMessage_StepNameIsEmpty = localize('stepData.stepNameRequired', 'Step name must be provided');
+	private static readonly CreateStepErrorMessage_JobNameIsEmpty = localize('stepData.jobNameRequired', "Job name must be provided");
+	private static readonly CreateStepErrorMessage_StepNameIsEmpty = localize('stepData.stepNameRequired', "Step name must be provided");
 
 	public dialogMode: AgentDialogMode;
 	public ownerUri: string;

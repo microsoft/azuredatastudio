@@ -33,6 +33,7 @@ import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
 import { notebookModeId } from 'sql/workbench/browser/customInputConverter';
 import { localize } from 'vs/nls';
 import { IFileService } from 'vs/platform/files/common/files';
+import { find } from 'vs/base/common/arrays';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -372,7 +373,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let cell: ICellModel;
 		if (cellUri) {
 			let uriString = URI.revive(cellUri).toString();
-			cell = editor.cells.find(c => c.cellUri.toString() === uriString);
+			cell = find(editor.cells, c => c.cellUri.toString() === uriString);
 			// If it's markdown what should we do? Show notification??
 		} else {
 			// Use the active cell in this case, or 1st cell if there's none active
@@ -394,11 +395,11 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let endCell: ICellModel;
 		if (startCellUri) {
 			let uriString = URI.revive(startCellUri).toString();
-			startCell = editor.cells.find(c => c.cellUri.toString() === uriString);
+			startCell = find(editor.cells, c => c.cellUri.toString() === uriString);
 		}
 		if (endCellUri) {
 			let uriString = URI.revive(endCellUri).toString();
-			endCell = editor.cells.find(c => c.cellUri.toString() === uriString);
+			endCell = find(editor.cells, c => c.cellUri.toString() === uriString);
 		}
 		return editor.runAllCells(startCell, endCell);
 	}
@@ -412,7 +413,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let cell: ICellModel;
 		if (cellUri) {
 			let uriString = URI.revive(cellUri).toString();
-			cell = editor.cells.find(c => c.cellUri.toString() === uriString);
+			cell = find(editor.cells, c => c.cellUri.toString() === uriString);
 			// If it's markdown what should we do? Show notification??
 		} else {
 			// Use the active cell in this case, or 1st cell if there's none active

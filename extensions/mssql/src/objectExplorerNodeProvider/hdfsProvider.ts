@@ -11,7 +11,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import * as Constants from '../constants';
-import { IFileSource, IHdfsOptions, IFile, File, FileSourceFactory } from './fileSources';
+import { IFileSource, IFile, File, FileType } from './fileSources';
 import { CancelableStream } from './cancelableStream';
 import { TreeNode } from './treeNodes';
 import * as utils from '../utils';
@@ -28,55 +28,8 @@ export class TreeDataContext {
 	}
 }
 
-export class HdfsProvider implements vscode.TreeDataProvider<TreeNode>, ITreeChangeHandler {
-	static readonly NoConnectionsMessage = 'No connections added';
-	static readonly ConnectionsLabel = 'Connections';
-
-	private connections: ConnectionNode[];
-	private _onDidChangeTreeData = new vscode.EventEmitter<TreeNode>();
-	private context: TreeDataContext;
-
-	constructor(extensionContext: vscode.ExtensionContext) {
-		this.connections = [];
-		this.context = new TreeDataContext(extensionContext, this);
-	}
-
-	public get onDidChangeTreeData(): vscode.Event<TreeNode> {
-		return this._onDidChangeTreeData.event;
-	}
-
-	getTreeItem(element: TreeNode): vscode.TreeItem | Thenable<vscode.TreeItem> {
-		return element.getTreeItem();
-	}
-
-	getChildren(element?: TreeNode): vscode.ProviderResult<TreeNode[]> {
-		if (element) {
-			return element.getChildren(false);
-		} else {
-			return this.connections.length > 0 ? this.connections : [ErrorNode.create(HdfsProvider.NoConnectionsMessage, element)];
-		}
-	}
-
-	addConnection(displayName: string, fileSource: IFileSource): void {
-		if (!this.connections.find(c => c.getDisplayName() === displayName)) {
-			this.connections.push(new ConnectionNode(this.context, displayName, fileSource));
-			this._onDidChangeTreeData.fire();
-		}
-	}
-
-	public async addHdfsConnection(options: IHdfsOptions): Promise<void> {
-		let displayName = `${options.user}@${options.host}:${options.port}`;
-		let fileSource = await FileSourceFactory.instance.createHdfsFileSource(options);
-		this.addConnection(displayName, fileSource);
-	}
-
-	notifyNodeChanged(node: TreeNode): void {
-		this._onDidChangeTreeData.fire(node);
-	}
-}
-
 export abstract class HdfsFileSourceNode extends TreeNode {
-	constructor(protected context: TreeDataContext, protected _path: string, public readonly fileSource: IFileSource) {
+	constructor(protected context: TreeDataContext, protected _path: string, public readonly fileSource: IFileSource, protected mountStatus?: MountStatus) {
 		super();
 	}
 
@@ -86,6 +39,11 @@ export abstract class HdfsFileSourceNode extends TreeNode {
 
 	public get nodePathValue(): string {
 		return this.getDisplayName();
+	}
+
+
+	protected isMounted(): boolean {
+		return this.mountStatus === MountStatus.Mount || this.mountStatus === MountStatus.Mount_Child;
 	}
 
 	getDisplayName(): string {
@@ -104,8 +62,8 @@ export abstract class HdfsFileSourceNode extends TreeNode {
 export class FolderNode extends HdfsFileSourceNode {
 	private children: TreeNode[];
 	protected _nodeType: string;
-	constructor(context: TreeDataContext, path: string, fileSource: IFileSource, nodeType?: string, private mountStatus?: MountStatus) {
-		super(context, path, fileSource);
+	constructor(context: TreeDataContext, path: string, fileSource: IFileSource, nodeType?: string, mountStatus?: MountStatus) {
+		super(context, path, fileSource, mountStatus);
 		this._nodeType = nodeType ? nodeType : Constants.MssqlClusterItems.Folder;
 	}
 
@@ -127,14 +85,15 @@ export class FolderNode extends HdfsFileSourceNode {
 				if (files) {
 					// Note: for now, assuming HDFS-provided sorting is sufficient
 					this.children = files.map((file) => {
-						let node: TreeNode = file.isDirectory ? new FolderNode(this.context, file.path, this.fileSource, Constants.MssqlClusterItems.Folder, this.getChildMountStatus(file))
-							: new FileNode(this.context, file.path, this.fileSource, this.getChildMountStatus(file));
+						let node: TreeNode = file.fileType === FileType.File ?
+							new FileNode(this.context, file.path, this.fileSource, this.getChildMountStatus(file)) :
+							new FolderNode(this.context, file.path, this.fileSource, Constants.MssqlClusterItems.Folder, this.getChildMountStatus(file));
 						node.parent = this;
 						return node;
 					});
 				}
 			} catch (error) {
-				this.children = [ErrorNode.create(localize('errorExpanding', 'Error: {0}', utils.getErrorMessage(error)), this, error.statusCode)];
+				this.children = [ErrorNode.create(localize('errorExpanding', "Error: {0}", utils.getErrorMessage(error)), this, error.statusCode)];
 			}
 		}
 		return this.children;
@@ -177,10 +136,6 @@ export class FolderNode extends HdfsFileSourceNode {
 			iconType: this.isMounted() ? 'Folder_mounted' : 'Folder'
 		};
 		return nodeInfo;
-	}
-
-	private isMounted(): boolean {
-		return this.mountStatus === MountStatus.Mount || this.mountStatus === MountStatus.Mount_Child;
 	}
 
 	private getSubType(): string | undefined {
@@ -240,7 +195,7 @@ export class ConnectionNode extends FolderNode {
 	}
 
 	public async delete(): Promise<void> {
-		throw new Error(localize('errDeleteConnectionNode', 'Cannot delete a connection. Only subfolders and files can be deleted.'));
+		throw new Error(localize('errDeleteConnectionNode', "Cannot delete a connection. Only subfolders and files can be deleted."));
 	}
 
 	async getTreeItem(): Promise<vscode.TreeItem> {
@@ -269,8 +224,8 @@ export class ConnectionNode extends FolderNode {
 
 export class FileNode extends HdfsFileSourceNode implements IFileNode {
 
-	constructor(context: TreeDataContext, path: string, fileSource: IFileSource, private mountStatus?: MountStatus) {
-		super(context, path, fileSource);
+	constructor(context: TreeDataContext, path: string, fileSource: IFileSource, mountStatus?: MountStatus) {
+		super(context, path, fileSource, mountStatus);
 	}
 
 	public onChildRemoved(): void {
@@ -303,7 +258,7 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 			nodeStatus: undefined,
 			nodeType: Constants.MssqlClusterItems.File,
 			nodeSubType: this.getSubType(),
-			iconType: 'FileGroupFile'
+			iconType: this.isMounted() ? 'FileGroupFile_mounted' : 'FileGroupFile'
 		};
 		return nodeInfo;
 	}
@@ -360,7 +315,7 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 	}
 }
 
-export class ErrorNode extends TreeNode {
+class ErrorNode extends TreeNode {
 	static messageNum: number = 0;
 
 	private _nodePathValue: string;

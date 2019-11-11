@@ -27,6 +27,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ConnectionWidget, AuthenticationType } from 'sql/workbench/services/connection/browser/connectionWidget';
+import { ILogService } from 'vs/platform/log/common/log';
 
 /**
  * Connection Widget clas for CMS Connections
@@ -48,10 +49,11 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		@ICapabilitiesService _capabilitiesService: ICapabilitiesService,
 		@IClipboardService _clipboardService: IClipboardService,
 		@IConfigurationService _configurationService: IConfigurationService,
-		@IAccountManagementService _accountManagementService: IAccountManagementService
+		@IAccountManagementService _accountManagementService: IAccountManagementService,
+		@ILogService _logService: ILogService,
 	) {
 		super(options, callbacks, providerName, _themeService, _contextViewService, _connectionManagementService, _capabilitiesService,
-			_clipboardService, _configurationService, _accountManagementService);
+			_clipboardService, _configurationService, _accountManagementService, _logService);
 		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		if (authTypeOption) {
 			if (OS === OperatingSystem.Windows) {
@@ -135,7 +137,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		}
 
 		DOM.addDisposableListener(container, 'paste', e => {
-			this._handleClipboard();
+			this._handleClipboard().catch(err => this._logService.error(`Unexpected error parsing clipboard contents for CMS Connection Dialog ${err}`));
 		});
 	}
 

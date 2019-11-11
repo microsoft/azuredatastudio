@@ -24,7 +24,7 @@ import { IExtensionManifest, IKeyBinding, IView, IViewContainer, ExtensionType }
 import { ResolvedKeybinding, KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput';
 import { IExtensionsWorkbenchService, IExtensionsViewlet, VIEWLET_ID, IExtension, ExtensionContainers } from 'vs/workbench/contrib/extensions/common/extensions';
-import { RatingsWidget, InstallCountWidget, RemoteBadgeWidget } from 'vs/workbench/contrib/extensions/browser/extensionsWidgets';
+import { /*RatingsWidget, InstallCountWidget,*/ RemoteBadgeWidget } from 'vs/workbench/contrib/extensions/browser/extensionsWidgets';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { CombinedInstallAction, UpdateAction, ExtensionEditorDropDownAction, ReloadAction, MaliciousStatusLabelAction, IgnoreExtensionRecommendationAction, UndoIgnoreExtensionRecommendationAction, EnableDropDownAction, DisableDropDownAction, StatusLabelAction, SetFileIconThemeAction, SetColorThemeAction, RemoteInstallAction, ExtensionToolTipAction, SystemDisabledWarningAction, LocalInstallAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
@@ -60,6 +60,7 @@ import { renderMarkdownDocument } from 'vs/workbench/contrib/markdown/common/mar
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { TokenizationRegistry } from 'vs/editor/common/modes';
 import { generateTokensCSSForColorMap } from 'vs/editor/common/modes/supports/tokenization';
+import { ExtensionsViewlet } from 'vs/workbench/contrib/extensions/browser/extensionsViewlet';
 
 function removeEmbeddedSVGs(documentContent: string): string {
 	const newDocument = new DOMParser().parseFromString(documentContent, 'text/html');
@@ -358,7 +359,7 @@ export class ExtensionEditor extends BaseEditor {
 		this.telemetryService.publicLog('extensionGallery:openExtension', assign(extension.telemetryData, recommendationsData));
 
 		toggleClass(template.name, 'clickable', !!extension.url);
-		toggleClass(template.publisher, 'clickable', !!extension.url);
+		toggleClass(template.publisher, 'clickable', !!extension.publisher); // {{SQL CARBON EDIT}} !!extension.url -> !!extension.publisher, for ADS we don't have marketplace website, but still want to make it clickable and filter extensions by publisher
 		toggleClass(template.rating, 'clickable', !!extension.url);
 		if (extension.url) {
 			this.transientDisposables.add(this.onClick(template.name, () => this.openerService.open(URI.parse(extension.url!))));
@@ -379,13 +380,20 @@ export class ExtensionEditor extends BaseEditor {
 			template.license.style.display = 'none';
 		}
 
-		// {{SQL CARBON EDIT}} add license url
-		if (extension.licenseUrl) {
-			template.license.onclick = finalHandler(() => window.open(extension.licenseUrl));
-			template.license.style.display = 'initial';
-		} else {
-			template.license.onclick = null;
-			template.license.style.display = 'none';
+		// {{SQL CARBON EDIT}}
+		// copied from the the extension.url condition block above
+		// for ADS the extension.url will be empty but we still want to make the publisher and license controls to be clickable
+		if (!extension.url) {
+			if (extension.licenseUrl) {
+				this.transientDisposables.add(this.onClick(template.license, () => this.openerService.open(URI.parse(extension.licenseUrl!))));
+				template.license.style.display = 'initial';
+			} else {
+				template.license.style.display = 'none';
+			}
+			this.transientDisposables.add(this.onClick(template.publisher, () => {
+				this.viewletService.openViewlet(VIEWLET_ID, true)
+					.then((viewlet: ExtensionsViewlet) => viewlet.search(`publisher:"${extension.publisherDisplayName}"`));
+			}));
 		}
 		// {{SQL CARBON EDIT}} - End
 
@@ -600,7 +608,6 @@ export class ExtensionEditor extends BaseEditor {
 			this.contentDisposables.add(webviewElement.onDidFocus(() => this.fireOnDidFocus()));
 			const removeLayoutParticipant = arrays.insert(this.layoutParticipants, {
 				layout: () => {
-					webviewElement.layout();
 					webviewElement.layoutWebviewOverElement(template.content);
 				}
 			});
@@ -867,7 +874,8 @@ export class ExtensionEditor extends BaseEditor {
 					this.renderViewContainers(content, manifest, layout),
 					this.renderViews(content, manifest, layout),
 					this.renderLocalizations(content, manifest, layout),
-					renderDashboardContributions(content, manifest, layout) // {{SQL CARBON EDIT}}
+					renderDashboardContributions(content, manifest, layout), // {{SQL CARBON EDIT}}
+					this.renderCustomEditors(content, manifest, layout),
 				];
 
 				scrollableContent.scanDomNode();
@@ -1060,6 +1068,31 @@ export class ExtensionEditor extends BaseEditor {
 			$('table', undefined,
 				$('tr', undefined, $('th', undefined, localize('localizations language id', "Language Id")), $('th', undefined, localize('localizations language name', "Language Name")), $('th', undefined, localize('localizations localized language name', "Language Name (Localized)"))),
 				...localizations.map(localization => $('tr', undefined, $('td', undefined, localization.languageId), $('td', undefined, localization.languageName || ''), $('td', undefined, localization.localizedLanguageName || '')))
+			)
+		);
+
+		append(container, details);
+		return true;
+	}
+
+	private renderCustomEditors(container: HTMLElement, manifest: IExtensionManifest, onDetailsToggle: Function): boolean {
+		const webviewEditors = (manifest.contributes && manifest.contributes.webviewEditors) || [];
+		if (!webviewEditors.length) {
+			return false;
+		}
+
+		const details = $('details', { open: true, ontoggle: onDetailsToggle },
+			$('summary', { tabindex: '0' }, localize('customEditors', "Custom Editors ({0})", webviewEditors.length)),
+			$('table', undefined,
+				$('tr', undefined,
+					$('th', undefined, localize('customEditors view type', "View Type")),
+					$('th', undefined, localize('customEditors priority', "Priority")),
+					$('th', undefined, localize('customEditors filenamePattern', "Filename Pattern"))),
+				...webviewEditors.map(webviewEditor =>
+					$('tr', undefined,
+						$('td', undefined, webviewEditor.viewType),
+						$('td', undefined, webviewEditor.priority),
+						$('td', undefined, arrays.coalesce(webviewEditor.selector.map(x => x.filenamePattern)).join(', '))))
 			)
 		);
 
@@ -1339,11 +1372,9 @@ export class ExtensionEditor extends BaseEditor {
 	private loadContents<T>(loadingTask: () => CacheResult<T>, template: IExtensionEditorTemplate): Promise<T> {
 		addClass(template.content, 'loading');
 
-		const result = loadingTask();
+		const result = this.contentDisposables.add(loadingTask());
 		const onDone = () => removeClass(template.content, 'loading');
 		result.promise.then(onDone, onDone);
-
-		this.contentDisposables.add(toDisposable(() => result.dispose()));
 
 		return result.promise;
 	}

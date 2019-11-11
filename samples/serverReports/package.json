@@ -381,10 +381,8 @@
 		"postinstall": "node ./node_modules/vscode/bin/install"
 	},
 	"dependencies": {
-		"fs": "0.0.1-security",
 		"fs-extra": "^8.1.0",
-		"generator-sqlops": "^0.10.4",
-		"handlebars": "^4.1.2",
+		"handlebars": "^4.3.0",
 		"openurl": "^1.1.1"
 	},
 	"devDependencies": {

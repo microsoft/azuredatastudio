@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import assert = require('assert');
+import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as fs from 'fs';

@@ -11,7 +11,7 @@ import * as dom from 'vs/base/browser/dom';
 import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy, Injectable } from '@angular/core';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/agentView.component';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { RunJobAction, StopJobAction, EditJobAction, JobsRefreshAction } from 'sql/platform/jobManagement/browser/jobActions';
 import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/browser/jobManagementUtilities';
@@ -33,6 +33,7 @@ import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardServi
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { find } from 'vs/base/common/arrays';
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
@@ -52,17 +53,15 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	private _treeFilter: JobHistoryFilter;
 
 	@ViewChild('table') private _tableContainer: ElementRef;
-	@ViewChild('jobsteps') private _jobStepsView: ElementRef;
 
 	@Input() public agentJobInfo: azdata.AgentJobInfo = undefined;
 	@Input() public agentJobHistories: azdata.AgentJobHistoryInfo[] = undefined;
 	public agentJobHistoryInfo: azdata.AgentJobHistoryInfo = undefined;
 
-	private _isVisible: boolean = false;
 	private _stepRows: JobStepsViewRow[] = [];
 	private _showSteps: boolean = undefined;
 	private _showPreviousRuns: boolean = undefined;
-	private _runStatus: string = undefined;
+	public _runStatus: string = undefined;
 	private _jobCacheObject: JobCacheObject;
 	private _agentJobInfo: azdata.AgentJobInfo;
 	private _noJobsAvailable: boolean = false;
@@ -200,10 +199,10 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		const self = this;
 		let cachedHistory = self._jobCacheObject.getJobHistory(element.jobID);
 		if (cachedHistory) {
-			self.agentJobHistoryInfo = cachedHistory.find(
+			self.agentJobHistoryInfo = find(cachedHistory,
 				history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
 		} else {
-			self.agentJobHistoryInfo = self._treeController.jobHistories.find(
+			self.agentJobHistoryInfo = find(self._treeController.jobHistories,
 				history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
 		}
 		if (self.agentJobHistoryInfo) {
@@ -267,7 +266,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		}
 	}
 
-	private toggleCollapse(): void {
+	public toggleCollapse(): void {
 		let arrow: HTMLElement = jQuery('.resultsViewCollapsible').get(0);
 		let checkbox: any = document.getElementById('accordion');
 		if (arrow.className === 'resultsViewCollapsible' && checkbox.checked === false) {
@@ -277,18 +276,8 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		}
 	}
 
-	private goToJobs(): void {
-		this._isVisible = false;
+	public goToJobs(): void {
 		this._agentViewComponent.showHistory = false;
-	}
-
-	private convertToJobHistoryRow(historyInfo: azdata.AgentJobHistoryInfo): JobHistoryRow {
-		let jobHistoryRow = new JobHistoryRow();
-		jobHistoryRow.runDate = this.formatTime(historyInfo.runDate);
-		jobHistoryRow.runStatus = JobManagementUtilities.convertToStatusString(historyInfo.runStatus);
-		jobHistoryRow.instanceID = historyInfo.instanceId;
-		jobHistoryRow.jobID = historyInfo.jobId;
-		return jobHistoryRow;
 	}
 
 	private formatTime(time: string): string {

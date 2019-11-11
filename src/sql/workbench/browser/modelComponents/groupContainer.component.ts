@@ -6,13 +6,14 @@ import 'vs/css!./media/groupLayout';
 
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
-	ViewChild, ElementRef, OnDestroy, AfterViewInit
+	ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
-import { GroupLayout } from 'azdata';
+import { GroupLayout, GroupContainerProperties } from 'azdata';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
+import { endsWith } from 'vs/base/common/strings';
 
 @Component({
 	selector: 'modelview-groupContainer',
@@ -37,15 +38,12 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 	@Input() modelStore: IModelStore;
 
 	private _containerLayout: GroupLayout;
-	private _collapsed: boolean;
-
-	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
 		super(changeRef, el);
-		this._collapsed = false;
+		this.collapsed = false;
 	}
 
 	ngOnInit(): void {
@@ -63,22 +61,30 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 
 	public setLayout(layout: GroupLayout): void {
 		this._containerLayout = layout;
-		this._collapsed = !!layout.collapsed;
+		this.collapsed = !!layout.collapsed;
 		this.layout();
 	}
 
+	public set collapsed(newValue: boolean) {
+		this.setPropertyFromUI<GroupContainerProperties, boolean>((properties, value) => { properties.collapsed = value; }, newValue);
+	}
+
+	public get collapsed(): boolean {
+		return this.getPropertyOrDefault<GroupContainerProperties, boolean>((props) => props.collapsed, false);
+	}
+
 	private hasHeader(): boolean {
-		return this._containerLayout && this._containerLayout && this._containerLayout.header !== undefined;
+		return this._containerLayout && this._containerLayout.header !== undefined;
 	}
 
 	private isCollapsible(): boolean {
 		return this.hasHeader() && this._containerLayout.collapsible === true;
 	}
 
-	private getContainerWidth(): string {
+	public getContainerWidth(): string {
 		if (this._containerLayout && this._containerLayout.width) {
 			let width: string = this._containerLayout.width.toString();
-			if (!width.endsWith('%') && !width.toLowerCase().endsWith('px')) {
+			if (!endsWith(width, '%') && !endsWith(width.toLowerCase(), 'px')) {
 				width = width + 'px';
 			}
 			return width;
@@ -87,22 +93,22 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 		}
 	}
 
-	private getContainerDisplayStyle(): string {
-		return !this.isCollapsible() || !this._collapsed ? 'block' : 'none';
+	public getContainerDisplayStyle(): string {
+		return !this.isCollapsible() || !this.collapsed ? 'block' : 'none';
 	}
 
-	private getHeaderClass(): string {
+	public getHeaderClass(): string {
 		if (this.isCollapsible()) {
-			let modifier = this._collapsed ? 'collapsed' : 'expanded';
+			let modifier = this.collapsed ? 'collapsed' : 'expanded';
 			return `modelview-group-header-collapsible ${modifier}`;
 		} else {
 			return 'modelview-group-header';
 		}
 	}
 
-	private changeState(): void {
+	public changeState(): void {
 		if (this.isCollapsible()) {
-			this._collapsed = !this._collapsed;
+			this.collapsed = !this.collapsed;
 			this._changeRef.detectChanges();
 		}
 	}

@@ -1,0 +1,80 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.dialogModal-body {
+	display: flex;
+	flex-direction: row;
+	height: 100%;
+	width: 100%;
+}
+
+.dialog-message-and-page-container {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1;
+	overflow: hidden;
+}
+
+.dialogModal-page-container {
+	flex: 1 1;
+	overflow: hidden;
+}
+
+.dialogModal-pane {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100%;
+	overflow-x: auto;
+	overflow-y: auto;
+}
+
+.dialogModal-hidden {
+	display: none;
+}
+
+.footer-button.dialogModal-hidden {
+	margin: 0;
+}
+
+.footer-button .validating {
+	background-size: 15px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.vs .footer-button .validating {
+	background-image: url("loading.svg");
+}
+
+.vs-dark .footer-button .validating,
+.hc-black .footer-button .validating {
+	background-image: url("loading_inverse.svg");
+}
+
+.dialogModal-wizardHeader {
+	padding: 10px 30px;
+}
+
+.dialogModal-wizardHeader h1 {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	font-size: 1.5em;
+	font-weight: bold;
+}
+
+.dialogContainer .dialogModal-wizardHeader h1.wizardPageNumber {
+	margin-block-start: 0px;
+	margin-block-end: 0px;
+	font-weight: normal;
+	font-size: 11px;
+}
+
+.dialogContainer {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+}

@@ -238,15 +238,9 @@ const sqlExtensions = [
 	'dacpac',
 	'schema-compare',
 	'cms',
-	'query-history'
+	'query-history',
+	'liveshare'
 ];
-
-// Make resource deployment and BDC extensions as built-in only in insiders
-if (process.env['VSCODE_QUALITY'] === 'stable') {
-	sqlExtensions.push('resource-deployment');
-	sqlExtensions.push('big-data-cluster');
-}
-
 
 interface IBuiltInExtension {
 	name: string;

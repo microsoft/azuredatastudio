@@ -19,7 +19,7 @@ import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBa
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { SimpleEditorProgressService } from 'vs/editor/standalone/browser/simpleServices';
-import { IProgressService } from 'vs/platform/progress/common/progress';
+import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { TextDiffEditor } from 'vs/workbench/browser/parts/editor/textDiffEditor';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { TextDiffEditorModel } from 'vs/workbench/common/editor/textDiffEditorModel';
@@ -47,7 +47,6 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 	private _languageMode: string;
 	private _isAutoResizable: boolean;
 	private _minimumHeight: number;
-	private _instancetiationService: IInstantiationService;
 	protected _title: string;
 
 	constructor(
@@ -70,7 +69,7 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 	}
 
 	private _createEditor(): void {
-		this._instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleEditorProgressService()]));
+		this._instantiationService = this._instantiationService.createChild(new ServiceCollection([IEditorProgressService, new SimpleEditorProgressService()]));
 		this._editor = this._instantiationService.createInstance(TextDiffEditor);
 		this._editor.reverseColoring();
 		this._editor.create(this._el.nativeElement);

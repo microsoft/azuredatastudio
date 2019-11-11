@@ -78,7 +78,7 @@ export class FileEditorTracker extends Disposable implements IWorkbenchContribut
 	}
 
 	private onConfigurationUpdated(configuration: IWorkbenchEditorConfiguration): void {
-		if (configuration.workbench && configuration.workbench.editor && typeof configuration.workbench.editor.closeOnFileDelete === 'boolean') {
+		if (typeof configuration.workbench?.editor?.closeOnFileDelete === 'boolean') {
 			this.closeOnFileDelete = configuration.workbench.editor.closeOnFileDelete;
 		} else {
 			this.closeOnFileDelete = false; // default
@@ -273,7 +273,7 @@ export class FileEditorTracker extends Disposable implements IWorkbenchContribut
 		const editors = this.editorService.visibleControls;
 
 		for (const editor of editors) {
-			if (editor && editor.input && editor.group === group) {
+			if (editor?.input && editor.group === group) {
 				const editorResource = editor.input.getResource();
 				if (editorResource && resource.toString() === editorResource.toString()) {
 					const control = editor.getControl();
@@ -328,7 +328,7 @@ export class FileEditorTracker extends Disposable implements IWorkbenchContribut
 			let isBinaryEditor = false;
 			if (editor instanceof SideBySideEditor) {
 				const masterEditor = editor.getMasterEditor();
-				isBinaryEditor = !!masterEditor && masterEditor.getId() === BINARY_FILE_EDITOR_ID;
+				isBinaryEditor = masterEditor?.getId() === BINARY_FILE_EDITOR_ID;
 			} else {
 				isBinaryEditor = editor.getId() === BINARY_FILE_EDITOR_ID;
 			}

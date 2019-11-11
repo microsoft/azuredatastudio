@@ -6,7 +6,7 @@
 import 'vs/css!./media/queryActions';
 import * as nls from 'vs/nls';
 import { Action, IActionViewItem, IActionRunner } from 'vs/base/common/actions';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -546,16 +546,12 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 		this.isSqlCmdMode ? this.updateCssClass(ToggleSqlCmdModeAction.DisableSqlcmdClass) : this.updateCssClass(ToggleSqlCmdModeAction.EnableSqlcmdClass);
 	}
 
-	private setSqlCmdModeFalse() {
-
-	}
-
 	public async run(): Promise<void> {
 		const toSqlCmdState = !this.isSqlCmdMode; // input.state change triggers event that changes this.isSqlCmdMode, so store it before using
 		this.editor.input.state.isSqlCmdMode = toSqlCmdState;
 
 		// set query options
-		let queryoptions: QueryExecutionOptions = { options: new Map<string, any>() };
+		let queryoptions: QueryExecutionOptions = { options: {} };
 		queryoptions.options['isSqlCmdMode'] = toSqlCmdState;
 		if (!this.editor.input) {
 			console.error('editor input was null');

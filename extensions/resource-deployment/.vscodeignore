@@ -1,4 +1,6 @@
-coverage/**
-out/test/**
-src/**
 coverageConfig.json
+coverage
+out
+src
+tsconfig.json
+yarn.lock

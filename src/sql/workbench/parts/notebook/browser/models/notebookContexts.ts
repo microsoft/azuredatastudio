@@ -11,6 +11,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { find } from 'vs/base/common/arrays';
 
 export class NotebookContexts {
 
@@ -49,7 +50,7 @@ export class NotebookContexts {
 	 * @param kernelChangedArgs kernel changed args (both old and new kernel info)
 	 * @param profile current connection profile
 	 */
-	public static async getContextsForKernel(connectionService: IConnectionManagementService, connProviderIds: string[], kernelChangedArgs?: nb.IKernelChangedArgs, profile?: IConnectionProfile): Promise<IDefaultConnection> {
+	public static getContextsForKernel(connectionService: IConnectionManagementService, connProviderIds: string[], kernelChangedArgs?: nb.IKernelChangedArgs, profile?: IConnectionProfile): IDefaultConnection {
 		let connections: IDefaultConnection = this.DefaultContext;
 		if (!profile) {
 			if (!kernelChangedArgs || !kernelChangedArgs.newValue ||
@@ -61,7 +62,7 @@ export class NotebookContexts {
 		if (kernelChangedArgs && kernelChangedArgs.newValue && kernelChangedArgs.newValue.name && connProviderIds.length < 1) {
 			return connections;
 		} else {
-			connections = await this.getActiveContexts(connectionService, connProviderIds, profile);
+			connections = this.getActiveContexts(connectionService, connProviderIds, profile);
 		}
 		return connections;
 	}
@@ -71,9 +72,9 @@ export class NotebookContexts {
 	 * @param apiWrapper ApiWrapper
 	 * @param profile current connection profile
 	 */
-	public static async getActiveContexts(connectionService: IConnectionManagementService, connProviderIds: string[], profile: IConnectionProfile): Promise<IDefaultConnection> {
+	public static getActiveContexts(connectionService: IConnectionManagementService, connProviderIds: string[], profile: IConnectionProfile): IDefaultConnection {
 		let defaultConnection: ConnectionProfile = NotebookContexts.DefaultContext.defaultConnection;
-		let activeConnections: ConnectionProfile[] = await connectionService.getActiveConnections();
+		let activeConnections: ConnectionProfile[] = connectionService.getActiveConnections();
 		if (activeConnections && activeConnections.length > 0) {
 			activeConnections = activeConnections.filter(conn => conn.id !== '-1');
 		}
@@ -88,13 +89,13 @@ export class NotebookContexts {
 		// Filter active connections by their provider ids to match kernel's supported connection providers
 		else if (activeConnections.length > 0) {
 			let connections = activeConnections.filter(connection => {
-				return connProviderIds.includes(connection.providerName);
+				return connProviderIds.some(x => x === connection.providerName);
 			});
 			if (connections && connections.length > 0) {
 				defaultConnection = connections[0];
 				if (profile && profile.options) {
-					if (connections.find(connection => connection.serverName === profile.serverName)) {
-						defaultConnection = connections.find(connection => connection.serverName === profile.serverName);
+					if (find(connections, connection => connection.serverName === profile.serverName)) {
+						defaultConnection = find(connections, connection => connection.serverName === profile.serverName);
 					}
 				}
 			} else if (connections.length === 0) {
@@ -128,11 +129,11 @@ export class NotebookContexts {
 		if (specs) {
 			// find the saved kernel (if it exists)
 			if (displayName) {
-				defaultKernel = specs.kernels.find((kernel) => kernel.display_name === displayName);
+				defaultKernel = find(specs.kernels, (kernel) => kernel.display_name === displayName);
 			}
 			// if no saved kernel exists, use the default KernelSpec
 			if (!defaultKernel) {
-				defaultKernel = specs.kernels.find((kernel) => kernel.name === specs.defaultKernel);
+				defaultKernel = find(specs.kernels, (kernel) => kernel.name === specs.defaultKernel);
 			}
 			if (defaultKernel) {
 				return defaultKernel;

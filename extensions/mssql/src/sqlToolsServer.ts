@@ -9,7 +9,6 @@ import * as Constants from './constants';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { getCommonLaunchArgsAndCleanupOldLogFiles } from './utils';
-import { localize } from './localize';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature } from './features';
@@ -21,7 +20,9 @@ import { DacFxService } from './dacfx/dacFxService';
 import { CmsService } from './cms/cmsService';
 import { CompletionExtensionParams, CompletionExtLoadRequest } from './contracts';
 import { promises as fs } from 'fs';
+import * as nls from 'vscode-nls';
 
+const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 

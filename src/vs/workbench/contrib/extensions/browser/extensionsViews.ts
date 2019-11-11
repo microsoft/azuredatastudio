@@ -34,7 +34,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { distinct, coalesce } from 'vs/base/common/arrays';
+import { distinct, coalesce, firstIndex } from 'vs/base/common/arrays';
 import { IExperimentService, IExperiment, ExperimentActionType } from 'vs/workbench/contrib/experiments/common/experimentService';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { IListContextMenuEvent } from 'vs/base/browser/ui/list/list';
@@ -653,8 +653,8 @@ export class ExtensionsListView extends ViewletPanel {
 
 						// sort the marketplace extensions
 						pager.firstPage.sort((a, b) => {
-							let isRecommendedA: boolean = recommmended.findIndex(ext => ext.extensionId === `${a.publisher}.${a.name}`) > -1;
-							let isRecommendedB: boolean = recommmended.findIndex(ext => ext.extensionId === `${b.publisher}.${b.name}`) > -1;
+							let isRecommendedA: boolean = firstIndex(recommmended, ext => ext.extensionId === `${a.publisher}.${a.name}`) > -1;
+							let isRecommendedB: boolean = firstIndex(recommmended, ext => ext.extensionId === `${b.publisher}.${b.name}`) > -1;
 
 							// sort recommeded extensions before other extensions
 							if (isRecommendedA !== isRecommendedB) {
@@ -686,7 +686,7 @@ export class ExtensionsListView extends ViewletPanel {
 						// filter out installed extensions and the extensions not in the recommended list
 						pager.firstPage = pager.firstPage.filter((p) => {
 							const extensionId = `${p.publisher}.${p.name}`;
-							return installedExtensions.indexOf(extensionId) === -1 && recommmended.findIndex(ext => ext.extensionId === extensionId) !== -1;
+							return installedExtensions.indexOf(extensionId) === -1 && firstIndex(recommmended, ext => ext.extensionId === extensionId) !== -1;
 						});
 						pager.total = pager.firstPage.length;
 						pager.pageSize = pager.firstPage.length;
@@ -787,10 +787,10 @@ export class ExtensionsListView extends ViewletPanel {
 				if (count === 0 && this.isBodyVisible()) {
 					if (error) {
 						if (error instanceof ExtensionListViewWarning) {
-							this.bodyTemplate.messageSeverityIcon.className = SeverityIcon.className(Severity.Warning);
+							this.bodyTemplate.messageSeverityIcon.className = `codicon ${SeverityIcon.className(Severity.Warning)}`;
 							this.bodyTemplate.messageBox.textContent = getErrorMessage(error);
 						} else {
-							this.bodyTemplate.messageSeverityIcon.className = SeverityIcon.className(Severity.Error);
+							this.bodyTemplate.messageSeverityIcon.className = `codicon ${SeverityIcon.className(Severity.Error)}`;
 							this.bodyTemplate.messageBox.textContent = localize('error', "Error while loading extensions. {0}", getErrorMessage(error));
 						}
 					} else {
@@ -961,7 +961,7 @@ export class ServerExtensionsView extends ExtensionsListView {
 	getActions(): IAction[] {
 		if (this.extensionManagementServerService.remoteExtensionManagementServer && this.extensionManagementServerService.localExtensionManagementServer === this.server) {
 			const installLocalExtensionsInRemoteAction = this._register(this.instantiationService.createInstance(InstallLocalExtensionsInRemoteAction));
-			installLocalExtensionsInRemoteAction.class = 'octicon octicon-cloud-download';
+			installLocalExtensionsInRemoteAction.class = 'codicon codicon-cloud-download';
 			return [installLocalExtensionsInRemoteAction];
 		}
 		return [];
@@ -1029,7 +1029,7 @@ export class DefaultRecommendedExtensionsView extends ExtensionsListView {
 }
 
 export class RecommendedExtensionsView extends ExtensionsListView {
-	private readonly recommendedExtensionsQuery = '@recommended';
+	// private readonly recommendedExtensionsQuery = '@recommended'; {{SQL CARBON EDIT}} no unused
 
 	renderBody(container: HTMLElement): void {
 		super.renderBody(container);
@@ -1060,11 +1060,11 @@ export class WorkspaceRecommendedExtensionsView extends ExtensionsListView {
 	getActions(): IAction[] {
 		if (!this.installAllAction) {
 			this.installAllAction = this._register(this.instantiationService.createInstance(InstallWorkspaceRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction.ID, InstallWorkspaceRecommendedExtensionsAction.LABEL, []));
-			this.installAllAction.class = 'octicon octicon-cloud-download';
+			this.installAllAction.class = 'codicon codicon-cloud-download';
 		}
 
 		const configureWorkspaceFolderAction = this._register(this.instantiationService.createInstance(ConfigureWorkspaceFolderRecommendedExtensionsAction, ConfigureWorkspaceFolderRecommendedExtensionsAction.ID, ConfigureWorkspaceFolderRecommendedExtensionsAction.LABEL));
-		configureWorkspaceFolderAction.class = 'octicon octicon-pencil';
+		configureWorkspaceFolderAction.class = 'codicon codicon-pencil';
 		return [this.installAllAction, configureWorkspaceFolderAction];
 	}
 

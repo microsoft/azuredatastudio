@@ -12,14 +12,16 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { Memento } from 'vs/workbench/common/memento';
 
 import AccountStore from 'sql/platform/accounts/common/accountStore';
-import { AccountDialogController } from 'sql/platform/accounts/browser/accountDialogController';
-import { AutoOAuthDialogController } from 'sql/platform/accounts/browser/autoOAuthDialogController';
+import { AccountDialogController } from 'sql/workbench/parts/accounts/browser/accountDialogController';
+import { AutoOAuthDialogController } from 'sql/workbench/parts/accounts/browser/autoOAuthDialogController';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { localize } from 'vs/nls';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
+import { firstIndex } from 'vs/base/common/arrays';
+import { values } from 'vs/base/common/collections';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -166,7 +168,7 @@ export class AccountManagementService implements IAccountManagementService {
 			}
 			if (result.accountModified) {
 				// Find the updated account and splice the updated on in
-				let indexToRemove: number = provider.accounts.findIndex(account => {
+				let indexToRemove: number = firstIndex(provider.accounts, account => {
 					return account.key.accountId === result.changedAccount.key.accountId;
 				});
 				if (indexToRemove >= 0) {
@@ -184,7 +186,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @returns Registered account providers
 	 */
 	public getAccountProviderMetadata(): Thenable<azdata.AccountProviderMetadata[]> {
-		return Promise.resolve(Object.values(this._providers).map(provider => provider.metadata));
+		return Promise.resolve(values(this._providers).map(provider => provider.metadata));
 	}
 
 	/**
@@ -241,7 +243,7 @@ export class AccountManagementService implements IAccountManagementService {
 						return result;
 					}
 
-					let indexToRemove: number = provider.accounts.findIndex(account => {
+					let indexToRemove: number = firstIndex(provider.accounts, account => {
 						return account.key.accountId === accountKey.accountId;
 					});
 
@@ -423,7 +425,7 @@ export class AccountManagementService implements IAccountManagementService {
 
 	private spliceModifiedAccount(provider: AccountProviderWithMetadata, modifiedAccount: azdata.Account) {
 		// Find the updated account and splice the updated one in
-		let indexToRemove: number = provider.accounts.findIndex(account => {
+		let indexToRemove: number = firstIndex(provider.accounts, account => {
 			return account.key.accountId === modifiedAccount.key.accountId;
 		});
 		if (indexToRemove >= 0) {

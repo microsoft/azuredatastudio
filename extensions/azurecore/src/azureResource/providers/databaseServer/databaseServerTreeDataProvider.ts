@@ -3,82 +3,62 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
-import { AzureResource, ExtensionNodeType } from 'azdata';
-import { TreeItem, TreeItemCollapsibleState, ExtensionContext } from 'vscode';
-import { TokenCredentials } from 'ms-rest';
+import { ExtensionNodeType, TreeItem } from 'azdata';
+import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { azureResource } from '../../azure-resource';
-import { IAzureResourceDatabaseServerService, IAzureResourceDatabaseServerNode } from './interfaces';
-import { AzureResourceDatabaseServer } from './models';
 import { AzureResourceItemType } from '../../../azureResource/constants';
 import { ApiWrapper } from '../../../apiWrapper';
 import { generateGuid } from '../../utils';
+import { IAzureResourceService, AzureResourceDatabaseServer } from '../../interfaces';
+import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
+import { azureResource } from '../../azure-resource';
 
-export class AzureResourceDatabaseServerTreeDataProvider implements azureResource.IAzureResourceTreeDataProvider {
+export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDataProviderBase<AzureResourceDatabaseServer> {
+	private static readonly containerId = 'azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainer';
+	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel', "SQL Servers");
+
 	public constructor(
-		databaseServerService: IAzureResourceDatabaseServerService,
+		databaseServerService: IAzureResourceService<AzureResourceDatabaseServer>,
 		apiWrapper: ApiWrapper,
-		extensionContext: ExtensionContext
+		private _extensionContext: ExtensionContext
 	) {
-		this._databaseServerService = databaseServerService;
-		this._apiWrapper = apiWrapper;
-		this._extensionContext = extensionContext;
+		super(databaseServerService, apiWrapper);
 	}
 
-	public getTreeItem(element: azureResource.IAzureResourceNode): TreeItem | Thenable<TreeItem> {
-		return element.treeItem;
+
+	protected getTreeItemForResource(databaseServer: AzureResourceDatabaseServer): TreeItem {
+		return {
+			id: `databaseServer_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
+			label: databaseServer.name,
+			iconPath: {
+				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
+				light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
+			},
+			collapsibleState: TreeItemCollapsibleState.Collapsed,
+			contextValue: AzureResourceItemType.databaseServer,
+			payload: {
+				id: generateGuid(),
+				connectionName: undefined,
+				serverName: databaseServer.fullName,
+				databaseName: databaseServer.defaultDatabaseName,
+				userName: databaseServer.loginName,
+				password: '',
+				authenticationType: 'SqlLogin',
+				savePassword: true,
+				groupFullName: '',
+				groupId: '',
+				providerName: 'MSSQL',
+				saveProfile: false,
+				options: {}
+			},
+			childProvider: 'MSSQL',
+			type: ExtensionNodeType.Server
+		};
 	}
 
-	public async getChildren(element?: azureResource.IAzureResourceNode): Promise<azureResource.IAzureResourceNode[]> {
-		if (!element) {
-			return [this.createContainerNode()];
-		}
-
-		const tokens = await this._apiWrapper.getSecurityToken(element.account, AzureResource.ResourceManagement);
-		const credential = new TokenCredentials(tokens[element.tenantId].token, tokens[element.tenantId].tokenType);
-
-		const databaseServers: AzureResourceDatabaseServer[] = (await this._databaseServerService.getDatabaseServers(element.subscription, credential)) || <AzureResourceDatabaseServer[]>[];
-
-		return databaseServers.map((databaseServer) => <IAzureResourceDatabaseServerNode>{
-			account: element.account,
-			subscription: element.subscription,
-			tenantId: element.tenantId,
-			databaseServer: databaseServer,
-			treeItem: {
-				id: `databaseServer_${databaseServer.name}`,
-				label: databaseServer.name,
-				iconPath: {
-					dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
-					light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
-				},
-				collapsibleState: TreeItemCollapsibleState.Collapsed,
-				contextValue: AzureResourceItemType.databaseServer,
-				payload: {
-					id: generateGuid(),
-					connectionName: undefined,
-					serverName: databaseServer.fullName,
-					databaseName: databaseServer.defaultDatabaseName,
-					userName: databaseServer.loginName,
-					password: '',
-					authenticationType: 'SqlLogin',
-					savePassword: true,
-					groupFullName: '',
-					groupId: '',
-					providerName: 'MSSQL',
-					saveProfile: false,
-					options: {}
-				},
-				childProvider: 'MSSQL',
-				type: ExtensionNodeType.Server
-			}
-		});
-	}
-
-	private createContainerNode(): azureResource.IAzureResourceNode {
+	protected createContainerNode(): azureResource.IAzureResourceNode {
 		return {
 			account: undefined,
 			subscription: undefined,
@@ -95,11 +75,4 @@ export class AzureResourceDatabaseServerTreeDataProvider implements azureResourc
 			}
 		};
 	}
-
-	private _databaseServerService: IAzureResourceDatabaseServerService = undefined;
-	private _apiWrapper: ApiWrapper = undefined;
-	private _extensionContext: ExtensionContext = undefined;
-
-	private static readonly containerId = 'azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel', 'SQL Servers');
 }

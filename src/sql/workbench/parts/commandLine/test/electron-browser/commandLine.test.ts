@@ -19,7 +19,7 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { TestCommandService } from 'vs/editor/test/browser/editorTestServices';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { assertThrowsAsync } from 'sqltest/utils/testUtils';
+import { assertThrowsAsync } from 'sql/base/test/common/async';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { TestEditorService, TestDialogService } from 'vs/workbench/test/workbenchTestServices';
 import { QueryInput, QueryEditorState } from 'sql/workbench/parts/query/common/queryInput';
@@ -29,6 +29,7 @@ import { TestConfigurationService } from 'vs/platform/configuration/test/common/
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
 class TestParsedArgs implements ParsedArgs {
 	[arg: string]: any;
@@ -233,7 +234,7 @@ suite('commandLineService tests', () => {
 		await contribution.processCommandLine(args);
 		connectionManagementService.verifyAll();
 		commandService.verifyAll();
-		should(capturedArgs).be.undefined();
+		assert(isUndefinedOrNull(capturedArgs));
 	});
 
 
@@ -269,8 +270,8 @@ suite('commandLineService tests', () => {
 		await contribution.processCommandLine(args);
 		connectionManagementService.verifyAll();
 		commandService.verifyAll();
-		should(actualProfile).not.be.undefined();
-		should(actualProfile.connectionProfile.serverName).equal(args.server);
+		assert(!isUndefinedOrNull(actualProfile));
+		assert.equal(actualProfile.connectionProfile.serverName, args.server);
 
 	});
 
@@ -525,10 +526,8 @@ suite('commandLineService tests', () => {
 			connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 			connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
 			connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
-			let originalProfile: IConnectionProfile = undefined;
 			connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.sqlLogin), 'connection', true))
 				.returns((conn) => {
-					originalProfile = conn;
 					return Promise.resolve('unused');
 				})
 				.verifiable(TypeMoq.Times.once());

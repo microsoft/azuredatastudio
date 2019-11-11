@@ -48,6 +48,8 @@ import { CollapseAllAction } from 'vs/base/browser/ui/tree/treeDefaults';
 import { ITreeItem, ITreeView } from 'sql/workbench/common/views';
 import { IOEShimService } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerViewTreeShim';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/browser/nodeContext';
+import { UserCancelledConnectionError } from 'sql/base/common/errors';
+import { firstIndex } from 'vs/base/common/arrays';
 
 export class CustomTreeViewPanel extends ViewletPanel {
 
@@ -700,6 +702,9 @@ class TreeDataSource implements IAsyncDataSource<ITreeItem, ITreeItem> {
 				// So in order to enable this we need to tell the tree to refresh this node so it will ask us for the data again
 				setTimeout(() => {
 					this.treeView.collapse(node);
+					if (e instanceof UserCancelledConnectionError) {
+						return;
+					}
 					this.treeView.refresh([node]);
 				});
 				return [];
@@ -943,7 +948,7 @@ class TreeMenus extends Disposable implements IDisposable {
 	}
 
 	private mergeActions(actions: IAction[][]): IAction[] {
-		return actions.reduce((p, c) => p.concat(...c.filter(a => p.findIndex(x => x.id === a.id) === -1)), [] as IAction[]);
+		return actions.reduce((p, c) => p.concat(...c.filter(a => firstIndex(p, x => x.id === a.id) === -1)), [] as IAction[]);
 	}
 
 	private getActions(menuId: MenuId, context: { key: string, value: string }): { primary: IAction[]; secondary: IAction[]; } {
