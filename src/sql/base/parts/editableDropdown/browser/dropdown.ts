@@ -22,6 +22,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export interface IDropdownOptions extends IDropdownStyles {
 	/**
@@ -260,7 +261,7 @@ export class Dropdown extends Disposable {
 			this._treeContainer.style.height = height + 'px';
 			this._treeContainer.style.width = DOM.getContentWidth(this._inputContainer) - 2 + 'px';
 			this._tree.layout(parseInt(this._treeContainer.style.height));
-			this._tree.refresh();
+			this._tree.refresh().catch(onUnexpectedError);
 		}
 	}
 
@@ -272,7 +273,7 @@ export class Dropdown extends Disposable {
 			this._treeContainer.style.height = height + 'px';
 			this._treeContainer.style.width = DOM.getContentWidth(this._inputContainer) - 2 + 'px';
 			this._tree.layout(parseInt(this._treeContainer.style.height));
-			this._tree.setInput(new DropdownModel());
+			this._tree.setInput(new DropdownModel()).catch(onUnexpectedError);
 			this._input.validate();
 		}
 	}
