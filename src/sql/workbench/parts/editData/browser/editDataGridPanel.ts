@@ -9,7 +9,6 @@ import 'vs/css!./media/editData';
 //import { VirtualizedCollection } from 'angular2-slickgrid';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { DataService } from 'sql/workbench/parts/grid/common/dataService';
 
 import { IGridDataSet } from 'sql/workbench/parts/grid/common/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
@@ -481,10 +480,11 @@ export class EditDataGridPanel extends GridParentComponent {
 					if (self.placeHolderDataSets.length > 0) {
 						let dataSet = self.placeHolderDataSets[0];
 						if (dataSet.columnDefinitions) {
-							console.log(dataSet.dataRows.at(0));
 							let t = new Table(self.nativeElement, { dataProvider: new AsyncDataProvider(dataSet.dataRows), columns: dataSet.columnDefinitions }, { showRowNumber: true });
 							self._tables[0] = t;
 							self.createNewTable();
+
+
 							// self._tables[0] = new Table(
 							// 	self.nativeElement,
 							// 	{ dataProvider: dataSet.dataRows, columns: dataSet.columnDefinition },
