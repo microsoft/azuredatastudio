@@ -31,7 +31,7 @@ export class ConnectionProfile implements ConnectionShape {
 	public readonly providerName: string;
 	public readonly options?: { readonly [name: string]: boolean | string | number };
 	public readonly authenticationType: string;
-	public readonly connectionName: string;
+	public readonly connectionName?: string;
 
 	protected constructor(shape: ConnectionShape) {
 		this.databaseName = shape.databaseName;
@@ -80,7 +80,7 @@ class _ConnectionProfile extends ConnectionProfile {
 
 export interface ConnectionShape {
 	providerName: string;
-	connectionName: string;
+	connectionName?: string;
 	serverName: string;
 	databaseName?: string;
 	userName?: string;

@@ -11,9 +11,15 @@ import { NullLogService } from 'vs/platform/log/common/log';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { find } from 'vs/base/common/arrays';
 import { Connection } from 'sql/base/common/connection';
+import { ConnectionProfile, ConnectionShape } from 'sql/base/common/connectionProfile';
 
 const storedGroup1 = { id: 'asdasd', name: 'name' };
 const group1 = new ConnectionGroup(storedGroup1.name, storedGroup1.id);
+
+const storedConnection1 = { id: 'asdasdasd', providerName: 'mssql', groupId: storedGroup1.id };
+const shape1: ConnectionShape = { serverName: 'server1', databaseName: 'database1', providerName: 'mssql', authenticationType: 'password' };
+const profile1 = ConnectionProfile.from(shape1);
+const connection1 = new Connection(profile1, undefined, storedConnection1.id, storedConnection1.groupId);
 
 suite('Connection Config', () => {
 	let configurationService: TestConfigurationService;
@@ -27,7 +33,14 @@ suite('Connection Config', () => {
 	});
 
 	test('gets connections', () => {
+		configurationService.updateValue('datasource.connectionGroups', [storedGroup1]);
+		configurationService.updateValue('datasource.connections', [storedConnection1]);
+		const connectionConfig = new ConnectionConfig(configurationService, capabilitiesService, logService);
 
+		const connections = connectionConfig.connections;
+		assert(connections.length === 1);
+		const connection = connections[0];
+		assert(connectionsMatch(connection, connection1));
 	});
 
 	test('gets groups', () => {
@@ -37,11 +50,15 @@ suite('Connection Config', () => {
 		const groups = connectionConfig.groups;
 		assert(groups.length === 1);
 		const group = groups[0];
-		assert(groupMatches(group, group1));
+		assert(groupsMatch(group, group1));
 	});
 });
 
-function groupMatches(group1: ConnectionGroup, group2: ConnectionGroup, includeChildren: boolean = false): boolean {
+function connectionsMatch(connection1: Connection, connection2: Connection): boolean {
+	return connection1.profile.matches(connection2.profile) && connection1.id === connection2.id && connection1.groupId === connection2.groupId;
+}
+
+function groupsMatch(group1: ConnectionGroup, group2: ConnectionGroup, includeChildren: boolean = false): boolean {
 	if (includeChildren) {
 		if (group1.children.length === group2.children.length) {
 			for (const child of group1.children) {
@@ -50,14 +67,11 @@ function groupMatches(group1: ConnectionGroup, group2: ConnectionGroup, includeC
 					return false;
 				}
 				if (child instanceof Connection) {
-					if (!child.profile.matches((child2 as Connection).profile)) {
-						return false;
-					}
-					if (child.groupId !== (child2 as Connection).groupId) {
+					if (!connectionsMatch(child, child2 as Connection)) {
 						return false;
 					}
 				} else {
-					if (!groupMatches(child, child2 as ConnectionGroup, includeChildren)) {
+					if (!groupsMatch(child, child2 as ConnectionGroup, includeChildren)) {
 						return false;
 					}
 				}
