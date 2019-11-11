@@ -210,7 +210,13 @@ export class NullAdsTelemetryService implements IAdsTelemetryService {
 	}
 
 	setEnabled(value: boolean): void { }
-	getTelemetryInfo(): Promise<ITelemetryInfo> { return undefined; }
+	getTelemetryInfo(): Promise<ITelemetryInfo> {
+		return Promise.resolve({
+			sessionId: '',
+			machineId: '',
+			instanceId: ''
+		});
+	}
 	createViewEvent(view: string): ITelemetryEvent { return new NullTelemetryEventImpl(); }
 	sendViewEvent(view: string): void { }
 	createActionEvent(view: string, action: string, target?: string, source?: string, durationInMs?: number): ITelemetryEvent { return new NullTelemetryEventImpl(); }
