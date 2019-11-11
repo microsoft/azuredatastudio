@@ -22,7 +22,7 @@ export abstract class AbstractEnablePreviewFeatures implements IWorkbenchContrib
 		@IConfigurationService private readonly configurationService: IConfigurationService
 	) { }
 
-	protected async handlePreviewFeatures(): Promise<void> {
+	protected handlePreviewFeatures(): void {
 		let previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (previewFeaturesEnabled || this.storageService.get(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, StorageScope.GLOBAL)) {
 			return;
@@ -30,11 +30,11 @@ export abstract class AbstractEnablePreviewFeatures implements IWorkbenchContrib
 		Promise.all([
 			this.hostService.hasFocus,
 			this.getWindowCount()
-		]).then(([focused, count]) => {
+		]).then(async ([focused, count]) => {
 			if (!focused && count > 1) {
 				return null;
 			}
-			this.configurationService.updateValue('workbench.enablePreviewFeatures', false);
+			await this.configurationService.updateValue('workbench.enablePreviewFeatures', false);
 
 			const enablePreviewFeaturesNotice = localize('enablePreviewFeatures.notice', "Preview features are required in order for extensions to be fully supported and for some actions to be available.  Would you like to enable preview features?");
 			this.notificationService.prompt(
@@ -43,25 +43,24 @@ export abstract class AbstractEnablePreviewFeatures implements IWorkbenchContrib
 				[{
 					label: localize('enablePreviewFeatures.yes', "Yes"),
 					run: () => {
-						this.configurationService.updateValue('workbench.enablePreviewFeatures', true);
+						this.configurationService.updateValue('workbench.enablePreviewFeatures', true).catch(e => onUnexpectedError(e));
 						this.storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL);
 					}
 				}, {
 					label: localize('enablePreviewFeatures.no', "No"),
 					run: () => {
-						this.configurationService.updateValue('workbench.enablePreviewFeatures', false);
+						this.configurationService.updateValue('workbench.enablePreviewFeatures', false).catch(e => onUnexpectedError(e));
 					}
 				}, {
 					label: localize('enablePreviewFeatures.never', "No, don't show again"),
 					run: () => {
-						this.configurationService.updateValue('workbench.enablePreviewFeatures', false);
+						this.configurationService.updateValue('workbench.enablePreviewFeatures', false).catch(e => onUnexpectedError(e));
 						this.storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL);
 					},
 					isSecondary: true
 				}]
 			);
-		})
-			.then(null, onUnexpectedError);
+		}).catch(e => onUnexpectedError(e));
 	}
 
 	protected abstract getWindowCount(): Promise<number>;
