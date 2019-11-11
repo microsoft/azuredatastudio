@@ -5,9 +5,8 @@
 
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
-import * as nls from 'vs/nls';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { find, firstIndex, coalesce } from 'vs/base/common/arrays';
+import { find, coalesce, firstIndex } from 'vs/base/common/arrays';
 import { Connection, ConnectionState } from 'sql/base/common/connection';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { ConnectionGroup } from 'sql/base/common/connectionGroup';
@@ -15,6 +14,8 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { isUndefined } from 'vs/base/common/types';
 import { createMemoizer } from 'vs/base/common/decorators';
 import { deepClone } from 'vs/base/common/objects';
+import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 
 const GROUPS_CONFIG_KEY = 'datasource.connectionGroups';
 const CONNECTIONS_CONFIG_KEY = 'datasource.connections';
@@ -35,10 +36,20 @@ interface StoredGroup {
 	description?: string;
 }
 
+export const IConnectionConfig = createDecorator<IConnectionConfig>('connectionConfig');
+export interface IConnectionConfig {
+	readonly groups: ReadonlyArray<ConnectionGroup>;
+	readonly connections: ReadonlyArray<Connection>;
+	addGroup(group: ConnectionGroup): Promise<void>;
+	addConnection(connection: Connection): Promise<void>;
+	deleteGroup(group: ConnectionGroup): Promise<void>;
+	deleteConnection(connection: Connection): Promise<void>;
+}
+
 /**
  * Implements connection profile file storage.
  */
-export class ConnectionConfig extends Disposable {
+export class ConnectionConfig extends Disposable implements IConnectionConfig {
 
 	private static readonly CONNECTION_CONFIG_MEMOIZE = createMemoizer();
 
@@ -68,7 +79,7 @@ export class ConnectionConfig extends Disposable {
 		for (const group of groups) {
 			const existing = this.findInTree<ConnectionGroup>(i => i.id === group.id);
 			if (existing) {
-
+				//TODO
 			} else if (group.parent) {
 				const existingParent = this.findInTree<ConnectionGroup>(i => i.id === group.parent);
 				if (existingParent) {
@@ -93,19 +104,21 @@ export class ConnectionConfig extends Disposable {
 			}
 		}
 
+		// at this point we should have all the groups we need to add connections to
+		if (toBeAdded.size > 0) {
+			this.logService.error('There are hanging groups in the settings with invalid parent groups');
+		}
+
 		for (const connection of connections) {
 			const existing = this.findInTree<Connection>(i => i.id === connection.id);
 			if (existing) {
-
+				//TODO
 			} else if (connection.groupId) {
 				const existingParent = this.findInTree<ConnectionGroup>(i => i.id === connection.groupId);
 				if (existingParent) {
 					existingParent.add(connection);
 				} else {
-					if (!toBeAdded.has(connection.groupId)) {
-						toBeAdded.set(connection.groupId, new Set<Connection | ConnectionGroup>());
-					}
-					toBeAdded.get(connection.groupId).add(connection);
+					this.logService.error(`Group for connection ${connection.id} is missing`);
 				}
 			} else {
 				// new group and a top level group
@@ -166,105 +179,105 @@ export class ConnectionConfig extends Disposable {
 	 * Add a new connection to the connection config.
 	 */
 	public async addConnection(connection: Connection): Promise<void> {
-		const groupId = await this.addGroupFromProfile(profile);
-		const profiles = this.configurationService.inspect<StoredConnection[]>(CONNECTIONS_CONFIG_KEY).user || [];
-		const newProfile = profileToStore(connectionProfile);
+		const connections = this.configurationService.inspect<StoredConnection[]>(CONNECTIONS_CONFIG_KEY).user || [];
+		const newConnection = connectionToStore(connection, this.capabilitiesService);
 
-		// Remove the profile if already set
-		const indexInProfiles = firstIndex(profiles, value => storeToProfile(value, this.capabilitiesService).matches(connectionProfile));
-		if (indexInProfiles >= 0) {
-			const sameProfile = profiles[indexInProfiles];
-			newProfile.id = sameProfile.id;
-			connectionProfile.id = sameProfile.id;
-			profiles[indexInProfiles] = newProfile;
-		} else {
-			profiles.push(newProfile);
+		if (find(connections, p => p.id === newConnection.id)) {
+			throw new Error('Connection already exists in config');
 		}
 
-		this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, ConfigurationTarget.USER).then(() => connectionProfile);
+		connections.push(newConnection);
+
+		await this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, connections, ConfigurationTarget.USER);
 	}
 
 	/**
 	 *Returns group id
 	 */
-	public addGroup(profileGroup: ConnectionGroup): Promise<string> {
-		if (profileGroup.id) {
-			return Promise.resolve(profileGroup.id);
-		} else {
-			let groups = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).user;
-			let sameNameGroup = groups ? find(groups, group => group.name === profileGroup.name) : undefined;
-			if (sameNameGroup) {
-				let errMessage: string = nls.localize('invalidServerName', "A server group with the same name already exists.");
-				return Promise.reject(errMessage);
-			} else {
-				let result = this.saveGroup(groups, profileGroup.name, profileGroup.color, profileGroup.description);
-				groups = result.groups;
+	public async addGroup(group: ConnectionGroup): Promise<void> {
+		const groups = this.configurationService.inspect<StoredGroup[]>(GROUPS_CONFIG_KEY).user || [];
+		const newGroup = groupToStore(group);
 
-				return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER).then(() => result.newGroupId!);
-			}
+		if (find(groups, p => p.id === newGroup.id)) {
+			throw new Error('Connection group already existing in config');
 		}
-	}
 
-	private getConnectionsForTarget(configTarget: ConfigurationTarget.USER | ConfigurationTarget.WORKSPACE): StoredConnection[] {
-		const configs = this.configurationService.inspect<StoredConnection[]>(CONNECTIONS_CONFIG_KEY);
-		switch (configTarget) {
-			case ConfigurationTarget.USER:
-				return configs.user || [];
-			case ConfigurationTarget.WORKSPACE:
-				return configs.workspace || [];
-		}
-	}
+		groups.push(newGroup);
 
-	private getConnectionGroupsForTarget(configTarget: ConfigurationTarget.USER | ConfigurationTarget.WORKSPACE): StoredGroup[] {
-		const configs = this.configurationService.inspect<StoredGroup[]>(CONNECTIONS_CONFIG_KEY);
-		switch (configTarget) {
-			case ConfigurationTarget.USER:
-				return configs.user || [];
-			case ConfigurationTarget.WORKSPACE:
-				return configs.workspace || [];
-		}
+		await this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER);
 	}
 
 	/**
 	 * Delete a connection profile from settings.
 	 */
-	public deleteConnection(connection: Connection): Promise<void> {
-		// Get all connections in the settings
-		let profiles = this.getConnectionsForTarget(ConfigurationTarget.USER);
-		// Remove the profile from the connections
-		profiles = profiles.filter(v => v.id !== connection.id);
+	public async deleteConnection(connection: Connection): Promise<void> {
+		const connections = this.configurationService.inspect<StoredConnection[]>(CONNECTIONS_CONFIG_KEY).user || [];
+		const newConnections = connections.filter(v => v.id !== connection.id);
 
-		// Write connections back to settings
-		return this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, ConfigurationTarget.USER);
+		if (connection.groupId) {
+			const parent = this.findInTree<ConnectionGroup>(i => i.id === connection.groupId);
+			if (parent) {
+				parent.remove(connection);
+			}
+		} else {
+			const deleted = this._rootItems.delete(connection);
+			if (!deleted) {
+				throw new Error('connection didnt originate from connection config');
+			}
+			ConnectionConfig.CONNECTION_CONFIG_MEMOIZE.clear();
+		}
+
+		if (connections.length === newConnections.length) {
+			this.logService.warn('Delete connection didnt result in any changes, not updating settings');
+		} else {
+			// Write connections back to settings
+			await this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, newConnections, ConfigurationTarget.USER);
+		}
 	}
 
 	/**
 	 *  Delete a group and all its child connections and groups from settings.
 	 * 	Fails if writing to settings fails.
 	 */
-	public deleteGroup(group: ConnectionGroup): Promise<void> {
-		let connections = ConnectionGroup.getConnectionsInGroup(group);
-		let subgroups = ConnectionGroup.getSubgroups(group);
-		// Add selected group to subgroups list
-		subgroups.push(group);
-		// Get all connections in the settings
-		let profiles = this.getConnectionsForTarget(ConfigurationTarget.USER);
-		// Remove the profiles from the connections
-		profiles = profiles.filter(value => {
-			const providerConnectionProfile = storeToProfile(value, this.capabilitiesService);
-			return !connections.some((val) => val.getOptionsKey() === providerConnectionProfile.getOptionsKey());
-		});
+	public deleteGroup(group: ConnectionGroup, deleteChildren: boolean = true): Promise<void> {
+		const connections = this.configurationService.inspect<StoredConnection[]>(CONNECTIONS_CONFIG_KEY).user || [];
+		const groups = this.configurationService.inspect<StoredGroup[]>(GROUPS_CONFIG_KEY).user || [];
 
-		// Get all groups in the settings
-		let groups = this.getConnectionGroupsForTarget(ConfigurationTarget.USER);
-		// Remove subgroups in the settings
-		groups = groups.filter((grp) => {
-			return !subgroups.some((item) => item.id === grp.id);
-		});
-		return Promise.all([
-			this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, ConfigurationTarget.USER),
-			this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER)
-		]).then(() => Promise.resolve());
+		if (deleteChildren) {
+			const deleteChildren = (group: ConnectionGroup): void => {
+				for (const child of group.children) {
+					if (child instanceof ConnectionGroup) {
+						deleteChildren(child);
+						group.remove(child);
+						const deleteIndex = firstIndex(groups, g => g.id === child.id);
+						groups.splice(deleteIndex, 1);
+					} else {
+						group.remove(child);
+						const deleteIndex = firstIndex(groups, g => g.id === child.id);
+						connections.splice(deleteIndex, 1);
+					}
+				}
+			};
+
+			deleteChildren(group);
+		}
+
+		if (group.parent) {
+			const parent = this.findInTree<ConnectionGroup>(i => i.id === group.parent);
+			if (parent) {
+				parent.remove(group);
+			}
+		} else {
+			this._rootItems.delete(group);
+			ConnectionConfig.CONNECTION_CONFIG_MEMOIZE.clear();
+		}
+		const deleteIndex = firstIndex(groups, g => g.id === group.id);
+		groups.splice(deleteIndex, 1);
+
+		const updateConnections = this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, connections, ConfigurationTarget.USER);
+		const updateGroups = this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER);
+
+		return Promise.all([updateConnections, updateGroups]).then();
 	}
 }
 
@@ -289,11 +302,24 @@ function storeToGroup(store: StoredGroup): ConnectionGroup {
 }
 
 function groupToStore(group: ConnectionGroup): StoredGroup {
-	return {
+	const obj: StoredGroup = {
 		id: group.id,
-		name: group.name,
-		color: group.color,
-		description: group.description,
-		parentId: group.parent
+		name: group.name
 	};
+
+	if (group.color) {
+		obj.color = group.color;
+	}
+
+	if (group.description) {
+		obj.description = group.description;
+	}
+
+	if (group.parent) {
+		obj.parentId = group.parent;
+	}
+
+	return obj;
 }
+
+registerSingleton(IConnectionConfig, ConnectionConfig, true);

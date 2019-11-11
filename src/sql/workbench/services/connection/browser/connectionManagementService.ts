@@ -15,6 +15,8 @@ import * as platform from 'vs/platform/registry/common/platform';
 import { entries } from 'sql/base/common/collections';
 import { assign } from 'vs/base/common/objects';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
 
 const defaultConnectOptions: ConnectOptions = {
 	saveToConfig: false,
@@ -31,13 +33,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	_serviceBrand: undefined;
 
 	private _providers = new Map<string, { readonly onReady: Promise<IConnectionProvider>, readonly properties: ConnectionProviderProperties }>();
-
-	/*private readonly connectionStore = this.instantiationService.createInstance(ConnectionStore);
-	private readonly connectionStatusManager = this.instantiationService.createInstance(ConnectionStatusManager);*/
+	private connectionStatusManager = this.instantiationService.createInstance(ConnectionStatusManager);
 
 	constructor(
-		// @IInstantiationService private readonly instantiationService: IInstantiationService
-		@ILogService private readonly logService: ILogService
+		@ILogService private readonly logService: ILogService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super();
 
@@ -67,8 +67,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this.tryConnect(connection, assign(options, defaultConnectOptions) as InternalConnectOptions);
 	}
 
-	public findExistingConnection(connection: ConnectionProfile): IConnection | undefined {
-		throw new errors.NotImplementedError();
+	public findExistingConnection(profile: ConnectionProfile): IConnection | undefined {
+		return this.connectionStatusManager.findConnectionWithProfile(profile);
 	}
 
 	private async tryConnect(connection: ConnectionProfile, options: InternalConnectOptions): Promise<IConnection> {

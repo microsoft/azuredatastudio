@@ -6,6 +6,7 @@
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Emitter } from 'vs/base/common/event';
+import { NotImplementedError } from 'vs/base/common/errors';
 
 export enum ConnectionState {
 	connected,
@@ -34,5 +35,13 @@ export class Connection {
 
 	public updateState(val: ConnectionState): void {
 		this._state = val;
+	}
+
+	public disconnect(): Promise<void> {
+		throw new NotImplementedError();
+	}
+
+	public cancel(): Promise<void> {
+		throw new NotImplementedError();
 	}
 }

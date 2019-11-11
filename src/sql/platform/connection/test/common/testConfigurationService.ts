@@ -3,7 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { getConfigurationKeys, IConfigurationOverrides, IConfigurationService, getConfigurationValue, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
+import { getConfigurationKeys, IConfigurationOverrides, IConfigurationService, getConfigurationValue, ConfigurationTarget, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
+import { Emitter, Event } from 'vs/base/common/event';
+import { ConfigurationChangeEvent } from 'vs/platform/configuration/common/configurationModels';
 
 export class TestConfigurationService implements IConfigurationService {
 	public _serviceBrand: undefined;
@@ -35,12 +37,22 @@ export class TestConfigurationService implements IConfigurationService {
 				targetObject = targetObject[keyArray[i]];
 			}
 		}
+		this._onDidChangeConfiguration.fire(new ConfigurationChangeEvent().change([key]).telemetryData(target, this.getTargetConfiguration(target)));
 		return Promise.resolve(void 0);
 	}
 
-	public onDidChangeConfiguration() {
-		return { dispose() { } };
+	private getTargetConfiguration(target: ConfigurationTarget): any {
+		switch (target) {
+			case ConfigurationTarget.DEFAULT:
+				return this.configuration.workspace;
+			case ConfigurationTarget.USER:
+				return this.configuration.user;
+		}
+		return {};
 	}
+
+	private readonly _onDidChangeConfiguration: Emitter<IConfigurationChangeEvent> = new Emitter<IConfigurationChangeEvent>();
+	readonly onDidChangeConfiguration: Event<IConfigurationChangeEvent> = this._onDidChangeConfiguration.event;
 
 	public inspect<T>(key: string, overrides?: IConfigurationOverrides): {
 		default: T,

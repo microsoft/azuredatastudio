@@ -198,8 +198,20 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		};
 	}
 
-	createOptionsFromConnectionShape(shape: ConnectionShape): { [key: string]: string | number | boolean; } {
-		throw new Error('Method not implemented.');
+	createOptionsFromConnectionShape(shape: ConnectionShape): { [key: string]: any; } | undefined {
+		const provider = this._providers.get(shape.providerName);
+		if (!provider) {
+			return undefined;
+		}
+		const connectionOptions = provider.connection.connectionOptions;
+		const options = Object.create(null);
+		assignSpecialValue(options, ConnectionOptionSpecialType.serverName, connectionOptions, shape.serverName);
+		assignSpecialValue(options, ConnectionOptionSpecialType.databaseName, connectionOptions, shape.databaseName);
+		assignSpecialValue(options, ConnectionOptionSpecialType.userName, connectionOptions, shape.userName);
+		assignSpecialValue(options, ConnectionOptionSpecialType.password, connectionOptions, shape.password);
+		assignSpecialValue(options, ConnectionOptionSpecialType.authType, connectionOptions, shape.authenticationType);
+		assignSpecialValue(options, ConnectionOptionSpecialType.connectionName, connectionOptions, shape.connectionName);
+		return options;
 	}
 }
 
@@ -211,4 +223,15 @@ function filterOutFromOptions(options: { [key: string]: any; }, type: Connection
 	const value = options[key.name];
 	delete options[key.name];
 	return value;
+}
+
+/**
+ * In place assigns the key for the type with the value provided and returns the object
+ */
+function assignSpecialValue(options: { [key: string]: any; }, type: ConnectionOptionSpecialType, connectionOptions: azdata.ConnectionOption[], value: any): { [key: string]: any; } {
+	const key = find(connectionOptions, o => o.specialValueType === type);
+	if (key && value) {
+		options[key.name] = value;
+	}
+	return options;
 }

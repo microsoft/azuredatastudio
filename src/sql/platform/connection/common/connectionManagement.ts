@@ -42,6 +42,7 @@ export interface IConnectionGroup {
 	readonly children: Array<IConnectionGroup | IConnection>;
 	readonly color?: string;
 	readonly description?: string;
+	readonly onChange: Event<void>;
 }
 
 export interface IConnectionProvider {

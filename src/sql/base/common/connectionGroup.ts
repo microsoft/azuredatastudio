@@ -4,8 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Connection } from 'sql/base/common/connection';
+import { Emitter } from 'vs/base/common/event';
 
 export class ConnectionGroup {
+
+	private _onChange = new Emitter<void>();
+	public readonly onChange = this._onChange.event;
 
 	private _children: Set<Connection | ConnectionGroup> = new Set<Connection | ConnectionGroup>();
 	public get children(): Array<Connection | ConnectionGroup> {
@@ -40,7 +44,16 @@ export class ConnectionGroup {
 		private _description?: string
 	) { }
 
-	public add(connection: Connection | ConnectionGroup): void {
-		this._children.add(connection);
+	public add(item: Connection | ConnectionGroup): void {
+		this._children.add(item);
+		this._onChange.fire();
+	}
+
+	public remove(item: Connection | ConnectionGroup): boolean {
+		const ret = this._children.delete(item);
+		if (ret) {
+			this._onChange.fire();
+		}
+		return ret;
 	}
 }

@@ -54,7 +54,7 @@ export class ConnectionProfile implements ConnectionShape {
 	}
 
 	public with(of: Partial<ConnectionShape>): ConnectionProfile {
-		return new _ConnectionProfile(assign({}, of, this.toShape()));
+		return new _ConnectionProfile(assign({}, this.toShape(), of));
 	}
 
 	public toShape(): ConnectionShape {
@@ -68,6 +68,21 @@ export class ConnectionProfile implements ConnectionShape {
 			authenticationType: this.authenticationType,
 			options: deepClone(this.options)
 		};
+	}
+
+	/**
+	 * Returns a identifying string for this profile
+	 * basically serverName & databaseName & username & providerName
+	 */
+	public toString(): string {
+		let val = `provider:${this.providerName};serverName:${this.serverName};`;
+		if (this.databaseName) {
+			val += `databaseName:${this.databaseName};`;
+		}
+		if (this.userName) {
+			val += `userName:${this.userName};`;
+		}
+		return val;
 	}
 }
 
