@@ -54,8 +54,8 @@ suite('Connection Config', () => {
 
 		const connections = connectionConfig.connections;
 		assert(connections.length === 2);
-		assert(connectionsMatch(connections[0], connection1));
-		assert(connectionsMatch(connections[1], connection2));
+		assert(connectionsMatch(find(connections, c => c.id === connection1.id), connection1));
+		assert(connectionsMatch(find(connections, c => c.id === connection2.id), connection2));
 	});
 
 	test('gets single group', () => {
