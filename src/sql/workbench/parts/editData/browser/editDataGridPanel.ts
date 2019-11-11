@@ -464,12 +464,12 @@ export class EditDataGridPanel extends GridParentComponent {
 			const self = this;
 			clearTimeout(self.refreshGridTimeoutHandle);
 			this.refreshGridTimeoutHandle = setTimeout(() => {
+				console.log('length is ' + self.placeHolderDataSets.length);
 				for (let i = 0; i < self.placeHolderDataSets.length; i++) {
 					// TODO figure out why these values can now be null in some cases
 					if (self.dataSet && self.placeHolderDataSets[i].resized) {
+						console.log('dataRows length is ' + self.dataSet.dataRows.getLength());
 						self.placeHolderDataSets[i].dataRows = self.dataSet.dataRows;
-						console.log(self.placeHolderDataSets[i].resized);
-						let emitternew = new Emitter();
 						self.placeHolderDataSets[i].resized.fire();
 					}
 				}
@@ -481,20 +481,14 @@ export class EditDataGridPanel extends GridParentComponent {
 					if (self.placeHolderDataSets.length > 0) {
 						let dataSet = self.placeHolderDataSets[0];
 						if (dataSet.columnDefinitions) {
-
-
-
-
+							console.log(dataSet.dataRows.at(0));
 							let t = new Table(self.nativeElement, { dataProvider: new AsyncDataProvider(dataSet.dataRows), columns: dataSet.columnDefinitions }, { showRowNumber: true });
 							self._tables[0] = t;
 							self.createNewTable();
-
 							// self._tables[0] = new Table(
 							// 	self.nativeElement,
 							// 	{ dataProvider: dataSet.dataRows, columns: dataSet.columnDefinition },
 							// 	{ showRowNumber: true });
-
-
 						}
 					}
 
@@ -667,12 +661,12 @@ export class EditDataGridPanel extends GridParentComponent {
 				self.dataSet.totalRows++;
 				self.dataSet.maxHeight = self.getMaxHeight(self.dataSet.totalRows);
 				self.dataSet.minHeight = self.getMinHeight(self.dataSet.totalRows);
-				// self.dataSet.dataRows = new VirtualizedCollection(
-				// 	self.windowSize,
-				// 	index => { return {}; },
-				// 	self.dataSet.totalRows,
-				// 	self.loadDataFunction,
-				// );
+				self.dataSet.dataRows = new VirtualizedCollection(
+					self.windowSize,
+					index => { return {}; },
+					self.dataSet.totalRows,
+					self.loadDataFunction,
+				);
 			});
 	}
 
@@ -688,15 +682,6 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.dataSet.totalRows,
 			this.loadDataFunction,
 		);
-
-		// this.dataSet.dataRows = new VirtualizedCollection(
-		// 	this.windowSize,
-		// 	this.dataSet.totalRows,
-		// 	this.loadDataFunction,
-		// 	index => { return {}; }
-		// );
-
-
 		// refresh results view
 		return this.refreshGrid().then(() => {
 			// Set focus to the row index column of the removed row if the current selection is in the removed row
