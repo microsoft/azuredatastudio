@@ -21,6 +21,11 @@ const shape1: ConnectionShape = { serverName: 'server1', databaseName: 'database
 const profile1 = ConnectionProfile.from(shape1);
 const connection1 = new Connection(profile1, undefined, storedConnection1.id, storedConnection1.groupId);
 
+const storedConnection2 = { id: 'asdasdasd', providerName: 'MSSQL', groupId: storedGroup1.id, options: { serverName: 'server1', databaseName: 'database1', authenticationType: 'password' } };
+const shape2: ConnectionShape = { serverName: 'server1', databaseName: 'database1', providerName: 'MSSQL', authenticationType: 'password' };
+const profile2 = ConnectionProfile.from(shape2);
+const connection2 = new Connection(profile2, undefined, storedConnection2.id, storedConnection2.groupId);
+
 suite('Connection Config', () => {
 	let configurationService: TestConfigurationService;
 	let logService: NullLogService;
@@ -32,25 +37,34 @@ suite('Connection Config', () => {
 		capabilitiesService = new TestCapabilitiesService();
 	});
 
-	test('gets connections', () => {
+	test('gets single connection', () => {
 		configurationService.updateValue('datasource.connectionGroups', [storedGroup1]);
 		configurationService.updateValue('datasource.connections', [storedConnection1]);
 		const connectionConfig = new ConnectionConfig(configurationService, capabilitiesService, logService);
 
 		const connections = connectionConfig.connections;
 		assert(connections.length === 1);
-		const connection = connections[0];
-		assert(connectionsMatch(connection, connection1));
+		assert(connectionsMatch(connections[0], connection1));
 	});
 
-	test('gets groups', () => {
+	test('gets multiple connections', () => {
+		configurationService.updateValue('datasource.connectionGroups', [storedGroup1]);
+		configurationService.updateValue('datasource.connections', [storedConnection1, storedConnection2]);
+		const connectionConfig = new ConnectionConfig(configurationService, capabilitiesService, logService);
+
+		const connections = connectionConfig.connections;
+		assert(connections.length === 2);
+		assert(connectionsMatch(connections[0], connection1));
+		assert(connectionsMatch(connections[1], connection2));
+	});
+
+	test('gets single group', () => {
 		configurationService.updateValue('datasource.connectionGroups', [storedGroup1]);
 		const connectionConfig = new ConnectionConfig(configurationService, capabilitiesService, logService);
 
 		const groups = connectionConfig.groups;
 		assert(groups.length === 1);
-		const group = groups[0];
-		assert(groupsMatch(group, group1));
+		assert(groupsMatch(groups[0], group1));
 	});
 });
 
