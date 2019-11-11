@@ -14,6 +14,7 @@ import { ConnectionGroup } from 'sql/base/common/connectionGroup';
 import { ILogService } from 'vs/platform/log/common/log';
 import { isUndefined } from 'vs/base/common/types';
 import { createMemoizer } from 'vs/base/common/decorators';
+import { deepClone } from 'vs/base/common/objects';
 
 const GROUPS_CONFIG_KEY = 'datasource.connectionGroups';
 const CONNECTIONS_CONFIG_KEY = 'datasource.connections';
@@ -268,7 +269,7 @@ export class ConnectionConfig extends Disposable {
 }
 
 function storeToConnection(store: StoredConnection, capabilitiesService: ICapabilitiesService): Connection | undefined {
-	const shape = capabilitiesService.createConnectionShapeFromOptions(store.options, store.providerName);
+	const shape = capabilitiesService.createConnectionShapeFromOptions(deepClone(store.options), store.providerName);
 	if (shape) {
 		return new Connection(ConnectionProfile.from(shape), ConnectionState.disconnected, store.id, store.groupId);
 	}
