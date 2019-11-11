@@ -16,8 +16,8 @@ import { ConnectionProfile, ConnectionShape } from 'sql/base/common/connectionPr
 const storedGroup1 = { id: 'asdasd', name: 'name' };
 const group1 = new ConnectionGroup(storedGroup1.name, storedGroup1.id);
 
-const storedConnection1 = { id: 'asdasdasd', providerName: 'mssql', groupId: storedGroup1.id, options: { serverName: 'server1', databaseName: 'database1', authenticationType: 'password' } };
-const shape1: ConnectionShape = { serverName: 'server1', databaseName: 'database1', providerName: 'mssql', authenticationType: 'password' };
+const storedConnection1 = { id: 'asdasdasd', providerName: 'MSSQL', groupId: storedGroup1.id, options: { serverName: 'server1', databaseName: 'database1', authenticationType: 'password' } };
+const shape1: ConnectionShape = { serverName: 'server1', databaseName: 'database1', providerName: 'MSSQL', authenticationType: 'password' };
 const profile1 = ConnectionProfile.from(shape1);
 const connection1 = new Connection(profile1, undefined, storedConnection1.id, storedConnection1.groupId);
 
