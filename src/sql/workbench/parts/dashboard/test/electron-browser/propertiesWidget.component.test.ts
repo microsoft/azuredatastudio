@@ -11,7 +11,6 @@ import { WidgetConfig } from 'sql/workbench/parts/dashboard/browser/core/dashboa
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/browser/services/dashboardServiceInterface.service';
 import { SingleAdminService, SingleConnectionManagementService } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { PropertiesWidgetComponent } from 'sql/workbench/parts/dashboard/browser/widgets/properties/propertiesWidget.component';
-import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';

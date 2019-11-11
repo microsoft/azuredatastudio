@@ -7,7 +7,6 @@ import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef, V
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
-import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/workbench/parts/dashboard/browser/dashboardRegistry';
 
 import { DatabaseInfo, ServerInfo } from 'azdata';
