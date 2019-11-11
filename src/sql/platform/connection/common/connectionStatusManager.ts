@@ -20,7 +20,7 @@ export class ConnectionStatusManager {
 
 	public findConnectionWithProfile(profile: ConnectionProfile): Connection | undefined {
 		for (const [, connection] of this.connections) {
-			if (connection[1].profile.matches(connectionProfile)) {
+			if (connection[1].profile.matches(profile)) {
 				return connection[1];
 			}
 		}
