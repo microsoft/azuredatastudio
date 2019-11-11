@@ -7,7 +7,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import * as nls from 'vs/nls';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { find, firstIndex } from 'vs/base/common/arrays';
+import { find, firstIndex, coalesce } from 'vs/base/common/arrays';
 import { Connection, ConnectionState } from 'sql/base/common/connection';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { ConnectionGroup } from 'sql/base/common/connectionGroup';
@@ -61,8 +61,8 @@ export class ConnectionConfig extends Disposable {
 		const toBeAdded = new Map<string, Set<Connection | ConnectionGroup>>();
 		const groupConfig = this.configurationService.inspect<StoredGroup[] | undefined>(GROUPS_CONFIG_KEY);
 		const connectionConfig = this.configurationService.inspect<StoredConnection[] | undefined>(CONNECTIONS_CONFIG_KEY);
-		const groups = (groupConfig.user || []).concat(groupConfig.workspace || []).map(storeToGroup);
-		const connections = (connectionConfig.user || []).concat(connectionConfig.workspace || []).map(c => storeToConnection(c, this.capabilitiesService));
+		const groups = coalesce((groupConfig.user || []).concat(groupConfig.workspace || []).map(storeToGroup));
+		const connections = coalesce((connectionConfig.user || []).concat(connectionConfig.workspace || []).map(c => storeToConnection(c, this.capabilitiesService)));
 
 		for (const group of groups) {
 			const existing = this.findInTree<ConnectionGroup>(i => i.id === group.id);
