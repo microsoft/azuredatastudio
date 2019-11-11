@@ -8,7 +8,6 @@ import { BaseChartDirective } from 'ng2-charts';
 import * as chartjs from 'chart.js';
 
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
 import { mixin } from 'sql/base/common/objects';
 import { defaultChartConfig, IChartConfig, IDataSet } from 'sql/workbench/parts/dashboard/browser/widgets/insights/views/charts/interfaces';
 
@@ -16,13 +15,12 @@ import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as types from 'vs/base/common/types';
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
-import { ILogService } from 'vs/platform/log/common/log';
 import { IInsightData, IPointDataSet } from 'sql/workbench/parts/charts/browser/interfaces';
 import { IInsightsView } from 'sql/platform/dashboard/browser/insightRegistry';
 import { ChartType, LegendPosition } from 'sql/workbench/parts/charts/common/interfaces';
 import { createMemoizer } from 'vs/base/common/decorators';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 @Component({
 	template: `	<div style="display: block; width: 100%; height: 100%; position: relative">
@@ -57,8 +55,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IThemeService) private themeService: IThemeService,
-		@Inject(ITelemetryService) private telemetryService: ITelemetryService,
-		@Inject(ILogService) private readonly logService: ILogService
+		@Inject(IAdsTelemetryService) private _telemetryService: IAdsTelemetryService
 	) {
 		super();
 	}
@@ -79,7 +76,9 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 			this._hasError = true;
 			this._changeRef.detectChanges();
 		}
-		TelemetryUtils.addTelemetry(this.telemetryService, this.logService, TelemetryKeys.ChartCreated, { type: this.chartType });
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ModalDialogOpened)
+			.withAdditionalProperties({ type: this.chartType })
+			.send();
 	}
 
 	/**
