@@ -18,7 +18,6 @@ const icons: string[] = [
 
 suite('codicon css', () => {
 	test('codicon.css contains expected icons', async () => {
-		assert.fail(__dirname);
 		const codiconFile = await readFile(join(URI.parse(__dirname).fsPath, '..', '..', '..', '..', '..', 'vs', 'base', 'browser', 'ui', 'codiconLabel', 'codicon', 'codicon.css'));
 		icons.forEach(icon => {
 			assert.ok(codiconFile.includes(icon), `codicon.css did not contain expected icon ${icon}`);
