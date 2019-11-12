@@ -77,7 +77,7 @@ export class JupyterServerInstallation {
 			version: '1.3.0'
 		}, {
 			name: 'powershell-kernel',
-			version: '0.1.0'
+			version: '0.1.1'
 		}
 	];
 
