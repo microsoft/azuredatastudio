@@ -452,11 +452,9 @@ export class EditDataGridPanel extends GridParentComponent {
 			const self = this;
 			clearTimeout(self.refreshGridTimeoutHandle);
 			this.refreshGridTimeoutHandle = setTimeout(() => {
-				console.log('length is ' + self.placeHolderDataSets.length);
 				for (let i = 0; i < self.placeHolderDataSets.length; i++) {
 					// TODO figure out why these values can now be null in some cases
 					if (self.dataSet && self.placeHolderDataSets[i].resized) {
-						console.log('dataRows length is ' + self.dataSet.dataRows.getLength());
 						self.placeHolderDataSets[i].dataRows = self.dataSet.dataRows;
 						self.placeHolderDataSets[i].resized.fire();
 					}
@@ -471,8 +469,9 @@ export class EditDataGridPanel extends GridParentComponent {
 						if (dataSet.columnDefinitions) {
 							let t = new Table(self.nativeElement, { dataProvider: new AsyncDataProvider(dataSet.dataRows), columns: dataSet.columnDefinitions }, { showRowNumber: true });
 							t.rerenderGrid(0, dataSet.dataRows.getLength());
+							t.resizeCanvas();
 							self._tables[0] = t;
-							self.createNewTable();
+							console.log(self._tables[0]);
 
 
 							// self._tables[0] = new Table(
