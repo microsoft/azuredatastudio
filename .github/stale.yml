@@ -1,5 +1,5 @@
 {
-  perform: true,
+  perform: false,
   label: 'Stale PR',
   daysSinceLastUpdate: 7,
   ignoredLabels: ['Do Not Merge']
