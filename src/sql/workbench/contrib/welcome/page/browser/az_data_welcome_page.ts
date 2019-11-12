@@ -6,19 +6,6 @@
 import { escape } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
 
-let productQuality: string;
-
-export function setProductQuality(quality: string): void {
-	productQuality = quality;
-}
-
-function showDeploySection(): boolean {
-	// only show the deploy section for insider build and dev environment for now until the feature is stable
-	// tracking issue: https://github.com/microsoft/azuredatastudio/issues/5987
-	return productQuality !== 'stable';
-}
-
-
 export default () => `
 <div class="welcomePageContainer">
 	<div class="welcomePage">
@@ -38,7 +25,7 @@ export default () => `
 						<li class="windows-only linux-only"><a href="command:workbench.action.files.openFile">${escape(localize('welcomePage.openFileLinuxPC', "Open file"))}</a></li>
 					</ul>
 				</div>
-				<div class="section deploy" style="display:${showDeploySection() ? 'block' : 'none'}">
+				<div class="section deploy">
 					<h2 class="caption">${escape(localize('welcomePage.deploy', "Deploy"))}</h2>
 					<ul>
 						<li><a href="command:azdata.resource.deploy">${escape(localize('welcomePage.DeploySQLServer', "Deploy SQL Server…"))}</a></li>
