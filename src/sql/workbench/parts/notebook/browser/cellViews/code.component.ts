@@ -325,8 +325,10 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 
 	private setFocusAndScroll(): void {
 		// If offsetParent is null, the element isn't visible
-		// In this case, we don't want a cell to grab focus for an editor that isn't in the foreground
-		if (this.cellModel.id === this._activeCellId && this._editor.getContainer().offsetParent) {
+		// In this case, we don't want a cell to grab focus for an editor that isn't in the foreground.
+		// In addition, ensure that the ownerDocument itself has focus for scenarios where ADS isn't in the foreground
+		let ownerDocument = this._editor.getContainer().ownerDocument;
+		if (this.cellModel.id === this._activeCellId && this._editor.getContainer().offsetParent && ownerDocument && ownerDocument.hasFocus()) {
 			this._editor.focus();
 			this._editor.getContainer().scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 		}
