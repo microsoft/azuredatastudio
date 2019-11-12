@@ -8,12 +8,12 @@
 	],
 	"version": "1.0.0.0",
 	"contents": {
-		"extensions/schema-compare/package": {
+		"package": {
 			"displayName": "SQL Server 結構描述比較",
 			"description": "Azure Data Studio 的 SQL Server 結構描述比較支援比較資料庫和 dacpac 的結構描述。",
 			"schemaCompare.start": "結構描述比較"
 		},
-		"extensions/schema-compare/out/dialogs/schemaCompareOptionsDialog": {
+		"out/dialogs/schemaCompareOptionsDialog": {
 			"SchemaCompareOptionsDialog.Ok": "確定",
 			"SchemaCompareOptionsDialog.Cancel": "取消",
 			"SchemaCompareOptionsDialog.Reset": "重設",
@@ -242,7 +242,7 @@
 			"SchemaCompare.Description.DropObjectsNotInSource": "指定當您發行至資料庫時，是否要從目標資料庫卸除不存在於資料庫快照集 (.dacpac) 檔案中的物件。這個值的優先順序高過 DropExtendedProperties。",
 			"SchemaCompare.Description.IgnoreColumnOrder": "指定當您發行至資料庫時，是否應略過或更新資料表資料行順序的差異。"
 		},
-		"extensions/schema-compare/out/dialogs/schemaCompareDialog": {
+		"out/dialogs/schemaCompareDialog": {
 			"schemaCompareDialog.ok": "確定",
 			"schemaCompareDialog.cancel": "取消",
 			"schemaCompareDialog.SourceTitle": "來源",
@@ -263,7 +263,7 @@
 			"schemaCompare.openFile": "開啟",
 			"schemaCompareDialog.defaultUser": "預設"
 		},
-		"extensions/schema-compare/out/schemaCompareMainWindow": {
+		"out/schemaCompareMainWindow": {
 			"schemaCompare.CompareDetailsTitle": "比較詳細資料",
 			"schemaCompare.ApplyConfirmation": "確定要更新目標嗎?",
 			"schemaCompare.RecompareToRefresh": "按下 [比較] 即可重新整理比較。",
