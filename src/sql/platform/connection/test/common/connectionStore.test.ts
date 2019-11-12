@@ -7,6 +7,6 @@ import * as assert from 'assert';
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
 
-suite('ConnectionStore', () => {
+suite('ConnectionStore -', () => {
 	//TODO
 });

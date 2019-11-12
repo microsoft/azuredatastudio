@@ -6,7 +6,6 @@
 import * as azdata from 'azdata';
 
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
-import * as Utils from 'sql/platform/connection/common/utils';
 import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { IQueryPlanInfo } from 'sql/platform/query/common/queryModel';
@@ -23,11 +22,11 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { URI } from 'vs/base/common/uri';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IGridDataProvider, getResultsString } from 'sql/platform/query/common/gridDataProvider';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { find } from 'vs/base/common/arrays';
+import { parseNumAsTimeString, parseTimeString } from 'sql/base/common/time';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -257,7 +256,7 @@ export default class QueryRunner extends Disposable {
 			}
 		});
 
-		let timeStamp = Utils.parseNumAsTimeString(this._totalElapsedMilliseconds);
+		let timeStamp = parseNumAsTimeString(this._totalElapsedMilliseconds);
 		// We're done with this query so shut down any waiting mechanisms
 
 		let message = {
@@ -311,11 +310,11 @@ export default class QueryRunner extends Disposable {
 
 		// Store the batch again to get the rest of the data
 		this._batchSets[batch.id] = batch;
-		let executionTime = <number>(Utils.parseTimeString(batch.executionElapsed) || 0);
+		let executionTime = <number>(parseTimeString(batch.executionElapsed) || 0);
 		this._totalElapsedMilliseconds += executionTime;
 		if (executionTime > 0) {
 			// send a time message in the format used for query complete
-			this.sendBatchTimeMessage(batch.id, Utils.parseNumAsTimeString(executionTime));
+			this.sendBatchTimeMessage(batch.id, parseNumAsTimeString(executionTime));
 		}
 
 		this._onBatchEnd.fire(batch);
@@ -385,7 +384,6 @@ export default class QueryRunner extends Disposable {
 						// fire query plan available event if execution is completed
 						if (result.resultSetSummary.complete) {
 							this._onQueryPlanAvailable.fire({
-								providerId: mssqlProviderName,
 								fileUri: result.ownerUri,
 								planXml: planXmlString
 							});

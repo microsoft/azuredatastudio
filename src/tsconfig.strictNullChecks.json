@@ -24,7 +24,7 @@
 		"./sql/platform/capabilities/**/*.ts",
 		"./sql/platform/clipboard/**/*.ts",
 		"./sql/platform/common/**/*.ts",
-		"./sql/platform/connection/common/**/*.ts",
+		"./sql/platform/connection/**/*.ts",
 		"./sql/platform/credentials/**/*.ts",
 		"./sql/platform/errorMessage/**/*.ts",
 		"./sql/platform/fileBrowser/**/*.ts",

@@ -17,6 +17,7 @@ import { assign } from 'vs/base/common/objects';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
+import { Connection, ConnectionState } from 'sql/base/common/connection';
 
 const defaultConnectOptions: ConnectOptions = {
 	saveToConfig: false,
@@ -57,12 +58,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	public async connect(connection: ConnectionProfile, options: ConnectOptions = {}): Promise<IConnection> {
-		if (options.useExisting) {
+	public async connect(connection: ConnectionProfile | IConnection, options: ConnectOptions = {}): Promise<IConnection> {
+		if (options.useExisting && connection instanceof ConnectionProfile) {
 			const existing = this.findExistingConnection(connection);
 			if (existing) {
 				return existing;
 			}
+		} else if (connection instanceof Connection && connection.state !== ConnectionState.disconnected) {
+			return connection;
 		}
 		return this.tryConnect(connection, assign(options, defaultConnectOptions) as InternalConnectOptions);
 	}
@@ -71,7 +74,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this.connectionStatusManager.findConnectionWithProfile(profile);
 	}
 
-	private async tryConnect(connection: ConnectionProfile, options: InternalConnectOptions): Promise<IConnection> {
+	private async tryConnect(connection: ConnectionProfile | IConnection, options: InternalConnectOptions): Promise<IConnection> {
 		throw new errors.NotImplementedError();
 	}
 

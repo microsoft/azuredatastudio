@@ -15,7 +15,8 @@ export interface ConnectOptions {
 	 */
 	associateUri?: URI;
 	/**
-	 * Attempt to use an existing connection for the profile if it exists
+	 * Attempt to use an existing connection for the profile if it exists; will be ignored if
+	 * used even passing an IConnection
 	 */
 	useExisting?: boolean;
 	/**
@@ -58,7 +59,11 @@ export interface IConnectionManagementService {
 	/**
 	 * Opens a connection with the given profile
 	 */
-	connect(connection: ConnectionProfile, options?: ConnectOptions): Promise<IConnection>;
+	connect(profile: ConnectionProfile, options?: ConnectOptions): Promise<IConnection>;
+	/**
+	 * Connects the given connection if it is not already connected
+	 */
+	connect(connection: IConnection, options?: ConnectOptions): Promise<IConnection>;
 
 	/**
 	 * Finds an existing connection that matches the provided connection profile

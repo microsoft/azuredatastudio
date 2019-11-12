@@ -5,6 +5,5 @@
 
 import * as assert from 'assert';
 
-suite('Connection Management Service -', () => {
-
+suite('Connection Status Manager -', () => {
 });

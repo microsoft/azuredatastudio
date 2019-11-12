@@ -7,7 +7,7 @@ import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnection } from 'sql/platform/connection/common/connectionManagement';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
@@ -15,15 +15,13 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import * as Utils from 'sql/platform/connection/common/utils';
 import { ILogService } from 'vs/platform/log/common/log';
 import { entries } from 'sql/base/common/collections';
 import { values } from 'vs/base/common/collections';
 import { startsWith } from 'vs/base/common/strings';
+import { IConnectionStore } from 'sql/platform/connection/common/connectionStore';
 
-export const SERVICE_ID = 'ObjectExplorerService';
-
+const SERVICE_ID = 'objectExplorerService';
 export const IObjectExplorerService = createDecorator<IObjectExplorerService>(SERVICE_ID);
 
 export interface NodeExpandInfoWithProviderId extends azdata.ObjectExplorerExpandInfo {
@@ -45,11 +43,11 @@ export interface IObjectExplorerService {
 
 	refreshTreeNode(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]>;
 
-	onSessionCreated(handle: number, sessionResponse: azdata.ObjectExplorerSession);
+	onSessionCreated(handle: number, sessionResponse: azdata.ObjectExplorerSession): void;
 
-	onSessionDisconnected(handle: number, sessionResponse: azdata.ObjectExplorerSession);
+	onSessionDisconnected(handle: number, sessionResponse: azdata.ObjectExplorerSession): void;
 
-	onNodeExpanded(sessionResponse: NodeExpandInfoWithProviderId);
+	onNodeExpanded(sessionResponse: NodeExpandInfoWithProviderId): void;
 
 	/**
 	 * Register a ObjectExplorer provider
@@ -98,7 +96,7 @@ export interface IObjectExplorerService {
 
 interface SessionStatus {
 	nodes: { [nodePath: string]: NodeStatus };
-	connection: ConnectionProfile;
+	connection: IConnection;
 	expandNodeTimer?: number;
 }
 
@@ -134,8 +132,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private _nodeProviders: { [handle: string]: azdata.ObjectExplorerNodeProvider[]; } = Object.create(null);
 
-	private _activeObjectExplorerNodes: { [id: string]: TreeNode };
-	private _sessions: { [sessionId: string]: SessionStatus };
+	private _activeObjectExplorerNodes: { [id: string]: TreeNode } = Object.create(null);
+	private _sessions: { [sessionId: string]: SessionStatus } = Object.create(null);
 
 	private _onUpdateObjectExplorerNodes: Emitter<ObjectExplorerNodeEventArgs>;
 
@@ -144,16 +142,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private _onSelectionOrFocusChange: Emitter<void>;
 
 	constructor(
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@ITelemetryService private _telemetryService: ITelemetryService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@ILogService private logService: ILogService
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
+		@IConnectionStore private readonly connectionStore: IConnectionStore,
+		@ITelemetryService private readonly telemetryService: ITelemetryService,
+		@ILogService private readonly logService: ILogService
 	) {
 		this._onUpdateObjectExplorerNodes = new Emitter<ObjectExplorerNodeEventArgs>();
-		this._activeObjectExplorerNodes = {};
-		this._sessions = {};
-		this._providers = {};
-		this._nodeProviders = {};
 		this._onSelectionOrFocusChange = new Emitter<void>();
 	}
 
@@ -181,20 +175,19 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._onSelectionOrFocusChange.event;
 	}
 
-	public updateObjectExplorerNodes(connection: ConnectionProfile): Promise<void> {
-		return this._connectionManagementService.addSavedPassword(connection).then(withPassword => {
+	public async updateObjectExplorerNodes(connection: ConnectionProfile): Promise<void> {
+		return this.connectionManagementService.addSavedPassword(connection).then(withPassword => {
 			return this.updateNewObjectExplorerNode(withPassword);
 		});
 	}
 
 	public deleteObjectExplorerNode(connection: ConnectionProfile): Thenable<void> {
-		let self = this;
 		let connectionUri = connection.id;
 		let nodeTree = this._activeObjectExplorerNodes[connectionUri];
 		if (nodeTree) {
-			return self.closeSession(connection.providerName, nodeTree.getSession()).then(() => {
-				delete self._activeObjectExplorerNodes[connectionUri];
-				delete self._sessions[nodeTree.getSession().sessionId];
+			return this.closeSession(connection.providerName, nodeTree.getSession()).then(() => {
+				delete this._activeObjectExplorerNodes[connectionUri];
+				delete this._sessions[nodeTree.getSession().sessionId];
 			});
 		}
 		return Promise.resolve();
@@ -301,9 +294,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	private updateNewObjectExplorerNode(connection: ConnectionProfile): Promise<void> {
-		let self = this;
 		return new Promise<void>((resolve, reject) => {
-			if (self._activeObjectExplorerNodes[connection.id]) {
+			if (this._activeObjectExplorerNodes[connection.id]) {
 				this.sendUpdateNodeEvent(connection);
 				resolve();
 			} else {
@@ -323,12 +315,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	public async createNewSession(providerId: string, connection: ConnectionProfile): Promise<azdata.ObjectExplorerSessionResponse> {
-		let self = this;
 		return new Promise<azdata.ObjectExplorerSessionResponse>((resolve, reject) => {
 			let provider = this._providers[providerId];
 			if (provider) {
 				provider.createNewSession(connection.toConnectionInfo()).then(result => {
-					self._sessions[result.sessionId] = {
+					this._sessions[result.sessionId] = {
 						connection: connection,
 						nodes: {}
 					};
@@ -371,12 +362,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		session: azdata.ObjectExplorerSession,
 		nodePath: string,
 		refresh: boolean = false): Thenable<azdata.ObjectExplorerExpandInfo> {
-		let self = this;
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
-			if (session.sessionId in self._sessions && self._sessions[session.sessionId]) {
+			if (session.sessionId in this._sessions && this._sessions[session.sessionId]) {
 				let newRequest = false;
-				if (!self._sessions[session.sessionId].nodes[nodePath]) {
-					self._sessions[session.sessionId].nodes[nodePath] = {
+				if (!this._sessions[session.sessionId].nodes[nodePath]) {
+					this._sessions[session.sessionId].nodes[nodePath] = {
 						expandEmitter: new Emitter<NodeExpandInfoWithProviderId>()
 					};
 					newRequest = true;
@@ -392,7 +382,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						allProviders.push(...nodeProviders);
 					}
 
-					self._sessions[session.sessionId].nodes[nodePath].expandEmitter.event((expandResult) => {
+					this._sessions[session.sessionId].nodes[nodePath].expandEmitter.event((expandResult) => {
 						if (expandResult && expandResult.providerId) {
 							resultMap.set(expandResult.providerId, expandResult);
 						} else {
@@ -401,17 +391,17 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 						// When get all responses from all providers, merge results
 						if (resultMap.size === allProviders.length) {
-							resolve(self.mergeResults(allProviders, resultMap, nodePath));
+							resolve(this.mergeResults(allProviders, resultMap, nodePath));
 
 							// Have to delete it after get all reponses otherwise couldn't find session for not the first response
 							if (newRequest) {
-								delete self._sessions[session.sessionId].nodes[nodePath];
+								delete this._sessions[session.sessionId].nodes[nodePath];
 							}
 						}
 					});
 					if (newRequest) {
 						allProviders.forEach(provider => {
-							self.callExpandOrRefreshFromProvider(provider, {
+							this.callExpandOrRefreshFromProvider(provider, {
 								sessionId: session.sessionId,
 								nodePath: nodePath
 							}, refresh).then(isExpanding => {
