@@ -8,7 +8,7 @@ import * as nls from 'vscode-nls';
 import { AgreementInfo, DeploymentProvider, ITool, ResourceType } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
-import { getErrorMessage } from '../utils';
+import { getErrorMessage, setEnvironmentVariablesForInstallPaths } from '../utils';
 import { DialogBase } from './dialogBase';
 import { createFlexContainer } from './modelViewUtils';
 
@@ -288,6 +288,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	protected onComplete(): void {
+		setEnvironmentVariablesForInstallPaths(this._tools);
 		this.resourceTypeService.startDeployment(this.getCurrentProvider());
 	}
 
