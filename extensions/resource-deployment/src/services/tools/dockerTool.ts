@@ -50,7 +50,7 @@ export class DockerTool extends ToolBase {
 		return false;
 	}
 
-	get allInstallationCommands(): Map<OsType, Command[]> {
+	protected get allInstallationCommands(): Map<OsType, Command[]> {
 		throw Error('Installation of DockerTool is not supported');
 	}
 }

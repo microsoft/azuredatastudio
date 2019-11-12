@@ -48,7 +48,10 @@
 	"resource-type-sql-windows-setup-display-name": "SQL Server on Windows",
 	"resource-type-sql-windows-setup-description": "Run SQL Server on Windows, select a version to get started.",
 	"bdc-agreement": "I accept {0}, {1} and {2}.",
-	"bdc-agreement-privacy-statement":"Microsoft Privacy Statement",
-	"bdc-agreement-azdata-eula":"azdata License Terms",
-	"bdc-agreement-bdc-eula":"SQL Server License Terms"
+	"bdc-agreement-privacy-statement": "Microsoft Privacy Statement",
+	"bdc-agreement-azdata-eula": "azdata License Terms",
+	"bdc-agreement-bdc-eula": "SQL Server License Terms",
+	"deployment.configuration.title": "Deployment configuration",
+	"azdata-pip-install-uri-description": "Location of the azdata package used for the pip install command",
+	"azdata-pip-install-args-description": "Additional arguments for the pip install azdata command"
 }
