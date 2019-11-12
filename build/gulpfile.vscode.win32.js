@@ -61,14 +61,6 @@ function packageInnoSetup(iss, options, cb) {
 		.on('exit', () => cb(null));
 }
 
-gulp.task('test', () => {
-	return gulp.src(issPath)
-		.pipe(replace(/inno-(small|big)-([\d]*)/g, 'inno-$1-$2-insiders'))
-		.pipe(replace(/code.ico/g, 'code-insiders.ico'))
-		.pipe(replace(/code_file.ico/g, 'code_file-insiders.ico'))
-		.pipe(rename(path.basename(adsPath)))
-		.pipe(vfs.dest(path.dirname(adsPath)));
-});
 function buildWin32Setup(arch, target) {
 	if (target !== 'system' && target !== 'user') {
 		throw new Error('Invalid setup target');
