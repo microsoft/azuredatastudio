@@ -260,7 +260,7 @@ export class PerFolderServerInstance implements IServerInstance {
 			let onErrorBeforeStartup = (err: any) => reject(err);
 			let onExitBeforeStart = (err: any) => {
 				if (!this.isStarted) {
-					reject(localize('notebookStartProcessExitPremature', "Notebook process exited prematurely with error: {0}, StdErr Output: {1}", err, stdErrLog));
+					reject(localize('notebookStartProcessExitPremature', 'Notebook process exited prematurely with error code: {0}. StdErr Output: {1}', err, stdErrLog));
 				}
 			};
 			this.childProcess.on('error', onErrorBeforeStartup);
