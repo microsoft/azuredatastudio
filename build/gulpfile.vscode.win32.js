@@ -7,6 +7,7 @@
 
 const gulp = require('gulp');
 const rename = require('gulp-rename'); // {{SQL CARBON EDIT}}
+const replace = require('gulp-replace'); // {{SQL CARBON EDIT}}
 const path = require('path');
 const fs = require('fs');
 const assert = require('assert');
@@ -44,9 +45,6 @@ function packageInnoSetup(iss, options, cb) {
 		definitions['Sign'] = 'true';
 	}
 
-	// {{SQL CARBON EDIT}} Switch file icon for non-stable builds
-	gulp.src(product.quality !== 'stable' ? 'resources/win32/code_file-insiders.ico' : 'resources/win32/code_file-stable.ico').pipe(rename('code_file.ico')).pipe(gulp.dest('resources/win32'));
-
 	const keys = Object.keys(definitions);
 
 	keys.forEach(key => assert(typeof definitions[key] === 'string', `Missing value for '${key}' in Inno Setup package step`));
@@ -63,6 +61,14 @@ function packageInnoSetup(iss, options, cb) {
 		.on('exit', () => cb(null));
 }
 
+gulp.task('test', () => {
+	return gulp.src(issPath)
+		.pipe(replace(/inno-(small|big)-([\d]*)/g, 'inno-$1-$2-insiders'))
+		.pipe(replace(/code.ico/g, 'code-insiders.ico'))
+		.pipe(replace(/code_file.ico/g, 'code_file-insiders.ico'))
+		.pipe(rename(path.basename(adsPath)))
+		.pipe(vfs.dest(path.dirname(adsPath)));
+});
 function buildWin32Setup(arch, target) {
 	if (target !== 'system' && target !== 'user') {
 		throw new Error('Invalid setup target');
@@ -83,13 +89,16 @@ function buildWin32Setup(arch, target) {
 		fs.writeFileSync(productJsonPath, JSON.stringify(productJson, undefined, '\t'));
 
 		// // {{SQL CARBON EDIT}} Modify installer file based on quality
-		if(product.quality !== 'stable') {
-			fs.writeFileSync(adsPath,
-				fs.readFileSync(issPath).toString()
-					.replace(/inno-(small|big)-([\d]*)/g, 'inno-$1-$2-insiders')
-					.replace(/code.ico/g, 'code-insiders.ico'));
+		let installerConfigPath = issPath;
+		if (product.quality !== 'stable') {
+			installerConfigPath = adsPath;
+			gulp.src(issPath)
+				.pipe(replace(/inno-(small|big)-([\d]*)/g, 'inno-$1-$2-insiders'))
+				.pipe(replace(/code.ico/g, 'code-insiders.ico'))
+				.pipe(replace(/code_file.ico/g, 'code_file-insiders.ico'))
+				.pipe(rename(path.basename(adsPath)))
+				.pipe(vfs.dest(path.dirname(adsPath)));
 		}
-
 
 		const definitions = {
 			NameLong: product.nameLong,
@@ -116,7 +125,7 @@ function buildWin32Setup(arch, target) {
 			ProductJsonPath: productJsonPath
 		};
 
-		packageInnoSetup(adsPath, { definitions }, cb);
+		packageInnoSetup(installerConfigPath, { definitions }, cb);
 	};
 }
 

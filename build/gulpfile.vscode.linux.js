@@ -53,7 +53,7 @@ function prepareDebPackage(arch) {
 			.pipe(replace('@@LICENSE@@', product.licenseName))
 			.pipe(rename('usr/share/appdata/' + product.applicationName + '.appdata.xml'));
 
-		const icon = gulp.src(product.quality === 'stable' ? 'resources/linux/code.png' : 'resources/linux/code-insiders.png', { base: '.' }) // {{SQL CARBON EDIT}} Use separate icons for non-stable
+		const icon = gulp.src(product.quality !== 'stable' ? 'resources/linux/code-insiders.png' : 'resources/linux/code.png', { base: '.' }) // {{SQL CARBON EDIT}} Use separate icons for non-stable
 			.pipe(rename('usr/share/pixmaps/' + product.linuxIconName + '.png'));
 
 		const bash_completion = gulp.src('resources/completions/bash/code')

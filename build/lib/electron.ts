@@ -42,13 +42,13 @@ export const config = {
 	productAppName: product.nameLong,
 	companyName: 'Microsoft Corporation',
 	copyright: 'Copyright (C) 2019 Microsoft. All rights reserved',
-	darwinIcon: product.quality === 'stable' ? 'resources/darwin/code.icns' : 'resources/darwin/code-insiders.icns', // {{SQL CARBON EDIT}} Use separate icons for non-stable
+	darwinIcon: product.quality !== 'stable' ? 'resources/darwin/code-insiders.icns' : 'resources/darwin/code.icns', // {{SQL CARBON EDIT}} Use separate icons for non-stable
 	darwinBundleIdentifier: product.darwinBundleIdentifier,
 	darwinApplicationCategoryType: 'public.app-category.developer-tools',
 	darwinHelpBookFolder: 'VS Code HelpBook',
 	darwinHelpBookName: 'VS Code HelpBook',
 	darwinBundleDocumentTypes: [
-		darwinBundleDocumentType(["csv", "json", "sqlplan", "sql", "xml"], product.quality === 'stable' ? 'resources/darwin/code_file.icns' : 'resources/darwin/code_file-insiders.icns'), // {{SQL CARBON EDIT}} - Remove most document types and replace with ours. Also use separate icon for non-stable
+		darwinBundleDocumentType(["csv", "json", "sqlplan", "sql", "xml"], product.quality !== 'stable' ? 'resources/darwin/code_file-insiders.icns' : 'resources/darwin/code_file.icns'), // {{SQL CARBON EDIT}} - Remove most document types and replace with ours. Also use separate icon for non-stable
 	],
 	darwinBundleURLTypes: [{
 		role: 'Viewer',
@@ -58,7 +58,7 @@ export const config = {
 	darwinForceDarkModeSupport: true,
 	darwinCredits: darwinCreditsTemplate ? Buffer.from(darwinCreditsTemplate({ commit: commit, date: new Date().toISOString() })) : undefined,
 	linuxExecutableName: product.applicationName,
-	winIcon: product.quality === 'stable' ? 'resources/win32/code.ico' : 'resources/win32/code-insiders.ico', // {{SQL CARBON EDIT}} Use separate icons for non-stable
+	winIcon: product.quality !== 'stable' ? 'resources/win32/code-insiders.ico' : 'resources/win32/code.ico', // {{SQL CARBON EDIT}} Use separate icons for non-stable
 	token: process.env['VSCODE_MIXIN_PASSWORD'] || process.env['GITHUB_TOKEN'] || undefined,
 	repo: product.electronRepository || undefined
 };

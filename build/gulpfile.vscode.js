@@ -265,19 +265,11 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		);
 
 		if (platform === 'win32') {
-			if (quality !== 'stable') {
-				// {{SQL CARBON EDIT}} use separate icons for non-stable
-				gulp.src([
-					'resources/win32/code_70x70-insiders.png',
-					'resources/win32/code_150x150-insiders.png'
-				]).pipe(rename(function (f) { f.basename = f.basename.replace('-insiders', ''); }))
-				.pipe(gulp.dest('resources/win32'));
-			}
 			all = es.merge(all, gulp.src([
-				// {{SQL CARBON EDIT}} remove unused icons
-				'resources/win32/code_70x70.png',
-				'resources/win32/code_150x150.png'
-			], { base: '.' }));
+				// {{SQL CARBON EDIT}} remove unused icons and use separate icons for non-stable
+				quality !== 'stable' ? 'resources/win32/code_70x70-insiders.png' : 'resources/win32/code_70x70.png',
+				quality !== 'stable' ? 'resources/win32/code_150x150-insiders.png' : 'resources/win32/code_150x150.png'
+			], { base: '.' }).pipe(rename(function (f) { f.basename = f.basename.replace('-insiders', ''); })));
 		} else if (platform === 'linux') {
 			// {{SQL CARBON EDIT}} use separate icons for non-stable
 			const icon = gulp.src(quality !== 'stable' ? 'resources/linux/code-insiders.png' : 'resources/linux/code.png', { base: '.' }).pipe(rename('code.png'));
