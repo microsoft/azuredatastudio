@@ -144,12 +144,19 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		}
 	}
 
-
 	private onResize(): void {
 		if (this._grid !== undefined) {
 			// this will make sure the grid header and body to be re-rendered\
 			this._grid.resizeCanvas();
 		}
+	}
+
+	public rerenderGrid(start: number, end: number) {
+		this.renderGridDataRowsRange(start, end);
+		this._grid.updateRowCount();
+		this._grid.setColumns(this._grid.getColumns());
+		this._grid.invalidateAllRows();
+		this._grid.render();
 	}
 
 	//my code ends here.
@@ -415,13 +422,5 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	public set ariaRole(value: string) {
 		this._tableContainer.setAttribute('role', value);
-	}
-
-	public rerenderGrid() {
-		this.renderGridDataRowsRange(0, 4);
-		this._grid.updateRowCount();
-		this._grid.setColumns(this._grid.getColumns());
-		this._grid.invalidateAllRows();
-		this._grid.render();
 	}
 }

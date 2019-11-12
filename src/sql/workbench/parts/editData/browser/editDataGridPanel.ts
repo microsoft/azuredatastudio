@@ -125,22 +125,11 @@ export class EditDataGridPanel extends GridParentComponent {
 		super(contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, logService);
 		this.nativeElement = document.createElement('div');
 		this.nativeElement.className = 'slickgridContainer';
-
-
-
 		this.dataService = params.dataService;
-
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
 		params.onRestoreViewState(() => this.restoreViewState());
 		params.onSaveViewState(() => this.saveViewState());
-
-
-		//console.log(this.templateHTML);
-
-
 		this.onInit();
-
-		// this.createNewTable();
 	}
 
 	/**
@@ -481,7 +470,7 @@ export class EditDataGridPanel extends GridParentComponent {
 						let dataSet = self.placeHolderDataSets[0];
 						if (dataSet.columnDefinitions) {
 							let t = new Table(self.nativeElement, { dataProvider: new AsyncDataProvider(dataSet.dataRows), columns: dataSet.columnDefinitions }, { showRowNumber: true });
-							t.rerenderGrid();
+							t.rerenderGrid(0, dataSet.dataRows.getLength());
 							self._tables[0] = t;
 							self.createNewTable();
 
