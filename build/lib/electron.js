@@ -36,7 +36,7 @@ exports.config = {
     productAppName: product.nameLong,
     companyName: 'Microsoft Corporation',
     copyright: 'Copyright (C) 2019 Microsoft. All rights reserved',
-    darwinIcon: product.quality === 'resources/darwin/code.icns',
+    darwinIcon: 'resources/darwin/code.icns',
     darwinBundleIdentifier: product.darwinBundleIdentifier,
     darwinApplicationCategoryType: 'public.app-category.developer-tools',
     darwinHelpBookFolder: 'VS Code HelpBook',
@@ -52,7 +52,7 @@ exports.config = {
     darwinForceDarkModeSupport: true,
     darwinCredits: darwinCreditsTemplate ? Buffer.from(darwinCreditsTemplate({ commit: commit, date: new Date().toISOString() })) : undefined,
     linuxExecutableName: product.applicationName,
-    winIcon: product.quality === 'resources/win32/code.ico',
+    winIcon: 'resources/win32/code.ico',
     token: process.env['VSCODE_MIXIN_PASSWORD'] || process.env['GITHUB_TOKEN'] || undefined,
     repo: product.electronRepository || undefined
 };
