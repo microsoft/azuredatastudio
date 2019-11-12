@@ -481,6 +481,7 @@ export class EditDataGridPanel extends GridParentComponent {
 						let dataSet = self.placeHolderDataSets[0];
 						if (dataSet.columnDefinitions) {
 							let t = new Table(self.nativeElement, { dataProvider: new AsyncDataProvider(dataSet.dataRows), columns: dataSet.columnDefinitions }, { showRowNumber: true });
+							t.rerenderGrid();
 							self._tables[0] = t;
 							self.createNewTable();
 

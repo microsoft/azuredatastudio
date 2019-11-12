@@ -416,4 +416,12 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	public set ariaRole(value: string) {
 		this._tableContainer.setAttribute('role', value);
 	}
+
+	public rerenderGrid() {
+		this.renderGridDataRowsRange(0, 4);
+		this._grid.updateRowCount();
+		this._grid.setColumns(this._grid.getColumns());
+		this._grid.invalidateAllRows();
+		this._grid.render();
+	}
 }
