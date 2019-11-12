@@ -163,7 +163,7 @@ export class DeployClusterWizardModel extends Model {
 			statements.push(`os.environ["DOCKER_USERNAME"] = '${this.getStringValue(VariableNames.DockerUsername_VariableName)}'`);
 			statements.push(`os.environ["DOCKER_PASSWORD"] = os.environ["${VariableNames.DockerPassword_VariableName}"]`);
 		}
-		statements.push(`os.environ["PATH"] = os.environ["PATH"] + "${delimiter}" + "${process.env[VariableNames.ToolsInstallPath]}"`);
+		statements.push(`os.environ["PATH"] = os.environ["PATH"] + "${delimiter}" + "${this.escapeForNotebookCodeCell(process.env[VariableNames.ToolsInstallPath]!)}"`);
 		statements.push(`print('Variables have been set successfully.')`);
 		return statements.map(line => line + EOL);
 	}
