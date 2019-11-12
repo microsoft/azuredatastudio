@@ -190,7 +190,9 @@ export class NotebookMarkdownRenderer {
 			}
 		}
 		try {
-			if (URI.parse(href)) {
+			// The call to resolveUrl() (where relative hrefs are converted to absolute ones) comes after this point
+			// Therefore, we only want to return immediately if the path is absolute here
+			if (URI.parse(href) && path.isAbsolute(href)) {
 				return href;
 			}
 		} catch {
