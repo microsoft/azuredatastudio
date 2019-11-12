@@ -449,7 +449,7 @@ export class AttachToDropdown extends SelectBox {
 			let connections = this.getConnections(model);
 			this.enable();
 			if (showSelectConnection) {
-				connections = this.loadWithSelectConnection(connections);
+				this.loadWithSelectConnection(connections);
 			}
 			else {
 				if (connections.length === 1 && connections[0] === msgAddNewConnection) {
@@ -465,7 +465,7 @@ export class AttachToDropdown extends SelectBox {
 		}
 	}
 
-	private loadWithSelectConnection(connections: string[]): string[] {
+	private loadWithSelectConnection(connections: string[]): void {
 		if (connections && connections.length > 0) {
 			if (!find(connections, x => x === msgSelectConnection)) {
 				connections.unshift(msgSelectConnection);
@@ -476,7 +476,6 @@ export class AttachToDropdown extends SelectBox {
 			}
 			this.setOptions(connections, 0);
 		}
-		return connections;
 	}
 
 	//Get connections from context

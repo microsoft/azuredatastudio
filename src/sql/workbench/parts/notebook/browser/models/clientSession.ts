@@ -229,7 +229,6 @@ export class ClientSession implements IClientSession {
 		this._kernelChangeCompleted = new Deferred<void>();
 		this._isReady = false;
 		let oldKernel = oldValue ? oldValue : this.kernel;
-		let newKernel = this.kernel;
 
 		let kernel = await this.doChangeKernel(options);
 		try {
@@ -240,7 +239,7 @@ export class ClientSession implements IClientSession {
 			this._kernelChangeCompleted.resolve();
 			throw error;
 		}
-		newKernel = this._session ? kernel : this._session.kernel;
+		let newKernel = this._session ? kernel : this._session.kernel;
 		this._isReady = kernel.isReady;
 		await this.updateCachedKernelSpec();
 		// Send resolution events to listeners
