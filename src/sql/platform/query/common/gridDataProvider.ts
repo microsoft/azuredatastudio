@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as types from 'vs/base/common/types';
-import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
+import { SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
 
 export interface IGridDataProvider {
 
