@@ -6,8 +6,6 @@
 'use strict';
 
 const gulp = require('gulp');
-const rename = require('gulp-rename'); // {{SQL CARBON EDIT}}
-const replace = require('gulp-replace'); // {{SQL CARBON EDIT}}
 const path = require('path');
 const fs = require('fs');
 const assert = require('assert');
@@ -28,7 +26,6 @@ const zipDir = arch => path.join(repoPath, '.build', `win32-${arch}`, 'archive')
 const zipPath = arch => path.join(zipDir(arch), `VSCode-win32-${arch}.zip`);
 const setupDir = (arch, target) => path.join(repoPath, '.build', `win32-${arch}`, `${target}-setup`);
 const issPath = path.join(__dirname, 'win32', 'code.iss');
-const adsPath = path.join(__dirname, 'win32', 'ads.iss');
 const innoSetupPath = path.join(path.dirname(path.dirname(require.resolve('innosetup'))), 'bin', 'ISCC.exe');
 const signPS1 = path.join(repoPath, 'build', 'azure-pipelines', 'win32', 'sign.ps1');
 
@@ -80,18 +77,6 @@ function buildWin32Setup(arch, target) {
 		productJson['target'] = target;
 		fs.writeFileSync(productJsonPath, JSON.stringify(productJson, undefined, '\t'));
 
-		// // {{SQL CARBON EDIT}} Modify installer file based on quality
-		let installerConfigPath = issPath;
-		if (product.quality !== 'stable') {
-			installerConfigPath = adsPath;
-			gulp.src(issPath)
-				.pipe(replace(/inno-(small|big)-([\d]*)/g, 'inno-$1-$2-insiders'))
-				.pipe(replace(/code.ico/g, 'code-insiders.ico'))
-				.pipe(replace(/code_file.ico/g, 'code_file-insiders.ico'))
-				.pipe(rename(path.basename(adsPath)))
-				.pipe(vfs.dest(path.dirname(adsPath)));
-		}
-
 		const definitions = {
 			NameLong: product.nameLong,
 			NameShort: product.nameShort,
@@ -117,7 +102,7 @@ function buildWin32Setup(arch, target) {
 			ProductJsonPath: productJsonPath
 		};
 
-		packageInnoSetup(installerConfigPath, { definitions }, cb);
+		packageInnoSetup(issPath, { definitions }, cb);
 	};
 }
 
@@ -153,7 +138,7 @@ function copyInnoUpdater(arch) {
 
 function updateIcon(executablePath) {
 	return cb => {
-		const icon = product.quality !== 'stable' ? path.join(repoPath, 'resources', 'win32', 'code-insiders.ico') : path.join(repoPath, 'resources', 'win32', 'code.ico'); // {{SQL CARBON EDIT}} Use separate icons for non-stable
+		const icon = path.join(repoPath, 'resources', 'win32', 'code.ico');
 		rcedit(executablePath, { icon }, cb);
 	};
 }
