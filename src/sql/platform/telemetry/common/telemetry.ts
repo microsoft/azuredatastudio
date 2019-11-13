@@ -11,7 +11,7 @@ export const IAdsTelemetryService = createDecorator<IAdsTelemetryService>('adsTe
  * Holds additional properties to send along with an event.
  */
 export interface ITelemetryEventProperties {
-	[key: string]: string;
+	[key: string]: any;
 }
 
 /**
