@@ -37,6 +37,7 @@ import { deepClone } from 'vs/base/common/objects';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { ReturnStatement } from '@angular/compiler/src/output/output_ast';
 
 export const EDITDATA_SELECTOR: string = 'editdatagridpanel';
 
@@ -52,7 +53,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	// The time(in milliseconds) we wait before refreshing the grid.
 	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
-	private refreshGridTimeoutInMs = 200;
+	private refreshGridTimeoutInMs = 200; //original value was 200
 
 	// The timeout handle for the refresh grid task
 	private refreshGridTimeoutHandle: any;
@@ -423,6 +424,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		self.placeHolderDataSets.push(undefinedDataSet);
 		self.refreshGrid();
 
+
 		// Setup the state of the selected cell
 		this.resetCurrentCell();
 		this.currentEditCellValue = undefined;
@@ -448,6 +450,8 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	private refreshGrid(): Thenable<void> {
+
+		//handle complete happens before refreshGrid is called for firstRender, something is not right.
 		return new Promise<void>((resolve, reject) => {
 			const self = this;
 			clearTimeout(self.refreshGridTimeoutHandle);
@@ -461,37 +465,21 @@ export class EditDataGridPanel extends GridParentComponent {
 				}
 
 				//self._cd.detectChanges();
-
 				if (self.firstRender) {
-
-					if (self.placeHolderDataSets.length > 0) {
-						let dataSet = self.placeHolderDataSets[0];
-						if (dataSet.columnDefinitions) {
-							let t = new Table(self.nativeElement, { dataProvider: new AsyncDataProvider(dataSet.dataRows), columns: dataSet.columnDefinitions }, { showRowNumber: true });
-							t.rerenderGrid(0, dataSet.dataRows.getLength());
-							t.resizeCanvas();
-							self._tables[0] = t;
-							console.log(self._tables[0]);
-
-
-							// self._tables[0] = new Table(
-							// 	self.nativeElement,
-							// 	{ dataProvider: dataSet.dataRows, columns: dataSet.columnDefinition },
-							// 	{ showRowNumber: true });
-						}
-					}
-
-
+					self._tables[0] = self.createNewTable();
 					let setActive = function () {
 						if (self.firstRender && self._tables.length > 0) {
 							self._tables[0].setActive();
+							self._tables[0].rerenderGrid(0, self.dataSet.dataRows.getLength());
+							self._tables[0].resizeCanvas();
+
 							self.firstRender = false;
 						}
 					};
 
 					setTimeout(() => {
 						setActive();
-					});
+					}, self.refreshGridTimeoutInMs);
 				}
 				resolve();
 			}, self.refreshGridTimeoutInMs);
@@ -789,5 +777,21 @@ export class EditDataGridPanel extends GridParentComponent {
 			};
 		}
 
+	}
+
+
+
+
+	//my code here:
+	private createNewTable(): Table<any> {
+		let t: Table<any>;
+		if (this.placeHolderDataSets) {
+			let dataSet = this.placeHolderDataSets[0];
+			if (dataSet.columnDefinitions) {
+				t = new Table(this.nativeElement, { dataProvider: new AsyncDataProvider(dataSet.dataRows), columns: dataSet.columnDefinitions }, { showRowNumber: true });
+				return t;
+			}
+		}
+		return new Table(this.nativeElement);
 	}
 }

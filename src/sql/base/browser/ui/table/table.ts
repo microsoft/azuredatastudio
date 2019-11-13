@@ -129,7 +129,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._grid.render();
 	}
 
-	private renderGridDataRowsRange(startIndex: number, count: number): void {
+	private renderGridRange(startIndex: number, count: number): void {
 
 		let editor = this._grid.getCellEditor();
 		let oldValue = editor ? (<Slick.Editors.Text<T>>editor).getValue() : undefined;
@@ -144,15 +144,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		}
 	}
 
-	private onResize(): void {
-		if (this._grid !== undefined) {
-			// this will make sure the grid header and body to be re-rendered\
-			this._grid.resizeCanvas();
-		}
-	}
-
 	public rerenderGrid(start: number, end: number) {
-		this.renderGridDataRowsRange(start, end);
+		//render grid range seems to have problems loading.
+		this.renderGridRange(start, end);
 		this._grid.updateRowCount();
 		this._grid.setColumns(this._grid.getColumns());
 		this._grid.invalidateAllRows();
