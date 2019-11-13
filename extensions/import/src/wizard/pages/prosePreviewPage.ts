@@ -3,15 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { ImportDataModel } from '../api/models';
 import { ImportPage } from '../api/importPage';
 import { FlatFileProvider } from '../../services/contracts';
 import { FlatFileWizard } from '../flatFileWizard';
-import { PerformanceObserver } from 'perf_hooks';
 
 const localize = nls.loadMessageBundle();
 

@@ -290,7 +290,7 @@ export function parseAclList(aclString: string): AclEntry[] {
  * assumes the string has already been checked for validity.
  * @param aclString The string representation of the ACL entry
  */
-export function parseAclEntry(aclString: string): AclEntry {
+function parseAclEntry(aclString: string): AclEntry {
 	const parts: string[] = aclString.split(':');
 	let i = 0;
 	const scope: AclEntryScope = parts.length === 4 && parts[i++] === 'default' ? AclEntryScope.default : AclEntryScope.access;

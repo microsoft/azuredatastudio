@@ -6,7 +6,7 @@
 import { AzureResourceDatabaseServer } from '../../interfaces';
 import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
 
-export interface SqlInstanceGraphData extends GraphData {
+interface SqlInstanceGraphData extends GraphData {
 	properties: {
 		fullyQualifiedDomainName: string;
 		administratorLogin: string;

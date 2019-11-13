@@ -25,12 +25,13 @@ const localize = nls.loadMessageBundle();
 /**
  * The main controller class that initializes the extension
  */
-export class TemplateMapObject {
+class TemplateMapObject {
 	notebookInfo: azdata.AgentNotebookInfo;
 	fileUri: vscode.Uri;
 	tempPath: string;
 	ownerUri: string;
 }
+
 export class MainController {
 
 	protected _context: vscode.ExtensionContext;

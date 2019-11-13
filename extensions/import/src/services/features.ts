@@ -2,14 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import {
 	ClientCapabilities,
 	StaticFeature,
 	RPCMessageType,
-	ServerCapabilities
+	ServerCapabilities,
+	RequestType
 } from 'vscode-languageclient';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { Disposable } from 'vscode';
@@ -57,7 +57,7 @@ export class FlatFileImportFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		let requestSender = (requestType, params) => {
+		let requestSender = (requestType: RequestType<any, any, void, void>, params: any) => {
 			return client.sendRequest(requestType, params).then(
 				r => {
 					return r as any;
