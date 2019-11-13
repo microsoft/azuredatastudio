@@ -42,9 +42,8 @@ Registry.as<ViewletRegistry>(ViewletExtensions.Viewlets).registerViewlet(new Vie
 	SCMViewlet,
 	VIEWLET_ID,
 	localize('source control', "Source Control"),
-	'scm',
-	// {{SQL CARBON EDIT}}
-	12
+	'codicon-source-control',
+	12 // {{SQL CARBON EDIT}}
 ));
 
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)

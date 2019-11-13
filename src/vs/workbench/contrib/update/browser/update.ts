@@ -134,7 +134,7 @@ export class ProductContribution implements IWorkbenchContribution {
 
 		// was there an update? if so, open release notes
 		const releaseNotesUrl = productService.releaseNotesUrl;
-		if (shouldShowReleaseNotes && !environmentService.skipReleaseNotes && releaseNotesUrl && lastVersion && productService.version !== lastVersion && productService.quality === 'stable') { // {{SQL CARBON EDIT}} Only show release notes for stable build
+		if (shouldShowReleaseNotes && !environmentService.args['skip-release-notes'] && releaseNotesUrl && lastVersion && productService.version !== lastVersion && productService.quality === 'stable') { // {{SQL CARBON EDIT}} Only show release notes for stable build
 			/* // {{SQL CARBON EDIT}} Prompt user to open release notes in browser until we can get ADS release notes from the web
 			showReleaseNotes(instantiationService, productService.version)
 				.then(undefined, () => {

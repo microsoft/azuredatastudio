@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/extensions';
 import { localize } from 'vs/nls';
 import { KeyMod, KeyChord, KeyCode } from 'vs/base/common/keyCodes';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -81,9 +80,8 @@ const viewletDescriptor = new ViewletDescriptor(
 	ExtensionsViewlet,
 	VIEWLET_ID,
 	localize('extensions', "Extensions"),
-	'extensions',
-	// {{SQL CARBON EDIT}}
-	14
+	'codicon-extensions',
+	14 // {{SQL CARBON EDIT}}
 );
 
 Registry.as<ViewletRegistry>(ViewletExtensions.Viewlets)

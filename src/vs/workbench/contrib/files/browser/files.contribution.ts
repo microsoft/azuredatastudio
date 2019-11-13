@@ -77,9 +77,8 @@ Registry.as<ViewletRegistry>(ViewletExtensions.Viewlets).registerViewlet(new Vie
 	ExplorerViewlet,
 	VIEWLET_ID,
 	nls.localize('explore', "Explorer"),
-	'explore',
-	// {{SQL CARBON EDIT}}
-	10
+	'codicon-files',
+	10 // {{SQL CARBON EDIT}}
 ));
 
 registerSingleton(IExplorerService, ExplorerService, true);
