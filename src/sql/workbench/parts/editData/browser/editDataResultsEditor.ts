@@ -146,7 +146,6 @@ export class EditDataResultsEditor extends BaseEditor {
 			onSaveViewState: input.onSaveViewStateEmitter.event,
 			onRestoreViewState: input.onRestoreViewStateEmitter.event
 		};
-		console.log(params.dataService);
 
 		this._applySettings();
 
