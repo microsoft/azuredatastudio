@@ -12,7 +12,7 @@ const localize = nls.loadMessageBundle();
 
 export class ConnectControllerDialog extends HdfsDialogBase<HdfsDialogProperties, ClusterController> {
 	constructor(model: ConnectControllerModel) {
-		super(localize('connectController.dialog.title', "Connect to Controller"), model);
+		super(localize('connectController.dialog.title', "Connect to Controller (preview)"), model);
 	}
 
 	protected getMainSectionComponents(): (azdata.FormComponentGroup | azdata.FormComponent)[] {
