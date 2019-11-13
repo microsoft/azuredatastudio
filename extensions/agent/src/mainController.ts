@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
@@ -36,7 +35,6 @@ export class MainController {
 
 	protected _context: vscode.ExtensionContext;
 	private jobDialog: JobDialog;
-	private jobStepDialog: JobStepDialog;
 	private alertDialog: AlertDialog;
 	private operatorDialog: OperatorDialog;
 	private proxyDialog: ProxyDialog;
@@ -204,13 +202,6 @@ export class MainController {
 			connection = await azdata.connection.openConnectionDialog();
 		}
 		else {
-			let sqlConnectionsPresent: boolean;
-			for (let i = 0; i < connections.length; i++) {
-				if (connections[i].providerName === 'MSSQL') {
-					sqlConnectionsPresent = true;
-					break;
-				}
-			}
 			let connectionNames: azdata.connection.Connection[] = [];
 			let connectionDisplayString: string[] = [];
 			for (let i = 0; i < connections.length; i++) {
