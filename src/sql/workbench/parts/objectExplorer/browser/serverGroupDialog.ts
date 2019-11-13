@@ -16,7 +16,6 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
@@ -29,6 +28,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { Color } from 'vs/base/common/color';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export class ServerGroupDialog extends Modal {
 	private _addServerButton: Button;
@@ -54,7 +54,7 @@ export class ServerGroupDialog extends Modal {
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@ITelemetryService telemetryService: ITelemetryService,
+		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
