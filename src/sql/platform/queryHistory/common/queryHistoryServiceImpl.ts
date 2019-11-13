@@ -14,7 +14,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
-import { IConfigurationChangedEvent } from 'sql/workbench/parts/profiler/browser/profilerFindWidget';
+import { find } from 'vs/base/common/arrays';
 
 /**
  * Service that collects the results of executed queries
@@ -42,37 +42,37 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 		this._captureEnabled = !!this._configurationService.getValue<boolean>('queryHistory.captureEnabled');
 
 		this._register(this._configurationService.onDidChangeConfiguration((e: IConfigurationChangeEvent) => {
-			if (e.affectedKeys.includes('queryHistory.captureEnabled')) {
+			if (find(e.affectedKeys, x => x === 'queryHistory.captureEnabled')) {
 				this.updateCaptureEnabled();
 			}
 		}));
 
 		this._register(_queryModelService.onQueryEvent((e: IQueryEvent) => {
 			if (this._captureEnabled && e.type === 'queryStop') {
-				let selection = e.queryInfo.selection[0];
-				if (selection) {
-					const uri: URI = URI.parse(e.uri);
-					// VS Range is 1 based so offset values by 1. The endLine we get back from SqlToolsService is incremented
-					// by 1 from the original input range sent in as well so take that into account and don't modify
-					const text: string = _modelService.getModel(uri).getValueInRange(new Range(
-						selection.startLine + 1,
-						selection.startColumn + 1,
-						selection.endLine,
-						selection.endColumn + 1));
+				const uri: URI = URI.parse(e.uri);
+				// VS Range is 1 based so offset values by 1. The endLine we get back from SqlToolsService is incremented
+				// by 1 from the original input range sent in as well so take that into account and don't modify
+				const text: string = e.queryInfo.selection && e.queryInfo.selection.length > 0 ?
+					_modelService.getModel(uri).getValueInRange(new Range(
+						e.queryInfo.selection[0].startLine + 1,
+						e.queryInfo.selection[0].startColumn + 1,
+						e.queryInfo.selection[0].endLine,
+						e.queryInfo.selection[0].endColumn + 1)) :
+					// If no specific selection get the entire text
+					_modelService.getModel(uri).getValue();
 
-					const newInfo = new QueryHistoryInfo(text, _connectionManagementService.getConnectionProfile(e.uri), new Date(), QueryStatus.Succeeded);
+				const newInfo = new QueryHistoryInfo(text, _connectionManagementService.getConnectionProfile(e.uri), new Date(), QueryStatus.Succeeded);
 
-					// icon as required (for now logic is if any message has error query has error)
-					let error: boolean = false;
-					e.queryInfo.messages.forEach(x => error = error || x.isError);
-					if (error) {
-						newInfo.status = QueryStatus.Failed;
-					}
-
-					// Append new node to beginning of array so the newest ones are at the top
-					this._infos.unshift(newInfo);
-					this._onInfosUpdated.fire(this._infos);
+				// icon as required (for now logic is if any message has error query has error)
+				let error: boolean = false;
+				e.queryInfo.messages.forEach(x => error = error || x.isError);
+				if (error) {
+					newInfo.status = QueryStatus.Failed;
 				}
+
+				// Append new node to beginning of array so the newest ones are at the top
+				this._infos.unshift(newInfo);
+				this._onInfosUpdated.fire(this._infos);
 			}
 		}));
 	}
