@@ -26,17 +26,17 @@ export enum DeclarativeDataType {
 @Component({
 	selector: 'modelview-declarativeTable',
 	template: `
-	<table role=grid aria-labelledby="ID_REF" #container *ngIf="columns" class="declarative-table" [style.height]="getHeight()">
+	<table role=grid #container *ngIf="columns" class="declarative-table" [style.height]="getHeight()" [attr.aria-label]="ariaLabel">
 	<thead>
 		<ng-container *ngFor="let column of columns;let h = index">
-		<th class="declarative-table-header" tabindex="-1" role="button" aria-sort="none">{{column.displayName}}</th>
+		<th class="declarative-table-header" tabindex="-1" aria-sort="none">{{column.displayName}}</th>
 		</ng-container>
 	</thead>
 		<ng-container *ngIf="data">
 			<ng-container *ngFor="let row of data;let r = index">
-				<tr class="declarative-table-row" >
+				<tr class="declarative-table-row">
 					<ng-container *ngFor="let cellData of row;let c = index">
-						<td class="declarative-table-cell" tabindex="-1" role="button" [style.width]="getColumnWidth(c)" [attr.aria-label]="getAriaLabel(r, c)" >
+						<td class="declarative-table-cell" tabindex="-1" [style.width]="getColumnWidth(c)" [attr.aria-label]="getAriaLabel(r, c)" >
 							<checkbox *ngIf="isCheckBox(c)" label="" (onChange)="onCheckBoxChanged($event,r,c)" [enabled]="isControlEnabled(c)" [checked]="isChecked(r,c)"></checkbox>
 							<select-box *ngIf="isSelectBox(c)" [options]="GetOptions(c)" (onDidSelect)="onSelectBoxChanged($event,r,c)" [selectedOption]="GetSelectedOptionDisplayName(r,c)"></select-box>
 							<editable-select-box *ngIf="isEditableSelectBox(c)" [options]="GetOptions(c)" (onDidSelect)="onSelectBoxChanged($event,r,c)" [selectedOption]="GetSelectedOptionDisplayName(r,c)"></editable-select-box>
