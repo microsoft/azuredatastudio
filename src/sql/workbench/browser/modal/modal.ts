@@ -28,6 +28,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/resour
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 import { find, firstIndex } from 'vs/base/common/arrays';
+import { isVisible } from 'sql/base/browser/dom';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
@@ -321,7 +322,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Figures out the first and last elements which the user can tab to in the dialog
 	 */
 	public setFirstLastTabbableElement() {
-		let tabbableElements = this._bodyContainer.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
+		const tabbableElements = this.getBodyContainerTababbleElements();
 		if (tabbableElements && tabbableElements.length > 0) {
 			this._firstTabbableElement = <HTMLElement>tabbableElements[0];
 			this._lastTabbableElement = <HTMLElement>tabbableElements[tabbableElements.length - 1];
@@ -335,14 +336,23 @@ export abstract class Modal extends Disposable implements IThemable {
 		// Try to find focusable element in dialog pane rather than overall container. _modalBodySection contains items in the pane for a wizard.
 		// This ensures that we are setting the focus on a useful element in the form when possible.
 		let focusableElements = this._modalBodySection ?
-			this._modalBodySection.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]') :
-			this._bodyContainer.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
+			Array.from(this._modalBodySection.querySelectorAll('input')).filter(e => isVisible(e)) :
+			this.getBodyContainerTababbleElements();
 
 		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
 
 		if (focusableElements && focusableElements.length > 0) {
 			(<HTMLElement>focusableElements[0]).focus();
 		}
+	}
+
+	/**
+	 * Gets all the currently visible elements for the body container of the dialog.
+	 */
+	private getBodyContainerTababbleElements(): HTMLElement[] {
+		// Filter out non-visible elements, which include things such as the messages panel that isn't always displayed
+		return Array.from(this._bodyContainer.querySelectorAll<HTMLElement>('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), div:not([style*="display: none"]) [tabindex="0"]'))
+			.filter(e => isVisible(e));
 	}
 
 	/**
