@@ -3,17 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import { nb } from 'azdata';
+import * as assert from 'assert';
 
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { URI } from 'vs/base/common/uri';
 
 import { ClientSession } from 'sql/workbench/parts/notebook/browser/models/clientSession';
-import { SessionManager, EmptySession } from 'sql/workbench/services/notebook/browser/sessionManager';
+import { SessionManager } from 'sql/workbench/services/notebook/browser/sessionManager';
 import { NotebookManagerStub, ServerManagerStub } from './common';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
 suite('Client Session', function (): void {
 	let path = URI.file('my/notebook.ipynb');
@@ -50,42 +51,42 @@ suite('Client Session', function (): void {
 	});
 
 	test('Should set path, isReady and ready on construction', function (): void {
-		should(session.notebookUri).equal(path);
-		should(session.ready).not.be.undefined();
-		should(session.isReady).be.false();
-		should(session.status).equal('starting');
-		should(session.isInErrorState).be.false();
-		should(session.errorMessage).be.undefined();
+		assert.equal(session.notebookUri, path);
+		assert(!isUndefinedOrNull(session.ready));
+		assert(!session.isReady);
+		assert.equal(session.status, 'starting');
+		assert(!session.isInErrorState);
+		assert(isUndefinedOrNull(session.errorMessage));
 	});
 
 	test('Should call on serverManager startup if set', async function (): Promise<void> {
 		// Given I have a serverManager that starts successfully
 		serverManager.result = Promise.resolve();
-		should(session.isReady).be.false();
+		assert(!session.isReady);
 
 		// When I kick off initialization
 		await session.initialize();
 
 		// Then I expect ready to be completed too
 		await session.ready;
-		should(serverManager.calledStart).be.true();
-		should(session.isReady).be.true();
+		assert(serverManager.calledStart);
+		assert(session.isReady);
 	});
 
 	test('Should go to error state if serverManager startup fails', async function (): Promise<void> {
 		// Given I have a serverManager that fails to start
 		serverManager.result = Promise.reject('error');
-		should(session.isInErrorState).be.false();
+		assert(!session.isInErrorState);
 
 		// When I initialize
 		await session.initialize();
 
 		// Then I expect ready to complete, but isInErrorState to be true
 		await session.ready;
-		should(session.isReady).be.true();
-		should(serverManager.calledStart).be.true();
-		should(session.isInErrorState).be.true();
-		should(session.errorMessage).equal('error');
+		assert(session.isReady);
+		assert(serverManager.calledStart);
+		assert(session.isInErrorState);
+		assert.equal(session.errorMessage, 'error');
 	});
 
 	test('Should be ready when session manager is ready', async function (): Promise<void> {
@@ -99,8 +100,8 @@ suite('Client Session', function (): void {
 		await session.initialize();
 
 		// Then
-		should(session.isReady).be.true();
-		should(session.isInErrorState).be.false();
+		assert(session.isReady);
+		assert(!session.isInErrorState);
 		await session.ready;
 	});
 
@@ -116,8 +117,8 @@ suite('Client Session', function (): void {
 
 		// Then
 		await session.ready;
-		should(session.isReady).be.true();
-		should(session.isInErrorState).be.true();
+		assert(session.isReady);
+		assert(session.isInErrorState);
 	});
 
 	test('Should go to error state if sessionManager fails', async function (): Promise<void> {
@@ -129,9 +130,9 @@ suite('Client Session', function (): void {
 		await session.initialize();
 
 		// Then
-		should(session.isReady).be.true();
-		should(session.isInErrorState).be.true();
-		should(session.errorMessage).equal('error');
+		assert(session.isReady);
+		assert(session.isInErrorState);
+		assert.equal(session.errorMessage, 'error');
 	});
 
 	// test('Should start session automatically if kernel preference requests it', async function (): Promise<void> {
