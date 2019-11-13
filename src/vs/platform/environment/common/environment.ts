@@ -149,6 +149,7 @@ export interface IEnvironmentService {
 	extensionsPath?: string;
 	extensionDevelopmentLocationURI?: URI[];
 	extensionTestsLocationURI?: URI;
+	logExtensionHostCommunication?: boolean;
 
 	debugExtensionHost: IExtensionHostDebugParams;
 
