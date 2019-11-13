@@ -32,6 +32,7 @@ import { TestStorageService, TestEnvironmentService, TestEditorService } from 'v
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { NullLogService } from 'vs/platform/log/common/log';
+import { assign } from 'vs/base/common/objects';
 
 suite('SQL ConnectionManagementService tests', () => {
 
@@ -65,9 +66,9 @@ suite('SQL ConnectionManagementService tests', () => {
 		id: undefined
 	};
 	let connectionProfileWithEmptySavedPassword: IConnectionProfile =
-		Object.assign({}, connectionProfile, { password: '', serverName: connectionProfile.serverName + 1 });
+		assign({}, connectionProfile, { password: '', serverName: connectionProfile.serverName + 1 });
 	let connectionProfileWithEmptyUnsavedPassword: IConnectionProfile =
-		Object.assign({}, connectionProfile, { password: '', serverName: connectionProfile.serverName + 2, savePassword: false });
+		assign({}, connectionProfile, { password: '', serverName: connectionProfile.serverName + 2, savePassword: false });
 
 	let connectionManagementService: ConnectionManagementService;
 	let configResult: { [key: string]: any } = {};
@@ -758,9 +759,9 @@ suite('SQL ConnectionManagementService tests', () => {
 		let dbName = 'master';
 		let serverName = 'test_server';
 		let userName = 'test_user';
-		let connectionProfileWithoutDb: IConnectionProfile = Object.assign(connectionProfile,
+		let connectionProfileWithoutDb: IConnectionProfile = assign(connectionProfile,
 			{ serverName: serverName, databaseName: '', userName: userName, getOptionsKey: () => undefined });
-		let connectionProfileWithDb: IConnectionProfile = Object.assign(connectionProfileWithoutDb, { databaseName: dbName });
+		let connectionProfileWithDb: IConnectionProfile = assign(connectionProfileWithoutDb, { databaseName: dbName });
 		// Save the database with a URI that has the database name filled in, to mirror Carbon's behavior
 		let ownerUri = Utils.generateUri(connectionProfileWithDb);
 		connect(ownerUri, undefined, false, connectionProfileWithoutDb).then(() => {
@@ -806,7 +807,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('getActiveConnectionCredentials returns the credentials dictionary for a connection profile', () => {
-		let profile = Object.assign({}, connectionProfile);
+		let profile = assign({}, connectionProfile);
 		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		connectionStatusManager.addConnection(profile, 'test_uri');
@@ -816,7 +817,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('getConnectionUriFromId returns a URI of an active connection with the given id', () => {
-		let profile = Object.assign({}, connectionProfile);
+		let profile = assign({}, connectionProfile);
 		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		let uri = 'test_initial_uri';
@@ -831,7 +832,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('getConectionUriFromId returns undefined if the given connection is not active', () => {
-		let profile = Object.assign({}, connectionProfile);
+		let profile = assign({}, connectionProfile);
 		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		connectionStatusManager.addConnection(profile, Utils.generateUri(profile));

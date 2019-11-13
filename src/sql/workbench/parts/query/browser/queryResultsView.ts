@@ -23,6 +23,8 @@ import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Event } from 'vs/base/common/event';
+import { find } from 'vs/base/common/arrays';
+import { startsWith } from 'vs/base/common/strings';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
@@ -234,7 +236,7 @@ export class QueryResultsView extends Disposable {
 			this.input.state.activeTab = this.resultsTab.identifier;
 		}));
 		this.runnerDisposables.add(runner.onQueryEnd(() => {
-			if (runner.messages.find(v => v.isError)) {
+			if (runner.messages.some(v => v.isError)) {
 				this._panelView.showTab(this.messagesTab.identifier);
 			}
 		}));
@@ -266,7 +268,7 @@ export class QueryResultsView extends Disposable {
 		this.dynamicModelViewTabs = [];
 
 		this.input.state.visibleTabs.forEach(tabId => {
-			if (tabId.startsWith('querymodelview;')) {
+			if (startsWith(tabId, 'querymodelview;')) {
 				// tab id format is 'tab type;title;model view id'
 				let parts = tabId.split(';');
 				if (parts.length === 3) {

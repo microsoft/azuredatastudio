@@ -563,7 +563,7 @@ export class RestoreDialog extends Modal {
 
 		let isSame = false;
 		if (this.viewModel.selectedBackupSets && this.viewModel.selectedBackupSets.length === selectedFiles.length) {
-			isSame = this.viewModel.selectedBackupSets.some(item => selectedFiles.includes(item));
+			isSame = this.viewModel.selectedBackupSets.some(item => selectedFiles.some(x => x === item));
 		}
 
 		if (!isSame) {

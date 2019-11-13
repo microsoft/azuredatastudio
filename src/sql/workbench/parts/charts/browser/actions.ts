@@ -20,6 +20,7 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { IFileDialogService, FileFilter } from 'vs/platform/dialogs/common/dialogs';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { assign } from 'vs/base/common/objects';
 
 export interface IChartActionContext {
 	options: IInsightOptions;
@@ -50,7 +51,7 @@ export class CreateInsightAction extends Action {
 		let queryFile: string = uri.fsPath;
 		let query: string = undefined;
 		let type = {};
-		let options = Object.assign({}, context.options);
+		let options = assign({}, context.options);
 		delete options.type;
 		type[context.options.type] = options;
 		// create JSON

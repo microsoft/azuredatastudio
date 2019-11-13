@@ -121,7 +121,7 @@ export class ConnectionDialogWidget extends Modal {
 		if (this._newConnectionParams && this._newConnectionParams.providers) {
 			const validProviderNames = Object.keys(this.providerNameToDisplayNameMap).filter(x => this.includeProvider(x, this._newConnectionParams));
 			if (validProviderNames && validProviderNames.length > 0) {
-				filteredProviderDisplayNames = filteredProviderDisplayNames.filter(x => validProviderNames.find(
+				filteredProviderDisplayNames = filteredProviderDisplayNames.filter(x => validProviderNames.some(
 					v => this.providerNameToDisplayNameMap[v] === x) !== undefined
 				);
 			}
@@ -134,7 +134,7 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	private includeProvider(providerName: string, params?: INewConnectionParams): Boolean {
-		return params === undefined || params.providers === undefined || params.providers.find(x => x === providerName) !== undefined;
+		return params === undefined || params.providers === undefined || params.providers.some(x => x === providerName);
 	}
 
 	protected renderBody(container: HTMLElement): void {
