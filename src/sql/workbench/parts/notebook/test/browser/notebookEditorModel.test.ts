@@ -8,7 +8,7 @@ import * as os from 'os';
 import * as assert from 'assert';
 
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
-import { ConnectionManagementService } from 'sql/platform/connection/browser/connectionManagementService';
+import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { CellModel } from 'sql/workbench/parts/notebook/browser/models/cell';
 import { CellTypes, NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { ModelFactory } from 'sql/workbench/parts/notebook/browser/models/modelFactory';

@@ -9,8 +9,8 @@ import { CommonModule, APP_BASE_HREF } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/browser/core/componentHost.directive';
-import { providerIterator } from 'sql/platform/bootstrap/browser/bootstrapService';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { providerIterator } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { EditableDropDown } from 'sql/platform/browser/editableDropdown/editableDropdown.component';
 import { NotebookComponent } from 'sql/workbench/parts/notebook/browser/notebook.component';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -27,7 +27,7 @@ import { InputBox } from 'sql/platform/browser/inputbox/inputBox.component';
 import { IMimeComponentRegistry, Extensions } from 'sql/workbench/parts/notebook/browser/outputs/mimeRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { LinkHandlerDirective } from 'sql/workbench/parts/notebook/browser/cellViews/linkHandler.directive';
-import { IBootstrapParams, ISelector } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { IBootstrapParams, ISelector } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { ICellComponenetRegistry, Extensions as OutputComponentExtensions } from 'sql/platform/notebooks/common/outputRegistry';
 import { CollapseComponent } from 'sql/workbench/parts/notebook/browser/cellViews/collapse.component';
 

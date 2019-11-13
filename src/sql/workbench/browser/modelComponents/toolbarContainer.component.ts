@@ -14,7 +14,7 @@ import { Orientation, ToolbarLayout } from 'sql/workbench/api/common/sqlExtHostT
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 
 export interface ToolbarItemConfig {
 	title?: string;

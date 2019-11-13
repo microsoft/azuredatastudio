@@ -14,7 +14,6 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
-import { IConfigurationChangedEvent } from 'sql/workbench/parts/profiler/browser/profilerFindWidget';
 
 /**
  * Service that collects the results of executed queries

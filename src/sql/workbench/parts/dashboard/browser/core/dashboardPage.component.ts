@@ -9,14 +9,14 @@ import 'sql/workbench/parts/dashboard/browser/core/dashboardPanelStyles';
 import { Component, Inject, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
 
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/browser/services/dashboardServiceInterface.service';
-import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
+import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { WidgetConfig, TabConfig, TabSettingConfig } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
 import { IPropertiesConfig } from 'sql/workbench/parts/dashboard/browser/pages/serverDashboardPage.contribution';
 import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
-import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/platform/dashboard/browser/dashboardRegistry';
+import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/workbench/parts/dashboard/browser/dashboardRegistry';
 import { PinUnpinTabAction, AddFeatureTabAction } from './actions';
 import { TabComponent, TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import { AngularEventType, IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
+import { AngularEventType, IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { DashboardTab, IConfigModifierCollection } from 'sql/workbench/parts/dashboard/browser/core/interfaces';
 import * as dashboardHelper from 'sql/workbench/parts/dashboard/browser/core/dashboardHelper';
 import { WIDGETS_CONTAINER } from 'sql/workbench/parts/dashboard/browser/containers/dashboardWidgetContainer.contribution';
