@@ -28,6 +28,12 @@
     <trans-unit id="command.deletemount.title">
       <source xml:lang="en">Delete Mount</source>
     </trans-unit>
+    <trans-unit id="bdc.configuration.title">
+      <source xml:lang="en">Big Data Cluster</source>
+    </trans-unit>
+    <trans-unit id="bdc.ignoreSslVerification.desc">
+      <source xml:lang="en">Ignore SSL verification errors against SQL Server Big Data Cluster endpoints such as HDFS, Spark, and Controller if true</source>
+    </trans-unit>
   </body></file>
   <file original="extensions/big-data-cluster/dist/bigDataCluster/utils" source-language="en" datatype="plaintext"><body>
     <trans-unit id="state.creating">
@@ -42,20 +48,65 @@
     <trans-unit id="state.deleting">
       <source xml:lang="en">Deleting</source>
     </trans-unit>
-    <trans-unit id="state.waitingForDeletion">
-      <source xml:lang="en">Waiting For Deletion</source>
-    </trans-unit>
     <trans-unit id="state.deleted">
       <source xml:lang="en">Deleted</source>
+    </trans-unit>
+    <trans-unit id="state.applyingUpgrade">
+      <source xml:lang="en">Applying Upgrade</source>
     </trans-unit>
     <trans-unit id="state.upgrading">
       <source xml:lang="en">Upgrading</source>
     </trans-unit>
-    <trans-unit id="state.waitingForUpgrade">
-      <source xml:lang="en">Waiting For Upgrade</source>
+    <trans-unit id="state.applyingmanagedupgrade">
+      <source xml:lang="en">Applying Managed Upgrade</source>
+    </trans-unit>
+    <trans-unit id="state.managedUpgrading">
+      <source xml:lang="en">Managed Upgrading</source>
+    </trans-unit>
+    <trans-unit id="state.rollback">
+      <source xml:lang="en">Rollback</source>
+    </trans-unit>
+    <trans-unit id="state.rollbackInProgress">
+      <source xml:lang="en">Rollback In Progress</source>
+    </trans-unit>
+    <trans-unit id="state.rollbackComplete">
+      <source xml:lang="en">Rollback Complete</source>
     </trans-unit>
     <trans-unit id="state.error">
       <source xml:lang="en">Error</source>
+    </trans-unit>
+    <trans-unit id="state.creatingSecrets">
+      <source xml:lang="en">Creating Secrets</source>
+    </trans-unit>
+    <trans-unit id="state.waitingForSecrets">
+      <source xml:lang="en">Waiting For Secrets</source>
+    </trans-unit>
+    <trans-unit id="state.creatingGroups">
+      <source xml:lang="en">Creating Groups</source>
+    </trans-unit>
+    <trans-unit id="state.waitingForGroups">
+      <source xml:lang="en">Waiting For Groups</source>
+    </trans-unit>
+    <trans-unit id="state.creatingResources">
+      <source xml:lang="en">Creating Resources</source>
+    </trans-unit>
+    <trans-unit id="state.waitingForResources">
+      <source xml:lang="en">Waiting For Resources</source>
+    </trans-unit>
+    <trans-unit id="state.creatingKerberosDelegationSetup">
+      <source xml:lang="en">Creating Kerberos Delegation Setup</source>
+    </trans-unit>
+    <trans-unit id="state.waitingForKerberosDelegationSetup">
+      <source xml:lang="en">Waiting For Kerberos Delegation Setup</source>
+    </trans-unit>
+    <trans-unit id="state.waitingForDeletion">
+      <source xml:lang="en">Waiting For Deletion</source>
+    </trans-unit>
+    <trans-unit id="state.waitingForUpgrade">
+      <source xml:lang="en">Waiting For Upgrade</source>
+    </trans-unit>
+    <trans-unit id="state.upgradePaused">
+      <source xml:lang="en">Upgrade Paused</source>
     </trans-unit>
     <trans-unit id="state.running">
       <source xml:lang="en">Running</source>
@@ -120,6 +171,9 @@
     <trans-unit id="bdc.unhealthy">
       <source xml:lang="en">Unhealthy</source>
     </trans-unit>
+    <trans-unit id="endpointsError">
+      <source xml:lang="en">Unexpected error retrieving BDC Endpoints: {0}</source>
+    </trans-unit>
   </body></file>
   <file original="extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi" source-language="en" datatype="plaintext"><body>
     <trans-unit id="error.no.activedirectory">
@@ -147,6 +201,56 @@
       <source xml:lang="en">Error deleting mount</source>
     </trans-unit>
   </body></file>
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="basicAuthName">
+      <source xml:lang="en">Basic</source>
+    </trans-unit>
+    <trans-unit id="integratedAuthName">
+      <source xml:lang="en">Windows Authentication</source>
+    </trans-unit>
+    <trans-unit id="mount.hdfs.loginerror1">
+      <source xml:lang="en">Login to controller failed</source>
+    </trans-unit>
+    <trans-unit id="mount.hdfs.loginerror2">
+      <source xml:lang="en">Login to controller failed: {0}</source>
+    </trans-unit>
+    <trans-unit id="err.controller.username.required">
+      <source xml:lang="en">Username is required</source>
+    </trans-unit>
+    <trans-unit id="err.controller.password.required">
+      <source xml:lang="en">Password is required</source>
+    </trans-unit>
+    <trans-unit id="textUrlLower">
+      <source xml:lang="en">url</source>
+    </trans-unit>
+    <trans-unit id="textUsernameLower">
+      <source xml:lang="en">username</source>
+    </trans-unit>
+    <trans-unit id="textPasswordLower">
+      <source xml:lang="en">password</source>
+    </trans-unit>
+    <trans-unit id="textUrlCapital">
+      <source xml:lang="en">URL</source>
+    </trans-unit>
+    <trans-unit id="textAuthCapital">
+      <source xml:lang="en">Authentication type</source>
+    </trans-unit>
+    <trans-unit id="textUsernameCapital">
+      <source xml:lang="en">Username</source>
+    </trans-unit>
+    <trans-unit id="textPasswordCapital">
+      <source xml:lang="en">Password</source>
+    </trans-unit>
+    <trans-unit id="hdsf.dialog.connection.section">
+      <source xml:lang="en">Cluster Connection</source>
+    </trans-unit>
+    <trans-unit id="hdfs.dialog.ok">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="hdfs.dialog.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+  </body></file>
   <file original="extensions/big-data-cluster/dist/extension" source-language="en" datatype="plaintext"><body>
     <trans-unit id="mount.error.endpointNotFound">
       <source xml:lang="en">Controller endpoint information was not found</source>
@@ -162,6 +266,16 @@
     </trans-unit>
     <trans-unit id="textConfirmDeleteController">
       <source xml:lang="en">Are you sure you want to delete '{0}'?</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/connectControllerDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="connectController.dialog.title">
+      <source xml:lang="en">Connect to Controller</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/commonControls" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="bdc.dashboard.viewDetails">
+      <source xml:lang="en">View Details</source>
     </trans-unit>
   </body></file>
   <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/addControllerNode" source-language="en" datatype="plaintext"><body>
@@ -263,14 +377,14 @@
     <trans-unit id="bdc.dashboard.metricsAndLogsLabel">
       <source xml:lang="en">Metrics and Logs</source>
     </trans-unit>
-    <trans-unit id="bdc.dashboard.metricsHeader">
-      <source xml:lang="en">Metrics</source>
+    <trans-unit id="bdc.dashboard.nodeMetricsHeader">
+      <source xml:lang="en">Node Metrics</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.sqlMetricsHeader">
+      <source xml:lang="en">SQL Metrics</source>
     </trans-unit>
     <trans-unit id="bdc.dashboard.logsHeader">
       <source xml:lang="en">Logs</source>
-    </trans-unit>
-    <trans-unit id="bdc.dashboard.viewDetails">
-      <source xml:lang="en">View Details</source>
     </trans-unit>
   </body></file>
   <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage" source-language="en" datatype="plaintext"><body>
@@ -307,40 +421,28 @@
     <trans-unit id="bdc.dashboard.endpointHeader">
       <source xml:lang="en">Endpoint</source>
     </trans-unit>
-    <trans-unit id="bdc.dashboard.viewDetails">
-      <source xml:lang="en">View Details</source>
+    <trans-unit id="endpointsError">
+      <source xml:lang="en">Unexpected error retrieving BDC Endpoints: {0}</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.noConnection">
+      <source xml:lang="en">The dashboard requires a connection. Please click retry to enter your credentials.</source>
+    </trans-unit>
+    <trans-unit id="bdc.dashboard.unexpectedError">
+      <source xml:lang="en">Unexpected error occurred: {0}</source>
     </trans-unit>
     <trans-unit id="bdc.dashboard.copyTitle">
       <source xml:lang="en">Copy</source>
     </trans-unit>
   </body></file>
   <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="basicAuthName">
-      <source xml:lang="en">Basic</source>
-    </trans-unit>
-    <trans-unit id="integratedAuthName">
-      <source xml:lang="en">Windows Authentication</source>
-    </trans-unit>
     <trans-unit id="mount.main.section">
       <source xml:lang="en">Mount Configuration</source>
     </trans-unit>
-    <trans-unit id="mount.hdfsPath">
+    <trans-unit id="mount.hdfsPath.title">
       <source xml:lang="en">HDFS Path</source>
     </trans-unit>
     <trans-unit id="mount.err.formatting">
       <source xml:lang="en">Bad formatting of credentials at {0}</source>
-    </trans-unit>
-    <trans-unit id="mount.hdfs.loginerror1">
-      <source xml:lang="en">Login to controller failed</source>
-    </trans-unit>
-    <trans-unit id="mount.hdfs.loginerror2">
-      <source xml:lang="en">Login to controller failed: {0}</source>
-    </trans-unit>
-    <trans-unit id="err.controller.username.required">
-      <source xml:lang="en">Username is required</source>
-    </trans-unit>
-    <trans-unit id="err.controller.password.required">
-      <source xml:lang="en">Password is required</source>
     </trans-unit>
     <trans-unit id="mount.task.name">
       <source xml:lang="en">Mounting HDFS folder on path {0}</source>
@@ -360,44 +462,23 @@
     <trans-unit id="mount.error.unknown">
       <source xml:lang="en">Unknown error occurred during the mount process</source>
     </trans-unit>
-    <trans-unit id="textUrlLower">
-      <source xml:lang="en">url</source>
-    </trans-unit>
-    <trans-unit id="textUsernameLower">
-      <source xml:lang="en">username</source>
-    </trans-unit>
-    <trans-unit id="textPasswordLower">
-      <source xml:lang="en">password</source>
-    </trans-unit>
-    <trans-unit id="textUrlCapital">
-      <source xml:lang="en">URL</source>
-    </trans-unit>
-    <trans-unit id="textAuthCapital">
-      <source xml:lang="en">Authentication type</source>
-    </trans-unit>
-    <trans-unit id="textUsernameCapital">
-      <source xml:lang="en">Username</source>
-    </trans-unit>
-    <trans-unit id="textPasswordCapital">
-      <source xml:lang="en">Password</source>
-    </trans-unit>
-    <trans-unit id="hdsf.dialog.connection.section">
-      <source xml:lang="en">Cluster Connection</source>
-    </trans-unit>
-    <trans-unit id="hdfs.dialog.ok">
-      <source xml:lang="en">OK</source>
-    </trans-unit>
-    <trans-unit id="hdfs.dialog.cancel">
-      <source xml:lang="en">Cancel</source>
-    </trans-unit>
     <trans-unit id="mount.dialog.title">
       <source xml:lang="en">Mount HDFS Folder</source>
     </trans-unit>
-    <trans-unit id="mount.remoteUri">
+    <trans-unit id="mount.hdfsPath.info">
+      <source xml:lang="en">Path to a new (non-existing) directory which you want to associate with the mount</source>
+    </trans-unit>
+    <trans-unit id="mount.remoteUri.title">
       <source xml:lang="en">Remote URI</source>
     </trans-unit>
-    <trans-unit id="mount.credentials">
+    <trans-unit id="mount.remoteUri.info">
+      <source xml:lang="en">The URI to the remote data source. Example for ADLS: abfs://fs@saccount.dfs.core.windows.net/</source>
+    </trans-unit>
+    <trans-unit id="mount.credentials.title">
       <source xml:lang="en">Credentials</source>
+    </trans-unit>
+    <trans-unit id="mount.credentials.info">
+      <source xml:lang="en">Mount credentials for authentication to remote data source for reads</source>
     </trans-unit>
     <trans-unit id="refreshmount.dialog.title">
       <source xml:lang="en">Refresh Mount</source>
