@@ -21,6 +21,7 @@ export interface IPlatformService {
 	osType(): OsType;
 	platform(): string;
 	storagePath(): string;
+	initialize(): Promise<void>;
 	copyFile(source: string, target: string): Promise<void>;
 	fileExists(file: string): Promise<boolean>;
 	openFile(filePath: string): void;
@@ -56,8 +57,14 @@ export interface CommandOptions {
 export class PlatformService implements IPlatformService {
 
 	private _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(extensionOutputChannel);
+	private _storagePathEnsurer: Promise<void>;
 
 	constructor(private _storagePath: string = '') {
+		this._storagePathEnsurer = this.ensureDirectoryExists(_storagePath);
+	}
+
+	async initialize(): Promise<void> {
+		await this._storagePathEnsurer;
 	}
 
 	storagePath(): string {
