@@ -301,7 +301,7 @@ export class ClusterController {
 	private async withConnectRetry<T>(f: (...args: any[]) => Promise<T>, promptConnect: boolean, errorMessage: string, ...args: any[]): Promise<T> {
 		try {
 			try {
-				return await f(this, args);
+				return await f(this, ...args);
 			} catch (error) {
 				if (promptConnect) {
 					// We don't want to open multiple dialogs here if multiple calls come in the same time so check
