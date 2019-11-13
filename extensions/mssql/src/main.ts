@@ -112,14 +112,14 @@ function activateSparkFeatures(appContext: AppContext): void {
 	let outputChannel: vscode.OutputChannel = mssqlOutputChannel;
 	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogCommand(appContext, outputChannel));
 	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogFromFileCommand(appContext, outputChannel));
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivySubmitSparkJobTask, (profile: azdata.IConnectionProfile) => {
-		new OpenSparkJobSubmissionDialogTask(appContext, outputChannel).execute(profile);
+	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivySubmitSparkJobTask, async (profile: azdata.IConnectionProfile) => {
+		await new OpenSparkJobSubmissionDialogTask(appContext, outputChannel).execute(profile);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenSparkHistory, (profile: azdata.IConnectionProfile) => {
-		new OpenSparkYarnHistoryTask(appContext).execute(profile, true);
+	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenSparkHistory, async (profile: azdata.IConnectionProfile) => {
+		await new OpenSparkYarnHistoryTask(appContext).execute(profile, true);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenYarnHistory, (profile: azdata.IConnectionProfile) => {
-		new OpenSparkYarnHistoryTask(appContext).execute(profile, false);
+	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenYarnHistory, async (profile: azdata.IConnectionProfile) => {
+		await new OpenSparkYarnHistoryTask(appContext).execute(profile, false);
 	});
 }
 
@@ -216,8 +216,9 @@ async function handleOpenClusterDashboardTask(profile: azdata.IConnectionProfile
 			url: controller.endpoint,
 			auth: profile.authenticationType === 'Integrated' ? AuthType.Integrated : AuthType.Basic,
 			username: 'admin', // Default to admin as a best-guess, we'll prompt for re-entering credentials if that fails
-			password: profile.password
-		});
+			password: profile.password,
+			rememberPassword: true
+		}, /*addOrUpdateController*/true);
 }
 
 // this method is called when your extension is deactivated

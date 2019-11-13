@@ -311,7 +311,6 @@ export class ClusterController {
 						this._connectionPromise = this._dialog.showDialog();
 					}
 					const controller = await this._connectionPromise;
-					this._connectionPromise = undefined;
 					if (controller) {
 						this._username = controller._username;
 						this._password = controller._password;
@@ -325,6 +324,8 @@ export class ClusterController {
 			}
 		} catch (error) {
 			throw new ControllerError(error, errorMessage);
+		} finally {
+			this._connectionPromise = undefined;
 		}
 	}
 }
