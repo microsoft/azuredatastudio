@@ -17,9 +17,6 @@ import { BackupComponent } from 'sql/workbench/parts/backup/browser/backup.compo
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IBootstrapParams, ISelector } from 'sql/platform/bootstrap/common/bootstrapParams';
 
-// work around
-const BrowserAnimationsModule = (<any>require.__$__nodeRequire('@angular/platform-browser/animations')).BrowserAnimationsModule;
-
 // Backup wizard main angular module
 export const BackupModule = (params: IBootstrapParams, selector: string, instantiationService: IInstantiationService): Type<any> => {
 	@NgModule({
@@ -30,8 +27,7 @@ export const BackupModule = (params: IBootstrapParams, selector: string, instant
 		imports: [
 			FormsModule,
 			CommonModule,
-			BrowserModule,
-			BrowserAnimationsModule,
+			BrowserModule
 		],
 		providers: [
 			{ provide: APP_BASE_HREF, useValue: '/' },
