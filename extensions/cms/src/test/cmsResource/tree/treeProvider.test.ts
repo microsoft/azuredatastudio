@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import 'mocha';
 import * as vscode from 'vscode';
 import * as should from 'should';
@@ -13,7 +12,6 @@ import { ApiWrapper } from '../../../apiWrapper';
 import { CmsResourceTreeProvider } from '../../../cmsResource/tree/treeProvider';
 import { CmsResourceMessageTreeNode } from '../../../cmsResource/messageTreeNode';
 import { CmsResourceEmptyTreeNode } from '../../../cmsResource/tree/cmsResourceEmptyTreeNode';
-import { CmsResourceTreeNode } from '../../../cmsResource/tree/cmsResourceTreeNode';
 import { CmsUtils } from '../../../cmsUtils';
 
 // Mock services

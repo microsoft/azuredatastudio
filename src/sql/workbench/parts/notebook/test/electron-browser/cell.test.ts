@@ -335,6 +335,34 @@ suite('Cell Model', function (): void {
 		assert(!isCollapsed);
 	});
 
+	test('Should not allow markdown cells to be collapsible', async function (): Promise<void> {
+		let mdCellData: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: 'some *markdown*',
+			outputs: [],
+			metadata: { language: 'python' }
+		};
+		let cell = factory.createCell(mdCellData, undefined);
+		assert(cell.isCollapsed === false);
+		cell.isCollapsed = true;
+		// The typescript compiler will complain if we don't ignore the error from the following line,
+		// claiming that cell.isCollapsed will return true. It doesn't.
+		// @ts-ignore
+		assert(cell.isCollapsed === false);
+
+		let codeCellData: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: '1+1',
+			outputs: [],
+			metadata: { language: 'python' },
+			execution_count: 1
+		};
+		cell = factory.createCell(codeCellData, undefined);
+		assert(cell.isCollapsed === false);
+		cell.isCollapsed = true;
+		assert(cell.isCollapsed === true);
+	});
+
 	suite('Model Future handling', function (): void {
 		let future: TypeMoq.Mock<EmptyFuture>;
 		let cell: ICellModel;
@@ -456,10 +484,8 @@ suite('Cell Model', function (): void {
 			future.setup(f => f.setStdInHandler(TypeMoq.It.isAny())).callback((handler) => onStdIn = handler);
 
 			let deferred = new Deferred<void>();
-			let stdInMessage: nb.IStdinMessage = undefined;
 			cell.setStdInHandler({
 				handle: (msg: nb.IStdinMessage) => {
-					stdInMessage = msg;
 					return deferred.promise;
 				}
 			});

@@ -9,7 +9,7 @@ import { FileBrowserRenderer } from 'sql/workbench/services/fileBrowser/browser/
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import errors = require('vs/base/common/errors');
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
 import nls = require('vs/nls');
 import { DefaultFilter, DefaultAccessibilityProvider, DefaultDragAndDrop } from 'vs/base/parts/tree/browser/treeDefaults';

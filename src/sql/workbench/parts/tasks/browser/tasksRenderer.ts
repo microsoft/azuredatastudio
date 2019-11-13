@@ -29,7 +29,6 @@ export interface ITaskHistoryTemplateData {
 export class TaskHistoryRenderer implements IRenderer {
 
 	public static readonly TASKOBJECT_HEIGHT = 22;
-	private static readonly TASKOBJECT_TEMPLATE_ID = 'carbonTask';
 	private static readonly FAIL_CLASS = 'error';
 	private static readonly SUCCESS_CLASS = 'success';
 	private static readonly INPROGRESS_CLASS = 'in-progress';

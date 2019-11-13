@@ -108,6 +108,9 @@ export class CellModel implements ICellModel {
 	}
 
 	public set isCollapsed(value: boolean) {
+		if (this.cellType !== CellTypes.Code) {
+			return;
+		}
 		let stateChanged = this._isCollapsed !== value;
 		this._isCollapsed = value;
 
@@ -451,7 +454,6 @@ export class CellModel implements ICellModel {
 	private handleReply(msg: nb.IShellMessage): void {
 		// TODO #931 we should process this. There can be a payload attached which should be added to outputs.
 		// In all other cases, it is a no-op
-		let output: nb.ICellOutput = msg.content as nb.ICellOutput;
 
 		if (!this._future.inProgress) {
 			this.disposeFuture();
@@ -460,7 +462,6 @@ export class CellModel implements ICellModel {
 
 	private handleIOPub(msg: nb.IIOPubMessage): void {
 		let msgType = msg.header.msg_type;
-		let displayId = this.getDisplayId(msg);
 		let output: nb.ICellOutput;
 		switch (msgType) {
 			case 'execute_result':
@@ -520,8 +521,8 @@ export class CellModel implements ICellModel {
 						let gatewayEndpointInfo = this.getGatewayEndpoint(model.activeConnection);
 						if (gatewayEndpointInfo) {
 							let hostAndIp = notebookUtils.getHostAndPortFromEndpoint(gatewayEndpointInfo.endpoint);
-							let host = gatewayEndpointInfo && hostAndIp.host ? hostAndIp.host : model.activeConnection.serverName;
-							let port = gatewayEndpointInfo && hostAndIp.port ? ':' + hostAndIp.port : defaultPort;
+							let host = hostAndIp.host ? hostAndIp.host : model.activeConnection.serverName;
+							let port = hostAndIp.port ? ':' + hostAndIp.port : defaultPort;
 							let html = result.data['text/html'];
 							// CTP 3.1 and earlier Spark link
 							html = this.rewriteUrlUsingRegex(/(https?:\/\/master.*\/proxy)(.*)/g, html, host, port, yarnUi);
@@ -550,11 +551,6 @@ export class CellModel implements ICellModel {
 			}
 			return ret;
 		});
-	}
-
-	private getDisplayId(msg: nb.IIOPubMessage): string | undefined {
-		let transient = (msg.content.transient || {});
-		return transient['display_id'] as string;
 	}
 
 	public setStdInHandler(handler: nb.MessageHandler<nb.IStdinMessage>): void {
@@ -610,7 +606,7 @@ export class CellModel implements ICellModel {
 		this._source = this.getMultilineSource(cell.source);
 		this._metadata = cell.metadata || {};
 
-		if (this._metadata.tags && this._metadata.tags.some(x => x === HideInputTag)) {
+		if (this._metadata.tags && this._metadata.tags.some(x => x === HideInputTag) && this._cellType === CellTypes.Code) {
 			this._isCollapsed = true;
 		} else {
 			this._isCollapsed = false;

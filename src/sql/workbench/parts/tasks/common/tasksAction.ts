@@ -6,7 +6,7 @@
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { ITaskService } from 'sql/platform/tasks/common/tasksService';
-import { TaskNode, TaskExecutionMode, TaskStatus } from 'sql/platform/tasks/common/tasksNode';
+import { TaskNode } from 'sql/platform/tasks/common/tasksNode';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import Severity from 'vs/base/common/severity';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';

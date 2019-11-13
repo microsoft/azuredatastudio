@@ -85,7 +85,7 @@ export class ApiWrapper {
 
 	public openTextDocument(uri: vscode.Uri): Thenable<vscode.TextDocument>;
 	public openTextDocument(options: { language?: string; content?: string; }): Thenable<vscode.TextDocument>;
-	public openTextDocument(uriOrOptions): Thenable<vscode.TextDocument> {
+	public openTextDocument(uriOrOptions: any): Thenable<vscode.TextDocument> {
 		return vscode.workspace.openTextDocument(uriOrOptions);
 	}
 

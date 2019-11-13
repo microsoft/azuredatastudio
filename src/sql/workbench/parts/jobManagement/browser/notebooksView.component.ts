@@ -14,7 +14,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import { NotebookCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { EditJobAction, NewNotebookJobAction, RunJobAction, EditNotebookJobAction, JobsRefreshAction, IJobActionInfo, DeleteNotebookAction, OpenLatestRunMaterializedNotebook } from 'sql/platform/jobManagement/browser/jobActions';
+import { NewNotebookJobAction, RunJobAction, EditNotebookJobAction, JobsRefreshAction, IJobActionInfo, DeleteNotebookAction, OpenLatestRunMaterializedNotebook } from 'sql/platform/jobManagement/browser/jobActions';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/browser/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -79,7 +79,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 	private rowDetail: RowDetailView<IItem>;
 	private filterPlugin: any;
 	private dataView: any;
-	private _isCloud: boolean;
+	public _isCloud: boolean;
 	private filterStylingMap: { [columnName: string]: [any]; } = {};
 	private filterStack = ['start'];
 	private filterValueMap: { [columnName: string]: string[]; } = {};
@@ -97,7 +97,6 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IWorkbenchThemeService) private _themeService: IWorkbenchThemeService,
@@ -898,7 +897,6 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 	}
 
 	protected getTableActions(targetObject: JobActionContext): IAction[] {
-		const editAction = this._instantiationService.createInstance(EditJobAction);
 		const editNotebookAction = this._instantiationService.createInstance(EditNotebookJobAction);
 		const runJobAction = this._instantiationService.createInstance(RunJobAction);
 		const openLatestRunAction = this._instantiationService.createInstance(OpenLatestRunMaterializedNotebook);

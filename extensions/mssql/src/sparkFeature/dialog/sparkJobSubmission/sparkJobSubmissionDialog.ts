@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
@@ -41,7 +39,7 @@ export class SparkJobSubmissionDialog {
 	}
 
 	public async openDialog(path?: string): Promise<void> {
-		this._dialog = this.apiWrapper.createDialog(localize('sparkJobSubmission.DialogTitleNewJob', "New Job"));
+		this._dialog = this.apiWrapper.createDialog(localize('sparkJobSubmission.DialogTitleNewJob', "New Job (preview)"));
 
 		this._dataModel = new SparkJobSubmissionModel(this.sqlClusterConnection, this._dialog, this.appContext);
 

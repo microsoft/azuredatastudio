@@ -127,7 +127,7 @@ export class ToggleQueryHistoryCaptureAction extends Action {
 
 	private setClassAndLabel(enabled: boolean) {
 		if (enabled) {
-			this.class = 'toggle-query-history-capture-action codicon-pause';
+			this.class = 'toggle-query-history-capture-action codicon-debug-pause';
 			this.label = localize('queryHistory.disableCapture', "Pause Query History Capture");
 		} else {
 			this.class = 'toggle-query-history-capture-action codicon-play';

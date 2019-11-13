@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { EOL } from 'os';
-import { delimiter } from 'path';
+import * as path from 'path';
 import { SemVer, compare } from 'semver';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
@@ -32,7 +32,7 @@ export const enum dependencyType {
 	Curl = 'Curl'
 }
 
-const pythonAndPip3Localized = localize('deploymentDialog.ToolInformationalMessage.PythonAndPip3', "•	azdata installation needs python3 and pip3 to be pre-installed before necessary tools can be deployed");
+const pythonAndPip3Localized = localize('deploymentDialog.ToolInformationalMessage.PythonAndPip3', "•	azdata installation needs pip3 and python3 version 3.6 to be pre-installed before necessary tools can be deployed");
 const brewLocalized = localize('deploymentDialog.ToolInformationalMessage.Brew', "•	brew is needed for deployment of the tools and needs to be pre-installed before necessary tools can be deployed");
 const curlLocalized = localize('deploymentDialog.ToolInformationalMessage.Curl', "•	curl is needed for installation and needs to be pre-installed before necessary tools can be deployed");
 
@@ -122,12 +122,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	public get storagePath(): string {
-		const storagePath = this._platformService.storagePath();
-		if (!this._storagePathEnsured) {
-			this._platformService.ensureDirectoryExists(storagePath);
-			this._storagePathEnsured = true;
-		}
-		return storagePath;
+		return this._platformService.storagePath();
 	}
 
 	public get osType(): OsType {
@@ -155,6 +150,7 @@ export abstract class ToolBase implements ITool {
 	public get installationPath(): string {
 		return this._installationPath;
 	}
+
 	protected get installationCommands(): Command[] | undefined {
 		return this.allInstallationCommands.get(this.osType);
 	}
@@ -232,9 +228,9 @@ export abstract class ToolBase implements ITool {
 		this.logToOutputChannel(localize('toolBase.addInstallationSearchPathsToSystemPath.SearchPaths', "Search Paths for tool '{0}': {1}", this.displayName, JSON.stringify(searchPaths, undefined, '\t'))); //this.displayName is localized and searchPaths are OS filesystem paths.
 		searchPaths.forEach(searchPath => {
 			if (process.env.PATH) {
-				if (!`${delimiter}${process.env.PATH}${delimiter}`.includes(`${delimiter}${searchPath}${delimiter}`)) {
-					process.env.PATH += `${delimiter}${searchPath}`;
-					console.log(`Appending to Path -> '${delimiter}${searchPath}'`);
+				if (!`${path.delimiter}${process.env.PATH}${path.delimiter}`.includes(`${path.delimiter}${searchPath}${path.delimiter}`)) {
+					process.env.PATH += `${path.delimiter}${searchPath}`;
+					console.log(`Appending to Path -> '${path.delimiter}${searchPath}'`);
 				}
 			} else {
 				process.env.PATH = searchPath;
@@ -299,7 +295,7 @@ export abstract class ToolBase implements ITool {
 		if (!commandOutput) {
 			throw new Error(`Install location of tool:'${this.displayName}' could not be discovered`);
 		} else {
-			this._installationPath = commandOutput.split(EOL)[0];
+			this._installationPath = path.resolve(commandOutput.split(EOL)[0]);
 		}
 	}
 
@@ -307,7 +303,6 @@ export abstract class ToolBase implements ITool {
 		return this._version ? compare(this._version, new SemVer(version)) >= 0 : false;
 	}
 
-	private _storagePathEnsured: boolean = false;
 	private _status: ToolStatus = ToolStatus.NotInstalled;
 	private _osType: OsType;
 	private _version?: SemVer;

@@ -20,7 +20,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IExtensionsWorkbenchService, IExtensionsViewlet, VIEWLET_ID, AutoUpdateConfigurationKey, ShowRecommendationsOnlyOnDemandKey, CloseExtensionDetailsOnViewChangeKey, VIEW_CONTAINER } from '../common/extensions';
 import {
-	ShowEnabledExtensionsAction, ShowInstalledExtensionsAction, ShowRecommendedExtensionsAction, ShowPopularExtensionsAction, ShowDisabledExtensionsAction,
+	ShowEnabledExtensionsAction, ShowInstalledExtensionsAction, ShowRecommendedExtensionsAction, /*ShowPopularExtensionsAction,*/ ShowDisabledExtensionsAction,
 	ShowOutdatedExtensionsAction, ClearExtensionsInputAction, ChangeSortAction, UpdateAllAction, CheckForUpdatesAction, DisableAllAction, EnableAllAction,
 	EnableAutoUpdateAction, DisableAutoUpdateAction, ShowBuiltInExtensionsAction, InstallVSIXAction
 } from 'vs/workbench/contrib/extensions/browser/extensionsActions';

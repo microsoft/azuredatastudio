@@ -247,7 +247,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 
 
 	@ChartInsight.MEMOIZER
-	private get colors(): { backgroundColor: string[] }[] {
+	public get colors(): { backgroundColor: string[] }[] {
 		if (this._config && this._config.colorMap) {
 			const backgroundColor = this.labels.map((item) => {
 				return this._config.colorMap[item];

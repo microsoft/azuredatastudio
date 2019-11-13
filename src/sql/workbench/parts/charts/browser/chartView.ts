@@ -28,10 +28,6 @@ import { ChartState, IInsightOptions, ChartType } from 'sql/workbench/parts/char
 import * as nls from 'vs/nls';
 import { find } from 'vs/base/common/arrays';
 
-declare class Proxy {
-	constructor(object, handler);
-}
-
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
 //Map used to store names and alternative names for chart types.
@@ -105,16 +101,16 @@ export class ChartView extends Disposable implements IPanelView {
 
 		const self = this;
 		this.options = new Proxy(this.options, {
-			get: function (target, key, receiver) {
+			get: function (target, key) {
 				return target[key];
 			},
-			set: function (target, key, value, receiver) {
+			set: function (target, key, value) {
 				let change = false;
 				if (target[key] !== value) {
 					change = true;
 				}
 
-				let result = target[key] = value;
+				target[key] = value;
 				// mirror the change in our state
 				if (self.state) {
 					self.state.options[key] = value;
@@ -129,7 +125,7 @@ export class ChartView extends Disposable implements IPanelView {
 					}
 				}
 
-				return result;
+				return true;
 			}
 		}) as IInsightOptions;
 

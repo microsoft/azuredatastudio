@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
@@ -72,7 +70,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 
 	private async doExpandNode(nodeInfo: azdata.ExpandNodeInfo, isRefresh: boolean = false): Promise<boolean> {
 		let session = this.sessionMap.get(nodeInfo.sessionId);
-		let response = {
+		let response: azdata.ObjectExplorerExpandInfo = {
 			sessionId: nodeInfo.sessionId,
 			nodePath: nodeInfo.nodePath,
 			errorMessage: undefined,
@@ -235,7 +233,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 	}
 }
 
-export class SqlClusterSession {
+class SqlClusterSession {
 	private _rootNode: SqlClusterRootNode;
 
 	constructor(
