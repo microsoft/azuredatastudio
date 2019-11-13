@@ -12,6 +12,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IModelViewService } from 'sql/platform/modelComponents/browser/modelViewService';
 import { IItemConfig, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IModelView } from 'sql/platform/model/browser/modelViewService';
+import { find } from 'vs/base/common/arrays';
 
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelView)
@@ -29,7 +30,7 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 		super();
 		this._proxy = _context.getProxy(SqlExtHostContext.ExtHostModelView);
 		viewService.onRegisteredModelView(view => {
-			if (this.knownWidgets.includes(view.id)) {
+			if (find(this.knownWidgets, x => x === view.id)) {
 				let handle = MainThreadModelView._handlePool++;
 				this._dialogs.set(handle, view);
 				this._proxy.$registerWidget(handle, view.id, view.connection, view.serverInfo);

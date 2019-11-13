@@ -14,6 +14,7 @@ import { MainThreadNotebookDocumentsAndEditorsShape } from 'sql/workbench/api/co
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/common/extHostNotebookDocumentData';
 import { CellRange, ISingleNotebookEditOperation, ICellRange } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { HideInputTag } from 'sql/workbench/parts/notebook/browser/models/cell';
+import { find } from 'vs/base/common/arrays';
 
 export interface INotebookEditOperation {
 	range: azdata.nb.CellRange;
@@ -91,7 +92,7 @@ export class NotebookEditorEdit {
 				value.metadata = { tags: [HideInputTag] };
 			} else if (!value.metadata.tags) {
 				value.metadata.tags = [HideInputTag];
-			} else if (!value.metadata.tags.includes(HideInputTag)) {
+			} else if (!find(value.metadata.tags, x => x === HideInputTag)) {
 				value.metadata.tags.push(HideInputTag);
 			}
 		}

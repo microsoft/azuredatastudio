@@ -30,7 +30,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { range } from 'vs/base/common/arrays';
+import { range, find } from 'vs/base/common/arrays';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, dispose, DisposableStore } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -184,7 +184,7 @@ export class GridPanel extends Disposable {
 
 		if (this.configurationService.getValue<boolean>('sql.results.streaming')) {
 			for (let set of resultsToUpdate) {
-				let table = this.tables.find(t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id);
+				let table = find(this.tables, t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id);
 				if (table) {
 					table.updateResult(set);
 				} else {
@@ -206,12 +206,12 @@ export class GridPanel extends Disposable {
 
 		for (let set of resultSet) {
 			// ensure we aren't adding a resultSet that is already visible
-			if (this.tables.find(t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id)) {
+			if (find(this.tables, t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id)) {
 				continue;
 			}
 			let tableState: GridTableState;
 			if (this.state) {
-				tableState = this.state.tableStates.find(e => e.batchId === set.batchId && e.resultId === set.id);
+				tableState = find(this.state.tableStates, e => e.batchId === set.batchId && e.resultId === set.id);
 			}
 			if (!tableState) {
 				tableState = new GridTableState(set.id, set.batchId);
@@ -262,7 +262,7 @@ export class GridPanel extends Disposable {
 	}
 
 	private maximizeTable(tableid: string): void {
-		if (!this.tables.find(t => t.id === tableid)) {
+		if (!find(this.tables, t => t.id === tableid)) {
 			return;
 		}
 
@@ -290,7 +290,7 @@ export class GridPanel extends Disposable {
 		this._state = val;
 		if (this.state) {
 			this.tables.map(t => {
-				let state = this.state.tableStates.find(s => s.batchId === t.resultSet.batchId && s.resultId === t.resultSet.id);
+				let state = find(this.state.tableStates, s => s.batchId === t.resultSet.batchId && s.resultId === t.resultSet.id);
 				if (!state) {
 					this.state.tableStates.push(t.state);
 				}

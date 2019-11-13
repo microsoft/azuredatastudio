@@ -19,3 +19,20 @@ export function escape(html: string): string {
 		}
 	});
 }
+
+// gotten from https://github.com/59naga/string-raw/blob/master/src/index.js
+export function raw(callSite: any, ...substitutions: any[]): string {
+	let template;
+	try {
+		template = Array.from(callSite.raw);
+	} catch (e) {
+		throw new TypeError('Cannot convert undefined or null to object');
+	}
+
+	return template.map((chunk, i) => {
+		if (callSite.raw.length <= i) {
+			return chunk;
+		}
+		return substitutions[i - 1] ? substitutions[i - 1] + chunk : chunk;
+	}).join('');
+}
