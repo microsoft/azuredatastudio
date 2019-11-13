@@ -304,7 +304,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			// if cells already exist, create them with language info (if it is saved)
 			this._cells = [];
 			if (contents) {
-				this._defaultLanguageInfo = contents && contents.metadata && contents.metadata.language_info;
+				this._defaultLanguageInfo = contents.metadata && contents.metadata.language_info;
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => {
@@ -443,7 +443,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public async startSession(manager: INotebookManager, displayName?: string, setErrorStateOnFail?: boolean): Promise<void> {
 		if (displayName && this._standardKernels) {
 			let standardKernel = find(this._standardKernels, kernel => kernel.displayName === displayName);
-			this._defaultKernel = displayName ? { name: standardKernel.name, display_name: standardKernel.displayName } : this._defaultKernel;
+			this._defaultKernel = { name: standardKernel.name, display_name: standardKernel.displayName };
 		}
 		if (this._defaultKernel) {
 			let clientSession = this._notebookOptions.factory.createClientSession({

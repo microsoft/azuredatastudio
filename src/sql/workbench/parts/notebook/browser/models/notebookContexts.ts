@@ -69,8 +69,9 @@ export class NotebookContexts {
 
 	/**
 	 * Get all active contexts and sort them
-	 * @param apiWrapper ApiWrapper
-	 * @param profile current connection profile
+	 * @param connectionService connection service
+	 * @param connProviderIds array of applicable connection providers to filter connections
+	 * @param profile connection profile passed when launching notebook
 	 */
 	public static getActiveContexts(connectionService: IConnectionManagementService, connProviderIds: string[], profile: IConnectionProfile): IDefaultConnection {
 		let defaultConnection: ConnectionProfile = NotebookContexts.DefaultContext.defaultConnection;
@@ -141,9 +142,6 @@ export class NotebookContexts {
 		}
 
 		// If no default kernel specified (should never happen), default to SQL
-		if (!defaultKernel) {
-			defaultKernel = notebookConstants.sqlKernelSpec;
-		}
-		return defaultKernel;
+		return notebookConstants.sqlKernelSpec;
 	}
 }
