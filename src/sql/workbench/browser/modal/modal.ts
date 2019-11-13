@@ -27,6 +27,7 @@ import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { isVisible } from 'sql/base/browser/dom';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
