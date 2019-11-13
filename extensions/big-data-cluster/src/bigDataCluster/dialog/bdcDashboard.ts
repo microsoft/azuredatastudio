@@ -8,7 +8,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { BdcDashboardModel, getTroubleshootNotebookUrl } from './bdcDashboardModel';
+import { BdcDashboardModel, getTroubleshootNotebookUrl, BdcErrorEvent } from './bdcDashboardModel';
 import { IconPathHelper, cssStyles } from '../constants';
 import { BdcServiceStatusPage } from './bdcServiceStatusPage';
 import { BdcDashboardOverviewPage } from './bdcDashboardOverviewPage';
@@ -34,6 +34,7 @@ export class BdcDashboard {
 	private modelView: azdata.ModelView;
 	private mainAreaContainer: azdata.FlexContainer;
 	private navContainer: azdata.FlexContainer;
+	private overviewPage: BdcDashboardOverviewPage;
 
 	private currentTab: NavTab;
 	private currentPage: azdata.FlexContainer;
@@ -44,7 +45,7 @@ export class BdcDashboard {
 
 	constructor(private title: string, private model: BdcDashboardModel) {
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.handleBdcStatusUpdate(bdcStatus));
-		this.model.onError(error => this.handleError(error));
+		this.model.onBdcError(errorEvent => this.handleError(errorEvent));
 	}
 
 	public showDashboard(): void {
@@ -75,6 +76,7 @@ export class BdcDashboard {
 				}).component();
 
 			this.refreshButton.onDidClick(async () => {
+				this.overviewPage.onRefreshStarted();
 				await this.doRefresh();
 			});
 
@@ -130,18 +132,19 @@ export class BdcDashboard {
 			const overviewNavItemText = modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.overviewNavTitle', "Big data cluster overview") }).component();
 			overviewNavItemText.updateCssStyles(selectedTabCss);
 			overviewNavItemDiv.addItem(overviewNavItemText, { CSSStyles: { 'user-select': 'text' } });
-			const overviewPage = new BdcDashboardOverviewPage(this, this.model).create(modelView);
-			this.currentPage = overviewPage;
+			this.overviewPage = new BdcDashboardOverviewPage(this, this.model);
+			const overviewContainer: azdata.FlexContainer = this.overviewPage.create(modelView);
+			this.currentPage = overviewContainer;
 			this.currentTab = { serviceName: undefined, div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
-			this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
+			this.mainAreaContainer.addItem(overviewContainer, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
 
 			overviewNavItemDiv.onDidClick(() => {
 				if (this.currentTab) {
 					this.currentTab.text.updateCssStyles(unselectedTabCss);
 				}
 				this.mainAreaContainer.removeItem(this.currentPage);
-				this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
-				this.currentPage = overviewPage;
+				this.mainAreaContainer.addItem(overviewContainer, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
+				this.currentPage = overviewContainer;
 				this.currentTab = { serviceName: undefined, div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
 				this.currentTab.text.updateCssStyles(selectedTabCss);
 			});
@@ -167,11 +170,14 @@ export class BdcDashboard {
 		this.updateServiceNavTabs(bdcStatus.services);
 	}
 
-	private handleError(error: Error): void {
+	private handleError(errorEvent: BdcErrorEvent): void {
+		if (errorEvent.errorType !== 'general') {
+			return;
+		}
 		// We don't want to show an error for the connection dialog being
 		// canceled since that's a normal case.
-		if (!(error instanceof HdfsDialogCancelledError)) {
-			showErrorMessage(error.message);
+		if (!(errorEvent.error instanceof HdfsDialogCancelledError)) {
+			showErrorMessage(errorEvent.error.message);
 		}
 	}
 
