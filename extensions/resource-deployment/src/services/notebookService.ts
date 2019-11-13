@@ -79,6 +79,7 @@ export class NotebookService implements INotebookService {
 		const workingDirectory = this.platformService.storagePath();
 		const notebookFullPath = path.join(workingDirectory, fileName);
 		const outputFullPath = path.join(workingDirectory, `output-${fileName}`);
+		process.env['ACCEPT_EULA'] = 'yes';
 		try {
 			await this.platformService.saveTextFile(content, notebookFullPath);
 			await this.platformService.runCommand(`azdata notebook run --path "${notebookFullPath}" --output-path "${workingDirectory}" --timeout -1`,
