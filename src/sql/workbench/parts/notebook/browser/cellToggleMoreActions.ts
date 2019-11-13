@@ -20,7 +20,6 @@ import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInt
 import { ToggleMoreWidgetAction } from 'sql/workbench/parts/dashboard/browser/core/actions';
 import { CellModel } from 'sql/workbench/parts/notebook/browser/models/cell';
 import { Action } from 'vs/base/common/actions';
-import { firstIndex } from 'vs/base/common/arrays';
 
 export const HIDDEN_CLASS = 'actionhidden';
 
@@ -104,7 +103,7 @@ export class AddCellFromContextAction extends CellActionBase {
 	doRun(context: CellContext): Promise<void> {
 		try {
 			let model = context.model;
-			let index = firstIndex(model.cells, (cell) => cell.id === context.cell.id);
+			let index = model.cells.findIndex((cell) => cell.id === context.cell.id);
 			if (index !== undefined && this.isAfter) {
 				index += 1;
 			}

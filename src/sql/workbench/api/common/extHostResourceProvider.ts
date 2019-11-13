@@ -11,8 +11,6 @@ import {
 	MainThreadResourceProviderShape,
 	SqlMainContext,
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { values } from 'vs/base/common/collections';
-import { firstIndex } from 'vs/base/common/arrays';
 
 export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 	private _handlePool: number = 0;
@@ -38,7 +36,7 @@ export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 		let self = this;
 
 		// Look for any account providers that have the same provider ID
-		let matchingProviderIndex = firstIndex(values(this._providers), (provider: ResourceProviderWithMetadata) => {
+		let matchingProviderIndex = Object.values(this._providers).findIndex((provider: ResourceProviderWithMetadata) => {
 			return provider.metadata.id === providerMetadata.id;
 		});
 		if (matchingProviderIndex >= 0) {

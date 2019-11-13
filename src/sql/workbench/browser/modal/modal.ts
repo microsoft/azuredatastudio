@@ -27,7 +27,6 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
-import { find, firstIndex } from 'vs/base/common/arrays';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
@@ -420,7 +419,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * @param onSelect The callback to call when the button is selected
 	 */
 	protected findFooterButton(label: string): Button {
-		return find(this._footerButtons, e => {
+		return this._footerButtons.find(e => {
 			try {
 				return e && e.element.innerText === label;
 			} catch {
@@ -434,7 +433,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	* @param label Label on the button
 	*/
 	protected removeFooterButton(label: string): void {
-		let buttonIndex = firstIndex(this._footerButtons, e => {
+		let buttonIndex = this._footerButtons.findIndex(e => {
 			return e && e.element && e.element.innerText === label;
 		});
 		if (buttonIndex > -1 && buttonIndex < this._footerButtons.length) {

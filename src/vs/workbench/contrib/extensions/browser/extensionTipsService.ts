@@ -26,7 +26,7 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { IExtensionsConfiguration, ConfigurationKey, ShowRecommendationsOnlyOnDemandKey, IExtensionsViewlet, IExtensionsWorkbenchService, EXTENSIONS_CONFIG } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { flatten, distinct, shuffle, coalesce, firstIndex } from 'vs/base/common/arrays';
+import { flatten, distinct, shuffle, coalesce } from 'vs/base/common/arrays';
 import { guessMimeTypes, MIME_UNKNOWN } from 'vs/base/common/mime';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IRequestService, asJson } from 'vs/platform/request/common/request';
@@ -1209,7 +1209,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			recommendationMessage = localize('VisualizerExtensionsRecommended', "Azure Data Studio has extension recommendations for data visualization.\nOnce installed, you can select the Visualizer icon to visualize your query results.");
 		}
 		Promise.all([getRecommendationPromise, getLocalExtensionPromise]).then(() => {
-			if (!recommendations.every(rec => { return firstIndex(localExtensions, local => local.identifier.id.toLocaleLowerCase() === rec.extensionId.toLocaleLowerCase()) !== -1; })) {
+			if (!recommendations.every(rec => { return localExtensions.findIndex(local => local.identifier.id.toLocaleLowerCase() === rec.extensionId.toLocaleLowerCase()) !== -1; })) {
 				return new Promise<void>(c => {
 					this.notificationService.prompt(
 						Severity.Info,

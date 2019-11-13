@@ -13,11 +13,10 @@ import { Registry } from 'vs/platform/registry/common/platform';
 
 import * as azdata from 'azdata';
 
+import { entries } from 'sql/base/common/objects';
 import { toObject } from 'sql/base/common/map';
 import { IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { ICapabilitiesService, ProviderFeatures, clientCapabilities, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
-import { find } from 'vs/base/common/arrays';
-import { entries } from 'sql/base/common/collections';
 
 const connectionRegistry = Registry.as<IConnectionProviderRegistry>(ConnectionExtensions.ConnectionProviderContributions);
 
@@ -78,7 +77,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		this._register(extensionManagementService.onDidUninstallExtension(({ identifier }) => {
 			const connectionProvider = 'connectionProvider';
 			extensionService.getExtensions().then(i => {
-				let extension = find(i, c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
+				let extension = i.find(c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
 				if (extension && extension.contributes
 					&& extension.contributes[connectionProvider]
 					&& extension.contributes[connectionProvider].providerId) {
@@ -92,7 +91,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	private cleanupProviders(): void {
 		let knownProviders = Object.keys(connectionRegistry.providers);
 		for (let key in this.capabilities.connectionProviderCache) {
-			if (!knownProviders.some(x => x === key)) {
+			if (!knownProviders.includes(key)) {
 				this._providers.delete(key);
 				delete this.capabilities.connectionProviderCache[key];
 			}

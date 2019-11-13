@@ -25,7 +25,6 @@ import { ISerializationService } from 'sql/platform/serialization/common/seriali
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { assign } from 'vs/base/common/objects';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -522,7 +521,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	}
 
 	public $onObjectExplorerNodeExpanded(providerId: string, expandResponse: azdata.ObjectExplorerExpandInfo): void {
-		let expandInfo: NodeExpandInfoWithProviderId = assign({ providerId: providerId }, expandResponse);
+		let expandInfo: NodeExpandInfoWithProviderId = Object.assign({ providerId: providerId }, expandResponse);
 		this._objectExplorerService.onNodeExpanded(expandInfo);
 	}
 

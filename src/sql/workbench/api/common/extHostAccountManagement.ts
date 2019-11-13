@@ -13,8 +13,6 @@ import {
 import { AzureResource } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Event, Emitter } from 'vs/base/common/event';
-import { firstIndex } from 'vs/base/common/arrays';
-import { values } from 'vs/base/common/collections';
 
 export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 	private _handlePool: number = 0;
@@ -96,7 +94,7 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		return this.$getAllAccounts().then(() => {
 			for (const handle in this._accounts) {
 				const providerHandle = parseInt(handle);
-				if (firstIndex(this._accounts[handle], (acct) => acct.key.accountId === account.key.accountId) !== -1) {
+				if (this._accounts[handle].findIndex((acct) => acct.key.accountId === account.key.accountId) !== -1) {
 					return this._withProvider(providerHandle, (provider: azdata.AccountProvider) => provider.getSecurityToken(account, resource));
 				}
 			}
@@ -117,7 +115,7 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		let self = this;
 
 		// Look for any account providers that have the same provider ID
-		let matchingProviderIndex = firstIndex(values(this._providers), (provider: AccountProviderWithMetadata) => {
+		let matchingProviderIndex = Object.values(this._providers).findIndex((provider: AccountProviderWithMetadata) => {
 			return provider.metadata.id === providerMetadata.id;
 		});
 		if (matchingProviderIndex >= 0) {

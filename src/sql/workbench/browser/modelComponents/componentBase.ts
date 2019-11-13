@@ -19,8 +19,6 @@ import { URI } from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 import { EventType, addDisposableListener } from 'vs/base/browser/dom';
 import { IKeyboardEvent, StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { endsWith } from 'vs/base/common/strings';
-import { firstIndex } from 'vs/base/common/arrays';
 
 
 export type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
@@ -194,9 +192,9 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 
 	public convertSizeToNumber(size: number | string): number {
 		if (size && typeof (size) === 'string') {
-			if (endsWith(size.toLowerCase(), 'px')) {
+			if (size.toLowerCase().endsWith('px')) {
 				return +size.replace('px', '');
-			} else if (endsWith(size.toLowerCase(), 'em')) {
+			} else if (size.toLowerCase().endsWith('em')) {
 				return +size.replace('em', '') * 11;
 			}
 		} else if (!size) {
@@ -219,7 +217,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 			return defaultValue;
 		}
 		let convertedSize: string = size ? size.toString() : defaultValue;
-		if (!endsWith(convertedSize.toLowerCase(), 'px') && !endsWith(convertedSize.toLowerCase(), '%')) {
+		if (!convertedSize.toLowerCase().endsWith('px') && !convertedSize.toLowerCase().endsWith('%')) {
 			convertedSize = convertedSize + 'px';
 		}
 		return convertedSize;
@@ -310,7 +308,7 @@ export abstract class ContainerBase<T> extends ComponentBase {
 		if (!componentDescriptor) {
 			return false;
 		}
-		let index = firstIndex(this.items, item => item.descriptor.id === componentDescriptor.id && item.descriptor.type === componentDescriptor.type);
+		let index = this.items.findIndex(item => item.descriptor.id === componentDescriptor.id && item.descriptor.type === componentDescriptor.type);
 		if (index >= 0) {
 			this.items.splice(index, 1);
 			this._changeRef.detectChanges();

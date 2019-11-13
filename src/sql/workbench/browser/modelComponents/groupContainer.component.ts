@@ -13,7 +13,6 @@ import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/bro
 import { GroupLayout, GroupContainerProperties } from 'azdata';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { endsWith } from 'vs/base/common/strings';
 
 @Component({
 	selector: 'modelview-groupContainer',
@@ -86,7 +85,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 	private getContainerWidth(): string {
 		if (this._containerLayout && this._containerLayout.width) {
 			let width: string = this._containerLayout.width.toString();
-			if (!endsWith(width, '%') && !endsWith(width.toLowerCase(), 'px')) {
+			if (!width.endsWith('%') && !width.toLowerCase().endsWith('px')) {
 				width = width + 'px';
 			}
 			return width;

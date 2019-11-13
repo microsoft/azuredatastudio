@@ -13,7 +13,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { Dimension, clearNode } from 'vs/base/browser/dom';
 import { deepClone } from 'vs/base/common/objects';
 import { IInsightOptions, ChartType, DataDirection, InsightType } from 'sql/workbench/parts/charts/common/interfaces';
-import { find } from 'vs/base/common/arrays';
 
 const defaultOptions: IInsightOptions = {
 	type: ChartType.Bar,
@@ -48,7 +47,7 @@ export class Insight {
 		this._options = deepClone(val);
 		if (this.insight) {
 			// check to see if we need to change the insight type
-			if (!find(this.insight.types, x => x === this.options.type)) {
+			if (!this.insight.types.includes(this.options.type)) {
 				this.buildInsight();
 			} else {
 				this.insight.options = this.options;
@@ -85,17 +84,17 @@ export class Insight {
 		}
 	}
 	public get isCopyable(): boolean {
-		return !!find(Graph.types, x => x === this.options.type as ChartType);
+		return Graph.types.includes(this.options.type as ChartType);
 	}
 
 	private findctor(type: ChartType | InsightType): IInsightCtor {
-		if (find(Graph.types, x => x === type as ChartType)) {
+		if (Graph.types.includes(type as ChartType)) {
 			return Graph;
-		} else if (find(ImageInsight.types, x => x === type as InsightType)) {
+		} else if (ImageInsight.types.includes(type as InsightType)) {
 			return ImageInsight;
-		} else if (find(TableInsight.types, x => x === type as InsightType)) {
+		} else if (TableInsight.types.includes(type as InsightType)) {
 			return TableInsight;
-		} else if (find(CountInsight.types, x => x === type as InsightType)) {
+		} else if (CountInsight.types.includes(type as InsightType)) {
 			return CountInsight;
 		}
 		return undefined;

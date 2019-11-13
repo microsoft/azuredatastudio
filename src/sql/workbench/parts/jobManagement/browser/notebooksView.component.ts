@@ -33,7 +33,6 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { find, fill } from 'vs/base/common/arrays';
 
 
 export const NOTEBOOKSVIEW_SELECTOR: string = 'notebooksview-component';
@@ -318,7 +317,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 						this._table.grid.removeCellCssStyles('notebook-error-row' + i.toString());
 						let item = this.dataView.getItemByIdx(i);
 						// current filter
-						if (!!find(filterValues, x => x === item[args.column.field])) {
+						if (_.contains(filterValues, item[args.column.field])) {
 							// check all previous filters
 							if (this.checkPreviousFilters(item)) {
 								if (item.lastRunOutcome === 'Failed') {
@@ -611,7 +610,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 	private checkPreviousFilters(item): boolean {
 		for (let column in this.filterValueMap) {
 			if (column !== 'start' && this.filterValueMap[column][0].length > 0) {
-				if (!find(this.filterValueMap[column][0], x => x === item[JobManagementUtilities.convertColNameToField(column)])) {
+				if (!_.contains(this.filterValueMap[column][0], item[JobManagementUtilities.convertColNameToField(column)])) {
 					return false;
 				}
 			}
@@ -730,7 +729,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		// if the durations are all 0 secs, show minimal chart
 		// instead of nothing
 		if (zeroDurationJobCount === jobHistories.length) {
-			return fill(jobHistories.length, '5px');
+			return Array(jobHistories.length).fill('5px');
 		} else {
 			return chartHeights;
 		}
@@ -770,9 +769,9 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			let filterValues = col.filterValues;
 			if (filterValues && filterValues.length > 0) {
 				if (item._parent) {
-					value = value && find(filterValues, x => x === item._parent[col.field]);
+					value = value && _.contains(filterValues, item._parent[col.field]);
 				} else {
-					value = value && find(filterValues, x => x === item[col.field]);
+					value = value && _.contains(filterValues, item[col.field]);
 				}
 			}
 		}

@@ -9,7 +9,6 @@ import { $ } from 'vs/base/browser/dom';
 import { mixin } from 'vs/base/common/objects';
 import { IInsightOptions, InsightType } from 'sql/workbench/parts/charts/common/interfaces';
 import * as nls from 'vs/nls';
-import { startsWith } from 'vs/base/common/strings';
 
 export interface IConfig extends IInsightOptions {
 	encoding?: string;
@@ -70,7 +69,7 @@ export class ImageInsight implements IInsight {
 
 	private static _hexToBase64(hexVal: string) {
 
-		if (startsWith(hexVal, '0x')) {
+		if (hexVal.startsWith('0x')) {
 			hexVal = hexVal.slice(2);
 		}
 		// should be able to be replaced with new Buffer(hexVal, 'hex').toString('base64')

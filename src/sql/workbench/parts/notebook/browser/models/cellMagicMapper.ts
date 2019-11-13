@@ -5,7 +5,6 @@
 
 import { ICellMagicMapper } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { ILanguageMagic } from 'sql/workbench/services/notebook/browser/notebookService';
-import { find } from 'vs/base/common/arrays';
 
 const defaultKernel = '*';
 export class CellMagicMapper implements ICellMagicMapper {
@@ -39,7 +38,7 @@ export class CellMagicMapper implements ICellMagicMapper {
 		searchText = searchText.toLowerCase();
 		let kernelMagics = this.kernelToMagicMap.get(kernelId) || [];
 		if (kernelMagics) {
-			return find(kernelMagics, m => m.magic.toLowerCase() === searchText);
+			return kernelMagics.find(m => m.magic.toLowerCase() === searchText);
 		}
 		return undefined;
 	}

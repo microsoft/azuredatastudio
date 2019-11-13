@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as chartjs from 'chart.js';
+import { Chart as ChartJs } from 'chart.js';
 
 import { mixin } from 'sql/base/common/objects';
 import { localize } from 'vs/nls';
@@ -13,12 +13,10 @@ import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 
 import { IInsight, IInsightData, IPointDataSet, customMixin } from './interfaces';
 import { IInsightOptions, DataDirection, ChartType, LegendPosition, DataType } from 'sql/workbench/parts/charts/common/interfaces';
-import { values } from 'vs/base/common/collections';
-import { find } from 'vs/base/common/arrays';
 
 const noneLineGraphs = [ChartType.Doughnut, ChartType.Pie];
 
-const timeSeriesScales: chartjs.ChartOptions = {
+const timeSeriesScales: ChartJs.ChartOptions = {
 	scales: {
 		xAxes: [{
 			type: 'time',
@@ -44,7 +42,7 @@ const defaultOptions: IInsightOptions = {
 export class Graph implements IInsight {
 	private _options: IInsightOptions;
 	private canvas: HTMLCanvasElement;
-	private chartjs: chartjs;
+	private chartjs: ChartJs;
 	private _data: IInsightData;
 
 	private originalType: ChartType;
@@ -93,7 +91,7 @@ export class Graph implements IInsight {
 		}
 		this._data = data;
 		let labels: Array<string>;
-		let chartData: Array<Chart.ChartDataSets>;
+		let chartData: Array<ChartJs.ChartDataSets>;
 
 		if (this.options.dataDirection === DataDirection.Horizontal) {
 			if (this.options.labelFirstColumn) {
@@ -116,7 +114,7 @@ export class Graph implements IInsight {
 					dataSetMap[legend].data.push({ x: row[1], y: Number(row[2]) });
 				}
 			});
-			chartData = values(dataSetMap);
+			chartData = Object.values(dataSetMap);
 		} else {
 			if (this.options.dataDirection === DataDirection.Horizontal) {
 				if (this.options.labelFirstColumn) {
@@ -162,10 +160,10 @@ export class Graph implements IInsight {
 			this.chartjs.config.type = this.options.type;
 			// we don't want to include lables for timeSeries
 			this.chartjs.data.labels = this.originalType === 'timeSeries' ? [] : labels;
-			this.chartjs.config.options = this.transformOptions(this.options);
+			this.chartjs.options = this.transformOptions(this.options);
 			this.chartjs.update(0);
 		} else {
-			this.chartjs = new chartjs.Chart(this.canvas.getContext('2d'), {
+			this.chartjs = new ChartJs(this.canvas.getContext('2d'), {
 				data: {
 					// we don't want to include lables for timeSeries
 					labels: this.originalType === 'timeSeries' ? [] : labels,
@@ -177,8 +175,8 @@ export class Graph implements IInsight {
 		}
 	}
 
-	private transformOptions(options: IInsightOptions): Chart.ChartOptions {
-		let retval: Chart.ChartOptions = {};
+	private transformOptions(options: IInsightOptions): ChartJs.ChartOptions {
+		let retval: ChartJs.ChartOptions = {};
 		retval.maintainAspectRatio = false;
 
 		let foregroundColor = this._theme.getColor(colors.editorForeground);
@@ -191,7 +189,7 @@ export class Graph implements IInsight {
 		if (options) {
 			retval.scales = {};
 			// we only want to include axis if it is a axis based graph type
-			if (!find(noneLineGraphs, x => x === options.type as ChartType)) {
+			if (!noneLineGraphs.includes(options.type as ChartType)) {
 				retval.scales.xAxes = [{
 					scaleLabel: {
 						fontColor: foreground,
@@ -264,8 +262,8 @@ export class Graph implements IInsight {
 				}
 			}
 
-			retval.legend = <Chart.ChartLegendOptions>{
-				position: options.legendPosition as Chart.PositionType,
+			retval.legend = <ChartJs.ChartLegendOptions>{
+				position: options.legendPosition as ChartJs.PositionType,
 				display: options.legendPosition !== LegendPosition.None,
 				labels: {
 					fontColor: foreground

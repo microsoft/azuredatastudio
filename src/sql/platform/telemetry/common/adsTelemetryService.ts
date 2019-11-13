@@ -6,7 +6,6 @@
 import { IAdsTelemetryService, ITelemetryInfo, ITelemetryEvent, ITelemetryConnectionInfo, ITelemetryEventMeasures, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { assign } from 'vs/base/common/objects';
 
 
 class TelemetryEventImpl implements ITelemetryEvent {
@@ -34,17 +33,17 @@ class TelemetryEventImpl implements ITelemetryEvent {
 	}
 
 	public withAdditionalProperties(additionalProperties: ITelemetryEventProperties): ITelemetryEvent {
-		assign(this._properties, additionalProperties);
+		Object.assign(this._properties, additionalProperties);
 		return this;
 	}
 
 	public withAdditionalMeasurements(additionalMeasurements: ITelemetryEventMeasures): ITelemetryEvent {
-		assign(this._measurements, additionalMeasurements);
+		Object.assign(this._measurements, additionalMeasurements);
 		return this;
 	}
 
 	public withConnectionInfo(connectionInfo: ITelemetryConnectionInfo): ITelemetryEvent {
-		assign(this._properties,
+		Object.assign(this._properties,
 			{
 				authenticationType: connectionInfo.authenticationType,
 				providerName: connectionInfo.providerName,

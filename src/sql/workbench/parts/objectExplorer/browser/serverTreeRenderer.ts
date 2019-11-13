@@ -257,7 +257,7 @@ export class ServerTreeRenderer implements IRenderer {
 	private findParentElement(container: HTMLElement, className: string): HTMLElement {
 		let currentElement = container;
 		while (currentElement) {
-			if (currentElement.className.indexOf(className) > -1) {
+			if (currentElement.className.includes(className)) {
 				break;
 			}
 			currentElement = currentElement.parentElement;

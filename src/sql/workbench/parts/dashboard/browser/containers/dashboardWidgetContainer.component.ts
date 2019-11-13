@@ -13,7 +13,6 @@ import { WidgetContent } from 'sql/workbench/parts/dashboard/browser/contents/wi
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { values } from 'vs/base/common/collections';
 
 @Component({
 	selector: 'dashboard-widget-container',
@@ -39,7 +38,7 @@ export class DashboardWidgetContainer extends DashboardTab implements OnDestroy,
 
 	ngOnInit() {
 		if (this.tab.container) {
-			this.widgets = values(this.tab.container)[0];
+			this.widgets = Object.values(this.tab.container)[0];
 			this._cd.detectChanges();
 		}
 	}

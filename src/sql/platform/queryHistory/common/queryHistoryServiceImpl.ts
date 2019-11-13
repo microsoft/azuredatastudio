@@ -14,7 +14,6 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
-import { find } from 'vs/base/common/arrays';
 
 /**
  * Service that collects the results of executed queries
@@ -42,7 +41,7 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 		this._captureEnabled = !!this._configurationService.getValue<boolean>('queryHistory.captureEnabled');
 
 		this._register(this._configurationService.onDidChangeConfiguration((e: IConfigurationChangeEvent) => {
-			if (find(e.affectedKeys, x => x === 'queryHistory.captureEnabled')) {
+			if (e.affectedKeys.includes('queryHistory.captureEnabled')) {
 				this.updateCaptureEnabled();
 			}
 		}));
