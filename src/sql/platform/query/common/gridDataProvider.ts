@@ -23,7 +23,7 @@ export interface IGridDataProvider {
 	 * @param resultId The result id of the result to copy from
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
-	copyResults(selection: Slick.Range[], includeHeaders?: boolean): void;
+	copyResults(selection: Slick.Range[], includeHeaders?: boolean): Promise<void>;
 
 	/**
 	 * Gets the EOL terminator to use for this data type.
