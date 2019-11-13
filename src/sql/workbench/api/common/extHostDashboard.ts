@@ -8,7 +8,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 
 import * as azdata from 'azdata';
 
-import { ExtHostDashboardShape, MainThreadDashboardShape, SqlMainContext } from './sqlExtHost.protocol';
+import { ExtHostDashboardShape } from './sqlExtHost.protocol';
 
 export class ExtHostDashboard implements ExtHostDashboardShape {
 	private _onDidOpenDashboard = new Emitter<azdata.DashboardDocument>();
@@ -17,10 +17,7 @@ export class ExtHostDashboard implements ExtHostDashboardShape {
 	private _onDidChangeToDashboard = new Emitter<azdata.DashboardDocument>();
 	public readonly onDidChangeToDashboard: Event<azdata.DashboardDocument> = this._onDidChangeToDashboard.event;
 
-	private _proxy: MainThreadDashboardShape;
-
 	constructor(mainContext: IMainContext) {
-		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadDashboard);
 	}
 
 	$onDidOpenDashboard(dashboard: azdata.DashboardDocument) {

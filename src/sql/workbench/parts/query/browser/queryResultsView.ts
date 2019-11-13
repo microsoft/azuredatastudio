@@ -23,7 +23,6 @@ import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Event } from 'vs/base/common/event';
-import { find } from 'vs/base/common/arrays';
 import { startsWith } from 'vs/base/common/strings';
 
 class MessagesView extends Disposable implements IPanelView {

@@ -34,15 +34,12 @@ export class WizardModal extends Modal {
 	// Wizard HTML elements
 	private _body: HTMLElement;
 
-	private _messageAndPageContainer: HTMLElement;
 	private _pageContainer: HTMLElement;
 
 	// Buttons
 	private _previousButton: Button;
 	private _nextButton: Button;
-	private _generateScriptButton: Button;
 	private _doneButton: Button;
-	private _cancelButton: Button;
 
 	constructor(
 		private _wizard: Wizard,
@@ -83,10 +80,10 @@ export class WizardModal extends Modal {
 
 		this._previousButton = this.addDialogButton(this._wizard.backButton, () => this.showPage(this._wizard.currentPage - 1));
 		this._nextButton = this.addDialogButton(this._wizard.nextButton, () => this.showPage(this._wizard.currentPage + 1, true, true), true, true);
-		this._generateScriptButton = this.addDialogButton(this._wizard.generateScriptButton, () => undefined);
+		this.addDialogButton(this._wizard.generateScriptButton, () => undefined);
 		this._doneButton = this.addDialogButton(this._wizard.doneButton, () => this.done(), false, true);
 		this._wizard.doneButton.registerClickEvent(this._onDone.event);
-		this._cancelButton = this.addDialogButton(this._wizard.cancelButton, () => this.cancel(), false);
+		this.addDialogButton(this._wizard.cancelButton, () => this.cancel(), false);
 		this._wizard.cancelButton.registerClickEvent(this._onCancel.event);
 
 		let messageChangeHandler = (message: DialogMessage) => {
@@ -133,7 +130,6 @@ export class WizardModal extends Modal {
 		this.initializeNavigation(this._body);
 
 		const mpContainer = append(this._body, $('div.dialog-message-and-page-container'));
-		this._messageAndPageContainer = mpContainer;
 		mpContainer.append(this._messageElement);
 		this._pageContainer = append(mpContainer, $('div.dialogModal-page-container'));
 

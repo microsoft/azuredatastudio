@@ -44,7 +44,7 @@ export interface DialogComponentParams extends IBootstrapParams {
 export class DialogContainer implements AfterViewInit {
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
-	private _dialogPane: DialogPane;
+	public _dialogPane: DialogPane;
 
 	public modelViewId: string;
 	@ViewChild(ModelViewContent) private _modelViewContent: ModelViewContent;

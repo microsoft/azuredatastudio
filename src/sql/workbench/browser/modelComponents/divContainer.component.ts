@@ -133,7 +133,7 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout> im
 		return this.getPropertyOrDefault<azdata.DivContainerProperties, boolean>((props) => props.clickable, false);
 	}
 
-	private onKey(e: KeyboardEvent) {
+	public onKey(e: KeyboardEvent) {
 		let event = new StandardKeyboardEvent(e);
 		if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 			this.onClick();
@@ -141,10 +141,10 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout> im
 		}
 	}
 
-	private getItemOrder(item: DivItem): number {
+	public getItemOrder(item: DivItem): number {
 		return item.config ? item.config.order : 0;
 	}
-	private getItemStyles(item: DivItem): { [key: string]: string } {
+	public getItemStyles(item: DivItem): { [key: string]: string } {
 		return item.config && item.config.CSSStyles ? item.config.CSSStyles : {};
 	}
 }

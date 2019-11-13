@@ -5,19 +5,19 @@
 
 import 'vs/css!./welcomeOverlay';
 import * as dom from 'vs/base/browser/dom';
-import { Registry } from 'vs/platform/registry/common/platform';
+// import { Registry } from 'vs/platform/registry/common/platform';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ShowAllCommandsAction } from 'vs/workbench/contrib/quickopen/browser/commandsHandler';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
-import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
-import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
+// import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
+// import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { RawContextKey, IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { KeyCode } from 'vs/base/common/keyCodes';
+// import { KeyCode } from 'vs/base/common/keyCodes';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { textPreformatForeground, foreground } from 'vs/platform/theme/common/colorRegistry';

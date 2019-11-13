@@ -57,7 +57,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 	};
 
 	private dataView: any;
-	private _isCloud: boolean;
+	public _isCloud: boolean;
 	private _operatorsCacheObject: OperatorsCacheObject;
 
 	private _didTabChange: boolean;
@@ -68,7 +68,6 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(ICommandService) private _commandService: ICommandService,

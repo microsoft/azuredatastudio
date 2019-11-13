@@ -47,7 +47,6 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 	private _languageMode: string;
 	private _isAutoResizable: boolean;
 	private _minimumHeight: number;
-	private _instancetiationService: IInstantiationService;
 	protected _title: string;
 
 	constructor(

@@ -17,7 +17,6 @@ import { EditDataInput } from 'sql/workbench/parts/editData/browser/editDataInpu
 import { DashboardInput } from 'sql/workbench/parts/dashboard/browser/dashboardInput';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { find } from 'vs/base/common/arrays';
 
 /**
@@ -147,7 +146,6 @@ export class GetCurrentConnectionStringAction extends Action {
 		label: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IEditorService private _editorService: IEditorService,
-		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@INotificationService private readonly _notificationService: INotificationService,
 		@IClipboardService private _clipboardService: IClipboardService,
 	) {

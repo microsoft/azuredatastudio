@@ -66,7 +66,7 @@ export class IssueReporterModel {
 Issue Type: <b>${this.getIssueTypeTitle()}</b>
 
 ${this._data.issueDescription}
-
+${this.getExtensionVersion()}
 Azure Data Studio version: ${this._data.versionInfo && this._data.versionInfo.vscodeVersion}
 OS version: ${this._data.versionInfo && this._data.versionInfo.os}
 ${this.getRemoteOSes()}

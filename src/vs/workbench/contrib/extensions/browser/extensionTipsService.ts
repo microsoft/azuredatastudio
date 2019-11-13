@@ -7,12 +7,12 @@ import { localize } from 'vs/nls';
 import { join, basename } from 'vs/base/common/path';
 import { forEach } from 'vs/base/common/collections';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { match } from 'vs/base/common/glob';
+// import { match } from 'vs/base/common/glob';
 import * as json from 'vs/base/common/json';
 import { IExtensionManagementService, IExtensionGalleryService, EXTENSION_IDENTIFIER_PATTERN, InstallOperation, ILocalExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IExtensionTipsService, ExtensionRecommendationReason, IExtensionsConfigContent, RecommendationChangeNotification, IExtensionRecommendation, ExtensionRecommendationSource, IExtensionEnablementService, EnablementState } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
-import { IModelService } from 'vs/editor/common/services/modelService';
-import { ITextModel } from 'vs/editor/common/model';
+// import { IModelService } from 'vs/editor/common/services/modelService';
+// import { ITextModel } from 'vs/editor/common/model';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 // {{SQL CARBON EDIT}}
@@ -23,37 +23,37 @@ import * as Constants from 'sql/workbench/contrib/extensions/common/constants';
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceContextService, IWorkspaceFolder, IWorkspace, IWorkspaceFoldersChangeEvent, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IFileService } from 'vs/platform/files/common/files';
-import { IExtensionsConfiguration, ConfigurationKey, ShowRecommendationsOnlyOnDemandKey, IExtensionsViewlet, IExtensionsWorkbenchService, EXTENSIONS_CONFIG } from 'vs/workbench/contrib/extensions/common/extensions';
+import { IExtensionsConfiguration, ConfigurationKey, ShowRecommendationsOnlyOnDemandKey, /*IExtensionsViewlet, IExtensionsWorkbenchService,*/ EXTENSIONS_CONFIG } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { flatten, distinct, shuffle, coalesce, firstIndex } from 'vs/base/common/arrays';
-import { guessMimeTypes, MIME_UNKNOWN } from 'vs/base/common/mime';
-import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
+// import { guessMimeTypes, MIME_UNKNOWN } from 'vs/base/common/mime';
+// import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IRequestService, asJson } from 'vs/platform/request/common/request';
 import { isNumber } from 'vs/base/common/types';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
+// import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Emitter, Event } from 'vs/base/common/event';
 import { assign } from 'vs/base/common/objects';
 import { URI } from 'vs/base/common/uri';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
-import { IExperimentService, ExperimentActionType, ExperimentState } from 'vs/workbench/contrib/experiments/common/experimentService';
+// import { IExperimentService, ExperimentActionType, ExperimentState } from 'vs/workbench/contrib/experiments/common/experimentService';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { ExtensionType, ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
-import { extname } from 'vs/base/common/resources';
+// import { extname } from 'vs/base/common/resources';
 import { IExeBasedExtensionTip, IProductService } from 'vs/platform/product/common/productService';
 import { timeout } from 'vs/base/common/async';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry'; // {{SQL CARBON EDIT}}
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys'; // {{SQL CARBON EDIT}}
 import { IWorkspaceStatsService } from 'vs/workbench/contrib/stats/common/workspaceStats';
-import { setImmediate, isWeb } from 'vs/base/common/platform';
+import { /*setImmediate,*/ isWeb } from 'vs/base/common/platform';
 import { platform, env as processEnv } from 'vs/base/common/process';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 
 const milliSecondsInADay = 1000 * 60 * 60 * 24;
 const choiceNever = localize('neverShowAgain', "Don't Show Again");
-const searchMarketplace = localize('searchMarketplace', "Search Marketplace");
-const processedFileExtensions: string[] = [];
+// const searchMarketplace = localize('searchMarketplace', "Search Marketplace"); {{SQL CARBON EDIT}} comment out for no unused
+// const processedFileExtensions: string[] = []; {{SQL CARBON EDIT}} comment out for no unused
 
 interface IDynamicWorkspaceRecommendations {
 	remoteSet: string[];
@@ -97,7 +97,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 
 	constructor(
 		@IExtensionGalleryService private readonly _galleryService: IExtensionGalleryService,
-		@IModelService private readonly _modelService: IModelService,
+		// @IModelService private readonly _modelService: IModelService, {{SQL CARBON EDIT}} comment out for no unused
 		@IStorageService private readonly storageService: IStorageService,
 		@IExtensionManagementService private readonly extensionsService: IExtensionManagementService,
 		@IExtensionEnablementService private readonly extensionEnablementService: IExtensionEnablementService,
@@ -107,13 +107,13 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService,
-		@IExtensionService private readonly extensionService: IExtensionService,
+		// @IExtensionService private readonly extensionService: IExtensionService, {{SQL CARBON EDIT}} comment out for no unused
 		@IRequestService private readonly requestService: IRequestService,
-		@IViewletService private readonly viewletService: IViewletService,
+		// @IViewletService private readonly viewletService: IViewletService, {{SQL CARBON EDIT}} comment out for no unused
 		@INotificationService private readonly notificationService: INotificationService,
 		@IExtensionManagementService private readonly extensionManagementService: IExtensionManagementService,
-		@IExtensionsWorkbenchService private readonly extensionWorkbenchService: IExtensionsWorkbenchService,
-		@IExperimentService private readonly experimentService: IExperimentService,
+		// @IExtensionsWorkbenchService private readonly extensionWorkbenchService: IExtensionsWorkbenchService, {{SQL CARBON EDIT}} comment out for no unused
+		// @IExperimentService private readonly experimentService: IExperimentService, {{SQL CARBON EDIT}} comment out for no unused
 		@IAdsTelemetryService private readonly adsTelemetryService: IAdsTelemetryService, // {{SQL CARBON EDIT}}
 		@IWorkspaceStatsService private readonly workspaceStatsService: IWorkspaceStatsService,
 		@IProductService private readonly productService: IProductService
@@ -709,7 +709,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	 * Prompt the user to either install the recommended extension for the file type in the current editor model
 	 * or prompt to search the marketplace if it has extensions that can support the file type
 	 */
-	private promptFiletypeBasedRecommendations(model: ITextModel): void {
+	/*private promptFiletypeBasedRecommendations(model: ITextModel): void { {{SQL CARBON EDIT}} comment out for no unused
 		const uri = model.uri;
 		if (!uri || !this.fileService.canHandleResource(uri)) {
 			return;
@@ -776,9 +776,9 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 
 			this.promptRecommendedExtensionForFileExtension(fileExtension, installed);
 		});
-	}
+	}*/
 
-	private async promptRecommendedExtensionForFileType(recommendationsToSuggest: string[], installed: ILocalExtension[]): Promise<boolean> {
+	/*private async promptRecommendedExtensionForFileType(recommendationsToSuggest: string[], installed: ILocalExtension[]): Promise<boolean> { {{SQL CARBON EDIT}} comment out for no unused
 
 		recommendationsToSuggest = this.filterIgnoredOrNotAllowed(recommendationsToSuggest);
 		if (recommendationsToSuggest.length === 0) {
@@ -805,24 +805,24 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			[{
 				label: localize('install', 'Install'),
 				run: () => {
-					/* __GDPR__
+					*//* __GDPR__
 					"extensionRecommendations:popup" : {
 						"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 						"extensionId": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
 					}
-					*/
+					*//*
 					this.telemetryService.publicLog('extensionRecommendations:popup', { userReaction: 'install', extensionId: name });
 					this.instantiationService.createInstance(InstallRecommendedExtensionAction, id).run();
 				}
 			}, {
 				label: localize('showRecommendations', "Show Recommendations"),
 				run: () => {
-					/* __GDPR__
+					*//* __GDPR__
 						"extensionRecommendations:popup" : {
 							"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 							"extensionId": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
 						}
-					*/
+					*//*
 					this.telemetryService.publicLog('extensionRecommendations:popup', { userReaction: 'show', extensionId: name });
 
 					const recommendationsAction = this.instantiationService.createInstance(ShowRecommendedExtensionsAction, ShowRecommendedExtensionsAction.ID, localize('showRecommendations', "Show Recommendations"));
@@ -834,12 +834,12 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 				isSecondary: true,
 				run: () => {
 					this.addToImportantRecommendationsIgnore(id);
-					/* __GDPR__
+					*//* __GDPR__
 						"extensionRecommendations:popup" : {
 							"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 							"extensionId": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
 						}
-					*/
+					*//*
 					this.telemetryService.publicLog('extensionRecommendations:popup', { userReaction: 'neverShowAgain', extensionId: name });
 					this.notificationService.prompt(
 						Severity.Info,
@@ -857,21 +857,21 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			{
 				sticky: true,
 				onCancel: () => {
-					/* __GDPR__
+					*//* __GDPR__
 						"extensionRecommendations:popup" : {
 							"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 							"extensionId": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
 						}
-					*/
+					*//*
 					this.telemetryService.publicLog('extensionRecommendations:popup', { userReaction: 'cancelled', extensionId: name });
 				}
 			}
 		);
 
 		return true;
-	}
+	}*/
 
-	private async promptRecommendedExtensionForFileExtension(fileExtension: string, installed: ILocalExtension[]): Promise<void> {
+	/*private async promptRecommendedExtensionForFileExtension(fileExtension: string, installed: ILocalExtension[]): Promise<void> { {{SQL CARBON EDIT}} no unused
 		const fileExtensionSuggestionIgnoreList = <string[]>JSON.parse(this.storageService.get('extensionsAssistant/fileExtensionsSuggestionIgnore', StorageScope.GLOBAL, '[]'));
 		if (fileExtensionSuggestionIgnoreList.indexOf(fileExtension) > -1) {
 			return;
@@ -894,12 +894,12 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			[{
 				label: searchMarketplace,
 				run: () => {
-					/* __GDPR__
+					*//* __GDPR__
 						"fileExtensionSuggestion:popup" : {
 							"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 							"fileExtension": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
 						}
-					*/
+					*//*
 					this.telemetryService.publicLog('fileExtensionSuggestion:popup', { userReaction: 'ok', fileExtension: fileExtension });
 					this.viewletService.openViewlet('workbench.view.extensions', true)
 						.then(viewlet => viewlet as IExtensionsViewlet)
@@ -917,29 +917,29 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 						JSON.stringify(fileExtensionSuggestionIgnoreList),
 						StorageScope.GLOBAL
 					);
-					/* __GDPR__
+					*//* __GDPR__
 						"fileExtensionSuggestion:popup" : {
 							"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 							"fileExtension": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
 						}
-					*/
+					*//*
 					this.telemetryService.publicLog('fileExtensionSuggestion:popup', { userReaction: 'neverShowAgain', fileExtension: fileExtension });
 				}
 			}],
 			{
 				sticky: true,
 				onCancel: () => {
-					/* __GDPR__
+					*//* __GDPR__
 						"fileExtensionSuggestion:popup" : {
 							"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 							"fileExtension": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
 						}
-					*/
+					*//*
 					this.telemetryService.publicLog('fileExtensionSuggestion:popup', { userReaction: 'cancelled', fileExtension: fileExtension });
 				}
 			}
 		);
-	}
+	}*/
 
 	private filterIgnoredOrNotAllowed(recommendationsToSuggest: string[]): string[] {
 		const importantRecommendationsIgnoreList = <string[]>JSON.parse(this.storageService.get('extensionsAssistant/importantRecommendationsIgnore', StorageScope.GLOBAL, '[]'));

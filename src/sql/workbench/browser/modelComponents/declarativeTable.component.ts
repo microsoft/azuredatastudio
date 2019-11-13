@@ -6,7 +6,7 @@
 import 'vs/css!./media/declarativeTable';
 
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ViewChild, ElementRef, OnDestroy, AfterViewInit
+	Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
 import * as azdata from 'azdata';
@@ -39,8 +39,8 @@ export enum DeclarativeDataType {
 					<ng-container *ngFor="let cellData of row;let c = index">
 						<td class="declarative-table-cell" tabindex="-1" [style.width]="getColumnWidth(c)" [attr.aria-label]="getAriaLabel(r, c)" >
 							<checkbox *ngIf="isCheckBox(c)" label="" (onChange)="onCheckBoxChanged($event,r,c)" [enabled]="isControlEnabled(c)" [checked]="isChecked(r,c)"></checkbox>
-							<select-box *ngIf="isSelectBox(c)" [options]="GetOptions(c)" (onDidSelect)="onSelectBoxChanged($event,r,c)" [selectedOption]="GetSelectedOptionDisplayName(r,c)"></select-box>
-							<editable-select-box *ngIf="isEditableSelectBox(c)" [options]="GetOptions(c)" (onDidSelect)="onSelectBoxChanged($event,r,c)" [selectedOption]="GetSelectedOptionDisplayName(r,c)"></editable-select-box>
+							<select-box *ngIf="isSelectBox(c)" [options]="getOptions(c)" (onDidSelect)="onSelectBoxChanged($event,r,c)" [selectedOption]="getSelectedOptionDisplayName(r,c)"></select-box>
+							<editable-select-box *ngIf="isEditableSelectBox(c)" [options]="getOptions(c)" (onDidSelect)="onSelectBoxChanged($event,r,c)" [selectedOption]="getSelectedOptionDisplayName(r,c)"></editable-select-box>
 							<input-box *ngIf="isInputBox(c)" [value]="cellData" (onDidChange)="onInputBoxChanged($event,r,c)"></input-box>
 							<ng-container *ngIf="isLabel(c)" >{{cellData}}</ng-container>
 						</td>
@@ -55,7 +55,6 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
-	@ViewChild('container', { read: ElementRef }) private _tableContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef
@@ -80,12 +79,12 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 		this.baseDestroy();
 	}
 
-	private isCheckBox(cell: number): boolean {
+	public isCheckBox(cell: number): boolean {
 		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		return column.valueType === DeclarativeDataType.boolean;
 	}
 
-	private isControlEnabled(cell: number): boolean {
+	public isControlEnabled(cell: number): boolean {
 		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		return !column.isReadOnly;
 	}
@@ -95,20 +94,20 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 		return column.isReadOnly && column.valueType === DeclarativeDataType.string;
 	}
 
-	private isChecked(row: number, cell: number): boolean {
+	public isChecked(row: number, cell: number): boolean {
 		let cellData = this.data[row][cell];
 		return cellData;
 	}
 
-	private onInputBoxChanged(e: string, row: number, cell: number): void {
+	public onInputBoxChanged(e: string, row: number, cell: number): void {
 		this.onCellDataChanged(e, row, cell);
 	}
 
-	private onCheckBoxChanged(e: boolean, row: number, cell: number): void {
+	public onCheckBoxChanged(e: boolean, row: number, cell: number): void {
 		this.onCellDataChanged(e, row, cell);
 	}
 
-	private onSelectBoxChanged(e: ISelectData | string, row: number, cell: number): void {
+	public onSelectBoxChanged(e: ISelectData | string, row: number, cell: number): void {
 
 		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		if (column.categoryValues) {
@@ -139,7 +138,7 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 		});
 	}
 
-	private isSelectBox(cell: number): boolean {
+	public isSelectBox(cell: number): boolean {
 		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		return column.valueType === DeclarativeDataType.category;
 	}
@@ -149,22 +148,22 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 		return column.valueType === DeclarativeDataType.editableCategory;
 	}
 
-	private isInputBox(cell: number): boolean {
+	public isInputBox(cell: number): boolean {
 		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		return column.valueType === DeclarativeDataType.string && !column.isReadOnly;
 	}
 
-	private getColumnWidth(cell: number): string {
+	public getColumnWidth(cell: number): string {
 		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		return this.convertSize(column.width, '30px');
 	}
 
-	private GetOptions(cell: number): string[] {
+	public getOptions(cell: number): string[] {
 		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		return column.categoryValues ? column.categoryValues.map(x => x.displayName) : [];
 	}
 
-	private GetSelectedOptionDisplayName(row: number, cell: number): string {
+	public getSelectedOptionDisplayName(row: number, cell: number): string {
 		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		let cellData = this.data[row][cell];
 		if (cellData && column.categoryValues) {
@@ -181,7 +180,7 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 		}
 	}
 
-	private getAriaLabel(row: number, column: number): string {
+	public getAriaLabel(row: number, column: number): string {
 		const cellData = this.data[row][column];
 		return this.isLabel(column) ? (cellData && cellData !== '' ? cellData : localize('blankValue', "blank")) : '';
 	}

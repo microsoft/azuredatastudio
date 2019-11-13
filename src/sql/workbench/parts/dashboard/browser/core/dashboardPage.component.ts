@@ -52,9 +52,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 	private _originalConfig: WidgetConfig[];
 
-	private _widgetConfigLocation: string;
-	private _propertiesConfigLocation: string;
-
 	protected panelActions: Action[];
 	private _tabsDispose: Array<IDisposable> = [];
 	private _tabSettingConfigs: Array<TabSettingConfig> = [];
@@ -115,7 +112,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			});
 		} else {
 			let tempWidgets = this.dashboardService.getSettings<Array<WidgetConfig>>([this.context, 'widgets'].join('.'));
-			this._widgetConfigLocation = 'default';
 			this._originalConfig = objects.deepClone(tempWidgets);
 			let properties = this.getProperties();
 			this._configModifiers.forEach((cb) => {
@@ -302,7 +298,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 	private getProperties(): Array<WidgetConfig> {
 		const properties = this.dashboardService.getSettings<IPropertiesConfig[] | string | boolean>([this.context, 'properties'].join('.'));
-		this._propertiesConfigLocation = 'default';
 		if (types.isUndefinedOrNull(properties)) {
 			return [this.propertiesWidget];
 		} else if (types.isBoolean(properties)) {

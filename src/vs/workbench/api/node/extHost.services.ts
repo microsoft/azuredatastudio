@@ -13,10 +13,10 @@ import { IExtHostCommands, ExtHostCommands } from 'vs/workbench/api/common/extHo
 import { IExtHostDocumentsAndEditors, ExtHostDocumentsAndEditors } from 'vs/workbench/api/common/extHostDocumentsAndEditors';
 import { ExtHostTerminalService } from 'vs/workbench/api/node/extHostTerminalService';
 import { IExtHostTerminalService } from 'vs/workbench/api/common/extHostTerminalService';
-import { IExtHostTask } from 'vs/workbench/api/common/extHostTask';
-import { ExtHostTask } from 'vs/workbench/api/node/extHostTask';
-import { ExtHostDebugService } from 'vs/workbench/api/node/extHostDebugService';
-import { IExtHostDebugService } from 'vs/workbench/api/common/extHostDebugService';
+// import { IExtHostTask } from 'vs/workbench/api/common/extHostTask';
+// import { ExtHostTask } from 'vs/workbench/api/node/extHostTask';
+// import { ExtHostDebugService } from 'vs/workbench/api/node/extHostDebugService';
+// import { IExtHostDebugService } from 'vs/workbench/api/common/extHostDebugService';
 import { IExtHostSearch } from 'vs/workbench/api/common/extHostSearch';
 import { ExtHostSearch } from 'vs/workbench/api/node/extHostSearch';
 import { ExtensionStoragePaths } from 'vs/workbench/api/node/extHostStoragePaths';

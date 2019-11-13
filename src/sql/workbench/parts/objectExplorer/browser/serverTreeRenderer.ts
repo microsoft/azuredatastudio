@@ -15,7 +15,6 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { badgeRenderer, iconRenderer } from 'sql/workbench/parts/objectExplorer/browser/iconRenderer';
-import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { URI } from 'vs/base/common/uri';
 
 export interface IConnectionTemplateData {
@@ -59,8 +58,7 @@ export class ServerTreeRenderer implements IRenderer {
 
 	constructor(
 		isCompact: boolean,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IContextKeyService private _contextKeyService: IContextKeyService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		// isCompact defaults to false unless explicitly set by instantiation call.
 		if (isCompact) {

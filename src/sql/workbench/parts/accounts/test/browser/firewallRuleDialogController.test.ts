@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
-import { Emitter, Event } from 'vs/base/common/event';
+import { Emitter } from 'vs/base/common/event';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { FirewallRuleDialog } from 'sql/workbench/parts/accounts/browser/firewallRuleDialog';
 import { FirewallRuleViewModel } from 'sql/platform/accounts/common/firewallRuleViewModel';
