@@ -20,13 +20,13 @@ import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteA
 export class WebTelemetryAppender implements ITelemetryAppender {
 
 	constructor(private _logService: ILogService, private _appender: IRemoteAgentService,
-		@IWorkbenchEnvironmentService private _environmentService: IWorkbenchEnvironmentService) { } // {{ SQL CARBON EDIT }}
+		@IProductService private _productService: IProductService) { } // {{ SQL CARBON EDIT }}
 
 	log(eventName: string, data: any): void {
 		data = validateTelemetryData(data);
 		this._logService.trace(`telemetry/${eventName}`, data);
 
-		const eventPrefix = this._environmentService.appQuality !== 'stable' ? '/adsworkbench/' : '/monacoworkbench/'; // {{SQL CARBON EDIT}}
+		const eventPrefix = this._productService.quality !== 'stable' ? '/adsworkbench/' : '/monacoworkbench/'; // {{SQL CARBON EDIT}}
 		this._appender.logTelemetry(eventPrefix + eventName, {
 			properties: data.properties,
 			measurements: data.measurements
@@ -56,7 +56,7 @@ export class TelemetryService extends Disposable implements ITelemetryService {
 
 		if (!environmentService.args['disable-telemetry'] && !!productService.enableTelemetry) {
 			const config: ITelemetryServiceConfig = {
-				appender: combinedAppender(new WebTelemetryAppender(logService, remoteAgentService, environmentService), new LogAppender(logService)), // {{SQL CARBON EDIT}}
+				appender: combinedAppender(new WebTelemetryAppender(logService, remoteAgentService, productService), new LogAppender(logService)), // {{SQL CARBON EDIT}}
 				commonProperties: resolveWorkbenchCommonProperties(storageService, productService.commit, productService.version, environmentService.configuration.machineId, environmentService.configuration.remoteAuthority),
 				piiPaths: [environmentService.appRoot]
 			};
