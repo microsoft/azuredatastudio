@@ -20,6 +20,7 @@ export const clientCapabilities = {
 export interface ConnectionProviderProperties {
 	providerId: string;
 	displayName: string;
+	azureResource?: azdata.AzureResource;
 	connectionOptions: azdata.ConnectionOption[];
 }
 
