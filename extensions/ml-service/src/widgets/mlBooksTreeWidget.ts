@@ -12,7 +12,7 @@ import { TreeNode } from '../notebookTree/treeModel';
 
 export function registerMlBooksTreeWidget(extensionContext: vscode.ExtensionContext): void {
 	azdata.ui.registerModelViewProvider('ml-bookstree', async (view) => {
-
+		const treeHeight = '500px';
 		let container = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 			alignItems: 'stretch',
@@ -30,7 +30,7 @@ export function registerMlBooksTreeWidget(extensionContext: vscode.ExtensionCont
 		// tslint:disable-next-line:no-sync
 		let tree = view.modelBuilder.tree().withProperties({
 			withCheckbox: false,
-			height: '250px'
+			height: treeHeight
 		}).component();
 		let root = new TreeNode(notebookFolder, 'root', undefined);
 		let treeProvider = new TreeDataProvider(root, extensionContext);
@@ -47,7 +47,7 @@ export function registerMlBooksTreeWidget(extensionContext: vscode.ExtensionCont
 			CSSStyles: {
 				'padding-top': '30px',
 				'padding-left': '1px',
-				'height': '250px',
+				'height': treeHeight,
 				'width': '540px'
 			}
 		});

@@ -94,6 +94,7 @@
               "row": 1,
               "col": 0,
               "colspan": 2,
+              "rowspan": 2,
               "widget": {
                 "modelview": {
                   "id": "ml-bookstree"

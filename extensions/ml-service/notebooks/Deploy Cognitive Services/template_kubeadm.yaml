@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: $LABEL-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: $LABEL
+    spec:
+      containers:
+      - name: $LABEL
+        image: $IMAGE
+        imagePullPolicy: Always
+        ports:
+        - name: http-port
+          containerPort: $CONTAINER_PORT
+        env:
+        - name: Eula
+          value: "accept"
+        - name: Billing
+          value: "$BILLING_END_POINT"
+        - name: ApiKey
+          value: "$API_KEY"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: $LABEL-svc
+spec:
+  selector:
+    app: $LABEL
+  type: NodePort
+  ports:
+  - nodePort: $PORT
+    port: $CONTAINER_PORT
+    targetPort: http-port
+    name: http-port
+

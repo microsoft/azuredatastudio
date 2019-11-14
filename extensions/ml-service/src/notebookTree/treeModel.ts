@@ -114,6 +114,12 @@ export class TreeNode implements azdata.TreeComponentItem {
 				} else {
 					this._children.push(node);
 				}
+			} else if (this._name === 'Deploy Cognitive Services') {
+				if (file === 'Deploy Cognitive Services.ipynb') {
+					this._children[0] = node;
+				} else {
+					this._children.push(node);
+				}
 			} else {
 				this._children.push(node);
 			}

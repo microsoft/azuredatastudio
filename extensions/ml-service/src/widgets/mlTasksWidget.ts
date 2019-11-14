@@ -45,6 +45,7 @@ export function registerMlTasksWidget(dataspace: Dataspace): void {
 			isBigDataCluster = view.serverInfo.options[isBigDataClusterProperty];
 		}
 		let deployMlFlowButton: azdata.ButtonComponent;
+		let deployCognitiveServicesButton: azdata.ButtonComponent;
 		if (isBigDataCluster) {
 			deployMlFlowButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 				label: 'Deploy MLFlow',
@@ -53,6 +54,17 @@ export function registerMlTasksWidget(dataspace: Dataspace): void {
 
 			deployMlFlowButton.onDidClick(async () => {
 				let notebookPath = path.join(notebooksFolder, 'Deploy MLFlow', 'Deploy MLFlow.ipynb');
+				let doc = await vscode.workspace.openTextDocument(notebookPath);
+				vscode.window.showTextDocument(doc);
+			});
+
+			deployCognitiveServicesButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+				label: 'Deploy Cognitive Services',
+				title: 'Deploy Cognitive Services'
+			}).component();
+
+			deployCognitiveServicesButton.onDidClick(async () => {
+				let notebookPath = path.join(notebooksFolder, 'Deploy Cognitive Services', 'Deploy Cognitive Services.ipynb');
 				let doc = await vscode.workspace.openTextDocument(notebookPath);
 				vscode.window.showTextDocument(doc);
 			});
@@ -103,7 +115,7 @@ export function registerMlTasksWidget(dataspace: Dataspace): void {
 			.withProperties<azdata.LoadingComponentProperties>({ loading: true })
 			.component();
 
-		loadTasks(view, container, [mlDocsButton, deployMlFlowButton, installOdbcDriverButton], installWarning, spinner);
+		loadTasks(view, container, [mlDocsButton, deployMlFlowButton, installOdbcDriverButton, deployCognitiveServicesButton], installWarning, spinner);
 		await view.initializeModel(spinner);
 	});
 }
