@@ -105,7 +105,7 @@ export class SelectBox extends vsSelectBox {
 			// SelectBoxList uses its own custom drop down list so we need to also stop propagation from that or it'll
 			// also bubble up
 			this.onkeydown(this.selectBoxDelegate.selectDropDownContainer, (e: IKeyboardEvent) => {
-				if (e.keyCode === KeyCode.Enter) {
+				if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Escape) {
 					dom.EventHelper.stop(e, true);
 				}
 			});
