@@ -15,17 +15,17 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import * as Utils from 'sql/platform/connection/common/utils';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
-import * as ConnectionContracts from 'sql/workbench/parts/connection/common/connection';
+import * as ConnectionContracts from 'sql/workbench/contrib/connection/common/connection';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
-import { DashboardInput } from 'sql/workbench/parts/dashboard/browser/dashboardInput';
-import { ConnectionGlobalStatus } from 'sql/workbench/parts/connection/common/connectionGlobalStatus';
+import { DashboardInput } from 'sql/workbench/contrib/dashboard/browser/dashboardInput';
+import { ConnectionGlobalStatus } from 'sql/workbench/contrib/connection/common/connectionGlobalStatus';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/browser/angularEventingService';
-import * as QueryConstants from 'sql/workbench/parts/query/common/constants';
+import * as QueryConstants from 'sql/workbench/contrib/query/common/constants';
 import { Deferred } from 'sql/base/common/promise';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
+import { IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/contrib/connection/common/connectionProviderExtension';
 import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
 
 import * as azdata from 'azdata';

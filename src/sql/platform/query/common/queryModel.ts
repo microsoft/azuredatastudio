@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import QueryRunner, { IQueryMessage } from 'sql/platform/query/common/queryRunner';
-import { DataService } from 'sql/workbench/parts/grid/common/dataService';
+import { DataService } from 'sql/workbench/contrib/grid/common/dataService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
 import {
 	ISelectionData,
 	ResultSetSubset,

@@ -31,8 +31,8 @@ import { IDimension } from 'vs/platform/layout/browser/layoutService';
 import { assertIsDefined } from 'vs/base/common/types';
 
 // {{SQL CARBON EDIT}}
-import { NewNotebookAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
-import { OpenDataExplorerViewletAction } from 'sql/workbench/parts/dataExplorer/browser/dataExplorerViewlet';
+import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { OpenDataExplorerViewletAction } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
 
 const $ = dom.$;
 
