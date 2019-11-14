@@ -467,6 +467,9 @@ export class EditDataGridPanel extends GridParentComponent {
 				//self._cd.detectChanges();
 				if (self.firstRender) {
 					self._tables[0] = self.createNewTable();
+					//	self._register(self._tables[0].onContextMenu(self.openContextMenu, self));
+					//	self._register(self._tables[0].onClick(self.handleContextClick, this));
+
 					let setActive = function () {
 						if (self.firstRender && self._tables.length > 0) {
 							self._tables[0].setActive();
