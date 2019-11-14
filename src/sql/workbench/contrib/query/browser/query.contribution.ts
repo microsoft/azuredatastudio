@@ -116,7 +116,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 	order: 1
 });
 
-// Query Actionsr
+// Query Actions
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(
 		RunQueryKeyboardAction,
