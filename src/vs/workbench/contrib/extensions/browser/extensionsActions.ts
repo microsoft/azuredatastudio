@@ -2124,7 +2124,7 @@ export abstract class AbstractConfigureRecommendedExtensionsAction extends Actio
 	protected getWorkspaceFolderExtensionsConfigContent(extensionsFileResource: URI): Promise<IExtensionsConfigContent> {
 		return Promise.resolve(this.fileService.readFile(extensionsFileResource))
 			.then(content => {
-				return (<IExtensionsConfigContent>json.parse(content.value.toString()) || {});
+				return (<IExtensionsConfigContent>json.parse(content.value.toString()) || {}) as IExtensionsConfigContent; // {{SQL CARBON EDIT}} strict-null-check
 			}, err => ({ recommendations: [], unwantedRecommendations: [] }));
 	}
 
