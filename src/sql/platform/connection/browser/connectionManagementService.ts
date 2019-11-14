@@ -696,6 +696,19 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
+	 * Previously, the only resource available for AAD access tokens was for Azure SQL / SQL Server.
+	 * Use that as a default if the provider extension does not configure a different one. If one is
+	 * configured, then use it.
+	 * @param connection The connection to fill in or update
+	 */
+	private getAzureResourceForConnection(connection: interfaces.IConnectionProfile): azdata.AzureResource {
+		let provider = this._providers.get(connection.providerName);
+		return (provider && provider.properties && provider.properties.azureResource)
+			? provider.properties.azureResource
+			: AzureResource.Sql;
+	}
+
+	/**
 	 * Fills in the Azure account token if it's needed for this connection and doesn't already have one
 	 * and clears it if it isn't.
 	 * @param connection The connection to fill in or update
@@ -708,6 +721,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (connection.options['azureAccountToken']) {
 			return true;
 		}
+		let azureResource = this.getAzureResourceForConnection(connection);
 		let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
 		if (accounts && accounts.length > 0) {
 			let account = accounts.find(account => account.key.accountId === connection.userName);
@@ -720,7 +734,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						return false;
 					}
 				}
-				let tokensByTenant = await this._accountManagementService.getSecurityToken(account, AzureResource.Sql);
+				let tokensByTenant = await this._accountManagementService.getSecurityToken(account, azureResource);
 				let token: string;
 				let tenantId = connection.azureTenantId;
 				if (tenantId && tokensByTenant[tenantId]) {

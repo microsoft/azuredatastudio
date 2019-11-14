@@ -16,6 +16,7 @@ import * as resources from 'vs/base/common/resources';
 export interface ConnectionProviderProperties {
 	providerId: string;
 	displayName: string;
+	azureResource?: azdata.AzureResource;
 	connectionOptions: azdata.ConnectionOption[];
 }
 

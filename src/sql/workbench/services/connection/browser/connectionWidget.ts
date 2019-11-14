@@ -64,7 +64,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected _tableContainer: HTMLElement;
 	protected _providerName: string;
 	protected _authTypeMap: { [providerName: string]: AuthenticationType[] } = {
-		[Constants.mssqlProviderName]: [AuthenticationType.SqlLogin, AuthenticationType.Integrated, AuthenticationType.AzureMFA]
+		[Constants.mssqlProviderName]: [AuthenticationType.SqlLogin, AuthenticationType.Integrated, AuthenticationType.AzureMFA],
+		[Constants.pgsqlProviderName]: [AuthenticationType.SqlLogin, AuthenticationType.AzureMFA]
 	};
 	protected _connectionNameInputBox: InputBox;
 	protected _databaseNameInputBox: Dropdown;
