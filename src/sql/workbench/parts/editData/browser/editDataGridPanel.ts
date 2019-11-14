@@ -9,6 +9,7 @@ import 'vs/css!./media/editData';
 //import { VirtualizedCollection } from 'angular2-slickgrid';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
+import { ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
 
 import { IGridDataSet } from 'sql/workbench/parts/grid/common/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
@@ -35,9 +36,8 @@ import { EditUpdateCellResult } from 'azdata';
 import { ILogService } from 'vs/platform/log/common/log';
 import { deepClone } from 'vs/base/common/objects';
 
-import { Event, Emitter } from 'vs/base/common/event';
-import { Disposable } from 'vs/base/common/lifecycle';
-import { ReturnStatement } from '@angular/compiler/src/output/output_ast';
+import { Emitter } from 'vs/base/common/event';
+
 
 export const EDITDATA_SELECTOR: string = 'editdatagridpanel';
 
@@ -467,8 +467,12 @@ export class EditDataGridPanel extends GridParentComponent {
 				//self._cd.detectChanges();
 				if (self.firstRender) {
 					self._tables[0] = self.createNewTable();
-					//	self._register(self._tables[0].onContextMenu(self.openContextMenu, self));
-					//	self._register(self._tables[0].onClick(self.handleContextClick, this));
+					self._tables[0].setSelectionModel(self.selectionModel);
+					let onContextMenu = (e: ITableMouseEvent) => {
+						self.openContextMenu(e, self.dataSet.batchId, self.dataSet.resultId, 0);
+					};
+					self._register(self._tables[0].onContextMenu(onContextMenu, self));
+					//self._register(self._tables[0].onClick(self.handleContextClick, this));
 
 					let setActive = function () {
 						if (self.firstRender && self._tables.length > 0) {
@@ -502,6 +506,8 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
+
+
 
 	private async revertCurrentRow(): Promise<void> {
 		let currentNewRowIndex = this.dataSet.totalRows - 2;

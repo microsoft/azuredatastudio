@@ -401,11 +401,13 @@ export abstract class GridParentComponent extends Disposable {
 		let selection = this.getSelection(index);
 
 		if (selection && selection.length === 0) {
-			let cell = (grid as Slick.Grid<any>).getCellFromEvent(event);
+			let cell = event.cell;
+			//let cell = (grid as Slick.Grid<any>).getCellFromEvent(event);
 			selection = [new Slick.Range(cell.row, cell.cell - 1)];
 		}
 
-		let rowIndex = grid.getCellFromEvent(event).row;
+		// let rowIndex = grid.getCellFromEvent(event).row;
+		let rowIndex = event.cell.row;
 
 		let actionContext: IGridInfo = {
 			batchIndex: batchId,
@@ -415,9 +417,9 @@ export abstract class GridParentComponent extends Disposable {
 			rowIndex: rowIndex
 		};
 
-		let anchor = { x: event.pageX + 1, y: event.pageY };
+		event.anchor.x = event.anchor.x + 1;
 		this.contextMenuService.showContextMenu({
-			getAnchor: () => anchor,
+			getAnchor: () => event.anchor,
 			getActions: () => this.actionProvider.getGridActions(),
 			getKeyBinding: (action) => this._keybindingFor(action),
 			getActionsContext: () => (actionContext)
