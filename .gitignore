@@ -31,3 +31,4 @@ test_data/
 test-results/
 yarn-error.log
 *.vsix
+extensions/ml-service/notebooks/Deploy MLFlow/mlflow-1.1.1.dev0-py3-none-any.whl
