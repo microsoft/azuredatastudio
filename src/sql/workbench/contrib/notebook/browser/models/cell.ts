@@ -108,6 +108,9 @@ export class CellModel implements ICellModel {
 	}
 
 	public set isCollapsed(value: boolean) {
+		if (this.cellType !== CellTypes.Code) {
+			return;
+		}
 		let stateChanged = this._isCollapsed !== value;
 		this._isCollapsed = value;
 
@@ -603,7 +606,7 @@ export class CellModel implements ICellModel {
 		this._source = this.getMultilineSource(cell.source);
 		this._metadata = cell.metadata || {};
 
-		if (this._metadata.tags && this._metadata.tags.some(x => x === HideInputTag)) {
+		if (this._metadata.tags && this._metadata.tags.some(x => x === HideInputTag) && this._cellType === CellTypes.Code) {
 			this._isCollapsed = true;
 		} else {
 			this._isCollapsed = false;

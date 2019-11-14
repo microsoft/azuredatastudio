@@ -21,6 +21,7 @@ import { TestObjectExplorerProvider } from 'sql/workbench/services/objectExplore
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { find } from 'vs/base/common/arrays';
+import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 
 suite('SQL Object Explorer Service tests', () => {
 	let sqlOEProvider: TypeMoq.Mock<TestObjectExplorerProvider>;
@@ -265,7 +266,7 @@ suite('SQL Object Explorer Service tests', () => {
 		connectionManagementService.setup(x => x.getCapabilities(mssqlProviderName)).returns(() => undefined);
 
 		const logService = new NullLogService();
-		objectExplorerService = new ObjectExplorerService(connectionManagementService.object, undefined, capabilitiesService, logService);
+		objectExplorerService = new ObjectExplorerService(connectionManagementService.object, new NullAdsTelemetryService(), capabilitiesService, logService);
 		objectExplorerService.registerProvider(mssqlProviderName, sqlOEProvider.object);
 		sqlOEProvider.setup(x => x.createNewSession(TypeMoq.It.is<azdata.ConnectionInfo>(x => x.options['serverName'] === connection.serverName))).returns(() => new Promise<any>((resolve) => {
 			resolve(response);

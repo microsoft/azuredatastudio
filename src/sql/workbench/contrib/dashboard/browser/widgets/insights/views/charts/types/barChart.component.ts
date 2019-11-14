@@ -10,9 +10,8 @@ import { IChartConfig } from 'sql/workbench/contrib/dashboard/browser/widgets/in
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { editorLineNumbers } from 'vs/editor/common/view/editorColorRegistry';
 import { ChangeDetectorRef, Inject, forwardRef } from '@angular/core';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
-import { ILogService } from 'vs/platform/log/common/log';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { customMixin } from 'sql/workbench/contrib/charts/browser/interfaces';
 import { ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
 
@@ -31,10 +30,9 @@ export default class BarChart extends ChartInsight {
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _changeRef: ChangeDetectorRef,
 		@Inject(IThemeService) themeService: IThemeService,
-		@Inject(ITelemetryService) telemetryService: ITelemetryService,
-		@Inject(ILogService) logService: ILogService
+		@Inject(IAdsTelemetryService) telemetryService: IAdsTelemetryService
 	) {
-		super(_changeRef, themeService, telemetryService, logService);
+		super(_changeRef, themeService, telemetryService);
 	}
 
 	public setConfig(config: IBarChartConfig): void {

@@ -8,12 +8,11 @@ import { mixin, deepClone } from 'vs/base/common/objects';
 import BarChart, { IBarChartConfig } from './barChart.component';
 import { defaultChartConfig, IDataSet } from 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/interfaces';
 import { ChangeDetectorRef, Inject, forwardRef } from '@angular/core';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { ILogService } from 'vs/platform/log/common/log';
 import { IPointDataSet } from 'sql/workbench/contrib/charts/browser/interfaces';
 import { DataType, ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
 import { values } from 'vs/base/common/collections';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export interface ILineConfig extends IBarChartConfig {
 	dataType?: DataType;
@@ -29,10 +28,9 @@ export default class LineChart extends BarChart {
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _changeRef: ChangeDetectorRef,
 		@Inject(IThemeService) themeService: IThemeService,
-		@Inject(ITelemetryService) telemetryService: ITelemetryService,
-		@Inject(ILogService) logService: ILogService
+		@Inject(IAdsTelemetryService) telemetryService: IAdsTelemetryService
 	) {
-		super(_changeRef, themeService, telemetryService, logService);
+		super(_changeRef, themeService, telemetryService);
 	}
 
 	public init() {

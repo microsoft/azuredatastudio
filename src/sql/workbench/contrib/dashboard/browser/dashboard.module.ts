@@ -20,8 +20,6 @@ import { IBootstrapParams, ISelector } from 'sql/workbench/services/bootstrap/co
 import { Registry } from 'vs/platform/registry/common/platform';
 
 /* Telemetry */
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 /* Services */
@@ -89,7 +87,7 @@ import { InsightsWidget } from 'sql/workbench/contrib/dashboard/browser/widgets/
 import { WebviewWidget } from 'sql/workbench/contrib/dashboard/browser/widgets/webview/webviewWidget.component';
 import { JobStepsViewComponent } from 'sql/workbench/contrib/jobManagement/browser/jobStepsView.component';
 import { IInstantiationService, _util } from 'vs/platform/instantiation/common/instantiation';
-import { ILogService } from 'vs/platform/log/common/log';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 
 const widgetComponents = [
@@ -161,8 +159,7 @@ export const DashboardModule = (params, selector: string, instantiationService: 
 		constructor(
 			@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
 			@Inject(forwardRef(() => Router)) private _router: Router,
-			@Inject(ITelemetryService) private telemetryService: ITelemetryService,
-			@Inject(ILogService) private readonly logService: ILogService,
+			@Inject(IAdsTelemetryService) private _telemetryService: IAdsTelemetryService,
 			@Inject(ISelector) private selector: string
 		) {
 		}
@@ -175,9 +172,9 @@ export const DashboardModule = (params, selector: string, instantiationService: 
 			this._router.events.subscribe(e => {
 				if (e instanceof NavigationEnd) {
 					this.navigations++;
-					TelemetryUtils.addTelemetry(this.telemetryService, this.logService, TelemetryKeys.DashboardNavigated, {
-						numberOfNavigations: this.navigations
-					});
+					this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DashboardNavigated)
+						.withAdditionalProperties({ numberOfNavigations: this.navigations })
+						.send();
 				}
 			});
 		}

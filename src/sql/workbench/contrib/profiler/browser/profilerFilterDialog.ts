@@ -10,7 +10,6 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { attachButtonStyler, attachModalDialogStyler, attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
@@ -27,6 +26,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { find, firstIndex } from 'vs/base/common/arrays';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 
 const ClearText: string = localize('profilerFilterDialog.clear', "Clear all");
@@ -75,7 +75,7 @@ export class ProfilerFilterDialog extends Modal {
 		@IThemeService themeService: IThemeService,
 		@IClipboardService clipboardService: IClipboardService,
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
-		@ITelemetryService telemetryService: ITelemetryService,
+		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
 		@IContextViewService private contextViewService: IContextViewService,

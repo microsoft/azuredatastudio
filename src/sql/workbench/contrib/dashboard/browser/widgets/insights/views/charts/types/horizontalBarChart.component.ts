@@ -5,9 +5,8 @@
 
 import BarChart from './barChart.component';
 import { forwardRef, Inject, ChangeDetectorRef } from '@angular/core';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { ILogService } from 'vs/platform/log/common/log';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
 
 export default class HorizontalBarChart extends BarChart {
@@ -16,9 +15,8 @@ export default class HorizontalBarChart extends BarChart {
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _changeRef: ChangeDetectorRef,
 		@Inject(IThemeService) themeService: IThemeService,
-		@Inject(ITelemetryService) telemetryService: ITelemetryService,
-		@Inject(ILogService) logService: ILogService
+		@Inject(IAdsTelemetryService) telemetryService: IAdsTelemetryService
 	) {
-		super(_changeRef, themeService, telemetryService, logService);
+		super(_changeRef, themeService, telemetryService);
 	}
 }

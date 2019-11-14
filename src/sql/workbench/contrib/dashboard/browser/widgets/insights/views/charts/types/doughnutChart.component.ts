@@ -5,10 +5,9 @@
 
 import PieChart from './pieChart.component';
 import { ChangeDetectorRef, Inject, forwardRef } from '@angular/core';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { ILogService } from 'vs/platform/log/common/log';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export default class DoughnutChart extends PieChart {
 	protected readonly chartType: ChartType = ChartType.Doughnut;
@@ -16,9 +15,8 @@ export default class DoughnutChart extends PieChart {
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _changeRef: ChangeDetectorRef,
 		@Inject(IThemeService) themeService: IThemeService,
-		@Inject(ITelemetryService) telemetryService: ITelemetryService,
-		@Inject(ILogService) logService: ILogService
+		@Inject(IAdsTelemetryService) telemetryService: IAdsTelemetryService
 	) {
-		super(_changeRef, themeService, telemetryService, logService);
+		super(_changeRef, themeService, telemetryService);
 	}
 }
