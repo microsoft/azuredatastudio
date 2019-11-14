@@ -468,6 +468,11 @@ export class EditDataGridPanel extends GridParentComponent {
 				if (self.firstRender) {
 					self._tables[0] = self.createNewTable();
 					self._tables[0].setSelectionModel(self.selectionModel);
+					console.log(self.plugins);
+					for (let i = 0; i < self.plugins[0].length; i++) {
+						self._tables[0].registerPlugin(self.plugins[0][i]);
+					}
+
 					let onContextMenu = (e: ITableMouseEvent) => {
 						self.openContextMenu(e, self.dataSet.batchId, self.dataSet.resultId, 0);
 					};
