@@ -45,7 +45,7 @@
     "ansi_up": "^3.0.0",
     "applicationinsights": "1.0.8",
     "chart.js": "^2.6.0",
-    "chokidar": "3.2.2",
+    "chokidar": "3.2.3",
     "graceful-fs": "4.1.11",
     "html-query-plan": "git://github.com/anthonydresser/html-query-plan.git#2.6",
     "http-proxy-agent": "^2.1.0",
