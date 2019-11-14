@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
+'use strict'; // tslint:disable-line
 
 import * as fs from 'fs';
 import * as path from 'vs/base/common/path';
