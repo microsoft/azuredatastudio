@@ -225,9 +225,11 @@ const excludedExtensions = [
 ];
 
 // {{SQL CARBON EDIT}}
-const sqlBuiltInExtensions = [
-	// Add SQL built-in extensions here.
-	// the extension will be excluded from SQLOps package and will have separate vsix packages
+const sqlExtensions = [
+	// This is the list of SQL extensions which the source code is included in this repository, but
+	// they get packaged separately. Adding extension name here, will make the build to create
+	// a separate vsix package for the extension and the extension will be excluded from the main package.
+	// Any extension not included here, will be installed by default.
 	'admin-tool-ext-win',
 	'agent',
 	'import',
@@ -261,7 +263,7 @@ export function packageLocalExtensionsStream(): NodeJS.ReadWriteStream {
 		})
 		.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
 		.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
-		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) === -1); // {{SQL CARBON EDIT}} add aditional filter
+		.filter(({ name }) => sqlExtensions.indexOf(name) === -1); // {{SQL CARBON EDIT}} Remove SQL Extensions with separate package
 
 	const nodeModules = gulp.src('extensions/node_modules/**', { base: '.' });
 	const localExtensions = localExtensionDescriptions.map(extension => {
@@ -287,7 +289,10 @@ export function packageMarketplaceExtensionsStream(): NodeJS.ReadWriteStream {
 import * as _ from 'underscore';
 import * as vfs from 'vinyl-fs';
 
-export function packageBuiltInExtensions() {
+export function packageSQLExtensions() {
+
+	// Create package for local SQL extensions
+	//
 	const sqlBuiltInLocalExtensionDescriptions = glob.sync('extensions/*/package.json')
 		.map(manifestPath => {
 			const extensionPath = path.dirname(path.join(root, manifestPath));
@@ -296,7 +301,7 @@ export function packageBuiltInExtensions() {
 		})
 		.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
 		.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
-		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) >= 0);
+		.filter(({ name }) => sqlExtensions.indexOf(name) >= 0);
 	const visxDirectory = path.join(path.dirname(root), 'vsix');
 	try {
 		if (!fs.existsSync(visxDirectory)) {
