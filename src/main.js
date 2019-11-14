@@ -221,7 +221,7 @@ function createDefaultArgvConfigSync(argvConfigPath) {
 
 		// Default argv content
 		const defaultArgvConfigContent = [
-			'// This configuration file allows to pass permanent command line arguments to VSCode.',
+			'// This configuration file allows you to pass permanent command line arguments to VS Code.',
 			'// Only a subset of arguments is currently supported to reduce the likelyhood of breaking',
 			'// the installation.',
 			'//',
@@ -231,14 +231,14 @@ function createDefaultArgvConfigSync(argvConfigPath) {
 			'// it in the JSON below with a value of \'true\'. Otherwise, put the value',
 			'// directly.',
 			'//',
-			'// If you see rendering issues in VSCode and have a better experience',
+			'// If you see rendering issues in VS Code and have a better experience',
 			'// with software rendering, you can configure this by adding:',
 			'//',
 			'// \'disable-hardware-acceleration\': true',
 			'//',
-			'// NOTE: Changing this file requires a restart of VSCode.',
+			'// NOTE: Changing this file requires a restart of VS Code.',
 			'{',
-			'	// Enabled by default by VSCode to resolve color issues in the renderer',
+			'	// Enabled by default by VS Code to resolve color issues in the renderer',
 			'	// See https://github.com/Microsoft/vscode/issues/51791 for details',
 			'	"disable-color-correct-rendering": true'
 		];
@@ -247,7 +247,7 @@ function createDefaultArgvConfigSync(argvConfigPath) {
 			defaultArgvConfigContent[defaultArgvConfigContent.length - 1] = `${defaultArgvConfigContent[defaultArgvConfigContent.length - 1]},`; // append trailing ","
 
 			defaultArgvConfigContent.push('');
-			defaultArgvConfigContent.push('	// Display language of VSCode');
+			defaultArgvConfigContent.push('	// Display language of VS Code');
 			defaultArgvConfigContent.push(`	"locale": "${legacyLocale}"`);
 		}
 
