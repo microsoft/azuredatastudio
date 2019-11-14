@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
@@ -13,17 +12,17 @@ import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 import { NotebookDialogOptions } from '../dialogs/notebookDialog';
 
 const localize = nls.loadMessageBundle();
-const NotebookCompletionActionCondition_Always: string = localize('notebookData.whenJobCompletes', 'When the notebook completes');
-const NotebookCompletionActionCondition_OnFailure: string = localize('notebookData.whenJobFails', 'When the notebook fails');
-const NotebookCompletionActionCondition_OnSuccess: string = localize('notebookData.whenJobSucceeds', 'When the notebook succeeds');
+const NotebookCompletionActionCondition_Always: string = localize('notebookData.whenJobCompletes', "When the notebook completes");
+const NotebookCompletionActionCondition_OnFailure: string = localize('notebookData.whenJobFails', "When the notebook fails");
+const NotebookCompletionActionCondition_OnSuccess: string = localize('notebookData.whenJobSucceeds', "When the notebook succeeds");
 
 // Error Messages
-const CreateNotebookErrorMessage_NameIsEmpty = localize('notebookData.jobNameRequired', 'Notebook name must be provided');
-const TemplatePathEmptyErrorMessage = localize('notebookData.templatePathRequired', 'Template path must be provided');
-const InvalidNotebookPathErrorMessage = localize('notebookData.invalidNotebookPath', 'Invalid notebook path');
-const SelectStorageDatabaseErrorMessage = localize('notebookData.selectStorageDatabase', 'Select storage database');
-const SelectExecutionDatabaseErrorMessage = localize('notebookData.selectExecutionDatabase', 'Select execution database');
-const JobWithSameNameExistsErrorMessage = localize('notebookData.jobExists', 'Job with similar name already exists');
+const CreateNotebookErrorMessage_NameIsEmpty = localize('notebookData.jobNameRequired', "Notebook name must be provided");
+const TemplatePathEmptyErrorMessage = localize('notebookData.templatePathRequired', "Template path must be provided");
+const InvalidNotebookPathErrorMessage = localize('notebookData.invalidNotebookPath', "Invalid notebook path");
+const SelectStorageDatabaseErrorMessage = localize('notebookData.selectStorageDatabase', "Select storage database");
+const SelectExecutionDatabaseErrorMessage = localize('notebookData.selectExecutionDatabase', "Select execution database");
+const JobWithSameNameExistsErrorMessage = localize('notebookData.jobExists', "Job with similar name already exists");
 
 export class NotebookData implements IAgentDialogData {
 

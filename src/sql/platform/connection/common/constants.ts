@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { localize } from 'vs/nls';
-
 // constants
 export const sqlConfigSectionName = 'sql';
 export const outputChannelName = 'MSSQL';

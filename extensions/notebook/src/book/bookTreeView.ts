@@ -13,6 +13,7 @@ import { BookTreeItem } from './bookTreeItem';
 import * as nls from 'vscode-nls';
 import { isEditorTitleFree } from '../common/utils';
 import { BookModel } from './bookModel';
+import { Deferred } from '../common/promise';
 
 const localize = nls.loadMessageBundle();
 
@@ -24,6 +25,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _resource: string;
 	private _extensionContext: vscode.ExtensionContext;
 	private prompter: IPrompter;
+	private _initializeDeferred: Deferred<void> = new Deferred<void>();
 
 	// For testing
 	private _errorMessage: string;
@@ -38,14 +40,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._extensionContext = extensionContext;
 		this.books = [];
 		this.initialize(workspaceFolders.map(a => a.uri.fsPath));
-		vscode.commands.executeCommand('setContext', 'untitledBooks', openAsUntitled);
 		this.viewId = view;
 		this.prompter = new CodeAdapter();
 
 	}
 
-	private async initialize(bookPaths: string[]): Promise<any> {
-		return Promise.all(bookPaths.map(async (bookPath) => {
+	private async initialize(bookPaths: string[]): Promise<void> {
+		await vscode.commands.executeCommand('setContext', 'unsavedBooks', this._openAsUntitled);
+		await Promise.all(bookPaths.map(async (bookPath) => {
 			let book: BookModel = new BookModel(bookPath, this._openAsUntitled, this._extensionContext);
 			await book.initializeContents();
 			this.books.push(book);
@@ -53,13 +55,16 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				this.currentBook = book;
 			}
 		}));
+		this._initializeDeferred.resolve();
 	}
 
 	public get onReadAllTOCFiles(): vscode.Event<void> {
 		return this._onReadAllTOCFiles.event;
 	}
 
-
+	public get initialized(): Promise<void> {
+		return this._initializeDeferred.promise;
+	}
 
 	async openBook(bookPath: string, urlToOpen?: string): Promise<void> {
 		try {
@@ -186,14 +191,19 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				}
 			}
 		}
+	}
 
+	public async searchJupyterBooks(): Promise<void> {
+		if (this.currentBook && this.currentBook.bookPath) {
+			let filesToIncludeFiltered = path.join(this.currentBook.bookPath, '**', '*.md') + ',' + path.join(this.currentBook.bookPath, '**', '*.ipynb');
+			vscode.commands.executeCommand('workbench.action.findInFiles', { filesToInclude: filesToIncludeFiltered, query: '' });
+		}
 	}
 
 	private runThrottledAction(resource: string, action: () => void) {
 		const isResourceChange = resource !== this._resource;
 		if (isResourceChange) {
-			clearTimeout(this._throttleTimer);
-			this._throttleTimer = undefined;
+			this.clearAndResetThrottleTimer();
 		}
 
 		this._resource = resource;
@@ -203,9 +213,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			if (isResourceChange) {
 				action();
 			} else {
-				this._throttleTimer = setTimeout(() => action(), 300);
+				this._throttleTimer = setTimeout(() => {
+					action();
+					this.clearAndResetThrottleTimer();
+				}, 300);
 			}
 		}
+	}
+
+	private clearAndResetThrottleTimer(): void {
+		clearTimeout(this._throttleTimer);
+		this._throttleTimer = undefined;
 	}
 
 	openExternalLink(resource: string): void {
@@ -284,7 +302,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	findNextUntitledFileName(filePath: string): string {
 		const baseName = path.basename(filePath);
 		let idx = 0;
-		let title = `${baseName}`;
+		let title;
 		do {
 			const suffix = idx === 0 ? '' : `-${idx}`;
 			title = `${baseName}${suffix}`;

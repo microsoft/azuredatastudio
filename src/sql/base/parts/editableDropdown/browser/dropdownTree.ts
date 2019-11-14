@@ -9,6 +9,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export interface Template {
 	label: HTMLElement;
@@ -95,7 +96,7 @@ export class DropdownFilter extends TreeDefaults.DefaultFilter {
 	public filterString: string;
 
 	public isVisible(tree: tree.ITree | undefined, element: Resource): boolean {
-		return element.value.toLowerCase().includes(this.filterString.toLowerCase());
+		return element.value.toLowerCase().indexOf(this.filterString.toLowerCase()) !== -1;
 	}
 }
 
@@ -124,10 +125,24 @@ export class DropdownController extends TreeDefaults.DefaultController {
 		return response;
 	}
 
+	public onKeyDown(tree: tree.ITree, event: IKeyboardEvent): boolean {
+		// The enter key press is handled on key up by our base class (DefaultController) but
+		// we want to stop it here because we know we're going to handle it (by selecting the item)
+		// and letting it propagate up means that other controls may incorrectly handle it first
+		// if they're listening to onKeyDown
+		const response = super.onKeyDown(tree, event);
+		if (event.keyCode === KeyCode.Enter) {
+			DOM.EventHelper.stop(event, true);
+			return true;
+		}
+		return response;
+	}
+
 	protected onEnter(tree: tree.ITree, event: IKeyboardEvent): boolean {
 		let response = super.onEnter(tree, event);
 		if (response) {
 			this._onSelectionChange.fire(tree.getSelection()[0]);
+			DOM.EventHelper.stop(event, true);
 		}
 		return response;
 	}

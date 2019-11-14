@@ -5,29 +5,29 @@
 
 import * as request from 'request';
 import { authenticateKerberos, getHostAndPortFromEndpoint } from '../auth';
-import { BdcRouterApi, Authentication, EndpointModel, BdcStatusModel } from './apiGenerated';
+import { BdcRouterApi, Authentication, EndpointModel, BdcStatusModel, DefaultApi } from './apiGenerated';
 import { TokenRouterApi } from './clusterApiGenerated2';
 import { AuthType } from '../constants';
 import * as nls from 'vscode-nls';
+import { ConnectControllerDialog, ConnectControllerModel } from '../dialog/connectControllerDialog';
+import { getIgnoreSslVerificationConfigSetting } from '../utils';
 
 const localize = nls.loadMessageBundle();
 
 class SslAuth implements Authentication {
-
-	constructor(private _ignoreSslVerification: boolean) {
-	}
+	constructor() { }
 
 	applyToRequest(requestOptions: request.Options): void {
 		requestOptions['agentOptions'] = {
-			rejectUnauthorized: !this._ignoreSslVerification
+			rejectUnauthorized: !getIgnoreSslVerificationConfigSetting()
 		};
 	}
 }
 
 export class KerberosAuth extends SslAuth implements Authentication {
 
-	constructor(public kerberosToken: string, ignoreSslVerification: boolean) {
-		super(ignoreSslVerification);
+	constructor(public kerberosToken: string) {
+		super();
 	}
 
 	applyToRequest(requestOptions: request.Options): void {
@@ -39,8 +39,8 @@ export class KerberosAuth extends SslAuth implements Authentication {
 	}
 }
 export class BasicAuth extends SslAuth implements Authentication {
-	constructor(public username: string, public password: string, ignoreSslVerification: boolean) {
-		super(ignoreSslVerification);
+	constructor(public username: string, public password: string) {
+		super();
 	}
 
 	applyToRequest(requestOptions: request.Options): void {
@@ -73,31 +73,65 @@ class BdcApiWrapper extends BdcRouterApi {
 		this.authentications.default = auth;
 	}
 }
+class DefaultApiWrapper extends DefaultApi {
+	constructor(basePathOrUsername: string, password: string, basePath: string, auth: Authentication) {
+		if (password) {
+			super(basePathOrUsername, password, basePath);
+		} else {
+			super(basePath, undefined, undefined);
+		}
+		this.authentications.default = auth;
+	}
+}
 
 export class ClusterController {
 
-	private authPromise: Promise<Authentication>;
+	private _authPromise: Promise<Authentication>;
 	private _url: string;
+	private readonly _dialog: ConnectControllerDialog;
+	private _connectionPromise: Promise<ClusterController>;
 
 	constructor(url: string,
-		private authType: AuthType,
-		private username?: string,
-		private password?: string,
-		ignoreSslVerification?: boolean
+		private _authType: AuthType,
+		private _username?: string,
+		private _password?: string
 	) {
-		if (!url || (authType === 'basic' && (!username || !password))) {
+		if (!url || (_authType === 'basic' && (!_username || !_password))) {
 			throw new Error('Missing required inputs for Cluster controller API (URL, username, password)');
 		}
 		this._url = adjustUrl(url);
-		if (this.authType === 'basic') {
-			this.authPromise = Promise.resolve(new BasicAuth(username, password, !!ignoreSslVerification));
+		if (this._authType === 'basic') {
+			this._authPromise = Promise.resolve(new BasicAuth(_username, _password));
 		} else {
-			this.authPromise = this.requestTokenUsingKerberos(ignoreSslVerification);
+			this._authPromise = this.requestTokenUsingKerberos();
 		}
+		this._dialog = new ConnectControllerDialog(new ConnectControllerModel(
+			{
+				url: this._url,
+				auth: this._authType,
+				username: this._username,
+				password: this._password
+			}));
 	}
 
-	private async requestTokenUsingKerberos(ignoreSslVerification?: boolean): Promise<Authentication> {
-		let supportsKerberos = await this.verifyKerberosSupported(ignoreSslVerification);
+	public get url(): string {
+		return this._url;
+	}
+
+	public get authType(): AuthType {
+		return this._authType;
+	}
+
+	public get username(): string | undefined {
+		return this._username;
+	}
+
+	public get password(): string | undefined {
+		return this._password;
+	}
+
+	private async requestTokenUsingKerberos(): Promise<Authentication> {
+		let supportsKerberos = await this.verifyKerberosSupported();
 		if (!supportsKerberos) {
 			throw new Error(localize('error.no.activedirectory', "This cluster does not support Windows authentication"));
 		}
@@ -108,9 +142,9 @@ export class ClusterController {
 			let host = getHostAndPortFromEndpoint(this._url).host;
 			let kerberosToken = await authenticateKerberos(host);
 			let tokenApi = new TokenRouterApi(this._url);
-			tokenApi.setDefaultAuthentication(new KerberosAuth(kerberosToken, !!ignoreSslVerification));
+			tokenApi.setDefaultAuthentication(new KerberosAuth(kerberosToken));
 			let result = await tokenApi.apiV1TokenPost();
-			let auth = new OAuthWithSsl(ignoreSslVerification);
+			let auth = new OAuthWithSsl();
 			auth.accessToken = result.body.accessToken;
 			return auth;
 		} catch (error) {
@@ -123,11 +157,9 @@ export class ClusterController {
 		}
 	}
 
-
-
-	private async verifyKerberosSupported(ignoreSslVerification: boolean): Promise<boolean> {
+	private async verifyKerberosSupported(): Promise<boolean> {
 		let tokenApi = new TokenRouterApi(this._url);
-		tokenApi.setDefaultAuthentication(new SslAuth(!!ignoreSslVerification));
+		tokenApi.setDefaultAuthentication(new SslAuth());
 		try {
 			await tokenApi.apiV1TokenPost();
 			// If we get to here, the route for endpoints doesn't require auth so state this is false
@@ -139,38 +171,162 @@ export class ClusterController {
 		}
 	}
 
-	public async getEndPoints(): Promise<IEndPointsResponse> {
-		let auth = await this.authPromise;
-		let endPointApi = new BdcApiWrapper(this.username, this.password, this._url, auth);
-		let options: any = {};
-		try {
-			let result = await endPointApi.endpointsGet(options);
-			return {
-				response: result.response as IHttpResponse,
-				endPoints: result.body as EndpointModel[]
-			};
-		} catch (error) {
-			// TODO handle 401 by reauthenticating
-			throw new ControllerError(error, localize('bdc.error.getEndPoints', "Error retrieving endpoints from {0}", this._url));
-		}
+	public async getEndPoints(promptConnect: boolean = false): Promise<IEndPointsResponse> {
+		return await this.withConnectRetry<IEndPointsResponse>(
+			this.getEndpointsImpl,
+			promptConnect,
+			localize('bdc.error.getEndPoints', "Error retrieving endpoints from {0}", this._url));
 	}
 
-	public async getBdcStatus(): Promise<IBdcStatusResponse> {
-		let auth = await this.authPromise;
-		const bdcApi = new BdcApiWrapper(this.username, this.password, this._url, auth);
+	private async getEndpointsImpl(self: ClusterController): Promise<IEndPointsResponse> {
+		let auth = await self._authPromise;
+		let endPointApi = new BdcApiWrapper(self._username, self._password, self._url, auth);
+		let options: any = {};
 
+		let result = await endPointApi.endpointsGet(options);
+		return {
+			response: result.response as IHttpResponse,
+			endPoints: result.body as EndpointModel[]
+		};
+	}
+
+	public async getBdcStatus(promptConnect: boolean = false): Promise<IBdcStatusResponse> {
+		return await this.withConnectRetry<IBdcStatusResponse>(
+			this.getBdcStatusImpl,
+			promptConnect,
+			localize('bdc.error.getBdcStatus', "Error retrieving BDC status from {0}", this._url));
+	}
+
+	private async getBdcStatusImpl(self: ClusterController): Promise<IBdcStatusResponse> {
+		let auth = await self._authPromise;
+		const bdcApi = new BdcApiWrapper(self._username, self._password, self._url, auth);
+
+		const bdcStatus = await bdcApi.getBdcStatus('', '', /*all*/ true);
+		return {
+			response: bdcStatus.response,
+			bdcStatus: bdcStatus.body
+		};
+	}
+
+	public async mountHdfs(mountPath: string, remoteUri: string, credentials: {}, promptConnection: boolean = false): Promise<MountResponse> {
+		return await this.withConnectRetry<MountResponse>(
+			this.mountHdfsImpl,
+			promptConnection,
+			localize('bdc.error.mountHdfs', "Error creating mount"),
+			mountPath,
+			remoteUri,
+			credentials);
+	}
+
+	private async mountHdfsImpl(self: ClusterController, mountPath: string, remoteUri: string, credentials: {}): Promise<MountResponse> {
+		let auth = await self._authPromise;
+		const api = new DefaultApiWrapper(self._username, self._password, self._url, auth);
+
+		const mountStatus = await api.createMount('', '', remoteUri, mountPath, credentials);
+		return {
+			response: mountStatus.response,
+			status: mountStatus.body
+		};
+	}
+
+	public async getMountStatus(mountPath?: string, promptConnect: boolean = false): Promise<MountStatusResponse> {
+		return await this.withConnectRetry<MountStatusResponse>(
+			this.getMountStatusImpl,
+			promptConnect,
+			localize('bdc.error.mountHdfs', "Error creating mount"),
+			mountPath);
+	}
+
+	private async getMountStatusImpl(self: ClusterController, mountPath?: string): Promise<MountStatusResponse> {
+		const auth = await self._authPromise;
+		const api = new DefaultApiWrapper(self._username, self._password, self._url, auth);
+
+		const mountStatus = await api.listMounts('', '', mountPath);
+		return {
+			response: mountStatus.response,
+			mount: mountStatus.body ? JSON.parse(mountStatus.body) : undefined
+		};
+	}
+
+	public async refreshMount(mountPath: string, promptConnect: boolean = false): Promise<MountResponse> {
+		return await this.withConnectRetry<MountResponse>(
+			this.refreshMountImpl,
+			promptConnect,
+			localize('bdc.error.refreshHdfs', "Error refreshing mount"),
+			mountPath);
+	}
+
+	private async refreshMountImpl(self: ClusterController, mountPath: string): Promise<MountResponse> {
+		const auth = await self._authPromise;
+		const api = new DefaultApiWrapper(self._username, self._password, self._url, auth);
+
+		const mountStatus = await api.refreshMount('', '', mountPath);
+		return {
+			response: mountStatus.response,
+			status: mountStatus.body
+		};
+	}
+
+	public async deleteMount(mountPath: string, promptConnect: boolean = false): Promise<MountResponse> {
+		return await this.withConnectRetry<MountResponse>(
+			this.deleteMountImpl,
+			promptConnect,
+			localize('bdc.error.deleteHdfs', "Error deleting mount"),
+			mountPath);
+	}
+
+	private async deleteMountImpl(mountPath: string): Promise<MountResponse> {
+		let auth = await this._authPromise;
+		const api = new DefaultApiWrapper(this._username, this._password, this._url, auth);
+
+		const mountStatus = await api.deleteMount('', '', mountPath);
+		return {
+			response: mountStatus.response,
+			status: mountStatus.body
+		};
+	}
+
+	/**
+	 * Helper function that wraps a function call in a try/catch and if promptConnect is true
+	 * will prompt the user to re-enter connection information and if that succeeds updates
+	 * this with the new information.
+	 * @param f The API function we're wrapping
+	 * @param promptConnect Whether to actually prompt for connection on failure
+	 * @param errorMessage The message to include in the wrapped error thrown
+	 * @param args The args to pass to the function
+	 */
+	private async withConnectRetry<T>(f: (...args: any[]) => Promise<T>, promptConnect: boolean, errorMessage: string, ...args: any[]): Promise<T> {
 		try {
-			const bdcStatus = await bdcApi.getBdcStatus('', '', /*all*/ true);
-			return {
-				response: bdcStatus.response,
-				bdcStatus: bdcStatus.body
-			};
+			try {
+				return await f(this, ...args);
+			} catch (error) {
+				if (promptConnect) {
+					// We don't want to open multiple dialogs here if multiple calls come in the same time so check
+					// and see if we have are actively waiting on an open dialog to return and if so then just wait
+					// on that promise.
+					if (!this._connectionPromise) {
+						this._connectionPromise = this._dialog.showDialog();
+					}
+					const controller = await this._connectionPromise;
+					if (controller) {
+						this._username = controller._username;
+						this._password = controller._password;
+						this._url = controller._url;
+						this._authType = controller._authType;
+						this._authPromise = controller._authPromise;
+					}
+					return await f(this, args);
+				}
+				throw error;
+			}
 		} catch (error) {
-			// TODO handle 401 by reauthenticating
-			throw new ControllerError(error, localize('bdc.error.getBdcStatus', "Error retrieving BDC status from {0}", this._url));
+			throw new ControllerError(error, errorMessage);
+		} finally {
+			this._connectionPromise = undefined;
 		}
 	}
 }
+
 /**
  * Fixes missing protocol and wrong character for port entered by user
  */
@@ -203,6 +359,28 @@ export interface IBdcStatusResponse {
 	bdcStatus: BdcStatusModel;
 }
 
+export enum MountState {
+	Creating = 'Creating',
+	Ready = 'Ready',
+	Error = 'Error'
+}
+
+export interface MountInfo {
+	mount: string;
+	remote: string;
+	state: MountState;
+	error?: string;
+}
+
+export interface MountResponse {
+	response: IHttpResponse;
+	status: any;
+}
+export interface MountStatusResponse {
+	response: IHttpResponse;
+	mount: MountInfo[];
+}
+
 export interface IHttpResponse {
 	method?: string;
 	url?: string;
@@ -214,7 +392,7 @@ export class ControllerError extends Error {
 	public code?: number;
 	public reason?: string;
 	public address?: string;
-
+	public statusMessage?: string;
 	/**
 	 *
 	 * @param error The original error to wrap
@@ -227,6 +405,7 @@ export class ControllerError extends Error {
 			this.code = error.response.statusCode;
 			this.message += `${error.response.statusMessage ? ` - ${error.response.statusMessage}` : ''}` || '';
 			this.address = error.response.url || '';
+			this.statusMessage = error.response.statusMessage;
 		}
 		else if (error.message) {
 			this.message += ` - ${error.message}`;

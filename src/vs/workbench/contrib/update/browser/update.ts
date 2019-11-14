@@ -19,7 +19,7 @@ import * as semver from 'semver-umd';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
-import { ReleaseNotesManager } from './releaseNotesEditor';
+// import { ReleaseNotesManager } from './releaseNotesEditor';
 import { isWindows } from 'vs/base/common/platform';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { RawContextKey, IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -36,24 +36,15 @@ import { IElectronEnvironmentService } from 'vs/workbench/services/electron/elec
 
 const CONTEXT_UPDATE_STATE = new RawContextKey<string>('updateState', StateType.Uninitialized);
 
-let releaseNotesManager: ReleaseNotesManager | undefined = undefined;
+/*let releaseNotesManager: ReleaseNotesManager | undefined = undefined; {{SQL CARBON EDIT}} comment out for no unused
 
 function showReleaseNotes(instantiationService: IInstantiationService, version: string) {
-	/* // {{SQL CARBON EDIT}} just open release notes in browser until we can get ADS release notes from the web
 	if (!releaseNotesManager) {
 		releaseNotesManager = instantiationService.createInstance(ReleaseNotesManager);
 	}
 
 	return instantiationService.invokeFunction(accessor => releaseNotesManager!.show(accessor, version));
-	*/
-
-	// {{SQL CARBON EDIT}} Open release notes in browser until we can get ADS notes from web
-	return instantiationService.invokeFunction(async accessor => {
-		const action = accessor.get(IInstantiationService).createInstance(OpenLatestReleaseNotesInBrowserAction);
-		await action.run();
-	});
-
-}
+}*/
 
 export class OpenLatestReleaseNotesInBrowserAction extends Action {
 
@@ -78,7 +69,7 @@ export abstract class AbstractShowReleaseNotesAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private version: string,
+		/*private */version: string, // {{SQL CARBON EDIT}} no unused
 		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super(id, label, undefined, true);
@@ -112,7 +103,7 @@ export class ShowReleaseNotesAction extends AbstractShowReleaseNotesAction {
 export class ShowCurrentReleaseNotesAction extends AbstractShowReleaseNotesAction {
 
 	static readonly ID = ShowCurrentReleaseNotesActionId;
-	static LABEL = nls.localize('showReleaseNotes', "Show Release Notes");
+	static readonly LABEL = nls.localize('showReleaseNotes', "Show Release Notes");
 
 	constructor(
 		id = ShowCurrentReleaseNotesAction.ID,
@@ -182,7 +173,7 @@ export class UpdateContribution extends Disposable implements IWorkbenchContribu
 	private readonly badgeDisposable = this._register(new MutableDisposable());
 	private updateStateContextKey: IContextKey<string>;
 
-	private windowId: number | undefined = this.electronEnvironmentService ? this.electronEnvironmentService.windowId : undefined;
+	private context = `window:${this.electronEnvironmentService ? this.electronEnvironmentService.windowId : 'any'}`;
 
 	constructor(
 		@IStorageService private readonly storageService: IStorageService,
@@ -229,7 +220,7 @@ export class UpdateContribution extends Disposable implements IWorkbenchContribu
 			case StateType.Idle:
 				if (state.error) {
 					this.onError(state.error);
-				} else if (this.state.type === StateType.CheckingForUpdates && this.state.context && this.state.context.windowId === this.windowId) {
+				} else if (this.state.type === StateType.CheckingForUpdates && this.state.context === this.context) {
 					this.onUpdateNotAvailable();
 				}
 				break;
@@ -412,7 +403,7 @@ export class UpdateContribution extends Disposable implements IWorkbenchContribu
 	}
 
 	private registerGlobalActivityActions(): void {
-		CommandsRegistry.registerCommand('update.check', () => this.updateService.checkForUpdates({ windowId: this.windowId }));
+		CommandsRegistry.registerCommand('update.check', () => this.updateService.checkForUpdates(this.context));
 		MenuRegistry.appendMenuItem(MenuId.GlobalActivity, {
 			group: '6_update',
 			command: {
@@ -480,7 +471,7 @@ export class UpdateContribution extends Disposable implements IWorkbenchContribu
 			group: '6_update',
 			command: {
 				id: 'update.restart',
-				title: nls.localize('restartToUpdate', "Restart to Update")
+				title: nls.localize('restartToUpdate', "Restart to Update (1)")
 			},
 			when: CONTEXT_UPDATE_STATE.isEqualTo(StateType.Ready)
 		});

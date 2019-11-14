@@ -72,18 +72,17 @@ export interface ISelectData {
 }
 
 export class SelectBox extends Widget implements ISelectBoxDelegate {
-	// {{SQL CARBON EDIT}}
-	protected selectElement: HTMLSelectElement;
+	protected selectElement: HTMLSelectElement; // {{SQL CARBON EDIT}}
 	protected selectBackground?: Color;
 	protected selectForeground?: Color;
 	protected selectBorder?: Color;
-	private selectBoxDelegate: ISelectBoxDelegate;
+	protected selectBoxDelegate: ISelectBoxDelegate; // {{SQL CARBON EDIT}} Make protected so we can hook into keyboard events
 
 	constructor(options: ISelectOptionItem[], selected: number, contextViewProvider: IContextViewProvider, styles: ISelectBoxStyles = deepClone(defaultStyles), selectBoxOptions?: ISelectBoxOptions) {
 		super();
 
 		// Default to native SelectBox for OSX unless overridden
-		if (isMacintosh && !(selectBoxOptions && selectBoxOptions.useCustomDrawn)) {
+		if (isMacintosh && !selectBoxOptions?.useCustomDrawn) {
 			this.selectBoxDelegate = new SelectBoxNative(options, selected, styles, selectBoxOptions);
 		} else {
 			this.selectBoxDelegate = new SelectBoxList(options, selected, contextViewProvider, styles, selectBoxOptions);

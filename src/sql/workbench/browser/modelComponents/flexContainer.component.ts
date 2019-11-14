@@ -20,7 +20,7 @@ export class FlexItem {
 
 @Component({
 	template: `
-		<div *ngIf="items" class="flexContainer" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent" [style.position]="position"
+		<div *ngIf="items" class="flexContainer" [style.display]="display" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent" [style.position]="position"
 				[style.alignItems]="alignItems" [style.alignContent]="alignContent" [style.height]="height" [style.width]="width" [style.flex-wrap]="flexWrap">
 			<div *ngFor="let item of items" [style.flex]="getItemFlex(item)" [style.textAlign]="textAlign" [style.order]="getItemOrder(item)" [ngStyle]="getItemStyles(item)">
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
@@ -113,13 +113,13 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 		return this._flexWrap;
 	}
 
-	private getItemFlex(item: FlexItem): string {
+	public getItemFlex(item: FlexItem): string {
 		return item.config ? item.config.flex : '1 1 auto';
 	}
-	private getItemOrder(item: FlexItem): number {
+	public getItemOrder(item: FlexItem): number {
 		return item.config ? item.config.order : 0;
 	}
-	private getItemStyles(item: FlexItem): { [key: string]: string } {
+	public getItemStyles(item: FlexItem): { [key: string]: string } {
 		return item.config && item.config.CSSStyles ? item.config.CSSStyles : {};
 	}
 }

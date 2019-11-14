@@ -32,11 +32,3 @@ export function mixin(destination: any, source: any, overwrite: boolean = true, 
 	}
 	return destination;
 }
-
-export function entries<T>(o: { [key: string]: T }): [string, T][] {
-	return Object.keys(o).map(k => [k, o[k]] as [string, T]);
-}
-
-export function values<T>(o: { [key: string]: T }): T[] {
-	return Object.keys(o).map(k => o[k]);
-}

@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
@@ -116,7 +115,7 @@ export class ApiWrapper {
 
 	public openTextDocument(uri: vscode.Uri): Thenable<vscode.TextDocument>;
 	public openTextDocument(options: { language?: string; content?: string; }): Thenable<vscode.TextDocument>;
-	public openTextDocument(uriOrOptions): Thenable<vscode.TextDocument> {
+	public openTextDocument(uriOrOptions: any): Thenable<vscode.TextDocument> {
 		return vscode.workspace.openTextDocument(uriOrOptions);
 	}
 

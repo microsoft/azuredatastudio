@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
@@ -14,9 +13,9 @@ import { JobData } from './jobData';
 const localize = nls.loadMessageBundle();
 
 export class AlertData implements IAgentDialogData {
-	public static readonly AlertTypeSqlServerEventString: string = localize('alertData.DefaultAlertTypString', 'SQL Server event alert');
-	public static readonly AlertTypePerformanceConditionString: string = localize('alertDialog.PerformanceCondition', 'SQL Server performance condition alert');
-	public static readonly AlertTypeWmiEventString: string = localize('alertDialog.WmiEvent', 'WMI event alert');
+	public static readonly AlertTypeSqlServerEventString: string = localize('alertData.DefaultAlertTypString', "SQL Server event alert");
+	public static readonly AlertTypePerformanceConditionString: string = localize('alertDialog.PerformanceCondition', "SQL Server performance condition alert");
+	public static readonly AlertTypeWmiEventString: string = localize('alertDialog.WmiEvent', "WMI event alert");
 	public static readonly DefaultAlertTypeString: string = AlertData.AlertTypeSqlServerEventString;
 
 	ownerUri: string;

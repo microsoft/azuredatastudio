@@ -200,7 +200,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.AllowUnsafeRowLevelSecurityDataMovement">
         <source xml:lang="en">Allow Unsafe Row Level Security Data Movement</source>
-        <target state="translated">Consenti spostamento dati con sicurezza a livello di riga non sicuro</target>
+        <target state="translated">Consenti spostamento dati con Sicurezza a livello di riga non sicuro</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.IgnoreWithNocheckOnCheckConstraints">
         <source xml:lang="en">Ignore With No check On Check Constraints</source>
@@ -768,7 +768,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.AllowUnsafeRowLevelSecurityDataMovement">
         <source xml:lang="en">Do not block data motion on a table which has Row Level Security if this property is set to true. Default is false.</source>
-        <target state="translated">Non bloccare il movimento di dati in una tabella con sicurezza a livello di riga se questa proprietà è impostata su true. L'impostazione predefinita è false.</target>
+        <target state="translated">Non bloccare il movimento di dati in una tabella con Sicurezza a livello di riga se questa proprietà è impostata su true. L'impostazione predefinita è false.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnCheckConstraints">
         <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for check constraints will be ignored or updated when you publish to a database.</source>
@@ -1132,7 +1132,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.generateScriptButton">
         <source xml:lang="en">Generate script</source>
-        <target state="translated">Genera script</target>
+        <target state="translated">Genera lo script</target>
       </trans-unit>
       <trans-unit id="schemaCompare.generateScriptErrorMessage">
         <source xml:lang="en">Generate script failed: '{0}'</source>

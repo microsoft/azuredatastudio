@@ -1,15 +1,15 @@
 {
+	"extends": "../shared.tsconfig.json",
 	"compilerOptions": {
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
-		"module": "commonjs",
-		"target": "ES5",
 		"outDir": "out",
-		"noUnusedLocals": true,
 		"lib": [
 			"es2015"
 		],
-		"sourceMap": true
+		"strict": false,
+		"noUnusedParameters": false,
+		"noImplicitAny": false,
 	},
 	"include": [
 		"src/**/*"

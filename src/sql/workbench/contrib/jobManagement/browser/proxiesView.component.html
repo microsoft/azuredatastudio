@@ -1,0 +1,15 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<div class="job-heading-container">
+	<h1 class="job-heading" *ngIf="_isCloud === false">Proxies</h1>
+	<h1 class="job-heading" *ngIf="_isCloud === true">No Proxies Available</h1>
+	<div class="codicon in-progress" *ngIf="_showProgressWheel === true"></div>
+</div>
+
+<div #actionbarContainer class="agent-actionbar-container"></div>
+
+<div #proxiesgrid class="jobproxiesview-grid"></div>

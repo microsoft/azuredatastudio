@@ -42,18 +42,18 @@ export class FlatFileWizard {
 
 		let connections = await azdata.connection.getActiveConnections();
 		if (!connections || connections.length === 0) {
-			vscode.window.showErrorMessage(localize('import.needConnection', 'Please connect to a server before using this wizard.'));
+			vscode.window.showErrorMessage(localize('import.needConnection', "Please connect to a server before using this wizard."));
 			return;
 		}
 
 		let currentConnection = await azdata.connection.getCurrentConnection();
 		model.serverId = currentConnection.connectionId;
 
-		this.wizard = azdata.window.createWizard(localize('flatFileImport.wizardName', 'Import flat file wizard'));
-		let page1 = azdata.window.createWizardPage(localize('flatFileImport.page1Name', 'Specify Input File'));
-		let page2 = azdata.window.createWizardPage(localize('flatFileImport.page2Name', 'Preview Data'));
-		let page3 = azdata.window.createWizardPage(localize('flatFileImport.page3Name', 'Modify Columns'));
-		let page4 = azdata.window.createWizardPage(localize('flatFileImport.page4Name', 'Summary'));
+		this.wizard = azdata.window.createWizard(localize('flatFileImport.wizardName', "Import flat file wizard"));
+		let page1 = azdata.window.createWizardPage(localize('flatFileImport.page1Name', "Specify Input File"));
+		let page2 = azdata.window.createWizardPage(localize('flatFileImport.page2Name', "Preview Data"));
+		let page3 = azdata.window.createWizardPage(localize('flatFileImport.page3Name', "Modify Columns"));
+		let page4 = azdata.window.createWizardPage(localize('flatFileImport.page4Name', "Summary"));
 
 		let fileConfigPage: FileConfigPage;
 
@@ -89,7 +89,7 @@ export class FlatFileWizard {
 		});
 
 
-		this.importAnotherFileButton = azdata.window.createButton(localize('flatFileImport.importNewFile', 'Import new file'));
+		this.importAnotherFileButton = azdata.window.createButton(localize('flatFileImport.importNewFile', "Import new file"));
 		this.importAnotherFileButton.onClick(() => {
 			//TODO replace this with proper cleanup for all the pages
 			this.wizard.close();

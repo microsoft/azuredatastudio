@@ -22,17 +22,9 @@ if "%ADS_TEST_GREP%" == "" (
 	set ADS_TEST_INVERT_GREP=1
 )
 
-set CODE_ARGS=--grep %ADS_TEST_GREP%
-
-if "%ADS_TEST_INVERT_GREP%" == "1" (
-	set CODE_ARGS=%CODE_ARGS% --invert
-) else if "%ADS_TEST_INVERT_GREP%" == "true" (
-	set CODE_ARGS=%CODE_ARGS% --invert
-)
-
 :: Run tests
 set ELECTRON_ENABLE_LOGGING=1
-%CODE% .\test\electron\index.js %CODE_ARGS% %*
+%CODE% .\test\electron\index.js %*
 
 popd
 

@@ -30,6 +30,8 @@
 	"title.SQL19PreviewBook": "SQL Server 2019 Guide",
 	"books-preview-category": "Jupyter Books",
 	"title.saveJupyterBook": "Save Book",
+	"title.searchJupyterBook": "Search Book",
 	"title.SavedBooks": "Saved Books",
-	"title.UntitledBooks": "Untitled Books"
+	"title.UnsavedBooks": "Unsaved Books",
+	"title.PreviewLocalizedBook": "Get localized SQL Server 2019 guide"
 }

@@ -1,5 +1,21 @@
 # Change Log
 
+## Version 1.13.0
+* Release date: November 4, 2019
+* Release status: General Availability
+* General Availability release for Schema Compare and DACPAC extensions
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/43?closed=1).
+
+## Version 1.12.2
+* Release date: October 11, 2019
+* Release status: General Availability
+* Hotfix release (1.12.2): `Disable automatically starting the EH in inspect mode` https://github.com/microsoft/azuredatastudio/commit/c9bef82ace6c67190d0e83820011a2bbd1f793c1
+
+## Version 1.12.1
+* Release date: October 7, 2019
+* Release status: General Availability
+* Hotfix release: `Notebooks: Ensure quotes and backslashes are escaped properly in text editor model` https://github.com/microsoft/azuredatastudio/pull/7540
+
 ## Version 1.12.0
 * Release date: October 2, 2019
 * Release status: General Availability

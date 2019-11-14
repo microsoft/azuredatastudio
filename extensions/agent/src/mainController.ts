@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
@@ -26,17 +25,17 @@ const localize = nls.loadMessageBundle();
 /**
  * The main controller class that initializes the extension
  */
-export class TemplateMapObject {
+class TemplateMapObject {
 	notebookInfo: azdata.AgentNotebookInfo;
 	fileUri: vscode.Uri;
 	tempPath: string;
 	ownerUri: string;
 }
+
 export class MainController {
 
 	protected _context: vscode.ExtensionContext;
 	private jobDialog: JobDialog;
-	private jobStepDialog: JobStepDialog;
 	private alertDialog: AlertDialog;
 	private operatorDialog: OperatorDialog;
 	private proxyDialog: ProxyDialog;
@@ -105,10 +104,10 @@ export class MainController {
 			AgentUtils.getAgentService().then(async (agentService) => {
 				let result = await agentService.updateNotebook(templateMap.ownerUri, templateMap.notebookInfo.name, templateMap.notebookInfo, templateMap.tempPath);
 				if (result.success) {
-					vscode.window.showInformationMessage(localize('agent.templateUploadSuccessful', 'Template updated successfully'));
+					vscode.window.showInformationMessage(localize('agent.templateUploadSuccessful', "Template updated successfully"));
 				}
 				else {
-					vscode.window.showInformationMessage(localize('agent.templateUploadError', 'Template update failure'));
+					vscode.window.showInformationMessage(localize('agent.templateUploadError', "Template update failure"));
 				}
 			});
 
@@ -169,8 +168,8 @@ export class MainController {
 			if (!ownerUri || ownerUri instanceof vscode.Uri) {
 				let path: string;
 				if (!ownerUri) {
-					if (azdata.nb.activeNotebookEditor.document.isDirty) {
-						vscode.window.showErrorMessage(localize('agent.unsavedFileSchedulingError', 'Save file before scheduling'), { modal: true });
+					if (azdata.nb.activeNotebookEditor.document.isDirty || azdata.nb.activeNotebookEditor.document.isUntitled) {
+						vscode.window.showErrorMessage(localize('agent.unsavedFileSchedulingError', "The notebook must be saved before being scheduled. Please save and then retry scheduling again."), { modal: true });
 						return;
 					}
 					path = azdata.nb.activeNotebookEditor.document.fileName;
@@ -204,13 +203,6 @@ export class MainController {
 			connection = await azdata.connection.openConnectionDialog();
 		}
 		else {
-			let sqlConnectionsPresent: boolean;
-			for (let i = 0; i < connections.length; i++) {
-				if (connections[i].providerName === 'MSSQL') {
-					sqlConnectionsPresent = true;
-					break;
-				}
-			}
 			let connectionNames: azdata.connection.Connection[] = [];
 			let connectionDisplayString: string[] = [];
 			for (let i = 0; i < connections.length; i++) {
@@ -218,10 +210,10 @@ export class MainController {
 				connectionNames.push(connections[i]);
 				connectionDisplayString.push(currentConnectionString);
 			}
-			connectionDisplayString.push(localize('agent.AddNewConnection', 'Add new connection'));
-			let connectionName = await vscode.window.showQuickPick(connectionDisplayString, { placeHolder: localize('agent.selectConnection', 'Select a connection') });
+			connectionDisplayString.push(localize('agent.AddNewConnection', "Add new connection"));
+			let connectionName = await vscode.window.showQuickPick(connectionDisplayString, { placeHolder: localize('agent.selectConnection', "Select a connection") });
 			if (connectionDisplayString.indexOf(connectionName) !== -1) {
-				if (connectionName === localize('agent.AddNewConnection', 'Add new connection')) {
+				if (connectionName === localize('agent.AddNewConnection', "Add new connection")) {
 					connection = await azdata.connection.openConnectionDialog();
 				}
 				else {
@@ -229,7 +221,7 @@ export class MainController {
 				}
 			}
 			else {
-				vscode.window.showErrorMessage(localize('agent.selectValidConnection', 'Please select a valid connection'), { modal: true });
+				vscode.window.showErrorMessage(localize('agent.selectValidConnection', "Please select a valid connection"), { modal: true });
 			}
 		}
 		return connection;

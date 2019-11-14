@@ -13,6 +13,10 @@
     "*"
   ],
   "main": "./out/extension",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
   "contributes": {
     "configuration": [
       {
@@ -138,10 +142,6 @@
         {
           "command": "azure.resource.connectsqlserver",
           "when": "false"
-        },
-        {
-          "command": "azure.resource.connectsqldb",
-          "when": "false"
         }
       ],
       "view/title": [
@@ -169,12 +169,7 @@
         },
         {
           "command": "azure.resource.connectsqlserver",
-          "when": "viewItem == azure.resource.itemType.databaseServer",
-          "group": "inline"
-        },
-        {
-          "command": "azure.resource.connectsqldb",
-          "when": "viewItem == azure.resource.itemType.database",
+          "when": "viewItem == azure.resource.itemType.databaseServer || viewItem == azure.resource.itemType.database || viewItem == azure.resource.itemType.sqlInstance",
           "group": "inline"
         }
       ]
@@ -182,10 +177,9 @@
     "hasAzureResourceProviders": true
   },
   "dependencies": {
+    "@azure/arm-resourcegraph": "^2.0.0",
+    "@azure/arm-subscriptions": "1.0.0",
     "adal-node": "^0.1.28",
-    "azure-arm-resource": "^7.0.0",
-    "azure-arm-sql": "^5.0.1",
-    "ms-rest": "^2.5.0",
     "request": "2.88.0",
     "vscode-nls": "^4.0.0"
   },
@@ -193,9 +187,9 @@
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.12.12",
     "@types/request": "^2.48.1",
+    "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
-    "mocha": "^5.2.0",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
     "vscode": "1.1.26"

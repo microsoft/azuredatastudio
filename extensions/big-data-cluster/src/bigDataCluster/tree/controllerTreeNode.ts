@@ -3,18 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
 import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
 import { TreeNode } from './treeNode';
 import { IconPathHelper, BdcItemType, IconPath, AuthType } from '../constants';
 
-const localize = nls.loadMessageBundle();
-
-export abstract class ControllerTreeNode extends TreeNode {
+abstract class ControllerTreeNode extends TreeNode {
 
 	constructor(
 		label: string,
@@ -106,7 +101,15 @@ export class ControllerRootNode extends ControllerTreeNode {
 		return this.children as ControllerNode[];
 	}
 
-	public addControllerNode(
+	/**
+	 * Creates or updates a node in the tree with the specified connection information
+	 * @param url The URL for the BDC management endpoint
+	 * @param auth The type of auth to use
+	 * @param username The username (if basic auth)
+	 * @param password The password (if basic auth)
+	 * @param rememberPassword Whether to store the password in the password store when saving
+	 */
+	public addOrUpdateControllerNode(
 		url: string,
 		auth: AuthType,
 		username: string,
@@ -124,20 +127,20 @@ export class ControllerRootNode extends ControllerTreeNode {
 		}
 	}
 
-	public deleteControllerNode(url: string, auth: AuthType, username: string): ControllerNode {
+	public deleteControllerNode(url: string, auth: AuthType, username: string): ControllerNode[] | undefined {
 		if (!url || (auth === 'basic' && !username)) {
 			return undefined;
 		}
 		let nodes = this.children as ControllerNode[];
 		let index = nodes.findIndex(e => isControllerMatch(e, url, auth, username));
-		let deleted = undefined;
+		let deleted: ControllerNode[] | undefined;
 		if (index >= 0) {
 			deleted = nodes.splice(index, 1);
 		}
 		return deleted;
 	}
 
-	private getExistingControllerNode(url: string, auth: AuthType, username: string): ControllerNode {
+	private getExistingControllerNode(url: string, auth: AuthType, username: string): ControllerNode | undefined {
 		if (!url || !username) {
 			return undefined;
 		}
@@ -164,7 +167,7 @@ export class ControllerNode extends ControllerTreeNode {
 		this.description = description;
 	}
 
-	public async getChildren(): Promise<ControllerTreeNode[]> {
+	public async getChildren(): Promise<ControllerTreeNode[] | undefined> {
 		if (this.children && this.children.length > 0) {
 			this.clearChildren();
 		}
@@ -173,11 +176,12 @@ export class ControllerNode extends ControllerTreeNode {
 			vscode.commands.executeCommand('bigDataClusters.command.addController', this);
 			return this.children as ControllerTreeNode[];
 		}
+		return undefined;
 	}
 
-	public static toIpAndPort(url: string): string {
+	public static toIpAndPort(url: string): string | undefined {
 		if (!url) {
-			return;
+			return undefined;
 		}
 		return url.trim().replace(/ /g, '').replace(/^.+\:\/\//, '');
 	}
@@ -204,16 +208,16 @@ export class ControllerNode extends ControllerTreeNode {
 		this._password = pw;
 	}
 
+	public set label(label: string) {
+		super.label = label || this.generateLabel();
+	}
+
 	public get rememberPassword() {
 		return this._rememberPassword;
 	}
 
 	public set rememberPassword(rememberPassword: boolean) {
 		this._rememberPassword = rememberPassword;
-	}
-
-	public set label(label: string) {
-		super.label = label || this.generateLabel();
 	}
 
 	private generateLabel(): string {
@@ -240,4 +244,3 @@ export class ControllerNode extends ControllerTreeNode {
 function isControllerMatch(node: ControllerNode, url: string, auth: string, username: string): unknown {
 	return node.url === url && node.auth === auth && node.username === username;
 }
-

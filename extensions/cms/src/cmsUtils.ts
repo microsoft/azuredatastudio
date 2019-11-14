@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
@@ -17,7 +16,7 @@ const mssqlProvider: string = 'MSSQL';
 const CredentialNamespace = 'cmsCredentials';
 const sqlLoginAuthType: string = 'SqlLogin';
 
-export interface CreateCmsResult {
+interface CreateCmsResult {
 	listRegisteredServersResult: mssql.ListRegisteredServersResult;
 	connection: azdata.connection.Connection;
 	ownerUri: string;
@@ -89,12 +88,13 @@ export class CmsUtils {
 		return this._cmsService;
 	}
 
-	public async getRegisteredServers(ownerUri: string, relativePath: string): Promise<mssql.ListRegisteredServersResult> {
+	public async getRegisteredServers(ownerUri: string, relativePath: string): Promise<mssql.ListRegisteredServersResult | undefined> {
 		const cmsService = await this.getCmsService();
 		const result = await cmsService.getRegisteredServers(ownerUri, relativePath);
 		if (result && result.registeredServersList && result.registeredServersList) {
 			return result;
 		}
+		return undefined;
 	}
 
 	public async createCmsServer(connection: azdata.connection.Connection,
@@ -166,7 +166,7 @@ export class CmsUtils {
 	}
 
 	public async addRegisteredServer(relativePath: string, ownerUri: string,
-		parentServerName?: string): Promise<boolean> {
+		parentServerName?: string): Promise<boolean | undefined> {
 		let provider = await this.getCmsService();
 		// Initial profile to disallow SQL Login without
 		// changing provider.
@@ -191,7 +191,7 @@ export class CmsUtils {
 		if (connection && connection.options) {
 			if (connection.options.server === parentServerName) {
 				// error out for same server registration
-				let errorText = localize('cms.errors.sameServerUnderCms', 'You cannot add a shared registered server with the same name as the Configuration Server');
+				let errorText = localize('cms.errors.sameServerUnderCms', "You cannot add a shared registered server with the same name as the Configuration Server");
 				this.showErrorMessage(errorText);
 				throw new Error(errorText);
 			} else {
@@ -200,6 +200,7 @@ export class CmsUtils {
 				return result;
 			}
 		}
+		return undefined;
 	}
 
 	public async removeRegisteredServer(registeredServerName: string, relativePath: string, ownerUri: string): Promise<boolean> {
@@ -232,7 +233,7 @@ export class CmsUtils {
 		return this._credentialProvider;
 	}
 
-	public async makeConnection(initialConnectionProfile?: azdata.IConnectionProfile): Promise<azdata.connection.Connection> {
+	public async makeConnection(initialConnectionProfile?: azdata.IConnectionProfile): Promise<azdata.connection.Connection | undefined> {
 		if (!initialConnectionProfile) {
 			initialConnectionProfile = {
 				connectionName: undefined,
@@ -261,6 +262,7 @@ export class CmsUtils {
 			}
 			return connection;
 		}
+		return undefined;
 	}
 
 	// Static Functions
@@ -282,11 +284,6 @@ export class CmsUtils {
 			options: connection.options
 		};
 		return connectionProfile;
-	}
-
-	public didConnectionChange(connectionA: azdata.connection.Connection, connectionB: azdata.connection.Connection): boolean {
-		return (connectionA !== connectionB) || ((connectionA.connectionId === connectionB.connectionId) &&
-			(connectionA.options.savePassword !== connectionA.options.savePassword));
 	}
 
 }

@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
-
 import * as azdata from 'azdata';
 
 import { Event } from 'vs/base/common/event';
@@ -18,6 +16,12 @@ export const clientCapabilities = {
 	hostName: HOST_NAME,
 	hostVersion: HOST_VERSION
 };
+
+export interface ConnectionProviderProperties {
+	providerId: string;
+	displayName: string;
+	connectionOptions: azdata.ConnectionOption[];
+}
 
 export interface ProviderFeatures {
 	connection: ConnectionProviderProperties;

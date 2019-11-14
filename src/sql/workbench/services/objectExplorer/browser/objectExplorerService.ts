@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
-import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/parts/objectExplorer/common/treeNode';
+import { NodeType } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
+import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -13,13 +13,14 @@ import { Event, Emitter } from 'vs/base/common/event';
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
+import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as Utils from 'sql/platform/connection/common/utils';
-import { entries } from 'sql/base/common/objects';
 import { ILogService } from 'vs/platform/log/common/log';
+import { entries } from 'sql/base/common/collections';
+import { values } from 'vs/base/common/collections';
+import { startsWith } from 'vs/base/common/strings';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -144,7 +145,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@ITelemetryService private _telemetryService: ITelemetryService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@ILogService private logService: ILogService
 	) {
@@ -228,7 +229,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	 */
 	public onSessionCreated(handle: number, session: azdata.ObjectExplorerSession): void {
 		if (session && session.success) {
-			this.handleSessionCreated(session);
+			this.handleSessionCreated(session).catch((e) => this.logService.error(e));
 		} else {
 			let errorMessage = session && session.errorMessage ? session.errorMessage : errSessionCreateFailed;
 			this.logService.error(errorMessage);
@@ -281,9 +282,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					this._serverTreeView.deleteObjectExplorerNodeAndRefreshTree(connection).then(() => {
 						this.sendUpdateNodeEvent(connection, session.errorMessage);
 						connection.isDisconnecting = true;
-						this._connectionManagementService.disconnect(connection).then((value) => {
+						this._connectionManagementService.disconnect(connection).then(() => {
 							connection.isDisconnecting = false;
-						});
+						}).catch((e) => this.logService.error(e));
 					});
 				}
 			}
@@ -346,7 +347,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
 			let provider = this._providers[providerId];
 			if (provider) {
-				TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId });
+				this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ObjectExplorerExpand)
+					.withAdditionalProperties({
+						refresh: false,
+						provider: providerId
+					}).send();
 				this.expandOrRefreshNode(providerId, session, nodePath).then(result => {
 					resolve(result);
 				}, error => {
@@ -484,7 +489,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Thenable<azdata.ObjectExplorerExpandInfo> {
 		let provider = this._providers[providerId];
 		if (provider) {
-			TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.ObjectExplorerExpand, { refresh: 1, provider: providerId });
+			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ObjectExplorerExpand)
+				.withAdditionalProperties({
+					refresh: true,
+					provider: providerId
+				}).send();
 			return this.expandOrRefreshNode(providerId, session, nodePath, true);
 		}
 		return Promise.resolve(undefined);
@@ -669,7 +678,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	public getActiveConnectionNodes(): TreeNode[] {
-		return Object.values(this._activeObjectExplorerNodes);
+		return values(this._activeObjectExplorerNodes);
 	}
 
 	/**
@@ -788,7 +797,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			}
 			if (currentNode.children) {
 				// Look at the next node in the path, which is the child object with the longest path where the desired path starts with the child path
-				let children = currentNode.children.filter(child => nodePath.startsWith(child.nodePath));
+				let children = currentNode.children.filter(child => startsWith(nodePath, child.nodePath));
 				if (children.length > 0) {
 					nextNode = children.reduce((currentMax, candidate) => currentMax.nodePath.length < candidate.nodePath.length ? candidate : currentMax);
 				}

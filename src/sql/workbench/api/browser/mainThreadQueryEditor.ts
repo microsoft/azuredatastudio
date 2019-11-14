@@ -7,7 +7,7 @@ import { SqlExtHostContext, SqlMainContext, ExtHostQueryEditorShape, MainThreadQ
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
-import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
+import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
@@ -15,6 +15,7 @@ import * as azdata from 'azdata';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
 export class MainThreadQueryEditor extends Disposable implements MainThreadQueryEditorShape {
@@ -26,7 +27,8 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorService private _editorService: IEditorService,
-		@IQueryManagementService private _queryManagementService: IQueryManagementService
+		@IQueryManagementService private _queryManagementService: IQueryManagementService,
+		@ILogService private _logService: ILogService
 	) {
 		super();
 		if (extHostContext) {
@@ -101,9 +103,9 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 			if (editor instanceof QueryEditor) {
 				let queryEditor: QueryEditor = editor;
 				if (runCurrentQuery) {
-					queryEditor.runCurrentQuery();
+					queryEditor.runCurrentQuery().catch((e) => this._logService.error(e));
 				} else {
-					queryEditor.runQuery();
+					queryEditor.runQuery().catch((e) => this._logService.error(e));
 				}
 			}
 		}

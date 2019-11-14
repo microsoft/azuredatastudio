@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 export enum CmsResourceItemType {
 	cmsMessageNodeContainer = 'cms.resource.itemType.cmsMessageNodeContainer',
 	cmsEmptyNodeContainer = 'cms.resource.itemType.cmsEmptyNodeContainer',

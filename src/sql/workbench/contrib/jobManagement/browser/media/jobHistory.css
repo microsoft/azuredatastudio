@@ -1,0 +1,477 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+jobhistory-component .all-jobs {
+	display: inline-block;
+	cursor: pointer;
+	font-size: 15px;
+	width: 10%;
+	margin-top: 10px;
+}
+notebookhistory-component .all-jobs {
+	display: inline-block;
+	cursor: pointer;
+	font-size: 15px;
+	width: 100%;
+}
+
+.overview-container .overview-tab .resultsViewCollapsible,
+.overview-container .overview-tab .notebooksgridViewCollapsible {
+	padding: 15px;
+	display: inline;
+}
+
+.job-heading {
+	text-align: left;
+	padding-left: 13px;
+	font-size: 1.5vw;
+}
+
+.overview-container {
+	padding-top: 10px;
+}
+
+.history-container {
+	position: relative;
+	overflow-y: auto;
+}
+
+.vs-dark .overview-container .overview-tab {
+	color: #fff;
+}
+
+.hc-black .overview-container .overview-tab {
+	color: #ffffff;
+}
+
+.overview-container > .overview-tab {
+	position: relative;
+	margin-bottom: 1px;
+	width: 100%;
+	color: #4a4a4a;
+	overflow: hidden;
+}
+
+input#accordion{
+	position: absolute;
+	opacity: 0;
+	z-index: -1;
+}
+
+.grid-arrow{
+	position: absolute;
+	opacity: 0;
+	z-index: -1;
+}
+
+.vs-dark .overview-container .overview-tab label {
+	background: #444444;
+}
+
+.hc-black .overview-container .overview-tab label {
+	background: #000000;
+	border: 1px solid #2b56f2;
+}
+
+.overview-container .overview-tab label {
+	position: relative;
+	display: block;
+	padding: 0 0 0 1em;
+	background: #f4f4f4;
+	font-weight: bold;
+	line-height: 3;
+	cursor: pointer;
+	width: 100%;
+}
+
+.vs-dark .overview-tab .accordion-content {
+	background: #333333;
+}
+
+.hc-black .overview-tab .accordion-content,
+.grid-arrow {
+	background: #000000;
+	border: 1px solid #2b56f2;
+}
+
+.overview-tab .accordion-content {
+	max-height: 0;
+	overflow: hidden;
+	background: #eaeaea;
+	-webkit-transition: max-height 0.35s;
+	-o-transition: max-height 0.35s;
+	transition: max-height 0.35s;
+	width: 100%;
+}
+
+.overview-tab .accordion-content p {
+	margin: 1em;
+}
+
+/* :checked */
+input#accordion:checked ~ .accordion-content,
+.grid-arrow:checked {
+	max-height: 10em;
+}
+
+input#accordion:checked ~ .accordion-content,
+.grid-arrow:checked {
+	max-height: 10em;
+}
+
+/* Icon */
+.overview-container .overview-tab label::after {
+	position: absolute;
+	right: 0;
+	top: 0;
+	display: block;
+	width: 3em;
+	height: 3em;
+	line-height: 3;
+	text-align: center;
+	-webkit-transition: all 0.3s;
+	-o-transition: all 0.3s;
+	transition: all 0.3s;
+}
+
+.all-jobs > .back-button-icon {
+	content: url("back.svg");
+	width: 20px;
+	margin-right: 10px;
+	float: left;
+	cursor: pointer;
+	padding-left: 13px;
+	padding-bottom: 10px;
+}
+
+.vs-dark .all-jobs > .back-button-icon,
+.hc-black .all-jobs > .back-button-icon {
+	content: url("back_inverse.svg");
+}
+
+.vs .action-label.codicon.newStepIcon {
+	background-image: url("new.svg");
+}
+
+.vs-dark .action-label.codicon.newStepIcon,
+.hc-black .action-label.codicon.newStepIcon {
+	background-image: url("new_inverse.svg");
+}
+
+jobhistory-component .hc-black .codicon.edit,
+jobhistory-component .vs-dark .codicon.edit,
+notebookhistory-component .hc-black .codicon.edit,
+notebookhistory-component .vs-dark .codicon.edit {
+	background-image: url("edit_inverse.svg");
+}
+
+jobhistory-component .vs .codicon.edit,
+notebookhistory-component .vs .codicon.edit {
+	background-image: url("edit.svg");
+}
+
+jobhistory-component .actions-container .codicon.edit,
+notebookhistory-component .actions-container .codicon.edit {
+	background-position: 0% 50%;
+	background-repeat: no-repeat;
+	background-size: 12px;
+}
+
+a.action-label.codicon.runJobIcon.non-runnable {
+	opacity: 0.4;
+	cursor: default;
+}
+
+a.action-label.codicon.stopJobIcon.non-runnable {
+	opacity: 0.4;
+	cursor: default;
+}
+
+.accordion-content #col1,
+.accordion-content #col2,
+.accordion-content #col3,
+.accordion-content #col4 {
+	padding: 10px;
+}
+
+.accordion-content #col1,
+.accordion-content #col3 {
+	font-weight: bold;
+}
+
+.accordion-content #col2 {
+	padding-right: 300px;
+}
+
+table.step-list tr.step-row td {
+	padding-right: 10px;
+}
+
+.history-details {
+	flex: 1 1 auto;
+	display: flex;
+}
+
+.history-details > .job-steps {
+	flex: 1 1 auto;
+	display: flex;
+	border-left: 3px solid #f4f4f4;
+	padding-left: 10px;
+	flex-direction: column;
+	width: 100%;
+}
+
+.vs-dark .history-details > .job-steps {
+	border-left: 3px solid #444444;
+}
+
+.hc-black .history-details > .job-steps {
+	border-left: 3px solid #2b56f2;
+}
+
+.history-details > .job-steps > table.step-list {
+	padding-bottom: 10px;
+	display: flex;
+	flex: 1 1;
+	overflow: scroll;
+	max-height: 200px;
+}
+
+.step-table
+	.monaco-tree
+	.monaco-tree-rows.show-twisties
+	> .monaco-tree-row.has-children
+	> .content:before {
+	background: none;
+	background-image: none;
+}
+
+.step-table
+	.monaco-tree.focused
+	.monaco-tree-rows.show-twisties
+	> .monaco-tree-row.has-children.selected:not(.loading)
+	> .content:before {
+	background-image: none;
+}
+
+.step-table .list-row .status-icon {
+	height: 10px;
+	width: 10px;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.step-table .list-row .label {
+	padding-left: 10px;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.job-passed {
+	background: green;
+}
+
+.job-failed {
+	background: red;
+}
+
+.job-unknown {
+	background: yellow;
+}
+
+.date-column {
+	padding-left: 50px;
+	width: 140px;
+}
+
+.step-table {
+	flex: 1 1 auto;
+}
+
+.prev-run-list-container {
+	display: flex;
+	flex-direction: column;
+}
+
+jobhistory-component,
+notebookhistory-component {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+}
+
+jobhistory-component > .jobhistory-heading-container,
+notebookhistory-component > .jobhistory-heading-container {
+	display: flex;
+}
+
+jobhistory-component > .jobhistory-heading-container > .codicon.in-progress,
+notebookhistory-component > .jobhistory-heading-container > .codicon.in-progress {
+	width: 20px;
+	height: 20px;
+	padding-top: 16px;
+	padding-left: 20px;
+}
+
+jobhistory-component > .agent-actionbar-container,
+notebookhistory-component > .agent-actionbar-container {
+	border-top: 3px solid #f4f4f4;
+}
+
+.vs-dark jobhistory-component > .agent-actionbar-container,
+.vs-dark notebookhistory-component > .agent-actionbar-container {
+	border-top: 3px solid #444444;
+}
+
+.hc-black jobhistory-component > .agent-actionbar-container,
+.hc-black notebookhistory-component > .agent-actionbar-container {
+	border-top: 3px solid #2b56f2;
+}
+
+jobhistory-component
+	.step-table.prev-run-list
+	.monaco-tree-wrapper
+	.monaco-tree-row,
+notebookhistory-component
+	.step-table.prev-run-list
+	.monaco-tree-wrapper
+	.monaco-tree-row {
+	width: 96%;
+}
+
+jobhistory-component
+	.agent-actionbar-container
+	> .monaco-toolbar.carbon-taskbar,
+notebookhistory-component
+	.agent-actionbar-container
+	> .monaco-toolbar.carbon-taskbar {
+	margin: 10px 0px 5px 0px;
+}
+.notebook-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+	grid-gap: 10px;
+	padding: 10px;
+}
+
+.notebook-grid-item {
+	border-radius: 5px;
+	padding-bottom: 5px;
+	height: 95px;
+	display: block;
+	border-radius: 0px;
+}
+
+.notebook-grid-item > img {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	width: 50px;
+	height: 50px;
+}
+
+.notebook-grid-item:hover {
+	background: #dcdcdc !important;
+}
+
+.vs-dark .notebook-grid-item:hover,
+.hc-black .notebook-grid-item:hover {
+	background: #444444 !important;
+}
+
+.notebook-grid-item > .img-success {
+	background-image: url(./NotebookSuccess_16x.svg);
+	background-position: center;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	width: 40px;
+	height: 40px;
+	background-size: 40px 40px;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .notebook-grid-item > .img-success,
+.hc-black .notebook-grid-item > .img-success {
+	background-image: url(./NotebookSuccess_16x_white.svg);
+	background-position: center;
+}
+
+.notebook-grid-item > .img-failure {
+	background-image: url(./NotebookFail_16x.svg);
+	background-position: center;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	width: 40px;
+	height: 40px;
+	background-size: 40px 40px;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .notebook-grid-item > .img-failure,
+.hc-black .notebook-grid-item > .img-failure {
+	background-image: url(./NotebookFail_16x_white.svg);
+	background-position: center;
+}
+
+.notebook-grid-item > .img-error {
+	background-image: url(./NotebookError_16x.svg);
+	background-position: center;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	width: 40px;
+	height: 40px;
+	background-size: 40px 40px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+.vs-dark .notebook-grid-item > .img-error,
+.hc-black .notebook-grid-item > .img-error {
+	background-image: url(./NotebookError_16x_white.svg);
+	background-position: center;
+}
+
+.notebook-grid-item > p {
+	display: absolute;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	width: 100%;
+	text-align: center;
+}
+
+.notebook-history-container {
+	flex: 1 1 auto;
+	position: relative;
+	overflow-y: auto;
+}
+
+.grid-title {
+	position: relative;
+	display: block;
+	padding: 0 0 0 1em;
+	background: #f4f4f4;
+	font-weight: bold;
+	line-height: 3;
+	cursor: pointer;
+	width: auto;
+}
+
+.vs-dark .grid-title {
+	background: #333333;
+}
+
+.hc-black .grid-title {
+	background: #000000;
+	border: 1px solid #2b56f2;
+}

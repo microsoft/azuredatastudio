@@ -15,6 +15,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 
 import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export interface IDropdownStyles {
 	backgroundColor?: Color;
@@ -42,14 +43,14 @@ export class DropdownList extends Dropdown {
 			this.button = new Button(_contentContainer);
 			this.button.label = action.label;
 			this._register(DOM.addDisposableListener(this.button.element, DOM.EventType.CLICK, () => {
-				action.run();
+				action.run().catch(e => onUnexpectedError(e));
 				this.hide();
 			}));
 			this._register(DOM.addDisposableListener(this.button.element, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 				let event = new StandardKeyboardEvent(e);
 				if (event.equals(KeyCode.Enter)) {
 					e.stopPropagation();
-					action.run();
+					action.run().catch(e => onUnexpectedError(e));
 					this.hide();
 				}
 			}));
@@ -131,22 +132,22 @@ export class DropdownList extends Dropdown {
 	}
 
 	protected applyStyles(): void {
-		const background = this.backgroundColor ? this.backgroundColor.toString() : null;
-		const foreground = this.foregroundColor ? this.foregroundColor.toString() : null;
-		const border = this.borderColor ? this.borderColor.toString() : null;
+		const background = this.backgroundColor ? this.backgroundColor.toString() : '';
+		const foreground = this.foregroundColor ? this.foregroundColor.toString() : '';
+		const border = this.borderColor ? this.borderColor.toString() : '';
 		this.applyStylesOnElement(this._contentContainer, background, foreground, border);
 		if (this.label) {
 			this.applyStylesOnElement(this.element, background, foreground, border);
 		}
 	}
 
-	private applyStylesOnElement(element: HTMLElement, background: string | null, foreground: string | null, border: string | null): void {
+	private applyStylesOnElement(element: HTMLElement, background: string, foreground: string, border: string): void {
 		if (element) {
 			element.style.backgroundColor = background;
 			element.style.color = foreground;
 
-			element.style.borderWidth = border ? '1px' : null;
-			element.style.borderStyle = border ? 'solid' : null;
+			element.style.borderWidth = border ? '1px' : '';
+			element.style.borderStyle = border ? 'solid' : '';
 			element.style.borderColor = border;
 		}
 	}

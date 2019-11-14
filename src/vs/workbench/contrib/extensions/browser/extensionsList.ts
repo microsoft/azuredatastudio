@@ -15,7 +15,7 @@ import { domEvent } from 'vs/base/browser/event';
 import { IExtension, ExtensionContainers, ExtensionState, IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 import { InstallAction, UpdateAction, ManageExtensionAction, ReloadAction, MaliciousStatusLabelAction, ExtensionActionViewItem, StatusLabelAction, RemoteInstallAction, SystemDisabledWarningAction, ExtensionToolTipAction, LocalInstallAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
-import { Label, RatingsWidget, InstallCountWidget, RecommendationWidget, RemoteBadgeWidget, TooltipWidget } from 'vs/workbench/contrib/extensions/browser/extensionsWidgets';
+import { Label, RatingsWidget, /*InstallCountWidget,*/ RecommendationWidget, RemoteBadgeWidget, TooltipWidget } from 'vs/workbench/contrib/extensions/browser/extensionsWidgets';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IExtensionManagementServerService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -73,7 +73,7 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 		const header = append(headerContainer, $('.header'));
 		const name = append(header, $('span.name'));
 		const version = append(header, $('span.version'));
-		const installCount = append(header, $('span.install-count'));
+		// const installCount = append(header, $('span.install-count')); {{SQL CARBON EDIT}} no unused
 		const ratings = append(header, $('span.ratings'));
 		const headerRemoteBadgeWidget = this.instantiationService.createInstance(RemoteBadgeWidget, header, false);
 		const description = append(details, $('.description.ellipsis'));

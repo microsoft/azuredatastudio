@@ -15,8 +15,10 @@ import * as nls from 'vscode-nls';
 
 import * as constants from '../constants';
 import { WebHDFS, HdfsError } from '../hdfs/webhdfs';
-import { AclEntry, IAclStatus } from '../hdfs/aclEntry';
+import { PermissionStatus } from '../hdfs/aclEntry';
 import { Mount, MountStatus } from '../hdfs/mount';
+import { FileStatus, hdfsFileTypeToFileType } from '../hdfs/fileStatus';
+import { getIgnoreSslVerificationConfigSetting } from '../util/auth';
 
 const localize = nls.loadMessageBundle();
 
@@ -27,15 +29,21 @@ export function joinHdfsPath(parent: string, child: string): string {
 	return `${parent}/${child}`;
 }
 
+export const enum FileType {
+	Directory = 'Directory',
+	File = 'File',
+	Symlink = 'Symlink'
+}
+
 export interface IFile {
 	path: string;
-	isDirectory: boolean;
+	fileType: FileType;
 	mountStatus?: MountStatus;
 }
 
 export class File implements IFile {
 	public mountStatus?: MountStatus;
-	constructor(public path: string, public isDirectory: boolean) {
+	constructor(public path: string, public fileType: FileType) {
 
 	}
 
@@ -43,16 +51,16 @@ export class File implements IFile {
 		return joinHdfsPath(path, fileName);
 	}
 
-	public static createChild(parent: IFile, fileName: string, isDirectory: boolean): IFile {
-		return new File(File.createPath(parent.path, fileName), isDirectory);
+	public static createChild(parent: IFile, fileName: string, fileType: FileType): IFile {
+		return new File(File.createPath(parent.path, fileName), fileType);
 	}
 
 	public static createFile(parent: IFile, fileName: string): File {
-		return File.createChild(parent, fileName, false);
+		return File.createChild(parent, fileName, FileType.File);
 	}
 
 	public static createDirectory(parent: IFile, fileName: string): IFile {
-		return File.createChild(parent, fileName, true);
+		return File.createChild(parent, fileName, FileType.Directory);
 	}
 
 	public static getBasename(file: IFile): string {
@@ -69,26 +77,40 @@ export interface IFileSource {
 	writeFile(localFile: IFile, remoteDir: string): Promise<string>;
 	delete(path: string, recursive?: boolean): Promise<void>;
 	/**
+	 * Retrieves the file status for the specified path (may be a file or directory)
+	 */
+	getFileStatus(path: string): Promise<FileStatus>;
+	/**
 	 * Get ACL status for given path
 	 * @param path The path to the file/folder to get the status of
 	 */
-	getAclStatus(path: string): Promise<IAclStatus>;
+	getAclStatus(path: string): Promise<PermissionStatus>;
 	/**
 	 * Sets the ACL status for given path
 	 * @param path The path to the file/folder to set the ACL on
-	 * @param ownerEntry The entry corresponding to the path owner
-	 * @param groupEntry The entry corresponding to the path owning group
-	 * @param otherEntry The entry corresponding to default permissions for all other users
-	 * @param aclEntries The ACL entries to set
+	 * @param fileType The type of file we're setting to determine if defaults should be applied. Use undefined if type is unknown
+	 * @param permissionStatus The status containing the permissions to set
 	 */
-	setAcl(path: string, ownerEntry: AclEntry, groupEntry: AclEntry, otherEntry: AclEntry, aclEntries: AclEntry[]): Promise<void>;
+	setAcl(path: string, fileType: FileType | undefined, permissionStatus: PermissionStatus): Promise<void>;
+	/**
+	 * Removes the default ACLs for the specified path
+	 * @param path The path to remove the default ACLs for
+	 */
+	removeDefaultAcl(path: string): Promise<void>;
+	/**
+	 * Sets the permission octal (sticky, owner, group & other) for a file/folder
+	 * @param path The path to the file/folder to set the permission of
+	 * @param aclStatus The status containing the permission to set
+	 */
+	setPermission(path: string, aclStatus: PermissionStatus): Promise<void>;
 	exists(path: string): Promise<boolean>;
 }
 
-export interface IHttpAuthentication {
+interface IHttpAuthentication {
 	user: string;
 	pass: string;
 }
+
 export interface IHdfsOptions {
 	host?: string;
 	port?: number;
@@ -109,11 +131,6 @@ export interface IRequestParams {
 	headers?: {};
 }
 
-export interface IHdfsFileStatus {
-	type: 'FILE' | 'DIRECTORY';
-	pathSuffix: string;
-}
-
 export class FileSourceFactory {
 	private static _instance: FileSourceFactory;
 
@@ -128,12 +145,11 @@ export class FileSourceFactory {
 		options = options && options.host ? FileSourceFactory.removePortFromHost(options) : options;
 		let requestParams: IRequestParams = options.requestParams ? options.requestParams : {};
 		if (requestParams.auth || requestParams.isKerberos) {
-			// TODO Remove handling of unsigned cert once we have real certs in our Knox service
 			let agentOptions = {
 				host: options.host,
 				port: options.port,
 				path: constants.hdfsRootPath,
-				rejectUnauthorized: false
+				rejectUnauthorized: !getIgnoreSslVerificationConfigSetting()
 			};
 			let agent = new https.Agent(agentOptions);
 			requestParams['agent'] = agent;
@@ -161,7 +177,7 @@ export class FileSourceFactory {
 	}
 }
 
-export class HdfsFileSource implements IFileSource {
+class HdfsFileSource implements IFileSource {
 	private mounts: Map<string, Mount>;
 	constructor(private client: WebHDFS) {
 	}
@@ -170,7 +186,7 @@ export class HdfsFileSource implements IFileSource {
 		if (!this.mounts || refresh) {
 			await this.loadMounts();
 		}
-		return this.readdir(path);
+		return this.listStatus(path);
 	}
 
 	private loadMounts(): Promise<void> {
@@ -185,16 +201,15 @@ export class HdfsFileSource implements IFileSource {
 		});
 	}
 
-	private readdir(path: string): Promise<IFile[]> {
+	private listStatus(path: string): Promise<IFile[]> {
 		return new Promise((resolve, reject) => {
-			this.client.readdir(path, (error, files) => {
+			this.client.listStatus(path, (error, fileStatuses) => {
 				if (error) {
 					reject(error);
 				}
 				else {
-					let hdfsFiles: IFile[] = files.map(fileStat => {
-						let hdfsFile = <IHdfsFileStatus>fileStat;
-						let file = new File(File.createPath(path, hdfsFile.pathSuffix), hdfsFile.type === 'DIRECTORY');
+					let hdfsFiles: IFile[] = fileStatuses.map(fileStatus => {
+						let file = new File(File.createPath(path, fileStatus.pathSuffix), hdfsFileTypeToFileType(fileStatus.type));
 						if (this.mounts && this.mounts.has(file.path)) {
 							file.mountStatus = MountStatus.Mount;
 						}
@@ -226,7 +241,7 @@ export class HdfsFileSource implements IFileSource {
 	public readFile(path: string, maxBytes?: number): Promise<Buffer> {
 		return new Promise((resolve, reject) => {
 			let error: HdfsError = undefined;
-			let remoteFileStream = this.client.createReadStream(path);
+			let remoteFileStream: fs.ReadStream | meter.StreamMeter = this.client.createReadStream(path);
 			remoteFileStream.on('error', (err) => {
 				error = <HdfsError>err;
 				reject(error);
@@ -344,17 +359,29 @@ export class HdfsFileSource implements IFileSource {
 		});
 	}
 
+	public getFileStatus(path: string): Promise<FileStatus> {
+		return new Promise((resolve, reject) => {
+			this.client.getFileStatus(path, (error: HdfsError, fileStatus: FileStatus) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve(fileStatus);
+				}
+			});
+		});
+	}
+
 	/**
 	 * Get ACL status for given path
 	 * @param path The path to the file/folder to get the status of
 	 */
-	public getAclStatus(path: string): Promise<IAclStatus> {
+	public getAclStatus(path: string): Promise<PermissionStatus> {
 		return new Promise((resolve, reject) => {
-			this.client.getAclStatus(path, (error: HdfsError, aclStatus: IAclStatus) => {
+			this.client.getAclStatus(path, (error: HdfsError, permissionStatus: PermissionStatus) => {
 				if (error) {
 					reject(error);
 				} else {
-					resolve(aclStatus);
+					resolve(permissionStatus);
 				}
 			});
 		});
@@ -363,14 +390,46 @@ export class HdfsFileSource implements IFileSource {
 	/**
 	 * Sets the ACL status for given path
 	 * @param path The path to the file/folder to set the ACL on
-	 * @param ownerEntry The entry corresponding to the path owner
-	 * @param groupEntry The entry corresponding to the path owning group
-	 * @param otherEntry The entry corresponding to default permissions for all other users
+	 * @param fileType The type of file we're setting to determine if defaults should be applied. Use undefined if type is unknown
+	 * @param ownerEntry The status containing the permissions to set
 	 * @param aclEntries The ACL entries to set
 	 */
-	public setAcl(path: string, ownerEntry: AclEntry, groupEntry: AclEntry, otherEntry: AclEntry, aclEntries: AclEntry[]): Promise<void> {
+	public setAcl(path: string, fileType: FileType | undefined, permissionStatus: PermissionStatus): Promise<void> {
 		return new Promise((resolve, reject) => {
-			this.client.setAcl(path, ownerEntry, groupEntry, otherEntry, aclEntries, (error: HdfsError) => {
+			this.client.setAcl(path, fileType, permissionStatus, (error: HdfsError) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve();
+				}
+			});
+		});
+	}
+
+	/**
+	 * Removes the default ACLs for the specified path
+	 * @param path The path to remove the default ACLs for
+	 */
+	public removeDefaultAcl(path: string): Promise<void> {
+		return new Promise((resolve, reject) => {
+			this.client.removeDefaultAcl(path, (error: HdfsError) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve();
+				}
+			});
+		});
+	}
+
+	/**
+	 * Sets the permission octal (sticky, owner, group & other) for a file/folder
+	 * @param path The path to the file/folder to set the permission of
+	 * @param aclStatus The status containing the permission to set
+	 */
+	public setPermission(path: string, aclStatus: PermissionStatus): Promise<void> {
+		return new Promise((resolve, reject) => {
+			this.client.setPermission(path, aclStatus, (error: HdfsError) => {
 				if (error) {
 					reject(error);
 				} else {

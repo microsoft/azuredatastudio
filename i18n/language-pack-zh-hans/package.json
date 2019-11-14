@@ -2,7 +2,7 @@
 	"name": "ads-language-pack-zh-hans",
 	"displayName": "Chinese (Simplified) Language Pack for Azure Data Studio",
 	"description": "Language pack extension for Chinese (Simplified)",
-	"version": "1.9.0",
+	"version": "1.13.0",
 	"publisher": "Microsoft",
 	"repository": {
 		"type": "git",
@@ -11,7 +11,7 @@
 	"license": "SEE SOURCE EULA LICENSE IN LICENSE.txt",
 	"engines": {
 		"vscode": "^1.34.0",
-		"azdata": ">=1.9.0"
+		"azdata": ">=1.13.0"
 	},
 	"icon": "languagepack.png",
 	"categories": [
@@ -315,6 +315,18 @@
 					{
 						"id": "vscode.yaml",
 						"path": "./translations/extensions/yaml.i18n.json"
+					},
+					{
+						"id": "Microsoft.dacpac",
+						"path": "./translations/extensions/dacpac.i18n.json"
+					},
+					{
+						"id": "Microsoft.schema-compare",
+						"path": "./translations/extensions/schema-compare.i18n.json"
+					},
+					{
+						"id": "Microsoft.notebook",
+						"path": "./translations/extensions/notebook.i18n.json"
 					}
 				]
 			}

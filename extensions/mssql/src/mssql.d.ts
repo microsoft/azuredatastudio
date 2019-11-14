@@ -75,6 +75,11 @@ export interface SchemaCompareResult extends azdata.ResultStatus {
 	differences: DiffEntry[];
 }
 
+export interface SchemaCompareIncludeExcludeResult extends azdata.ResultStatus {
+	affectedDependencies: DiffEntry[];
+	blockingDependencies: DiffEntry[];
+}
+
 export interface SchemaCompareCompletionResult extends azdata.ResultStatus {
 	operationId: string;
 	areEqual: boolean;
@@ -91,6 +96,7 @@ export interface DiffEntry {
 	children: DiffEntry[];
 	sourceScript: string;
 	targetScript: string;
+	included: boolean;
 }
 
 export const enum SchemaUpdateAction {
@@ -290,7 +296,7 @@ export interface ISchemaCompareService {
 	schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus>;
 	schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus>;
 	schemaCompareGetDefaultOptions(): Thenable<SchemaCompareOptionsResult>;
-	schemaCompareIncludeExcludeNode(operationId: string, diffEntry: DiffEntry, IncludeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus>;
+	schemaCompareIncludeExcludeNode(operationId: string, diffEntry: DiffEntry, IncludeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<SchemaCompareIncludeExcludeResult>;
 	schemaCompareOpenScmp(filePath: string): Thenable<SchemaCompareOpenScmpResult>;
 	schemaCompareSaveScmp(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: DeploymentOptions, scmpFilePath: string, excludedSourceObjects: SchemaCompareObjectId[], excludedTargetObjects: SchemaCompareObjectId[]): Thenable<azdata.ResultStatus>;
 	schemaCompareCancel(operationId: string): Thenable<azdata.ResultStatus>;

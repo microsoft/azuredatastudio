@@ -20,6 +20,7 @@ import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { find } from 'vs/base/common/arrays';
 
 @Component({
 	selector: 'modelview-dropdown',
@@ -155,7 +156,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	private getSelectedValue(): string {
 		if (this.values && this.values.length > 0 && this.valuesHaveDisplayName()) {
 			let selectedValue = <azdata.CategoryValue>this.value || <azdata.CategoryValue>this.values[0];
-			let valueCategory = (<azdata.CategoryValue[]>this.values).find(v => v.name === selectedValue.name);
+			let valueCategory = find(<azdata.CategoryValue[]>this.values, v => v.name === selectedValue.name);
 			return valueCategory && valueCategory.displayName;
 		} else {
 			if (!this.value && this.values && this.values.length > 0) {
@@ -167,7 +168,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	private setSelectedValue(newValue: string): void {
 		if (this.values && this.valuesHaveDisplayName()) {
-			let valueCategory = (<azdata.CategoryValue[]>this.values).find(v => v.displayName === newValue);
+			let valueCategory = find((<azdata.CategoryValue[]>this.values), v => v.displayName === newValue);
 			this.value = valueCategory;
 		} else {
 			this.value = newValue;
@@ -186,10 +187,6 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	private get fireOnTextChange(): boolean {
 		return this.getPropertyOrDefault<azdata.DropDownProperties, boolean>((props) => props.fireOnTextChange, false);
-	}
-
-	private get ariaLabel(): string {
-		return this.getPropertyOrDefault<azdata.DropDownProperties, string>((props) => props.ariaLabel, '');
 	}
 
 	public getEditableDisplay(): string {

@@ -15,12 +15,12 @@ import * as utils from '../utils';
 import * as constants from '../constants';
 import { AppContext } from '../appContext';
 
-export interface ICommandContextParsingOptions {
+interface ICommandContextParsingOptions {
 	editor: boolean;
 	uri: boolean;
 }
 
-export interface ICommandBaseContext {
+interface ICommandBaseContext {
 	command: string;
 	editor?: vscode.TextEditor;
 	uri?: vscode.Uri;
@@ -30,7 +30,7 @@ export interface ICommandUnknownContext extends ICommandBaseContext {
 	type: 'unknown';
 }
 
-export interface ICommandUriContext extends ICommandBaseContext {
+interface ICommandUriContext extends ICommandBaseContext {
 	type: 'uri';
 }
 
@@ -44,7 +44,7 @@ export interface ICommandObjectExplorerContext extends ICommandBaseContext {
 	explorerContext: azdata.ObjectExplorerContext;
 }
 
-export type CommandContext = ICommandObjectExplorerContext | ICommandViewContext | ICommandUriContext | ICommandUnknownContext;
+type CommandContext = ICommandObjectExplorerContext | ICommandViewContext | ICommandUriContext | ICommandUnknownContext;
 
 function isTextEditor(editor: any): editor is vscode.TextEditor {
 	if (editor === undefined) { return false; }
@@ -140,7 +140,7 @@ export abstract class ProgressCommand extends Command {
 		const tokenSource = new vscode.CancellationTokenSource();
 		const statusBarItem = this.apiWrapper.createStatusBarItem(vscode.StatusBarAlignment.Left);
 		disposables.push(vscode.Disposable.from(statusBarItem));
-		statusBarItem.text = localize('progress', '$(sync~spin) {0}...', label);
+		statusBarItem.text = localize('progress', "$(sync~spin) {0}...", label);
 		if (isCancelable) {
 			const cancelCommandId = `cancelProgress${ProgressCommand.progressId++}`;
 			disposables.push(this.apiWrapper.registerCommand(cancelCommandId, async () => {
@@ -148,7 +148,7 @@ export abstract class ProgressCommand extends Command {
 					tokenSource.cancel();
 				}
 			}));
-			statusBarItem.tooltip = localize('cancelTooltip', 'Cancel');
+			statusBarItem.tooltip = localize('cancelTooltip', "Cancel");
 			statusBarItem.command = cancelCommandId;
 		}
 		statusBarItem.show();
@@ -170,7 +170,7 @@ export abstract class ProgressCommand extends Command {
 	private async confirmCancel(): Promise<boolean> {
 		return await this.prompter.promptSingle<boolean>(<IQuestion>{
 			type: QuestionTypes.confirm,
-			message: localize('cancel', 'Cancel operation?'),
+			message: localize('cancel', "Cancel operation?"),
 			default: true
 		});
 	}
@@ -179,7 +179,7 @@ export abstract class ProgressCommand extends Command {
 export function registerSearchServerCommand(appContext: AppContext): void {
 	appContext.apiWrapper.registerCommand('mssql.searchServers', () => {
 		vscode.window.showInputBox({
-			placeHolder: localize('mssql.searchServers', 'Search Server Names')
+			placeHolder: localize('mssql.searchServers', "Search Server Names")
 		}).then((stringSearch) => {
 			if (stringSearch) {
 				vscode.commands.executeCommand('registeredServers.searchServer', (stringSearch));

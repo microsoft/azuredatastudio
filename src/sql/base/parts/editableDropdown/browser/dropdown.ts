@@ -22,6 +22,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export interface IDropdownOptions extends IDropdownStyles {
 	/**
@@ -227,7 +228,7 @@ export class Dropdown extends Disposable {
 	}
 
 	private _showList(): void {
-		if (this._input.isEnabled) {
+		if (this._input.isEnabled()) {
 			this._onFocus.fire();
 			this._filter.filterString = '';
 			this.contextViewService.showContextView({
@@ -260,7 +261,7 @@ export class Dropdown extends Disposable {
 			this._treeContainer.style.height = height + 'px';
 			this._treeContainer.style.width = DOM.getContentWidth(this._inputContainer) - 2 + 'px';
 			this._tree.layout(parseInt(this._treeContainer.style.height));
-			this._tree.refresh();
+			this._tree.refresh().catch(e => onUnexpectedError(e));
 		}
 	}
 
@@ -272,7 +273,7 @@ export class Dropdown extends Disposable {
 			this._treeContainer.style.height = height + 'px';
 			this._treeContainer.style.width = DOM.getContentWidth(this._inputContainer) - 2 + 'px';
 			this._tree.layout(parseInt(this._treeContainer.style.height));
-			this._tree.setInput(new DropdownModel());
+			this._tree.setInput(new DropdownModel()).catch(e => onUnexpectedError(e));
 			this._input.validate();
 		}
 	}
@@ -297,12 +298,12 @@ export class Dropdown extends Disposable {
 	style(style: IListStyles & IInputBoxStyles & IDropdownStyles) {
 		this._tree.style(style);
 		this._input.style(style);
-		this._treeContainer.style.backgroundColor = style.contextBackground ? style.contextBackground.toString() : null;
+		this._treeContainer.style.backgroundColor = style.contextBackground ? style.contextBackground.toString() : '';
 		this._treeContainer.style.outline = `1px solid ${style.contextBorder || this._options.contextBorder}`;
 	}
 
 	private _inputValidator(value: string): IMessage | null {
-		if (!this._input.hasFocus() && !this._tree.isDOMFocused() && this._dataSource.options && !this._dataSource.options.find(i => i.value === value)) {
+		if (!this._input.hasFocus() && !this._tree.isDOMFocused() && this._dataSource.options && !this._dataSource.options.some(i => i.value === value)) {
 			if (this._options.strictSelection && this._options.errorMessage) {
 				return {
 					content: this._options.errorMessage,

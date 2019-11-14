@@ -9,8 +9,9 @@ import { ErrorAction, ErrorHandler, Message, CloseAction } from 'vscode-language
 
 import * as Utils from './utils';
 import * as Constants from './constants';
-import { localize } from './localize';
+import * as nls from 'vscode-nls';
 
+const localize = nls.loadMessageBundle();
 const packageJson = require('../package.json');
 const viewKnownIssuesAction = localize('viewKnownIssuesText', "View Known Issues");
 
@@ -25,7 +26,7 @@ export interface ITelemetryEventMeasures {
 /**
  * Filters error paths to only include source files. Exported to support testing
  */
-export function FilterErrorPath(line: string): string {
+function FilterErrorPath(line: string): string {
 	if (line) {
 		let values: string[] = line.split('/out/');
 		if (values.length <= 1) {

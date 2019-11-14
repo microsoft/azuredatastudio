@@ -22,7 +22,6 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { attachInputBoxStyler, attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import * as DOM from 'vs/base/browser/dom';
@@ -32,6 +31,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export class FileBrowserDialog extends Modal {
 	private _viewModel: FileBrowserViewModel;
@@ -53,7 +53,7 @@ export class FileBrowserDialog extends Modal {
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@ITelemetryService telemetryService: ITelemetryService,
+		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,

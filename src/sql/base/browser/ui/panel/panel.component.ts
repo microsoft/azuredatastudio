@@ -18,6 +18,7 @@ import * as types from 'vs/base/common/types';
 import { mixin } from 'vs/base/common/objects';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import { firstIndex } from 'vs/base/common/arrays';
 
 export interface IPanelOptions {
 	/**
@@ -202,7 +203,7 @@ export class PanelComponent extends Disposable {
 	 * Select on the next tab
 	 */
 	public selectOnNextTab(): void {
-		let activeIndex = this._tabs.toArray().findIndex(i => i === this._activeTab);
+		let activeIndex = firstIndex(this._tabs.toArray(), i => i === this._activeTab);
 		let nextTabIndex = activeIndex + 1;
 		if (nextTabIndex === this._tabs.length) {
 			nextTabIndex = 0;
@@ -211,7 +212,7 @@ export class PanelComponent extends Disposable {
 	}
 
 	private findAndRemoveTabFromMRU(tab: TabComponent): void {
-		let mruIndex = this._mru.findIndex(i => i === tab);
+		let mruIndex = firstIndex(this._mru, i => i === tab);
 
 		if (mruIndex !== -1) {
 			// Remove old index

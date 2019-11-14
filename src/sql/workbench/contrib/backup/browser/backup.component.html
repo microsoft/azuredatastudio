@@ -1,0 +1,176 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<form class="angular-form" #myForm="ngForm" (ngSubmit)="onSubmit(f)">
+	<div class="angular-modal-body" style="display: flex; flex-direction: column;">
+		<div class="angular-modal-body-content">
+			<div class="dialog-label">
+				{{localizedStrings.BACKUP_NAME}}
+			</div>
+			<div class="input-divider" #backupsetName>
+			</div>
+			<div class="dialog-label">
+				{{localizedStrings.RECOVERY_MODEL}}
+			</div>
+			<div class="input-divider" #recoveryModelContainer>
+			</div>
+			<div class="dialog-label">
+				{{localizedStrings.BACKUP_TYPE}}
+			</div>
+			<div class="input-divider" #backupTypeContainer>
+			</div>
+			<div class="input-divider check" #copyOnlyContainer>
+			</div>
+			<div class="dialog-label">
+				{{localizedStrings.BACKUP_DEVICE}}
+			</div>
+			<div class="backup-path-list">
+				<div #pathContainer>
+				</div>
+			</div>
+			<table class="backup-path-table">
+				<tr>
+					<td style="padding-left: 0px; padding-right: 0px;">
+						<div class="backup-path-button" #addPathContainer></div>
+					</td>
+					<td>
+						<div class="backup-path-button" #removePathContainer></div>
+					</td>
+				</tr>
+			</table>
+
+
+			<div class="advanced-main-header" #advancedOptionContainer>
+				<div class="advanced-main-body" #advancedOptionBodyContainer>
+					<!-- Compression -->
+					<div class="dialog-label advanced-header">
+						{{localizedStrings.COMPRESSION}}
+					</div>
+					<div class="indent">
+						<div class="dialog-label">
+							{{localizedStrings.SET_BACKUP_COMPRESSION}}
+						</div>
+						<div class="dialog-label" #compressionContainer>
+						</div>
+					</div>
+
+					<!-- Encryption -->
+					<div class="dialog-label advanced-header">
+							{{localizedStrings.ENCRYPTION}}
+					</div>
+					<div class="indent">
+						<div class="option check" #encryptCheckContainer>
+						</div>
+						<div class="option" #encryptWarningContainer>
+							<div class="sql icon warning">
+							</div>
+							<div class="warning-message">
+								{{localizedStrings.NO_ENCRYPTOR_WARNING}}
+							</div>
+						</div>
+						<div #encryptContainer>
+							<div class="dialog-label">
+								{{localizedStrings.ALGORITHM}}
+							</div>
+							<div class="dialog-label" #algorithmContainer>
+							</div>
+							<div class="dialog-label">
+								{{localizedStrings.CERTIFICATE_OR_ASYMMETRIC_KEY}}
+							</div>
+							<div class="dialog-label" #encryptorContainer>
+							</div>
+						</div>
+					</div>
+
+					<!-- Overwrite media -->
+					<div id="media" class="dialog-label advanced-header">
+						{{localizedStrings.MEDIA}}
+					</div>
+					<div role="radiogroup" aria-labelledby="media" class="radio-indent">
+						<div class="option">
+							<input role="radio" type="radio" name="media-option" value="no_format" [checked]="!isFormatChecked" (change)="onChangeMediaFormat()" [disabled]="isEncryptChecked" aria-labelledby="mediaOption"><span id="mediaOption">{{localizedStrings.MEDIA_OPTION}}</span>
+						</div>
+						<div role="radiogroup" aria-labelledby="mediaOption" style="margin-left:15px">
+							<div class="option">
+								<input role="radio" type="radio" name="existing-media" value="append" [(ngModel)]="selectedInitOption" [disabled]="isFormatChecked" aria-labelledby="existingMediaAppend"><span id="existingMediaAppend">{{localizedStrings.EXISTING_MEDIA_APPEND}}</span>
+							</div>
+							<div class="option">
+								<input role="radio" type="radio" name="existing-media" value="overwrite" [(ngModel)]="selectedInitOption" [disabled]="isFormatChecked" aria-labelledby="existingMediaOverwrite"><span id="existingMediaOverwrite">{{localizedStrings.EXISTING_MEDIA_OVERWRITE}}</span>
+							</div>
+						</div>
+
+						<div class="option">
+							<input role="radio" type="radio" name="media-option" value="format" [checked]="isFormatChecked" (change)="onChangeMediaFormat()" aria-labelledby="mediaOptionFormat"><span id="mediaOptionFormat">{{localizedStrings.MEDIA_OPTION_FORMAT}}</span>
+						</div>
+						<div style="margin-left: 22px">
+							<div class="dialog-label">
+								{{localizedStrings.NEW_MEDIA_SET_NAME}}
+							</div>
+							<div class="dialog-label" #mediaName>
+							</div>
+							<div class="dialog-label">
+								{{localizedStrings.NEW_MEDIA_SET_DESCRIPTION}}
+							</div>
+							<div class="dialog-label" #mediaDescription>
+							</div>
+						</div>
+					</div>
+
+					<!-- Transaction log -->
+					<div id="transactionLog" class="dialog-label advanced-header">
+						{{localizedStrings.TRANSACTION_LOG}}
+					</div>
+					<div role="radiogroup" aria-labelledby="transactionLog" class="radio-indent">
+						<div class="option">
+							<input role="radio" type="radio" name="t-log" value="truncate" [checked]="isTruncateChecked" (change)="onChangeTlog()" [disabled]="disableTlog" aria-labelledby="truncateTransaction"><span id="truncateTransaction">{{localizedStrings.TRUNCATE_TRANSACTION_LOG}}</span>
+						</div>
+						<div class="option">
+							<input role="radio" type="radio" name="t-log" value="taillog" [checked]="isTaillogChecked" (change)="onChangeTlog()" [disabled]="disableTlog" aria-labelledby="backupTail"><span id="backupTail">{{localizedStrings.BACKUP_TAIL}}</span>
+						</div>
+					</div>
+
+					<!-- Reliability -->
+					<div class="dialog-label advanced-header">
+						{{localizedStrings.RELIABILITY}}
+					</div>
+					<div class="indent">
+						<div class="option check" #checksumContainer>
+						</div>
+						<div class="option check" #verifyContainer>
+						</div>
+						<div class="option check" #continueOnErrorContainer>
+						</div>
+					</div>
+
+					<!-- Backup expiration -->
+					<div class="dialog-label advanced-header">
+						{{localizedStrings.EXPIRATION}}
+					</div>
+					<div class="indent">
+						<div class="dialog-label">
+							{{localizedStrings.SET_BACKUP_RETAIN_DAYS}}
+						</div>
+						<div class="dialog-label">
+							<div #backupDaysContainer></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal-footer" #modalFooterContainer>
+		<div class="codicon in-progress" #inProgressContainer></div>
+		<div class="right-footer">
+			<div class="footer-button" #scriptButtonContainer>
+			</div>
+			<div class="footer-button" #backupButtonContainer>
+			</div>
+			<div class="footer-button" #cancelButtonContainer>
+			</div>
+		</div>
+	</div>
+</form>

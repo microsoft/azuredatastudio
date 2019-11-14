@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
@@ -38,7 +37,7 @@ export abstract class DacFxConfigPage extends BasePage {
 		this.view = view;
 	}
 
-	public setupNavigationValidator() {
+	public setupNavigationValidator(): void {
 		this.instance.registerNavigationValidator(() => {
 			return true;
 		});
@@ -79,19 +78,19 @@ export abstract class DacFxConfigPage extends BasePage {
 		return true;
 	}
 
-	protected async createDatabaseTextBox(): Promise<azdata.FormComponent> {
+	protected async createDatabaseTextBox(title: string): Promise<azdata.FormComponent> {
 		this.databaseTextBox = this.view.modelBuilder.inputBox().withProperties({
 			required: true
 		}).component();
 
-		this.databaseTextBox.ariaLabel = localize('dacfx.databaseAriaLabel', "Database");
+		this.databaseTextBox.ariaLabel = title;
 		this.databaseTextBox.onTextChanged(async () => {
 			this.model.database = this.databaseTextBox.value;
 		});
 
 		return {
 			component: this.databaseTextBox,
-			title: localize('dacFx.databaseNameTextBox', 'Target Database')
+			title: title
 		};
 	}
 
@@ -198,4 +197,3 @@ export abstract class DacFxConfigPage extends BasePage {
 interface ConnectionDropdownValue extends azdata.CategoryValue {
 	connection: azdata.connection.ConnectionProfile;
 }
-

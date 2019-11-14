@@ -10,26 +10,9 @@
 import * as vscode from 'vscode';
 
 /**
- * Root API that is used to acquire access to the main Live Share API.
- *
- * An implementation of this interface is returned by the Live Share extension's
- * activation function. Ordinarily this interface is not used directly; use the
- * `getApiAsync()` helper function above instead.
- */
-export interface LiveShareExtension {
-	/**
-	 * Requests a specific version of the Live Share API for use by another extension.
-	 *
-	 * @returns a promise that resolves to the requested API, or `null` if the requested
-	 * API is not available
-	 */
-	getApi(requestedApiVersion: string): Promise<LiveShare | null>;
-}
-
-/**
  * Forward definition of the ContactServiceProvider interface
  */
-export interface ContactServiceProvider {
+interface ContactServiceProvider {
 
 }
 
@@ -216,7 +199,7 @@ export interface LiveShare {
 	getContacts(emails: string[]): Promise<ContactsCollection>;
 }
 
-export interface ShareOptions {
+interface ShareOptions {
 	/**
 	 * Suppress display of the usual notification that indicates that sharing
 	 * started. Also suppresses copying the join link to the clipboard. When
@@ -232,7 +215,7 @@ export interface ShareOptions {
 	access?: Access;
 }
 
-export interface JoinOptions {
+interface JoinOptions {
 	/**
 	 * Open the joined workspace in a new window, instead of re-using the current window.
 	 */
@@ -243,7 +226,7 @@ export interface JoinOptions {
 /**
  * Represents a local TCP server listening on the given port.
  */
-export interface Server {
+interface Server {
 	/**
 	 * Local TCP port the server is listening on.
 	 */
@@ -258,14 +241,14 @@ export interface Server {
 	browseUrl?: string;
 }
 
-export enum Role {
+enum Role {
 	None = 0,
 	Host = 1,
 	Guest = 2,
 }
 
 /** This is just a placeholder for a richer access control model to be added later. */
-export enum Access {
+enum Access {
 	None = 0,
 	ReadOnly = 1,
 	ReadWrite = 3,
@@ -278,7 +261,7 @@ export enum Access {
  * NOTE: Access to user information may be restricted.
  * If the caller is not permitted, the `Peer.user` property returns 'null'.
  */
-export interface UserInfo {
+interface UserInfo {
 	/**
 	 * User display name.
 	 */
@@ -304,7 +287,7 @@ export interface UserInfo {
 /**
  * Represents one participant in a sharing session.
  */
-export interface Peer {
+interface Peer {
 	/** Integer that uniquely identifies a peer within the scope of a session. */
 	readonly peerNumber: number;
 
@@ -332,27 +315,27 @@ export interface Peer {
 /**
  * Information about the current session, including user information (in the base class).
  */
-export interface Session extends Peer {
+interface Session extends Peer {
 	/**
 	 * Globally unique identifier for the current session, or null if there is no active session.
 	 */
 	readonly id: string | null;
 }
 
-export interface SessionChangeEvent {
+interface SessionChangeEvent {
 	readonly session: Session;
 }
 
-export interface PeersChangeEvent {
+interface PeersChangeEvent {
 	readonly added: Peer[];
 	readonly removed: Peer[];
 }
 
-export interface RequestHandler {
+interface RequestHandler {
 	(args: any[], cancellation: vscode.CancellationToken): any | Promise<any>;
 }
 
-export interface NotifyHandler {
+interface NotifyHandler {
 	(args: object): void;
 }
 
@@ -436,99 +419,18 @@ export interface SharedServiceProxy {
 }
 
 /**
- * Error thrown by a proxy when a request to a shared service cannot be made
- * because the service is not available or cannot be reached.
- */
-export interface SharedServiceProxyError extends Error {
-}
-
-/**
- * Error thrown by a proxy when a shared service's request handler threw an error.
- * The remote message and remote stack are propagated back to the proxy.
- */
-export interface SharedServiceResponseError extends Error {
-	remoteStack?: string;
-}
-
-/**
  * Identifiers for Live Share tree views. These identifiers may be used by other extensions
  * to extend Live Share tree views with additional nodes via the `registerTreeDataProvider()`
  * API.
  */
-export enum View {
+enum View {
 	Session = 'liveshare.session',
 	ExplorerSession = 'liveshare.session.explorer',
 	Contacts = 'liveshare.contacts',
 	Help = 'liveshare.help',
 }
 
-/**
- * Identifiers for Live Share tree view items. These identifiers may be used by other
- * extensions to extend Live Share tree items with additional commands using conditional
- * expressions in the `view/item/context` section of their own package.json.
- */
-export enum ViewItem {
-	// session item groups
-	Participants = 'participants',
-	Servers = 'servers',
-	Terminals = 'terminals',
-
-	// participants
-	CurrentUser = 'participants.currentuser', // (not currently shown)
-	Guest = 'participants.guest',
-	FollowedGuest = 'participants.guest.followed',
-	Participant = 'participants.participant',
-	FollowedParticipant = 'participants.participant.followed',
-
-	GuestAnonymous = 'participants.guest.anonymous',
-	FollowedGuestAnonymous = 'participants.guest.followed.anonymous',
-
-	GuestElevated = 'participants.guest.elevated',
-	FollowedGuestElevated = 'participants.guest.followed.elevated',
-
-	// servers
-	LocalServer = 'servers.local',
-	RemoteServer = 'servers.remote',
-
-	// terminals
-	LocalTerminalReadOnly = 'terminals.local.readonly',
-	LocalTerminalReadWrite = 'terminals.local.readwrite',
-	RemoteTerminal = 'terminals.remote',
-
-	// contacts
-	SuggestedContacts = 'contacts.suggested',
-	AvailableContacts = 'contacts.available',
-	ContactsProvider = 'contacts.provider',
-	SelfContact = 'contacts.selfContact',
-	Contact = 'contacts.contact',
-	ContactOffline = 'contacts.contact.offline',
-	RecentContact = 'contacts.recentContact',
-	RecentContactOffline = 'contacts.recentContact.offline',
-	NoContact = 'contacts.noContact',
-	RecentContacts = 'contacts.RecentContacts',
-	NoSuggestedContacts = 'contacts.NoSuggestedUsers',
-	NoRecentContacts = 'contacts.NoRecentContacts',
-	InvitedContact = 'contacts.invited',
-
-	// help
-	SessionFeedbackQuestion = 'help.sessionFeedback',
-	ReportAProblem = 'help.reportAProblem',
-	TweetUsYourFeedback = 'help.tweetUsYourFeedback',
-	Survey = 'help.survey',
-	GoodFeedback = 'help.goodFeedback',
-	BadFeedback = 'help.badFeedback',
-	DontAskAgain = 'help.dontAskAgain',
-	Thankyou = 'help.thankyou',
-	MoreInfo = 'help.moreinfo',
-
-	// Shown while session sharing / joining is in progress
-	Loading = 'loading',
-
-	// Other / unspecified item type
-	Other = 'other',
-}
-
-export interface InviteContactOptions {
+interface InviteContactOptions {
 
 	/**
 	 * This option will force the invite to only use the email channel
@@ -539,7 +441,7 @@ export interface InviteContactOptions {
 /**
  * Represent a contact with live presence support
  */
-export interface Contact {
+interface Contact {
 	readonly onDidChange: vscode.Event<string[]>;
 	readonly id: string;
 	readonly email: string;
@@ -553,7 +455,7 @@ export interface Contact {
 /**
  * Represent a collection of contacts that can be disposed at once
  */
-export interface ContactsCollection {
+interface ContactsCollection {
 	readonly contacts: { [email: string]: Contact };
 	dispose(): Promise<void>;
 }

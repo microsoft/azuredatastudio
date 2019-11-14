@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
@@ -28,7 +26,7 @@ export class AddControllerNode extends TreeNode {
 	public getTreeItem(): vscode.TreeItem {
 		let item = new vscode.TreeItem(this.label, vscode.TreeItemCollapsibleState.None);
 		item.command = {
-			title: localize('textConnectToController', 'Connect to Controller'),
+			title: localize('textConnectToController', "Connect to Controller"),
 			command: 'bigDataClusters.command.addController',
 			arguments: [this]
 		};

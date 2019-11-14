@@ -192,7 +192,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.authType.displayName">
         <source xml:lang="en">Authentication type</source>
-        <target state="translated">Type d'authentification </target>
+        <target state="translated">Type d'authentification</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.authType.description">
         <source xml:lang="en">Specifies the method of authenticating with SQL Server</source>
