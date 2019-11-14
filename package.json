@@ -58,7 +58,7 @@
     "native-keymap": "2.0.0",
     "native-watchdog": "1.2.0",
     "ng2-charts": "^1.6.0",
-    "node-pty": "0.9.0",
+    "node-pty": "^0.10.0-beta2",
     "nsfw": "1.2.5",
     "onigasm-umd": "^2.2.2",
     "plotly.js-dist": "^1.48.3",
