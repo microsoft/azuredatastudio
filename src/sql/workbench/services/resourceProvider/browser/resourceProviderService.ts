@@ -3,18 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IResourceProviderService, IHandleFirewallRuleResult } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
-import { FirewallRuleDialogController } from 'sql/workbench/parts/accounts/browser/firewallRuleDialogController';
+import { FirewallRuleDialogController } from 'sql/workbench/contrib/accounts/browser/firewallRuleDialogController';
 
 import * as azdata from 'azdata';
 import { invalidProvider } from 'sql/base/common/errors';
-import { ILogService } from 'vs/platform/log/common/log';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export class ResourceProviderService implements IResourceProviderService {
 
@@ -23,9 +21,8 @@ export class ResourceProviderService implements IResourceProviderService {
 	private _firewallRuleDialogController: FirewallRuleDialogController;
 
 	constructor(
-		@ITelemetryService private _telemetryService: ITelemetryService,
-		@IInstantiationService private _instantiationService: IInstantiationService,
-		@ILogService private readonly logService: ILogService
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 	}
 
@@ -49,7 +46,10 @@ export class ResourceProviderService implements IResourceProviderService {
 		return new Promise<azdata.CreateFirewallRuleResponse>((resolve, reject) => {
 			const provider = this._providers[resourceProviderId];
 			if (provider) {
-				TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.FirewallRuleRequested, { provider: resourceProviderId });
+				this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.FirewallRuleRequested)
+					.withAdditionalProperties({
+						provider: resourceProviderId
+					}).send();
 				provider.createFirewallRule(selectedAccount, firewallruleInfo).then(result => {
 					resolve(result);
 				}, error => {
