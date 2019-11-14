@@ -93,7 +93,7 @@ declare module 'azdata' {
 			azureTenantId?: string;
 			options: { [name: string]: any };
 
-			static createFrom(options: Map<string, any>): ConnectionProfile;
+			static createFrom(options: { [key: string]: any }): ConnectionProfile;
 		}
 
 		/**
@@ -3011,6 +3011,10 @@ declare module 'azdata' {
 		 */
 		display?: DisplayType;
 		/**
+		 * Corresponds to the aria-label accessibility attribute for this component
+		 */
+		ariaLabel?: string;
+		/**
 		 * Matches the CSS style key and its available values.
 		 */
 		CSSStyles?: { [key: string]: string };
@@ -3024,7 +3028,6 @@ declare module 'azdata' {
 
 	export interface InputBoxProperties extends ComponentProperties {
 		value?: string;
-		ariaLabel?: string;
 		ariaLive?: string;
 		placeHolder?: string;
 		inputType?: InputBoxInputType;
@@ -3086,7 +3089,13 @@ declare module 'azdata' {
 		ariaColumnCount?: number;
 		ariaRole?: string;
 		focused?: boolean;
+		updateCells?: TableCell[];
 		moveFocusOutWithTab?: boolean; //accessibility requirement for tables with no actionable cells
+	}
+
+	export interface CheckBoxCell extends TableCell {
+		checked: boolean;
+		columnName: string;
 	}
 
 	export interface FileBrowserTreeProperties extends ComponentProperties {
@@ -3147,7 +3156,6 @@ declare module 'azdata' {
 		values?: string[] | CategoryValue[];
 		editable?: boolean;
 		fireOnTextChange?: boolean;
-		ariaLabel?: string;
 		required?: boolean;
 	}
 
@@ -3226,14 +3234,13 @@ declare module 'azdata' {
 		 * The title for the button. This title will show when hovered over
 		 */
 		title?: string;
-		/**
-		 * The accessibility aria label for this component
-		 */
-		ariaLabel?: string;
 	}
 
 	export interface LoadingComponentProperties {
 		loading?: boolean;
+		showText?: boolean;
+		loadingText?: string;
+		loadingCompletedText?: string;
 	}
 
 	export interface DivContainerProperties extends ComponentProperties {

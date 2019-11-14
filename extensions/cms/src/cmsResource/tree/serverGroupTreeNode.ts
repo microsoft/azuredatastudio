@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import * as azdata from 'azdata';
 import { TreeNode } from '../treeNode';
@@ -33,7 +31,7 @@ export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 	}
 	public getChildren(): TreeNode[] | Promise<TreeNode[]> {
 		try {
-			let nodes = [];
+			let nodes: TreeNode[] = [];
 			return this.appContext.cmsUtils.getRegisteredServers(this.ownerUri, this.relativePath).then((result) => {
 				if (result) {
 					if (result.registeredServersList) {

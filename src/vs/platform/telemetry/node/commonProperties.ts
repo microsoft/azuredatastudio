@@ -96,11 +96,11 @@ export async function resolveCommonProperties(
 	return result;
 }
 
-function verifyMicrosoftInternalDomain(domainList: readonly string[]): boolean {
+/*function verifyMicrosoftInternalDomain(domainList: readonly string[]): boolean { {{SQL CARBON EDIT}} comment out for no unused
 	if (!process || !process.env || !process.env['USERDNSDOMAIN']) {
 		return false;
 	}
 
 	const domain = process.env['USERDNSDOMAIN']!.toLowerCase();
 	return domainList.some(msftDomain => domain === msftDomain);
-}
+}*/

@@ -30,7 +30,7 @@ import { withNullAsUndefined } from 'vs/base/common/types';
 import { EditorActivation } from 'vs/platform/editor/common/editor';
 
 // {{SQL CARBON EDIT}}
-import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorInput';
+import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 
 export class FileEditorTracker extends Disposable implements IWorkbenchContribution {
 

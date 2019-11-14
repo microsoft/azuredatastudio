@@ -3,14 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { ClusterController, ControllerError } from '../controller/clusterControllerApi';
 import { ControllerTreeDataProvider } from '../tree/controllerTreeDataProvider';
-import { TreeNode } from '../tree/treeNode';
 import { AuthType } from '../constants';
+import { BdcDashboardOptions } from './bdcDashboardModel';
+import { ControllerNode } from '../tree/controllerTreeNode';
+import { ManageControllerCommand } from '../../commands';
 
 const localize = nls.loadMessageBundle();
 
@@ -30,7 +31,7 @@ export class AddControllerDialogModel {
 	private _authTypes: azdata.CategoryValue[];
 	constructor(
 		public treeDataProvider: ControllerTreeDataProvider,
-		public node?: TreeNode,
+		public node?: ControllerNode,
 		public prefilledUrl?: string,
 		public prefilledAuth?: azdata.CategoryValue,
 		public prefilledUsername?: string,
@@ -67,13 +68,14 @@ export class AddControllerDialogModel {
 				}
 			}
 			// We pre-fetch the endpoints here to verify that the information entered is correct (the user is able to connect)
-			let controller = new ClusterController(url, auth, username, password, true);
+			let controller = new ClusterController(url, auth, username, password);
 			let response = await controller.getEndPoints();
 			if (response && response.endPoints) {
 				if (this._canceled) {
 					return;
 				}
-				this.treeDataProvider.addController(url, auth, username, password, rememberPassword);
+				this.treeDataProvider.addOrUpdateController(url, auth, username, password, rememberPassword);
+				vscode.commands.executeCommand(ManageControllerCommand, <BdcDashboardOptions>{ url: url, auth: auth, username: username, password: password });
 				await this.treeDataProvider.saveControllers();
 			}
 		} catch (error) {
@@ -117,7 +119,7 @@ export class AddControllerDialog {
 	}
 
 	private createDialog(): void {
-		this.dialog = azdata.window.createModelViewDialog(localize('textAddNewController', "Add New Controller"));
+		this.dialog = azdata.window.createModelViewDialog(localize('textAddNewController', "Add New Controller (preview)"));
 		this.dialog.registerContent(async view => {
 			this.uiModelBuilder = view.modelBuilder;
 

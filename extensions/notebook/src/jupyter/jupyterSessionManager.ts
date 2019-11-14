@@ -26,9 +26,6 @@ const configBase = {
 	'kernel_r_credentials': {
 		'url': ''
 	},
-
-	'ignore_ssl_errors': true,
-
 	'logging_config': {
 		'version': 1,
 		'formatters': {
@@ -171,7 +168,12 @@ export class JupyterSession implements nb.ISession {
 	private _messagesComplete: Deferred<void> = new Deferred<void>();
 
 	constructor(private sessionImpl: Session.ISession, skipSettingEnvironmentVars?: boolean, private _pythonEnvVarPath?: string) {
-		this.setEnvironmentVars(skipSettingEnvironmentVars);
+		this.setEnvironmentVars(skipSettingEnvironmentVars).catch(error => {
+			console.error(`Unexpected exception setting Jupyter Session variables : ${error}`);
+			// We don't want callers to hang forever waiting - it's better to continue on even if we weren't
+			// able to set environment variables
+			this._messagesComplete.resolve();
+		});
 	}
 
 	public get canChangeKernels(): boolean {
@@ -308,6 +310,7 @@ export class JupyterSession implements nb.ISession {
 		config.kernel_scala_credentials = creds;
 		config.kernel_r_credentials = creds;
 		config.logging_config.handlers.magicsHandler.home_path = homePath;
+		config.ignore_ssl_errors = utils.getIgnoreSslVerificationConfigSetting();
 	}
 
 	private getKnoxPortOrDefault(connectionProfile: IConnectionProfile): string {
@@ -333,6 +336,10 @@ export class JupyterSession implements nb.ISession {
 	private async setEnvironmentVars(skip: boolean = false): Promise<void> {
 		if (!skip && this.sessionImpl) {
 			let allCode: string = '';
+			// Ensure cwd matches notebook path (this follows Jupyter behavior)
+			if (this.path && path.dirname(this.path)) {
+				allCode += `%cd ${path.dirname(this.path)}${EOL}`;
+			}
 			for (let i = 0; i < Object.keys(process.env).length; i++) {
 				let key = Object.keys(process.env)[i];
 				if (key.toLowerCase() === 'path' && this._pythonEnvVarPath) {
@@ -343,7 +350,9 @@ export class JupyterSession implements nb.ISession {
 				}
 			}
 			let future = this.sessionImpl.kernel.requestExecute({
-				code: allCode
+				code: allCode,
+				silent: true,
+				store_history: false
 			}, true);
 			await future.done;
 		}

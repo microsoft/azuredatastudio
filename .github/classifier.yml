@@ -2,6 +2,7 @@
   perform: true,
   alwaysRequireAssignee: false,
   labelsRequiringAssignee: [],
+  defaultLabel: 'Triage: Needed',
   autoAssignees: {
     Area - Acquisition: [],
     Area - Azure: [],

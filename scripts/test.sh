@@ -25,12 +25,6 @@ if [[ "$ADS_TEST_GREP" == "" ]]; then
 	export ADS_TEST_INVERT_GREP=1
 fi
 
-CODE_ARGS="--grep $ADS_TEST_GREP"
-
-if [[ "$ADS_TEST_INVERT_GREP" == "1" ]] || [[ "$ADS_TEST_INVERT_GREP" == "true" ]]; then
-	CODE_ARGS="$CODE_ARGS --invert"
-fi
-
 # Node modules
 test -d node_modules || yarn
 
@@ -42,7 +36,7 @@ if [[ "$OSTYPE" == "darwin"* ]] || [[ "$AGENT_OS" == "Darwin"* ]]; then
 	cd $ROOT ; ulimit -n 4096 ; \
 		ELECTRON_ENABLE_LOGGING=1 \
 		"$CODE" \
-		test/electron/index.js $CODE_ARGS $PASSED_ARGS
+		test/electron/index.js $PASSED_ARGS
 else
 	cd $ROOT ; \
 		ELECTRON_ENABLE_LOGGING=1 \

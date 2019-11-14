@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
-import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorInput';
+import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { URI } from 'vs/base/common/uri';

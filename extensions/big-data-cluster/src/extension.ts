@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
@@ -17,16 +15,10 @@ import { BdcDashboard } from './bigDataCluster/dialog/bdcDashboard';
 import { BdcDashboardModel, BdcDashboardOptions } from './bigDataCluster/dialog/bdcDashboardModel';
 import { MountHdfsDialogModel as MountHdfsModel, MountHdfsProperties, MountHdfsDialog, DeleteMountDialog, DeleteMountModel, RefreshMountDialog, RefreshMountModel } from './bigDataCluster/dialog/mountHdfsDialog';
 import { getControllerEndpoint } from './bigDataCluster/utils';
+import * as commands from './commands';
+import { HdfsDialogCancelledError } from './bigDataCluster/dialog/hdfsDialogBase';
 
 const localize = nls.loadMessageBundle();
-
-const AddControllerCommand = 'bigDataClusters.command.addController';
-const DeleteControllerCommand = 'bigDataClusters.command.deleteController';
-const RefreshControllerCommand = 'bigDataClusters.command.refreshController';
-const ManageControllerCommand = 'bigDataClusters.command.manageController';
-const MountHdfsCommand = 'bigDataClusters.command.mount';
-const RefreshMountCommand = 'bigDataClusters.command.refreshmount';
-const DeleteMountCommand = 'bigDataClusters.command.deletemount';
 
 const endpointNotFoundError = localize('mount.error.endpointNotFound', "Controller endpoint information was not found");
 
@@ -47,59 +39,77 @@ function registerTreeDataProvider(treeDataProvider: ControllerTreeDataProvider):
 }
 
 function registerCommands(context: vscode.ExtensionContext, treeDataProvider: ControllerTreeDataProvider): void {
-	vscode.commands.registerCommand(AddControllerCommand, (node?: TreeNode) => {
-		runThrottledAction(AddControllerCommand, () => addBdcController(treeDataProvider, node));
+	vscode.commands.registerCommand(commands.AddControllerCommand, (node?: TreeNode) => {
+		runThrottledAction(commands.AddControllerCommand, () => addBdcController(treeDataProvider, node));
 	});
 
-	vscode.commands.registerCommand(DeleteControllerCommand, (node: TreeNode) => {
-		deleteBdcController(treeDataProvider, node);
+	vscode.commands.registerCommand(commands.DeleteControllerCommand, async (node: TreeNode) => {
+		await deleteBdcController(treeDataProvider, node);
 	});
 
-	vscode.commands.registerCommand(RefreshControllerCommand, (node: TreeNode) => {
+	vscode.commands.registerCommand(commands.RefreshControllerCommand, (node: TreeNode) => {
 		if (!node) {
 			return;
 		}
 		treeDataProvider.notifyNodeChanged(node);
 	});
 
-	vscode.commands.registerCommand(ManageControllerCommand, async (info: ControllerNode | BdcDashboardOptions) => {
-		const title: string = `${localize('bdc.dashboard.title', "Big Data Cluster Dashboard -")} ${ControllerNode.toIpAndPort(info.url)}`;
-		const dashboard: BdcDashboard = new BdcDashboard(title, new BdcDashboardModel(info));
+	vscode.commands.registerCommand(commands.ManageControllerCommand, async (info: ControllerNode | BdcDashboardOptions, addOrUpdateController: boolean = false) => {
+		const title: string = `${localize('bdc.dashboard.title', "Big Data Cluster Dashboard (preview) -")} ${ControllerNode.toIpAndPort(info.url)}`;
+		if (addOrUpdateController) {
+			// The info may be wrong, but if it is then we'll prompt to reconnect when the dashboard is opened
+			// and update with the correct info then
+			treeDataProvider.addOrUpdateController(
+				info.url,
+				info.auth,
+				info.username,
+				info.password,
+				info.rememberPassword);
+			await treeDataProvider.saveControllers();
+		}
+		const dashboard: BdcDashboard = new BdcDashboard(title, new BdcDashboardModel(info, treeDataProvider));
 		dashboard.showDashboard();
 	});
 
-	vscode.commands.registerCommand(MountHdfsCommand, e => mountHdfs(e).catch(error => {
+	vscode.commands.registerCommand(commands.MountHdfsCommand, e => mountHdfs(e).catch(error => {
 		vscode.window.showErrorMessage(error instanceof Error ? error.message : error);
 	}));
-	vscode.commands.registerCommand(RefreshMountCommand, e => refreshMount(e).catch(error => {
+	vscode.commands.registerCommand(commands.RefreshMountCommand, e => refreshMount(e).catch(error => {
 		vscode.window.showErrorMessage(error instanceof Error ? error.message : error);
 	}));
-	vscode.commands.registerCommand(DeleteMountCommand, e => deleteMount(e).catch(error => {
+	vscode.commands.registerCommand(commands.DeleteMountCommand, e => deleteMount(e).catch(error => {
 		vscode.window.showErrorMessage(error instanceof Error ? error.message : error);
 	}));
 }
 
 async function mountHdfs(explorerContext?: azdata.ObjectExplorerContext): Promise<void> {
-	let mountProps = await getMountProps(explorerContext);
+	const mountProps = await getMountProps(explorerContext);
 	if (mountProps) {
-		let dialog = new MountHdfsDialog(new MountHdfsModel(mountProps));
-		dialog.showDialog();
+		const dialog = new MountHdfsDialog(new MountHdfsModel(mountProps));
+		try {
+			await dialog.showDialog();
+		} catch (error) {
+			if (!(error instanceof HdfsDialogCancelledError)) {
+				throw error;
+			}
+		}
+
 	}
 }
 
 async function refreshMount(explorerContext?: azdata.ObjectExplorerContext): Promise<void> {
-	let mountProps = await getMountProps(explorerContext);
+	const mountProps = await getMountProps(explorerContext);
 	if (mountProps) {
-		let dialog = new RefreshMountDialog(new RefreshMountModel(mountProps));
-		dialog.showDialog();
+		const dialog = new RefreshMountDialog(new RefreshMountModel(mountProps));
+		await dialog.showDialog();
 	}
 }
 
 async function deleteMount(explorerContext?: azdata.ObjectExplorerContext): Promise<void> {
-	let mountProps = await getMountProps(explorerContext);
+	const mountProps = await getMountProps(explorerContext);
 	if (mountProps) {
-		let dialog = new DeleteMountDialog(new DeleteMountModel(mountProps));
-		dialog.showDialog();
+		const dialog = new DeleteMountDialog(new DeleteMountModel(mountProps));
+		await dialog.showDialog();
 	}
 }
 
@@ -145,14 +155,14 @@ async function lookupController(explorerContext?: azdata.ObjectExplorerContext):
 }
 
 function addBdcController(treeDataProvider: ControllerTreeDataProvider, node?: TreeNode): void {
-	let model = new AddControllerDialogModel(treeDataProvider, node);
+	let model = new AddControllerDialogModel(treeDataProvider, node as ControllerNode);
 	let dialog = new AddControllerDialog(model);
 	dialog.showDialog();
 }
 
-async function deleteBdcController(treeDataProvider: ControllerTreeDataProvider, node: TreeNode): Promise<boolean> {
+async function deleteBdcController(treeDataProvider: ControllerTreeDataProvider, node: TreeNode): Promise<boolean | undefined> {
 	if (!node && !(node instanceof ControllerNode)) {
-		return;
+		return undefined;
 	}
 
 	let controllerNode = node as ControllerNode;
@@ -169,15 +179,15 @@ async function deleteBdcController(treeDataProvider: ControllerTreeDataProvider,
 	let result = await vscode.window.showQuickPick(Object.keys(choices), options);
 	let remove: boolean = !!(result && choices[result]);
 	if (remove) {
-		deleteControllerInternal(treeDataProvider, controllerNode);
+		await deleteControllerInternal(treeDataProvider, controllerNode);
 	}
 	return remove;
 }
 
-function deleteControllerInternal(treeDataProvider: ControllerTreeDataProvider, controllerNode: ControllerNode): void {
-	let deleted = treeDataProvider.deleteController(controllerNode.url, controllerNode.auth, controllerNode.username);
+async function deleteControllerInternal(treeDataProvider: ControllerTreeDataProvider, controllerNode: ControllerNode): Promise<void> {
+	const deleted = treeDataProvider.deleteController(controllerNode.url, controllerNode.auth, controllerNode.username);
 	if (deleted) {
-		treeDataProvider.saveControllers();
+		await treeDataProvider.saveControllers();
 	}
 }
 

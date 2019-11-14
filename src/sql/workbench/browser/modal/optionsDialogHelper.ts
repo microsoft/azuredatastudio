@@ -12,6 +12,7 @@ import * as types from 'vs/base/common/types';
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { startsWith } from 'vs/base/common/strings';
 
 export interface IOptionElement {
 	optionWidget: any;
@@ -150,7 +151,7 @@ export function findElement(container: HTMLElement, className: string): HTMLElem
 	let elementBuilder = container;
 	while (elementBuilder) {
 		let htmlElement = elementBuilder;
-		if (htmlElement.className.startsWith(className)) {
+		if (startsWith(htmlElement.className, className)) {
 			break;
 		}
 		elementBuilder = elementBuilder.firstChild as HTMLElement;

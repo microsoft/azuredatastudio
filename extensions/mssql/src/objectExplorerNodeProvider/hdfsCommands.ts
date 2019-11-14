@@ -71,8 +71,8 @@ export class UploadFilesCommand extends ProgressCommand {
 		try {
 			let folderNode = await getNode<FolderNode>(context, this.appContext);
 			const allFilesFilter = localize('allFiles', "All Files");
-			let filter = {};
-			filter[allFilesFilter] = '*';
+			let filter: { [key: string]: string[] } = {};
+			filter[allFilesFilter] = ['*'];
 			if (folderNode) {
 				let options: vscode.OpenDialogOptions = {
 					canSelectFiles: true,
@@ -175,7 +175,7 @@ export class MkDirCommand extends ProgressCommand {
 		}).then(confirmed => <string>confirmed);
 	}
 
-	private async mkDir(fileName, folderNode: FolderNode, cancelToken: vscode.CancellationTokenSource): Promise<void> {
+	private async mkDir(fileName: string, folderNode: FolderNode, cancelToken: vscode.CancellationTokenSource): Promise<void> {
 		await folderNode.mkdir(fileName);
 	}
 }

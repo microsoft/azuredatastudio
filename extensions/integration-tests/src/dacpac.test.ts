@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'mocha';
 import * as azdata from 'azdata';
 import * as utils from './utils';
@@ -15,7 +13,7 @@ import * as mssql from '../../mssql';
 import * as vscode from 'vscode';
 import { context } from './testContext';
 import { getStandaloneServer } from './testConfig';
-import assert = require('assert');
+import * as assert from 'assert';
 
 const retryCount = 24; // 2 minutes
 const dacpac1: string = path.join(__dirname, '../testData/Database1.dacpac');

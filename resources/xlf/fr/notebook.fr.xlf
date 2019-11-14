@@ -30,6 +30,10 @@
         <source xml:lang="en">Maximum number of rows returned per table in the Notebook editor</source>
         <target state="translated">Nombre maximal de lignes retournées par table dans l'éditeur de notebook</target>
       </trans-unit>
+      <trans-unit id="notebook.maxBookSearchDepth.description">
+        <source xml:lang="en">Maximum depth of subdirectories to search for Books (Enter 0 for infinite)</source>
+        <target state="translated">Profondeur maximale des sous-répertoires où rechercher les notebooks (Entrer 0 pour l'infini)</target>
+      </trans-unit>
       <trans-unit id="notebook.command.new">
         <source xml:lang="en">New Notebook</source>
         <target state="translated">Nouveau notebook</target>
@@ -110,9 +114,293 @@
         <source xml:lang="en">Manage Packages</source>
         <target state="translated">Gérer les packages</target>
       </trans-unit>
+      <trans-unit id="title.SQL19PreviewBook">
+        <source xml:lang="en">SQL Server 2019 Guide</source>
+        <target state="translated">Guide SQL Server 2019</target>
+      </trans-unit>
+      <trans-unit id="books-preview-category">
+        <source xml:lang="en">Jupyter Books</source>
+        <target state="translated">Notebooks Jupyter</target>
+      </trans-unit>
+      <trans-unit id="title.saveJupyterBook">
+        <source xml:lang="en">Save Book</source>
+        <target state="translated">Enregistrer le notebook</target>
+      </trans-unit>
+      <trans-unit id="title.searchJupyterBook">
+        <source xml:lang="en">Search Book</source>
+        <target state="translated">Rechercher dans le notebook</target>
+      </trans-unit>
+      <trans-unit id="title.SavedBooks">
+        <source xml:lang="en">Saved Books</source>
+        <target state="translated">Notebooks enregistrés</target>
+      </trans-unit>
+      <trans-unit id="title.UntitledBooks">
+        <source xml:lang="en">Untitled Books</source>
+        <target state="translated">Notebooks sans titre</target>
+      </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/out/dialog/managePackages/managePackagesDialog" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/common/utils" source-language="en" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="mkdirOutputMsg">
+        <source xml:lang="en">... Creating {0}</source>
+        <target state="translated">... Création de {0}</target>
+      </trans-unit>
+      <trans-unit id="executeCommandProcessExited">
+        <source xml:lang="en">Process exited with code {0}</source>
+        <target state="translated">Processus terminé avec le code {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/common/localizedConstants" source-language="en" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="msgYes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Oui</target>
+      </trans-unit>
+      <trans-unit id="msgNo">
+        <source xml:lang="en">No</source>
+        <target state="translated">Non</target>
+      </trans-unit>
+      <trans-unit id="msgSampleCodeDataFrame">
+        <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
+        <target state="translated">Cet exemple de code charge le fichier dans un cadre de données et affiche les 10 premiers résultats.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/jupyter/jupyterServerInstallation" source-language="en" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="msgInstallPkgProgress">
+        <source xml:lang="en">Notebook dependencies installation is in progress</source>
+        <target state="translated">L'installation des dépendances de notebook est en cours</target>
+      </trans-unit>
+      <trans-unit id="msgPythonDownloadComplete">
+        <source xml:lang="en">Python download is complete</source>
+        <target state="translated">Le téléchargement de Python est terminé</target>
+      </trans-unit>
+      <trans-unit id="msgPythonDownloadError">
+        <source xml:lang="en">Error while downloading python setup</source>
+        <target state="translated">Erreur de téléchargement du programme d'installation de Python</target>
+      </trans-unit>
+      <trans-unit id="msgPythonDownloadPending">
+        <source xml:lang="en">Downloading python package</source>
+        <target state="translated">Téléchargement du package Python</target>
+      </trans-unit>
+      <trans-unit id="msgPythonUnpackPending">
+        <source xml:lang="en">Unpacking python package</source>
+        <target state="translated">Décompression du package Python</target>
+      </trans-unit>
+      <trans-unit id="msgPythonDirectoryError">
+        <source xml:lang="en">Error while creating python installation directory</source>
+        <target state="translated">Erreur de création du répertoire d'installation de Python</target>
+      </trans-unit>
+      <trans-unit id="msgPythonUnpackError">
+        <source xml:lang="en">Error while unpacking python bundle</source>
+        <target state="translated">Erreur de décompression du bundle Python</target>
+      </trans-unit>
+      <trans-unit id="msgTaskName">
+        <source xml:lang="en">Installing Notebook dependencies</source>
+        <target state="translated">Installation des dépendances de notebook</target>
+      </trans-unit>
+      <trans-unit id="msgInstallPkgStart">
+        <source xml:lang="en">Installing Notebook dependencies, see Tasks view for more information</source>
+        <target state="translated">Installation des dépendances de notebook, consultez la vue Tâches pour plus d'informations</target>
+      </trans-unit>
+      <trans-unit id="msgInstallPkgFinish">
+        <source xml:lang="en">Notebook dependencies installation is complete</source>
+        <target state="translated">L'installation des dépendances de notebook est terminée</target>
+      </trans-unit>
+      <trans-unit id="msgPythonRunningError">
+        <source xml:lang="en">Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.</source>
+        <target state="translated">Impossible de remplacer une installation Python existante quand Python est en cours d'exécution. Fermez tous les notebooks actifs avant de continuer.</target>
+      </trans-unit>
+      <trans-unit id="msgSkipPythonInstall">
+        <source xml:lang="en">Python already exists at the specific location. Skipping install.</source>
+        <target state="translated">Python existe déjà à l'emplacement spécifique. Installation ignorée.</target>
+      </trans-unit>
+      <trans-unit id="msgWaitingForInstall">
+        <source xml:lang="en">Another Python installation is currently in progress. Waiting for it to complete.</source>
+        <target state="translated">Une autre installation de Python est actuellement en cours. En attente de la fin de l'installation.</target>
+      </trans-unit>
+      <trans-unit id="msgDependenciesInstallationFailed">
+        <source xml:lang="en">Installing Notebook dependencies failed with error: {0}</source>
+        <target state="translated">L'installation des dépendances de notebook a échoué avec l'erreur : {0}</target>
+      </trans-unit>
+      <trans-unit id="msgDownloadPython">
+        <source xml:lang="en">Downloading local python for platform: {0} to {1}</source>
+        <target state="translated">Téléchargement de la version locale de Python pour la plateforme : {0} dans {1}</target>
+      </trans-unit>
+      <trans-unit id="confirmPackageUpgrade">
+        <source xml:lang="en">Some installed python packages need to be upgraded. Would you like to upgrade them now?</source>
+        <target state="translated">Des packages Python installés ont besoin d'être mis à jour. Voulez-vous les mettre à jour maintenant ?</target>
+      </trans-unit>
+      <trans-unit id="upgradePackages.pipInstall">
+        <source xml:lang="en">Installing {0}</source>
+        <target state="translated">Installation de {0}</target>
+      </trans-unit>
+      <trans-unit id="msgInstallStart">
+        <source xml:lang="en">Installing required packages to run Notebooks...</source>
+        <target state="translated">Installation des packages nécessaires pour exécuter Notebooks...</target>
+      </trans-unit>
+      <trans-unit id="msgJupyterInstallDone">
+        <source xml:lang="en">... Jupyter installation complete.</source>
+        <target state="translated">...Installation de Jupyter effectuée.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/dialog/configurePythonDialog" source-language="en" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="configurePython.dialogName">
+        <source xml:lang="en">Configure Python for Notebooks</source>
+        <target state="translated">Configurer Python pour Notebooks</target>
+      </trans-unit>
+      <trans-unit id="configurePython.okButtonText">
+        <source xml:lang="en">Install</source>
+        <target state="translated">Installer</target>
+      </trans-unit>
+      <trans-unit id="configurePython.cancelButtonText">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Annuler</target>
+      </trans-unit>
+      <trans-unit id="configurePython.browseButtonText">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">Parcourir</target>
+      </trans-unit>
+      <trans-unit id="configurePython.locationTextBoxText">
+        <source xml:lang="en">Python Install Location</source>
+        <target state="translated">Emplacement d'installation de Python</target>
+      </trans-unit>
+      <trans-unit id="configurePython.selectFileLabel">
+        <source xml:lang="en">Select</source>
+        <target state="translated">Sélectionner</target>
+      </trans-unit>
+      <trans-unit id="configurePython.installNote">
+        <source xml:lang="en">This installation will take some time. It is recommended to not close the application until the installation is complete.</source>
+        <target state="translated">Cette installation dure un certain temps. Nous vous recommandons de ne pas fermer l'application avant la fin de l'installation.</target>
+      </trans-unit>
+      <trans-unit id="configurePython.invalidLocationMsg">
+        <source xml:lang="en">The specified install location is invalid.</source>
+        <target state="translated">L'emplacement d'installation spécifié n'est pas valide.</target>
+      </trans-unit>
+      <trans-unit id="configurePython.pythonNotFoundMsg">
+        <source xml:lang="en">No python installation was found at the specified location.</source>
+        <target state="translated">Aucune installation de Python à l'emplacement spécifié.</target>
+      </trans-unit>
+      <trans-unit id="configurePython.pythonInstallDeclined">
+        <source xml:lang="en">Python installation was declined.</source>
+        <target state="translated">L'installation de Python a été refusée.</target>
+      </trans-unit>
+      <trans-unit id="configurePython.installationType">
+        <source xml:lang="en">Installation Type</source>
+        <target state="translated">Type d'installation</target>
+      </trans-unit>
+      <trans-unit id="configurePython.newInstall">
+        <source xml:lang="en">New Python installation</source>
+        <target state="translated">Nouvelle installation de Python</target>
+      </trans-unit>
+      <trans-unit id="configurePython.existingInstall">
+        <source xml:lang="en">Use existing Python installation</source>
+        <target state="translated">Utiliser l'installation existante de Python</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/extension" source-language="en" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="msgSampleCodeDataFrame">
+        <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
+        <target state="translated">Cet exemple de code charge le fichier dans un cadre de données et affiche les 10 premiers résultats.</target>
+      </trans-unit>
+      <trans-unit id="noNotebookVisible">
+        <source xml:lang="en">No notebook editor is active</source>
+        <target state="translated">Aucun éditeur de notebook actif</target>
+      </trans-unit>
+      <trans-unit id="codeCellName">
+        <source xml:lang="en">Code</source>
+        <target state="translated">Code</target>
+      </trans-unit>
+      <trans-unit id="textCellName">
+        <source xml:lang="en">Text</source>
+        <target state="translated">Texte</target>
+      </trans-unit>
+      <trans-unit id="selectCellType">
+        <source xml:lang="en">What type of cell do you want to add?</source>
+        <target state="translated">Quel type de cellule voulez-vous ajouter ?</target>
+      </trans-unit>
+      <trans-unit id="notebookFiles">
+        <source xml:lang="en">Notebooks</source>
+        <target state="translated">Notebooks</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/jupyter/jupyterController" source-language="en" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="notebookFileType">
+        <source xml:lang="en">Notebooks</source>
+        <target state="translated">Notebooks</target>
+      </trans-unit>
+      <trans-unit id="unsupportedFileType">
+        <source xml:lang="en">Only .ipynb Notebooks are supported</source>
+        <target state="translated">Seuls les notebooks .ipynb sont pris en charge</target>
+      </trans-unit>
+      <trans-unit id="confirmReinstall">
+        <source xml:lang="en">Are you sure you want to reinstall?</source>
+        <target state="translated">Voulez-vous vraiment le réinstaller ?</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/jupyter/jupyterServerManager" source-language="en" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="shutdownError">
+        <source xml:lang="en">Shutdown of Notebook server failed: {0}</source>
+        <target state="translated">L'arrêt du serveur de notebook a échoué : {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/jupyter/serverInstance" source-language="en" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="serverStopError">
+        <source xml:lang="en">Error stopping Notebook Server: {0}</source>
+        <target state="translated">Erreur d'arrêt du serveur de notebook : {0}</target>
+      </trans-unit>
+      <trans-unit id="notebookStartProcessExitPremature">
+        <source xml:lang="en">Notebook process exited prematurely with error: {0}, StdErr Output: {1}</source>
+        <target state="translated">Le processus du notebook s'est terminé prématurément avec l'erreur : {0}, sortie StdErr : {1}</target>
+      </trans-unit>
+      <trans-unit id="jupyterError">
+        <source xml:lang="en">Error sent from Jupyter: {0}</source>
+        <target state="translated">Erreur envoyée par Jupyter : {0}</target>
+      </trans-unit>
+      <trans-unit id="jupyterOutputMsgStartSuccessful">
+        <source xml:lang="en">... Jupyter is running at {0}</source>
+        <target state="translated">...Jupyter est en cours d'exécution sur {0}</target>
+      </trans-unit>
+      <trans-unit id="jupyterOutputMsgStart">
+        <source xml:lang="en">... Starting Notebook server</source>
+        <target state="translated">...Démarrage du serveur de notebook</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/jupyter/jupyterNotebookProvider" source-language="en" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="errNotebookUriMissing">
+        <source xml:lang="en">A notebook path is required</source>
+        <target state="translated">Un chemin de notebook est nécessaire</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/jupyter/jupyterSessionManager" source-language="en" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="errorStartBeforeReady">
+        <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
+        <target state="translated">Impossible de démarrer une session, le gestionnaire n'est pas encore initialisé</target>
+      </trans-unit>
+      <trans-unit id="connectionNotValid">
+        <source xml:lang="en">Spark kernels require a connection to a SQL Server Big Data Cluster master instance.</source>
+        <target state="translated">Les noyaux Spark nécessitent une connexion a une instance maître de cluster Big Data SQL Server.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/dialog/managePackages/managePackagesDialog" source-language="en" target-language="fr" datatype="plaintext">
     <body>
       <trans-unit id="managePackages.dialogName">
         <source xml:lang="en">Manage Packages</source>
@@ -124,7 +412,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/out/dialog/managePackages/installedPackagesTab" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/dialog/managePackages/installedPackagesTab" source-language="en" target-language="fr" datatype="plaintext">
     <body>
       <trans-unit id="managePackages.installedTabTitle">
         <source xml:lang="en">Installed</source>
@@ -168,7 +456,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/out/dialog/managePackages/addNewPackageTab" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/dialog/managePackages/addNewPackageTab" source-language="en" target-language="fr" datatype="plaintext">
     <body>
       <trans-unit id="managePackages.invalidTextPlaceholder">
         <source xml:lang="en">N/A</source>
@@ -228,7 +516,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/out/protocol/notebookUriHandler" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/protocol/notebookUriHandler" source-language="en" target-language="fr" datatype="plaintext">
     <body>
       <trans-unit id="notebook.unsupportedAction">
         <source xml:lang="en">Action {0} is not supported for this handler</source>
@@ -252,236 +540,60 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/out/jupyter/serverInstance" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/book/bookTreeView" source-language="en" target-language="fr" datatype="plaintext">
     <body>
-      <trans-unit id="serverStopError">
-        <source xml:lang="en">Error stopping Notebook Server: {0}</source>
-        <target state="translated">Erreur d'arrêt du serveur de notebook : {0}</target>
+      <trans-unit id="openBookError">
+        <source xml:lang="en">Open book {0} failed: {1}</source>
+        <target state="translated">L'ouverture du notebook {0} a échoué : {1}</target>
       </trans-unit>
-      <trans-unit id="notebookStartProcessExitPremature">
-        <source xml:lang="en">Notebook process exited prematurely with error: {0}, StdErr Output: {1}</source>
-        <target state="translated">Le processus du notebook s'est terminé prématurément avec l'erreur : {0}, sortie StdErr : {1}</target>
-      </trans-unit>
-      <trans-unit id="jupyterError">
-        <source xml:lang="en">Error sent from Jupyter: {0}</source>
-        <target state="translated">Erreur envoyée par Jupyter : {0}</target>
-      </trans-unit>
-      <trans-unit id="jupyterOutputMsgStartSuccessful">
-        <source xml:lang="en">... Jupyter is running at {0}</source>
-        <target state="translated">...Jupyter est en cours d'exécution sur {0}</target>
-      </trans-unit>
-      <trans-unit id="jupyterOutputMsgStart">
-        <source xml:lang="en">... Starting Notebook server</source>
-        <target state="translated">...Démarrage du serveur de notebook</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/jupyter/jupyterSettingWriter" source-language="en" target-language="fr" datatype="plaintext">
-    <body>
-      <trans-unit id="UnexpectedSettingType">
-        <source xml:lang="en">Unexpected setting type {0}</source>
-        <target state="translated">Type de paramètre inattendu {0}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/jupyter/jupyterSessionManager" source-language="en" target-language="fr" datatype="plaintext">
-    <body>
-      <trans-unit id="errorStartBeforeReady">
-        <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
-        <target state="translated">Impossible de démarrer une session, le gestionnaire n'est pas encore initialisé</target>
-      </trans-unit>
-      <trans-unit id="connectionNotValid">
-        <source xml:lang="en">Spark kernels require a connection to a SQL Server big data cluster master instance.</source>
-        <target state="translated">Les noyaux Spark nécessitent une connexion a une instance maître de cluster Big Data SQL Server.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/jupyter/jupyterServerManager" source-language="en" target-language="fr" datatype="plaintext">
-    <body>
-      <trans-unit id="shutdownError">
-        <source xml:lang="en">Shutdown of Notebook server failed: {0}</source>
-        <target state="translated">L'arrêt du serveur de notebook a échoué : {0}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/jupyter/jupyterServerInstallation" source-language="en" target-language="fr" datatype="plaintext">
-    <body>
-      <trans-unit id="msgInstallPkgProgress">
-        <source xml:lang="en">Notebook dependencies installation is in progress</source>
-        <target state="translated">L'installation des dépendances de notebook est en cours</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDownloadComplete">
-        <source xml:lang="en">Python download is complete</source>
-        <target state="translated">Le téléchargement de Python est terminé</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDownloadError">
-        <source xml:lang="en">Error while downloading python setup</source>
-        <target state="translated">Erreur de téléchargement du programme d'installation de Python</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDownloadPending">
-        <source xml:lang="en">Downloading python package</source>
-        <target state="translated">Téléchargement du package Python</target>
-      </trans-unit>
-      <trans-unit id="msgPythonUnpackPending">
-        <source xml:lang="en">Unpacking python package</source>
-        <target state="translated">Décompression du package Python</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDirectoryError">
-        <source xml:lang="en">Error while creating python installation directory</source>
-        <target state="translated">Erreur de création du répertoire d'installation de Python</target>
-      </trans-unit>
-      <trans-unit id="msgPythonUnpackError">
-        <source xml:lang="en">Error while unpacking python bundle</source>
-        <target state="translated">Erreur de décompression du bundle Python</target>
-      </trans-unit>
-      <trans-unit id="msgTaskName">
-        <source xml:lang="en">Installing Notebook dependencies</source>
-        <target state="translated">Installation des dépendances de notebook</target>
-      </trans-unit>
-      <trans-unit id="msgInstallPkgStart">
-        <source xml:lang="en">Installing Notebook dependencies, see Tasks view for more information</source>
-        <target state="translated">Installation des dépendances de notebook, consultez la vue Tâches pour plus d'informations</target>
-      </trans-unit>
-      <trans-unit id="msgInstallPkgFinish">
-        <source xml:lang="en">Notebook dependencies installation is complete</source>
-        <target state="translated">L'installation des dépendances de notebook est terminée</target>
-      </trans-unit>
-      <trans-unit id="msgPythonRunningError">
-        <source xml:lang="en">Cannot overwrite existing Python installation while python is running.</source>
-        <target state="translated">Impossible de remplacer l'installation de Python existante si Python est en cours d'exécution.</target>
-      </trans-unit>
-      <trans-unit id="msgPendingInstallError">
-        <source xml:lang="en">Another Python installation is currently in progress.</source>
-        <target state="translated">Une autre installation de Python est actuellement en cours.</target>
-      </trans-unit>
-      <trans-unit id="msgSkipPythonInstall">
-        <source xml:lang="en">Python already exists at the specific location. Skipping install.</source>
-        <target state="translated">Python existe déjà à l'emplacement spécifique. Installation ignorée.</target>
-      </trans-unit>
-      <trans-unit id="msgDependenciesInstallationFailed">
-        <source xml:lang="en">Installing Notebook dependencies failed with error: {0}</source>
-        <target state="translated">L'installation des dépendances de notebook a échoué avec l'erreur : {0}</target>
-      </trans-unit>
-      <trans-unit id="msgDownloadPython">
-        <source xml:lang="en">Downloading local python for platform: {0} to {1}</source>
-        <target state="translated">Téléchargement de la version locale de Python pour la plateforme : {0} dans {1}</target>
-      </trans-unit>
-      <trans-unit id="msgInstallStart">
-        <source xml:lang="en">Installing required packages to run Notebooks...</source>
-        <target state="translated">Installation des packages nécessaires pour exécuter Notebooks...</target>
-      </trans-unit>
-      <trans-unit id="msgJupyterInstallDone">
-        <source xml:lang="en">... Jupyter installation complete.</source>
-        <target state="translated">...Installation de Jupyter effectuée.</target>
-      </trans-unit>
-      <trans-unit id="msgInstallingSpark">
-        <source xml:lang="en">Installing SparkMagic...</source>
-        <target state="translated">Installation de SparkMagic...</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/jupyter/jupyterNotebookProvider" source-language="en" target-language="fr" datatype="plaintext">
-    <body>
-      <trans-unit id="errNotebookUriMissing">
-        <source xml:lang="en">A notebook path is required</source>
-        <target state="translated">Un chemin de notebook est nécessaire</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/jupyter/jupyterController" source-language="en" target-language="fr" datatype="plaintext">
-    <body>
-      <trans-unit id="notebookFileType">
-        <source xml:lang="en">Notebooks</source>
-        <target state="translated">Notebooks</target>
-      </trans-unit>
-      <trans-unit id="unsupportedFileType">
-        <source xml:lang="en">Only .ipynb Notebooks are supported</source>
-        <target state="translated">Seuls les notebooks .ipynb sont pris en charge</target>
-      </trans-unit>
-      <trans-unit id="confirmReinstall">
-        <source xml:lang="en">Are you sure you want to reinstall?</source>
-        <target state="translated">Voulez-vous vraiment le réinstaller ?</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/dialog/configurePythonDialog" source-language="en" target-language="fr" datatype="plaintext">
-    <body>
-      <trans-unit id="configurePython.dialogName">
-        <source xml:lang="en">Configure Python for Notebooks</source>
-        <target state="translated">Configurer Python pour Notebooks</target>
-      </trans-unit>
-      <trans-unit id="configurePython.okButtonText">
-        <source xml:lang="en">Install</source>
-        <target state="translated">Installer</target>
-      </trans-unit>
-      <trans-unit id="configurePython.cancelButtonText">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">Annuler</target>
-      </trans-unit>
-      <trans-unit id="configurePython.browseButtonText">
-        <source xml:lang="en">Browse</source>
-        <target state="translated">Parcourir</target>
-      </trans-unit>
-      <trans-unit id="configurePython.locationTextBoxText">
-        <source xml:lang="en">Python Install Location</source>
-        <target state="translated">Emplacement d'installation de Python</target>
-      </trans-unit>
-      <trans-unit id="configurePython.selectFileLabel">
-        <source xml:lang="en">Select</source>
-        <target state="translated">Sélectionner</target>
-      </trans-unit>
-      <trans-unit id="configurePython.installNote">
-        <source xml:lang="en">This installation will take some time. It is recommended to not close the application until the installation is complete.</source>
-        <target state="translated">Cette installation dure un certain temps. Nous vous recommandons de ne pas fermer l'application avant la fin de l'installation.</target>
-      </trans-unit>
-      <trans-unit id="configurePython.invalidLocationMsg">
-        <source xml:lang="en">The specified install location is invalid.</source>
-        <target state="translated">L'emplacement d'installation spécifié n'est pas valide.</target>
-      </trans-unit>
-      <trans-unit id="configurePython.pythonNotFoundMsg">
-        <source xml:lang="en">No python installation was found at the specified location.</source>
-        <target state="translated">Aucune installation de Python à l'emplacement spécifié.</target>
-      </trans-unit>
-      <trans-unit id="configurePython.pythonInstallDeclined">
-        <source xml:lang="en">Python installation was declined.</source>
-        <target state="translated">L'installation de Python a été refusée.</target>
-      </trans-unit>
-      <trans-unit id="configurePython.installationType">
-        <source xml:lang="en">Installation Type</source>
-        <target state="translated">Type d'installation</target>
-      </trans-unit>
-      <trans-unit id="configurePython.newInstall">
-        <source xml:lang="en">New Python installation</source>
-        <target state="translated">Nouvelle installation de Python</target>
-      </trans-unit>
-      <trans-unit id="configurePython.existingInstall">
-        <source xml:lang="en">Use existing Python installation</source>
-        <target state="translated">Utiliser l'installation existante de Python</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/book/bookTreeView" source-language="en" target-language="fr" datatype="plaintext">
-    <body>
       <trans-unit id="openNotebookError">
-        <source xml:lang="en">Open file {0} failed: {1}</source>
-        <target state="translated">L'ouverture du fichier {0} a échoué : {1}</target>
+        <source xml:lang="en">Open notebook {0} failed: {1}</source>
+        <target state="translated">L'ouverture du notebook {0} a échoué : {1}</target>
       </trans-unit>
       <trans-unit id="openMarkdownError">
-        <source xml:lang="en">Open file {0} failed: {1}</source>
-        <target state="translated">L'ouverture du fichier {0} a échoué : {1}</target>
+        <source xml:lang="en">Open markdown {0} failed: {1}</source>
+        <target state="translated">L'ouverture du fichier Markdown {0} a échoué : {1}</target>
+      </trans-unit>
+      <trans-unit id="openUntitledNotebookError">
+        <source xml:lang="en">Open untitled notebook {0} as untitled failed: {1}</source>
+        <target state="translated">Ouvrez un notebook {0} sans titre, car le {1} sans titre a échoué</target>
+      </trans-unit>
+      <trans-unit id="allFiles">
+        <source xml:lang="en">All Files</source>
+        <target state="translated">Tous les fichiers</target>
+      </trans-unit>
+      <trans-unit id="labelPickFolder">
+        <source xml:lang="en">Pick Folder</source>
+        <target state="translated">Choisir un dossier</target>
       </trans-unit>
       <trans-unit id="openExternalLinkError">
         <source xml:lang="en">Open link {0} failed: {1}</source>
         <target state="translated">Échec de l'ouverture du lien {0} : {1}</target>
       </trans-unit>
-      <trans-unit id="openConfigFileError">
-        <source xml:lang="en">Open file {0} failed: {1}</source>
-        <target state="translated">L'ouverture du fichier {0} a échoué : {1}</target>
+      <trans-unit id="confirmReplace">
+        <source xml:lang="en">Folder already exists. Are you sure you want to delete and replace this folder?</source>
+        <target state="translated">Le dossier existe déjà. Voulez-vous vraiment supprimer et remplacer ce dossier ?</target>
       </trans-unit>
-      <trans-unit id="openExternalLinkCommand">
-        <source xml:lang="en">Open External Link</source>
-        <target state="translated">Ouvrir le lien externe</target>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/book/bookModel" source-language="en" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="missingFileError">
+        <source xml:lang="en">Missing file : {0}</source>
+        <target state="translated">Fichier manquant : {0}</target>
       </trans-unit>
+      <trans-unit id="InvalidError.tocFile">
+        <source xml:lang="en">{0}</source>
+        <target state="translated">{0}</target>
+      </trans-unit>
+      <trans-unit id="Invalid toc.yml">
+        <source xml:lang="en">Error: {0} has an incorrect toc.yml file</source>
+        <target state="translated">Erreur : {0} a un fichier toc.yml incorrect</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/book/bookTreeItem" source-language="en" target-language="fr" datatype="plaintext">
+    <body>
       <trans-unit id="openNotebookCommand">
         <source xml:lang="en">Open Notebook</source>
         <target state="translated">Ouvrir le notebook</target>
@@ -490,65 +602,9 @@
         <source xml:lang="en">Open Markdown</source>
         <target state="translated">Ouvrir Markdown</target>
       </trans-unit>
-      <trans-unit id="missingFileError">
-        <source xml:lang="en">Missing file : {0}</source>
-        <target state="translated">Fichier manquant : {0}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/common/utils" source-language="en" target-language="fr" datatype="plaintext">
-    <body>
-      <trans-unit id="mkdirOutputMsg">
-        <source xml:lang="en">... Creating {0}</source>
-        <target state="translated">... Création de {0}</target>
-      </trans-unit>
-      <trans-unit id="executeCommandProcessExited">
-        <source xml:lang="en">Process exited with code {0}</source>
-        <target state="translated">Processus terminé avec le code {0}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/common/localizedConstants" source-language="en" target-language="fr" datatype="plaintext">
-    <body>
-      <trans-unit id="msgYes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Oui</target>
-      </trans-unit>
-      <trans-unit id="msgNo">
-        <source xml:lang="en">No</source>
-        <target state="translated">Non</target>
-      </trans-unit>
-      <trans-unit id="msgSampleCodeDataFrame">
-        <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
-        <target state="translated">Cet exemple de code charge le fichier dans un cadre de données et affiche les 10 premiers résultats.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/extension" source-language="en" target-language="fr" datatype="plaintext">
-    <body>
-      <trans-unit id="msgSampleCodeDataFrame">
-        <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
-        <target state="translated">Cet exemple de code charge le fichier dans un cadre de données et affiche les 10 premiers résultats.</target>
-      </trans-unit>
-      <trans-unit id="noNotebookVisible">
-        <source xml:lang="en">No notebook editor is active</source>
-        <target state="translated">Aucun éditeur de notebook actif</target>
-      </trans-unit>
-      <trans-unit id="codeCellName">
-        <source xml:lang="en">Code</source>
-        <target state="translated">Code</target>
-      </trans-unit>
-      <trans-unit id="textCellName">
-        <source xml:lang="en">Text</source>
-        <target state="translated">Texte</target>
-      </trans-unit>
-      <trans-unit id="selectCellType">
-        <source xml:lang="en">What type of cell do you want to add?</source>
-        <target state="translated">Quel type de cellule voulez-vous ajouter ?</target>
-      </trans-unit>
-      <trans-unit id="notebookFiles">
-        <source xml:lang="en">Notebooks</source>
-        <target state="translated">Notebooks</target>
+      <trans-unit id="openExternalLinkCommand">
+        <source xml:lang="en">Open External Link</source>
+        <target state="translated">Ouvrir le lien externe</target>
       </trans-unit>
     </body>
   </file>

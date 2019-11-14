@@ -1,0 +1,94 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.wizardNavigation-container {
+	display: flex;
+	flex-direction: column;
+	width: 80px;
+	height: 100%;
+	overflow: auto;
+}
+
+.hc-black .wizardNavigation-container {
+	border-right-color: #2b56f2;
+	border-right-style: solid;
+	border-right-width: 1px;
+	background-color: unset;
+}
+
+.wizardNavigation-pageNumber {
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	max-height: 100px;
+}
+
+.wizardNavigation-pageNumber a {
+	text-decoration: none;
+}
+
+.wizardNavigation-dot {
+	height: 30px;
+	width: 30px;
+	background-color: rgb(200, 200, 200);
+	color: white;
+	border-radius: 50%;
+	border-style: none;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 14px;
+}
+
+.hc-black .wizardNavigation-dot {
+	flex-grow: 1;
+	background-color: unset;
+	border-style: solid;
+	border-width: 1px;
+	border-color: white;
+}
+
+.wizardNavigation-connector {
+	width: 3px;
+	display: inline-block;
+	flex-grow: 1;
+	background-color: rgb(200, 200, 200);
+}
+
+.hc-black .wizardNavigation-connector {
+	display: none;
+}
+
+.wizardNavigation-connector.active,
+.wizardNavigation-dot.active {
+	background-color: rgb(9, 109, 201);
+}
+
+.hc-black .wizardNavigation-dot.active {
+	border-color: #2b56f2;
+	background-color: unset;
+	border-style: solid;
+}
+
+.hc-black .wizardNavigation-dot.active:hover,
+.hc-black .wizardNavigation-dot.active.currentPage:hover {
+	border-color: #F38518;
+	border-style: dashed;
+}
+
+.wizardNavigation-dot.active.currentPage {
+	border-style: double;
+}
+
+.hc-black .wizardNavigation-dot.active.currentPage {
+	border-style: solid;
+	border-color: #F38518;
+}
+
+.wizardNavigation-connector.invisible {
+	visibility: hidden;
+}

@@ -364,7 +364,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.ApplicationRoles">
         <source xml:lang="en">Application Roles</source>
-        <target state="translated">응용 프로그램 역할</target>
+        <target state="translated">애플리케이션 역할</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Assemblies">
         <source xml:lang="en">Assemblies</source>
@@ -500,7 +500,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Signatures">
         <source xml:lang="en">Signatures</source>
-        <target state="translated">서명</target>
+        <target state="translated">시그니처</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.StoredProcedures">
         <source xml:lang="en">StoredProcedures</source>
@@ -796,7 +796,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DisableAndReenableDdlTriggers">
         <source xml:lang="en">Specifies whether Data Definition Language (DDL) triggers are disabled at the beginning of the publish process and re-enabled at the end of the publish action.</source>
-        <target state="translated">게시 프로세스가 시작될 때 Data Definition Language (DDL) 트리거를 해제하고 게시 프로세스 동작이 끝날 때 다시 설정할지 여부를 지정합니다.</target>
+        <target state="translated">게시 프로세스가 시작될 때 DDL(데이터 정의 언어) 트리거를 해제하고 게시 프로세스 동작이 끝날 때 다시 설정할지 여부를 지정합니다.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DeployDatabaseInSingleUserMode">
         <source xml:lang="en">If true, the database is set to Single User Mode before deploying.</source>
@@ -836,19 +836,19 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropConstraintsNotInSource">
         <source xml:lang="en">Specifies whether constraints that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅숏(.dacpac) 파일에 없는 제약 조건을 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
+        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 없는 제약 조건을 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropDmlTriggersNotInSource">
         <source xml:lang="en">Specifies whether DML triggers that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅숏(.dacpac) 파일에 없는 DML 트리거를 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
+        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 없는 DML 트리거를 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropExtendedPropertiesNotInSource">
         <source xml:lang="en">Specifies whether extended properties that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅숏(.dacpac) 파일에 없는 확장 속성을 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
+        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 없는 확장 속성을 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropIndexesNotInSource">
         <source xml:lang="en">Specifies whether indexes that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅숏(.dacpac) 파일에 없는 인덱스를 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
+        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 없는 인덱스를 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreFileAndLogFilePath">
         <source xml:lang="en">Specifies whether differences in the paths for files and log files should be ignored or updated when you publish to a database.</source>
@@ -864,7 +864,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerOrder">
         <source xml:lang="en">Specifies whether differences in the order of Data Manipulation Language (DML) triggers should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 DML(Data Manipulation Language) 트리거 순서의 차이점을 무시할지 또는 업데이트할지를 지정합니다.</target>
+        <target state="translated">데이터베이스에 게시할 때 DML(데이터 조작 언어) 트리거 순서의 차이점을 무시할지 또는 업데이트할지를 지정합니다.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreDefaultSchema">
         <source xml:lang="en">Specifies whether differences in the default schema should be ignored or updated when you publish to a database.</source>
@@ -872,11 +872,11 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerState">
         <source xml:lang="en">Specifies whether differences in the enabled or disabled state of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 DDL(Data Definition Language) 트리거 사용/사용 안 함 상태의 차이점을 무시할지 또는 업데이트할지를 지정합니다.</target>
+        <target state="translated">데이터베이스에 게시할 때 DDL(데이터 정의 언어) 트리거 사용/사용 안 함 상태의 차이점을 무시할지 또는 업데이트할지를 지정합니다.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerOrder">
         <source xml:lang="en">Specifies whether differences in the order of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database or server.</source>
-        <target state="translated">데이터베이스 또는 서버에 게시할 때 DDL(Data Definition Language) 트리거 순서의 차이점을 무시할지 또는 업데이트할지를 지정합니다.</target>
+        <target state="translated">데이터베이스 또는 서버에 게시할 때 DDL(데이터 정의 언어) 트리거 순서의 차이점을 무시할지 또는 업데이트할지를 지정합니다.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreCryptographicProviderFilePath">
         <source xml:lang="en">Specifies whether differences in the file path for the cryptographic provider should be ignored or updated when you publish to a database.</source>
@@ -908,19 +908,19 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropStatisticsNotInSource">
         <source xml:lang="en">Specifies whether statistics that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">데이터베이스 스냅숏(.dacpac) 파일에 없는 통계를 데이터베이스에 게시할 때 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
+        <target state="translated">데이터베이스 스냅샷(.dacpac) 파일에 없는 통계를 데이터베이스에 게시할 때 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropRoleMembersNotInSource">
         <source xml:lang="en">Specifies whether role members that are not defined in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.&lt;/</source>
-        <target state="translated">데이터베이스에 업데이트를 게시할 때 데이터베이스 스냅숏(.dacpac) 파일에 정의되지 않은 역할 멤버가 대상 데이터베이스에서 삭제되는지 여부를 지정합니다.&lt;/</target>
+        <target state="translated">데이터베이스에 업데이트를 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 정의되지 않은 역할 멤버가 대상 데이터베이스에서 삭제되는지 여부를 지정합니다.&lt;/</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropPermissionsNotInSource">
         <source xml:lang="en">Specifies whether permissions that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅숏(.dacpac) 파일에 없는 사용 권한을 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
+        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 없는 사용 권한을 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropObjectsNotInSource">
         <source xml:lang="en">Specifies whether objects that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.  This value takes precedence over DropExtendedProperties.</source>
-        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅숏 파일(.dacpac)에 없는 개체를 대상 데이터베이스에서 삭제할지 여부를 지정합니다. 이 값이 DropExtendedProperties보다 우선합니다.</target>
+        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅샷 파일(.dacpac)에 없는 개체를 대상 데이터베이스에서 삭제할지 여부를 지정합니다. 이 값이 DropExtendedProperties보다 우선합니다.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreColumnOrder">
         <source xml:lang="en">Specifies whether differences in table column order should be ignored or updated when you publish to a database.</source>

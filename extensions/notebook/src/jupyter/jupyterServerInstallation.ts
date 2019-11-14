@@ -36,6 +36,7 @@ const msgSkipPythonInstall = localize('msgSkipPythonInstall', "Python already ex
 const msgWaitingForInstall = localize('msgWaitingForInstall', "Another Python installation is currently in progress. Waiting for it to complete.");
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
+function msgPackageRetrievalFailed(errorMessage: string): string { return localize('msgPackageRetrievalFailed', "Encountered an error when trying to retrieve list of installed packages: {0}", errorMessage); }
 
 export class JupyterServerInstallation {
 	public apiWrapper: ApiWrapper;
@@ -77,7 +78,7 @@ export class JupyterServerInstallation {
 			version: '1.3.0'
 		}, {
 			name: 'powershell-kernel',
-			version: '0.1.1'
+			version: '0.1.2'
 		}
 	];
 
@@ -312,8 +313,8 @@ export class JupyterServerInstallation {
 	/**
 	 * Installs Python and associated dependencies to the specified directory.
 	 * @param forceInstall Indicates whether an existing installation should be overwritten, if it exists.
-	 * @param installationPath Optional parameter that specifies where to install python.
-	 * The previous path (or the default) is used if a new path is not specified.
+	 * @param installSettings Optional parameter that specifies where to install python, and whether the install targets an existing python install.
+	 * The previous python path (or the default) is used if a new path is not specified.
 	 */
 	public async startInstallProcess(forceInstall: boolean, installSettings?: { installPath: string, existingPython: boolean }): Promise<void> {
 		let isPythonRunning: boolean;
@@ -519,14 +520,19 @@ export class JupyterServerInstallation {
 	}
 
 	public async getInstalledPipPackages(): Promise<PythonPkgDetails[]> {
-		let cmd = `"${this.pythonExecutable}" -m pip list --format=json`;
-		let packagesInfo = await this.executeBufferedCommand(cmd);
-
-		let packagesResult: PythonPkgDetails[] = [];
-		if (packagesInfo) {
-			packagesResult = <PythonPkgDetails[]>JSON.parse(packagesInfo);
+		try {
+			let cmd = `"${this.pythonExecutable}" -m pip list --format=json`;
+			let packagesInfo = await this.executeBufferedCommand(cmd);
+			let packagesResult: PythonPkgDetails[] = [];
+			if (packagesInfo) {
+				packagesResult = <PythonPkgDetails[]>JSON.parse(packagesInfo);
+			}
+			return packagesResult;
 		}
-		return packagesResult;
+		catch (err) {
+			this.outputChannel.appendLine(msgPackageRetrievalFailed(utils.getErrorMessage(err)));
+			return [];
+		}
 	}
 
 	public installPipPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void> {
@@ -549,19 +555,25 @@ export class JupyterServerInstallation {
 	}
 
 	public async getInstalledCondaPackages(): Promise<PythonPkgDetails[]> {
-		let condaExe = this.getCondaExePath();
-		let cmd = `"${condaExe}" list --json`;
-		let packagesInfo = await this.executeBufferedCommand(cmd);
+		try {
+			let condaExe = this.getCondaExePath();
+			let cmd = `"${condaExe}" list --json`;
+			let packagesInfo = await this.executeBufferedCommand(cmd);
 
-		if (packagesInfo) {
-			let packagesResult = JSON.parse(packagesInfo);
-			if (Array.isArray(packagesResult)) {
-				return packagesResult
-					.filter(pkg => pkg && pkg.channel && pkg.channel !== 'pypi')
-					.map(pkg => <PythonPkgDetails>{ name: pkg.name, version: pkg.version });
+			if (packagesInfo) {
+				let packagesResult = JSON.parse(packagesInfo);
+				if (Array.isArray(packagesResult)) {
+					return packagesResult
+						.filter(pkg => pkg && pkg.channel && pkg.channel !== 'pypi')
+						.map(pkg => <PythonPkgDetails>{ name: pkg.name, version: pkg.version });
+				}
 			}
+			return [];
 		}
-		return [];
+		catch (err) {
+			this.outputChannel.appendLine(msgPackageRetrievalFailed(utils.getErrorMessage(err)));
+			return [];
+		}
 	}
 
 	public installCondaPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void> {

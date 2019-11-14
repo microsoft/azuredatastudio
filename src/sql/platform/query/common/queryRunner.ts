@@ -7,10 +7,10 @@ import * as azdata from 'azdata';
 
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import * as Utils from 'sql/platform/connection/common/utils';
-import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
+import { SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { IQueryPlanInfo } from 'sql/platform/query/common/queryModel';
-import { ResultSerializer } from 'sql/workbench/parts/query/common/resultSerializer';
+import { ResultSerializer } from 'sql/workbench/contrib/query/common/resultSerializer';
 
 import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
@@ -26,6 +26,8 @@ import { URI } from 'vs/base/common/uri';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IGridDataProvider, getResultsString } from 'sql/platform/query/common/gridDataProvider';
 import { getErrorMessage } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
+import { find } from 'vs/base/common/arrays';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -103,7 +105,8 @@ export default class QueryRunner extends Disposable {
 		@INotificationService private _notificationService: INotificationService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService
+		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService,
+		@ILogService private _logService: ILogService
 	) {
 		super();
 	}
@@ -344,14 +347,15 @@ export default class QueryRunner extends Disposable {
 			}
 			// handle getting queryPlanxml if we need too
 			// check if this result has show plan, this needs work, it won't work for any other provider
-			let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
+			let hasShowPlan = !!find(result.resultSetSummary.columnInfo, e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 			if (hasShowPlan) {
 				this._isQueryPlan = true;
+
 				this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
 					if (e.resultSubset.rows) {
 						this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
 					}
-				});
+				}).catch((e) => this._logService.error(e));
 			}
 			// we will just ignore the set if we already have it
 			// ideally this should never happen
@@ -370,10 +374,11 @@ export default class QueryRunner extends Disposable {
 			batchSet = this._batchSets[resultSet.batchId];
 			// handle getting queryPlanxml if we need too
 			// check if this result has show plan, this needs work, it won't work for any other provider
-			let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
+			let hasShowPlan = !!find(result.resultSetSummary.columnInfo, e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 			if (hasShowPlan) {
 				this._isQueryPlan = true;
 				this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
+
 					if (e.resultSubset.rows) {
 						let planXmlString = e.resultSubset.rows[0][0].displayValue;
 						this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
@@ -386,7 +391,7 @@ export default class QueryRunner extends Disposable {
 							});
 						}
 					}
-				});
+				}).catch((e) => this._logService.error(e));
 			}
 			if (batchSet) {
 				// Store the result set in the batch and emit that a result set has completed
@@ -525,10 +530,9 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Disposes the Query from the service client
 	 */
-	public disposeQuery(): void {
-		this._queryManagementService.disposeQuery(this.uri).then(() => {
-			this.dispose();
-		});
+	public async disposeQuery(): Promise<void> {
+		await this._queryManagementService.disposeQuery(this.uri);
+		this.dispose();
 	}
 
 	public dispose() {
@@ -547,9 +551,9 @@ export default class QueryRunner extends Disposable {
 	 * @param resultId The result id of the result to copy from
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
-	copyResults(selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): void {
+	async copyResults(selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<void> {
 		let provider = this.getGridDataProvider(batchId, resultId);
-		provider.copyResults(selection, includeHeaders);
+		return provider.copyResults(selection, includeHeaders);
 	}
 
 
@@ -618,14 +622,14 @@ export class QueryGridDataProvider implements IGridDataProvider {
 		return this.queryRunner.getQueryRows(rowStart, numberOfRows, this.batchId, this.resultSetId);
 	}
 
-	copyResults(selection: Slick.Range[], includeHeaders?: boolean): void {
-		this.copyResultsAsync(selection, includeHeaders);
+	copyResults(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
+		return this.copyResultsAsync(selection, includeHeaders);
 	}
 
 	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
 		try {
 			let results = await getResultsString(this, selection, includeHeaders);
-			this._clipboardService.writeText(results);
+			await this._clipboardService.writeText(results);
 		} catch (error) {
 			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
 		}

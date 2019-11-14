@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import { promises as fs } from 'fs';
 
@@ -28,7 +26,7 @@ export class AgentUtils {
 		return AgentUtils._agentService;
 	}
 
-	public static async getDatabases(ownerUri: string): Promise<string[]> {
+	public static async getDatabases(ownerUri: string): Promise<string[] | undefined> {
 		if (!AgentUtils._connectionService) {
 			let currentConnection = await azdata.connection.getCurrentConnection();
 			this._connectionService = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(currentConnection.providerId, azdata.DataProviderType.ConnectionProvider);
@@ -37,6 +35,7 @@ export class AgentUtils {
 			if (result && result.databaseNames && result.databaseNames.length > 0) {
 				return result.databaseNames;
 			}
+			return undefined;
 		});
 	}
 

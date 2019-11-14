@@ -203,6 +203,12 @@ export enum ExtensionNodeType {
 	Database = 'Database'
 }
 
+export interface CheckBoxInfo {
+	row: number;
+	columnName: string;
+	checked: boolean;
+}
+
 export interface IComponentShape {
 	type: ModelComponentTypes;
 	id: string;
@@ -691,9 +697,9 @@ export class ConnectionProfile {
 		this.options['azureTenantId'] = value;
 	}
 
-	options: Map<string, any> = new Map<string, any>();
+	options: { [key: string]: any } = {};
 
-	static createFrom(options: Map<string, any>): ConnectionProfile {
+	static createFrom(options: { [key: string]: any }): ConnectionProfile {
 		let profile = new ConnectionProfile();
 		profile.options = options;
 		return profile;

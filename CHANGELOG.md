@@ -1,5 +1,11 @@
 # Change Log
 
+## Version 1.13.0
+* Release date: November 4, 2019
+* Release status: General Availability
+* General Availability release for Schema Compare and DACPAC extensions
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/43?closed=1).
+
 ## Version 1.12.2
 * Release date: October 11, 2019
 * Release status: General Availability

@@ -11,7 +11,7 @@
 	},
 	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx",
 	"icon": "images/sqlserver.png",
-	"aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
+	"aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
 	"activationEvents": [
 		"*"
 	],
@@ -51,7 +51,7 @@
 				}
 			]
 		},
-		"configuration":{
+		"configuration": {
 			"type": "object",
 			"title": "%flatfileimport.configuration.title%",
 			"properties": {
@@ -66,11 +66,13 @@
 	"dependencies": {
 		"dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.3.0",
 		"htmlparser2": "^3.10.1",
-		"service-downloader": "github:anthonydresser/service-downloader#0.1.5",
+		"service-downloader": "github:anthonydresser/service-downloader#0.1.7",
 		"vscode-extension-telemetry": "0.0.18",
 		"vscode-nls": "^3.2.1"
 	},
-	"devDependencies": {},
+	"devDependencies": {
+		"@types/node": "10"
+	},
 	"__metadata": {
 		"id": "23",
 		"publisherDisplayName": "Microsoft",

@@ -3,14 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'mocha';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as mssql from '../../mssql';
 import * as utils from './utils';
-import * as uuid from 'uuid';
+import * as uuid from './uuid';
 import { context } from './testContext';
 import assert = require('assert');
 import { getStandaloneServer, TestServerProfile, getBdcServer } from './testConfig';

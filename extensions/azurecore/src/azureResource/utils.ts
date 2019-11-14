@@ -3,12 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-export function getErrorMessage(error: Error | string): string {
+function getErrorMessage(error: Error | string): string {
 	return (error instanceof Error) ? error.message : error;
 }
 

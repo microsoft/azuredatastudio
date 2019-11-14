@@ -126,7 +126,7 @@ registerSingleton(IOpenerService, OpenerService, true);
 //#region -- sql services
 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ConnectionManagementService } from 'sql/platform/connection/browser/connectionManagementService';
+import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ConnectionDialogService } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -134,7 +134,7 @@ import { ErrorMessageService } from 'sql/workbench/services/errorMessage/browser
 import { ServerGroupController } from 'sql/workbench/services/serverGroup/browser/serverGroupController';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesServiceImpl';
+import { CapabilitiesService } from 'sql/workbench/services/capabilities/common/capabilitiesServiceImpl';
 import { ICredentialsService as sqlICredentialsService, CredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { QueryModelService } from 'sql/platform/query/common/queryModelService';
@@ -145,10 +145,10 @@ import { IResourceProviderService } from 'sql/workbench/services/resourceProvide
 import { ResourceProviderService } from 'sql/workbench/services/resourceProvider/browser/resourceProviderService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { AdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
-import { OEShimService, IOEShimService } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerViewTreeShim';
+import { OEShimService, IOEShimService } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerViewTreeShim';
 import { IObjectExplorerService, ObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
-import { IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
-import { AngularEventingService } from 'sql/platform/angularEventing/node/angularEventingService';
+import { IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
+import { AngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingServiceImpl';
 import { ISerializationService, SerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IMetadataService, MetadataService } from 'sql/platform/metadata/common/metadataService';
 import { ITaskService, TaskService } from 'sql/platform/tasks/common/tasksService';
@@ -174,8 +174,8 @@ import { IAccountManagementService } from 'sql/platform/accounts/common/interfac
 import { AccountManagementService } from 'sql/workbench/services/accountManagement/browser/accountManagementService';
 import { IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ProfilerService } from 'sql/workbench/services/profiler/browser/profilerService';
-import { AccountPickerService } from 'sql/platform/accounts/browser/accountPickerService';
-import { IAccountPickerService } from 'sql/platform/accounts/browser/accountPicker';
+import { AccountPickerService } from 'sql/workbench/contrib/accounts/browser/accountPickerService';
+import { IAccountPickerService } from 'sql/workbench/contrib/accounts/browser/accountPicker';
 import { IDashboardViewService } from 'sql/platform/dashboard/browser/dashboardViewService';
 import { DashboardViewService } from 'sql/platform/dashboard/browser/dashboardViewServiceImpl';
 import { IModelViewService } from 'sql/platform/modelComponents/browser/modelViewService';
@@ -362,81 +362,81 @@ import 'vs/workbench/contrib/userDataSync/browser/userDataSync.contribution';
 //#region -- contributions
 
 // query
-import 'sql/workbench/parts/query/browser/query.contribution';
-import 'sql/workbench/parts/query/common/resultsGrid.contribution';
+import 'sql/workbench/contrib/query/browser/query.contribution';
+import 'sql/workbench/contrib/query/common/resultsGrid.contribution';
 
 // data explorer
-import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
-import 'sql/workbench/parts/dataExplorer/browser/nodeActions.common.contribution';
+import 'sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution';
+import 'sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contribution';
 
 // {{SQL CARBON EDIT}}
 //editor replacement
 import 'sql/workbench/common/editorReplacer.contribution';
 
 // tasks
-import 'sql/workbench/parts/tasks/browser/tasks.contribution';
+import 'sql/workbench/contrib/tasks/browser/tasks.contribution';
 import 'sql/workbench/browser/actions.contribution';
 
 // telemetry
-import 'sql/workbench/parts/telemetry/common/telemetry.contribution';
+import 'sql/workbench/contrib/telemetry/common/telemetry.contribution';
 
 // connection
-import 'sql/workbench/parts/connection/browser/connection.contribution';
-import 'sql/workbench/parts/objectExplorer/common/serverGroup.contribution';
+import 'sql/workbench/contrib/connection/browser/connection.contribution';
+import 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
 
 // edit data editor
-import 'sql/workbench/parts/editData/browser/editData.contribution';
+import 'sql/workbench/contrib/editData/browser/editData.contribution';
 
 // query plan editor
-import 'sql/workbench/parts/queryPlan/browser/queryPlan.contribution';
+import 'sql/workbench/contrib/queryPlan/browser/queryPlan.contribution';
 
 //acounts
-import 'sql/workbench/parts/accounts/browser/accounts.contribution';
-import 'sql/platform/accounts/browser/accountManagement.contribution';
+import 'sql/workbench/contrib/accounts/browser/accounts.contribution';
+import 'sql/workbench/contrib/accounts/browser/accountManagement.contribution';
 
 // profiler
-import 'sql/workbench/parts/profiler/browser/profiler.contribution';
-import 'sql/workbench/parts/profiler/browser/profilerActions.contribution';
+import 'sql/workbench/contrib/profiler/browser/profiler.contribution';
+import 'sql/workbench/contrib/profiler/browser/profilerActions.contribution';
 
 // dashboard
-import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/charts/types/barChart.contribution';
-import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/charts/types/doughnutChart.contribution';
-import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/charts/types/horizontalBarChart.contribution';
-import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/charts/types/lineChart.contribution';
-import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/charts/types/pieChart.contribution';
-import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/charts/types/scatterChart.contribution';
-import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/charts/types/timeSeriesChart.contribution';
-import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/countInsight.contribution';
-import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/imageInsight.contribution';
-import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/tableInsight.contribution';
-import 'sql/workbench/parts/dashboard/browser/dashboard.contribution';
-import 'sql/workbench/parts/dashboard/browser/widgets/insights/insightsWidget.contribution';
-import 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerWidget.contribution';
-import 'sql/workbench/parts/dashboard/browser/widgets/tasks/tasksWidget.contribution';
-import 'sql/workbench/parts/dashboard/browser/widgets/webview/webviewWidget.contribution';
-import 'sql/workbench/parts/dashboard/browser/containers/dashboardWebviewContainer.contribution';
-import 'sql/workbench/parts/dashboard/browser/containers/dashboardControlHostContainer.contribution';
-import 'sql/workbench/parts/dashboard/browser/containers/dashboardGridContainer.contribution';
-import 'sql/workbench/parts/dashboard/browser/containers/dashboardWidgetContainer.contribution';
-import 'sql/workbench/parts/dashboard/browser/containers/dashboardContainer.contribution';
-import 'sql/workbench/parts/dashboard/browser/containers/dashboardNavSection.contribution';
-import 'sql/workbench/parts/dashboard/browser/containers/dashboardModelViewContainer.contribution';
-import 'sql/workbench/parts/dashboard/browser/core/dashboardTab.contribution';
+import 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/barChart.contribution';
+import 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/doughnutChart.contribution';
+import 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/horizontalBarChart.contribution';
+import 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/lineChart.contribution';
+import 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/pieChart.contribution';
+import 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/scatterChart.contribution';
+import 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/timeSeriesChart.contribution';
+import 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/countInsight.contribution';
+import 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/imageInsight.contribution';
+import 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/tableInsight.contribution';
+import 'sql/workbench/contrib/dashboard/browser/dashboard.contribution';
+import 'sql/workbench/contrib/dashboard/browser/widgets/insights/insightsWidget.contribution';
+import 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerWidget.contribution';
+import 'sql/workbench/contrib/dashboard/browser/widgets/tasks/tasksWidget.contribution';
+import 'sql/workbench/contrib/dashboard/browser/widgets/webview/webviewWidget.contribution';
+import 'sql/workbench/contrib/dashboard/browser/containers/dashboardWebviewContainer.contribution';
+import 'sql/workbench/contrib/dashboard/browser/containers/dashboardControlHostContainer.contribution';
+import 'sql/workbench/contrib/dashboard/browser/containers/dashboardGridContainer.contribution';
+import 'sql/workbench/contrib/dashboard/browser/containers/dashboardWidgetContainer.contribution';
+import 'sql/workbench/contrib/dashboard/browser/containers/dashboardContainer.contribution';
+import 'sql/workbench/contrib/dashboard/browser/containers/dashboardNavSection.contribution';
+import 'sql/workbench/contrib/dashboard/browser/containers/dashboardModelViewContainer.contribution';
+import 'sql/workbench/contrib/dashboard/browser/core/dashboardTab.contribution';
 
 // Model-based Views
 import 'sql/workbench/browser/modelComponents/components.contribution';
 import 'sql/workbench/browser/modelComponents/modelViewEditor.contribution';
 
 // notebooks
-import 'sql/workbench/parts/notebook/browser/notebook.contribution';
+import 'sql/workbench/contrib/notebook/browser/notebook.contribution';
 
 // backup
-import 'sql/workbench/parts/backup/browser/backup.contribution';
+import 'sql/workbench/contrib/backup/browser/backup.contribution';
 
 //restore
-import 'sql/workbench/parts/restore/browser/restore.contribution';
+import 'sql/workbench/contrib/restore/browser/restore.contribution';
 
 // Scripting
-import 'sql/workbench/parts/scripting/browser/scripting.contribution';
+import 'sql/workbench/contrib/scripting/browser/scripting.contribution';
 
 //#endregion

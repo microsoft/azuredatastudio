@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as parser from 'htmlparser2';
@@ -13,7 +12,7 @@ import { DacFxConfigPage } from '../api/dacFxConfigPage';
 
 const localize = nls.loadMessageBundle();
 
-export enum deployPlanXml {
+enum deployPlanXml {
 	AlertElement = 'Alert',
 	OperationElement = 'Operation',
 	ItemElement = 'Item',
@@ -24,14 +23,14 @@ export enum deployPlanXml {
 	DataIssueAttribute = 'DataIssue'
 }
 
-export class TableObject {
+class TableObject {
 	operation: string;
 	object: string;
 	type: string;
 	dataloss: boolean;
 }
 
-export class DeployPlanResult {
+class DeployPlanResult {
 	columnData: Array<Array<string>>;
 	dataLossAlerts: Set<string>;
 }

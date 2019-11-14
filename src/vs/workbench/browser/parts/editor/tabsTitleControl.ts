@@ -44,7 +44,7 @@ import { withNullAsUndefined, assertAllDefined, assertIsDefined } from 'vs/base/
 import { ILabelService } from 'vs/platform/label/common/label';
 
 // {{SQL CARBON EDIT}} -- Display the editor's tab color
-import * as QueryConstants from 'sql/workbench/parts/query/common/constants';
+import * as QueryConstants from 'sql/workbench/contrib/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 // {{SQL CARBON EDIT}} -- End
 

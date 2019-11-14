@@ -18,6 +18,7 @@ import { WebHDFS, HdfsError } from '../hdfs/webhdfs';
 import { PermissionStatus } from '../hdfs/aclEntry';
 import { Mount, MountStatus } from '../hdfs/mount';
 import { FileStatus, hdfsFileTypeToFileType } from '../hdfs/fileStatus';
+import { getIgnoreSslVerificationConfigSetting } from '../util/auth';
 
 const localize = nls.loadMessageBundle();
 
@@ -105,10 +106,11 @@ export interface IFileSource {
 	exists(path: string): Promise<boolean>;
 }
 
-export interface IHttpAuthentication {
+interface IHttpAuthentication {
 	user: string;
 	pass: string;
 }
+
 export interface IHdfsOptions {
 	host?: string;
 	port?: number;
@@ -143,12 +145,11 @@ export class FileSourceFactory {
 		options = options && options.host ? FileSourceFactory.removePortFromHost(options) : options;
 		let requestParams: IRequestParams = options.requestParams ? options.requestParams : {};
 		if (requestParams.auth || requestParams.isKerberos) {
-			// TODO Remove handling of unsigned cert once we have real certs in our Knox service
 			let agentOptions = {
 				host: options.host,
 				port: options.port,
 				path: constants.hdfsRootPath,
-				rejectUnauthorized: false
+				rejectUnauthorized: !getIgnoreSslVerificationConfigSetting()
 			};
 			let agent = new https.Agent(agentOptions);
 			requestParams['agent'] = agent;
@@ -176,7 +177,7 @@ export class FileSourceFactory {
 	}
 }
 
-export class HdfsFileSource implements IFileSource {
+class HdfsFileSource implements IFileSource {
 	private mounts: Map<string, Mount>;
 	constructor(private client: WebHDFS) {
 	}
@@ -240,7 +241,7 @@ export class HdfsFileSource implements IFileSource {
 	public readFile(path: string, maxBytes?: number): Promise<Buffer> {
 		return new Promise((resolve, reject) => {
 			let error: HdfsError = undefined;
-			let remoteFileStream = this.client.createReadStream(path);
+			let remoteFileStream: fs.ReadStream | meter.StreamMeter = this.client.createReadStream(path);
 			remoteFileStream.on('error', (err) => {
 				error = <HdfsError>err;
 				reject(error);

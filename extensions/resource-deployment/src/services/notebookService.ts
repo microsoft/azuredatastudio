@@ -35,7 +35,7 @@ export interface INotebookService {
 	launchNotebook(notebook: string | NotebookInfo): Thenable<azdata.nb.NotebookEditor>;
 	launchNotebookWithContent(title: string, content: string): Thenable<azdata.nb.NotebookEditor>;
 	getNotebook(notebook: string | NotebookInfo): Promise<Notebook>;
-	executeNotebook(notebook: any, env: NodeJS.ProcessEnv): Promise<NotebookExecutionResult>;
+	executeNotebook(notebook: any, env?: NodeJS.ProcessEnv): Promise<NotebookExecutionResult>;
 }
 
 export class NotebookService implements INotebookService {
@@ -73,17 +73,21 @@ export class NotebookService implements INotebookService {
 		return <Notebook>JSON.parse(await this.platformService.readTextFile(notebookPath));
 	}
 
-	async executeNotebook(notebook: Notebook, env: NodeJS.ProcessEnv): Promise<NotebookExecutionResult> {
+	async executeNotebook(notebook: Notebook, env?: NodeJS.ProcessEnv): Promise<NotebookExecutionResult> {
 		const content = JSON.stringify(notebook, undefined, 4);
 		const fileName = `nb-${getDateTimeString()}.ipynb`;
 		const workingDirectory = this.platformService.storagePath();
 		const notebookFullPath = path.join(workingDirectory, fileName);
 		const outputFullPath = path.join(workingDirectory, `output-${fileName}`);
+		const additionalEnvironmentVariables: NodeJS.ProcessEnv = env || {};
+		// Set the azdata eula
+		// Scenarios using the executeNotebook feature already have the EULA acceptted by the user before executing this.
+		additionalEnvironmentVariables['ACCEPT_EULA'] = 'yes';
 		try {
 			await this.platformService.saveTextFile(content, notebookFullPath);
 			await this.platformService.runCommand(`azdata notebook run --path "${notebookFullPath}" --output-path "${workingDirectory}" --timeout -1`,
 				{
-					additionalEnvironmentVariables: env,
+					additionalEnvironmentVariables: additionalEnvironmentVariables,
 					workingDirectory: workingDirectory
 				});
 			return {

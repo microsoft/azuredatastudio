@@ -156,10 +156,10 @@ import 'vs/workbench/contrib/configExporter/node/configurationExportHelper.contr
 import 'sql/workbench/update/electron-browser/releaseNotes.contribution';
 
 // query history
-import 'sql/workbench/parts/queryHistory/electron-browser/queryHistory.contribution';
+import 'sql/workbench/contrib/queryHistory/electron-browser/queryHistory.contribution';
 
 // CLI
-import 'sql/workbench/parts/commandLine/electron-browser/commandLine.contribution';
+import 'sql/workbench/contrib/commandLine/electron-browser/commandLine.contribution';
 
 //getting started
-import 'sql/workbench/parts/welcome/gettingStarted/electron-browser/gettingStarted.contribution';
+import 'sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted.contribution';

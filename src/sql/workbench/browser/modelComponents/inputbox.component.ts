@@ -22,6 +22,8 @@ import * as nls from 'vs/nls';
 import { inputBackground, inputBorder } from 'vs/platform/theme/common/colorRegistry';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import * as DOM from 'vs/base/browser/dom';
+import { assign } from 'vs/base/common/objects';
 
 @Component({
 	selector: 'modelview-inputBox',
@@ -78,18 +80,18 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 						args: this._input.value
 					});
 					if (this.stopEnterPropagation) {
-						e.stopPropagation();
+						DOM.EventHelper.stop(e, true);
 					}
 				}
 			});
 			this.registerInput(this._input, () => !this.multiline);
 		}
 		if (this._textareaContainer) {
-			let textAreaInputOptions = Object.assign({}, inputOptions, { flexibleHeight: true, type: 'textarea' });
+			let textAreaInputOptions = assign({}, inputOptions, { flexibleHeight: true, type: 'textarea' });
 			this._textAreaInput = new InputBox(this._textareaContainer.nativeElement, this.contextViewService, textAreaInputOptions);
 			this.onkeydown(this._textAreaInput.inputElement, (e: StandardKeyboardEvent) => {
 				if (this.tryHandleKeyEvent(e)) {
-					e.stopPropagation();
+					DOM.EventHelper.stop(e, true);
 				}
 				if (e.keyCode === KeyCode.Enter) {
 					this.fireEvent({
@@ -97,7 +99,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 						args: this._textAreaInput.value
 					});
 					if (this.stopEnterPropagation) {
-						e.stopPropagation();
+						DOM.EventHelper.stop(e, true);
 					}
 				}
 				// Else assume that keybinding service handles routing this to a command

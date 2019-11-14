@@ -15,6 +15,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 
 import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export interface IDropdownStyles {
 	backgroundColor?: Color;
@@ -42,14 +43,14 @@ export class DropdownList extends Dropdown {
 			this.button = new Button(_contentContainer);
 			this.button.label = action.label;
 			this._register(DOM.addDisposableListener(this.button.element, DOM.EventType.CLICK, () => {
-				action.run();
+				action.run().catch(e => onUnexpectedError(e));
 				this.hide();
 			}));
 			this._register(DOM.addDisposableListener(this.button.element, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 				let event = new StandardKeyboardEvent(e);
 				if (event.equals(KeyCode.Enter)) {
 					e.stopPropagation();
-					action.run();
+					action.run().catch(e => onUnexpectedError(e));
 					this.hide();
 				}
 			}));

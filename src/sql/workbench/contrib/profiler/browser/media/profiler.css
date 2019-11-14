@@ -1,0 +1,21 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.profiler-column-tree {
+	height: calc(100% - 25px);
+	width: 100%;
+}
+
+.tree-row > * {
+	display: inline-block;
+}
+
+.vs .codicon.clear-results {
+	background-image: url('clear.svg');
+}
+
+.vs-dark .codicon.clear-results {
+	background-image: url('clear_inverse.svg');
+}

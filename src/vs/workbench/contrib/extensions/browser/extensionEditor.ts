@@ -24,7 +24,7 @@ import { IExtensionManifest, IKeyBinding, IView, IViewContainer, ExtensionType }
 import { ResolvedKeybinding, KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput';
 import { IExtensionsWorkbenchService, IExtensionsViewlet, VIEWLET_ID, IExtension, ExtensionContainers } from 'vs/workbench/contrib/extensions/common/extensions';
-import { RatingsWidget, InstallCountWidget, RemoteBadgeWidget } from 'vs/workbench/contrib/extensions/browser/extensionsWidgets';
+import { /*RatingsWidget, InstallCountWidget,*/ RemoteBadgeWidget } from 'vs/workbench/contrib/extensions/browser/extensionsWidgets';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { CombinedInstallAction, UpdateAction, ExtensionEditorDropDownAction, ReloadAction, MaliciousStatusLabelAction, IgnoreExtensionRecommendationAction, UndoIgnoreExtensionRecommendationAction, EnableDropDownAction, DisableDropDownAction, StatusLabelAction, SetFileIconThemeAction, SetColorThemeAction, RemoteInstallAction, ExtensionToolTipAction, SystemDisabledWarningAction, LocalInstallAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
@@ -51,7 +51,7 @@ import { isUndefined } from 'vs/base/common/types';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IWebviewService, Webview, KEYBINDING_CONTEXT_WEBVIEW_FIND_WIDGET_FOCUSED } from 'vs/workbench/contrib/webview/browser/webview';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { renderDashboardContributions } from 'sql/workbench/parts/extensions/browser/contributionRenders'; // {{SQL CARBON EDIT}}
+import { renderDashboardContributions } from 'sql/workbench/contrib/extensions/browser/contributionRenders'; // {{SQL CARBON EDIT}}
 import { generateUuid } from 'vs/base/common/uuid';
 import { platform } from 'vs/base/common/process';
 import { URI } from 'vs/base/common/uri';
@@ -60,6 +60,7 @@ import { renderMarkdownDocument } from 'vs/workbench/contrib/markdown/common/mar
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { TokenizationRegistry } from 'vs/editor/common/modes';
 import { generateTokensCSSForColorMap } from 'vs/editor/common/modes/supports/tokenization';
+import { ExtensionsViewlet } from 'vs/workbench/contrib/extensions/browser/extensionsViewlet';
 
 function removeEmbeddedSVGs(documentContent: string): string {
 	const newDocument = new DOMParser().parseFromString(documentContent, 'text/html');
@@ -358,7 +359,7 @@ export class ExtensionEditor extends BaseEditor {
 		this.telemetryService.publicLog('extensionGallery:openExtension', assign(extension.telemetryData, recommendationsData));
 
 		toggleClass(template.name, 'clickable', !!extension.url);
-		toggleClass(template.publisher, 'clickable', !!extension.url);
+		toggleClass(template.publisher, 'clickable', !!extension.publisher); // {{SQL CARBON EDIT}} !!extension.url -> !!extension.publisher, for ADS we don't have marketplace website, but still want to make it clickable and filter extensions by publisher
 		toggleClass(template.rating, 'clickable', !!extension.url);
 		if (extension.url) {
 			this.transientDisposables.add(this.onClick(template.name, () => this.openerService.open(URI.parse(extension.url!))));
@@ -379,13 +380,20 @@ export class ExtensionEditor extends BaseEditor {
 			template.license.style.display = 'none';
 		}
 
-		// {{SQL CARBON EDIT}} add license url
-		if (extension.licenseUrl) {
-			template.license.onclick = finalHandler(() => window.open(extension.licenseUrl));
-			template.license.style.display = 'initial';
-		} else {
-			template.license.onclick = null;
-			template.license.style.display = 'none';
+		// {{SQL CARBON EDIT}}
+		// copied from the the extension.url condition block above
+		// for ADS the extension.url will be empty but we still want to make the publisher and license controls to be clickable
+		if (!extension.url) {
+			if (extension.licenseUrl) {
+				this.transientDisposables.add(this.onClick(template.license, () => this.openerService.open(URI.parse(extension.licenseUrl!))));
+				template.license.style.display = 'initial';
+			} else {
+				template.license.style.display = 'none';
+			}
+			this.transientDisposables.add(this.onClick(template.publisher, () => {
+				this.viewletService.openViewlet(VIEWLET_ID, true)
+					.then((viewlet: ExtensionsViewlet) => viewlet.search(`publisher:"${extension.publisherDisplayName}"`));
+			}));
 		}
 		// {{SQL CARBON EDIT}} - End
 

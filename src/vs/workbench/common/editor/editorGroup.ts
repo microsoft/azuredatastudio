@@ -11,12 +11,12 @@ import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/co
 import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ResourceMap } from 'vs/base/common/map';
-import { coalesce } from 'vs/base/common/arrays';
+import { coalesce, firstIndex } from 'vs/base/common/arrays';
 
 // {{SQL CARBON EDIT}}
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorInput';
+import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 
 const EditorOpenPositioning = {
 	LEFT: 'left',
@@ -719,7 +719,7 @@ export class EditorGroup extends Disposable {
 			if (editor instanceof QueryEditorInput && editor.matchInputInstanceType(FileEditorInput) && !editor.isDirty() && await editor.inputFileExists() === false && this.editors.length > 1) {
 				// remove from editors list so that they do not get restored
 				this.editors.splice(n, 1);
-				let index = this.mru.findIndex(e => e.matches(editor));
+				let index = firstIndex(this.mru, e => e.matches(editor));
 
 				// remove from MRU list otherwise later if we try to close them it leaves a sticky active editor with no data
 				this.mru.splice(index, 1);
