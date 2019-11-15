@@ -321,7 +321,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Figures out the first and last elements which the user can tab to in the dialog
 	 */
 	public setFirstLastTabbableElement() {
-		const tabbableElements = this.getBodyContainerTababbleElements();
+		const tabbableElements = this.getBodyContainerTabbableElements();
 		if (tabbableElements && tabbableElements.length > 0) {
 			this._firstTabbableElement = <HTMLElement>tabbableElements[0];
 			this._lastTabbableElement = <HTMLElement>tabbableElements[tabbableElements.length - 1];
@@ -336,7 +336,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		// This ensures that we are setting the focus on a useful element in the form when possible.
 		let focusableElements = this._modalBodySection ?
 			Array.from(this._modalBodySection.querySelectorAll('input')).filter(e => isVisible(e)) :
-			this.getBodyContainerTababbleElements();
+			this.getBodyContainerTabbableElements();
 
 		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
 
@@ -348,7 +348,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Gets all the currently visible elements for the body container of the dialog.
 	 */
-	private getBodyContainerTababbleElements(): HTMLElement[] {
+	private getBodyContainerTabbableElements(): HTMLElement[] {
 		// Filter out non-visible elements, which include things such as the messages panel that isn't always displayed
 		return Array.from(this._bodyContainer.querySelectorAll<HTMLElement>('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), div:not([style*="display: none"]) [tabindex="0"]'))
 			.filter(e => isVisible(e));
