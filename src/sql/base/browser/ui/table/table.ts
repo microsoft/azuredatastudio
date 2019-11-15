@@ -56,9 +56,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	private _onColumnResize = new Emitter<void>();
 	public readonly onColumnResize = this._onColumnResize.event;
 
-	//my addition
-	public selection: Slick.Range[] | boolean;
-
 	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
 		super();
 		if (!configuration || !configuration.dataProvider || isArray(configuration.dataProvider)) {

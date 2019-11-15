@@ -183,11 +183,7 @@ export class VirtualizedCollection<T extends Slick.SlickData> implements IObserv
 		return this.placeHolderGenerator(index);
 	}
 
-	public publicResetWindowsAroundIndex(index: number): void {
-		this.resetWindowsAroundIndex(index);
-	}
-
-	private resetWindowsAroundIndex(index: number): void {
+	public resetWindowsAroundIndex(index: number): void {
 
 		let bufferWindowBeforeStart = Math.max(0, index - this.windowSize * 1.5);
 		let bufferWindowBeforeEnd = Math.max(0, index - this.windowSize / 2);

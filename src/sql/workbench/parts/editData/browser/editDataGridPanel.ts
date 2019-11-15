@@ -525,8 +525,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				this.resetCurrentCell();
 
 				if (row !== undefined) {
-					//this.dataSet.dataRows.resetWindowsAroundIndex(row);
-					this.dataSet.dataRows.publicResetWindowsAroundIndex(row);
+					this.dataSet.dataRows.resetWindowsAroundIndex(row);
 				}
 			}
 		}
@@ -712,7 +711,15 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private restoreViewState(): void {
 		if (this.savedViewState) {
-			this._tables[0].selection = this.savedViewState.gridSelections;
+			//get all rows shown in gridSelections Range to use setSelectedRows directly.
+			let rowArray: number[] = [];
+			let fromRow = this.savedViewState.gridSelections[0].fromRow;
+			let toRow = this.savedViewState.gridSelections[0].toRow;
+			for (let i = fromRow; i <= toRow; i++) {
+				rowArray.push(i);
+			}
+
+			this._tables[0].setSelectedRows(rowArray);
 			let viewport = ((this._tables[0] as any)._grid.getCanvasNode() as HTMLElement).parentElement;
 			viewport.scrollLeft = this.savedViewState.scrollLeft;
 			viewport.scrollTop = this.savedViewState.scrollTop;

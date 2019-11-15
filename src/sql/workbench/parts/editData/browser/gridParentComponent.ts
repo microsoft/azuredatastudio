@@ -429,13 +429,13 @@ export abstract class GridParentComponent extends Disposable {
 			let grid = self._tables[self.activeGrid];
 			//let grid = self.tablegrids[self.activeGrid];
 			grid.setActive();
-			grid.selection = true;
+			grid.setSelectedRows(true);
 		};
 	}
 
 	private onSelectAllForActiveGrid(): void {
 		if (this.activeGrid >= 0 && this._tables.length > this.activeGrid) {
-			this._tables[this.activeGrid].selection = true;
+			this._tables[this.activeGrid].setSelectedRows(true);
 		}
 
 		// if (this.activeGrid >= 0 && this.tablegrids.length > this.activeGrid) {
