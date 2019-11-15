@@ -188,12 +188,12 @@ export abstract class Modal extends Disposable implements IThemable {
 				this._modalTitleIcon = DOM.append(this._modalHeaderSection, DOM.$('.modal-title-icon'));
 			}
 
-			this._modalTitle = DOM.append(this._modalHeaderSection, DOM.$('.modal-title'));
+			this._modalTitle = DOM.append(this._modalHeaderSection, DOM.$('h1.modal-title'));
 			this._modalTitle.innerText = this._title;
 		}
 
 		if (!this._modalOptions.isAngular && this._modalOptions.hasErrors) {
-			this._messageElement = DOM.$('.dialog-message.error');
+			this._messageElement = DOM.$('.dialog-message.error', { role: 'alert' });
 			const headerContainer = DOM.append(this._messageElement, DOM.$('.dialog-message-header'));
 			this._messageIcon = DOM.append(headerContainer, DOM.$('.dialog-message-icon'));
 			this._messageSeverity = DOM.append(headerContainer, DOM.$('.dialog-message-severity'));
