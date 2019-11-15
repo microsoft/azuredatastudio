@@ -167,7 +167,7 @@ export abstract class HdfsDialogBase<T extends HdfsDialogProperties, R> {
 				components: [
 					{
 						component: this.urlInputBox,
-						title: localize('textUrlCapital', "URL"),
+						title: localize('textUrlCapital', "Cluster Management URL"),
 						required: true
 					}, {
 						component: this.authDropdown,

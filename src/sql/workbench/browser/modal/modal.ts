@@ -188,7 +188,7 @@ export abstract class Modal extends Disposable implements IThemable {
 				this._modalTitleIcon = DOM.append(this._modalHeaderSection, DOM.$('.modal-title-icon'));
 			}
 
-			this._modalTitle = DOM.append(this._modalHeaderSection, DOM.$('.modal-title'));
+			this._modalTitle = DOM.append(this._modalHeaderSection, DOM.$('h1.modal-title'));
 			this._modalTitle.innerText = this._title;
 		}
 
