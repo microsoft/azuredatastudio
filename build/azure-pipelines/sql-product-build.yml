@@ -16,6 +16,8 @@ jobs:
     name: mssqltools
   steps:
   - template: win32/sql-product-build-win32.yml
+  timeoutInMinutes: 120
+  cancelTimeoutInMinutes: 5
 
 trigger: none
 pr: none
