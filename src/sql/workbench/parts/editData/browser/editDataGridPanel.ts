@@ -5,8 +5,6 @@
 
 import 'vs/css!./media/editData';
 
-//import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, EventEmitter } from '@angular/core';
-//import { VirtualizedCollection } from 'angular2-slickgrid';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
@@ -37,7 +35,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { deepClone } from 'vs/base/common/objects';
 
 import { Emitter } from 'vs/base/common/event';
-import { GridTableBase } from 'sql/workbench/parts/query/browser/gridPanel';
+
 
 
 export const EDITDATA_SELECTOR: string = 'editdatagridpanel';
@@ -48,13 +46,11 @@ export const EDITDATA_SELECTOR: string = 'editdatagridpanel';
 // 	templateUrl: decodeURI(require.toUrl('./editData.component.html'))
 // })
 
-
-//rename to EditDataGrid
 export class EditDataGridPanel extends GridParentComponent {
 
 	// The time(in milliseconds) we wait before refreshing the grid.
 	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
-	private refreshGridTimeoutInMs = 200; //original value was 200
+	private refreshGridTimeoutInMs = 200;
 
 	// The timeout handle for the refresh grid task
 	private refreshGridTimeoutHandle: any;
@@ -72,7 +68,6 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	//my fields:
 	private templateHTML: any;
-
 
 	// Current selected cell state
 	private currentCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
@@ -100,11 +95,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	};
 
 	constructor(
-		// @Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		// @Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
-		// @Inject(IBootstrapParams) params: IEditDataComponentParams,
-
-
 		params: IEditDataComponentParams,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@INotificationService private notificationService: INotificationService,
@@ -461,7 +451,6 @@ export class EditDataGridPanel extends GridParentComponent {
 				if (self.firstRender) {
 					self._tables[0] = self.createNewTable();
 					self._tables[0].setSelectionModel(self.selectionModel);
-					console.log(self.plugins);
 					for (let i = 0; i < self.plugins[0].length; i++) {
 						self._tables[0].registerPlugin(self.plugins[0][i]);
 					}
@@ -471,12 +460,9 @@ export class EditDataGridPanel extends GridParentComponent {
 						self.openContextMenu(e, self.dataSet.batchId, self.dataSet.resultId, 0);
 					};
 
-					// let onTableClick = (e: ITableMouseEvent) => {
-					// 	let rowNumberColumn = new RowNumberColumn({ numberOfRows: self.dataSet.dataRows.getLength() });
-					// 	rowNumberColumn.handleTableClick(e);
-					// };
 					self._register(self._tables[0].onContextMenu(onContextMenu, self));
-					//self._register(self._tables[0].onClick(onTableClick, self));
+
+					//TODO: Need to be able to add onClick function with working editor.
 
 					let setActive = function () {
 						if (self.firstRender && self._tables.length > 0) {
@@ -791,9 +777,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 
 	}
-
-
-
 
 	//my code here:
 	private createNewTable(): Table<any> {

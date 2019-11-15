@@ -6,16 +6,9 @@
 import 'vs/css!./media/flexbox';
 import 'vs/css!./media/styles';
 
-
-//import 'vs/css!./media/slick.grid';
-//import 'vs/css!./media/slickColorTheme';
-//import 'vs/css!./media/slickGrid';
-
 import { Table } from 'sql/base/browser/ui/table/table';
 
 import { Subscription, Subject } from 'rxjs/Rx';
-//import { ElementRef, QueryList, ChangeDetectorRef, ViewChildren } from '@angular/core';
-import { SlickGrid } from 'angular2-slickgrid';
 import * as Constants from 'sql/workbench/parts/query/common/constants';
 import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedConstants';
 import { IGridInfo, IGridDataSet, SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
@@ -38,7 +31,6 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
-import { fstat } from 'fs';
 
 
 export abstract class GridParentComponent extends Disposable {
@@ -81,8 +73,6 @@ export abstract class GridParentComponent extends Disposable {
 	protected activeGrid = 0;
 
 
-
-	//@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
 	protected nativeElement: HTMLElement;
 	protected _tables: Table<any>[] = [];
 

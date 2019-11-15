@@ -37,7 +37,6 @@ export class EditDataResultsEditor extends BaseEditor {
 	protected _input: EditDataResultsInput;
 	protected _rawOptions: BareResultsGridInfo;
 
-
 	private styleSheet = DOM.createStyleSheet();
 
 	//my own reference to the new grid panel
@@ -85,7 +84,7 @@ export class EditDataResultsEditor extends BaseEditor {
 
 
 		if (!input.hasBootstrapped) {
-			this.createTable();
+			this.createGridPanel();
 		}
 		return Promise.resolve<void>(null);
 	}
@@ -115,7 +114,7 @@ export class EditDataResultsEditor extends BaseEditor {
 	/**
 	 * Load the angular components and record for this input that we have done so
 	 */
-	private createTable(): void {
+	private createGridPanel(): void {
 		let input = <EditDataResultsInput>this.input;
 		let uri = input.uri;
 
@@ -126,11 +125,6 @@ export class EditDataResultsEditor extends BaseEditor {
 		}
 
 		const parent = input.container;
-
-
-
-
-
 
 		//Stuff afterwards can be ignored
 		// Mark that we have bootstrapped
@@ -151,17 +145,6 @@ export class EditDataResultsEditor extends BaseEditor {
 
 		let editGridPanel = this._register(this._instantiationService.createInstance(EditDataGridPanel, params));
 		editGridPanel.render(this.getContainer());
-
-		//this._instantiationService.createInstance(EditDataComponent, params);
-
-		//comment this out when actually running.
-		/* let selector = document.createElement(EDITDATA_SELECTOR);
-		parent.appendChild(selector);
-		this._instantiationService.invokeFunction((accessor) => {
-			const environmentService = accessor.get(IEnvironmentService);
-		}); */
-
-
 
 		// bootstrapAngular(this._instantiationService,
 		// 	EditDataModule,
