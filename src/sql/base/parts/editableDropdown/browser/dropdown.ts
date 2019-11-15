@@ -285,7 +285,7 @@ export class Dropdown extends Disposable {
 			this._treeContainer.style.height = height + 'px';
 
 			if (longestString.length > 10) {
-				this._treeContainer.style.width = this._widthControlElement.clientWidth + 'px';
+				this._treeContainer.style.width = DOM.getTotalWidth(this._widthControlElement) + 'px';
 			}
 			this._treeContainer.style.maxWidth = `500px`;
 
