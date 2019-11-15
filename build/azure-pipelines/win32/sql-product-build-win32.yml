@@ -56,13 +56,13 @@ steps:
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
       exec { yarn gulp "install-sqltoolsservice" }
-    displayName: Build
+    displayName: Install sqltoolsservice
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
       exec { yarn gulp "install-ssmsmin" }
-    displayName: Build
+    displayName: Install ssmsmin
 
   - task: ArchiveFiles@2 # WHY
     displayName: 'Archive build scripts source'
