@@ -1,17 +1,20 @@
 jobs:
 - job: macOS
+  condition: eq(variables['VSCODE_BUILD_MACOS'], 'true')
   pool:
     vmImage: macOS 10.13
   steps:
   - template: darwin/sql-product-build-darwin.yml
 
 - job: Linux
+  condition: eq(variables['VSCODE_BUILD_LINUX'], 'true')
   pool:
     vmImage: 'Ubuntu-16.04'
   steps:
   - template: linux/sql-product-build-linux.yml
 
 - job: Windows
+  condition: eq(variables['VSCODE_BUILD_WIN32'], 'true')
   pool:
     name: mssqltools
   steps:
