@@ -711,6 +711,10 @@ class ComponentWrapper implements azdata.Component {
 	public get valid(): boolean {
 		return this._valid;
 	}
+
+	public focus() {
+		return this._proxy.$focus(this._handle, this._id);
+	}
 }
 
 class ComponentWithIconWrapper extends ComponentWrapper {

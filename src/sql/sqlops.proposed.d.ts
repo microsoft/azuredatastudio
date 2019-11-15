@@ -183,6 +183,11 @@ declare module 'sqlops' {
 		 * Run the component's validations
 		 */
 		validate(): Thenable<boolean>;
+
+		/**
+		 * Focuses the component.
+		 */
+		focus(): Thenable<void>;
 	}
 
 	export interface FormComponent {
