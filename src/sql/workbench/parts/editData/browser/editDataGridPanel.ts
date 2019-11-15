@@ -13,7 +13,7 @@ import { ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
 
 import { IGridDataSet } from 'sql/workbench/parts/grid/common/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
-import { IEditDataComponentParams, IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { IEditDataComponentParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 import { GridParentComponent } from 'sql/workbench/parts/editData/browser/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/workbench/parts/editData/browser/editDataGridActions';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
@@ -471,8 +471,12 @@ export class EditDataGridPanel extends GridParentComponent {
 						self.openContextMenu(e, self.dataSet.batchId, self.dataSet.resultId, 0);
 					};
 
+					// let onTableClick = (e: ITableMouseEvent) => {
+					// 	let rowNumberColumn = new RowNumberColumn({ numberOfRows: self.dataSet.dataRows.getLength() });
+					// 	rowNumberColumn.handleTableClick(e);
+					// };
 					self._register(self._tables[0].onContextMenu(onContextMenu, self));
-					self._register(self._tables[0].onClick(self.onTableClick, self));
+					//self._register(self._tables[0].onClick(onTableClick, self));
 
 					let setActive = function () {
 						if (self.firstRender && self._tables.length > 0) {
@@ -804,21 +808,4 @@ export class EditDataGridPanel extends GridParentComponent {
 		return new Table(this.nativeElement);
 	}
 
-	private onTableClick(event: ITableMouseEvent) {
-		// account for not having the number column
-		let column = this.dataSet.columnDefinitions[event.cell.cell - 1];
-		// handle if a showplan link was clicked
-		if (column) {
-			// this.DataProvider.getRowData(event.cell.row, 1).then(async d => {
-			// 	let value = d.resultSubset.rows[0][event.cell.cell - 1];
-			// 	let content = value.displayValue;
-
-			// 	const input = this.untitledEditorService.createOrGet(undefined, column.isXml ? 'xml' : 'json', content);
-			// 	const model = await input.resolve();
-			// 	await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, model.textEditorModel, FormattingMode.Explicit, CancellationToken.None);
-			// 	return this.editorService.openEditor(input);
-			// });
-			console.log('cannot do anything for now');
-		}
-	}
 }
