@@ -24,7 +24,8 @@ if (isWeb) {
 			version: '1.39.0-dev',
 			vscodeVersion: '1.39.0-dev',
 			nameLong: 'Visual Studio Code Web Dev',
-			nameShort: 'VSCode Web Dev'
+			nameShort: 'VSCode Web Dev',
+			urlProtocol: 'code-oss'
 		});
 	}
 }
