@@ -4,17 +4,14 @@ steps:
       versionSpec: '10.15.1'
 
   - script: |
-      sudo add-apt-repository http://us.archive.ubuntu.com/ubuntu/ && sudo apt-get update && sudo apt-get install -y --no-install-recommends pkg-config libsecret-1-dev libx11-dev libxkbfile-dev libkrb5-dev fakeroot libxss1 libgconf-2-4 libunwind8 rpm g++-4.8 xvfb
-      sudo rm /usr/bin/gcc # what is going on here?
-      sudo rm /usr/bin/g++
-      sudo ln -s /usr/bin/gcc-4.8 /usr/bin/gcc
-      sudo ln -s /usr/bin/g++-4.8 /usr/bin/g++
-      ls /usr/bin/g*
+      set -e
+      sudo apt-get update
+      sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 libkrb5-dev #{{SQL CARBON EDIT}} add kerberos dep
+      sudo cp build/azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
+      sudo chmod +x /etc/init.d/xvfb
+      sudo update-rc.d xvfb defaults
+      sudo service xvfb start
     displayName: 'System Installs'
-
-  - script: |
-      Xvfb :99 -screen 0 1280x1024x24 -ac -nolisten tcp -nolisten unix > /dev/null 2>&1 & # this seems needlessly complicated
-    displayName: 'Setup headless display'
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
@@ -73,11 +70,11 @@ steps:
       PathtoPublish: '$(Build.BinariesDirectory)/source.tar.gz'
       ArtifactName: source
 
-  - script: './scripts/test-extensions-unit.sh'
+  - script: DISPLAY=:10 ./scripts/test-extensions-unit.sh
     displayName: 'Run Stable Extension Unit Tests'
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  - script: './scripts/test-extensions-unit-unstable.sh'
+  - script: DISPLAY=:10 ./scripts/test-extensions-unit-unstable.sh
     displayName: 'Run Unstable Extension Unit Tests'
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
