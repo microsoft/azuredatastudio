@@ -13,7 +13,7 @@ jobs:
 
 - job: Windows
   pool:
-    vmImage: VS2017-Win2016
+    name: mssqltools
   steps:
   - template: win32/sql-product-build-win32.yml
 
