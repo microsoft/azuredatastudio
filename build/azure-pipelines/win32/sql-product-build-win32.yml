@@ -7,10 +7,10 @@ steps:
     inputs:
       versionSpec: "1.x"
 
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '2.x'
-      addToPath: true
+  # - task: UsePythonVersion@0
+  #   inputs:
+  #     versionSpec: '2.x'
+  #     addToPath: true
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
     inputs:
