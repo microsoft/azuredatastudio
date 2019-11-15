@@ -25,7 +25,7 @@
 	"urlProtocol": "azuredatastudio",
 	"enableTelemetry": true,
 	"aiConfig": {
-		"asimovKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916"
+		"asimovKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e"
 	},
 	"sendASmile": {
 		"reportIssueUrl": "https://github.com/Microsoft/azuredatastudio/issues/new?labels=customer%20reported%20issue",
