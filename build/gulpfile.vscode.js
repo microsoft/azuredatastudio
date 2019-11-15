@@ -198,7 +198,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			.pipe(util.setExecutableBit(['**/*.sh']));
 
 		// {{SQL CARBON EDIT}}
-		ext.packageBuiltInExtensions();
+		ext.packageSQLExtensions();
 
 		const extensions = gulp.src(['.build/extensions/**', '!.build/extensions/node_modules/**'], { base: '.build', dot: true }); // {{SQL CARBON EDIT}} - don't package the node_modules directory
 

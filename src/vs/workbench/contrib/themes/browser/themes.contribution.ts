@@ -12,7 +12,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
 import { IWorkbenchThemeService, COLOR_THEME_SETTING, ICON_THEME_SETTING, IColorTheme, IFileIconTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { VIEWLET_ID, IExtensionsViewlet } from 'vs/workbench/contrib/extensions/common/extensions';
-import { IExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionManagement';
+// import { IExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IColorRegistry, Extensions as ColorRegistryExtensions } from 'vs/platform/theme/common/colorRegistry';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -33,7 +33,7 @@ export class SelectColorThemeAction extends Action {
 		label: string,
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
 		@IWorkbenchThemeService private readonly themeService: IWorkbenchThemeService,
-		@IExtensionGalleryService private readonly extensionGalleryService: IExtensionGalleryService,
+		// @IExtensionGalleryService private readonly extensionGalleryService: IExtensionGalleryService, {{SQL CARBON EDIT}} no unused
 		@IViewletService private readonly viewletService: IViewletService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
@@ -106,7 +106,7 @@ class SelectIconThemeAction extends Action {
 		label: string,
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
 		@IWorkbenchThemeService private readonly themeService: IWorkbenchThemeService,
-		@IExtensionGalleryService private readonly extensionGalleryService: IExtensionGalleryService,
+		// @IExtensionGalleryService private readonly extensionGalleryService: IExtensionGalleryService, {{SQL CARBON EDIT}} no unused
 		@IViewletService private readonly viewletService: IViewletService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
 
@@ -166,7 +166,7 @@ class SelectIconThemeAction extends Action {
 	}
 }
 
-function configurationEntries(extensionGalleryService: IExtensionGalleryService, label: string): QuickPickInput<ThemeItem>[] {
+/*function configurationEntries(extensionGalleryService: IExtensionGalleryService, label: string): QuickPickInput<ThemeItem>[] { {{SQL CARBON EDIT}} comment out function for no unused
 	if (extensionGalleryService.isEnabled()) {
 		return [
 			{
@@ -180,7 +180,7 @@ function configurationEntries(extensionGalleryService: IExtensionGalleryService,
 		];
 	}
 	return [];
-}
+}*/
 
 function openExtensionViewlet(viewletService: IViewletService, query: string) {
 	return viewletService.openViewlet(VIEWLET_ID, true).then(viewlet => {

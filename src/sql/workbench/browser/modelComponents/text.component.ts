@@ -99,7 +99,7 @@ export default class TextComponent extends TitledComponent implements IComponent
 		return this.requiredIndicator || !!this.description;
 	}
 
-	private onClick() {
+	public onClick() {
 		this.fireEvent({
 			eventType: ComponentEventType.onDidClick,
 			args: undefined

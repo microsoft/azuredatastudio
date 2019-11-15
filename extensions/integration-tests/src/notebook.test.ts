@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'mocha';
 import * as assert from 'assert';
 import * as azdata from 'azdata';
@@ -458,4 +456,3 @@ class NotebookTester {
 		assert(languageInNotebook === languageConfigured, `Expected cell language is: ${languageConfigured}, Actual: ${languageInNotebook}`);
 	}
 }
-

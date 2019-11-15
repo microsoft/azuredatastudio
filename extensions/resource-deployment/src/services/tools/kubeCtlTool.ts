@@ -7,11 +7,12 @@ import { Command, ToolType, OsType } from '../../interfaces';
 import * as nls from 'vscode-nls';
 import { SemVer } from 'semver';
 import { IPlatformService } from '../platformService';
-import { ToolBase, dependencyType } from './toolBase';
+import { dependencyType, ToolBase } from './toolBase';
 
 const localize = nls.loadMessageBundle();
 
 const defaultInstallationRoot = '/usr/local/bin';
+export const KubeCtlToolName = 'kubectl';
 
 export class KubeCtlTool extends ToolBase {
 	constructor(platformService: IPlatformService) {
@@ -19,7 +20,7 @@ export class KubeCtlTool extends ToolBase {
 	}
 
 	get name(): string {
-		return 'kubectl';
+		return KubeCtlToolName;
 	}
 
 	get description(): string {

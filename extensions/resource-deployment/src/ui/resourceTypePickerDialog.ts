@@ -35,7 +35,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		private toolsService: IToolsService,
 		private resourceTypeService: IResourceTypeService,
 		resourceType: ResourceType) {
-		super(localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
+		super(localize('resourceTypePickerDialog.title', "Select the deployment options (preview)"), 'ResourceTypePickerDialog', true);
 		this._selectedResourceType = resourceType;
 		this._installToolButton = azdata.window.createButton(localize('deploymentDialog.InstallToolsButton', "Install tools"));
 		this._toDispose.push(this._installToolButton.onClick(() => {

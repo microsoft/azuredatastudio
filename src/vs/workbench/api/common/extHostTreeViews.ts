@@ -22,7 +22,6 @@ import { IExtensionDescription } from 'vs/platform/extensions/common/extensions'
 
 // {{SQL CARBON EDIT}}
 import * as azdata from 'azdata';
-import { ITreeItem as sqlITreeItem } from 'sql/workbench/common/views';
 export type TreeItemHandle = string;
 
 function toTreeItemLabel(label: any, extension: IExtensionDescription): ITreeItemLabel | undefined {

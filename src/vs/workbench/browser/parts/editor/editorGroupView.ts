@@ -32,7 +32,7 @@ import { RunOnceWorker } from 'vs/base/common/async';
 import { EventType as TouchEventType, GestureEvent } from 'vs/base/browser/touch';
 import { TitleControl } from 'vs/workbench/browser/parts/editor/titleControl';
 import { IEditorGroupsAccessor, IEditorGroupView, IEditorPartOptionsChangeEvent, getActiveTextEditorOptions, IEditorOpeningEvent } from 'vs/workbench/browser/parts/editor/editor';
-import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
+// import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ActionRunner, IAction, Action } from 'vs/base/common/actions';
@@ -132,7 +132,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		@INotificationService private readonly notificationService: INotificationService,
 		@IDialogService private readonly dialogService: IDialogService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
-		@IUntitledEditorService private readonly untitledEditorService: IUntitledEditorService,
+		// @IUntitledEditorService private readonly untitledEditorService: IUntitledEditorService, {{SQL CARBON EDIT}} no unused
 		@IKeybindingService private readonly keybindingService: IKeybindingService,
 		@IMenuService private readonly menuService: IMenuService,
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,

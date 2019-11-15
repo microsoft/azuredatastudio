@@ -16,7 +16,6 @@ import { ModelViewInput, ModelViewInputModel, ModeViewSaveHandler } from 'sql/wo
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelViewDialog)
 export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape {
@@ -33,8 +32,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	constructor(
 		context: IExtHostContext,
 		@IInstantiationService private _instatiationService: IInstantiationService,
-		@IEditorService private _editorService: IEditorService,
-		@ITelemetryService private _telemetryService: ITelemetryService
+		@IEditorService private _editorService: IEditorService
 	) {
 		this._proxy = context.getProxy(SqlExtHostContext.ExtHostModelViewDialog);
 		this._dialogService = new CustomDialogService(_instatiationService);

@@ -181,8 +181,8 @@ async function handleNewNotebookTask(oeContext?: azdata.ObjectExplorerContext, p
 
 async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promise<void> {
 	let notebookFileTypeName = localize('notebookFileType', "Notebooks");
-	let filter = {};
-	filter[notebookFileTypeName] = 'ipynb';
+	let filter: { [key: string]: string[] } = {};
+	filter[notebookFileTypeName] = ['ipynb'];
 	let uris = await vscode.window.showOpenDialog({
 		filters: filter,
 		canSelectFiles: true,

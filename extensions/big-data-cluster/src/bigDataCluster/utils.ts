@@ -73,7 +73,7 @@ export function showErrorMessage(error: any, prefixText?: string): void {
  * Mappings of the different expected state values to their localized friendly names.
  * These are defined in aris/projects/controller/src/Microsoft.SqlServer.Controller/StateMachines
  */
-const stateToDisplayTextMap = {
+const stateToDisplayTextMap: { [key: string]: string } = {
 	// K8sScaledSetStateMachine
 	'creating': localize('state.creating', "Creating"),
 	'waiting': localize('state.waiting', "Waiting"),
@@ -234,14 +234,14 @@ interface RawEndpoint {
 	port?: number;
 }
 
-export interface IEndpoint {
+interface IEndpoint {
 	serviceName: string;
 	description: string;
 	endpoint: string;
 	protocol: string;
 }
 
-export function getClusterEndpoints(serverInfo: azdata.ServerInfo): IEndpoint[] {
+function getClusterEndpoints(serverInfo: azdata.ServerInfo): IEndpoint[] {
 	let endpoints: RawEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
 	if (!endpoints || endpoints.length === 0) { return []; }
 
@@ -272,8 +272,8 @@ export function getBdcStatusErrorMessage(error: Error): string {
 	return localize('endpointsError', "Unexpected error retrieving BDC Endpoints: {0}", error.message);
 }
 
-export const bdcConfigSectionName = 'bigDataCluster';
-export const ignoreSslConfigName = 'ignoreSslVerification';
+const bdcConfigSectionName = 'bigDataCluster';
+const ignoreSslConfigName = 'ignoreSslVerification';
 
 /**
  * Retrieves the current setting for whether to ignore SSL verification errors
@@ -287,5 +287,3 @@ export function getIgnoreSslVerificationConfigSetting(): boolean {
 	}
 	return true;
 }
-
-
