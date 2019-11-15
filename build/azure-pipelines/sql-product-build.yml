@@ -1,0 +1,9 @@
+jobs:
+- job: macOS
+  pool:
+    vmImage: macOS 10.13
+  steps:
+  - template: darwin/sql-product-build-darwin.yml
+
+trigger: none
+pr: none
