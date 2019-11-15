@@ -320,8 +320,8 @@ steps:
     displayName: Delete CodeSignSummary.md
 
   - script: |
-    if exist $(Build.SourcesDirectory)\..\azuredatastudio-windows rmdir /s /q $(Build.SourcesDirectory)\..\azuredatastudio-windows
-    move $(Build.SourcesDirectory)\..\azuredatastudio-win32-x64 $(Build.SourcesDirectory)\..\azuredatastudio-windows
+      if exist $(Build.SourcesDirectory)\..\azuredatastudio-windows rmdir /s /q $(Build.SourcesDirectory)\..\azuredatastudio-windows
+      move $(Build.SourcesDirectory)\..\azuredatastudio-win32-x64 $(Build.SourcesDirectory)\..\azuredatastudio-windows
     displayName: 'Rename Build Directory'
 
   - task: ArchiveFiles@1
@@ -343,9 +343,9 @@ steps:
       TargetFolder: '$(Build.ArtifactStagingDirectory)/user-setup/'
 
   - script: |
-    cd $(Build.ArtifactStagingDirectory)
-    ren *.zip *-UNSIGNED.zip
-    ren *.exe *-UNSIGNED.exe
+      cd $(Build.ArtifactStagingDirectory)
+      ren *.zip *-UNSIGNED.zip
+      ren *.exe *-UNSIGNED.exe
     displayName: 'Rename unsigned files'
     condition: or(failed(), eq(variables['signed'], false))
 
