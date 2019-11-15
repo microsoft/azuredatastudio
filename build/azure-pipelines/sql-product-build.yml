@@ -5,5 +5,11 @@ jobs:
   steps:
   - template: darwin/sql-product-build-darwin.yml
 
+- job: Linux
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  steps:
+  - template: linux/sql-product-build-linux.yml
+
 trigger: none
 pr: none
