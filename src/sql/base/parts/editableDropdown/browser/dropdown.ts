@@ -96,7 +96,7 @@ export class Dropdown extends Disposable {
 
 	private _onFocus = this._register(new Emitter<void>());
 	public onFocus: Event<void> = this._onFocus.event;
-	private _widthControlElement!: HTMLElement;
+	private readonly _widthControlElement: HTMLElement;
 
 	constructor(
 		container: HTMLElement,
