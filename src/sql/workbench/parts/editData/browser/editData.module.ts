@@ -7,10 +7,7 @@
 import { ApplicationRef, ComponentFactoryResolver, NgModule, Inject, forwardRef, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
-import { Table } from 'sql/base/browser/ui/table/table';
 import { SlickGrid } from 'angular2-slickgrid';
-
-//import { EditDataComponent, } from 'sql/workbench/parts/editData/browser/editData.component';
 import { EditDataGridPanel, } from 'sql/workbench/parts/editData/browser/editDataGridPanel';
 import { providerIterator } from 'sql/platform/bootstrap/browser/bootstrapService';
 
@@ -27,13 +24,11 @@ export const EditDataModule = (params: IBootstrapParams, selector: string, insta
 		],
 
 		declarations: [
-			//	EditDataComponent,
 			EditDataGridPanel,
 			SlickGrid
 		],
 
 		entryComponents: [
-			//EditDataComponent,
 			EditDataGridPanel
 		],
 		providers: [
@@ -51,7 +46,6 @@ export const EditDataModule = (params: IBootstrapParams, selector: string, insta
 		}
 
 		ngDoBootstrap(appRef: ApplicationRef) {
-			//const factory = this._resolver.resolveComponentFactory(EditDataComponent);
 			const factory = this._resolver.resolveComponentFactory(EditDataGridPanel);
 			(<any>factory).factory.selector = this.selector;
 			appRef.bootstrap(factory);

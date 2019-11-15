@@ -15,20 +15,12 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import * as types from 'vs/base/common/types';
 
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import { bootstrapAngular } from 'sql/platform/bootstrap/browser/bootstrapService';
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/parts/query/browser/queryResultsEditor';
 import { IEditDataComponentParams } from 'sql/platform/bootstrap/common/bootstrapParams';
-import { EditDataModule } from 'sql/workbench/parts/editData/browser/editData.module';
-import { EDITDATA_SELECTOR, EditDataGridPanel } from 'sql/workbench/parts/editData/browser/editDataGridPanel';
+import { EditDataGridPanel } from 'sql/workbench/parts/editData/browser/editDataGridPanel';
 import { EditDataResultsInput } from 'sql/workbench/parts/editData/browser/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-
-
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { Table } from 'sql/base/browser/ui/table/table';
-import { INotificationService } from 'vs/platform/notification/common/notification';
-
 
 export class EditDataResultsEditor extends BaseEditor {
 

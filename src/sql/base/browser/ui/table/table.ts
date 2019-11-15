@@ -11,7 +11,6 @@ import 'vs/css!./media/slickGrid';
 import { TableDataView } from './tableDataView';
 import { IDisposableDataProvider, ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 
-
 import * as DOM from 'vs/base/browser/dom';
 import { mixin } from 'vs/base/common/objects';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -28,8 +27,6 @@ function getDefaultOptions<T>(): Slick.GridOptions<T> {
 		emulatePagingWhenScrolling: false
 	};
 }
-
-
 
 export class Table<T extends Slick.SlickData> extends Widget implements IDisposable {
 	private styleElement: HTMLStyleElement;
@@ -59,6 +56,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	private _onColumnResize = new Emitter<void>();
 	public readonly onColumnResize = this._onColumnResize.event;
 
+	//my addition
 	public selection: Slick.Range[] | boolean;
 
 	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
@@ -126,9 +124,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	}
 
 	//own code begins here:
-
-
-
 	private invalidateRange(start: number, end: number): void {
 		let refreshedRows = _.range(start, end);
 		this._grid.invalidateRows(refreshedRows, true);
@@ -136,12 +131,10 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	}
 
 	private renderGridRange(startIndex: number, count: number): void {
-
 		let editor = this._grid.getCellEditor();
 		let oldValue = editor ? (<Slick.Editors.Text<T>>editor).getValue() : undefined;
 		let wasValueChanged = editor ? editor.isValueChanged() : false;
 		this.invalidateRange(startIndex, startIndex + count);
-
 		let activeCell = this.activeCell;
 		if (editor && activeCell.row >= startIndex && activeCell.row < startIndex + count) {
 			if (oldValue && wasValueChanged) {
@@ -240,6 +233,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		};
 	}
 
+	//additonal functions for SelectionModel
 	setSelectionModel(model: Slick.SelectionModel<T, Array<Slick.Range>>) {
 		this._grid.setSelectionModel(model);
 	}

@@ -33,10 +33,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { EditUpdateCellResult } from 'azdata';
 import { ILogService } from 'vs/platform/log/common/log';
 import { deepClone } from 'vs/base/common/objects';
-
 import { Emitter } from 'vs/base/common/event';
-
-
 
 export const EDITDATA_SELECTOR: string = 'editdatagridpanel';
 
@@ -47,7 +44,6 @@ export const EDITDATA_SELECTOR: string = 'editdatagridpanel';
 // })
 
 export class EditDataGridPanel extends GridParentComponent {
-
 	// The time(in milliseconds) we wait before refreshing the grid.
 	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
 	private refreshGridTimeoutInMs = 200;
