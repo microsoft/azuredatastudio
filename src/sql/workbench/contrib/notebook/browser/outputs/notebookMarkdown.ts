@@ -111,7 +111,12 @@ export class NotebookMarkdownRenderer {
 				text = removeMarkdownEscapes(text);
 			}
 			title = removeMarkdownEscapes(title);
-			href = removeMarkdownEscapes(href);
+			// only remove escaped characters if it's a hyperlink, filepath usually can start with .{}_
+			// and the below function escapes them if it encounters in the path.
+			if (!path.isAbsolute(href)) {
+
+				href = removeMarkdownEscapes(href);
+			}
 			if (
 				!href
 				|| !markdown.isTrusted
