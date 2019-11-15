@@ -116,7 +116,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		if (authTypeOption) {
-			if (OS === OperatingSystem.Windows) {
+			if ((OS === OperatingSystem.Windows) && (providerName === Constants.mssqlProviderName)) {
 				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.Integrated);
 			} else {
 				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.SqlLogin);
