@@ -75,7 +75,6 @@ export default class RadioButtonComponent extends ComponentBase implements IComp
 		this._input.label = this.label;
 		this._input.enabled = this.enabled;
 		this._input.checked = this.checked;
-		this.focused ? this._input.focus() : this._input.blur();
 	}
 
 	// CSS-bound properties
