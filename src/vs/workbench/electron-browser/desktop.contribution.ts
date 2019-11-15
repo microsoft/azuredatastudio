@@ -21,6 +21,7 @@ import { IsMacContext, HasMacNativeTabsContext } from 'vs/workbench/browser/cont
 import { NoEditorsVisibleContext, SingleEditorGroupsContext } from 'vs/workbench/common/editor';
 import { IElectronService } from 'vs/platform/electron/node/electron';
 import { IJSONContributionRegistry, Extensions as JSONExtensions } from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
+import product from 'vs/platform/product/common/product';
 
 import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions'; // {{SQL CARBON EDIT}} add import
 
@@ -169,14 +170,16 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 		order: 3
 	});
 
-	MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
-		group: '3_feedback',
-		command: {
-			id: 'workbench.action.openIssueReporter',
-			title: nls.localize({ key: 'miReportIssue', comment: ['&& denotes a mnemonic', 'Translate this to "Report Issue in English" in all languages please!'] }, "Report &&Issue")
-		},
-		order: 3
-	});
+	if (!!product.reportIssueUrl) {
+		MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
+			group: '3_feedback',
+			command: {
+				id: 'workbench.action.openIssueReporter',
+				title: nls.localize({ key: 'miReportIssue', comment: ['&& denotes a mnemonic', 'Translate this to "Report Issue in English" in all languages please!'] }, "Report &&Issue")
+			},
+			order: 3
+		});
+	}
 
 	// Tools
 	MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
