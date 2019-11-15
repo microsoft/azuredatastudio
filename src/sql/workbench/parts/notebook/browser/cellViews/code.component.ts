@@ -375,4 +375,8 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		}
 		this._editor.setHeightToScrollHeight(false, isCollapsed);
 	}
+
+	public deltaDecorations(newDecorationRange: any, oldDecorationRange: any): void {
+		// not-implemented
+	}
 }

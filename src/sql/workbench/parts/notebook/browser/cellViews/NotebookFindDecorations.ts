@@ -114,6 +114,7 @@ export class FindDecorations implements IDisposable {
 		}
 
 		if (this._highlightedDecorationId !== null || newCurrentDecorationId !== null) {
+			this.removePrevDecorations();
 			if (this.checkValidEditor(nextMatch)) {
 				this._editor.getCellEditor(nextMatch.cell.cellGuid).getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
 					if (this._highlightedDecorationId !== null) {
@@ -124,16 +125,7 @@ export class FindDecorations implements IDisposable {
 						this._highlightedDecorationId = newCurrentDecorationId;
 						changeAccessor.changeDecorationOptions(this._highlightedDecorationId, FindDecorations._CURRENT_FIND_MATCH_DECORATION);
 					}
-					if (this._rangeHighlightDecorationId !== null) {
-						if (this._currentMatch && this._currentMatch.cell && this._editor.getCellEditor(this._currentMatch.cell.cellGuid)) {
-							let prevMatch: NotebookRange = this._currentMatch;
-							this._editor.getCellEditor(prevMatch.cell.cellGuid).getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
-								changeAccessor.removeDecoration(this._rangeHighlightDecorationId);
-								this._rangeHighlightDecorationId = null;
-							});
-						}
-						this._currentMatch = nextMatch;
-					}
+
 					if (newCurrentDecorationId !== null) {
 						let rng = this._editor.getNotebookModel().getDecorationRange(newCurrentDecorationId)!;
 						if (rng.startLineNumber !== rng.endLineNumber && rng.endColumn === 1) {
@@ -142,12 +134,34 @@ export class FindDecorations implements IDisposable {
 							rng = new NotebookRange(rng.cell, rng.startLineNumber, rng.startColumn, lineBeforeEnd, lineBeforeEndMaxColumn);
 						}
 						this._rangeHighlightDecorationId = changeAccessor.addDecoration(rng, FindDecorations._RANGE_HIGHLIGHT_DECORATION);
+						this._currentMatch = nextMatch;
 					}
 				});
+			}
+			else {
+				this._editor.updateDecorations(nextMatch, undefined);
+				this._currentMatch = nextMatch;
 			}
 		}
 
 		return matchPosition;
+	}
+
+	private removePrevDecorations(): void {
+		if (this._currentMatch && this._currentMatch.cell) {
+			let pevEditor = this._editor.getCellEditor(this._currentMatch.cell.cellGuid);
+			if (pevEditor) {
+				let prevMatch: NotebookRange = this._currentMatch;
+				pevEditor.getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
+					changeAccessor.removeDecoration(this._rangeHighlightDecorationId);
+					this._rangeHighlightDecorationId = null;
+				});
+			} else {
+				if (this._currentMatch.cell.cellType === 'markdown') {
+					this._editor.updateDecorations(undefined, this._currentMatch);
+				}
+			}
+		}
 	}
 
 	public checkValidEditor(range: NotebookRange): boolean {

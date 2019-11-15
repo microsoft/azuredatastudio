@@ -17,6 +17,10 @@ text-cell-component .notebook-preview {
 	user-select: text;
 }
 
+.notebook-preview .rangeHighlight {
+	background-color: rgba(253, 255, 0, 0.2);
+}
+
 text-cell-component table {
 	border-collapse: collapse;
 	border-spacing: 0;

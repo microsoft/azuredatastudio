@@ -197,4 +197,8 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	public cellGuid(): string {
 		return this.cellModel.cellGuid;
 	}
+
+	public deltaDecorations(newDecorationRange: any, oldDecorationRange: any): void {
+		// not-implemented
+	}
 }

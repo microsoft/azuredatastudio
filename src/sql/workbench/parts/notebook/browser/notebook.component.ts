@@ -23,7 +23,7 @@ import * as DOM from 'vs/base/browser/dom';
 
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { CellTypes, CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
-import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { ICellModel, IModelFactory, INotebookModel, NotebookRange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
@@ -173,6 +173,17 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			editors.push(...this.textCells.toArray());
 		}
 		return editors;
+	}
+
+	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
+		if (newDecorationRange && newDecorationRange.cell && newDecorationRange.cell.cellType === 'markdown') {
+			let cell = this.cellEditors.find(c => c.cellGuid() === newDecorationRange.cell.cellGuid);
+			cell.deltaDecorations(newDecorationRange, undefined);
+		}
+		if (oldDecorationRange && oldDecorationRange.cell && oldDecorationRange.cell.cellType === 'markdown') {
+			let cell = this.cellEditors.find(c => c.cellGuid() === oldDecorationRange.cell.cellGuid);
+			cell.deltaDecorations(undefined, oldDecorationRange);
+		}
 	}
 
 	public get addCodeLabel(): string {

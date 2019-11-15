@@ -105,6 +105,15 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		return undefined;
 	}
 
+	// updateDecorations is only used for modifying decorations on markdown cells
+	// changeDecorations is the function that handles the decorations w.r.t codeEditor cells.
+	public updateDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
+		let editorImpl = this._notebookService.findNotebookEditor(this.notebookInput.notebookUri);
+		if (editorImpl) {
+			editorImpl.deltaDecorations(newDecorationRange, oldDecorationRange);
+		}
+	}
+
 	public changeDecorations(callback: (changeAccessor: IModelDecorationsChangeAccessor) => any): any {
 		if (!this._notebookModel) {
 			// callback will not be called
@@ -343,6 +352,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 
 	private _setCurrentFindMatch(match: NotebookRange): void {
 		if (match) {
+			this._notebookModel.updateActiveCell(match.cell);
 			this._decorations.setCurrentFindMatch(match);
 			this.setSelection(match);
 			this._revealRangeInCenterIfOutsideViewport(match, ScrollType.Smooth);
@@ -350,7 +360,6 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 	}
 
 	private _revealRangeInCenterIfOutsideViewport(match: NotebookRange, scrollType: ScrollType): void {
-		this._notebookModel.updateActiveCell(match.cell);
 		let matchEditor = this.getCellEditor(match.cell.cellGuid);
 		if (matchEditor && matchEditor instanceof BaseTextEditor) {
 			matchEditor.getContainer().scrollIntoView({ behavior: 'smooth', block: 'nearest' });

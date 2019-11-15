@@ -23,7 +23,7 @@ import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRender
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { NotebookMarkdownRenderer } from 'sql/workbench/parts/notebook/browser/outputs/notebookMarkdown';
 import { CellView } from 'sql/workbench/parts/notebook/browser/cellViews/interfaces';
-import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { ICellModel, NotebookRange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/parts/notebook/browser/outputs/sanitizer';
 import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/browser/cellToggleMoreActions';
@@ -264,7 +264,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.toggleEditMode(this.isActive());
 
 		if (this.output && this.output.nativeElement) {
-			(<HTMLElement>this.output.nativeElement).scrollTo({ behavior: 'smooth' });
+			(<HTMLElement>this.output.nativeElement).scrollIntoView({ behavior: 'smooth' });
 		}
 	}
 
@@ -274,5 +274,38 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	protected toggleMoreActionsButton(isActiveOrHovered: boolean) {
 		this._cellToggleMoreActions.toggleVisible(!isActiveOrHovered);
+	}
+
+	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
+		if (oldDecorationRange) {
+			this.removeDecoration(oldDecorationRange);
+		}
+
+		if (newDecorationRange) {
+			this.addDecoration(newDecorationRange);
+		}
+	}
+
+	private addDecoration(range: NotebookRange): void {
+		if (range && this.output && this.output.nativeElement) {
+			let hostElem = this.output.nativeElement;
+			let children = hostElem.children;
+			let ele = children[Math.ceil(range.lineNumber / 2)];
+			if (ele) {
+				ele.className = 'rangeHighlight';
+				ele.scrollIntoView({ behavior: 'smooth' });
+			}
+		}
+	}
+
+	private removeDecoration(range: NotebookRange): void {
+		if (range && this.output && this.output.nativeElement) {
+			let hostElem = this.output.nativeElement;
+			let children = hostElem.children;
+			let ele = children[Math.ceil(range.lineNumber / 2)];
+			if (ele) {
+				ele.className = ele.className.replace('rangeHighlight', '');
+			}
+		}
 	}
 }

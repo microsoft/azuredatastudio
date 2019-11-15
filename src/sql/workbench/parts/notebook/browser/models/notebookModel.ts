@@ -1240,8 +1240,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				} else {
 					for (let j = 0; j < cellVal.length; j++) {
 						index = 0;
-						while (cellVal[j].substr(index).toLocaleLowerCase().includes(exp.toLocaleLowerCase())) {
-							start = cellVal[j].substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index + 1;
+						let cellValFormatted = cell.cellType === 'markdown' ? this.cleanMarkdownLinks(cellVal[j]) : cellVal[j];
+						while (cellValFormatted.substr(index).toLocaleLowerCase().includes(exp.toLocaleLowerCase())) {
+							start = cellValFormatted.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index + 1;
 							end = start + exp.length;
 							// lineNumber: j+1 since notebook editors aren't zero indexed.
 							let range = new NotebookRange(cell, j + 1, start, j + 1, end);
@@ -1269,6 +1270,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				break;
 			}
 		}
+	}
+
+	cleanMarkdownLinks(cellSrc: string): string {
+		return cellSrc.replace(/(?:__|[*#])|\[(.*?)\]\(.*?\)/gm, '$1');
 	}
 
 	clearFind(): void {

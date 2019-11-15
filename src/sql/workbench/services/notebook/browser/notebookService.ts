@@ -13,7 +13,7 @@ import { ModelFactory } from 'sql/workbench/parts/notebook/browser/models/modelF
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ICellModel, INotebookModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { ICellModel, INotebookModel, NotebookRange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
@@ -148,6 +148,7 @@ export interface ICellEditorProvider {
 	hasEditor(): boolean;
 	cellGuid(): string;
 	getEditor(): BaseTextEditor;
+	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void;
 }
 
 export interface INotebookEditor {
@@ -167,6 +168,7 @@ export interface INotebookEditor {
 	clearAllOutputs(): Promise<boolean>;
 	getSections(): INotebookSection[];
 	navigateToSection(sectionId: string): void;
+	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void;
 }
 
 export interface INavigationProvider {
