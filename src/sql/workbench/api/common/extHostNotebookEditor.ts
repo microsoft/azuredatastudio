@@ -13,7 +13,7 @@ import { readonly } from 'vs/base/common/errors';
 import { MainThreadNotebookDocumentsAndEditorsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/common/extHostNotebookDocumentData';
 import { CellRange, ISingleNotebookEditOperation, ICellRange } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { HideInputTag } from 'sql/workbench/parts/notebook/browser/models/cell';
+import { HideInputTag } from 'sql/workbench/contrib/notebook/browser/models/cell';
 import { find } from 'vs/base/common/arrays';
 
 export interface INotebookEditOperation {

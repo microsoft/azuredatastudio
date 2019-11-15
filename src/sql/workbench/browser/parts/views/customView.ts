@@ -46,8 +46,8 @@ import { FuzzyScore, createMatches } from 'vs/base/common/filters';
 import { CollapseAllAction } from 'vs/base/browser/ui/tree/treeDefaults';
 
 import { ITreeItem, ITreeView } from 'sql/workbench/common/views';
-import { IOEShimService } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerViewTreeShim';
-import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/browser/nodeContext';
+import { IOEShimService } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerViewTreeShim';
+import { NodeContextKey } from 'sql/workbench/contrib/dataExplorer/browser/nodeContext';
 import { UserCancelledConnectionError } from 'sql/base/common/errors';
 import { firstIndex } from 'vs/base/common/arrays';
 

@@ -6,13 +6,13 @@
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ObjectExplorerService, NodeExpandInfoWithProviderId } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
-import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
-import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/parts/objectExplorer/common/treeNode';
+import { NodeType } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
+import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
 
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
+import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { Event } from 'vs/base/common/event';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';

@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
-import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/parts/objectExplorer/common/treeNode';
+import { NodeType } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
+import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -13,7 +13,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
+import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { ILogService } from 'vs/platform/log/common/log';
