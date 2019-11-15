@@ -37,6 +37,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { deepClone } from 'vs/base/common/objects';
 
 import { Emitter } from 'vs/base/common/event';
+import { GridTableBase } from 'sql/workbench/parts/query/browser/gridPanel';
 
 
 export const EDITDATA_SELECTOR: string = 'editdatagridpanel';
@@ -103,15 +104,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		// @Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
 		// @Inject(IBootstrapParams) params: IEditDataComponentParams,
 
-		// @Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		// @Inject(INotificationService) private notificationService: INotificationService,
-		// @Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		// @Inject(IKeybindingService) keybindingService: IKeybindingService,
-		// @Inject(IContextKeyService) contextKeyService: IContextKeyService,
-		// @Inject(IConfigurationService) configurationService: IConfigurationService,
-		// @Inject(IClipboardService) clipboardService: IClipboardService,
-		// @Inject(IQueryEditorService) queryEditorService: IQueryEditorService,
-		// @Inject(ILogService) logService: ILogService,
+
 		params: IEditDataComponentParams,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@INotificationService private notificationService: INotificationService,
@@ -467,19 +460,19 @@ export class EditDataGridPanel extends GridParentComponent {
 				//self._cd.detectChanges();
 				if (self.firstRender) {
 					self._tables[0] = self.createNewTable();
-					self._tables[0].registerPlugin(self.plugins[0][0]);
 					self._tables[0].setSelectionModel(self.selectionModel);
 					console.log(self.plugins);
-					// for (let i = 0; i < self.plugins[0].length; i++) {
-					// 	self._tables[0].registerPlugin(self.plugins[0][i]);
-					// }
+					for (let i = 0; i < self.plugins[0].length; i++) {
+						self._tables[0].registerPlugin(self.plugins[0][i]);
+					}
 
 
 					let onContextMenu = (e: ITableMouseEvent) => {
 						self.openContextMenu(e, self.dataSet.batchId, self.dataSet.resultId, 0);
 					};
+
 					self._register(self._tables[0].onContextMenu(onContextMenu, self));
-					//self._register(self._tables[0].onClick(self.handleContextClick, this));
+					self._register(self._tables[0].onClick(self.onTableClick, self));
 
 					let setActive = function () {
 						if (self.firstRender && self._tables.length > 0) {
@@ -809,5 +802,23 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 		}
 		return new Table(this.nativeElement);
+	}
+
+	private onTableClick(event: ITableMouseEvent) {
+		// account for not having the number column
+		let column = this.dataSet.columnDefinitions[event.cell.cell - 1];
+		// handle if a showplan link was clicked
+		if (column) {
+			// this.DataProvider.getRowData(event.cell.row, 1).then(async d => {
+			// 	let value = d.resultSubset.rows[0][event.cell.cell - 1];
+			// 	let content = value.displayValue;
+
+			// 	const input = this.untitledEditorService.createOrGet(undefined, column.isXml ? 'xml' : 'json', content);
+			// 	const model = await input.resolve();
+			// 	await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, model.textEditorModel, FormattingMode.Explicit, CancellationToken.None);
+			// 	return this.editorService.openEditor(input);
+			// });
+			console.log('cannot do anything for now');
+		}
 	}
 }

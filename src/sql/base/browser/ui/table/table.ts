@@ -52,6 +52,10 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	private _onClick = new Emitter<ITableMouseEvent>();
 	public readonly onClick: Event<ITableMouseEvent> = this._onClick.event;
 
+	//my addition
+	private _onHeaderClick = new Emitter<ITableMouseEvent>();
+	public readonly onHeaderClick: Event<ITableMouseEvent> = this._onHeaderClick.event;
+
 	private _onColumnResize = new Emitter<void>();
 	public readonly onColumnResize = this._onColumnResize.event;
 
@@ -116,6 +120,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 		this.mapMouseEvent(this._grid.onContextMenu, this._onContextMenu);
 		this.mapMouseEvent(this._grid.onClick, this._onClick);
+		//my addition
+		this.mapMouseEvent(this._grid.onHeaderClick, this._onHeaderClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
 	}
 
