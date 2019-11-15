@@ -82,7 +82,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 		if (this.reverseColor) { // {{SQL CARBON EDIT}}
 			(configuration as IDiffEditorOptions).reverse = true;
 		}
-		return this.instantiationService.createInstance(DiffEditorWidget, parent, configuration, this._clipboardService);
+		return this.instantiationService.createInstance(DiffEditorWidget as any, parent, configuration, this._clipboardService); // {{SQL CARBON EDIT}} strict-null-check...i guess?
 	}
 
 	async setInput(input: EditorInput, options: EditorOptions | undefined, token: CancellationToken): Promise<void> {

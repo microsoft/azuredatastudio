@@ -29,7 +29,7 @@ import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
-import { Action } from 'vs/base/common/actions';
+import { Action, IAction } from 'vs/base/common/actions';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { memoize } from 'vs/base/common/decorators';
@@ -117,7 +117,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 				this._collapseAction = this.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed);
 				this._actionbar.push(this._collapseAction, { icon: true, label: false });
 			}
-			this._actionbar.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, this._component.actionsContext), { icon: true, label: false });
+			this._actionbar.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions as Array<IAction>, this._component.actionsContext), { icon: true, label: false });
 		}
 		this.layout();
 	}

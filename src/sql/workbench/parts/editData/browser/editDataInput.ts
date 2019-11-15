@@ -38,8 +38,8 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 
 	constructor(
 		private _uri: URI,
-		private _schemaName,
-		private _tableName,
+		private _schemaName: string,
+		private _tableName: string,
 		private _sql: UntitledEditorInput,
 		private _queryString: string,
 		private _results: EditDataResultsInput,

@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
@@ -345,7 +344,7 @@ export class NotebookInput extends EditorInput {
 		if (this._model) {
 			return Promise.resolve(this._model);
 		} else {
-			let textOrUntitledEditorModel: UntitledEditorModel | IEditorModel;
+			let textOrUntitledEditorModel: TextFileEditorModel | UntitledEditorModel | ResourceEditorModel;
 			if (this.resource.scheme === Schemas.untitled) {
 				if (this._untitledEditorModel) {
 					this._untitledEditorModel.textEditorModel.onBeforeAttached();
@@ -358,7 +357,7 @@ export class NotebookInput extends EditorInput {
 			} else {
 				const textEditorModelReference = await this.textModelService.createModelReference(this.resource);
 				textEditorModelReference.object.textEditorModel.onBeforeAttached();
-				textOrUntitledEditorModel = await textEditorModelReference.object.load();
+				textOrUntitledEditorModel = await textEditorModelReference.object.load() as TextFileEditorModel | ResourceEditorModel;
 			}
 			this._model = this._register(this.instantiationService.createInstance(NotebookEditorModel, this.resource, textOrUntitledEditorModel));
 			this.hookDirtyListener(this._model.onDidChangeDirty, () => this._onDidChangeDirty.fire());

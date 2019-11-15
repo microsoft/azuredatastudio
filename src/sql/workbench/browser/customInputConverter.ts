@@ -45,7 +45,7 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 			uri = getQueryEditorFileUri(input);
 			if (uri) {
 				const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, uri.toString(true));
-				let queryInput: QueryInput = instantiationService.createInstance(QueryInput, '', input, queryResultsInput, undefined);
+				let queryInput: QueryInput = instantiationService.createInstance(QueryInput, '', input as UntitledEditorInput, queryResultsInput, undefined);
 				return queryInput;
 			}
 
@@ -59,7 +59,7 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 		//Notebook
 		uri = getNotebookEditorUri(input, instantiationService);
 		if (uri) {
-			let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, input.getName(), uri, input);
+			let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, input.getName(), uri, input as UntitledEditorInput);
 			return notebookInput;
 		}
 	}

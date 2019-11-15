@@ -400,7 +400,7 @@ export class InsightsDialogView extends Modal {
 			let task = tasks.some(x => x === action);
 			let commandAction = MenuRegistry.getCommand(action);
 			if (task) {
-				returnActions.push(this._instantiationService.createInstance(ExecuteCommandAction, commandAction.id, commandAction.title));
+				returnActions.push(this._instantiationService.createInstance(ExecuteCommandAction, commandAction.id as string, commandAction.title as string));
 			}
 		}
 		return returnActions;

@@ -31,6 +31,7 @@ import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsSe
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { ILogService } from 'vs/platform/log/common/log';
 import { assign } from 'vs/base/common/objects';
+import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 
 /**
  * Service wrapper for opening and creating SQL documents as sql editor inputs
@@ -256,7 +257,7 @@ export class QueryEditorService implements IQueryEditorService {
 		let newEditorInput: IEditorInput = undefined;
 		if (changingToSql) {
 			const queryResultsInput: QueryResultsInput = this._instantiationService.createInstance(QueryResultsInput, uri.toString());
-			let queryInput: QueryInput = this._instantiationService.createInstance(QueryInput, '', input, queryResultsInput, undefined);
+			let queryInput: QueryInput = this._instantiationService.createInstance(QueryInput, '', input as UntitledEditorInput, queryResultsInput, undefined);
 			newEditorInput = queryInput;
 		} else {
 			let uriCopy: URI = URI.from({ scheme: uri.scheme, authority: uri.authority, path: uri.path, query: uri.query, fragment: uri.fragment });

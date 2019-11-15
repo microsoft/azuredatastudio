@@ -5,11 +5,10 @@
 
 import * as dom from 'vs/base/browser/dom';
 import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
-import { LIGHT } from 'vs/platform/theme/common/themeService';
+import { LIGHT, IThemeService } from 'vs/platform/theme/common/themeService';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ITreeComponentItem } from 'sql/workbench/common/views';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { TreeViewDataProvider } from './treeViewDataProvider';
 import { URI } from 'vs/base/common/uri';
 
@@ -95,7 +94,7 @@ export class TreeComponentRenderer extends Disposable implements IRenderer {
 
 	constructor(
 		private _dataProvider: TreeViewDataProvider,
-		private themeService: IWorkbenchThemeService,
+		private themeService: IThemeService,
 		public options?: { withCheckbox: boolean }
 	) {
 		super();

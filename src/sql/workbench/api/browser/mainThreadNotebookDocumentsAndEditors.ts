@@ -34,6 +34,7 @@ import { notebookModeId } from 'sql/workbench/browser/customInputConverter';
 import { localize } from 'vs/nls';
 import { IFileService } from 'vs/platform/files/common/files';
 import { find } from 'vs/base/common/arrays';
+import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -455,7 +456,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 
 		const fileInput = isUntitled ? this._untitledEditorService.createOrGet(uri, notebookModeId, options.initialContent) :
 			this._editorService.createInput({ resource: uri, mode: notebookModeId });
-		let input = this._instantiationService.createInstance(NotebookInput, path.basename(uri.fsPath), uri, fileInput);
+		let input = this._instantiationService.createInstance(NotebookInput, path.basename(uri.fsPath), uri, fileInput as UntitledEditorInput);
 		input.defaultKernel = options.defaultKernel;
 		input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);
 		if (isUntitled) {
