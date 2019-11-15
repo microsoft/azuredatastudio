@@ -259,6 +259,14 @@
 			]
 		},
 		{
+			"name": "Debug azuredatastudio Main, Renderer & Extension Host",
+			"configurations": [
+				"Launch azuredatastudio",
+				"Attach to Main Process",
+				"Attach to Extension Host"
+			]
+		},
+		{
 			"name": "Debug Renderer and search processes",
 			"configurations": [
 				"Launch azuredatastudio",

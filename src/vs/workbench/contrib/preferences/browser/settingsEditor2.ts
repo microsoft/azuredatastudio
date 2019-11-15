@@ -134,9 +134,6 @@ export class SettingsEditor2 extends BaseEditor {
 	private scheduledRefreshes: Map<string, DOM.IFocusTracker>;
 	private lastFocusedSettingElement: string | null = null;
 
-	private actionBar: ActionBar;
-	private actionsContainer: HTMLElement;
-
 	/** Don't spam warnings */
 	private hasWarnedMissingSettings = false;
 
@@ -449,14 +446,14 @@ export class SettingsEditor2 extends BaseEditor {
 		this.settingsTargetsWidget.settingsTarget = ConfigurationTarget.USER_LOCAL;
 		this.settingsTargetsWidget.onDidTargetChange(target => this.onDidSettingsTargetChange(target));
 
-		this.actionsContainer = DOM.append(searchContainer, DOM.$('.settings-clear-widget'));
+		const actionsContainer = DOM.append(searchContainer, DOM.$('.settings-clear-widget'));
 
-		this.actionBar = this._register(new ActionBar(this.actionsContainer, {
+		const actionBar = this._register(new ActionBar(actionsContainer, {
 			animated: false,
 			actionViewItemProvider: (action: Action) => { return undefined; }
 		}));
 
-		this.actionBar.push([clearInputAction], { label: false, icon: true });
+		actionBar.push([clearInputAction], { label: false, icon: true });
 	}
 
 	private onDidSettingsTargetChange(target: SettingsTarget): void {
