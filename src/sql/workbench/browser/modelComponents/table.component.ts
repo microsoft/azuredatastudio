@@ -252,10 +252,6 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.ariaRole = this.ariaRole;
 		}
 
-		if (this.focused) {
-			this._table.focus();
-		}
-
 		if (this.updateCells !== undefined) {
 			this.updateTableCells(this.updateCells);
 		}
@@ -366,14 +362,6 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public get moveFocusOutWithTab(): boolean {
 		return this.getPropertyOrDefault<azdata.TableComponentProperties, boolean>((props) => props.moveFocusOutWithTab, false);
-	}
-
-	public get focused(): boolean {
-		return this.getPropertyOrDefault<azdata.RadioButtonProperties, boolean>((props) => props.focused, false);
-	}
-
-	public set focused(newValue: boolean) {
-		this.setPropertyFromUI<azdata.RadioButtonProperties, boolean>((properties, value) => { properties.focused = value; }, newValue);
 	}
 
 	public get updateCells(): azdata.TableCell[] {

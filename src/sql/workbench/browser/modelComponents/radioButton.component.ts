@@ -116,11 +116,8 @@ export default class RadioButtonComponent extends ComponentBase implements IComp
 		this.setPropertyFromUI<azdata.RadioButtonProperties, string>((properties, label) => { properties.name = label; }, newValue);
 	}
 
-	public get focused(): boolean {
-		return this.getPropertyOrDefault<azdata.RadioButtonProperties, boolean>((props) => props.focused, false);
+	public focus(): void {
+		this._input.focus();
 	}
 
-	public set focused(newValue: boolean) {
-		this.setPropertyFromUI<azdata.RadioButtonProperties, boolean>((properties, value) => { properties.focused = value; }, newValue);
-	}
 }
