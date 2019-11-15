@@ -57,7 +57,7 @@ export class TelemetryService extends Disposable implements ITelemetryService {
 		if (!!productService.enableTelemetry) {
 			const config: ITelemetryServiceConfig = {
 				appender: combinedAppender(new WebTelemetryAppender(logService, remoteAgentService, productService), new LogAppender(logService)), // {{SQL CARBON EDIT}}
-				commonProperties: resolveWorkbenchCommonProperties(storageService, productService.commit, productService.version, environmentService.configuration.remoteAuthority)
+				commonProperties: resolveWorkbenchCommonProperties(storageService, productService.commit, productService.version, environmentService.configuration.remoteAuthority, environmentService.options && environmentService.options.resolveCommonTelemetryProperties)
 			};
 
 			this.impl = this._register(new BaseTelemetryService(config, configurationService));
