@@ -11,5 +11,11 @@ jobs:
   steps:
   - template: linux/sql-product-build-linux.yml
 
+- job: Windows
+  pool:
+    vmImage: VS2017-Win2016
+  steps:
+  - template: win32/sql-product-build-win32.yml
+
 trigger: none
 pr: none
