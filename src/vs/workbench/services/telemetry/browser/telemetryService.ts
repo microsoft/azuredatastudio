@@ -19,15 +19,13 @@ import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteA
 
 export class WebTelemetryAppender implements ITelemetryAppender {
 
-	constructor(private _logService: ILogService, private _appender: IRemoteAgentService,
-		@IProductService private _productService: IProductService) { } // {{ SQL CARBON EDIT }}
+	constructor(private _logService: ILogService, private _appender: IRemoteAgentService) { }
 
 	log(eventName: string, data: any): void {
 		data = validateTelemetryData(data);
 		this._logService.trace(`telemetry/${eventName}`, data);
 
-		const eventPrefix = this._productService.quality !== 'stable' ? '/adsworkbench/' : '/monacoworkbench/'; // {{SQL CARBON EDIT}}
-		this._appender.logTelemetry(eventPrefix + eventName, {
+		this._appender.logTelemetry(eventName, {
 			properties: data.properties,
 			measurements: data.measurements
 		});
@@ -56,7 +54,7 @@ export class TelemetryService extends Disposable implements ITelemetryService {
 
 		if (!!productService.enableTelemetry) {
 			const config: ITelemetryServiceConfig = {
-				appender: combinedAppender(new WebTelemetryAppender(logService, remoteAgentService, productService), new LogAppender(logService)), // {{SQL CARBON EDIT}}
+				appender: combinedAppender(new WebTelemetryAppender(logService, remoteAgentService), new LogAppender(logService)),
 				commonProperties: resolveWorkbenchCommonProperties(storageService, productService.commit, productService.version, environmentService.configuration.remoteAuthority, environmentService.options && environmentService.options.resolveCommonTelemetryProperties)
 			};
 
