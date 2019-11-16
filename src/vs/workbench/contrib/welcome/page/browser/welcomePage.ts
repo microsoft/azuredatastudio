@@ -44,6 +44,7 @@ import { IRecentlyOpened, isRecentWorkspace, IRecentWorkspace, IRecentFolder, is
 import { CancellationToken } from 'vs/base/common/cancellation';
 import 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}}
 import { IHostService } from 'vs/workbench/services/host/browser/host';
+import { IProductService } from 'vs/platform/product/common/productService';
 
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
@@ -264,7 +265,9 @@ class WelcomePage extends Disposable {
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
-		@IHostService private readonly hostService: IHostService
+		@IHostService private readonly hostService: IHostService,
+		@IProductService private readonly productService: IProductService,
+
 	) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
@@ -299,6 +302,11 @@ class WelcomePage extends Disposable {
 		showOnStartup.addEventListener('click', e => {
 			this.configurationService.updateValue(configurationKey, showOnStartup.checked ? 'welcomePage' : 'newUntitledFile', ConfigurationTarget.USER);
 		});
+
+		const prodName = container.querySelector('.welcomePage .title .caption') as HTMLElement;
+		if (prodName) {
+			prodName.innerHTML = this.productService.nameLong;
+		}
 
 		recentlyOpened.then(({ workspaces }) => {
 			// Filter out the current workspace
