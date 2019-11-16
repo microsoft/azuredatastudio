@@ -10,7 +10,7 @@ import { IPlatformService } from '../platformService';
 import { dependencyType, ToolBase } from './toolBase';
 
 const localize = nls.loadMessageBundle();
-const defaultInstallationRoot = '~/.local/bin';
+const defaultInstallationRoot = '/usr/local/bin';
 const win32InstallationRoot = `${process.env['ProgramFiles(x86)']}\\Microsoft SDKs\\Azure\\CLI2\\wbin`;
 export const AzCliToolName = 'azure-cli';
 
