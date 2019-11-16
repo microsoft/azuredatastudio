@@ -7,6 +7,8 @@
 The base color for this template is #5c87b2. If you'd like
 to use a different color start by replacing all instances of
 #5c87b2 with your new color.
+
+öäüßßß
 ----------------------------------------------------------*/
 body
 {
@@ -25,12 +27,12 @@ h1, h2, h3, h4, h5, h6
     margin: 0px;
 }
 
-textarea 
+textarea
 {
    font-family: Consolas
 }
 
-#results 
+#results
 {
     margin-top: 2em;
     margin-left: 2em;

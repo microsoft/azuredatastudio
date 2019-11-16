@@ -1155,8 +1155,8 @@ export class SelectionRange {
 
 export class CallHierarchyItem {
 
-	_sessionId: string;
-	_itemId: string;
+	_sessionId?: string;
+	_itemId?: string;
 
 	kind: SymbolKind;
 	name: string;

@@ -10,6 +10,7 @@
 		"alwaysStrict": true,
 		"strictBindCallApply": true,
 		"strictNullChecks": false,
+		"strictPropertyInitialization": false,
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
 		"paths": {

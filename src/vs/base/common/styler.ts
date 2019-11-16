@@ -3,8 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-declare module 'windows-foreground-love' {
+import { Color } from 'vs/base/common/color';
 
-	export function allowSetForegroundWindow(pid?: number): boolean;
+export type styleFn = (colors: { [name: string]: Color | undefined }) => void;
 
+export interface IThemable {
+	style: styleFn;
 }

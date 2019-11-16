@@ -43,12 +43,12 @@ import { ExtensionType, ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/platfor
 // import { extname } from 'vs/base/common/resources';
 import { IExeBasedExtensionTip, IProductService } from 'vs/platform/product/common/productService';
 import { timeout } from 'vs/base/common/async';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry'; // {{SQL CARBON EDIT}}
-import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys'; // {{SQL CARBON EDIT}}
-import { IWorkspaceStatsService } from 'vs/workbench/contrib/stats/common/workspaceStats';
+import { IWorkspaceTagsService } from 'vs/workbench/contrib/tags/common/workspaceTags';
 import { /*setImmediate,*/ isWeb } from 'vs/base/common/platform';
 import { platform, env as processEnv } from 'vs/base/common/process';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys'; // {{SQL CARBON EDIT}}
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 const milliSecondsInADay = 1000 * 60 * 60 * 24;
 const choiceNever = localize('neverShowAgain', "Don't Show Again");
@@ -112,10 +112,10 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 		// @IViewletService private readonly viewletService: IViewletService, {{SQL CARBON EDIT}} comment out for no unused
 		@INotificationService private readonly notificationService: INotificationService,
 		@IExtensionManagementService private readonly extensionManagementService: IExtensionManagementService,
+		@IAdsTelemetryService private readonly adsTelemetryService: IAdsTelemetryService, // {{SQL CARBON EDIT}}
 		// @IExtensionsWorkbenchService private readonly extensionWorkbenchService: IExtensionsWorkbenchService, {{SQL CARBON EDIT}} comment out for no unused
 		// @IExperimentService private readonly experimentService: IExperimentService, {{SQL CARBON EDIT}} comment out for no unused
-		@IAdsTelemetryService private readonly adsTelemetryService: IAdsTelemetryService, // {{SQL CARBON EDIT}}
-		@IWorkspaceStatsService private readonly workspaceStatsService: IWorkspaceStatsService,
+		@IWorkspaceTagsService private readonly workspaceTagsService: IWorkspaceTagsService,
 		@IProductService private readonly productService: IProductService
 	) {
 		super();
@@ -518,15 +518,6 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 
 	private async promptForImportantExeBasedExtension(): Promise<boolean> {
 
-		const storageKey = 'extensionsAssistant/workspaceRecommendationsIgnore';
-		const config = this.configurationService.getValue<IExtensionsConfiguration>(ConfigurationKey);
-
-		if (config.ignoreRecommendations
-			|| config.showRecommendationsOnlyOnDemand
-			|| this.storageService.getBoolean(storageKey, StorageScope.WORKSPACE, false)) {
-			return false;
-		}
-
 		let recommendationsToSuggest = Object.keys(this._importantExeBasedRecommendations);
 
 		const installed = await this.extensionManagementService.getInstalled(ExtensionType.User);
@@ -539,10 +530,20 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 				"exeName": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
 			}
 			*/
-			this.telemetryService.publicLog('exeExtensionRecommendations:alreadyInstalled', { extensionId, exeName: tip.exeFriendlyName || basename(tip.windowsPath!) });
+			this.telemetryService.publicLog('exeExtensionRecommendations:alreadyInstalled', { extensionId, exeName: basename(tip.windowsPath!) });
 
 		});
+
 		if (recommendationsToSuggest.length === 0) {
+			return false;
+		}
+
+		const storageKey = 'extensionsAssistant/workspaceRecommendationsIgnore';
+		const config = this.configurationService.getValue<IExtensionsConfiguration>(ConfigurationKey);
+
+		if (config.ignoreRecommendations
+			|| config.showRecommendationsOnlyOnDemand
+			|| this.storageService.getBoolean(storageKey, StorageScope.WORKSPACE, false)) {
 			return false;
 		}
 
@@ -1123,7 +1124,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 
 		const storageKey = 'extensionsAssistant/dynamicWorkspaceRecommendations';
 		const workspaceUri = this.contextService.getWorkspace().folders[0].uri;
-		return Promise.all([this.workspaceStatsService.getHashedRemotesFromUri(workspaceUri, false), this.workspaceStatsService.getHashedRemotesFromUri(workspaceUri, true)]).then(([hashedRemotes1, hashedRemotes2]) => {
+		return Promise.all([this.workspaceTagsService.getHashedRemotesFromUri(workspaceUri, false), this.workspaceTagsService.getHashedRemotesFromUri(workspaceUri, true)]).then(([hashedRemotes1, hashedRemotes2]) => {
 			const hashedRemotes = (hashedRemotes1 || []).concat(hashedRemotes2 || []);
 			if (!hashedRemotes.length) {
 				return undefined;

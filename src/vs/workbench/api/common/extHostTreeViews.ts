@@ -202,7 +202,13 @@ export class ExtHostTreeView<T> extends Disposable {
 	private refreshPromise: Promise<void> = Promise.resolve();
 	private refreshQueue: Promise<void> = Promise.resolve();
 
-	constructor(private viewId: string, options: vscode.TreeViewOptions<T>, private proxy: MainThreadTreeViewsShape, private commands: CommandsConverter, private logService: ILogService, private extension: IExtensionDescription) {
+	constructor(
+		private viewId: string, options: vscode.TreeViewOptions<T>,
+		private proxy: MainThreadTreeViewsShape,
+		private commands: CommandsConverter,
+		private logService: ILogService,
+		private extension: IExtensionDescription
+	) {
 		super();
 		if (extension.contributes && extension.contributes.views) {
 			for (const location in extension.contributes.views) {
@@ -257,7 +263,7 @@ export class ExtHostTreeView<T> extends Disposable {
 	getChildren(parentHandle: TreeItemHandle | Root): Promise<ITreeItem[]> {
 		const parentElement = parentHandle ? this.getExtensionElement(parentHandle) : undefined;
 		if (parentHandle && !parentElement) {
-			console.error(`No tree item with id \'${parentHandle}\' found.`);
+			this.logService.error(`No tree item with id \'${parentHandle}\' found.`);
 			return Promise.resolve([]);
 		}
 
