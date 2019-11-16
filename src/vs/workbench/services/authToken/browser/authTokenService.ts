@@ -43,7 +43,7 @@ export class AuthTokenService extends Disposable implements IAuthTokenService {
 			return token;
 		}
 
-		return;
+		return undefined; // {{SQL CARBON EDIT}} strict-null-check
 	}
 
 	async login(): Promise<void> {

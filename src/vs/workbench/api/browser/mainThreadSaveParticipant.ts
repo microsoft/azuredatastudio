@@ -53,7 +53,7 @@ class NotebookUpdateParticipant implements ISaveParticipantParticipant { // {{SQ
 	}
 
 	public participate(model: ITextFileEditorModel, env: { reason: SaveReason }): Promise<void> {
-		let uri = model.getResource();
+		let uri = model.resource;
 		let notebookEditor = this.notebookService.findNotebookEditor(uri);
 		if (notebookEditor) {
 			notebookEditor.notebookParams.input.updateModel();
