@@ -59,7 +59,7 @@
     "native-watchdog": "1.2.0",
     "ng2-charts": "^1.6.0",
     "node-pty": "^0.10.0-beta2",
-    "onigasm-umd": "^2.2.2",
+    "onigasm-umd": "^2.2.4",
     "plotly.js-dist": "^1.48.3",
     "reflect-metadata": "^0.1.8",
     "rxjs": "5.4.0",
