@@ -146,4 +146,8 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	public setDataProvider(handle: number, componentId: string, context: any): any {
 		return this.queueAction(componentId, (component) => component.setDataProvider(handle, componentId, context));
 	}
+
+	public focus(componentId: string): void {
+		return this.queueAction(componentId, (component) => component.focus());
+	}
 }

@@ -105,4 +105,8 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 	private set label(newValue: string) {
 		this.setPropertyFromUI<azdata.CheckBoxProperties, string>((properties, label) => { properties.label = label; }, newValue);
 	}
+
+	public focus(): void {
+		this._input.focus();
+	}
 }
