@@ -27,7 +27,6 @@ import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { isVisible } from 'sql/base/browser/dom';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
@@ -70,13 +69,17 @@ const defaultOptions: IModalOptions = {
 	hasSpinner: false
 };
 
+const tabbableElementsQuerySelector = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]';
+
 export abstract class Modal extends Disposable implements IThemable {
 	protected _useDefaultMessageBoxLocation: boolean = true;
 	protected _messageElement: HTMLElement;
 	protected _modalOptions: IModalOptions;
+	private _detailsButtonContainer: HTMLElement;
 	private _messageIcon: HTMLElement;
 	private _messageSeverity: HTMLElement;
 	private _messageSummary: HTMLElement;
+	private _messageBody: HTMLElement;
 	private _messageDetail: HTMLElement;
 	private _toggleMessageDetailButton: Button;
 	private _copyMessageButton: Button;
@@ -95,6 +98,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _dialogBodyBackground?: Color;
 
 	private _modalDialog: HTMLElement;
+	private _modalContent: HTMLElement;
 	private _modalHeaderSection: HTMLElement;
 	private _modalBodySection: HTMLElement;
 	private _modalFooterSection: HTMLElement;
@@ -174,10 +178,10 @@ export abstract class Modal extends Disposable implements IThemable {
 		const top = this.layoutService.getTitleBarOffset();
 		this._bodyContainer.style.top = `${top}px`;
 		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
-		const modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
+		this._modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
 
 		if (!isUndefinedOrNull(this._title)) {
-			this._modalHeaderSection = DOM.append(modalContent, DOM.$('.modal-header'));
+			this._modalHeaderSection = DOM.append(this._modalContent, DOM.$('.modal-header'));
 			if (this._modalOptions.hasBackButton) {
 				const container = DOM.append(this._modalHeaderSection, DOM.$('.modal-go-back'));
 				this._backButton = new Button(container);
@@ -198,8 +202,8 @@ export abstract class Modal extends Disposable implements IThemable {
 			const headerContainer = DOM.append(this._messageElement, DOM.$('.dialog-message-header'));
 			this._messageIcon = DOM.append(headerContainer, DOM.$('.dialog-message-icon'));
 			this._messageSeverity = DOM.append(headerContainer, DOM.$('.dialog-message-severity'));
-			const detailsButtonContainer = DOM.append(headerContainer, DOM.$('.dialog-message-button'));
-			this._toggleMessageDetailButton = new Button(detailsButtonContainer);
+			this._detailsButtonContainer = DOM.append(headerContainer, DOM.$('.dialog-message-button'));
+			this._toggleMessageDetailButton = new Button(this._detailsButtonContainer);
 			this._toggleMessageDetailButton.icon = 'message-details-icon';
 			this._toggleMessageDetailButton.label = SHOW_DETAILS_TEXT;
 			this._register(this._toggleMessageDetailButton.onDidClick(() => this.toggleMessageDetail()));
@@ -218,27 +222,21 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._register(attachButtonStyler(this._copyMessageButton, this._themeService));
 			this._register(attachButtonStyler(this._closeMessageButton, this._themeService));
 
-			const messageBody = DOM.append(this._messageElement, DOM.$('.dialog-message-body'));
-			this._messageSummary = DOM.append(messageBody, DOM.$('.dialog-message-summary'));
+			this._messageBody = DOM.append(this._messageElement, DOM.$('.dialog-message-body'));
+			this._messageSummary = DOM.append(this._messageBody, DOM.$('.dialog-message-summary'));
 			this._register(DOM.addDisposableListener(this._messageSummary, DOM.EventType.CLICK, () => this.toggleMessageDetail()));
 
-			this._messageDetail = DOM.append(messageBody, DOM.$('.dialog-message-detail'));
-			DOM.hide(this._messageDetail);
-			DOM.hide(this._messageElement);
-
-			if (this._useDefaultMessageBoxLocation) {
-				DOM.append(modalContent, (this._messageElement));
-			}
+			this._messageDetail = DOM.$('.dialog-message-detail');
 		}
 
 		const modalBodyClass = (this._modalOptions.isAngular === false ? 'modal-body' : 'modal-body-and-footer');
 
-		this._modalBodySection = DOM.append(modalContent, DOM.$(`.${modalBodyClass}`));
+		this._modalBodySection = DOM.append(this._modalContent, DOM.$(`.${modalBodyClass}`));
 		this.renderBody(this._modalBodySection);
 
 		// This modal footer section refers to the footer of of the dialog
 		if (!this._modalOptions.isAngular) {
-			this._modalFooterSection = DOM.append(modalContent, DOM.$('.modal-footer'));
+			this._modalFooterSection = DOM.append(this._modalContent, DOM.$('.modal-footer'));
 			if (this._modalOptions.hasSpinner) {
 				this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.codicon.in-progress'));
 				DOM.hide(this._spinnerElement);
@@ -293,9 +291,9 @@ export abstract class Modal extends Disposable implements IThemable {
 		this._messageSummary.style.cursor = this.shouldShowExpandMessageButton ? 'pointer' : 'default';
 		DOM.removeClass(this._messageSummary, MESSAGE_EXPANDED_MODE_CLASS);
 		if (this.shouldShowExpandMessageButton) {
-			DOM.show(this._toggleMessageDetailButton.element);
+			DOM.append(this._detailsButtonContainer, this._toggleMessageDetailButton.element);
 		} else {
-			DOM.hide(this._toggleMessageDetailButton.element);
+			DOM.removeNode(this._toggleMessageDetailButton.element);
 		}
 	}
 
@@ -306,9 +304,9 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		if (this._messageDetailText) {
 			if (isExpanded) {
-				DOM.hide(this._messageDetail);
+				DOM.removeNode(this._messageDetail);
 			} else {
-				DOM.show(this._messageDetail);
+				DOM.append(this._messageBody, this._messageDetail);
 			}
 		}
 	}
@@ -321,7 +319,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Figures out the first and last elements which the user can tab to in the dialog
 	 */
 	public setFirstLastTabbableElement() {
-		const tabbableElements = this.getBodyContainerTabbableElements();
+		const tabbableElements = this._bodyContainer.querySelectorAll(tabbableElementsQuerySelector);
 		if (tabbableElements && tabbableElements.length > 0) {
 			this._firstTabbableElement = <HTMLElement>tabbableElements[0];
 			this._lastTabbableElement = <HTMLElement>tabbableElements[tabbableElements.length - 1];
@@ -334,24 +332,15 @@ export abstract class Modal extends Disposable implements IThemable {
 	public setInitialFocusedElement() {
 		// Try to find focusable element in dialog pane rather than overall container. _modalBodySection contains items in the pane for a wizard.
 		// This ensures that we are setting the focus on a useful element in the form when possible.
-		let focusableElements = this._modalBodySection ?
-			Array.from(this._modalBodySection.querySelectorAll('input')).filter(e => isVisible(e)) :
-			this.getBodyContainerTabbableElements();
+		const focusableElements = this._modalBodySection ?
+			this._modalBodySection.querySelectorAll('input') :
+			this._bodyContainer.querySelectorAll(tabbableElementsQuerySelector);
 
 		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
 
 		if (focusableElements && focusableElements.length > 0) {
 			(<HTMLElement>focusableElements[0]).focus();
 		}
-	}
-
-	/**
-	 * Gets all the currently visible elements for the body container of the dialog.
-	 */
-	private getBodyContainerTabbableElements(): HTMLElement[] {
-		// Filter out non-visible elements, which include things such as the messages panel that isn't always displayed
-		return Array.from(this._bodyContainer.querySelectorAll<HTMLElement>('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), div:not([style*="display: none"]) [tabindex="0"]'))
-			.filter(e => isVisible(e));
 	}
 
 	/**
@@ -491,11 +480,15 @@ export abstract class Modal extends Disposable implements IThemable {
 				this._messageSummary.title = message!;
 				this._messageDetail.innerText = description;
 			}
-			DOM.hide(this._messageDetail);
+			DOM.removeNode(this._messageDetail);
 			if (this._messageSummaryText) {
-				DOM.show(this._messageElement);
+				if (this._useDefaultMessageBoxLocation) {
+					DOM.prepend(this._modalContent, (this._messageElement));
+				}
 			} else {
-				DOM.hide(this._messageElement);
+				// Set the focus manually otherwise it'll escape the dialog to something behind it
+				this.setInitialFocusedElement();
+				DOM.removeNode(this._messageElement);
 			}
 			this.updateExpandMessageState();
 		}
