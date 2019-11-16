@@ -157,7 +157,7 @@ export class AddControllerDialog {
 					components: [
 						{
 							component: this.urlInputBox,
-							title: localize('textUrlCapital', "URL"),
+							title: localize('textUrlCapital', "Cluster Management URL"),
 							required: true
 						}, {
 							component: this.authDropdown,
@@ -180,6 +180,7 @@ export class AddControllerDialog {
 				}]).withLayout({ width: '100%' }).component();
 			this.onAuthChanged();
 			await view.initializeModel(formModel);
+			this.urlInputBox.focus();
 		});
 
 		this.dialog.registerCloseValidator(async () => await this.validate());
