@@ -629,7 +629,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 
 		// Data URI
 		else if (resource.scheme === Schemas.data) {
-			input = instantiationService.createInstance(DataUriEditorInput, label, description, resource);
+			input = instantiationService.createInstance(DataUriEditorInput, label || basename(resource), description, resource);
 		}
 
 		// Resource
