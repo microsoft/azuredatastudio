@@ -9,9 +9,15 @@ import 'vs/css!./media/styles';
 import { Table } from 'sql/base/browser/ui/table/table';
 
 import { Subscription, Subject } from 'rxjs/Rx';
+<<<<<<< HEAD:src/sql/workbench/contrib/editData/browser/gridParentComponent.ts
 import * as Constants from 'sql/workbench/contrib/query/common/constants';
 import * as LocalizedConstants from 'sql/workbench/contrib/query/common/localizedConstants';
 import { IGridInfo, IGridDataSet, SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
+=======
+import * as Constants from 'sql/workbench/parts/query/common/constants';
+import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedConstants';
+import { IGridInfo, IGridDataSet, SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
+>>>>>>> af419910762501aea875f9470d30d331b4c6a433:src/sql/workbench/parts/editData/browser/gridParentComponent.ts
 import * as Utils from 'sql/platform/connection/common/utils';
 import { DataService } from 'sql/workbench/contrib/grid/common/dataService';
 import * as actions from 'sql/workbench/contrib/editData/common/gridActions';

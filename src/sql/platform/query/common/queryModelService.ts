@@ -120,6 +120,10 @@ export class QueryModelService implements IQueryModelService {
 	 * Sends all previously enqueued query events to the DataService and signals to stop enqueuing
 	 * any further events.
 	 */
+<<<<<<< HEAD
+=======
+	// TODO: rename to remove reference to Angular
+>>>>>>> af419910762501aea875f9470d30d331b4c6a433
 	public onComponentLoaded(uri: string) {
 		if (this._queryInfoMap.has(uri)) {
 			let info = this._getQueryInfo(uri)!;
