@@ -303,7 +303,7 @@ export class CustomEditorContribution implements IWorkbenchContribution {
 
 		// If we have all optional editors, then open VS Code's standard editor
 		if (contributedEditors.every(editor => editor.priority === CustomEditorPriority.option)) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict-null-check
 		}
 
 		// Open VS Code's standard editor but prompt user to see if they wish to use a custom one instead
