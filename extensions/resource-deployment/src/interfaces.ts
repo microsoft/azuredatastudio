@@ -201,11 +201,20 @@ export interface NotebookInfo {
 	linux: string;
 }
 
-export enum OsType {
+export enum OsDistribution {
 	win32 = 'win32',
 	darwin = 'darwin',
 	debian = 'debian',
 	others = 'others'
+}
+export interface OsRelease extends JSON {
+	type: string;
+	platform: string;
+	hostname: string;
+	arch: string;
+	release: string;
+	id?: string;
+	id_like?: string;
 }
 
 export interface ToolRequirementInfo {

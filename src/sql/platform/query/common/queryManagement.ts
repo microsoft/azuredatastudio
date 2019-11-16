@@ -9,12 +9,10 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { IDisposable } from 'vs/base/common/lifecycle';
 import * as azdata from 'azdata';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Event, Emitter } from 'vs/base/common/event';
 import { keys } from 'vs/base/common/map';
-import { ILogService } from 'vs/platform/log/common/log';
 import { assign } from 'vs/base/common/objects';
+import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 
 export const SERVICE_ID = 'queryManagementService';
 
@@ -104,8 +102,7 @@ export class QueryManagementService implements IQueryManagementService {
 
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
-		@ITelemetryService private _telemetryService: ITelemetryService,
-		@ILogService private logService: ILogService
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 	}
 
@@ -169,18 +166,17 @@ export class QueryManagementService implements IQueryManagementService {
 	}
 
 	private addTelemetry(eventName: string, ownerUri: string, runOptions?: azdata.ExecutionPlanOptions): void {
-		let providerId: string = this._connectionService.getProviderIdFromUri(ownerUri);
-		let data: TelemetryUtils.IConnectionTelemetryData = {
+		const providerId: string = this._connectionService.getProviderIdFromUri(ownerUri);
+		const data: ITelemetryEventProperties = {
 			provider: providerId,
 		};
 		if (runOptions) {
-			data = assign({}, data, {
+			assign(data, {
 				displayEstimatedQueryPlan: runOptions.displayEstimatedQueryPlan,
 				displayActualQueryPlan: runOptions.displayActualQueryPlan
 			});
 		}
-		// tslint:disable-next-line:no-floating-promises
-		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, eventName, data);
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, eventName).withAdditionalProperties(data).send();
 	}
 
 	private _runAction<T>(uri: string, action: (handler: IQueryRequestHandler) => Promise<T>, fallBackToDefaultProvider: boolean = false): Promise<T> {

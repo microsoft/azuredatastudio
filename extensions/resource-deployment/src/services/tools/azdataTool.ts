@@ -8,7 +8,7 @@ import { SemVer } from 'semver';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { azdataPipInstallArgsKey, AzdataPipInstallUriKey, DeploymentConfigurationKey } from '../../constants';
-import { Command, OsType, ToolType } from '../../interfaces';
+import { Command, OsDistribution, ToolType } from '../../interfaces';
 import { IPlatformService } from '../platformService';
 import { dependencyType, ToolBase } from './toolBase';
 
@@ -68,12 +68,12 @@ export class AzdataTool extends ToolBase {
 	}
 
 	protected async getSearchPaths(): Promise<string[]> {
-		switch (this.osType) {
-			case OsType.win32:
+		switch (this.osDistribution) {
+			case OsDistribution.win32:
 				return [win32InstallationRoot];
-			case OsType.darwin:
+			case OsDistribution.darwin:
 				return [macInstallationRoot];
-			case OsType.debian:
+			case OsDistribution.debian:
 				return [debianInstallationRoot];
 			default:
 				const azdataCliInstallLocation = await this.getPip3InstallLocation('azdata-cli');
@@ -85,12 +85,12 @@ export class AzdataTool extends ToolBase {
 		}
 	}
 
-	protected get allInstallationCommands(): Map<OsType, Command[]> {
-		return new Map<OsType, Command[]>([
-			[OsType.debian, debianInstallationCommands],
-			[OsType.win32, win32InstallationCommands],
-			[OsType.darwin, macOsInstallationCommands],
-			[OsType.others, this.defaultInstallationCommands]
+	protected get allInstallationCommands(): Map<OsDistribution, Command[]> {
+		return new Map<OsDistribution, Command[]>([
+			[OsDistribution.debian, debianInstallationCommands],
+			[OsDistribution.win32, win32InstallationCommands],
+			[OsDistribution.darwin, macOsInstallationCommands],
+			[OsDistribution.others, this.defaultInstallationCommands]
 		]);
 	}
 
@@ -123,11 +123,11 @@ export class AzdataTool extends ToolBase {
 		return vscode.workspace.getConfiguration(DeploymentConfigurationKey)[azdataPipInstallArgsKey];
 	}
 
-	protected dependenciesByOsType: Map<OsType, dependencyType[]> = new Map<OsType, dependencyType[]>([
-		[OsType.debian, []],
-		[OsType.win32, []],
-		[OsType.darwin, []],
-		[OsType.others, [dependencyType.PythonAndPip3]]
+	protected dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>([
+		[OsDistribution.debian, []],
+		[OsDistribution.win32, []],
+		[OsDistribution.darwin, []],
+		[OsDistribution.others, [dependencyType.PythonAndPip3]]
 	]);
 }
 
