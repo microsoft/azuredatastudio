@@ -2,12 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as os from 'os';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { promises as fs } from 'fs';
 import { Telemetry } from '../telemetry';
@@ -46,6 +44,8 @@ async function exists(path: string): Promise<boolean> {
 export class SchemaCompareDialog {
 	public dialog: azdata.window.Dialog;
 	public dialogName: string;
+	private sourceDacpacRadioButton: azdata.RadioButtonComponent;
+	private sourceDatabaseRadioButton: azdata.RadioButtonComponent;
 	private schemaCompareTab: azdata.window.DialogTab;
 	private sourceDacpacComponent: azdata.FormComponent;
 	private sourceTextBox: azdata.InputBoxComponent;
@@ -291,6 +291,11 @@ export class SchemaCompareDialog {
 
 			let formModel = this.formBuilder.component();
 			await view.initializeModel(formModel);
+			if (this.sourceIsDacpac) {
+				this.sourceDacpacRadioButton.focus();
+			} else {
+				this.sourceDatabaseRadioButton.focus();
+			}
 		});
 	}
 
@@ -346,20 +351,20 @@ export class SchemaCompareDialog {
 	}
 
 	private async createSourceRadiobuttons(view: azdata.ModelView): Promise<azdata.FormComponent> {
-		let dacpacRadioButton = view.modelBuilder.radioButton()
+		this.sourceDacpacRadioButton = view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'source',
 				label: DacpacRadioButtonLabel
 			}).component();
 
-		let databaseRadioButton = view.modelBuilder.radioButton()
+		this.sourceDatabaseRadioButton = view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'source',
 				label: DatabaseRadioButtonLabel
 			}).component();
 
 		// show dacpac file browser
-		dacpacRadioButton.onDidClick(async () => {
+		this.sourceDacpacRadioButton.onDidClick(async () => {
 			this.sourceIsDacpac = true;
 			this.formBuilder.removeFormItem(this.sourceNoActiveConnectionsText);
 			this.formBuilder.removeFormItem(this.sourceServerComponent);
@@ -369,7 +374,7 @@ export class SchemaCompareDialog {
 		});
 
 		// show server and db dropdowns or 'No active connections' text
-		databaseRadioButton.onDidClick(async () => {
+		this.sourceDatabaseRadioButton.onDidClick(async () => {
 			this.sourceIsDacpac = false;
 			if ((this.sourceServerDropdown.value as ConnectionDropdownValue)) {
 				this.formBuilder.insertFormItem(this.sourceServerComponent, 2, { horizontal: true, titleFontSize: titleFontSize });
@@ -383,17 +388,15 @@ export class SchemaCompareDialog {
 
 		// if source is currently a db, show it in the server and db dropdowns
 		if (this.schemaCompareResult.sourceEndpointInfo && this.schemaCompareResult.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
-			databaseRadioButton.checked = true;
-			databaseRadioButton.focused = true;
+			this.sourceDatabaseRadioButton.checked = true;
 			this.sourceIsDacpac = false;
 		} else {
-			dacpacRadioButton.checked = true;
-			dacpacRadioButton.focused = true;
+			this.sourceDacpacRadioButton.checked = true;
 			this.sourceIsDacpac = true;
 		}
 		let flexRadioButtonsModel = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
-			.withItems([dacpacRadioButton, databaseRadioButton]
+			.withItems([this.sourceDacpacRadioButton, this.sourceDatabaseRadioButton]
 			).component();
 
 		return {

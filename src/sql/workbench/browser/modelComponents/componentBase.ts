@@ -262,6 +262,12 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		});
 	}
 
+	public focus(): void {
+		// Default is to just focus on the native element, components should override this if they
+		// want their own behavior (such as focusing a particular child element)
+		(<HTMLElement>this._el.nativeElement).focus();
+	}
+
 	protected onkeydown(domNode: HTMLElement, listener: (e: IKeyboardEvent) => void): void {
 		this._register(addDisposableListener(domNode, EventType.KEY_DOWN, (e: KeyboardEvent) => listener(new StandardKeyboardEvent(e))));
 	}
