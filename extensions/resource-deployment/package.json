@@ -353,14 +353,13 @@
 		]
 	},
 	"dependencies": {
-		"getos": "^3.1.1",
+		"linux-release-info": "^2.0.0",
 		"promisify-child-process": "^3.1.1",
 		"sudo-prompt": "^9.0.0",
 		"vscode-nls": "^4.0.0",
 		"yamljs": "^0.3.0"
 	},
 	"devDependencies": {
-		"@types/getos": "^3.0.0",
 		"@types/yamljs": "0.2.30",
 		"mocha-junit-reporter": "^1.17.0",
 		"mocha-multi-reporters": "^1.1.7",

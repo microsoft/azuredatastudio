@@ -4,13 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as fs from 'fs';
-import * as getos from 'getos';
+import * as releaseInfo from 'linux-release-info';
 import * as cp from 'promisify-child-process';
 import * as sudo from 'sudo-prompt';
-import { promisify } from 'util';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { OsType } from '../interfaces';
+import { OsDistribution, OsRelease } from '../interfaces';
 import { getErrorMessage } from '../utils';
 
 const localize = nls.loadMessageBundle();
@@ -20,7 +19,7 @@ const sudoPromptTitle = 'AzureDataStudio';
  * Abstract of platform dependencies
  */
 export interface IPlatformService {
-	osType(): OsType;
+	osDistribution(): OsDistribution;
 	platform(): string;
 	storagePath(): string;
 	initialize(): Promise<void>;
@@ -58,16 +57,12 @@ export interface CommandOptions {
 export class PlatformService implements IPlatformService {
 
 	private _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(extensionOutputChannel);
-	private _initializationEnsurer: Promise<void[]>;
-	private _osType?: OsType = undefined;
+	private _initializationEnsurer: Promise<void>;
+	private _osDistribution: OsDistribution;
 
 	constructor(private _storagePath: string) {
-		this._initializationEnsurer = Promise.all([
-			this.ensureDirectoryExists(_storagePath),
-			this.getOsType().then((value: OsType) => {
-				this._osType = value;
-			})
-		]);
+		this._osDistribution = this.getOsDistribution();
+		this._initializationEnsurer = this.ensureDirectoryExists(_storagePath);
 	}
 
 	async initialize(): Promise<void> {
@@ -90,24 +85,18 @@ export class PlatformService implements IPlatformService {
 		this._outputChannel.show(preserveFocus);
 	}
 
-	osType(): OsType {
-		if (!this._osType) {
-			throw new Error('platformService was not initialized');
-		}
-		return this._osType;
+	osDistribution(): OsDistribution {
+		return this._osDistribution;
 	}
-	private async getOsType(platform: string = this.platform()): Promise<OsType> {
-		if (Object.values(OsType).includes(<OsType>platform)) {
-			return <OsType>platform;
-		} else if (/^linux$/i.test(platform)) {
-			const os = <getos.LinuxOs>await promisify(getos)();
-			if (/^(ubuntu|debian)/i.test(os.dist)) {
-				// return debian for ubuntu or debian distributions
-				return OsType.debian;
-			}
+
+	private getOsDistribution(): OsDistribution {
+		const currentReleaseInfo = <OsRelease>releaseInfo({ mode: 'sync' });
+		const dist = currentReleaseInfo.id_like || currentReleaseInfo.id || currentReleaseInfo.platform;
+		if (Object.values(OsDistribution).includes(<OsDistribution>dist)) {
+			return <OsDistribution>dist;
 		}
 		// all other unrecognized oses/distributions are treated as OsType.others
-		return OsType.others;
+		return OsDistribution.others;
 	}
 
 	async copyFile(source: string, target: string): Promise<void> {
