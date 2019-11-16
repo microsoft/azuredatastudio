@@ -15,17 +15,10 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import * as types from 'vs/base/common/types';
 
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-<<<<<<< HEAD:src/sql/workbench/contrib/editData/browser/editDataResultsEditor.ts
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import { IEditDataComponentParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 import { EditDataGridPanel } from 'sql/workbench/contrib/editData/browser/editDataGridPanel';
 import { EditDataResultsInput } from 'sql/workbench/contrib/editData/browser/editDataResultsInput';
-=======
-import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/parts/query/browser/queryResultsEditor';
-import { IEditDataComponentParams } from 'sql/platform/bootstrap/common/bootstrapParams';
-import { EditDataGridPanel } from 'sql/workbench/parts/editData/browser/editDataGridPanel';
-import { EditDataResultsInput } from 'sql/workbench/parts/editData/browser/editDataResultsInput';
->>>>>>> af419910762501aea875f9470d30d331b4c6a433:src/sql/workbench/parts/editData/browser/editDataResultsEditor.ts
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 

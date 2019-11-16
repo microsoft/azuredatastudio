@@ -8,11 +8,7 @@ import { ApplicationRef, ComponentFactoryResolver, NgModule, Inject, forwardRef,
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { SlickGrid } from 'angular2-slickgrid';
-<<<<<<< HEAD:src/sql/workbench/contrib/editData/browser/editData.module.ts
 import { EditDataGridPanel, } from 'sql/workbench/contrib/editData/browser/editDataGridPanel';
-=======
-import { EditDataGridPanel, } from 'sql/workbench/parts/editData/browser/editDataGridPanel';
->>>>>>> af419910762501aea875f9470d30d331b4c6a433:src/sql/workbench/parts/editData/browser/editData.module.ts
 import { providerIterator } from 'sql/platform/bootstrap/browser/bootstrapService';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

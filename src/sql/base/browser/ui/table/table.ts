@@ -49,10 +49,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	private _onClick = new Emitter<ITableMouseEvent>();
 	public readonly onClick: Event<ITableMouseEvent> = this._onClick.event;
 
-<<<<<<< HEAD
-=======
-	//my addition
->>>>>>> af419910762501aea875f9470d30d331b4c6a433
 	private _onHeaderClick = new Emitter<ITableMouseEvent>();
 	public readonly onHeaderClick: Event<ITableMouseEvent> = this._onHeaderClick.event;
 
