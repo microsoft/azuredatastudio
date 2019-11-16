@@ -44,7 +44,6 @@ export const messageByDependencyType: Map<dependencyType, string> = new Map<depe
 
 export abstract class ToolBase implements ITool {
 	constructor(private _platformService: IPlatformService) {
-		this._osDistribution = this._platformService.osType();
 	}
 
 	abstract name: string;
