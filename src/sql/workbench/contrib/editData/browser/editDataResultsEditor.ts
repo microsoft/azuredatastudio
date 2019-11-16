@@ -16,7 +16,7 @@ import * as types from 'vs/base/common/types';
 
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
-import { IEditDataComponentParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { IEditDataComponentParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { EditDataGridPanel } from 'sql/workbench/contrib/editData/browser/editDataGridPanel';
 import { EditDataResultsInput } from 'sql/workbench/contrib/editData/browser/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
