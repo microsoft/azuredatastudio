@@ -15,12 +15,10 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
-import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { Schemas } from 'vs/base/common/network';
 import { ITextFileService, ISaveOptions, StateChange } from 'vs/workbench/services/textfile/common/textfiles';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
@@ -28,6 +26,8 @@ import { Deferred } from 'sql/base/common/promise';
 import { NotebookTextFileModel } from 'sql/workbench/parts/notebook/browser/models/notebookTextFileModel';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
+import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -38,7 +38,7 @@ export class NotebookEditorModel extends EditorModel {
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
 	private _lastEditFullReplacement: boolean;
 	constructor(public readonly notebookUri: URI,
-		private textEditorModel: TextFileEditorModel | UntitledEditorModel | ResourceEditorModel,
+		private textEditorModel: TextFileEditorModel | UntitledTextEditorModel | ResourceEditorModel,
 		@INotebookService private notebookService: INotebookService,
 		@ITextFileService private textFileService: ITextFileService,
 		@ITextResourcePropertiesService private textResourcePropertiesService: ITextResourcePropertiesService
@@ -63,7 +63,7 @@ export class NotebookEditorModel extends EditorModel {
 				}, err => undefined);
 			}
 		}));
-		if (this.textEditorModel instanceof UntitledEditorModel) {
+		if (this.textEditorModel instanceof UntitledTextEditorModel) {
 			this._register(this.textEditorModel.onDidChangeDirty(e => {
 				let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
 				this.setDirty(dirty);
@@ -206,7 +206,7 @@ export class NotebookInput extends EditorInput {
 	private _parentContainer: HTMLElement;
 	private readonly _layoutChanged: Emitter<void> = this._register(new Emitter<void>());
 	private _model: NotebookEditorModel;
-	private _untitledEditorModel: UntitledEditorModel;
+	private _untitledEditorModel: UntitledTextEditorModel;
 	private _contentManager: IContentManager;
 	private _providersLoaded: Promise<void>;
 	private _dirtyListener: IDisposable;
@@ -216,7 +216,7 @@ export class NotebookInput extends EditorInput {
 
 	constructor(private _title: string,
 		private resource: URI,
-		private _textInput: UntitledEditorInput,
+		private _textInput: UntitledTextEditorInput,
 		@ITextModelService private textModelService: ITextModelService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@INotebookService private notebookService: INotebookService,
@@ -232,7 +232,7 @@ export class NotebookInput extends EditorInput {
 		}
 	}
 
-	public get textInput(): UntitledEditorInput {
+	public get textInput(): UntitledTextEditorInput {
 		return this._textInput;
 	}
 
@@ -326,11 +326,11 @@ export class NotebookInput extends EditorInput {
 		return this.resource;
 	}
 
-	public get untitledEditorModel(): UntitledEditorModel {
+	public get untitledEditorModel(): UntitledTextEditorModel {
 		return this._untitledEditorModel;
 	}
 
-	public set untitledEditorModel(value: UntitledEditorModel) {
+	public set untitledEditorModel(value: UntitledTextEditorModel) {
 		this._untitledEditorModel = value;
 	}
 
@@ -344,7 +344,7 @@ export class NotebookInput extends EditorInput {
 		if (this._model) {
 			return Promise.resolve(this._model);
 		} else {
-			let textOrUntitledEditorModel: TextFileEditorModel | UntitledEditorModel | ResourceEditorModel;
+			let textOrUntitledEditorModel: TextFileEditorModel | UntitledTextEditorModel | ResourceEditorModel;
 			if (this.resource.scheme === Schemas.untitled) {
 				if (this._untitledEditorModel) {
 					this._untitledEditorModel.textEditorModel.onBeforeAttached();

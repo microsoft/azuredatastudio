@@ -6,7 +6,6 @@
 import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import * as nls from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
 import * as editorCommon from 'vs/editor/common/editorCommon';
 
@@ -23,6 +22,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 
 class ProfilerResourceCodeEditor extends StandaloneCodeEditor {
 
@@ -79,7 +79,7 @@ export class ProfilerResourceEditor extends BaseTextEditor {
 		return options;
 	}
 
-	setInput(input: UntitledEditorInput, options: EditorOptions): Promise<void> {
+	setInput(input: UntitledTextEditorInput, options: EditorOptions): Promise<void> {
 		return super.setInput(input, options, CancellationToken.None)
 			.then(() => this.input.resolve()
 				.then(editorModel => editorModel.load())

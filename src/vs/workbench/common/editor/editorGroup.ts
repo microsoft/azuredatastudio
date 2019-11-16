@@ -15,10 +15,10 @@ import { coalesce, firstIndex } from 'vs/base/common/arrays';
 
 // {{SQL CARBON EDIT}}
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import * as CustomInputConverter from 'sql/workbench/browser/customInputConverter';
 import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 
 const EditorOpenPositioning = {
 	LEFT: 'left',
@@ -657,7 +657,7 @@ export class EditorGroup extends Disposable {
 			if (factory) {
 				// {{SQL CARBON EDIT}}
 				// don't serialize unmodified unitited files
-				if (e instanceof UntitledEditorInput && !e.isDirty()
+				if (e instanceof UntitledTextEditorInput && !e.isDirty()
 					&& !this.configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles')) {
 					return;
 				}

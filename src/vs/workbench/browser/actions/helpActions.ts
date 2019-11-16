@@ -297,15 +297,6 @@ if (OpenDocumentationUrlAction.AVAILABLE) {
 		order: 3
 	});
 }
-/* // {{SQL CARBON EDIT}} - Disable unused menu item
-MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
-	group: '1_welcome',
-	command: {
-		id: 'update.showCurrentReleaseNotes',
-		title: nls.localize({ key: 'miReleaseNotes', comment: ['&& denotes a mnemonic'] }, "&&Release Notes")
-	},
-	order: 4
-});
 
 // Reference
 if (KeybindingsReferenceAction.AVAILABLE) {
@@ -362,7 +353,7 @@ if (OpenRequestFeatureUrlAction.AVAILABLE) {
 		},
 		order: 2
 	});
-}*/
+}
 
 // Legal
 if (OpenLicenseUrlAction.AVAILABLE) {

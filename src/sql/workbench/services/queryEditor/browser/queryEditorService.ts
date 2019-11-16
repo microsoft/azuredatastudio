@@ -12,7 +12,6 @@ import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/wo
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 
 import { ITextModel } from 'vs/editor/common/model';
-import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
@@ -31,7 +30,8 @@ import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsSe
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { ILogService } from 'vs/platform/log/common/log';
 import { assign } from 'vs/base/common/objects';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 
 /**
  * Service wrapper for opening and creating SQL documents as sql editor inputs
@@ -52,7 +52,7 @@ export class QueryEditorService implements IQueryEditorService {
 
 	constructor(
 		@INotificationService private _notificationService: INotificationService,
-		@IUntitledEditorService private _untitledEditorService: IUntitledEditorService,
+		@IUntitledTextEditorService private _untitledEditorService: IUntitledTextEditorService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -257,7 +257,7 @@ export class QueryEditorService implements IQueryEditorService {
 		let newEditorInput: IEditorInput = undefined;
 		if (changingToSql) {
 			const queryResultsInput: QueryResultsInput = this._instantiationService.createInstance(QueryResultsInput, uri.toString());
-			let queryInput: QueryInput = this._instantiationService.createInstance(QueryInput, '', input as UntitledEditorInput, queryResultsInput, undefined);
+			let queryInput: QueryInput = this._instantiationService.createInstance(QueryInput, '', input as UntitledTextEditorInput, queryResultsInput, undefined);
 			newEditorInput = queryInput;
 		} else {
 			let uriCopy: URI = URI.from({ scheme: uri.scheme, authority: uri.authority, path: uri.path, query: uri.query, fragment: uri.fragment });

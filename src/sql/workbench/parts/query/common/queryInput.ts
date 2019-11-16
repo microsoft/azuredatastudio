@@ -7,7 +7,6 @@ import { localize } from 'vs/nls';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { EditorInput, ConfirmResult, EncodingMode, IEncodingSupport } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -17,9 +16,10 @@ import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResults
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 
 import { ISelectionData, ExecutionPlanOptions } from 'azdata';
-import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
 import { startsWith } from 'vs/base/common/strings';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
 
 const MAX_SIZE = 13;
 
@@ -115,7 +115,7 @@ export class QueryEditorState extends Disposable {
  * Input for the QueryEditor. This input is simply a wrapper around a QueryResultsInput for the QueryResultsEditor
  * and a UntitledEditorInput for the SQL File Editor.
  */
-export class QueryInput extends EditorInput implements IEncodingSupport, IConnectableInput, PublicPart<UntitledEditorInput>, IDisposable {
+export class QueryInput extends EditorInput implements IEncodingSupport, IConnectableInput, PublicPart<UntitledTextEditorInput>, IDisposable {
 
 	public static ID: string = 'workbench.editorinputs.queryInput';
 	public static SCHEMA: string = 'sql';
@@ -127,7 +127,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 	constructor(
 		private _description: string,
-		private _sql: UntitledEditorInput,
+		private _sql: UntitledTextEditorInput,
 		private _results: QueryResultsInput,
 		private _connectionProviderName: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -195,7 +195,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 	// Getters for private properties
 	public get uri(): string { return this.getResource().toString(true); }
-	public get sql(): UntitledEditorInput { return this._sql; }
+	public get sql(): UntitledTextEditorInput { return this._sql; }
 	public get results(): QueryResultsInput { return this._results; }
 	public updateSelection(selection: ISelectionData): void { this._updateSelection.fire(selection); }
 	public getTypeId(): string { return QueryInput.ID; }
@@ -219,7 +219,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	// Forwarding resource functions to the inline sql file editor
 	public get onDidModelChangeContent(): Event<void> { return this._sql.onDidModelChangeContent; }
 	public get onDidModelChangeEncoding(): Event<void> { return this._sql.onDidModelChangeEncoding; }
-	public resolve(): Promise<UntitledEditorModel & IResolvedTextEditorModel> { return this._sql.resolve(); }
+	public resolve(): Promise<UntitledTextEditorModel & IResolvedTextEditorModel> { return this._sql.resolve(); }
 	public save(): Promise<boolean> { return this._sql.save(); }
 	public isDirty(): boolean { return this._sql.isDirty(); }
 	public confirmSave(): Promise<ConfirmResult> { return this._sql.confirmSave(); }

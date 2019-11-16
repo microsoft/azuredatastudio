@@ -7,7 +7,6 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import { IEditorDescriptor } from 'vs/workbench/browser/editor';
 import { URI } from 'vs/base/common/uri';
 import { Memento } from 'vs/workbench/common/memento';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 
 import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
 import { QueryModelService } from 'sql/platform/query/common/queryModelService';
@@ -23,6 +22,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 
 suite('SQL QueryEditor Tests', () => {
 	let instantiationService: TypeMoq.Mock<InstantiationService>;
@@ -283,7 +283,7 @@ suite('SQL QueryEditor Tests', () => {
 					return new RunQueryAction(undefined, undefined, undefined);
 				});
 
-			let fileInput = new UntitledEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService.object, undefined, undefined);
+			let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService.object, undefined, undefined);
 			queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose, undefined, undefined);
 			queryModelService.callBase = true;
 			queryModelService.setup(x => x.disposeQuery(TypeMoq.It.isAny())).returns(() => void 0);

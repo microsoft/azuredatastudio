@@ -21,7 +21,7 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { RawContextKey, IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IResourceInput } from 'vs/platform/editor/common/editor';
 import { IFileService } from 'vs/platform/files/common/files';
-import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { IEditorViewState } from 'vs/editor/common/editorCommon';
 import { getCodeEditor } from 'vs/editor/browser/editorBrowser';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
@@ -113,7 +113,7 @@ async function save(
 	options: ISaveOptions | undefined,
 	editorService: IEditorService,
 	fileService: IFileService,
-	untitledEditorService: IUntitledEditorService,
+	untitledTextEditorService: IUntitledTextEditorService,
 	textFileService: ITextFileService,
 	editorGroupService: IEditorGroupsService,
 	queryEditorService: IQueryEditorService,
@@ -125,15 +125,12 @@ async function save(
 
 	// Save As (or Save untitled with associated path)
 	if (isSaveAs || resource.scheme === Schemas.untitled) {
-		return doSaveAs(resource, isSaveAs, options, editorService, fileService, untitledEditorService, textFileService, editorGroupService, queryEditorService, environmentService); // {{SQL CARBON EDIT}} add paramater
-	}
 
-	if (resource && (fileService.canHandleResource(resource) || resource.scheme === Schemas.untitled)) {
-		// {{SQL CARBON EDIT}}
 		let editorInput = editorService.activeEditor;
-		if (editorInput instanceof EditorInput && !(<EditorInput>editorInput).savingSupported) {
+		if (editorInput instanceof EditorInput && !(<EditorInput>editorInput).savingSupported) { // {{SQL CARBON EDIT}}
 			return;
 		}
+		return doSaveAs(resource, isSaveAs, options, editorService, fileService, untitledTextEditorService, textFileService, editorGroupService, queryEditorService, environmentService);
 	}
 
 	// Save
@@ -146,7 +143,7 @@ async function doSaveAs(
 	options: ISaveOptions | undefined,
 	editorService: IEditorService,
 	fileService: IFileService,
-	untitledEditorService: IUntitledEditorService,
+	untitledTextEditorService: IUntitledTextEditorService,
 	textFileService: ITextFileService,
 	editorGroupService: IEditorGroupsService,
 	queryEditorService: IQueryEditorService,
@@ -163,7 +160,7 @@ async function doSaveAs(
 
 	// Special case: an untitled file with associated path gets saved directly unless "saveAs" is true
 	let target: URI | undefined;
-	if (!isSaveAs && resource.scheme === Schemas.untitled && untitledEditorService.hasAssociatedFilePath(resource)) {
+	if (!isSaveAs && resource.scheme === Schemas.untitled && untitledTextEditorService.hasAssociatedFilePath(resource)) {
 		const result = await textFileService.save(resource, options);
 		if (result) {
 			target = toLocalResource(resource, environmentService.configuration.remoteAuthority);
@@ -235,7 +232,7 @@ function ensureForcedSave(options?: ISaveOptions): ISaveOptions {
 	return options;
 }
 
-async function saveAll(saveAllArguments: any, editorService: IEditorService, untitledEditorService: IUntitledEditorService,
+async function saveAll(saveAllArguments: any, editorService: IEditorService, untitledTextEditorService: IUntitledTextEditorService,
 	textFileService: ITextFileService, editorGroupService: IEditorGroupsService): Promise<any> {
 
 	// Store some properties per untitled file to restore later after save is completed
@@ -245,13 +242,13 @@ async function saveAll(saveAllArguments: any, editorService: IEditorService, unt
 		const activeEditorResource = group.activeEditor && group.activeEditor.getResource();
 		group.editors.forEach(e => {
 			const resource = e.getResource();
-			if (resource && untitledEditorService.isDirty(resource)) {
+			if (resource && untitledTextEditorService.isDirty(resource)) {
 				if (!groupIdToUntitledResourceInput.has(group.id)) {
 					groupIdToUntitledResourceInput.set(group.id, []);
 				}
 
 				groupIdToUntitledResourceInput.get(group.id)!.push({
-					encoding: untitledEditorService.getEncoding(resource),
+					encoding: untitledTextEditorService.getEncoding(resource),
 					resource,
 					options: {
 						inactive: activeEditorResource ? !isEqual(activeEditorResource, resource) : true,
@@ -528,7 +525,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		}
 
 		// {{SQL CARBON EDIT}}
-		return save(resource, true, undefined, editorService, accessor.get(IFileService), accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService), accessor.get(IQueryEditorService), accessor.get(IWorkbenchEnvironmentService));
+		return save(resource, true, undefined, editorService, accessor.get(IFileService), accessor.get(IUntitledTextEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService), accessor.get(IQueryEditorService), accessor.get(IWorkbenchEnvironmentService));
 	}
 });
 
@@ -544,9 +541,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		if (resources.length === 1) {
 			// If only one resource is selected explictly call save since the behavior is a bit different than save all #41841
 			// {{SQL CARBON EDIT}}
-			return save(resources[0], false, undefined, editorService, accessor.get(IFileService), accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService), accessor.get(IQueryEditorService), accessor.get(IWorkbenchEnvironmentService));
+			return save(resources[0], false, undefined, editorService, accessor.get(IFileService), accessor.get(IUntitledTextEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService), accessor.get(IQueryEditorService), accessor.get(IWorkbenchEnvironmentService));
 		}
-		return saveAll(resources, editorService, accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService));
+		return saveAll(resources, editorService, accessor.get(IUntitledTextEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService));
 	}
 });
 
@@ -562,7 +559,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		const resource = toResource(editorService.activeEditor, { supportSideBySide: SideBySideEditor.MASTER });
 		if (resource) {
 			// {{SQL CARBON EDIT}}
-			return save(resource, false, { skipSaveParticipants: true }, editorService, accessor.get(IFileService), accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService), accessor.get(IQueryEditorService), accessor.get(IWorkbenchEnvironmentService));
+			return save(resource, false, { skipSaveParticipants: true }, editorService, accessor.get(IFileService), accessor.get(IUntitledTextEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService), accessor.get(IQueryEditorService), accessor.get(IWorkbenchEnvironmentService));
 		}
 
 		return undefined;
@@ -572,7 +569,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 CommandsRegistry.registerCommand({
 	id: SAVE_ALL_COMMAND_ID,
 	handler: (accessor) => {
-		return saveAll(true, accessor.get(IEditorService), accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService));
+		return saveAll(true, accessor.get(IEditorService), accessor.get(IUntitledTextEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService));
 	}
 });
 
@@ -600,14 +597,14 @@ CommandsRegistry.registerCommand({
 			});
 		}
 
-		return saveAll(saveAllArg, accessor.get(IEditorService), accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService));
+		return saveAll(saveAllArg, accessor.get(IEditorService), accessor.get(IUntitledTextEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService));
 	}
 });
 
 CommandsRegistry.registerCommand({
 	id: SAVE_FILES_COMMAND_ID,
 	handler: (accessor) => {
-		return saveAll(false, accessor.get(IEditorService), accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService));
+		return saveAll(false, accessor.get(IEditorService), accessor.get(IUntitledTextEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService));
 	}
 });
 

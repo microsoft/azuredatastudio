@@ -21,7 +21,6 @@ import { SimpleEditorProgressService } from 'vs/editor/standalone/browser/simple
 import { IProgressService } from 'vs/platform/progress/common/progress';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModel } from 'vs/editor/common/model';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import * as DOM from 'vs/base/browser/dom';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
@@ -30,11 +29,12 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/browser/notebookService';
 import * as notebookUtils from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
-import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
 import { CollapseComponent } from 'sql/workbench/parts/notebook/browser/cellViews/collapse.component';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -93,7 +93,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	private readonly _maximumHeight = 4000;
 	private _cellModel: ICellModel;
 	private _editor: QueryTextEditor;
-	private _editorInput: UntitledEditorInput;
+	private _editorInput: UntitledTextEditorInput;
 	private _editorModel: ITextModel;
 	private _model: NotebookModel;
 	private _activeCellId: string;
@@ -197,11 +197,11 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		let uri = this.cellModel.cellUri;
 		let cellModelSource: string;
 		cellModelSource = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
-		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, cellModelSource, '');
+		this._editorInput = instantiationService.createInstance(UntitledTextEditorInput, uri, false, this.cellModel.language, cellModelSource, '');
 		await this._editor.setInput(this._editorInput, undefined);
 		this.setFocusAndScroll();
 
-		let untitledEditorModel: UntitledEditorModel = await this._editorInput.resolve();
+		let untitledEditorModel: UntitledTextEditorModel = await this._editorInput.resolve();
 		this._editorModel = untitledEditorModel.textEditorModel;
 
 		let isActive = this.cellModel.id === this._activeCellId;

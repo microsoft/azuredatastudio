@@ -5,7 +5,6 @@
 
 import { EditorInput, IEditorInput } from 'vs/workbench/common/editor';
 import { IInstantiationService, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { URI } from 'vs/base/common/uri';
 
 import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
@@ -17,6 +16,7 @@ import { INotebookService } from 'sql/workbench/services/notebook/browser/notebo
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { find } from 'vs/base/common/arrays';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 
 ////// Exported public functions/vars
 
@@ -36,7 +36,7 @@ export const notebookModeId = 'notebook';
  */
 export function convertEditorInput(input: EditorInput, options: IQueryEditorOptions, instantiationService: IInstantiationService): EditorInput {
 	let denyQueryEditor: boolean = options && options.denyQueryEditor;
-	let untitledEditorInput: UntitledEditorInput = input as UntitledEditorInput;
+	let untitledEditorInput: UntitledTextEditorInput = input as UntitledTextEditorInput;
 	let mode: string = (untitledEditorInput && untitledEditorInput.getMode) ? untitledEditorInput.getMode() : 'sql';
 	if (input && !denyQueryEditor) {
 		let uri: URI;
@@ -45,7 +45,7 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 			uri = getQueryEditorFileUri(input);
 			if (uri) {
 				const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, uri.toString(true));
-				let queryInput: QueryInput = instantiationService.createInstance(QueryInput, '', input as UntitledEditorInput, queryResultsInput, undefined);
+				let queryInput: QueryInput = instantiationService.createInstance(QueryInput, '', input as UntitledTextEditorInput, queryResultsInput, undefined);
 				return queryInput;
 			}
 
@@ -59,7 +59,7 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 		//Notebook
 		uri = getNotebookEditorUri(input, instantiationService);
 		if (uri) {
-			let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, input.getName(), uri, input as UntitledEditorInput);
+			let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, input.getName(), uri, input as UntitledTextEditorInput);
 			return notebookInput;
 		}
 	}
@@ -71,11 +71,8 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
  * @param input The IEditorInput to get the resource of
  */
 export function getSupportedInputResource(input: IEditorInput): URI {
-	if (input instanceof UntitledEditorInput) {
-		let untitledCast: UntitledEditorInput = <UntitledEditorInput>input;
-		if (untitledCast) {
-			return untitledCast.getResource();
-		}
+	if (input instanceof UntitledTextEditorInput) {
+		return input.getResource();
 	}
 
 	if (input instanceof FileEditorInput) {
@@ -181,9 +178,8 @@ function getNotebookFileExtensions(instantiationService: IInstantiationService):
  * @param input The EditorInput to check the mode of
  */
 function hasNotebookFileMode(input: EditorInput): boolean {
-	if (input instanceof UntitledEditorInput) {
-		let untitledCast: UntitledEditorInput = <UntitledEditorInput>input;
-		return (untitledCast && untitledCast.getMode() === notebookModeId);
+	if (input instanceof UntitledTextEditorInput) {
+		return input.getMode() === notebookModeId;
 	}
 	return false;
 }
@@ -200,9 +196,8 @@ function withService<TService, TResult>(instantiationService: IInstantiationServ
  * @param input The EditorInput to check the mode of
  */
 function hasSqlFileMode(input: EditorInput): boolean {
-	if (input instanceof UntitledEditorInput) {
-		let untitledCast: UntitledEditorInput = <UntitledEditorInput>input;
-		return untitledCast && (untitledCast.getMode() === undefined || untitledCast.getMode() === sqlModeId);
+	if (input instanceof UntitledTextEditorInput) {
+		return (input.getMode() === undefined || input.getMode() === sqlModeId);
 	}
 
 	return false;

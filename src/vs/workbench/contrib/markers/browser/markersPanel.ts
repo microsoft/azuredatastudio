@@ -34,11 +34,10 @@ import { deepClone } from 'vs/base/common/objects';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { FilterData, Filter, VirtualDelegate, ResourceMarkersRenderer, MarkerRenderer, RelatedInformationRenderer, TreeElement, MarkersTreeAccessibilityProvider, MarkersViewModel, ResourceDragAndDrop } from 'vs/workbench/contrib/markers/browser/markersTreeViewer';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { Separator, ActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { Separator, ActionViewItem, ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { IKeyboardEvent, StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyCode } from 'vs/base/common/keyCodes';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { domEvent } from 'vs/base/browser/event';
 import { ResourceLabels } from 'vs/workbench/browser/labels';
 import { IMarker } from 'vs/platform/markers/common/markers';
@@ -75,12 +74,12 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 	private readonly filter: Filter;
 
 	private tree!: MarkersTree;
+	private filterActionBar!: ActionBar;
 	private messageBoxContainer!: HTMLElement;
 	private ariaLabelElement!: HTMLElement;
 
 	private readonly collapseAllAction: IAction;
 	private readonly filterAction: MarkersFilterAction;
-	private filterInputActionViewItem: MarkersFilterActionViewItem | null = null;
 
 	private readonly panelState: MementoObject;
 	private panelFoucusContextKey: IContextKey<boolean>;
@@ -91,6 +90,7 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 
 	private currentResourceGotAddedToMarkersData: boolean = false;
 	readonly markersViewModel: MarkersViewModel;
+	private isSmallLayout: boolean = false;
 
 	constructor(
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
@@ -118,7 +118,14 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 
 		// actions
 		this.collapseAllAction = this._register(new Action('vs.tree.collapse', localize('collapseAll', "Collapse All"), 'monaco-tree-action codicon-collapse-all', true, async () => this.collapseAll()));
-		this.filterAction = this._register(this.instantiationService.createInstance(MarkersFilterAction, { filterText: this.panelState['filter'] || '', filterHistory: this.panelState['filterHistory'] || [], useFilesExclude: !!this.panelState['useFilesExclude'] }));
+		this.filterAction = this._register(this.instantiationService.createInstance(MarkersFilterAction, {
+			filterText: this.panelState['filter'] || '',
+			filterHistory: this.panelState['filterHistory'] || [],
+			showErrors: this.panelState['showErrors'] !== false,
+			showWarnings: this.panelState['showWarnings'] !== false,
+			showInfos: this.panelState['showInfos'] !== false,
+			useFilesExclude: !!this.panelState['useFilesExclude']
+		}));
 	}
 
 	public create(parent: HTMLElement): void {
@@ -129,6 +136,7 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 
 		const container = dom.append(parent, dom.$('.markers-panel-container'));
 
+		this.createFilterActionBar(container);
 		this.createArialLabelElement(container);
 		this.createMessageBox(container);
 		this.createTree(container);
@@ -147,6 +155,7 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 			}
 		}));
 
+		this.filterActionBar.push(this.filterAction);
 		this.render();
 	}
 
@@ -155,10 +164,15 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 	}
 
 	public layout(dimension: dom.Dimension): void {
-		this.tree.layout(dimension.height, dimension.width);
-		if (this.filterInputActionViewItem) {
-			this.filterInputActionViewItem.toggleLayout(dimension.width < 1200);
+		const wasSmallLayout = this.isSmallLayout;
+		this.isSmallLayout = dimension.width < 600;
+		if (this.isSmallLayout !== wasSmallLayout) {
+			this.updateTitleArea();
+			dom.toggleClass(this.filterActionBar.getContainer(), 'hide', !this.isSmallLayout);
 		}
+		const treeHeight = this.isSmallLayout ? dimension.height - 44 : dimension.height;
+		this.tree.layout(treeHeight, dimension.width);
+		this.filterAction.layout(this.isSmallLayout ? dimension.width : dimension.width - 200);
 	}
 
 	public focus(): void {
@@ -174,12 +188,13 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 	}
 
 	public focusFilter(): void {
-		if (this.filterInputActionViewItem) {
-			this.filterInputActionViewItem.focus();
-		}
+		this.filterAction.focus();
 	}
 
 	public getActions(): IAction[] {
+		if (this.isSmallLayout) {
+			return [this.collapseAllAction];
+		}
 		return [this.filterAction, this.collapseAllAction];
 	}
 
@@ -265,7 +280,7 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 
 	private updateFilter() {
 		this.cachedFilterStats = undefined;
-		this.filter.options = new FilterOptions(this.filterAction.filterText, this.getFilesExcludeExpressions());
+		this.filter.options = new FilterOptions(this.filterAction.filterText, this.getFilesExcludeExpressions(), this.filterAction.showWarnings, this.filterAction.showErrors, this.filterAction.showInfos);
 		this.tree.refilter();
 		this._onDidFilter.fire();
 
@@ -287,6 +302,12 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 
 	private getFilesExclude(resource?: URI): IExpression {
 		return deepClone(this.configurationService.getValue('files.exclude', { resource })) || {};
+	}
+
+	private createFilterActionBar(parent: HTMLElement): void {
+		this.filterActionBar = this._register(new ActionBar(parent, { actionViewItemProvider: action => this.getActionViewItem(action) }));
+		dom.addClass(this.filterActionBar.getContainer(), 'markers-panel-filter-container');
+		dom.toggleClass(this.filterActionBar.getContainer(), 'hide', !this.isSmallLayout);
 	}
 
 	private createMessageBox(parent: HTMLElement): void {
@@ -369,8 +390,8 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 
 		// move focus to input, whenever a key is pressed in the panel container
 		this._register(domEvent(parent, 'keydown')(e => {
-			if (this.filterInputActionViewItem && this.keybindingService.mightProducePrintableCharacter(new StandardKeyboardEvent(e))) {
-				this.filterInputActionViewItem.focus();
+			if (this.keybindingService.mightProducePrintableCharacter(new StandardKeyboardEvent(e))) {
+				this.filterAction.focus();
 			}
 		}));
 
@@ -405,7 +426,7 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 		}));
 		this._register(this.tree.onDidChangeSelection(() => this.onSelected()));
 		this._register(this.filterAction.onDidChange((event: IMarkersFilterActionChangeEvent) => {
-			if (event.filterText || event.useFilesExclude) {
+			if (event.filterText || event.useFilesExclude || event.showWarnings || event.showErrors || event.showInfos) {
 				this.updateFilter();
 			}
 		}));
@@ -482,11 +503,7 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 			this.messageBoxContainer.style.display = 'block';
 			this.messageBoxContainer.setAttribute('tabIndex', '0');
 			if (total > 0) {
-				if (this.filter.options.filter) {
-					this.renderFilteredByFilterMessage(this.messageBoxContainer);
-				} else {
-					this.renderFilteredByFilesExcludeMessage(this.messageBoxContainer);
-				}
+				this.renderFilteredByFilterMessage(this.messageBoxContainer);
 			} else {
 				this.renderNoProblemsMessage(this.messageBoxContainer);
 			}
@@ -501,37 +518,9 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 		}
 	}
 
-	private renderFilteredByFilesExcludeMessage(container: HTMLElement) {
-		const span1 = dom.append(container, dom.$('span'));
-		span1.textContent = Messages.MARKERS_PANEL_NO_PROBLEMS_FILE_EXCLUSIONS_FILTER;
-		const link = dom.append(container, dom.$('a.messageAction'));
-		link.textContent = localize('disableFilesExclude', "Disable Files Exclude Filter.");
-		link.setAttribute('tabIndex', '0');
-		dom.addStandardDisposableListener(link, dom.EventType.CLICK, () => this.filterAction.useFilesExclude = false);
-		dom.addStandardDisposableListener(link, dom.EventType.KEY_DOWN, (e: IKeyboardEvent) => {
-			if (e.equals(KeyCode.Enter) || e.equals(KeyCode.Space)) {
-				this.filterAction.useFilesExclude = false;
-				e.stopPropagation();
-			}
-		});
-		this.ariaLabelElement.setAttribute('aria-label', Messages.MARKERS_PANEL_NO_PROBLEMS_FILE_EXCLUSIONS_FILTER);
-	}
-
 	private renderFilteredByFilterMessage(container: HTMLElement) {
 		const span1 = dom.append(container, dom.$('span'));
 		span1.textContent = Messages.MARKERS_PANEL_NO_PROBLEMS_FILTERS;
-		const link = dom.append(container, dom.$('a.messageAction'));
-		link.textContent = localize('clearFilter', "Clear Filter");
-		link.setAttribute('tabIndex', '0');
-		const span2 = dom.append(container, dom.$('span'));
-		span2.textContent = '.';
-		dom.addStandardDisposableListener(link, dom.EventType.CLICK, () => this.filterAction.filterText = '');
-		dom.addStandardDisposableListener(link, dom.EventType.KEY_DOWN, (e: IKeyboardEvent) => {
-			if (e.equals(KeyCode.Enter) || e.equals(KeyCode.Space)) {
-				this.filterAction.filterText = '';
-				e.stopPropagation();
-			}
-		});
 		this.ariaLabelElement.setAttribute('aria-label', Messages.MARKERS_PANEL_NO_PROBLEMS_FILTERS);
 	}
 
@@ -671,8 +660,7 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 
 	public getActionViewItem(action: IAction): IActionViewItem | undefined {
 		if (action.id === MarkersFilterAction.ID) {
-			this.filterInputActionViewItem = this.instantiationService.createInstance(MarkersFilterActionViewItem, this.filterAction, this);
-			return this.filterInputActionViewItem;
+			return this.instantiationService.createInstance(MarkersFilterActionViewItem, this.filterAction, this);
 		}
 		return super.getActionViewItem(action);
 	}
@@ -714,6 +702,9 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 	protected saveState(): void {
 		this.panelState['filter'] = this.filterAction.filterText;
 		this.panelState['filterHistory'] = this.filterAction.filterHistory;
+		this.panelState['showErrors'] = this.filterAction.showErrors;
+		this.panelState['showWarnings'] = this.filterAction.showWarnings;
+		this.panelState['showInfos'] = this.filterAction.showInfos;
 		this.panelState['useFilesExclude'] = this.filterAction.useFilesExclude;
 		this.panelState['multiline'] = this.markersViewModel.multiline;
 

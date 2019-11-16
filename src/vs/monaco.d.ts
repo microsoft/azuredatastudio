@@ -1193,7 +1193,8 @@ declare namespace monaco.editor {
 	 * Position in the minimap to render the decoration.
 	 */
 	export enum MinimapPosition {
-		Inline = 1
+		Inline = 1,
+		Gutter = 2
 	}
 
 	export interface IDecorationOptions {
@@ -3064,6 +3065,8 @@ declare namespace monaco.editor {
 
 	export type EditorFindOptions = Readonly<Required<IEditorFindOptions>>;
 
+	export type GoToLocationValues = 'peek' | 'gotoAndPeek' | 'goto';
+
 	/**
 	 * Configuration options for go to location
 	 */
@@ -3071,7 +3074,12 @@ declare namespace monaco.editor {
 		/**
 		 * Control how goto-command work when having multiple results.
 		 */
-		multiple?: 'peek' | 'gotoAndPeek' | 'goto';
+		multiple?: GoToLocationValues;
+		multipleDefinitions?: GoToLocationValues;
+		multipleTypeDefinitions?: GoToLocationValues;
+		multipleDeclarations?: GoToLocationValues;
+		multipleImplemenations?: GoToLocationValues;
+		multipleReferences?: GoToLocationValues;
 	}
 
 	export type GoToLocationOptions = Readonly<Required<IGotoLocationOptions>>;
