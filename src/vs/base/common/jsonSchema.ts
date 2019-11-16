@@ -3,11 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+export type JSONSchemaType = 'string' | 'number' | 'integer' | 'boolean' | 'null' | 'array' | 'object';
+
 export interface IJSONSchema {
 	id?: string;
 	$id?: string;
 	$schema?: string;
-	type?: string | string[];
+	type?: JSONSchemaType | JSONSchemaType[];
 	title?: string;
 	default?: any;
 	definitions?: IJSONSchemaMap;

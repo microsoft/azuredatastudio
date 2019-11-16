@@ -130,19 +130,19 @@ const ConnectionProviderContrib: IJSONSchema = {
 						type: 'string'
 					},
 					defaultValue: {
-						type: 'any'
+						type: ['string', 'number', 'boolean', 'object', 'integer', 'null', 'array']
 					},
 					objectType: {
-						type: 'any'
+						type: ['string', 'number', 'boolean', 'object', 'integer', 'null', 'array']
 					},
 					categoryValues: {
-						type: 'any'
+						type: ['string', 'number', 'boolean', 'object', 'integer', 'null', 'array']
 					},
 					isRequired: {
 						type: 'boolean'
 					},
 					isArray: {
-						type: 'bolean'
+						type: 'boolean'
 					}
 				}
 			}

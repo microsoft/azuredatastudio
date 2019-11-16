@@ -8,7 +8,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
-import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
+import { IConfigurationRegistry, Extensions as ConfigExtensions, IConfigurationPropertySchema } from 'vs/platform/configuration/common/configurationRegistry';
 import { SyncActionDescriptor, MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import { KeyMod, KeyCode, KeyChord } from 'vs/base/common/keyCodes';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
@@ -298,7 +298,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 });
 
 // Intellisense and other configuration options
-const registryProperties = {
+const registryProperties: { [path: string]: IConfigurationPropertySchema; } = {
 	'sql.saveAsCsv.includeHeaders': {
 		'type': 'boolean',
 		'description': localize('sql.saveAsCsv.includeHeaders', "[Optional] When true, column headers are included when saving results as CSV"),
@@ -310,7 +310,7 @@ const registryProperties = {
 		'default': ','
 	},
 	'sql.saveAsCsv.lineSeperator': {
-		'type': '',
+		'type': 'string',
 		'description': localize('sql.saveAsCsv.lineSeperator', "[Optional] Character(s) used for seperating rows when saving results as CSV"),
 		'default': null
 	},
