@@ -174,7 +174,7 @@ export class PlatformService implements IPlatformService {
 		}
 	}
 
-	private sudoExec(command: string, options: sudo.SudoOptions): Promise<CommandOutput> {
+	private sudoExec(command: string, options: { [key: string]: any }): Promise<CommandOutput> {
 		return new Promise<CommandOutput>((resolve, reject) => {
 			sudo.exec(command, options, (error, stdout, stderr) => {
 				if (error) {
