@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
-import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/parts/objectExplorer/common/treeNode';
+import { NodeType } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
+import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService, IConnection } from 'sql/platform/connection/common/connectionManagement';
@@ -14,7 +14,7 @@ import * as nls from 'vs/nls';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
+import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
 import { ILogService } from 'vs/platform/log/common/log';
 import { entries } from 'sql/base/common/collections';
 import { values } from 'vs/base/common/collections';
@@ -144,7 +144,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	constructor(
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IConnectionStore private readonly connectionStore: IConnectionStore,
-		@ITelemetryService private readonly telemetryService: ITelemetryService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 		@ILogService private readonly logService: ILogService
 	) {
 		this._onUpdateObjectExplorerNodes = new Emitter<ObjectExplorerNodeEventArgs>();
@@ -337,7 +337,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
 			let provider = this._providers[providerId];
 			if (provider) {
-				TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId }).catch((e) => this.logService.error(e));
+				this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ObjectExplorerExpand)
+					.withAdditionalProperties({
+						refresh: false,
+						provider: providerId
+					}).send();
 				this.expandOrRefreshNode(providerId, session, nodePath).then(result => {
 					resolve(result);
 				}, error => {
@@ -474,7 +478,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Thenable<azdata.ObjectExplorerExpandInfo> {
 		let provider = this._providers[providerId];
 		if (provider) {
-			TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.ObjectExplorerExpand, { refresh: 1, provider: providerId }).catch((e) => this.logService.error(e));
+			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ObjectExplorerExpand)
+				.withAdditionalProperties({
+					refresh: true,
+					provider: providerId
+				}).send();
 			return this.expandOrRefreshNode(providerId, session, nodePath, true);
 		}
 		return Promise.resolve(undefined);

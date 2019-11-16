@@ -8,7 +8,6 @@ import { Color } from 'vs/base/common/color';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { mixin } from 'vs/base/common/objects';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -16,7 +15,6 @@ import { IContextKeyService, RawContextKey, IContextKey } from 'vs/platform/cont
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { localize } from 'vs/nls';
 import { MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -28,6 +26,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/resour
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 import { find, firstIndex } from 'vs/base/common/arrays';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
@@ -140,7 +139,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	constructor(
 		private _title: string,
 		private _name: string,
-		private readonly _telemetryService: ITelemetryService,
+		private readonly _telemetryService: IAdsTelemetryService,
 		protected readonly layoutService: IWorkbenchLayoutService,
 		protected readonly _clipboardService: IClipboardService,
 		protected readonly _themeService: IThemeService,
@@ -189,12 +188,12 @@ export abstract class Modal extends Disposable implements IThemable {
 				this._modalTitleIcon = DOM.append(this._modalHeaderSection, DOM.$('.modal-title-icon'));
 			}
 
-			this._modalTitle = DOM.append(this._modalHeaderSection, DOM.$('.modal-title'));
+			this._modalTitle = DOM.append(this._modalHeaderSection, DOM.$('h1.modal-title'));
 			this._modalTitle.innerText = this._title;
 		}
 
 		if (!this._modalOptions.isAngular && this._modalOptions.hasErrors) {
-			this._messageElement = DOM.$('.dialog-message.error');
+			this._messageElement = DOM.$('.dialog-message.error', { role: 'alert' });
 			const headerContainer = DOM.append(this._messageElement, DOM.$('.dialog-message-header'));
 			this._messageIcon = DOM.append(headerContainer, DOM.$('.dialog-message-icon'));
 			this._messageSeverity = DOM.append(headerContainer, DOM.$('.dialog-message-severity'));
@@ -373,7 +372,9 @@ export abstract class Modal extends Disposable implements IThemable {
 		});
 
 		this.layout(DOM.getTotalHeight(this._modalBodySection));
-		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.ModalDialogOpened, { name: this._name });
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ModalDialogOpened)
+			.withAdditionalProperties({ name: this._name })
+			.send();
 	}
 
 	/**
@@ -392,7 +393,9 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 		this._keydownListener.dispose();
 		this._resizeListener.dispose();
-		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.ModalDialogClosed, { name: this._name });
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ModalDialogClosed)
+			.withAdditionalProperties({ name: this._name })
+			.send();
 	}
 
 	/**

@@ -1,0 +1,6 @@
+{
+  perform: true,
+  label: 'Stale PR',
+  daysSinceLastUpdate: 7,
+  ignoredLabels: ['Do Not Merge']
+}

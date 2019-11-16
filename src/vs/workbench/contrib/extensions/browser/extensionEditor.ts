@@ -51,7 +51,7 @@ import { isUndefined } from 'vs/base/common/types';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IWebviewService, Webview, KEYBINDING_CONTEXT_WEBVIEW_FIND_WIDGET_FOCUSED } from 'vs/workbench/contrib/webview/browser/webview';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { renderDashboardContributions } from 'sql/workbench/parts/extensions/browser/contributionRenders'; // {{SQL CARBON EDIT}}
+import { renderDashboardContributions } from 'sql/workbench/contrib/extensions/browser/contributionRenders'; // {{SQL CARBON EDIT}}
 import { generateUuid } from 'vs/base/common/uuid';
 import { platform } from 'vs/base/common/process';
 import { URI } from 'vs/base/common/uri';

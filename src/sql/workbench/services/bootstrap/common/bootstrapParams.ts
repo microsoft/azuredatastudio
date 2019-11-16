@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DataService } from 'sql/workbench/parts/grid/common/dataService';
+import { DataService } from 'sql/workbench/contrib/grid/common/dataService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
+import { ConnectionContextKey } from 'sql/workbench/contrib/connection/common/connectionContextKey';
 import { Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';

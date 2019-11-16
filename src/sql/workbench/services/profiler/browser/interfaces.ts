@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
+import { ProfilerInput } from 'sql/workbench/contrib/profiler/browser/profilerInput';
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import * as azdata from 'azdata';
-import { INewProfilerState } from 'sql/workbench/parts/profiler/common/profilerState';
+import { INewProfilerState } from 'sql/workbench/contrib/profiler/common/profilerState';
 import { ConnectionProfile } from 'sql/base/common/connectionProfile';
 
 const PROFILER_SERVICE_ID = 'profilerService';

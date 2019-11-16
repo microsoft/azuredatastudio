@@ -12,7 +12,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import * as ConnectionUtils from 'sql/platform/connection/common/utils';
 import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { BackupDialog } from 'sql/workbench/parts/backup/browser/backupDialog';
+import { BackupDialog } from 'sql/workbench/contrib/backup/browser/backupDialog';
 import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
 import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
