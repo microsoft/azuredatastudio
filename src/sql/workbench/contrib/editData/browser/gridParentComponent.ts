@@ -6,9 +6,9 @@
 import 'vs/css!./media/flexbox';
 import 'vs/css!./media/styles';
 
+import { Table } from 'sql/base/browser/ui/table/table';
+
 import { Subscription, Subject } from 'rxjs/Rx';
-import { ElementRef, QueryList, ChangeDetectorRef, ViewChildren } from '@angular/core';
-import { SlickGrid } from 'angular2-slickgrid';
 import * as Constants from 'sql/workbench/contrib/query/common/constants';
 import * as LocalizedConstants from 'sql/workbench/contrib/query/common/localizedConstants';
 import { IGridInfo, IGridDataSet, SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
@@ -25,14 +25,15 @@ import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { DisposableStore } from 'vs/base/common/lifecycle';
+import { DisposableStore, Disposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 
-export abstract class GridParentComponent {
+
+export abstract class GridParentComponent extends Disposable {
 	// CONSTANTS
 	// tslint:disable:no-unused-variable
 
@@ -56,7 +57,6 @@ export abstract class GridParentComponent {
 
 	protected toDispose = new DisposableStore();
 
-
 	// Context keys to set when keybindings are available
 	private resultsVisibleContextKey: IContextKey<boolean>;
 	private gridFocussedContextKey: IContextKey<boolean>;
@@ -72,14 +72,16 @@ export abstract class GridParentComponent {
 	protected _messageActive = true;
 	protected activeGrid = 0;
 
-	@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
+
+	protected nativeElement: HTMLElement;
+	protected _tables: Table<any>[] = [];
+
 
 	set messageActive(input: boolean) {
 		this._messageActive = input;
 		if (this.resultActive) {
 			this.resizeGrids();
 		}
-		this._cd.detectChanges();
 	}
 
 	get messageActive(): boolean {
@@ -87,16 +89,15 @@ export abstract class GridParentComponent {
 	}
 
 	constructor(
-		protected _el: ElementRef,
-		protected _cd: ChangeDetectorRef,
-		protected contextMenuService: IContextMenuService,
-		protected keybindingService: IKeybindingService,
-		protected contextKeyService: IContextKeyService,
-		protected configurationService: IConfigurationService,
-		protected clipboardService: IClipboardService,
-		protected queryEditorService: IQueryEditorService,
-		protected logService: ILogService
+		@IContextMenuService protected contextMenuService: IContextMenuService,
+		@IKeybindingService protected keybindingService: IKeybindingService,
+		@IContextKeyService protected contextKeyService: IContextKeyService,
+		@IConfigurationService protected configurationService: IConfigurationService,
+		@IClipboardService protected clipboardService: IClipboardService,
+		@IQueryEditorService protected queryEditorService: IQueryEditorService,
+		@ILogService protected logService: ILogService
 	) {
+		super();
 	}
 
 	protected baseInit(): void {
@@ -179,12 +180,14 @@ export abstract class GridParentComponent {
 		this.toDispose.add(subscriptionToDisposable(sub));
 	}
 
+
+
 	private bindKeys(contextKeyService: IContextKeyService): void {
 		if (contextKeyService) {
 			this.queryEditorVisible = QueryEditorVisibleContext.bindTo(contextKeyService);
 			this.queryEditorVisible.set(true);
 
-			let gridContextKeyService = this.contextKeyService.createScoped(this._el.nativeElement);
+			let gridContextKeyService = this.contextKeyService.createScoped(this.nativeElement);
 			this.toDispose.add(gridContextKeyService);
 			this.resultsVisibleContextKey = ResultsVisibleContext.bindTo(gridContextKeyService);
 			this.resultsVisibleContextKey.set(true);
@@ -203,7 +206,6 @@ export abstract class GridParentComponent {
 		if (this.resultActive) {
 			this.resizeGrids();
 		}
-		this._cd.detectChanges();
 	}
 
 	protected toggleMessagePane(): void {
@@ -227,7 +229,9 @@ export abstract class GridParentComponent {
 	}
 
 	protected getSelection(index?: number): Slick.Range[] {
-		let selection = this.slickgrids.toArray()[index || this.activeGrid].getSelectedRanges();
+
+		//let selection = this.slickgrids.toArray()[index || this.activeGrid].getSelectedRanges();
+		let selection = this._tables[index || this.activeGrid].getSelectedRanges();
 		if (selection) {
 			selection = selection.map(c => { return <Slick.Range>{ fromCell: c.fromCell - 1, toCell: c.toCell - 1, toRow: c.toRow, fromRow: c.fromRow }; });
 			return selection;
@@ -380,17 +384,20 @@ export abstract class GridParentComponent {
 	}
 
 	openContextMenu(event, batchId, resultId, index): void {
-		let slick: any = this.slickgrids.toArray()[index];
+		//let slick: any = this.slickgrids.toArray()[index];
+		let slick: any = this._tables[index];
 		let grid = slick._grid;
 
 		let selection = this.getSelection(index);
 
 		if (selection && selection.length === 0) {
-			let cell = (grid as Slick.Grid<any>).getCellFromEvent(event);
+			let cell = event.cell;
+			//let cell = (grid as Slick.Grid<any>).getCellFromEvent(event);
 			selection = [new Slick.Range(cell.row, cell.cell - 1)];
 		}
 
-		let rowIndex = grid.getCellFromEvent(event).row;
+		// let rowIndex = grid.getCellFromEvent(event).row;
+		let rowIndex = event.cell.row;
 
 		let actionContext: IGridInfo = {
 			batchIndex: batchId,
@@ -400,9 +407,9 @@ export abstract class GridParentComponent {
 			rowIndex: rowIndex
 		};
 
-		let anchor = { x: event.pageX + 1, y: event.pageY };
+		event.anchor.x = event.anchor.x + 1;
 		this.contextMenuService.showContextMenu({
-			getAnchor: () => anchor,
+			getAnchor: () => event.anchor,
 			getActions: () => this.actionProvider.getGridActions(),
 			getKeyBinding: (action) => this._keybindingFor(action),
 			getActionsContext: () => (actionContext)
@@ -419,16 +426,21 @@ export abstract class GridParentComponent {
 		let self = this;
 		return (gridIndex: number) => {
 			self.activeGrid = gridIndex;
-			let grid = self.slickgrids.toArray()[self.activeGrid];
+			let grid = self._tables[self.activeGrid];
+			//let grid = self.tablegrids[self.activeGrid];
 			grid.setActive();
-			grid.selection = true;
+			grid.setSelectedRows(true);
 		};
 	}
 
 	private onSelectAllForActiveGrid(): void {
-		if (this.activeGrid >= 0 && this.slickgrids.length > this.activeGrid) {
-			this.slickgrids.toArray()[this.activeGrid].selection = true;
+		if (this.activeGrid >= 0 && this._tables.length > this.activeGrid) {
+			this._tables[this.activeGrid].setSelectedRows(true);
 		}
+
+		// if (this.activeGrid >= 0 && this.tablegrids.length > this.activeGrid) {
+		// 	this.tablegrids[this.activeGrid].selection = true;
+		// }
 	}
 
 	/**
@@ -445,18 +457,18 @@ export abstract class GridParentComponent {
 		}
 		setTimeout(() => {
 			self.resizeGrids();
-			self.slickgrids.toArray()[0].setActive();
-			self._cd.detectChanges();
+			self._tables[0].setActive();
+			//self.tablegrids[0].setActive();
 		});
 	}
 
 	abstract onScroll(scrollTop): void;
 
 	protected getResultsElement(): any {
-		return this._el.nativeElement.querySelector('#results');
+		return this.nativeElement.querySelector('#results');
 	}
 	protected getMessagesElement(): any {
-		return this._el.nativeElement.querySelector('#messages');
+		return this.nativeElement.querySelector('#messages');
 	}
 	/**
 	 * Force angular to re-render the results grids. Calling this upon unhide (upon focus) fixes UI
@@ -464,10 +476,9 @@ export abstract class GridParentComponent {
 	 */
 	refreshResultsets(): void {
 		let tempRenderedDataSets = this.renderedDataSets;
+
 		this.renderedDataSets = [];
-		this._cd.detectChanges();
 		this.renderedDataSets = tempRenderedDataSets;
-		this._cd.detectChanges();
 	}
 
 	getSelectedRangeUnderMessages(): Selection {
@@ -479,8 +490,8 @@ export abstract class GridParentComponent {
 	}
 
 	selectAllMessages(): void {
-		let msgEl = this._el.nativeElement.querySelector('#messages');
-		this.selectElementContents(msgEl);
+		let msgEl = this.nativeElement.querySelector('#messages');
+		this.selectElementContents(<HTMLElement>msgEl);
 	}
 
 	selectElementContents(el: HTMLElement): void {
@@ -517,4 +528,58 @@ export abstract class GridParentComponent {
 	}
 
 	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
+
+	//own helper functions
+	public render(container: HTMLElement): void {
+		this.nativeElement.style.width = '100%';
+		this.nativeElement.style.height = '100%';
+
+		container.appendChild(this.nativeElement);
+	}
+
+
+	// private addResultSet(resultSet: azdata.ResultSetSummary[]) {
+	// 	let tables: Table<any>[] = [];
+
+	// 	for (let set of resultSet) {
+	// 		// ensure we aren't adding a resultSet that is already visible
+	// 		if (this.tables.find(t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id)) {
+	// 			continue;
+	// 		}
+	// 		let tableState: GridTableState;
+	// 		if (this.state) {
+	// 			tableState = this.state.tableStates.find(e => e.batchId === set.batchId && e.resultId === set.id);
+	// 		}
+	// 		if (!tableState) {
+	// 			tableState = new GridTableState(set.id, set.batchId);
+	// 			if (this.state) {
+	// 				this.state.tableStates.push(tableState);
+	// 			}
+	// 		}
+	// 		let table = this.instantiationService.createInstance(GridTable, this.runner, set, tableState);
+	// 		this.tableDisposable.add(tableState.onMaximizedChange(e => {
+	// 			if (e) {
+	// 				this.maximizeTable(table.id);
+	// 			} else {
+	// 				this.minimizeTables();
+	// 			}
+	// 		}));
+	// 		this.tableDisposable.add(attachTableStyler(table, this.themeService));
+
+	// 		tables.push(table);
+	// 	}
+
+	// 	this.tables = this.tables.concat(tables);
+
+	// 	// turn-off special-case process when only a single table is being displayed
+	// 	if (this.tables.length > 1) {
+	// 		for (let i = 0; i < this.tables.length; ++i) {
+	// 			this.tables[i].isOnlyTable = false;
+	// 		}
+	// 	}
+
+	// 	if (isUndefinedOrNull(this.maximizedGrid)) {
+	// 		this.splitView.addViews(tables, tables.map(i => i.minimumSize), this.splitView.length);
+	// 	}
+	// }
 }

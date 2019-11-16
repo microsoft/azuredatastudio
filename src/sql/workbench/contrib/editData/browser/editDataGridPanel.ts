@@ -5,12 +5,13 @@
 
 import 'vs/css!./media/editData';
 
-import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, EventEmitter } from '@angular/core';
-import { VirtualizedCollection } from 'angular2-slickgrid';
+import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
+import { Table } from 'sql/base/browser/ui/table/table';
+import { ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
 
 import { IGridDataSet } from 'sql/workbench/contrib/grid/common/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
-import { IEditDataComponentParams, IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
+import { IEditDataComponentParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 import { GridParentComponent } from 'sql/workbench/contrib/editData/browser/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/workbench/contrib/editData/browser/editDataGridActions';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
@@ -31,15 +32,18 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { EditUpdateCellResult } from 'azdata';
 import { ILogService } from 'vs/platform/log/common/log';
-import { deepClone, assign } from 'vs/base/common/objects';
-export const EDITDATA_SELECTOR: string = 'editdata-component';
+import { deepClone } from 'vs/base/common/objects';
+import { Emitter } from 'vs/base/common/event';
 
-@Component({
-	selector: EDITDATA_SELECTOR,
-	host: { '(window:keydown)': 'keyEvent($event)', '(window:gridnav)': 'keyEvent($event)' },
-	templateUrl: decodeURI(require.toUrl('./editData.component.html'))
-})
-export class EditDataComponent extends GridParentComponent implements OnInit, OnDestroy {
+export const EDITDATA_SELECTOR: string = 'editdatagridpanel';
+
+// @Component({
+// 	selector: EDITDATA_SELECTOR,
+// 	host: { '(window:keydown)': 'keyEvent($event)', '(window:gridnav)': 'keyEvent($event)' },
+// 	templateUrl: decodeURI(require.toUrl('./editData.component.html'))
+// })
+
+export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
 	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
 	private refreshGridTimeoutInMs = 200;
@@ -55,6 +59,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	// All datasets
 	private dataSet: IGridDataSet;
 	private firstRender = true;
+	private totalElapsedTimeSpan: number;
+	private complete = false;
+
+	//my fields:
+	private templateHTML: any;
+
 	// Current selected cell state
 	private currentCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
 	private currentEditCellValue: string;
@@ -81,31 +91,31 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	};
 
 	constructor(
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
-		@Inject(IBootstrapParams) params: IEditDataComponentParams,
-		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(INotificationService) private notificationService: INotificationService,
-		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IKeybindingService) keybindingService: IKeybindingService,
-		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
-		@Inject(IConfigurationService) configurationService: IConfigurationService,
-		@Inject(IClipboardService) clipboardService: IClipboardService,
-		@Inject(IQueryEditorService) queryEditorService: IQueryEditorService,
-		@Inject(ILogService) logService: ILogService
+		params: IEditDataComponentParams,
+		@IInstantiationService private instantiationService: IInstantiationService,
+		@INotificationService private notificationService: INotificationService,
+		@IContextMenuService contextMenuService: IContextMenuService,
+		@IKeybindingService keybindingService: IKeybindingService,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IConfigurationService configurationService: IConfigurationService,
+		@IClipboardService clipboardService: IClipboardService,
+		@IQueryEditorService queryEditorService: IQueryEditorService,
+		@ILogService logService: ILogService
 	) {
-		super(el, cd, contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, logService);
-		this._el.nativeElement.className = 'slickgridContainer';
+		super(contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, logService);
+		this.nativeElement = document.createElement('div');
+		this.nativeElement.className = 'slickgridContainer';
 		this.dataService = params.dataService;
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
 		params.onRestoreViewState(() => this.restoreViewState());
 		params.onSaveViewState(() => this.saveViewState());
+		this.onInit();
 	}
 
 	/**
 	 * Called by Angular when the object is initialized
 	 */
-	ngOnInit(): void {
+	onInit(): void {
 		const self = this;
 		this.baseInit();
 
@@ -132,27 +142,38 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					this.logService.error('Unexpected query event type "' + event.type + '" sent');
 					break;
 			}
-			self._cd.detectChanges();
+			//self._cd.detectChanges();
 		});
 
-		this.dataService.onAngularLoaded();
+		this.dataService.onComponentLoaded();
 	}
+
+
+	public render(container: HTMLElement): void {
+		this.nativeElement.style.width = '100%';
+		this.nativeElement.style.height = '100%';
+
+		container.appendChild(this.nativeElement);
+	}
+
 
 	protected initShortcuts(shortcuts: { [name: string]: Function }): void {
 		// TODO add any Edit Data-specific shortcuts here
 	}
 
-	public ngOnDestroy(): void {
+	public onDestroy(): void {
 		this.baseDestroy();
 	}
 
-	handleStart(self: EditDataComponent, event: any): void {
+	handleStart(self: EditDataGridPanel, event: any): void {
 		self.dataSet = undefined;
 		self.placeHolderDataSets = [];
 		self.renderedDataSets = self.placeHolderDataSets;
-		this._cd.detectChanges();
+		//this._cd.detectChanges();
+		self.totalElapsedTimeSpan = undefined;
+		self.complete = false;
 
-		// Hooking up edit functions
+		// Hooking up edit functionshandle
 		this.onIsCellEditValid = (row, column, value): boolean => {
 			// TODO can only run sync code
 			return true;
@@ -313,14 +334,16 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		cellSelectTasks.catch(() => { });
 	}
 
-	handleComplete(self: EditDataComponent, event: any): void {
+	handleComplete(self: EditDataGridPanel, event: any): void {
+		self.totalElapsedTimeSpan = event.data;
+		self.complete = true;
 	}
 
 	handleEditSessionReady(self, event): void {
 		// TODO: update when edit session is ready
 	}
 
-	handleMessage(self: EditDataComponent, event: any): void {
+	handleMessage(self: EditDataGridPanel, event: any): void {
 		if (event.data && event.data.isError) {
 			self.notificationService.notify({
 				severity: Severity.Error,
@@ -329,9 +352,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		}
 	}
 
-	handleResultSet(self: EditDataComponent, event: any): void {
+	handleResultSet(self: EditDataGridPanel, event: any): void {
 		// Clone the data before altering it to avoid impacting other subscribers
-		let resultSet = assign({}, event.data);
+		let resultSet = Object.assign({}, event.data);
 		if (!resultSet.complete) {
 			return;
 		}
@@ -354,9 +377,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			minHeight: minHeight,
 			dataRows: new VirtualizedCollection(
 				self.windowSize,
+				index => { return {}; },
 				resultSet.rowCount,
 				this.loadDataFunction,
-				index => { return {}; }
 			),
 			columnDefinitions: [rowNumberColumn.getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
 				let columnIndex = (i + 1).toString();
@@ -376,9 +399,10 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		let undefinedDataSet = deepClone(dataSet);
 		undefinedDataSet.columnDefinitions = dataSet.columnDefinitions;
 		undefinedDataSet.dataRows = undefined;
-		undefinedDataSet.resized = new EventEmitter();
+		undefinedDataSet.resized = new Emitter();
 		self.placeHolderDataSets.push(undefinedDataSet);
 		self.refreshGrid();
+
 
 		// Setup the state of the selected cell
 		this.resetCurrentCell();
@@ -405,28 +429,50 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	}
 
 	private refreshGrid(): Thenable<void> {
+
+		//handle complete happens before refreshGrid is called for firstRender, something is not right.
 		return new Promise<void>((resolve, reject) => {
 			const self = this;
 			clearTimeout(self.refreshGridTimeoutHandle);
 			this.refreshGridTimeoutHandle = setTimeout(() => {
 				for (let i = 0; i < self.placeHolderDataSets.length; i++) {
-					self.placeHolderDataSets[i].dataRows = self.dataSet.dataRows;
-					self.placeHolderDataSets[i].resized.emit();
+					// TODO figure out why these values can now be null in some cases
+					if (self.dataSet && self.placeHolderDataSets[i].resized) {
+						self.placeHolderDataSets[i].dataRows = self.dataSet.dataRows;
+						self.placeHolderDataSets[i].resized.fire();
+					}
 				}
 
-				self._cd.detectChanges();
-
+				//self._cd.detectChanges();
 				if (self.firstRender) {
+					self._tables[0] = self.createNewTable();
+					self._tables[0].setSelectionModel(self.selectionModel);
+					for (let i = 0; i < self.plugins[0].length; i++) {
+						self._tables[0].registerPlugin(self.plugins[0][i]);
+					}
+
+
+					let onContextMenu = (e: ITableMouseEvent) => {
+						self.openContextMenu(e, self.dataSet.batchId, self.dataSet.resultId, 0);
+					};
+
+					self._register(self._tables[0].onContextMenu(onContextMenu, self));
+
+					//TODO: Need to be able to add onClick function with working editor.
+
 					let setActive = function () {
-						if (self.firstRender && self.slickgrids.toArray().length > 0) {
-							self.slickgrids.toArray()[0].setActive();
+						if (self.firstRender && self._tables.length > 0) {
+							self._tables[0].setActive();
+							self._tables[0].rerenderGrid(0, self.dataSet.dataRows.getLength());
+							self._tables[0].resizeCanvas();
+
 							self.firstRender = false;
 						}
 					};
 
 					setTimeout(() => {
 						setActive();
-					});
+					}, self.refreshGridTimeoutInMs);
 				}
 				resolve();
 			}, self.refreshGridTimeoutInMs);
@@ -435,6 +481,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 	protected tryHandleKeyEvent(e: StandardKeyboardEvent): boolean {
 		let handled: boolean = false;
+		// If the esc key was pressed while in a create session
+		let currentNewRowIndex = this.dataSet.totalRows - 2;
 
 		if (e.keyCode === KeyCode.Escape) {
 			this.revertCurrentRow();
@@ -444,6 +492,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	}
 
 	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
+
+
 
 	private async revertCurrentRow(): Promise<void> {
 		let currentNewRowIndex = this.dataSet.totalRows - 2;
@@ -528,7 +578,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 	// Adds CSS classes to slickgrid cells to indicate a dirty state
 	private setCellDirtyState(row: number, column: number, dirtyState: boolean): void {
-		let slick: any = this.slickgrids.toArray()[0];
+		let slick: any = this._tables[0];
 		let grid = slick._grid;
 		if (dirtyState) {
 			// Change cell color
@@ -546,7 +596,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 	// Adds CSS classes to slickgrid rows to indicate a dirty state
 	private setRowDirtyState(row: number, dirtyState: boolean): void {
-		let slick: any = this.slickgrids.toArray()[0];
+		let slick: any = this._tables[0];
 		let grid = slick._grid;
 		if (dirtyState) {
 			// Change row header color
@@ -584,9 +634,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				self.dataSet.minHeight = self.getMinHeight(self.dataSet.totalRows);
 				self.dataSet.dataRows = new VirtualizedCollection(
 					self.windowSize,
+					index => { return {}; },
 					self.dataSet.totalRows,
 					self.loadDataFunction,
-					index => { return {}; }
 				);
 			});
 	}
@@ -599,11 +649,10 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		this.dataSet.totalRows--;
 		this.dataSet.dataRows = new VirtualizedCollection(
 			this.windowSize,
+			index => { return {}; },
 			this.dataSet.totalRows,
 			this.loadDataFunction,
-			index => { return {}; }
 		);
-
 		// refresh results view
 		return this.refreshGrid().then(() => {
 			// Set focus to the row index column of the removed row if the current selection is in the removed row
@@ -615,7 +664,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	}
 
 	private focusCell(row: number, column: number, forceEdit: boolean = true): void {
-		let slick: any = this.slickgrids.toArray()[0];
+		let slick: any = this._tables[0];
 		let grid = slick._grid;
 		grid.gotoCell(row, column, forceEdit);
 	}
@@ -633,7 +682,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	}
 
 	private saveViewState(): void {
-		let grid = this.slickgrids.toArray()[0];
+		let grid = this._tables[0];
 		let self = this;
 		if (grid) {
 			let gridSelections = grid.getSelectedRanges();
@@ -662,8 +711,16 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 	private restoreViewState(): void {
 		if (this.savedViewState) {
-			this.slickgrids.toArray()[0].selection = this.savedViewState.gridSelections;
-			let viewport = ((this.slickgrids.toArray()[0] as any)._grid.getCanvasNode() as HTMLElement).parentElement;
+			//get all rows shown in gridSelections Range to use setSelectedRows directly.
+			let rowArray: number[] = [];
+			let fromRow = this.savedViewState.gridSelections[0].fromRow;
+			let toRow = this.savedViewState.gridSelections[0].toRow;
+			for (let i = fromRow; i <= toRow; i++) {
+				rowArray.push(i);
+			}
+
+			this._tables[0].setSelectedRows(rowArray);
+			let viewport = ((this._tables[0] as any)._grid.getCanvasNode() as HTMLElement).parentElement;
 			viewport.scrollLeft = this.savedViewState.scrollLeft;
 			viewport.scrollTop = this.savedViewState.scrollTop;
 			this.savedViewState = undefined;
@@ -691,7 +748,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	}
 
 	private isCellOnScreen(row: number, column: number): boolean {
-		let slick: any = this.slickgrids.toArray()[0];
+		let slick: any = this._tables[0];
 		let grid = slick._grid;
 		let viewport = grid.getViewport();
 		let cellBox = grid.getCellNodeBox(row, column);
@@ -723,4 +780,18 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		}
 
 	}
+
+	//my code here:
+	private createNewTable(): Table<any> {
+		let t: Table<any>;
+		if (this.placeHolderDataSets) {
+			let dataSet = this.placeHolderDataSets[0];
+			if (dataSet.columnDefinitions) {
+				t = new Table(this.nativeElement, { dataProvider: new AsyncDataProvider(dataSet.dataRows), columns: dataSet.columnDefinitions }, { showRowNumber: true });
+				return t;
+			}
+		}
+		return new Table(this.nativeElement);
+	}
+
 }

@@ -8,12 +8,11 @@ import { ApplicationRef, ComponentFactoryResolver, NgModule, Inject, forwardRef,
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { SlickGrid } from 'angular2-slickgrid';
-
-import { EditDataComponent } from 'sql/workbench/contrib/editData/browser/editData.component';
-import { providerIterator } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
+import { EditDataGridPanel, } from 'sql/workbench/contrib/editData/browser/editDataGridPanel';
+import { providerIterator } from 'sql/platform/bootstrap/browser/bootstrapService';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IBootstrapParams, ISelector } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
+import { IBootstrapParams, ISelector } from 'sql/platform/bootstrap/common/bootstrapParams';
 
 export const EditDataModule = (params: IBootstrapParams, selector: string, instantiationService: IInstantiationService): Type<any> => {
 
@@ -21,16 +20,16 @@ export const EditDataModule = (params: IBootstrapParams, selector: string, insta
 
 		imports: [
 			CommonModule,
-			BrowserModule
+			BrowserModule,
 		],
 
 		declarations: [
-			EditDataComponent,
+			EditDataGridPanel,
 			SlickGrid
 		],
 
 		entryComponents: [
-			EditDataComponent
+			EditDataGridPanel
 		],
 		providers: [
 			{ provide: IBootstrapParams, useValue: params },
@@ -47,7 +46,7 @@ export const EditDataModule = (params: IBootstrapParams, selector: string, insta
 		}
 
 		ngDoBootstrap(appRef: ApplicationRef) {
-			const factory = this._resolver.resolveComponentFactory(EditDataComponent);
+			const factory = this._resolver.resolveComponentFactory(EditDataGridPanel);
 			(<any>factory).factory.selector = this.selector;
 			appRef.bootstrap(factory);
 		}
