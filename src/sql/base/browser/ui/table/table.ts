@@ -49,6 +49,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	private _onClick = new Emitter<ITableMouseEvent>();
 	public readonly onClick: Event<ITableMouseEvent> = this._onClick.event;
 
+	private _onHeaderClick = new Emitter<ITableMouseEvent>();
+	public readonly onHeaderClick: Event<ITableMouseEvent> = this._onHeaderClick.event;
+
 	private _onColumnResize = new Emitter<void>();
 	public readonly onColumnResize = this._onColumnResize.event;
 
@@ -111,8 +114,41 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 		this.mapMouseEvent(this._grid.onContextMenu, this._onContextMenu);
 		this.mapMouseEvent(this._grid.onClick, this._onClick);
+		//my addition
+		this.mapMouseEvent(this._grid.onHeaderClick, this._onHeaderClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
 	}
+
+	//own code begins here:
+	private invalidateRange(start: number, end: number): void {
+		let refreshedRows = _.range(start, end);
+		this._grid.invalidateRows(refreshedRows, true);
+		this._grid.render();
+	}
+
+	private renderGridRange(startIndex: number, count: number): void {
+		let editor = this._grid.getCellEditor();
+		let oldValue = editor ? (<Slick.Editors.Text<T>>editor).getValue() : undefined;
+		let wasValueChanged = editor ? editor.isValueChanged() : false;
+		this.invalidateRange(startIndex, startIndex + count);
+		let activeCell = this.activeCell;
+		if (editor && activeCell.row >= startIndex && activeCell.row < startIndex + count) {
+			if (oldValue && wasValueChanged) {
+				(<Slick.Editors.Text<T>>editor).setValue(oldValue);
+			}
+		}
+	}
+
+	public rerenderGrid(start: number, end: number) {
+		//render grid range seems to have problems loading.
+		this.renderGridRange(start, end);
+		this._grid.updateRowCount();
+		this._grid.setColumns(this._grid.getColumns());
+		this._grid.invalidateAllRows();
+		this._grid.render();
+	}
+
+	//my code ends here.
 
 	private mapMouseEvent(slickEvent: Slick.Event<any>, emitter: Emitter<ITableMouseEvent>) {
 		slickEvent.subscribe((e: JQuery.Event) => {
@@ -193,8 +229,17 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		};
 	}
 
+	//additonal functions for SelectionModel
 	setSelectionModel(model: Slick.SelectionModel<T, Array<Slick.Range>>) {
 		this._grid.setSelectionModel(model);
+	}
+
+	getSelectionModel(): Slick.SelectionModel<T, Array<Slick.Range>> {
+		return this._grid.getSelectionModel();
+	}
+
+	getSelectedRanges(): Slick.Range[] {
+		return this._grid.getSelectionModel().getSelectedRanges();
 	}
 
 	focus(): void {
@@ -203,6 +248,10 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	setActiveCell(row: number, cell: number): void {
 		this._grid.setActiveCell(row, cell);
+	}
+
+	setActive(): void {
+		this._grid.setActiveCell(0, 1);
 	}
 
 	get activeCell(): Slick.Cell {
