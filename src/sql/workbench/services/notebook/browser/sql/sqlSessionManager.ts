@@ -277,7 +277,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			if (this._future && !this._queryRunner.hasCompleted) {
 				this._queryRunner.cancelQuery().then(ok => undefined, error => this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error));
 				// TODO when we can just show error as an output, should show an "execution canceled" error in output
-				this._future.handleDoneAsync().catch(err => onUnexpectedError(err));
+				this._future.handleDone().catch(err => onUnexpectedError(err));
 			}
 			this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 		} else if (this._currentConnection && this._currentConnectionProfile) {
@@ -297,7 +297,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		this._future = new SQLFuture(this._queryRunner, count, this._configurationService, this.logService);
 		if (!canRun) {
 			// Complete early
-			this._future.handleDoneAsync(new Error(localize('connectionRequired', "A connection must be chosen to run notebook cells"))).catch(err => onUnexpectedError(err));
+			this._future.handleDone(new Error(localize('connectionRequired', "A connection must be chosen to run notebook cells"))).catch(err => onUnexpectedError(err));
 		}
 
 		// TODO should we  cleanup old future? I don't think we need to
@@ -355,7 +355,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 	private async queryComplete(): Promise<void> {
 		if (this._future) {
-			await this._future.handleDoneAsync();
+			await this._future.handleDone();
 		}
 		// TODO issue #2746 should ideally show a warning inside the dialog if have no data
 	}
@@ -417,7 +417,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		return this.doneDeferred.promise;
 	}
 
-	public async handleDoneAsync(err?: Error): Promise<void> {
+	public async handleDone(err?: Error): Promise<void> {
 		// must wait on all outstanding output updates to complete
 		if (this._outputAddedPromises && this._outputAddedPromises.length > 0) {
 			// Do not care about error handling as this is handled elsewhere

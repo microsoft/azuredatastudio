@@ -157,14 +157,14 @@ export class DialogModal extends Modal {
 	/**
 	 * Overridable to change behavior of escape key
 	 */
-	protected onClose(e: StandardKeyboardEvent) {
+	protected onClose(e: StandardKeyboardEvent): void {
 		this.cancel();
 	}
 
 	/**
 	 * Overridable to change behavior of enter key
 	 */
-	protected onAccept(e: StandardKeyboardEvent) {
+	protected onAccept(e: StandardKeyboardEvent): void {
 		this.done().catch(err => onUnexpectedError(err));
 	}
 
