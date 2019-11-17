@@ -392,7 +392,7 @@ suite('SQL Object Explorer Service tests', () => {
 		assert.equal(treeNode.nodePath, 'testServerName/tables');
 	});
 
-	test('deconste object explorerNode nodes should deconste session, deconste the root node to the active OE node', async () => {
+	test('delete object explorerNode nodes should delete session, delete the root node to the active OE node', async () => {
 		await objectExplorerService.createNewSession(mssqlProviderName, connection);
 		objectExplorerService.onSessionCreated(1, objectExplorerSession);
 		await objectExplorerService.updateObjectExplorerNodes(connection);
