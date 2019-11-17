@@ -42,7 +42,7 @@ suite('SQL Object Explorer Service tests', () => {
 
 	setup(() => {
 
-		let NodeInfoTable1 = {
+		const NodeInfoTable1 = {
 			nodePath: 'testServerName/tables/dbo.Table1',
 			nodeType: NodeType.Table,
 			label: 'dbo.Table1',
@@ -52,7 +52,7 @@ suite('SQL Object Explorer Service tests', () => {
 			nodeStatus: '',
 			errorMessage: ''
 		};
-		let NodeInfoTable2 = {
+		const NodeInfoTable2 = {
 			nodePath: 'testServerName/tables/dbo.Table2',
 			nodeType: NodeType.Table,
 			label: 'dbo.Table2',
@@ -63,7 +63,7 @@ suite('SQL Object Explorer Service tests', () => {
 			errorMessage: ''
 		};
 
-		let NodeInfoTable3 = {
+		const NodeInfoTable3 = {
 			nodePath: 'testServerName/tables/dbo.Table3',
 			nodeType: NodeType.Table,
 			label: 'dbo.Table3',
@@ -117,18 +117,18 @@ suite('SQL Object Explorer Service tests', () => {
 			nodePath: objectExplorerSession.rootNode.nodePath,
 			providerId: mssqlProviderName
 		};
-		let response: azdata.ObjectExplorerSessionResponse = {
+		const response: azdata.ObjectExplorerSessionResponse = {
 			sessionId: objectExplorerSession.sessionId
 		};
 
-		let failedResponse: azdata.ObjectExplorerSessionResponse = {
+		const failedResponse: azdata.ObjectExplorerSessionResponse = {
 			sessionId: failedSessionId
 		};
 
 		sqlOEProvider = TypeMoq.Mock.ofType(TestObjectExplorerProvider, TypeMoq.MockBehavior.Loose);
 		sqlOEProvider.callBase = true;
 
-		let sqlProvider = {
+		const sqlProvider = {
 			providerId: mssqlProviderName,
 			displayName: 'MSSQL',
 			connectionOptions: [
@@ -219,7 +219,7 @@ suite('SQL Object Explorer Service tests', () => {
 			]
 		};
 
-		let capabilitiesService = new TestCapabilitiesService();
+		const capabilitiesService = new TestCapabilitiesService();
 		capabilitiesService.capabilities[mssqlProviderName] = { connection: sqlProvider };
 
 		connection = new ConnectionProfile(capabilitiesService, {
@@ -303,7 +303,7 @@ suite('SQL Object Explorer Service tests', () => {
 		assert.equal(session !== null || session !== undefined, true);
 		assert.equal(session.sessionId, '1234');
 		objectExplorerService.onSessionCreated(1, objectExplorerSession);
-		let node = objectExplorerService.getObjectExplorerNode(connection);
+		const node = objectExplorerService.getObjectExplorerNode(connection);
 		assert.notEqual(node, undefined);
 		assert.equal(node.session.success, true);
 	});
@@ -312,9 +312,9 @@ suite('SQL Object Explorer Service tests', () => {
 		const session = await objectExplorerService.createNewSession(mssqlProviderName, connectionToFail);
 		assert.equal(session !== null || session !== undefined, true);
 		assert.equal(session.sessionId, failedSessionId);
-		let currentNumberOfSuccessfulSessions = numberOfSuccessfulSessions;
+		const currentNumberOfSuccessfulSessions = numberOfSuccessfulSessions;
 		objectExplorerService.onSessionCreated(1, objectExplorerFailedSession);
-		let node = objectExplorerService.getObjectExplorerNode(connection);
+		const node = objectExplorerService.getObjectExplorerNode(connection);
 		assert.equal(node, undefined);
 		assert.equal(currentNumberOfSuccessfulSessions, numberOfSuccessfulSessions);
 	});
@@ -370,7 +370,7 @@ suite('SQL Object Explorer Service tests', () => {
 		tablesNode.connection = connection;
 		await objectExplorerService.createNewSession(mssqlProviderName, connection);
 		objectExplorerService.onSessionCreated(1, objectExplorerSession);
-		const children = objectExplorerService.refreshTreeNode(objectExplorerSession, tablesNode);
+		const children = await objectExplorerService.refreshTreeNode(objectExplorerSession, tablesNode);
 		assert.equal(children !== null || children !== undefined, true);
 		assert.equal(children[0].label, 'dbo.Table1');
 		assert.equal(children[0].parent, tablesNode);
@@ -392,7 +392,7 @@ suite('SQL Object Explorer Service tests', () => {
 		assert.equal(treeNode.nodePath, 'testServerName/tables');
 	});
 
-	test('delete object explorerNode nodes should delete session, delete the root node to the active OE node', async () => {
+	test('deconste object explorerNode nodes should deconste session, deconste the root node to the active OE node', async () => {
 		await objectExplorerService.createNewSession(mssqlProviderName, connection);
 		objectExplorerService.onSessionCreated(1, objectExplorerSession);
 		await objectExplorerService.updateObjectExplorerNodes(connection);
@@ -404,20 +404,20 @@ suite('SQL Object Explorer Service tests', () => {
 	});
 
 	test('children tree nodes should return correct object explorer session, connection profile and database name', () => {
-		let databaseMetaData = {
+		const databaseMetaData = {
 			metadataType: 0,
 			metadataTypeName: 'Database',
 			urn: '//server/db1/',
 			name: 'Db1',
 			schema: null
 		};
-		let databaseNode = new TreeNode(NodeType.Database, 'Db1', false, 'testServerName\\Db1', '', '', null, databaseMetaData, undefined, undefined);
+		const databaseNode = new TreeNode(NodeType.Database, 'Db1', false, 'testServerName\\Db1', '', '', null, databaseMetaData, undefined, undefined);
 		databaseNode.connection = connection;
 		databaseNode.session = objectExplorerSession;
-		let tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, 'testServerName\\Db1\\tables', '', '', databaseNode, null, undefined, undefined);
+		const tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, 'testServerName\\Db1\\tables', '', '', databaseNode, null, undefined, undefined);
 		databaseNode.children = [tablesNode];
-		let table1Node = new TreeNode(NodeType.Table, 'dbo.Table1', false, 'testServerName\\Db1\\tables\\dbo.Table1', '', '', tablesNode, null, undefined, undefined);
-		let table2Node = new TreeNode(NodeType.Table, 'dbo.Table2', false, 'testServerName\\Db1\\tables\\dbo.Table2', '', '', tablesNode, null, undefined, undefined);
+		const table1Node = new TreeNode(NodeType.Table, 'dbo.Table1', false, 'testServerName\\Db1\\tables\\dbo.Table1', '', '', tablesNode, null, undefined, undefined);
+		const table2Node = new TreeNode(NodeType.Table, 'dbo.Table2', false, 'testServerName\\Db1\\tables\\dbo.Table2', '', '', tablesNode, null, undefined, undefined);
 		tablesNode.children = [table1Node, table2Node];
 		assert.equal(table1Node.getSession(), objectExplorerSession);
 		assert.equal(table1Node.getConnectionProfile(), connection);
@@ -425,61 +425,61 @@ suite('SQL Object Explorer Service tests', () => {
 	});
 
 	test('getSelectedProfileAndDatabase returns the profile if it is selected', () => {
-		let serverTreeView = TypeMoq.Mock.ofInstance({ getSelection: () => undefined, onSelectionOrFocusChange: Event.None } as ServerTreeView);
+		const serverTreeView = TypeMoq.Mock.ofInstance({ getSelection: () => undefined, onSelectionOrFocusChange: Event.None } as ServerTreeView);
 		serverTreeView.setup(x => x.getSelection()).returns(() => [connection]);
 		objectExplorerService.registerServerTreeView(serverTreeView.object);
 
-		let selectedProfileAndDatabase = objectExplorerService.getSelectedProfileAndDatabase();
+		const selectedProfileAndDatabase = objectExplorerService.getSelectedProfileAndDatabase();
 		assert.equal(selectedProfileAndDatabase.profile, connection);
 		assert.equal(selectedProfileAndDatabase.databaseName, undefined);
 	});
 
 	test('getSelectedProfileAndDatabase returns the profile but no database if children of a server are selected', () => {
-		let serverTreeView = TypeMoq.Mock.ofInstance({ getSelection: () => undefined, onSelectionOrFocusChange: Event.None } as ServerTreeView);
-		let databaseNode = new TreeNode(NodeType.Folder, 'Folder1', false, 'testServerName\\Folder1', '', '', undefined, undefined, undefined, undefined);
+		const serverTreeView = TypeMoq.Mock.ofInstance({ getSelection: () => undefined, onSelectionOrFocusChange: Event.None } as ServerTreeView);
+		const databaseNode = new TreeNode(NodeType.Folder, 'Folder1', false, 'testServerName\\Folder1', '', '', undefined, undefined, undefined, undefined);
 		databaseNode.connection = connection;
 		serverTreeView.setup(x => x.getSelection()).returns(() => [databaseNode]);
 		objectExplorerService.registerServerTreeView(serverTreeView.object);
 
-		let selectedProfileAndDatabase = objectExplorerService.getSelectedProfileAndDatabase();
+		const selectedProfileAndDatabase = objectExplorerService.getSelectedProfileAndDatabase();
 		assert.equal(selectedProfileAndDatabase.profile, connection);
 		assert.equal(selectedProfileAndDatabase.databaseName, undefined);
 	});
 
 	test('getSelectedProfileAndDatabase returns the profile and database if children of a database node are selected', () => {
-		let serverTreeView = TypeMoq.Mock.ofInstance({ getSelection: () => undefined, onSelectionOrFocusChange: Event.None } as ServerTreeView);
-		let databaseMetadata = {
+		const serverTreeView = TypeMoq.Mock.ofInstance({ getSelection: () => undefined, onSelectionOrFocusChange: Event.None } as ServerTreeView);
+		const databaseMetadata = {
 			metadataType: 0,
 			metadataTypeName: 'Database',
 			urn: '//server/db1/',
 			name: 'Db1',
 			schema: undefined
 		};
-		let databaseName = 'Db1';
-		let databaseNode = new TreeNode(NodeType.Database, databaseName, false, 'testServerName\\Db1', '', '', undefined, databaseMetadata, undefined, undefined);
-		let tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, 'testServerName\\Db1\\tables', '', '', databaseNode, undefined, undefined, undefined);
+		const databaseName = 'Db1';
+		const databaseNode = new TreeNode(NodeType.Database, databaseName, false, 'testServerName\\Db1', '', '', undefined, databaseMetadata, undefined, undefined);
+		const tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, 'testServerName\\Db1\\tables', '', '', databaseNode, undefined, undefined, undefined);
 		databaseNode.connection = connection;
 		databaseNode.children = [tablesNode];
 		serverTreeView.setup(x => x.getSelection()).returns(() => [tablesNode]);
 		objectExplorerService.registerServerTreeView(serverTreeView.object);
 
-		let selectedProfileAndDatabase = objectExplorerService.getSelectedProfileAndDatabase();
+		const selectedProfileAndDatabase = objectExplorerService.getSelectedProfileAndDatabase();
 		assert.equal(selectedProfileAndDatabase.profile, connection);
 		assert.equal(selectedProfileAndDatabase.databaseName, databaseName);
 	});
 
 	test('getSelectedProfileAndDatabase returns undefined when there is no selection', () => {
-		let serverTreeView = TypeMoq.Mock.ofInstance({ getSelection: () => undefined, onSelectionOrFocusChange: Event.None } as ServerTreeView);
+		const serverTreeView = TypeMoq.Mock.ofInstance({ getSelection: () => undefined, onSelectionOrFocusChange: Event.None } as ServerTreeView);
 		serverTreeView.setup(x => x.getSelection()).returns(() => []);
 		objectExplorerService.registerServerTreeView(serverTreeView.object);
 
-		let selectedProfileAndDatabase = objectExplorerService.getSelectedProfileAndDatabase();
+		const selectedProfileAndDatabase = objectExplorerService.getSelectedProfileAndDatabase();
 		assert.equal(selectedProfileAndDatabase, undefined);
 	});
 
 	test('isExpanded returns true when the node and its parents are expanded', async () => {
-		let table1NodePath = objectExplorerExpandInfo.nodes[0].nodePath;
-		let tableExpandInfo = {
+		const table1NodePath = objectExplorerExpandInfo.nodes[0].nodePath;
+		const tableExpandInfo = {
 			sessionId: sessionId,
 			nodes: [],
 			errorMessage: '',
@@ -496,10 +496,9 @@ suite('SQL Object Explorer Service tests', () => {
 		sqlOEProvider.setup(x => x.expandNode(TypeMoq.It.isAny())).callback(() => {
 			objectExplorerService.onNodeExpanded(tableExpandInfo);
 		}).returns(() => Promise.resolve(true));
-		let tableNode = find(childNodes, node => node.nodePath === table1NodePath);
+		const tableNode = find(childNodes, node => node.nodePath === table1NodePath);
 		await objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, tableNode);
-		// If I check whether the table is expanded, the answer should be yes
-		const isExpanded = tableNode.isExpanded();
+		const isExpanded = await tableNode.isExpanded();
 		assert.equal(isExpanded, true, 'Table node was not expanded');
 	});
 
@@ -513,14 +512,14 @@ suite('SQL Object Explorer Service tests', () => {
 		objectExplorerService.onSessionCreated(1, objectExplorerSession);
 		const childNodes = await objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, objectExplorerService.getObjectExplorerNode(connection));
 		// If I check whether the table is expanded, the answer should be no because only its parent node is expanded
-		let tableNode = find(childNodes, node => node.nodePath === table1NodePath);
+		const tableNode = find(childNodes, node => node.nodePath === table1NodePath);
 		const isExpanded = await tableNode.isExpanded();
 		assert.equal(isExpanded, false);
 	});
 
 	test('isExpanded returns false when the parent of the requested node is not expanded', (done) => {
-		let table1NodePath = objectExplorerExpandInfo.nodes[0].nodePath;
-		let tableExpandInfo = {
+		const table1NodePath = objectExplorerExpandInfo.nodes[0].nodePath;
+		const tableExpandInfo = {
 			sessionId: sessionId,
 			nodes: [],
 			errorMessage: '',
@@ -539,7 +538,7 @@ suite('SQL Object Explorer Service tests', () => {
 				}).returns(() => Promise.resolve(true));
 				objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, find(childNodes, node => node.nodePath === table1NodePath)).then(() => {
 					// If I check whether the table is expanded, the answer should be yes
-					let tableNode = find(childNodes, node => node.nodePath === table1NodePath);
+					const tableNode = find(childNodes, node => node.nodePath === table1NodePath);
 					tableNode.isExpanded().then(isExpanded => {
 						try {
 							assert.equal(isExpanded, false);
@@ -594,7 +593,7 @@ suite('SQL Object Explorer Service tests', () => {
 		await objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, objectExplorerService.getObjectExplorerNode(connection));
 		// If I collapse the connection node, then the tree's collapse method should get called
 		const treeNode = await objectExplorerService.getTreeNode(connection.id, undefined);
-		treeNode.setExpandedState(TreeItemCollapsibleState.Collapsed);
+		await treeNode.setExpandedState(TreeItemCollapsibleState.Collapsed);
 		serverTreeView.verify(x => x.setExpandedState(TypeMoq.It.is(treeNode => treeNode === connection), TypeMoq.It.is(state => state === TreeItemCollapsibleState.Collapsed)), TypeMoq.Times.once());
 	});
 
@@ -638,8 +637,8 @@ suite('SQL Object Explorer Service tests', () => {
 		objectExplorerService.registerServerTreeView(serverTreeView.object);
 
 		// Refresh the node
-		let nodePath = objectExplorerSession.rootNode.nodePath;
-		let refreshedNode = await objectExplorerService.refreshNodeInView(connection.id, nodePath);
+		const nodePath = objectExplorerSession.rootNode.nodePath;
+		const refreshedNode = await objectExplorerService.refreshNodeInView(connection.id, nodePath);
 
 		// Verify that it was refreshed, expanded, and the refreshed detailed were returned
 		sqlOEProvider.verify(x => x.refreshNode(TypeMoq.It.is(refreshNode => refreshNode.nodePath === nodePath)), TypeMoq.Times.once());
@@ -654,17 +653,17 @@ suite('SQL Object Explorer Service tests', () => {
 		await objectExplorerService.createNewSession(mssqlProviderName, connection);
 		objectExplorerService.onSessionCreated(1, objectExplorerSession);
 
-		// Set up the provider to not respond to the second expand request, simulating a request that takes a long time to complete
+		// Set up the provider to not respond to the second expand request, simulating a request that takes a long time to compconste
 		const nodePath = objectExplorerSession.rootNode.nodePath;
 		sqlOEProvider.setup(x => x.expandNode(TypeMoq.It.is(x => x.nodePath === nodePath))).callback(() => { }).returns(() => Promise.resolve(true));
 
-		// If I queue a second expand request (the first completes normally because of the original mock) and then close the session
+		// If I queue a second expand request (the first compconstes normally because of the original mock) and then close the session
 		await objectExplorerService.expandNode(mssqlProviderName, objectExplorerSession, objectExplorerSession.rootNode.nodePath);
-		let expandPromise = objectExplorerService.expandNode(mssqlProviderName, objectExplorerSession, objectExplorerSession.rootNode.nodePath);
-		let closeSessionResult = await objectExplorerService.closeSession(mssqlProviderName, objectExplorerSession);
+		const expandPromise = objectExplorerService.expandNode(mssqlProviderName, objectExplorerSession, objectExplorerSession.rootNode.nodePath);
+		const closeSessionResult = await objectExplorerService.closeSession(mssqlProviderName, objectExplorerSession);
 
-		// Then the expand request has completed and the session is closed
-		let expandResult = await expandPromise;
+		// Then the expand request has compconsted and the session is closed
+		const expandResult = await expandPromise;
 		assert.equal(expandResult.nodes.length, 0);
 		assert.equal(closeSessionResult.success, true);
 	});
@@ -674,8 +673,8 @@ suite('SQL Object Explorer Service tests', () => {
 		objectExplorerService.onSessionCreated(1, objectExplorerSession);
 
 		// If I call resolveTreeNodeChildren once, set an error on the node, and then call it again
-		let tablesNodePath = 'testServerName/tables';
-		let tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, tablesNodePath, '', '', null, null, undefined, undefined);
+		const tablesNodePath = 'testServerName/tables';
+		const tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, tablesNodePath, '', '', null, null, undefined, undefined);
 		tablesNode.connection = connection;
 		await objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, tablesNode);
 		sqlOEProvider.verify(x => x.refreshNode(TypeMoq.It.is(x => x.nodePath === tablesNodePath)), TypeMoq.Times.never());
