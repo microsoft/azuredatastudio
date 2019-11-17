@@ -228,7 +228,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 									return this.unsetUninstalledAndGetLocal(identifierWithVersion)
 										.then(existing => {
 											if (existing) {
-												return this.removeExtension(existing, 'existing').then(null, e => Promise.reject(new Error(nls.localize('restartCode', "Please restart VS Code before reinstalling {0}.", manifest.displayName || manifest.name))));
+												return this.removeExtension(existing, 'existing').then(null, e => Promise.reject(new Error(nls.localize('restartCode', "Please restart Azure Data Studio before reinstalling {0}.", manifest.displayName || manifest.name))));
 											}
 											return undefined;
 										});
