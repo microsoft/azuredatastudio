@@ -553,9 +553,9 @@ suite('SQL Object Explorer Service tests', () => {
 		}, err => done(err));
 	});
 
-	test('setting a node to expanded calls expand on the requested tree node', (done) => {
-		let table1NodePath = objectExplorerExpandInfo.nodes[0].nodePath;
-		let tableExpandInfo = {
+	test('setting a node to expanded calls expand on the requested tree node', async () => {
+		const table1NodePath = objectExplorerExpandInfo.nodes[0].nodePath;
+		const tableExpandInfo = {
 			sessionId: sessionId,
 			nodes: [],
 			errorMessage: '',
@@ -574,97 +574,60 @@ suite('SQL Object Explorer Service tests', () => {
 		});
 		serverTreeView.setup(x => x.reveal(TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		objectExplorerService.registerServerTreeView(serverTreeView.object);
-		objectExplorerService.createNewSession(mssqlProviderName, connection).then(result => {
-			objectExplorerService.onSessionCreated(1, objectExplorerSession);
-			// If I expand the node, then it should get revealed and expanded
-			objectExplorerService.getTreeNode(connection.id, table1NodePath).then(tableNode => {
-				tableNode.setExpandedState(TreeItemCollapsibleState.Expanded).then(() => {
-					try {
-						serverTreeView.verify(x => x.setExpandedState(TypeMoq.It.isValue(tableNode), TypeMoq.It.is(state => state === TreeItemCollapsibleState.Expanded)), TypeMoq.Times.once());
-						serverTreeView.verify(x => x.reveal(TypeMoq.It.isValue(tableNode)), TypeMoq.Times.once());
-						done();
-					} catch (err) {
-						done(err);
-					}
-				}, err => done(err));
-			}, err => done(err));
-		});
+		await objectExplorerService.createNewSession(mssqlProviderName, connection);
+		objectExplorerService.onSessionCreated(1, objectExplorerSession);
+		// If I expand the node, then it should get revealed and expanded
+		const tableNode = await objectExplorerService.getTreeNode(connection.id, table1NodePath);
+		await tableNode.setExpandedState(TreeItemCollapsibleState.Expanded);
+		serverTreeView.verify(x => x.setExpandedState(TypeMoq.It.isValue(tableNode), TypeMoq.It.is(state => state === TreeItemCollapsibleState.Expanded)), TypeMoq.Times.once());
+		serverTreeView.verify(x => x.reveal(TypeMoq.It.isValue(tableNode)), TypeMoq.Times.once());
 	});
 
-	test('setting a node to collapsed calls collapse on the requested tree node', (done) => {
+	test('setting a node to collapsed calls collapse on the requested tree node', async () => {
 		serverTreeView.setup(x => x.isExpanded(TypeMoq.It.isAny())).returns(treeNode => {
 			return treeNode === connection;
 		});
 		serverTreeView.setup(x => x.setExpandedState(TypeMoq.It.is(treeNode => treeNode === connection), TypeMoq.It.is(state => state === TreeItemCollapsibleState.Collapsed))).returns(() => Promise.resolve());
 		objectExplorerService.registerServerTreeView(serverTreeView.object);
-		objectExplorerService.createNewSession(mssqlProviderName, connection).then(result => {
-			objectExplorerService.onSessionCreated(1, objectExplorerSession);
-			objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, objectExplorerService.getObjectExplorerNode(connection)).then(childNodes => {
-				// If I collapse the connection node, then the tree's collapse method should get called
-				objectExplorerService.getTreeNode(connection.id, undefined).then(treeNode => treeNode.setExpandedState(TreeItemCollapsibleState.Collapsed).then(() => {
-					try {
-						serverTreeView.verify(x => x.setExpandedState(TypeMoq.It.is(treeNode => treeNode === connection), TypeMoq.It.is(state => state === TreeItemCollapsibleState.Collapsed)), TypeMoq.Times.once());
-						done();
-					} catch (err) {
-						done(err);
-					}
-				}, err => done(err)));
-			}, err => done(err));
-		}, err => done(err));
+		await objectExplorerService.createNewSession(mssqlProviderName, connection);
+		objectExplorerService.onSessionCreated(1, objectExplorerSession);
+		await objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, objectExplorerService.getObjectExplorerNode(connection));
+		// If I collapse the connection node, then the tree's collapse method should get called
+		const treeNode = await objectExplorerService.getTreeNode(connection.id, undefined);
+		treeNode.setExpandedState(TreeItemCollapsibleState.Collapsed);
+		serverTreeView.verify(x => x.setExpandedState(TypeMoq.It.is(treeNode => treeNode === connection), TypeMoq.It.is(state => state === TreeItemCollapsibleState.Collapsed)), TypeMoq.Times.once());
 	});
 
-	test('setNodeSelected sets the tree selection to the requested tree node', (done) => {
-		let table1NodePath = objectExplorerExpandInfo.nodes[0].nodePath;
+	test('setNodeSelected sets the tree selection to the requested tree node', async () => {
+		const table1NodePath = objectExplorerExpandInfo.nodes[0].nodePath;
 		serverTreeView.setup(x => x.setSelected(TypeMoq.It.is((treeNode: TreeNode) => treeNode.nodePath === table1NodePath), TypeMoq.It.isAny(), undefined)).returns(() => Promise.resolve());
 		serverTreeView.setup(x => x.reveal(TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		objectExplorerService.registerServerTreeView(serverTreeView.object);
-		objectExplorerService.createNewSession(mssqlProviderName, connection).then(result => {
-			objectExplorerService.onSessionCreated(1, objectExplorerSession);
-			// If I select the table node, then it should be selected and revealed
-			objectExplorerService.getTreeNode(connection.id, table1NodePath).then(tableNode => {
-				tableNode.setSelected(true).then(() => {
-					try {
-						serverTreeView.verify(x => x.setSelected(TypeMoq.It.isValue(tableNode), TypeMoq.It.isValue(true), undefined), TypeMoq.Times.once());
-						serverTreeView.verify(x => x.reveal(TypeMoq.It.isValue(tableNode)), TypeMoq.Times.once());
-						done();
-					} catch (err) {
-						done(err);
-					}
-				}, err => done(err));
-			}, err => done(err));
-		}, err => done(err));
+		await objectExplorerService.createNewSession(mssqlProviderName, connection);
+		objectExplorerService.onSessionCreated(1, objectExplorerSession);
+		// If I select the table node, then it should be selected and revealed
+		const tableNode = await objectExplorerService.getTreeNode(connection.id, table1NodePath);
+		await tableNode.setSelected(true);
+		serverTreeView.verify(x => x.setSelected(TypeMoq.It.isValue(tableNode), TypeMoq.It.isValue(true), undefined), TypeMoq.Times.once());
+		serverTreeView.verify(x => x.reveal(TypeMoq.It.isValue(tableNode)), TypeMoq.Times.once());
 	});
 
-	test('findTreeNode returns the tree node for the relevant node', (done) => {
-		let table1NodePath = objectExplorerExpandInfo.nodes[0].nodePath;
-		objectExplorerService.createNewSession(mssqlProviderName, connection).then(result => {
-			objectExplorerService.onSessionCreated(1, objectExplorerSession);
-			objectExplorerService.getTreeNode(connection.id, table1NodePath).then(treeNode => {
-				try {
-					assert.equal(treeNode.nodePath, objectExplorerExpandInfo.nodes[0].nodePath);
-					assert.equal(treeNode.nodeTypeId, objectExplorerExpandInfo.nodes[0].nodeType);
-					assert.equal(treeNode.label, objectExplorerExpandInfo.nodes[0].label);
-					done();
-				} catch (err) {
-					done(err);
-				}
-			}, err => done(err));
-		});
+	test('findTreeNode returns the tree node for the relevant node', async () => {
+		const table1NodePath = objectExplorerExpandInfo.nodes[0].nodePath;
+		await objectExplorerService.createNewSession(mssqlProviderName, connection);
+		objectExplorerService.onSessionCreated(1, objectExplorerSession);
+		const treeNode = await objectExplorerService.getTreeNode(connection.id, table1NodePath);
+		assert.equal(treeNode.nodePath, objectExplorerExpandInfo.nodes[0].nodePath);
+		assert.equal(treeNode.nodeTypeId, objectExplorerExpandInfo.nodes[0].nodeType);
+		assert.equal(treeNode.label, objectExplorerExpandInfo.nodes[0].label);
 	});
 
-	test('findTreeNode returns undefined if the requested node does not exist', (done) => {
-		let invalidNodePath = objectExplorerSession.rootNode.nodePath + '/invalidNode';
-		objectExplorerService.createNewSession(mssqlProviderName, connection).then(result => {
-			objectExplorerService.onSessionCreated(1, objectExplorerSession);
-			objectExplorerService.getTreeNode(connection.id, invalidNodePath).then(nodeInfo => {
-				try {
-					assert.equal(nodeInfo, undefined);
-					done();
-				} catch (err) {
-					done(err);
-				}
-			}, err => done(err));
-		});
+	test('findTreeNode returns undefined if the requested node does not exist', async () => {
+		const invalidNodePath = objectExplorerSession.rootNode.nodePath + '/invalidNode';
+		await objectExplorerService.createNewSession(mssqlProviderName, connection);
+		objectExplorerService.onSessionCreated(1, objectExplorerSession);
+		const nodeInfo = await objectExplorerService.getTreeNode(connection.id, invalidNodePath);
+		assert.equal(nodeInfo, undefined);
 	});
 
 	test('refreshInView refreshes the node, expands it, and returns the refreshed node', async () => {
