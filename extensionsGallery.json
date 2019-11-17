@@ -877,14 +877,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.0.4",
-							"lastUpdated": "10/28/2018",
+							"version": "0.0.5",
+							"lastUpdated": "11/12/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/dzsquared/high-color-queries/releases/tag/0.0.4"
+									"source": "https://github.com/dzsquared/high-color-queries/releases/tag/0.0.5"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
