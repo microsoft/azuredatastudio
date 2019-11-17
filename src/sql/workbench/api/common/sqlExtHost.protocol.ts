@@ -736,6 +736,7 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$validate(handle: number, componentId: string): Thenable<boolean>;
 	$setDataProvider(handle: number, componentId: string): Thenable<void>;
 	$refreshDataProvider(handle: number, componentId: string, item?: any): Thenable<void>;
+	$focus(handle: number, componentId: string): Thenable<void>;
 }
 
 export interface ExtHostObjectExplorerShape {
