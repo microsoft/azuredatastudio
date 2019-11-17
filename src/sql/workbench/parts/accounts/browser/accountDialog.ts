@@ -15,7 +15,6 @@ import { IAction } from 'vs/base/common/actions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
@@ -36,6 +35,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 class AccountPanel extends ViewletPanel {
 	public index: number;
@@ -122,7 +122,7 @@ export class AccountDialog extends Modal {
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IKeybindingService private _keybindingService: IKeybindingService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@ITelemetryService telemetryService: ITelemetryService,
+		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
