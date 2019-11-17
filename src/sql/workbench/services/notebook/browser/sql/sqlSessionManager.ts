@@ -279,12 +279,12 @@ class SqlKernel extends Disposable implements nb.IKernel {
 				// TODO when we can just show error as an output, should show an "execution canceled" error in output
 				this._future.handleDoneAsync().catch(err => onUnexpectedError(err));
 			}
-			this._queryRunner.runQuery(code);
+			this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 		} else if (this._currentConnection && this._currentConnectionProfile) {
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._connectionPath);
 			this._connectionManagementService.connect(this._currentConnectionProfile, this._connectionPath).then((result) => {
 				this.addQueryEventListeners(this._queryRunner);
-				this._queryRunner.runQuery(code);
+				this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 			}).catch(err => onUnexpectedError(err));
 		} else {
 			canRun = false;
