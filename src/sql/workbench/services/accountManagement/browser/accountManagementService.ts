@@ -12,8 +12,8 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { Memento } from 'vs/workbench/common/memento';
 
 import AccountStore from 'sql/platform/accounts/common/accountStore';
-import { AccountDialogController } from 'sql/workbench/parts/accounts/browser/accountDialogController';
-import { AutoOAuthDialogController } from 'sql/workbench/parts/accounts/browser/autoOAuthDialogController';
+import { AccountDialogController } from 'sql/workbench/contrib/accounts/browser/accountDialogController';
+import { AutoOAuthDialogController } from 'sql/workbench/contrib/accounts/browser/autoOAuthDialogController';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';

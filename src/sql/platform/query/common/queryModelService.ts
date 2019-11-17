@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as GridContentEvents from 'sql/workbench/parts/grid/common/gridContentEvents';
-import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedConstants';
+import * as GridContentEvents from 'sql/workbench/contrib/grid/common/gridContentEvents';
+import * as LocalizedConstants from 'sql/workbench/contrib/query/common/localizedConstants';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
-import { DataService } from 'sql/workbench/parts/grid/common/dataService';
+import { DataService } from 'sql/workbench/contrib/grid/common/dataService';
 import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
 
 import * as azdata from 'azdata';
 

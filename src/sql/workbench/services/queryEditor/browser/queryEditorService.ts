@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
-import { EditDataInput } from 'sql/workbench/parts/editData/browser/editDataInput';
+import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
+import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
+import { EditDataInput } from 'sql/workbench/contrib/editData/browser/editDataInput';
 import { IConnectableInput, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService, IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/workbench/browser/customInputConverter';
@@ -21,7 +21,7 @@ import paths = require('vs/base/common/extpath');
 import { isLinux } from 'vs/base/common/platform';
 import { Schemas } from 'vs/base/common/network';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { EditDataResultsInput } from 'sql/workbench/parts/editData/browser/editDataResultsInput';
+import { EditDataResultsInput } from 'sql/workbench/contrib/editData/browser/editDataResultsInput';
 import { IEditorInput, IEditor } from 'vs/workbench/common/editor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { ILanguageSelection } from 'vs/editor/common/services/modeService';

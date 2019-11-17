@@ -32,8 +32,8 @@ import { assertIsDefined } from 'vs/base/common/types';
 import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuration';
 
 // {{SQL CARBON EDIT}}
-import { NewNotebookAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
-import { OpenDataExplorerViewletAction } from 'sql/workbench/parts/dataExplorer/browser/dataExplorerViewlet';
+import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { OpenDataExplorerViewletAction } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
 
 const $ = dom.$;
 
