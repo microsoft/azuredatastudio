@@ -283,16 +283,16 @@ export class WizardModal extends Modal {
 	/**
 	 * Overridable to change behavior of escape key
 	 */
-	protected onClose(e: StandardKeyboardEvent) {
+	protected onClose(e: StandardKeyboardEvent): void {
 		this.cancel();
 	}
 
 	/**
 	 * Overridable to change behavior of enter key
 	 */
-	protected onAccept(e: StandardKeyboardEvent) {
+	protected onAccept(e: StandardKeyboardEvent): void {
 		if (this._wizard.currentPage === this._wizard.pages.length - 1) {
-			this.done();
+			this.done().catch(err => onUnexpectedError(err));
 		} else {
 			if (this._nextButton.enabled) {
 				this.showPage(this._wizard.currentPage + 1, true, true).catch(err => onUnexpectedError(err));
