@@ -13,7 +13,7 @@ import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/
 import { IDashboardTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { find, firstIndex } from 'vs/base/common/arrays';
-import { CellContext } from 'sql/workbench/parts/notebook/browser/cellViews/codeActions';
+import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 
 export class EditDashboardAction extends Action {
 
