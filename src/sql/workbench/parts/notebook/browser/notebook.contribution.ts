@@ -53,7 +53,7 @@ Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 let actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		NewNotebookAction,
 		NewNotebookAction.ID,
 		NewNotebookAction.LABEL,

@@ -14,7 +14,8 @@ import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace
 import { ExplorerFocusCondition, TextFileContentProvider, VIEWLET_ID, IExplorerService } from 'vs/workbench/contrib/files/common/files';
 import { ExplorerViewlet } from 'vs/workbench/contrib/files/browser/explorerViewlet';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { ITextFileService, ISaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
+import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
+import { ISaveOptions } from 'vs/workbench/services/workingCopy/common/workingCopyService';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { IListService } from 'vs/platform/list/browser/listService';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
@@ -28,7 +29,7 @@ import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/co
 import { KeyMod, KeyCode, KeyChord } from 'vs/base/common/keyCodes';
 import { isWindows } from 'vs/base/common/platform';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
-import { getResourceForCommand, getMultiSelectedResources } from 'vs/workbench/contrib/files/browser/files';
+import { getResourceForCommand, getMultiSelectedResources, getMultiSelectedEditors } from 'vs/workbench/contrib/files/browser/files';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspaces/common/workspaceEditing';
 import { getMultiSelectedEditorContexts } from 'vs/workbench/browser/parts/editor/editorCommands';
 import { Schemas } from 'vs/base/common/network';
@@ -43,6 +44,7 @@ import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { UNTITLED_WORKSPACE_NAME } from 'vs/platform/workspaces/common/workspaces';
 import { withUndefinedAsNull, withNullAsUndefined } from 'vs/base/common/types';
+import { assign } from 'vs/base/common/objects';
 
 // {{SQL CARBON EDIT}}
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
@@ -133,8 +135,17 @@ async function save(
 		return doSaveAs(resource, isSaveAs, options, editorService, fileService, untitledTextEditorService, textFileService, editorGroupService, queryEditorService, environmentService);
 	}
 
-	// Save
-	return doSave(resource, options, editorService, textFileService);
+	// Pin the active editor if we are saving it
+	const activeControl = editorService.activeControl;
+	const activeEditorResource = activeControl?.input?.getResource();
+	if (activeControl && activeEditorResource && isEqual(activeEditorResource, resource)) {
+		activeControl.group.pinEditor(activeControl.input);
+	}
+
+	// Just save (force a change to the file to trigger external watchers if any)
+	options = assign({ force: true }, options || Object.create(null));
+
+	return textFileService.save(resource, options);
 }
 
 async function doSaveAs(
@@ -172,7 +183,7 @@ async function doSaveAs(
 
 		// Force a change to the file to trigger external watchers if any
 		// fixes https://github.com/Microsoft/vscode/issues/59655
-		options = ensureForcedSave(options);
+		options = assign({ force: true }, options || Object.create(null));
 
 		target = await textFileService.saveAs(resource, undefined, options);
 	}
@@ -200,36 +211,6 @@ async function doSaveAs(
 		});
 
 	return true;
-}
-
-async function doSave(
-	resource: URI,
-	options: ISaveOptions | undefined,
-	editorService: IEditorService,
-	textFileService: ITextFileService
-): Promise<boolean> {
-
-	// Pin the active editor if we are saving it
-	const activeControl = editorService.activeControl;
-	const activeEditorResource = activeControl?.input?.getResource();
-	if (activeControl && activeEditorResource && isEqual(activeEditorResource, resource)) {
-		activeControl.group.pinEditor(activeControl.input);
-	}
-
-	// Just save (force a change to the file to trigger external watchers if any)
-	options = ensureForcedSave(options);
-
-	return textFileService.save(resource, options);
-}
-
-function ensureForcedSave(options?: ISaveOptions): ISaveOptions {
-	if (!options) {
-		options = { force: true };
-	} else {
-		options.force = true;
-	}
-
-	return options;
 }
 
 async function saveAll(saveAllArguments: any, editorService: IEditorService, untitledTextEditorService: IUntitledTextEditorService,
@@ -293,18 +274,27 @@ async function saveAll(saveAllArguments: any, editorService: IEditorService, unt
 
 CommandsRegistry.registerCommand({
 	id: REVERT_FILE_COMMAND_ID,
-	handler: async (accessor, resource: URI | object) => {
-		const editorService = accessor.get(IEditorService);
-		const textFileService = accessor.get(ITextFileService);
+	handler: async accessor => {
 		const notificationService = accessor.get(INotificationService);
-		const resources = getMultiSelectedResources(resource, accessor.get(IListService), editorService)
-			.filter(resource => resource.scheme !== Schemas.untitled);
+		const listService = accessor.get(IListService);
+		const editorGroupsService = accessor.get(IEditorGroupsService);
 
-		if (resources.length) {
+		const editors = getMultiSelectedEditors(listService, editorGroupsService);
+		if (editors.length) {
 			try {
-				await textFileService.revertAll(resources, { force: true });
+				await Promise.all(editors.map(async ({ groupId, editor }) => {
+					const resource = editor.getResource();
+					if (resource && resource.scheme === Schemas.untitled) {
+						return undefined; // we do not allow to revert untitled files {{SQL CARBON EDIT}} strict-null-checks
+					}
+
+					// Use revert as a hint to pin the editor
+					editorGroupsService.getGroup(groupId)?.pinEditor(editor);
+
+					return editor.revert({ force: true });
+				}));
 			} catch (error) {
-				notificationService.error(nls.localize('genericRevertError', "Failed to revert '{0}': {1}", resources.map(r => basename(r)).join(', '), toErrorMessage(error, false)));
+				notificationService.error(nls.localize('genericRevertResourcesError', "Failed to revert '{0}': {1}", editors.map(({ editor }) => editor.getName()).join(', '), toErrorMessage(error, false)));
 			}
 		}
 	}
@@ -534,9 +524,30 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	weight: KeybindingWeight.WorkbenchContrib,
 	primary: KeyMod.CtrlCmd | KeyCode.KEY_S,
 	id: SAVE_FILE_COMMAND_ID,
-	handler: (accessor, resource: URI | object) => {
+	handler: async (accessor, resource: URI | object) => {
+		const listService = accessor.get(IListService);
+		const editorGroupsService = accessor.get(IEditorGroupsService);
+		const notificationService = accessor.get(INotificationService);
+
+		const editors = getMultiSelectedEditors(listService, editorGroupsService);
+		if (editors.length && !editors.some(({ editor }) => editor.getResource()?.scheme === Schemas.untitled)) {
+			try {
+				await Promise.all(editors.map(async ({ groupId, editor }) => {
+
+					// Use save as a hint to pin the editor
+					editorGroupsService.getGroup(groupId)?.pinEditor(editor);
+
+					return editor.save({ force: true });
+				}));
+			} catch (error) {
+				notificationService.error(nls.localize('genericRevertResourcesError', "Failed to revert '{0}': {1}", editors.map(({ editor }) => editor.getName()).join(', '), toErrorMessage(error, false)));
+			}
+
+			return;
+		}
+
 		const editorService = accessor.get(IEditorService);
-		const resources = getMultiSelectedResources(resource, accessor.get(IListService), editorService);
+		const resources = getMultiSelectedResources(resource, listService, editorService);
 
 		if (resources.length === 1) {
 			// If only one resource is selected explictly call save since the behavior is a bit different than save all #41841

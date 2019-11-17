@@ -320,7 +320,7 @@ suite('SQL QueryEditor Tests', () => {
 		test('Test that we attempt to dispose query when the queryInput is disposed', () => {
 			let queryResultsInput = new QueryResultsInput('testUri');
 			queryInput['_results'] = queryResultsInput;
-			queryInput.close();
+			queryInput.dispose();
 			queryModelService.verify(x => x.disposeQuery(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
 		});
 	});

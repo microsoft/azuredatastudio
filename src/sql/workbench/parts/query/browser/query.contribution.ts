@@ -106,7 +106,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 
 // Query Actions
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		RunQueryKeyboardAction,
 		RunQueryKeyboardAction.ID,
 		RunQueryKeyboardAction.LABEL,
@@ -123,7 +123,7 @@ MenuRegistry.appendMenuItem(MenuId.TouchBarContext, {
 });
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		RunCurrentQueryKeyboardAction,
 		RunCurrentQueryKeyboardAction.ID,
 		RunCurrentQueryKeyboardAction.LABEL,
@@ -133,7 +133,7 @@ actionRegistry.registerWorkbenchAction(
 );
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		RunCurrentQueryWithActualPlanKeyboardAction,
 		RunCurrentQueryWithActualPlanKeyboardAction.ID,
 		RunCurrentQueryWithActualPlanKeyboardAction.LABEL,
@@ -143,7 +143,7 @@ actionRegistry.registerWorkbenchAction(
 );
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		CancelQueryKeyboardAction,
 		CancelQueryKeyboardAction.ID,
 		CancelQueryKeyboardAction.LABEL,
@@ -153,7 +153,7 @@ actionRegistry.registerWorkbenchAction(
 );
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		RefreshIntellisenseKeyboardAction,
 		RefreshIntellisenseKeyboardAction.ID,
 		RefreshIntellisenseKeyboardAction.LABEL
@@ -162,7 +162,7 @@ actionRegistry.registerWorkbenchAction(
 );
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		FocusOnCurrentQueryKeyboardAction,
 		FocusOnCurrentQueryKeyboardAction.ID,
 		FocusOnCurrentQueryKeyboardAction.LABEL,
@@ -172,7 +172,7 @@ actionRegistry.registerWorkbenchAction(
 );
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		ParseSyntaxAction,
 		ParseSyntaxAction.ID,
 		ParseSyntaxAction.LABEL
@@ -183,7 +183,7 @@ actionRegistry.registerWorkbenchAction(
 // Grid actions
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		ToggleQueryResultsKeyboardAction,
 		ToggleQueryResultsKeyboardAction.ID,
 		ToggleQueryResultsKeyboardAction.LABEL,

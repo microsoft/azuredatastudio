@@ -60,7 +60,7 @@ import { IPreferencesService } from 'vs/workbench/services/preferences/common/pr
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IFileDialogService, IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage'; // {{SQL CARBON EDIT}}
@@ -1070,6 +1070,7 @@ export class CheckForUpdatesAction extends Action {
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IExtensionEnablementService private readonly extensionEnablementService: IExtensionEnablementService,
 		@IViewletService private readonly viewletService: IViewletService,
+		@IDialogService private readonly dialogService: IDialogService,
 		@INotificationService private readonly notificationService: INotificationService
 	) {
 		super(id, label, '', true);
@@ -1078,7 +1079,7 @@ export class CheckForUpdatesAction extends Action {
 	private checkUpdatesAndNotify(): void {
 		const outdated = this.extensionsWorkbenchService.outdated;
 		if (!outdated.length) {
-			this.notificationService.info(localize('noUpdatesAvailable', "All extensions are up to date."));
+			this.dialogService.show(Severity.Info, localize('noUpdatesAvailable', "All extensions are up to date."), [localize('ok', "OK")]);
 			return;
 		}
 

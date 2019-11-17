@@ -343,20 +343,18 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		this.state.executing = false;
 	}
 
-	public close(): void {
-		this._queryModelService.disposeQuery(this.uri);
-		this._connectionManagementService.disconnectEditor(this, true);
-
-		this._sql.close();
-		this._results.close();
-		super.close();
-	}
-
 	/**
 	 * Get the color that should be displayed
 	 */
 	public get tabColor(): string {
 		return this._connectionManagementService.getTabColorForUri(this.uri);
+	}
+
+	public dispose() {
+		this._queryModelService.disposeQuery(this.uri);
+		this._connectionManagementService.disconnectEditor(this, true);
+
+		super.dispose();
 	}
 
 	public get isSharedSession(): boolean {

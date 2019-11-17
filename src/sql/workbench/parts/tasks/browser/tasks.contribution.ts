@@ -61,7 +61,7 @@ export class StatusUpdater extends lifecycle.Disposable implements ext.IWorkbenc
 
 const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
 registry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		ToggleTasksAction,
 		ToggleTasksAction.ID,
 		ToggleTasksAction.LABEL,
@@ -71,7 +71,7 @@ registry.registerWorkbenchAction(
 );
 
 // Register Output Panel
-Registry.as<PanelRegistry>(PanelExtensions.Panels).registerPanel(new PanelDescriptor(
+Registry.as<PanelRegistry>(PanelExtensions.Panels).registerPanel(PanelDescriptor.create(
 	TasksPanel,
 	TASKS_PANEL_ID,
 	localize('tasks', "Tasks"),
