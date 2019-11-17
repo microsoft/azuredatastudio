@@ -55,7 +55,6 @@
     "jquery": "3.4.0",
     "jschardet": "2.1.1",
     "keytar": "^4.11.0",
-    "msal": "^1.1.3",
     "native-is-elevated": "0.4.1",
     "native-keymap": "2.0.0",
     "native-watchdog": "1.2.0",
