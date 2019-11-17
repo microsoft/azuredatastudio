@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorInput, EditorModel, ConfirmResult, EncodingMode } from 'vs/workbench/common/editor';
+import { EditorInput, EditorModel, EncodingMode } from 'vs/workbench/common/editor';
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -110,7 +110,6 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	public showResultsEditor(): void { this._showResultsEditor.fire(undefined); }
 	public isDirty(): boolean { return false; }
 	public save(): Promise<boolean> { return Promise.resolve(false); }
-	public confirmSave(): Promise<ConfirmResult> { return Promise.resolve(ConfirmResult.DONT_SAVE); }
 	public getTypeId(): string { return EditDataInput.ID; }
 	public setBootstrappedTrue(): void { this._hasBootstrapped = true; }
 	public getResource(): URI { return this._uri; }

@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 
 import { IEditorModel } from 'vs/platform/editor/common/editor';
-import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
+import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
@@ -134,17 +134,6 @@ export class ModelViewInput extends EditorInput {
 	 */
 	isDirty(): boolean {
 		return this._model.isDirty;
-	}
-
-	/**
-	 * Subclasses should bring up a proper dialog for the user if the editor is dirty and return the result.
-	 */
-	confirmSave(): Promise<ConfirmResult> {
-		// TODO #2530 support save on close / confirm save. This is significantly more work
-		// as we need to either integrate with textFileService (seems like this isn't viable)
-		// or register our own complimentary service that handles the lifecycle operations such
-		// as close all, auto save etc.
-		return Promise.resolve(ConfirmResult.DONT_SAVE);
 	}
 
 	/**

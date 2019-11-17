@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
+import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
@@ -234,10 +234,6 @@ export class NotebookInput extends EditorInput {
 
 	public get textInput(): UntitledTextEditorInput {
 		return this._textInput;
-	}
-
-	public confirmSave(): Promise<ConfirmResult> {
-		return this._textInput.confirmSave();
 	}
 
 	public revert(): Promise<boolean> {
