@@ -771,7 +771,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (this.placeHolderDataSets) {
 			let dataSet = this.placeHolderDataSets[0];
 			if (dataSet.columnDefinitions) {
-				t = new Table(this.nativeElement, { dataProvider: new AsyncDataProvider(dataSet.dataRows), columns: dataSet.columnDefinitions }, { showRowNumber: true, editable: true });
+				t = new Table(this.nativeElement, { dataProvider: new AsyncDataProvider(dataSet.dataRows), columns: dataSet.columnDefinitions }, { autoEdit: true, defaultColumnWidth: 120, editable: true, enableAddRow: false, enableAsyncPostRender: true, enableCellNavigation: true, enableColumnReorder: false, rowHeight: 29, showHeaderRow: true, showRowNumber: true });
 				return t;
 			}
 		}
