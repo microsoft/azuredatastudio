@@ -118,7 +118,7 @@ export function submitAllStats(productJson: any, commit: string): Promise<boolea
 
 			appInsights.defaultClient.config.endpointUrl = 'https://vortex.data.microsoft.com/collect/v1';
 
-			/* __GDPR__f
+			/* __GDPR__
 				"monacoworkbench/packagemetrics" : {
 					"commit" : {"classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
 					"size" : {"classification": "SystemMetaData", "purpose": "PerformanceAndHealth" },
