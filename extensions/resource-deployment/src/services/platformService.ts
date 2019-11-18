@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as fs from 'fs';
+import * as releaseInfo from 'linux-release-info';
 import * as cp from 'promisify-child-process';
 import * as sudo from 'sudo-prompt';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { OsType } from '../interfaces';
+import { OsDistribution, OsRelease } from '../interfaces';
 import { getErrorMessage } from '../utils';
 
 const localize = nls.loadMessageBundle();
@@ -18,7 +19,7 @@ const sudoPromptTitle = 'AzureDataStudio';
  * Abstract of platform dependencies
  */
 export interface IPlatformService {
-	osType(): OsType;
+	osDistribution(): OsDistribution;
 	platform(): string;
 	storagePath(): string;
 	initialize(): Promise<void>;
@@ -31,7 +32,6 @@ export interface IPlatformService {
 	showOutputChannel(preserveFocus?: boolean): void;
 	isNotebookNameUsed(title: string): boolean;
 	makeDirectory(path: string): Promise<void>;
-	ensureDirectoryExists(directory: string): Promise<void>;
 	readTextFile(filePath: string): Promise<string>;
 	runCommand(command: string, options?: CommandOptions): Promise<string>;
 	saveTextFile(content: string, path: string): Promise<void>;
@@ -57,14 +57,16 @@ export interface CommandOptions {
 export class PlatformService implements IPlatformService {
 
 	private _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(extensionOutputChannel);
-	private _storagePathEnsurer: Promise<void>;
+	private _initializationEnsurer: Promise<void>;
+	private _osDistribution: OsDistribution;
 
-	constructor(private _storagePath: string = '') {
-		this._storagePathEnsurer = this.ensureDirectoryExists(_storagePath);
+	constructor(private _storagePath: string) {
+		this._osDistribution = this.getOsDistribution();
+		this._initializationEnsurer = this.ensureDirectoryExists(_storagePath);
 	}
 
 	async initialize(): Promise<void> {
-		await this._storagePathEnsurer;
+		await this._initializationEnsurer;
 	}
 
 	storagePath(): string {
@@ -83,12 +85,18 @@ export class PlatformService implements IPlatformService {
 		this._outputChannel.show(preserveFocus);
 	}
 
-	osType(platform: string = this.platform()): OsType {
-		if (Object.values(OsType).includes(<OsType>platform)) {
-			return <OsType>platform;
-		} else {
-			return OsType.others;
+	osDistribution(): OsDistribution {
+		return this._osDistribution;
+	}
+
+	private getOsDistribution(): OsDistribution {
+		const currentReleaseInfo = <OsRelease>releaseInfo({ mode: 'sync' });
+		const dist = currentReleaseInfo.id_like || currentReleaseInfo.id || currentReleaseInfo.platform;
+		if (Object.values(OsDistribution).includes(<OsDistribution>dist)) {
+			return <OsDistribution>dist;
 		}
+		// all other unrecognized oses/distributions are treated as OsType.others
+		return OsDistribution.others;
 	}
 
 	async copyFile(source: string, target: string): Promise<void> {
@@ -127,7 +135,7 @@ export class PlatformService implements IPlatformService {
 	 *This function ensures that the given {@link directory} does not exist it creates it. It creates only the most leaf folder so if any ancestor folders are missing then this command throws an error.
 	 * @param directory - the path to ensure
 	 */
-	async ensureDirectoryExists(directory: string): Promise<void> {
+	private async ensureDirectoryExists(directory: string): Promise<void> {
 		if (!await this.fileExists(directory)) {
 			await this.makeDirectory(directory);
 		}
