@@ -36,10 +36,6 @@ export interface ITaskDialogComponentParams extends IBootstrapParams {
 	ownerUri: string;
 }
 
-export interface IQueryPlanParams extends IBootstrapParams {
-	planXml: string;
-}
-
 export const ISelector = 'selector';
 
 export const IBootstrapParams = 'bootstrap_params';

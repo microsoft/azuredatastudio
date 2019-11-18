@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as QP from 'html-query-plan';
+import 'vs/css!./media/qp';
 
 import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 
@@ -11,6 +11,7 @@ import { Dimension, clearNode } from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import { dispose } from 'vs/base/common/lifecycle';
 import { QueryPlanState } from 'sql/workbench/contrib/queryPlan/common/queryPlanState';
+import { IdleValue } from 'vs/base/common/async';
 
 export class QueryPlanTab implements IPanelTab {
 	public readonly title = localize('queryPlanTitle', "Query Plan");
@@ -91,7 +92,9 @@ export class QueryPlanView implements IPanelView {
 	}
 }
 
+type QueryPlanModule = typeof import('html-query-plan');
 export class QueryPlan {
+	private static htmlqueryplan = new IdleValue<Promise<QueryPlanModule>>(() => import('html-query-plan'));
 	private _xml: string;
 	constructor(private container: HTMLElement) {
 	}
@@ -100,13 +103,16 @@ export class QueryPlan {
 		this._xml = xml;
 		clearNode(this.container);
 		if (this.xml) {
-			QP.showPlan(this.container, this._xml, {
-				jsTooltips: false
-			});
-			(<any>this.container.querySelectorAll('div.qp-tt')).forEach(toolTip => {
-				toolTip.classList.add('monaco-editor');
-				toolTip.classList.add('monaco-editor-hover');
-			});
+			(async () => {
+				const qp = await QueryPlan.htmlqueryplan.getValue();
+				qp.showPlan(this.container, this._xml, {
+					jsTooltips: false
+				});
+				(<any>this.container.querySelectorAll('div.qp-tt')).forEach(toolTip => {
+					toolTip.classList.add('monaco-editor');
+					toolTip.classList.add('monaco-editor-hover');
+				});
+			})();
 		}
 	}
 
