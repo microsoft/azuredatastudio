@@ -21,10 +21,10 @@ import { MssqlIconProvider } from './iconProvider';
 //import { registerBooksWidget } from './dashboard/bookWidget';
 import { createMssqlApi } from './kustoApiFactory';
 import { localize } from './localize';
-import { SqlToolsServer } from './sqlToolsServer';
+import { KustoServer } from './KustoServer';
 import { promises as fs } from 'fs';
 
-const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
+const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample code loads the file into a data frame and shows the first 10 results.");
 
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
@@ -56,14 +56,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	registerLogCommand(context);
 
 	// initialize client last so we don't have features stuck behind it
-	const server = new SqlToolsServer();
+	const server = new KustoServer();
 	context.subscriptions.push(server);
 	await server.start(appContext);
 
 	return createMssqlApi(appContext);
 }
 
-const logFiles = ['resourceprovider.log', 'sqltools.log', 'credentialstore.log'];
+const logFiles = ['resourceprovider.log', 'kustoservice.log', 'credentialstore.log'];
 function registerLogCommand(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('kusto.showLogFile', async () => {
 		const choice = await vscode.window.showQuickPick(logFiles);
@@ -133,7 +133,7 @@ async function handleNewNotebookTask(oeContext?: azdata.ObjectExplorerContext, p
 }
 
 async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promise<void> {
-	let notebookFileTypeName = localize('notebookFileType', 'Notebooks');
+	let notebookFileTypeName = localize('notebookFileType', "Notebooks");
 	let filter = {};
 	filter[notebookFileTypeName] = 'ipynb';
 	let uris = await vscode.window.showOpenDialog({
@@ -146,7 +146,7 @@ async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promi
 		// Verify this is a .ipynb file since this isn't actually filtered on Mac/Linux
 		if (path.extname(fileUri.fsPath) !== '.ipynb') {
 			// in the future might want additional supported types
-			vscode.window.showErrorMessage(localize('unsupportedFileType', 'Only .ipynb Notebooks are supported'));
+			vscode.window.showErrorMessage(localize('unsupportedFileType', "Only .ipynb Notebooks are supported"));
 		} else {
 			await azdata.nb.showNotebookDocument(fileUri, {
 				connectionProfile: profile,

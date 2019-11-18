@@ -22,7 +22,7 @@ import { promises as fs } from 'fs';
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 
-export class SqlToolsServer {
+export class KustoServer {
 
 	private client: SqlOpsDataClient;
 	private config: IConfig;
@@ -31,8 +31,8 @@ export class SqlToolsServer {
 	public async start(context: AppContext): Promise<SqlOpsDataClient> {
 		try {
 			const installationStart = Date.now();
-			/* const path =*/ await this.download(context); // TodoKusto: Remove this commented line once the Kusto service layer has been published to Github. Until then copy manually for debugging.
-			const path = "e:\\repos\\azuredatastudio\\extensions\\kusto\\sqltoolsservice\\Windows\\2.0.0-release.15\\MicrosoftSqlToolsServiceLayer.exe"
+			const path = await this.download(context); // TodoKusto: Remove this commented line once the Kusto service layer has been published to Github. Until then copy manually for debugging.
+			// const path = "e:\\repos\\azuredatastudio\\extensions\\kusto\\sqltoolsservice\\Windows\\2.0.0-release.15\\MicrosoftKustoServiceLayer.exe";
 			const installationComplete = Date.now();
 			let serverOptions = generateServerOptions(context.extensionContext.logPath, path);
 			let clientOptions = getClientOptions(context);
@@ -95,7 +95,7 @@ export class SqlToolsServer {
 }
 
 function generateServerOptions(logPath: string, executablePath: string): ServerOptions {
-	const launchArgs = getCommonLaunchArgsAndCleanupOldLogFiles(logPath, 'sqltools.log', executablePath);
+	const launchArgs = getCommonLaunchArgsAndCleanupOldLogFiles(logPath, 'kustoService.log', executablePath);
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }
 
@@ -136,7 +136,7 @@ function generateHandleServerProviderEvent() {
 
 function getClientOptions(context: AppContext): ClientOptions {
 	return {
-		documentSelector: ['sql'],
+		documentSelector: ['kql'],
 		synchronize: {
 			configurationSection: Constants.extensionConfigSectionName
 		},
