@@ -180,8 +180,6 @@ export abstract class GridParentComponent extends Disposable {
 		this.toDispose.add(subscriptionToDisposable(sub));
 	}
 
-
-
 	private bindKeys(contextKeyService: IContextKeyService): void {
 		if (contextKeyService) {
 			this.queryEditorVisible = QueryEditorVisibleContext.bindTo(contextKeyService);
@@ -229,7 +227,6 @@ export abstract class GridParentComponent extends Disposable {
 	}
 
 	protected getSelection(index?: number): Slick.Range[] {
-
 		//let selection = this.slickgrids.toArray()[index || this.activeGrid].getSelectedRanges();
 		let selection = this._tables[index || this.activeGrid].getSelectedRanges();
 		if (selection) {

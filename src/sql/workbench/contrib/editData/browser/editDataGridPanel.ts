@@ -59,7 +59,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	// All datasets
 	private dataSet: IGridDataSet;
 	private firstRender = true;
-
 	// Current selected cell state
 	private currentCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
 	private currentEditCellValue: string;
@@ -394,7 +393,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		self.placeHolderDataSets.push(undefinedDataSet);
 		self.refreshGrid();
 
-
 		// Setup the state of the selected cell
 		this.resetCurrentCell();
 		this.currentEditCellValue = undefined;
@@ -420,7 +418,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	private refreshGrid(): Thenable<void> {
-
 		//handle complete happens before refreshGrid is called for firstRender, something is not right.
 		return new Promise<void>((resolve, reject) => {
 			const self = this;
@@ -481,8 +478,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
-
-
 
 	private async revertCurrentRow(): Promise<void> {
 		let currentNewRowIndex = this.dataSet.totalRows - 2;

@@ -20,7 +20,7 @@ export const EditDataModule = (params: IBootstrapParams, selector: string, insta
 
 		imports: [
 			CommonModule,
-			BrowserModule,
+			BrowserModule
 		],
 
 		declarations: [
