@@ -59,7 +59,7 @@ export class NotebookMarkdownRenderer {
 		let signalInnerHTML: () => void;
 		const withInnerHTML = new Promise(c => signalInnerHTML = c);
 
-		let notebookFolder = path.dirname(this._notebookURI.fsPath) + '/';
+		let notebookFolder = this._notebookURI ? path.dirname(this._notebookURI.fsPath) + '/' : '';
 		if (!this._baseUrls.some(x => x === notebookFolder)) {
 			this._baseUrls.push(notebookFolder);
 		}
@@ -207,7 +207,7 @@ export class NotebookMarkdownRenderer {
 			href = this.resolveUrl(base, href);
 		}
 		try {
-			href = encodeURI(href).replace(/%5C/g, '\\').replace(/%25/g, '%');
+			href = encodeURI(href).replace(/%5C/g, '\\').replace(/%25/g, '%').replace(/%7C/g, '|');
 		} catch (e) {
 			return null;
 		}
