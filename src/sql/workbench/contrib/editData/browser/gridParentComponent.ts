@@ -385,8 +385,8 @@ export abstract class GridParentComponent extends Disposable {
 
 	openContextMenu(event, batchId, resultId, index): void {
 		//let slick: any = this.slickgrids.toArray()[index];
-		let slick: any = this._tables[index];
-		let grid = slick._grid;
+		//let slick: any = this._tables[index];
+		//let grid = slick._grid;
 
 		let selection = this.getSelection(index);
 

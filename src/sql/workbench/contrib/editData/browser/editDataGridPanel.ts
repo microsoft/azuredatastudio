@@ -32,7 +32,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { EditUpdateCellResult } from 'azdata';
 import { ILogService } from 'vs/platform/log/common/log';
-import { deepClone } from 'vs/base/common/objects';
+import { deepClone, assign } from 'vs/base/common/objects';
 import { Emitter } from 'vs/base/common/event';
 
 export const EDITDATA_SELECTOR: string = 'editdatagridpanel';
@@ -59,11 +59,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	// All datasets
 	private dataSet: IGridDataSet;
 	private firstRender = true;
-	private totalElapsedTimeSpan: number;
-	private complete = false;
-
-	//my fields:
-	private templateHTML: any;
 
 	// Current selected cell state
 	private currentCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
@@ -170,8 +165,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		self.placeHolderDataSets = [];
 		self.renderedDataSets = self.placeHolderDataSets;
 		//this._cd.detectChanges();
-		self.totalElapsedTimeSpan = undefined;
-		self.complete = false;
 
 		// Hooking up edit functionshandle
 		this.onIsCellEditValid = (row, column, value): boolean => {
@@ -335,8 +328,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	handleComplete(self: EditDataGridPanel, event: any): void {
-		self.totalElapsedTimeSpan = event.data;
-		self.complete = true;
 	}
 
 	handleEditSessionReady(self, event): void {
@@ -354,7 +345,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	handleResultSet(self: EditDataGridPanel, event: any): void {
 		// Clone the data before altering it to avoid impacting other subscribers
-		let resultSet = Object.assign({}, event.data);
+		let resultSet = assign({}, event.data);
 		if (!resultSet.complete) {
 			return;
 		}
@@ -481,8 +472,6 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	protected tryHandleKeyEvent(e: StandardKeyboardEvent): boolean {
 		let handled: boolean = false;
-		// If the esc key was pressed while in a create session
-		let currentNewRowIndex = this.dataSet.totalRows - 2;
 
 		if (e.keyCode === KeyCode.Escape) {
 			this.revertCurrentRow();

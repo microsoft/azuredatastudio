@@ -31,8 +31,6 @@ export class EditDataResultsEditor extends BaseEditor {
 
 	private styleSheet = DOM.createStyleSheet();
 
-	//my own reference to the new grid panel
-	private editGridPanel: EditDataGridPanel;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -115,8 +113,6 @@ export class EditDataResultsEditor extends BaseEditor {
 		if (!dataService) {
 			throw new Error('DataService not found for URI: ' + uri);
 		}
-
-		const parent = input.container;
 
 		//Stuff afterwards can be ignored
 		// Mark that we have bootstrapped

@@ -121,7 +121,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	//own code begins here:
 	private invalidateRange(start: number, end: number): void {
-		let refreshedRows = _.range(start, end);
+		let refreshedRows = range(start, end);
 		this._grid.invalidateRows(refreshedRows, true);
 		this._grid.render();
 	}
