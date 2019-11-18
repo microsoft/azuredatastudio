@@ -3,6 +3,7 @@
   alwaysRequireAssignee: false,
   labelsRequiringAssignee: [],
   defaultLabel: 'Triage: Needed',
+  defaultAssignee: 'anthonydresser',
   autoAssignees: {
     Area - Acquisition: [],
     Area - Azure: [],
