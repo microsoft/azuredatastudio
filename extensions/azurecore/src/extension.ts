@@ -38,7 +38,7 @@ let extensionContext: vscode.ExtensionContext;
 
 // The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't
 // work for now because the extension is running in different process.
-export function getAppDataPath() {
+function getAppDataPath() {
 	let platform = process.platform;
 	switch (platform) {
 		case 'win32': return process.env['APPDATA'] || path.join(process.env['USERPROFILE'], 'AppData', 'Roaming');
@@ -48,7 +48,7 @@ export function getAppDataPath() {
 	}
 }
 
-export function getDefaultLogLocation() {
+function getDefaultLogLocation() {
 	return path.join(getAppDataPath(), 'azuredatastudio');
 }
 
@@ -135,4 +135,3 @@ function registerAzureServices(appContext: AppContext): void {
 	appContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, new AzureResourceSubscriptionFilterService(new AzureResourceCacheService(extensionContext)));
 	appContext.registerService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService, new AzureResourceTenantService());
 }
-

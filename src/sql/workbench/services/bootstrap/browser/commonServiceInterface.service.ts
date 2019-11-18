@@ -16,7 +16,7 @@ import { IAdminService } from 'sql/workbench/services/admin/common/adminService'
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
+import { ConnectionContextKey } from 'sql/workbench/contrib/connection/common/connectionContextKey';
 
 import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'azdata';
 

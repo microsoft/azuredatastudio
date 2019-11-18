@@ -313,8 +313,8 @@ export class JupyterServerInstallation {
 	/**
 	 * Installs Python and associated dependencies to the specified directory.
 	 * @param forceInstall Indicates whether an existing installation should be overwritten, if it exists.
-	 * @param installationPath Optional parameter that specifies where to install python.
-	 * The previous path (or the default) is used if a new path is not specified.
+	 * @param installSettings Optional parameter that specifies where to install python, and whether the install targets an existing python install.
+	 * The previous python path (or the default) is used if a new path is not specified.
 	 */
 	public async startInstallProcess(forceInstall: boolean, installSettings?: { installPath: string, existingPython: boolean }): Promise<void> {
 		let isPythonRunning: boolean;

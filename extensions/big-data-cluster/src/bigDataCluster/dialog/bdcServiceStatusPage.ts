@@ -79,7 +79,7 @@ export class BdcServiceStatusPage extends BdcDashboardPage {
 	private createResourceNavTabs(resources: ResourceStatusModel[]) {
 		let tabIndex = this.createdTabs.size;
 		resources.forEach(resource => {
-			const existingTab: ServiceTab = this.createdTabs[resource.resourceName];
+			const existingTab: ServiceTab = this.createdTabs.get(resource.resourceName);
 			if (existingTab) {
 				// We already created this tab so just update the status
 				existingTab.dot.value = getHealthStatusDot(resource.healthStatus);
@@ -87,7 +87,7 @@ export class BdcServiceStatusPage extends BdcDashboardPage {
 				// New tab - create and add to the end of the container
 				const currentIndex = tabIndex++;
 				const resourceHeaderTab = createResourceHeaderTab(this.modelView.modelBuilder, resource);
-				this.createdTabs[resource.resourceName] = resourceHeaderTab;
+				this.createdTabs.set(resource.resourceName, resourceHeaderTab);
 				const resourceStatusPage: azdata.FlexContainer = new BdcDashboardResourceStatusPage(this.model, this.modelView, this.serviceName, resource.resourceName).container;
 				resourceHeaderTab.div.onDidClick(() => {
 					// Don't need to do anything if this is already the currently selected tab

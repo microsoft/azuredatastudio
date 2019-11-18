@@ -10,7 +10,6 @@ import { Dialog, DialogButton } from 'sql/workbench/services/dialog/common/dialo
 import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Button } from 'vs/base/browser/ui/button/button';
@@ -24,6 +23,7 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { append, $ } from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
@@ -31,7 +31,6 @@ export class DialogModal extends Modal {
 	private _onCancel = new Emitter<void>();
 
 	// Buttons
-	private _cancelButton: Button;
 	private _doneButton: Button;
 
 	constructor(
@@ -40,7 +39,7 @@ export class DialogModal extends Modal {
 		options: IModalOptions,
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
-		@ITelemetryService telemetryService: ITelemetryService,
+		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
@@ -75,7 +74,7 @@ export class DialogModal extends Modal {
 		this._dialog.onValidityChanged(valid => {
 			this._doneButton.enabled = valid && this._dialog.okButton.enabled;
 		});
-		this._cancelButton = this.addDialogButton(this._dialog.cancelButton, () => this.cancel(), false);
+		this.addDialogButton(this._dialog.cancelButton, () => this.cancel(), false);
 		this._dialog.cancelButton.registerClickEvent(this._onCancel.event);
 
 		let messageChangeHandler = (message: DialogMessage) => {

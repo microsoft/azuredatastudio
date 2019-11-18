@@ -3,10 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import { OperatorData } from '../data/operatorData';
 import * as nls from 'vscode-nls';
 import { AgentDialog } from './agentDialog';
@@ -409,7 +406,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 		});
 	}
 
-	protected updateModel() {
+	protected async updateModel(): Promise<void> {
 		this.model.name = this.nameTextBox.value;
 		this.model.enabled = this.enabledCheckBox.checked;
 		this.model.emailAddress = this.emailNameTextBox.value;

@@ -14,10 +14,10 @@ import { ResourceMap } from 'vs/base/common/map';
 import { coalesce, firstIndex } from 'vs/base/common/arrays';
 
 // {{SQL CARBON EDIT}}
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import * as CustomInputConverter from 'sql/workbench/browser/customInputConverter';
-import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
+import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
 const EditorOpenPositioning = {

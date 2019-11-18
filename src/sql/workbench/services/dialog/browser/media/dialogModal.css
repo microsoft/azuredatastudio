@@ -8,12 +8,6 @@
 	flex-direction: row;
 	height: 100%;
 	width: 100%;
-	min-width: 500px;
-	min-height: 600px;
-}
-
-.modal.wide .dialogModal-body {
-	min-width: 800px;
 }
 
 .dialog-message-and-page-container {
@@ -33,8 +27,8 @@
 	flex-direction: column;
 	width: 100%;
 	height: 100%;
-	overflow-x: hidden;
-	overflow-y: scroll;
+	overflow-x: auto;
+	overflow-y: auto;
 }
 
 .dialogModal-hidden {
@@ -69,6 +63,13 @@
 	margin-bottom: 10px;
 	font-size: 1.5em;
 	font-weight: bold;
+}
+
+.dialogContainer .dialogModal-wizardHeader h1.wizardPageNumber {
+	margin-block-start: 0px;
+	margin-block-end: 0px;
+	font-weight: normal;
+	font-size: 11px;
 }
 
 .dialogContainer {

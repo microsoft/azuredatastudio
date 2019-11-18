@@ -12,10 +12,7 @@
 		"moduleResolution": "node",
 		"declaration": false,
 		"strict": false,
-		"noImplicitAny": false,
 		"noUnusedParameters": false,
-		"noImplicitReturns": false,
-		"noUnusedLocals": false,
 	},
 	"exclude": [
 		"node_modules"

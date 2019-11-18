@@ -47,7 +47,7 @@ import { ExplorerItem, NewExplorerItem } from 'vs/workbench/contrib/files/common
 import { onUnexpectedError, getErrorMessage } from 'vs/base/common/errors';
 
 // {{SQL CARBON EDIT}}
-import { openNewQuery } from 'sql/workbench/parts/query/browser/queryActions';
+import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 
 export const NEW_FILE_COMMAND_ID = 'explorer.newFile';
 export const NEW_FILE_LABEL = nls.localize('newFile', "New File");

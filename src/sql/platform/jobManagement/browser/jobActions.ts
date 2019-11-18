@@ -8,20 +8,19 @@ import * as nls from 'vs/nls';
 import * as azdata from 'azdata';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
-import { JobHistoryComponent } from 'sql/workbench/parts/jobManagement/browser/jobHistory.component';
+import { JobHistoryComponent } from 'sql/workbench/contrib/jobManagement/browser/jobHistory.component';
 import { IJobManagementService } from '../common/interfaces';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { JobsViewComponent } from 'sql/workbench/parts/jobManagement/browser/jobsView.component';
-import { AlertsViewComponent } from 'sql/workbench/parts/jobManagement/browser/alertsView.component';
-import { OperatorsViewComponent } from 'sql/workbench/parts/jobManagement/browser/operatorsView.component';
-import { ProxiesViewComponent } from 'sql/workbench/parts/jobManagement/browser/proxiesView.component';
+import { JobsViewComponent } from 'sql/workbench/contrib/jobManagement/browser/jobsView.component';
+import { AlertsViewComponent } from 'sql/workbench/contrib/jobManagement/browser/alertsView.component';
+import { OperatorsViewComponent } from 'sql/workbench/contrib/jobManagement/browser/operatorsView.component';
+import { ProxiesViewComponent } from 'sql/workbench/contrib/jobManagement/browser/proxiesView.component';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-import { JobManagementView } from 'sql/workbench/parts/jobManagement/browser/jobManagementView';
-import { NotebooksViewComponent } from 'sql/workbench/parts/jobManagement/browser/notebooksView.component';
-import { NotebookHistoryComponent } from 'sql/workbench/parts/jobManagement/browser/notebookHistory.component';
+import { JobManagementView } from 'sql/workbench/contrib/jobManagement/browser/jobManagementView';
+import { NotebooksViewComponent } from 'sql/workbench/contrib/jobManagement/browser/notebooksView.component';
 
 export const successLabel: string = nls.localize('jobaction.successLabel', "Success");
 export const errorLabel: string = nls.localize('jobaction.faillabel', "Error");
@@ -177,9 +176,7 @@ export class OpenMaterializedNotebookAction extends Action {
 	public static ID = 'notebookAction.openNotebook';
 	public static LABEL = nls.localize('notebookAction.openNotebook', "Open");
 
-	constructor(
-		@ICommandService private _commandService: ICommandService
-	) {
+	constructor() {
 		super(OpenMaterializedNotebookAction.ID, OpenMaterializedNotebookAction.LABEL, 'openNotebook');
 	}
 
@@ -610,9 +607,7 @@ export class OpenTemplateNotebookAction extends Action {
 	public static ID = 'notebookaction.openTemplate';
 	public static LABEL = nls.localize('notebookaction.openNotebook', "Open Template Notebook");
 
-	constructor(
-		@ICommandService private _commandService: ICommandService
-	) {
+	constructor() {
 		super(OpenTemplateNotebookAction.ID, OpenTemplateNotebookAction.LABEL, 'opennotebook');
 	}
 
@@ -673,9 +668,7 @@ export class PinNotebookMaterializedAction extends Action {
 	public static ID = 'notebookaction.openTemplate';
 	public static LABEL = nls.localize('notebookaction.pinNotebook', "Pin");
 
-	constructor(
-		@ICommandService private _commandService: ICommandService
-	) {
+	constructor() {
 		super(PinNotebookMaterializedAction.ID, PinNotebookMaterializedAction.LABEL);
 	}
 
@@ -689,9 +682,7 @@ export class DeleteMaterializedNotebookAction extends Action {
 	public static ID = 'notebookaction.deleteMaterializedNotebook';
 	public static LABEL = nls.localize('notebookaction.deleteMaterializedNotebook', "Delete");
 
-	constructor(
-		@ICommandService private _commandService: ICommandService
-	) {
+	constructor() {
 		super(DeleteMaterializedNotebookAction.ID, DeleteMaterializedNotebookAction.LABEL);
 	}
 
@@ -705,9 +696,7 @@ export class UnpinNotebookMaterializedAction extends Action {
 	public static ID = 'notebookaction.unpinNotebook';
 	public static LABEL = nls.localize('notebookaction.unpinNotebook', "Unpin");
 
-	constructor(
-		@ICommandService private _commandService: ICommandService
-	) {
+	constructor() {
 		super(UnpinNotebookMaterializedAction.ID, UnpinNotebookMaterializedAction.LABEL);
 	}
 
@@ -721,9 +710,7 @@ export class RenameNotebookMaterializedAction extends Action {
 	public static ID = 'notebookaction.openTemplate';
 	public static LABEL = nls.localize('notebookaction.renameNotebook', "Rename");
 
-	constructor(
-		@ICommandService private _commandService: ICommandService,
-	) {
+	constructor() {
 		super(RenameNotebookMaterializedAction.ID, RenameNotebookMaterializedAction.LABEL);
 	}
 
@@ -737,9 +724,7 @@ export class OpenLatestRunMaterializedNotebook extends Action {
 	public static ID = 'notebookaction.openLatestRun';
 	public static LABEL = nls.localize('notebookaction.openLatestRun', "Open Latest Run");
 
-	constructor(
-		@ICommandService private _commandService: ICommandService,
-	) {
+	constructor() {
 		super(OpenLatestRunMaterializedNotebook.ID, OpenLatestRunMaterializedNotebook.LABEL);
 	}
 

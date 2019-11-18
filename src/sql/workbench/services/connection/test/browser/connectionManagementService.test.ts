@@ -33,6 +33,7 @@ import { TestNotificationService } from 'vs/platform/notification/test/common/te
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { assign } from 'vs/base/common/objects';
+import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 
 suite('SQL ConnectionManagementService tests', () => {
 
@@ -152,7 +153,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			connectionDialogService.object,
 			undefined, // IInstantiationService
 			workbenchEditorService.object,
-			undefined, // ITelemetryService
+			new NullAdsTelemetryService(), // ITelemetryService
 			workspaceConfigurationServiceMock.object,
 			capabilitiesService,
 			undefined, // IQuickInputService

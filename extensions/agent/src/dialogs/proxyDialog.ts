@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import { AgentDialog } from './agentDialog';
@@ -34,7 +32,6 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 	private static readonly SSASCommandLabel: string = localize('createProxy.SSASCommandLabel', "SQL Server Analysis Services Command");
 	private static readonly SSISPackageLabel: string = localize('createProxy.SSISPackage', "SQL Server Integration Services Package");
 	private static readonly PowerShellLabel: string = localize('createProxy.PowerShell', "PowerShell");
-	private static readonly SubSystemHeadingLabel: string = localize('createProxy.subSystemHeading', "Active to the following subsytems");
 
 	private readonly NewProxyDialog = 'NewProxyDialogOpened';
 	private readonly EditProxyDialog = 'EditProxyDialogOpened';
@@ -189,7 +186,7 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 					label: ProxyDialog.PowerShellLabel
 				}).component();
 
-			let checkBoxContainer = view.modelBuilder.groupContainer()
+			view.modelBuilder.groupContainer()
 				.withItems([this.operatingSystemCheckBox, this.replicationSnapshotCheckBox,
 				this.replicationTransactionLogCheckBox, this.replicationDistributorCheckBox, this.replicationMergeCheckbox,
 				this.replicationQueueReaderCheckbox, this.sqlQueryCheckBox, this.sqlCommandCheckBox, this.sqlIntegrationServicesPackageCheckbox,
@@ -217,7 +214,7 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 	}
 
 
-	protected updateModel() {
+	protected async updateModel(): Promise<void> {
 		this.model.accountName = this.proxyNameTextBox.value;
 		this.model.credentialName = this.credentialNameDropDown.value as string;
 		this.model.credentialId = this.credentials.find(

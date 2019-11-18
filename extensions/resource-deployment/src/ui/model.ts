@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import { NoteBookEnvironmentVariablePrefix } from '../interfaces';
 
 export class Model {
 	private propValueObject: { [s: string]: string | undefined } = {};
@@ -32,7 +33,7 @@ export class Model {
 	}
 
 	public setEnvironmentVariables(): void {
-		Object.keys(this.propValueObject).filter(propertyName => propertyName.startsWith('AZDATA_NB_VAR_')).forEach(propertyName => {
+		Object.keys(this.propValueObject).filter(propertyName => propertyName.startsWith(NoteBookEnvironmentVariablePrefix)).forEach(propertyName => {
 			const value = this.getStringValue(propertyName);
 			if (value !== undefined && value !== '') {
 				process.env[propertyName] = value;

@@ -15,17 +15,6 @@ import { BdcDashboardPage } from './bdcDashboardPage';
 
 const localize = nls.loadMessageBundle();
 
-export interface IGroup {
-	groupName: string;
-	instances: IInstanceStatus[];
-}
-
-export interface IInstanceStatus {
-	instanceName: string;
-	state: string;
-	healthStatus: string;
-}
-
 const healthAndStatusIconColumnWidth = 25;
 const healthAndStatusInstanceNameColumnWidth = 100;
 const healthAndStatusStateColumnWidth = 150;
@@ -257,4 +246,3 @@ function createMetricsAndLogsRow(modelBuilder: azdata.ModelBuilder, instanceStat
 
 	return metricsAndLogsRow;
 }
-

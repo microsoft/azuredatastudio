@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 1.13.1
+* Release date: November 15, 2019
+* Release status: General Availability
+* Resolved [#8210 Copy/Paste results are out of order](https://github.com/microsoft/azuredatastudio/issues/8210).
+
 ## Version 1.13.0
 * Release date: November 4, 2019
 * Release status: General Availability

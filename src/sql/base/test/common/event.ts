@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { find } from 'vs/base/common/arrays';
 
 export class EventVerifierSingle<T> {
 	private _eventArgument: T;

@@ -6,14 +6,13 @@ import 'vs/css!./media/formLayout';
 
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
-	ViewChild, ElementRef, OnDestroy, AfterViewInit
+	ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
 import { FormLayout, FormItemLayout } from 'azdata';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { find } from 'vs/base/common/arrays';
 
 export interface TitledFormItemLayout {
@@ -45,12 +44,11 @@ class FormItem {
 				</div>
 			</div>
 			<div class="form-row" *ngIf="isFormComponent(item)" [style.height]="getRowHeight(item)">
-
 					<ng-container *ngIf="isHorizontal(item)">
-						<div *ngIf="hasItemTitle(item)" class="form-cell form-cell-title" [style.font-size]="getItemTitleFontSize(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
+						<h2 *ngIf="hasItemTitle(item)" class="form-cell form-cell-title" [style.font-size]="getItemTitleFontSize(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
 							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
 							<span class="codicon help form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
-						</div>
+						</h2>
 						<div class="form-cell">
 							<div class="form-component-container">
 								<div [style.width]="getComponentWidth(item)" [ngClass]="{'form-input-flex': !getComponentWidth(item)}">
@@ -67,10 +65,10 @@ class FormItem {
 						</div>
 					</ng-container>
 					<div class="form-vertical-container" *ngIf="isVertical(item)" [style.height]="getRowHeight(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
-						<div class="form-item-row" [style.font-size]="getItemTitleFontSize(item)">
+						<h2 class="form-item-row" [style.font-size]="getItemTitleFontSize(item)">
 							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
 							<span class="codicon help form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
-						</div>
+						</h2>
 						<div class="form-item-row" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
 							<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore" [style.width]="getComponentWidth(item)" [style.height]="getRowHeight(item)">
 							</model-component-wrapper>
@@ -95,10 +93,7 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 	private _alignContent: string;
 	private _formLayout: FormLayout;
 
-	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
-
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
 		super(changeRef, el);
@@ -129,39 +124,39 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		return this._alignContent;
 	}
 
-	private getFormWidth(): string {
+	public getFormWidth(): string {
 		return this.convertSize(this._formLayout && this._formLayout.width, '');
 	}
 
-	private getFormPadding(): string {
+	public getFormPadding(): string {
 		return this._formLayout && this._formLayout.padding ? this._formLayout.padding : '10px 30px 0px 30px';
 	}
 
-	private getFormHeight(): string {
+	public getFormHeight(): string {
 		return this.convertSize(this._formLayout && this._formLayout.height, '');
 	}
 
-	private getComponentWidth(item: FormItem): string {
+	public getComponentWidth(item: FormItem): string {
 		let itemConfig = item.config;
 		return (itemConfig && itemConfig.componentWidth) ? this.convertSize(itemConfig.componentWidth, '') : '';
 	}
 
-	private getRowHeight(item: FormItem): string {
+	public getRowHeight(item: FormItem): string {
 		let itemConfig = item.config;
 		return (itemConfig && itemConfig.componentHeight) ? this.convertSize(itemConfig.componentHeight, '') : '';
 	}
 
-	private isItemRequired(item: FormItem): boolean {
+	public isItemRequired(item: FormItem): boolean {
 		let itemConfig = item.config;
 		return itemConfig && itemConfig.required;
 	}
 
-	private getItemInfo(item: FormItem): string {
+	public getItemInfo(item: FormItem): string {
 		let itemConfig = item.config;
 		return itemConfig && itemConfig.info;
 	}
 
-	private itemHasInfo(item: FormItem): boolean {
+	public itemHasInfo(item: FormItem): boolean {
 		let itemConfig = item.config;
 		return itemConfig && itemConfig.info !== undefined;
 	}
@@ -172,11 +167,11 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		return itemConfig ? itemConfig.title : '';
 	}
 
-	private hasItemTitle(item: FormItem): boolean {
+	public hasItemTitle(item: FormItem): boolean {
 		return this.getItemTitle(item) !== '';
 	}
 
-	private getItemTitleFontSize(item: FormItem): string {
+	public getItemTitleFontSize(item: FormItem): string {
 		let defaultFontSize = '14px';
 		if (this.isInGroup(item)) {
 			defaultFontSize = '12px';
@@ -185,7 +180,7 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		return itemConfig && itemConfig.titleFontSize ? this.convertSize(itemConfig.titleFontSize, defaultFontSize) : defaultFontSize;
 	}
 
-	private getActionComponents(item: FormItem): FormItem[] {
+	public getActionComponents(item: FormItem): FormItem[] {
 		let items = this.items;
 		let itemConfig = item.config;
 		if (itemConfig && itemConfig.actions) {
@@ -200,7 +195,7 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		return [];
 	}
 
-	private isGroupLabel(item: FormItem): boolean {
+	public isGroupLabel(item: FormItem): boolean {
 		return item && item.config && item.config.isGroupLabel;
 	}
 
@@ -208,11 +203,11 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		return item && item.config && item.config.isInGroup;
 	}
 
-	private isFormComponent(item: FormItem): boolean {
+	public isFormComponent(item: FormItem): boolean {
 		return item && item.config && item.config.isFormComponent;
 	}
 
-	private itemHasActions(item: FormItem): boolean {
+	public itemHasActions(item: FormItem): boolean {
 		let itemConfig = item.config;
 		return itemConfig && itemConfig.actions !== undefined && itemConfig.actions.length > 0;
 	}
@@ -222,11 +217,11 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		this.layout();
 	}
 
-	private isHorizontal(item: FormItem): boolean {
+	public isHorizontal(item: FormItem): boolean {
 		return item && item.config && item.config.horizontal;
 	}
 
-	private isVertical(item: FormItem): boolean {
+	public isVertical(item: FormItem): boolean {
 		return item && item.config && !item.config.horizontal;
 	}
 }

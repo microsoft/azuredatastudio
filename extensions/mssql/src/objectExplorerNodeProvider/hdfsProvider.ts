@@ -11,7 +11,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import * as Constants from '../constants';
-import { IFileSource, IHdfsOptions, IFile, File, FileSourceFactory, FileType } from './fileSources';
+import { IFileSource, IFile, File, FileType } from './fileSources';
 import { CancelableStream } from './cancelableStream';
 import { TreeNode } from './treeNodes';
 import * as utils from '../utils';
@@ -25,53 +25,6 @@ export class TreeDataContext {
 
 	constructor(public extensionContext: vscode.ExtensionContext, public changeHandler: ITreeChangeHandler) {
 
-	}
-}
-
-export class HdfsProvider implements vscode.TreeDataProvider<TreeNode>, ITreeChangeHandler {
-	static readonly NoConnectionsMessage = 'No connections added';
-	static readonly ConnectionsLabel = 'Connections';
-
-	private connections: ConnectionNode[];
-	private _onDidChangeTreeData = new vscode.EventEmitter<TreeNode>();
-	private context: TreeDataContext;
-
-	constructor(extensionContext: vscode.ExtensionContext) {
-		this.connections = [];
-		this.context = new TreeDataContext(extensionContext, this);
-	}
-
-	public get onDidChangeTreeData(): vscode.Event<TreeNode> {
-		return this._onDidChangeTreeData.event;
-	}
-
-	getTreeItem(element: TreeNode): vscode.TreeItem | Thenable<vscode.TreeItem> {
-		return element.getTreeItem();
-	}
-
-	getChildren(element?: TreeNode): vscode.ProviderResult<TreeNode[]> {
-		if (element) {
-			return element.getChildren(false);
-		} else {
-			return this.connections.length > 0 ? this.connections : [ErrorNode.create(HdfsProvider.NoConnectionsMessage, element)];
-		}
-	}
-
-	addConnection(displayName: string, fileSource: IFileSource): void {
-		if (!this.connections.find(c => c.getDisplayName() === displayName)) {
-			this.connections.push(new ConnectionNode(this.context, displayName, fileSource));
-			this._onDidChangeTreeData.fire();
-		}
-	}
-
-	public async addHdfsConnection(options: IHdfsOptions): Promise<void> {
-		let displayName = `${options.user}@${options.host}:${options.port}`;
-		let fileSource = await FileSourceFactory.instance.createHdfsFileSource(options);
-		this.addConnection(displayName, fileSource);
-	}
-
-	notifyNodeChanged(node: TreeNode): void {
-		this._onDidChangeTreeData.fire(node);
 	}
 }
 
@@ -362,7 +315,7 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 	}
 }
 
-export class ErrorNode extends TreeNode {
+class ErrorNode extends TreeNode {
 	static messageNum: number = 0;
 
 	private _nodePathValue: string;

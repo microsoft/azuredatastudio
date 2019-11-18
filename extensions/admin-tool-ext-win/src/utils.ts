@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 export interface IPackageInfo {
 	name: string;
@@ -10,7 +9,7 @@ export interface IPackageInfo {
 	aiKey: string;
 }
 
-export function getPackageInfo(packageJson: any): IPackageInfo {
+export function getPackageInfo(packageJson: any): IPackageInfo | undefined {
 	if (packageJson) {
 		return {
 			name: packageJson.name,
@@ -18,6 +17,7 @@ export function getPackageInfo(packageJson: any): IPackageInfo {
 			aiKey: packageJson.aiKey
 		};
 	}
+	return undefined;
 }
 
 /**

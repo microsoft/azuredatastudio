@@ -72,7 +72,6 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 	}
 
 	$registerEvent(handle: number, componentId: string): Thenable<void> {
-		let properties: { [key: string]: any; } = { eventName: this.onEvent };
 		return this.execModelViewAction(handle, (modelView) => {
 			this._register(modelView.onEvent(e => {
 				if (e.componentId && e.componentId === componentId) {
@@ -96,6 +95,10 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 
 	$validate(handle: number, componentId: string): Thenable<boolean> {
 		return new Promise(resolve => this.execModelViewAction(handle, (modelView) => resolve(modelView.validate(componentId))));
+	}
+
+	$focus(handle: number, componentId: string): Thenable<void> {
+		return new Promise(resolve => this.execModelViewAction(handle, (modelView) => resolve(modelView.focus(componentId))));
 	}
 
 	private runCustomValidations(handle: number, componentId: string): Thenable<boolean> {
