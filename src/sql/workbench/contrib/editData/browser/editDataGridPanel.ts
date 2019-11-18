@@ -770,12 +770,70 @@ export class EditDataGridPanel extends GridParentComponent {
 		let t: Table<any>;
 		if (this.placeHolderDataSets) {
 			let dataSet = this.placeHolderDataSets[0];
+			let options = {
+				autoEdit: true,
+				defaultColumnWidth: 120,
+				editable: true, enableAddRow: false,
+				enableAsyncPostRender: true,
+				enableCellNavigation: true,
+				enableColumnReorder: false,
+				rowHeight: 29,
+				showRowNumber: true
+			};
 			if (dataSet.columnDefinitions) {
-				t = new Table(this.nativeElement, { dataProvider: new AsyncDataProvider(dataSet.dataRows), columns: dataSet.columnDefinitions }, { autoEdit: true, defaultColumnWidth: 120, editable: true, enableAddRow: false, enableAsyncPostRender: true, enableCellNavigation: true, enableColumnReorder: false, rowHeight: 29, showHeaderRow: true, showRowNumber: true });
+				t = new Table(this.nativeElement, { dataProvider: new AsyncDataProvider(dataSet.dataRows), columns: dataSet.columnDefinitions }, options);
 				return t;
 			}
 		}
 		return new Table(this.nativeElement);
 	}
 
+	// private getFormatter = (column: any): any => {
+	// 	return (row, cell, value, columnDef, dataContext) => {
+	// 		let columnId = cell > 0 && this.columnDefinitions.length > cell - 1 ? this.columnDefinitions[cell - 1].id : undefined;
+	// 		if (columnId) {
+	// 			let isHighlighted = this.highlightedCells && !!this.highlightedCells.find(c => c.row === row && c.column + 1 === cell);
+	// 			let isColumnLoading = this.columnsLoading && this.columnsLoading.indexOf(columnId) !== -1;
+	// 			let isShadowed = this.blurredColumns && !!this.blurredColumns.find(c => c === columnId);
+	// 			let isContext = this.contextColumns && !!this.contextColumns.find(c => c === columnId);
+	// 			let overrideValue = this.overrideCellFn && this.overrideCellFn(row, columnId, value, dataContext);
+
+	// 			let valueToDisplay = (value + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+	// 			let cellClasses = 'grid-cell-value-container';
+
+	// 			/* tslint:disable:no-null-keyword */
+	// 			let valueMissing = value === undefined || value === null;
+	// 			/* tslint:disable:no-null-keyword */
+	// 			let isOverridden = overrideValue !== undefined && overrideValue !== null;
+
+	// 			if (valueMissing && !isOverridden) {
+	// 				cellClasses += ' missing-value';
+	// 			}
+
+	// 			if (isColumnLoading === true && !isOverridden) {
+	// 				cellClasses += ' loading-cell';
+	// 				valueToDisplay = '';
+	// 			}
+
+	// 			if (isOverridden) {
+	// 				cellClasses += ' override-cell';
+	// 				valueToDisplay = overrideValue;
+	// 			}
+
+	// 			if (isContext) {
+	// 				cellClasses += ' context';
+	// 			}
+
+	// 			if (isHighlighted === true) {
+	// 				cellClasses += ' highlighted';
+	// 			}
+
+	// 			if (isShadowed && !isHighlighted && !isOverridden) {
+	// 				cellClasses += ' blurred';
+	// 			}
+
+	// 			return '<span title="' + valueToDisplay + '" class="' + cellClasses + '">' + valueToDisplay + '</span>';
+	// 		}
+
+	// 	};
 }
