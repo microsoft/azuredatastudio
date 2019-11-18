@@ -800,13 +800,11 @@ MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
 
 // Go to menu
 
-// {{SQL CARBON EDIT}} - Disable unused menu item
-// MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
-// 	group: '3_global_nav',
-// 	command: {
-// 		id: 'workbench.action.showAllSymbols',
-// 		title: nls.localize({ key: 'miGotoSymbolInWorkspace', comment: ['&& denotes a mnemonic'] }, "Go to Symbol in &&Workspace...")
-// 	},
-// 	order: 2
-// });
-// {{SQL CARBON EDIT}} - End
+MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
+	group: '3_global_nav',
+	command: {
+		id: 'workbench.action.showAllSymbols',
+		title: nls.localize({ key: 'miGotoSymbolInWorkspace', comment: ['&& denotes a mnemonic'] }, "Go to Symbol in &&Workspace...")
+	},
+	order: 2
+});
