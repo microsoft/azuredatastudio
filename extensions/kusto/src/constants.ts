@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-export const serviceName = 'SQL Tools Service';
+export const serviceName = 'Kusto service';
 export const providerId = 'KUSTO';
 export const serviceCrashLink = 'https://github.com/Microsoft/vscode-kusto/wiki/SqlToolsService-Known-Issues';
 export const extensionConfigSectionName = 'kusto';
