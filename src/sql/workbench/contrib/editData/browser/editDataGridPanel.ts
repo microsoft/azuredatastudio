@@ -836,4 +836,84 @@ export class EditDataGridPanel extends GridParentComponent {
 	// 		}
 
 	// 	};
+
+	getOverridableTextEditorClass(grid: Table<any>): any {
+		class OverridableTextEditor {
+			private _textEditor: any;
+			public keyCaptureList: number[];
+
+			constructor(private _args: any) {
+				this._textEditor = new Slick.Editors.Text(_args);
+				const END = 35;
+				const HOME = 36;
+
+				// These are the special keys the text editor should capture instead of letting
+				// the grid handle them
+				this.keyCaptureList = [END, HOME];
+			}
+
+			destroy(): void {
+				this._textEditor.destroy();
+			}
+
+			focus(): void {
+				this._textEditor.focus();
+			}
+
+			getValue(): string {
+				return this._textEditor.getValue();
+			}
+
+			setValue(val): void {
+				this._textEditor.setValue(val);
+			}
+
+			loadValue(item, rowNumber): void {
+				if (grid.overrideCellFn) {
+					let overrideValue = grid.overrideCellFn(rowNumber, this._args.column.id, item[this._args.column.id]);
+					if (overrideValue !== undefined) {
+						item[this._args.column.id] = overrideValue;
+					}
+				}
+				this._textEditor.loadValue(item);
+			}
+
+			serializeValue(): string {
+				return this._textEditor.serializeValue();
+			}
+
+			applyValue(item, state): void {
+				let activeRow = grid.activeCell.row;
+				let currentRow = grid.dataRows.at(activeRow);
+				let colIndex = grid.getColumnIndex(this._args.column.name);
+				let dataLength: number = grid.dataRows.getLength();
+
+				// If this is not the "new row" at the very bottom
+				if (activeRow !== dataLength) {
+					currentRow[colIndex] = state;
+					this._textEditor.applyValue(item, state);
+				}
+			}
+
+			isValueChanged(): boolean {
+				return this._textEditor.isValueChanged();
+			}
+
+			validate(): any {
+				let activeRow = grid.activeCell.row;
+				let result: any = { valid: true, msg: undefined };
+				let colIndex: number = grid.getColumnIndex(this._args.column.name);
+				let newValue: any = this._textEditor.getValue();
+
+				// TODO: It would be nice if we could support the isCellEditValid as a promise
+				if (grid.isCellEditValid && !grid.isCellEditValid(activeRow, colIndex, newValue)) {
+					result.valid = false;
+				}
+
+				return result;
+			}
+		}
+
+		return OverridableTextEditor;
+	}
 }
