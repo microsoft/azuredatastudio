@@ -59,7 +59,7 @@ export class NotebookMarkdownRenderer {
 		let signalInnerHTML: () => void;
 		const withInnerHTML = new Promise(c => signalInnerHTML = c);
 
-		let notebookFolder = this._notebookURI ? path.dirname(this._notebookURI.fsPath) + path.sep : '';
+		let notebookFolder = this._notebookURI ? path.join(path.dirname(this._notebookURI.fsPath), path.sep)  : '';
 		if (!this._baseUrls.some(x => x === notebookFolder)) {
 			this._baseUrls.push(notebookFolder);
 		}
