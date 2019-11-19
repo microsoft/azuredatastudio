@@ -235,6 +235,11 @@ export class ResourceTypePickerDialog extends DialogBase {
 					this._toDispose.push(tool.onDidUpdateData((t: ITool) => {
 						this.updateToolsDisplayTableData(t);
 					}));
+					console.log(`TCL: tool`, tool);
+					console.log(`TCL: toolReq`, toolReq);
+					if (tool.isInstalled && toolReq.version) {
+						console.log(`TCL: tool.isSameOrNewerThan(toolReq.version)`, tool.isSameOrNewerThan(toolReq.version));
+					}
 					if (tool.isNotInstalled && !tool.autoInstallSupported) {
 						messages.push(localize('deploymentDialog.ToolInformation', "'{0}' [ {1} ]", tool.displayName, tool.homePage));
 						if (tool.statusDescription !== undefined) {

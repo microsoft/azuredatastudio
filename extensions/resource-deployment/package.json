@@ -248,7 +248,8 @@
 						},
 						"requiredTools": [
 							{
-								"name": "kubectl"
+                "name": "kubectl",
+                "version": "1.13.0"
 							},
 							{
 								"name": "azure-cli"
