@@ -132,6 +132,20 @@ const ConnectionProviderContrib: IJSONSchema = {
 					defaultValue: {
 						type: 'any'
 					},
+					defaultValueOsOverrides: {
+						type: 'array',
+						items: {
+							type: 'object',
+							properties: {
+								osEnumValue: {
+									type: 'integer'
+								},
+								defaultValueOverride: {
+									type: 'any'
+								}
+							}
+						}
+					},
 					objectType: {
 						type: 'any'
 					},

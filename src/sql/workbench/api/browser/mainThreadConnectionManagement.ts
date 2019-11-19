@@ -60,6 +60,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 				saveProfile: inputProfile.saveProfile,
 				id: inputProfile.id,
 				azureTenantId: inputProfile.azureTenantId,
+				azureAccount: inputProfile.azureAccount,
 				options: inputProfile.options
 			};
 			return outputProfile;
@@ -102,6 +103,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			groupId: profile.groupId,
 			saveProfile: profile.savePassword,
 			azureTenantId: profile.azureTenantId,
+			azureAccount: profile.azureAccount,
 			options: profile.options
 		};
 		return Promise.resolve(connection);

@@ -698,6 +698,14 @@ export class ConnectionProfile {
 		this.options['azureTenantId'] = value;
 	}
 
+	get azureAccount(): string {
+		return this.options['azureAccount'];
+	}
+
+	set azureAccount(value: string) {
+		this.options['azureAccount'] = value;
+	}
+
 	options: { [key: string]: any } = {};
 
 	static createFrom(options: { [key: string]: any }): ConnectionProfile {
