@@ -93,7 +93,7 @@ export class Checkbox extends Widget {
 	}
 
 	public set ariaLabel(val: string | null) {
-		this._el.setAttribute('aria-label', val);
+		this._el.setAttribute('aria-label', val || '');
 	}
 
 	public get ariaLabel(): string | null {
