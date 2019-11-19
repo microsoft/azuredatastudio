@@ -27,6 +27,7 @@ import { URI } from 'vs/base/common/uri';
 import { getUriPrefix, uriPrefixes } from 'sql/platform/connection/common/utils';
 import { firstIndex } from 'vs/base/common/arrays';
 import { startsWith } from 'vs/base/common/strings';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;
@@ -276,15 +277,15 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			if (this._future && !this._queryRunner.hasCompleted) {
 				this._queryRunner.cancelQuery().then(ok => undefined, error => this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error));
 				// TODO when we can just show error as an output, should show an "execution canceled" error in output
-				this._future.handleDone();
+				this._future.handleDone().catch(err => onUnexpectedError(err));
 			}
-			this._queryRunner.runQuery(code);
+			this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 		} else if (this._currentConnection && this._currentConnectionProfile) {
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._connectionPath);
 			this._connectionManagementService.connect(this._currentConnectionProfile, this._connectionPath).then((result) => {
 				this.addQueryEventListeners(this._queryRunner);
-				this._queryRunner.runQuery(code);
-			});
+				this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
+			}).catch(err => onUnexpectedError(err));
 		} else {
 			canRun = false;
 		}
@@ -296,7 +297,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		this._future = new SQLFuture(this._queryRunner, count, this._configurationService, this.logService);
 		if (!canRun) {
 			// Complete early
-			this._future.handleDone(new Error(localize('connectionRequired', "A connection must be chosen to run notebook cells")));
+			this._future.handleDone(new Error(localize('connectionRequired', "A connection must be chosen to run notebook cells"))).catch(err => onUnexpectedError(err));
 		}
 
 		// TODO should we  cleanup old future? I don't think we need to
@@ -354,7 +355,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 	private async queryComplete(): Promise<void> {
 		if (this._future) {
-			this._future.handleDone();
+			await this._future.handleDone();
 		}
 		// TODO issue #2746 should ideally show a warning inside the dialog if have no data
 	}
@@ -405,7 +406,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	}
 	set inProgress(val: boolean) {
 		if (this._queryRunner && !val) {
-			this._queryRunner.cancelQuery();
+			this._queryRunner.cancelQuery().catch(err => onUnexpectedError(err));
 		}
 	}
 	get msg(): nb.IMessage {
@@ -416,12 +417,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		return this.doneDeferred.promise;
 	}
 
-	public handleDone(err?: Error): void {
-		this.handleDoneAsync(err);
-		// TODO we should reject where some failure happened?
-	}
-
-	private async handleDoneAsync(err?: Error): Promise<void> {
+	public async handleDone(err?: Error): Promise<void> {
 		// must wait on all outstanding output updates to complete
 		if (this._outputAddedPromises && this._outputAddedPromises.length > 0) {
 			// Do not care about error handling as this is handled elsewhere

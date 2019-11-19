@@ -1,0 +1,142 @@
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.15.3'
+
+  - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
+    inputs:
+      versionSpec: '1.x'
+
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+    inputs:
+      keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+      targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
+      vstsFeed: 'BuildCache'
+
+  - script: |
+      set -e
+      CHILD_CONCURRENCY=1 yarn --frozen-lockfile
+    displayName: Install dependencies
+    condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
+    inputs:
+      keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+      targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
+      vstsFeed: 'BuildCache'
+    condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+
+  - script: |
+      set -e
+      yarn postinstall
+    displayName: Run postinstall scripts
+    condition: and(succeeded(), eq(variables['CacheRestored'], 'true'))
+
+  - script: |
+      set -e
+      yarn gulp mixin
+    displayName: Mix in quality
+
+  - script: |
+      set -e
+      yarn gulp vscode-darwin-min
+    displayName: Build
+
+  - script: |
+      set -e
+      yarn gulp install-sqltoolsservice
+    displayName: Install sqltoolsservice
+
+  - task: ArchiveFiles@2 # WHY ARE WE DOING THIS?
+    displayName: 'Archive build scripts source'
+    inputs:
+      rootFolderOrFile: '$(Build.SourcesDirectory)/build'
+      archiveType: tar
+      archiveFile: '$(Build.BinariesDirectory)/source.tar.gz'
+
+  - task: PublishBuildArtifacts@1 # WHY ARE WE DOING THIS?
+    displayName: 'Publish Artifact: build scripts source'
+    inputs:
+      PathtoPublish: '$(Build.BinariesDirectory)/source.tar.gz'
+      ArtifactName: source
+
+  - script: |
+      set -e
+      cd $(Build.SourcesDirectory)/../azuredatastudio-darwin
+      zip -r -y $(Build.ArtifactStagingDirectory)/azuredatastudio-darwin.zip "Azure Data Studio.app"
+    displayName: 'Stable - Run zip'
+    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'stable'))
+
+  - script: |
+      set -e
+      cd $(Build.SourcesDirectory)/../azuredatastudio-darwin
+      zip -r -y $(Build.ArtifactStagingDirectory)/azuredatastudio-darwin.zip "Azure Data Studio - Insiders.app"
+    displayName: 'Insiders - Run zip'
+    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'insider'))
+
+  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+    displayName: 'ESRP CodeSigning'
+    inputs:
+      ConnectedServiceName: 'Code Signing'
+      FolderPath: '$(Build.ArtifactStagingDirectory)'
+      Pattern: 'azuredatastudio-darwin.zip'
+      signConfigType: inlineSignParams
+      inlineOperation: |
+        [
+          {
+            "keyCode": "CP-401337-Apple",
+            "operationSetCode": "MacAppDeveloperSign",
+            "parameters": [],
+            "toolName": "sign",
+            "toolVersion": "1.0"
+          }
+        ]
+      SessionTimeout: 20
+
+  - script: | # WHY ARE WE DOING THIS?
+      set -e
+      zip -d $(Build.ArtifactStagingDirectory)/azuredatastudio-darwin.zip "Azure Data Studio.pkg"
+    displayName: 'Stable - Remove .pkg from signed zip'
+    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'stable'))
+
+  - script: | # WHY ARE WE DOING THIS?
+      set -e
+      zip -d $(Build.ArtifactStagingDirectory)/azuredatastudio-darwin.zip "Azure Data Studio - Insiders.pkg"
+    displayName: 'Insiders - Remove .pkg from signed zip'
+    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'insider'))
+
+  - script: |
+      set -e
+      ./scripts/test.sh --build --coverage --reporter mocha-junit-reporter
+    displayName: Run unit tests
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+    timeoutInMinutes: 20
+    continueOnError: true
+
+  - script: | # WHY ARE WE DOING THIS?
+      set -e
+      BUILD="$(Build.SourcesDirectory)/../azuredatastudio-darwin"
+      PACKAGEJSON=`ls $BUILD/*.app/Contents/Resources/app/package.json`
+      VERSION=`node -p "require(\"$PACKAGEJSON\").version"`
+      COMMIT_ID=`git rev-parse HEAD`
+
+      echo -e "{  \"version\": \"$VERSION\", \"quality\": \"$VSCODE_QUALITY\", \"commit\": \"$COMMIT_ID\" }" > "$(Build.ArtifactStagingDirectory)/version.json"
+    displayName: 'Create version.json'
+
+  - script: | # WHY ARE WE DOING THIS?
+      set -e
+      for f in *
+      do
+      shasum -a 256 "$f" >> sha256hashes.txt
+      done
+    workingDirectory: '$(Build.ArtifactStagingDirectory)'
+    displayName: 'Get SHA256 Hashes'
+    continueOnError: true
+
+  - script: 'echo "##vso[build.addbuildtag]Scheduled" '
+    displayName: 'Add scheduled tag if needed'
+    condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['Build.Reason'], 'Schedule'))
+
+  - script: 'echo "##vso[build.addbuildtag]AutoRelease" '
+    displayName: 'Add AutoRelease tag if needed'
+    condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['AUTO_RELEASE'], 'true'))
