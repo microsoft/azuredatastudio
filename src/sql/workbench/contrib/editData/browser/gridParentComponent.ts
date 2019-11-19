@@ -519,7 +519,7 @@ export abstract class GridParentComponent extends Disposable {
 		const self = this;
 		setTimeout(() => {
 			for (let grid of self.renderedDataSets) {
-				grid.resized.emit();
+				grid.resized.fire();
 			}
 		});
 	}
