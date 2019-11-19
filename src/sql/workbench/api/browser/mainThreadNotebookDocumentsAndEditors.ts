@@ -20,12 +20,12 @@ import {
 	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData, INotebookModelChangedData
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
+import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookService, INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ISingleNotebookEditOperation, NotebookChangeKind } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
-import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
-import { NotebookChangeType, CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
+import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { NotebookChangeType, CellTypes } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
@@ -33,6 +33,7 @@ import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
 import { notebookModeId } from 'sql/workbench/browser/customInputConverter';
 import { localize } from 'vs/nls';
 import { IFileService } from 'vs/platform/files/common/files';
+import { find } from 'vs/base/common/arrays';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -372,7 +373,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let cell: ICellModel;
 		if (cellUri) {
 			let uriString = URI.revive(cellUri).toString();
-			cell = editor.cells.find(c => c.cellUri.toString() === uriString);
+			cell = find(editor.cells, c => c.cellUri.toString() === uriString);
 			// If it's markdown what should we do? Show notification??
 		} else {
 			// Use the active cell in this case, or 1st cell if there's none active
@@ -394,11 +395,11 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let endCell: ICellModel;
 		if (startCellUri) {
 			let uriString = URI.revive(startCellUri).toString();
-			startCell = editor.cells.find(c => c.cellUri.toString() === uriString);
+			startCell = find(editor.cells, c => c.cellUri.toString() === uriString);
 		}
 		if (endCellUri) {
 			let uriString = URI.revive(endCellUri).toString();
-			endCell = editor.cells.find(c => c.cellUri.toString() === uriString);
+			endCell = find(editor.cells, c => c.cellUri.toString() === uriString);
 		}
 		return editor.runAllCells(startCell, endCell);
 	}
@@ -412,7 +413,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let cell: ICellModel;
 		if (cellUri) {
 			let uriString = URI.revive(cellUri).toString();
-			cell = editor.cells.find(c => c.cellUri.toString() === uriString);
+			cell = find(editor.cells, c => c.cellUri.toString() === uriString);
 			// If it's markdown what should we do? Show notification??
 		} else {
 			// Use the active cell in this case, or 1st cell if there's none active

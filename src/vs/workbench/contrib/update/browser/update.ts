@@ -19,7 +19,7 @@ import * as semver from 'semver-umd';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
-import { ReleaseNotesManager } from './releaseNotesEditor';
+// import { ReleaseNotesManager } from './releaseNotesEditor';
 import { isWindows } from 'vs/base/common/platform';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { RawContextKey, IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -36,24 +36,15 @@ import { IElectronEnvironmentService } from 'vs/workbench/services/electron/elec
 
 const CONTEXT_UPDATE_STATE = new RawContextKey<string>('updateState', StateType.Uninitialized);
 
-let releaseNotesManager: ReleaseNotesManager | undefined = undefined;
+/*let releaseNotesManager: ReleaseNotesManager | undefined = undefined; {{SQL CARBON EDIT}} comment out for no unused
 
 function showReleaseNotes(instantiationService: IInstantiationService, version: string) {
-	/* // {{SQL CARBON EDIT}} just open release notes in browser until we can get ADS release notes from the web
 	if (!releaseNotesManager) {
 		releaseNotesManager = instantiationService.createInstance(ReleaseNotesManager);
 	}
 
 	return instantiationService.invokeFunction(accessor => releaseNotesManager!.show(accessor, version));
-	*/
-
-	// {{SQL CARBON EDIT}} Open release notes in browser until we can get ADS notes from web
-	return instantiationService.invokeFunction(async accessor => {
-		const action = accessor.get(IInstantiationService).createInstance(OpenLatestReleaseNotesInBrowserAction);
-		await action.run();
-	});
-
-}
+}*/
 
 export class OpenLatestReleaseNotesInBrowserAction extends Action {
 
@@ -78,7 +69,7 @@ export abstract class AbstractShowReleaseNotesAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private version: string,
+		/*private */version: string, // {{SQL CARBON EDIT}} no unused
 		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super(id, label, undefined, true);

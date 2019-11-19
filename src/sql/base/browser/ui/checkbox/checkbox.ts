@@ -30,15 +30,15 @@ export class Checkbox extends Widget {
 	private _onChange = new Emitter<boolean>();
 	public readonly onChange: Event<boolean> = this._onChange.event;
 
-	constructor(container: HTMLElement, opts: ICheckboxOptions) {
+	constructor(container: HTMLElement, private _opts: ICheckboxOptions) {
 		super();
 
 		this._el = document.createElement('input');
 		this._el.type = 'checkbox';
 		this._el.style.verticalAlign = 'middle';
 
-		if (opts.ariaLabel) {
-			this._el.setAttribute('aria-label', opts.ariaLabel);
+		if (_opts.ariaLabel) {
+			this._el.setAttribute('aria-label', _opts.ariaLabel);
 		}
 
 		this.onchange(this._el, e => {
@@ -55,12 +55,12 @@ export class Checkbox extends Widget {
 		this._label = document.createElement('span');
 		this._label.style.verticalAlign = 'middle';
 
-		this.label = opts.label;
-		this.enabled = opts.enabled || true;
-		this.checked = opts.checked || false;
+		this.label = _opts.label;
+		this.enabled = _opts.enabled || true;
+		this.checked = _opts.checked || false;
 
-		if (opts.onChange) {
-			this.onChange(opts.onChange);
+		if (_opts.onChange) {
+			this.onChange(_opts.onChange);
 		}
 
 		container.appendChild(this._el);
@@ -69,6 +69,10 @@ export class Checkbox extends Widget {
 
 	public set label(val: string) {
 		this._label.innerText = val;
+		// Default the aria label to the label if one wasn't specifically set by the user
+		if (!this._opts.ariaLabel) {
+			this._el.setAttribute('aria-label', val);
+		}
 	}
 
 	public set enabled(val: boolean) {

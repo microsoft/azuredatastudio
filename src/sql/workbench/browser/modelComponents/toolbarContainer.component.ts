@@ -6,7 +6,7 @@ import 'vs/css!./media/toolbarLayout';
 
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
-	ViewChild, ElementRef, OnDestroy, AfterViewInit
+	ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
 import { Orientation, ToolbarLayout } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -14,7 +14,6 @@ import { Orientation, ToolbarLayout } from 'sql/workbench/api/common/sqlExtHostT
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
 
 export interface ToolbarItemConfig {
 	title?: string;
@@ -49,12 +48,9 @@ export default class ToolbarContainer extends ContainerBase<ToolbarItemConfig> i
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
-	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
-
 	private _orientation: Orientation;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
 		super(changeRef, el);

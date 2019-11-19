@@ -36,7 +36,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _button: Button;
-	private fileType: string = '.sql';
+	public fileType: string = '.sql';
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	@ViewChild('fileInput', { read: ElementRef }) private _fileInputContainer: ElementRef;
@@ -125,6 +125,10 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		this._changeRef.detectChanges();
 	}
 
+	public focus(): void {
+		this._button.focus();
+	}
+
 	protected updateIcon() {
 		if (this.iconPath) {
 			if (!this._iconClass) {
@@ -153,11 +157,11 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		this.setPropertyFromUI<azdata.ButtonProperties, string>(this.setValueProperties, newValue);
 	}
 
-	private get isFile(): boolean {
+	public get isFile(): boolean {
 		return this.getPropertyOrDefault<azdata.ButtonProperties, boolean>((props) => props.isFile, false);
 	}
 
-	private set isFile(newValue: boolean) {
+	public set isFile(newValue: boolean) {
 		this.setPropertyFromUI<azdata.ButtonProperties, boolean>(this.setFileProperties, newValue);
 	}
 
@@ -187,9 +191,5 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 
 	private set title(newValue: string) {
 		this.setPropertyFromUI<azdata.ButtonProperties, string>((properties, title) => { properties.title = title; }, newValue);
-	}
-
-	private setFileType(value: string) {
-		this.properties.fileType = value;
 	}
 }

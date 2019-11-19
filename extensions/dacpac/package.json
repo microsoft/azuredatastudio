@@ -11,7 +11,7 @@
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
   "icon": "images/sqlserver.png",
-  "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
+  "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
   "activationEvents": [
     "*"
   ],
@@ -57,6 +57,7 @@
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",
+    "@types/node": "10",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",

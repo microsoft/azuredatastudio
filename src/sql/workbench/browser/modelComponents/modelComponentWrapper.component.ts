@@ -8,7 +8,7 @@ import {
 	ElementRef, OnInit, ChangeDetectorRef, ReflectiveInjector, Injector, ComponentRef
 } from '@angular/core';
 
-import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/browser/core/componentHost.directive';
+import { ComponentHostDirective } from 'sql/workbench/contrib/dashboard/browser/core/componentHost.directive';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IComponent, IComponentConfig, IComponentDescriptor, IModelStore, COMPONENT_CONFIG } from './interfaces';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/browser/modelComponentRegistry';
@@ -19,10 +19,10 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { memoize } from 'vs/base/common/decorators';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Event } from 'vs/base/common/event';
-import { LayoutRequestParams } from 'sql/platform/dialog/browser/dialogContainer.component';
+import { LayoutRequestParams } from 'sql/workbench/services/dialog/browser/dialogContainer.component';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 
 const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentContribution);
 

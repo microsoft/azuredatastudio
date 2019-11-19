@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
+
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import { JobData } from '../data/jobData';
@@ -59,7 +59,6 @@ export class JobDialog extends AgentDialog<JobData>  {
 	// Schedules tab strings
 	private readonly SchedulesTopLabelString: string = localize('jobDialog.schedulesaLabel', "Schedules list");
 	private readonly PickScheduleButtonString: string = localize('jobDialog.pickSchedule', "Pick Schedule");
-	private readonly ScheduleNameLabelString: string = localize('jobDialog.scheduleNameLabel', "Schedule Name");
 
 	// Alerts tab strings
 	private readonly AlertsTopLabelString: string = localize('jobDialog.alertsList', "Alerts list");
@@ -98,7 +97,6 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private removeScheduleButton: azdata.ButtonComponent;
 
 	// Notifications tab controls
-	private notificationsTabTopLabel: azdata.TextComponent;
 	private emailCheckBox: azdata.CheckBoxComponent;
 	private emailOperatorDropdown: azdata.DropDownComponent;
 	private emailConditionDropdown: azdata.DropDownComponent;
@@ -549,7 +547,6 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private initializeNotificationsTab() {
 		this.notificationsTab.registerContent(async view => {
 
-			this.notificationsTabTopLabel = view.modelBuilder.text().withProperties({ value: this.NotificationsTabTopLabelString }).component();
 			this.emailCheckBox = view.modelBuilder.checkBox().withProperties({
 				label: this.EmailCheckBoxString,
 				width: 80
@@ -652,10 +649,10 @@ export class JobDialog extends AgentDialog<JobData>  {
 		});
 	}
 
-	private convertStepsToData(jobSteps: azdata.AgentJobStepInfo[]): any[][] {
-		let result = [];
+	private convertStepsToData(jobSteps: azdata.AgentJobStepInfo[]): Array<string | number>[] {
+		let result: Array<string | number>[] = [];
 		jobSteps.forEach(jobStep => {
-			let cols = [];
+			let cols: Array<string | number> = [];
 			cols.push(jobStep.id);
 			cols.push(jobStep.stepName);
 			cols.push(JobStepData.convertToSubSystemDisplayName(jobStep.subSystem));
@@ -666,8 +663,8 @@ export class JobDialog extends AgentDialog<JobData>  {
 		return result;
 	}
 
-	private convertSchedulesToData(jobSchedules: azdata.AgentJobScheduleInfo[]): any[][] {
-		let result = [];
+	private convertSchedulesToData(jobSchedules: azdata.AgentJobScheduleInfo[]): Array<string | number>[] {
+		let result: Array<string | number>[] = [];
 		jobSchedules.forEach(schedule => {
 			let cols = [];
 			cols.push(schedule.id);
@@ -678,8 +675,8 @@ export class JobDialog extends AgentDialog<JobData>  {
 		return result;
 	}
 
-	private convertAlertsToData(alerts: azdata.AgentAlertInfo[]): any[][] {
-		let result = [];
+	private convertAlertsToData(alerts: azdata.AgentAlertInfo[]): Array<string | boolean>[] {
+		let result: Array<string | boolean>[] = [];
 		alerts.forEach(alert => {
 			let cols = [];
 			cols.push(alert.name);
@@ -690,7 +687,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 		return result;
 	}
 
-	protected updateModel() {
+	protected async updateModel(): Promise<void> {
 		this.model.name = this.nameTextBox.value;
 		this.model.owner = this.ownerTextBox.value;
 		this.model.enabled = this.enabledCheckBox.checked;

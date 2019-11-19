@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
+import * as assert from 'assert';
 import { JobsRefreshAction, NewJobAction, EditJobAction, RunJobAction, StopJobAction, DeleteJobAction, NewStepAction, DeleteStepAction, NewAlertAction, EditAlertAction, DeleteAlertAction, NewOperatorAction, EditOperatorAction, DeleteOperatorAction, NewProxyAction, EditProxyAction, DeleteProxyAction } from 'sql/platform/jobManagement/browser/jobActions';
 import { JobManagementService } from 'sql/platform/jobManagement/common/jobManagementService';
 
@@ -80,8 +81,8 @@ suite('Job Management Actions', () => {
 		mockRefreshAction.setup(s => s.run(TypeMoq.It.isAny())).returns(() => mockJobsViewComponent.object.refreshJobs());
 		mockRefreshAction.setup(s => s.id).returns(() => JobsRefreshAction.ID);
 		mockRefreshAction.setup(s => s.label).returns(() => JobsRefreshAction.LABEL);
-		should(mockRefreshAction.object.id).equal(JobsRefreshAction.ID);
-		should(mockRefreshAction.object.label).equal(JobsRefreshAction.LABEL);
+		assert.equal(mockRefreshAction.object.id, JobsRefreshAction.ID);
+		assert.equal(mockRefreshAction.object.label, JobsRefreshAction.LABEL);
 
 		// Job Refresh Action from Jobs View should refresh the component
 		mockRefreshAction.object.run(null);
@@ -94,8 +95,8 @@ suite('Job Management Actions', () => {
 		mockNewJobAction.setup(s => s.run(TypeMoq.It.isAny())).returns(() => mockJobsViewComponent.object.openCreateJobDialog());
 		mockNewJobAction.setup(s => s.id).returns(() => NewJobAction.ID);
 		mockNewJobAction.setup(s => s.label).returns(() => NewJobAction.LABEL);
-		should(mockNewJobAction.object.id).equal(NewJobAction.ID);
-		should(mockNewJobAction.object.label).equal(NewJobAction.LABEL);
+		assert.equal(mockNewJobAction.object.id, NewJobAction.ID);
+		assert.equal(mockNewJobAction.object.label, NewJobAction.LABEL);
 
 		// New Job Action from Jobs View should open a dialog
 		mockNewJobAction.object.run(null);
@@ -112,12 +113,12 @@ suite('Job Management Actions', () => {
 		});
 		mockEditJobAction.setup(s => s.id).returns(() => EditJobAction.ID);
 		mockEditJobAction.setup(s => s.label).returns(() => EditJobAction.LABEL);
-		should(mockEditJobAction.object.id).equal(EditJobAction.ID);
-		should(mockEditJobAction.object.label).equal(EditJobAction.LABEL);
+		assert.equal(mockEditJobAction.object.id, EditJobAction.ID);
+		assert.equal(mockEditJobAction.object.label, EditJobAction.LABEL);
 
 		// Edit Job Action from Jobs View should open a dialog
 		mockEditJobAction.object.run(null);
-		should(commandServiceCalled).equal(true);
+		assert(commandServiceCalled);
 		done();
 	});
 
@@ -130,8 +131,8 @@ suite('Job Management Actions', () => {
 
 		mockRunJobAction.setup(s => s.id).returns(() => RunJobAction.ID);
 		mockRunJobAction.setup(s => s.label).returns(() => RunJobAction.LABEL);
-		should(mockRunJobAction.object.id).equal(RunJobAction.ID);
-		should(mockRunJobAction.object.label).equal(RunJobAction.LABEL);
+		assert.equal(mockRunJobAction.object.id, RunJobAction.ID);
+		assert.equal(mockRunJobAction.object.label, RunJobAction.LABEL);
 
 		// Run Job Action should make the Job Management service call job action
 		mockRunJobAction.object.run(null);
@@ -148,8 +149,8 @@ suite('Job Management Actions', () => {
 
 		mockStopJobAction.setup(s => s.id).returns(() => RunJobAction.ID);
 		mockStopJobAction.setup(s => s.label).returns(() => RunJobAction.LABEL);
-		should(mockStopJobAction.object.id).equal(RunJobAction.ID);
-		should(mockStopJobAction.object.label).equal(RunJobAction.LABEL);
+		assert.equal(mockStopJobAction.object.id, RunJobAction.ID);
+		assert.equal(mockStopJobAction.object.label, RunJobAction.LABEL);
 
 		// Run Job Action should make the Job Management service call job action
 		mockStopJobAction.object.run(null);
@@ -166,8 +167,8 @@ suite('Job Management Actions', () => {
 
 		mockDeleteJobAction.setup(s => s.id).returns(() => DeleteJobAction.ID);
 		mockDeleteJobAction.setup(s => s.label).returns(() => DeleteJobAction.LABEL);
-		should(mockDeleteJobAction.object.id).equal(DeleteJobAction.ID);
-		should(mockDeleteJobAction.object.label).equal(DeleteJobAction.LABEL);
+		assert.equal(mockDeleteJobAction.object.id, DeleteJobAction.ID);
+		assert.equal(mockDeleteJobAction.object.label, DeleteJobAction.LABEL);
 
 		// Run Job Action should make the Job Management service call job action
 		mockDeleteJobAction.object.run(null);
@@ -185,12 +186,12 @@ suite('Job Management Actions', () => {
 		});
 		mockNewStepAction.setup(s => s.id).returns(() => NewJobAction.ID);
 		mockNewStepAction.setup(s => s.label).returns(() => NewJobAction.LABEL);
-		should(mockNewStepAction.object.id).equal(NewJobAction.ID);
-		should(mockNewStepAction.object.label).equal(NewJobAction.LABEL);
+		assert.equal(mockNewStepAction.object.id, NewJobAction.ID);
+		assert.equal(mockNewStepAction.object.label, NewJobAction.LABEL);
 
 		// New Step Action should called command service
 		mockNewStepAction.object.run(null);
-		should(commandServiceCalled).equal(true);
+		assert(commandServiceCalled);
 		done();
 	});
 
@@ -204,12 +205,12 @@ suite('Job Management Actions', () => {
 		});
 		mockDeleteStepAction.setup(s => s.id).returns(() => DeleteStepAction.ID);
 		mockDeleteStepAction.setup(s => s.label).returns(() => DeleteStepAction.LABEL);
-		should(mockDeleteStepAction.object.id).equal(DeleteStepAction.ID);
-		should(mockDeleteStepAction.object.label).equal(DeleteStepAction.LABEL);
+		assert.equal(mockDeleteStepAction.object.id, DeleteStepAction.ID);
+		assert.equal(mockDeleteStepAction.object.label, DeleteStepAction.LABEL);
 
 		// Delete Step Action should called command service
 		mockDeleteStepAction.object.run(null);
-		should(commandServiceCalled).equal(true);
+		assert(commandServiceCalled);
 		mockJobManagementService.verify(s => s.deleteJobStep(null, null), TypeMoq.Times.once());
 		done();
 	});
@@ -220,8 +221,8 @@ suite('Job Management Actions', () => {
 		mockNewAlertAction.setup(s => s.run(TypeMoq.It.isAny())).returns(() => mockAlertsViewComponent.object.openCreateAlertDialog());
 		mockNewAlertAction.setup(s => s.id).returns(() => NewJobAction.ID);
 		mockNewAlertAction.setup(s => s.label).returns(() => NewJobAction.LABEL);
-		should(mockNewAlertAction.object.id).equal(NewJobAction.ID);
-		should(mockNewAlertAction.object.label).equal(NewJobAction.LABEL);
+		assert.equal(mockNewAlertAction.object.id, NewJobAction.ID);
+		assert.equal(mockNewAlertAction.object.label, NewJobAction.LABEL);
 
 		// New Alert Action from Alerts View should open a dialog
 		mockNewAlertAction.object.run(null);
@@ -238,12 +239,12 @@ suite('Job Management Actions', () => {
 		});
 		mockEditAlertAction.setup(s => s.id).returns(() => EditAlertAction.ID);
 		mockEditAlertAction.setup(s => s.label).returns(() => EditAlertAction.LABEL);
-		should(mockEditAlertAction.object.id).equal(EditAlertAction.ID);
-		should(mockEditAlertAction.object.label).equal(EditAlertAction.LABEL);
+		assert.equal(mockEditAlertAction.object.id, EditAlertAction.ID);
+		assert.equal(mockEditAlertAction.object.label, EditAlertAction.LABEL);
 
 		// Edit Alert Action from Jobs View should open a dialog
 		mockEditAlertAction.object.run(null);
-		should(commandServiceCalled).equal(true);
+		assert(commandServiceCalled);
 		done();
 	});
 
@@ -257,12 +258,12 @@ suite('Job Management Actions', () => {
 		});
 		mockDeleteAlertAction.setup(s => s.id).returns(() => DeleteAlertAction.ID);
 		mockDeleteAlertAction.setup(s => s.label).returns(() => DeleteAlertAction.LABEL);
-		should(mockDeleteAlertAction.object.id).equal(DeleteAlertAction.ID);
-		should(mockDeleteAlertAction.object.label).equal(DeleteAlertAction.LABEL);
+		assert.equal(mockDeleteAlertAction.object.id, DeleteAlertAction.ID);
+		assert.equal(mockDeleteAlertAction.object.label, DeleteAlertAction.LABEL);
 
 		// Delete Alert Action should call job management service
 		mockDeleteAlertAction.object.run(null);
-		should(commandServiceCalled).equal(true);
+		assert(commandServiceCalled);
 		mockJobManagementService.verify(s => s.deleteAlert(null, null), TypeMoq.Times.once());
 		done();
 	});
@@ -273,8 +274,8 @@ suite('Job Management Actions', () => {
 		mockNewOperatorAction.setup(s => s.run(TypeMoq.It.isAny())).returns(() => mockOperatorsViewComponent.object.openCreateOperatorDialog());
 		mockNewOperatorAction.setup(s => s.id).returns(() => NewOperatorAction.ID);
 		mockNewOperatorAction.setup(s => s.label).returns(() => NewOperatorAction.LABEL);
-		should(mockNewOperatorAction.object.id).equal(NewOperatorAction.ID);
-		should(mockNewOperatorAction.object.label).equal(NewOperatorAction.LABEL);
+		assert.equal(mockNewOperatorAction.object.id, NewOperatorAction.ID);
+		assert.equal(mockNewOperatorAction.object.label, NewOperatorAction.LABEL);
 
 		// New Operator Action from Operators View should open a dialog
 		mockNewOperatorAction.object.run(null);
@@ -291,12 +292,12 @@ suite('Job Management Actions', () => {
 		});
 		mockEditOperatorAction.setup(s => s.id).returns(() => EditOperatorAction.ID);
 		mockEditOperatorAction.setup(s => s.label).returns(() => EditOperatorAction.LABEL);
-		should(mockEditOperatorAction.object.id).equal(EditOperatorAction.ID);
-		should(mockEditOperatorAction.object.label).equal(EditOperatorAction.LABEL);
+		assert.equal(mockEditOperatorAction.object.id, EditOperatorAction.ID);
+		assert.equal(mockEditOperatorAction.object.label, EditOperatorAction.LABEL);
 
 		// Edit Operator Action from Jobs View should open a dialog
 		mockEditOperatorAction.object.run(null);
-		should(commandServiceCalled).equal(true);
+		assert(commandServiceCalled);
 		done();
 	});
 
@@ -310,12 +311,12 @@ suite('Job Management Actions', () => {
 		});
 		mockDeleteOperatorAction.setup(s => s.id).returns(() => DeleteOperatorAction.ID);
 		mockDeleteOperatorAction.setup(s => s.label).returns(() => DeleteOperatorAction.LABEL);
-		should(mockDeleteOperatorAction.object.id).equal(DeleteOperatorAction.ID);
-		should(mockDeleteOperatorAction.object.label).equal(DeleteOperatorAction.LABEL);
+		assert.equal(mockDeleteOperatorAction.object.id, DeleteOperatorAction.ID);
+		assert.equal(mockDeleteOperatorAction.object.label, DeleteOperatorAction.LABEL);
 
 		// Delete Operator Action should call job management service
 		mockDeleteOperatorAction.object.run(null);
-		should(commandServiceCalled).equal(true);
+		assert(commandServiceCalled);
 		mockJobManagementService.verify(s => s.deleteOperator(null, null), TypeMoq.Times.once());
 		done();
 	});
@@ -326,8 +327,8 @@ suite('Job Management Actions', () => {
 		mockNewProxyAction.setup(s => s.run(TypeMoq.It.isAny())).returns(() => mockProxiesViewComponent.object.openCreateProxyDialog());
 		mockNewProxyAction.setup(s => s.id).returns(() => NewProxyAction.ID);
 		mockNewProxyAction.setup(s => s.label).returns(() => NewProxyAction.LABEL);
-		should(mockNewProxyAction.object.id).equal(NewProxyAction.ID);
-		should(mockNewProxyAction.object.label).equal(NewProxyAction.LABEL);
+		assert.equal(mockNewProxyAction.object.id, NewProxyAction.ID);
+		assert.equal(mockNewProxyAction.object.label, NewProxyAction.LABEL);
 
 		// New Proxy Action from Alerts View should open a dialog
 		mockNewProxyAction.object.run(null);
@@ -344,12 +345,12 @@ suite('Job Management Actions', () => {
 		});
 		mockEditProxyAction.setup(s => s.id).returns(() => EditProxyAction.ID);
 		mockEditProxyAction.setup(s => s.label).returns(() => EditProxyAction.LABEL);
-		should(mockEditProxyAction.object.id).equal(EditProxyAction.ID);
-		should(mockEditProxyAction.object.label).equal(EditProxyAction.LABEL);
+		assert.equal(mockEditProxyAction.object.id, EditProxyAction.ID);
+		assert.equal(mockEditProxyAction.object.label, EditProxyAction.LABEL);
 
 		// Edit Proxy Action from Proxies View should open a dialog
 		mockEditProxyAction.object.run(null);
-		should(commandServiceCalled).equal(true);
+		assert(commandServiceCalled);
 		done();
 	});
 
@@ -363,12 +364,12 @@ suite('Job Management Actions', () => {
 		});
 		mockDeleteProxyAction.setup(s => s.id).returns(() => DeleteProxyAction.ID);
 		mockDeleteProxyAction.setup(s => s.label).returns(() => DeleteProxyAction.LABEL);
-		should(mockDeleteProxyAction.object.id).equal(DeleteProxyAction.ID);
-		should(mockDeleteProxyAction.object.label).equal(DeleteProxyAction.LABEL);
+		assert.equal(mockDeleteProxyAction.object.id, DeleteProxyAction.ID);
+		assert.equal(mockDeleteProxyAction.object.label, DeleteProxyAction.LABEL);
 
 		// Delete Proxy Action should call job management service
 		mockDeleteProxyAction.object.run(null);
-		should(commandServiceCalled).equal(true);
+		assert(commandServiceCalled);
 		mockJobManagementService.verify(s => s.deleteProxy(null, null), TypeMoq.Times.once());
 		done();
 	});

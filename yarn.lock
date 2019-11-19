@@ -203,13 +203,6 @@
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-5.5.0.tgz#146c2a29ee7d3bae4bf2fcb274636e264c813c45"
   integrity sha512-41qEJgBH/TWgo5NFSvBCJ1qkoi3Q6ONSF2avrHq1LVEZfYpdHmj0y9SuTK+u9ZhG1sYQKBL1AWXKyLWP4RaUoQ==
 
-"@types/should@^13.0.0":
-  version "13.0.0"
-  resolved "https://registry.yarnpkg.com/@types/should/-/should-13.0.0.tgz#96c00117f1896177848fdecfa336313c230c879e"
-  integrity sha512-Mi6YZ2ABnnGGFMuiBDP0a8s1ZDCDNHqP97UH8TyDmCWuGGavpsFMfJnAMYaaqmDlSCOCNbVLHBrSDEOpx/oLhw==
-  dependencies:
-    should "*"
-
 "@types/sinon@^1.16.36":
   version "1.16.36"
   resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-1.16.36.tgz#74bb6ed7928597c1b3fb1b009005e94dc6eae357"
@@ -7868,50 +7861,6 @@ shebang-regex@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-1.0.0.tgz#da42f49740c0b42db2ca9728571cb190c98efea3"
   integrity sha1-2kL0l0DAtC2yypcoVxyxkMmO/qM=
-
-should-equal@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/should-equal/-/should-equal-2.0.0.tgz#6072cf83047360867e68e98b09d71143d04ee0c3"
-  integrity sha512-ZP36TMrK9euEuWQYBig9W55WPC7uo37qzAEmbjHz4gfyuXrEUgF8cUvQVO+w+d3OMfPvSRQJ22lSm8MQJ43LTA==
-  dependencies:
-    should-type "^1.4.0"
-
-should-format@^3.0.3:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/should-format/-/should-format-3.0.3.tgz#9bfc8f74fa39205c53d38c34d717303e277124f1"
-  integrity sha1-m/yPdPo5IFxT04w01xcwPidxJPE=
-  dependencies:
-    should-type "^1.3.0"
-    should-type-adaptors "^1.0.1"
-
-should-type-adaptors@^1.0.1:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/should-type-adaptors/-/should-type-adaptors-1.1.0.tgz#401e7f33b5533033944d5cd8bf2b65027792e27a"
-  integrity sha512-JA4hdoLnN+kebEp2Vs8eBe9g7uy0zbRo+RMcU0EsNy+R+k049Ki+N5tT5Jagst2g7EAja+euFuoXFCa8vIklfA==
-  dependencies:
-    should-type "^1.3.0"
-    should-util "^1.0.0"
-
-should-type@^1.3.0, should-type@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/should-type/-/should-type-1.4.0.tgz#0756d8ce846dfd09843a6947719dfa0d4cff5cf3"
-  integrity sha1-B1bYzoRt/QmEOmlHcZ36DUz/XPM=
-
-should-util@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/should-util/-/should-util-1.0.0.tgz#c98cda374aa6b190df8ba87c9889c2b4db620063"
-  integrity sha1-yYzaN0qmsZDfi6h8mInCtNtiAGM=
-
-should@*, should@^13.2.3:
-  version "13.2.3"
-  resolved "https://registry.yarnpkg.com/should/-/should-13.2.3.tgz#96d8e5acf3e97b49d89b51feaa5ae8d07ef58f10"
-  integrity sha512-ggLesLtu2xp+ZxI+ysJTmNjh2U0TsC+rQ/pfED9bUZZ4DKefP27D+7YJVVTvKsmjLpIi9jAa7itwDGkDDmt1GQ==
-  dependencies:
-    should-equal "^2.0.0"
-    should-format "^3.0.3"
-    should-type "^1.4.0"
-    should-type-adaptors "^1.0.1"
-    should-util "^1.0.0"
 
 sigmund@^1.0.1, sigmund@~1.0.0:
   version "1.0.1"

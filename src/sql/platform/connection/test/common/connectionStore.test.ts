@@ -12,12 +12,13 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { TestCredentialsService } from 'sql/platform/credentials/test/common/testCredentialsService';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
-import { deepClone, deepFreeze } from 'vs/base/common/objects';
+import { deepClone, deepFreeze, assign } from 'vs/base/common/objects';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
-import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
+import { InMemoryStorageService } from 'vs/platform/storage/common/storage';
+import { find } from 'vs/base/common/arrays';
 
 suite('ConnectionStore', () => {
 	let defaultNamedProfile: IConnectionProfile = deepFreeze({
@@ -142,7 +143,7 @@ suite('ConnectionStore', () => {
 		// Given 5 is the max # creds
 		const numCreds = 6;
 
-		const storageService = new TestStorageService();
+		const storageService = new InMemoryStorageService();
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
 
@@ -153,7 +154,7 @@ suite('ConnectionStore', () => {
 		const connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
 		for (let i = 0; i < numCreds; i++) {
-			const cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
+			const cred = assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
 			const connectionProfile = new ConnectionProfile(capabilitiesService, cred);
 			await connectionStore.addRecentConnection(connectionProfile);
 			const current = connectionStore.getRecentlyUsedConnections();
@@ -169,7 +170,7 @@ suite('ConnectionStore', () => {
 	});
 
 	test('getRecentlyUsedConnections should return connection for given provider', () => {
-		const storageService = new TestStorageService();
+		const storageService = new InMemoryStorageService();
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
 		const connectionStore = new ConnectionStore(storageService, configurationService,
@@ -181,7 +182,7 @@ suite('ConnectionStore', () => {
 
 	test('addActiveConnection should add same connection exactly once', async () => {
 
-		const storageService = new TestStorageService();
+		const storageService = new InMemoryStorageService();
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
 
@@ -189,7 +190,7 @@ suite('ConnectionStore', () => {
 		// Then expect the only 1 instance of that connection to be listed in the MRU
 		const connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
-		const cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + 1 });
+		const cred = assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + 1 });
 		const connectionProfile = new ConnectionProfile(capabilitiesService, cred);
 		await connectionStore.addRecentConnection(defaultNamedConnectionProfile);
 		await connectionStore.addRecentConnection(connectionProfile);
@@ -204,20 +205,20 @@ suite('ConnectionStore', () => {
 
 		// Setup credential store to capture credentials sent to it
 
-		const storageService = new TestStorageService();
+		const storageService = new InMemoryStorageService();
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
 
 		// Given we save 1 connection with password and multiple other connections without
 		const connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
-		const integratedCred = Object.assign({}, defaultNamedProfile, {
+		const integratedCred = assign({}, defaultNamedProfile, {
 			serverName: defaultNamedProfile.serverName + 'Integrated',
 			authenticationType: 'Integrated',
 			userName: '',
 			password: ''
 		});
-		const noPwdCred = Object.assign({}, defaultNamedProfile, {
+		const noPwdCred = assign({}, defaultNamedProfile, {
 			serverName: defaultNamedProfile.serverName + 'NoPwd',
 			password: ''
 		});
@@ -232,7 +233,7 @@ suite('ConnectionStore', () => {
 		// Then verify that since its password based we save the password
 		assert.equal(credentialsService.credentials.size, 1);
 		assert.strictEqual(recentCredential.password, defaultNamedProfile.password);
-		assert.ok(recentCredential.credentialId.includes('Profile'), 'Expect credential to be marked as an Profile cred');
+		assert.ok(recentCredential.credentialId.indexOf('Profile') > -1, 'Expect credential to be marked as an Profile cred');
 		assert.ok(!current[0].password);
 		// When add integrated auth connection
 		const integratedCredConnectionProfile = new ConnectionProfile(capabilitiesService, integratedCred);
@@ -251,7 +252,7 @@ suite('ConnectionStore', () => {
 	});
 
 	test('can clear connections list', async () => {
-		const storageService = new TestStorageService();
+		const storageService = new InMemoryStorageService();
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
 
@@ -268,7 +269,7 @@ suite('ConnectionStore', () => {
 	});
 
 	test('isPasswordRequired should return true for MSSQL SqlLogin', () => {
-		const storageService = new TestStorageService();
+		const storageService = new InMemoryStorageService();
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
 
@@ -279,7 +280,7 @@ suite('ConnectionStore', () => {
 	});
 
 	test('isPasswordRequired should return true for MSSQL SqlLogin for connection profile object', () => {
-		const storageService = new TestStorageService();
+		const storageService = new InMemoryStorageService();
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
 
@@ -291,7 +292,7 @@ suite('ConnectionStore', () => {
 	});
 
 	test('isPasswordRequired should return false if the password is not required in capabilities', () => {
-		const storageService = new TestStorageService();
+		const storageService = new InMemoryStorageService();
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
 
@@ -312,18 +313,18 @@ suite('ConnectionStore', () => {
 
 		const connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
-		const connectionProfile: IConnectionProfile = Object.assign({}, defaultNamedProfile, { providerName: providerName });
+		const connectionProfile: IConnectionProfile = assign({}, defaultNamedProfile, { providerName: providerName });
 
 		assert.ok(!connectionStore.isPasswordRequired(connectionProfile));
 	});
 
 	test('saveProfile should save the password after the profile is saved', async () => {
-		const storageService = new TestStorageService();
+		const storageService = new InMemoryStorageService();
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
 
 		const password: string = 'asdf!@#$';
-		const connectionProfile: IConnectionProfile = Object.assign({}, defaultNamedProfile, { password });
+		const connectionProfile: IConnectionProfile = assign({}, defaultNamedProfile, { password });
 
 		const connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
@@ -335,7 +336,7 @@ suite('ConnectionStore', () => {
 	});
 
 	test('getGroupFromId returns undefined when there is no group with the given ID', () => {
-		const storageService = new TestStorageService();
+		const storageService = new InMemoryStorageService();
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
 
@@ -346,7 +347,7 @@ suite('ConnectionStore', () => {
 	});
 
 	test('getGroupFromId returns the group that has the given ID', () => {
-		const storageService = new TestStorageService();
+		const storageService = new InMemoryStorageService();
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
 
@@ -384,7 +385,7 @@ suite('ConnectionStore', () => {
 	});
 
 	test('getProfileWithoutPassword can return the profile without credentials in the password property or options dictionary', () => {
-		const storageService = new TestStorageService();
+		const storageService = new InMemoryStorageService();
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
 
@@ -393,7 +394,7 @@ suite('ConnectionStore', () => {
 		const profile = deepClone(defaultNamedProfile);
 		profile.options['password'] = profile.password;
 		profile.id = 'testId';
-		let expectedProfile = Object.assign({}, profile);
+		let expectedProfile = assign({}, profile);
 		expectedProfile.password = '';
 		expectedProfile.options['password'] = '';
 		expectedProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, expectedProfile).toIConnectionProfile();
@@ -402,11 +403,11 @@ suite('ConnectionStore', () => {
 	});
 
 	test('addPassword gets the password from the credentials service', async () => {
-		const storageService = new TestStorageService();
+		const storageService = new InMemoryStorageService();
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
 
-		const profile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, Object.assign({}, defaultNamedProfile, { password: undefined }));
+		const profile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, assign({}, defaultNamedProfile, { password: undefined }));
 
 		const credId = `Microsoft.SqlTools|itemtype:Profile|id:${profile.getConnectionInfoId()}`;
 		const password: string = 'asdf!@#$';
@@ -422,7 +423,7 @@ suite('ConnectionStore', () => {
 	});
 
 	test('getConnectionProfileGroups', async () => {
-		const storageService = new TestStorageService();
+		const storageService = new InMemoryStorageService();
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
 
@@ -453,13 +454,13 @@ suite('ConnectionStore', () => {
 		const connectionGroups = connectionStore.getConnectionProfileGroups();
 
 		for (const group of connectionGroups) {
-			const foundGroup = groups.find(g => g.id === group.id);
+			const foundGroup = find(groups, g => g.id === group.id);
 			assert.ok(foundGroup);
 		}
 	});
 
 	test('removing connection correctly removes', async () => {
-		const storageService = new TestStorageService();
+		const storageService = new InMemoryStorageService();
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
 
@@ -467,7 +468,7 @@ suite('ConnectionStore', () => {
 			credentialsService, capabilitiesService);
 
 		for (let i = 0; i < 5; i++) {
-			const cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
+			const cred = assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
 			const connectionProfile = new ConnectionProfile(capabilitiesService, cred);
 			await connectionStore.addRecentConnection(connectionProfile);
 			const current = connectionStore.getRecentlyUsedConnections();
@@ -475,7 +476,7 @@ suite('ConnectionStore', () => {
 		}
 
 		for (let i = 0; i < 5; i++) {
-			const cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
+			const cred = assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
 			const connectionProfile = new ConnectionProfile(capabilitiesService, cred);
 			connectionStore.removeRecentConnection(connectionProfile);
 			const current = connectionStore.getRecentlyUsedConnections();
@@ -484,7 +485,7 @@ suite('ConnectionStore', () => {
 	});
 
 	test('getRecentlyUsedConnections correctly fills in group names', async () => {
-		const storageService = new TestStorageService();
+		const storageService = new InMemoryStorageService();
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
 

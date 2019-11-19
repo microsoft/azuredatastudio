@@ -11,7 +11,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
-import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
+import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 
 // Test stubs for commonly used objects
 

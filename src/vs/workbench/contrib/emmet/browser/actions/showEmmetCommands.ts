@@ -9,7 +9,7 @@ import { registerEditorAction, EditorAction, ServicesAccessor } from 'vs/editor/
 import { IQuickOpenService } from 'vs/platform/quickOpen/common/quickOpen';
 import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
-import { MenuId } from 'vs/platform/actions/common/actions';
+// import { MenuId } from 'vs/platform/actions/common/actions';
 
 const EMMET_COMMANDS_PREFIX = '>Emmet: ';
 

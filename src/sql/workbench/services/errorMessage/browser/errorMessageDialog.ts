@@ -14,7 +14,6 @@ import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_FOREGROUND } from 'vs/workbench/common/theme';
 import { Event, Emitter } from 'vs/base/common/event';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
@@ -23,6 +22,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 const maxActions = 1;
 
@@ -46,7 +46,7 @@ export class ErrorMessageDialog extends Modal {
 		@IThemeService themeService: IThemeService,
 		@IClipboardService clipboardService: IClipboardService,
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
-		@ITelemetryService telemetryService: ITelemetryService,
+		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService

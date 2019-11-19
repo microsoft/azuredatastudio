@@ -26,7 +26,6 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as nls from 'vs/nls';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IAction } from 'vs/base/common/actions';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as types from 'vs/base/common/types';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -42,6 +41,7 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
 import { TaskRegistry } from 'sql/platform/tasks/browser/tasksRegistry';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -162,7 +162,7 @@ export class InsightsDialogView extends Modal {
 		@IThemeService themeService: IThemeService,
 		@IClipboardService clipboardService: IClipboardService,
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
-		@ITelemetryService telemetryService: ITelemetryService,
+		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
@@ -338,7 +338,7 @@ export class InsightsDialogView extends Modal {
 		if (this._insight.actions && this._insight.actions.types) {
 			let tasks = TaskRegistry.getTasks();
 			for (let action of this._insight.actions.types) {
-				let task = tasks.includes(action);
+				let task = tasks.some(x => x === action);
 				let commandAction = MenuRegistry.getCommand(action);
 				let commandLabel = types.isString(commandAction.title) ? commandAction.title : commandAction.title.value;
 				if (task) {
@@ -397,7 +397,7 @@ export class InsightsDialogView extends Modal {
 		let actions = this._insight.actions.types;
 		let returnActions: IAction[] = [];
 		for (let action of actions) {
-			let task = tasks.includes(action);
+			let task = tasks.some(x => x === action);
 			let commandAction = MenuRegistry.getCommand(action);
 			if (task) {
 				returnActions.push(this._instantiationService.createInstance(ExecuteCommandAction, commandAction.id, commandAction.title));

@@ -3,17 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { ClusterController, ControllerError } from '../controller/clusterControllerApi';
 import { ControllerTreeDataProvider } from '../tree/controllerTreeDataProvider';
-import { TreeNode } from '../tree/treeNode';
 import { AuthType } from '../constants';
-import { ManageControllerCommand } from '../../extension';
 import { BdcDashboardOptions } from './bdcDashboardModel';
+import { ControllerNode } from '../tree/controllerTreeNode';
+import { ManageControllerCommand } from '../../commands';
 
 const localize = nls.loadMessageBundle();
 
@@ -33,7 +31,7 @@ export class AddControllerDialogModel {
 	private _authTypes: azdata.CategoryValue[];
 	constructor(
 		public treeDataProvider: ControllerTreeDataProvider,
-		public node?: TreeNode,
+		public node?: ControllerNode,
 		public prefilledUrl?: string,
 		public prefilledAuth?: azdata.CategoryValue,
 		public prefilledUsername?: string,
@@ -121,7 +119,7 @@ export class AddControllerDialog {
 	}
 
 	private createDialog(): void {
-		this.dialog = azdata.window.createModelViewDialog(localize('textAddNewController', "Add New Controller"));
+		this.dialog = azdata.window.createModelViewDialog(localize('textAddNewController', "Add New Controller (preview)"));
 		this.dialog.registerContent(async view => {
 			this.uiModelBuilder = view.modelBuilder;
 
@@ -159,7 +157,7 @@ export class AddControllerDialog {
 					components: [
 						{
 							component: this.urlInputBox,
-							title: localize('textUrlCapital', "URL"),
+							title: localize('textUrlCapital', "Cluster Management URL"),
 							required: true
 						}, {
 							component: this.authDropdown,
@@ -182,6 +180,7 @@ export class AddControllerDialog {
 				}]).withLayout({ width: '100%' }).component();
 			this.onAuthChanged();
 			await view.initializeModel(formModel);
+			this.urlInputBox.focus();
 		});
 
 		this.dialog.registerCloseValidator(async () => await this.validate());

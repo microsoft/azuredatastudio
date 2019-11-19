@@ -55,7 +55,7 @@ export default class ImageComponent extends ComponentWithIconBase implements ICo
 		if (this.iconPath) {
 			if (!this._iconClass) {
 				super.updateIcon();
-				DOM.addClasses(this.imageContainer.nativeElement, this._iconClass, 'codicon');
+				DOM.addClasses(this.imageContainer.nativeElement, this._iconClass, 'icon');
 			} else {
 				super.updateIcon();
 			}
@@ -65,7 +65,7 @@ export default class ImageComponent extends ComponentWithIconBase implements ICo
 	/**
 	 * Helper to get the size string for the background-size CSS property
 	 */
-	private getImageSize(): string {
+	public getImageSize(): string {
 		return `${this.getIconWidth()} ${this.getIconHeight()}`;
 	}
 }

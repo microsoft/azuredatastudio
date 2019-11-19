@@ -3,14 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'mocha';
 import * as azdata from 'azdata';
 import { context } from './testContext';
 import { getBdcServer, TestServerProfile, getAzureServer, getStandaloneServer } from './testConfig';
 import { connectToServer, createDB, deleteDB, DefaultConnectTimeoutInMs, asyncTimeout } from './utils';
-import assert = require('assert');
+import * as assert from 'assert';
 import { stressify } from 'adstest';
 
 if (context.RunTest) {

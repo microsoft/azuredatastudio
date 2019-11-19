@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as azdata from 'azdata';
 import { TreeItemCollapsibleState } from 'vscode';
 import { TreeNode } from '../treeNode';
@@ -27,8 +26,8 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 		super(name, description, ownerUri, appContext, treeChangeHandler, parent);
 	}
 
-	public async getChildren(): Promise<TreeNode[]> {
-		return;
+	public async getChildren(): Promise<TreeNode[] | undefined> {
+		return undefined;
 	}
 
 	public getTreeItem(): azdata.TreeItem | Promise<azdata.TreeItem> {
@@ -37,8 +36,8 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 			connectionName: this.name ? this.name : this.serverName,
 			serverName: this.serverName,
 			databaseName: '',
-			userName: undefined,
-			password: undefined,
+			userName: undefined as string,
+			password: undefined as string,
 			authenticationType: 'Integrated',
 			savePassword: false,
 			groupFullName: '',

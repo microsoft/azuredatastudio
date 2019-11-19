@@ -477,31 +477,29 @@ registerEditorAction(GoToTypeDefinitionAction);
 registerEditorAction(PeekTypeDefinitionAction);
 
 // Go to menu
-// {{SQL CARBON EDIT}} - Disable unused menu items
-// MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
-// 	group: '4_symbol_nav',
-// 	command: {
-// 		id: 'editor.action.goToDeclaration',
-// 		title: nls.localize({ key: 'miGotoDefinition', comment: ['&& denotes a mnemonic'] }, "Go to &&Definition")
-// 	},
-// 	order: 2
-// });
+MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
+	group: '4_symbol_nav',
+	command: {
+		id: 'editor.action.goToDeclaration',
+		title: nls.localize({ key: 'miGotoDefinition', comment: ['&& denotes a mnemonic'] }, "Go to &&Definition")
+	},
+	order: 2
+});
 
-// MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
-// 	group: '4_symbol_nav',
-// 	command: {
-// 		id: 'editor.action.goToTypeDefinition',
-// 		title: nls.localize({ key: 'miGotoTypeDefinition', comment: ['&& denotes a mnemonic'] }, "Go to &&Type Definition")
-// 	},
-// 	order: 3
-// });
+MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
+	group: '4_symbol_nav',
+	command: {
+		id: 'editor.action.goToTypeDefinition',
+		title: nls.localize({ key: 'miGotoTypeDefinition', comment: ['&& denotes a mnemonic'] }, "Go to &&Type Definition")
+	},
+	order: 3
+});
 
-// MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
-// 	group: '4_symbol_nav',
-// 	command: {
-// 		id: 'editor.action.goToImplementation',
-// 		title: nls.localize({ key: 'miGotoImplementation', comment: ['&& denotes a mnemonic'] }, "Go to &&Implementation")
-// 	},
-// 	order: 4
-// });
-// {{SQL CARBON EDIT - End}}
+MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
+	group: '4_symbol_nav',
+	command: {
+		id: 'editor.action.goToImplementation',
+		title: nls.localize({ key: 'miGotoImplementation', comment: ['&& denotes a mnemonic'] }, "Go to &&Implementation")
+	},
+	order: 4
+});

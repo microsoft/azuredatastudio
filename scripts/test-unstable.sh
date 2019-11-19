@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+PASSED_ARGS="$@"
+
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	realpath() { [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"; }
 	ROOT=$(dirname $(dirname $(realpath "$0")))
@@ -15,4 +17,4 @@ export ADS_TEST_INVERT_GREP=
 
 echo Running UNSTABLE ADS Core Tests
 
-./scripts/test.sh
+./scripts/test.sh $PASSED_ARGS

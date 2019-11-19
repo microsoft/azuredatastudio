@@ -12,8 +12,8 @@ import {
 	INotebookService, INotebookManager, INotebookProvider,
 	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, OVERRIDE_EDITOR_THEMING_SETTING, INavigationProvider, ILanguageMagic
 } from 'sql/workbench/services/notebook/browser/notebookService';
-import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/browser/outputs/registry';
-import { standardRendererFactories } from 'sql/workbench/parts/notebook/browser/outputs/factories';
+import { RenderMimeRegistry } from 'sql/workbench/contrib/notebook/browser/outputs/registry';
+import { standardRendererFactories } from 'sql/workbench/contrib/notebook/browser/outputs/factories';
 import { Extensions, INotebookProviderRegistry, NotebookProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Memento } from 'vs/workbench/common/memento';
@@ -26,11 +26,11 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { NotebookEditor } from 'sql/workbench/parts/notebook/browser/notebookEditor';
+import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { registerNotebookThemes } from 'sql/workbench/parts/notebook/browser/notebookStyles';
+import { registerNotebookThemes } from 'sql/workbench/contrib/notebook/browser/notebookStyles';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
-import { notebookConstants, ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { notebookConstants, ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { SqlNotebookProvider } from 'sql/workbench/services/notebook/browser/sql/sqlNotebookProvider';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
@@ -40,8 +40,9 @@ import { RunOnceScheduler } from 'vs/base/common/async';
 import { Schemas } from 'vs/base/common/network';
 import { ILogService } from 'vs/platform/log/common/log';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
-import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
+import { NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { find, firstIndex } from 'vs/base/common/arrays';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -72,7 +73,7 @@ const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.Noteb
 
 class ProviderDescriptor {
 	private _instanceReady = new Deferred<INotebookProvider>();
-	constructor(private providerId: string, private _instance?: INotebookProvider) {
+	constructor(private _instance?: INotebookProvider) {
 		if (_instance) {
 			this._instanceReady.resolve(_instance);
 		}
@@ -212,7 +213,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		let sqlNotebookProvider = this._providerToStandardKernels.get(notebookConstants.SQL);
 		if (sqlNotebookProvider) {
 			let sqlConnectionTypes = this._queryManagementService.getRegisteredProviders();
-			let provider = sqlNotebookProvider.find(p => p.name === notebookConstants.SQL);
+			let provider = find(sqlNotebookProvider, p => p.name === notebookConstants.SQL);
 			if (provider) {
 				this._providerToStandardKernels.set(notebookConstants.SQL, [{
 					name: notebookConstants.SQL,
@@ -242,7 +243,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		let registration = p.registration;
 
 		if (!this._providers.has(p.id)) {
-			this._providers.set(p.id, new ProviderDescriptor(p.id));
+			this._providers.set(p.id, new ProviderDescriptor());
 		}
 		if (registration.fileExtensions) {
 			if (Array.isArray<string>(registration.fileExtensions)) {
@@ -265,7 +266,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			// Update, which will resolve the promise for anyone waiting on the instance to be registered
 			providerDescriptor.instance = instance;
 		} else {
-			this._providers.set(providerId, new ProviderDescriptor(providerId, instance));
+			this._providers.set(providerId, new ProviderDescriptor(instance));
 		}
 	}
 
@@ -353,7 +354,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		let managers: INotebookManager[] = this._managersMap.get(uriString);
 		// If manager already exists for a given notebook, return it
 		if (managers) {
-			let index = managers.findIndex(m => m.providerId === providerId);
+			let index = firstIndex(managers, m => m.providerId === providerId);
 			if (index && index >= 0) {
 				return managers[index];
 			}
@@ -404,7 +405,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			return undefined;
 		}
 		let uriString = notebookUri.toString();
-		let editor = this.listNotebookEditors().find(n => n.id === uriString);
+		let editor = find(this.listNotebookEditors(), n => n.id === uriString);
 		return editor;
 	}
 
@@ -512,7 +513,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		let knownProviders = Object.keys(notebookRegistry.providers);
 		let cache = this.providersMemento.notebookProviderCache;
 		for (let key in cache) {
-			if (!knownProviders.includes(key)) {
+			if (!knownProviders.some(x => x === key)) {
 				this._providers.delete(key);
 				delete cache[key];
 			}
@@ -532,7 +533,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private removeContributedProvidersFromCache(identifier: IExtensionIdentifier, extensionService: IExtensionService) {
 		const notebookProvider = 'notebookProvider';
 		extensionService.getExtensions().then(i => {
-			let extension = i.find(c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
+			let extension = find(i, c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
 			if (extension && extension.contributes
 				&& extension.contributes[notebookProvider]
 				&& extension.contributes[notebookProvider].providerId) {
@@ -584,9 +585,9 @@ export class NotebookService extends Disposable implements INotebookService {
 			// 3. Not already saving (e.g. isn't in the queue to be cached)
 			// 4. Notebook is trusted. Don't need to save state of untrusted notebooks
 			let notebookUriString = notebookUri.toString();
-			if (changeType === NotebookChangeType.Saved && this._trustedCacheQueue.findIndex(uri => uri.toString() === notebookUriString) < 0) {
+			if (changeType === NotebookChangeType.Saved && firstIndex(this._trustedCacheQueue, uri => uri.toString() === notebookUriString) < 0) {
 				// Only save if it's trusted
-				let notebook = this.listNotebookEditors().find(n => n.id === notebookUriString);
+				let notebook = find(this.listNotebookEditors(), n => n.id === notebookUriString);
 				if (notebook && notebook.model.trustedMode) {
 					this._trustedCacheQueue.push(notebookUri);
 					this._updateTrustCacheScheduler.schedule();

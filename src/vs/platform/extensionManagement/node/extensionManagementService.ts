@@ -8,7 +8,7 @@ import * as path from 'vs/base/common/path';
 import * as pfs from 'vs/base/node/pfs';
 import { assign } from 'vs/base/common/objects';
 import { toDisposable, Disposable } from 'vs/base/common/lifecycle';
-import { flatten, isNonEmptyArray } from 'vs/base/common/arrays';
+import { flatten/*, isNonEmptyArray*/ } from 'vs/base/common/arrays';
 import { extract, ExtractError, zip, IFile } from 'vs/base/node/zip';
 import {
 	IExtensionManagementService, IExtensionGalleryService, ILocalExtension,
@@ -205,7 +205,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 				return getManifest(zipPath)
 					.then(manifest => {
 						const identifier = { id: getGalleryExtensionId(manifest.publisher, manifest.name) };
-						let operation: InstallOperation = InstallOperation.Install;
+						// let operation: InstallOperation = InstallOperation.Install; {{SQL CARBON EDIT}} comment out for no unused
 						// {{SQL CARBON EDIT - Check VSCode and ADS version}}
 						if (manifest.engines && ((manifest.engines.vscode && !isEngineValid(manifest.engines.vscode, product.vscodeVersion)) || (manifest.engines.azdata && !isEngineValid(manifest.engines.azdata, product.version)))) {
 							return Promise.reject(new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", identifier.id, product.version)));
@@ -215,7 +215,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 							.then(installedExtensions => {
 								const existing = installedExtensions.filter(i => areSameExtensions(identifier, i.identifier))[0];
 								if (existing) {
-									operation = InstallOperation.Update;
+									// operation = InstallOperation.Update; {{SQL CARBON EDIT}} comment out for no unused
 									if (identifierWithVersion.equals(new ExtensionIdentifierWithVersion(existing.identifier, existing.manifest.version))) {
 										// {{SQL CARBON EDIT}} - Update VS Code product name
 										return this.removeExtension(existing, 'existing').then(null, e => Promise.reject(new Error(nls.localize('restartCode', "Please restart Azure Data Studio before reinstalling {0}.", manifest.displayName || manifest.name))));
@@ -267,7 +267,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 		return this.downloadService.download(vsix, URI.file(downloadedLocation)).then(() => URI.file(downloadedLocation));
 	}
 
-	private installFromZipPath(identifierWithVersion: ExtensionIdentifierWithVersion, zipPath: string, metadata: IGalleryMetadata | null, type: ExtensionType, operation: InstallOperation, token: CancellationToken): Promise<ILocalExtension> {
+	/*private installFromZipPath(identifierWithVersion: ExtensionIdentifierWithVersion, zipPath: string, metadata: IGalleryMetadata | null, type: ExtensionType, operation: InstallOperation, token: CancellationToken): Promise<ILocalExtension> { {{SQL CARBON EDIT}} comment out for no unused
 		return this.toNonCancellablePromise(this.installExtension({ zipPath, identifierWithVersion, metadata }, type, token)
 			.then(local => this.installDependenciesAndPackExtensions(local, null)
 				.then(
@@ -285,7 +285,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 				local => { this._onDidInstallExtension.fire({ identifier: identifierWithVersion.identifier, zipPath, local, operation }); return local; },
 				error => { this._onDidInstallExtension.fire({ identifier: identifierWithVersion.identifier, zipPath, operation, error }); return Promise.reject(error); }
 			));
-	}
+	}*/
 
 	async installFromGallery(extension: IGalleryExtension): Promise<ILocalExtension> {
 		if (!this.galleryService.isEnabled()) {
@@ -594,10 +594,10 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			.then(() => local);
 	}
 
-	private getMetadata(extensionName: string): Promise<IGalleryMetadata | null> {
+	/*private getMetadata(extensionName: string): Promise<IGalleryMetadata | null> { {{SQL CARBON EDIT}} comment out function for no unused
 		return this.findGalleryExtensionByName(extensionName)
 			.then(galleryExtension => galleryExtension ? <IGalleryMetadata>{ id: galleryExtension.identifier.uuid, publisherDisplayName: galleryExtension.publisherDisplayName, publisherId: galleryExtension.publisherId } : null);
-	}
+	}*/
 
 	private findGalleryExtension(local: ILocalExtension): Promise<IGalleryExtension> {
 		if (local.identifier.uuid) {

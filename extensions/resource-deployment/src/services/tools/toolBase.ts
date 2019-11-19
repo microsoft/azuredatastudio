@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { EOL } from 'os';
-import { delimiter } from 'path';
+import * as path from 'path';
 import { SemVer, compare } from 'semver';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { Command, ITool, OsType, ToolStatus, ToolType } from '../../interfaces';
+import { Command, ITool, OsDistribution, ToolStatus, ToolType } from '../../interfaces';
 import { getErrorMessage } from '../../utils';
 import { IPlatformService } from '../platformService';
 
@@ -32,7 +32,7 @@ export const enum dependencyType {
 	Curl = 'Curl'
 }
 
-const pythonAndPip3Localized = localize('deploymentDialog.ToolInformationalMessage.PythonAndPip3', "•	azdata installation needs python3 and pip3 to be pre-installed before necessary tools can be deployed");
+const pythonAndPip3Localized = localize('deploymentDialog.ToolInformationalMessage.PythonAndPip3', "•	azdata installation needs pip3 and python3 version 3.6 to be pre-installed before necessary tools can be deployed");
 const brewLocalized = localize('deploymentDialog.ToolInformationalMessage.Brew', "•	brew is needed for deployment of the tools and needs to be pre-installed before necessary tools can be deployed");
 const curlLocalized = localize('deploymentDialog.ToolInformationalMessage.Curl', "•	curl is needed for installation and needs to be pre-installed before necessary tools can be deployed");
 
@@ -44,7 +44,6 @@ export const messageByDependencyType: Map<dependencyType, string> = new Map<depe
 
 export abstract class ToolBase implements ITool {
 	constructor(private _platformService: IPlatformService) {
-		this._osType = this._platformService.osType();
 	}
 
 	abstract name: string;
@@ -53,8 +52,8 @@ export abstract class ToolBase implements ITool {
 	abstract type: ToolType;
 	abstract homePage: string;
 	abstract autoInstallSupported: boolean;
-	protected abstract readonly allInstallationCommands: Map<OsType, Command[]>;
-	protected readonly dependenciesByOsType: Map<OsType, dependencyType[]> = new Map<OsType, dependencyType[]>();
+	protected abstract readonly allInstallationCommands: Map<OsDistribution, Command[]>;
+	protected readonly dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>();
 
 	protected abstract getVersionFromOutput(output: string): SemVer | undefined;
 	protected readonly _onDidUpdateData = new vscode.EventEmitter<ITool>();
@@ -63,7 +62,7 @@ export abstract class ToolBase implements ITool {
 	protected abstract readonly versionCommand: Command;
 
 	public get dependencyMessages(): string[] {
-		return (this.dependenciesByOsType.get(this.osType) || []).map((msgType: dependencyType) => messageByDependencyType.get(msgType)!);
+		return (this.dependenciesByOsType.get(this.osDistribution) || []).map((msgType: dependencyType) => messageByDependencyType.get(msgType)!);
 	}
 
 	protected async getInstallationPath(): Promise<string | undefined> {
@@ -122,16 +121,11 @@ export abstract class ToolBase implements ITool {
 	}
 
 	public get storagePath(): string {
-		const storagePath = this._platformService.storagePath();
-		if (!this._storagePathEnsured) {
-			this._platformService.ensureDirectoryExists(storagePath);
-			this._storagePathEnsured = true;
-		}
-		return storagePath;
+		return this._platformService.storagePath();
 	}
 
-	public get osType(): OsType {
-		return this._osType;
+	public get osDistribution(): OsDistribution {
+		return this._platformService.osDistribution();
 	}
 
 	protected get version(): SemVer | undefined {
@@ -155,8 +149,9 @@ export abstract class ToolBase implements ITool {
 	public get installationPath(): string {
 		return this._installationPath;
 	}
+
 	protected get installationCommands(): Command[] | undefined {
-		return this.allInstallationCommands.get(this.osType);
+		return this.allInstallationCommands.get(this.osDistribution);
 	}
 
 	protected async getPip3InstallLocation(packageName: string): Promise<string> {
@@ -232,9 +227,9 @@ export abstract class ToolBase implements ITool {
 		this.logToOutputChannel(localize('toolBase.addInstallationSearchPathsToSystemPath.SearchPaths', "Search Paths for tool '{0}': {1}", this.displayName, JSON.stringify(searchPaths, undefined, '\t'))); //this.displayName is localized and searchPaths are OS filesystem paths.
 		searchPaths.forEach(searchPath => {
 			if (process.env.PATH) {
-				if (!`${delimiter}${process.env.PATH}${delimiter}`.includes(`${delimiter}${searchPath}${delimiter}`)) {
-					process.env.PATH += `${delimiter}${searchPath}`;
-					console.log(`Appending to Path -> '${delimiter}${searchPath}'`);
+				if (!`${path.delimiter}${process.env.PATH}${path.delimiter}`.includes(`${path.delimiter}${searchPath}${path.delimiter}`)) {
+					process.env.PATH += `${path.delimiter}${searchPath}`;
+					console.log(`Appending to Path -> '${path.delimiter}${searchPath}'`);
 				}
 			} else {
 				process.env.PATH = searchPath;
@@ -276,10 +271,10 @@ export abstract class ToolBase implements ITool {
 	}
 
 	protected discoveryCommandString(toolBinary: string) {
-		switch (this.osType) {
-			case OsType.win32:
+		switch (this.osDistribution) {
+			case OsDistribution.win32:
 				return `where.exe  ${toolBinary}`;
-			case OsType.darwin:
+			case OsDistribution.darwin:
 				return `command -v ${toolBinary}`;
 			default:
 				return `which ${toolBinary}`;
@@ -299,7 +294,7 @@ export abstract class ToolBase implements ITool {
 		if (!commandOutput) {
 			throw new Error(`Install location of tool:'${this.displayName}' could not be discovered`);
 		} else {
-			this._installationPath = commandOutput.split(EOL)[0];
+			this._installationPath = path.resolve(commandOutput.split(EOL)[0]);
 		}
 	}
 
@@ -307,9 +302,7 @@ export abstract class ToolBase implements ITool {
 		return this._version ? compare(this._version, new SemVer(version)) >= 0 : false;
 	}
 
-	private _storagePathEnsured: boolean = false;
 	private _status: ToolStatus = ToolStatus.NotInstalled;
-	private _osType: OsType;
 	private _version?: SemVer;
 	private _statusDescription?: string;
 	private _installationPath!: string;

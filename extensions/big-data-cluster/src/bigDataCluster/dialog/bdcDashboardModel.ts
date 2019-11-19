@@ -14,7 +14,7 @@ import { ControllerTreeDataProvider } from '../tree/controllerTreeDataProvider';
 
 export type BdcDashboardOptions = { url: string, auth: AuthType, username: string, password: string, rememberPassword: boolean };
 
-export type BdcErrorType = 'bdcStatus' | 'bdcEndpoints' | 'general';
+type BdcErrorType = 'bdcStatus' | 'bdcEndpoints' | 'general';
 export type BdcErrorEvent = { error: Error, errorType: BdcErrorType };
 
 export class BdcDashboardModel {

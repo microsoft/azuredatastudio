@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { RequestType } from 'vscode-languageclient';
 import * as azdata from 'azdata';
@@ -25,7 +24,7 @@ export interface CreateFirewallRuleParams {
 	securityTokenMappings: {};
 }
 
-export interface CreateFirewallRuleResponse {
+interface CreateFirewallRuleResponse {
 	result: boolean;
 	errorMessage: string;
 }
@@ -36,7 +35,7 @@ export interface HandleFirewallRuleParams {
 	connectionTypeId: string;
 }
 
-export interface HandleFirewallRuleResponse {
+interface HandleFirewallRuleResponse {
 	result: boolean;
 	ipAddress: string;
 }

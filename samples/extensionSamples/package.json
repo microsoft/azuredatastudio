@@ -171,7 +171,7 @@
     },
     "dependencies": {
         "fs-extra": "^5.0.0",
-        "handlebars": "^4.0.11"
+        "handlebars": "^4.5.2"
     },
     "devDependencies": {
         "@types/mocha": "^2.2.42",

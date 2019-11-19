@@ -6,6 +6,7 @@
 import { IAdsTelemetryService, ITelemetryInfo, ITelemetryEvent, ITelemetryConnectionInfo, ITelemetryEventMeasures, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { assign } from 'vs/base/common/objects';
 
 
 class TelemetryEventImpl implements ITelemetryEvent {
@@ -33,17 +34,17 @@ class TelemetryEventImpl implements ITelemetryEvent {
 	}
 
 	public withAdditionalProperties(additionalProperties: ITelemetryEventProperties): ITelemetryEvent {
-		Object.assign(this._properties, additionalProperties);
+		assign(this._properties, additionalProperties);
 		return this;
 	}
 
 	public withAdditionalMeasurements(additionalMeasurements: ITelemetryEventMeasures): ITelemetryEvent {
-		Object.assign(this._measurements, additionalMeasurements);
+		assign(this._measurements, additionalMeasurements);
 		return this;
 	}
 
 	public withConnectionInfo(connectionInfo: ITelemetryConnectionInfo): ITelemetryEvent {
-		Object.assign(this._properties,
+		assign(this._properties,
 			{
 				authenticationType: connectionInfo.authenticationType,
 				providerName: connectionInfo.providerName,
@@ -52,6 +53,18 @@ class TelemetryEventImpl implements ITelemetryEvent {
 			});
 		return this;
 	}
+}
+
+class NullTelemetryEventImpl implements ITelemetryEvent {
+	constructor() { }
+
+	public send(): void { }
+
+	public withAdditionalProperties(additionalProperties: ITelemetryEventProperties): ITelemetryEvent { return this; }
+
+	public withAdditionalMeasurements(additionalMeasurements: ITelemetryEventMeasures): ITelemetryEvent { return this; }
+
+	public withConnectionInfo(connectionInfo: ITelemetryConnectionInfo): ITelemetryEvent { return this; }
 }
 
 export class AdsTelemetryService implements IAdsTelemetryService {
@@ -186,4 +199,32 @@ export class AdsTelemetryService implements IAdsTelemetryService {
 	public sendTelemetryEvent(eventName: string, properties?: ITelemetryEventProperties, measurements?: ITelemetryEventMeasures): void {
 		this.createTelemetryEvent(eventName, properties, measurements).send();
 	}
+}
+
+export class NullAdsTelemetryService implements IAdsTelemetryService {
+
+	_serviceBrand: undefined;
+
+	get isOptedIn(): boolean {
+		return false;
+	}
+
+	setEnabled(value: boolean): void { }
+	getTelemetryInfo(): Promise<ITelemetryInfo> {
+		return Promise.resolve({
+			sessionId: '',
+			machineId: '',
+			instanceId: ''
+		});
+	}
+	createViewEvent(view: string): ITelemetryEvent { return new NullTelemetryEventImpl(); }
+	sendViewEvent(view: string): void { }
+	createActionEvent(view: string, action: string, target?: string, source?: string, durationInMs?: number): ITelemetryEvent { return new NullTelemetryEventImpl(); }
+	sendActionEvent(view: string, action: string, target?: string, source?: string, durationInMs?: number): void { }
+	createMetricsEvent(metrics: ITelemetryEventMeasures, groupName: string): ITelemetryEvent { return new NullTelemetryEventImpl(); }
+	sendMetricsEvent(metrics: ITelemetryEventMeasures, groupName: string): void { }
+	createErrorEvent(view: string, name: string, errorCode?: string, errorType?: string): ITelemetryEvent { return new NullTelemetryEventImpl(); }
+	sendErrorEvent(view: string, name: string, errorCode?: string, errorType?: string): void { }
+	createTelemetryEvent(eventName: string, properties?: ITelemetryEventProperties, measurements?: ITelemetryEventMeasures): ITelemetryEvent { return new NullTelemetryEventImpl(); }
+	sendTelemetryEvent(eventName: string, properties?: ITelemetryEventProperties, measurements?: ITelemetryEventMeasures): void { }
 }

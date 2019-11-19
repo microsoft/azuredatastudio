@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { TreeNode } from './treeNode';
@@ -77,7 +75,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		this.notifyNodeChanged();
 	}
 
-	public deleteController(url: string, auth: AuthType, username: string): ControllerNode {
+	public deleteController(url: string, auth: AuthType, username: string): ControllerNode[] {
 		let deleted = this.root.deleteControllerNode(url, auth, username);
 		if (deleted) {
 			this.notifyNodeChanged();

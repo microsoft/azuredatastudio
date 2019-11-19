@@ -5,7 +5,7 @@
 
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
-import { deepClone } from 'vs/base/common/objects';
+import { deepClone, assign } from 'vs/base/common/objects';
 import { URI } from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 
@@ -15,6 +15,7 @@ import * as azdata from 'azdata';
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape, ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, ColumnSizingMode } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { firstIndex } from 'vs/base/common/arrays';
 
 class ModelBuilderImpl implements azdata.ModelBuilder {
 	private nextComponentId: number;
@@ -23,7 +24,6 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 	constructor(
 		private readonly _proxy: MainThreadModelViewShape,
 		private readonly _handle: number,
-		private readonly _mainContext: IMainContext,
 		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
 		private readonly _extension: IExtensionDescription
 	) {
@@ -269,7 +269,7 @@ class ComponentBuilderImpl<T extends azdata.Component> implements azdata.Compone
 
 	withProperties<U>(properties: U): azdata.ComponentBuilder<T> {
 		// Keep any properties that may have been set during initial object construction
-		this._component.properties = Object.assign({}, this._component.properties, properties);
+		this._component.properties = assign({}, this._component.properties, properties);
 		return this;
 	}
 
@@ -343,7 +343,7 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 			});
 		}
 
-		return new InternalItemConfig(componentWrapper, Object.assign({}, itemLayout, {
+		return new InternalItemConfig(componentWrapper, assign({}, itemLayout || {}, {
 			title: formComponent.title,
 			actions: actions,
 			isFormComponent: true,
@@ -409,8 +409,8 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 		let result: boolean = false;
 		if (componentGroup && componentGroup.components !== undefined) {
 			let firstComponent = componentGroup.components[0];
-			let index = this._component.itemConfigs.findIndex(x => x.component.id === firstComponent.component.id);
-			if (index) {
+			let index = firstIndex(this._component.itemConfigs, x => x.component.id === firstComponent.component.id);
+			if (index !== -1) {
 				result = this._component.removeItemAt(index - 1);
 			}
 			componentGroup.components.forEach(element => {
@@ -606,7 +606,7 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public removeItem(item: azdata.Component): boolean {
-		let index = this.itemConfigs.findIndex(c => c.component.id === item.id);
+		let index = firstIndex(this.itemConfigs, c => c.component.id === item.id);
 		if (index >= 0 && index < this.itemConfigs.length) {
 			return this.removeItemAt(index);
 		}
@@ -638,7 +638,7 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public updateProperties(properties: { [key: string]: any }): Thenable<void> {
-		this.properties = Object.assign(this.properties, properties);
+		this.properties = assign(this.properties, properties);
 		return this.notifyPropertyChanged();
 	}
 
@@ -647,7 +647,7 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void> {
-		this.properties.CSSStyles = Object.assign(this.properties.CSSStyles || {}, cssStyles);
+		this.properties.CSSStyles = assign(this.properties.CSSStyles || {}, cssStyles);
 		return this.notifyPropertyChanged();
 	}
 
@@ -711,6 +711,10 @@ class ComponentWrapper implements azdata.Component {
 	public get valid(): boolean {
 		return this._valid;
 	}
+
+	public focus() {
+		return this._proxy.$focus(this._handle, this._id);
+	}
 }
 
 class ComponentWithIconWrapper extends ComponentWrapper {
@@ -739,14 +743,6 @@ class ComponentWithIconWrapper extends ComponentWrapper {
 	public set iconWidth(v: string | number) {
 		this.setProperty('iconWidth', v);
 	}
-}
-
-class ContainerWrapper<T, U> extends ComponentWrapper implements azdata.Container<T, U> {
-
-	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
-		super(proxy, handle, type, id);
-	}
-
 }
 
 class CardWrapper extends ComponentWrapper implements azdata.CardComponent {
@@ -1152,12 +1148,6 @@ class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonC
 	public set checked(v: boolean) {
 		this.setProperty('checked', v);
 	}
-	public get focused(): boolean {
-		return this.properties['focused'];
-	}
-	public set focused(v: boolean) {
-		this.setProperty('focused', v);
-	}
 
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
@@ -1272,13 +1262,6 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 	}
 	public set moveFocusOutWithTab(v: boolean) {
 		this.setProperty('moveFocusOutWithTab', v);
-	}
-
-	public get focused(): boolean {
-		return this.properties['focused'];
-	}
-	public set focused(v: boolean) {
-		this.setProperty('focused', v);
 	}
 
 	public get updateCells(): azdata.TableCell[] {
@@ -1579,11 +1562,10 @@ class ModelViewImpl implements azdata.ModelView {
 		private readonly _handle: number,
 		private readonly _connection: azdata.connection.Connection,
 		private readonly _serverInfo: azdata.ServerInfo,
-		private readonly mainContext: IMainContext,
 		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
 		_extension: IExtensionDescription
 	) {
-		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle, this.mainContext, this._extHostModelViewTree, _extension);
+		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle, this._extHostModelViewTree, _extension);
 	}
 
 	public get onClosed(): vscode.Event<any> {
@@ -1636,7 +1618,7 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 	private readonly _handlers = new Map<string, (view: azdata.ModelView) => void>();
 	private readonly _handlerToExtension = new Map<string, IExtensionDescription>();
 	constructor(
-		private _mainContext: IMainContext,
+		_mainContext: IMainContext,
 		private _extHostModelViewTree: ExtHostModelViewTreeViewsShape
 	) {
 		this._proxy = _mainContext.getProxy(SqlMainContext.MainThreadModelView);
@@ -1656,7 +1638,7 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 
 	$registerWidget(handle: number, id: string, connection: azdata.connection.Connection, serverInfo: azdata.ServerInfo): void {
 		let extension = this._handlerToExtension.get(id);
-		let view = new ModelViewImpl(this._proxy, handle, connection, serverInfo, this._mainContext, this._extHostModelViewTree, extension);
+		let view = new ModelViewImpl(this._proxy, handle, connection, serverInfo, this._extHostModelViewTree, extension);
 		this._modelViews.set(handle, view);
 		this._handlers.get(id)(view);
 	}

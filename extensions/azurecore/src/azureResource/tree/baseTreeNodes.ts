@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { AppContext } from '../../appContext';
 
 import { TreeNode } from '../treeNode';
@@ -12,7 +10,7 @@ import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { IAzureResourceCacheService } from '../../azureResource/interfaces';
 import { AzureResourceServiceNames } from '../constants';
 
-export abstract class AzureResourceTreeNodeBase extends TreeNode {
+abstract class AzureResourceTreeNodeBase extends TreeNode {
 	public constructor(
 		public readonly appContext: AppContext,
 		public readonly treeChangeHandler: IAzureResourceTreeChangeHandler,

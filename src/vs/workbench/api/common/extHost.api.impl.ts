@@ -60,13 +60,14 @@ import { ExtHostLabelService } from 'vs/workbench/api/common/extHostLabelService
 import { getRemoteName } from 'vs/platform/remote/common/remoteHosts';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IExtHostDecorations } from 'vs/workbench/api/common/extHostDecorations';
-import { IExtHostTask } from 'vs/workbench/api/common/extHostTask';
-import { IExtHostDebugService } from 'vs/workbench/api/common/extHostDebugService';
+// import { IExtHostTask } from 'vs/workbench/api/common/extHostTask';
+// import { IExtHostDebugService } from 'vs/workbench/api/common/extHostDebugService';
 import { IExtHostSearch } from 'vs/workbench/api/common/extHostSearch';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IURITransformerService } from 'vs/workbench/api/common/extHostUriTransformerService';
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitDataService';
+import { find } from 'vs/base/common/arrays';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -127,7 +128,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	// Check that no named customers are missing
 	// {{SQL CARBON EDIT}} filter out the services we don't expose
 	const filtered: ProxyIdentifier<any>[] = [ExtHostContext.ExtHostDebugService, ExtHostContext.ExtHostTask];
-	const expected: ProxyIdentifier<any>[] = values(ExtHostContext).filter(v => !filtered.includes(v));
+	const expected: ProxyIdentifier<any>[] = values(ExtHostContext).filter(v => !find(filtered, x => x === v));
 	rpcProtocol.assertRegistered(expected);
 
 	// Other instances

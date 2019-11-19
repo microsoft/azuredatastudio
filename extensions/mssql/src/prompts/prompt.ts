@@ -1,16 +1,15 @@
-'use strict';
-
 // This code is originally from https://github.com/DonJayamanne/bowerVSCode
 // License: https://github.com/DonJayamanne/bowerVSCode/blob/master/LICENSE
 
 import { InputBoxOptions, QuickPickOptions } from 'vscode';
+import { IQuestion } from './question';
 
 abstract class Prompt {
 
-	protected _question: any;
+	protected _question: IQuestion;
 	protected _ignoreFocusOut?: boolean;
 
-	constructor(question: any, ignoreFocusOut?: boolean) {
+	constructor(question: IQuestion, ignoreFocusOut?: boolean) {
 		this._question = question;
 		this._ignoreFocusOut = ignoreFocusOut ? ignoreFocusOut : false;
 	}

@@ -136,7 +136,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		this.workingFilters = columnDef.filterValues.slice(0);
 
 		for (let i = 0; i < filterItems.length; i++) {
-			const filtered = _.contains(this.workingFilters, filterItems[i]);
+			const filtered = this.workingFilters.some(x => x === filterItems[i]);
 
 			filterOptions += '<label><input type="checkbox" value="' + i + '"'
 				+ (filtered ? ' checked="checked"' : '')
@@ -184,7 +184,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		let filterOptions = '<label><input type="checkbox" value="-1" />(Select All)</label>';
 
 		for (let i = 0; i < filterItems.length; i++) {
-			const filtered = _.contains(this.workingFilters, filterItems[i]);
+			const filtered = this.workingFilters.some(x => x === filterItems[i]);
 			if (filterItems[i] && filterItems[i].indexOf('Error:') < 0) {
 				filterOptions += '<label><input type="checkbox" value="' + i + '"'
 					+ (filtered ? ' checked="checked"' : '')
@@ -282,7 +282,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 				workingFilters.length = 0;
 			}
 		} else {
-			const index = _.indexOf(workingFilters, filterItems[value]);
+			const index = workingFilters.indexOf(filterItems[value]);
 
 			if ($checkbox.prop('checked') && index < 0) {
 				workingFilters.push(filterItems[value]);
@@ -326,7 +326,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		for (let i = 0; i < dataView.getLength(); i++) {
 			const value = dataView.getItem(i)[column.field!];
 
-			if (!_.contains(seen, value)) {
+			if (!seen.some(x => x === value)) {
 				seen.push(value);
 			}
 		}
@@ -346,18 +346,18 @@ export class HeaderFilter<T extends Slick.SlickData> {
 				const itemValue = !value ? '' : value;
 				const lowercaseFilter = filter.toString().toLowerCase();
 				const lowercaseVal = itemValue.toString().toLowerCase();
-				if (!_.contains(seen, value) && lowercaseVal.indexOf(lowercaseFilter) > -1) {
+				if (!seen.some(x => x === value) && lowercaseVal.indexOf(lowercaseFilter) > -1) {
 					seen.push(value);
 				}
 			}
 			else {
-				if (!_.contains(seen, value)) {
+				if (!seen.some(x => x === value)) {
 					seen.push(value);
 				}
 			}
 		}
 
-		return _.sortBy(seen, (v) => { return v; });
+		return seen.sort((v) => { return v; });
 	}
 
 	private getAllFilterValues(data: Array<Slick.SlickData>, column: Slick.Column<T>) {
@@ -365,12 +365,12 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		for (let i = 0; i < data.length; i++) {
 			const value = data[i][column.field!];
 
-			if (!_.contains(seen, value)) {
+			if (!seen.some(x => x === value)) {
 				seen.push(value);
 			}
 		}
 
-		return _.sortBy(seen, (v) => { return v; });
+		return seen.sort((v) => { return v; });
 	}
 
 	private handleMenuItemClick(e: JQuery.Event<HTMLElement, null>, command: string, columnDef: Slick.Column<T>) {

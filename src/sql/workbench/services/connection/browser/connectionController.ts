@@ -5,7 +5,7 @@
 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionComponentCallbacks, IConnectionComponentController, IConnectionValidateResult } from 'sql/workbench/services/connection/browser/connectionDialogService';
-import { AdvancedPropertiesController } from 'sql/workbench/parts/connection/browser/advancedPropertiesController';
+import { AdvancedPropertiesController } from 'sql/workbench/contrib/connection/browser/advancedPropertiesController';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as Constants from 'sql/platform/connection/common/constants';
@@ -13,10 +13,12 @@ import * as azdata from 'azdata';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { ConnectionWidget } from 'sql/workbench/services/connection/browser/connectionWidget';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
+import { assign } from 'vs/base/common/objects';
+import { find } from 'vs/base/common/arrays';
 
 export class ConnectionController implements IConnectionComponentController {
 	private _advancedController: AdvancedPropertiesController;
@@ -139,7 +141,7 @@ export class ConnectionController implements IConnectionComponentController {
 		} else {
 			defaultGroupId = Utils.defaultGroupId;
 		}
-		allGroups.push(Object.assign({}, this._connectionWidget.DefaultServerGroup, { id: defaultGroupId }));
+		allGroups.push(assign({}, this._connectionWidget.DefaultServerGroup, { id: defaultGroupId }));
 		allGroups.push(this._connectionWidget.NoneServerGroup);
 		connectionGroupRoot.forEach(cpg => cpg.dispose());
 		return allGroups;
@@ -149,7 +151,7 @@ export class ConnectionController implements IConnectionComponentController {
 		this._connectionWidget.updateServerGroup(this.getAllServerGroups(providers));
 		this._model = connectionInfo;
 		this._model.providerName = this._providerName;
-		let appNameOption = this._providerOptions.find(option => option.specialValueType === ConnectionOptionSpecialType.appName);
+		let appNameOption = find(this._providerOptions, option => option.specialValueType === ConnectionOptionSpecialType.appName);
 		if (appNameOption) {
 			let appNameKey = appNameOption.name;
 			this._model.options[appNameKey] = Constants.applicationName;
