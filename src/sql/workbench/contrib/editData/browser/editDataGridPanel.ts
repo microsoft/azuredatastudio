@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/editData';
 
-import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
+import { VirtualizedCollection, AsyncDataProvider, ISlickColumn } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
 
@@ -67,6 +67,10 @@ export class EditDataGridPanel extends GridParentComponent {
 	private rowIdMappings: { [gridRowId: number]: number } = {};
 	private dirtyCells: number[] = [];
 	protected plugins = new Array<Array<Slick.Plugin<any>>>();
+
+	//list of column names to index.
+	private _columnNameToIndex: any;
+
 
 	// Edit Data functions
 	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
@@ -164,6 +168,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		self.placeHolderDataSets = [];
 		self.renderedDataSets = self.placeHolderDataSets;
 		//this._cd.detectChanges();
+		self._columnNameToIndex = [];
 
 		// Hooking up edit functionshandle
 		this.onIsCellEditValid = (row, column, value): boolean => {
@@ -777,10 +782,20 @@ export class EditDataGridPanel extends GridParentComponent {
 				enableAsyncPostRender: true,
 				enableCellNavigation: true,
 				enableColumnReorder: false,
+				editorFactory: {
+					getEditor: (column: ISlickColumn<any>) => this.getColumnEditor(column)
+				},
 				rowHeight: 29,
 				showRowNumber: true
 			};
+
 			if (dataSet.columnDefinitions) {
+				// add names of columns to column name list
+				for (let i = 0; i < dataSet.columnDefinitions.length; i++) {
+					this._columnNameToIndex[dataSet.columnDefinitions[i].name] = i;
+				}
+				console.log(this._columnNameToIndex);
+
 				t = new Table(this.nativeElement, { dataProvider: new AsyncDataProvider(dataSet.dataRows), columns: dataSet.columnDefinitions }, options);
 				return t;
 			}
@@ -837,7 +852,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	// 	};
 
-	getOverridableTextEditorClass(grid: Table<any>): any {
+	getOverridableTextEditorClass(grid: EditDataGridPanel): any {
 		class OverridableTextEditor {
 			private _textEditor: any;
 			public keyCaptureList: number[];
@@ -883,10 +898,10 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 
 			applyValue(item, state): void {
-				let activeRow = grid.activeCell.row;
-				let currentRow = grid.dataRows.at(activeRow);
+				let activeRow = grid.currentCell.row;
+				let currentRow = grid.dataSet.dataRows.at(activeRow);
 				let colIndex = grid.getColumnIndex(this._args.column.name);
-				let dataLength: number = grid.dataRows.getLength();
+				let dataLength: number = grid.dataSet.dataRows.getLength();
 
 				// If this is not the "new row" at the very bottom
 				if (activeRow !== dataLength) {
@@ -900,13 +915,13 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 
 			validate(): any {
-				let activeRow = grid.activeCell.row;
+				let activeRow = grid.currentCell.row;
 				let result: any = { valid: true, msg: undefined };
 				let colIndex: number = grid.getColumnIndex(this._args.column.name);
 				let newValue: any = this._textEditor.getValue();
 
 				// TODO: It would be nice if we could support the isCellEditValid as a promise
-				if (grid.isCellEditValid && !grid.isCellEditValid(activeRow, colIndex, newValue)) {
+				if (grid.onIsCellEditValid && !grid.onIsCellEditValid(activeRow, colIndex, newValue)) {
 					result.valid = false;
 				}
 
@@ -914,6 +929,28 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 		}
 
+		console.log(grid.currentCell);
 		return OverridableTextEditor;
 	}
+
+	private getColumnEditor(column: ISlickColumn<any>): any {
+
+		if (column.isEditable === false || typeof column.isEditable === 'undefined') {
+			return undefined;
+		}
+
+		let columnId = column.id;
+		//  let isColumnLoading = this.columnsLoading && this.columnsLoading.indexOf(columnId) !== -1;,
+		let isColumnLoading = false;
+		let canEditColumn = columnId !== undefined && !isColumnLoading;
+		if (canEditColumn) {
+			return this.getOverridableTextEditorClass(this);
+		}
+		return undefined;
+	}
+
+	public getColumnIndex(name: string): number {
+		return this._columnNameToIndex[name];
+	}
+
 }
