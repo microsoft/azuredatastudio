@@ -116,7 +116,7 @@ function submitAllStats(productJson, commit) {
                 }
             */
             appInsights.defaultClient.trackEvent({
-                name: `${productJson.quality !== 'stable' ? 'adsworkbench' : 'monacoworkbench'}/packagemetrics`,
+                name: 'monacoworkbench/packagemetrics',
                 properties: { commit, size: JSON.stringify(sizes), count: JSON.stringify(counts) }
             });
             appInsights.defaultClient.flush({
