@@ -785,6 +785,9 @@ export class EditDataGridPanel extends GridParentComponent {
 				editorFactory: {
 					getEditor: (column: ISlickColumn<any>) => this.getColumnEditor(column)
 				},
+				formatterFactory: {
+					getFormatter: this.getFormatter
+				},
 				rowHeight: 29,
 				showRowNumber: true
 			};
@@ -803,54 +806,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		return new Table(this.nativeElement);
 	}
 
-	// private getFormatter = (column: any): any => {
-	// 	return (row, cell, value, columnDef, dataContext) => {
-	// 		let columnId = cell > 0 && this.columnDefinitions.length > cell - 1 ? this.columnDefinitions[cell - 1].id : undefined;
-	// 		if (columnId) {
-	// 			let isHighlighted = this.highlightedCells && !!this.highlightedCells.find(c => c.row === row && c.column + 1 === cell);
-	// 			let isColumnLoading = this.columnsLoading && this.columnsLoading.indexOf(columnId) !== -1;
-	// 			let isShadowed = this.blurredColumns && !!this.blurredColumns.find(c => c === columnId);
-	// 			let isContext = this.contextColumns && !!this.contextColumns.find(c => c === columnId);
-	// 			let overrideValue = this.overrideCellFn && this.overrideCellFn(row, columnId, value, dataContext);
 
-	// 			let valueToDisplay = (value + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-	// 			let cellClasses = 'grid-cell-value-container';
-
-	// 			/* tslint:disable:no-null-keyword */
-	// 			let valueMissing = value === undefined || value === null;
-	// 			/* tslint:disable:no-null-keyword */
-	// 			let isOverridden = overrideValue !== undefined && overrideValue !== null;
-
-	// 			if (valueMissing && !isOverridden) {
-	// 				cellClasses += ' missing-value';
-	// 			}
-
-	// 			if (isColumnLoading === true && !isOverridden) {
-	// 				cellClasses += ' loading-cell';
-	// 				valueToDisplay = '';
-	// 			}
-
-	// 			if (isOverridden) {
-	// 				cellClasses += ' override-cell';
-	// 				valueToDisplay = overrideValue;
-	// 			}
-
-	// 			if (isContext) {
-	// 				cellClasses += ' context';
-	// 			}
-
-	// 			if (isHighlighted === true) {
-	// 				cellClasses += ' highlighted';
-	// 			}
-
-	// 			if (isShadowed && !isHighlighted && !isOverridden) {
-	// 				cellClasses += ' blurred';
-	// 			}
-
-	// 			return '<span title="' + valueToDisplay + '" class="' + cellClasses + '">' + valueToDisplay + '</span>';
-	// 		}
-
-	// 	};
 
 	getOverridableTextEditorClass(grid: EditDataGridPanel): any {
 		class OverridableTextEditor {
@@ -953,4 +909,42 @@ export class EditDataGridPanel extends GridParentComponent {
 		return this._columnNameToIndex[name];
 	}
 
+	private getFormatter = (column: any): any => {
+		return (row, cell, value, columnDef, dataContext) => {
+			let columnId = cell > 0 && this.dataSet.columnDefinitions.length > cell - 1 ? this.dataSet.columnDefinitions[cell - 1].id : undefined;
+			if (columnId) {
+				// let isHighlighted = this.dataSet.highlightedCells && !!this.highlightedCells.find(c => c.row === row && c.column + 1 === cell);
+				// let isColumnLoading = this.columnsLoading && this.columnsLoading.indexOf(columnId) !== -1;
+				// let isShadowed = this.blurredColumns && !!this.blurredColumns.find(c => c === columnId);
+				// let isContext = this.contextColumns && !!this.contextColumns.find(c => c === columnId);
+				// let overrideValue = this.overrideCellFn && this.overrideCellFn(row, columnId, value, dataContext);
+				let valueToDisplay = (value + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+				let cellClasses = 'grid-cell-value-container';
+				// let valueMissing = value === undefined || value === null;
+				// let isOverridden = overrideValue !== undefined && overrideValue !== null;
+				// if (valueMissing && !isOverridden) {
+				//     cellClasses += ' missing-value';
+				// }
+				// if (isColumnLoading === true && !isOverridden) {
+				//     cellClasses += ' loading-cell';
+				//     valueToDisplay = '';
+				// }
+				// if (isOverridden) {
+				//     cellClasses += ' override-cell';
+				//     valueToDisplay = overrideValue;
+				// }
+				// if (isContext) {
+				//     cellClasses += ' context';
+				// }
+				// if (isHighlighted === true) {
+				//     cellClasses += ' highlighted';
+				// }
+				// if (isShadowed && !isHighlighted && !isOverridden) {
+				//     cellClasses += ' blurred';
+				// }
+				return '<span title="' + valueToDisplay + '" class="' + cellClasses + '">' + valueToDisplay + '</span>';
+			}
+			return undefined;
+		};
+	}
 }
