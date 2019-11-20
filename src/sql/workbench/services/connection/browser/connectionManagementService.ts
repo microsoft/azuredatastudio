@@ -702,9 +702,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public ensureDefaultLanguageFlavor(uri: string): void {
 		if (!this.getProviderIdFromUri(uri)) {
 			// Lookup the default settings and use this
-			let defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultEngine);
-			if (defaultProvider && this._providers.has(defaultProvider)) {
-				// Only set a default if it's in the list of registered providers
+			let defaultProvider = this.getDefaultProviderId();
+			if (defaultProvider) {
 				this.doChangeLanguageFlavor(uri, 'sql', defaultProvider);
 			}
 		}
