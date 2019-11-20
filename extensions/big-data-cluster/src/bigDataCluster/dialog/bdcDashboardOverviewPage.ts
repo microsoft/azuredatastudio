@@ -298,6 +298,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 			.withProperties<azdata.TextComponentProperties>({
 				value: getHealthStatusIcon(serviceStatus.healthStatus),
 				ariaRole: 'img',
+				title: getHealthStatusDisplayText(serviceStatus.healthStatus),
 				CSSStyles: { 'user-select': 'none' }
 			}).component();
 		serviceStatusRow.addItem(statusIconCell, { CSSStyles: { 'width': `${overviewIconColumnWidthPx}px`, 'min-width': `${overviewIconColumnWidthPx}px` } });
