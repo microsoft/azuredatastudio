@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { EOL } from 'os';
 import * as path from 'path';
-import { SemVer, compare } from 'semver';
+import { SemVer, compare as SemVerCompare } from 'semver';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { Command, ITool, OsDistribution, ToolStatus, ToolType } from '../../interfaces';
@@ -100,8 +100,8 @@ export abstract class ToolBase implements ITool {
 		return <string>toolStatusLocalized.get(this._status);
 	}
 
-	public get autoInstallRequired(): boolean {
-		return this.status !== ToolStatus.Installed && this.autoInstallSupported;
+	public isInstallRequired(minimumVersion?: string): boolean {
+		return this.status !== ToolStatus.Installed && this.autoInstallSupported && this.isSameOrNewerThan(minimumVersion);
 	}
 
 	public get isNotInstalled(): boolean {
@@ -298,13 +298,12 @@ export abstract class ToolBase implements ITool {
 		}
 	}
 
-	isSameOrNewerThan(version: string): boolean {
-		return this._version ? compare(this._version, new SemVer(version)) >= 0 : false;
+	isSameOrNewerThan(version?: string): boolean {
+		return !version || (this._version ? SemVerCompare(this._version, version) >= 0 : false);
 	}
 
 	private _status: ToolStatus = ToolStatus.NotInstalled;
 	private _version?: SemVer;
 	private _statusDescription?: string;
 	private _installationPath!: string;
-
 }
