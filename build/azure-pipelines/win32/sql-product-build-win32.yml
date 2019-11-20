@@ -131,26 +131,30 @@ steps:
             "keyCode": "CP-230012",
             "operationSetCode": "SigntoolSign",
             "parameters": [
-            {
-              "parameterName": "OpusName",
-              "parameterValue": "Azure Data Studio"
-            },
-            {
-              "parameterName": "OpusInfo",
-              "parameterValue": "https://github.com/microsoft/azuredatastudio"
-            },
-            {
-              "parameterName": "PageHash",
-              "parameterValue": "/NPH"
-            },
-            {
-              "parameterName": "FileDigest",
-              "parameterValue": "/fd sha256"
-            },
-            {
-              "parameterName": "TimeStamp",
-              "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
-            }
+              {
+                "parameterName": "OpusName",
+                "parameterValue": "Azure Data Studio"
+              },
+              {
+                "parameterName": "OpusInfo",
+                "parameterValue": "https://github.com/microsoft/azuredatastudio"
+              },
+              {
+                "parameterName": "Append",
+                "parameterValue": "/as"
+              },
+              {
+                "parameterName": "FileDigest",
+                "parameterValue": "/fd \"SHA256\""
+              },
+              {
+                "parameterName": "PageHash",
+                "parameterValue": "/NPH"
+              },
+              {
+                "parameterName": "TimeStamp",
+                "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+              }
             ],
             "toolName": "signtool.exe",
             "toolVersion": "6.2.9304.0"
