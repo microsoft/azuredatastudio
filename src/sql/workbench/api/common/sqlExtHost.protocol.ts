@@ -623,7 +623,8 @@ export const SqlMainContext = {
 	MainThreadQueryEditor: createMainId<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
 	MainThreadNotebook: createMainId<MainThreadNotebookShape>('MainThreadNotebook'),
 	MainThreadNotebookDocumentsAndEditors: createMainId<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors'),
-	MainThreadExtensionManagement: createMainId<MainThreadExtensionManagementShape>('MainThreadExtensionManagement')
+	MainThreadExtensionManagement: createMainId<MainThreadExtensionManagementShape>('MainThreadExtensionManagement'),
+	MainThreadAria: createMainId<MainThreadAriaShape>('MainThreadAria')
 };
 
 export const SqlExtHostContext = {
@@ -644,7 +645,8 @@ export const SqlExtHostContext = {
 	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor'),
 	ExtHostNotebook: createExtId<ExtHostNotebookShape>('ExtHostNotebook'),
 	ExtHostNotebookDocumentsAndEditors: createExtId<ExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors'),
-	ExtHostExtensionManagement: createExtId<ExtHostExtensionManagementShape>('ExtHostExtensionManagement')
+	ExtHostExtensionManagement: createExtId<ExtHostExtensionManagementShape>('ExtHostExtensionManagement'),
+	ExtHostAria: createExtId<ExtHostAriaShape>('ExtHostAria')
 };
 
 export interface MainThreadDashboardShape extends IDisposable {
@@ -909,4 +911,14 @@ export interface ExtHostExtensionManagementShape {
 export interface MainThreadExtensionManagementShape extends IDisposable {
 	$install(vsixPath: string): Thenable<string>;
 	$showObsoleteExtensionApiUsageNotification(message: string): void;
+}
+
+export interface ExtHostAriaShape {
+	$alert(msg: string, disableRepeat?: boolean): void;
+	$status(msg: string, disableRepeat?: boolean): void;
+}
+
+export interface MainThreadAriaShape {
+	$alert(msg: string, disableRepeat?: boolean): void;
+	$status(msg: string, disableRepeat?: boolean): void;
 }

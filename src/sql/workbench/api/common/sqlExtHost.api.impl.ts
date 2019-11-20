@@ -35,6 +35,7 @@ import { IURITransformerService } from 'vs/workbench/api/common/extHostUriTransf
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IExtensionApiFactory as vsIApiFactory, createApiFactoryAndRegisterActors as vsApiFactory } from 'vs/workbench/api/common/extHost.api.impl';
+import { ExtHostAria } from 'sql/workbench/api/common/extHostAria';
 
 export interface ISqlopsExtensionApiFactory {
 	(extension: IExtensionDescription): typeof sqlops;
@@ -100,6 +101,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol));
 	const extHostNotebookDocumentsAndEditors = rpcProtocol.set(SqlExtHostContext.ExtHostNotebookDocumentsAndEditors, new ExtHostNotebookDocumentsAndEditors(rpcProtocol));
 	const extHostExtensionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostExtensionManagement, new ExtHostExtensionManagement(rpcProtocol));
+	const extHostAria = rpcProtocol.set(SqlExtHostContext.ExtHostAria, new ExtHostAria(rpcProtocol));
 
 
 	return {
@@ -514,6 +516,15 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				NotebookChangeKind: sqlExtHostTypes.NotebookChangeKind
 			};
 
+			const aria = {
+				alert(msg: string, disableRepeat?: boolean): void {
+					extHostAria.$alert(msg, disableRepeat);
+				},
+				status(msg: string, disableRepeat?: boolean): void {
+					extHostAria.$status(msg, disableRepeat);
+				}
+			};
+
 			return {
 				accounts,
 				connection,
@@ -559,7 +570,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				AgentSubSystem: sqlExtHostTypes.AgentSubSystem,
 				ExtensionNodeType: sqlExtHostTypes.ExtensionNodeType,
 				ColumnSizingMode: sqlExtHostTypes.ColumnSizingMode,
-				DatabaseEngineEdition: sqlExtHostTypes.DatabaseEngineEdition
+				DatabaseEngineEdition: sqlExtHostTypes.DatabaseEngineEdition,
+				aria: aria
 			};
 		},
 

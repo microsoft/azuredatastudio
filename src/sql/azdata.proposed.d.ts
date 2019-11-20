@@ -29,6 +29,10 @@ declare module 'azdata' {
 		export function getConnection(uri: string): Thenable<ConnectionProfile>;
 	}
 
+	export namespace aria {
+		export function alert(msg: string, disableRepeat?: boolean): void;
+		export function status(msg: string, disableRepeat?: boolean): void;
+	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
 		| 'Float' | 'Image' | 'Int' | 'Money' | 'NChar' | 'NText' | 'NVarChar' | 'Real'
