@@ -159,13 +159,13 @@ steps:
             "keyCode": "CP-230012",
             "operationSetCode": "SigntoolVerify",
             "parameters": [
-            {
-              "parameterName": "VerifyAll",
-              "parameterValue": "/all"
-            }
-                ],
-            "toolName": "signtool.exe",
-            "toolVersion": "6.2.9304.0"
+              {
+                "parameterName": "VerifyAll",
+                "parameterValue": "/all"
+              }
+            ],
+          "toolName": "sign",
+          "toolVersion": "1.0"
           }
         ]
       SessionTimeout: 600
