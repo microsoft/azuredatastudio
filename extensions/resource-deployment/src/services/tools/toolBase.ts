@@ -100,8 +100,8 @@ export abstract class ToolBase implements ITool {
 		return <string>toolStatusLocalized.get(this._status);
 	}
 
-	public isInstallRequired(minimumVersion?: string): boolean {
-		return this.status !== ToolStatus.Installed && this.autoInstallSupported && this.isSameOrNewerThan(minimumVersion);
+	public get autoInstallRequired(): boolean {
+		return this.status !== ToolStatus.Installed && this.autoInstallSupported;
 	}
 
 	public get isNotInstalled(): boolean {

@@ -248,6 +248,7 @@ export interface ITool {
 	readonly dependencyMessages: string[];
 	readonly statusDescription: string | undefined;
 	readonly autoInstallSupported: boolean;
+	readonly autoInstallRequired: boolean;
 	readonly isNotInstalled: boolean;
 	readonly isInstalled: boolean;
 	readonly installationPath: string;
@@ -255,7 +256,7 @@ export interface ITool {
 	readonly outputChannelName: string;
 	readonly fullVersion: string | undefined;
 	readonly onDidUpdateData: vscode.Event<ITool>;
-	isInstallRequired(minimumVersion?: string): boolean;
+
 	showOutputChannel(preserveFocus?: boolean): void;
 	loadInformation(): Promise<void>;
 	install(): Promise<void>;

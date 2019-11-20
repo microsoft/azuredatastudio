@@ -244,12 +244,12 @@ export class ResourceTypePickerDialog extends DialogBase {
 						minVersionCheckFailed = true;
 						messages.push(localize('deploymentDialog.ToolDoesNotMeetVersionRequirement', "'{0}' [ {1} ] does not meet the minimum version requirement, please uninstall it and restart Azure Data Studio.", tool.displayName, tool.homePage));
 					}
-					installationRequired = installationRequired || tool.isInstallRequired(toolReq.version);
+					installationRequired = installationRequired || tool.autoInstallRequired;
 					return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || '', toolReq.version || ''];
 				});
 
 				this._installToolButton.hidden = minVersionCheckFailed || !installationRequired;
-				this._dialogObject.okButton.enabled = messages.length === 0 && !installationRequired;
+				this._dialogObject.okButton.enabled = messages.length === 0 && !minVersionCheckFailed && !installationRequired;
 				if (messages.length !== 0) {
 					if (!minVersionCheckFailed) {
 						messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed by yourself after Azure Data Studio is launched to pick up the updated PATH environment variable. You may find additional details in the debug console by running the 'Toggle Developer Tools' command in the Azure Data Studio Command Palette."));
