@@ -1196,7 +1196,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (exp) {
 			return new Promise<NotebookRange>((resolve) => {
 				const disp = this.onFindCountChange(e => {
-					resolve(this._findArray[e - 1]);
+					resolve(this._findArray[0]);
 					disp.dispose();
 				});
 				this._startSearch(exp, maxMatches);

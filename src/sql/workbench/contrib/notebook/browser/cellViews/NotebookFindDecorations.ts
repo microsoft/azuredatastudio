@@ -92,11 +92,7 @@ export class FindDecorations implements IDisposable {
 	}
 
 	public clearDecorations(): void {
-		if (this.checkValidEditor(this._currentMatch)) {
-			this._editor.getCellEditor(this._currentMatch.cell.cellGuid).getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
-				changeAccessor.removeDecoration(this._rangeHighlightDecorationId);
-			});
-		}
+		this.removePrevDecorations();
 	}
 
 	public setCurrentFindMatch(nextMatch: NotebookRange | null): number {

@@ -269,6 +269,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		}
 
 		if (e.searchString) {
+			this._decorations.clearDecorations();
 			if (this._notebookModel) {
 				if (this._findState.searchString) {
 					let findScope = this._decorations.getFindScope();
