@@ -7,7 +7,7 @@ import 'vs/css!sql/media/overwriteVsIcons';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
+import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { SyncActionDescriptor, MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import { KeyMod, KeyCode, KeyChord } from 'vs/base/common/keyCodes';
@@ -32,7 +32,7 @@ import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } fr
 
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, QueryStatusStatusBarContributions } from 'sql/workbench/contrib/query/browser/statusBarItems';
-import { SqlFlavorStatusbarItem } from 'sql/workbench/contrib/query/browser/flavorStatus';
+import { SqlFlavorStatusbarItem, ChangeFlavorAction } from 'sql/workbench/contrib/query/browser/flavorStatus';
 import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/contrib/query/browser/queryActions';
 import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
 import { MssqlNodeContext } from 'sql/workbench/contrib/dataExplorer/browser/mssqlNodeContext';
@@ -43,6 +43,10 @@ import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/
 export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.queryEditorVisibleId);
 export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
 export const ResultsMessagesFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsMessagesFocussedId));
+
+export const Extensions = {
+	WorkbenchActions: 'workbench.contributions.actions'
+};
 
 // Editor
 const queryResultsEditorDescriptor = new EditorDescriptor(
@@ -564,3 +568,7 @@ workbenchRegistry.registerWorkbenchContribution(TimeElapsedStatusBarContribution
 workbenchRegistry.registerWorkbenchContribution(RowCountStatusBarContributions, LifecyclePhase.Restored);
 workbenchRegistry.registerWorkbenchContribution(QueryStatusStatusBarContributions, LifecyclePhase.Restored);
 workbenchRegistry.registerWorkbenchContribution(SqlFlavorStatusbarItem, LifecyclePhase.Restored);
+
+// Register Flavor Action
+const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
+registry.registerWorkbenchAction(new SyncActionDescriptor(ChangeFlavorAction, ChangeFlavorAction.ID, ChangeFlavorAction.LABEL), 'Change Language Flavor');

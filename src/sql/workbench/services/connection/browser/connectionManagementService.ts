@@ -204,6 +204,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
+	 * Gets the list of provider names
+	 */
+	public getProviderNames(): string[] {
+		return entries(this._capabilitiesService.providers).map(p => p[0]);
+	}
+
+	/**
 	 * Get the connections provider ID from an connection URI
 	 */
 	public getProviderIdFromUri(ownerUri: string): string {
@@ -213,6 +220,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 
 		return providerId;
+	}
+
+	/**
+	 * Sets the provider ID for a URI
+	 */
+	public setProviderIdForUri(ownerUri: string, providerName: string): void {
+		// setup URI to provider ID map
+		this._uriToProvider[ownerUri] = providerName;
 	}
 
 	/**

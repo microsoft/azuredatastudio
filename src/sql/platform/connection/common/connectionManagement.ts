@@ -201,6 +201,16 @@ export interface IConnectionManagementService {
 
 	getProviderIdFromUri(ownerUri: string): string;
 
+	/**
+	 * Sets the provider for a uri
+	 */
+	setProviderIdForUri(ownerUri: string, providerName: string): void;
+
+	/**
+	 * Gets all provider names
+	 */
+	getProviderNames(): string[];
+
 	hasRegisteredServers(): boolean;
 
 	canChangeConnectionConfig(profile: IConnectionProfile, newGroupID: string): boolean;
