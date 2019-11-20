@@ -920,7 +920,9 @@ export class EditDataGridPanel extends GridParentComponent {
 				// let overrideValue = this.overrideCellFn && this.overrideCellFn(row, columnId, value, dataContext);
 				let valueToDisplay = (value + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 				let cellClasses = 'grid-cell-value-container';
+				// /* tslint:disable:no-null-keyword */
 				// let valueMissing = value === undefined || value === null;
+				// /* tslint:disable:no-null-keyword */
 				// let isOverridden = overrideValue !== undefined && overrideValue !== null;
 				// if (valueMissing && !isOverridden) {
 				//     cellClasses += ' missing-value';
