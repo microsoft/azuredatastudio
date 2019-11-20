@@ -294,7 +294,12 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 
 	private createServiceStatusRow(container: azdata.FlexContainer, serviceStatus: ServiceStatusModel, isLastRow: boolean): void {
 		const serviceStatusRow = this.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center', height: '30px' }).component();
-		const statusIconCell = this.modelBuilder.text().withProperties({ value: getHealthStatusIcon(serviceStatus.healthStatus), CSSStyles: { 'user-select': 'none' } }).component();
+		const statusIconCell = this.modelBuilder.text()
+			.withProperties<azdata.TextComponentProperties>({
+				value: getHealthStatusIcon(serviceStatus.healthStatus),
+				ariaRole: 'img',
+				CSSStyles: { 'user-select': 'none' }
+			}).component();
 		serviceStatusRow.addItem(statusIconCell, { CSSStyles: { 'width': `${overviewIconColumnWidthPx}px`, 'min-width': `${overviewIconColumnWidthPx}px` } });
 		const nameCell = this.modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink } }).component();
 		nameCell.onDidClick(() => {
