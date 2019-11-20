@@ -885,7 +885,6 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 		}
 
-		console.log(grid.currentCell);
 		return OverridableTextEditor;
 	}
 
