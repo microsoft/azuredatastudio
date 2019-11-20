@@ -168,6 +168,8 @@ function createInstanceHealthStatusRow(modelBuilder: azdata.ModelBuilder, instan
 	const statusIconCell = modelBuilder.text()
 		.withProperties<azdata.TextComponentProperties>({
 			value: getHealthStatusIcon(instanceStatus.healthStatus),
+			ariaRole: 'img',
+			title: getHealthStatusDisplayText(instanceStatus.healthStatus),
 			CSSStyles: { 'user-select': 'none' }
 		}).component();
 	instanceHealthStatusRow.addItem(statusIconCell, { CSSStyles: { 'width': `${healthAndStatusIconColumnWidth}px`, 'min-width': `${healthAndStatusIconColumnWidth}px` } });

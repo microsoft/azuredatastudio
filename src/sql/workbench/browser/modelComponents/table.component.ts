@@ -352,10 +352,6 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		return this.getPropertyOrDefault<azdata.TableComponentProperties, number>((props) => props.ariaColumnCount, -1);
 	}
 
-	public get ariaRole(): string {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, string>((props) => props.ariaRole, undefined);
-	}
-
 	public set moveFocusOutWithTab(newValue: boolean) {
 		this.setPropertyFromUI<azdata.TableComponentProperties, boolean>((props, value) => props.moveFocusOutWithTab = value, newValue);
 	}
