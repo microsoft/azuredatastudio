@@ -3020,10 +3020,6 @@ declare module 'azdata' {
 		 */
 		ariaLabel?: string;
 		/**
-		 * Corresponds to the role accessibility attribute for this component
-		 */
-		ariaRole?: string;
-		/**
 		 * Matches the CSS style key and its available values.
 		 */
 		CSSStyles?: { [key: string]: string };

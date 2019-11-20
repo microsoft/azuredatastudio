@@ -11,7 +11,6 @@ export class ExtHostAria implements ExtHostAriaShape {
 
 	private readonly _proxy: MainThreadAriaShape;
 
-	// Notebook URI to manager lookup.
 	constructor(_mainContext: IMainContext) {
 		this._proxy = _mainContext.getProxy(SqlMainContext.MainThreadAria);
 	}
