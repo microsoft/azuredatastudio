@@ -367,8 +367,7 @@ function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: 
 	copyValueCell.iconPath = IconPathHelper.copy;
 	copyValueCell.onDidClick(() => {
 		vscode.env.clipboard.writeText(endpoint.endpoint);
-		azdata.aria.status(localize('copiedEndpoint', "Copied endpoint {0}", getEndpointDisplayText(endpoint.name, endpoint.description)));
-
+		vscode.window.showInformationMessage(localize('copiedEndpoint', "Endpoint '{0}' copied to clipboard", getEndpointDisplayText(endpoint.name, endpoint.description)));
 	});
 	copyValueCell.iconHeight = '14px';
 	copyValueCell.iconWidth = '14px';
