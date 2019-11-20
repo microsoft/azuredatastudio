@@ -213,9 +213,17 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return Promise.resolve();
 	}
 
+	getProviderNames(): string[] {
+		return [];
+	}
+
 	getProviderIdFromUri(ownerUri: string): string {
 		return undefined;
 	}
+
+	setProviderIdForUri(ownerUri: string, providerName: string): void {
+	}
+
 	hasRegisteredServers(): boolean {
 		return true;
 	}
@@ -233,10 +241,6 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 	ensureDefaultLanguageFlavor(uri: string): void {
 
-	}
-
-	public getProviderNames(): string[] {
-		return [];
 	}
 
 	connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection', saveConnection: boolean = false): Promise<string> {
