@@ -151,19 +151,6 @@ configurationRegistry.registerConfiguration({
 	'title': 'Notebook',
 	'type': 'object',
 	'properties': {
-		'notebook.useInProcMarkdown': {
-			'type': 'boolean',
-			'default': true,
-			'description': localize('notebook.inProcMarkdown', "Use in-process markdown viewer to render text cells more quickly (Experimental).")
-		}
-	}
-});
-
-configurationRegistry.registerConfiguration({
-	'id': 'notebook',
-	'title': 'Notebook',
-	'type': 'object',
-	'properties': {
 		'notebook.sqlStopOnError': {
 			'type': 'boolean',
 			'default': true,
