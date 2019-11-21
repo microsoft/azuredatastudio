@@ -38,7 +38,7 @@ export class Checkbox extends Widget {
 		this._el.style.verticalAlign = 'middle';
 
 		if (opts.ariaLabel) {
-			this._el.setAttribute('aria-label', opts.ariaLabel);
+			this.ariaLabel = opts.ariaLabel;
 		}
 
 		this.onchange(this._el, e => {
@@ -69,6 +69,10 @@ export class Checkbox extends Widget {
 
 	public set label(val: string) {
 		this._label.innerText = val;
+		// Default the aria label to the label if one wasn't specifically set by the user
+		if (!this.ariaLabel) {
+			this.ariaLabel = val;
+		}
 	}
 
 	public set enabled(val: boolean) {
@@ -86,6 +90,14 @@ export class Checkbox extends Widget {
 
 	public get checked(): boolean {
 		return this._el.checked;
+	}
+
+	public set ariaLabel(val: string | null) {
+		this._el.setAttribute('aria-label', val || '');
+	}
+
+	public get ariaLabel(): string | null {
+		return this._el.getAttribute('aria-label');
 	}
 
 	public focus(): void {

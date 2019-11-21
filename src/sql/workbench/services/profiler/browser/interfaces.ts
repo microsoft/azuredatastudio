@@ -139,7 +139,7 @@ export interface IProfilerService {
 	 * Saves the filter
 	 * @param filter filter object
 	 */
-	saveFilter(filter: ProfilerFilter): void;
+	saveFilter(filter: ProfilerFilter): Promise<void>;
 }
 
 export interface IProfilerSettings {

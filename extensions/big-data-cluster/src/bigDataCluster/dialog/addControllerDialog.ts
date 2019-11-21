@@ -180,6 +180,7 @@ export class AddControllerDialog {
 				}]).withLayout({ width: '100%' }).component();
 			this.onAuthChanged();
 			await view.initializeModel(formModel);
+			this.urlInputBox.focus();
 		});
 
 		this.dialog.registerCloseValidator(async () => await this.validate());

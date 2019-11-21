@@ -121,12 +121,21 @@ export class BdcDashboard extends BdcDashboardPage {
 					width: navWidth,
 					height: '100%'
 				}
-			).component();
+			).withProperties({
+				ariaRole: 'tablist'
+			}).component();
 
 			this.mainAreaContainer.addItem(this.navContainer, { flex: `0 0 ${navWidth}`, CSSStyles: { 'padding': '0 20px 0 20px', 'border-right': 'solid 1px #ccc' } });
 
 			// Overview nav item - this will be the initial page
-			const overviewNavItemDiv = modelView.modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).withProperties({ clickable: true }).component();
+			const overviewNavItemDiv = modelView.modelBuilder
+				.divContainer()
+				.withLayout({ width: navWidth, height: '30px' })
+				.withProperties<azdata.DivContainerProperties>({
+					clickable: true,
+					ariaRole: 'tab',
+					ariaSelected: true
+				}).component();
 			const overviewNavItemText = modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.overviewNavTitle', "Big Data Cluster overview") }).component();
 			overviewNavItemText.updateCssStyles(selectedTabCss);
 			overviewNavItemDiv.addItem(overviewNavItemText, { CSSStyles: { 'user-select': 'text' } });
@@ -139,12 +148,14 @@ export class BdcDashboard extends BdcDashboardPage {
 			overviewNavItemDiv.onDidClick(() => {
 				if (this.currentTab) {
 					this.currentTab.text.updateCssStyles(unselectedTabCss);
+					this.currentTab.div.ariaSelected = false;
 				}
 				this.mainAreaContainer.removeItem(this.currentPage);
 				this.mainAreaContainer.addItem(overviewContainer, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
 				this.currentPage = overviewContainer;
 				this.currentTab = { serviceName: undefined, div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
 				this.currentTab.text.updateCssStyles(selectedTabCss);
+				this.currentTab.div.ariaSelected = true;
 			});
 			this.navContainer.addItem(overviewNavItemDiv, { flex: '0 0 auto' });
 
@@ -198,12 +209,14 @@ export class BdcDashboard extends BdcDashboardPage {
 		}
 		if (this.currentTab) {
 			this.currentTab.text.updateCssStyles(unselectedTabCss);
+			this.currentTab.div.ariaSelected = false;
 		}
 		this.mainAreaContainer.removeItem(this.currentPage);
 		this.mainAreaContainer.addItem(tabPageMapping.servicePage, { CSSStyles: { 'margin': '0 20px 0 20px' } });
 		this.currentPage = tabPageMapping.servicePage;
 		this.currentTab = tabPageMapping.navTab;
 		this.currentTab.text.updateCssStyles(selectedTabCss);
+		this.currentTab.div.ariaSelected = true;
 	}
 
 	/**
@@ -233,7 +246,15 @@ export class BdcDashboard extends BdcDashboardPage {
 }
 
 function createServiceNavTab(modelBuilder: azdata.ModelBuilder, serviceStatus: ServiceStatusModel): NavTab {
-	const div = modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px', }).withProperties({ clickable: true }).component();
+	const div = modelBuilder.divContainer()
+		.withLayout({
+			width: navWidth,
+			height: '30px',
+		})
+		.withProperties<azdata.DivContainerProperties>({
+			clickable: true,
+			ariaRole: 'tab'
+		}).component();
 	const innerContainer = modelBuilder.flexContainer().withLayout({ width: navWidth, height: '30px', flexFlow: 'row' }).component();
 	const dot = modelBuilder.text().withProperties({ value: getHealthStatusDot(serviceStatus.healthStatus), CSSStyles: { 'color': 'red', 'font-size': '40px', 'width': '20px', ...cssStyles.nonSelectableText } }).component();
 	innerContainer.addItem(dot, { flex: '0 0 auto' });

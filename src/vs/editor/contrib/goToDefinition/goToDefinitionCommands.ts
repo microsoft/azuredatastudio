@@ -21,7 +21,7 @@ import { PeekContext } from 'vs/editor/contrib/referenceSearch/peekViewWidget';
 import { ReferencesController } from 'vs/editor/contrib/referenceSearch/referencesController';
 import { ReferencesModel } from 'vs/editor/contrib/referenceSearch/referencesModel';
 import * as nls from 'vs/nls';
-// import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
+import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -477,31 +477,29 @@ registerEditorAction(GoToTypeDefinitionAction);
 registerEditorAction(PeekTypeDefinitionAction);
 
 // Go to menu
-// {{SQL CARBON EDIT}} - Disable unused menu items
-// MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
-// 	group: '4_symbol_nav',
-// 	command: {
-// 		id: 'editor.action.goToDeclaration',
-// 		title: nls.localize({ key: 'miGotoDefinition', comment: ['&& denotes a mnemonic'] }, "Go to &&Definition")
-// 	},
-// 	order: 2
-// });
+MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
+	group: '4_symbol_nav',
+	command: {
+		id: 'editor.action.goToDeclaration',
+		title: nls.localize({ key: 'miGotoDefinition', comment: ['&& denotes a mnemonic'] }, "Go to &&Definition")
+	},
+	order: 2
+});
 
-// MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
-// 	group: '4_symbol_nav',
-// 	command: {
-// 		id: 'editor.action.goToTypeDefinition',
-// 		title: nls.localize({ key: 'miGotoTypeDefinition', comment: ['&& denotes a mnemonic'] }, "Go to &&Type Definition")
-// 	},
-// 	order: 3
-// });
+MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
+	group: '4_symbol_nav',
+	command: {
+		id: 'editor.action.goToTypeDefinition',
+		title: nls.localize({ key: 'miGotoTypeDefinition', comment: ['&& denotes a mnemonic'] }, "Go to &&Type Definition")
+	},
+	order: 3
+});
 
-// MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
-// 	group: '4_symbol_nav',
-// 	command: {
-// 		id: 'editor.action.goToImplementation',
-// 		title: nls.localize({ key: 'miGotoImplementation', comment: ['&& denotes a mnemonic'] }, "Go to &&Implementation")
-// 	},
-// 	order: 4
-// });
-// {{SQL CARBON EDIT - End}}
+MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
+	group: '4_symbol_nav',
+	command: {
+		id: 'editor.action.goToImplementation',
+		title: nls.localize({ key: 'miGotoImplementation', comment: ['&& denotes a mnemonic'] }, "Go to &&Implementation")
+	},
+	order: 4
+});

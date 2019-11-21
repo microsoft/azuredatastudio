@@ -34,7 +34,7 @@ export function getEditorUri(input: IEditorInput): string {
 	}
 
 	if (uri) {
-		return uri.toString();
+		return uri.toString(true);
 	}
 	return undefined;
 }

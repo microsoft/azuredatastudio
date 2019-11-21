@@ -96,6 +96,7 @@ export class Dropdown extends Disposable {
 
 	private _onFocus = this._register(new Emitter<void>());
 	public onFocus: Event<void> = this._onFocus.event;
+	private readonly _widthControlElement: HTMLElement;
 
 	constructor(
 		container: HTMLElement,
@@ -105,6 +106,10 @@ export class Dropdown extends Disposable {
 		super();
 		this._options = opt || Object.create(null);
 		mixin(this._options, defaults, false);
+		this._widthControlElement = DOM.append(container, document.createElement('span'));
+		this._widthControlElement.classList.add('monaco-dropdown-width-control-element');
+		this._widthControlElement.setAttribute('aria-hidden', 'true');
+
 		this._el = DOM.append(container, DOM.$('.monaco-dropdown'));
 		this._el.style.width = '100%';
 
@@ -267,14 +272,27 @@ export class Dropdown extends Disposable {
 
 	public set values(vals: string[] | undefined) {
 		if (vals) {
+			const longestString = vals.reduce((previous, current) => {
+				return previous.length > current.length ? previous : current;
+			}, '');
+
+			this._widthControlElement.innerText = longestString;
+
 			this._filter.filterString = '';
 			this._dataSource.options = vals.map(i => { return { value: i }; });
 			let height = this._dataSource.options.length * 22 > this._options.maxHeight! ? this._options.maxHeight! : this._dataSource.options.length * 22;
+
 			this._treeContainer.style.height = height + 'px';
-			this._treeContainer.style.width = DOM.getContentWidth(this._inputContainer) - 2 + 'px';
+
+			if (longestString.length > 10) {
+				this._treeContainer.style.width = DOM.getTotalWidth(this._widthControlElement) + 'px';
+			}
+			this._treeContainer.style.maxWidth = `500px`;
+
 			this._tree.layout(parseInt(this._treeContainer.style.height));
 			this._tree.setInput(new DropdownModel()).catch(e => onUnexpectedError(e));
 			this._input.validate();
+
 		}
 	}
 
