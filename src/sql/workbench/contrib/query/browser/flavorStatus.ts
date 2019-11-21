@@ -8,11 +8,11 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IEditorCloseEvent } from 'vs/workbench/common/editor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { Action } from 'vs/base/common/actions';
+import { getCodeEditor } from 'vs/editor/browser/editorBrowser';
 import * as nls from 'vs/nls';
 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
-
 import { DidChangeLanguageFlavorParams } from 'azdata';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -194,15 +194,24 @@ export class ChangeFlavorAction extends Action {
 				"A connection using engine {0} exists. To change please disconnect or change connection", currentProvider));
 		}
 
+		const editorWidget = getCodeEditor(activeEditor.getControl());
+		if (!editorWidget) {
+			return this._showMessage(Severity.Info, nls.localize('noEditor', "No text editor active at this time"));
+		}
+
 		// TODO #1334 use connectionManagementService.GetProviderNames here. The challenge is that the credentials provider is returned
 		// so we need a way to filter this using a capabilities check, with isn't yet implemented
 		let ProviderOptions = this._connectionManagementService.getProviderNames().map(p => new SqlProviderEntry(p));
 
 		return this._quickInputService.pick(ProviderOptions, { placeHolder: nls.localize('pickSqlProvider', "Select SQL Language Provider") }).then(provider => {
 			if (provider) {
-				if (currentUri) {
-					this._connectionManagementService.setProviderIdForUri(currentUri, provider.providerId);
-					this._connectionManagementService.doChangeLanguageFlavor(currentUri, 'sql', provider.providerId);
+				let activeEditor = this._editorService.activeControl.getControl();
+				const editorWidget = getCodeEditor(activeEditor);
+				if (editorWidget) {
+					if (currentUri) {
+						this._connectionManagementService.setProviderIdForUri(currentUri, provider.providerId);
+						this._connectionManagementService.doChangeLanguageFlavor(currentUri, 'sql', provider.providerId);
+					}
 				}
 			}
 		});
