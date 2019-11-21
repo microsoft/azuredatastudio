@@ -437,22 +437,9 @@ export class EditDataGridPanel extends GridParentComponent {
 					}
 				}
 
-				this.handleChanges(self.dataSet.dataRows);
+				this.handleChanges({ ['dataRows']: self.dataSet.dataRows });
 				//self._cd.detectChanges(); Replacement above.
 				if (self.firstRender) {
-					self._tables[0] = self.createNewTable();
-					self._tables[0].setSelectionModel(self.selectionModel);
-					for (let i = 0; i < self.plugins[0].length; i++) {
-						self._tables[0].registerPlugin(self.plugins[0][i]);
-					}
-
-
-					let onContextMenu = (e: ITableMouseEvent) => {
-						self.openContextMenu(e, self.dataSet.batchId, self.dataSet.resultId, 0);
-					};
-
-					self._register(self._tables[0].onContextMenu(onContextMenu, self));
-
 					//TODO: Need to be able to add onClick function with working editor.
 
 					let setActive = function () {
@@ -773,14 +760,15 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	//my code here:
-	private createNewTable(): Table<any> {
+	private createNewTable(): void {
+
 		let t: Table<any>;
 		if (this.placeHolderDataSets) {
 			let dataSet = this.placeHolderDataSets[0];
 			let options = {
 				autoEdit: true,
 				defaultColumnWidth: 120,
-				editable: true, enableAddRow: false,
+				editable: false, enableAddRow: false,
 				enableAsyncPostRender: true,
 				enableCellNavigation: true,
 				enableColumnReorder: false,
@@ -802,10 +790,19 @@ export class EditDataGridPanel extends GridParentComponent {
 				console.log(this._columnNameToIndex);
 
 				t = new Table(this.nativeElement, { dataProvider: new AsyncDataProvider(dataSet.dataRows), columns: dataSet.columnDefinitions }, options);
-				return t;
+
+				this._tables[0] = t;
+				this._tables[0].setSelectionModel(this.selectionModel);
+				for (let i = 0; i < this.plugins[0].length; i++) {
+					this._tables[0].registerPlugin(this.plugins[0][i]);
+				}
+				let onContextMenu = (e: ITableMouseEvent) => {
+					this.openContextMenu(e, this.dataSet.batchId, this.dataSet.resultId, 0);
+				};
+				this._register(this._tables[0].onContextMenu(onContextMenu, self));
 			}
 		}
-		return new Table(this.nativeElement);
+		this._tables[0] = new Table(this.nativeElement);
 	}
 
 
@@ -958,8 +955,12 @@ export class EditDataGridPanel extends GridParentComponent {
 		let wasEditing = this._tables[0] ? !!this._tables[0].grid.getCellEditor() : false;
 
 		if (columnDefinitionChanges && !equals(columnDefinitionChanges.previousValue, columnDefinitionChanges.currentValue)) {
-			this._tables[0].grid.resetActiveCell();
-			this._tables[0].grid.setColumns(this.dataSet.columnDefinitions);
+			if (!this._tables[0]) {
+				this.createNewTable();
+			} else {
+				this._tables[0].grid.resetActiveCell();
+				this._tables[0].grid.setColumns(this.dataSet.columnDefinitions);
+			}
 			hasGridStructureChanges = true;
 
 			if (!columnDefinitionChanges.currentValue || columnDefinitionChanges.currentValue.length === 0) {
@@ -1004,7 +1005,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (this.dataSet.dataRows) {
 			// We must wait until we get the first set of dataRows before we enable editing or slickgrid will complain
 			console.log('need to check if row is editable or not');
-			if (true) {
+			if (false) {
 				this.enterEditSession();
 			}
 
