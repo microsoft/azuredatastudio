@@ -6,7 +6,7 @@
 import { nb } from 'azdata';
 
 import { localize } from 'vs/nls';
-import { IDefaultConnection, notebookConstants } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { IDefaultConnection } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -15,7 +15,7 @@ import { find } from 'vs/base/common/arrays';
 
 export class NotebookContexts {
 
-	private static get DefaultContext(): IDefaultConnection {
+	public static get DefaultContext(): IDefaultConnection {
 		let defaultConnection: ConnectionProfile = <any>{
 			providerName: mssqlProviderName,
 			id: '-1',
@@ -29,7 +29,7 @@ export class NotebookContexts {
 		};
 	}
 
-	private static get LocalContext(): IDefaultConnection {
+	public static get LocalContext(): IDefaultConnection {
 		let localConnection: ConnectionProfile = <any>{
 			providerName: mssqlProviderName,
 			id: '-1',
@@ -118,30 +118,5 @@ export class NotebookContexts {
 			otherConnections: activeConnections,
 			defaultConnection: defaultConnection
 		};
-	}
-
-	/**
-	 *
-	 * @param specs kernel specs (comes from session manager)
-	 * @param displayName kernel info loaded from
-	 */
-	public static getDefaultKernel(specs: nb.IAllKernels, displayName: string): nb.IKernelSpec {
-		let defaultKernel: nb.IKernelSpec;
-		if (specs) {
-			// find the saved kernel (if it exists)
-			if (displayName) {
-				defaultKernel = find(specs.kernels, (kernel) => kernel.display_name === displayName);
-			}
-			// if no saved kernel exists, use the default KernelSpec
-			if (!defaultKernel) {
-				defaultKernel = find(specs.kernels, (kernel) => kernel.name === specs.defaultKernel);
-			}
-			if (defaultKernel) {
-				return defaultKernel;
-			}
-		}
-
-		// If no default kernel specified (should never happen), default to SQL
-		return notebookConstants.sqlKernelSpec;
 	}
 }
