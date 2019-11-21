@@ -2848,6 +2848,63 @@
 					],
 					"statistics": [],
 					"flags": ""
+				},
+				{
+					"extensionId": "59",
+					"extensionName": "demo-mode",
+					"displayName": "Demo Mode",
+					"shortDescription": "Fast font embiggen for presentations and over the shoulder demos",
+					"publisher": {
+						"displayName": "Drew Skwiers-Koballa",
+						"publisherId": "drewsk",
+						"publisherName": "drewsk"
+					},
+					"versions": [
+						{
+							"version": "1.1.0",
+							"lastUpdated": "11/16/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/dzsquared/demo-mode/releases/tag/1.1.0"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/dzsquared/demo-mode/master/images/monitor256.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/dzsquared/demo-mode/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/dzsquared/demo-mode/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/dzsquared/demo-mode/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/dzsquared/demo-mode"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
