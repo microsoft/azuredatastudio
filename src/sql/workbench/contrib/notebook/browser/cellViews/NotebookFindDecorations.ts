@@ -72,25 +72,6 @@ export class FindDecorations implements IDisposable {
 		}
 	}
 
-	/* private _getDecorationIndex(decorationId: string): number {
-		const index = this._decorations.indexOf(decorationId);
-		if (index >= 0) {
-			return index + 1;
-		}
-		return 1;
-	}
-
-	public getCurrentMatchesPosition(desiredRange: NotebookRange): number {
-		let candidates = this._editor.getNotebookModel().getDecorationsInRange(desiredRange);
-		for (const candidate of candidates) {
-			const candidateOpts = candidate.options;
-			if (candidateOpts === FindDecorations._FIND_MATCH_DECORATION || candidateOpts === FindDecorations._CURRENT_FIND_MATCH_DECORATION) {
-				return this._getDecorationIndex(candidate.id);
-			}
-		}
-		return 1;
-	} */
-
 	public clearDecorations(): void {
 		this.removePrevDecorations();
 	}

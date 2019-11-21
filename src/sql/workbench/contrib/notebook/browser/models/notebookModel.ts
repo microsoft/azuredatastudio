@@ -738,7 +738,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public changeKernel(displayName: string): void {
 		this._contextsLoadingEmitter.fire();
-		this.doChangeKernel(displayName, true);
+		this.doChangeKernel(displayName, true).catch((err) => console.error(err));
 	}
 
 	private async doChangeKernel(displayName: string, mustSetProvider: boolean = true, restoreOnFail: boolean = true): Promise<void> {
@@ -928,8 +928,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public dispose(): void {
 		super.dispose();
-		this.disconnectAttachToConnections();
-		this.handleClosed();
+		this.disconnectAttachToConnections().catch((err) => console.error(err));
+		this.handleClosed().catch((err) => console.error(err));
 		this._findArray = [];
 		this._isDisposed = true;
 	}

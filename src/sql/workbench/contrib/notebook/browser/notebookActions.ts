@@ -404,7 +404,7 @@ export class AttachToDropdown extends SelectBox {
 	private handleContextsChanged(showSelectConnection?: boolean) {
 		let kernelDisplayName: string = this.getKernelDisplayName();
 		if (kernelDisplayName) {
-			this.loadAttachToDropdown(this.model, kernelDisplayName, showSelectConnection);
+			this.loadAttachToDropdown(this.model, kernelDisplayName, showSelectConnection).catch((err) => console.error(err));
 		} else if (this.model.clientSession.isInErrorState) {
 			this.setOptions([localize('noContextAvailable', "None")], 0);
 		}
@@ -419,7 +419,7 @@ export class AttachToDropdown extends SelectBox {
 					this.model.addAttachToConnectionsToBeDisposed(connectionUri);
 					this.doChangeContext(connectionProfile);
 				} else {
-					this.openConnectionDialog(true);
+					this.openConnectionDialog(true).catch((err) => console.error(err));
 				}
 			}).catch(err =>
 				this.logService.error(err));
@@ -523,7 +523,7 @@ export class AttachToDropdown extends SelectBox {
 
 	public doChangeContext(connection?: ConnectionProfile, hideErrorMessage?: boolean): void {
 		if (this.value === msgAddNewConnection) {
-			this.openConnectionDialog();
+			this.openConnectionDialog().catch((err) => console.error(err));
 		} else {
 			this.model.changeContext(this.value, connection, hideErrorMessage).then(ok => undefined, err => this._notificationService.error(getErrorMessage(err)));
 		}
@@ -546,7 +546,7 @@ export class AttachToDropdown extends SelectBox {
 
 			let attachToConnections = this.values;
 			if (!connection) {
-				this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
+				this.loadAttachToDropdown(this.model, this.getKernelDisplayName()).catch((err) => console.error(err));
 				this.doChangeContext(undefined, true);
 				return false;
 			}
@@ -555,7 +555,7 @@ export class AttachToDropdown extends SelectBox {
 			let connectedServer = connectionProfile.title ? connectionProfile.title : connectionProfile.serverName;
 			//Check to see if the same server is already there in dropdown. We only have server names in dropdown
 			if (attachToConnections.some(val => val === connectedServer)) {
-				this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
+				this.loadAttachToDropdown(this.model, this.getKernelDisplayName()).catch((err) => console.error(err));
 				this.doChangeContext();
 				return true;
 			}
