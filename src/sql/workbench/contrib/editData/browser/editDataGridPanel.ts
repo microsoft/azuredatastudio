@@ -437,7 +437,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					}
 				}
 
-				this.handleChanges({ ['dataRows']: self.dataSet.dataRows });
+				this.handleChanges({ ['dataRows']: self.dataSet.dataRows, ['columnDefinitions']: self.dataSet.columnDefinitions });
 				//self._cd.detectChanges(); Replacement above.
 				if (self.firstRender) {
 					//TODO: Need to be able to add onClick function with working editor.
