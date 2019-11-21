@@ -1,4 +1,5 @@
 # Change Log
+* Modify connectionWidget to support authType for databases other than SQL Server
 
 ## Version 1.13.1
 * Release date: November 15, 2019
