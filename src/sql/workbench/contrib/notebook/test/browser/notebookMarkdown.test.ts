@@ -52,7 +52,7 @@ suite('NotebookMarkdownRenderer', () => {
 		assert.strictEqual(result.innerHTML, `<p><a href="someFileurl" data-href="someFileurl" title="someFileurl">Link to File Path</a></p>`);
 	});
 
-	test('link from relative path', () => {
+	test('link from relative file path', () => {
 		notebookMarkdownRenderer.setNotebookURI(URI.parse('maddy/temp/file1.txt'));
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[Link to relative path](../test/.build/someimageurl)`, isTrusted: true });
 		if (process.platform === 'win32') {

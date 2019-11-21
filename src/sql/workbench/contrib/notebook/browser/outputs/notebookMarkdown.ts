@@ -111,9 +111,9 @@ export class NotebookMarkdownRenderer {
 				text = removeMarkdownEscapes(text);
 			}
 			title = removeMarkdownEscapes(title);
-			// only remove escaped characters if it's a hyperlink, filepath usually can start with .{}_
+			// only remove markdown escapes if it's a hyperlink, filepath usually can start with .{}_
 			// and the below function escapes them if it encounters in the path.
-			// using path.isAbsolute instead of isPathLocal since the latter accepts resolver (IRenderMime.IResolver) to check isLocal
+			// dev note: using path.isAbsolute instead of isPathLocal since the latter accepts resolver (IRenderMime.IResolver) to check isLocal
 			if (!path.isAbsolute(href)) {
 				href = removeMarkdownEscapes(href);
 			}
