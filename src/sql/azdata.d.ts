@@ -3295,10 +3295,7 @@ declare module 'azdata' {
 	}
 
 	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
-		/**
-		 * An event called when the text is clicked
-		 */
-		onDidClick: vscode.Event<any>;
+
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
