@@ -11,8 +11,7 @@ import { NotebookChangeType, CellType } from 'sql/workbench/contrib/notebook/com
 import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IStandardKernelWithProvider } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
-import { IModelDecoration, IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
-import { IRange } from 'vs/editor/common/core/range';
+import { IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
 
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo) {
@@ -127,9 +126,6 @@ export class NotebookModelStub implements INotebookModel {
 		throw new Error('Method not implemented.');
 	}
 	getDecorationRange(id: string): NotebookRange | null {
-		throw new Error('Method not implemented.');
-	}
-	getDecorationsInRange(range: IRange, ownerId?: number, filterOutValidation?: boolean): IModelDecoration[] {
 		throw new Error('Method not implemented.');
 	}
 	changeDecorations<T>(callback: (changeAccessor: IModelDecorationsChangeAccessor) => T, ownerId: number): T | null {

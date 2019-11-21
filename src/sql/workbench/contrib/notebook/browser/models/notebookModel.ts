@@ -30,7 +30,7 @@ import * as types from 'vs/base/common/types';
 import { Range, IRange } from 'vs/editor/common/core/range';
 import * as model from 'vs/editor/common/model';
 import { IntervalNode } from 'vs/editor/common/model/intervalTree';
-import { DecorationsTrees, DidChangeDecorationsEmitter, ModelDecorationOptions } from 'vs/editor/common/model/textModel';
+import { DidChangeDecorationsEmitter, ModelDecorationOptions } from 'vs/editor/common/model/textModel';
 import { IModelDecorationsChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import { PieceTreeTextBufferBuilder } from 'vs/editor/common/model/pieceTreeTextBuffer/pieceTreeTextBufferBuilder';
 import { VSBufferReadableStream, VSBuffer } from 'vs/base/common/buffer';
@@ -190,7 +190,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private readonly _instanceId: string;
 	private _lastDecorationId: number;
 	private _decorations: { [decorationId: string]: NotebookIntervalNode; };
-	private _decorationsTree: DecorationsTrees;
 	public static DEFAULT_CREATION_OPTIONS: model.ITextModelCreationOptions = {
 		isForSimpleWidget: false,
 		tabSize: EDITOR_MODEL_DEFAULTS.tabSize,
@@ -224,7 +223,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._instanceId = singleLetterHash(MODEL_ID);
 		this._lastDecorationId = 0;
 		this._decorations = Object.create(null);
-		this._decorationsTree = new DecorationsTrees();
 
 		this._buffer = createTextBuffer('', NotebookModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
 
@@ -1289,26 +1287,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public getDecorationRange(id: string): NotebookRange | null {
-		// return this._findArray[id];
-		// return this._getDecorationsInRange[id];
 		const node = this._decorations[id];
 		if (!node) {
 			return null;
 		}
-		const versionId = this.getVersionId();
-		if (node.node.cachedVersionId !== versionId) {
-			this._decorationsTree.resolveNode(node.node, versionId);
-		}
+
 		let range = node.node.range;
 		if (range === null) {
 			node.node.range = this._getRangeAt(node.cell, node.node.cachedAbsoluteStart, node.node.cachedAbsoluteEnd);
 		}
 		return new NotebookRange(node.cell, node.node.range.startLineNumber, node.node.range.startColumn, node.node.range.endLineNumber, node.node.range.endColumn);
-	}
-
-	getDecorationsInRange(range: IRange, ownerId?: number, filterOutValidation?: boolean): model.IModelDecoration[] {
-		let validatedRange = this.validateRange(range);
-		return this._getDecorationsInRange(validatedRange, ownerId, filterOutValidation);
 	}
 
 	getLineMaxColumn(lineNumber: number): number {
@@ -1392,29 +1380,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		changeAccessor.removeDecoration = invalidFunc;
 		changeAccessor.deltaDecorations = invalidFunc;
 		return result;
-	}
-
-	private _getDecorationsInRange(filterRange: NotebookRange, filterOwnerId: number, filterOutValidation: boolean): IntervalNode[] {
-		if (filterRange) {
-			const startOffset = this._buffer.getOffsetAt(filterRange.startLineNumber, filterRange.startColumn);
-			const endOffset = this._buffer.getOffsetAt(filterRange.endLineNumber, filterRange.endColumn);
-
-			const versionId = this.getVersionId();
-			const result = this._decorationsTree.intervalSearch(startOffset, endOffset, filterOwnerId, filterOutValidation, versionId);
-
-			return this._ensureNodesHaveRanges(result);
-		}
-		return [];
-	}
-
-	private _ensureNodesHaveRanges(nodes: IntervalNode[]): IntervalNode[] {
-		for (let i = 0, len = nodes.length; i < len; i++) {
-			const node = nodes[i];
-			if (node.range === null) {
-				node.range = this._buffer.getRangeAt(node.cachedAbsoluteStart, node.cachedAbsoluteEnd - node.cachedAbsoluteStart);
-			}
-		}
-		return nodes;
 	}
 
 	private _getRangeAt(cell: ICellModel, start: number, end: number): NotebookRange {
@@ -1592,10 +1557,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		const range = this._validateRangeRelaxedNoAllocations(_range);
 		const startOffset = this._buffer.getOffsetAt(range.startLineNumber, range.startColumn);
 		const endOffset = this._buffer.getOffsetAt(range.endLineNumber, range.endColumn);
-
-		this._decorationsTree.delete(node.node);
 		node.node.reset(this.getVersionId(), startOffset, endOffset, range);
-		this._decorationsTree.insert(node.node);
 	}
 
 	private _changeDecorationOptionsImpl(decorationId: string, options: ModelDecorationOptions): void {
@@ -1609,9 +1571,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 		if (nodeWasInOverviewRuler !== nodeIsInOverviewRuler) {
 			// Delete + Insert due to an overview ruler status change
-			this._decorationsTree.delete(node.node);
 			node.node.setOptions(options);
-			this._decorationsTree.insert(node.node);
 		} else {
 			node.node.setOptions(options);
 		}
@@ -1641,7 +1601,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 				// (2) remove the node from the tree (if it exists)
 				if (node) {
-					this._decorationsTree.delete(node);
+					//this._decorationsTree.delete(node);
 				}
 			}
 
@@ -1667,7 +1627,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 				this._decorations[node.id].cell = range.cell;
 				this._decorations[node.id].node = node;
-				this._decorationsTree.insert(node);
+				//this._decorationsTree.insert(node);
 
 				result[newDecorationIndex] = node.id;
 

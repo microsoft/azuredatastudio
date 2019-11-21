@@ -2753,7 +2753,7 @@ export class TextModel extends Disposable implements model.ITextModel {
 
 //#region Decorations
 
-export class DecorationsTrees {
+class DecorationsTrees {
 
 	/**
 	 * This tree holds decorations that do not show up in the overview ruler.

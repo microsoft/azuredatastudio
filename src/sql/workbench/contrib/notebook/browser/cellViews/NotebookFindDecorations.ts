@@ -72,7 +72,7 @@ export class FindDecorations implements IDisposable {
 		}
 	}
 
-	private _getDecorationIndex(decorationId: string): number {
+	/* private _getDecorationIndex(decorationId: string): number {
 		const index = this._decorations.indexOf(decorationId);
 		if (index >= 0) {
 			return index + 1;
@@ -89,7 +89,7 @@ export class FindDecorations implements IDisposable {
 			}
 		}
 		return 1;
-	}
+	} */
 
 	public clearDecorations(): void {
 		this.removePrevDecorations();

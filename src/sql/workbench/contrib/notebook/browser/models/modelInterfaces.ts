@@ -22,8 +22,8 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { localize } from 'vs/nls';
 import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-import { Range, IRange } from 'vs/editor/common/core/range';
-import { IModelDecoration, FindMatch, IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
+import { Range } from 'vs/editor/common/core/range';
+import { FindMatch, IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 
 export interface IClientSessionOptions {
@@ -437,16 +437,6 @@ export interface INotebookModel {
 	 * @return The decoration range or null if the decoration was not found.
 	 */
 	getDecorationRange(id: string): NotebookRange | null;
-
-	/**
-	 * Gets all the decorations in a range as an array. Only `startLineNumber` and `endLineNumber` from `range` are used for filtering.
-	 * So for now it returns all the decorations on the same line as `range`.
-	 * @param range The range to search in
-	 * @param ownerId If set, it will ignore decorations belonging to other owners.
-	 * @param filterOutValidation If set, it will ignore decorations specific to validation (i.e. warnings, errors).
-	 * @return An array with the decorations
-	 */
-	getDecorationsInRange(range: IRange, ownerId?: number, filterOutValidation?: boolean): IModelDecoration[];
 
 	changeDecorations<T>(callback: (changeAccessor: IModelDecorationsChangeAccessor) => T, ownerId: number): T | null;
 	/**

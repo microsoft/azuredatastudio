@@ -296,7 +296,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 						this._finder.focusFindInput();
 						this._decorations.set(this._notebookModel.findMatches, this._currentMatch);
 						this._findState.changeMatchInfo(
-							this._decorations.getCurrentMatchesPosition(this.getSelection()),
+							1, //this._decorations.getCurrentMatchesPosition(this.getSelection()),
 							this._decorations.getCount(),
 							this._currentMatch
 						);
