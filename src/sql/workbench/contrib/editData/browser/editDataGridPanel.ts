@@ -34,6 +34,7 @@ import { EditUpdateCellResult } from 'azdata';
 import { ILogService } from 'vs/platform/log/common/log';
 import { deepClone, assign } from 'vs/base/common/objects';
 import { Emitter } from 'vs/base/common/event';
+import { equals } from 'vs/base/common/arrays';
 
 export const EDITDATA_SELECTOR: string = 'editdatagridpanel';
 
@@ -436,7 +437,8 @@ export class EditDataGridPanel extends GridParentComponent {
 					}
 				}
 
-				//self._cd.detectChanges();
+				this.handleChanges(self.dataSet.dataRows);
+				//self._cd.detectChanges(); Replacement above.
 				if (self.firstRender) {
 					self._tables[0] = self.createNewTable();
 					self._tables[0].setSelectionModel(self.selectionModel);
@@ -947,5 +949,106 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 			return undefined;
 		};
+	}
+
+	handleChanges(changes: VirtualizedCollection<any>): void {
+		let columnDefinitionChanges = changes['columnDefinitions'];
+		let activeCell = this._tables[0].grid ? this._tables[0].grid.getActiveCell() : undefined;
+		let hasGridStructureChanges = false;
+		let wasEditing = this._tables[0].grid ? !!this._tables[0].grid.getCellEditor() : false;
+
+		if (columnDefinitionChanges && !equals(columnDefinitionChanges.previousValue, columnDefinitionChanges.currentValue)) {
+			this._tables[0].grid.resetActiveCell();
+			this._tables[0].grid.setColumns(this.dataSet.columnDefinitions);
+			hasGridStructureChanges = true;
+
+			if (!columnDefinitionChanges.currentValue || columnDefinitionChanges.currentValue.length === 0) {
+				activeCell = undefined;
+			}
+			if (activeCell) {
+				let columnThatContainedActiveCell = columnDefinitionChanges.previousValue[Math.max(activeCell.cell - 1, 0)];
+				let newActiveColumnIndex = columnThatContainedActiveCell
+					? columnDefinitionChanges.currentValue.findIndex(c => c.id === columnThatContainedActiveCell.id)
+					: -1;
+				activeCell.cell = newActiveColumnIndex !== -1 ? newActiveColumnIndex + 1 : 0;
+			}
+		}
+
+		if (changes['dataRows']
+			|| (changes['highlightedCells'] && !equals(changes['highlightedCells'].currentValue, changes['highlightedCells'].previousValue))
+			|| (changes['blurredColumns'] && !equals(changes['blurredColumns'].currentValue, changes['blurredColumns'].previousValue))
+			|| (changes['columnsLoading'] && !equals(changes['columnsLoading'].currentValue, changes['columnsLoading'].previousValue))) {
+			this.setCallbackOnDataRowsChanged();
+			this._tables[0].grid.updateRowCount();
+			this._tables[0].grid.setColumns(this._tables[0].grid.getColumns());
+			this._tables[0].grid.invalidateAllRows();
+			this._tables[0].grid.render();
+			hasGridStructureChanges = true;
+		}
+
+		if (hasGridStructureChanges) {
+			if (activeCell) {
+				this._tables[0].grid.setActiveCell(activeCell.row, activeCell.cell);
+			} else {
+				this._tables[0].grid.resetActiveCell();
+			}
+		}
+
+		if (wasEditing && hasGridStructureChanges) {
+			console.log('need to handle editing of cells');
+			//this._tables[0].grid.editActiveCell();
+		}
+	}
+
+	private setCallbackOnDataRowsChanged(): void {
+		if (this.dataSet.dataRows) {
+			// We must wait until we get the first set of dataRows before we enable editing or slickgrid will complain
+			console.log('need to check if row is editable or not');
+			if (true) {
+				this.enterEditSession();
+			}
+
+			this.dataSet.dataRows.setCollectionChangedCallback((startIndex: number, count: number) => {
+				this.renderGridDataRowsRange(startIndex, count);
+			});
+		}
+	}
+
+	// Enables editing on the grid
+	public enterEditSession(): void {
+		this.changeEditSession(true);
+	}
+
+	// Disables editing on the grid
+	public endEditSession(): void {
+		this.changeEditSession(false);
+	}
+
+	private changeEditSession(enabled: boolean): void {
+		//this.enableEditing = enabled;
+		let options: any = this._tables[0].grid.getOptions();
+		options.editable = enabled;
+		options.enableAddRow = false; // TODO change to " options.enableAddRow = false;" when we support enableAddRow
+		this._tables[0].grid.setOptions(options);
+	}
+
+
+	private renderGridDataRowsRange(startIndex: number, count: number): void {
+		let editor = <any>this._tables[0].grid.getCellEditor();
+		let oldValue = editor ? editor.getValue() : undefined;
+		let wasValueChanged = editor ? editor.isValueChanged() : false;
+		this.invalidateRange(startIndex, startIndex + count);
+		let activeCell = this.currentCell;
+		if (editor && activeCell.row >= startIndex && activeCell.row < startIndex + count) {
+			if (oldValue && wasValueChanged) {
+				editor.setValue(oldValue);
+			}
+		}
+	}
+
+	private invalidateRange(start: number, end: number): void {
+		let refreshedRows = Array.from({ length: (end - start) }, (v, k) => k + start);
+		this._tables[0].grid.invalidateRows(refreshedRows, true);
+		this._tables[0].grid.render();
 	}
 }
