@@ -26,7 +26,7 @@ import { TitledComponent } from 'sql/workbench/browser/modelComponents/titledCom
 		</div>
 	</div>
 	<ng-template #noDiv>
-		<p [innerHTML]="getValue()" [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title"  [ngStyle]="this.CSSStyles" (click)="onClick()"></p>
+		<p [innerHTML]="getValue()" [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title" [attr.role]="ariaRole" [ngStyle]="this.CSSStyles" (click)="onClick()"></p>
 	</ng-template>`
 })
 export default class TextComponent extends TitledComponent implements IComponent, OnDestroy, AfterViewInit {

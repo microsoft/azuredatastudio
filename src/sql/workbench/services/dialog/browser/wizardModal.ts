@@ -13,7 +13,6 @@ import { DialogMessage } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { DialogModule } from 'sql/workbench/services/dialog/browser/dialog.module';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -25,6 +24,8 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export class WizardModal extends Modal {
 	private _dialogPanes = new Map<WizardPage, DialogPane>();
@@ -47,7 +48,7 @@ export class WizardModal extends Modal {
 		options: IModalOptions,
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IThemeService themeService: IThemeService,
-		@ITelemetryService telemetryService: ITelemetryService,
+		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IClipboardService clipboardService: IClipboardService,
@@ -139,13 +140,13 @@ export class WizardModal extends Modal {
 		this._wizard.onPageAdded(page => {
 			this.registerPage(page);
 			this.updatePageNumbers();
-			this.showPage(this._wizard.currentPage, false);
+			this.showPage(this._wizard.currentPage, false).catch(err => onUnexpectedError(err));
 		});
 		this._wizard.onPageRemoved(page => {
 			let dialogPane = this._dialogPanes.get(page);
 			this._dialogPanes.delete(page);
 			this.updatePageNumbers();
-			this.showPage(this._wizard.currentPage, false);
+			this.showPage(this._wizard.currentPage, false).catch(err => onUnexpectedError(err));
 			dialogPane.dispose();
 		});
 		this.updatePageNumbers();
@@ -168,7 +169,7 @@ export class WizardModal extends Modal {
 	private async showPage(index: number, validate: boolean = true, focus: boolean = false): Promise<void> {
 		let pageToShow = this._wizard.pages[index];
 		if (!pageToShow) {
-			this.done(validate);
+			this.done(validate).catch(err => onUnexpectedError(err));
 			return;
 		}
 		if (validate && !await this.validateNavigation(index)) {
@@ -235,8 +236,9 @@ export class WizardModal extends Modal {
 	}
 
 	public open(): void {
-		this.showPage(0, false, true);
-		this.show();
+		this.showPage(0, false, true).then(() => {
+			this.show();
+		}).catch(err => onUnexpectedError(err));
 	}
 
 	public async done(validate: boolean = true): Promise<void> {
@@ -281,19 +283,19 @@ export class WizardModal extends Modal {
 	/**
 	 * Overridable to change behavior of escape key
 	 */
-	protected onClose(e: StandardKeyboardEvent) {
+	protected onClose(e: StandardKeyboardEvent): void {
 		this.cancel();
 	}
 
 	/**
 	 * Overridable to change behavior of enter key
 	 */
-	protected onAccept(e: StandardKeyboardEvent) {
+	protected onAccept(e: StandardKeyboardEvent): void {
 		if (this._wizard.currentPage === this._wizard.pages.length - 1) {
-			this.done();
+			this.done().catch(err => onUnexpectedError(err));
 		} else {
 			if (this._nextButton.enabled) {
-				this.showPage(this._wizard.currentPage + 1, true, true);
+				this.showPage(this._wizard.currentPage + 1, true, true).catch(err => onUnexpectedError(err));
 			}
 		}
 	}

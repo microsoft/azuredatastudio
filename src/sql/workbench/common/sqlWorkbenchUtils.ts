@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
 
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { URI } from 'vs/base/common/uri';
@@ -34,7 +34,7 @@ export function getEditorUri(input: IEditorInput): string {
 	}
 
 	if (uri) {
-		return uri.toString();
+		return uri.toString(true);
 	}
 	return undefined;
 }

@@ -25,7 +25,6 @@
 		"onCommand:markdown.showSource",
 		"onCommand:markdown.showPreviewSecuritySelector",
 		"onCommand:markdown.api.render",
-    "onCommand:notebook.showPreview",
 		"onWebviewPanel:markdown.preview"
 	],
 	"contributes": {
@@ -80,12 +79,7 @@
 				"command": "markdown.preview.toggleLock",
 				"title": "%markdown.preview.toggleLock.title%",
 				"category": "Markdown"
-			},
-      {
-        "command": "notebook.showPreview",
-        "title": "notebook.showPreview",
-        "category": "Notebook"
-      }
+			}
 		],
 		"menus": {
 			"editor/title": [
@@ -170,11 +164,7 @@
 				{
 					"command": "markdown.preview.refresh",
 					"when": "markdownPreviewFocus"
-				},
-        {
-          "command": "notebook.showPreview",
-          "when": "false"
-        }
+				}
 			]
 		},
 		"keybindings": [

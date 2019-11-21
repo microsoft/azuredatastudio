@@ -8,8 +8,8 @@ const path = require('path');
 const fs = require('fs');
 
 const rootPath = path.dirname(path.dirname(path.dirname(__dirname)));
-const vscodePath = path.join(rootPath, 'vscode');
-const distroPath = path.join(rootPath, 'vscode-distro');
+const vscodePath = path.join(rootPath, 'azuredatastudio'); // {{SQL CARBON EDIT}} replace vscode
+const distroPath = path.join(rootPath, 'azuredatastudio-release'); // {{SQL CARBON EDIT}} replace vscode
 const commit = cp.execSync('git rev-parse HEAD', { cwd: distroPath, encoding: 'utf8' }).trim();
 const packageJsonPath = path.join(vscodePath, 'package.json');
 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
