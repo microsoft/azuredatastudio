@@ -951,11 +951,11 @@ export class EditDataGridPanel extends GridParentComponent {
 		};
 	}
 
-	handleChanges(changes: VirtualizedCollection<any>): void {
+	handleChanges(changes: { [propName: string]: any }): void {
 		let columnDefinitionChanges = changes['columnDefinitions'];
-		let activeCell = this._tables[0].grid ? this._tables[0].grid.getActiveCell() : undefined;
+		let activeCell = this._tables[0] ? this._tables[0].grid.getActiveCell() : undefined;
 		let hasGridStructureChanges = false;
-		let wasEditing = this._tables[0].grid ? !!this._tables[0].grid.getCellEditor() : false;
+		let wasEditing = this._tables[0] ? !!this._tables[0].grid.getCellEditor() : false;
 
 		if (columnDefinitionChanges && !equals(columnDefinitionChanges.previousValue, columnDefinitionChanges.currentValue)) {
 			this._tables[0].grid.resetActiveCell();
