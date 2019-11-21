@@ -21,7 +21,7 @@ function main() {
 		return;
 	}
 
-	const productJsonFilter = filter('product.json', { restore: true });
+	const productJsonFilter = filter('**/product.json', { restore: true });
 
 	fancyLog(ansiColors.blue('[mixin]'), `Mixing in sources:`);
 	return vfs
@@ -29,7 +29,7 @@ function main() {
 		.pipe(filter(f => !f.isDirectory()))
 		.pipe(productJsonFilter)
 		.pipe(buffer())
-		.pipe(json(o => Object.assign({}, require('../product.json'), o)))
+		.pipe(json(o => Object.assign({}, require('../../product.json'), o)))
 		.pipe(productJsonFilter.restore)
 		.pipe(es.mapSync(function (f) {
 			fancyLog(ansiColors.blue('[mixin]'), f.relative, ansiColors.green('✔︎'));

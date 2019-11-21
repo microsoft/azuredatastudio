@@ -24,6 +24,7 @@ import { append, $ } from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
@@ -156,15 +157,15 @@ export class DialogModal extends Modal {
 	/**
 	 * Overridable to change behavior of escape key
 	 */
-	protected onClose(e: StandardKeyboardEvent) {
+	protected onClose(e: StandardKeyboardEvent): void {
 		this.cancel();
 	}
 
 	/**
 	 * Overridable to change behavior of enter key
 	 */
-	protected onAccept(e: StandardKeyboardEvent) {
-		this.done();
+	protected onAccept(e: StandardKeyboardEvent): void {
+		this.done().catch(err => onUnexpectedError(err));
 	}
 
 	public dispose(): void {
