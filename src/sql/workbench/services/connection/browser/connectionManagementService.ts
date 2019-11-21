@@ -834,7 +834,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				provider: connection.connectionProfile.providerName,
 				serverVersion: connection.serverInfo ? connection.serverInfo.serverVersion : '',
 				serverEdition: connection.serverInfo ? connection.serverInfo.serverEdition : '',
-
+				serverEngineEdition: connection.serverInfo ? connection.serverInfo.engineEditionId : '',
 				extensionConnectionTime: connection.extensionTimer.elapsed() - connection.serviceTimer.elapsed(),
 				serviceConnectionTime: connection.serviceTimer.elapsed()
 			})
