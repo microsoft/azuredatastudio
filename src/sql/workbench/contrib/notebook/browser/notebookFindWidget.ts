@@ -85,7 +85,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 
 	private _resizeSash: Sash;
 
-	private searchTimeoutHandle: NodeJS.Timer;
+	private searchTimeoutHandle: number | undefined;
 
 	constructor(
 		notebookController: IFindNotebookController,
@@ -404,10 +404,10 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 		this._register(this._findInput.onInput(() => {
 			let self = this;
 			if (self.searchTimeoutHandle) {
-				clearTimeout(self.searchTimeoutHandle);
+				window.clearTimeout(self.searchTimeoutHandle);
 			}
 
-			this.searchTimeoutHandle = setTimeout(function () {
+			this.searchTimeoutHandle = window.setTimeout(function () {
 				self._state.change({ searchString: self._findInput.getValue() }, true);
 			}, 300);
 		}));
