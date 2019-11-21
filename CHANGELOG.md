@@ -11,6 +11,10 @@
 * General Availability release for Schema Compare and DACPAC extensions
 * Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/43?closed=1).
 
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+* aspnerd for `Use selected DB for import wizard schema list` [#7878](https://github.com/microsoft/azuredatastudio/pull/7878)
+
 ## Version 1.12.2
 * Release date: October 11, 2019
 * Release status: General Availability

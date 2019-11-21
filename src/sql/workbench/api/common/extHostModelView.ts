@@ -566,6 +566,22 @@ class ComponentWrapper implements azdata.Component {
 		this.setProperty('ariaLabel', v);
 	}
 
+	public get ariaRole(): string {
+		return this.properties['ariaRole'];
+	}
+
+	public set ariaRole(v: string) {
+		this.setProperty('ariaRole', v);
+	}
+
+	public get ariaSelected(): boolean {
+		return this.properties['ariaSelected'];
+	}
+
+	public set ariaSelected(v: boolean) {
+		this.setProperty('ariaSelected', v);
+	}
+
 	public get CSSStyles(): { [key: string]: string } {
 		return this.properties['CSSStyles'];
 	}
