@@ -13,7 +13,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import CredentialServiceTokenCache from './tokenCache';
 import providerSettings from './providerSettings';
-import { AzureAccountProvider } from './azureAccountProvider';
+import { AzureAccountProvider } from './azureAccountProvider2';
 import { AzureAccountProviderMetadata, ProviderSettings } from './interfaces';
 
 let localize = nls.loadMessageBundle();
@@ -69,10 +69,11 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private onClearTokenCache(): Thenable<void> {
-		let self = this;
+		// let self = this;
 
 		let promises: Thenable<void>[] = providerSettings.map(provider => {
-			return self._accountProviders[provider.metadata.id].clearTokenCache();
+			// return self._accountProviders[provider.metadata.id].clearTokenCache();
+			return Promise.resolve();
 		});
 
 		return Promise.all(promises)
