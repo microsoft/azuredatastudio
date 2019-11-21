@@ -719,7 +719,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param connection The connection to fill in or update
 	 */
 	private async fillInOrClearAzureToken(connection: interfaces.IConnectionProfile): Promise<boolean> {
-		if (connection.authenticationType !== Constants.azureMFA) {
+		if (connection.authenticationType !== Constants.azureMFA && connection.authenticationType !== Constants.azureMFAAndUser) {
 			connection.options['azureAccountToken'] = undefined;
 			return true;
 		}
@@ -729,7 +729,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let azureResource = this.getAzureResourceForConnection(connection);
 		let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
 		if (accounts && accounts.length > 0) {
-			let account = find(accounts, account => account.key.accountId === connection.userName);
+			let accountName = (connection.authenticationType !== Constants.azureMFA) ? connection.azureAccount : connection.userName;
+			let account = find(accounts, account => account.key.accountId === accountName);
 			if (account) {
 				if (account.isStale) {
 					try {
