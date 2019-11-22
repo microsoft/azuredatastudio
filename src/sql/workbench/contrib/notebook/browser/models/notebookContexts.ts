@@ -6,7 +6,7 @@
 import { nb } from 'azdata';
 
 import { localize } from 'vs/nls';
-import { IDefaultConnection, notebookConstants } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { IDefaultConnection } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -15,7 +15,7 @@ import { find } from 'vs/base/common/arrays';
 
 export class NotebookContexts {
 
-	private static get DefaultContext(): IDefaultConnection {
+	public static get DefaultContext(): IDefaultConnection {
 		let defaultConnection: ConnectionProfile = <any>{
 			providerName: mssqlProviderName,
 			id: '-1',
@@ -29,7 +29,7 @@ export class NotebookContexts {
 		};
 	}
 
-	private static get LocalContext(): IDefaultConnection {
+	public static get LocalContext(): IDefaultConnection {
 		let localConnection: ConnectionProfile = <any>{
 			providerName: mssqlProviderName,
 			id: '-1',
@@ -73,7 +73,7 @@ export class NotebookContexts {
 	 * @param connProviderIds array of applicable connection providers to filter connections
 	 * @param profile connection profile passed when launching notebook
 	 */
-	public static getActiveContexts(connectionService: IConnectionManagementService, connProviderIds: string[], profile: IConnectionProfile): IDefaultConnection {
+	public static getActiveContexts(connectionService: IConnectionManagementService, connProviderIds: string[], profile?: IConnectionProfile): IDefaultConnection {
 		let defaultConnection: ConnectionProfile = NotebookContexts.DefaultContext.defaultConnection;
 		let activeConnections: ConnectionProfile[] = connectionService.getActiveConnections();
 		if (activeConnections && activeConnections.length > 0) {
@@ -95,8 +95,9 @@ export class NotebookContexts {
 			if (connections && connections.length > 0) {
 				defaultConnection = connections[0];
 				if (profile && profile.options) {
-					if (find(connections, connection => connection.serverName === profile.serverName)) {
-						defaultConnection = find(connections, connection => connection.serverName === profile.serverName);
+					let matchingConn = find(connections, connection => connection.serverName === profile.serverName);
+					if (matchingConn) {
+						defaultConnection = matchingConn;
 					}
 				}
 			} else if (connections.length === 0) {
@@ -105,43 +106,10 @@ export class NotebookContexts {
 			activeConnections = [];
 			connections.forEach(connection => activeConnections.push(connection));
 		}
-		if (defaultConnection === NotebookContexts.DefaultContext.defaultConnection) {
-			let newConnection = <ConnectionProfile><any>{
-				providerName: 'SQL',
-				id: '-2',
-				serverName: localize('addConnection', "Add New Connection")
-			};
-			activeConnections.push(newConnection);
-		}
 
 		return {
 			otherConnections: activeConnections,
 			defaultConnection: defaultConnection
 		};
-	}
-
-	/**
-	 *
-	 * @param specs kernel specs (comes from session manager)
-	 * @param displayName kernel info loaded from
-	 */
-	public static getDefaultKernel(specs: nb.IAllKernels, displayName: string): nb.IKernelSpec {
-		let defaultKernel: nb.IKernelSpec;
-		if (specs) {
-			// find the saved kernel (if it exists)
-			if (displayName) {
-				defaultKernel = find(specs.kernels, (kernel) => kernel.display_name === displayName);
-			}
-			// if no saved kernel exists, use the default KernelSpec
-			if (!defaultKernel) {
-				defaultKernel = find(specs.kernels, (kernel) => kernel.name === specs.defaultKernel);
-			}
-			if (defaultKernel) {
-				return defaultKernel;
-			}
-		}
-
-		// If no default kernel specified (should never happen), default to SQL
-		return notebookConstants.sqlKernelSpec;
 	}
 }
