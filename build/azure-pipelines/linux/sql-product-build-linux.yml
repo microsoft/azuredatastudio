@@ -17,6 +17,31 @@ steps:
     inputs:
       versionSpec: "1.x"
 
+  - task: AzureKeyVault@1
+    displayName: 'Azure Key Vault: Get Secrets'
+    inputs:
+      azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+      KeyVaultName: ado-secrets
+
+  - script: |
+      set -e
+      cat << EOF > ~/.netrc
+      machine github.com
+      login azuredatastudio
+      password $(github-distro-mixin-password)
+      EOF
+
+      git config user.email "andresse@microsoft.com"
+      git config user.name "AzureDataStudio"
+    displayName: Prepare tooling
+
+  - script: |
+      set -e
+      git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+      git fetch distro
+      git merge $(node -p "require('./package.json').distro")
+    displayName: Merge distro
+
   - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
     inputs:
       keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
@@ -44,7 +69,7 @@ steps:
 
   - script: |
       set -e
-      yarn gulp mixin
+      node build/azure-pipelines/mixin
     displayName: Mix in quality
 
   - script: |
