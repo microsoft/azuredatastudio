@@ -86,8 +86,4 @@ export class CollapseComponent extends CellView implements OnInit, OnChanges {
 			collapseButton.classList.remove(buttonClass);
 		}
 	}
-
-	public deltaDecorations(newDecorationRange: any, oldDecorationRange: any): void {
-		// not-implemented
-	}
 }

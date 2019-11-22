@@ -22,5 +22,7 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 
 	public abstract cellGuid(): string;
 
-	public abstract deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void;
+	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
+
+	}
 }

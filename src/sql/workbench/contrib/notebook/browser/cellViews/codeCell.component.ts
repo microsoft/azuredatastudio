@@ -138,8 +138,4 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	public cellGuid(): string {
 		return this.cellModel.cellGuid;
 	}
-
-	public deltaDecorations(newDecorationRange: any, oldDecorationRange: any): void {
-		// not-implemented
-	}
 }

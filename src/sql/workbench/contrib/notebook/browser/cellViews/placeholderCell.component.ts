@@ -94,8 +94,4 @@ export class PlaceholderCellComponent extends CellView implements OnInit, OnChan
 	public cellGuid(): string {
 		return this.cellModel.cellGuid;
 	}
-
-	public deltaDecorations(newDecorationRange: any, oldDecorationRange: any): void {
-		// not-implemented
-	}
 }
