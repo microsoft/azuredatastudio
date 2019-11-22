@@ -7,7 +7,6 @@ import * as path from 'vs/base/common/path';
 import { nb, ServerInfo } from 'azdata';
 import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { URI } from 'vs/base/common/uri';
 import { startsWith } from 'vs/base/common/strings';
 import { assign } from 'vs/base/common/objects';
@@ -106,26 +105,6 @@ export async function asyncForEach(array: any, callback: any): Promise<any> {
 	for (let index = 0; index < array.length; index++) {
 		await callback(array[index], index, array);
 	}
-}
-
-/**
- * Only replace vscode-resource with file when in the same (or a sub) directory
- * This matches Jupyter Notebook viewer behavior
- */
-export function convertVscodeResourceToFileInSubDirectories(htmlContent: string, cellModel: ICellModel): string {
-	let htmlContentCopy = htmlContent;
-	while (htmlContentCopy.search('(?<=img src=\"vscode-resource:)') > 0) {
-		let pathStartIndex = htmlContentCopy.search('(?<=img src=\"vscode-resource:)');
-		let pathEndIndex = htmlContentCopy.indexOf('\" ', pathStartIndex);
-		let filePath = htmlContentCopy.substring(pathStartIndex, pathEndIndex);
-		// If the asset is in the same folder or a subfolder, replace 'vscode-resource:' with 'file:', so the image is visible
-		if (!(path.relative(path.dirname(cellModel.notebookModel.notebookUri.fsPath), filePath).indexOf('..') > -1)) {
-			// ok to change from vscode-resource: to file:
-			htmlContent = htmlContent.replace('vscode-resource:' + filePath, 'file:' + filePath);
-		}
-		htmlContentCopy = htmlContentCopy.slice(pathEndIndex);
-	}
-	return htmlContent;
 }
 
 export function getClusterEndpoints(serverInfo: ServerInfo): IEndpoint[] | undefined {
