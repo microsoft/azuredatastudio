@@ -1014,7 +1014,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (this.dataSet.dataRows) {
 			// We must wait until we get the first set of dataRows before we enable editing or slickgrid will complain
 			console.log('need to check if row is editable or not');
-			if (false) {
+			if (true) {
 				this.enterEditSession();
 			}
 
