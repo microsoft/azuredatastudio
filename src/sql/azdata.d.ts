@@ -2646,6 +2646,11 @@ declare module 'azdata' {
 		 * Run the component's validations
 		 */
 		validate(): Thenable<boolean>;
+
+		/**
+		 * Focuses the component.
+		 */
+		focus(): Thenable<void>;
 	}
 
 	export interface FormComponent {
@@ -3015,6 +3020,14 @@ declare module 'azdata' {
 		 */
 		ariaLabel?: string;
 		/**
+		 * Corresponds to the role accessibility attribute for this component
+		 */
+		ariaRole?: string;
+		/**
+		 * Corresponds to the aria-selected accessibility attribute for this component
+		 */
+		ariaSelected?: boolean;
+		/**
 		 * Matches the CSS style key and its available values.
 		 */
 		CSSStyles?: { [key: string]: string };
@@ -3087,8 +3100,6 @@ declare module 'azdata' {
 		title?: string;
 		ariaRowCount?: number;
 		ariaColumnCount?: number;
-		ariaRole?: string;
-		focused?: boolean;
 		updateCells?: TableCell[];
 		moveFocusOutWithTab?: boolean; //accessibility requirement for tables with no actionable cells
 	}
@@ -3123,7 +3134,6 @@ declare module 'azdata' {
 		label?: string;
 		value?: string;
 		checked?: boolean;
-		focused?: boolean;
 	}
 
 	export interface TextComponentProperties extends ComponentProperties, TitledComponentProperties {

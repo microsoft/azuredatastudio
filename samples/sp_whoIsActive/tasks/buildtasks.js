@@ -12,7 +12,6 @@ let tslint = require('gulp-tslint');
 let ts = require('gulp-typescript');
 let cproc = require('child_process');
 let os = require('os');
-let path = require('path');
 
 let config = require('./config');
 let tsProject = ts.createProject('tsconfig.json');
