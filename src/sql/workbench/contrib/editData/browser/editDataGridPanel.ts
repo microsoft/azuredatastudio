@@ -460,8 +460,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				}
 				else {
 					this.handleChanges({
-						['dataRows']: self.dataSet.dataRows,
-						['columnDefinitions']: self.dataSet.columnDefinitions
+						['dataRows']: self.dataSet.dataRows
 					});
 				}
 
@@ -816,11 +815,6 @@ export class EditDataGridPanel extends GridParentComponent {
 				for (let i = 0; i < this.placeHolderDataSets[0].columnDefinitions.length; i++) {
 					this._columnNameToIndex[this.placeHolderDataSets[0].columnDefinitions[i].name] = i;
 				}
-
-				let onContextMenu = (e: ITableMouseEvent) => {
-					this.openContextMenu(e, this.dataSet.batchId, this.dataSet.resultId, 0);
-				};
-				this._register(this._tables[0].onContextMenu(onContextMenu, self));
 			}
 		}
 		else {
@@ -1074,5 +1068,33 @@ export class EditDataGridPanel extends GridParentComponent {
 		let refreshedRows = Array.from({ length: (end - start) }, (v, k) => k + start);
 		this._tables[0].grid.invalidateRows(refreshedRows, true);
 		this._tables[0].grid.render();
+	}
+
+	private setupEvents(): void {
+		this._tables[0].grid.onScroll.subscribe((e, args) => {
+			this.onScroll(args);
+
+		});
+		this._tables[0].grid.onCellChange.subscribe((e, args) => {
+			this.onCellEditEnd(args);
+		});
+		// this._tables[0].grid.onBeforeEditCell.subscribe((e, args) => {
+		//     this.onBeforeEditCell.fire(args);
+		// });
+		// Subscribe to all active cell changes to be able to catch when we tab to the header on the next row
+		this._tables[0].grid.onActiveCellChanged.subscribe((e, args) => {
+			// Emit that we've changed active cells
+			this.onActiveCellChanged(args);
+		});
+		this._tables[0].grid.onContextMenu.subscribe((e, args) => {
+			this.openContextMenu(e, this.dataSet.batchId, this.dataSet.resultId, 0);
+		});
+		this._tables[0].grid.onBeforeAppendCell.subscribe((e, args) => {
+			// Since we need to return a string here, we are using calling a function instead of event emitter like other events handlers
+			return this.onBeforeAppendCell ? this.onBeforeAppendCell(args.row, args.cell) : undefined;
+		});
+		this._tables[0].grid.onRendered.subscribe((e, args) => {
+			this.onGridRendered(args);
+		});
 	}
 }
