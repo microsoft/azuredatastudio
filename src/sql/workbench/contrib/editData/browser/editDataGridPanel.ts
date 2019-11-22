@@ -442,6 +442,7 @@ export class EditDataGridPanel extends GridParentComponent {
 						['dataRows']: { currentValue: self.dataSet.dataRows, firstChange: self.firstRender, previousValue: undefined },
 						['columnDefinitions']: { currentValue: self.dataSet.columnDefinitions, firstChange: self.firstRender, previousValue: undefined }
 					});
+					this.handleInitializeTable();
 					//TODO: Need to be able to add onClick function with working editor.
 
 					let setActive = function () {
@@ -1097,4 +1098,34 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.onGridRendered(args);
 		});
 	}
+
+	handleInitializeTable(): void {
+		// handleInitializeTable() will be called *after* the first time handleChanges() is called
+		// so, grid must be there already
+		// if (this.topRowNumber === undefined) {
+		//     this.topRowNumber = 0;
+		// }
+		if (this.dataSet.dataRows && this.dataSet.dataRows.getLength() > 0) {
+			// this._tables[0].grid.scrollRowToTop(this.topRowNumber);
+			this._tables[0].grid.scrollRowToTop(0);
+		}
+
+		if (this.dataSet.resized) {
+			// Re-rendering the grid is expensive. Throttle so we only do so every 100ms.
+			this.dataSet.resized.throttleTime(100)
+				.subscribe(() => this.onResize());
+		}
+
+		// subscribe to slick events
+		// https://github.com/mleibman/SlickGrid/wiki/Grid-Events
+		this.setupEvents();
+	}
+
+	private onResize(): void {
+		if (this._tables[0].grid !== undefined) {
+			// this will make sure the grid header and body to be re-rendered
+			this._tables[0].grid.resizeCanvas();
+		}
+	}
+
 }
