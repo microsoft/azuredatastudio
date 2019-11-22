@@ -79,4 +79,31 @@ declare module 'azdata' {
 	export namespace dataprotocol {
 		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;
 	}
+
+	/*
+	 * Add optional azureAccount for connectionWidget.
+	 */
+	export interface IConnectionProfile extends ConnectionInfo {
+		azureAccount?: string;
+	}
+
+	/*
+	 * Add optional per-OS default value.
+	 */
+	export interface DefaultValueOsOverride {
+		osEnumValue: number;
+
+		defaultValueOverride: string;
+	}
+
+	export interface ConnectionOption {
+		defaultValueOsOverrides?: DefaultValueOsOverride[];
+	}
+
+	/*
+	 * Add OssRdbms for sqlops AzureResource.
+	 */
+	export enum AzureResource {
+		OssRdbms = 2
+	}
 }

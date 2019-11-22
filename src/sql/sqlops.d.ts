@@ -1378,8 +1378,7 @@ declare module 'sqlops' {
 
 	export enum AzureResource {
 		ResourceManagement = 0,
-		Sql = 1,
-		OssRdbms = 2
+		Sql = 1
 	}
 
 	export interface ModalDialog {

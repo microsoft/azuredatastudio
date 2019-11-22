@@ -91,7 +91,6 @@ declare module 'azdata' {
 			groupId: string;
 			saveProfile: boolean;
 			azureTenantId?: string;
-			azureAccount?: string;
 			options: { [name: string]: any };
 
 			static createFrom(options: { [key: string]: any }): ConnectionProfile;
@@ -292,7 +291,6 @@ declare module 'azdata' {
 		saveProfile: boolean;
 		id: string;
 		azureTenantId?: string;
-		azureAccount?: string;
 	}
 
 	/**
@@ -502,12 +500,6 @@ declare module 'azdata' {
 		name: string;
 	}
 
-	export interface DefaultValueOsOverride {
-		osEnumValue: number;
-
-		defaultValueOverride: string;
-	}
-
 	export interface ConnectionOption {
 		name: string;
 
@@ -522,8 +514,6 @@ declare module 'azdata' {
 		specialValueType: ConnectionOptionSpecialType;
 
 		defaultValue: string;
-
-		defaultValueOsOverrides?: DefaultValueOsOverride[];
 
 		categoryValues: CategoryValue[];
 
@@ -2189,8 +2179,7 @@ declare module 'azdata' {
 
 	export enum AzureResource {
 		ResourceManagement = 0,
-		Sql = 1,
-		OssRdbms = 2
+		Sql = 1
 	}
 
 	export interface DidChangeAccountsParams {

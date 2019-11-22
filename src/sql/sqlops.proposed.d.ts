@@ -1816,4 +1816,11 @@ declare module 'sqlops' {
 		 */
 		export function connect(connectionProfile: IConnectionProfile, saveConnection?: boolean, showDashboard?: boolean): Thenable<ConnectionResult>;
 	}
+
+	/*
+	 * Add OssRdbms for sqlops AzureResource.
+	 */
+	export enum AzureResource {
+		OssRdbms = 2
+	}
 }
