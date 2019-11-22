@@ -28,11 +28,9 @@ steps:
     displayName: Prepare tooling
 
   - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Continue"
-      exec { git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git" }
-      exec { git fetch distro }
-      exec { git merge $(node -p "require('./package.json').distro") }
+      git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+      git fetch distro
+      git merge $(node -p "require('./package.json').distro")
     continueOnError: true
     displayName: Merge distro
 
