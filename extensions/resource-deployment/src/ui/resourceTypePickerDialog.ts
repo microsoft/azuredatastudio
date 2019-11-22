@@ -284,7 +284,9 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	private createAgreementCheckbox(agreementInfo: AgreementInfo): azdata.FlexContainer {
-		const checkbox = this._view.modelBuilder.checkBox().component();
+		const checkbox = this._view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
+			ariaLabel: this.getAgreementDisplayText(agreementInfo)
+		}).component();
 		checkbox.checked = false;
 		this._toDispose.push(checkbox.onChanged(() => {
 			this._agreementCheckboxChecked = !!checkbox.checked;
@@ -295,6 +297,16 @@ export class ResourceTypePickerDialog extends DialogBase {
 			requiredIndicator: true
 		}).component();
 		return createFlexContainer(this._view, [checkbox, text]);
+	}
+
+	private getAgreementDisplayText(agreementInfo: AgreementInfo): string {
+		// the agreement template will have {index} as placeholder for hyperlinks
+		// this method will get the display text after replacing the placeholders
+		let text = agreementInfo.template;
+		for (let i: number = 0; i < agreementInfo.links.length; i++) {
+			text = text.replace(`{${i}}`, agreementInfo.links[i].text);
+		}
+		return text;
 	}
 
 	private getCurrentProvider(): DeploymentProvider {
