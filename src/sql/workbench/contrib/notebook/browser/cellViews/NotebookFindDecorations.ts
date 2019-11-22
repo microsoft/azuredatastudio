@@ -11,9 +11,8 @@ import { themeColorFromId } from 'vs/platform/theme/common/themeService';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 import { NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 
-export class FindDecorations implements IDisposable {
+export class NotebookFindDecorations implements IDisposable {
 
-	private readonly _editor: NotebookEditor;
 	private _decorations: string[];
 	private _overviewRulerApproximateDecorations: string[];
 	private _findScopeDecorationId: string | null;
@@ -22,8 +21,7 @@ export class FindDecorations implements IDisposable {
 	private _startPosition: NotebookRange;
 	private _currentMatch: NotebookRange;
 
-	constructor(editor: NotebookEditor) {
-		this._editor = editor;
+	constructor(private readonly _editor: NotebookEditor) {
 		this._decorations = [];
 		this._overviewRulerApproximateDecorations = [];
 		this._findScopeDecorationId = null;
@@ -95,12 +93,12 @@ export class FindDecorations implements IDisposable {
 			if (this.checkValidEditor(nextMatch)) {
 				this._editor.getCellEditor(nextMatch.cell.cellGuid).getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
 					if (this._highlightedDecorationId !== null) {
-						changeAccessor.changeDecorationOptions(this._highlightedDecorationId, FindDecorations._FIND_MATCH_DECORATION);
+						changeAccessor.changeDecorationOptions(this._highlightedDecorationId, NotebookFindDecorations._FIND_MATCH_DECORATION);
 						this._highlightedDecorationId = null;
 					}
 					if (newCurrentDecorationId !== null) {
 						this._highlightedDecorationId = newCurrentDecorationId;
-						changeAccessor.changeDecorationOptions(this._highlightedDecorationId, FindDecorations._CURRENT_FIND_MATCH_DECORATION);
+						changeAccessor.changeDecorationOptions(this._highlightedDecorationId, NotebookFindDecorations._CURRENT_FIND_MATCH_DECORATION);
 					}
 
 					if (newCurrentDecorationId !== null) {
@@ -110,7 +108,7 @@ export class FindDecorations implements IDisposable {
 							let lineBeforeEndMaxColumn = this._editor.getNotebookModel().getLineMaxColumn(lineBeforeEnd);
 							rng = new NotebookRange(rng.cell, rng.startLineNumber, rng.startColumn, lineBeforeEnd, lineBeforeEndMaxColumn);
 						}
-						this._rangeHighlightDecorationId = changeAccessor.addDecoration(rng, FindDecorations._RANGE_HIGHLIGHT_DECORATION);
+						this._rangeHighlightDecorationId = changeAccessor.addDecoration(rng, NotebookFindDecorations._RANGE_HIGHLIGHT_DECORATION);
 						this._currentMatch = nextMatch;
 					}
 				});
@@ -147,13 +145,13 @@ export class FindDecorations implements IDisposable {
 	public set(findMatches: NotebookFindMatch[], findScope: NotebookRange | null): void {
 		this._editor.changeDecorations((accessor) => {
 
-			let findMatchesOptions: ModelDecorationOptions = FindDecorations._FIND_MATCH_DECORATION;
+			let findMatchesOptions: ModelDecorationOptions = NotebookFindDecorations._FIND_MATCH_DECORATION;
 			let newOverviewRulerApproximateDecorations: IModelDeltaDecoration[] = [];
 
 			if (findMatches.length > 1000) {
 				// we go into a mode where the overview ruler gets "approximate" decorations
 				// the reason is that the overview ruler paints all the decorations in the file and we don't want to cause freezes
-				findMatchesOptions = FindDecorations._FIND_MATCH_NO_OVERVIEW_DECORATION;
+				findMatchesOptions = NotebookFindDecorations._FIND_MATCH_NO_OVERVIEW_DECORATION;
 
 				// approximate a distance in lines where matches should be merged
 				const lineCount = this._editor.getNotebookModel().getLineCount();
@@ -173,7 +171,7 @@ export class FindDecorations implements IDisposable {
 					} else {
 						newOverviewRulerApproximateDecorations.push({
 							range: new NotebookRange(range.cell, prevStartLineNumber, 1, prevEndLineNumber, 1),
-							options: FindDecorations._FIND_MATCH_ONLY_OVERVIEW_DECORATION
+							options: NotebookFindDecorations._FIND_MATCH_ONLY_OVERVIEW_DECORATION
 						});
 						prevStartLineNumber = range.startLineNumber;
 						prevEndLineNumber = range.endLineNumber;
@@ -182,7 +180,7 @@ export class FindDecorations implements IDisposable {
 
 				newOverviewRulerApproximateDecorations.push({
 					range: new NotebookRange(findMatches[0].range.cell, prevStartLineNumber, 1, prevEndLineNumber, 1),
-					options: FindDecorations._FIND_MATCH_ONLY_OVERVIEW_DECORATION
+					options: NotebookFindDecorations._FIND_MATCH_ONLY_OVERVIEW_DECORATION
 				});
 			}
 
@@ -212,7 +210,7 @@ export class FindDecorations implements IDisposable {
 			}
 			if (findScope) {
 				this._currentMatch = findScope;
-				this._findScopeDecorationId = accessor.addDecoration(findScope, FindDecorations._FIND_SCOPE_DECORATION);
+				this._findScopeDecorationId = accessor.addDecoration(findScope, NotebookFindDecorations._FIND_SCOPE_DECORATION);
 			}
 		});
 	}

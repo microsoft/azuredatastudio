@@ -738,7 +738,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public changeKernel(displayName: string): void {
 		this._contextsLoadingEmitter.fire();
-		this.doChangeKernel(displayName, true).catch((err) => console.error(err));
+		this.doChangeKernel(displayName, true).catch(e => this.logService.error(e));
 	}
 
 	private async doChangeKernel(displayName: string, mustSetProvider: boolean = true, restoreOnFail: boolean = true): Promise<void> {
@@ -928,8 +928,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public dispose(): void {
 		super.dispose();
-		this.disconnectAttachToConnections().catch((err) => console.error(err));
-		this.handleClosed().catch((err) => console.error(err));
+		this.disconnectAttachToConnections().catch(e => this.logService.error(e));
+		this.handleClosed().catch(e => this.logService.error(e));
 		this._findArray = [];
 		this._isDisposed = true;
 	}
@@ -1253,17 +1253,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		for (let i = 0; i < this.cells.length; i++) {
 			const item = this.cells[i];
 			const result = searchFn!(item, exp);
-			let breakout = false;
 			if (result) {
 				this._findArray = this._findArray.concat(result);
 				this._onFindCountChange.fire(this._findArray.length);
 				if (maxMatches > 0 && this._findArray.length === maxMatches) {
-					breakout = true;
 					break;
 				}
-			}
-			if (breakout) {
-				break;
 			}
 		}
 	}
@@ -1388,6 +1383,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	/**
+	 * @param range the range to check for validity
 	 * @param strict Do NOT allow a range to have its boundaries inside a high-low surrogate pair
 	 */
 	private _isValidRange(range: NotebookRange, strict: boolean): boolean {
@@ -1420,9 +1416,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return true;
 	}
 
-	/**
-	 * @param strict Do NOT allow a position inside a high-low surrogate pair
-	 */
 	private _isValidPosition(lineNumber: number, column: number, strict: boolean): boolean {
 		if (typeof lineNumber !== 'number' || typeof column !== 'number') {
 			return false;

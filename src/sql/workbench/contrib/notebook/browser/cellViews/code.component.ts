@@ -184,7 +184,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		if (this.destroyed) {
 			return;
 		}
-		this.createEditor().catch((err) => console.error(err));
+		this.createEditor().catch(e => this.logService.error(e));
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
 			this._layoutEmitter.fire();
 		}));

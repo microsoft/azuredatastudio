@@ -34,7 +34,7 @@ import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegis
 import { NOTEBOOK_COMMAND_SEARCH, NOTEBOOK_COMMAND_CLOSE_SEARCH, NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
 import { IDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import { IModelDecorationsChangeAccessor, IModelDeltaDecoration } from 'vs/editor/common/model';
-import { FindDecorations } from 'sql/workbench/contrib/notebook/browser/cellViews/NotebookFindDecorations';
+import { NotebookFindDecorations } from 'sql/workbench/contrib/notebook/browser/cellViews/NotebookFindDecorations';
 import { TimeoutTimer } from 'vs/base/common/async';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 
@@ -53,7 +53,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 	private _findCountChangeListener: IDisposable;
 	private _currentMatch: NotebookRange;
 	private _previousMatch: NotebookRange;
-	private readonly _decorations: FindDecorations;
+	private readonly _decorations: NotebookFindDecorations;
 	private readonly _toDispose = new DisposableStore();
 	private readonly _startSearchingTimer: TimeoutTimer;
 
@@ -70,7 +70,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 	) {
 		super(NotebookEditor.ID, telemetryService, themeService, storageService);
 		this._startSearchingTimer = new TimeoutTimer();
-		this._decorations = new FindDecorations(this);
+		this._decorations = new NotebookFindDecorations(this);
 		this._toDispose.add(this._decorations);
 		this._decorations.setStartPosition(this.getPosition());
 		this._actionMap[ACTION_IDS.FIND_NEXT] = this._instantiationService.createInstance(NotebookFindNext, this);
@@ -281,6 +281,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 								// multiline find scope => expand to line starts / ends
 								findScope = new NotebookRange(findScope.cell, findScope.startLineNumber, 1, findScope.endLineNumber, this._notebookModel.getLineMaxColumn(findScope.endLineNumber));
 							}
+							this._setCurrentFindMatch(findScope);
 						}
 					}
 					this._notebookModel.find(this._findState.searchString, NOTEBOOK_MAX_MATCHES).then(findRange => {

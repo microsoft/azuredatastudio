@@ -109,6 +109,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 
 		let checkEditorWidth = () => {
 			let editorWidth = this._notebookController.getConfiguration().layoutInfo.width;
+			const minimapWidth = this._notebookController.getConfiguration().layoutInfo.minimapWidth;
 			let collapsedFindWidget = false;
 			let reducedFindWidget = false;
 			let narrowFindWidget = false;
@@ -120,14 +121,14 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 				return;
 			}
 
-			if (FIND_WIDGET_INITIAL_WIDTH + 28 >= editorWidth) {
-				reducedFindWidget = false;
+			if (FIND_WIDGET_INITIAL_WIDTH + 28 + minimapWidth >= editorWidth) {
+				reducedFindWidget = true;
 			}
-			if (FIND_WIDGET_INITIAL_WIDTH + 28 - MAX_MATCHES_COUNT_WIDTH >= editorWidth) {
-				narrowFindWidget = false;
+			if (FIND_WIDGET_INITIAL_WIDTH + 28 + minimapWidth - MAX_MATCHES_COUNT_WIDTH >= editorWidth) {
+				narrowFindWidget = true;
 			}
-			if (FIND_WIDGET_INITIAL_WIDTH + 28 - MAX_MATCHES_COUNT_WIDTH >= editorWidth + 50) {
-				collapsedFindWidget = false;
+			if (FIND_WIDGET_INITIAL_WIDTH + 28 + minimapWidth - MAX_MATCHES_COUNT_WIDTH >= editorWidth + 50) {
+				collapsedFindWidget = true;
 			}
 			dom.toggleClass(this._domNode, 'collapsed-find-widget', collapsedFindWidget);
 			dom.toggleClass(this._domNode, 'narrow-find-widget', narrowFindWidget);
