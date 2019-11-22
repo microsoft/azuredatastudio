@@ -18,7 +18,6 @@ import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
-import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
