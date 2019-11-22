@@ -8,7 +8,7 @@ import * as assert from 'assert';
 
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
+import { formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName, tryMatchCellMagic } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 suite('notebookUtils', function (): void {
@@ -83,5 +83,25 @@ suite('notebookUtils', function (): void {
 		let databaseName = getDatabaseFromFormattedAttachToName('serv()erName (databaseName)');
 		assert.equal(serverName, 'serv()erName');
 		assert.equal(databaseName, 'databaseName');
+	});
+
+	test('Try Match Cell Magic Test', async function (): Promise<void> {
+		let result = tryMatchCellMagic(undefined);
+		assert.equal(result, undefined);
+
+		result = tryMatchCellMagic('    ');
+		assert.equal(result, undefined);
+
+		result = tryMatchCellMagic('text');
+		assert.equal(result, undefined);
+
+		result = tryMatchCellMagic('%%sql');
+		assert.equal(result, 'sql');
+
+		result = tryMatchCellMagic('%%');
+		assert.equal(result, undefined);
+
+		result = tryMatchCellMagic('%% sql');
+		assert.equal(result, undefined);
 	});
 });
