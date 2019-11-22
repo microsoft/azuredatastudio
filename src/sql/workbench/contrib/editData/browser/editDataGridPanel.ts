@@ -437,9 +437,12 @@ export class EditDataGridPanel extends GridParentComponent {
 					}
 				}
 
-				this.handleChanges({ ['dataRows']: self.dataSet.dataRows, ['columnDefinitions']: self.dataSet.columnDefinitions });
 				//self._cd.detectChanges(); Replacement above.
 				if (self.firstRender) {
+					this.handleChanges({
+						['dataRows']: { currentValue: self.dataSet.dataRows, firstChange: self.firstRender, previousValue: undefined },
+						['columnDefinitions']: { currentValue: self.dataSet.columnDefinitions, firstChange: self.firstRender, previousValue: undefined }
+					});
 					//TODO: Need to be able to add onClick function with working editor.
 
 					let setActive = function () {
@@ -456,6 +459,10 @@ export class EditDataGridPanel extends GridParentComponent {
 						setActive();
 					}, self.refreshGridTimeoutInMs);
 				}
+				else {
+					//this.handleChanges({ ['dataRows']: self.dataSet.dataRows, ['columnDefinitions']: self.dataSet.columnDefinitions });
+				}
+
 				resolve();
 			}, self.refreshGridTimeoutInMs);
 		});
@@ -802,7 +809,9 @@ export class EditDataGridPanel extends GridParentComponent {
 				this._register(this._tables[0].onContextMenu(onContextMenu, self));
 			}
 		}
-		this._tables[0] = new Table(this.nativeElement);
+		else {
+			this._tables[0] = new Table(this.nativeElement);
+		}
 	}
 
 
