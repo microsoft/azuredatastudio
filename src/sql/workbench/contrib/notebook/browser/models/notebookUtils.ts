@@ -53,11 +53,6 @@ export function getStandardKernelsForProvider(providerId: string, notebookServic
 	return <IStandardKernelWithProvider[]>(standardKernels);
 }
 
-// Extract server name from format used in Attach To: serverName (databaseName)
-export function getServerFromFormattedAttachToName(name: string): string {
-	return name.substring(0, name.lastIndexOf(' (')) ? name.substring(0, name.lastIndexOf(' (')) : name;
-}
-
 // Extract database name from format used in Attach To: serverName (databaseName)
 export function getDatabaseFromFormattedAttachToName(name: string): string {
 	return name.substring(name.lastIndexOf('(') + 1, name.lastIndexOf(')')) ?
