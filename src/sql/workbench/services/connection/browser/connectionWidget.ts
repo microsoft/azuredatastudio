@@ -121,7 +121,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._providerName = providerName;
 	}
 
-	private getAuthTypeDefault(option: azdata.ConnectionOption, os: OperatingSystem): string {
+	protected getAuthTypeDefault(option: azdata.ConnectionOption, os: OperatingSystem): string {
 		// Check for OS-specific default value
 		if (option.defaultValueOsOverrides) {
 			let result = find(option.defaultValueOsOverrides, d => d.osEnumValue === os);

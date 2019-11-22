@@ -5,7 +5,6 @@
 
 declare module 'sqlops' {
 	import * as vscode from 'vscode';
-	import { OperatingSystem } from 'vs/base/common/platform';
 
 	// EXPORTED NAMESPACES /////////////////////////////////////////////////
 	/**
@@ -222,7 +221,6 @@ declare module 'sqlops' {
 		saveProfile: boolean;
 		id: string;
 		azureTenantId?: string;
-		azureAccount?: string;
 	}
 
 	/**
@@ -416,12 +414,6 @@ declare module 'sqlops' {
 		name: string;
 	}
 
-	export interface DefaultValueOsOverride {
-		osEnumValue: OperatingSystem;
-
-		defaultValueOverride: string;
-	}
-
 	export interface ConnectionOption {
 		name: string;
 
@@ -436,8 +428,6 @@ declare module 'sqlops' {
 		specialValueType: ConnectionOptionSpecialType;
 
 		defaultValue: string;
-
-		defaultValueOsOverrides?: DefaultValueOsOverride[];
 
 		categoryValues: CategoryValue[];
 

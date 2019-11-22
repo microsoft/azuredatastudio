@@ -5,7 +5,6 @@
 
 declare module 'azdata' {
 	import * as vscode from 'vscode';
-	import { OperatingSystem } from 'vs/base/common/platform';
 
 	// EXPORTED NAMESPACES /////////////////////////////////////////////////
 	/**
@@ -504,7 +503,7 @@ declare module 'azdata' {
 	}
 
 	export interface DefaultValueOsOverride {
-		osEnumValue: OperatingSystem;
+		osEnumValue: number;
 
 		defaultValueOverride: string;
 	}

@@ -11,7 +11,6 @@ export const outputChannelName = 'MSSQL';
 export const capabilitiesOptions = 'OPTIONS_METADATA';
 
 export const mssqlProviderName = 'MSSQL';
-export const pgsqlProviderName = 'PGSQL';
 export const anyProviderName = '*';
 export const connectionProviderContextKey = 'connectionProvider';
 
