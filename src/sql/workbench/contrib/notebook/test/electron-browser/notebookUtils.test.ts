@@ -5,24 +5,9 @@
 
 import * as assert from 'assert';
 
-import { getDatabaseFromFormattedAttachToName, tryMatchCellMagic, getHostAndPortFromEndpoint } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
+import { tryMatchCellMagic, getHostAndPortFromEndpoint } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 
 suite('notebookUtils', function (): void {
-	test('Should extract server name when no database specified', async function (): Promise<void> {
-		let databaseName = getDatabaseFromFormattedAttachToName('serverName');
-		assert.equal(databaseName, '');
-	});
-
-	test('Should extract server and database name', async function (): Promise<void> {
-		let databaseName = getDatabaseFromFormattedAttachToName('serverName (databaseName)');
-		assert.equal(databaseName, 'databaseName');
-	});
-
-	test('Should extract server and database name with other parentheses', async function (): Promise<void> {
-		let databaseName = getDatabaseFromFormattedAttachToName('serv()erName (databaseName)');
-		assert.equal(databaseName, 'databaseName');
-	});
-
 	test('tryMatchCellMagic Test', async function (): Promise<void> {
 		let result = tryMatchCellMagic(undefined);
 		assert.equal(result, undefined);
