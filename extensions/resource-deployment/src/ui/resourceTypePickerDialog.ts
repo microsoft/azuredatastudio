@@ -92,7 +92,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 				data: [],
 				columns: [toolColumn, descriptionColumn, installStatusColumn, versionColumn, minVersionColumn],
-				width: tableWidth
+				width: tableWidth,
+				ariaLabel: localize('deploymentDialog.RequiredToolsTitle', "Required tools")
 			}).component();
 
 			const toolsTableWrapper = view.modelBuilder.divContainer().withLayout({ width: tableWidth }).component();
