@@ -131,30 +131,26 @@ steps:
             "keyCode": "CP-230012",
             "operationSetCode": "SigntoolSign",
             "parameters": [
-              {
-                "parameterName": "OpusName",
-                "parameterValue": "Azure Data Studio"
-              },
-              {
-                "parameterName": "OpusInfo",
-                "parameterValue": "https://github.com/microsoft/azuredatastudio"
-              },
-              {
-                "parameterName": "Append",
-                "parameterValue": "/as"
-              },
-              {
-                "parameterName": "FileDigest",
-                "parameterValue": "/fd \"SHA256\""
-              },
-              {
-                "parameterName": "PageHash",
-                "parameterValue": "/NPH"
-              },
-              {
-                "parameterName": "TimeStamp",
-                "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
-              }
+            {
+              "parameterName": "OpusName",
+              "parameterValue": "Azure Data Studio"
+            },
+            {
+              "parameterName": "OpusInfo",
+              "parameterValue": "https://github.com/microsoft/azuredatastudio"
+            },
+            {
+              "parameterName": "PageHash",
+              "parameterValue": "/NPH"
+            },
+            {
+              "parameterName": "FileDigest",
+              "parameterValue": "/fd sha256"
+            },
+            {
+              "parameterName": "TimeStamp",
+              "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+            }
             ],
             "toolName": "signtool.exe",
             "toolVersion": "6.2.9304.0"
@@ -163,19 +159,27 @@ steps:
             "keyCode": "CP-230012",
             "operationSetCode": "SigntoolVerify",
             "parameters": [
-              {
-                "parameterName": "VerifyAll",
-                "parameterValue": "/all"
-              }
-            ],
-          "toolName": "sign",
-          "toolVersion": "1.0"
+            {
+              "parameterName": "VerifyAll",
+              "parameterValue": "/all"
+            }
+                ],
+            "toolName": "signtool.exe",
+            "toolVersion": "6.2.9304.0"
           }
         ]
       SessionTimeout: 600
       MaxConcurrency: 5
       MaxRetryAttempts: 20
     condition: and(succeeded(), eq(variables['signed'], true))
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { del $(Build.SourcesDirectory)\..\azuredatastudio-win32-x64\CodeSignSummary*.md }
+    condition: and(succeeded(), eq(variables['signed'], true))
+    continueOnError: true
+    displayName: Delete CodeSignSummary.md
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
@@ -241,6 +245,14 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
+      exec { del $(Build.SourcesDirectory)\.build\win32-x64\user-setup\CodeSignSummary.md }
+    condition: and(succeeded(), eq(variables['signed'], true))
+    continueOnError: true
+    displayName: Delete CodeSignSummary.md
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
       exec { yarn gulp "vscode-win32-x64-system-setup" }
     continueOnError: true
     displayName: System setup
@@ -298,6 +310,14 @@ steps:
       MaxConcurrency: 5
       MaxRetryAttempts: 20
     condition: and(succeeded(), eq(variables['signed'], true))
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { del $(Build.SourcesDirectory)\.build\win32-x64\system-setup\CodeSignSummary.md }
+    condition: and(succeeded(), eq(variables['signed'], true))
+    continueOnError: true
+    displayName: Delete CodeSignSummary.md
 
   - script: |
       if exist $(Build.SourcesDirectory)\..\azuredatastudio-windows rmdir /s /q $(Build.SourcesDirectory)\..\azuredatastudio-windows
