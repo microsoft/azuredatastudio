@@ -173,10 +173,12 @@ steps:
       MaxRetryAttempts: 20
     condition: and(succeeded(), eq(variables['signed'], true))
 
-  - powershell: del $(Build.SourcesDirectory)\..\azuredatastudio-win32-x64\CodeSignSummary*.md
+  - task: CmdLine@1
+    displayName: 'Delete CodeSignSummary.md'
+    inputs:
+      filename: del
+      arguments: '$(Build.SourcesDirectory)\..\azuredatastudio-win32-x64\CodeSignSummary*.md'
     condition: and(succeeded(), eq(variables['signed'], true))
-    continueOnError: true
-    displayName: Delete CodeSignSummary.md
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
@@ -238,9 +240,13 @@ steps:
       MaxRetryAttempts: 20
     condition: and(succeeded(), eq(variables['signed'], true))
 
-  - powershell: del $(Build.SourcesDirectory)\.build\win32-x64\user-setup\CodeSignSummary.md
+  - task: CmdLine@1
+    displayName: 'Delete CodeSignSummary.md for user installer'
+    inputs:
+      filename: del
+      arguments: '$(Build.SourcesDirectory)\.build\win32-x64\user-setup\CodeSignSummary.md'
+    continueOnError: true
     condition: and(succeeded(), eq(variables['signed'], true))
-    displayName: Delete CodeSignSummary.md
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
