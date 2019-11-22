@@ -75,14 +75,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.2",
-							"lastUpdated": "10/2/2019",
+							"version": "0.1.3",
+							"lastUpdated": "11/22/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/whoisactive/whoisactive-0.1.2.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/whoisactive/whoisactive-0.1.3.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -132,14 +132,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.2.0",
-							"lastUpdated": "10/2/2019",
+							"version": "0.2.1",
+							"lastUpdated": "11/22/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ServerReports/server-report-0.2.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ServerReports/server-report-0.2.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
