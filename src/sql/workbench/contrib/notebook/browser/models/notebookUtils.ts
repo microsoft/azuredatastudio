@@ -6,7 +6,6 @@
 import * as path from 'vs/base/common/path';
 import { nb, ServerInfo } from 'azdata';
 import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { URI } from 'vs/base/common/uri';
 import { startsWith } from 'vs/base/common/strings';
 import { assign } from 'vs/base/common/objects';
@@ -52,15 +51,6 @@ export function getStandardKernelsForProvider(providerId: string, notebookServic
 		});
 	});
 	return <IStandardKernelWithProvider[]>(standardKernels);
-}
-
-// In the Attach To dropdown, show the database name (if it exists) using the current connection
-// Example: myFakeServer (myDatabase)
-export function formatServerNameWithDatabaseNameForAttachTo(connectionProfile: ConnectionProfile): string {
-	if (connectionProfile && connectionProfile.serverName) {
-		return !connectionProfile.databaseName ? connectionProfile.serverName : connectionProfile.serverName + ' (' + connectionProfile.databaseName + ')';
-	}
-	return '';
 }
 
 // Extract server name from format used in Attach To: serverName (databaseName)
