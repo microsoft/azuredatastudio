@@ -173,10 +173,7 @@ steps:
       MaxRetryAttempts: 20
     condition: and(succeeded(), eq(variables['signed'], true))
 
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { del $(Build.SourcesDirectory)\..\azuredatastudio-win32-x64\CodeSignSummary*.md }
+  - powershell: del $(Build.SourcesDirectory)\..\azuredatastudio-win32-x64\CodeSignSummary*.md
     condition: and(succeeded(), eq(variables['signed'], true))
     continueOnError: true
     displayName: Delete CodeSignSummary.md
@@ -185,7 +182,6 @@ steps:
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
       exec { yarn gulp "vscode-win32-x64-user-setup" }
-    continueOnError: true
     displayName: User setup
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
@@ -242,19 +238,14 @@ steps:
       MaxRetryAttempts: 20
     condition: and(succeeded(), eq(variables['signed'], true))
 
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { del $(Build.SourcesDirectory)\.build\win32-x64\user-setup\CodeSignSummary.md }
+  - powershell: del $(Build.SourcesDirectory)\.build\win32-x64\user-setup\CodeSignSummary.md
     condition: and(succeeded(), eq(variables['signed'], true))
-    continueOnError: true
     displayName: Delete CodeSignSummary.md
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
       exec { yarn gulp "vscode-win32-x64-system-setup" }
-    continueOnError: true
     displayName: System setup
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
@@ -311,10 +302,7 @@ steps:
       MaxRetryAttempts: 20
     condition: and(succeeded(), eq(variables['signed'], true))
 
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { del $(Build.SourcesDirectory)\.build\win32-x64\system-setup\CodeSignSummary.md }
+  - powershell: del $(Build.SourcesDirectory)\.build\win32-x64\system-setup\CodeSignSummary.md
     condition: and(succeeded(), eq(variables['signed'], true))
     continueOnError: true
     displayName: Delete CodeSignSummary.md
