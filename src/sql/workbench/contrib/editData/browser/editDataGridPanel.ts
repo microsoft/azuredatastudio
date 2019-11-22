@@ -169,7 +169,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		self.placeHolderDataSets = [];
 		self.renderedDataSets = self.placeHolderDataSets;
 		//this._cd.detectChanges();
-		self._columnNameToIndex = [];
 
 		// Hooking up edit functionshandle
 		this.onIsCellEditValid = (row, column, value): boolean => {
@@ -460,7 +459,10 @@ export class EditDataGridPanel extends GridParentComponent {
 					}, self.refreshGridTimeoutInMs);
 				}
 				else {
-					//this.handleChanges({ ['dataRows']: self.dataSet.dataRows, ['columnDefinitions']: self.dataSet.columnDefinitions });
+					this.handleChanges({
+						['dataRows']: self.dataSet.dataRows,
+						['columnDefinitions']: self.dataSet.columnDefinitions
+					});
 				}
 
 				resolve();
@@ -773,36 +775,48 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (this.placeHolderDataSets) {
 			let dataSet = this.placeHolderDataSets[0];
 			let options = {
-				autoEdit: true,
-				defaultColumnWidth: 120,
-				editable: false, enableAddRow: false,
-				enableAsyncPostRender: true,
 				enableCellNavigation: true,
 				enableColumnReorder: false,
+				renderRowWithRange: true,
+				showHeader: true,
+				rowHeight: this._rowHeight,
+				defaultColumnWidth: 120,
+				editable: false,
+				autoEdit: false,
+				enableAddRow: false, // TODO change when we support enableAddRow
+				enableAsyncPostRender: false,
 				editorFactory: {
 					getEditor: (column: ISlickColumn<any>) => this.getColumnEditor(column)
 				},
 				formatterFactory: {
 					getFormatter: this.getFormatter
-				},
-				rowHeight: 29,
-				showRowNumber: true
+				}
 			};
 
 			if (dataSet.columnDefinitions) {
-				// add names of columns to column name list
-				for (let i = 0; i < dataSet.columnDefinitions.length; i++) {
-					this._columnNameToIndex[dataSet.columnDefinitions[i].name] = i;
-				}
-				console.log(this._columnNameToIndex);
-
 				t = new Table(this.nativeElement, { dataProvider: new AsyncDataProvider(dataSet.dataRows), columns: dataSet.columnDefinitions }, options);
 
 				this._tables[0] = t;
-				this._tables[0].setSelectionModel(this.selectionModel);
-				for (let i = 0; i < this.plugins[0].length; i++) {
-					this._tables[0].registerPlugin(this.plugins[0][i]);
+				if (this.selectionModel) {
+					if (typeof this.selectionModel === 'object') {
+						t.grid.setSelectionModel(this.selectionModel);
+					} else if (typeof this.selectionModel === 'string' && Slick[this.selectionModel] && typeof Slick[this.selectionModel] === 'function') {
+						t.grid.setSelectionModel(Slick[this.selectionModel]);
+					} else {
+						console.error(`Tried to register selection model ${this.selectionModel},
+						but none was found to be attached to Slick Grid or it was not a function.
+						Please extend the Slick namespace with the selection model as a function before registering`);
+					}
 				}
+				for (let plugin of this.plugins[0]) {
+					this._tables[0].registerPlugin(plugin);
+				}
+
+				this._columnNameToIndex = {};
+				for (let i = 0; i < this.placeHolderDataSets[0].columnDefinitions.length; i++) {
+					this._columnNameToIndex[this.placeHolderDataSets[0].columnDefinitions[i].name] = i;
+				}
+
 				let onContextMenu = (e: ITableMouseEvent) => {
 					this.openContextMenu(e, this.dataSet.batchId, this.dataSet.resultId, 0);
 				};
