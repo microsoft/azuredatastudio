@@ -67,7 +67,7 @@ panel {
 	text-transform: none;
 	text-overflow: ellipsis;
 	overflow: hidden;
-	width: 65px;
+	width: auto;
 	height: 50px;
 	line-height: 45px;
 }
@@ -98,7 +98,7 @@ panel {
 	flex: 0 0 auto;
 }
 
-.tab > .tabLabel.active {
+.tab>.tabLabel.active {
 	border-bottom: 1px solid;
 }
 
@@ -111,30 +111,26 @@ panel {
 	flex-direction: row;
 }
 
-.tabbedPanel.vertical > .title {
+.tabbedPanel.vertical>.title {
 	flex: 0 0 auto;
 	flex-direction: column;
 	height: 100%;
 }
 
-.tabbedPanel.vertical .tabList {
-	flex-direction: column;
-}
-
-.tabbedPanel > .tab-content {
+.tabbedPanel>.tab-content {
 	flex: 1;
 	position: relative;
 }
 
-.tabbedPanel.vertical > .title > .tabList {
+.tabbedPanel.vertical > .title > .tabContainer > .monaco-scrollable-element >.tabList {
 	flex-flow: column;
 }
 
-.tabbedPanel.horizontal > .title > .tabList {
+.tabbedPanel.horizontal > .title > .tabContainer > .monaco-scrollable-element >.tabList {
 	flex-flow: row;
 }
 
-.tabbedPanel > .title > .monaco-scrollable-element {
+.tabbedPanel > .title > .tabContainer > .monaco-scrollable-element {
 	flex: 0 1 auto;
 	width: inherit;
 }

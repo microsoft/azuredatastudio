@@ -12,9 +12,8 @@ import { DashboardServiceInterface } from 'sql/workbench/contrib/dashboard/brows
 import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { WidgetConfig, TabConfig, TabSettingConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { IPropertiesConfig } from 'sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution';
-import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
+import { PanelComponent, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
 import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
-import { PinUnpinTabAction, AddFeatureTabAction } from './actions';
 import { TabComponent, TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { AngularEventType, IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { DashboardTab, IConfigModifierCollection } from 'sql/workbench/contrib/dashboard/browser/core/interfaces';
@@ -122,7 +121,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				tempWidgets = cb.apply(this, [tempWidgets, this._originalConfig]);
 			});
 			this.propertiesWidget = properties ? properties[0] : undefined;
-
+			this._panel.options.layout = NavigationBarLayout.vertical;
 			this.createTabs(tempWidgets);
 		}
 	}
@@ -170,14 +169,18 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this.loadNewTabs(alwaysShowTabs);
 
 		// Set panel actions
-		const openedTabs = [...pinnedDashboardTabs, ...alwaysShowTabs];
-		if (extensionTabsEnabled) {
-			const addNewTabAction = this.instantiationService.createInstance(AddFeatureTabAction, allTabs, openedTabs, this.dashboardService.getUnderlyingUri());
-			this._tabsDispose.push(addNewTabAction);
-			this.panelActions = [addNewTabAction];
-		} else {
-			this.panelActions = [];
-		}
+		//const openedTabs = [...pinnedDashboardTabs, ...alwaysShowTabs];
+
+		// if (extensionTabsEnabled) {
+		// 	const addNewTabAction = this.instantiationService.createInstance(AddFeatureTabAction, allTabs, openedTabs, this.dashboardService.getUnderlyingUri());
+		// 	this._tabsDispose.push(addNewTabAction);
+		// 	this.panelActions = [addNewTabAction];
+		// } else {
+		// 	this.panelActions = [];
+		// }
+
+		this.panelActions = [];
+
 		this._cd.detectChanges();
 
 		this._tabsDispose.push(this.dashboardService.onPinUnpinTab(e => {
@@ -232,19 +235,19 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		if (dashboardTabs && dashboardTabs.length > 0) {
 			const selectedTabs = dashboardTabs.map(v => this.initTabComponents(v)).map(v => {
 				const actions = [];
-				const tabSettingConfig = find(this._tabSettingConfigs, i => i.tabId === v.id);
-				let isPinned = false;
-				if (tabSettingConfig) {
-					isPinned = tabSettingConfig.isPinned;
-				} else if (v.alwaysShow) {
-					isPinned = true;
-				}
-				actions.push(this.instantiationService.createInstance(PinUnpinTabAction, v.id, this.dashboardService.getUnderlyingUri(), isPinned));
+				// const tabSettingConfig = find(this._tabSettingConfigs, i => i.tabId === v.id);
+				// let isPinned = false;
+				// if (tabSettingConfig) {
+				// 	isPinned = tabSettingConfig.isPinned;
+				// } else if (v.alwaysShow) {
+				// 	isPinned = true;
+				// }
+				// actions.push(this.instantiationService.createInstance(PinUnpinTabAction, v.id, this.dashboardService.getUnderlyingUri(), isPinned));
 
 				const config = v as TabConfig;
 				config.context = this.context;
 				config.editable = false;
-				config.canClose = true;
+				config.canClose = false;
 				config.actions = actions;
 				this.addNewTab(config);
 				return config;
