@@ -294,7 +294,13 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 
 	private createServiceStatusRow(container: azdata.FlexContainer, serviceStatus: ServiceStatusModel, isLastRow: boolean): void {
 		const serviceStatusRow = this.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center', height: '30px' }).component();
-		const statusIconCell = this.modelBuilder.text().withProperties({ value: getHealthStatusIcon(serviceStatus.healthStatus), CSSStyles: { 'user-select': 'none' } }).component();
+		const statusIconCell = this.modelBuilder.text()
+			.withProperties<azdata.TextComponentProperties>({
+				value: getHealthStatusIcon(serviceStatus.healthStatus),
+				ariaRole: 'img',
+				title: getHealthStatusDisplayText(serviceStatus.healthStatus),
+				CSSStyles: { 'user-select': 'none' }
+			}).component();
 		serviceStatusRow.addItem(statusIconCell, { CSSStyles: { 'width': `${overviewIconColumnWidthPx}px`, 'min-width': `${overviewIconColumnWidthPx}px` } });
 		const nameCell = this.modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink } }).component();
 		nameCell.onDidClick(() => {
@@ -367,6 +373,7 @@ function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: 
 	copyValueCell.iconPath = IconPathHelper.copy;
 	copyValueCell.onDidClick(() => {
 		vscode.env.clipboard.writeText(endpoint.endpoint);
+		vscode.window.showInformationMessage(localize('copiedEndpoint', "Endpoint '{0}' copied to clipboard", getEndpointDisplayText(endpoint.name, endpoint.description)));
 	});
 	copyValueCell.iconHeight = '14px';
 	copyValueCell.iconWidth = '14px';
