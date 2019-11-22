@@ -42,7 +42,7 @@ suite('Notebook Contexts', function (): void {
 
 		// No kernel or profile info provided
 		let conns = NotebookContexts.getContextsForKernel(connService.object, [mssqlProviderName]);
-		assert.deepEqual(conns, defaultContext);
+		assert.deepStrictEqual(conns, defaultContext);
 
 		// No Profile, Kernels are the same
 		let kernelChangeArgs = <nb.IKernelChangedArgs>{
@@ -56,17 +56,17 @@ suite('Notebook Contexts', function (): void {
 			}
 		};
 		conns = NotebookContexts.getContextsForKernel(connService.object, [mssqlProviderName], kernelChangeArgs);
-		assert.deepEqual(conns, defaultContext);
+		assert.deepStrictEqual(conns, defaultContext);
 
 		// Kernel Info and Profile, but no provider IDs
 		let testConn = createTestConnProfile();
 		conns = NotebookContexts.getContextsForKernel(connService.object, [], kernelChangeArgs, testConn);
-		assert.deepEqual(conns, defaultContext);
+		assert.deepStrictEqual(conns, defaultContext);
 
 		// Normal use case
 		connService.setup(c => c.getActiveConnections()).returns(() => [testConn]);
 		conns = NotebookContexts.getContextsForKernel(connService.object, [mssqlProviderName], kernelChangeArgs, testConn);
-		assert.deepEqual(conns, <IDefaultConnection>{
+		assert.deepStrictEqual(conns, <IDefaultConnection>{
 			otherConnections: [testConn],
 			defaultConnection: testConn
 		});
@@ -81,29 +81,29 @@ suite('Notebook Contexts', function (): void {
 		// No provider IDs
 		connService.setup(c => c.getActiveConnections()).returns(() => [testConn]);
 		let conns = NotebookContexts.getActiveContexts(connService.object, [], testConn);
-		assert.deepEqual(conns, localContext);
+		assert.deepStrictEqual(conns, localContext);
 
 		// No connections
 		connService.setup(c => c.getActiveConnections()).returns(() => []);
 		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], testConn);
-		assert.deepEqual(conns, defaultContext);
+		assert.deepStrictEqual(conns, defaultContext);
 
 		// No valid connection IDs
 		testConn.id = '-1';
 		connService.setup(c => c.getActiveConnections()).returns(() => [testConn]);
 		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], testConn);
-		assert.deepEqual(conns, defaultContext);
+		assert.deepStrictEqual(conns, defaultContext);
 
 		// No matching provider IDs
 		testConn.id = 'testId';
 		connService.setup(c => c.getActiveConnections()).returns(() => [testConn]);
 		conns = NotebookContexts.getActiveContexts(connService.object, ['notARealProvider'], testConn);
-		assert.deepEqual(conns, defaultContext);
+		assert.deepStrictEqual(conns, defaultContext);
 
 		// Normal behavior, valid connection present
 		connService.setup(c => c.getActiveConnections()).returns(() => [testConn]);
 		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], testConn);
-		assert.deepEqual(conns, <IDefaultConnection>{
+		assert.deepStrictEqual(conns, <IDefaultConnection>{
 			otherConnections: [testConn],
 			defaultConnection: testConn
 		});
@@ -113,7 +113,7 @@ suite('Notebook Contexts', function (): void {
 		newTestConn.serverName = 'otherTestServerName';
 		connService.setup(c => c.getActiveConnections()).returns(() => [newTestConn, testConn]);
 		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], testConn);
-		assert.deepEqual(conns, <IDefaultConnection>{
+		assert.deepStrictEqual(conns, <IDefaultConnection>{
 			otherConnections: [newTestConn, testConn],
 			defaultConnection: testConn
 		});
@@ -121,7 +121,7 @@ suite('Notebook Contexts', function (): void {
 		// Multiple connections, no profile provided
 		connService.setup(c => c.getActiveConnections()).returns(() => [newTestConn, testConn]);
 		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], undefined);
-		assert.deepEqual(conns, <IDefaultConnection>{
+		assert.deepStrictEqual(conns, <IDefaultConnection>{
 			otherConnections: [newTestConn, testConn],
 			defaultConnection: newTestConn
 		});
