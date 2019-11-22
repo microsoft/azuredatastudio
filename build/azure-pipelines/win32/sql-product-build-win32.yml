@@ -72,7 +72,7 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { yarn gulp "vscode-win32-x64-min" }
+      exec { yarn gulp "vscode-win32-x64" }
     displayName: Build
 
   - powershell: |

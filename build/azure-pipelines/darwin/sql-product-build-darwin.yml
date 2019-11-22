@@ -65,7 +65,7 @@ steps:
 
   - script: |
       set -e
-      yarn gulp vscode-darwin-min
+      yarn gulp vscode-darwin
     displayName: Build
 
   - script: |
