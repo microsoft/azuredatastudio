@@ -8,7 +8,7 @@ import * as assert from 'assert';
 
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName, tryMatchCellMagic } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
+import { formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName, tryMatchCellMagic, getHostAndPortFromEndpoint } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 suite('notebookUtils', function (): void {
@@ -85,7 +85,7 @@ suite('notebookUtils', function (): void {
 		assert.equal(databaseName, 'databaseName');
 	});
 
-	test('Try Match Cell Magic Test', async function (): Promise<void> {
+	test('tryMatchCellMagic Test', async function (): Promise<void> {
 		let result = tryMatchCellMagic(undefined);
 		assert.equal(result, undefined);
 
@@ -103,5 +103,27 @@ suite('notebookUtils', function (): void {
 
 		result = tryMatchCellMagic('%% sql');
 		assert.equal(result, undefined);
+	});
+
+	test('getHostAndPortFromEndpoint Test', async function (): Promise<void> {
+		let result = getHostAndPortFromEndpoint('https://localhost:1433');
+		assert.equal(result.host, 'localhost');
+		assert.equal(result.port, '1433');
+
+		result = getHostAndPortFromEndpoint('tcp://localhost,1433');
+		assert.equal(result.host, 'localhost');
+		assert.equal(result.port, '1433');
+
+		result = getHostAndPortFromEndpoint('tcp://localhost');
+		assert.equal(result.host, 'localhost');
+		assert.equal(result.port, undefined);
+
+		result = getHostAndPortFromEndpoint('localhost');
+		assert.equal(result.host, '');
+		assert.equal(result.port, undefined);
+
+		result = getHostAndPortFromEndpoint('localhost:1433');
+		assert.equal(result.host, '');
+		assert.equal(result.port, undefined);
 	});
 });
