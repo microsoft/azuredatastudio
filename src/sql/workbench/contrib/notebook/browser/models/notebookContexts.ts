@@ -73,7 +73,7 @@ export class NotebookContexts {
 	 * @param connProviderIds array of applicable connection providers to filter connections
 	 * @param profile connection profile passed when launching notebook
 	 */
-	public static getActiveContexts(connectionService: IConnectionManagementService, connProviderIds: string[], profile: IConnectionProfile): IDefaultConnection {
+	public static getActiveContexts(connectionService: IConnectionManagementService, connProviderIds: string[], profile?: IConnectionProfile): IDefaultConnection {
 		let defaultConnection: ConnectionProfile = NotebookContexts.DefaultContext.defaultConnection;
 		let activeConnections: ConnectionProfile[] = connectionService.getActiveConnections();
 		if (activeConnections && activeConnections.length > 0) {
