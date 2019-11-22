@@ -29,10 +29,11 @@ steps:
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
+      $ErrorActionPreference = "Continue"
       exec { git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git" }
       exec { git fetch distro }
       exec { git merge $(node -p "require('./package.json').distro") }
+    continueOnError: true
     displayName: Merge distro
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
