@@ -11,7 +11,6 @@ import { URI } from 'vs/base/common/uri';
 import { startsWith } from 'vs/base/common/strings';
 import { assign } from 'vs/base/common/objects';
 
-
 export const clusterEndpointsProperty = 'clusterEndpoints';
 export const hadoopEndpointNameGateway = 'gateway';
 /**
