@@ -15,7 +15,7 @@ import { find } from 'vs/base/common/arrays';
 
 export class NotebookContexts {
 
-	public static get DefaultContext(): IDefaultConnection {
+	private static get DefaultContext(): IDefaultConnection {
 		let defaultConnection: ConnectionProfile = <any>{
 			providerName: mssqlProviderName,
 			id: '-1',
@@ -29,7 +29,7 @@ export class NotebookContexts {
 		};
 	}
 
-	public static get LocalContext(): IDefaultConnection {
+	private static get LocalContext(): IDefaultConnection {
 		let localConnection: ConnectionProfile = <any>{
 			providerName: mssqlProviderName,
 			id: '-1',
@@ -95,8 +95,9 @@ export class NotebookContexts {
 			if (connections && connections.length > 0) {
 				defaultConnection = connections[0];
 				if (profile && profile.options) {
-					if (find(connections, connection => connection.serverName === profile.serverName)) {
-						defaultConnection = find(connections, connection => connection.serverName === profile.serverName);
+					let matchingConn = find(connections, connection => connection.serverName === profile.serverName);
+					if (matchingConn) {
+						defaultConnection = matchingConn;
 					}
 				}
 			} else if (connections.length === 0) {
@@ -104,14 +105,6 @@ export class NotebookContexts {
 			}
 			activeConnections = [];
 			connections.forEach(connection => activeConnections.push(connection));
-		}
-		if (defaultConnection === NotebookContexts.DefaultContext.defaultConnection) {
-			let newConnection = <ConnectionProfile><any>{
-				providerName: 'SQL',
-				id: '-2',
-				serverName: localize('addConnection', "Add New Connection")
-			};
-			activeConnections.push(newConnection);
 		}
 
 		return {

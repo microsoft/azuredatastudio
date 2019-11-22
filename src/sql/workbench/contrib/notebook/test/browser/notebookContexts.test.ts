@@ -11,10 +11,11 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { IDefaultConnection } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 
 suite('Notebook Contexts', function (): void {
-	const defaultContext = NotebookContexts.DefaultContext;
-	const localContext = NotebookContexts.LocalContext;
+	const defaultContext = NotebookContexts['DefaultContext'];
+	const localContext = NotebookContexts['LocalContext'];
 
 	function createTestConnProfile(): ConnectionProfile {
 		return new ConnectionProfile(new TestCapabilitiesService(), {
@@ -44,20 +45,52 @@ suite('Notebook Contexts', function (): void {
 
 		let testConnection = createTestConnProfile();
 
-		// No connProviderIds
+		// No provider IDs
 		connService.setup(c => c.getActiveConnections()).returns(() => [testConnection]);
 		let conns = NotebookContexts.getActiveContexts(connService.object, [], testConnection);
 		assert.deepEqual(conns, localContext);
 
 		// No connections
 		connService.setup(c => c.getActiveConnections()).returns(() => []);
-		conns = NotebookContexts.getActiveContexts(connService.object, ['TestId'], testConnection);
+		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], testConnection);
 		assert.deepEqual(conns, defaultContext);
 
 		// No valid connection IDs
 		testConnection.id = '-1';
 		connService.setup(c => c.getActiveConnections()).returns(() => [testConnection]);
-		conns = NotebookContexts.getActiveContexts(connService.object, ['TestId'], testConnection);
+		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], testConnection);
 		assert.deepEqual(conns, defaultContext);
+
+		// No valid provider IDs
+		connService.setup(c => c.getActiveConnections()).returns(() => [testConnection]);
+		conns = NotebookContexts.getActiveContexts(connService.object, ['notARealProvider'], testConnection);
+		assert.deepEqual(conns, defaultContext);
+
+		// Normal behavior, valid connection present
+		testConnection.id = 'testId';
+		connService.setup(c => c.getActiveConnections()).returns(() => [testConnection]);
+		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], testConnection);
+		assert.deepEqual(conns, <IDefaultConnection>{
+			otherConnections: [testConnection],
+			defaultConnection: testConnection
+		});
+
+		// Multiple active connections
+		let newTestConn = createTestConnProfile();
+		newTestConn.serverName = 'otherTestServerName';
+		connService.setup(c => c.getActiveConnections()).returns(() => [newTestConn, testConnection]);
+		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], testConnection);
+		assert.deepEqual(conns, <IDefaultConnection>{
+			otherConnections: [newTestConn, testConnection],
+			defaultConnection: testConnection
+		});
+
+		// Multiple connections, no profile provided
+		connService.setup(c => c.getActiveConnections()).returns(() => [newTestConn, testConnection]);
+		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], undefined);
+		assert.deepEqual(conns, <IDefaultConnection>{
+			otherConnections: [newTestConn, testConnection],
+			defaultConnection: newTestConn
+		});
 	});
 });
