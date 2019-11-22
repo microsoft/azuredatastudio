@@ -12,6 +12,29 @@ steps:
   #     versionSpec: '2.x'
   #     addToPath: true
 
+  - task: AzureKeyVault@1
+    displayName: 'Azure Key Vault: Get Secrets'
+    inputs:
+      azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+      KeyVaultName: ado-secrets
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      "machine github.com`nlogin azuredatastudio`npassword $(github-distro-mixin-password)" | Out-File "$env:USERPROFILE\_netrc" -Encoding ASCII
+
+      exec { git config user.email "andresse@microsoft.com" }
+      exec { git config user.name "AzureDataStudio" }
+    displayName: Prepare tooling
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git" }
+      exec { git fetch distro }
+      exec { git merge $(node -p "require('./package.json').distro") }
+    displayName: Merge distro
+
   - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
     inputs:
       keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
@@ -43,7 +66,7 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { yarn gulp "mixin" }
+      exec { node build/azure-pipelines/mixin }
     displayName: Mix in quality
 
   - powershell: |

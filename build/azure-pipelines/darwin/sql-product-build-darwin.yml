@@ -13,6 +13,32 @@ steps:
       targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
       vstsFeed: 'BuildCache'
 
+  - task: AzureKeyVault@1
+    displayName: 'Azure Key Vault: Get Secrets'
+    inputs:
+      azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+      KeyVaultName: ado-secrets
+
+  - script: |
+      set -e
+
+      cat << EOF > ~/.netrc
+      machine github.com
+      login azuredatastudio
+      password $(github-distro-mixin-password)
+      EOF
+
+      git config user.email "andresse@microsoft.com"
+      git config user.name "AzureDataStudio"
+    displayName: Prepare tooling
+
+  - script: |
+      set -e
+      git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+      git fetch distro
+      git merge $(node -p "require('./package.json').distro")
+    displayName: Merge distro
+
   - script: |
       set -e
       CHILD_CONCURRENCY=1 yarn --frozen-lockfile
@@ -34,7 +60,7 @@ steps:
 
   - script: |
       set -e
-      yarn gulp mixin
+      node build/azure-pipelines/mixin
     displayName: Mix in quality
 
   - script: |
