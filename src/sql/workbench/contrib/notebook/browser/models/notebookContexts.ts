@@ -15,7 +15,7 @@ import { find } from 'vs/base/common/arrays';
 
 export class NotebookContexts {
 
-	private static get DefaultContext(): IDefaultConnection {
+	public static get DefaultContext(): IDefaultConnection {
 		let defaultConnection: ConnectionProfile = <any>{
 			providerName: mssqlProviderName,
 			id: '-1',
@@ -29,7 +29,7 @@ export class NotebookContexts {
 		};
 	}
 
-	private static get LocalContext(): IDefaultConnection {
+	public static get LocalContext(): IDefaultConnection {
 		let localConnection: ConnectionProfile = <any>{
 			providerName: mssqlProviderName,
 			id: '-1',

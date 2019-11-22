@@ -5,6 +5,7 @@
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
+import { nb } from 'azdata';
 import { NotebookContexts } from 'sql/workbench/contrib/notebook/browser/models/notebookContexts';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
@@ -14,8 +15,8 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IDefaultConnection } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 
 suite('Notebook Contexts', function (): void {
-	const defaultContext = NotebookContexts['DefaultContext'];
-	const localContext = NotebookContexts['LocalContext'];
+	const defaultContext = NotebookContexts.DefaultContext;
+	const localContext = NotebookContexts.LocalContext;
 
 	function createTestConnProfile(): ConnectionProfile {
 		return new ConnectionProfile(new TestCapabilitiesService(), {
@@ -36,60 +37,92 @@ suite('Notebook Contexts', function (): void {
 	}
 
 	test('Get Contexts For Kernel', async function (): Promise<void> {
+		const connService: TypeMoq.Mock<IConnectionManagementService>
+			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 
+		// No kernel or profile info provided
+		let conns = NotebookContexts.getContextsForKernel(connService.object, [mssqlProviderName]);
+		assert.deepEqual(conns, defaultContext);
+
+		// No Profile, Kernels are the same
+		let kernelChangeArgs = <nb.IKernelChangedArgs>{
+			oldValue: <nb.IKernel>{
+				id: '1',
+				name: 'TestKernel'
+			},
+			newValue: <nb.IKernel>{
+				id: '1',
+				name: 'TestKernel'
+			}
+		};
+		conns = NotebookContexts.getContextsForKernel(connService.object, [mssqlProviderName], kernelChangeArgs);
+		assert.deepEqual(conns, defaultContext);
+
+		// Kernel Info and Profile, but no provider IDs
+		let testConn = createTestConnProfile();
+		conns = NotebookContexts.getContextsForKernel(connService.object, [], kernelChangeArgs, testConn);
+		assert.deepEqual(conns, defaultContext);
+
+		// Normal use case
+		connService.setup(c => c.getActiveConnections()).returns(() => [testConn]);
+		conns = NotebookContexts.getContextsForKernel(connService.object, [mssqlProviderName], kernelChangeArgs, testConn);
+		assert.deepEqual(conns, <IDefaultConnection>{
+			otherConnections: [testConn],
+			defaultConnection: testConn
+		});
 	});
 
 	test('Get Active Contexts', async function (): Promise<void> {
 		const connService: TypeMoq.Mock<IConnectionManagementService>
 			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 
-		let testConnection = createTestConnProfile();
+		let testConn = createTestConnProfile();
 
 		// No provider IDs
-		connService.setup(c => c.getActiveConnections()).returns(() => [testConnection]);
-		let conns = NotebookContexts.getActiveContexts(connService.object, [], testConnection);
+		connService.setup(c => c.getActiveConnections()).returns(() => [testConn]);
+		let conns = NotebookContexts.getActiveContexts(connService.object, [], testConn);
 		assert.deepEqual(conns, localContext);
 
 		// No connections
 		connService.setup(c => c.getActiveConnections()).returns(() => []);
-		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], testConnection);
+		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], testConn);
 		assert.deepEqual(conns, defaultContext);
 
 		// No valid connection IDs
-		testConnection.id = '-1';
-		connService.setup(c => c.getActiveConnections()).returns(() => [testConnection]);
-		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], testConnection);
+		testConn.id = '-1';
+		connService.setup(c => c.getActiveConnections()).returns(() => [testConn]);
+		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], testConn);
 		assert.deepEqual(conns, defaultContext);
 
-		// No valid provider IDs
-		connService.setup(c => c.getActiveConnections()).returns(() => [testConnection]);
-		conns = NotebookContexts.getActiveContexts(connService.object, ['notARealProvider'], testConnection);
+		// No matching provider IDs
+		testConn.id = 'testId';
+		connService.setup(c => c.getActiveConnections()).returns(() => [testConn]);
+		conns = NotebookContexts.getActiveContexts(connService.object, ['notARealProvider'], testConn);
 		assert.deepEqual(conns, defaultContext);
 
 		// Normal behavior, valid connection present
-		testConnection.id = 'testId';
-		connService.setup(c => c.getActiveConnections()).returns(() => [testConnection]);
-		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], testConnection);
+		connService.setup(c => c.getActiveConnections()).returns(() => [testConn]);
+		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], testConn);
 		assert.deepEqual(conns, <IDefaultConnection>{
-			otherConnections: [testConnection],
-			defaultConnection: testConnection
+			otherConnections: [testConn],
+			defaultConnection: testConn
 		});
 
 		// Multiple active connections
 		let newTestConn = createTestConnProfile();
 		newTestConn.serverName = 'otherTestServerName';
-		connService.setup(c => c.getActiveConnections()).returns(() => [newTestConn, testConnection]);
-		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], testConnection);
+		connService.setup(c => c.getActiveConnections()).returns(() => [newTestConn, testConn]);
+		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], testConn);
 		assert.deepEqual(conns, <IDefaultConnection>{
-			otherConnections: [newTestConn, testConnection],
-			defaultConnection: testConnection
+			otherConnections: [newTestConn, testConn],
+			defaultConnection: testConn
 		});
 
 		// Multiple connections, no profile provided
-		connService.setup(c => c.getActiveConnections()).returns(() => [newTestConn, testConnection]);
+		connService.setup(c => c.getActiveConnections()).returns(() => [newTestConn, testConn]);
 		conns = NotebookContexts.getActiveContexts(connService.object, [mssqlProviderName], undefined);
 		assert.deepEqual(conns, <IDefaultConnection>{
-			otherConnections: [newTestConn, testConnection],
+			otherConnections: [newTestConn, testConn],
 			defaultConnection: newTestConn
 		});
 	});
