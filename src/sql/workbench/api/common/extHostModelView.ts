@@ -1176,7 +1176,6 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Text, id);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
 	}
 
 	public get value(): string {
@@ -1191,11 +1190,6 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	}
 	public set title(title: string) {
 		this.setProperty('title', title);
-	}
-
-	public get onDidClick(): vscode.Event<any> {
-		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
-		return emitter && emitter.event;
 	}
 }
 
@@ -1534,6 +1528,7 @@ class HyperlinkComponentWrapper extends ComponentWrapper implements azdata.Hyper
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Hyperlink, id);
 		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
 	}
 
 	public get label(): string {
@@ -1548,6 +1543,11 @@ class HyperlinkComponentWrapper extends ComponentWrapper implements azdata.Hyper
 	}
 	public set url(v: string) {
 		this.setProperty('url', v);
+	}
+
+	public get onDidClick(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
 	}
 }
 

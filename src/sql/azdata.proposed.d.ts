@@ -80,6 +80,13 @@ declare module 'azdata' {
 		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;
 	}
 
+	export interface HyperlinkComponent {
+		/**
+		 * An event called when the text is clicked
+		 */
+		onDidClick: vscode.Event<any>;
+	}
+
 	/*
 	 * Add optional azureAccount for connectionWidget.
 	 */
