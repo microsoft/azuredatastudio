@@ -308,10 +308,13 @@ steps:
       MaxRetryAttempts: 20
     condition: and(succeeded(), eq(variables['signed'], true))
 
-  - powershell: del $(Build.SourcesDirectory)\.build\win32-x64\system-setup\CodeSignSummary.md
-    condition: and(succeeded(), eq(variables['signed'], true))
+  - task: CmdLine@1
+    displayName: 'Delete CodeSignSummary.md for installer'
+    inputs:
+      filename: del
+      arguments: '$(Build.SourcesDirectory)\.build\win32-x64\system-setup\CodeSignSummary.md'
     continueOnError: true
-    displayName: Delete CodeSignSummary.md
+    condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
       if exist $(Build.SourcesDirectory)\..\azuredatastudio-windows rmdir /s /q $(Build.SourcesDirectory)\..\azuredatastudio-windows
