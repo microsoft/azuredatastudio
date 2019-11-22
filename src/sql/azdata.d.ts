@@ -3126,7 +3126,8 @@ declare module 'azdata' {
 		string = 'string',
 		category = 'category',
 		boolean = 'boolean',
-		editableCategory = 'editableCategory'
+		editableCategory = 'editableCategory',
+		component = 'component'
 	}
 
 	export interface RadioButtonProperties {
@@ -3171,10 +3172,10 @@ declare module 'azdata' {
 
 	export interface DeclarativeTableColumn {
 		displayName: string;
-		categoryValues: CategoryValue[];
 		valueType: DeclarativeDataType;
 		isReadOnly: boolean;
 		width: number | string;
+		categoryValues?: CategoryValue[];
 	}
 
 	export interface DeclarativeTableProperties {

@@ -1374,6 +1374,20 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
+
+	protected notifyPropertyChanged(): Thenable<void> {
+		const properties = assign({}, this.properties);
+		if (properties.data) {
+			properties.data = properties.data.map(row => row.map(cell => {
+				let component = cell as azdata.Component;
+				if (component) {
+					return component.id;
+				}
+				return cell;
+			}));
+		}
+		return this._proxy.$setProperties(this._handle, this._id, this.properties);
+	}
 }
 
 class ListBoxWrapper extends ComponentWrapper implements azdata.ListBoxComponent {

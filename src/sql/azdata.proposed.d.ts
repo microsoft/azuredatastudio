@@ -79,4 +79,9 @@ declare module 'azdata' {
 	export namespace dataprotocol {
 		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;
 	}
+
+	export interface DeclarativeTableColumn {
+		headerCssStyles?: { [key: string]: string };
+		rowCssStyles?: { [key: string]: string };
+	}
 }

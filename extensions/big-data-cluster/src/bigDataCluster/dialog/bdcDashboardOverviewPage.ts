@@ -28,6 +28,7 @@ const overviewHealthStatusCellWidthPx = 100;
 
 const serviceEndpointRowServiceNameCellWidth = 200;
 const serviceEndpointRowEndpointCellWidth = 350;
+const serviceEndpointRowCopyCellWidth = 50;
 
 const hyperlinkedEndpoints = [Endpoint.metricsui, Endpoint.logsui, Endpoint.sparkHistory, Endpoint.yarnUi];
 
@@ -42,6 +43,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 
 	private serviceStatusRowContainer: azdata.FlexContainer;
 
+	private endpointsTable: azdata.DeclarativeTableComponent;
 	private endpointsRowContainer: azdata.FlexContainer;
 	private endpointsDisplayContainer: azdata.DivContainer;
 	private serviceStatusDisplayContainer: azdata.DivContainer;
@@ -170,6 +172,73 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 
 		const endpointsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%' }).component();
 
+		this.endpointsTable = view.modelBuilder.declarativeTable()
+			.withProperties<azdata.DeclarativeTableProperties>(
+				{
+					columns: [
+						{ // service
+							displayName: localize('bdc.dashboard.serviceHeader', "Service"),
+							valueType: azdata.DeclarativeDataType.string,
+							isReadOnly: true,
+							width: serviceEndpointRowServiceNameCellWidth,
+							headerCssStyles: {
+								'border': 'none',
+								'background-color': '#FFFFFF',
+								'text-align': 'left',
+								'font-weight': 'bold',
+								'text-transform': 'uppercase',
+								'font-size': '10px',
+								'user-select': 'text'
+							},
+							rowCssStyles: {
+								'border-top': 'solid 1px #ccc',
+								'border-bottom': 'solid 1px #ccc',
+								'border-left': 'none',
+								'border-right': 'none'
+							},
+						},
+						{ // endpoint
+							displayName: localize('bdc.dashboard.endpointHeader', "Endpoint"),
+							valueType: azdata.DeclarativeDataType.component,
+							isReadOnly: true,
+							width: serviceEndpointRowEndpointCellWidth,
+							headerCssStyles: {
+								'border': 'none',
+								'background-color': '#FFFFFF',
+								'text-align': 'left',
+								'font-weight': 'bold',
+								'text-transform': 'uppercase',
+								'font-size': '10px',
+								'user-select': 'text'
+							},
+							rowCssStyles: {
+								'border-top': 'solid 1px #ccc',
+								'border-bottom': 'solid 1px #ccc',
+								'border-left': 'none',
+								'border-right': 'none'
+							},
+						},
+						{ // copy
+							displayName: '',
+							valueType: azdata.DeclarativeDataType.component,
+							isReadOnly: true,
+							width: serviceEndpointRowCopyCellWidth,
+							headerCssStyles: {
+								'border': 'none',
+								'background-color': '#FFFFFF'
+							},
+							rowCssStyles: {
+								'border-top': 'solid 1px #ccc',
+								'border-bottom': 'solid 1px #ccc',
+								'border-left': 'none',
+								'border-right': 'none'
+							}
+						}
+					],
+					data: []
+				})
+			.component();
+		rootContainer.addItem(this.endpointsTable, { flex: '0 0 auto' });
 		// Service endpoints header row
 		const endpointsHeaderRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
 		const endpointsServiceNameHeaderCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.serviceHeader', "Service") }).component();
@@ -252,6 +321,9 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		endpoints.forEach((e, i) => {
 			createServiceEndpointRow(this.modelBuilder, this.endpointsRowContainer, e, this.model, hyperlinkedEndpoints.some(he => he === e.name), i === endpoints.length - 1);
 		});
+
+		//this.endpointsTable.data = endpoints.map(e => [getEndpointDisplayText(e.name, e.description), e.endpoint]);
+		this.endpointsTable.data = endpoints.map(e => [getEndpointDisplayText(e.name, e.description), e.endpoint, this.endpointsTable]);
 	}
 
 	private handleBdcError(errorEvent: BdcErrorEvent): void {
