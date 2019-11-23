@@ -97,7 +97,11 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 			const toolsTableWrapper = view.modelBuilder.divContainer().withLayout({ width: tableWidth }).component();
 			toolsTableWrapper.addItem(this._toolsTable, { CSSStyles: { 'border-left': '1px solid silver', 'border-top': '1px solid silver' } });
-			this._toolsLoadingComponent = view.modelBuilder.loadingComponent().withItem(toolsTableWrapper).component();
+			this._toolsLoadingComponent = view.modelBuilder.loadingComponent().withItem(toolsTableWrapper).withProperties<azdata.LoadingComponentProperties>({
+				loadingCompletedText: localize('deploymentDialog.loadingRequiredToolsCompleted', "Loading required tools information completed"),
+				loadingText: localize('deploymentDialog.loadingRequiredTools', "Loading required tools information"),
+				showText: true
+			}).component();
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
