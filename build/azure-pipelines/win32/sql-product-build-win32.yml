@@ -28,11 +28,9 @@ steps:
     displayName: Prepare tooling
 
   - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git" }
-      exec { git fetch distro }
-      exec { git merge $(node -p "require('./package.json').distro") }
+      git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+      git fetch distro
+      git merge $(node -p "require('./package.json').distro")
     displayName: Merge distro
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
@@ -72,7 +70,7 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { yarn gulp "vscode-win32-x64-min" }
+      exec { yarn gulp "vscode-win32-x64" }
     displayName: Build
 
   - powershell: |
