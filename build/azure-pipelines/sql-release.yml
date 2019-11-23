@@ -1,0 +1,4 @@
+steps:
+  - script: |
+      set -e
+      echo "##vso[build.addbuildtag]Release"
