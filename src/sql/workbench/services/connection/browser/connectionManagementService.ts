@@ -72,6 +72,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _mementoContext: Memento;
 	private _mementoObj: any;
 	private static readonly CONNECTION_MEMENTO = 'ConnectionManagement';
+	private static readonly _azureResources: AzureResource[] =
+		[AzureResource.ResourceManagement, AzureResource.Sql, AzureResource.OssRdbms];
 
 	constructor(
 		private _connectionStore: ConnectionStore,
@@ -708,9 +710,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 */
 	private getAzureResourceForConnection(connection: interfaces.IConnectionProfile): azdata.AzureResource {
 		let provider = this._providers.get(connection.providerName);
-		return (provider && provider.properties && provider.properties.azureResource)
-			? provider.properties.azureResource
-			: AzureResource.Sql;
+		if (!provider || !provider.properties || !provider.properties.azureResource) {
+			return AzureResource.Sql;
+		}
+
+		let result = find(ConnectionManagementService._azureResources, r => AzureResource[r] === provider.properties.azureResource);
+		return result ? result : AzureResource.Sql;
 	}
 
 	/**

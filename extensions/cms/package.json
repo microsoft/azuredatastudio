@@ -90,7 +90,7 @@
           "defaultValue": "SqlLogin",
           "defaultValueOsOverrides": [
             {
-              "osEnumValue": 1,
+              "os": "Windows",
               "defaultValueOverride": "Integrated"
             }
           ],

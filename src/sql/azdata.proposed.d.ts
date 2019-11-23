@@ -98,7 +98,7 @@ declare module 'azdata' {
 	 * Add optional per-OS default value.
 	 */
 	export interface DefaultValueOsOverride {
-		osEnumValue: number;
+		os: string;
 
 		defaultValueOverride: string;
 	}

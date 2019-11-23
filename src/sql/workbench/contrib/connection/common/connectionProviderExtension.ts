@@ -137,8 +137,9 @@ const ConnectionProviderContrib: IJSONSchema = {
 						items: {
 							type: 'object',
 							properties: {
-								osEnumValue: {
-									type: 'integer'
+								os: {
+									type: 'string',
+									enum: ['Windows', 'Macintosh', 'Linux']
 								},
 								defaultValueOverride: {
 									type: 'any'

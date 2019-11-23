@@ -37,6 +37,13 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { ILogService } from 'vs/platform/log/common/log';
 import { find } from 'vs/base/common/arrays';
 
+export enum AuthenticationType {
+	SqlLogin = 'SqlLogin',
+	Integrated = 'Integrated',
+	AzureMFA = 'AzureMFA',
+	AzureMFAAndUser = 'AzureMFAAndUser'
+}
+
 export class ConnectionWidget extends lifecycle.Disposable {
 	private _previousGroupOption: string;
 	private _serverGroupOptions: IConnectionProfileGroup[];
@@ -65,11 +72,16 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected _optionsMaps: { [optionType: number]: azdata.ConnectionOption };
 	protected _tableContainer: HTMLElement;
 	protected _providerName: string;
-	protected _authTypes: AuthenticationType[] =
-		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin];
 	protected _connectionNameInputBox: InputBox;
 	protected _databaseNameInputBox: Dropdown;
 	protected _advancedButton: Button;
+	private static readonly _authTypes: AuthenticationType[] =
+		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin];
+	private static readonly _osByName = {
+		Windows: OperatingSystem.Windows,
+		Macintosh: OperatingSystem.Macintosh,
+		Linux: OperatingSystem.Linux
+	};
 	public DefaultServerGroup: IConnectionProfileGroup = {
 		id: '',
 		name: localize('defaultServerGroup', "<Default>"),
@@ -124,7 +136,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected getAuthTypeDefault(option: azdata.ConnectionOption, os: OperatingSystem): string {
 		// Check for OS-specific default value
 		if (option.defaultValueOsOverrides) {
-			let result = find(option.defaultValueOsOverrides, d => d.osEnumValue === os);
+			let result = find(option.defaultValueOsOverrides, d => ConnectionWidget._osByName[d.os] === os);
 			if (result) {
 				return result.defaultValueOverride;
 			}
@@ -903,7 +915,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	private getMatchingAuthType(displayName: string): AuthenticationType {
-		return find(this._authTypes, authType => this.getAuthTypeDisplayName(authType) === displayName);
+		return find(ConnectionWidget._authTypes, authType => this.getAuthTypeDisplayName(authType) === displayName);
 	}
 
 	public closeDatabaseDropdown(): void {
@@ -928,11 +940,4 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._passwordInputBox.focus();
 		}
 	}
-}
-
-export enum AuthenticationType {
-	SqlLogin = 'SqlLogin',
-	Integrated = 'Integrated',
-	AzureMFA = 'AzureMFA',
-	AzureMFAAndUser = 'AzureMFAAndUser'
 }
