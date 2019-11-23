@@ -71,19 +71,19 @@ suite('notebookUtils', function (): void {
 		assert.strictEqual(result, undefined);
 
 		result = tryMatchCellMagic('    ');
-		assert.strictEqual(result, undefined);
+		assert.strictEqual(result, null);
 
 		result = tryMatchCellMagic('text');
-		assert.strictEqual(result, undefined);
+		assert.strictEqual(result, null);
 
 		result = tryMatchCellMagic('%%sql');
 		assert.strictEqual(result, 'sql');
 
 		result = tryMatchCellMagic('%%');
-		assert.strictEqual(result, undefined);
+		assert.strictEqual(result, null);
 
 		result = tryMatchCellMagic('%% sql');
-		assert.strictEqual(result, undefined);
+		assert.strictEqual(result, null);
 	});
 
 	test('getHostAndPortFromEndpoint Test', async function (): Promise<void> {
