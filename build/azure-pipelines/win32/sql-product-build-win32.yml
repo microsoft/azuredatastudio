@@ -413,6 +413,11 @@ steps:
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection'
+    inputs:
+      failOnAlert: true
+
   - powershell: 'Write-Host "##vso[build.addbuildtag]Scheduled" '
     displayName: 'Tag build if scheduled'
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['Build.Reason'], 'Schedule'))
