@@ -94,7 +94,7 @@ export class EditDataResultsEditor extends BaseEditor {
 	 */
 	private _bootstrapAngular(): void {
 		let input = <EditDataResultsInput>this.input;
-		let uri = input.uri;
+		let uri = unescape(input.uri);
 
 		// Pass the correct DataService to the new angular component
 		let dataService = this._queryModelService.getDataService(uri);

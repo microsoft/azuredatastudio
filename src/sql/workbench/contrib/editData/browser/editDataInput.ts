@@ -93,7 +93,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	// Getters/Setters
 	public get tableName(): string { return this._tableName; }
 	public get schemaName(): string { return this._schemaName; }
-	public get uri(): string { return this._uri.toString(); }
+	public get uri(): string { return unescape(this._uri.toString()); }
 	public get sql(): UntitledEditorInput { return this._sql; }
 	public get results(): EditDataResultsInput { return this._results; }
 	public getResultsInputResource(): string { return this._results.uri; }
