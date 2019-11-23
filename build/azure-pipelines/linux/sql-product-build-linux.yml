@@ -183,10 +183,6 @@ steps:
     displayName: 'Add scheduled tag if needed'
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['Build.Reason'], 'Schedule'))
 
-  - script: 'echo "##vso[build.addbuildtag]AutoRelease" '
-    displayName: 'Add AutoRelease tag if needed copy'
-    condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['AUTO_RELEASE'], 'true'))
-
   - script: 'echo "##vso[build.addbuildtag]PerfTestCandidate" '
     displayName: 'Add PerfTestCandidate tag if needed'
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['VSCODE_QUALITY'], 'insider'))

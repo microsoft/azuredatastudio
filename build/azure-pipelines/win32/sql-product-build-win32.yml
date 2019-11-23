@@ -420,10 +420,6 @@ steps:
     displayName: 'Tag build if scheduled'
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['Build.Reason'], 'Schedule'))
 
-  - powershell: 'Write-Host "##vso[build.addbuildtag]AutoRelease" '
-    displayName: 'Tag build for AutoRelease if needed'
-    condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['AUTO_RELEASE'], 'true'))
-
   - powershell: 'Write-Host "##vso[build.addbuildtag]PerfTestCandidate" '
     displayName: 'Tag build for PerfTestCandidate if needed'
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['VSCODE_QUALITY'], 'insider'))
