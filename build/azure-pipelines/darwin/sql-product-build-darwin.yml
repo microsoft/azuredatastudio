@@ -195,7 +195,3 @@ steps:
   - script: 'echo "##vso[build.addbuildtag]Scheduled" '
     displayName: 'Add scheduled tag if needed'
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['Build.Reason'], 'Schedule'))
-
-  - script: 'echo "##vso[build.addbuildtag]AutoRelease" '
-    displayName: 'Add AutoRelease tag if needed'
-    condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['AUTO_RELEASE'], 'true'))

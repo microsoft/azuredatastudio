@@ -2,3 +2,4 @@ steps:
   - script: |
       set -e
       echo "##vso[build.addbuildtag]Release"
+    displayName: Set For Release
