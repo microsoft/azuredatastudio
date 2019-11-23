@@ -8,9 +8,11 @@ import { nb, IConnectionProfile } from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
 import { INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
-import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, INotebookProvider, INavigationProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IStandardKernelWithProvider } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
+import { URI } from 'vs/workbench/workbench.web.api';
+import { RenderMimeRegistry } from 'sql/workbench/contrib/notebook/browser/outputs/registry';
 
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo) {
@@ -137,5 +139,66 @@ export class ServerManagerStub implements nb.ServerManager {
 	stopServer(): Promise<void> {
 		this.calledEnd = true;
 		return this.result;
+	}
+}
+
+export class NotebookServiceStub implements INotebookService {
+	_serviceBrand: undefined;
+	onNotebookEditorAdd: Event<INotebookEditor>;
+	onNotebookEditorRemove: Event<INotebookEditor>;
+	onNotebookEditorRename: Event<INotebookEditor>;
+	isRegistrationComplete: boolean;
+	registrationComplete: Promise<void>;
+	languageMagics: ILanguageMagic[];
+	registerProvider(providerId: string, provider: INotebookProvider): void {
+		throw new Error('Method not implemented.');
+	}
+	unregisterProvider(providerId: string): void {
+		throw new Error('Method not implemented.');
+	}
+	registerNavigationProvider(provider: INavigationProvider): void {
+		throw new Error('Method not implemented.');
+	}
+	getNavigationProvider(notebookUri: URI): INavigationProvider {
+		throw new Error('Method not implemented.');
+	}
+	getSupportedFileExtensions(): string[] {
+		throw new Error('Method not implemented.');
+	}
+	getProvidersForFileType(fileType: string): string[] {
+		throw new Error('Method not implemented.');
+	}
+	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] {
+		throw new Error('Method not implemented.');
+	}
+	getOrCreateNotebookManager(providerId: string, uri: URI): Thenable<INotebookManager> {
+		throw new Error('Method not implemented.');
+	}
+	addNotebookEditor(editor: INotebookEditor): void {
+		throw new Error('Method not implemented.');
+	}
+	removeNotebookEditor(editor: INotebookEditor): void {
+		throw new Error('Method not implemented.');
+	}
+	listNotebookEditors(): INotebookEditor[] {
+		throw new Error('Method not implemented.');
+	}
+	findNotebookEditor(notebookUri: URI): INotebookEditor {
+		throw new Error('Method not implemented.');
+	}
+	getMimeRegistry(): RenderMimeRegistry {
+		throw new Error('Method not implemented.');
+	}
+	renameNotebookEditor(oldUri: URI, newUri: URI, currentEditor: INotebookEditor): void {
+		throw new Error('Method not implemented.');
+	}
+	isNotebookTrustCached(notebookUri: URI, isDirty: boolean): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel): void {
+		throw new Error('Method not implemented.');
+	}
+	navigateTo(notebookUri: URI, sectionId: string): void {
+		throw new Error('Method not implemented.');
 	}
 }
