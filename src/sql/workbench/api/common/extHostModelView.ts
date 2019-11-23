@@ -1372,15 +1372,15 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 	protected notifyPropertyChanged(): Thenable<void> {
 		const properties = assign({}, this.properties);
 		if (properties.data) {
-			properties.data = properties.data.map(row => row.map(cell => {
-				let component = cell as azdata.Component;
-				if (component) {
-					return component.id;
+			properties.data = properties.data.map((row: any[]) => row.map(cell => {
+				if (cell instanceof ComponentWrapper) {
+					//return new InternalItemConfig(cell, { }).toIItemConfig();
+					return cell.id;
 				}
 				return cell;
 			}));
 		}
-		return this._proxy.$setProperties(this._handle, this._id, this.properties);
+		return this._proxy.$setProperties(this._handle, this._id, properties);
 	}
 }
 

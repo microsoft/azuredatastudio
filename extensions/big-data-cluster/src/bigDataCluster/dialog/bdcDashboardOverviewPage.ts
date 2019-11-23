@@ -323,7 +323,17 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		});
 
 		//this.endpointsTable.data = endpoints.map(e => [getEndpointDisplayText(e.name, e.description), e.endpoint]);
-		this.endpointsTable.data = endpoints.map(e => [getEndpointDisplayText(e.name, e.description), e.endpoint, this.endpointsTable]);
+		this.endpointsTable.data = endpoints.map(e => {
+			const copyValueCell = this.modelBuilder.button().withProperties<azdata.ButtonProperties>({ title: localize('bdc.dashboard.copyTitle', "Copy") }).component();
+			copyValueCell.iconPath = IconPathHelper.copy;
+			copyValueCell.onDidClick(() => {
+				vscode.env.clipboard.writeText(e.endpoint);
+				vscode.window.showInformationMessage(localize('copiedEndpoint', "Endpoint '{0}' copied to clipboard", getEndpointDisplayText(e.name, e.description)));
+			});
+			copyValueCell.iconHeight = '14px';
+			copyValueCell.iconWidth = '14px';
+			return [getEndpointDisplayText(e.name, e.description), e.endpoint, copyValueCell];
+		});
 	}
 
 	private handleBdcError(errorEvent: BdcErrorEvent): void {
