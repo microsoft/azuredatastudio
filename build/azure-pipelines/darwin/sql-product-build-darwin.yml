@@ -162,7 +162,6 @@ steps:
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Detection'
     inputs:
-      verbosity: Normal
       failOnAlert: true
 
   - script: 'echo "##vso[build.addbuildtag]Scheduled" '
