@@ -6,8 +6,8 @@
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 
-import { nb } from 'azdata';
-import { tryMatchCellMagic, getHostAndPortFromEndpoint, isStream, getProvidersForFileName, asyncForEach } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
+import { nb, ServerInfo } from 'azdata';
+import { tryMatchCellMagic, getHostAndPortFromEndpoint, isStream, getProvidersForFileName, asyncForEach, clusterEndpointsProperty, getClusterEndpoints, RawEndpoint, IEndpoint } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 import { INotebookService, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/electron-browser/common';
 
@@ -92,6 +92,46 @@ suite('notebookUtils', function (): void {
 			totalResult += value;
 		});
 		assert.strictEqual(totalResult, 10);
+	});
+
+	test('getClusterEndpoints Test', async function (): Promise<void> {
+		let serverInfo = <ServerInfo>{
+			options: {}
+		};
+
+		serverInfo.options[clusterEndpointsProperty] = undefined;
+		let result = getClusterEndpoints(serverInfo);
+		assert.deepStrictEqual(result, []);
+
+		serverInfo.options[clusterEndpointsProperty] = [];
+		result = getClusterEndpoints(serverInfo);
+		assert.deepStrictEqual(result, []);
+
+		let testEndpoint = <RawEndpoint>{
+			serviceName: 'testName',
+			description: 'testDescription',
+			endpoint: 'testEndpoint',
+			protocol: 'testProtocol',
+			ipAddress: 'testIpAddress',
+			port: 1433
+		};
+		serverInfo.options[clusterEndpointsProperty] = [testEndpoint];
+		result = getClusterEndpoints(serverInfo);
+		assert.deepStrictEqual(result, [<IEndpoint>{
+			serviceName: testEndpoint.serviceName,
+			description: testEndpoint.description,
+			endpoint: testEndpoint.endpoint,
+			protocol: testEndpoint.protocol
+		}]);
+
+		testEndpoint.endpoint = undefined;
+		result = getClusterEndpoints(serverInfo);
+		assert.deepStrictEqual(result, [<IEndpoint>{
+			serviceName: testEndpoint.serviceName,
+			description: testEndpoint.description,
+			endpoint: 'https://testIpAddress:1433',
+			protocol: testEndpoint.protocol
+		}]);
 	});
 
 	test('getHostAndPortFromEndpoint Test', async function (): Promise<void> {

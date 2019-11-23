@@ -120,7 +120,7 @@ export function getHostAndPortFromEndpoint(endpoint: string): HostAndIp {
 	};
 }
 
-interface RawEndpoint {
+export interface RawEndpoint {
 	serviceName: string;
 	description?: string;
 	endpoint?: string;
