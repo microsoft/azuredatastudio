@@ -737,10 +737,7 @@ declare module 'sqlops' {
 	}
 
 	export interface TextComponent extends Component, TextComponentProperties {
-		/**
-		 * An event called when the text is clicked
-		 */
-		onDidClick: vscode.Event<any>;
+
 	}
 
 	export interface ImageComponent extends Component, ImageComponentProperties {
@@ -748,6 +745,10 @@ declare module 'sqlops' {
 	}
 
 	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
+		/**
+		 * An event called when the text is clicked
+		 */
+		onDidClick: vscode.Event<any>;
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {

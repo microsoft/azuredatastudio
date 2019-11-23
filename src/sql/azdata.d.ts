@@ -3289,16 +3289,14 @@ declare module 'azdata' {
 	}
 
 	export interface TextComponent extends Component, TextComponentProperties {
-		/**
-		 * An event called when the text is clicked
-		 */
-		onDidClick: vscode.Event<any>;
+
 	}
 
 	export interface ImageComponent extends Component, ImageComponentProperties {
 	}
 
 	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
+
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {

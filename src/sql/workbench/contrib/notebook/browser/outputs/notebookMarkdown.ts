@@ -5,7 +5,6 @@
 import * as path from 'vs/base/common/path';
 
 import { URI } from 'vs/base/common/uri';
-
 import { IMarkdownString, removeMarkdownEscapes } from 'vs/base/common/htmlContent';
 import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
 import * as marked from 'vs/base/common/marked/marked';
@@ -128,7 +127,7 @@ export class NotebookMarkdownRenderer {
 
 			} else {
 				// HTML Encode href
-				href = href.replace(/&/g, '&amp;')
+				href = href.replace(/&(?!amp;)/g, '&amp;')
 					.replace(/</g, '&lt;')
 					.replace(/>/g, '&gt;')
 					.replace(/"/g, '&quot;')

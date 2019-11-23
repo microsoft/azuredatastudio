@@ -84,4 +84,11 @@ declare module 'azdata' {
 		headerCssStyles?: { [key: string]: string };
 		rowCssStyles?: { [key: string]: string };
 	}
+
+	export interface HyperlinkComponent {
+		/**
+		 * An event called when the text is clicked
+		 */
+		onDidClick: vscode.Event<any>;
+	}
 }

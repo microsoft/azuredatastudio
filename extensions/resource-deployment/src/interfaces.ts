@@ -219,7 +219,7 @@ export interface OsRelease extends JSON {
 
 export interface ToolRequirementInfo {
 	name: string;
-	version: string;
+	version?: string;
 }
 
 export enum ToolType {
@@ -256,6 +256,7 @@ export interface ITool {
 	readonly outputChannelName: string;
 	readonly fullVersion: string | undefined;
 	readonly onDidUpdateData: vscode.Event<ITool>;
+
 	showOutputChannel(preserveFocus?: boolean): void;
 	loadInformation(): Promise<void>;
 	install(): Promise<void>;

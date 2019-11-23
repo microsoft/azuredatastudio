@@ -1,4 +1,4 @@
-<div *ngIf="label" [class]="getClass()" (click)="onCardClick()" (mouseover)="onCardHoverChanged($event)"
+<div role="button" *ngIf="label" [class]="getClass()" (click)="onCardClick()" (mouseover)="onCardHoverChanged($event)"
 	(mouseout)="onCardHoverChanged($event)" tabIndex="0" [style.width]="width" [style.height]="height">
 	<ng-container *ngIf="isVerticalButton || isDetailsCard">
 		<span *ngIf="hasStatus" class="card-status">

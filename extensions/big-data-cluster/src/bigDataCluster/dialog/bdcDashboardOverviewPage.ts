@@ -374,7 +374,11 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 				CSSStyles: { 'user-select': 'none' }
 			}).component();
 		serviceStatusRow.addItem(statusIconCell, { CSSStyles: { 'width': `${overviewIconColumnWidthPx}px`, 'min-width': `${overviewIconColumnWidthPx}px` } });
-		const nameCell = this.modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink } }).component();
+		const nameCell = this.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+			label: getServiceNameDisplayText(serviceStatus.serviceName),
+			url: '',
+			CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink }
+		}).component();
 		nameCell.onDidClick(() => {
 			this.dashboard.switchToServiceTab(serviceStatus.serviceName);
 		});
@@ -409,13 +413,13 @@ function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: 
 		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}px`, 'min-width': `${serviceEndpointRowEndpointCellWidth}px`, 'overflow': 'hidden', 'text-overflow': 'ellipsis', ...cssStyles.hyperlink } });
 	}
 	else if (endpoint.name === Endpoint.sqlServerMaster) {
-		const endpointCell = modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({
-				value: endpoint.endpoint,
+		const endpointCell = modelBuilder.hyperlink()
+			.withProperties<azdata.HyperlinkComponentProperties>({
 				title: endpoint.endpoint,
+				label: endpoint.endpoint,
+				url: '',
 				CSSStyles: { 'overflow': 'hidden', 'text-overflow': 'ellipsis', ...cssStyles.text, ...cssStyles.hyperlink }
-			})
-			.component();
+			}).component();
 		endpointCell.onDidClick(async () => {
 			const connProfile = bdcModel.getSqlServerMasterConnectionProfile();
 			const result = await azdata.connection.connect(connProfile, true, true);
