@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 
 import { nb } from 'azdata';
-import { tryMatchCellMagic, getHostAndPortFromEndpoint, isStream, getProvidersForFileName } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
+import { tryMatchCellMagic, getHostAndPortFromEndpoint, isStream, getProvidersForFileName, asyncForEach } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 import { INotebookService, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/electron-browser/common';
 
@@ -84,6 +84,14 @@ suite('notebookUtils', function (): void {
 
 		result = tryMatchCellMagic('%% sql');
 		assert.strictEqual(result, null);
+	});
+
+	test('asyncForEach Test', async function (): Promise<void> {
+		let totalResult = 0;
+		await asyncForEach([1, 2, 3, 4], async (value) => {
+			totalResult += value;
+		});
+		assert.strictEqual(totalResult, 10);
 	});
 
 	test('getHostAndPortFromEndpoint Test', async function (): Promise<void> {
