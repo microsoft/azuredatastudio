@@ -4,10 +4,36 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
+import { nb } from 'azdata';
 
-import { tryMatchCellMagic, getHostAndPortFromEndpoint } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
+import { tryMatchCellMagic, getHostAndPortFromEndpoint, isStream } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 
 suite('notebookUtils', function (): void {
+	test('isStream Test', async function (): Promise<void> {
+		let result = isStream(<nb.ICellOutput>{
+			output_type: 'stream'
+		});
+		assert.strictEqual(result, true);
+
+		result = isStream(<nb.ICellOutput>{
+			output_type: 'display_data'
+		});
+		assert.strictEqual(result, false);
+
+		result = isStream(<nb.ICellOutput>{
+			output_type: undefined
+		});
+		assert.strictEqual(result, false);
+	});
+
+	test('getProvidersForFileName Test', async function (): Promise<void> {
+
+	});
+
+	test('getStandardKernelsForProvider Test', async function (): Promise<void> {
+
+	});
+
 	test('tryMatchCellMagic Test', async function (): Promise<void> {
 		let result = tryMatchCellMagic(undefined);
 		assert.equal(result, undefined);
