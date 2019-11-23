@@ -26,6 +26,10 @@ jobs:
   condition: and(succeeded(), or(eq(variables['VSCODE_RELEASE'], 'true'), and(eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))))
   pool:
     vmImage: 'Ubuntu-16.04'
+  dependsOn:
+  - macOS
+  - Linux
+  - Windows
   steps:
   - template: sql-release.yml
 
