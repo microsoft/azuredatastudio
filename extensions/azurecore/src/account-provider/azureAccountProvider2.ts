@@ -18,11 +18,17 @@ import TokenCache from './tokenCache';
 import { AddressInfo } from 'net';
 import { AuthenticationContext, TokenResponse } from 'adal-node';
 import { promisify } from 'util';
+import * as events from 'events';
+
 const localize = nls.loadMessageBundle();
 
 export class AzureAccountProvider implements azdata.AccountProvider, vscode.UriHandler {
+	private static AzureAccountAuthenticatedEvent: string = 'AzureAccountAuthenticated';
 	private static WorkSchoolAccountType: string = 'work_school';
 	private static MicrosoftAccountType: string = 'microsoft';
+	private static eventEmitter = new events.EventEmitter();
+	private static redirectUrlAAD = 'https://vscode-redirect.azurewebsites.net/';
+
 	constructor(private metadata: AzureAccountProviderMetadata, private tokenCache: TokenCache) {
 		console.log(this.metadata, this.tokenCache);
 
@@ -67,7 +73,6 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.UriH
 		// const redirectUri = await vscode.env.createAppUri({
 		// 	payload: { path: 'authenticated' }
 		// });
-		const redirectUrlAAD = 'https://vscode-redirect.azurewebsites.net/';
 		const nonce = crypto.randomBytes(16).toString('base64');
 
 		const server = this.createAuthServer(pathMappings);
@@ -76,19 +81,31 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.UriH
 
 		const authUrl = this.createAuthUrl(
 			this.metadata.settings.host,
-			redirectUrlAAD,
+			AzureAccountProvider.redirectUrlAAD,
 			this.metadata.settings.clientId,
 			this.metadata.settings.signInResourceId,
 			'common',
 			`${port},${encodeURIComponent(nonce)}`
 		);
+
 		this.addServerPaths(pathMappings, nonce, authUrl);
+
+		const accountAuthenticatedPromise = new Promise<AzureAccount>((resolve, reject) => {
+			AzureAccountProvider.eventEmitter.on(AzureAccountProvider.AzureAccountAuthenticatedEvent, ({ account, error }) => {
+				if (error) {
+					return reject(error);
+				}
+				return resolve(account);
+			});
+		});
 
 		console.log(`http://localhost:${port}/signin?nonce=${encodeURIComponent(nonce)}`);
 
 		vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${port}/signin?nonce=${encodeURIComponent(nonce)}`));
 
-		throw new Error('Method not implemented.');
+		const account = await accountAuthenticatedPromise;
+
+		return account;
 	}
 
 	private addServerPaths(
@@ -124,7 +141,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.UriH
 			res.writeHead(200, 'success, you may close this page');
 			res.end();
 
-			this.handleAuthentication(code, authUrl).catch((e: any) => console.error(e));
+			this.handleAuthentication(code).catch(console.error);
 		});
 
 		pathMappings.set('/signin', initialSignIn);
@@ -143,8 +160,12 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.UriH
 		throw new Error('Method not implemented.');
 	}
 
-	private async handleAuthentication(code: string, redirectUrl: string): Promise<AzureAccount> {
-		const token = await this.getTokenWithAuthCode(code, redirectUrl);
+	/**
+	 * Authenticates an azure account and then emits an event
+	 * @param code Code from authenticating
+	 */
+	private async handleAuthentication(code: string): Promise<void> {
+		const token = await this.getTokenWithAuthCode(code, AzureAccountProvider.redirectUrlAAD);
 
 		console.log(token);
 		let identityProvider = token.identityProvider;
@@ -172,7 +193,8 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.UriH
 		let accountType = msa
 			? AzureAccountProvider.MicrosoftAccountType
 			: AzureAccountProvider.WorkSchoolAccountType;
-		return {
+
+		const account = {
 			key: {
 				providerId: this.metadata.id,
 				accountId: token.userId
@@ -190,11 +212,14 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.UriH
 			},
 			isStale: false
 		} as AzureAccount;
+
+		AzureAccountProvider.eventEmitter.emit(AzureAccountProvider.AzureAccountAuthenticatedEvent, { account });
 	}
 
 	private async getTokenWithAuthCode(code: string, redirectUrl: string): Promise<TokenResponse> {
 		const context = new AuthenticationContext(`${this.metadata.settings.host}common`);
-		const acquireToken = promisify(context.acquireTokenWithAuthorizationCode);
+		const acquireToken = promisify(context.acquireTokenWithAuthorizationCode).bind(context);
+
 		let token = await acquireToken(code, redirectUrl, this.metadata.settings.signInResourceId, this.metadata.settings.clientId, undefined);
 		if (token.error) {
 			throw new Error(`${token.error} - ${token.errorDescription}`);
