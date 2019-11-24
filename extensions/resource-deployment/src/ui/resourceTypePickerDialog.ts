@@ -193,7 +193,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 			const optionSelectBox = this._view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 				values: option.values,
 				value: option.values[0],
-				width: '300px'
+				width: '300px',
+				ariaLabel: option.displayName
 			}).component();
 
 			this._toDispose.push(optionSelectBox.onValueChanged(() => { this.updateToolsDisplayTable(); }));
