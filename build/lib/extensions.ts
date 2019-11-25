@@ -289,7 +289,7 @@ export function packageMarketplaceExtensionsStream(): NodeJS.ReadWriteStream {
 import * as _ from 'underscore';
 import * as vfs from 'vinyl-fs';
 
-export function packageSQLExtensions() {
+export function packageSQLExtensions(): Promise<void> {
 
 	// Create package for local SQL extensions
 	//
@@ -311,16 +311,16 @@ export function packageSQLExtensions() {
 		// don't fail the build if the output directory already exists
 		console.warn(err);
 	}
-	sqlBuiltInLocalExtensionDescriptions.forEach(element => {
+	return Promise.all(sqlBuiltInLocalExtensionDescriptions.map(element => {
 		let pkgJson = JSON.parse(fs.readFileSync(path.join(element.path, 'package.json'), { encoding: 'utf8' }));
 		const packagePath = path.join(visxDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
 		console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
-		vsce.createVSIX({
+		return vsce.createVSIX({
 			cwd: element.path,
 			packagePath: packagePath,
 			useYarn: true
 		});
-	});
+	})).then();
 }
 
 export function packageExtensionTask(extensionName: string, platform: string, arch: string) {
