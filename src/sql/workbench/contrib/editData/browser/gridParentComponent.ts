@@ -74,7 +74,7 @@ export abstract class GridParentComponent extends Disposable {
 
 
 	protected nativeElement: HTMLElement;
-	protected _tables: Table<any>[] = [];
+	protected tables: Table<any>[] = [];
 
 
 	set messageActive(input: boolean) {
@@ -227,8 +227,7 @@ export abstract class GridParentComponent extends Disposable {
 	}
 
 	protected getSelection(index?: number): Slick.Range[] {
-		//let selection = this.slickgrids.toArray()[index || this.activeGrid].getSelectedRanges();
-		let selection = this._tables[index || this.activeGrid].getSelectedRanges();
+		let selection = this.tables[index || this.activeGrid].getSelectedRanges();
 		if (selection) {
 			selection = selection.map(c => { return <Slick.Range>{ fromCell: c.fromCell - 1, toCell: c.toCell - 1, toRow: c.toRow, fromRow: c.fromRow }; });
 			return selection;
@@ -381,19 +380,13 @@ export abstract class GridParentComponent extends Disposable {
 	}
 
 	openContextMenu(event, batchId, resultId, index): void {
-		//let slick: any = this.slickgrids.toArray()[index];
-		//let slick: any = this._tables[index];
-		//let grid = slick._grid;
-
 		let selection = this.getSelection(index);
 
 		if (selection && selection.length === 0) {
 			let cell = event.cell;
-			//let cell = (grid as Slick.Grid<any>).getCellFromEvent(event);
 			selection = [new Slick.Range(cell.row, cell.cell - 1)];
 		}
 
-		// let rowIndex = grid.getCellFromEvent(event).row;
 		let rowIndex = event.cell.row;
 
 		let actionContext: IGridInfo = {
@@ -423,21 +416,16 @@ export abstract class GridParentComponent extends Disposable {
 		let self = this;
 		return (gridIndex: number) => {
 			self.activeGrid = gridIndex;
-			let grid = self._tables[self.activeGrid];
-			//let grid = self.tablegrids[self.activeGrid];
+			let grid = self.tables[self.activeGrid];
 			grid.setActive();
 			grid.setSelectedRows(true);
 		};
 	}
 
 	private onSelectAllForActiveGrid(): void {
-		if (this.activeGrid >= 0 && this._tables.length > this.activeGrid) {
-			this._tables[this.activeGrid].setSelectedRows(true);
+		if (this.activeGrid >= 0 && this.tables.length > this.activeGrid) {
+			this.tables[this.activeGrid].setSelectedRows(true);
 		}
-
-		// if (this.activeGrid >= 0 && this.tablegrids.length > this.activeGrid) {
-		// 	this.tablegrids[this.activeGrid].selection = true;
-		// }
 	}
 
 	/**
@@ -454,8 +442,7 @@ export abstract class GridParentComponent extends Disposable {
 		}
 		setTimeout(() => {
 			self.resizeGrids();
-			self._tables[0].setActive();
-			//self.tablegrids[0].setActive();
+			self.tables[0].setActive();
 		});
 	}
 
@@ -468,7 +455,7 @@ export abstract class GridParentComponent extends Disposable {
 		return this.nativeElement.querySelector('#messages');
 	}
 	/**
-	 * Force angular to re-render the results grids. Calling this upon unhide (upon focus) fixes UI
+	 * Force re-rendering of the results grids. Calling this upon unhide (upon focus) fixes UI
 	 * glitches that occur when a QueryRestulsEditor is hidden then unhidden while it is running a query.
 	 */
 	refreshResultsets(): void {

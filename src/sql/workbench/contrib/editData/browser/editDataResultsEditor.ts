@@ -101,9 +101,6 @@ export class EditDataResultsEditor extends BaseEditor {
 		}
 	}
 
-	/**
-	 * Load the angular components and record for this input that we have done so
-	 */
 	private createGridPanel(): void {
 		let input = <EditDataResultsInput>this.input;
 		let uri = input.uri;
@@ -114,7 +111,6 @@ export class EditDataResultsEditor extends BaseEditor {
 			throw new Error('DataService not found for URI: ' + uri);
 		}
 
-		//Stuff afterwards can be ignored
 		// Mark that we have bootstrapped
 		input.setBootstrappedTrue();
 
@@ -133,51 +129,5 @@ export class EditDataResultsEditor extends BaseEditor {
 
 		let editGridPanel = this._register(this._instantiationService.createInstance(EditDataGridPanel, params));
 		editGridPanel.render(this.getContainer());
-
-		// bootstrapAngular(this._instantiationService,
-		// 	EditDataModule,
-		// 	parent,
-		// 	EDITDATA_SELECTOR,
-		// 	params,
-		// 	input);
 	}
-
-	/*
-	 * Add the subscription to the list of things to be disposed on destroy, or else on a new component init
-	 * may get the "destroyed" object still getting called back.
-	 */
-	// 	protected subscribeWithDispose<T>(subject: Subject<T>, event: (value: any) => void): void {
-	// 		let sub: Subscription = subject.subscribe(event);
-	// 		this.toDispose.add(subscriptionToDisposable(sub));
-	// 	}
-
-	// 	initializeTable(): void {
-	// 		const self = this;
-	// 		this.baseInit();
-
-	// 		// Add the subscription to the list of things to be disposed on destroy, or else on a new component init
-	// 		// may get the "destroyed" object still getting called back.
-	// 		this.subscribeWithDispose(this.dataService.queryEventObserver, (event) => {
-	// 			switch (event.type) {
-	// 				case 'start':
-	// 					self.handleStart(self, event);
-	// 					break;
-	// 				case 'complete':
-	// 					self.handleComplete(self, event);
-	// 					break;
-	// 				case 'message':
-	// 					self.handleMessage(self, event);
-	// 					break;
-	// 				case 'resultSet':
-	// 					self.handleResultSet(self, event);
-	// 					break;
-	// 				case 'editSessionReady':
-	// 					self.handleEditSessionReady(self, event);
-	// 					break;
-	// 				default:
-	// 					this.logService.error('Unexpected query event type "' + event.type + '" sent');
-	// 					break;
-	// 			}
-	// 		});
-	// 	}
 }
