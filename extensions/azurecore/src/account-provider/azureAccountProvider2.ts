@@ -9,11 +9,13 @@ import * as http from 'http';
 import * as url from 'url';
 import * as crypto from 'crypto';
 import * as nls from 'vscode-nls';
+import * as request from 'request';
 import {
 	AzureAccount,
 	AzureAccountProviderMetadata,
 	AzureAccountSecurityTokenCollection,
 	AzureAccountSecurityToken,
+	Tenant,
 } from './interfaces';
 
 import TokenCache from './tokenCache';
@@ -39,6 +41,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	constructor(private metadata: AzureAccountProviderMetadata, private tokenCache: TokenCache) {
 		console.log(this.metadata, this.tokenCache);
 		this.commonAuthorityUrl = url.resolve(this.metadata.settings.host, AzureAccountProvider.AadCommonTenant);
+		console.log(this.isInitialized);
 	}
 
 	// interface method
@@ -60,6 +63,22 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		return storedAccounts;
 	}
 
+	private async getToken(userId: string, tenantId: string, resourceId: string): Promise<TokenResponse> {
+		let authorityUrl = url.resolve(this.metadata.settings.host, tenantId);
+		const context = new AuthenticationContext(authorityUrl, null, this.tokenCache);
+
+		const acquireToken = promisify(context.acquireToken).bind(context);
+
+		let response: (TokenResponse | ErrorResponse) = await acquireToken(resourceId, userId, this.metadata.settings.clientId);
+		if (response.error) {
+			throw new Error(`Response contained error ${response}`);
+		}
+
+		response = response as TokenResponse;
+
+		return response;
+	}
+
 	private async getAccessTokens(account: azdata.Account, resource: azdata.AzureResource): Promise<AzureAccountSecurityTokenCollection> {
 		const resourceIdMap = new Map<azdata.AzureResource, string>([
 			[azdata.AzureResource.ResourceManagement, this.metadata.settings.armResource.id],
@@ -70,17 +89,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 		for (let tenant of account.properties.tenants) {
 			const promise = new Promise<{ tenantId: any, securityToken: AzureAccountSecurityToken }>(async (resolve, reject) => {
-				let authorityUrl = url.resolve(this.metadata.settings.host, tenant.id);
-				let context = new AuthenticationContext(authorityUrl, null, this.tokenCache);
+				let response = await this.getToken(tenant.userId, tenant.id, resourceIdMap.get(resource));
 
-				const acquireToken = promisify(context.acquireToken).bind(this);
-
-				let response: (TokenResponse | ErrorResponse) = await acquireToken(resourceIdMap.get(resource), tenant.userId, this.metadata.settings.clientId);
-				if (response.error) {
-					throw new Error(`Response contained error ${response}`);
-				}
-
-				response = response as TokenResponse;
 				return {
 					tenantId: tenant.id,
 					securityToken: {
@@ -200,6 +210,53 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		pathMappings.set('/signin', initialSignIn);
 		pathMappings.set('/callback', callback);
 	}
+	private async makeWebRequest(accessToken: TokenResponse, uri: string): Promise<any> {
+		const params = {
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${accessToken.accessToken}`
+			},
+			json: true
+		};
+
+		return new Promise((resolve, reject) => {
+			request.get(uri, params, (error: any, response: request.Response, body: any) => {
+				const err = error ?? body.error;
+				if (err) {
+					return reject(err);
+				}
+				return resolve(body.value);
+			});
+		});
+	}
+
+	private async getTenants(userId: string, homeTenant: string): Promise<Tenant[]> {
+		const armToken = await this.getToken(userId, AzureAccountProvider.AadCommonTenant, this.metadata.settings.armResource.id);
+		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2015-01-01');
+		const armWebResponse: any[] = await this.makeWebRequest(armToken, tenantUri);
+
+		const promises = armWebResponse.map(async (value: { tenantId: string }) => {
+			const graphToken = await this.getToken(userId, value.tenantId, this.metadata.settings.graphResource.id);
+			const tenantDetailsUri = url.resolve(this.metadata.settings.graphResource.endpoint, value.tenantId + '/');
+			const tenantDetails: any[] = await this.makeWebRequest(graphToken, tenantDetailsUri);
+
+			return {
+				id: value.tenantId,
+				userId: userId,
+				displayName: tenantDetailsUri.length && tenantDetails[0].displayName
+					? tenantDetails[0].displayName
+					: localize('azureWorkAccountDisplayName', "Work or school account")
+			} as Tenant;
+		});
+
+		const tenants = await Promise.all(promises);
+		const homeTenantIndex = tenants.findIndex(tenant => tenant.id === homeTenant);
+		if (homeTenantIndex >= 0) {
+			const homeTenant = tenants.splice(homeTenantIndex, 1);
+			tenants.unshift(homeTenant[0]);
+		}
+		return tenants;
+	}
 
 	/**
 	 * Authenticates an azure account and then emits an event
@@ -208,7 +265,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private async handleAuthentication(code: string): Promise<void> {
 		const token = await this.getTokenWithAuthCode(code, AzureAccountProvider.redirectUrlAAD);
 
-		console.log(token);
+		const tenants = await this.getTenants(token.userId, token.userId);
 		let identityProvider = token.identityProvider;
 		if (identityProvider) {
 			identityProvider = identityProvider.toLowerCase();
@@ -229,7 +286,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		// Calculate the home tenant display name to use for the contextual display name
 		let contextualDisplayName = msa
 			? localize('microsoftAccountDisplayName', "Microsoft Account")
-			: ''; // TODO tenants
+			: tenants[0].displayName;
 
 		let accountType = msa
 			? AzureAccountProvider.MicrosoftAccountType
@@ -250,7 +307,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			properties: {
 				providerSettings: this.metadata,
 				isMsAccount: msa,
-				tenants: []
+				tenants,
 			},
 			isStale: false
 		} as AzureAccount;
@@ -272,7 +329,6 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	private createAuthUrl(baseHost: string, redirectUri: string, clientId: string, resource: string, tenant: string, nonce: string): string {
-		// TODO do this properly.
 		return `${baseHost}${tenant}/oauth2/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${nonce}&resource=${resource}`;
 	}
 
