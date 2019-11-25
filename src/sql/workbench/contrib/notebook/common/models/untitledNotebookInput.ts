@@ -34,6 +34,11 @@ export class UntitledNotebookInput extends NotebookInput {
 		this.textInput.setMode(mode);
 	}
 
+	isUntitled(): boolean {
+		// Subclasses need to explicitly opt-in to being untitled.
+		return true;
+	}
+
 	public getTypeId(): string {
 		return UntitledNotebookInput.ID;
 	}
