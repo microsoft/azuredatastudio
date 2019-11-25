@@ -21,6 +21,7 @@ export class InstalledPackagesTab {
 	private installedPkgTab: azdata.window.DialogTab;
 
 	private packageTypeDropdown: azdata.DropDownComponent;
+	private locationComponent: azdata.TextComponent;
 	private installedPackageCount: azdata.TextComponent;
 	private installedPackagesTable: azdata.TableComponent;
 	private installedPackagesLoader: azdata.LoadingComponent;
@@ -32,18 +33,27 @@ export class InstalledPackagesTab {
 		this.installedPkgTab = azdata.window.createTab(localize('managePackages.installedTabTitle', "Installed"));
 
 		this.installedPkgTab.registerContent(async view => {
-			let dropdownValues: string[];
-			if (this.dialog.currentPkgType === PythonPkgType.Anaconda) {
-				dropdownValues = [PythonPkgType.Anaconda, PythonPkgType.Pip];
-			} else {
-				dropdownValues = [PythonPkgType.Pip];
-			}
+
+			// TODO: only supporting single location for now. We should add a drop down for multi locations mode
+			//
+			this.locationComponent = view.modelBuilder.text().withProperties({
+				value: this.dialog.model.getLocationTitle()
+			}).component();
+
+			let dropdownValues = this.dialog.model.getPackageTypes().map(x => {
+				return {
+					name: x[0],
+					displayName: x[1]
+				};
+			});
+			let defaultPackageType = dropdownValues && dropdownValues.length > 0 ? dropdownValues[0] : undefined;
 			this.packageTypeDropdown = view.modelBuilder.dropDown().withProperties({
 				values: dropdownValues,
-				value: dropdownValues[0]
+				value: defaultPackageType
 			}).component();
+			this.dialog.changePackageType(defaultPackageType.name);
 			this.packageTypeDropdown.onValueChanged(() => {
-				this.dialog.resetPages(this.packageTypeDropdown.value as PythonPkgType)
+				this.dialog.resetPages((<azdata.CategoryValue>this.packageTypeDropdown.value).name)
 					.catch(err => {
 						this.dialog.showErrorMessage(utils.getErrorMessage(err));
 					});
@@ -73,6 +83,9 @@ export class InstalledPackagesTab {
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
+					component: this.locationComponent,
+					title: localize('managePackages.location', "Location")
+				}, {
 					component: this.packageTypeDropdown,
 					title: localize('managePackages.packageType', "Package Type")
 				}, {
@@ -108,11 +121,7 @@ export class InstalledPackagesTab {
 		await this.installedPackagesLoader.updateProperties({ loading: true });
 		await this.uninstallPackageButton.updateProperties({ enabled: false });
 		try {
-			if (this.dialog.currentPkgType === PythonPkgType.Anaconda) {
-				pythonPackages = await this.jupyterInstallation.getInstalledCondaPackages();
-			} else {
-				pythonPackages = await this.jupyterInstallation.getInstalledPipPackages();
-			}
+			pythonPackages = await this.dialog.model.listPackage();
 		} catch (err) {
 			this.dialog.showErrorMessage(utils.getErrorMessage(err));
 		} finally {

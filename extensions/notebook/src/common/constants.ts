@@ -27,6 +27,8 @@ export const jupyterReinstallDependenciesCommand = 'jupyter.reinstallDependencie
 export const jupyterAnalyzeCommand = 'jupyter.cmd.analyzeNotebook';
 export const jupyterManagePackages = 'jupyter.cmd.managePackages';
 export const jupyterConfigurePython = 'jupyter.cmd.configurePython';
+export const localhostTitle = 'localhost';
+export const localhostName = 'localhost';
 
 export enum BuiltInCommands {
 	SetContext = 'setContext'

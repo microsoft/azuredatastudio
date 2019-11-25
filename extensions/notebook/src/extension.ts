@@ -11,7 +11,7 @@ import * as nls from 'vscode-nls';
 import { JupyterController } from './jupyter/jupyterController';
 import { AppContext } from './common/appContext';
 import { ApiWrapper } from './common/apiWrapper';
-import { IExtensionApi } from './types';
+import { IExtensionApi, IPackageManageProvider } from './types';
 import { CellType } from './contracts/content';
 import { getErrorMessage, isEditorTitleFree } from './common/utils';
 import { NotebookUriHandler } from './protocol/notebookUriHandler';
@@ -115,6 +115,9 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	return {
 		getJupyterController() {
 			return controller;
+		},
+		registerPackageManager(providerId: string, packageManagerProvider: IPackageManageProvider): void {
+			controller.registerPackageManagers(providerId, packageManagerProvider);
 		}
 	};
 }

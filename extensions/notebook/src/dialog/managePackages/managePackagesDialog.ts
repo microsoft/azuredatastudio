@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
 import { InstalledPackagesTab } from './installedPackagesTab';
 import { AddNewPackageTab } from './addNewPackageTab';
-import { PythonPkgType } from '../../common/constants';
+import { ManagePackageDialogModel } from './managePackagesDialogModel';
 
 const localize = nls.loadMessageBundle();
 
@@ -18,10 +18,10 @@ export class ManagePackagesDialog {
 	private installedPkgTab: InstalledPackagesTab;
 	private addNewPkgTab: AddNewPackageTab;
 
-	public currentPkgType: PythonPkgType;
+	public currentPkgType: string;
 
-	constructor(private jupyterInstallation: JupyterServerInstallation) {
-		this.currentPkgType = this.jupyterInstallation.usingConda ? PythonPkgType.Anaconda : PythonPkgType.Pip;
+	constructor(
+		private _managePackageDialogModel: ManagePackageDialogModel) {
 	}
 
 	/**
@@ -49,8 +49,21 @@ export class ManagePackagesDialog {
 		return this.installedPkgTab.loadInstalledPackagesInfo();
 	}
 
-	public async resetPages(newPkgType: PythonPkgType): Promise<void> {
+	public get jupyterInstallation(): JupyterServerInstallation {
+		return this._managePackageDialogModel.jupyterInstallation;
+	}
+
+	public get model(): ManagePackageDialogModel {
+		return this._managePackageDialogModel;
+	}
+
+	public changePackageType(newPkgType: string): void {
+		this.model.changeProvider(newPkgType);
 		this.currentPkgType = newPkgType;
+	}
+
+	public async resetPages(providerId: string): Promise<void> {
+		this.changePackageType(providerId);
 		await this.installedPkgTab.loadInstalledPackagesInfo();
 		await this.addNewPkgTab.resetPageFields();
 	}
