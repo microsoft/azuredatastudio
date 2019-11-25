@@ -138,7 +138,6 @@ steps:
 
   - script: | # WHY ARE WE DOING THIS?
       set -e
-      BUILD="$(Build.SourcesDirectory)/../azuredatastudio-linux-x64"
       PACKAGEJSON="$(Build.SourcesDirectory)/package.json"
       VERSION=$(node -p "require(\"$PACKAGEJSON\").version")
       COMMIT_ID=$(git rev-parse HEAD)
