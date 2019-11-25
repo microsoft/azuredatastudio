@@ -212,7 +212,7 @@ steps:
     displayName: 'Copy System Install to: $(Build.ArtifactStagingDirectory)'
     inputs:
       SourceFolder: '$(Build.SourcesDirectory)/.build/win32-x64/system-setup/'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/system-setup/'
 
   - task: CopyFiles@2
     displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/vsix'
