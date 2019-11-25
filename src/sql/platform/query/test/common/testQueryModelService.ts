@@ -56,7 +56,7 @@ export class TestQueryModelService implements IQueryModelService {
 	resizeResultsets(uri: string): void {
 		throw new Error('Method not implemented.');
 	}
-	onAngularLoaded(uri: string): void {
+	onComponentLoaded(uri: string): void {
 		throw new Error('Method not implemented.');
 	}
 	copyResults(uri: string, selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): void {

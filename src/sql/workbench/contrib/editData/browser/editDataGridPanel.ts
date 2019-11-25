@@ -7,7 +7,7 @@ import 'vs/css!./media/editData';
 
 import { VirtualizedCollection, AsyncDataProvider, ISlickColumn } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
+
 
 import { IGridDataSet } from 'sql/workbench/contrib/grid/common/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
@@ -1079,9 +1079,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		this._tables[0].grid.onCellChange.subscribe((e, args) => {
 			this.onCellEditEnd(args);
 		});
-		// this._tables[0].grid.onBeforeEditCell.subscribe((e, args) => {
-		//     this.onBeforeEditCell.fire(args);
-		// });
+		this._tables[0].grid.onBeforeEditCell.subscribe((e, args) => {
+			this.onBeforeEditCell(args);
+		});
 		// Subscribe to all active cell changes to be able to catch when we tab to the header on the next row
 		this._tables[0].grid.onActiveCellChanged.subscribe((e, args) => {
 			// Emit that we've changed active cells
@@ -1097,6 +1097,10 @@ export class EditDataGridPanel extends GridParentComponent {
 		this._tables[0].grid.onRendered.subscribe((e, args) => {
 			this.onGridRendered(args);
 		});
+	}
+
+	onBeforeEditCell(any): void {
+
 	}
 
 	handleInitializeTable(): void {
