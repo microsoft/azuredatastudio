@@ -166,16 +166,14 @@ MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
 
 // Go to menu
 
-// {{SQL CARBON EDIT}} - Disable unused menu item
-// MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
-// 	group: '4_symbol_nav',
-// 	command: {
-// 		id: 'workbench.action.gotoSymbol',
-// 		title: nls.localize({ key: 'miGotoSymbolInFile', comment: ['&& denotes a mnemonic'] }, "Go to &&Symbol in File...")
-// 	},
-// 	order: 1
-// });
-// {{SQL CARBON EDIT}} - End
+MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
+	group: '4_symbol_nav',
+	command: {
+		id: 'workbench.action.gotoSymbol',
+		title: nls.localize({ key: 'miGotoSymbolInFile', comment: ['&& denotes a mnemonic'] }, "Go to &&Symbol in File...")
+	},
+	order: 1
+});
 
 MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
 	group: '5_infile_nav',

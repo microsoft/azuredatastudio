@@ -54,7 +54,7 @@ import { IMarker, IMarkerService, MarkerSeverity, IMarkerData } from 'vs/platfor
 import { find } from 'vs/base/common/arrays';
 
 // {{SQL CARBON EDIT}}
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { setMode } from 'sql/workbench/browser/parts/editor/editorStatusModeSelect'; // {{SQL CARBON EDIT}}
 
 class SideBySideEditorEncodingSupport implements IEncodingSupport {
 	constructor(private master: IEncodingSupport, private details: IEncodingSupport) { }
@@ -1003,8 +1003,7 @@ export class ChangeModeAction extends Action {
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
 		@IPreferencesService private readonly preferencesService: IPreferencesService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@IUntitledTextEditorService private readonly untitledTextEditorService: IUntitledTextEditorService,
-		@IQueryEditorService private readonly queryEditorService: IQueryEditorService // {{ SQL CARBON EDIT }
+		@IUntitledTextEditorService private readonly untitledTextEditorService: IUntitledTextEditorService
 	) {
 		super(actionId, actionLabel);
 	}
@@ -1104,16 +1103,16 @@ export class ChangeModeAction extends Action {
 		}
 
 		// Change mode for active editor
-		const activeEditor = this.editorService.activeControl; // {{SQL CARBON EDIT}} @anthonydresser change to activeControl from active editor
+		const activeEditor = this.editorService.activeEditor;
 		if (activeEditor) {
-			const modeSupport = toEditorWithModeSupport(activeEditor.input); // {{SQL CARBON EDIT}} @anthonydresser reference input rather than activeeditor directly
+			const modeSupport = toEditorWithModeSupport(activeEditor);
 			if (modeSupport) {
 
 				// Find mode
 				let languageSelection: ILanguageSelection | undefined;
 				if (pick === autoDetectMode) {
 					if (textModel) {
-						const resource = toResource(activeEditor.input, { supportSideBySide: SideBySideEditor.MASTER }); // {{SQL CARBON EDIT}} @anthonydresser reference input rather than activeeditor directly
+						const resource = toResource(activeEditor, { supportSideBySide: SideBySideEditor.MASTER });
 						if (resource) {
 							languageSelection = this.modeService.createByFilepathOrFirstLine(resource, textModel.getLineContent(1));
 						}
@@ -1122,14 +1121,9 @@ export class ChangeModeAction extends Action {
 					languageSelection = this.modeService.createByLanguageName(pick.label);
 				}
 
-				// {{SQL CARBON EDIT}} @anthonydresser preform a check before we actuall set the mode
 				// Change mode
 				if (typeof languageSelection !== 'undefined') {
-					this.queryEditorService.sqlLanguageModeCheck(textModel, languageSelection, activeEditor).then(newTextModel => {
-						if (newTextModel) {
-							modeSupport.setMode(languageSelection.languageIdentifier.language);
-						}
-					});
+					return this.instantiationService.invokeFunction(setMode, modeSupport, activeEditor, languageSelection.languageIdentifier.language); // {{SQL CARBON EDIT}} @anthonydresser use custom setMode
 				}
 			}
 		}

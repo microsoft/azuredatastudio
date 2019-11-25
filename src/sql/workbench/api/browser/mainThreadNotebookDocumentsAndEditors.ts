@@ -29,12 +29,14 @@ import { NotebookChangeType, CellTypes } from 'sql/workbench/contrib/notebook/co
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
-import { notebookModeId } from 'sql/workbench/browser/customInputConverter';
 import { localize } from 'vs/nls';
 import { IFileService } from 'vs/platform/files/common/files';
+import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/common/models/untitledNotebookInput';
+import { FileNotebookInput } from 'sql/workbench/contrib/notebook/common/models/fileNotebookInput';
 import { find } from 'vs/base/common/arrays';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -454,13 +456,18 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		};
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
-		const fileInput = isUntitled ? this._untitledEditorService.createOrGet(uri, notebookModeId, options.initialContent) :
-			this._editorService.createInput({ resource: uri, mode: notebookModeId });
-		let input = this._instantiationService.createInstance(NotebookInput, path.basename(uri.fsPath), uri, fileInput as UntitledTextEditorInput);
+		const fileInput = isUntitled ? this._untitledEditorService.createOrGet(uri, 'notebook', options.initialContent) :
+			this._editorService.createInput({ resource: uri, mode: 'notebook' });
+		let input: NotebookInput;
+		if (isUntitled) {
+			input = this._instantiationService.createInstance(UntitledNotebookInput, path.basename(uri.fsPath), uri, fileInput as UntitledTextEditorInput);
+		} else {
+			input = this._instantiationService.createInstance(FileNotebookInput, path.basename(uri.fsPath), uri, fileInput as FileEditorInput);
+		}
 		input.defaultKernel = options.defaultKernel;
 		input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);
 		if (isUntitled) {
-			let untitledModel = await input.textInput.resolve();
+			let untitledModel = await (input as UntitledNotebookInput).textInput.resolve();
 			await untitledModel.load();
 			input.untitledEditorModel = untitledModel;
 			if (options.initialDirtyState === false) {

@@ -28,7 +28,6 @@ import { IEditorGroupView, IEditorOpeningEvent, EditorServiceImpl } from 'vs/wor
 import { ILabelService } from 'vs/platform/label/common/label';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { withNullAsUndefined } from 'vs/base/common/types';
-import { convertEditorInput, getFileMode } from 'sql/workbench/browser/customInputConverter'; //{{SQL CARBON EDIT}}
 
 type CachedEditorInput = ResourceEditorInput | IFileEditorInput | DataUriEditorInput;
 type OpenInEditorGroup = IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE;
@@ -571,10 +570,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		// Untitled file support
 		const untitledInput = input as IUntitledTextResourceInput;
 		if (untitledInput.forceUntitled || !untitledInput.resource || (untitledInput.resource && untitledInput.resource.scheme === Schemas.untitled)) {
-			// {{SQL CARBON EDIT}}
-			// Need to get mode for QueryEditor and Notebook
-			let mode: string = untitledInput.mode ? untitledInput.mode : getFileMode(this.instantiationService, untitledInput.resource);
-			return convertEditorInput(this.untitledTextEditorService.createOrGet(untitledInput.resource, mode, untitledInput.contents, untitledInput.encoding), undefined, this.instantiationService);
+			return this.untitledTextEditorService.createOrGet(untitledInput.resource, untitledInput.mode, untitledInput.contents, untitledInput.encoding);
 		}
 
 		// Resource Editor Support
@@ -585,9 +581,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 				label = basename(resourceInput.resource); // derive the label from the path (but not for data URIs)
 			}
 
-			// {{SQL CARBON EDIT}}
-			return convertEditorInput(this.createOrGet(resourceInput.resource, this.instantiationService, label, resourceInput.description, resourceInput.encoding, resourceInput.mode, resourceInput.forceFile) as EditorInput,
-				undefined, this.instantiationService);
+			return this.createOrGet(resourceInput.resource, this.instantiationService, label, resourceInput.description, resourceInput.encoding, resourceInput.mode, resourceInput.forceFile) as EditorInput;
 		}
 
 		throw new Error('Unknown input type');

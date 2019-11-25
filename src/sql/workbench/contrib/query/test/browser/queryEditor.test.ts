@@ -9,8 +9,6 @@ import { URI } from 'vs/base/common/uri';
 import { Memento } from 'vs/workbench/common/memento';
 
 import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
-import { QueryModelService } from 'sql/platform/query/common/queryModelService';
-import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
 import { INewConnectionParams, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { RunQueryAction, ListDatabasesActionItem } from 'sql/workbench/contrib/query/browser/queryActions';
@@ -23,6 +21,9 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
+import { TestQueryModelService } from 'sql/platform/query/test/common/testQueryModelService';
+import { Event } from 'vs/base/common/event';
 
 suite('SQL QueryEditor Tests', () => {
 	let instantiationService: TypeMoq.Mock<InstantiationService>;
@@ -247,8 +248,8 @@ suite('SQL QueryEditor Tests', () => {
 	suite('Action Tests', () => {
 		let queryActionInstantiationService: TypeMoq.Mock<InstantiationService>;
 		let queryConnectionService: TypeMoq.Mock<ConnectionManagementService>;
-		let queryModelService: TypeMoq.Mock<QueryModelService>;
-		let queryInput: QueryInput;
+		let queryModelService: TypeMoq.Mock<TestQueryModelService>;
+		let queryInput: UntitledQueryEditorInput;
 		setup(() => {
 
 			// Mock ConnectionManagementService but don't set connected state
@@ -284,17 +285,17 @@ suite('SQL QueryEditor Tests', () => {
 				});
 
 			let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService.object, undefined, undefined);
-			queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose, undefined, undefined);
-			queryModelService.callBase = true;
-			queryModelService.setup(x => x.disposeQuery(TypeMoq.It.isAny())).returns(() => void 0);
-			queryInput = new QueryInput(
+			queryModelService = TypeMoq.Mock.ofType(TestQueryModelService, TypeMoq.MockBehavior.Strict);
+			queryModelService.setup(x => x.disposeQuery(TypeMoq.It.isAny()));
+			queryModelService.setup(x => x.onRunQueryComplete).returns(() => Event.None);
+			queryModelService.setup(x => x.onRunQueryStart).returns(() => Event.None);
+			queryInput = new UntitledQueryEditorInput(
 				'',
 				fileInput,
 				undefined,
-				undefined,
 				connectionManagementService.object,
 				queryModelService.object,
-				undefined,
+				configurationService.object,
 				undefined
 			);
 		});
@@ -311,8 +312,8 @@ suite('SQL QueryEditor Tests', () => {
 
 		test('Taskbar buttons are set correctly upon connect', () => {
 			let params: INewConnectionParams = { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none };
-			queryInput.onConnectSuccess(params);
 			queryModelService.setup(x => x.isRunningQuery(TypeMoq.It.isAny())).returns(() => false);
+			queryInput.onConnectSuccess(params);
 			assert.equal(queryInput.state.connected, true, 'query state should be not connected');
 			assert.equal(queryInput.state.executing, false, 'query state should be not executing');
 			assert.equal(queryInput.state.connecting, false, 'query state should be not connecting');

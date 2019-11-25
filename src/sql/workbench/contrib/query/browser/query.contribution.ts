@@ -19,7 +19,6 @@ import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
-import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
 import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
 	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction
@@ -33,36 +32,49 @@ import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } fr
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, QueryStatusStatusBarContributions } from 'sql/workbench/contrib/query/browser/statusBarItems';
 import { SqlFlavorStatusbarItem } from 'sql/workbench/contrib/query/browser/flavorStatus';
+import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions } from 'vs/workbench/common/editor';
+import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
+import { FileQueryEditorInputFactory, UntitledQueryEditorInputFactory } from 'sql/workbench/contrib/query/common/queryInputFactory';
+import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
+import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/contrib/query/browser/queryActions';
 import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
 import { MssqlNodeContext } from 'sql/workbench/contrib/dataExplorer/browser/mssqlNodeContext';
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTreeContext';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 
 export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.queryEditorVisibleId);
 export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
 export const ResultsMessagesFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsMessagesFocussedId));
 
-// Editor
-const queryResultsEditorDescriptor = new EditorDescriptor(
-	QueryResultsEditor,
-	QueryResultsEditor.ID,
-	'QueryResults'
-);
+Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
+	.registerEditorInputFactory(FileQueryEditorInput.ID, FileQueryEditorInputFactory);
+
+Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
+	.registerEditorInputFactory(UntitledQueryEditorInput.ID, UntitledQueryEditorInputFactory);
+
+Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations)
+	.registerLanguageAssociation('sql', (accessor, editor) => {
+		const instantiationService = accessor.get(IInstantiationService);
+		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, editor.getResource().toString());
+		if (editor instanceof FileEditorInput) {
+			return instantiationService.createInstance(FileQueryEditorInput, '', editor, queryResultsInput);
+		} else if (editor instanceof UntitledTextEditorInput) {
+			return instantiationService.createInstance(UntitledQueryEditorInput, '', editor, queryResultsInput);
+		} else {
+			return undefined;
+		}
+	}, (editor: QueryEditorInput) => editor.text, true);
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(queryResultsEditorDescriptor, [new SyncDescriptor(QueryResultsInput)]);
-
-// Editor
-const queryEditorDescriptor = new EditorDescriptor(
-	QueryEditor,
-	QueryEditor.ID,
-	'Query'
-);
+	.registerEditor(new EditorDescriptor(QueryResultsEditor, QueryResultsEditor.ID, localize('queryResultsEditor.name', "Query Results")), [new SyncDescriptor(QueryResultsInput)]);
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(queryEditorDescriptor, [new SyncDescriptor(QueryInput)]);
+	.registerEditor(new EditorDescriptor(QueryEditor, QueryEditor.ID, localize('queryEditor.name', "Query Editor")), [new SyncDescriptor(FileQueryEditorInput), new SyncDescriptor(UntitledQueryEditorInput)]);
 
 const actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
 

@@ -30,7 +30,7 @@ import { withNullAsUndefined } from 'vs/base/common/types';
 import { EditorActivation } from 'vs/platform/editor/common/editor';
 
 // {{SQL CARBON EDIT}}
-import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
+import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 
 export class FileEditorTracker extends Disposable implements IWorkbenchContribution {
 
@@ -189,12 +189,12 @@ export class FileEditorTracker extends Disposable implements IWorkbenchContribut
 	}
 
 	// {{SQL CARBON EDIT}} - Support FileEditorInput or QueryInput
-	private getOpenedFileEditors(dirtyState: boolean): (FileEditorInput | QueryInput)[] {
-		const editors: (FileEditorInput | QueryInput)[] = [];
+	private getOpenedFileEditors(dirtyState: boolean): (FileEditorInput | QueryEditorInput)[] {
+		const editors: (FileEditorInput | QueryEditorInput)[] = [];
 
 		this.editorService.editors.forEach(editor => {
 			// {{SQL CARBON EDIT}} - Support FileEditorInput or QueryInput
-			if (editor instanceof FileEditorInput || editor instanceof QueryInput) {
+			if (editor instanceof FileEditorInput || editor instanceof QueryEditorInput) {
 				if (!!editor.isDirty() === dirtyState) {
 					editors.push(editor);
 				}
@@ -223,7 +223,7 @@ export class FileEditorTracker extends Disposable implements IWorkbenchContribut
 		this.editorGroupService.groups.forEach(group => {
 			group.editors.forEach(editor => {
 				// {{SQL CARBON EDIT}} - Support FileEditorInput or QueryInput
-				if (editor instanceof FileEditorInput || editor instanceof QueryInput) {
+				if (editor instanceof FileEditorInput || editor instanceof QueryEditorInput) {
 					const resource = editor.getResource();
 
 					// Update Editor if file (or any parent of the input) got renamed or moved

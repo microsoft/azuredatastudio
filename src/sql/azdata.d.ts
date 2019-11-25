@@ -3020,6 +3020,14 @@ declare module 'azdata' {
 		 */
 		ariaLabel?: string;
 		/**
+		 * Corresponds to the role accessibility attribute for this component
+		 */
+		ariaRole?: string;
+		/**
+		 * Corresponds to the aria-selected accessibility attribute for this component
+		 */
+		ariaSelected?: boolean;
+		/**
 		 * Matches the CSS style key and its available values.
 		 */
 		CSSStyles?: { [key: string]: string };
@@ -3092,7 +3100,6 @@ declare module 'azdata' {
 		title?: string;
 		ariaRowCount?: number;
 		ariaColumnCount?: number;
-		ariaRole?: string;
 		updateCells?: TableCell[];
 		moveFocusOutWithTab?: boolean; //accessibility requirement for tables with no actionable cells
 	}
@@ -3281,16 +3288,14 @@ declare module 'azdata' {
 	}
 
 	export interface TextComponent extends Component, TextComponentProperties {
-		/**
-		 * An event called when the text is clicked
-		 */
-		onDidClick: vscode.Event<any>;
+
 	}
 
 	export interface ImageComponent extends Component, ImageComponentProperties {
 	}
 
 	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
+
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {

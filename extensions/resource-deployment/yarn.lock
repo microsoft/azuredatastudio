@@ -398,6 +398,11 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
+linux-release-info@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/linux-release-info/-/linux-release-info-2.0.0.tgz#bdd4743a3ac49151ce612dbfe063f5eec116aeab"
+  integrity sha512-w0RoUAZOQvnwuypQT+kwiDRNrMrEyrNWC8OOQH4e0Chii/BqB2tq7yeUHKo9brPDymY0Iz7EKe0TtwsflAlOnA==
+
 lodash@^4.16.4, lodash@^4.17.4:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"

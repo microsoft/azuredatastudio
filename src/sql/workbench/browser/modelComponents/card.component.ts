@@ -41,7 +41,7 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.onkeydown(this._el.nativeElement, (e: StandardKeyboardEvent) => {
-			if (e.keyCode === KeyCode.Enter) {
+			if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Space) {
 				this.onCardClick();
 				DOM.EventHelper.stop(e, true);
 			}

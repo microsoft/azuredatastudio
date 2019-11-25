@@ -32,7 +32,7 @@ import { Color } from 'vs/base/common/color';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { MergeGroupMode, IMergeGroupOptions, GroupsArrangement } from 'vs/workbench/services/editor/common/editorGroupsService';
-// import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { addClass, addDisposableListener, hasClass, EventType, EventHelper, removeClass, Dimension, scheduleAtNextAnimationFrame, findParentWithClass, clearNode } from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import { IEditorGroupsAccessor, IEditorGroupView } from 'vs/workbench/browser/parts/editor/editor';
@@ -44,10 +44,8 @@ import { withNullAsUndefined, assertAllDefined, assertIsDefined } from 'vs/base/
 import { ILabelService } from 'vs/platform/label/common/label';
 
 // {{SQL CARBON EDIT}} -- Display the editor's tab color
-import { ICommandService } from 'vs/platform/commands/common/commands';
 import * as QueryConstants from 'sql/workbench/contrib/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
-import { GlobalNewUntitledFileAction } from 'vs/workbench/contrib/files/browser/fileActions';
 // {{SQL CARBON EDIT}} -- End
 
 interface IEditorInputLabel {
@@ -81,7 +79,7 @@ export class TabsTitleControl extends TitleControl {
 		group: IEditorGroupView,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		// @IUntitledTextEditorService private readonly untitledTextEditorService: IUntitledTextEditorService, {{SQL CARBON EDIT}} comment out inject
+		@IUntitledTextEditorService private readonly untitledTextEditorService: IUntitledTextEditorService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -92,9 +90,6 @@ export class TabsTitleControl extends TitleControl {
 		@IExtensionService extensionService: IExtensionService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IFileService fileService: IFileService,
-		// {{SQL CARBON EDIT}} -- Display the editor's tab color
-		@ICommandService private commandService: ICommandService,
-		// {{SQL CARBON EDIT}} -- End
 		@ILabelService labelService: ILabelService
 	) {
 		super(parent, accessor, group, contextMenuService, instantiationService, contextKeyService, keybindingService, telemetryService, notificationService, menuService, quickOpenService, themeService, extensionService, configurationService, fileService, labelService);
@@ -187,7 +182,7 @@ export class TabsTitleControl extends TitleControl {
 			if (e.target === tabsContainer) {
 				EventHelper.stop(e);
 
-				this.commandService.executeCommand(GlobalNewUntitledFileAction.ID).then(undefined, err => this.notificationService.warn(err)); // {{SQL CARBON EDIT}}
+				this.group.openEditor(this.untitledTextEditorService.createOrGet(), { pinned: true /* untitled is always pinned */, index: this.group.count /* always at the end */ });
 			}
 		}));
 

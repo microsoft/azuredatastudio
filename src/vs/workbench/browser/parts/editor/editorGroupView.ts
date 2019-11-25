@@ -32,7 +32,7 @@ import { RunOnceWorker } from 'vs/base/common/async';
 import { EventType as TouchEventType, GestureEvent } from 'vs/base/browser/touch';
 import { TitleControl } from 'vs/workbench/browser/parts/editor/titleControl';
 import { IEditorGroupsAccessor, IEditorGroupView, IEditorPartOptionsChangeEvent, getActiveTextEditorOptions, IEditorOpeningEvent } from 'vs/workbench/browser/parts/editor/editor';
-// import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ActionRunner, IAction, Action } from 'vs/base/common/actions';
@@ -42,10 +42,6 @@ import { IMenuService, MenuId, IMenu } from 'vs/platform/actions/common/actions'
 import { StandardMouseEvent } from 'vs/base/browser/mouseEvent';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-// {{SQL CARBON EDIT}}
-import { ICommandService } from 'vs/platform/commands/common/commands';
-import { GlobalNewUntitledFileAction } from 'vs/workbench/contrib/files/browser/fileActions';
-// {{SQL CARBON EDIT}} - End
 import { isErrorWithActions, IErrorWithActions } from 'vs/base/common/errorsWithActions';
 import { IVisibleEditor } from 'vs/workbench/services/editor/common/editorService';
 import { withNullAsUndefined, withUndefinedAsNull } from 'vs/base/common/types';
@@ -133,12 +129,11 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		@INotificationService private readonly notificationService: INotificationService,
 		@IDialogService private readonly dialogService: IDialogService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
-		// @IUntitledTextEditorService private readonly untitledTextEditorService: IUntitledTextEditorService, {{SQL CARBON EDIT}} no unused
+		@IUntitledTextEditorService private readonly untitledTextEditorService: IUntitledTextEditorService,
 		@IKeybindingService private readonly keybindingService: IKeybindingService,
 		@IMenuService private readonly menuService: IMenuService,
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IFileDialogService private readonly fileDialogService: IFileDialogService,
-		@ICommandService private commandService: ICommandService, // {{SQL CARBON EDIT}}
 		@ILogService private readonly logService: ILogService
 	) {
 		super(themeService);
@@ -263,7 +258,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 			if (this.isEmpty) {
 				EventHelper.stop(e);
 
-				this.commandService.executeCommand(GlobalNewUntitledFileAction.ID).then(undefined, err => this.notificationService.warn(err)); // {{SQL CARBON EDIT}}
+				this.openEditor(this.untitledTextEditorService.createOrGet(), EditorOptions.create({ pinned: true }));
 			}
 		}));
 
@@ -1499,7 +1494,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		inactiveReplacements.forEach(({ editor, replacement, options }) => {
 
 			// Open inactive editor
-			this.doOpenEditor(replacement, options);
+			this.openEditor(replacement, options);  // {{SQL CARBON EDIT}} use this.openEditor to allow us to override the open, we could potentially add this to vscode but i don't think they would care
 
 			// Close replaced inactive editor unless they match
 			if (!editor.matches(replacement)) {
@@ -1512,7 +1507,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		if (activeReplacement) {
 
 			// Open replacement as active editor
-			const openEditorResult = this.doOpenEditor(activeReplacement.replacement, activeReplacement.options);
+			const openEditorResult = this.openEditor(activeReplacement.replacement, activeReplacement.options); // {{SQL CARBON EDIT}} use this.openEditor to allow us to override the open, we could potentially add this to vscode but i don't think they would care
 
 			// Close replaced active editor unless they match
 			if (!activeReplacement.editor.matches(activeReplacement.replacement)) {

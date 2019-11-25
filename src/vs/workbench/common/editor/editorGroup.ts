@@ -12,10 +12,8 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { coalesce, firstIndex } from 'vs/base/common/arrays';
 
 // {{SQL CARBON EDIT}}
-import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
-import * as CustomInputConverter from 'sql/workbench/browser/customInputConverter';
-import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 
 const EditorOpenPositioning = {
@@ -582,16 +580,7 @@ export class EditorGroup extends Disposable {
 		let serializableEditors: EditorInput[] = [];
 		let serializedEditors: ISerializedEditorInput[] = [];
 		let serializablePreviewIndex: number | undefined;
-		// {{SQL CARBON EDIT}}
-		const editors = this.editors.map(e => {
-			if (e instanceof QueryInput) {
-				return e.sql;
-			} else if (e instanceof NotebookInput) {
-				return e.textInput;
-			}
-			return e;
-		});
-		editors.forEach(e => {
+		this.editors.forEach(e => {
 			const factory = registry.getEditorInputFactory(e.getTypeId());
 			if (factory) {
 				// {{SQL CARBON EDIT}}
@@ -614,16 +603,7 @@ export class EditorGroup extends Disposable {
 			}
 		});
 
-		// {{SQL CARBON EDIT}}
-		let mru = this.mru.map(e => {
-			if (e instanceof QueryInput) {
-				return e.sql;
-			} else if (e instanceof NotebookInput) {
-				return e.textInput;
-			}
-			return e;
-		});
-		const serializableMru = mru.map(e => this.indexOf(e, serializableEditors)).filter(i => i >= 0);
+		const serializableMru = this.mru.map(e => this.indexOf(e, serializableEditors)).filter(i => i >= 0);
 
 		return {
 			id: this.id,
@@ -652,8 +632,7 @@ export class EditorGroup extends Disposable {
 					this.registerEditorListeners(editor);
 				}
 
-				// {{SQL CARBON EDIT}}
-				return CustomInputConverter.convertEditorInput(editor, undefined, this.instantiationService);
+				return editor;
 			}
 
 			return null;
@@ -675,7 +654,7 @@ export class EditorGroup extends Disposable {
 		let n = 0;
 		while (n < this.editors.length) {
 			let editor = this.editors[n];
-			if (editor instanceof QueryInput && editor.matchInputInstanceType(FileEditorInput) && !editor.isDirty() && await editor.inputFileExists() === false && this.editors.length > 1) {
+			if (editor instanceof QueryEditorInput && editor.matchInputInstanceType(FileEditorInput) && !editor.isDirty() && await editor.inputFileExists() === false && this.editors.length > 1) {
 				// remove from editors list so that they do not get restored
 				this.editors.splice(n, 1);
 				let index = firstIndex(this.mru, e => e.matches(editor));

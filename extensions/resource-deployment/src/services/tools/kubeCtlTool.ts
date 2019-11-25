@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Command, ToolType, OsType } from '../../interfaces';
+import { Command, ToolType, OsDistribution } from '../../interfaces';
 import * as nls from 'vscode-nls';
 import { SemVer } from 'semver';
 import { IPlatformService } from '../platformService';
@@ -63,25 +63,25 @@ export class KubeCtlTool extends ToolBase {
 	}
 
 	protected async getSearchPaths(): Promise<string[]> {
-		switch (this.osType) {
-			case OsType.win32:
+		switch (this.osDistribution) {
+			case OsDistribution.win32:
 				return [this.storagePath];
 			default:
 				return [defaultInstallationRoot];
 		}
 	}
-	protected readonly allInstallationCommands: Map<OsType, Command[]> = new Map<OsType, Command[]>([
-		[OsType.linux, linuxInstallationCommands],
-		[OsType.win32, win32InstallationCommands],
-		[OsType.darwin, macOsInstallationCommands],
-		[OsType.others, defaultInstallationCommands]
+	protected readonly allInstallationCommands: Map<OsDistribution, Command[]> = new Map<OsDistribution, Command[]>([
+		[OsDistribution.debian, debianInstallationCommands],
+		[OsDistribution.win32, win32InstallationCommands],
+		[OsDistribution.darwin, macOsInstallationCommands],
+		[OsDistribution.others, defaultInstallationCommands]
 	]);
 
-	protected dependenciesByOsType: Map<OsType, dependencyType[]> = new Map<OsType, dependencyType[]>([
-		[OsType.linux, []],
-		[OsType.win32, []],
-		[OsType.darwin, [dependencyType.Brew]],
-		[OsType.others, [dependencyType.Curl]]
+	protected dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>([
+		[OsDistribution.debian, []],
+		[OsDistribution.win32, []],
+		[OsDistribution.darwin, [dependencyType.Brew]],
+		[OsDistribution.others, [dependencyType.Curl]]
 	]);
 }
 
@@ -95,7 +95,7 @@ const macOsInstallationCommands = [
 		command: 'brew install kubectl'
 	}
 ];
-const linuxInstallationCommands = [
+const debianInstallationCommands = [
 	{
 		sudo: true,
 		comment: localize('resourceDeployment.Kubectl.AptGetUpdate', "updating repository information …"),
