@@ -31,7 +31,7 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileE
 import { URI } from 'vs/base/common/uri';
 import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
 
-import { QueryInput, IQueryEditorStateChange } from 'sql/workbench/contrib/query/common/queryInput';
+import { QueryEditorInput, IQueryEditorStateChange } from 'sql/workbench/contrib/query/common/queryEditorInput';
 import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
@@ -120,8 +120,8 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	// PUBLIC METHODS ////////////////////////////////////////////////////////////
-	public get input(): QueryInput | null {
-		return this._input as QueryInput;
+	public get input(): QueryEditorInput | null {
+		return this._input as QueryEditorInput;
 	}
 
 	/**
@@ -278,7 +278,7 @@ export class QueryEditor extends BaseEditor {
 		this.taskbar.setContent(content);
 	}
 
-	public async setInput(newInput: QueryInput, options: EditorOptions, token: CancellationToken): Promise<void> {
+	public async setInput(newInput: QueryEditorInput, options: EditorOptions, token: CancellationToken): Promise<void> {
 		const oldInput = this.input;
 
 		if (newInput.matches(oldInput)) {
@@ -293,7 +293,7 @@ export class QueryEditor extends BaseEditor {
 		}
 
 		// If we're switching editor types switch out the views
-		const newTextEditor = newInput.sql instanceof FileEditorInput ? this.textFileEditor : this.textResourceEditor;
+		const newTextEditor = newInput.text instanceof FileEditorInput ? this.textFileEditor : this.textResourceEditor;
 		if (newTextEditor !== this.currentTextEditor) {
 			this.currentTextEditor = newTextEditor;
 			this.splitview.removeView(0, Sizing.Distribute);
@@ -309,7 +309,7 @@ export class QueryEditor extends BaseEditor {
 
 		await Promise.all([
 			super.setInput(newInput, options, token),
-			this.currentTextEditor.setInput(newInput.sql, options, token),
+			this.currentTextEditor.setInput(newInput.text, options, token),
 			this.resultsEditor.setInput(newInput.results, options)
 		]);
 
@@ -324,7 +324,7 @@ export class QueryEditor extends BaseEditor {
 		}
 	}
 
-	private saveQueryEditorViewState(input: QueryInput): void {
+	private saveQueryEditorViewState(input: QueryEditorInput): void {
 		if (!input) {
 			return; // ensure we have an input to handle view state for
 		}

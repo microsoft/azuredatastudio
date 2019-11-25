@@ -20,7 +20,7 @@ import * as ConnectionConstants from 'sql/platform/connection/common/constants';
 import { EditDataEditor } from 'sql/workbench/contrib/editData/browser/editDataEditor';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
+import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 import { firstIndex } from 'vs/base/common/arrays';
 
 const singleQuote = '\'';
@@ -199,7 +199,7 @@ export class RefreshIntellisenseKeyboardAction extends Action {
 
 	public run(): Promise<void> {
 		const editor = this.editorService.activeEditor;
-		if (editor instanceof QueryInput) {
+		if (editor instanceof QueryEditorInput) {
 			this.connectionManagementService.rebuildIntelliSenseCache(editor.uri);
 		}
 		return Promise.resolve(null);
