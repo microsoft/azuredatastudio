@@ -286,7 +286,6 @@ export function packageMarketplaceExtensionsStream(): NodeJS.ReadWriteStream {
 }
 
 export function packageSQLExtensions(): Promise<void> {
-
 	return new Promise<void>((resolve, reject) => {
 		const sqlBuiltInLocalExtensionDescriptions = (<string[]>glob.sync('extensions/*/package.json'))
 			.map(manifestPath => {
@@ -302,22 +301,13 @@ export function packageSQLExtensions(): Promise<void> {
 			return fromLocal(extension.path)
 				.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
 		}).map(p => p.pipe(gulp.dest('.build/external')))).on('end', () => {
-			const visxDirectory = path.join(path.dirname(root), 'vsix');
-			try {
-				if (!fs.existsSync(visxDirectory)) {
-					fs.mkdirSync(visxDirectory);
-				}
-			} catch (err) {
-				// don't fail the build if the output directory already exists
-				console.warn(err);
-			}
-
-			resolve(Promise.all((<string[]>glob.sync('.build/external/extensions/*/package.json')).map(manifestPath => {
+			resolve(Promise.all(glob.sync('.build/external/extensions/*/package.json').map(manifestPath => {
 				const extensionPath = path.dirname(path.join(root, manifestPath));
 				const extensionName = path.basename(extensionPath);
 				return { name: extensionName, path: extensionPath };
 			}).map(element => {
-				let pkgJson = JSON.parse(fs.readFileSync(path.join(element.path, 'package.json'), { encoding: 'utf8' }));
+				const pkgJson = require(path.join(element.path, 'package.json'));
+				const visxDirectory = path.join(path.dirname(root), 'vsix');
 				const packagePath = path.join(visxDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
 				console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
 				return vsce.createVSIX({
