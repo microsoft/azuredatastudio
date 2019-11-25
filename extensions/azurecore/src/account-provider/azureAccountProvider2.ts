@@ -12,60 +12,111 @@ import * as nls from 'vscode-nls';
 import {
 	AzureAccount,
 	AzureAccountProviderMetadata,
+	AzureAccountSecurityTokenCollection,
+	AzureAccountSecurityToken,
 } from './interfaces';
 
 import TokenCache from './tokenCache';
 import { AddressInfo } from 'net';
-import { AuthenticationContext, TokenResponse } from 'adal-node';
+import { AuthenticationContext, TokenResponse, ErrorResponse } from 'adal-node';
 import { promisify } from 'util';
 import * as events from 'events';
 
 const localize = nls.loadMessageBundle();
 
-export class AzureAccountProvider implements azdata.AccountProvider, vscode.UriHandler {
+export class AzureAccountProvider implements azdata.AccountProvider {
 	private static AzureAccountAuthenticatedEvent: string = 'AzureAccountAuthenticated';
 	private static WorkSchoolAccountType: string = 'work_school';
 	private static MicrosoftAccountType: string = 'microsoft';
+	private static AadCommonTenant: string = 'common';
+
 	private static eventEmitter = new events.EventEmitter();
 	private static redirectUrlAAD = 'https://vscode-redirect.azurewebsites.net/';
+	private commonAuthorityUrl: string;
+	private isInitialized: boolean = false;
+
 
 	constructor(private metadata: AzureAccountProviderMetadata, private tokenCache: TokenCache) {
 		console.log(this.metadata, this.tokenCache);
-
-		vscode.window.registerUriHandler(this);
+		this.commonAuthorityUrl = url.resolve(this.metadata.settings.host, AzureAccountProvider.AadCommonTenant);
 	}
 
+	// interface method
 	initialize(storedAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
 		return this._initialize(storedAccounts);
 	}
 
+	private async _initialize(storedAccounts: azdata.Account[]): Promise<azdata.Account[]> {
+		for (let account of storedAccounts) {
+			try {
+				await this.getAccessTokens;
+			} catch (e) {
+				console.log(`Refreshing account ${account.displayInfo} failed - ${e}`);
+				account.isStale = true;
+				azdata.accounts.accountUpdated(account);
+			}
+		}
+		this.isInitialized = true;
+		return storedAccounts;
+	}
+
+	private async getAccessTokens(account: azdata.Account, resource: azdata.AzureResource): Promise<AzureAccountSecurityTokenCollection> {
+		const resourceIdMap = new Map<azdata.AzureResource, string>([
+			[azdata.AzureResource.ResourceManagement, this.metadata.settings.armResource.id],
+			[azdata.AzureResource.Sql, this.metadata.settings.sqlResource.id]
+		]);
+		const tenantRefreshPromises: Promise<{ tenantId: any, securityToken: AzureAccountSecurityToken }>[] = [];
+		const tokenCollection: AzureAccountSecurityTokenCollection = {};
+
+		for (let tenant of account.properties.tenants) {
+			const promise = new Promise<{ tenantId: any, securityToken: AzureAccountSecurityToken }>(async (resolve, reject) => {
+				let authorityUrl = url.resolve(this.metadata.settings.host, tenant.id);
+				let context = new AuthenticationContext(authorityUrl, null, this.tokenCache);
+
+				const acquireToken = promisify(context.acquireToken).bind(this);
+
+				let response: (TokenResponse | ErrorResponse) = await acquireToken(resourceIdMap.get(resource), tenant.userId, this.metadata.settings.clientId);
+				if (response.error) {
+					throw new Error(`Response contained error ${response}`);
+				}
+
+				response = response as TokenResponse;
+				return {
+					tenantId: tenant.id,
+					securityToken: {
+						expiresOn: response.expiresOn,
+						resource: response.resource,
+						token: response.accessToken,
+						tokenType: response.tokenType
+					} as AzureAccountSecurityToken,
+				};
+
+			});
+			tenantRefreshPromises.push(promise);
+		}
+
+		const refreshedTenants = await Promise.all(tenantRefreshPromises);
+		refreshedTenants.forEach((refreshed) => {
+			tokenCollection[refreshed.tenantId] = refreshed.securityToken;
+		});
+
+		return tokenCollection;
+	}
+
+	// interface method
 	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}> {
 		return this._getSecurityToken(account, resource);
-	}
-	prompt(): Thenable<azdata.Account | azdata.PromptFailedResult> {
-		return this._prompt();
-	}
-	refresh(account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> {
-		return this._refresh(account);
-	}
-	clear(accountKey: azdata.AccountKey): Thenable<void> {
-		return this._clear(accountKey);
-	}
-	autoOAuthCancelled(): Thenable<void> {
-		return this._autoOAuthCancelled();
-	}
-
-	handleUri(uri: vscode.Uri): vscode.ProviderResult<void> {
-		console.log(uri);
-	}
-
-	private async _initialize(storedAccounts: azdata.Account[]): Promise<azdata.Account[]> {
-		return storedAccounts;
 	}
 
 	private async _getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<{}> {
 		throw new Error('Method not implemented.');
 	}
+
+	// interface method
+	prompt(): Thenable<azdata.Account | azdata.PromptFailedResult> {
+		return this._prompt();
+	}
+
 
 	private async _prompt(): Promise<azdata.Account | azdata.PromptFailedResult> {
 		const pathMappings = new Map<string, (req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => void>();
@@ -84,7 +135,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.UriH
 			AzureAccountProvider.redirectUrlAAD,
 			this.metadata.settings.clientId,
 			this.metadata.settings.signInResourceId,
-			'common',
+			AzureAccountProvider.AadCommonTenant,
 			`${port},${encodeURIComponent(nonce)}`
 		);
 
@@ -99,9 +150,11 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.UriH
 			});
 		});
 
-		console.log(`http://localhost:${port}/signin?nonce=${encodeURIComponent(nonce)}`);
+		const urlToOpen = `http://localhost:${port}/signin?nonce=${encodeURIComponent(nonce)}`;
 
-		vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${port}/signin?nonce=${encodeURIComponent(nonce)}`));
+		console.log(urlToOpen);
+
+		vscode.env.openExternal(vscode.Uri.parse(urlToOpen));
 
 		const account = await accountAuthenticatedPromise;
 
@@ -146,18 +199,6 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.UriH
 
 		pathMappings.set('/signin', initialSignIn);
 		pathMappings.set('/callback', callback);
-	}
-
-	private async _refresh(account: azdata.Account): Promise<azdata.Account | azdata.PromptFailedResult> {
-		throw new Error('Method not implemented.');
-	}
-
-	private async _clear(accountKey: azdata.AccountKey): Promise<void> {
-		throw new Error('Method not implemented.');
-	}
-
-	private async _autoOAuthCancelled(): Promise<void> {
-		throw new Error('Method not implemented.');
 	}
 
 	/**
@@ -207,6 +248,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.UriH
 				displayName: displayName
 			},
 			properties: {
+				providerSettings: this.metadata,
 				isMsAccount: msa,
 				tenants: []
 			},
@@ -217,7 +259,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.UriH
 	}
 
 	private async getTokenWithAuthCode(code: string, redirectUrl: string): Promise<TokenResponse> {
-		const context = new AuthenticationContext(`${this.metadata.settings.host}common`);
+		const context = new AuthenticationContext(this.commonAuthorityUrl, null, this.tokenCache);
 		const acquireToken = promisify(context.acquireTokenWithAuthorizationCode).bind(context);
 
 		let token = await acquireToken(code, redirectUrl, this.metadata.settings.signInResourceId, this.metadata.settings.clientId, undefined);
@@ -286,5 +328,32 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.UriH
 		cancelPortTimer();
 
 		return portValue;
+	}
+
+	// interface method
+	refresh(account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> {
+		return this._refresh(account);
+	}
+
+	private async _refresh(account: azdata.Account): Promise<azdata.Account | azdata.PromptFailedResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	// interface method
+	clear(accountKey: azdata.AccountKey): Thenable<void> {
+		return this._clear(accountKey);
+	}
+
+	private async _clear(accountKey: azdata.AccountKey): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	// interface method
+	autoOAuthCancelled(): Thenable<void> {
+		return this._autoOAuthCancelled();
+	}
+
+	private async _autoOAuthCancelled(): Promise<void> {
+		throw new Error('Method not implemented.');
 	}
 }

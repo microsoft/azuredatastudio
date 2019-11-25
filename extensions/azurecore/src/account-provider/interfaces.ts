@@ -122,6 +122,7 @@ export interface AzureAccountProviderMetadata extends azdata.AccountProviderMeta
  * Properties specific to an Azure account
  */
 interface AzureAccountProperties {
+	providerSettings: AzureAccountProviderMetadata;
 	/**
 	 * Whether or not the account is a Microsoft account
 	 */
@@ -146,7 +147,7 @@ export interface AzureAccount extends azdata.Account {
 /**
  * Token returned from a request for an access token
  */
-interface AzureAccountSecurityToken {
+export interface AzureAccountSecurityToken {
 	/**
 	 * Access token, itself
 	 */
