@@ -235,68 +235,47 @@ function packageMarketplaceExtensionsStream() {
         .pipe(util2.setExecutableBit(['**/*.sh']));
 }
 exports.packageMarketplaceExtensionsStream = packageMarketplaceExtensionsStream;
-const vfs = require("vinyl-fs");
 function packageSQLExtensions() {
-    // Create package for local SQL extensions
-    //
-    const sqlBuiltInLocalExtensionDescriptions = glob.sync('extensions/*/package.json')
-        .map(manifestPath => {
-        const extensionPath = path.dirname(path.join(root, manifestPath));
-        const extensionName = path.basename(extensionPath);
-        return { name: extensionName, path: extensionPath };
-    })
-        .filter(({ name }) => excludedExtensions.indexOf(name) === -1)
-        .filter(({ name }) => builtInExtensions.every(b => b.name !== name))
-        .filter(({ name }) => sqlExtensions.indexOf(name) >= 0);
-    const visxDirectory = path.join(path.dirname(root), 'vsix');
-    try {
-        if (!fs.existsSync(visxDirectory)) {
-            fs.mkdirSync(visxDirectory);
-        }
-    }
-    catch (err) {
-        // don't fail the build if the output directory already exists
-        console.warn(err);
-    }
-    return Promise.all(sqlBuiltInLocalExtensionDescriptions.map(element => {
-        let pkgJson = JSON.parse(fs.readFileSync(path.join(element.path, 'package.json'), { encoding: 'utf8' }));
-        const packagePath = path.join(visxDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
-        console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
-        return vsce.createVSIX({
-            cwd: element.path,
-            packagePath: packagePath,
-            useYarn: true
-        });
-    })).then();
-}
-exports.packageSQLExtensions = packageSQLExtensions;
-function packageExtensionTask(extensionName, platform, arch) {
-    var destination = path.join(path.dirname(root), 'azuredatastudio') + (platform ? '-' + platform : '') + (arch ? '-' + arch : '');
-    if (platform === 'darwin') {
-        destination = path.join(destination, 'Azure Data Studio.app', 'Contents', 'Resources', 'app', 'extensions', extensionName);
-    }
-    else {
-        destination = path.join(destination, 'resources', 'app', 'extensions', extensionName);
-    }
-    platform = platform || process.platform;
-    return () => {
-        const root = path.resolve(path.join(__dirname, '../..'));
-        const localExtensionDescriptions = glob.sync('extensions/*/package.json')
+    return new Promise((resolve, reject) => {
+        const sqlBuiltInLocalExtensionDescriptions = glob.sync('extensions/*/package.json')
             .map(manifestPath => {
             const extensionPath = path.dirname(path.join(root, manifestPath));
             const extensionName = path.basename(extensionPath);
             return { name: extensionName, path: extensionPath };
         })
-            .filter(({ name }) => extensionName === name);
-        const localExtensions = es.merge(...localExtensionDescriptions.map(extension => {
-            return fromLocal(extension.path);
-        }));
-        let result = localExtensions
-            .pipe(util2.skipDirectories())
-            .pipe(util2.fixWin32DirectoryPermissions())
-            .pipe(filter(['**', '!LICENSE', '!LICENSES.chromium.html', '!version']));
-        return result.pipe(vfs.dest(destination));
-    };
+            .filter(({ name }) => excludedExtensions.indexOf(name) === -1)
+            .filter(({ name }) => builtInExtensions.every(b => b.name !== name))
+            .filter(({ name }) => sqlExtensions.indexOf(name) >= 0);
+        es.merge(sqlBuiltInLocalExtensionDescriptions.map(extension => {
+            return fromLocal(extension.path)
+                .pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
+        }).map(p => p.pipe(gulp.dest('.build/external')))).on('end', () => {
+            const visxDirectory = path.join(path.dirname(root), 'vsix');
+            try {
+                if (!fs.existsSync(visxDirectory)) {
+                    fs.mkdirSync(visxDirectory);
+                }
+            }
+            catch (err) {
+                // don't fail the build if the output directory already exists
+                console.warn(err);
+            }
+            resolve(Promise.all(glob.sync('.build/external/extensions/*/package.json').map(manifestPath => {
+                const extensionPath = path.dirname(path.join(root, manifestPath));
+                const extensionName = path.basename(extensionPath);
+                return { name: extensionName, path: extensionPath };
+            }).map(element => {
+                let pkgJson = JSON.parse(fs.readFileSync(path.join(element.path, 'package.json'), { encoding: 'utf8' }));
+                const packagePath = path.join(visxDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
+                console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
+                return vsce.createVSIX({
+                    cwd: element.path,
+                    packagePath: packagePath,
+                    useYarn: true
+                });
+            })).then(undefined, reject));
+        });
+    });
 }
-exports.packageExtensionTask = packageExtensionTask;
+exports.packageSQLExtensions = packageSQLExtensions;
 // {{SQL CARBON EDIT}} - End

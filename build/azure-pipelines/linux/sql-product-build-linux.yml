@@ -89,6 +89,11 @@ steps:
 
   - script: |
       set -e
+      yarn gulp compile-extensions
+    displayName: Compile Extensions
+
+  - script: |
+      set -e
       yarn gulp package-extensions
     displayName: Package extensions
 

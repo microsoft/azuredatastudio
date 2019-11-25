@@ -285,74 +285,48 @@ export function packageMarketplaceExtensionsStream(): NodeJS.ReadWriteStream {
 		.pipe(util2.setExecutableBit(['**/*.sh']));
 }
 
-// {{SQL CARBON EDIT}}
-import * as _ from 'underscore';
-import * as vfs from 'vinyl-fs';
-
 export function packageSQLExtensions(): Promise<void> {
 
-	// Create package for local SQL extensions
-	//
-	const sqlBuiltInLocalExtensionDescriptions = glob.sync('extensions/*/package.json')
-		.map(manifestPath => {
-			const extensionPath = path.dirname(path.join(root, manifestPath));
-			const extensionName = path.basename(extensionPath);
-			return { name: extensionName, path: extensionPath };
-		})
-		.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
-		.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
-		.filter(({ name }) => sqlExtensions.indexOf(name) >= 0);
-	const visxDirectory = path.join(path.dirname(root), 'vsix');
-	try {
-		if (!fs.existsSync(visxDirectory)) {
-			fs.mkdirSync(visxDirectory);
-		}
-	} catch (err) {
-		// don't fail the build if the output directory already exists
-		console.warn(err);
-	}
-	return Promise.all(sqlBuiltInLocalExtensionDescriptions.map(element => {
-		let pkgJson = JSON.parse(fs.readFileSync(path.join(element.path, 'package.json'), { encoding: 'utf8' }));
-		const packagePath = path.join(visxDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
-		console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
-		return vsce.createVSIX({
-			cwd: element.path,
-			packagePath: packagePath,
-			useYarn: true
-		});
-	})).then();
-}
-
-export function packageExtensionTask(extensionName: string, platform: string, arch: string) {
-	var destination = path.join(path.dirname(root), 'azuredatastudio') + (platform ? '-' + platform : '') + (arch ? '-' + arch : '');
-	if (platform === 'darwin') {
-		destination = path.join(destination, 'Azure Data Studio.app', 'Contents', 'Resources', 'app', 'extensions', extensionName);
-	} else {
-		destination = path.join(destination, 'resources', 'app', 'extensions', extensionName);
-	}
-
-	platform = platform || process.platform;
-
-	return () => {
-		const root = path.resolve(path.join(__dirname, '../..'));
-		const localExtensionDescriptions = glob.sync('extensions/*/package.json')
+	return new Promise<void>((resolve, reject) => {
+		const sqlBuiltInLocalExtensionDescriptions = (<string[]>glob.sync('extensions/*/package.json'))
 			.map(manifestPath => {
 				const extensionPath = path.dirname(path.join(root, manifestPath));
 				const extensionName = path.basename(extensionPath);
 				return { name: extensionName, path: extensionPath };
 			})
-			.filter(({ name }) => extensionName === name);
+			.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
+			.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
+			.filter(({ name }) => sqlExtensions.indexOf(name) >= 0);
 
-		const localExtensions = es.merge(...localExtensionDescriptions.map(extension => {
-			return fromLocal(extension.path);
-		}));
+		es.merge(sqlBuiltInLocalExtensionDescriptions.map(extension => {
+			return fromLocal(extension.path)
+				.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
+		}).map(p => p.pipe(gulp.dest('.build/external')))).on('end', () => {
+			const visxDirectory = path.join(path.dirname(root), 'vsix');
+			try {
+				if (!fs.existsSync(visxDirectory)) {
+					fs.mkdirSync(visxDirectory);
+				}
+			} catch (err) {
+				// don't fail the build if the output directory already exists
+				console.warn(err);
+			}
 
-		let result = localExtensions
-			.pipe(util2.skipDirectories())
-			.pipe(util2.fixWin32DirectoryPermissions())
-			.pipe(filter(['**', '!LICENSE', '!LICENSES.chromium.html', '!version']));
-
-		return result.pipe(vfs.dest(destination));
-	};
+			resolve(Promise.all((<string[]>glob.sync('.build/external/extensions/*/package.json')).map(manifestPath => {
+				const extensionPath = path.dirname(path.join(root, manifestPath));
+				const extensionName = path.basename(extensionPath);
+				return { name: extensionName, path: extensionPath };
+			}).map(element => {
+				let pkgJson = JSON.parse(fs.readFileSync(path.join(element.path, 'package.json'), { encoding: 'utf8' }));
+				const packagePath = path.join(visxDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
+				console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
+				return vsce.createVSIX({
+					cwd: element.path,
+					packagePath: packagePath,
+					useYarn: true
+				});
+			})).then(undefined, reject));
+		});
+	});
 }
 // {{SQL CARBON EDIT}} - End
