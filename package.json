@@ -56,7 +56,7 @@
     "jschardet": "2.1.1",
     "keytar": "^4.11.0",
     "native-is-elevated": "0.4.1",
-    "native-keymap": "2.0.0",
+    "native-keymap": "2.1.0",
     "native-watchdog": "1.2.0",
     "ng2-charts": "^1.6.0",
     "node-pty": "^0.10.0-beta2",
