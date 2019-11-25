@@ -12,7 +12,7 @@ import { INotificationService, INotificationActions } from 'vs/platform/notifica
 import Severity from 'vs/base/common/severity';
 import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
+import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 import { EditDataInput } from 'sql/workbench/contrib/editData/browser/editDataInput';
 import { DashboardInput } from 'sql/workbench/contrib/dashboard/browser/dashboardInput';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -156,7 +156,7 @@ export class GetCurrentConnectionStringAction extends Action {
 	public run(): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			let activeInput = this._editorService.activeEditor;
-			if (activeInput && (activeInput instanceof QueryInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput)
+			if (activeInput && (activeInput instanceof QueryEditorInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput)
 				&& this._connectionManagementService.isConnected(activeInput.uri)) {
 				let includePassword = false;
 				let connectionProfile = this._connectionManagementService.getConnectionProfile(activeInput.uri);

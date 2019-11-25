@@ -74,7 +74,7 @@ steps:
 
   - script: |
       set -e
-      yarn gulp vscode-linux-x64-min
+      yarn gulp vscode-linux-x64
     displayName: Build
 
   - script: |
@@ -174,13 +174,14 @@ steps:
       reportDirectory: '$(Build.SourcesDirectory)/.build/coverage'
     continueOnError: true
 
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection'
+    inputs:
+      failOnAlert: true
+
   - script: 'echo "##vso[build.addbuildtag]Scheduled" '
     displayName: 'Add scheduled tag if needed'
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['Build.Reason'], 'Schedule'))
-
-  - script: 'echo "##vso[build.addbuildtag]AutoRelease" '
-    displayName: 'Add AutoRelease tag if needed copy'
-    condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['AUTO_RELEASE'], 'true'))
 
   - script: 'echo "##vso[build.addbuildtag]PerfTestCandidate" '
     displayName: 'Add PerfTestCandidate tag if needed'

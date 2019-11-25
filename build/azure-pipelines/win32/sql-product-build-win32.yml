@@ -28,11 +28,9 @@ steps:
     displayName: Prepare tooling
 
   - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git" }
-      exec { git fetch distro }
-      exec { git merge $(node -p "require('./package.json').distro") }
+      git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+      git fetch distro
+      git merge $(node -p "require('./package.json').distro")
     displayName: Merge distro
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
@@ -72,7 +70,7 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { yarn gulp "vscode-win32-x64-min" }
+      exec { yarn gulp "vscode-win32-x64" }
     displayName: Build
 
   - powershell: |
@@ -413,13 +411,14 @@ steps:
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection'
+    inputs:
+      failOnAlert: true
+
   - powershell: 'Write-Host "##vso[build.addbuildtag]Scheduled" '
     displayName: 'Tag build if scheduled'
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['Build.Reason'], 'Schedule'))
-
-  - powershell: 'Write-Host "##vso[build.addbuildtag]AutoRelease" '
-    displayName: 'Tag build for AutoRelease if needed'
-    condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['AUTO_RELEASE'], 'true'))
 
   - powershell: 'Write-Host "##vso[build.addbuildtag]PerfTestCandidate" '
     displayName: 'Tag build for PerfTestCandidate if needed'

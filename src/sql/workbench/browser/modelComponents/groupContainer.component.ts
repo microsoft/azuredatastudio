@@ -14,11 +14,14 @@ import { GroupLayout, GroupContainerProperties } from 'azdata';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { endsWith } from 'vs/base/common/strings';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import * as DOM from 'vs/base/browser/dom';
 
 @Component({
 	selector: 'modelview-groupContainer',
 	template: `
-		<div *ngIf="hasHeader()" [class]="getHeaderClass()" (click)="changeState()">
+		<div *ngIf="hasHeader()" [class]="getHeaderClass()" (click)="changeState()" [tabindex]="isCollapsible()? 0 : -1" [attr.role]="isCollapsible() ? 'button' : null" [attr.aria-expanded]="isCollapsible() ? !collapsed : null">
 				{{_containerLayout.header}}
 		</div>
 		<div #container *ngIf="items" class="modelview-group-container" [style.width]="getContainerWidth()" [style.display]="getContainerDisplayStyle()">
@@ -48,6 +51,23 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 
 	ngOnInit(): void {
 		this.baseInit();
+		this.onkeydown(this._el.nativeElement, (e: StandardKeyboardEvent) => {
+			if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Space) {
+				this.changeState();
+				DOM.EventHelper.stop(e, true);
+			}
+			else if (e.keyCode === KeyCode.LeftArrow) {
+				if (!this.collapsed) {
+					this.changeState();
+				}
+				DOM.EventHelper.stop(e, true);
+			} else if (e.keyCode === KeyCode.RightArrow) {
+				if (this.collapsed) {
+					this.changeState();
+				}
+				DOM.EventHelper.stop(e, true);
+			}
+		});
 	}
 
 	ngOnDestroy(): void {
