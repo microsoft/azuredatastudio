@@ -74,13 +74,14 @@ steps:
 
   - script: |
       set -e
-      yarn gulp vscode-linux-x64
-    displayName: Build
+      yarn gulp install-sqltoolsservice
+    displayName: Install sqltoolsservice
 
   - script: |
       set -e
-      yarn gulp install-sqltoolsservice
-    displayName: Install sqltoolsservice
+      yarn gulp vscode-linux-x64-min
+    displayName: Build
+
 
   - task: ArchiveFiles@2 # WHY ARE WE DOING THIS?
     displayName: 'Archive build scripts source'
