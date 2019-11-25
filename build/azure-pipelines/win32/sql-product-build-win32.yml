@@ -276,7 +276,7 @@ steps:
     condition: and(succeeded(), eq(variables['signed'], true))
 
   - powershell: | # WHY!
-      $PackageJson = Get-Content -Raw -Path "$(Build.SourcesDirectory)\resources\app\package.json" | ConvertFrom-Json
+      $PackageJson = Get-Content -Raw -Path "$(Build.SourcesDirectory)\package.json" | ConvertFrom-Json
 
       $jsonResult = @{
       version = $PackageJson.version
