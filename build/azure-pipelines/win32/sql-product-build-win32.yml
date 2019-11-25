@@ -148,11 +148,23 @@ steps:
       exec { yarn gulp "vscode-win32-x64-archive" }
     displayName: Archive & User & System setup
 
+  - task: CopyFiles@2
+    displayName: 'Copy User Installer to: $(Build.ArtifactStagingDirectory)'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)/.build/win32-x64/user-setup/'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/user-setup/'
+
+  - task: CopyFiles@2
+    displayName: 'Copy System Install to: $(Build.ArtifactStagingDirectory)'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)/.build/win32-x64/system-setup/'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning - Installer - sha256 only'
     inputs:
       ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(agent.builddirectory)'
+      FolderPath: '$(agent.builddirectory)/azuredatastudio-win32-x64,$(agent.builddirectory)/azuredatastudio-reh-win32-x64,$(agent.builddirectory)/user-setup,$(agent.builddirectory)/system-setup'
       Pattern: '*.dll,*.exe,*.node'
       signConfigType: inlineSignParams
       inlineOperation: |
@@ -221,18 +233,6 @@ steps:
     inputs:
       rootFolder: '$(Build.SourcesDirectory)/../azuredatastudio-windows'
       archiveFile: '$(Build.ArtifactStagingDirectory)/azuredatastudio-windows.zip'
-
-  - task: CopyFiles@2
-    displayName: 'Copy System Install to: $(Build.ArtifactStagingDirectory)'
-    inputs:
-      SourceFolder: '$(Build.SourcesDirectory)/.build/win32-x64/system-setup/'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)'
-
-  - task: CopyFiles@2
-    displayName: 'Copy User Installer to: $(Build.ArtifactStagingDirectory)'
-    inputs:
-      SourceFolder: '$(Build.SourcesDirectory)/.build/win32-x64/user-setup/'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/user-setup/'
 
   - script: |
       cd $(Build.ArtifactStagingDirectory)
