@@ -79,6 +79,11 @@ steps:
 
   - script: |
       set -e
+      yarn gulp package-extensions
+    displayName: Build
+
+  - script: |
+      set -e
       yarn gulp install-sqltoolsservice
     displayName: Install sqltoolsservice
 
@@ -134,6 +139,12 @@ steps:
       SourceFolder: '$(Build.SourcesDirectory)/.build/linux/rpm/x86_64/'
       Contents: '*.rpm'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+  - task: CopyFiles@2
+    displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/vsix'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)/../vsix'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/vsix'
 
   - script: | # WHY ARE WE DOING THIS?
       set -e
