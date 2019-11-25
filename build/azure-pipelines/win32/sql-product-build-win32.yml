@@ -164,7 +164,7 @@ steps:
     displayName: 'ESRP CodeSigning - Installer - sha256 only'
     inputs:
       ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(agent.builddirectory)/azuredatastudio-win32-x64,$(agent.builddirectory)/azuredatastudio-reh-win32-x64,$(agent.builddirectory)/user-setup,$(agent.builddirectory)/system-setup'
+      FolderPath: '$(agent.builddirectory)/azuredatastudio-win32-x64,$(agent.builddirectory)/user-setup,$(agent.builddirectory)/system-setup'
       Pattern: '*.dll,*.exe,*.node'
       signConfigType: inlineSignParams
       inlineOperation: |
