@@ -21,13 +21,12 @@ class ShowEmmetCommandsAction extends EditorAction {
 			label: nls.localize('showEmmetCommands', "Show Emmet Commands"),
 			alias: 'Show Emmet Commands',
 			precondition: EditorContextKeys.writable,
-			// {{SQL CARBON EDIT}} - Remove from menu
-			// menubarOpts: {
-			// 	menuId: MenuId.MenubarEditMenu,
-			// 	group: '5_insert',
-			// 	title: nls.localize({ key: 'miShowEmmetCommands', comment: ['&& denotes a mnemonic'] }, "E&&mmet..."),
-			// 	order: 4
-			// }
+			/*menuOpts: { {{SQL CARBON EDIT}} - Remove from menu
+				menuId: MenuId.MenubarEditMenu,
+				group: '5_insert',
+				title: nls.localize({ key: 'miShowEmmetCommands', comment: ['&& denotes a mnemonic'] }, "E&&mmet..."),
+				order: 4
+			}*/
 		});
 	}
 

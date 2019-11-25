@@ -56,13 +56,12 @@ class ToggleCommentLineAction extends CommentLineAction {
 				primary: KeyMod.CtrlCmd | KeyCode.US_SLASH,
 				weight: KeybindingWeight.EditorContrib
 			},
-			// {{SQL CARBON EDIT}} - Remove from menu
-			// menubarOpts: {
-			// 	menuId: MenuId.MenubarEditMenu,
-			// 	group: '5_insert',
-			// 	title: nls.localize({ key: 'miToggleLineComment', comment: ['&& denotes a mnemonic'] }, "&&Toggle Line Comment"),
-			// 	order: 1
-			// }
+			/*menuOpts: { {{SQL CARBON EDIT}} - Remove from menu
+				menuId: MenuId.MenubarEditMenu,
+				group: '5_insert',
+				title: nls.localize({ key: 'miToggleLineComment', comment: ['&& denotes a mnemonic'] }, "&&Toggle Line Comment"),
+				order: 1
+			}*/
 		});
 	}
 }
@@ -113,13 +112,12 @@ class BlockCommentAction extends EditorAction {
 				linux: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_A },
 				weight: KeybindingWeight.EditorContrib
 			},
-			// {{SQL CARBON EDIT}} - Remove from menu
-			// menubarOpts: {
-			// 	menuId: MenuId.MenubarEditMenu,
-			// 	group: '5_insert',
-			// 	title: nls.localize({ key: 'miToggleBlockComment', comment: ['&& denotes a mnemonic'] }, "Toggle &&Block Comment"),
-			// 	order: 2
-			// }
+			/*menuOpts: { {{SQL CARBON EDIT}} - Remove from menu
+				menuId: MenuId.MenubarEditMenu,
+				group: '5_insert',
+				title: nls.localize({ key: 'miToggleBlockComment', comment: ['&& denotes a mnemonic'] }, "Toggle &&Block Comment"),
+				order: 2
+			}*/
 		});
 	}
 

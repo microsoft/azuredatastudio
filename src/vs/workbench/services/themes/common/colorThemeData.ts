@@ -344,6 +344,7 @@ export class ColorThemeData implements IColorTheme {
 		}
 
 		this.tokenColorIndex = undefined;
+		this.textMateThemingRules = undefined;
 	}
 
 	private addCustomTokenColors(customTokenColors: ITokenColorCustomizations) {
