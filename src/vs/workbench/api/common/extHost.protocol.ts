@@ -1091,6 +1091,7 @@ export interface ICodeActionDto {
 	command?: ICommandDto;
 	kind?: string;
 	isPreferred?: boolean;
+	disabled?: string;
 }
 
 export interface ICodeActionListDto {
