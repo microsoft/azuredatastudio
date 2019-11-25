@@ -39,7 +39,7 @@ export interface IPackageTarget {
 export interface IPackageManageProvider {
 	providerId: string;
 	packageTarget: IPackageTarget;
-	listPackages(): Promise<IPackageDetails[]>
+	listPackages(): Promise<IPackageDetails[]>;
 	installPackage(package: IPackageDetails[], useMinVersion: boolean): Promise<void>;
 	uninstallPackage(package: IPackageDetails[]): Promise<void>;
 	canUseProvider(): Promise<boolean>
