@@ -176,7 +176,6 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	// Forwarding resource functions to the inline sql file editor
-	public save(): Promise<boolean> { return this._text.save(); }
 	public isDirty(): boolean { return this._text.isDirty(); }
 	public getResource(): URI { return this._text.getResource(); }
 

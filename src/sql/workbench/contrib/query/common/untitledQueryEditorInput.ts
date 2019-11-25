@@ -14,6 +14,7 @@ import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverServ
 import { IFileService } from 'vs/platform/files/common/files';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
+import { ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 
 type PublicPart<T> = { [K in keyof T]: T[K] };
 
@@ -70,6 +71,14 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 
 	public setEncoding(encoding: string, mode: EncodingMode): void {
 		this.text.setEncoding(encoding, mode);
+	}
+
+	save(groupId: number, options?: ITextFileSaveOptions): Promise<boolean> {
+		return this.text.save(groupId, options);
+	}
+
+	saveAs(group: number, options?: ITextFileSaveOptions): Promise<boolean> {
+		return this.text.saveAs(group, options);
 	}
 
 	hasBackup(): boolean {

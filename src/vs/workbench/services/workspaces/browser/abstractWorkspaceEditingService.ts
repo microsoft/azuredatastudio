@@ -52,7 +52,7 @@ export abstract class AbstractWorkspaceEditingService implements IWorkspaceEditi
 		});
 
 		if (!workspacePath) {
-			return; // canceled
+			return undefined; // canceled  {{SQL CARBON EDIT}} strict-null-checks
 		}
 
 		if (!hasWorkspaceFileExtension(workspacePath)) {

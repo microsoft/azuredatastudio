@@ -284,7 +284,7 @@ suite('SQL QueryEditor Tests', () => {
 					return new RunQueryAction(undefined, undefined, undefined);
 				});
 
-			let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService.object, undefined, undefined, undefined, undefined);
+			let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService.object, undefined, undefined, undefined, undefined, undefined);
 			queryModelService = TypeMoq.Mock.ofType(TestQueryModelService, TypeMoq.MockBehavior.Strict);
 			queryModelService.setup(x => x.disposeQuery(TypeMoq.It.isAny()));
 			queryModelService.setup(x => x.onRunQueryComplete).returns(() => Event.None);

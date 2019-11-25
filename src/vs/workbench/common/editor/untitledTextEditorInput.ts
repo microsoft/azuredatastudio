@@ -173,7 +173,7 @@ export class UntitledTextEditorInput extends TextEditorInput implements IEncodin
 					return toLocalResource(this.resource, this.environmentService.configuration.remoteAuthority);
 				}
 
-				return;
+				return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 			}
 
 			// Without associated file path, do a normal "Save As"

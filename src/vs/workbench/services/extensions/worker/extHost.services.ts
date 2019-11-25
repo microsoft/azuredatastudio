@@ -12,7 +12,7 @@ import { IExtHostCommands, ExtHostCommands } from 'vs/workbench/api/common/extHo
 import { IExtHostDocumentsAndEditors, ExtHostDocumentsAndEditors } from 'vs/workbench/api/common/extHostDocumentsAndEditors';
 import { IExtHostTerminalService, WorkerExtHostTerminalService } from 'vs/workbench/api/common/extHostTerminalService';
 // import { IExtHostTask, WorkerExtHostTask } from 'vs/workbench/api/common/extHostTask';
-// import { IExtHostDebugService } from 'vs/workbench/api/common/extHostDebugService';
+// import { IExtHostDebugService, WorkerExtHostDebugService } from 'vs/workbench/api/common/extHostDebugService';
 import { IExtHostSearch, ExtHostSearch } from 'vs/workbench/api/common/extHostSearch';
 import { IExtensionStoragePaths } from 'vs/workbench/api/common/extHostStoragePaths';
 import { IExtHostExtensionService } from 'vs/workbench/api/common/extHostExtensionService';
@@ -50,8 +50,8 @@ function NotImplementedProxy<T>(name: ServiceIdentifier<T>): { new(): T } {
 	};
 }
 registerSingleton(IExtHostTerminalService, WorkerExtHostTerminalService);
-// registerSingleton(IExtHostTask, WorkerExtHostTask); {{SQL CARBON EDIT}} disable tasks
-// registerSingleton(IExtHostDebugService, class extends NotImplementedProxy(IExtHostDebugService) { }); {{SQL CARBON EDIT}} remove debug service
+// registerSingleton(IExtHostTask, WorkerExtHostTask); {{SQL CARBON EDIT}} disable
+// registerSingleton(IExtHostDebugService, WorkerExtHostDebugService); {{SQL CARBON EDIT}} disable
 registerSingleton(IExtensionStoragePaths, class extends NotImplementedProxy(IExtensionStoragePaths) {
 	whenReady = Promise.resolve();
 });
