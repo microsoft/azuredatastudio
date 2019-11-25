@@ -1457,7 +1457,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		inactiveReplacements.forEach(({ editor, replacement, options }) => {
 
 			// Open inactive editor
-			this.doOpenEditor(replacement, options);
+			this.openEditor(replacement, options);  // {{SQL CARBON EDIT}} use this.openEditor to allow us to override the open, we could potentially add this to vscode but i don't think they would care
 
 			// Close replaced inactive editor unless they match
 			if (!editor.matches(replacement)) {
@@ -1470,7 +1470,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		if (activeReplacement) {
 
 			// Open replacement as active editor
-			const openEditorResult = this.doOpenEditor(activeReplacement.replacement, activeReplacement.options);
+			const openEditorResult = this.openEditor(activeReplacement.replacement, activeReplacement.options); // {{SQL CARBON EDIT}} use this.openEditor to allow us to override the open, we could potentially add this to vscode but i don't think they would care
 
 			// Close replaced active editor unless they match
 			if (!activeReplacement.editor.matches(activeReplacement.replacement)) {

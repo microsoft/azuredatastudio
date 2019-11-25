@@ -167,10 +167,11 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public revert(): Promise<boolean> { return this._text.revert(); }
 
 	public matches(otherInput: any): boolean {
+		// we want to be able to match against our underlying input as well, bascially we are our underlying input
 		if (otherInput instanceof QueryEditorInput) {
 			return this._text.matches(otherInput._text);
 		} else {
-			return false;
+			return this._text.matches(otherInput);
 		}
 	}
 
