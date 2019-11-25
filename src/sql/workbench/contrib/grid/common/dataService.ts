@@ -149,7 +149,7 @@ export class DataService {
 		this._queryModel.copyResults(this._uri, selection, batchId, resultId, includeHeaders);
 	}
 
-	onComponentLoaded(): void {
-		this._queryModel.onComponentLoaded(this._uri);
+	onLoaded(): void {
+		this._queryModel.onLoaded(this._uri);
 	}
 }

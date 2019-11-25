@@ -120,7 +120,7 @@ export class QueryModelService implements IQueryModelService {
 	 * Sends all previously enqueued query events to the DataService and signals to stop enqueuing
 	 * any further events.
 	 */
-	public onComponentLoaded(uri: string) {
+	public onLoaded(uri: string) {
 		if (this._queryInfoMap.has(uri)) {
 			let info = this._getQueryInfo(uri)!;
 			info.dataServiceReady = true;

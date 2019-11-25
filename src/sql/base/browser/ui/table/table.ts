@@ -114,12 +114,10 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 		this.mapMouseEvent(this._grid.onContextMenu, this._onContextMenu);
 		this.mapMouseEvent(this._grid.onClick, this._onClick);
-		//my addition
 		this.mapMouseEvent(this._grid.onHeaderClick, this._onHeaderClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
 	}
 
-	//own code begins here:
 	private invalidateRange(start: number, end: number): void {
 		let refreshedRows = range(start, end);
 		this._grid.invalidateRows(refreshedRows, true);
@@ -147,8 +145,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._grid.invalidateAllRows();
 		this._grid.render();
 	}
-
-	//my code ends here.
 
 	private mapMouseEvent(slickEvent: Slick.Event<any>, emitter: Emitter<ITableMouseEvent>) {
 		slickEvent.subscribe((e: JQuery.Event) => {
@@ -229,7 +225,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		};
 	}
 
-	//additonal functions for SelectionModel
 	setSelectionModel(model: Slick.SelectionModel<T, Array<Slick.Range>>) {
 		this._grid.setSelectionModel(model);
 	}

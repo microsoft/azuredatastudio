@@ -63,7 +63,7 @@ export interface IQueryModelService {
 	refreshResultsets(uri: string): void;
 	sendGridContentEvent(uri: string, eventName: string): void;
 	resizeResultsets(uri: string): void;
-	onComponentLoaded(uri: string): void;
+	onLoaded(uri: string): void;
 
 	copyResults(uri: string, selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): void;
 	showCommitError(error: string): void;

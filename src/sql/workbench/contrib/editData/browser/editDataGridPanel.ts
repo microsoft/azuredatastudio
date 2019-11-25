@@ -144,7 +144,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			//self._cd.detectChanges();
 		});
 
-		this.dataService.onComponentLoaded();
+		this.dataService.onLoaded();
 	}
 
 
@@ -1044,7 +1044,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	private changeEditSession(enabled: boolean): void {
-		//this.enableEditing = enabled;
+
 		let options: any = this._tables[0].grid.getOptions();
 		options.editable = enabled;
 		options.enableAddRow = false; // TODO change to " options.enableAddRow = false;" when we support enableAddRow
@@ -1099,8 +1099,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		});
 	}
 
-	onBeforeEditCell(any): void {
-
+	onBeforeEditCell(event: Slick.OnBeforeEditCellEventArgs<any>): void {
+		console.log('onBeforeEditCell called with grid: ' + event.grid + ' row: ' + event.row
+			+ ' cell: ' + event.cell + ' item: ' + event.item + ' column: ' + event.column);
 	}
 
 	handleInitializeTable(): void {
