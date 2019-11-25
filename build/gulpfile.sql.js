@@ -116,7 +116,7 @@ gulp.task('install-sqltoolsservice', () => {
 
 gulp.task('install-ssmsmin', () => {
 	const config = require('../extensions/admin-tool-ext-win/config.json');
-	const runtime = 'Windows_64';
+	const runtime = 'Windows_64'; // admin-tool-ext is a windows only extension, and we only ship a 64 bit version, so locking the binaries as such
 	// fix path since it won't be correct
 	config.installDirectory = path.join(__dirname, '..', 'extensions', 'admin-tool-ext-win', config.installDirectory);
 	var installer = new serviceDownloader(config);
