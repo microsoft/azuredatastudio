@@ -21,7 +21,6 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
-import { IFilesConfigurationService } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
 
 class ProfilerResourceCodeEditor extends StandaloneCodeEditor {
 
@@ -47,11 +46,10 @@ export class ProfilerResourceEditor extends BaseTextEditor {
 		@ITextResourceConfigurationService configurationService: ITextResourceConfigurationService,
 		@IThemeService themeService: IThemeService,
 		@IEditorService protected editorService: IEditorService,
-		@IEditorGroupsService editorGroupService: IEditorGroupsService,
-		@IFilesConfigurationService filesConfigurationService: IFilesConfigurationService
+		@IEditorGroupsService editorGroupService: IEditorGroupsService
 
 	) {
-		super(ProfilerResourceEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, editorService, editorGroupService, filesConfigurationService);
+		super(ProfilerResourceEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, editorService, editorGroupService);
 	}
 
 	public createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
