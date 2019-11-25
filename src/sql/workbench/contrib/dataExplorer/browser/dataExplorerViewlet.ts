@@ -16,7 +16,6 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IAddedViewDescriptorRef } from 'vs/workbench/browser/parts/views/views';
-import { ViewletPanel } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { ConnectionViewletPanel } from 'sql/workbench/contrib/dataExplorer/browser/connectionViewletPanel';
 import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry, IViewContainersRegistry } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -27,6 +26,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ShowViewletAction } from 'vs/workbench/browser/viewlet';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
+import { ViewletPane } from 'vs/workbench/browser/parts/views/paneViewlet';
 
 export const VIEWLET_ID = 'workbench.view.connections';
 
@@ -134,13 +134,13 @@ export class DataExplorerViewlet extends ViewContainerViewlet {
 		return actions;
 	}
 
-	protected onDidAddViews(added: IAddedViewDescriptorRef[]): ViewletPanel[] {
+	protected onDidAddViews(added: IAddedViewDescriptorRef[]): ViewletPane[] {
 		const addedViews = super.onDidAddViews(added);
 		return addedViews;
 	}
 
-	protected createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewletPanel {
-		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewletPanel;
+	protected createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewletPane {
+		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewletPane;
 		this._register(viewletPanel);
 		return viewletPanel;
 	}
