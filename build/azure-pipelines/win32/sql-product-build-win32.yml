@@ -139,147 +139,21 @@ steps:
       SourceFolder: '$(Build.SourcesDirectory)/../vsix'
       TargetFolder: '$(Build.ArtifactStagingDirectory)/vsix'
 
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-    displayName: 'ESRP CodeSigning - Build files - sha256 only'
-    inputs:
-      ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(Build.SourcesDirectory)/../azuredatastudio-win32-x64'
-      Pattern: 'azuredatastudio.exe,azuredatastudio-insider.exe,watcher.exe,inno_updater.exe,7z.exe,mksnapshot.exe,Compil32.exe,ISCC.exe,islzma32.exe,islzma64.exe,winpty-agent.exe,rcedit.exe,rg.exe,CodeHelper.exe,CodeHelper.exe,CodeHelper.exe,CodeHelper.exe,electron.exe,chromedriver.exe,launcher.exe,ffmpeg.dll,libEGL.dll,libGLESv2.dll,node.dll,7-zip.dll,7-zip32.dll,7z.dll,isbunzip.dll,isbzip.dll,ISCmplr.dll,islzma.dll,ISPP.dll,isscint.dll,isunzlib.dll,iszlib.dll,winpty.dll,ffmpeg.dll,libEGL.dll,libGLESv2.dll,node.dll,MicrosoftSqlToolsCredentials.exe,MicrosoftSqlToolsServiceLayer.exe,SqlSerializationService.exe,SqlToolsResourceProviderService.exe,Microsoft.SqlTools.Hosting.dll,Microsoft.SqlTools.ResourceProvider.Core.dll,Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll,MicrosoftSqlToolsCredentials.dll,MicrosoftSqlToolsServiceLayer.dll,Newtonsoft.Json.dll,SqlSerializationService.dll,SqlToolsResourceProviderService.dll,Microsoft.SqlServer.*.dll,Microsoft.Data.Tools.Sql.BatchParser.dll'
-      signConfigType: inlineSignParams
-      inlineOperation: |
-        [
-          {
-            "keyCode": "CP-230012",
-            "operationSetCode": "SigntoolSign",
-            "parameters": [
-            {
-              "parameterName": "OpusName",
-              "parameterValue": "Azure Data Studio"
-            },
-            {
-              "parameterName": "OpusInfo",
-              "parameterValue": "https://github.com/microsoft/azuredatastudio"
-            },
-            {
-              "parameterName": "PageHash",
-              "parameterValue": "/NPH"
-            },
-            {
-              "parameterName": "FileDigest",
-              "parameterValue": "/fd sha256"
-            },
-            {
-              "parameterName": "TimeStamp",
-              "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
-            }
-            ],
-            "toolName": "signtool.exe",
-            "toolVersion": "6.2.9304.0"
-          },
-          {
-            "keyCode": "CP-230012",
-            "operationSetCode": "SigntoolVerify",
-            "parameters": [
-            {
-              "parameterName": "VerifyAll",
-              "parameterValue": "/all"
-            }
-                ],
-            "toolName": "signtool.exe",
-            "toolVersion": "6.2.9304.0"
-          }
-        ]
-      SessionTimeout: 600
-      MaxConcurrency: 5
-      MaxRetryAttempts: 20
-    condition: and(succeeded(), eq(variables['signed'], true))
-
-  - task: CmdLine@1
-    displayName: 'Delete CodeSignSummary.md'
-    inputs:
-      filename: del
-      arguments: '$(Build.SourcesDirectory)\..\azuredatastudio-win32-x64\CodeSignSummary*.md'
-    condition: and(succeeded(), eq(variables['signed'], true))
-
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
+      exec { yarn gulp "vscode-win32-x64-min" }
       exec { yarn gulp "vscode-win32-x64-user-setup" }
-    displayName: User setup
-
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-    displayName: 'ESRP CodeSigning - User Installer - sha256 only'
-    inputs:
-      ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(Build.SourcesDirectory)/.build/win32-x64/user-setup'
-      signConfigType: inlineSignParams
-      inlineOperation: |
-        [
-          {
-            "keyCode": "CP-230012",
-            "operationSetCode": "SigntoolSign",
-            "parameters": [
-            {
-              "parameterName": "OpusName",
-              "parameterValue": "Azure Data Studio"
-            },
-            {
-              "parameterName": "OpusInfo",
-              "parameterValue": "https://github.com/microsoft/azuredatastudio"
-            },
-            {
-              "parameterName": "PageHash",
-              "parameterValue": "/NPH"
-            },
-            {
-              "parameterName": "FileDigest",
-              "parameterValue": "/fd sha256"
-            },
-            {
-              "parameterName": "TimeStamp",
-              "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
-            }
-            ],
-            "toolName": "signtool.exe",
-            "toolVersion": "6.2.9304.0"
-          },
-          {
-            "keyCode": "CP-230012",
-            "operationSetCode": "SigntoolVerify",
-            "parameters": [
-            {
-              "parameterName": "VerifyAll",
-              "parameterValue": "/all"
-            }
-                ],
-            "toolName": "signtool.exe",
-            "toolVersion": "6.2.9304.0"
-          }
-        ]
-      SessionTimeout: 600
-      MaxConcurrency: 5
-      MaxRetryAttempts: 20
-    condition: and(succeeded(), eq(variables['signed'], true))
-
-  - task: CmdLine@1
-    displayName: 'Delete CodeSignSummary.md for user installer'
-    inputs:
-      filename: del
-      arguments: '$(Build.SourcesDirectory)\.build\win32-x64\user-setup\CodeSignSummary.md'
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['signed'], true))
-
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
       exec { yarn gulp "vscode-win32-x64-system-setup" }
-    displayName: System setup
+      exec { yarn gulp "vscode-win32-x64-archive" }
+    displayName: Archive & User & System setup
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning - Installer - sha256 only'
     inputs:
       ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(Build.SourcesDirectory)/.build/win32-x64/system-setup'
+      FolderPath: '$(agent.builddirectory)'
+      Pattern: '*.dll,*.exe,*.node'
       signConfigType: inlineSignParams
       inlineOperation: |
         [
