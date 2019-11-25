@@ -15,24 +15,14 @@ import { BdcDashboardPage } from './bdcDashboardPage';
 
 const localize = nls.loadMessageBundle();
 
-const healthAndStatusIconColumnWidth = 25;
-const healthAndStatusInstanceNameColumnWidth = 100;
-const healthAndStatusStateColumnWidth = 150;
-const healthAndStatusHealthColumnWidth = 100;
-
-const metricsAndLogsInstanceNameColumnWidth = 125;
-const metricsAndLogsNodeMetricsColumnWidth = 80;
-const metricsAndLogsSqlMetricsColumnWidth = 80;
-const metricsAndLogsLogsColumnWidth = 75;
-
 const viewText = localize('bdc.dashboard.viewHyperlink', "View");
 const notAvailableText = localize('bdc.dashboard.notAvailable', "N/A");
 
 export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 
 	private rootContainer: azdata.FlexContainer;
-	private instanceHealthStatusRowsContainer: azdata.FlexContainer;
-	private metricsAndLogsRowsContainer: azdata.FlexContainer;
+	private instanceHealthStatusTable: azdata.DeclarativeTableComponent;
+	private metricsAndLogsRowsTable: azdata.DeclarativeTableComponent;
 	private lastUpdatedLabel: azdata.TextComponent;
 
 	constructor(private model: BdcDashboardModel, private modelView: azdata.ModelView, private serviceName: string, private resourceName: string) {
@@ -79,19 +69,98 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 
 		healthStatusHeaderContainer.addItem(this.lastUpdatedLabel, { CSSStyles: { 'margin-left': '45px' } });
 
-		// Header row
-		const instanceHealthStatusHeaderRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
-		const instanceHealthAndStatusNameHeader = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.instanceHeader', "Instance") }).component();
-		// Instance name cell covers both icon + service name so width stretches both cells
-		instanceHealthStatusHeaderRow.addItem(instanceHealthAndStatusNameHeader, { CSSStyles: { 'width': `${healthAndStatusIconColumnWidth + healthAndStatusInstanceNameColumnWidth}px`, 'min-width': `${healthAndStatusIconColumnWidth + healthAndStatusInstanceNameColumnWidth}px`, ...cssStyles.tableHeader } });
-		const instanceHealthAndStatusState = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.stateHeader', "State") }).component();
-		instanceHealthStatusHeaderRow.addItem(instanceHealthAndStatusState, { CSSStyles: { 'width': `${healthAndStatusStateColumnWidth}px`, 'min-width': `${healthAndStatusStateColumnWidth}px`, ...cssStyles.tableHeader } });
-		const instanceHealthAndStatusHealthStatus = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.healthStatusHeader', "Health Status") }).component();
-		instanceHealthStatusHeaderRow.addItem(instanceHealthAndStatusHealthStatus, { CSSStyles: { 'width': `${healthAndStatusHealthColumnWidth}px`, 'min-width': `${healthAndStatusHealthColumnWidth}px`, ...cssStyles.tableHeader } });
-		rootContainer.addItem(instanceHealthStatusHeaderRow, { flex: '0 0 auto', CSSStyles: { 'padding-left': '10px', 'box-sizing': 'border-box' } });
-
-		this.instanceHealthStatusRowsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-		rootContainer.addItem(this.instanceHealthStatusRowsContainer, { flex: '0 0 auto' });
+		this.instanceHealthStatusTable = view.modelBuilder.declarativeTable()
+			.withProperties<azdata.DeclarativeTableProperties>(
+				{
+					columns: [
+						{ // status icon
+							displayName: '',
+							valueType: azdata.DeclarativeDataType.component,
+							isReadOnly: true,
+							width: 25,
+							headerCssStyles: {
+								'border': 'none',
+								'background-color': '#FFFFFF'
+							},
+							rowCssStyles: {
+								'border-top': 'solid 1px #ccc',
+								'border-bottom': 'solid 1px #ccc',
+								'border-left': 'none',
+								'border-right': 'none'
+							},
+						},
+						{ // instance
+							displayName: localize('bdc.dashboard.instanceHeader', "Instance"),
+							valueType: azdata.DeclarativeDataType.string,
+							isReadOnly: true,
+							width: 100,
+							headerCssStyles: {
+								'border': 'none',
+								'background-color': '#FFFFFF',
+								...cssStyles.tableHeader
+							},
+							rowCssStyles: {
+								'border-top': 'solid 1px #ccc',
+								'border-bottom': 'solid 1px #ccc',
+								'border-left': 'none',
+								'border-right': 'none'
+							},
+						},
+						{ // state
+							displayName: localize('bdc.dashboard.stateHeader', "State"),
+							valueType: azdata.DeclarativeDataType.string,
+							isReadOnly: true,
+							width: 150,
+							headerCssStyles: {
+								'border': 'none',
+								'background-color': '#FFFFFF',
+								...cssStyles.tableHeader
+							},
+							rowCssStyles: {
+								'border-top': 'solid 1px #ccc',
+								'border-bottom': 'solid 1px #ccc',
+								'border-left': 'none',
+								'border-right': 'none'
+							},
+						},
+						{ // health status
+							displayName: localize('bdc.dashboard.healthStatusHeader', "Health Status"),
+							valueType: azdata.DeclarativeDataType.string,
+							isReadOnly: true,
+							width: 100,
+							headerCssStyles: {
+								'border': 'none',
+								'background-color': '#FFFFFF',
+								'text-align': 'left',
+								...cssStyles.tableHeader
+							},
+							rowCssStyles: {
+								'border-top': 'solid 1px #ccc',
+								'border-bottom': 'solid 1px #ccc',
+								'border-left': 'none',
+								'border-right': 'none'
+							}
+						},
+						{ // view details button
+							displayName: '',
+							valueType: azdata.DeclarativeDataType.component,
+							isReadOnly: true,
+							width: 150,
+							headerCssStyles: {
+								'border': 'none',
+								'background-color': '#FFFFFF'
+							},
+							rowCssStyles: {
+								'border-top': 'solid 1px #ccc',
+								'border-bottom': 'solid 1px #ccc',
+								'border-left': 'none',
+								'border-right': 'none'
+							},
+						},
+					],
+					data: []
+				}).component();
+		rootContainer.addItem(this.instanceHealthStatusTable, { flex: '0 0 auto' });
 
 		// ####################
 		// # METRICS AND LOGS #
@@ -103,23 +172,94 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 			.component();
 		rootContainer.addItem(endpointsLabel, { CSSStyles: { 'padding-left': '10px', ...cssStyles.title } });
 
-		// Header row
-		const metricsAndLogsHeaderRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
-		const nameCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.instanceHeader', "Instance") }).component();
-		metricsAndLogsHeaderRow.addItem(nameCell, { CSSStyles: { 'width': `${metricsAndLogsInstanceNameColumnWidth}px`, 'min-width': `${metricsAndLogsInstanceNameColumnWidth}px`, ...cssStyles.tableHeader } });
-		const nodeMetricsCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.nodeMetricsHeader', "Node Metrics") }).component();
-		metricsAndLogsHeaderRow.addItem(nodeMetricsCell, { CSSStyles: { 'width': `${metricsAndLogsNodeMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsNodeMetricsColumnWidth}px`, ...cssStyles.tableHeader } });
+		let metricsAndLogsColumns: azdata.DeclarativeTableColumn[] =
+			[
+				{ // instance
+					displayName: localize('bdc.dashboard.instanceHeader', "Instance"),
+					valueType: azdata.DeclarativeDataType.string,
+					isReadOnly: true,
+					width: 125,
+					headerCssStyles: {
+						'border': 'none',
+						'background-color': '#FFFFFF',
+						...cssStyles.tableHeader
+					},
+					rowCssStyles: {
+						'border-top': 'solid 1px #ccc',
+						'border-bottom': 'solid 1px #ccc',
+						'border-left': 'none',
+						'border-right': 'none'
+					},
+				},
+				{ // node metrics
+					displayName: localize('bdc.dashboard.nodeMetricsHeader', "Node Metrics"),
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: true,
+					width: 80,
+					headerCssStyles: {
+						'border': 'none',
+						'background-color': '#FFFFFF',
+						...cssStyles.tableHeader
+					},
+					rowCssStyles: {
+						'border-top': 'solid 1px #ccc',
+						'border-bottom': 'solid 1px #ccc',
+						'border-left': 'none',
+						'border-right': 'none'
+					},
+				}
+			];
+
 		// Only show SQL metrics column for SQL resource instances
 		if (this.serviceName.toLowerCase() === Service.sql) {
-			const sqlMetricsCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.sqlMetricsHeader', "SQL Metrics") }).component();
-			metricsAndLogsHeaderRow.addItem(sqlMetricsCell, { CSSStyles: { 'width': `${metricsAndLogsSqlMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsSqlMetricsColumnWidth}px`, ...cssStyles.tableHeader } });
+			metricsAndLogsColumns.push(
+				{ // sql metrics
+					displayName: localize('bdc.dashboard.sqlMetricsHeader', "SQL Metrics"),
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: true,
+					width: 80,
+					headerCssStyles: {
+						'border': 'none',
+						'background-color': '#FFFFFF',
+						'text-align': 'left',
+						...cssStyles.tableHeader
+					},
+					rowCssStyles: {
+						'border-top': 'solid 1px #ccc',
+						'border-bottom': 'solid 1px #ccc',
+						'border-left': 'none',
+						'border-right': 'none'
+					}
+				});
 		}
-		const healthStatusCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.logsHeader', "Logs") }).component();
-		metricsAndLogsHeaderRow.addItem(healthStatusCell, { CSSStyles: { 'width': `${metricsAndLogsLogsColumnWidth}px`, 'min-width': `${metricsAndLogsLogsColumnWidth}px`, ...cssStyles.tableHeader } });
-		rootContainer.addItem(metricsAndLogsHeaderRow, { flex: '0 0 auto', CSSStyles: { 'padding-left': '10px', 'box-sizing': 'border-box' } });
 
-		this.metricsAndLogsRowsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-		rootContainer.addItem(this.metricsAndLogsRowsContainer, { flex: '0 0 auto' });
+		metricsAndLogsColumns.push(
+			{ // logs
+				displayName: localize('bdc.dashboard.logsHeader', "Logs"),
+				valueType: azdata.DeclarativeDataType.component,
+				isReadOnly: true,
+				width: 75,
+				headerCssStyles: {
+					'border': 'none',
+					'background-color': '#FFFFFF',
+					'text-align': 'left',
+					...cssStyles.tableHeader
+				},
+				rowCssStyles: {
+					'border-top': 'solid 1px #ccc',
+					'border-bottom': 'solid 1px #ccc',
+					'border-left': 'none',
+					'border-right': 'none'
+				},
+			});
+
+		this.metricsAndLogsRowsTable = view.modelBuilder.declarativeTable()
+			.withProperties<azdata.DeclarativeTableProperties>(
+				{
+					columns: metricsAndLogsColumns,
+					data: []
+				}).component();
+		rootContainer.addItem(this.metricsAndLogsRowsTable, { flex: '0 0 auto' });
 
 		this.initialized = true;
 		this.handleBdcStatusUpdate(this.model.bdcStatus);
@@ -144,107 +284,69 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 					`${this.model.bdcStatusLastUpdated.toLocaleDateString()} ${this.model.bdcStatusLastUpdated.toLocaleTimeString()}`
 					: '-');
 
-		this.instanceHealthStatusRowsContainer.clearItems();
-		this.metricsAndLogsRowsContainer.clearItems();
+		this.instanceHealthStatusTable.data = resource.instances.map(instanceStatus => this.createHealthStatusRow(instanceStatus));
 
-		resource.instances.forEach(i => {
-			const instanceHealthStatusRow = createInstanceHealthStatusRow(this.modelView.modelBuilder, i);
-			this.instanceHealthStatusRowsContainer.addItem(instanceHealthStatusRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'box-sizing': 'border-box', 'user-select': 'text' } });
-
-			let metricsAndLogsRow = createMetricsAndLogsRow(this.modelView.modelBuilder, i, this.serviceName);
-			this.metricsAndLogsRowsContainer.addItem(metricsAndLogsRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'box-sizing': 'border-box', 'user-select': 'text' } });
-		});
-	}
-}
-
-/**
- * Creates a row with the name, state and health status for a particular instance on this resource
- *
- * @param modelBuilder The builder used to create the component
- * @param instanceStatus The status object for the instance this row is for
- */
-function createInstanceHealthStatusRow(modelBuilder: azdata.ModelBuilder, instanceStatus: InstanceStatusModel): azdata.FlexContainer {
-	const instanceHealthStatusRow = modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center', height: '30px' }).component();
-	const statusIconCell = modelBuilder.text()
-		.withProperties<azdata.TextComponentProperties>({
-			value: getHealthStatusIcon(instanceStatus.healthStatus),
-			ariaRole: 'img',
-			title: getHealthStatusDisplayText(instanceStatus.healthStatus),
-			CSSStyles: { 'user-select': 'none' }
-		}).component();
-	instanceHealthStatusRow.addItem(statusIconCell, { CSSStyles: { 'width': `${healthAndStatusIconColumnWidth}px`, 'min-width': `${healthAndStatusIconColumnWidth}px` } });
-	const nameCell = modelBuilder.text().withProperties({ value: instanceStatus.instanceName, CSSStyles: { ...cssStyles.text } }).component();
-	instanceHealthStatusRow.addItem(nameCell, { CSSStyles: { 'width': `${healthAndStatusInstanceNameColumnWidth}px`, 'min-width': `${healthAndStatusInstanceNameColumnWidth}px`, ...cssStyles.text } });
-	const stateText = getStateDisplayText(instanceStatus.state);
-	const stateCell = modelBuilder.text().withProperties({ value: stateText, title: stateText, CSSStyles: { ...cssStyles.overflowEllipsisText } }).component();
-	instanceHealthStatusRow.addItem(stateCell, { CSSStyles: { 'width': `${healthAndStatusStateColumnWidth}px`, 'min-width': `${healthAndStatusStateColumnWidth}px` } });
-	const healthStatusText = getHealthStatusDisplayText(instanceStatus.healthStatus);
-	const healthStatusCell = modelBuilder.text().withProperties({ value: healthStatusText, title: healthStatusText, CSSStyles: { ...cssStyles.overflowEllipsisText } }).component();
-	instanceHealthStatusRow.addItem(healthStatusCell, { CSSStyles: { 'width': `${healthAndStatusHealthColumnWidth}px`, 'min-width': `${healthAndStatusHealthColumnWidth}px` } });
-
-	if (instanceStatus.healthStatus !== 'healthy' && instanceStatus.details && instanceStatus.details.length > 0) {
-		instanceHealthStatusRow.addItem(createViewDetailsButton(modelBuilder, instanceStatus.details), { flex: '0 0 auto' });
-	}
-	return instanceHealthStatusRow;
-}
-
-/**
- * Creates a row with the name, link to the metrics and a link to the logs for a particular instance on this resource
- * @param modelBuilder The builder used to create the component
- * @param instanceStatus The status object for the instance this row is for
- * @param serviceName The name of the service this resource instance belongs to
- */
-function createMetricsAndLogsRow(modelBuilder: azdata.ModelBuilder, instanceStatus: InstanceStatusModel, serviceName: string): azdata.FlexContainer {
-	const metricsAndLogsRow = modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center', height: '30px' }).component();
-	const nameCell = modelBuilder.text().withProperties({ value: instanceStatus.instanceName, CSSStyles: { ...cssStyles.text } }).component();
-	metricsAndLogsRow.addItem(nameCell, { CSSStyles: { 'width': `${metricsAndLogsInstanceNameColumnWidth}px`, 'min-width': `${metricsAndLogsInstanceNameColumnWidth}px`, ...cssStyles.text } });
-
-	// Not all instances have all logs available - in that case just display N/A instead of a link
-	if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.nodeMetricsUrl)) {
-		const metricsCell = modelBuilder.text().withProperties({ value: notAvailableText, CSSStyles: { ...cssStyles.text } }).component();
-		metricsAndLogsRow.addItem(metricsCell, { CSSStyles: { 'width': `${metricsAndLogsNodeMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsNodeMetricsColumnWidth}px`, ...cssStyles.text } });
-	} else {
-		const nodeMetricsCell = modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
-			label: viewText,
-			url: instanceStatus.dashboards.nodeMetricsUrl,
-			title: instanceStatus.dashboards.nodeMetricsUrl,
-			CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink }
-		})
-			.component();
-		metricsAndLogsRow.addItem(nodeMetricsCell, { CSSStyles: { 'width': `${metricsAndLogsNodeMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsNodeMetricsColumnWidth}px` } });
+		this.metricsAndLogsRowsTable.data = resource.instances.map(instanceStatus => this.createInstanceStatusRow(instanceStatus));
 	}
 
-	// Only show SQL metrics column for SQL resource instances
-	if (serviceName === Service.sql) {
+	private createInstanceStatusRow(instanceStatus: InstanceStatusModel): any[] {
+		const row: any[] = [instanceStatus.instanceName];
+
 		// Not all instances have all logs available - in that case just display N/A instead of a link
-		if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.sqlMetricsUrl)) {
-			const metricsCell = modelBuilder.text().withProperties({ value: notAvailableText, CSSStyles: { ...cssStyles.text } }).component();
-			metricsAndLogsRow.addItem(metricsCell, { CSSStyles: { 'width': `${metricsAndLogsSqlMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsSqlMetricsColumnWidth}px`, ...cssStyles.text } });
+		if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.nodeMetricsUrl)) {
+			row.push(this.modelView.modelBuilder.text().withProperties({ value: notAvailableText, CSSStyles: { ...cssStyles.text } }).component());
 		} else {
-			const sqlMetricsCell = modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+			row.push(this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
 				label: viewText,
-				url: instanceStatus.dashboards.sqlMetricsUrl,
-				title: instanceStatus.dashboards.sqlMetricsUrl,
+				url: instanceStatus.dashboards.nodeMetricsUrl,
+				title: instanceStatus.dashboards.nodeMetricsUrl,
 				CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink }
-			})
-				.component();
-			metricsAndLogsRow.addItem(sqlMetricsCell, { CSSStyles: { 'width': `${metricsAndLogsSqlMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsSqlMetricsColumnWidth}px` } });
+			}).component());
 		}
+
+		// Only show SQL metrics column for SQL resource instances
+		if (this.serviceName === Service.sql) {
+			// Not all instances have all logs available - in that case just display N/A instead of a link
+			if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.sqlMetricsUrl)) {
+				row.push(this.modelView.modelBuilder.text().withProperties({ value: notAvailableText, CSSStyles: { ...cssStyles.text } }).component());
+			} else {
+				row.push(this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+					label: viewText,
+					url: instanceStatus.dashboards.sqlMetricsUrl,
+					title: instanceStatus.dashboards.sqlMetricsUrl,
+					CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink }
+				}).component());
+			}
+		}
+
+		if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.logsUrl)) {
+			row.push(this.modelView.modelBuilder.text().withProperties({ value: notAvailableText, CSSStyles: { ...cssStyles.text } }).component());
+		} else {
+			row.push(this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+				label: viewText,
+				url: instanceStatus.dashboards.logsUrl,
+				title: instanceStatus.dashboards.logsUrl,
+				CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink }
+			}).component());
+		}
+		return row;
 	}
 
-	if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.logsUrl)) {
-		const logsCell = modelBuilder.text().withProperties({ value: notAvailableText, CSSStyles: { ...cssStyles.text } }).component();
-		metricsAndLogsRow.addItem(logsCell, { CSSStyles: { 'width': `${metricsAndLogsLogsColumnWidth}px`, 'min-width': `${metricsAndLogsLogsColumnWidth}px`, ...cssStyles.text } });
-	} else {
-		const logsCell = modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
-			label: viewText,
-			url: instanceStatus.dashboards.logsUrl,
-			title: instanceStatus.dashboards.logsUrl,
-			CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink }
-		})
-			.component();
-		metricsAndLogsRow.addItem(logsCell, { CSSStyles: { 'width': `${metricsAndLogsLogsColumnWidth}px`, 'min-width': `${metricsAndLogsLogsColumnWidth}px` } });
-	}
+	private createHealthStatusRow(instanceStatus: InstanceStatusModel): any[] {
+		const statusIconCell = this.modelView.modelBuilder.text()
+			.withProperties<azdata.TextComponentProperties>({
+				value: getHealthStatusIcon(instanceStatus.healthStatus),
+				ariaRole: 'img',
+				title: getHealthStatusDisplayText(instanceStatus.healthStatus),
+				CSSStyles: { 'user-select': 'none', ...cssStyles.text }
+			}).component();
 
-	return metricsAndLogsRow;
+		const viewDetailsButton = instanceStatus.healthStatus !== 'healthy' && instanceStatus.details && instanceStatus.details.length > 0 ? createViewDetailsButton(this.modelView.modelBuilder, instanceStatus.details) : undefined;
+		return [
+			statusIconCell,
+			instanceStatus.instanceName,
+			getStateDisplayText(instanceStatus.state),
+			getHealthStatusDisplayText(instanceStatus.healthStatus),
+			viewDetailsButton];
+	}
 }

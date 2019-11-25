@@ -91,4 +91,8 @@ declare module 'azdata' {
 		 */
 		onDidClick: vscode.Event<any>;
 	}
+
+	export enum DeclarativeDataType {
+		component = 'component'
+	}
 }

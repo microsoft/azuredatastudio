@@ -3126,8 +3126,7 @@ declare module 'azdata' {
 		string = 'string',
 		category = 'category',
 		boolean = 'boolean',
-		editableCategory = 'editableCategory',
-		component = 'component'
+		editableCategory = 'editableCategory'
 	}
 
 	export interface RadioButtonProperties {
