@@ -133,8 +133,15 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 			});
 			this.diffNavigatorDisposables.add(this.diffNavigator);
 
-			// Readonly flag
-			diffEditor.updateOptions({ readOnly: resolvedDiffEditorModel.isReadonly() });
+			// Since the resolved model provides information about being readonly
+			// or not, we apply it here to the editor even though the editor input
+			// was already asked for being readonly or not. The rationale is that
+			// a resolved model might have more specific information about being
+			// readonly or not that the input did not have.
+			diffEditor.updateOptions({
+				readOnly: resolvedDiffEditorModel.modifiedModel?.isReadonly(),
+				originalEditable: !resolvedDiffEditorModel.originalModel?.isReadonly()
+			});
 		} catch (error) {
 
 			// In case we tried to open a file and the response indicates that this is not a text file, fallback to binary diff.
@@ -143,14 +150,6 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 			}
 
 			throw error;
-		}
-	}
-
-	setOptions(options: EditorOptions | undefined): void {
-		const textOptions = <TextEditorOptions>options;
-		if (textOptions && isFunction(textOptions.apply)) {
-			const diffEditor = assertIsDefined(this.getControl());
-			textOptions.apply(diffEditor, ScrollType.Smooth);
 		}
 	}
 
@@ -220,6 +219,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 	protected getConfigurationOverrides(): ICodeEditorOptions {
 		const options: IDiffEditorOptions = super.getConfigurationOverrides();
 
+		options.readOnly = this.input instanceof DiffEditorInput && this.input.modifiedInput.isReadonly();
 		options.originalEditable = this.input instanceof DiffEditorInput && !this.input.originalInput.isReadonly();
 		options.lineDecorationsWidth = '2ch';
 
