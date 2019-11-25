@@ -3077,7 +3077,7 @@ declare namespace monaco.editor {
 		multipleDefinitions?: GoToLocationValues;
 		multipleTypeDefinitions?: GoToLocationValues;
 		multipleDeclarations?: GoToLocationValues;
-		multipleImplemenations?: GoToLocationValues;
+		multipleImplementations?: GoToLocationValues;
 		multipleReferences?: GoToLocationValues;
 	}
 
