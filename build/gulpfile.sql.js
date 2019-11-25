@@ -11,7 +11,7 @@ const es = require('event-stream');
 const filter = require('gulp-filter');
 const del = require('del');
 const serviceDownloader = require('service-downloader').ServiceDownloadProvider;
-const platform = require('service-downloader/out/platform');
+const platform = require('service-downloader/out/platform').PlatformInformation;
 const path = require('path');
 const ext = require('./lib/extensions');
 
@@ -94,7 +94,7 @@ const formatStagedFiles = () => {
 
 function installService() {
 	let config = require('../extensions/mssql/config.json');
-	return platform.platformInfo.getCurrent().then(p => {
+	return platform.getCurrent().then(p => {
 		let runtime = p.runtimeId;
 		// fix path since it won't be correct
 		config.installDirectory = path.join(__dirname, '../extensions/mssql/src', config.installDirectory);
@@ -116,7 +116,7 @@ gulp.task('install-sqltoolsservice', () => {
 
 gulp.task('install-ssmsmin', () => {
 	const config = require('../extensions/admin-tool-ext-win/config.json');
-	const runtime = platform.Runtime.Windows_64;
+	const runtime = 'Windows_64';
 	// fix path since it won't be correct
 	config.installDirectory = path.join(__dirname, '..', 'extensions', 'admin-tool-ext-win', config.installDirectory);
 	var installer = new serviceDownloader(config);

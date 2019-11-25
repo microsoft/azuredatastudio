@@ -80,7 +80,7 @@ steps:
   - script: |
       set -e
       yarn gulp package-extensions
-    displayName: Build extensions
+    displayName: Package extensions
 
   - script: |
       set -e
