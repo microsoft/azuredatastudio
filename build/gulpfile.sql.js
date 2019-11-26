@@ -14,6 +14,9 @@ const serviceDownloader = require('service-downloader').ServiceDownloadProvider;
 const platform = require('service-downloader/out/platform').PlatformInformation;
 const path = require('path');
 const ext = require('./lib/extensions');
+const task = require('./lib/task');
+const glob = require('glob');
+const vsce = require('vsce');
 
 gulp.task('clean-mssql-extension', util.rimraf('extensions/mssql/node_modules'));
 gulp.task('clean-credentials-extension', util.rimraf('extensions/credentials/node_modules'));
@@ -131,6 +134,27 @@ gulp.task('install-ssmsmin', () => {
 	});
 });
 
-gulp.task('package-external-extensions', () => {
-	return ext.packageExternalExtensions();
-});
+const root = path.dirname(__dirname);
+
+gulp.task('package-external-extensions', task.series(
+	task.define('bundle-external-extensions-build', () => ext.packageExternalExtensionsStream().pipe(gulp.dest('.build/external'))),
+	task.define('create-external-extension-vsix-build', () => {
+		const vsixes = glob.sync('.build/external/extensions/*/package.json').map(manifestPath => {
+			const extensionPath = path.dirname(path.join(root, manifestPath));
+			const extensionName = path.basename(extensionPath);
+			return { name: extensionName, path: extensionPath };
+		}).map(element => {
+			const pkgJson = require(path.join(element.path, 'package.json'));
+			const visxDirectory = path.join(path.dirname(root), 'vsix');
+			const packagePath = path.join(visxDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
+			console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
+			return vsce.createVSIX({
+				cwd: element.path,
+				packagePath: packagePath,
+				useYarn: true
+			});
+		});
+
+		return Promise.all(vsixes);
+	})
+));

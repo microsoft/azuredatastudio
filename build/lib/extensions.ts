@@ -285,40 +285,20 @@ export function packageMarketplaceExtensionsStream(): NodeJS.ReadWriteStream {
 		.pipe(util2.setExecutableBit(['**/*.sh']));
 }
 
-export function packageExternalExtensions(): Promise<void> {
-	return new Promise<void>((resolve) => {
-		const extenalExtensionDescriptions = (<string[]>glob.sync('extensions/*/package.json'))
-			.map(manifestPath => {
-				const extensionPath = path.dirname(path.join(root, manifestPath));
-				const extensionName = path.basename(extensionPath);
-				return { name: extensionName, path: extensionPath };
-			})
-			.filter(({ name }) => externalExtensions.indexOf(name) >= 0);
+export function packageExternalExtensionsStream(): NodeJS.ReadWriteStream {
+	const extenalExtensionDescriptions = (<string[]>glob.sync('extensions/*/package.json'))
+		.map(manifestPath => {
+			const extensionPath = path.dirname(path.join(root, manifestPath));
+			const extensionName = path.basename(extensionPath);
+			return { name: extensionName, path: extensionPath };
+		})
+		.filter(({ name }) => externalExtensions.indexOf(name) >= 0);
 
-		const builtExtensions = extenalExtensionDescriptions.map(extension => {
-			return fromLocal(extension.path)
-				.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
-		}).map(p => p.pipe(gulp.dest('.build/external')));
-
-		es.merge(builtExtensions).on('end', () => {
-			const vsixes = glob.sync('.build/external/extensions/*/package.json').map(manifestPath => {
-				const extensionPath = path.dirname(path.join(root, manifestPath));
-				const extensionName = path.basename(extensionPath);
-				return { name: extensionName, path: extensionPath };
-			}).map(element => {
-				const pkgJson = require(path.join(element.path, 'package.json'));
-				const visxDirectory = path.join(path.dirname(root), 'vsix');
-				const packagePath = path.join(visxDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
-				console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
-				return vsce.createVSIX({
-					cwd: element.path,
-					packagePath: packagePath,
-					useYarn: true
-				});
-			});
-
-			resolve(Promise.all(vsixes).then());
-		});
+	const builtExtensions = extenalExtensionDescriptions.map(extension => {
+		return fromLocal(extension.path)
+			.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
 	});
+
+	return es.merge(builtExtensions);
 }
 // {{SQL CARBON EDIT}} - End

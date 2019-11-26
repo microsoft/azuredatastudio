@@ -235,38 +235,19 @@ function packageMarketplaceExtensionsStream() {
         .pipe(util2.setExecutableBit(['**/*.sh']));
 }
 exports.packageMarketplaceExtensionsStream = packageMarketplaceExtensionsStream;
-function packageExternalExtensions() {
-    return new Promise((resolve) => {
-        const extenalExtensionDescriptions = glob.sync('extensions/*/package.json')
-            .map(manifestPath => {
-            const extensionPath = path.dirname(path.join(root, manifestPath));
-            const extensionName = path.basename(extensionPath);
-            return { name: extensionName, path: extensionPath };
-        })
-            .filter(({ name }) => externalExtensions.indexOf(name) >= 0);
-        const builtExtensions = extenalExtensionDescriptions.map(extension => {
-            return fromLocal(extension.path)
-                .pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
-        }).map(p => p.pipe(gulp.dest('.build/external')));
-        es.merge(builtExtensions).on('end', () => {
-            const vsixes = glob.sync('.build/external/extensions/*/package.json').map(manifestPath => {
-                const extensionPath = path.dirname(path.join(root, manifestPath));
-                const extensionName = path.basename(extensionPath);
-                return { name: extensionName, path: extensionPath };
-            }).map(element => {
-                const pkgJson = require(path.join(element.path, 'package.json'));
-                const visxDirectory = path.join(path.dirname(root), 'vsix');
-                const packagePath = path.join(visxDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
-                console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
-                return vsce.createVSIX({
-                    cwd: element.path,
-                    packagePath: packagePath,
-                    useYarn: true
-                });
-            });
-            resolve(Promise.all(vsixes).then());
-        });
+function packageExternalExtensionsStream() {
+    const extenalExtensionDescriptions = glob.sync('extensions/*/package.json')
+        .map(manifestPath => {
+        const extensionPath = path.dirname(path.join(root, manifestPath));
+        const extensionName = path.basename(extensionPath);
+        return { name: extensionName, path: extensionPath };
+    })
+        .filter(({ name }) => externalExtensions.indexOf(name) >= 0);
+    const builtExtensions = extenalExtensionDescriptions.map(extension => {
+        return fromLocal(extension.path)
+            .pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
     });
+    return es.merge(builtExtensions);
 }
-exports.packageExternalExtensions = packageExternalExtensions;
+exports.packageExternalExtensionsStream = packageExternalExtensionsStream;
 // {{SQL CARBON EDIT}} - End
