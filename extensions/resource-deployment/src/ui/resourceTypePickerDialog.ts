@@ -162,6 +162,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._selectedResourceType = resourceType;
 		const card = this._cardResourceTypeMap.get(this._selectedResourceType.name)!;
 		if (card.selected) {
+			card.focus();
 			// clear the selected state of the previously selected card
 			this._resourceTypeCards.forEach(c => {
 				if (c !== card) {
