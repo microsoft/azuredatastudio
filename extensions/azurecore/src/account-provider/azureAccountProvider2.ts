@@ -287,8 +287,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 		// Determine if this is a microsoft account
 		let msa = identityProvider && (
-			identityProvider.indexOf('live.com') !== -1 ||
-			identityProvider.indexOf('live-int.com') !== -1 ||
+			identityProvider.indexOf('live.com') !== -1 || // lgtm [js/incomplete-url-substring-sanitization]
+			identityProvider.indexOf('live-int.com') !== -1 || // lgtm [js/incomplete-url-substring-sanitization]
 			identityProvider.indexOf('f8cdef31-a31e-4b4a-93e4-5f571e91255a') !== -1 ||
 			identityProvider.indexOf('ea8a4392-515e-481f-879e-6571ff2a8a36') !== -1);
 
