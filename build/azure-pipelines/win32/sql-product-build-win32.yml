@@ -70,20 +70,14 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { yarn gulp "vscode-win32-x64" }
-    displayName: Build
-
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
       exec { yarn gulp "install-sqltoolsservice" }
     displayName: Install sqltoolsservice
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { yarn gulp "install-ssmsmin" }
-    displayName: Install ssmsmin
+      exec { yarn gulp "vscode-win32-x64" }
+    displayName: Build
 
   - task: ArchiveFiles@2 # WHY
     displayName: 'Archive build scripts source'
@@ -132,12 +126,6 @@ steps:
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
     displayName: Run unstable integration tests
-
-  - task: CopyFiles@2
-    displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/vsix'
-    inputs:
-      SourceFolder: '$(Build.SourcesDirectory)/../vsix'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/vsix'
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning - Build files - sha256 only'

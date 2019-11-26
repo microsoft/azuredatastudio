@@ -182,6 +182,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 				const card = this.createProfileCard(profile, this._view!);
 				if (profile.profileName === defaultProfile) {
 					card.selected = true;
+					card.focus();
 					this.setModelValuesByProfile(profile);
 				}
 				this._cardContainer!.addItem(card, { flex: '0 0 auto' });
