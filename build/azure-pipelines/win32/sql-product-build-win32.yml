@@ -224,8 +224,8 @@ steps:
     displayName: 'Sign installers'
     inputs:
       ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(Build.ArtifactStagingDirectory)/user-setup,$(Build.ArtifactStagingDirectory)/system-setup'
-      Pattern: '*.dll,*.exe,*.node'
+      FolderPath: '$(Build.ArtifactStagingDirectory)'
+      Pattern: '*.exe'
       signConfigType: inlineSignParams
       inlineOperation: |
         [
