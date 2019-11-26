@@ -587,8 +587,7 @@ declare module 'sqlops' {
 		string = 'string',
 		category = 'category',
 		boolean = 'boolean',
-		editableCategory = 'editableCategory',
-		component = 'component'
+		editableCategory = 'editableCategory'
 	}
 
 	export interface RadioButtonProperties {

@@ -195,7 +195,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 					displayName: localize('bdc.dashboard.nodeMetricsHeader', "Node Metrics"),
 					valueType: azdata.DeclarativeDataType.component,
 					isReadOnly: true,
-					width: 80,
+					width: 100,
 					headerCssStyles: {
 						'border': 'none',
 						'background-color': '#FFFFFF',
@@ -217,7 +217,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 					displayName: localize('bdc.dashboard.sqlMetricsHeader', "SQL Metrics"),
 					valueType: azdata.DeclarativeDataType.component,
 					isReadOnly: true,
-					width: 80,
+					width: 100,
 					headerCssStyles: {
 						'border': 'none',
 						'background-color': '#FFFFFF',
@@ -238,7 +238,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 				displayName: localize('bdc.dashboard.logsHeader', "Logs"),
 				valueType: azdata.DeclarativeDataType.component,
 				isReadOnly: true,
-				width: 75,
+				width: 100,
 				headerCssStyles: {
 					'border': 'none',
 					'background-color': '#FFFFFF',
