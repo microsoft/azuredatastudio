@@ -363,13 +363,16 @@ import 'vs/workbench/contrib/userDataSync/browser/userDataSync.contribution';
 
 // query
 import 'sql/workbench/contrib/query/browser/query.contribution';
-import 'sql/workbench/contrib/query/common/resultsGridContribution';
+import 'sql/workbench/contrib/query/common/resultsGrid.contribution';
 
 // data explorer
 import 'sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution';
 import 'sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contribution';
 
 // {{SQL CARBON EDIT}}
+//editor replacement
+import 'sql/workbench/common/editorReplacer.contribution';
+
 // tasks
 import 'sql/workbench/contrib/tasks/browser/tasks.contribution';
 import 'sql/workbench/browser/actions.contribution';

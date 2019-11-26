@@ -73,7 +73,6 @@ steps:
       yarn gulp vscode-darwin-min
     displayName: Build
 
-
   - task: ArchiveFiles@2 # WHY ARE WE DOING THIS?
     displayName: 'Archive build scripts source'
     inputs:

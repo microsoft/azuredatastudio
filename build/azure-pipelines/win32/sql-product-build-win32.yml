@@ -76,8 +76,8 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { yarn gulp "install-ssmsmin" }
-    displayName: Install ssmsmin
+      exec { yarn gulp "vscode-win32-x64" }
+    displayName: Build
 
   - task: ArchiveFiles@2 # WHY
     displayName: 'Archive build scripts source'
