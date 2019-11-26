@@ -5,7 +5,7 @@
 import 'vs/css!./media/card';
 
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnDestroy
+	Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnDestroy, ViewChild
 } from '@angular/core';
 
 import * as azdata from 'azdata';
@@ -29,6 +29,7 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 
 	private backgroundColor: string;
 
+	@ViewChild('cardDiv', { read: ElementRef }) private cardDiv: ElementRef;
 	constructor(@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
@@ -51,6 +52,12 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 
 	ngOnDestroy(): void {
 		this.baseDestroy();
+	}
+
+	focus() {
+		if (this.cardDiv) {
+			this.cardDiv.nativeElement.focus();
+		}
 	}
 
 	private _defaultBorderColor = 'rgb(214, 214, 214)';
