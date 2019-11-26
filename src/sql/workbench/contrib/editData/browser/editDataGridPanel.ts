@@ -436,7 +436,7 @@ export class EditDataGridPanel extends GridParentComponent {
 						self.placeHolderDataSets[i].resized.fire();
 					}
 				}
-				setTimeout(() => { self.detectChange(); }, 20000);
+				self.detectChange();
 				if (self.firstRender) {
 					//TODO: Need to be able to add onClick function with working editor.
 
