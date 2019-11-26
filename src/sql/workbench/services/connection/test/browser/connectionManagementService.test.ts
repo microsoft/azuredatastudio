@@ -732,6 +732,18 @@ suite('SQL ConnectionManagementService tests', () => {
 		}
 	});
 
+	test('getProviderNames should return all known providers', done => {
+		try {
+			let providerNames = connectionManagementService.getProviderNames();
+			assert.equal(providerNames.length, 2);
+			assert.equal(providerNames.indexOf('MSSQL') > -1, true);
+			assert.equal(providerNames.indexOf('PGSQL') > -1, true);
+			done();
+		} catch (error) {
+			done(error);
+		}
+	});
+
 	test('ensureDefaultLanguageFlavor should not send event if uri is connected', done => {
 		let uri: string = 'Editor Uri';
 		let options: IConnectionCompletionOptions = {

@@ -14,6 +14,7 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export class TestCapabilitiesService implements ICapabilitiesService {
 
+	private pgsqlProvider = 'PGSQL';
 	public _serviceBrand: undefined;
 
 	public capabilities: { [id: string]: ProviderFeatures } = {};
@@ -99,7 +100,13 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 			displayName: 'MSSQL',
 			connectionOptions: connectionProvider,
 		};
+		let pgSQLCapabilities = {
+			providerId: this.pgsqlProvider,
+			displayName: this.pgsqlProvider,
+			connectionOptions: connectionProvider,
+		};
 		this.capabilities[mssqlProviderName] = { connection: msSQLCapabilities };
+		this.capabilities[this.pgsqlProvider] = { connection: pgSQLCapabilities };
 	}
 
 	/**
