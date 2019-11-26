@@ -826,7 +826,8 @@ export class EditDataGridPanel extends GridParentComponent {
 
 
 
-	getOverridableTextEditorClass(grid: EditDataGridPanel): any {
+	getOverridableTextEditorClass(): any {
+		let self = this;
 		class OverridableTextEditor {
 			private _textEditor: any;
 			public keyCaptureList: number[];
@@ -858,8 +859,8 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 
 			loadValue(item, rowNumber): void {
-				if (grid.overrideCellFn) {
-					let overrideValue = grid.overrideCellFn(rowNumber, this._args.column.id, item[this._args.column.id]);
+				if (self.overrideCellFn) {
+					let overrideValue = self.overrideCellFn(rowNumber, this._args.column.id, item[this._args.column.id]);
 					if (overrideValue !== undefined) {
 						item[this._args.column.id] = overrideValue;
 					}
@@ -872,10 +873,10 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 
 			applyValue(item, state): void {
-				let activeRow = grid.currentCell.row;
-				let currentRow = grid.dataSet.dataRows.at(activeRow);
-				let colIndex = grid.getColumnIndex(this._args.column.name);
-				let dataLength: number = grid.dataSet.dataRows.getLength();
+				let activeRow = self.currentCell.row;
+				let currentRow = self.dataSet.dataRows.at(activeRow);
+				let colIndex = self.getColumnIndex(this._args.column.name);
+				let dataLength: number = self.dataSet.dataRows.getLength();
 
 				// If this is not the "new row" at the very bottom
 				if (activeRow !== dataLength) {
@@ -889,13 +890,13 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 
 			validate(): any {
-				let activeRow = grid.currentCell.row;
+				let activeRow = self.currentCell.row;
 				let result: any = { valid: true, msg: undefined };
-				let colIndex: number = grid.getColumnIndex(this._args.column.name);
+				let colIndex: number = self.getColumnIndex(this._args.column.name);
 				let newValue: any = this._textEditor.getValue();
 
 				// TODO: It would be nice if we could support the isCellEditValid as a promise
-				if (grid.onIsCellEditValid && !grid.onIsCellEditValid(activeRow, colIndex, newValue)) {
+				if (self.onIsCellEditValid && !self.onIsCellEditValid(activeRow, colIndex, newValue)) {
 					result.valid = false;
 				}
 
@@ -917,7 +918,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		let isColumnLoading = false;
 		let canEditColumn = columnId !== undefined && !isColumnLoading;
 		if (canEditColumn) {
-			return this.getOverridableTextEditorClass(this);
+			return this.getOverridableTextEditorClass();
 		}
 		return undefined;
 	}
