@@ -20,11 +20,17 @@ import {
 
 import TokenCache from './tokenCache';
 import { AddressInfo } from 'net';
-import { AuthenticationContext, TokenResponse, ErrorResponse } from 'adal-node';
+import { AuthenticationContext, TokenResponse, ErrorResponse, Logging as logging, LoggingLevel } from 'adal-node';
 import { promisify } from 'util';
 import * as events from 'events';
 
 const localize = nls.loadMessageBundle();
+logging.setLoggingOptions({
+	level: 3 as LoggingLevel,
+	log: function (level, message, error) {
+		console.log(level, message, error);
+	}
+});
 
 export class AzureAccountProvider implements azdata.AccountProvider {
 	private static AzureAccountAuthenticatedEvent: string = 'AzureAccountAuthenticated';
@@ -38,8 +44,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private isInitialized: boolean = false;
 
 
-	constructor(private metadata: AzureAccountProviderMetadata, private tokenCache: TokenCache) {
-		console.log(this.metadata, this.tokenCache);
+	constructor(private metadata: AzureAccountProviderMetadata, private _tokenCache: TokenCache) {
+		console.log(this.metadata, this._tokenCache);
 		this.commonAuthorityUrl = url.resolve(this.metadata.settings.host, AzureAccountProvider.AadCommonTenant);
 		console.log(this.isInitialized);
 	}
@@ -52,7 +58,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private async _initialize(storedAccounts: azdata.Account[]): Promise<azdata.Account[]> {
 		for (let account of storedAccounts) {
 			try {
-				await this.getAccessTokens;
+				await this.getAccessTokens(account, azdata.AzureResource.ResourceManagement);
 			} catch (e) {
 				console.log(`Refreshing account ${account.displayInfo} failed - ${e}`);
 				account.isStale = true;
@@ -65,7 +71,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 	private async getToken(userId: string, tenantId: string, resourceId: string): Promise<TokenResponse> {
 		let authorityUrl = url.resolve(this.metadata.settings.host, tenantId);
-		const context = new AuthenticationContext(authorityUrl, null, this.tokenCache);
+		const context = new AuthenticationContext(authorityUrl, null, this._tokenCache);
 
 		const acquireToken = promisify(context.acquireToken).bind(context);
 
@@ -75,6 +81,10 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		}
 
 		response = response as TokenResponse;
+
+		context.cache.add([response], (err, result) => {
+			console.log(err, result);
+		});
 
 		return response;
 	}
@@ -119,7 +129,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	private async _getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<{}> {
-		throw new Error('Method not implemented.');
+		return this.getAccessTokens(account, resource);
 	}
 
 	// interface method
@@ -237,7 +247,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 		const promises = armWebResponse.map(async (value: { tenantId: string }) => {
 			const graphToken = await this.getToken(userId, value.tenantId, this.metadata.settings.graphResource.id);
-			const tenantDetailsUri = url.resolve(this.metadata.settings.graphResource.endpoint, value.tenantId + '/');
+			let tenantDetailsUri = url.resolve(this.metadata.settings.graphResource.endpoint, value.tenantId + '/');
+			tenantDetailsUri = url.resolve(tenantDetailsUri, 'tenantDetails?api-version=2013-04-05');
 			const tenantDetails: any[] = await this.makeWebRequest(graphToken, tenantDetailsUri);
 
 			return {
@@ -316,7 +327,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	private async getTokenWithAuthCode(code: string, redirectUrl: string): Promise<TokenResponse> {
-		const context = new AuthenticationContext(this.commonAuthorityUrl, null, this.tokenCache);
+		const context = new AuthenticationContext(this.commonAuthorityUrl, null, this._tokenCache);
 		const acquireToken = promisify(context.acquireTokenWithAuthorizationCode).bind(context);
 
 		let token = await acquireToken(code, redirectUrl, this.metadata.settings.signInResourceId, this.metadata.settings.clientId, undefined);
@@ -324,6 +335,13 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			throw new Error(`${token.error} - ${token.errorDescription}`);
 		}
 		token = token as TokenResponse;
+		token._clientId = this.metadata.settings.clientId;
+		token._authority = this.commonAuthorityUrl;
+		token.isMRRT = true;
+
+		context.cache.add([token], (err, result) => {
+			console.log(err, result);
+		});
 
 		return token;
 	}
@@ -392,7 +410,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	private async _refresh(account: azdata.Account): Promise<azdata.Account | azdata.PromptFailedResult> {
-		throw new Error('Method not implemented.');
+		return this.prompt();
 	}
 
 	// interface method
@@ -401,7 +419,13 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	private async _clear(accountKey: azdata.AccountKey): Promise<void> {
-		throw new Error('Method not implemented.');
+		// Put together a query to look up any tokens associated with the account key
+		let query = { userId: accountKey.accountId } as TokenResponse;
+
+		// 1) Look up the tokens associated with the query
+		// 2) Remove them
+		let results = await this._tokenCache.findThenable(query);
+		this._tokenCache.removeThenable(results);
 	}
 
 	// interface method
@@ -410,6 +434,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	private async _autoOAuthCancelled(): Promise<void> {
+		// I don't think we need this?
 		throw new Error('Method not implemented.');
 	}
 }
