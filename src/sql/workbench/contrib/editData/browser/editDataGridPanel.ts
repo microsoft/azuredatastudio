@@ -436,14 +436,8 @@ export class EditDataGridPanel extends GridParentComponent {
 						self.placeHolderDataSets[i].resized.fire();
 					}
 				}
-
-				//self._cd.detectChanges(); Replacement above.
+				setTimeout(() => { self.detectChange(); }, 20000);
 				if (self.firstRender) {
-					this.handleChanges({
-						['dataRows']: { currentValue: self.dataSet.dataRows, firstChange: self.firstRender, previousValue: undefined },
-						['columnDefinitions']: { currentValue: self.dataSet.columnDefinitions, firstChange: self.firstRender, previousValue: undefined }
-					});
-					this.handleInitializeTable();
 					//TODO: Need to be able to add onClick function with working editor.
 
 					let setActive = function () {
@@ -458,17 +452,27 @@ export class EditDataGridPanel extends GridParentComponent {
 
 					setTimeout(() => {
 						setActive();
-					}, self.refreshGridTimeoutInMs);
-				}
-				else {
-					this.handleChanges({
-						['dataRows']: self.dataSet.dataRows
 					});
 				}
 
 				resolve();
 			}, self.refreshGridTimeoutInMs);
 		});
+	}
+
+	protected detectChange(): void {
+		if (this.firstRender) {
+			this.handleChanges({
+				['dataRows']: { currentValue: this.dataSet.dataRows, firstChange: this.firstRender, previousValue: undefined },
+				['columnDefinitions']: { currentValue: this.dataSet.columnDefinitions, firstChange: this.firstRender, previousValue: undefined }
+			});
+			this.handleInitializeTable();
+		}
+		else {
+			this.handleChanges({
+				['dataRows']: this.dataSet.dataRows
+			});
+		}
 	}
 
 	protected tryHandleKeyEvent(e: StandardKeyboardEvent): boolean {
