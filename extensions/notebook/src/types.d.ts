@@ -10,7 +10,7 @@
  */
 export interface IExtensionApi {
 	getJupyterController(): IJupyterController;
-	registerPackageManager(providerId: string, packageManagerProvider: IPackageManageProvider): void
+	registerPackageManager(providerId: string, packageManagerProvider: IPackageManageProvider): void;
 }
 
 export interface IJupyterController {
