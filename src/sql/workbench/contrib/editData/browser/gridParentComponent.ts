@@ -380,14 +380,15 @@ export abstract class GridParentComponent extends Disposable {
 	}
 
 	openContextMenu(event, batchId, resultId, index): void {
+		let grid = this.tables[0].grid;
 		let selection = this.getSelection(index);
 
 		if (selection && selection.length === 0) {
-			let cell = event.cell;
+			let cell = grid.getCellFromEvent(event);
 			selection = [new Slick.Range(cell.row, cell.cell - 1)];
 		}
 
-		let rowIndex = event.cell.row;
+		let rowIndex = grid.getCellFromEvent(event).row;
 
 		let actionContext: IGridInfo = {
 			batchIndex: batchId,
@@ -397,9 +398,9 @@ export abstract class GridParentComponent extends Disposable {
 			rowIndex: rowIndex
 		};
 
-		event.anchor.x = event.anchor.x + 1;
+		let anchor = { x: event.pageX + 1, y: event.pageY };
 		this.contextMenuService.showContextMenu({
-			getAnchor: () => event.anchor,
+			getAnchor: () => anchor,
 			getActions: () => this.actionProvider.getGridActions(),
 			getKeyBinding: (action) => this._keybindingFor(action),
 			getActionsContext: () => (actionContext)
