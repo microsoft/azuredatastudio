@@ -42,18 +42,23 @@
           },
           "accounts.azure.enableUsGovCloud": {
             "type": "boolean",
-            "default": true,
+            "default": false,
             "description": "%config.enableUsGovCloudDescription%"
           },
           "accounts.azure.enableGermanyCloud": {
             "type": "boolean",
-            "default": true,
+            "default": false,
             "description": "%config.enableChinaCloudDescription%"
           },
           "accounts.azure.enableChinaCloud": {
             "type": "boolean",
-            "default": true,
+            "default": false,
             "description": "%config.enableGermanyCloudDescription%"
+          },
+          "accounts.azure.useNewSignInExperience": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.useNewSignInExperience%"
           }
         }
       }

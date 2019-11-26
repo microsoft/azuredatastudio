@@ -11,7 +11,8 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import CredentialServiceTokenCache from './tokenCache';
 import providerSettings from './providerSettings';
-import { AzureAccountProvider } from './azureAccountProvider2';
+import { AzureAccountProvider as OldAzureAccountProvider } from './azureAccountProvider';
+import { AzureAccountProvider as NewAzureAccountProvider } from './azureAccountProvider2';
 import { AzureAccountProviderMetadata, ProviderSettings } from './interfaces';
 
 let localize = nls.loadMessageBundle();
@@ -24,7 +25,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////////
 	private _accountDisposals: { [accountProviderId: string]: vscode.Disposable };
-	private _accountProviders: { [accountProviderId: string]: AzureAccountProvider };
+	private _accountProviders: { [accountProviderId: string]: azdata.AccountProvider };
 	private _credentialProvider: azdata.CredentialProvider;
 	private _configChangePromiseChain: Thenable<void>;
 	private _currentConfig: vscode.WorkspaceConfiguration;
@@ -128,14 +129,23 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	}
 
 	private registerAccountProvider(provider: ProviderSettings): Thenable<void> {
+
 		let self = this;
 
 		return new Promise((resolve, reject) => {
 			try {
+				let config = vscode.workspace.getConfiguration(AzureAccountProviderService.ConfigurationSection);
+
 				let tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
 				let tokenCachePath = path.join(this._userStoragePath, tokenCacheKey);
 				let tokenCache = new CredentialServiceTokenCache(self._credentialProvider, tokenCacheKey, tokenCachePath);
-				let accountProvider = new AzureAccountProvider(<AzureAccountProviderMetadata>provider.metadata, tokenCache);
+				let accountProvider: azdata.AccountProvider;
+
+				if (config.get('useNewSignInExperience') === true) {
+					accountProvider = new NewAzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, tokenCache);
+				} else {
+					accountProvider = new OldAzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, tokenCache);
+				}
 				self._accountProviders[provider.metadata.id] = accountProvider;
 				self._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
 				resolve();

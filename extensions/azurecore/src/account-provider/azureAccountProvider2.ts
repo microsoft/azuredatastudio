@@ -20,17 +20,11 @@ import {
 
 import TokenCache from './tokenCache';
 import { AddressInfo } from 'net';
-import { AuthenticationContext, TokenResponse, ErrorResponse, Logging as logging, LoggingLevel } from 'adal-node';
+import { AuthenticationContext, TokenResponse, ErrorResponse } from 'adal-node';
 import { promisify } from 'util';
 import * as events from 'events';
 
 const localize = nls.loadMessageBundle();
-logging.setLoggingOptions({
-	level: 3 as LoggingLevel,
-	log: function (level, message, error) {
-		console.log(level, message, error);
-	}
-});
 
 export class AzureAccountProvider implements azdata.AccountProvider {
 	private static AzureAccountAuthenticatedEvent: string = 'AzureAccountAuthenticated';
@@ -45,9 +39,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 
 	constructor(private metadata: AzureAccountProviderMetadata, private _tokenCache: TokenCache) {
-		console.log(this.metadata, this._tokenCache);
 		this.commonAuthorityUrl = url.resolve(this.metadata.settings.host, AzureAccountProvider.AadCommonTenant);
-		console.log(this.isInitialized);
 	}
 
 	// interface method
@@ -58,9 +50,10 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private async _initialize(storedAccounts: azdata.Account[]): Promise<azdata.Account[]> {
 		for (let account of storedAccounts) {
 			try {
-				await this.getAccessTokens(account, azdata.AzureResource.ResourceManagement);
+				const x = await this.getAccessTokens(account, azdata.AzureResource.ResourceManagement);
+				console.log(x);
 			} catch (e) {
-				console.log(`Refreshing account ${account.displayInfo} failed - ${e}`);
+				console.error(`Refreshing account ${account.displayInfo} failed - ${e}`);
 				account.isStale = true;
 				azdata.accounts.accountUpdated(account);
 			}
@@ -99,17 +92,21 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 		for (let tenant of account.properties.tenants) {
 			const promise = new Promise<{ tenantId: any, securityToken: AzureAccountSecurityToken }>(async (resolve, reject) => {
-				let response = await this.getToken(tenant.userId, tenant.id, resourceIdMap.get(resource));
+				try {
+					let response = await this.getToken(tenant.userId, tenant.id, resourceIdMap.get(resource));
 
-				return {
-					tenantId: tenant.id,
-					securityToken: {
-						expiresOn: response.expiresOn,
-						resource: response.resource,
-						token: response.accessToken,
-						tokenType: response.tokenType
-					} as AzureAccountSecurityToken,
-				};
+					resolve({
+						tenantId: tenant.id,
+						securityToken: {
+							expiresOn: response.expiresOn,
+							resource: response.resource,
+							token: response.accessToken,
+							tokenType: response.tokenType
+						} as AzureAccountSecurityToken,
+					});
+				} catch (ex) {
+					reject(ex);
+				}
 
 			});
 			tenantRefreshPromises.push(promise);
@@ -171,8 +168,6 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		});
 
 		const urlToOpen = `http://localhost:${port}/signin?nonce=${encodeURIComponent(nonce)}`;
-
-		console.log(urlToOpen);
 
 		vscode.env.openExternal(vscode.Uri.parse(urlToOpen));
 
