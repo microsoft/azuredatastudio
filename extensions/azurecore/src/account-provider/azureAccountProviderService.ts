@@ -11,8 +11,8 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import CredentialServiceTokenCache from './tokenCache';
 import providerSettings from './providerSettings';
-import { AzureAccountProvider as OldAzureAccountProvider } from './azureAccountProvider';
-import { AzureAccountProvider as NewAzureAccountProvider } from './azureAccountProvider2';
+import { AzureAccountProvider as AzureAccountProviderDeprecated } from './azureAccountProvider';
+import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider2';
 import { AzureAccountProviderMetadata, ProviderSettings } from './interfaces';
 
 let localize = nls.loadMessageBundle();
@@ -142,9 +142,9 @@ export class AzureAccountProviderService implements vscode.Disposable {
 				let accountProvider: azdata.AccountProvider;
 
 				if (config.get('useNewSignInExperience') === true) {
-					accountProvider = new NewAzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, tokenCache);
+					accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, tokenCache);
 				} else {
-					accountProvider = new OldAzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, tokenCache);
+					accountProvider = new AzureAccountProviderDeprecated(provider.metadata as AzureAccountProviderMetadata, tokenCache);
 				}
 				self._accountProviders[provider.metadata.id] = accountProvider;
 				self._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);

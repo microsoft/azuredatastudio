@@ -51,8 +51,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private async _initialize(storedAccounts: azdata.Account[]): Promise<azdata.Account[]> {
 		for (let account of storedAccounts) {
 			try {
-				const x = await this.getAccessTokens(account, azdata.AzureResource.ResourceManagement);
-				console.log(x);
+				await this.getAccessTokens(account, azdata.AzureResource.ResourceManagement);
 			} catch (e) {
 				console.error(`Refreshing account ${account.displayInfo} failed - ${e}`);
 				account.isStale = true;
