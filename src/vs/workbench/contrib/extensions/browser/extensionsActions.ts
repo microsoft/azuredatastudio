@@ -1274,6 +1274,10 @@ export class ReloadAction extends ExtensionAction {
 								// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 								this.tooltip = localize('postUpdateTooltip', "Please reload Azure Data Studio to enable the updated extension.");
 							}
+						} else {
+							this.enabled = true;
+							this.label = localize('reloadRequired', "Reload Required");
+							this.tooltip = localize('postEnableTooltip', "Please reload Visual Studio Code to enable this extension.");
 						}
 					}
 				} else {
