@@ -1014,7 +1014,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 
 		if (wasEditing && hasGridStructureChanges) {
-			console.log('need to handle editing of cells');
+			this.logService.debug('need to handle editing of cells');
 			//this.tables[0].grid.editActiveCell();
 		}
 	}
@@ -1022,7 +1022,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private setCallbackOnDataRowsChanged(): void {
 		if (this.dataSet.dataRows) {
 			// We must wait until we get the first set of dataRows before we enable editing or slickgrid will complain
-			console.log('need to check if row is editable or not');
+			this.logService.debug('need to check if row is editable or not');
 			if (true) {
 				this.enterEditSession();
 			}
@@ -1100,7 +1100,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	onBeforeEditCell(event: Slick.OnBeforeEditCellEventArgs<any>): void {
-		console.log('onBeforeEditCell called with grid: ' + event.grid + ' row: ' + event.row
+		this.logService.debug('onBeforeEditCell called with grid: ' + event.grid + ' row: ' + event.row
 			+ ' cell: ' + event.cell + ' item: ' + event.item + ' column: ' + event.column);
 	}
 
