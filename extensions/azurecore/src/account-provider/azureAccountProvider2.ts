@@ -41,6 +41,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 	constructor(private metadata: AzureAccountProviderMetadata, private _tokenCache: TokenCache) {
 		this.commonAuthorityUrl = url.resolve(this.metadata.settings.host, AzureAccountProvider.AadCommonTenant);
+		// Temporary override
+		this.metadata.settings.clientId = 'aebc6443-996d-45c2-90f0-388ff96faa56';
 	}
 
 	// interface method
@@ -349,7 +351,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	private createAuthUrl(baseHost: string, redirectUri: string, clientId: string, resource: string, tenant: string, nonce: string): string {
-		return `${encodeURIComponent(baseHost)}${encodeURIComponent(tenant)}/oauth2/authorize?response_type=code&client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${encodeURIComponent(nonce)}&resource=${encodeURIComponent(resource)}`;
+		return `${baseHost}${encodeURIComponent(tenant)}/oauth2/authorize?response_type=code&client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${encodeURIComponent(nonce)}&resource=${encodeURIComponent(resource)}`;
 	}
 
 	private createAuthServer(pathMappings: Map<string, (req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => void>) {
@@ -361,7 +363,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			if (method) {
 				method(req, res, reqUrl);
 			} else {
-				console.error('undefined request ', reqUrl);
+				console.error('undefined request ', reqUrl, req);
 			}
 		});
 

@@ -141,7 +141,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 				let tokenCache = new CredentialServiceTokenCache(self._credentialProvider, tokenCacheKey, tokenCachePath);
 				let accountProvider: azdata.AccountProvider;
 
-				if (config.get('useNewSignInExperience') === true) {
+				if (config.get('useNewSignInExperience') === true && Boolean(process.env['NEW_SIGN_IN_EXPERIENCE']) === true) {
 					accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, tokenCache);
 				} else {
 					accountProvider = new AzureAccountProviderDeprecated(provider.metadata as AzureAccountProviderMetadata, tokenCache);
