@@ -383,6 +383,7 @@ export class SettingsEditor2 extends BaseEditor {
 
 	clearSearchResults(): void {
 		this.searchWidget.setValue('');
+		this.focusSearch();
 	}
 
 	clearSearchFilters(): void {
@@ -395,17 +396,12 @@ export class SettingsEditor2 extends BaseEditor {
 		this.searchWidget.setValue(query.trim());
 	}
 
-	clearSearch(): void {
-		this.clearSearchResults();
-		this.focusSearch();
-	}
-
 	private createHeader(parent: HTMLElement): void {
 		this.headerContainer = DOM.append(parent, $('.settings-header'));
 
 		const searchContainer = DOM.append(this.headerContainer, $('.search-container'));
 
-		const clearInputAction = new Action(SETTINGS_EDITOR_COMMAND_CLEAR_SEARCH_RESULTS, localize('clearInput', "Clear Settings Search Input"), 'codicon-clear-all', false, () => { this.clearSearch(); return Promise.resolve(null); });
+		const clearInputAction = new Action(SETTINGS_EDITOR_COMMAND_CLEAR_SEARCH_RESULTS, localize('clearInput', "Clear Settings Search Input"), 'codicon-clear-all', false, () => { this.clearSearchResults(); return Promise.resolve(null); });
 
 		const searchBoxLabel = localize('SearchSettings.AriaLabel', "Search settings");
 		this.searchWidget = this._register(this.instantiationService.createInstance(SuggestEnabledInput, `${SettingsEditor2.ID}.searchbox`, searchContainer, {
@@ -549,7 +545,6 @@ export class SettingsEditor2 extends BaseEditor {
 		this._register(DOM.addDisposableListener(clearSearch, DOM.EventType.CLICK, (e: MouseEvent) => {
 			DOM.EventHelper.stop(e, false);
 			this.clearSearchResults();
-			this.focusSearch();
 		}));
 
 		DOM.append(this.noResultsMessage, clearSearchContainer);
