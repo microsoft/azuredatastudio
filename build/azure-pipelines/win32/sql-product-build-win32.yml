@@ -200,7 +200,7 @@ steps:
     displayName: 'Copy Archive to: $(Build.ArtifactStagingDirectory)'
     inputs:
       SourceFolder: '$(Build.SourcesDirectory)/.build/win32-x64/archive/'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/archive'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
   - task: CopyFiles@2
     displayName: 'Copy User Installer to: $(Build.ArtifactStagingDirectory)'
