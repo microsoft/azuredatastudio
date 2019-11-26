@@ -390,7 +390,8 @@ export class TreeComponentItem extends vsExtTypes.TreeItem {
 
 export enum AzureResource {
 	ResourceManagement = 0,
-	Sql = 1
+	Sql = 1,
+	OssRdbms = 2
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {
@@ -695,6 +696,14 @@ export class ConnectionProfile {
 
 	set azureTenantId(value: string) {
 		this.options['azureTenantId'] = value;
+	}
+
+	get azureAccount(): string {
+		return this.options['azureAccount'];
+	}
+
+	set azureAccount(value: string) {
+		this.options['azureAccount'] = value;
 	}
 
 	options: { [key: string]: any } = {};

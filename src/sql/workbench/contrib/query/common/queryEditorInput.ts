@@ -134,6 +134,14 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		this._text.onDidChangeDirty(() => this._onDidChangeDirty.fire());
 
 		this._register(
+			this.queryModelService.onRunQueryStart(uri => {
+				if (this.uri === uri) {
+					this.onRunQuery();
+				}
+			})
+		);
+
+		this._register(
 			this.queryModelService.onRunQueryComplete(uri => {
 				if (this.uri === uri) {
 					this.onQueryComplete();
@@ -152,6 +160,8 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 				this._onDidChangeLabel.fire();
 			}
 		}));
+
+		this.connectionManagementService.ensureDefaultLanguageFlavor(this.uri);
 
 		this.onDisconnect();
 		this.onQueryComplete();

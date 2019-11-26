@@ -31,6 +31,10 @@ const publicAzureSettings: ProviderSettings = {
 				id: 'https://database.windows.net/',
 				endpoint: 'https://database.windows.net'
 			},
+			ossRdbmsResource: {
+				id: 'https://ossrdbms-aad.database.windows.net',
+				endpoint: 'https://ossrdbms-aad.database.windows.net'
+			},
 			redirectUri: 'http://localhost/redirect'
 		}
 	}

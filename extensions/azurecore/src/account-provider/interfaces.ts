@@ -75,6 +75,11 @@ interface Settings {
 	sqlResource?: Resource;
 
 	/**
+	 * Information that describes the OSS RDBMS resource
+	 */
+	ossRdbmsResource?: Resource;
+
+	/**
 	 * A list of tenant IDs to authenticate against. If defined, then these IDs will be used
 	 * instead of querying the tenants endpoint of the armResource
 	 */
