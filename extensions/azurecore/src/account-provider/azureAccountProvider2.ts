@@ -151,34 +151,37 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		const server = this.createAuthServer(pathMappings);
 
 		const port = await this.listenToServer(server);
+		try {
+			const authUrl = this.createAuthUrl(
+				this.metadata.settings.host,
+				AzureAccountProvider.redirectUrlAAD,
+				this.metadata.settings.clientId,
+				this.metadata.settings.signInResourceId,
+				AzureAccountProvider.AadCommonTenant,
+				`${port},${encodeURIComponent(nonce)}`
+			);
 
-		const authUrl = this.createAuthUrl(
-			this.metadata.settings.host,
-			AzureAccountProvider.redirectUrlAAD,
-			this.metadata.settings.clientId,
-			this.metadata.settings.signInResourceId,
-			AzureAccountProvider.AadCommonTenant,
-			`${port},${encodeURIComponent(nonce)}`
-		);
+			this.addServerPaths(pathMappings, nonce, authUrl);
 
-		this.addServerPaths(pathMappings, nonce, authUrl);
-
-		const accountAuthenticatedPromise = new Promise<AzureAccount>((resolve, reject) => {
-			AzureAccountProvider.eventEmitter.on(AzureAccountProvider.AzureAccountAuthenticatedEvent, ({ account, error }) => {
-				if (error) {
-					return reject(error);
-				}
-				return resolve(account);
+			const accountAuthenticatedPromise = new Promise<AzureAccount>((resolve, reject) => {
+				AzureAccountProvider.eventEmitter.on(AzureAccountProvider.AzureAccountAuthenticatedEvent, ({ account, error }) => {
+					if (error) {
+						return reject(error);
+					}
+					return resolve(account);
+				});
 			});
-		});
 
-		const urlToOpen = `http://localhost:${port}/signin?nonce=${encodeURIComponent(nonce)}`;
+			const urlToOpen = `http://localhost:${port}/signin?nonce=${encodeURIComponent(nonce)}`;
 
-		vscode.env.openExternal(vscode.Uri.parse(urlToOpen));
+			vscode.env.openExternal(vscode.Uri.parse(urlToOpen));
 
-		const account = await accountAuthenticatedPromise;
+			const account = await accountAuthenticatedPromise;
 
-		return account;
+			return account;
+		} finally {
+			server.close();
+		}
 	}
 
 	private addServerPaths(
