@@ -12,6 +12,27 @@ steps:
   #     versionSpec: '2.x'
   #     addToPath: true
 
+  - task: AzureKeyVault@1
+    displayName: 'Azure Key Vault: Get Secrets'
+    inputs:
+      azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+      KeyVaultName: ado-secrets
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      "machine github.com`nlogin azuredatastudio`npassword $(github-distro-mixin-password)" | Out-File "$env:USERPROFILE\_netrc" -Encoding ASCII
+
+      exec { git config user.email "andresse@microsoft.com" }
+      exec { git config user.name "AzureDataStudio" }
+    displayName: Prepare tooling
+
+  - powershell: |
+      git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+      git fetch distro
+      git merge $(node -p "require('./package.json').distro")
+    displayName: Merge distro
+
   - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
     inputs:
       keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
@@ -43,14 +64,8 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { yarn gulp "mixin" }
+      exec { node build/azure-pipelines/mixin }
     displayName: Mix in quality
-
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { yarn gulp "vscode-win32-x64-min" }
-    displayName: Build
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
@@ -61,8 +76,8 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { yarn gulp "install-ssmsmin" }
-    displayName: Install ssmsmin
+      exec { yarn gulp "vscode-win32-x64" }
+    displayName: Build
 
   - task: ArchiveFiles@2 # WHY
     displayName: 'Archive build scripts source'
@@ -111,12 +126,6 @@ steps:
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
     displayName: Run unstable integration tests
-
-  - task: CopyFiles@2
-    displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/vsix'
-    inputs:
-      SourceFolder: '$(Build.SourcesDirectory)/../vsix'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/vsix'
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning - Build files - sha256 only'
@@ -173,18 +182,17 @@ steps:
       MaxRetryAttempts: 20
     condition: and(succeeded(), eq(variables['signed'], true))
 
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { del $(Build.SourcesDirectory)\..\azuredatastudio-win32-x64\CodeSignSummary*.md }
+  - task: CmdLine@1
+    displayName: 'Delete CodeSignSummary.md'
+    inputs:
+      filename: del
+      arguments: '$(Build.SourcesDirectory)\..\azuredatastudio-win32-x64\CodeSignSummary*.md'
     condition: and(succeeded(), eq(variables['signed'], true))
-    displayName: Delete CodeSignSummary.md
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
       exec { yarn gulp "vscode-win32-x64-user-setup" }
-    continueOnError: true
     displayName: User setup
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
@@ -241,19 +249,18 @@ steps:
       MaxRetryAttempts: 20
     condition: and(succeeded(), eq(variables['signed'], true))
 
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { del $(Build.SourcesDirectory)\.build\win32-x64\user-setup\CodeSignSummary.md }
-    condition: and(succeeded(), eq(variables['signed'], true))
+  - task: CmdLine@1
+    displayName: 'Delete CodeSignSummary.md for user installer'
+    inputs:
+      filename: del
+      arguments: '$(Build.SourcesDirectory)\.build\win32-x64\user-setup\CodeSignSummary.md'
     continueOnError: true
-    displayName: Delete CodeSignSummary.md
+    condition: and(succeeded(), eq(variables['signed'], true))
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
       exec { yarn gulp "vscode-win32-x64-system-setup" }
-    continueOnError: true
     displayName: System setup
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
@@ -310,13 +317,13 @@ steps:
       MaxRetryAttempts: 20
     condition: and(succeeded(), eq(variables['signed'], true))
 
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { del $(Build.SourcesDirectory)\.build\win32-x64\system-setup\CodeSignSummary.md }
-    condition: and(succeeded(), eq(variables['signed'], true))
+  - task: CmdLine@1
+    displayName: 'Delete CodeSignSummary.md for installer'
+    inputs:
+      filename: del
+      arguments: '$(Build.SourcesDirectory)\.build\win32-x64\system-setup\CodeSignSummary.md'
     continueOnError: true
-    displayName: Delete CodeSignSummary.md
+    condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
       if exist $(Build.SourcesDirectory)\..\azuredatastudio-windows rmdir /s /q $(Build.SourcesDirectory)\..\azuredatastudio-windows
@@ -392,13 +399,14 @@ steps:
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection'
+    inputs:
+      failOnAlert: true
+
   - powershell: 'Write-Host "##vso[build.addbuildtag]Scheduled" '
     displayName: 'Tag build if scheduled'
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['Build.Reason'], 'Schedule'))
-
-  - powershell: 'Write-Host "##vso[build.addbuildtag]AutoRelease" '
-    displayName: 'Tag build for AutoRelease if needed'
-    condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['AUTO_RELEASE'], 'true'))
 
   - powershell: 'Write-Host "##vso[build.addbuildtag]PerfTestCandidate" '
     displayName: 'Tag build for PerfTestCandidate if needed'

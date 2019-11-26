@@ -1,4 +1,4 @@
-<div *ngIf="label" [class]="getClass()" (click)="onCardClick()" (mouseover)="onCardHoverChanged($event)"
+<div #cardDiv role="radio" *ngIf="label" [class]="getClass()" (click)="onCardClick()" [attr.aria-checked]="selected" (mouseover)="onCardHoverChanged($event)"
 	(mouseout)="onCardHoverChanged($event)" tabIndex="0" [style.width]="width" [style.height]="height">
 	<ng-container *ngIf="isVerticalButton || isDetailsCard">
 		<span *ngIf="hasStatus" class="card-status">

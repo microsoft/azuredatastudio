@@ -92,12 +92,17 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 				data: [],
 				columns: [toolColumn, descriptionColumn, installStatusColumn, versionColumn, minVersionColumn],
-				width: tableWidth
+				width: tableWidth,
+				ariaLabel: localize('deploymentDialog.RequiredToolsTitle', "Required tools")
 			}).component();
 
 			const toolsTableWrapper = view.modelBuilder.divContainer().withLayout({ width: tableWidth }).component();
 			toolsTableWrapper.addItem(this._toolsTable, { CSSStyles: { 'border-left': '1px solid silver', 'border-top': '1px solid silver' } });
-			this._toolsLoadingComponent = view.modelBuilder.loadingComponent().withItem(toolsTableWrapper).component();
+			this._toolsLoadingComponent = view.modelBuilder.loadingComponent().withItem(toolsTableWrapper).withProperties<azdata.LoadingComponentProperties>({
+				loadingCompletedText: localize('deploymentDialog.loadingRequiredToolsCompleted', "Loading required tools information completed"),
+				loadingText: localize('deploymentDialog.loadingRequiredTools', "Loading required tools information"),
+				showText: true
+			}).component();
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
@@ -157,6 +162,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._selectedResourceType = resourceType;
 		const card = this._cardResourceTypeMap.get(this._selectedResourceType.name)!;
 		if (card.selected) {
+			card.focus();
 			// clear the selected state of the previously selected card
 			this._resourceTypeCards.forEach(c => {
 				if (c !== card) {
@@ -188,7 +194,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 			const optionSelectBox = this._view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 				values: option.values,
 				value: option.values[0],
-				width: '300px'
+				width: '300px',
+				ariaLabel: option.displayName
 			}).component();
 
 			this._toDispose.push(optionSelectBox.onValueChanged(() => { this.updateToolsDisplayTable(); }));
@@ -226,7 +233,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				if (this.toolRefreshTimestamp !== currentRefreshTimestamp) {
 					return;
 				}
-				let autoInstallRequired = false;
+				let installationRequired = false;
 				let minVersionCheckFailed = false;
 				const messages: string[] = [];
 				this._toolsTable.data = toolRequirements.map(toolReq => {
@@ -244,22 +251,24 @@ export class ResourceTypePickerDialog extends DialogBase {
 						minVersionCheckFailed = true;
 						messages.push(localize('deploymentDialog.ToolDoesNotMeetVersionRequirement', "'{0}' [ {1} ] does not meet the minimum version requirement, please uninstall it and restart Azure Data Studio.", tool.displayName, tool.homePage));
 					}
-					autoInstallRequired = autoInstallRequired || tool.autoInstallRequired;
+					installationRequired = installationRequired || tool.autoInstallRequired;
 					return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || '', toolReq.version || ''];
 				});
 
-				this._installToolButton.hidden = !autoInstallRequired;
-				this._dialogObject.okButton.enabled = messages.length === 0 && !autoInstallRequired;
+				this._installToolButton.hidden = minVersionCheckFailed || !installationRequired;
+				this._dialogObject.okButton.enabled = messages.length === 0 && !minVersionCheckFailed && !installationRequired;
 				if (messages.length !== 0) {
 					if (!minVersionCheckFailed) {
 						messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed by yourself after Azure Data Studio is launched to pick up the updated PATH environment variable. You may find additional details in the debug console by running the 'Toggle Developer Tools' command in the Azure Data Studio Command Palette."));
 					}
 					this._dialogObject.message = {
 						level: azdata.window.MessageLevel.Error,
-						text: localize('deploymentDialog.ToolCheckFailed', "Some required tools are not installed or do not meet the minimum version requirement."),
-						description: messages.join(EOL)
+						text: [
+							localize('deploymentDialog.ToolCheckFailed', "Some required tools are not installed or do not meet the minimum version requirement."),
+							...messages
+						].join(EOL)
 					};
-				} else if (autoInstallRequired) {
+				} else if (installationRequired) {
 					let infoText: string[] = [localize('deploymentDialog.InstallToolsHint', "Some required tools are not installed, you can click the \"{0}\" button to install them.", this._installToolButton.label)];
 					const informationalMessagesArray = this._tools.reduce<string[]>((returnArray, currentTool) => {
 						if (currentTool.needsInstallation) {
@@ -284,7 +293,9 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	private createAgreementCheckbox(agreementInfo: AgreementInfo): azdata.FlexContainer {
-		const checkbox = this._view.modelBuilder.checkBox().component();
+		const checkbox = this._view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
+			ariaLabel: this.getAgreementDisplayText(agreementInfo)
+		}).component();
 		checkbox.checked = false;
 		this._toDispose.push(checkbox.onChanged(() => {
 			this._agreementCheckboxChecked = !!checkbox.checked;
@@ -295,6 +306,16 @@ export class ResourceTypePickerDialog extends DialogBase {
 			requiredIndicator: true
 		}).component();
 		return createFlexContainer(this._view, [checkbox, text]);
+	}
+
+	private getAgreementDisplayText(agreementInfo: AgreementInfo): string {
+		// the agreement template will have {index} as placeholder for hyperlinks
+		// this method will get the display text after replacing the placeholders
+		let text = agreementInfo.template;
+		for (let i: number = 0; i < agreementInfo.links.length; i++) {
+			text = text.replace(`{${i}}`, agreementInfo.links[i].text);
+		}
+		return text;
 	}
 
 	private getCurrentProvider(): DeploymentProvider {

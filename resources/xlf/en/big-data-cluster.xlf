@@ -175,32 +175,6 @@
       <source xml:lang="en">Unexpected error retrieving BDC Endpoints: {0}</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="error.no.activedirectory">
-      <source xml:lang="en">This cluster does not support Windows authentication</source>
-    </trans-unit>
-    <trans-unit id="bdc.error.tokenPost">
-      <source xml:lang="en">Error during authentication</source>
-    </trans-unit>
-    <trans-unit id="bdc.error.unauthorized">
-      <source xml:lang="en">You do not have permission to log into this cluster using Windows Authentication</source>
-    </trans-unit>
-    <trans-unit id="bdc.error.getEndPoints">
-      <source xml:lang="en">Error retrieving endpoints from {0}</source>
-    </trans-unit>
-    <trans-unit id="bdc.error.getBdcStatus">
-      <source xml:lang="en">Error retrieving BDC status from {0}</source>
-    </trans-unit>
-    <trans-unit id="bdc.error.mountHdfs">
-      <source xml:lang="en">Error creating mount</source>
-    </trans-unit>
-    <trans-unit id="bdc.error.refreshHdfs">
-      <source xml:lang="en">Error refreshing mount</source>
-    </trans-unit>
-    <trans-unit id="bdc.error.deleteHdfs">
-      <source xml:lang="en">Error deleting mount</source>
-    </trans-unit>
-  </body></file>
   <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase" source-language="en" datatype="plaintext"><body>
     <trans-unit id="basicAuthName">
       <source xml:lang="en">Basic</source>
@@ -230,7 +204,7 @@
       <source xml:lang="en">password</source>
     </trans-unit>
     <trans-unit id="textUrlCapital">
-      <source xml:lang="en">URL</source>
+      <source xml:lang="en">Cluster Management URL</source>
     </trans-unit>
     <trans-unit id="textAuthCapital">
       <source xml:lang="en">Authentication type</source>
@@ -251,12 +225,48 @@
       <source xml:lang="en">Cancel</source>
     </trans-unit>
   </body></file>
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="error.no.activedirectory">
+      <source xml:lang="en">This cluster does not support Windows authentication</source>
+    </trans-unit>
+    <trans-unit id="bdc.error.tokenPost">
+      <source xml:lang="en">Error during authentication</source>
+    </trans-unit>
+    <trans-unit id="bdc.error.unauthorized">
+      <source xml:lang="en">You do not have permission to log into this cluster using Windows Authentication</source>
+    </trans-unit>
+    <trans-unit id="bdc.error.getEndPoints">
+      <source xml:lang="en">Error retrieving endpoints from {0}</source>
+    </trans-unit>
+    <trans-unit id="bdc.error.getBdcStatus">
+      <source xml:lang="en">Error retrieving BDC status from {0}</source>
+    </trans-unit>
+    <trans-unit id="bdc.error.mountHdfs">
+      <source xml:lang="en">Error creating mount</source>
+    </trans-unit>
+    <trans-unit id="bdc.error.refreshHdfs">
+      <source xml:lang="en">Error refreshing mount</source>
+    </trans-unit>
+    <trans-unit id="bdc.error.deleteHdfs">
+      <source xml:lang="en">Error deleting mount</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/connectControllerDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="connectController.dialog.title">
+      <source xml:lang="en">Connect to Controller (preview)</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/commonControls" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="bdc.dashboard.viewDetails">
+      <source xml:lang="en">View Details</source>
+    </trans-unit>
+  </body></file>
   <file original="extensions/big-data-cluster/dist/extension" source-language="en" datatype="plaintext"><body>
     <trans-unit id="mount.error.endpointNotFound">
       <source xml:lang="en">Controller endpoint information was not found</source>
     </trans-unit>
     <trans-unit id="bdc.dashboard.title">
-      <source xml:lang="en">Big Data Cluster Dashboard -</source>
+      <source xml:lang="en">Big Data Cluster Dashboard (preview) -</source>
     </trans-unit>
     <trans-unit id="textYes">
       <source xml:lang="en">Yes</source>
@@ -266,16 +276,6 @@
     </trans-unit>
     <trans-unit id="textConfirmDeleteController">
       <source xml:lang="en">Are you sure you want to delete '{0}'?</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/connectControllerDialog" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="connectController.dialog.title">
-      <source xml:lang="en">Connect to Controller</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/commonControls" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="bdc.dashboard.viewDetails">
-      <source xml:lang="en">View Details</source>
     </trans-unit>
   </body></file>
   <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/addControllerNode" source-language="en" datatype="plaintext"><body>
@@ -305,7 +305,7 @@
       <source xml:lang="en">Password is required</source>
     </trans-unit>
     <trans-unit id="textAddNewController">
-      <source xml:lang="en">Add New Controller</source>
+      <source xml:lang="en">Add New Controller (preview)</source>
     </trans-unit>
     <trans-unit id="textUrlLower">
       <source xml:lang="en">url</source>
@@ -320,7 +320,7 @@
       <source xml:lang="en">Remember Password</source>
     </trans-unit>
     <trans-unit id="textUrlCapital">
-      <source xml:lang="en">URL</source>
+      <source xml:lang="en">Cluster Management URL</source>
     </trans-unit>
     <trans-unit id="textAuthCapital">
       <source xml:lang="en">Authentication type</source>
@@ -346,7 +346,7 @@
       <source xml:lang="en">Troubleshoot</source>
     </trans-unit>
     <trans-unit id="bdc.dashboard.overviewNavTitle">
-      <source xml:lang="en">Big data cluster overview</source>
+      <source xml:lang="en">Big Data Cluster overview</source>
     </trans-unit>
     <trans-unit id="bdc.dashboard.clusterDetails">
       <source xml:lang="en">Cluster Details</source>
@@ -433,6 +433,9 @@
     <trans-unit id="bdc.dashboard.copyTitle">
       <source xml:lang="en">Copy</source>
     </trans-unit>
+    <trans-unit id="copiedEndpoint">
+      <source xml:lang="en">Endpoint '{0}' copied to clipboard</source>
+    </trans-unit>
   </body></file>
   <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog" source-language="en" datatype="plaintext"><body>
     <trans-unit id="mount.main.section">
@@ -463,7 +466,7 @@
       <source xml:lang="en">Unknown error occurred during the mount process</source>
     </trans-unit>
     <trans-unit id="mount.dialog.title">
-      <source xml:lang="en">Mount HDFS Folder</source>
+      <source xml:lang="en">Mount HDFS Folder (preview)</source>
     </trans-unit>
     <trans-unit id="mount.hdfsPath.info">
       <source xml:lang="en">Path to a new (non-existing) directory which you want to associate with the mount</source>

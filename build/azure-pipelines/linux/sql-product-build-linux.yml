@@ -17,6 +17,31 @@ steps:
     inputs:
       versionSpec: "1.x"
 
+  - task: AzureKeyVault@1
+    displayName: 'Azure Key Vault: Get Secrets'
+    inputs:
+      azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+      KeyVaultName: ado-secrets
+
+  - script: |
+      set -e
+      cat << EOF > ~/.netrc
+      machine github.com
+      login azuredatastudio
+      password $(github-distro-mixin-password)
+      EOF
+
+      git config user.email "andresse@microsoft.com"
+      git config user.name "AzureDataStudio"
+    displayName: Prepare tooling
+
+  - script: |
+      set -e
+      git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+      git fetch distro
+      git merge $(node -p "require('./package.json').distro")
+    displayName: Merge distro
+
   - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
     inputs:
       keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
@@ -44,18 +69,33 @@ steps:
 
   - script: |
       set -e
-      yarn gulp mixin
+      node build/azure-pipelines/mixin
     displayName: Mix in quality
-
-  - script: |
-      set -e
-      yarn gulp vscode-linux-x64-min
-    displayName: Build
 
   - script: |
       set -e
       yarn gulp install-sqltoolsservice
     displayName: Install sqltoolsservice
+
+  - script: |
+      set -e
+      yarn gulp install-ssmsmin
+    displayName: Install ssmsmin
+
+  - script: |
+      set -e
+      yarn gulp vscode-linux-x64
+    displayName: Build
+
+  - script: |
+      set -e
+      yarn gulp compile-extensions
+    displayName: Compile Extensions
+
+  - script: |
+      set -e
+      yarn gulp package-external-extensions
+    displayName: Package External extensions
 
   - task: ArchiveFiles@2 # WHY ARE WE DOING THIS?
     displayName: 'Archive build scripts source'
@@ -110,6 +150,12 @@ steps:
       Contents: '*.rpm'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
+  - task: CopyFiles@2
+    displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/vsix'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)/../vsix'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/vsix'
+
   - script: | # WHY ARE WE DOING THIS?
       set -e
       BUILD="$(Build.SourcesDirectory)/../azuredatastudio-linux-x64"
@@ -149,13 +195,14 @@ steps:
       reportDirectory: '$(Build.SourcesDirectory)/.build/coverage'
     continueOnError: true
 
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection'
+    inputs:
+      failOnAlert: true
+
   - script: 'echo "##vso[build.addbuildtag]Scheduled" '
     displayName: 'Add scheduled tag if needed'
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['Build.Reason'], 'Schedule'))
-
-  - script: 'echo "##vso[build.addbuildtag]AutoRelease" '
-    displayName: 'Add AutoRelease tag if needed copy'
-    condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['AUTO_RELEASE'], 'true'))
 
   - script: 'echo "##vso[build.addbuildtag]PerfTestCandidate" '
     displayName: 'Add PerfTestCandidate tag if needed'
