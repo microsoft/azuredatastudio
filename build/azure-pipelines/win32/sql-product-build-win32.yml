@@ -76,7 +76,7 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { yarn gulp "vscode-win32-x64" }
+      exec { yarn gulp "vscode-win32-x64-min" }
     displayName: Build
 
   - task: ArchiveFiles@2 # WHY
@@ -91,12 +91,6 @@ steps:
     inputs:
       PathtoPublish: '$(Build.BinariesDirectory)/source.tar.gz'
       ArtifactName: source
-
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { yarn gulp "vscode-win32-x64-min" }
-    displayName: Build
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
