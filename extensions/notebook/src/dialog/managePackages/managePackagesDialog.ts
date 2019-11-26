@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
 import { InstalledPackagesTab } from './installedPackagesTab';
 import { AddNewPackageTab } from './addNewPackageTab';
-import { ManagePackageDialogModel } from './managePackagesDialogModel';
+import { ManagePackagesDialogModel } from './managePackagesDialogModel';
 
 const localize = nls.loadMessageBundle();
 
@@ -18,10 +18,8 @@ export class ManagePackagesDialog {
 	private installedPkgTab: InstalledPackagesTab;
 	private addNewPkgTab: AddNewPackageTab;
 
-	public currentPkgType: string;
-
 	constructor(
-		private _managePackageDialogModel: ManagePackageDialogModel) {
+		private _managePackageDialogModel: ManagePackagesDialogModel) {
 	}
 
 	/**
@@ -53,17 +51,33 @@ export class ManagePackagesDialog {
 		return this._managePackageDialogModel.jupyterInstallation;
 	}
 
-	public get model(): ManagePackageDialogModel {
+	/**
+	 * Dialog model instance
+	 */
+	public get model(): ManagePackagesDialogModel {
 		return this._managePackageDialogModel;
 	}
 
-	public changePackageType(newPkgType: string): void {
-		this.model.changeProvider(newPkgType);
-		this.currentPkgType = newPkgType;
+	/**
+	 * Changes the current package type
+	 * @param newPkgType Package Type
+	 */
+	public changeProvider(providerId: string): void {
+		this.model.changeProvider(providerId);
 	}
 
+	/**
+	 * Resets the tabs for given provider Id
+	 * @param providerId Package Management Provider Id
+	 */
 	public async resetPages(providerId: string): Promise<void> {
-		this.changePackageType(providerId);
+
+		// Change the provider in the model
+		//
+		this.changeProvider(providerId);
+
+		// Load packages for given provider
+		//
 		await this.installedPkgTab.loadInstalledPackagesInfo();
 		await this.addNewPkgTab.resetPageFields();
 	}

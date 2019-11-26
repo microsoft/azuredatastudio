@@ -11,10 +11,10 @@ import * as TypeMoq from 'typemoq';
 import { IPackageManageProvider, IPackageDetails } from '../../types';
 import { LocalPipPackageManageProvider } from '../../jupyter/localPipPackageManageProvider';
 
-import { ManagePackageDialogModel } from '../../dialog/managePackages/managePackagesDialogModel';
+import { ManagePackagesDialogModel } from '../../dialog/managePackages/managePackagesDialogModel';
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
 
-interface testContext {
+interface TestContext {
 	provider: IPackageManageProvider;
 }
 
@@ -25,12 +25,12 @@ describe('Manage Packages', () => {
 	});
 
 	it('Should throw exception given undefined providers', async function (): Promise<void> {
-		should.throws(() => { new ManagePackageDialogModel(jupyterServerInstallation, undefined); }, 'Invalid list of package manager providers');
+		should.throws(() => { new ManagePackagesDialogModel(jupyterServerInstallation, undefined); }, 'Invalid list of package manager providers');
 	});
 
 	it('Should throw exception given empty providers', async function (): Promise<void> {
 		let providers = new Map<string, IPackageManageProvider>();
-		should.throws(() => { new ManagePackageDialogModel(jupyterServerInstallation, providers); }, 'Invalid list of package manager providers');
+		should.throws(() => { new ManagePackagesDialogModel(jupyterServerInstallation, providers); }, 'Invalid list of package manager providers');
 	});
 
 	it('Should not throw exception given undefined options', async function (): Promise<void> {
@@ -42,7 +42,7 @@ describe('Manage Packages', () => {
 		let providers = new Map<string, IPackageManageProvider>();
 		providers.set(provider.providerId, provider);
 
-		should.doesNotThrow(() => { new ManagePackageDialogModel(jupyterServerInstallation, providers, undefined); });
+		should.doesNotThrow(() => { new ManagePackagesDialogModel(jupyterServerInstallation, providers, undefined); });
 	});
 
 	it('Init should throw exception given invalid default location', async function (): Promise<void> {
@@ -55,8 +55,22 @@ describe('Manage Packages', () => {
 			multiLocations: true,
 			defaultLocation: 'invalid location'
 		};
-		let model = new ManagePackageDialogModel(jupyterServerInstallation, providers, options);
+		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, options);
 		should(model.init()).rejectedWith(`Invalid default location '${options.defaultLocation}`);
+	});
+
+	it('Init should throw exception given invalid default provider', async function (): Promise<void> {
+		let testContext = createContext();
+		let provider = createProvider(testContext);
+		let providers = new Map<string, IPackageManageProvider>();
+		providers.set(provider.providerId, provider);
+
+		let options = {
+			multiLocations: true,
+			defaultProviderId: 'invalid provider'
+		};
+		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, options);
+		should(model.init()).rejectedWith(`Invalid default provider id '${options.defaultProviderId}`);
 	});
 
 	it('Init should throw exception not given valid default location for single location mode', async function (): Promise<void> {
@@ -68,9 +82,10 @@ describe('Manage Packages', () => {
 		let options = {
 			multiLocations: false
 		};
-		let model = new ManagePackageDialogModel(jupyterServerInstallation, providers, options);
+		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, options);
 		should(model.init()).rejectedWith(`Default location not specified for single location mode`);
 	});
+
 
 	it('Init should set default options given undefined', async function (): Promise<void> {
 		let testContext = createContext();
@@ -78,11 +93,42 @@ describe('Manage Packages', () => {
 		let providers = new Map<string, IPackageManageProvider>();
 		providers.set(provider.providerId, provider);
 
-		let model = new ManagePackageDialogModel(jupyterServerInstallation, providers, undefined);
+		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, undefined);
 
 		await model.init();
 		should.equal(model.multiLocationMode, true);
 		should.equal(model.defaultLocation, provider.packageTarget.location);
+		should.equal(model.defaultProviderId, provider.providerId);
+	});
+
+	it('Init should set default provider Id given valid options', async function (): Promise<void> {
+		let testContext1 = createContext();
+		testContext1.provider.providerId = 'providerId1';
+		testContext1.provider.packageTarget = {
+			location: 'location1',
+			packageType: 'package-type1'
+		};
+
+		let testContext2 = createContext();
+		testContext2.provider.providerId = 'providerId2';
+		testContext2.provider.packageTarget = {
+			location: 'location1',
+			packageType: 'package-type2'
+		};
+		let providers = new Map<string, IPackageManageProvider>();
+		providers.set(testContext1.provider.providerId, createProvider(testContext1));
+		providers.set(testContext2.provider.providerId, createProvider(testContext2));
+		let options = {
+			multiLocations: false,
+			defaultLocation: testContext2.provider.packageTarget.location,
+			defaultProviderId: testContext2.provider.providerId
+		};
+		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, options);
+
+		await model.init();
+		should.equal(model.multiLocationMode, false);
+		should.equal(model.defaultLocation, testContext2.provider.packageTarget.location);
+		should.equal(model.defaultProviderId, testContext2.provider.providerId);
 	});
 
 	it('Should create a cache for multiple providers successfully', async function (): Promise<void> {
@@ -111,12 +157,12 @@ describe('Manage Packages', () => {
 		providers.set(testContext2.provider.providerId, createProvider(testContext2));
 		providers.set(testContext3.provider.providerId, createProvider(testContext3));
 
-		let model = new ManagePackageDialogModel(jupyterServerInstallation, providers, undefined);
+		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, undefined);
 
 		await model.init();
 		should.equal(model.defaultLocation, testContext1.provider.packageTarget.location);
-		should.deepEqual(model.getPackageTypes('location1'), [['providerId1', 'package-type1'], ['providerId2', 'package-type2']]);
-		should.deepEqual(model.getPackageTypes('location2'), [['providerId3', 'package-type1']]);
+		should.deepEqual(model.getPackageTypes('location1'), [{ providerId: 'providerId1', packageType: 'package-type1'}, {providerId: 'providerId2', packageType: 'package-type2'}]);
+		should.deepEqual(model.getPackageTypes('location2'), [{providerId: 'providerId3', packageType: 'package-type1'}]);
 	});
 
 	it('Should not include a provider that can not be used in current context', async function (): Promise<void> {
@@ -139,11 +185,11 @@ describe('Manage Packages', () => {
 		providers.set(testContext1.provider.providerId, createProvider(testContext1));
 		providers.set(testContext2.provider.providerId, createProvider(testContext2));
 
-		let model = new ManagePackageDialogModel(jupyterServerInstallation, providers, undefined);
+		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, undefined);
 
 		await model.init();
 		should.equal(model.defaultLocation, testContext1.provider.packageTarget.location);
-		should.deepEqual(model.getPackageTypes('location1'), [['providerId1', 'package-type1']]);
+		should.deepEqual(model.getPackageTypes('location1'), [{providerId: 'providerId1', packageType: 'package-type1'}]);
 	});
 
 	it('changeProvider should change current provider successfully', async function (): Promise<void> {
@@ -167,7 +213,7 @@ describe('Manage Packages', () => {
 		providers.set(testContext1.provider.providerId, createProvider(testContext1));
 		providers.set(testContext2.provider.providerId, createProvider(testContext2));
 
-		let model = new ManagePackageDialogModel(jupyterServerInstallation, providers, undefined);
+		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, undefined);
 
 		await model.init();
 		model.changeProvider('providerId2');
@@ -193,7 +239,7 @@ describe('Manage Packages', () => {
 		providers.set(testContext1.provider.providerId, createProvider(testContext1));
 		providers.set(testContext2.provider.providerId, createProvider(testContext2));
 
-		let model = new ManagePackageDialogModel(jupyterServerInstallation, providers, undefined);
+		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, undefined);
 
 		await model.init();
 		should.throws(() => model.changeProvider('providerId3'));
@@ -219,11 +265,10 @@ describe('Manage Packages', () => {
 		providers.set(testContext1.provider.providerId, createProvider(testContext1));
 		providers.set(testContext2.provider.providerId, createProvider(testContext2));
 
-		let model = new ManagePackageDialogModel(jupyterServerInstallation, providers, undefined);
+		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, undefined);
 
-		await model.init();
 		should.equal(model.currentPackageManageProvider, undefined);
-		should(model.listPackage()).rejected();
+		should(model.listPackages()).rejected();
 		should(model.installPackages(TypeMoq.It.isAny())).rejected();
 		should(model.uninstallPackages(TypeMoq.It.isAny())).rejected();
 	});
@@ -261,17 +306,18 @@ describe('Manage Packages', () => {
 		providers.set(testContext1.provider.providerId, createProvider(testContext1));
 		providers.set(testContext2.provider.providerId, createProvider(testContext2));
 
-		let model = new ManagePackageDialogModel(jupyterServerInstallation, providers, undefined);
+		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, undefined);
 
 		await model.init();
 		model.changeProvider('providerId2');
-		should(model.listPackage()).resolvedWith(packages);
+		should(model.listPackages()).resolvedWith(packages);
 		should(model.installPackages(packages)).resolved();
 		should(model.uninstallPackages(packages)).resolved();
+		should(model.getPackageOverview('p1')).resolved();
 		should.equal(model.getLocationTitle(), 'location title 2');
 	});
 
-	function createContext(): testContext {
+	function createContext(): TestContext {
 		return {
 			provider: {
 				providerId: 'providerId',
@@ -281,20 +327,22 @@ describe('Manage Packages', () => {
 				},
 				canUseProvider: () => { return Promise.resolve(true); },
 				getLocationTitle: () => { return 'location-title'; },
-				installPackage:() =>  { return Promise.resolve(); },
-				uninstallPackage: (packages: IPackageDetails[]) => { return Promise.resolve(); },
+				installPackages:() =>  { return Promise.resolve(); },
+				uninstallPackages: (packages: IPackageDetails[]) => { return Promise.resolve(); },
 				listPackages: () => { return Promise.resolve([]); },
+				getPackageOverview: (name: string) => { return Promise.resolve(undefined); },
 			}
 		};
 	}
 
-	function createProvider(testContext: testContext): IPackageManageProvider {
+	function createProvider(testContext: TestContext): IPackageManageProvider {
 		let mockProvider = TypeMoq.Mock.ofType(LocalPipPackageManageProvider);
 		mockProvider.setup(x => x.canUseProvider()).returns(() => testContext.provider.canUseProvider());
 		mockProvider.setup(x => x.getLocationTitle()).returns(() => testContext.provider.getLocationTitle());
-		mockProvider.setup(x => x.installPackage(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((packages, useMinVersion) => testContext.provider.installPackage(packages, useMinVersion));
-		mockProvider.setup(x => x.uninstallPackage(TypeMoq.It.isAny())).returns((packages) => testContext.provider.uninstallPackage(packages));
+		mockProvider.setup(x => x.installPackages(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((packages, useMinVersion) => testContext.provider.installPackages(packages, useMinVersion));
+		mockProvider.setup(x => x.uninstallPackages(TypeMoq.It.isAny())).returns((packages) => testContext.provider.uninstallPackages(packages));
 		mockProvider.setup(x => x.listPackages()).returns(() => testContext.provider.listPackages());
+		mockProvider.setup(x => x.getPackageOverview(TypeMoq.It.isAny())).returns((name) => testContext.provider.getPackageOverview(name));
 		mockProvider.setup(x => x.packageTarget).returns(() => testContext.provider.packageTarget);
 		mockProvider.setup(x => x.providerId).returns(() => testContext.provider.providerId);
 		return mockProvider.object;

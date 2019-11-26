@@ -11,7 +11,6 @@ import * as utils from '../../common/utils';
 import { ManagePackagesDialog } from './managePackagesDialog';
 import CodeAdapter from '../../prompts/adapter';
 import { QuestionTypes, IQuestion } from '../../prompts/question';
-import { PythonPkgType } from '../../common/constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -42,16 +41,16 @@ export class InstalledPackagesTab {
 
 			let dropdownValues = this.dialog.model.getPackageTypes().map(x => {
 				return {
-					name: x[0],
-					displayName: x[1]
+					name: x.providerId,
+					displayName: x.packageType
 				};
 			});
-			let defaultPackageType = dropdownValues && dropdownValues.length > 0 ? dropdownValues[0] : undefined;
+			let defaultPackageType = this.dialog.model.getDefaultPackageType();
 			this.packageTypeDropdown = view.modelBuilder.dropDown().withProperties({
 				values: dropdownValues,
 				value: defaultPackageType
 			}).component();
-			this.dialog.changePackageType(defaultPackageType.name);
+			this.dialog.changeProvider(defaultPackageType.providerId);
 			this.packageTypeDropdown.onValueChanged(() => {
 				this.dialog.resetPages((<azdata.CategoryValue>this.packageTypeDropdown.value).name)
 					.catch(err => {
@@ -121,7 +120,7 @@ export class InstalledPackagesTab {
 		await this.installedPackagesLoader.updateProperties({ loading: true });
 		await this.uninstallPackageButton.updateProperties({ enabled: false });
 		try {
-			pythonPackages = await this.dialog.model.listPackage();
+			pythonPackages = await this.dialog.model.listPackages();
 		} catch (err) {
 			this.dialog.showErrorMessage(utils.getErrorMessage(err));
 		} finally {
@@ -140,7 +139,7 @@ export class InstalledPackagesTab {
 		await this.installedPackageCount.updateProperties({
 			value: localize('managePackages.packageCount', "{0} {1} packages found",
 				packageCount,
-				this.dialog.currentPkgType)
+				this.dialog.model.currentPackageType)
 		});
 
 		if (packageData && packageData.length > 0) {
@@ -188,11 +187,7 @@ export class InstalledPackagesTab {
 					isCancelable: false,
 					operation: op => {
 						let uninstallPromise: Promise<void>;
-						if (this.dialog.currentPkgType === PythonPkgType.Anaconda) {
-							uninstallPromise = this.jupyterInstallation.uninstallCondaPackages(packages);
-						} else {
-							uninstallPromise = this.jupyterInstallation.uninstallPipPackages(packages);
-						}
+						this.dialog.model.uninstallPackages(packages);
 						uninstallPromise
 							.then(async () => {
 								let uninstallMsg = localize('managePackages.backgroundUninstallComplete',

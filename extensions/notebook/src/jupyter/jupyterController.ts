@@ -28,7 +28,7 @@ import { ManagePackagesDialog } from '../dialog/managePackages/managePackagesDia
 import { IPackageManageProvider } from '../types';
 import { LocalPipPackageManageProvider } from './localPipPackageManageProvider';
 import { LocalCondaPackageManageProvider } from './localCondaPackageManageProvider';
-import { ManagePackageDialogModel } from '../dialog/managePackages/managePackagesDialogModel';
+import { ManagePackagesDialogModel, ManagePackageDialogOptions } from '../dialog/managePackages/managePackagesDialogModel';
 
 let untitledCounter = 0;
 
@@ -81,7 +81,7 @@ export class JupyterController implements vscode.Disposable {
 		});
 
 		this.apiWrapper.registerCommand(constants.jupyterReinstallDependenciesCommand, () => { return this.handleDependenciesReinstallation(); });
-		this.apiWrapper.registerCommand(constants.jupyterManagePackages, async () => { return this.doManagePackages(); });
+		this.apiWrapper.registerCommand(constants.jupyterManagePackages, async (args) => { return this.doManagePackages(args); });
 		this.apiWrapper.registerCommand(constants.jupyterConfigurePython, () => { return this.doConfigurePython(this._jupyterInstallation); });
 
 		let supportedFileFilter: vscode.DocumentFilter[] = [
@@ -202,9 +202,17 @@ export class JupyterController implements vscode.Disposable {
 		});
 	}
 
-	public async doManagePackages(): Promise<void> {
+	public async doManagePackages(options?: ManagePackageDialogOptions): Promise<void> {
 		try {
-			let model = new ManagePackageDialogModel(this._jupyterInstallation, this._packageManageProviders);
+			if (!options) {
+				options = {
+					multiLocations: false,
+					defaultLocation: constants.localhostName,
+					defaultProviderId: LocalPipPackageManageProvider.ProviderId
+				};
+			}
+			let model = new ManagePackagesDialogModel(this._jupyterInstallation, this._packageManageProviders, options);
+
 			await model.init();
 			let packagesDialog = new ManagePackagesDialog(model);
 			packagesDialog.showDialog();
@@ -214,17 +222,19 @@ export class JupyterController implements vscode.Disposable {
 		}
 	}
 
-	public registerPackageManagers(providerId: string, packageManageProvider: IPackageManageProvider): void {
+	public registerPackageManager(providerId: string, packageManageProvider: IPackageManageProvider): void {
 		if (packageManageProvider) {
 			if (!this._packageManageProviders.has(providerId)) {
 				this._packageManageProviders.set(providerId, packageManageProvider);
+			} else {
+				throw Error(`Package manager provider is already registered. provider id: ${providerId}`);
 			}
 		}
 	}
 
 	private registerDefaultPackageManageProviders(): void {
-		this.registerPackageManagers(LocalPipPackageManageProvider.ProviderId, new LocalPipPackageManageProvider(this._jupyterInstallation));
-		this.registerPackageManagers(LocalCondaPackageManageProvider.ProviderId, new LocalCondaPackageManageProvider(this._jupyterInstallation));
+		this.registerPackageManager(LocalPipPackageManageProvider.ProviderId, new LocalPipPackageManageProvider(this._jupyterInstallation));
+		this.registerPackageManager(LocalCondaPackageManageProvider.ProviderId, new LocalCondaPackageManageProvider(this._jupyterInstallation));
 	}
 
 	public doConfigurePython(jupyterInstaller: JupyterServerInstallation): void {

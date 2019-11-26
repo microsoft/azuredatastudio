@@ -4,20 +4,34 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
-import { IPackageManageProvider, IPackageDetails } from '../../types';
+import { IPackageManageProvider, IPackageDetails, IPackageOverview } from '../../types';
 
 export interface ManagePackageDialogOptions {
 	multiLocations: boolean;
 	defaultLocation?: string;
+	defaultProviderId?: string;
+}
+
+export interface ProviderPackageType {
+	packageType: string;
+	providerId: string;
 }
 
 /**
  * Manage package dialog model
  */
-export class ManagePackageDialogModel {
+export class ManagePackagesDialogModel {
 
-	public currentProvider: string;
+	private _currentProvider: string;
+
+	/**
+	 * A set for locations
+	 */
 	private _locations: Set<string> = new Set<string>();
+
+	/**
+	 * Map of locations to providers
+	 */
 	private _packageTypes: Map<string, IPackageManageProvider[]> = new Map<string, IPackageManageProvider[]>();
 
 	/**
@@ -42,28 +56,39 @@ export class ManagePackageDialogModel {
 	public async init(): Promise<void> {
 		await this.loadCaches();
 		this.loadOptions();
+		this.changeProvider(this.defaultProviderId);
 	}
 
 	/**
 	 * Loads the model options
 	 */
 	private loadOptions(): void {
+
 		// Set Default Options
 		//
 		if (!this._options) {
-			this._options = {
-				multiLocations: true,
-				defaultLocation: undefined
-			};
+			this._options = this.defaultOptions;
 		}
 
-		if (this._options.defaultLocation && !this._packageTypes.get(this._options.defaultLocation)) {
+		if (this._options.defaultLocation && !this._packageTypes.has(this._options.defaultLocation)) {
 			throw new Error(`Invalid default location '${this._options.defaultLocation}`);
+		}
+
+		if (this._options.defaultProviderId && !this._packageManageProviders.has(this._options.defaultProviderId)) {
+			throw new Error(`Invalid default provider id '${this._options.defaultProviderId}`);
 		}
 
 		if (!this._options.multiLocations && !this.defaultLocation) {
 			throw new Error('Default location not specified for single location mode');
 		}
+	}
+
+	private get defaultOptions(): ManagePackageDialogOptions {
+		return {
+			multiLocations: true,
+			defaultLocation: undefined,
+			defaultProviderId: undefined
+		};
 	}
 
 	/**
@@ -77,9 +102,20 @@ export class ManagePackageDialogModel {
 	 * Returns the current provider
 	 */
 	public get currentPackageManageProvider(): IPackageManageProvider {
-		if (this.currentProvider) {
-			let provider = this._packageManageProviders.get(this.currentProvider);
+		if (this._currentProvider) {
+			let provider = this._packageManageProviders.get(this._currentProvider);
 			return provider;
+		}
+		return undefined;
+	}
+
+	/**
+ * Returns the current provider
+ */
+	public get currentPackageType(): string {
+		if (this._currentProvider) {
+			let provider = this._packageManageProviders.get(this._currentProvider);
+			return provider.packageTarget.packageType;
 		}
 		return undefined;
 	}
@@ -88,13 +124,20 @@ export class ManagePackageDialogModel {
 	 * Returns true if multi locations mode is enabled
 	 */
 	public get multiLocationMode(): boolean {
-		return this._options.multiLocations;
+		return this.options.multiLocations;
+	}
+
+	/**
+	 * Returns options
+	 */
+	public get options(): ManagePackageDialogOptions {
+		return this._options || this.defaultOptions;
 	}
 
 	/**
 	 * returns the array of target locations
 	 */
-	public targetLocations(): string[] {
+	public get targetLocations(): string[] {
 		return Array.from(this._locations.keys());
 	}
 
@@ -102,7 +145,14 @@ export class ManagePackageDialogModel {
 	 * Returns the default location
 	 */
 	public get defaultLocation(): string {
-		return this._options.defaultLocation || this.targetLocations()[0];
+		return this.options.defaultLocation || this.targetLocations[0];
+	}
+
+	/**
+ * Returns the default location
+ */
+	public get defaultProviderId(): string {
+		return this.options.defaultProviderId || Array.from(this.packageManageProviders.keys())[0];
 	}
 
 	/**
@@ -127,23 +177,37 @@ export class ManagePackageDialogModel {
 	}
 
 	/**
-	 * Returns the package types for given location
+	 * Returns a map of providerId to package types for given location
 	 */
-	public getPackageTypes(targetLocation?: string): [string, string][] {
+	public getPackageTypes(targetLocation?: string): ProviderPackageType[] {
 		targetLocation = targetLocation || this.defaultLocation;
 		let providers = this._packageTypes.get(targetLocation);
-		return providers.map(x => [x.providerId, x.packageTarget.packageType]);
+		return providers.map(x => {
+			return {
+				providerId: x.providerId,
+				packageType: x.packageTarget.packageType
+			};
+		});
+	}
+
+	/**
+ * Returns a map of providerId to package types for given location
+ */
+	public getDefaultPackageType(): ProviderPackageType {
+		let defaultProviderId = this.defaultProviderId;
+		let packageTypes = this.getPackageTypes();
+		return packageTypes.find(x => x.providerId === defaultProviderId);
 	}
 
 	/**
 	 * returns the list of packages for current provider
 	 */
-	public async listPackage(): Promise<IPackageDetails[]> {
+	public async listPackages(): Promise<IPackageDetails[]> {
 		let provider = this.currentPackageManageProvider;
 		if (provider) {
 			return await provider.listPackages();
 		} else {
-			return Promise.reject('Current Provider is not set');
+			throw new Error('Current Provider is not set');
 		}
 	}
 
@@ -152,22 +216,22 @@ export class ManagePackageDialogModel {
 	 */
 	public changeProvider(providerId: string): void {
 		if (this._packageManageProviders.has(providerId)) {
-			this.currentProvider = providerId;
+			this._currentProvider = providerId;
 		} else {
 			throw Error(`Invalid package type ${providerId}`);
 		}
 	}
 
 	/**
-	 * Installs give packages using current provider
+	 * Installs given packages using current provider
 	 * @param packages Packages to install
 	 */
 	public async installPackages(packages: IPackageDetails[]): Promise<void> {
 		let provider = this.currentPackageManageProvider;
 		if (provider) {
-			await provider.installPackage(packages, false);
+			await provider.installPackages(packages, false);
 		} else {
-			return Promise.reject('Current Provider is not set');
+			throw new Error('Current Provider is not set');
 		}
 	}
 
@@ -183,15 +247,28 @@ export class ManagePackageDialogModel {
 	}
 
 	/**
-	 * UnInstalls give packages using current provider
+	 * UnInstalls given packages using current provider
 	 * @param packages Packages to install
 	 */
 	public async uninstallPackages(packages: IPackageDetails[]): Promise<void> {
 		let provider = this.currentPackageManageProvider;
 		if (provider) {
-			await provider.uninstallPackage(packages);
+			await provider.uninstallPackages(packages);
 		} else {
-			return Promise.reject('Current Provider is not set');
+			throw new Error('Current Provider is not set');
+		}
+	}
+
+	/**
+	 * Returns package preview for given name
+	 * @param packageName Package name
+	 */
+	public async getPackageOverview(packageName: string): Promise<IPackageOverview> {
+		let provider = this.currentPackageManageProvider;
+		if (provider) {
+			return await provider.getPackageOverview(packageName);
+		} else {
+			throw new Error('Current Provider is not set');
 		}
 	}
 

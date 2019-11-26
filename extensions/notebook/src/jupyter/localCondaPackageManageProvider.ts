@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IPackageManageProvider, IPackageDetails, IPackageTarget } from '../types';
+import { IPackageManageProvider, IPackageDetails, IPackageTarget, IPackageOverview } from '../types';
 import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as constants from '../common/constants';
+import * as utils from '../common/utils';
 
 export class LocalCondaPackageManageProvider implements IPackageManageProvider {
-
 
 	/**
 	 * Provider Id for Anaconda package manage provider
@@ -40,11 +40,11 @@ export class LocalCondaPackageManageProvider implements IPackageManageProvider {
 	}
 
 	/**
-	 * Installs give packages
+	 * Installs given packages
 	 * @param packages Packages to install
 	 * @param useMinVersion minimum version
 	 */
-	installPackage(packages: IPackageDetails[], useMinVersion: boolean): Promise<void> {
+	installPackages(packages: IPackageDetails[], useMinVersion: boolean): Promise<void> {
 		return this.jupyterInstallation.installCondaPackages(packages, useMinVersion);
 	}
 
@@ -52,7 +52,7 @@ export class LocalCondaPackageManageProvider implements IPackageManageProvider {
 	 * Uninstalls given packages
 	 * @param packages Packages to uninstall
 	 */
-	uninstallPackage(packages: IPackageDetails[]): Promise<void> {
+	uninstallPackages(packages: IPackageDetails[]): Promise<void> {
 		return this.jupyterInstallation.uninstallCondaPackages(packages);
 	}
 
@@ -67,6 +67,48 @@ export class LocalCondaPackageManageProvider implements IPackageManageProvider {
 	 * Returns location title
 	 */
 	getLocationTitle(): string {
-		return constants.localhostTitle;
+		return constants.localhostName;
+	}
+
+	/**
+	 * Returns package overview for given name
+	 * @param packageName Package Name
+	 */
+	getPackageOverview(packageName: string): Promise<IPackageOverview> {
+		return this.fetchCondaPackage(packageName);
+	}
+
+	private async fetchCondaPackage(packageName: string): Promise<IPackageOverview> {
+		let condaExe = this.jupyterInstallation.getCondaExePath();
+		let cmd = `"${condaExe}" search --json ${packageName}`;
+		let packageResult: string;
+		try {
+			packageResult = await this.jupyterInstallation.executeBufferedCommand(cmd);
+		} catch (err) {
+			throw new Error(constants.PackageNotFoundError);
+		}
+
+		if (packageResult) {
+			let packageJson = JSON.parse(packageResult);
+			if (packageJson) {
+				if (packageJson.error) {
+					throw new Error(packageJson.error);
+				}
+
+				let packages = packageJson[packageName];
+				if (Array.isArray(packages)) {
+					let allVersions = packages.filter(pkg => pkg && pkg.version).map(pkg => pkg.version);
+					let singletonVersions = new Set<string>(allVersions);
+					let sortedVersions = utils.sortPackageVersions(Array.from(singletonVersions), false);
+					return {
+						name: packageName,
+						versions: sortedVersions,
+						summary: undefined
+					};
+				}
+			}
+		}
+
+		return undefined;
 	}
 }

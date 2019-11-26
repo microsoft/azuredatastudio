@@ -3,16 +3,21 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IPackageManageProvider, IPackageDetails, IPackageTarget } from '../types';
+import * as nls from 'vscode-nls';
+import { IPackageManageProvider, IPackageDetails, IPackageTarget, IPackageOverview } from '../types';
 import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as constants from '../common/constants';
+import * as utils from '../common/utils';
+import * as request from 'request';
+
+const localize = nls.loadMessageBundle();
 
 export class LocalPipPackageManageProvider implements IPackageManageProvider {
 
 	/**
 	 * Provider Id for Pip package manage provider
 	 */
-	public static ProviderId = 'localhost_Python';
+	public static ProviderId = 'localhost_Pip';
 
 	constructor(private jupyterInstallation: JupyterServerInstallation) {
 	}
@@ -39,11 +44,11 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 	}
 
 	/**
-	 * Installs give packages
+	 * Installs given packages
 	 * @param packages Packages to install
 	 * @param useMinVersion minimum version
 	 */
-	installPackage(packages: IPackageDetails[], useMinVersion: boolean): Promise<void> {
+	installPackages(packages: IPackageDetails[], useMinVersion: boolean): Promise<void> {
 		return this.jupyterInstallation.installPipPackages(packages, useMinVersion);
 	}
 
@@ -51,7 +56,7 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 	 * Uninstalls given packages
 	 * @param packages Packages to uninstall
 	 */
-	uninstallPackage(packages: IPackageDetails[]): Promise<void> {
+	uninstallPackages(packages: IPackageDetails[]): Promise<void> {
 		return this.jupyterInstallation.uninstallPipPackages(packages);
 	}
 
@@ -66,6 +71,61 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 	 * Returns location title
 	 */
 	getLocationTitle(): string {
-		return constants.localhostTitle;
+		return constants.localhostName;
+	}
+
+	/**
+	 * Returns package overview for given name
+	 * @param packageName Package Name
+	 */
+	getPackageOverview(packageName: string): Promise<IPackageOverview> {
+		return this.fetchPypiPackage(packageName);
+	}
+
+	private async fetchPypiPackage(packageName: string): Promise<IPackageOverview> {
+		return new Promise<IPackageOverview>((resolve, reject) => {
+			request.get(`https://pypi.org/pypi/${packageName}/json`, { timeout: 10000 }, (error, response, body) => {
+				if (error) {
+					return reject(error);
+				}
+
+				if (response.statusCode === 404) {
+					return reject(constants.PackageNotFoundError);
+				}
+
+				if (response.statusCode !== 200) {
+					return reject(
+						localize('managePackages.packageRequestError',
+							"Package info request failed with error: {0} {1}",
+							response.statusCode,
+							response.statusMessage));
+				}
+
+				let versionNums: string[] = [];
+				let packageSummary = '';
+
+				let packagesJson = JSON.parse(body);
+				if (packagesJson) {
+					if (packagesJson.releases) {
+						let versionKeys = Object.keys(packagesJson.releases);
+						versionKeys = versionKeys.filter(versionKey => {
+							let releaseInfo = packagesJson.releases[versionKey];
+							return Array.isArray(releaseInfo) && releaseInfo.length > 0;
+						});
+						versionNums = utils.sortPackageVersions(versionKeys, false);
+					}
+
+					if (packagesJson.info && packagesJson.info.summary) {
+						packageSummary = packagesJson.info.summary;
+					}
+				}
+
+				resolve({
+					name: packageName,
+					versions: versionNums,
+					summary: packageSummary
+				});
+			});
+		});
 	}
 }

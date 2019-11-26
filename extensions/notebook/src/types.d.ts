@@ -36,12 +36,19 @@ export interface IPackageTarget {
 	packageType: string;
 }
 
+export interface IPackageOverview {
+	name: string;
+	versions: string[];
+	summary: string;
+}
+
 export interface IPackageManageProvider {
 	providerId: string;
 	packageTarget: IPackageTarget;
 	listPackages(): Promise<IPackageDetails[]>;
-	installPackage(package: IPackageDetails[], useMinVersion: boolean): Promise<void>;
-	uninstallPackage(package: IPackageDetails[]): Promise<void>;
-	canUseProvider(): Promise<boolean>
+	installPackages(package: IPackageDetails[], useMinVersion: boolean): Promise<void>;
+	uninstallPackages(package: IPackageDetails[]): Promise<void>;
+	canUseProvider(): Promise<boolean>;
 	getLocationTitle(): string;
+	getPackageOverview(packageName: string): Promise<IPackageOverview>;
 }
