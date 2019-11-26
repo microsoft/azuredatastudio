@@ -17,6 +17,7 @@ const ext = require('./lib/extensions');
 const task = require('./lib/task');
 const glob = require('glob');
 const vsce = require('vsce');
+const mkdirp = require('mkdirp');
 
 gulp.task('clean-mssql-extension', util.rimraf('extensions/mssql/node_modules'));
 gulp.task('clean-credentials-extension', util.rimraf('extensions/credentials/node_modules'));
@@ -145,8 +146,9 @@ gulp.task('package-external-extensions', task.series(
 			return { name: extensionName, path: extensionPath };
 		}).map(element => {
 			const pkgJson = require(path.join(element.path, 'package.json'));
-			const visxDirectory = path.join(path.dirname(root), 'vsix');
-			const packagePath = path.join(visxDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
+			const vsixDirectory = path.join(path.dirname(root), 'vsix');
+			mkdirp.sync(vsixDirectory);
+			const packagePath = path.join(vsixDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
 			console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
 			return vsce.createVSIX({
 				cwd: element.path,
