@@ -54,7 +54,7 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		this.baseDestroy();
 	}
 
-	focus() {
+	focus(): void {
 		if (this.cardDiv) {
 			this.cardDiv.nativeElement.focus();
 		}
