@@ -25,6 +25,7 @@ import { promisify } from 'util';
 import * as events from 'events';
 
 const localize = nls.loadMessageBundle();
+const notInitalizedMessage = localize('accountProviderNotInitialized', "Account provider not initialized, cannot perform action");
 
 export class AzureAccountProvider implements azdata.AccountProvider {
 	private static AzureAccountAuthenticatedEvent: string = 'AzureAccountAuthenticated';
@@ -136,6 +137,10 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 
 	private async _prompt(): Promise<azdata.Account | azdata.PromptFailedResult> {
+		if (this.isInitialized === false) {
+			vscode.window.showInformationMessage(notInitalizedMessage);
+			return { canceled: false };
+		}
 		const pathMappings = new Map<string, (req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => void>();
 
 		// const redirectUri = await vscode.env.createAppUri({
