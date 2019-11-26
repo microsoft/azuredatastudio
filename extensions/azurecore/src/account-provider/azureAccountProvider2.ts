@@ -350,7 +350,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	private createAuthUrl(baseHost: string, redirectUri: string, clientId: string, resource: string, tenant: string, nonce: string): string {
-		return `${baseHost}${tenant}/oauth2/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${nonce}&resource=${resource}`;
+		return `${encodeURIComponent(baseHost)}${encodeURIComponent(tenant)}/oauth2/authorize?response_type=code&client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${encodeURIComponent(nonce)}&resource=${encodeURIComponent(resource)}`;
 	}
 
 	private createAuthServer(pathMappings: Map<string, (req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => void>) {
