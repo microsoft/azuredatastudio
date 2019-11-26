@@ -60,6 +60,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	// All datasets
 	private dataSet: IGridDataSet;
 	private firstRender = true;
+	private enableEditing = false;
 	// Current selected cell state
 	private currentCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
 	private currentEditCellValue: string;
@@ -781,8 +782,8 @@ export class EditDataGridPanel extends GridParentComponent {
 				showHeader: true,
 				rowHeight: this._rowHeight,
 				defaultColumnWidth: 120,
-				editable: false,
-				autoEdit: false,
+				editable: this.enableEditing,
+				autoEdit: this.enableEditing,
 				enableAddRow: false, // TODO change when we support enableAddRow
 				enableAsyncPostRender: false,
 				editorFactory: {
@@ -1023,7 +1024,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (this.dataSet.dataRows) {
 			// We must wait until we get the first set of dataRows before we enable editing or slickgrid will complain
 			this.logService.debug('need to check if row is editable or not');
-			if (true) {
+			if (this.enableEditing) {
 				this.enterEditSession();
 			}
 
@@ -1044,7 +1045,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	private changeEditSession(enabled: boolean): void {
-
+		this.enableEditing = enabled;
 		let options: any = this.tables[0].grid.getOptions();
 		options.editable = enabled;
 		options.enableAddRow = false; // TODO change to " options.enableAddRow = false;" when we support enableAddRow
