@@ -200,7 +200,7 @@ steps:
     displayName: 'Copy Archive to: $(Build.ArtifactStagingDirectory)'
     inputs:
       SourceFolder: '$(Build.SourcesDirectory)/.build/win32-x64/archive/'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)' # our release scripts expect the archive to be in the root
 
   - task: CopyFiles@2
     displayName: 'Copy User Installer to: $(Build.ArtifactStagingDirectory)'
@@ -212,7 +212,7 @@ steps:
     displayName: 'Copy System Install to: $(Build.ArtifactStagingDirectory)'
     inputs:
       SourceFolder: '$(Build.SourcesDirectory)/.build/win32-x64/system-setup/'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/system-setup/'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/' # our release scripts except system exe to be in root and user setup to be under /user-setup
 
   - task: CopyFiles@2
     displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/vsix'
