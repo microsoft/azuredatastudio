@@ -61,14 +61,6 @@ export class CollapseComponent extends CellView implements OnInit, OnChanges {
 		this.cellModel.isCollapsed = !this.cellModel.isCollapsed;
 	}
 
-	public getEditor(): any {
-		return undefined;
-	}
-
-	public hasEditor(): boolean {
-		return false;
-	}
-
 	public cellGuid(): string {
 		return this.cellModel.cellGuid;
 	}

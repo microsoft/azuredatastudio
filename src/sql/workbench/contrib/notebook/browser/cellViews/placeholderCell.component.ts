@@ -83,14 +83,6 @@ export class PlaceholderCellComponent extends CellView implements OnInit, OnChan
 
 	}
 
-	public getEditor(): any {
-		return undefined;
-	}
-
-	public hasEditor(): boolean {
-		return false;
-	}
-
 	public cellGuid(): string {
 		return this.cellModel.cellGuid;
 	}

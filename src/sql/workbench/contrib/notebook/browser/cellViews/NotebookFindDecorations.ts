@@ -4,12 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { IModelDecorationsChangeAccessor, IModelDeltaDecoration, OverviewRulerLane, TrackedRangeStickiness, MinimapPosition } from 'vs/editor/common/model';
+import { IModelDecorationsChangeAccessor, IModelDeltaDecoration, OverviewRulerLane, TrackedRangeStickiness, MinimapPosition, FindMatch } from 'vs/editor/common/model';
 import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
 import { overviewRulerFindMatchForeground, minimapFindMatch } from 'vs/platform/theme/common/colorRegistry';
 import { themeColorFromId } from 'vs/platform/theme/common/themeService';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
-import { NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { NotebookPosition, ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { Range } from 'vs/editor/common/core/range';
 
 export class NotebookFindDecorations implements IDisposable {
 
@@ -325,4 +326,39 @@ export class NotebookFindDecorations implements IDisposable {
 		className: 'findScope',
 		isWholeLine: true
 	});
+}
+
+export class NotebookRange extends Range implements NotebookPosition {
+	lineNumber: number;
+	startColumnNumber: number;
+	endColumnNumber: number;
+	updateActiveCell(cell: ICellModel) {
+		this.cell = cell;
+	}
+	cell: ICellModel;
+
+	constructor(cell: ICellModel, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number) {
+		super(startLineNumber, startColumn, endLineNumber, endColumn);
+		this.cell = cell;
+		this.lineNumber = startLineNumber;
+		this.startColumnNumber = startColumn;
+		this.endColumnNumber = endColumn;
+		this.updateActiveCell(cell);
+	}
+}
+
+export class NotebookFindMatch extends FindMatch {
+	_findMatchBrand: void;
+
+	public readonly range: NotebookRange;
+	public readonly matches: string[] | null;
+
+	/**
+	 * @internal
+	 */
+	constructor(range: NotebookRange, matches: string[] | null) {
+		super(new Range(range.lineNumber, range.startColumnNumber, range.endLineNumber, range.endColumnNumber), matches);
+		this.range = range;
+		this.matches = matches;
+	}
 }

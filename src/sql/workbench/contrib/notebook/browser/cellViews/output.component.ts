@@ -185,14 +185,6 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 		}
 	}
 
-	public getEditor(): any {
-		return undefined;
-	}
-
-	public hasEditor(): boolean {
-		return false;
-	}
-
 	public cellGuid(): string {
 		return this.cellModel.cellGuid;
 	}

@@ -127,14 +127,6 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 		return this.cellModel.stdInVisible;
 	}
 
-	public getEditor(): any | undefined {
-		return undefined;
-	}
-
-	public hasEditor(): boolean {
-		return false;
-	}
-
 	public cellGuid(): string {
 		return this.cellModel.cellGuid;
 	}

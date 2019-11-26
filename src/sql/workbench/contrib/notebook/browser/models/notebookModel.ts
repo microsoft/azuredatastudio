@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
-import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants, NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { nbversion } from 'sql/workbench/contrib/notebook/common/models/notebookConstants';
 import * as notebookUtils from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
@@ -37,6 +37,7 @@ import { VSBufferReadableStream, VSBuffer } from 'vs/base/common/buffer';
 import { EDITOR_MODEL_DEFAULTS } from 'vs/editor/common/config/editorOptions';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { startsWith, singleLetterHash, isHighSurrogate, } from 'vs/base/common/strings';
+import { NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/cellViews/NotebookFindDecorations';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,

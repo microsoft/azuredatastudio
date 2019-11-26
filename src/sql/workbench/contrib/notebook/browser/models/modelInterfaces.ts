@@ -22,9 +22,9 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { localize } from 'vs/nls';
 import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-import { Range } from 'vs/editor/common/core/range';
-import { FindMatch, IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
+import { IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
+import { NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/cellViews/NotebookFindDecorations';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -454,42 +454,6 @@ export interface INotebookModel {
 	onFindCountChange: Event<number>;
 
 }
-
-export class NotebookRange extends Range implements NotebookPosition {
-	lineNumber: number;
-	startColumnNumber: number;
-	endColumnNumber: number;
-	updateActiveCell(cell: ICellModel) {
-		this.cell = cell;
-	}
-	cell: ICellModel;
-
-	constructor(cell: ICellModel, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number) {
-		super(startLineNumber, startColumn, endLineNumber, endColumn);
-		this.cell = cell;
-		this.lineNumber = startLineNumber;
-		this.startColumnNumber = startColumn;
-		this.endColumnNumber = endColumn;
-		this.updateActiveCell(cell);
-	}
-}
-
-export class NotebookFindMatch extends FindMatch {
-	_findMatchBrand: void;
-
-	public readonly range: NotebookRange;
-	public readonly matches: string[] | null;
-
-	/**
-	 * @internal
-	 */
-	constructor(range: NotebookRange, matches: string[] | null) {
-		super(new Range(range.lineNumber, range.startColumnNumber, range.endLineNumber, range.endColumnNumber), matches);
-		this.range = range;
-		this.matches = matches;
-	}
-}
-
 export interface NotebookPosition {
 	readonly cell: ICellModel;
 	readonly lineNumber: number;

@@ -26,7 +26,7 @@ import { NotebookFindNext, NotebookFindPrevious } from 'sql/workbench/contrib/no
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { INotebookModel, NotebookRange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { Command } from 'vs/editor/browser/editorExtensions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
@@ -34,7 +34,7 @@ import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegis
 import { NOTEBOOK_COMMAND_SEARCH, NOTEBOOK_COMMAND_CLOSE_SEARCH, NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
 import { IDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import { IModelDecorationsChangeAccessor, IModelDeltaDecoration } from 'vs/editor/common/model';
-import { NotebookFindDecorations } from 'sql/workbench/contrib/notebook/browser/cellViews/NotebookFindDecorations';
+import { NotebookFindDecorations, NotebookRange } from 'sql/workbench/contrib/notebook/browser/cellViews/NotebookFindDecorations';
 import { TimeoutTimer } from 'vs/base/common/async';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 

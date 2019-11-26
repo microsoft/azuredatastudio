@@ -20,10 +20,11 @@ import { toDisposable } from 'vs/base/common/lifecycle';
 import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
-import { ICellModel, NotebookRange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/contrib/notebook/browser/outputs/sanitizer';
 import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions';
+import { NotebookRange } from 'sql/workbench/contrib/notebook/browser/cellViews/NotebookFindDecorations';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -139,14 +140,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 	}
 
-	public getEditor(): any {
-		return undefined;
-	}
-
-	public hasEditor(): boolean {
-		return false;
-	}
-
 	public cellGuid(): string {
 		return this.cellModel.cellGuid;
 	}
@@ -244,7 +237,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.toggleEditMode(this.isActive());
 
 		if (this.output && this.output.nativeElement) {
-			(<HTMLElement>this.output.nativeElement).scrollIntoView({ behavior: 'smooth' });
+			(<HTMLElement>this.output.nativeElement).scrollTo({ behavior: 'smooth' });
 		}
 	}
 

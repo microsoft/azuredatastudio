@@ -6,12 +6,14 @@
 import { nb, IConnectionProfile } from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange, NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IStandardKernelWithProvider } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 import { IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
+import { NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/cellViews/NotebookFindDecorations';
+
 
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo) {
