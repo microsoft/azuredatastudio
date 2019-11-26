@@ -131,6 +131,6 @@ gulp.task('install-ssmsmin', () => {
 	});
 });
 
-gulp.task('package-extensions', () => {
-	return ext.packageSQLExtensions();
+gulp.task('package-external-extensions', () => {
+	return ext.packageExternalExtensions();
 });

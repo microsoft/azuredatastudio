@@ -285,7 +285,7 @@ export function packageMarketplaceExtensionsStream(): NodeJS.ReadWriteStream {
 		.pipe(util2.setExecutableBit(['**/*.sh']));
 }
 
-export function packageSQLExtensions(): Promise<void> {
+export function packageExternalExtensions(): Promise<void> {
 	return new Promise<void>((resolve, reject) => {
 		const extenalExtensionDescriptions = (<string[]>glob.sync('extensions/*/package.json'))
 			.map(manifestPath => {

@@ -94,8 +94,8 @@ steps:
 
   - script: |
       set -e
-      yarn gulp package-extensions
-    displayName: Package extensions
+      yarn gulp package-external-extensions
+    displayName: Package External extensions
 
   - task: ArchiveFiles@2 # WHY ARE WE DOING THIS?
     displayName: 'Archive build scripts source'

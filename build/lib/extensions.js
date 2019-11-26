@@ -235,7 +235,7 @@ function packageMarketplaceExtensionsStream() {
         .pipe(util2.setExecutableBit(['**/*.sh']));
 }
 exports.packageMarketplaceExtensionsStream = packageMarketplaceExtensionsStream;
-function packageSQLExtensions() {
+function packageExternalExtensions() {
     return new Promise((resolve, reject) => {
         const extenalExtensionDescriptions = glob.sync('extensions/*/package.json')
             .map(manifestPath => {
@@ -267,5 +267,5 @@ function packageSQLExtensions() {
         });
     });
 }
-exports.packageSQLExtensions = packageSQLExtensions;
+exports.packageExternalExtensions = packageExternalExtensions;
 // {{SQL CARBON EDIT}} - End
