@@ -55,12 +55,6 @@ export const Extensions = {
 	WorkbenchActions: 'workbench.contributions.actions'
 };
 
-// Editor
-const queryResultsEditorDescriptor = new EditorDescriptor(
-	QueryResultsEditor,
-	QueryResultsEditor.ID,
-	'QueryResults'
-);
 Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
 	.registerEditorInputFactory(FileQueryEditorInput.ID, FileQueryEditorInputFactory);
 
