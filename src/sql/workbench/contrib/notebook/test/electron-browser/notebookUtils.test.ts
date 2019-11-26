@@ -26,7 +26,8 @@ suite('notebookUtils', function (): void {
 		saveProfile: true,
 		id: '',
 		options: {},
-		azureTenantId: undefined
+		azureTenantId: undefined,
+		azureAccount: undefined
 	};
 
 	test('Should format server and database name correctly for attach to', async function (): Promise<void> {
