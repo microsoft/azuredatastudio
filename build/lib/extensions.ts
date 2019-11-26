@@ -286,7 +286,7 @@ export function packageMarketplaceExtensionsStream(): NodeJS.ReadWriteStream {
 }
 
 export function packageExternalExtensions(): Promise<void> {
-	return new Promise<void>((resolve, reject) => {
+	return new Promise<void>((resolve) => {
 		const extenalExtensionDescriptions = (<string[]>glob.sync('extensions/*/package.json'))
 			.map(manifestPath => {
 				const extensionPath = path.dirname(path.join(root, manifestPath));
@@ -301,7 +301,7 @@ export function packageExternalExtensions(): Promise<void> {
 		}).map(p => p.pipe(gulp.dest('.build/external')));
 
 		es.merge(builtExtensions).on('end', () => {
-			resolve(Promise.all(glob.sync('.build/external/extensions/*/package.json').map(manifestPath => {
+			const vsixes = glob.sync('.build/external/extensions/*/package.json').map(manifestPath => {
 				const extensionPath = path.dirname(path.join(root, manifestPath));
 				const extensionName = path.basename(extensionPath);
 				return { name: extensionName, path: extensionPath };
@@ -314,8 +314,10 @@ export function packageExternalExtensions(): Promise<void> {
 					cwd: element.path,
 					packagePath: packagePath,
 					useYarn: true
-				}).then(() => console.log('Finished vsix for ' + element.path + ' result:' + packagePath));
-			})).then(undefined, reject));
+				});
+			});
+
+			resolve(Promise.all(vsixes).then());
 		});
 	});
 }
