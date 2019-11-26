@@ -225,7 +225,7 @@ const excludedExtensions = [
 ];
 
 // {{SQL CARBON EDIT}}
-const sqlExtensions = [
+const externalExtensions = [
 	// This is the list of SQL extensions which the source code is included in this repository, but
 	// they get packaged separately. Adding extension name here, will make the build to create
 	// a separate vsix package for the extension and the extension will be excluded from the main package.
@@ -263,7 +263,7 @@ export function packageLocalExtensionsStream(): NodeJS.ReadWriteStream {
 		})
 		.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
 		.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
-		.filter(({ name }) => sqlExtensions.indexOf(name) === -1); // {{SQL CARBON EDIT}} Remove SQL Extensions with separate package
+		.filter(({ name }) => externalExtensions.indexOf(name) === -1); // {{SQL CARBON EDIT}} Remove external Extensions with separate package
 
 	const nodeModules = gulp.src('extensions/node_modules/**', { base: '.' });
 	const localExtensions = localExtensionDescriptions.map(extension => {
@@ -287,20 +287,20 @@ export function packageMarketplaceExtensionsStream(): NodeJS.ReadWriteStream {
 
 export function packageSQLExtensions(): Promise<void> {
 	return new Promise<void>((resolve, reject) => {
-		const sqlBuiltInLocalExtensionDescriptions = (<string[]>glob.sync('extensions/*/package.json'))
+		const extenalExtensionDescriptions = (<string[]>glob.sync('extensions/*/package.json'))
 			.map(manifestPath => {
 				const extensionPath = path.dirname(path.join(root, manifestPath));
 				const extensionName = path.basename(extensionPath);
 				return { name: extensionName, path: extensionPath };
 			})
-			.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
-			.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
-			.filter(({ name }) => sqlExtensions.indexOf(name) >= 0);
+			.filter(({ name }) => externalExtensions.indexOf(name) >= 0);
 
-		es.merge(sqlBuiltInLocalExtensionDescriptions.map(extension => {
+		const builtExtensions = extenalExtensionDescriptions.map(extension => {
 			return fromLocal(extension.path)
 				.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
-		}).map(p => p.pipe(gulp.dest('.build/external')))).on('end', () => {
+		}).map(p => p.pipe(gulp.dest('.build/external')));
+
+		es.merge(builtExtensions).on('end', () => {
 			resolve(Promise.all(glob.sync('.build/external/extensions/*/package.json').map(manifestPath => {
 				const extensionPath = path.dirname(path.join(root, manifestPath));
 				const extensionName = path.basename(extensionPath);
@@ -314,7 +314,7 @@ export function packageSQLExtensions(): Promise<void> {
 					cwd: element.path,
 					packagePath: packagePath,
 					useYarn: true
-				});
+				}).then(() => console.log('Finished vsix for ' + element.path + ' result:' + packagePath));
 			})).then(undefined, reject));
 		});
 	});
