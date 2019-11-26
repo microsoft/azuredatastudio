@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { BdcDashboardModel } from './bdcDashboardModel';
-import { BdcStatusModel, InstanceStatusModel } from '../controller/apiGenerated';
+import { BdcStatusModel, InstanceStatusModel, ResourceStatusModel } from '../controller/apiGenerated';
 import { getHealthStatusDisplayText, getHealthStatusIcon, getStateDisplayText, Service } from '../utils';
 import { cssStyles } from '../constants';
 import { isNullOrUndefined } from 'util';
@@ -20,6 +20,7 @@ const notAvailableText = localize('bdc.dashboard.notAvailable', "N/A");
 
 export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 
+	private resourceStatusModel: ResourceStatusModel;
 	private rootContainer: azdata.FlexContainer;
 	private instanceHealthStatusTable: azdata.DeclarativeTableComponent;
 	private metricsAndLogsRowsTable: azdata.DeclarativeTableComponent;
@@ -28,15 +29,21 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 	constructor(private model: BdcDashboardModel, private modelView: azdata.ModelView, private serviceName: string, private resourceName: string) {
 		super();
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.eventuallyRunOnInitialized(() => this.handleBdcStatusUpdate(bdcStatus)));
-		this.rootContainer = this.createContainer(modelView);
 	}
 
 	public get container(): azdata.FlexContainer {
+		// Lazily create the container only when needed
+		if (!this.rootContainer) {
+			// We do this here so that we can have the resource model to use for populating the data
+			// in the tables. This is to get around a timing issue with ModelView tables
+			this.updateResourceStatusModel(this.model.bdcStatus);
+			this.createContainer();
+		}
 		return this.rootContainer;
 	}
 
-	private createContainer(view: azdata.ModelView): azdata.FlexContainer {
-		const rootContainer = view.modelBuilder.flexContainer().withLayout(
+	private createContainer(): void {
+		this.rootContainer = this.modelView.modelBuilder.flexContainer().withLayout(
 			{
 				flexFlow: 'column',
 				width: '100%',
@@ -47,11 +54,11 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 		// # INSTANCE HEALTH AND STATUS #
 		// ##############################
 
-		const healthStatusHeaderContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', height: '20px' }).component();
-		rootContainer.addItem(healthStatusHeaderContainer, { CSSStyles: { 'padding-left': '10px', 'padding-top': '15px' } });
+		const healthStatusHeaderContainer = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', height: '20px' }).component();
+		this.rootContainer.addItem(healthStatusHeaderContainer, { CSSStyles: { 'padding-left': '10px', 'padding-top': '15px' } });
 
 		// Header label
-		const healthStatusHeaderLabel = view.modelBuilder.text()
+		const healthStatusHeaderLabel = this.modelView.modelBuilder.text()
 			.withProperties<azdata.TextComponentProperties>({
 				value: localize('bdc.dashboard.healthStatusDetailsHeader', "Health Status Details"),
 				CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '10px' }
@@ -61,15 +68,15 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 		healthStatusHeaderContainer.addItem(healthStatusHeaderLabel, { CSSStyles: { ...cssStyles.title } });
 
 		// Last updated label
-		this.lastUpdatedLabel = view.modelBuilder.text()
+		this.lastUpdatedLabel = this.modelView.modelBuilder.text()
 			.withProperties({
-				value: localize('bdc.dashboard.lastUpdated', "Last Updated : {0}", '-'),
+				value: this.getLastUpdatedText(),
 				CSSStyles: { ...cssStyles.lastUpdatedText }
 			}).component();
 
 		healthStatusHeaderContainer.addItem(this.lastUpdatedLabel, { CSSStyles: { 'margin-left': '45px' } });
 
-		this.instanceHealthStatusTable = view.modelBuilder.declarativeTable()
+		this.instanceHealthStatusTable = this.modelView.modelBuilder.declarativeTable()
 			.withProperties<azdata.DeclarativeTableProperties>(
 				{
 					columns: [
@@ -158,19 +165,19 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 							},
 						},
 					],
-					data: []
+					data: this.createHealthStatusRows()
 				}).component();
-		rootContainer.addItem(this.instanceHealthStatusTable, { flex: '0 0 auto' });
+		this.rootContainer.addItem(this.instanceHealthStatusTable, { flex: '0 0 auto' });
 
 		// ####################
 		// # METRICS AND LOGS #
 		// ####################
 
 		// Title label
-		const endpointsLabel = view.modelBuilder.text()
+		const endpointsLabel = this.modelView.modelBuilder.text()
 			.withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.metricsAndLogsLabel', "Metrics and Logs"), CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
 			.component();
-		rootContainer.addItem(endpointsLabel, { CSSStyles: { 'padding-left': '10px', ...cssStyles.title } });
+		this.rootContainer.addItem(endpointsLabel, { CSSStyles: { 'padding-left': '10px', ...cssStyles.title } });
 
 		let metricsAndLogsColumns: azdata.DeclarativeTableColumn[] =
 			[
@@ -253,43 +260,50 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 				},
 			});
 
-		this.metricsAndLogsRowsTable = view.modelBuilder.declarativeTable()
+		this.metricsAndLogsRowsTable = this.modelView.modelBuilder.declarativeTable()
 			.withProperties<azdata.DeclarativeTableProperties>(
 				{
 					columns: metricsAndLogsColumns,
-					data: []
+					data: this.createMetricsAndLogsRows()
 				}).component();
-		rootContainer.addItem(this.metricsAndLogsRowsTable, { flex: '0 0 auto' });
+		this.rootContainer.addItem(this.metricsAndLogsRowsTable, { flex: '0 0 auto' });
 
 		this.initialized = true;
-		this.handleBdcStatusUpdate(this.model.bdcStatus);
-
-		return rootContainer;
 	}
 
-	private handleBdcStatusUpdate(bdcStatus?: BdcStatusModel): void {
+	private updateResourceStatusModel(bdcStatus?: BdcStatusModel): void {
+		// If we can't find the resource model for this resource then just
+		// default to keeping what we had originally
 		if (!bdcStatus) {
 			return;
 		}
 		const service = bdcStatus.services ? bdcStatus.services.find(s => s.serviceName === this.serviceName) : undefined;
-		const resource = service ? service.resources.find(r => r.resourceName === this.resourceName) : undefined;
+		this.resourceStatusModel = service ? service.resources.find(r => r.resourceName === this.resourceName) : this.resourceStatusModel;
+	}
 
-		if (!resource || isNullOrUndefined(resource.instances)) {
+	private handleBdcStatusUpdate(bdcStatus?: BdcStatusModel): void {
+		this.updateResourceStatusModel(bdcStatus);
+
+		if (!this.resourceStatusModel || isNullOrUndefined(this.resourceStatusModel.instances)) {
 			return;
 		}
 
-		this.lastUpdatedLabel.value =
-			localize('bdc.dashboard.lastUpdated', "Last Updated : {0}",
-				this.model.bdcStatusLastUpdated ?
-					`${this.model.bdcStatusLastUpdated.toLocaleDateString()} ${this.model.bdcStatusLastUpdated.toLocaleTimeString()}`
-					: '-');
+		this.lastUpdatedLabel.value = this.getLastUpdatedText();
 
-		this.instanceHealthStatusTable.data = resource.instances.map(instanceStatus => this.createHealthStatusRow(instanceStatus));
+		this.instanceHealthStatusTable.data = this.createHealthStatusRows();
 
-		this.metricsAndLogsRowsTable.data = resource.instances.map(instanceStatus => this.createInstanceStatusRow(instanceStatus));
+		this.metricsAndLogsRowsTable.data = this.createMetricsAndLogsRows();
 	}
 
-	private createInstanceStatusRow(instanceStatus: InstanceStatusModel): any[] {
+	private createMetricsAndLogsRows(): any[][] {
+		return this.resourceStatusModel ? this.resourceStatusModel.instances.map(instanceStatus => this.createMetricsAndLogsRow(instanceStatus)) : [];
+	}
+
+	private createHealthStatusRows(): any[][] {
+		return this.resourceStatusModel ? this.resourceStatusModel.instances.map(instanceStatus => this.createHealthStatusRow(instanceStatus)) : [];
+	}
+
+	private createMetricsAndLogsRow(instanceStatus: InstanceStatusModel): any[] {
 		const row: any[] = [instanceStatus.instanceName];
 
 		// Not all instances have all logs available - in that case just display N/A instead of a link
@@ -348,5 +362,12 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 			getStateDisplayText(instanceStatus.state),
 			getHealthStatusDisplayText(instanceStatus.healthStatus),
 			viewDetailsButton];
+	}
+
+	private getLastUpdatedText(): string {
+		return localize('bdc.dashboard.lastUpdated', "Last Updated : {0}",
+			this.model.bdcStatusLastUpdated ?
+				`${this.model.bdcStatusLastUpdated.toLocaleDateString()} ${this.model.bdcStatusLastUpdated.toLocaleTimeString()}`
+				: '-');
 	}
 }
