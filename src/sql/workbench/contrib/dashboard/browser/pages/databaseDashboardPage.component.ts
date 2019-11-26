@@ -15,7 +15,6 @@ import { IAngularEventingService } from 'sql/platform/angularEventing/browser/an
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as nls from 'vs/nls';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -42,13 +41,12 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 		@Inject(forwardRef(() => CommonServiceInterface)) dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(INotificationService) notificationService: INotificationService,
 		@Inject(IAngularEventingService) angularEventingService: IAngularEventingService,
 		@Inject(IConfigurationService) configurationService: IConfigurationService,
 		@Inject(ILogService) logService: ILogService
 	) {
-		super(dashboardService, el, _cd, instantiationService, notificationService, angularEventingService, configurationService, logService);
+		super(dashboardService, el, _cd, notificationService, angularEventingService, configurationService, logService);
 		this._register(dashboardService.onUpdatePage(() => {
 			this.refresh(true);
 			this._cd.detectChanges();
