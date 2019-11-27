@@ -410,7 +410,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 				copyValueCell];
 		});
 
-		this.endpointsLoadingComponent.loading = false;
+		this.endpointsDisplayContainer.removeItem(this.endpointsLoadingComponent);
 	}
 
 	private handleBdcError(errorEvent: BdcErrorEvent): void {
