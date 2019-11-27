@@ -64,9 +64,8 @@ export class InsightAction extends Action {
 		super(id, label);
 	}
 
-	run(actionContext: InsightActionContext): Promise<boolean> {
-		this._insightsDialogService.show(actionContext.insight, actionContext.profile);
-		return Promise.resolve(true);
+	async run(actionContext: InsightActionContext): Promise<void> {
+		await this._insightsDialogService.show(actionContext.insight, actionContext.profile);
 	}
 }
 

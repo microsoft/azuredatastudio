@@ -6,7 +6,7 @@
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/fileBrowserDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
+import { InputBox, OnLoseFocusParams } from 'sql/base/browser/ui/inputBox/inputBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { Modal } from 'sql/workbench/browser/modal/modal';
@@ -32,6 +32,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export class FileBrowserDialog extends Modal {
 	private _viewModel: FileBrowserViewModel;
@@ -61,7 +62,7 @@ export class FileBrowserDialog extends Modal {
 	) {
 		super(title, TelemetryKeys.Backup, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { isFlyout: true, hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
 		this._viewModel = this._instantiationService.createInstance(FileBrowserViewModel);
-		this._viewModel.onAddFileTree(args => this.handleOnAddFileTree(args.rootNode, args.selectedNode, args.expandedNodes));
+		this._viewModel.onAddFileTree(args => this.handleOnAddFileTree(args.rootNode, args.selectedNode, args.expandedNodes).catch(err => onUnexpectedError(err)));
 		this._viewModel.onPathValidate(args => this.handleOnValidate(args.succeeded, args.message));
 	}
 
@@ -114,7 +115,7 @@ export class FileBrowserDialog extends Modal {
 		expandPath: string,
 		fileFilters: [{ label: string, filters: string[] }],
 		fileValidationServiceType: string,
-	) {
+	): void {
 		this._viewModel.initialize(ownerUri, expandPath, fileFilters, fileValidationServiceType);
 		this._fileFilterSelectBox.setOptions(this._viewModel.formattedFileFilters);
 		this._fileFilterSelectBox.select(0);
@@ -127,7 +128,7 @@ export class FileBrowserDialog extends Modal {
 		this._fileBrowserTreeView = this._instantiationService.createInstance(FileBrowserTreeView);
 		this._fileBrowserTreeView.setOnClickedCallback((arg) => this.onClicked(arg));
 		this._fileBrowserTreeView.setOnDoubleClickedCallback((arg) => this.onDoubleClicked(arg));
-		this._viewModel.openFileBrowser(0, false);
+		this._viewModel.openFileBrowser(0, false).catch(err => onUnexpectedError(err));
 	}
 
 	/* enter key */
@@ -137,8 +138,8 @@ export class FileBrowserDialog extends Modal {
 		}
 	}
 
-	private handleOnAddFileTree(rootNode: FileNode, selectedNode: FileNode, expandedNodes: FileNode[]) {
-		this.updateFileTree(rootNode, selectedNode, expandedNodes);
+	private async handleOnAddFileTree(rootNode: FileNode, selectedNode: FileNode, expandedNodes: FileNode[]): Promise<void> {
+		await this.updateFileTree(rootNode, selectedNode, expandedNodes);
 		this.spinner = false;
 	}
 
@@ -176,10 +177,11 @@ export class FileBrowserDialog extends Modal {
 		this.enableOkButton();
 	}
 
-	private onFilePathBlur(param) {
-		if (!strings.isFalsyOrWhitespace(param.value)) {
-			this._viewModel.validateFilePaths([param.value]);
+	private async onFilePathBlur(params: OnLoseFocusParams): Promise<boolean> {
+		if (!strings.isFalsyOrWhitespace(params.value)) {
+			return this._viewModel.validateFilePaths([params.value]);
 		}
+		return true;
 	}
 
 	private ok() {
@@ -196,35 +198,35 @@ export class FileBrowserDialog extends Modal {
 		}
 	}
 
-	private close() {
+	private close(): void {
 		if (this._fileBrowserTreeView) {
 			this._fileBrowserTreeView.dispose();
 		}
 		this._onOk.dispose();
 		this.hide();
-		this._viewModel.closeFileBrowser();
+		this._viewModel.closeFileBrowser().catch(err => onUnexpectedError(err));
 	}
 
-	private updateFileTree(rootNode: FileNode, selectedNode: FileNode, expandedNodes: FileNode[]): void {
-		this._fileBrowserTreeView.renderBody(this._treeContainer, rootNode, selectedNode, expandedNodes);
+	private async updateFileTree(rootNode: FileNode, selectedNode: FileNode, expandedNodes: FileNode[]): Promise<void> {
+		await this._fileBrowserTreeView.renderBody(this._treeContainer, rootNode, selectedNode, expandedNodes);
 		this._fileBrowserTreeView.setVisible(true);
 		this._fileBrowserTreeView.layout(DOM.getTotalHeight(this._treeContainer));
 	}
 
-	private onFilterSelectChanged(filterIndex) {
+	private async onFilterSelectChanged(filterIndex): Promise<void> {
 		this.spinner = true;
-		this._viewModel.openFileBrowser(filterIndex, true);
+		await this._viewModel.openFileBrowser(filterIndex, true);
 	}
 
 	private registerListeners(): void {
-		this._register(this._fileFilterSelectBox.onDidSelect(selection => {
-			this.onFilterSelectChanged(selection.index);
+		this._register(this._fileFilterSelectBox.onDidSelect(selectData => {
+			this.onFilterSelectChanged(selectData.index).catch(err => onUnexpectedError(err));
 		}));
 		this._register(this._filePathInputBox.onDidChange(e => {
 			this.onFilePathChange(e);
 		}));
-		this._register(this._filePathInputBox.onLoseFocus(params => {
-			this.onFilePathBlur(params);
+		this._register(this._filePathInputBox.onLoseFocus((params: OnLoseFocusParams) => {
+			this.onFilePathBlur(params).catch(err => onUnexpectedError(err));
 		}));
 
 		// Theme styler

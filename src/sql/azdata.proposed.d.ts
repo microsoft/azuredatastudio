@@ -87,6 +87,15 @@ declare module 'azdata' {
 		onDidClick: vscode.Event<any>;
 	}
 
+	export interface DeclarativeTableColumn {
+		headerCssStyles?: { [key: string]: string };
+		rowCssStyles?: { [key: string]: string };
+	}
+
+	export enum DeclarativeDataType {
+		component = 'component'
+	}
+
 	/*
 	 * Add optional azureAccount for connectionWidget.
 	 */
