@@ -9,7 +9,7 @@ steps:
     inputs:
       keyfile: 'build/.cachesalt, .build/commit, .build/quality'
       targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
-      vstsFeed: 'npm-vscode'
+      vstsFeed: 'BuildCache'
       platformIndependent: true
       alias: 'Compilation'
 
