@@ -168,6 +168,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	handleStart(self: EditDataGridPanel, event: any): void {
 		self.dataSet = undefined;
+		self.oldDataRows = undefined;
 		self.placeHolderDataSets = [];
 		self.renderedDataSets = self.placeHolderDataSets;
 		//this._cd.detectChanges();
@@ -415,9 +416,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	 */
 	onScroll(scrollTop): void {
 		console.log(scrollTop);
-		if (scrollTop.scrollTop !== 0) {
-			this.refreshGrid();
-		}
+		this.refreshGrid();
 	}
 
 	/**
@@ -440,7 +439,13 @@ export class EditDataGridPanel extends GridParentComponent {
 						self.placeHolderDataSets[i].resized.fire();
 					}
 				}
-				self.detectChange();
+
+				if (self.oldDataRows !== self.placeHolderDataSets[0].dataRows) {
+					self.detectChange();
+					self.oldDataRows = self.placeHolderDataSets[0].dataRows;
+				}
+
+
 				if (self.firstRender) {
 					//TODO: Need to be able to add onClick function with working editor.
 
