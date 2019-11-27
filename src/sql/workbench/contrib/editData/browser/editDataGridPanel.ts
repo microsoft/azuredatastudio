@@ -415,7 +415,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	 * @param scrollTop The scrolltop value, if not called by the scroll event should be 0
 	 */
 	onScroll(scrollTop): void {
-		console.log(scrollTop);
 		this.refreshGrid();
 	}
 
@@ -1030,7 +1029,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 
 		if (wasEditing && hasGridStructureChanges) {
-			this.logService.debug('need to handle editing of cells');
+			console.log('need to handle editing of cells');
 			//this.tables[0].grid.editActiveCell();
 		}
 	}
@@ -1038,7 +1037,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private setCallbackOnDataRowsChanged(): void {
 		if (this.dataSet.dataRows) {
 			// We must wait until we get the first set of dataRows before we enable editing or slickgrid will complain
-			this.logService.debug('need to check if row is editable or not');
+			console.log('need to check if row is editable or not');
 			if (this.enableEditing) {
 				this.enterEditSession();
 			}
