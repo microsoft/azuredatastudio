@@ -7,6 +7,10 @@ steps:
     inputs:
       versionSpec: "1.x"
 
+  - powershell: |
+      git clean -fxd
+    displayName: Clean repo
+
   # - task: UsePythonVersion@0
   #   inputs:
   #     versionSpec: '2.x'
@@ -32,10 +36,6 @@ steps:
       git fetch distro
       git merge $(node -p "require('./package.json').distro")
     displayName: Merge distro
-
-  - powershell: |
-      git clean -fxd
-    displayName: Clean repo
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
     inputs:
