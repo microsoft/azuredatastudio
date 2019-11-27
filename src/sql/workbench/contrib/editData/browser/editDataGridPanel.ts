@@ -414,7 +414,9 @@ export class EditDataGridPanel extends GridParentComponent {
 	 */
 	onScroll(scrollTop): void {
 		console.log(scrollTop);
-		this.refreshGrid();
+		if (scrollTop.scrollTop !== 0) {
+			this.refreshGrid();
+		}
 	}
 
 	/**
@@ -1117,10 +1119,11 @@ export class EditDataGridPanel extends GridParentComponent {
 		// if (this.topRowNumber === undefined) {
 		//     this.topRowNumber = 0;
 		// }
-		if (this.dataSet.dataRows && this.dataSet.dataRows.getLength() > 0) {
-			// this.tables[0].grid.scrollRowToTop(this.topRowNumber);
-			this.tables[0].grid.scrollRowToTop(0);
-		}
+		//not necessary as datarows is already included.
+		// if (!this.firstRender && this.dataSet.dataRows && this.dataSet.dataRows.getLength() > 0) {
+		// 	// this.tables[0].grid.scrollRowToTop(this.topRowNumber);
+		// 	this.tables[0].grid.scrollRowToTop(0);
+		// }
 
 		if (this.dataSet.resized) {
 			// Re-rendering the grid is expensive. Throttle so we only do so every 100ms.
