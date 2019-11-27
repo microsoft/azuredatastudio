@@ -5,7 +5,6 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
 import { BdcDashboardModel, BdcErrorEvent } from './bdcDashboardModel';
 import { IconPathHelper, cssStyles } from '../constants';
 import { getStateDisplayText, getHealthStatusDisplayText, getEndpointDisplayText, getHealthStatusIcon, getServiceNameDisplayText, Endpoint, getBdcStatusErrorMessage } from '../utils';
@@ -14,8 +13,7 @@ import { BdcDashboard } from './bdcDashboard';
 import { createViewDetailsButton } from './commonControls';
 import { HdfsDialogCancelledError } from './hdfsDialogBase';
 import { BdcDashboardPage } from './bdcDashboardPage';
-
-const localize = nls.loadMessageBundle();
+import * as loc from '../localizedConstants';
 
 const clusterStateLabelColumnWidth = 100;
 const clusterStateValueColumnWidth = 225;
@@ -63,7 +61,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		// ##############
 
 		const propertiesLabel = view.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.propertiesHeader', "Cluster Properties"), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '10px' } })
+			.withProperties<azdata.TextComponentProperties>({ value: loc.clusterProperties, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '10px' } })
 			.component();
 		rootContainer.addItem(propertiesLabel, { CSSStyles: { 'margin-top': '15px', 'padding-left': '10px', ...cssStyles.title } });
 
@@ -76,14 +74,14 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		const row1 = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', height: '30px', alignItems: 'center' }).component();
 
 		// Cluster State
-		const clusterStateLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.clusterState', "Cluster State :") }).component();
+		const clusterStateLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.clusterState }).component();
 		const clusterStateValue = view.modelBuilder.text().component();
 		this.clusterStateLoadingComponent = view.modelBuilder.loadingComponent().withItem(clusterStateValue).component();
 		row1.addItem(clusterStateLabel, { CSSStyles: { 'width': `${clusterStateLabelColumnWidth}px`, 'min-width': `${clusterStateLabelColumnWidth}px`, 'user-select': 'none', 'font-weight': 'bold' } });
 		row1.addItem(this.clusterStateLoadingComponent, { CSSStyles: { 'width': `${clusterStateValueColumnWidth}px`, 'min-width': `${clusterStateValueColumnWidth}px` } });
 
 		// Health Status
-		const healthStatusLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.healthStatus', "Health Status :") }).component();
+		const healthStatusLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.healthStatusWithColon }).component();
 		const healthStatusValue = view.modelBuilder.text().component();
 		this.clusterHealthStatusLoadingComponent = view.modelBuilder.loadingComponent().withItem(healthStatusValue).component();
 		row1.addItem(healthStatusLabel, { CSSStyles: { 'width': `${healthStatusColumnWidth}px`, 'min-width': `${healthStatusColumnWidth}px`, 'user-select': 'none', 'font-weight': 'bold' } });
@@ -102,7 +100,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 
 		const overviewLabel = view.modelBuilder.text()
 			.withProperties<azdata.TextComponentProperties>({
-				value: localize('bdc.dashboard.overviewHeader', "Cluster Overview"),
+				value: loc.clusterOverview,
 				CSSStyles: { ...cssStyles.text }
 			})
 			.component();
@@ -111,7 +109,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 
 		this.lastUpdatedLabel = view.modelBuilder.text()
 			.withProperties({
-				value: localize('bdc.dashboard.lastUpdated', "Last Updated : {0}", '-'),
+				value: loc.lastUpdated(),
 				CSSStyles: { ...cssStyles.lastUpdatedText }
 			}).component();
 
@@ -125,6 +123,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 					columns: [
 						{ // status icon
 							displayName: '',
+							ariaLabel: loc.statusIcon,
 							valueType: azdata.DeclarativeDataType.component,
 							isReadOnly: true,
 							width: 25,
@@ -140,7 +139,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							},
 						},
 						{ // service
-							displayName: localize('bdc.dashboard.serviceNameHeader', "Service Name"),
+							displayName: loc.serviceName,
 							valueType: azdata.DeclarativeDataType.component,
 							isReadOnly: true,
 							width: 175,
@@ -157,7 +156,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							},
 						},
 						{ // state
-							displayName: localize('bdc.dashboard.stateHeader', "State"),
+							displayName: loc.state,
 							valueType: azdata.DeclarativeDataType.string,
 							isReadOnly: true,
 							width: 150,
@@ -174,7 +173,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							},
 						},
 						{ // health status
-							displayName: localize('bdc.dashboard.healthStatusHeader', "Health Status"),
+							displayName: loc.healthStatus,
 							valueType: azdata.DeclarativeDataType.string,
 							isReadOnly: true,
 							width: 100,
@@ -193,6 +192,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 						},
 						{ // view details button
 							displayName: '',
+							ariaLabel: loc.viewDetails,
 							valueType: azdata.DeclarativeDataType.component,
 							isReadOnly: true,
 							width: 150,
@@ -208,7 +208,8 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							},
 						},
 					],
-					data: []
+					data: [],
+					ariaLabel: loc.clusterOverview
 				})
 			.component();
 
@@ -236,7 +237,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		// #####################
 
 		const endpointsLabel = view.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.endpointsLabel', "Service Endpoints"), CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
+			.withProperties<azdata.TextComponentProperties>({ value: loc.serviceEndpoints, CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
 			.component();
 		rootContainer.addItem(endpointsLabel, { CSSStyles: { 'padding-left': '10px', ...cssStyles.title } });
 
@@ -249,7 +250,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 				{
 					columns: [
 						{ // service
-							displayName: localize('bdc.dashboard.serviceHeader', "Service"),
+							displayName: loc.service,
 							valueType: azdata.DeclarativeDataType.string,
 							isReadOnly: true,
 							width: 200,
@@ -266,7 +267,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							},
 						},
 						{ // endpoint
-							displayName: localize('bdc.dashboard.endpointHeader', "Endpoint"),
+							displayName: loc.endpoint,
 							valueType: azdata.DeclarativeDataType.component,
 							isReadOnly: true,
 							width: 350,
@@ -286,6 +287,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 						},
 						{ // copy
 							displayName: '',
+							ariaLabel: loc.copy,
 							valueType: azdata.DeclarativeDataType.component,
 							isReadOnly: true,
 							width: 50,
@@ -301,7 +303,8 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 							}
 						}
 					],
-					data: []
+					data: [],
+					ariaLabel: loc.serviceEndpoints
 				}).component();
 
 		this.endpointsDisplayContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
@@ -342,11 +345,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		if (!bdcStatus) {
 			return;
 		}
-		this.lastUpdatedLabel.value =
-			localize('bdc.dashboard.lastUpdated', "Last Updated : {0}",
-				this.model.bdcStatusLastUpdated ?
-					`${this.model.bdcStatusLastUpdated.toLocaleDateString()} ${this.model.bdcStatusLastUpdated.toLocaleTimeString()}`
-					: '-');
+		this.lastUpdatedLabel.value = loc.lastUpdated(this.model.bdcStatusLastUpdated);
 
 		this.clusterStateLoadingComponent.loading = false;
 		this.clusterHealthStatusLoadingComponent.loading = false;
@@ -397,11 +396,11 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		endpoints.unshift(...sqlServerMasterEndpoints);
 
 		this.endpointsTable.data = endpoints.map(e => {
-			const copyValueCell = this.modelBuilder.button().withProperties<azdata.ButtonProperties>({ title: localize('bdc.dashboard.copyTitle', "Copy") }).component();
+			const copyValueCell = this.modelBuilder.button().withProperties<azdata.ButtonProperties>({ title: loc.copy }).component();
 			copyValueCell.iconPath = IconPathHelper.copy;
 			copyValueCell.onDidClick(() => {
 				vscode.env.clipboard.writeText(e.endpoint);
-				vscode.window.showInformationMessage(localize('copiedEndpoint', "Endpoint '{0}' copied to clipboard", getEndpointDisplayText(e.name, e.description)));
+				vscode.window.showInformationMessage(loc.copiedEndpoint(getEndpointDisplayText(e.name, e.description)));
 			});
 			copyValueCell.iconHeight = '14px';
 			copyValueCell.iconWidth = '14px';
@@ -415,7 +414,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 
 	private handleBdcError(errorEvent: BdcErrorEvent): void {
 		if (errorEvent.errorType === 'bdcEndpoints') {
-			const errorMessage = localize('endpointsError', "Unexpected error retrieving BDC Endpoints: {0}", errorEvent.error.message);
+			const errorMessage = loc.endpointsError(errorEvent.error.message);
 			this.showEndpointsError(errorMessage);
 		} else if (errorEvent.errorType === 'bdcStatus') {
 			this.showBdcStatusError(getBdcStatusErrorMessage(errorEvent.error));
@@ -441,11 +440,11 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 
 	private handleGeneralError(error: Error): void {
 		if (error instanceof HdfsDialogCancelledError) {
-			const errorMessage = localize('bdc.dashboard.noConnection', "The dashboard requires a connection. Please click retry to enter your credentials.");
+			const errorMessage = loc.noConnectionError;
 			this.showBdcStatusError(errorMessage);
 			this.showEndpointsError(errorMessage);
 		} else {
-			const errorMessage = localize('bdc.dashboard.unexpectedError', "Unexpected error occurred: {0}", error.message);
+			const errorMessage = loc.unexpectedError(error);
 			this.showBdcStatusError(errorMessage);
 			this.showEndpointsError(errorMessage);
 		}

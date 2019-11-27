@@ -31,7 +31,7 @@ export enum DeclarativeDataType {
 	<table role=grid #container *ngIf="columns" class="declarative-table" [style.height]="getHeight()" [attr.aria-label]="ariaLabel">
 	<thead>
 		<ng-container *ngFor="let column of columns;">
-		<th class="declarative-table-header" tabindex="-1" aria-sort="none" [ngStyle]="column.headerCssStyles">{{column.displayName}}</th>
+		<th class="declarative-table-header" tabindex="-1" aria-sort="none" [attr.aria-label]="column.ariaLabel" [ngStyle]="column.headerCssStyles">{{column.displayName}}</th>
 		</ng-container>
 	</thead>
 		<ng-container *ngIf="data">

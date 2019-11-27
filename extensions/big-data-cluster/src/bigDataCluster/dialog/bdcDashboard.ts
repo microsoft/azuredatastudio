@@ -5,7 +5,6 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
 import { BdcDashboardModel, getTroubleshootNotebookUrl, BdcErrorEvent } from './bdcDashboardModel';
 import { IconPathHelper, cssStyles } from '../constants';
 import { BdcServiceStatusPage } from './bdcServiceStatusPage';
@@ -14,8 +13,7 @@ import { BdcStatusModel, ServiceStatusModel } from '../controller/apiGenerated';
 import { getHealthStatusDot, getServiceNameDisplayText, showErrorMessage } from '../utils';
 import { HdfsDialogCancelledError } from './hdfsDialogBase';
 import { BdcDashboardPage } from './bdcDashboardPage';
-
-const localize = nls.loadMessageBundle();
+import * as loc from '../localizedConstants';
 
 const navWidth = '200px';
 
@@ -69,7 +67,7 @@ export class BdcDashboard extends BdcDashboardPage {
 			// Refresh button
 			this.refreshButton = modelView.modelBuilder.button()
 				.withProperties<azdata.ButtonProperties>({
-					label: localize('bdc.dashboard.refreshButton', "Refresh"),
+					label: loc.refresh,
 					iconPath: IconPathHelper.refresh
 				}).component();
 
@@ -80,7 +78,7 @@ export class BdcDashboard extends BdcDashboardPage {
 
 			const openTroubleshootNotebookButton = modelView.modelBuilder.button()
 				.withProperties<azdata.ButtonProperties>({
-					label: localize('bdc.dashboard.troubleshootButton', "Troubleshoot"),
+					label: loc.troubleshoot,
 					iconPath: IconPathHelper.notebook
 				}).component();
 
@@ -136,7 +134,7 @@ export class BdcDashboard extends BdcDashboardPage {
 					ariaRole: 'tab',
 					ariaSelected: true
 				}).component();
-			const overviewNavItemText = modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.overviewNavTitle', "Big Data Cluster overview") }).component();
+			const overviewNavItemText = modelView.modelBuilder.text().withProperties({ value: loc.bdcOverview }).component();
 			overviewNavItemText.updateCssStyles(selectedTabCss);
 			overviewNavItemDiv.addItem(overviewNavItemText, { CSSStyles: { 'user-select': 'text' } });
 			this.overviewPage = new BdcDashboardOverviewPage(this, this.model);
@@ -159,7 +157,7 @@ export class BdcDashboard extends BdcDashboardPage {
 			});
 			this.navContainer.addItem(overviewNavItemDiv, { flex: '0 0 auto' });
 
-			const clusterDetailsHeader = modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.clusterDetails', "Cluster Details"), CSSStyles: { 'margin-block-end': '0px' } }).component();
+			const clusterDetailsHeader = modelView.modelBuilder.text().withProperties({ value: loc.clusterDetails, CSSStyles: { 'margin-block-end': '0px' } }).component();
 			this.navContainer.addItem(clusterDetailsHeader, { CSSStyles: { 'user-select': 'none', 'font-weight': 'bold', 'border-bottom': 'solid 1px #ccc', 'margin-bottom': '10px' } });
 
 			await modelView.initializeModel(rootContainer);

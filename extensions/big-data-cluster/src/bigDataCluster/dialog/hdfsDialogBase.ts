@@ -4,21 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
 import { ClusterController, ControllerError, IEndPointsResponse } from '../controller/clusterControllerApi';
 import { AuthType } from '../constants';
 import { Deferred } from '../../common/promise';
-
-const localize = nls.loadMessageBundle();
-
-const basicAuthDisplay = localize('basicAuthName', "Basic");
-const integratedAuthDisplay = localize('integratedAuthName', "Windows Authentication");
+import * as loc from '../localizedConstants';
 
 function getAuthCategory(name: AuthType): azdata.CategoryValue {
 	if (name === 'basic') {
-		return { name: name, displayName: basicAuthDisplay };
+		return { name: name, displayName: loc.basic };
 	}
-	return { name: name, displayName: integratedAuthDisplay };
+	return { name: name, displayName: loc.windowsAuth };
 }
 
 export interface HdfsDialogProperties {
@@ -90,10 +85,10 @@ export abstract class HdfsDialogModelBase<T extends HdfsDialogProperties, R> {
 		try {
 			response = await controller.getEndPoints();
 			if (!response || !response.endPoints) {
-				throw new Error(localize('mount.hdfs.loginerror1', "Login to controller failed"));
+				throw new Error(loc.loginFailed);
 			}
 		} catch (err) {
-			throw new Error(localize('mount.hdfs.loginerror2', "Login to controller failed: {0}", err.statusMessage || err.message));
+			throw new Error(loc.loginFailedWithError(err));
 		}
 		return controller;
 	}
@@ -102,9 +97,9 @@ export abstract class HdfsDialogModelBase<T extends HdfsDialogProperties, R> {
 		if (this.props.auth === 'basic') {
 			// Verify username and password as we can't make them required in the UI
 			if (!this.props.username) {
-				throw new Error(localize('err.controller.username.required', "Username is required"));
+				throw new Error(loc.usernameRequired);
 			} else if (!this.props.password) {
-				throw new Error(localize('err.controller.password.required', "Password is required"));
+				throw new Error(loc.passwordRequired);
 			}
 		}
 	}
@@ -139,7 +134,7 @@ export abstract class HdfsDialogBase<T extends HdfsDialogProperties, R> {
 
 			this.urlInputBox = this.uiModelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
-					placeHolder: localize('textUrlLower', "url"),
+					placeHolder: loc.url.toLocaleLowerCase(),
 					value: this.model.props.url,
 					enabled: false
 				}).component();
@@ -152,12 +147,12 @@ export abstract class HdfsDialogBase<T extends HdfsDialogProperties, R> {
 			this.authDropdown.onValueChanged(e => this.onAuthChanged());
 			this.usernameInputBox = this.uiModelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
-					placeHolder: localize('textUsernameLower', "username"),
+					placeHolder: loc.username.toLocaleLowerCase(),
 					value: this.model.props.username
 				}).component();
 			this.passwordInputBox = this.uiModelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
-					placeHolder: localize('textPasswordLower', "password"),
+					placeHolder: loc.password.toLocaleLowerCase(),
 					inputType: 'password',
 					value: this.model.props.password
 				})
@@ -167,23 +162,23 @@ export abstract class HdfsDialogBase<T extends HdfsDialogProperties, R> {
 				components: [
 					{
 						component: this.urlInputBox,
-						title: localize('textUrlCapital', "Cluster Management URL"),
+						title: loc.clusterUrl,
 						required: true
 					}, {
 						component: this.authDropdown,
-						title: localize('textAuthCapital', "Authentication type"),
+						title: loc.authType,
 						required: true
 					}, {
 						component: this.usernameInputBox,
-						title: localize('textUsernameCapital', "Username"),
+						title: loc.username,
 						required: false
 					}, {
 						component: this.passwordInputBox,
-						title: localize('textPasswordCapital', "Password"),
+						title: loc.password,
 						required: false
 					}
 				],
-				title: localize('hdsf.dialog.connection.section', "Cluster Connection")
+				title: loc.clusterConnection
 			};
 			let formModel = this.uiModelBuilder.formContainer()
 				.withFormItems(
@@ -204,8 +199,8 @@ export abstract class HdfsDialogBase<T extends HdfsDialogProperties, R> {
 			return result.validated;
 		});
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
-		this.dialog.okButton.label = localize('hdfs.dialog.ok', "OK");
-		this.dialog.cancelButton.label = localize('hdfs.dialog.cancel', "Cancel");
+		this.dialog.okButton.label = loc.ok;
+		this.dialog.cancelButton.label = loc.cancel;
 	}
 
 	protected abstract getMainSectionComponents(): (azdata.FormComponentGroup | azdata.FormComponent)[];
