@@ -43,6 +43,7 @@ import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { find, firstIndex } from 'vs/base/common/arrays';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -161,7 +162,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				this._register(this._queryManagementService.onHandlerAdded((queryType) => {
 					this.updateSQLRegistrationWithConnectionProviders();
 				}));
-			});
+			}).catch(err => onUnexpectedError(err));
 		}
 		if (extensionManagementService) {
 			this._register(extensionManagementService.onDidUninstallExtension(({ identifier }) => this.removeContributedProvidersFromCache(identifier, this._extensionService)));
@@ -530,7 +531,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		});
 	}
 
-	private removeContributedProvidersFromCache(identifier: IExtensionIdentifier, extensionService: IExtensionService) {
+	private removeContributedProvidersFromCache(identifier: IExtensionIdentifier, extensionService: IExtensionService): void {
 		const notebookProvider = 'notebookProvider';
 		extensionService.getExtensions().then(i => {
 			let extension = find(i, c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
@@ -540,7 +541,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				let id = extension.contributes[notebookProvider].providerId;
 				delete this.providersMemento.notebookProviderCache[id];
 			}
-		});
+		}).catch(err => onUnexpectedError(err));
 	}
 
 	async isNotebookTrustCached(notebookUri: URI, isDirty: boolean): Promise<boolean> {
