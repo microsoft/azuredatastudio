@@ -11,8 +11,13 @@ const es = require('event-stream');
 const filter = require('gulp-filter');
 const del = require('del');
 const serviceDownloader = require('service-downloader').ServiceDownloadProvider;
-const platformInfo = require('service-downloader/out/platform').PlatformInformation;
+const platform = require('service-downloader/out/platform').PlatformInformation;
 const path = require('path');
+const ext = require('./lib/extensions');
+const task = require('./lib/task');
+const glob = require('glob');
+const vsce = require('vsce');
+const mkdirp = require('mkdirp');
 
 gulp.task('clean-mssql-extension', util.rimraf('extensions/mssql/node_modules'));
 gulp.task('clean-credentials-extension', util.rimraf('extensions/credentials/node_modules'));
@@ -93,7 +98,7 @@ const formatStagedFiles = () => {
 
 function installService() {
 	let config = require('../extensions/mssql/config.json');
-	return platformInfo.getCurrent().then(p => {
+	return platform.getCurrent().then(p => {
 		let runtime = p.runtimeId;
 		// fix path since it won't be correct
 		config.installDirectory = path.join(__dirname, '../extensions/mssql/src', config.installDirectory);
@@ -113,25 +118,45 @@ gulp.task('install-sqltoolsservice', () => {
 	return installService();
 });
 
-function installSsmsMin() {
-	const config = require('../extensions/admin-tool-ext-win/config.json');
-	return platformInfo.getCurrent().then(p => {
-		const runtime = p.runtimeId;
-		// fix path since it won't be correct
-		config.installDirectory = path.join(__dirname, '..', 'extensions', 'admin-tool-ext-win', config.installDirectory);
-		var installer = new serviceDownloader(config);
-		const serviceInstallFolder = installer.getInstallDirectory(runtime);
-		const serviceCleanupFolder = path.join(serviceInstallFolder, '..');
-		console.log('Cleaning up the install folder: ' + serviceCleanupFolder);
-		return del(serviceCleanupFolder + '/*').then(() => {
-			console.log('Installing the service. Install folder: ' + serviceInstallFolder);
-			return installer.installService(runtime);
-		}, delError => {
-			console.log('failed to delete the install folder error: ' + delError);
-		});
-	});
-}
-
 gulp.task('install-ssmsmin', () => {
-	return installSsmsMin();
+	const config = require('../extensions/admin-tool-ext-win/config.json');
+	const runtime = 'Windows_64'; // admin-tool-ext is a windows only extension, and we only ship a 64 bit version, so locking the binaries as such
+	// fix path since it won't be correct
+	config.installDirectory = path.join(__dirname, '..', 'extensions', 'admin-tool-ext-win', config.installDirectory);
+	var installer = new serviceDownloader(config);
+	const serviceInstallFolder = installer.getInstallDirectory(runtime);
+	const serviceCleanupFolder = path.join(serviceInstallFolder, '..');
+	console.log('Cleaning up the install folder: ' + serviceCleanupFolder);
+	return del(serviceCleanupFolder + '/*').then(() => {
+		console.log('Installing the service. Install folder: ' + serviceInstallFolder);
+		return installer.installService(runtime);
+	}, delError => {
+		console.log('failed to delete the install folder error: ' + delError);
+	});
 });
+
+const root = path.dirname(__dirname);
+
+gulp.task('package-external-extensions', task.series(
+	task.define('bundle-external-extensions-build', () => ext.packageExternalExtensionsStream().pipe(gulp.dest('.build/external'))),
+	task.define('create-external-extension-vsix-build', () => {
+		const vsixes = glob.sync('.build/external/extensions/*/package.json').map(manifestPath => {
+			const extensionPath = path.dirname(path.join(root, manifestPath));
+			const extensionName = path.basename(extensionPath);
+			return { name: extensionName, path: extensionPath };
+		}).map(element => {
+			const pkgJson = require(path.join(element.path, 'package.json'));
+			const vsixDirectory = path.join(path.dirname(root), 'vsix');
+			mkdirp.sync(vsixDirectory);
+			const packagePath = path.join(vsixDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
+			console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
+			return vsce.createVSIX({
+				cwd: element.path,
+				packagePath: packagePath,
+				useYarn: true
+			});
+		});
+
+		return Promise.all(vsixes);
+	})
+));

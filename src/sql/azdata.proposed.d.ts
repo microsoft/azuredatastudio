@@ -86,4 +86,31 @@ declare module 'azdata' {
 		 */
 		onDidClick: vscode.Event<any>;
 	}
+
+	/*
+	 * Add optional azureAccount for connectionWidget.
+	 */
+	export interface IConnectionProfile extends ConnectionInfo {
+		azureAccount?: string;
+	}
+
+	/*
+	 * Add optional per-OS default value.
+	 */
+	export interface DefaultValueOsOverride {
+		os: string;
+
+		defaultValueOverride: string;
+	}
+
+	export interface ConnectionOption {
+		defaultValueOsOverrides?: DefaultValueOsOverride[];
+	}
+
+	/*
+	 * Add OssRdbms for sqlops AzureResource.
+	 */
+	export enum AzureResource {
+		OssRdbms = 2
+	}
 }
