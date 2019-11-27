@@ -15,6 +15,7 @@ import { coalesce, firstIndex } from 'vs/base/common/arrays';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { doHandleUpgrade } from 'sql/workbench/common/languageAssociation';
 
 const EditorOpenPositioning = {
 	LEFT: 'left',
@@ -627,7 +628,7 @@ export class EditorGroup extends Disposable {
 		this.editors = coalesce(data.editors.map(e => {
 			const factory = registry.getEditorInputFactory(e.id);
 			if (factory) {
-				const editor = factory.deserialize(this.instantiationService, e.value);
+				const editor = this.instantiationService.invokeFunction(doHandleUpgrade, factory.deserialize(this.instantiationService, e.value)); // {{SQL CARBON EDIT}} handle upgrade path to new serialization
 				if (editor) {
 					this.registerEditorListeners(editor);
 				}
