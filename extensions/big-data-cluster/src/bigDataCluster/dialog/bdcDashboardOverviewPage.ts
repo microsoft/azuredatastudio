@@ -384,7 +384,10 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		}
 	}
 
-	private handleEndpointsUpdate(endpoints: EndpointModel[]): void {
+	private handleEndpointsUpdate(endpoints?: EndpointModel[]): void {
+		if (!endpoints) {
+			return;
+		}
 		// Sort the endpoints. The sort method is that SQL Server Master is first - followed by all
 		// others in alphabetical order by endpoint
 		const sqlServerMasterEndpoints = endpoints.filter(e => e.name === Endpoint.sqlServerMaster);
@@ -406,7 +409,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 			copyValueCell.iconHeight = '14px';
 			copyValueCell.iconWidth = '14px';
 			return [getEndpointDisplayText(e.name, e.description),
-			createEndpointComponent(this.modelBuilder, e, this.model, hyperlinkedEndpoints.some(he => he === e.name)), //e.endpoint,
+			createEndpointComponent(this.modelBuilder, e, this.model, hyperlinkedEndpoints.some(he => he === e.name)),
 				copyValueCell];
 		});
 
