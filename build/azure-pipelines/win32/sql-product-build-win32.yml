@@ -236,6 +236,13 @@ steps:
       SourceFolder: '$(Build.SourcesDirectory)/../vsix'
       TargetFolder: '$(Build.ArtifactStagingDirectory)/vsix'
 
+  - script: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { .\node_modules\7zip\7zip-lite\7z.exe a -tzip $(pwd)\..\azuredatastudio-server-win32-x64 $(pwd)\..\azuredatastudio-reh-win32-x64 -r }
+      mv $(pwd)\..\azuredatastudio-server-win32-x64.zip $(Build.ArtifactStagingDirectory)
+    displayName: 'Package server'
+
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'Sign installers'
     inputs:
