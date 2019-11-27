@@ -71,6 +71,8 @@ steps:
   - script: |
       set -e
       yarn gulp vscode-darwin
+      yarn gulp vscode-reh-darwin-min
+      yarn gulp vscode-reh-web-darwin-min
     displayName: Build
 
   - task: ArchiveFiles@2 # WHY ARE WE DOING THIS?
@@ -138,6 +140,10 @@ steps:
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
     timeoutInMinutes: 20
     continueOnError: true
+
+  - script: |
+      pushd .. && mv azuredatastudio-reh-darwin azuredatastudio-server-darwin && zip -Xry azuredatastudio-server-darwin.zip azuredatastudio-server-darwin && popd
+    displayName: 'Build server'
 
   - script: | # WHY ARE WE DOING THIS?
       set -e

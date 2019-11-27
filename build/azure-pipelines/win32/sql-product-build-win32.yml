@@ -77,6 +77,8 @@ steps:
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
       exec { yarn gulp "vscode-win32-x64" }
+      exec { yarn gulp "vscode-reh-win32-x64-min" }
+      exec { yarn gulp "vscode-reh-web-win32-x64-min" }
     displayName: Build
 
   - task: ArchiveFiles@2 # WHY
@@ -347,6 +349,13 @@ steps:
     inputs:
       SourceFolder: '$(Build.SourcesDirectory)/.build/win32-x64/user-setup/'
       TargetFolder: '$(Build.ArtifactStagingDirectory)/user-setup/'
+
+  - script: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { .\node_modules\7zip\7zip-lite\7z.exe a -tzip $(pwd)\..\azuredatastudio-server-win32-x64 $(pwd)\..\azuredatastudio-reh-win32-x64 -r }
+      mv $(pwd)\..\azuredatastudio-server-win32-x64.zip $(Build.ArtifactStagingDirectory)
+    displayName: 'Build server'
 
   - script: |
       cd $(Build.ArtifactStagingDirectory)
