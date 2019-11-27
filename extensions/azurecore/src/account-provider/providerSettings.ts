@@ -11,7 +11,7 @@ const localize = nls.loadMessageBundle();
 const publicAzureSettings: ProviderSettings = {
 	configKey: 'enablePublicCloud',
 	metadata: {
-		displayName: localize('publicCloudDisplayName', "Azure Public Cloud"),
+		displayName: localize('publicCloudDisplayName', "Azure"),
 		id: 'azurePublicCloud',
 		settings: {
 			host: 'https://login.microsoftonline.com/',
