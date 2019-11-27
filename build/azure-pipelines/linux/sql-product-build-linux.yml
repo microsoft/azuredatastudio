@@ -1,15 +1,5 @@
 steps:
   - script: |
-      set -e
-      sudo apt-get update
-      sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 libkrb5-dev #{{SQL CARBON EDIT}} add kerberos dep
-      sudo cp build/azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
-      sudo chmod +x /etc/init.d/xvfb
-      sudo update-rc.d xvfb defaults
-      sudo service xvfb start
-    displayName: 'System Installs'
-
-  - script: |
       mkdir -p .build
       echo -n $BUILD_SOURCEVERSION > .build/commit
       echo -n $VSCODE_QUALITY > .build/quality
@@ -104,6 +94,12 @@ steps:
       yarn gulp vscode-reh-linux-x64-min-ci
       yarn gulp vscode-reh-web-linux-x64-min-ci
     displayName: Build
+
+  - script: |
+      set -e
+      service xvfb start
+    displayName: Start xvfb
+    condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
 
   - script: |
       set -e
