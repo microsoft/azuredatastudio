@@ -23,7 +23,7 @@ const repoPath = path.dirname(__dirname);
 // {{SQL CARBON EDIT}}
 const buildPath = arch => path.join(path.dirname(repoPath), `azuredatastudio-win32-${arch}`);
 const zipDir = arch => path.join(repoPath, '.build', `win32-${arch}`, 'archive');
-const zipPath = arch => path.join(zipDir(arch), `VSCode-win32-${arch}.zip`);
+const zipPath = arch => path.join(zipDir(arch), `azuredatastudio-win32-${arch}.zip`);
 const setupDir = (arch, target) => path.join(repoPath, '.build', `win32-${arch}`, `${target}-setup`);
 const issPath = path.join(__dirname, 'win32', 'code.iss');
 const innoSetupPath = path.join(path.dirname(path.dirname(require.resolve('innosetup'))), 'bin', 'ISCC.exe');
