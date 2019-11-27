@@ -61,7 +61,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private dataSet: IGridDataSet;
 	private oldDataRows: VirtualizedCollection<any>;
 	private firstRender = true;
-	private enableEditing = false;
+	private enableEditing = true;
 	// Current selected cell state
 	private currentCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
 	private currentEditCellValue: string;
