@@ -1,4 +1,24 @@
 steps:
+  - powershell: |
+      mkdir .build -ea 0
+      "$env:BUILD_SOURCEVERSION" | Out-File -Encoding ascii -NoNewLine .build\commit
+      "$env:VSCODE_QUALITY" | Out-File -Encoding ascii -NoNewLine .build\quality
+    displayName: Prepare cache flag
+
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+    inputs:
+      keyfile: 'build/.cachesalt, .build/commit, .build/quality'
+      targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
+      vstsFeed: 'BuildCache'
+      platformIndependent: true
+      alias: 'Compilation'
+
+  - powershell: |
+      $ErrorActionPreference = "Stop"
+      exit 1
+    displayName: Check RestoreCache
+    condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+
   - task: NodeTool@0
     inputs:
       versionSpec: "10.15.1"
@@ -76,7 +96,9 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { yarn gulp "vscode-win32-x64-min" }
+      exec { yarn gulp "vscode-win32-x64-min-ci" }
+      exec { yarn gulp "vscode-reh-win32-x64-min-ci" }
+      exec { yarn gulp "vscode-reh-web-win32-x64-min-ci" }
     displayName: Build
 
   - task: ArchiveFiles@2 # WHY

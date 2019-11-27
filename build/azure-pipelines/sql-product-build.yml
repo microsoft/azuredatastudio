@@ -1,8 +1,16 @@
 jobs:
+- job: Compile
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  steps:
+  - template: sql-product-compile.yml
+
 - job: macOS
   condition: eq(variables['VSCODE_BUILD_MACOS'], 'true')
   pool:
     vmImage: macOS 10.13
+  dependsOn:
+  - Compile
   steps:
   - template: darwin/sql-product-build-darwin.yml
   timeoutInMinutes: 90
@@ -12,6 +20,8 @@ jobs:
   condition: eq(variables['VSCODE_BUILD_LINUX'], 'true')
   pool:
     vmImage: 'Ubuntu-16.04'
+  dependsOn:
+  - Compile
   steps:
   - template: linux/sql-product-build-linux.yml
 
@@ -19,6 +29,8 @@ jobs:
   condition: eq(variables['VSCODE_BUILD_WIN32'], 'true')
   pool:
     name: mssqltools
+  dependsOn:
+  - Compile
   steps:
   - template: win32/sql-product-build-win32.yml
   timeoutInMinutes: 90
