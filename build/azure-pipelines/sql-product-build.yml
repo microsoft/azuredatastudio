@@ -1,7 +1,14 @@
+resources:
+  containers:
+  - container: linux-x64
+    image: sqltoolscontainers.azurecr.io/linux-build-agent:x64
+    endpoint: ContainerRegistry
+
 jobs:
 - job: Compile
   pool:
     vmImage: 'Ubuntu-16.04'
+  container: linux-x64
   steps:
   - template: sql-product-compile.yml
 
@@ -20,6 +27,7 @@ jobs:
   condition: eq(variables['VSCODE_BUILD_LINUX'], 'true')
   pool:
     vmImage: 'Ubuntu-16.04'
+  container: linux-x64
   dependsOn:
   - Compile
   steps:
