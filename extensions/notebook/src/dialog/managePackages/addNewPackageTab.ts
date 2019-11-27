@@ -39,8 +39,8 @@ export class AddNewPackageTab {
 					label: localize('managePackages.searchButtonLabel', "Search"),
 					width: '200px'
 				}).component();
-			this.packagesSearchButton.onDidClick(() => {
-				this.loadNewPackageInfo();
+			this.packagesSearchButton.onDidClick(async () => {
+				await this.loadNewPackageInfo();
 			});
 
 			this.newPackagesName = view.modelBuilder.text().withProperties({ width: '400px' }).component();
@@ -62,8 +62,8 @@ export class AddNewPackageTab {
 				label: localize('managePackages.installButtonText', "Install"),
 				width: '200px'
 			}).component();
-			this.packageInstallButton.onDidClick(() => {
-				this.doPackageInstall();
+			this.packageInstallButton.onDidClick(async () => {
+				await this.doPackageInstall();
 			});
 
 			let formModel = view.modelBuilder.formContainer()

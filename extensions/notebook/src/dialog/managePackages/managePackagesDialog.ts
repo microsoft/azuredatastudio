@@ -59,8 +59,8 @@ export class ManagePackagesDialog {
 	}
 
 	/**
-	 * Changes the current package type
-	 * @param newPkgType Package Type
+	 * Changes the current provider id
+	 * @param providerId Provider Id
 	 */
 	public changeProvider(providerId: string): void {
 		this.model.changeProvider(providerId);

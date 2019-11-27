@@ -38,7 +38,20 @@ function msgDependenciesInstallationFailed(errorMessage: string): string { retur
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 function msgPackageRetrievalFailed(errorMessage: string): string { return localize('msgPackageRetrievalFailed', "Encountered an error when trying to retrieve list of installed packages: {0}", errorMessage); }
 
-export class JupyterServerInstallation {
+export interface IJupyterServerInstallation {
+	installCondaPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void>;
+	configurePackagePaths(): Promise<void>;
+	startInstallProcess(forceInstall: boolean, installSettings?: { installPath: string, existingPython: boolean }): Promise<void>;
+	getInstalledPipPackages(): Promise<PythonPkgDetails[]>;
+	getInstalledCondaPackages(): Promise<PythonPkgDetails[]>;
+	uninstallCondaPackages(packages: PythonPkgDetails[]): Promise<void>;
+	usingConda: boolean;
+	getCondaExePath(): string;
+	executeBufferedCommand(command: string): Promise<string>;
+	installPipPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void>;
+	uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void>;
+}
+export class JupyterServerInstallation implements IJupyterServerInstallation {
 	public apiWrapper: ApiWrapper;
 	public extensionPath: string;
 	public pythonBinPath: string;

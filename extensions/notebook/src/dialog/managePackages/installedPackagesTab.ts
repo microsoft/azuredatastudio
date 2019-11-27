@@ -186,8 +186,7 @@ export class InstalledPackagesTab {
 					description: taskName,
 					isCancelable: false,
 					operation: op => {
-						let uninstallPromise: Promise<void>;
-						this.dialog.model.uninstallPackages(packages);
+						let uninstallPromise: Promise<void> = this.dialog.model.uninstallPackages(packages);
 						uninstallPromise
 							.then(async () => {
 								let uninstallMsg = localize('managePackages.backgroundUninstallComplete',

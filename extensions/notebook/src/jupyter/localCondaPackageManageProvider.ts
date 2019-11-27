@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IPackageManageProvider, IPackageDetails, IPackageTarget, IPackageOverview } from '../types';
-import { JupyterServerInstallation } from './jupyterServerInstallation';
+import { IJupyterServerInstallation } from './jupyterServerInstallation';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 
@@ -15,7 +15,7 @@ export class LocalCondaPackageManageProvider implements IPackageManageProvider {
 	 */
 	public static ProviderId = 'localhost_Anaconda';
 
-	constructor(private jupyterInstallation: JupyterServerInstallation) {
+	constructor(private jupyterInstallation: IJupyterServerInstallation) {
 	}
 
 	/**

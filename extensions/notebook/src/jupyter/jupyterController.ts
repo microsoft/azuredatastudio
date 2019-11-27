@@ -29,6 +29,7 @@ import { IPackageManageProvider } from '../types';
 import { LocalPipPackageManageProvider } from './localPipPackageManageProvider';
 import { LocalCondaPackageManageProvider } from './localCondaPackageManageProvider';
 import { ManagePackagesDialogModel, ManagePackageDialogOptions } from '../dialog/managePackages/managePackagesDialogModel';
+import { PiPyClient } from './pipyClient';
 
 let untitledCounter = 0;
 
@@ -116,7 +117,7 @@ export class JupyterController implements vscode.Disposable {
 
 	public deactivate(): void {
 		// Shutdown any open notebooks
-		this._notebookInstances.forEach(instance => { instance.stop(); });
+		this._notebookInstances.forEach(async (instance) => { await instance.stop(); });
 	}
 
 	// EVENT HANDLERS //////////////////////////////////////////////////////
@@ -233,7 +234,7 @@ export class JupyterController implements vscode.Disposable {
 	}
 
 	private registerDefaultPackageManageProviders(): void {
-		this.registerPackageManager(LocalPipPackageManageProvider.ProviderId, new LocalPipPackageManageProvider(this._jupyterInstallation));
+		this.registerPackageManager(LocalPipPackageManageProvider.ProviderId, new LocalPipPackageManageProvider(this._jupyterInstallation, new PiPyClient()));
 		this.registerPackageManager(LocalCondaPackageManageProvider.ProviderId, new LocalCondaPackageManageProvider(this._jupyterInstallation));
 	}
 

@@ -3,14 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as nls from 'vscode-nls';
 import { IPackageManageProvider, IPackageDetails, IPackageTarget, IPackageOverview } from '../types';
-import { JupyterServerInstallation } from './jupyterServerInstallation';
+import { IJupyterServerInstallation } from './jupyterServerInstallation';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
-import * as request from 'request';
-
-const localize = nls.loadMessageBundle();
+import { IPiPyClient } from './pipyClient';
 
 export class LocalPipPackageManageProvider implements IPackageManageProvider {
 
@@ -19,7 +16,9 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 	 */
 	public static ProviderId = 'localhost_Pip';
 
-	constructor(private jupyterInstallation: JupyterServerInstallation) {
+	constructor(
+		private jupyterInstallation: IJupyterServerInstallation,
+		private pipyClient: IPiPyClient) {
 	}
 
 	/**
@@ -83,49 +82,29 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 	}
 
 	private async fetchPypiPackage(packageName: string): Promise<IPackageOverview> {
-		return new Promise<IPackageOverview>((resolve, reject) => {
-			request.get(`https://pypi.org/pypi/${packageName}/json`, { timeout: 10000 }, (error, response, body) => {
-				if (error) {
-					return reject(error);
-				}
-
-				if (response.statusCode === 404) {
-					return reject(constants.PackageNotFoundError);
-				}
-
-				if (response.statusCode !== 200) {
-					return reject(
-						localize('managePackages.packageRequestError',
-							"Package info request failed with error: {0} {1}",
-							response.statusCode,
-							response.statusMessage));
-				}
-
-				let versionNums: string[] = [];
-				let packageSummary = '';
-
-				let packagesJson = JSON.parse(body);
-				if (packagesJson) {
-					if (packagesJson.releases) {
-						let versionKeys = Object.keys(packagesJson.releases);
-						versionKeys = versionKeys.filter(versionKey => {
-							let releaseInfo = packagesJson.releases[versionKey];
-							return Array.isArray(releaseInfo) && releaseInfo.length > 0;
-						});
-						versionNums = utils.sortPackageVersions(versionKeys, false);
-					}
-
-					if (packagesJson.info && packagesJson.info.summary) {
-						packageSummary = packagesJson.info.summary;
-					}
-				}
-
-				resolve({
-					name: packageName,
-					versions: versionNums,
-					summary: packageSummary
+		let body = await this.pipyClient.fetchPypiPackage(packageName);
+		let packagesJson = JSON.parse(body);
+		let versionNums: string[] = [];
+		let packageSummary = '';
+		if (packagesJson) {
+			if (packagesJson.releases) {
+				let versionKeys = Object.keys(packagesJson.releases);
+				versionKeys = versionKeys.filter(versionKey => {
+					let releaseInfo = packagesJson.releases[versionKey];
+					return Array.isArray(releaseInfo) && releaseInfo.length > 0;
 				});
-			});
-		});
+				versionNums = utils.sortPackageVersions(versionKeys, false);
+			}
+
+			if (packagesJson.info && packagesJson.info.summary) {
+				packageSummary = packagesJson.info.summary;
+			}
+		}
+
+		return {
+			name: packageName,
+			versions: versionNums,
+			summary: packageSummary
+		};
 	}
 }
