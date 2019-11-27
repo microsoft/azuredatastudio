@@ -70,7 +70,7 @@ steps:
 
   - script: |
       set -e
-      yarn gulp vscode-darwin
+      yarn gulp vscode-darwin-min
       yarn gulp vscode-reh-darwin-min
       yarn gulp vscode-reh-web-darwin-min
     displayName: Build
@@ -143,12 +143,11 @@ steps:
 
   - script: |
       pushd .. && mv azuredatastudio-reh-darwin azuredatastudio-server-darwin && zip -Xry azuredatastudio-server-darwin.zip azuredatastudio-server-darwin && popd
-    displayName: 'Build server'
+    displayName: 'Package server'
 
   - script: | # WHY ARE WE DOING THIS?
       set -e
-      BUILD="$(Build.SourcesDirectory)/../azuredatastudio-darwin"
-      PACKAGEJSON=`ls $BUILD/*.app/Contents/Resources/app/package.json`
+      PACKAGEJSON=`ls $(Build.SourcesDirectory)/package.json`
       VERSION=`node -p "require(\"$PACKAGEJSON\").version"`
       COMMIT_ID=`git rev-parse HEAD`
 

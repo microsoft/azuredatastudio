@@ -84,7 +84,7 @@ steps:
 
   - script: |
       set -e
-      yarn gulp vscode-linux-x64
+      yarn gulp vscode-linux-x64-min
       yarn gulp vscode-reh-linux-x64-min
       yarn gulp vscode-reh-web-linux-x64-min
     displayName: Build
@@ -168,12 +168,11 @@ steps:
       cd $(agent.builddirectory)
       tar --owner=0 --group=0 -czf azuredatastudio-server-linux-x64.tar.gz vscode-reh-linux-x64
       cp azuredatastudio-server-linux-x64.tar.gz $(Build.ArtifactStagingDirectory)
-    displayName: 'Build server'
+    displayName: 'Package server'
 
   - script: | # WHY ARE WE DOING THIS?
       set -e
-      BUILD="$(Build.SourcesDirectory)/../azuredatastudio-linux-x64"
-      PACKAGEJSON="$BUILD/resources/app/package.json"
+      PACKAGEJSON="$(Build.SourcesDirectory)/package.json"
       VERSION=$(node -p "require(\"$PACKAGEJSON\").version")
       COMMIT_ID=$(git rev-parse HEAD)
 

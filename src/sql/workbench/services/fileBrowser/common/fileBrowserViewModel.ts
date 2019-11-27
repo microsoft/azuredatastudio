@@ -5,6 +5,7 @@
 
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { localize } from 'vs/nls';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 /**
  * View model for file browser dialog
@@ -48,17 +49,17 @@ export class FileBrowserViewModel {
 		}
 	}
 
-	public validateFilePaths(selectedFiles: string[]) {
-		this._fileBrowserService.validateFilePaths(this._ownerUri, this._fileValidationServiceType, selectedFiles);
+	public async validateFilePaths(selectedFiles: string[]): Promise<boolean> {
+		return this._fileBrowserService.validateFilePaths(this._ownerUri, this._fileValidationServiceType, selectedFiles);
 	}
 
-	public openFileBrowser(filterIndex: number, changeFilter: boolean) {
+	public async openFileBrowser(filterIndex: number, changeFilter: boolean): Promise<void> {
 		if (this._fileFilters[filterIndex]) {
-			this._fileBrowserService.openFileBrowser(this._ownerUri, this._expandPath, this._fileFilters[filterIndex].filters, changeFilter);
+			await this._fileBrowserService.openFileBrowser(this._ownerUri, this._expandPath, this._fileFilters[filterIndex].filters, changeFilter);
 		}
 	}
 
-	public closeFileBrowser() {
-		this._fileBrowserService.closeFileBrowser(this._ownerUri);
+	public async closeFileBrowser(): Promise<void> {
+		await this._fileBrowserService.closeFileBrowser(this._ownerUri).catch(err => onUnexpectedError(err));
 	}
 }
