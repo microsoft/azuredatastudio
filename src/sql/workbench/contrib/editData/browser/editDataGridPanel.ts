@@ -413,6 +413,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	 * @param scrollTop The scrolltop value, if not called by the scroll event should be 0
 	 */
 	onScroll(scrollTop): void {
+		console.log(scrollTop);
 		this.refreshGrid();
 	}
 
@@ -680,6 +681,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			let gridSelections = grid.getSelectedRanges();
 			let gridObject = grid as any;
 			let viewport = (gridObject._grid.getCanvasNode() as HTMLElement).parentElement;
+			console.log(viewport.scrollTop);
 			this.savedViewState = {
 				gridSelections,
 				scrollTop: viewport.scrollTop,
@@ -1080,7 +1082,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	private setupEvents(): void {
 		this.tables[0].grid.onScroll.subscribe((e, args) => {
 			this.onScroll(args);
-
 		});
 		this.tables[0].grid.onCellChange.subscribe((e, args) => {
 			this.onCellEditEnd(args);
