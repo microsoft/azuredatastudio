@@ -138,7 +138,11 @@
 	display: none;
 }
 
-.hide-username-password .username-password-row {
+.hide-username .username-row {
+	display: none;
+}
+
+.hide-password .password-row {
 	display: none;
 }
 
