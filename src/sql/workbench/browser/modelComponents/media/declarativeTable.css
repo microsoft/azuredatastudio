@@ -11,26 +11,30 @@
 
 .declarative-table-header {
 	padding: 5px;
-	border: 1px solid gray;
+	border-left: 1px solid gray;
+	border-top: 1px solid gray;
+	border-right: 1px solid gray;
+	border-bottom: 1px solid gray;
 	background-color: #F5F5F5;
 	vertical-align: top;
 }
 
-.vs-dark .declarative-table-header {
-	padding: 5px;
-	border: 1px solid gray;
-	background-color: #333334;
-}
-
+.vs-dark .declarative-table-header 
 .hc-black .declarative-table-header {
 	padding: 5px;
-	border: 1px solid gray;
+	border-left: 1px solid gray;
+	border-top: 1px solid gray;
+	border-right: 1px solid gray;
+	border-bottom: 1px solid gray;
 	background-color: #333334;
 }
 
 .declarative-table-cell {
 	padding: 5px;
-	border: 1px solid gray;
+	border-left: 1px solid gray;
+	border-top: 1px solid gray;
+	border-right: 1px solid gray;
+	border-bottom: 1px solid gray;
 }
 
 .declarative-table [role="gridcell"]:focus,

@@ -1368,6 +1368,46 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
+
+	protected notifyPropertyChanged(): Thenable<void> {
+		return this._proxy.$setProperties(this._handle, this._id, this.getPropertiesForMainThread());
+	}
+
+	public toComponentShape(): IComponentShape {
+		// Overridden to ensure we send the correct properties mapping.
+		return <IComponentShape>{
+			id: this.id,
+			type: this.type,
+			layout: this.layout,
+			properties: this.getPropertiesForMainThread(),
+			itemConfigs: this.itemConfigs ? this.itemConfigs.map<IItemConfig>(item => item.toIItemConfig()) : undefined
+		};
+	}
+
+	/**
+	 * Gets the properties map to send to the main thread.
+	 */
+	private getPropertiesForMainThread(): { [key: string]: string } {
+		// This is necessary because we can't send the actual ComponentWrapper objects
+		// and so map them into their IDs instead. We don't want to update the actual
+		// data property though since the caller would still expect that to contain
+		// the Component objects they created
+		const properties = assign({}, this.properties);
+		if (properties.data) {
+			properties.data = properties.data.map((row: any[]) => row.map(cell => {
+				if (cell instanceof ComponentWrapper) {
+					// First ensure that we register the component using addItem
+					// such that it gets added to the ModelStore. We don't want to
+					// make the table component an actual container since that exposes
+					// a lot of functionality we don't need.
+					this.addItem(cell);
+					return cell.id;
+				}
+				return cell;
+			}));
+		}
+		return properties;
+	}
 }
 
 class ListBoxWrapper extends ComponentWrapper implements azdata.ListBoxComponent {
