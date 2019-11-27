@@ -132,6 +132,21 @@ const ConnectionProviderContrib: IJSONSchema = {
 					defaultValue: {
 						type: ['string', 'number', 'boolean', 'object', 'integer', 'null', 'array']
 					},
+					defaultValueOsOverrides: {
+						type: 'array',
+						items: {
+							type: 'object',
+							properties: {
+								os: {
+									type: 'string',
+									enum: ['Windows', 'Macintosh', 'Linux']
+								},
+								defaultValueOverride: {
+									type: ['string', 'number', 'boolean', 'object', 'integer', 'null', 'array']
+								}
+							}
+						}
+					},
 					objectType: {
 						type: ['string', 'number', 'boolean', 'object', 'integer', 'null', 'array']
 					},

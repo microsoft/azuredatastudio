@@ -87,7 +87,13 @@
           "description": "%cms.connectionOptions.authType.description%",
           "groupName": "Security",
           "valueType": "category",
-          "defaultValue": null,
+          "defaultValue": "SqlLogin",
+          "defaultValueOsOverrides": [
+            {
+              "os": "Windows",
+              "defaultValueOverride": "Integrated"
+            }
+          ],
           "objectType": null,
           "categoryValues": [
             {
