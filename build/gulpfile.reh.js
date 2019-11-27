@@ -350,7 +350,7 @@ function copyNativeTask(folder) {
 }
 
 function packagePkgTask(platform, arch, pkgTarget) {
-	const folder = path.join(BUILD_ROOT, 'vscode-reh') + (platform ? '-' + platform : '') + (arch ? '-' + arch : '');
+	const folder = path.join(BUILD_ROOT, 'azuredatastudio-reh') + (platform ? '-' + platform : '') + (arch ? '-' + arch : '');
 	return () => {
 		const cwd = process.cwd();
 		const config = path.join(cwd, 'out-vscode-reh-pkg', 'pkg-package.vscode-reh-' + platform + '-' + arch + '.json');
@@ -425,7 +425,7 @@ function packagePkgTask(platform, arch, pkgTarget) {
 				tasks.push(
 					() => gulp.src(path.join(REMOTE_FOLDER, '.yarnrc')).pipe(gulp.dest(root)),
 					util.rimraf(path.join(root, 'node_modules')),
-					() => exec('yarn', root),
+					() => exec('yarn', root)
 				);
 			});
 			const yarnrcExtensions = task.define(`vscode-web-${type}${dashed(platform)}${dashed(arch)}-yarnrc-extensions`, task.series(...tasks));
