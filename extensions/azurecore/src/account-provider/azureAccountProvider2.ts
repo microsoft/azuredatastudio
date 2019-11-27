@@ -144,9 +144,6 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		}
 		const pathMappings = new Map<string, (req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => void>();
 
-		// const redirectUri = await vscode.env.createAppUri({
-		// 	payload: { path: 'authenticated' }
-		// });
 		const nonce = crypto.randomBytes(16).toString('base64');
 
 		const server = this.createAuthServer(pathMappings);
@@ -193,7 +190,9 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		const initialSignIn = ((req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => {
 			const receivedNonce = (reqUrl.query.nonce as string || '').replace(/ /g, '+');
 			if (receivedNonce !== nonce) {
-				// TODO handle broken nonce situation
+				res.writeHead(400, { 'content-type': 'text/html' });
+				res.write(localize('azureAuth.nonceError', "Authentication failed due to a nonce mismatch, please close ADS and try again."));
+				res.end();
 				return;
 			}
 			res.writeHead(302, { Location: authUrl });
@@ -206,16 +205,21 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 			const stateSplit = state.split(',');
 			if (stateSplit.length !== 2) {
-				// TODO handle broken state.
+				res.writeHead(400, { 'content-type': 'text/html' });
+				res.write(localize('azureAuth.stateError', "Authentication failed due to a state mismatch, please close ADS and try again."));
+				res.end();
 				return;
 			}
 
 			if (stateSplit[1] !== nonce) {
-				// TODO handle broken nonce situation
+				res.writeHead(400, { 'content-type': 'text/html' });
+				res.write(localize('azureAuth.nonceError', "Authentication failed due to a nonce mismatch, please close ADS and try again."));
+				res.end();
 				return;
 			}
 
-			res.writeHead(200, 'success, you may close this page');
+			res.writeHead(200, { 'content-type': 'text/html' });
+			res.write(localize('azureAuth.authSuccessful', "Authentication was successful, you can now close this page."));
 			res.end();
 
 			this.handleAuthentication(code).catch(console.error);
@@ -351,7 +355,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	}
 
 	private createAuthUrl(baseHost: string, redirectUri: string, clientId: string, resource: string, tenant: string, nonce: string): string {
-		return `${baseHost}${encodeURIComponent(tenant)}/oauth2/authorize?response_type=code&client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${nonce}&resource=${encodeURIComponent(resource)}`;
+		return `${baseHost}${encodeURIComponent(tenant)}/oauth2/authorize?response_type=code&client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${nonce}&resource=${encodeURIComponent(resource)}&prompt=select_account`;
 	}
 
 	private createAuthServer(pathMappings: Map<string, (req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => void>) {
