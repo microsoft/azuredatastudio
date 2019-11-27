@@ -490,6 +490,7 @@
     "connectionProvider": {
       "providerId": "MSSQL",
       "displayName": "%mssql.provider.displayName%",
+      "isLanguageFlavorProvider": true,
       "iconPath": [
         {
           "id": "mssql:cloud",

@@ -202,14 +202,9 @@ export interface IConnectionManagementService {
 	getProviderIdFromUri(ownerUri: string): string;
 
 	/**
-	 * Sets the provider for a uri
+	 * Gets the list of provider names that are language flavors
 	 */
-	setProviderIdForUri(ownerUri: string, providerName: string): void;
-
-	/**
-	 * Gets all provider names
-	 */
-	getProviderNames(): string[];
+	getLanguageFlavorProviderNames(): string[];
 
 	hasRegisteredServers(): boolean;
 

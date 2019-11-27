@@ -21,6 +21,7 @@ export interface ConnectionProviderProperties {
 	providerId: string;
 	displayName: string;
 	azureResource?: string;
+	isLanguageFlavorProvider?: boolean;
 	connectionOptions: azdata.ConnectionOption[];
 }
 

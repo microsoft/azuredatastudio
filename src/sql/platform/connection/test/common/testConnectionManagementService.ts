@@ -213,15 +213,12 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return Promise.resolve();
 	}
 
-	getProviderNames(): string[] {
+	getLanguageFlavorProviderNames(): string[] {
 		return [];
 	}
 
 	getProviderIdFromUri(ownerUri: string): string {
 		return undefined;
-	}
-
-	setProviderIdForUri(ownerUri: string, providerName: string): void {
 	}
 
 	hasRegisteredServers(): boolean {

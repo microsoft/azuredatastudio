@@ -206,10 +206,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
-	 * Gets the list of provider names
+	 * Gets the list of provider names that are language flavors
 	 */
-	public getProviderNames(): string[] {
-		return entries(this._capabilitiesService.providers).map(p => p[0]);
+	public getLanguageFlavorProviderNames(): string[] {
+		return Object.keys(this._capabilitiesService.providers).filter(p => this._capabilitiesService.providers[p].connection.isLanguageFlavorProvider);
 	}
 
 	/**
@@ -222,14 +222,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 
 		return providerId;
-	}
-
-	/**
-	 * Sets the provider ID for a URI
-	 */
-	public setProviderIdForUri(ownerUri: string, providerName: string): void {
-		// setup URI to provider ID map
-		this._uriToProvider[ownerUri] = providerName;
 	}
 
 	/**
@@ -687,6 +679,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 */
 	public doChangeLanguageFlavor(uri: string, language: string, provider: string): void {
 		if (this._providers.has(provider)) {
+			this._uriToProvider[uri] = provider;
 			this._onLanguageFlavorChanged.fire({
 				uri: uri,
 				language: language,
@@ -784,9 +777,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let connectionInfo = assign({}, {
 			options: connection.options
 		});
-
-		// setup URI to provider ID map for connection
-		this._uriToProvider[uri] = connection.providerName;
 
 		return this._providers.get(connection.providerName).onReady.then((provider) => {
 			provider.connect(uri, connectionInfo);

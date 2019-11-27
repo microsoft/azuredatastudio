@@ -201,15 +201,14 @@ export class ChangeFlavorAction extends Action {
 
 		// TODO #1334 use connectionManagementService.GetProviderNames here. The challenge is that the credentials provider is returned
 		// so we need a way to filter this using a capabilities check, with isn't yet implemented
-		let ProviderOptions = this._connectionManagementService.getProviderNames().map(p => new SqlProviderEntry(p));
+		let providerOptions = this._connectionManagementService.getLanguageFlavorProviderNames().map(p => new SqlProviderEntry(p));
 
-		return this._quickInputService.pick(ProviderOptions, { placeHolder: nls.localize('pickSqlProvider', "Select SQL Language Provider") }).then(provider => {
+		return this._quickInputService.pick(providerOptions, { placeHolder: nls.localize('pickSqlProvider', "Select SQL Language Provider") }).then(provider => {
 			if (provider) {
 				let activeEditor = this._editorService.activeControl.getControl();
 				const editorWidget = getCodeEditor(activeEditor);
 				if (editorWidget) {
 					if (currentUri) {
-						this._connectionManagementService.setProviderIdForUri(currentUri, provider.providerId);
 						this._connectionManagementService.doChangeLanguageFlavor(currentUri, 'sql', provider.providerId);
 					}
 				}
