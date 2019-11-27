@@ -614,7 +614,7 @@ export class NewNotebookAction extends Action {
 	}
 }
 
-export class NotebookFindNext implements IEditorAction {
+export class NotebookFindNextAction implements IEditorAction {
 	public readonly id = 'notebook.findNext';
 	public readonly label = localize('notebook.findNext', "Find Next String");
 	public readonly alias = '';
@@ -630,7 +630,7 @@ export class NotebookFindNext implements IEditorAction {
 	}
 }
 
-export class NotebookFindPrevious implements IEditorAction {
+export class NotebookFindPreviousAction implements IEditorAction {
 	public readonly id = 'notebook.findPrevious';
 	public readonly label = localize('notebook.findPrevious', "Find Previous String");
 	public readonly alias = '';

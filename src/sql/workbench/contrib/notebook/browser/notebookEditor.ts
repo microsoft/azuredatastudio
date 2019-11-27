@@ -22,7 +22,7 @@ import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contri
 import { IEditorAction, ScrollType } from 'vs/editor/common/editorCommon';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { NotebookFindNext, NotebookFindPrevious } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { NotebookFindNextAction, NotebookFindPreviousAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -73,8 +73,8 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		this._decorations = new NotebookFindDecorations(this);
 		this._toDispose.add(this._decorations);
 		this._decorations.setStartPosition(this.getPosition());
-		this._actionMap[ACTION_IDS.FIND_NEXT] = this._instantiationService.createInstance(NotebookFindNext, this);
-		this._actionMap[ACTION_IDS.FIND_PREVIOUS] = this._instantiationService.createInstance(NotebookFindPrevious, this);
+		this._actionMap[ACTION_IDS.FIND_NEXT] = this._instantiationService.createInstance(NotebookFindNextAction, this);
+		this._actionMap[ACTION_IDS.FIND_PREVIOUS] = this._instantiationService.createInstance(NotebookFindPreviousAction, this);
 	}
 
 	public dispose(): void {
@@ -94,7 +94,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		return this._previousMatch;
 	}
 
-	public getCellEditor(cellGuid: string): BaseTextEditor {
+	public getCellEditor(cellGuid: string): BaseTextEditor | undefined {
 		let editorImpl = this._notebookService.findNotebookEditor(this.notebookInput.notebookUri);
 		if (editorImpl) {
 			let cellEditorProvider = editorImpl.cellEditors.filter(c => c.cellGuid() === cellGuid)[0];
@@ -132,8 +132,6 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 	}
 
 	public getNotebookModel(): INotebookModel {
-		// let notebookEditorModel = await this.notebookInput.resolve();
-		// return notebookEditorModel.getNotebookModel();
 		return this._notebookModel;
 	}
 
