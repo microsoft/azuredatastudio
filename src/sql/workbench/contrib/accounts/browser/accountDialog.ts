@@ -188,6 +188,7 @@ export class AccountDialog extends Modal {
 		const buttonSection = DOM.append(this._noaccountViewContainer, DOM.$('div.button-section'));
 		this._addAccountButton = new Button(buttonSection);
 		this._addAccountButton.label = localize('accountDialog.addConnection', "Add an account");
+
 		this._register(this._addAccountButton.onDidClick(() => {
 			(<IProviderViewUiComponent>values(this._providerViewsMap)[0]).addAccountAction.run();
 		}));

@@ -432,6 +432,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 				displayName: displayName
 			},
 			properties: {
+				providerSettings: this._metadata,
 				isMsAccount: msa,
 				tenants: tenants
 			},
