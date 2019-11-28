@@ -184,7 +184,7 @@ steps:
   - script: |
       set -e
       cd $(agent.builddirectory)
-      tar --owner=0 --group=0 -czf azuredatastudio-server-linux-x64.tar.gz vscode-reh-linux-x64
+      tar --owner=0 --group=0 -czf azuredatastudio-server-linux-x64.tar.gz azuredatastudio-reh-linux-x64
       cp azuredatastudio-server-linux-x64.tar.gz $(Build.ArtifactStagingDirectory)
     displayName: 'Package server'
 
