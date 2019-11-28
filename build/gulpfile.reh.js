@@ -403,7 +403,7 @@ function packagePkgTask(platform, arch, pkgTarget) {
 
 		['', 'min'].forEach(minified => {
 			const sourceFolderName = `out-vscode-${type}${dashed(minified)}`;
-			const destinationFolderName = `vscode-${type}${dashed(platform)}${dashed(arch)}`;
+			const destinationFolderName = `azuredatastudio-${type}${dashed(platform)}${dashed(arch)}`;
 
 			const rollupAngularTask = task.define(`vscode-web-${type}${dashed(platform)}${dashed(arch)}-angular-rollup`, () => {
 				return rollupAngular(REMOTE_FOLDER);
