@@ -27,10 +27,10 @@ steps:
     inputs:
       versionSpec: "1.x"
 
-  # - task: UsePythonVersion@0
-  #   inputs:
-  #     versionSpec: '2.x'
-  #     addToPath: true
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '2.x'
+      addToPath: true
 
   - task: AzureKeyVault@1
     displayName: 'Azure Key Vault: Get Secrets'
@@ -121,33 +121,6 @@ steps:
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
     displayName: Run unstable tests
-
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { .\scripts\sql-test-integration.bat }
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-    displayName: Run stable tests
-
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { .\scripts\sql-test-integration.bat }
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-    displayName: Run release tests
-    env:
-      ADS_TEST_GREP: (.*@REL@|integration test setup)
-      ADS_TEST_INVERT_GREP: 0
-
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { .\scripts\sql-test-integration-unstable.bat }
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
-    displayName: Run unstable integration tests
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'Sign out code'
