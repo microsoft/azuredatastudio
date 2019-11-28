@@ -13,6 +13,6 @@ RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubunt
 RUN apt-get update
 RUN apt-get -y install docker-ce docker-ce-cli containerd.io
 
-ADD ./../xvfb.init /etc/init.d/xvfb
+ADD ./xvfb.init /etc/init.d/xvfb
 RUN chmod +x /etc/init.d/xvfb
 RUN update-rc.d xvfb defaults
