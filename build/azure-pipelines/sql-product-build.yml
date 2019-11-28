@@ -14,7 +14,9 @@ jobs:
     vmImage: 'Ubuntu-16.04'
   steps:
   - template: linux/sql-product-build-linux.yml
-
+  timeoutInMinutes: 90
+  cancelTimeoutInMinutes: 5
+  
 - job: Windows
   condition: eq(variables['VSCODE_BUILD_WIN32'], 'true')
   pool:
