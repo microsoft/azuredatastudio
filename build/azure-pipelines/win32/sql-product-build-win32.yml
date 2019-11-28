@@ -203,12 +203,6 @@ steps:
       SourceFolder: '$(Build.SourcesDirectory)/.build/win32-x64/system-setup/'
       TargetFolder: '$(Build.ArtifactStagingDirectory)/' # our release scripts except system exe to be in root and user setup to be under /user-setup
 
-  - task: CopyFiles@2
-    displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/vsix'
-    inputs:
-      SourceFolder: '$(Build.SourcesDirectory)/../vsix'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/vsix'
-
   - script: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
