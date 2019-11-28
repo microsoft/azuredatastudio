@@ -203,7 +203,7 @@ steps:
       SourceFolder: '$(Build.SourcesDirectory)/.build/win32-x64/system-setup/'
       TargetFolder: '$(Build.ArtifactStagingDirectory)/' # our release scripts except system exe to be in root and user setup to be under /user-setup
 
-  - script: |
+  - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
       exec { .\node_modules\7zip\7zip-lite\7z.exe a -tzip $(pwd)\..\azuredatastudio-server-win32-x64 $(pwd)\..\azuredatastudio-reh-win32-x64 -r }
