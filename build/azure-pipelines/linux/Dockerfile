@@ -6,7 +6,7 @@ RUN apt-get update --fix-missing
 
 RUN apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 \
 	libkrb5-dev git apt-transport-https ca-certificates curl gnupg-agent software-properties-common \
-	libnss3
+	libnss3 libasound2
 
 #docker
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
