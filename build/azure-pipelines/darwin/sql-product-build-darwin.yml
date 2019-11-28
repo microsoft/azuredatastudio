@@ -162,7 +162,7 @@ steps:
     continueOnError: true
 
   - script: |
-      pushd .. && mv azuredatastudio-reh-darwin azuredatastudio-server-darwin && zip -Xry azuredatastudio-server-darwin.zip azuredatastudio-server-darwin && popd
+      pushd .. && mv azuredatastudio-reh-darwin azuredatastudio-server-darwin && zip -Xry $(Build.ArtifactStagingDirectory)/azuredatastudio-server-darwin.zip azuredatastudio-server-darwin && popd
     displayName: 'Package server'
 
   - script: | # WHY ARE WE DOING THIS?
