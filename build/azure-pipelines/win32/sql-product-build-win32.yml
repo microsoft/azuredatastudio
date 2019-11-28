@@ -208,7 +208,7 @@ steps:
       $ErrorActionPreference = "Stop"
       $Repo = "$(pwd)"
       $Root = "$Repo\.."
-      $LegacyServer = "$Root\vscode-reh-win32-x64"
+      $LegacyServer = "$Root\azuredatastudio-reh-win32-x64"
       $ServerName = "azuredatastudio-server-win32-x64"
       $Server = "$Root\$ServerName"
       $ServerZip = "$(Build.ArtifactStagingDirectory)\azuredatastudio-server-win32-x64.zip"
