@@ -101,12 +101,12 @@ steps:
     displayName: Start xvfb
     condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
 
-  - script: |
-      set -e
-      docker build -t ads-server-web -f build/azure-pipelines/docker/Dockerfile $(Build.SourcesDirectory)/../vscode-reh-linux-x64
-      docker save ads-server-web | gzip > server-docker-web.tar.gz
-      cp server-docker-web.tar.gz $(Build.ArtifactStagingDirectory)
-    displayName: "Create docker image"
+  # - script: |
+  #     set -e
+  #     docker build -t ads-server-web -f build/azure-pipelines/docker/Dockerfile $(Build.SourcesDirectory)/../vscode-reh-linux-x64
+  #     docker save ads-server-web | gzip > server-docker-web.tar.gz
+  #     cp server-docker-web.tar.gz $(Build.ArtifactStagingDirectory)
+  #   displayName: "Create docker image"
 
   - script: |
       set -e
