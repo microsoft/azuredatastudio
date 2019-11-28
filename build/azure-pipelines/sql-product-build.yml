@@ -44,7 +44,7 @@ jobs:
   timeoutInMinutes: 90
   cancelTimeoutInMinutes: 5
 
-- job: Windows Test
+- job: Windows_Test
   condition: eq(variables['VSCODE_BUILD_WIN32'], 'true')
   pool:
     name: mssqltools
