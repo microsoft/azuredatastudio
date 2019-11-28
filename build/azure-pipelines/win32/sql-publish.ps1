@@ -12,7 +12,7 @@ $ExeName = "AzureDataStudioSetup.exe"
 $SystemExe = "$artifactsDir\$ExeName"
 $UserExe = "$artifactsDir\user-setup\$ExeName"
 $UserExeName = "AzureDataStudioUserSetup.exe"
-$ZipName = "azuredatastudio-windows.zip"
+$ZipName = "azuredatastudio-win32-x64.zip"
 $Zip = "$artifactsDir\$ZipName"
 
 $VersionJson = Get-Content -Raw -Path "$artifactsDir\version.json" | ConvertFrom-Json
