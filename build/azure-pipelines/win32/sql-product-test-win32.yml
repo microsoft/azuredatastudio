@@ -4,7 +4,7 @@ steps:
     buildType: 'current'
     targetPath: '$(Pipeline.Workspace)'
     artifactName: drop
-    itemPattern: azuredatastudio-win32-x64.zip
+    itemPattern: '**/azuredatastudio-win32-x64.zip'
 
 - task: NodeTool@0
   inputs:
