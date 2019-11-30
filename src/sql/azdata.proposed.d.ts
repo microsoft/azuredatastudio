@@ -113,4 +113,40 @@ declare module 'azdata' {
 	export enum AzureResource {
 		OssRdbms = 2
 	}
+
+	export interface ModelBuilder {
+		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent>;
+	}
+
+	export interface RadioCard {
+		id: string;
+		label: string;
+		descriptions?: RadioCardDescription[];
+		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+	}
+
+	export interface RadioCardDescription {
+		ariaLabel: string;
+		labelHeader: string;
+		valueHeader?: string;
+		contents: RadioCardLabelValuePair[];
+	}
+
+	export interface RadioCardLabelValuePair {
+		label: string;
+		value?: string;
+	}
+
+	export interface RadioCardGroupComponentProperties extends ComponentProperties, TitledComponentProperties {
+		cards: RadioCard[];
+		iconWidth?: string;
+		iconHeight?: string;
+		cardWidth: string;
+		cardHeight: string;
+		selectedCardId?: string;
+	}
+
+	export interface RadioCardGroupComponent extends Component, RadioCardGroupComponentProperties {
+		onSelectionChanged: vscode.Event<any>;
+	}
 }

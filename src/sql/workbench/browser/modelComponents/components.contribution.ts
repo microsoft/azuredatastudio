@@ -29,6 +29,7 @@ import { registerComponentType } from 'sql/platform/dashboard/browser/modelCompo
 import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 import HyperlinkComponent from 'sql/workbench/browser/modelComponents/hyperlink.component';
 import SplitViewContainer from 'sql/workbench/browser/modelComponents/splitviewContainer.component';
+import RadioCardGroup from 'sql/workbench/browser/modelComponents/radioCardGroup.component';
 
 export const DIV_CONTAINER = 'div-container';
 registerComponentType(DIV_CONTAINER, ModelComponentTypes.DivContainer, DivContainer);
@@ -105,3 +106,7 @@ registerComponentType(DOM_COMPONENT, ModelComponentTypes.Dom, DomComponent);
 
 export const HYPERLINK_COMPONENT = 'hyperlink-component';
 registerComponentType(HYPERLINK_COMPONENT, ModelComponentTypes.Hyperlink, HyperlinkComponent);
+
+export const RADIOCARDGROUP_COMPONENT = 'radiocardgroup-component';
+registerComponentType(RADIOCARDGROUP_COMPONENT, ModelComponentTypes.RadioCardGroup, RadioCardGroup);
+
