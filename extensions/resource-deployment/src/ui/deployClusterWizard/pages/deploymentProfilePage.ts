@@ -30,7 +30,8 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 				cards: [],
 				cardWidth: '240px',
 				cardHeight: '340px',
-				ariaLabel: localize('deploymentDialog.deploymentOptions', "Deployment options")
+				ariaLabel: localize('deploymentDialog.deploymentOptions', "Deployment options"),
+				width: '1000px'
 			}).component();
 			this.wizard.registerDisposable(this._cardContainer.onSelectionChanged((profileName) => {
 				const selectedProfile = this._profiles.find(p => profileName === p.profileName);
