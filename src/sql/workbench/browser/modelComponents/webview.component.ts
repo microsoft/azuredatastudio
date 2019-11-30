@@ -85,7 +85,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		});
 
 		this._ready.then(() => {
-			this._register(this._webview.onDidClickLink(link => this.onDidClickLink(link)));
+			this._register(this._webview.onDidClickLink(link => this.onDidClickLink(URI.parse(link))));
 
 			this._register(this._webview.onMessage(e => {
 				this.fireEvent({
