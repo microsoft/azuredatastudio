@@ -18,6 +18,7 @@ import { IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 
 import { ICapabilitiesService, ProviderFeatures, clientCapabilities, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { find } from 'vs/base/common/arrays';
 import { entries } from 'sql/base/common/collections';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 const connectionRegistry = Registry.as<IConnectionProviderRegistry>(ConnectionExtensions.ConnectionProviderContributions);
 
@@ -71,7 +72,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 
 		extensionService.whenInstalledExtensionsRegistered().then(() => {
 			this.cleanupProviders();
-		});
+		}).catch(err => onUnexpectedError(err));
 
 		_storageService.onWillSaveState(() => this.shutdown());
 
@@ -85,7 +86,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 					let id = extension.contributes[connectionProvider].providerId;
 					delete this.capabilities.connectionProviderCache[id];
 				}
-			});
+			}).catch(err => onUnexpectedError(err));
 		}));
 	}
 

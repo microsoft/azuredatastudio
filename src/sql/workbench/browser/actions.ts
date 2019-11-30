@@ -84,7 +84,7 @@ export class ConfigureDashboardAction extends Task {
 		});
 	}
 
-	runTask(accessor: ServicesAccessor): Promise<void> {
-		return accessor.get(IOpenerService).open(URI.parse(ConfigureDashboardAction.configHelpUri)).then();
+	async runTask(accessor: ServicesAccessor): Promise<void> {
+		accessor.get(IOpenerService).open(URI.parse(ConfigureDashboardAction.configHelpUri));
 	}
 }
