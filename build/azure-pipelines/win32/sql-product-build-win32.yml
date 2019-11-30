@@ -37,11 +37,11 @@ steps:
       git merge $(node -p "require('./package.json').distro")
     displayName: Merge distro
 
-  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
-    inputs:
-      keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
-      targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
-      vstsFeed: 'BuildCache'
+  # - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+  #   inputs:
+  #     keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+  #     targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
+  #     vstsFeed: 'BuildCache'
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
@@ -49,21 +49,21 @@ steps:
       $env:CHILD_CONCURRENCY="1"
       exec { yarn --frozen-lockfile }
     displayName: Install dependencies
-    condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+    # condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
-  - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
-    inputs:
-      keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
-      targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
-      vstsFeed: 'BuildCache'
-    condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+  # - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
+  #   inputs:
+  #     keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+  #     targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
+  #     vstsFeed: 'BuildCache'
+  #   condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { yarn postinstall }
-    displayName: Run postinstall scripts
-    condition: and(succeeded(), eq(variables['CacheRestored'], 'true'))
+  # - powershell: |
+  #     . build/azure-pipelines/win32/exec.ps1
+  #     $ErrorActionPreference = "Stop"
+  #     exec { yarn postinstall }
+  #   displayName: Run postinstall scripts
+  #   condition: and(succeeded(), eq(variables['CacheRestored'], 'true'))
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
