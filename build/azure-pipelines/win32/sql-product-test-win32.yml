@@ -2,7 +2,7 @@ steps:
 - task: DownloadPipelineArtifact@2
   inputs:
     buildType: 'current'
-    targetPath: '$(Build.SourcesDirectory)'
+    targetPath: '$(Agent.TempDirectory)'
     artifactName: drop
     itemPattern: '**/azuredatastudio-win32-x64.zip'
 
@@ -24,13 +24,13 @@ steps:
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
     $ErrorActionPreference = "Stop"
-    exec { .\node_modules\7zip\7zip-lite\7z.exe x $(Build.SourcesDirectory)\azuredatastudio-win32-x64.zip -o$(Build.SourcesDirectory) }
+    exec { .\node_modules\7zip\7zip-lite\7z.exe x $(Agent.TempDirectory)\azuredatastudio-win32-x64.zip -o$(Agent.TempDirectory)\azuredatastudio-win32-x64 }
   displayName: Unzip artifact
 
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
     $ErrorActionPreference = "Stop"
-    $AppRoot = "$(Build.SourcesDirectory)\azuredatastudio-win32-x64"
+    $AppRoot = "$(Agent.TempDirectory)\azuredatastudio-win32-x64"
     $AppProductJson = Get-Content -Raw -Path "$AppRoot\resources\app\product.json" | ConvertFrom-Json
     $AppNameShort = $AppProductJson.nameShort
     exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; .\scripts\sql-test-integration.bat }
@@ -41,7 +41,7 @@ steps:
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
     $ErrorActionPreference = "Stop"
-    $AppRoot = "$(Build.SourcesDirectory)\azuredatastudio-win32-x64"
+    $AppRoot = "$(Agent.TempDirectory)\azuredatastudio-win32-x64"
     $AppProductJson = Get-Content -Raw -Path "$AppRoot\resources\app\product.json" | ConvertFrom-Json
     $AppNameShort = $AppProductJson.nameShort
     exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; .\scripts\sql-test-integration.bat }
@@ -55,7 +55,7 @@ steps:
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
     $ErrorActionPreference = "Stop"
-    $AppRoot = "$(Build.SourcesDirectory)\azuredatastudio-win32-x64"
+    $AppRoot = "$(Agent.TempDirectory)\azuredatastudio-win32-x64"
     $AppProductJson = Get-Content -Raw -Path "$AppRoot\resources\app\product.json" | ConvertFrom-Json
     $AppNameShort = $AppProductJson.nameShort
     exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; .\scripts\sql-test-integration-unstable.bat }
