@@ -332,6 +332,10 @@ export interface IEditorOptions {
 	 */
 	accessibilitySupport?: 'auto' | 'off' | 'on';
 	/**
+	 * Controls the number of lines in the editor that can be read out by a screen reader
+	 */
+	accessibilityPageSize?: number;
+	/**
 	 * Suggest options.
 	 */
 	suggest?: ISuggestOptions;
@@ -3009,6 +3013,7 @@ export const enum EditorOption {
 	acceptSuggestionOnCommitCharacter,
 	acceptSuggestionOnEnter,
 	accessibilitySupport,
+	accessibilityPageSize,
 	ariaLabel,
 	autoClosingBrackets,
 	autoClosingOvertype,
@@ -3136,6 +3141,8 @@ export const EditorOptions = {
 		}
 	)),
 	accessibilitySupport: register(new EditorAccessibilitySupport()),
+	accessibilityPageSize: register(new EditorIntOption(EditorOption.accessibilityPageSize, 'accessibilityPageSize', 10, 1, Constants.MAX_SAFE_SMALL_INTEGER,
+		{ description: nls.localize('accessibilityPageSize', "Controls the number of lines in the editor that can be read out by a screen reader. Warning: this has a performance implication for numbers larger than the default.") })),
 	ariaLabel: register(new EditorStringOption(
 		EditorOption.ariaLabel, 'ariaLabel', nls.localize('editorViewAccessibleLabel', "Editor content")
 	)),
