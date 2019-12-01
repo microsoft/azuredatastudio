@@ -20,8 +20,6 @@ jobs:
   - Compile
   steps:
   - template: darwin/sql-product-build-darwin.yml
-  timeoutInMinutes: 90
-  cancelTimeoutInMinutes: 5
 
 - job: Linux
   condition: eq(variables['VSCODE_BUILD_LINUX'], 'true')
@@ -41,8 +39,6 @@ jobs:
   - Compile
   steps:
   - template: win32/sql-product-build-win32.yml
-  timeoutInMinutes: 90
-  cancelTimeoutInMinutes: 5
 
 - job: Windows_Test
   condition: eq(variables['VSCODE_BUILD_WIN32'], 'true')
