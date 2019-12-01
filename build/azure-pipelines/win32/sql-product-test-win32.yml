@@ -21,11 +21,10 @@ steps:
     exec { git clean -fxd }
   displayName: Clean repo
 
-- powershell: |
-    . build/azure-pipelines/win32/exec.ps1
-    $ErrorActionPreference = "Stop"
-    exec { 7z x $(Agent.TempDirectory)\azuredatastudio-win32-x64.zip -o$(Agent.TempDirectory)\azuredatastudio-win32-x64 } # depend on 7z being on the agent to avoid having to yarn install
-  displayName: Unzip artifact
+- task: ExtractFiles@1 # use this to avoid having to install
+  inputs:
+    archiveFilePatterns: $(Agent.TempDirectory)\azuredatastudio-win32-x64.zip
+    destinationFolder: $(Agent.TempDirectory)\azuredatastudio-win32-x64
 
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
