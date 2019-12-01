@@ -103,6 +103,7 @@ steps:
 
   - script: |
       set -e
+      yarn gulp package-rebuild-extensions
       yarn gulp compile-extensions
       yarn gulp package-external-extensions
     displayName: Package External extensions
