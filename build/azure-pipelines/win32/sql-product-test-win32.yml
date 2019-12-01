@@ -18,6 +18,13 @@ steps:
     . build/azure-pipelines/win32/exec.ps1
     $ErrorActionPreference = "Stop"
     $env:CHILD_CONCURRENCY="1"
+    exec { git clean -fxd }
+  displayName: Clean repo
+
+- powershell: |
+    . build/azure-pipelines/win32/exec.ps1
+    $ErrorActionPreference = "Stop"
+    $env:CHILD_CONCURRENCY="1"
     exec { yarn --frozen-lockfile }
   displayName: Install dependencies
 
