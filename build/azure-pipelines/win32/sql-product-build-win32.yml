@@ -210,7 +210,7 @@ steps:
       $Repo = "$(pwd)"
       $Root = "$Repo\.."
       $LegacyServer = "$Root\azuredatastudio-reh-win32-x64"
-      $ServerZip = "$Repo\.build\azuredatastudio-server-win32-x64.zip"
+      $ServerZip = "$(Build.ArtifactStagingDirectory)\azuredatastudio-server-win32-x64.zip"
       exec { .\node_modules\7zip\7zip-lite\7z.exe a -tzip $ServerZip $LegacyServer -r }
     displayName: 'Package server'
 

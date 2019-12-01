@@ -24,14 +24,7 @@ steps:
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
     $ErrorActionPreference = "Stop"
-    $env:CHILD_CONCURRENCY="1"
-    exec { yarn --frozen-lockfile }
-  displayName: Install dependencies
-
-- powershell: |
-    . build/azure-pipelines/win32/exec.ps1
-    $ErrorActionPreference = "Stop"
-    exec { .\node_modules\7zip\7zip-lite\7z.exe x $(Agent.TempDirectory)\azuredatastudio-win32-x64.zip -o$(Agent.TempDirectory)\azuredatastudio-win32-x64 }
+    exec { 7z x $(Agent.TempDirectory)\azuredatastudio-win32-x64.zip -o$(Agent.TempDirectory)\azuredatastudio-win32-x64 } # depend on 7z being on the agent to avoid having to yarn install
   displayName: Unzip artifact
 
 - powershell: |
