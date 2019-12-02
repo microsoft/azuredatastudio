@@ -23,6 +23,7 @@ import { TreeUpdateUtils } from 'sql/workbench/contrib/objectExplorer/browser/tr
 import Severity from 'vs/base/common/severity';
 import { TreeNode } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
 import { VIEWLET_ID } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
+import { ILogService } from 'vs/platform/log/common/log';
 
 //#region -- Data Explorer
 export const SCRIPT_AS_CREATE_COMMAND_ID = 'dataExplorer.scriptAsCreate';
@@ -307,33 +308,29 @@ CommandsRegistry.registerCommand({
 // Refresh Action for Scriptable objects
 CommandsRegistry.registerCommand({
 	id: OE_REFRESH_COMMAND_ID,
-	handler: (accessor, args: ObjectExplorerActionsContext): void => {
+	handler: async (accessor, args: ObjectExplorerActionsContext): Promise<void> => {
 		const connectionManagementService = accessor.get(IConnectionManagementService);
 		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const objectExplorerService = accessor.get(IObjectExplorerService);
-		const errorMessageService = accessor.get(IErrorMessageService);
+		const logService = accessor.get(ILogService);
 		const connection = new ConnectionProfile(capabilitiesService, args.connectionProfile);
 		if (connectionManagementService.isConnected(undefined, connection)) {
-			getTreeNode(args, objectExplorerService).then(async (treeNode) => {
-				if (!treeNode) {
-					await objectExplorerService.updateObjectExplorerNodes(connection.toIConnectionProfile());
-					treeNode = objectExplorerService.getObjectExplorerNode(connection);
-				}
-				if (treeNode) {
-					const tree = objectExplorerService.getServerTreeView().tree;
-					await tree.collapse(treeNode);
-					await objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode);
-					await tree.refresh(treeNode);
-					await tree.expand(treeNode);
-				} else {
-					throw new Error(`Could not find tree node for node ${args.nodeInfo.label}`);
-				}
-			}).catch(err => {
-				errorMessageService.showDialog(Severity.Error, '', err);
-			});
+			let treeNode = await getTreeNode(args, objectExplorerService);
+			if (!treeNode) {
+				await objectExplorerService.updateObjectExplorerNodes(connection.toIConnectionProfile());
+				treeNode = objectExplorerService.getObjectExplorerNode(connection);
+			}
+			if (treeNode) {
+				const tree = objectExplorerService.getServerTreeView().tree;
+				await tree.collapse(treeNode);
+				await objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode);
+				await tree.refresh(treeNode);
+				await tree.expand(treeNode);
+			} else {
+				logService.error(`Could not find tree node for node ${args.nodeInfo.label}`);
+			}
 		}
-	}
-});
+	});
 //#endregion
 
 //#region -- explorer widget
