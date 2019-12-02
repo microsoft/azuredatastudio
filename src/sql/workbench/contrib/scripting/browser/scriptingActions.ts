@@ -23,6 +23,9 @@ import { TreeUpdateUtils } from 'sql/workbench/contrib/objectExplorer/browser/tr
 import { TreeNode } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
 import { VIEWLET_ID } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
 import { ILogService } from 'vs/platform/log/common/log';
+import { getErrorMessage } from 'vs/base/common/errors';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { localize } from 'vs/nls';
 
 //#region -- Data Explorer
 export const SCRIPT_AS_CREATE_COMMAND_ID = 'dataExplorer.scriptAsCreate';
@@ -308,10 +311,10 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand({
 	id: OE_REFRESH_COMMAND_ID,
 	handler: async (accessor, args: ObjectExplorerActionsContext): Promise<void> => {
-		const connectionManagementService = accessor.get(IConnectionManagementService);
 		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const objectExplorerService = accessor.get(IObjectExplorerService);
 		const logService = accessor.get(ILogService);
+		const notificationService = accessor.get(INotificationService);
 		const connection = new ConnectionProfile(capabilitiesService, args.connectionProfile);
 		if (connectionManagementService.isConnected(undefined, connection)) {
 			let treeNode = await getTreeNode(args, objectExplorerService);
@@ -321,10 +324,17 @@ CommandsRegistry.registerCommand({
 			}
 			if (treeNode) {
 				const tree = objectExplorerService.getServerTreeView().tree;
-				await tree.collapse(treeNode);
-				await objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode);
-				await tree.refresh(treeNode);
-				await tree.expand(treeNode);
+				try {
+					await tree.collapse(treeNode);
+					await objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode);
+					await tree.refresh(treeNode);
+					await tree.expand(treeNode);
+				} catch (err) {
+					// Display message to the user but also log the entire error to the console for the stack trace
+					notificationService.error(localize('refreshError', "An error occurred refreshing node '{0}': {1}", args.nodeInfo.label, getErrorMessage(err)));
+					logService.error(err);
+				}
+
 			} else {
 				logService.error(`Could not find tree node for node ${args.nodeInfo.label}`);
 			}
