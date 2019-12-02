@@ -107,6 +107,9 @@ suite('notebookUtils', function (): void {
 		result = tryMatchCellMagic('%%sql');
 		assert.strictEqual(result, 'sql');
 
+		result = tryMatchCellMagic('%%sql\nselect @@VERSION\nselect * from TestTable');
+		assert.strictEqual(result, 'sql');
+
 		result = tryMatchCellMagic('%%');
 		assert.strictEqual(result, null);
 
@@ -167,9 +170,9 @@ suite('notebookUtils', function (): void {
 		assert.strictEqual(result.host, 'localhost');
 		assert.strictEqual(result.port, '1433');
 
-		result = getHostAndPortFromEndpoint('tcp://localhost,1433');
+		result = getHostAndPortFromEndpoint('tcp://localhost,12345');
 		assert.strictEqual(result.host, 'localhost');
-		assert.strictEqual(result.port, '1433');
+		assert.strictEqual(result.port, '12345');
 
 		result = getHostAndPortFromEndpoint('tcp://localhost');
 		assert.strictEqual(result.host, 'localhost');
