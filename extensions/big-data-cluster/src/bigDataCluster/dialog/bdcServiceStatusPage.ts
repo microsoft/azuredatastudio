@@ -16,7 +16,7 @@ type ServiceTab = { div: azdata.DivContainer, dot: azdata.TextComponent, text: a
 export class BdcServiceStatusPage extends BdcDashboardPage {
 
 	private currentTab: { tab: ServiceTab, index: number };
-	private currentTabPage: azdata.FlexContainer;
+	private currentTabPage: BdcDashboardResourceStatusPage;
 	private rootContainer: azdata.FlexContainer;
 	private resourceHeader: azdata.FlexContainer;
 
@@ -25,10 +25,13 @@ export class BdcServiceStatusPage extends BdcDashboardPage {
 	constructor(private serviceName: string, private model: BdcDashboardModel, private modelView: azdata.ModelView) {
 		super();
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.eventuallyRunOnInitialized(() => this.handleBdcStatusUpdate(bdcStatus)));
-		this.createPage();
 	}
 
 	public get container(): azdata.FlexContainer {
+		// Lazily create the container only when needed
+		if (!this.rootContainer) {
+			this.createPage();
+		}
 		return this.rootContainer;
 	}
 
@@ -67,11 +70,11 @@ export class BdcServiceStatusPage extends BdcDashboardPage {
 		}
 	}
 
-	private changeSelectedTabPage(newPage: azdata.FlexContainer): void {
+	private changeSelectedTabPage(newPage: BdcDashboardResourceStatusPage): void {
 		if (this.currentTabPage) {
-			this.rootContainer.removeItem(this.currentTabPage);
+			this.rootContainer.removeItem(this.currentTabPage.container);
 		}
-		this.rootContainer.addItem(newPage);
+		this.rootContainer.addItem(newPage.container);
 		this.currentTabPage = newPage;
 	}
 
@@ -90,7 +93,7 @@ export class BdcServiceStatusPage extends BdcDashboardPage {
 				const currentIndex = tabIndex++;
 				const resourceHeaderTab = createResourceHeaderTab(this.modelView.modelBuilder, resource);
 				this.createdTabs.set(resource.resourceName, resourceHeaderTab);
-				const resourceStatusPage: azdata.FlexContainer = new BdcDashboardResourceStatusPage(this.model, this.modelView, this.serviceName, resource.resourceName).container;
+				const resourceStatusPage = new BdcDashboardResourceStatusPage(this.model, this.modelView, this.serviceName, resource.resourceName);
 				resourceHeaderTab.div.onDidClick(() => {
 					// Don't need to do anything if this is already the currently selected tab
 					if (this.currentTab.index === currentIndex) {

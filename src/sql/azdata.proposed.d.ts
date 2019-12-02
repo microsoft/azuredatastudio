@@ -87,6 +87,16 @@ declare module 'azdata' {
 		onDidClick: vscode.Event<any>;
 	}
 
+	export interface DeclarativeTableColumn {
+		headerCssStyles?: { [key: string]: string };
+		rowCssStyles?: { [key: string]: string };
+		ariaLabel?: string;
+	}
+
+	export enum DeclarativeDataType {
+		component = 'component'
+	}
+
 	/*
 	 * Add optional azureAccount for connectionWidget.
 	 */
@@ -112,5 +122,8 @@ declare module 'azdata' {
 	 */
 	export enum AzureResource {
 		OssRdbms = 2
+	}
+
+	export interface DeclarativeTableProperties extends ComponentProperties {
 	}
 }

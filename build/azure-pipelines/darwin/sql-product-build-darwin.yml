@@ -70,7 +70,7 @@ steps:
 
   - script: |
       set -e
-      yarn gulp vscode-darwin
+      yarn gulp vscode-darwin-min
     displayName: Build
 
   - task: ArchiveFiles@2 # WHY ARE WE DOING THIS?
@@ -141,8 +141,7 @@ steps:
 
   - script: | # WHY ARE WE DOING THIS?
       set -e
-      BUILD="$(Build.SourcesDirectory)/../azuredatastudio-darwin"
-      PACKAGEJSON=`ls $BUILD/*.app/Contents/Resources/app/package.json`
+      PACKAGEJSON=`ls $(Build.SourcesDirectory)/package.json`
       VERSION=`node -p "require(\"$PACKAGEJSON\").version"`
       COMMIT_ID=`git rev-parse HEAD`
 

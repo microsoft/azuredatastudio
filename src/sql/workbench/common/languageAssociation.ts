@@ -4,10 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IEditorInput } from 'vs/workbench/common/editor';
-import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { IEditorInput, EditorInput } from 'vs/workbench/common/editor';
+import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { find } from 'vs/base/common/arrays';
+import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { getCodeEditor } from 'vs/editor/browser/editorBrowser';
 
-export type InputCreator = (servicesAccessor: ServicesAccessor, activeEditor: IEditorInput) => IEditorInput | undefined;
+export type InputCreator = (servicesAccessor: ServicesAccessor, activeEditor: IEditorInput) => EditorInput | undefined;
 export type BaseInputCreator = (activeEditor: IEditorInput) => IEditorInput;
 
 export interface ILanguageAssociationRegistry {
@@ -15,7 +19,7 @@ export interface ILanguageAssociationRegistry {
 	getAssociations(): Array<{ language: string, creator: InputCreator, baseInputCreator: BaseInputCreator, isDefault: boolean }>;
 }
 
-class LanguageAssociationRegistry implements ILanguageAssociationRegistry {
+const languageAssociationRegistery = new class implements ILanguageAssociationRegistry {
 	private associations = new Array<{ language: string, creator: InputCreator, baseInputCreator: BaseInputCreator, isDefault: boolean }>();
 
 	registerLanguageAssociation(language: string, creator: InputCreator, baseInputCreator: BaseInputCreator, isDefault: boolean = false): void {
@@ -25,10 +29,24 @@ class LanguageAssociationRegistry implements ILanguageAssociationRegistry {
 	getAssociations(): Array<{ language: string, creator: InputCreator, baseInputCreator: BaseInputCreator, isDefault: boolean }> {
 		return this.associations.slice();
 	}
-}
+};
 
 export const Extensions = {
 	LanguageAssociations: 'workbench.contributions.editor.languageAssociation'
 };
 
-Registry.add(Extensions.LanguageAssociations, new LanguageAssociationRegistry());
+Registry.add(Extensions.LanguageAssociations, languageAssociationRegistery);
+
+export function doHandleUpgrade(accessor: ServicesAccessor, editor: EditorInput): EditorInput {
+	if (editor instanceof UntitledEditorInput || editor instanceof FileEditorInput) {
+		const instantiationService = accessor.get(IInstantiationService);
+		const activeWidget = getCodeEditor(editor);
+		const textModel = activeWidget.getModel();
+		const oldLanguage = textModel.getLanguageIdentifier().language;
+		const association = find(languageAssociationRegistery.getAssociations(), l => l.language === oldLanguage);
+		if (association) {
+			return instantiationService.invokeFunction(association.creator, editor);
+		}
+	}
+	return editor;
+}
