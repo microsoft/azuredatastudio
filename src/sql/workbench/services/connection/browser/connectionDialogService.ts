@@ -182,11 +182,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 					profile.savePassword = true;
 				}
 
-				this.handleDefaultOnConnect(params, profile);
+				this.handleDefaultOnConnect(params, profile).catch(err => onUnexpectedError(err));
 			} else {
 				profile.serverName = trim(profile.serverName);
-				this._connectionManagementService.addSavedPassword(profile).then(connectionWithPassword => {
-					this.handleDefaultOnConnect(params, connectionWithPassword);
+				this._connectionManagementService.addSavedPassword(profile).then(async (connectionWithPassword) => {
+					await this.handleDefaultOnConnect(params, connectionWithPassword);
 				}).catch(err => onUnexpectedError(err));
 			}
 		}
