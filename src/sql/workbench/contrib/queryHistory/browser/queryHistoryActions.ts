@@ -75,14 +75,14 @@ export class OpenQueryAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IInstantiationService private _instantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(id, label);
 	}
 
 	public async run(element: QueryHistoryNode): Promise<void> {
 		if (element instanceof QueryHistoryNode && element.info) {
-			return this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText, RunQueryOnConnectionMode.none).then(() => true, () => false);
+			return this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText, RunQueryOnConnectionMode.none).then();
 		}
 	}
 }
@@ -94,14 +94,14 @@ export class RunQueryAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IInstantiationService private _instantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(id, label);
 	}
 
 	public async run(element: QueryHistoryNode): Promise<void> {
 		if (element instanceof QueryHistoryNode && element.info) {
-			return this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText, RunQueryOnConnectionMode.executeQuery).catch(() => true, () => false);
+			return this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText, RunQueryOnConnectionMode.executeQuery).then();
 		}
 	}
 }

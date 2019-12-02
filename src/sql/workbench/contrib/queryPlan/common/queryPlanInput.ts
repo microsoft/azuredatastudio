@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 
 export class QueryPlanInput extends EditorInput {
 
@@ -29,7 +29,7 @@ export class QueryPlanInput extends EditorInput {
 	}
 
 	public getTypeId(): string {
-		return UntitledEditorInput.ID;
+		return UntitledTextEditorInput.ID;
 	}
 
 	public getName(): string {

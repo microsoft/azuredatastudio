@@ -7,7 +7,6 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import { IEditorDescriptor } from 'vs/workbench/browser/editor';
 import { URI } from 'vs/base/common/uri';
 import { Memento } from 'vs/workbench/common/memento';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 
 import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
 import { INewConnectionParams, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
@@ -21,6 +20,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
 import { TestQueryModelService } from 'sql/platform/query/test/common/testQueryModelService';
 import { Event } from 'vs/base/common/event';
@@ -284,7 +284,7 @@ suite('SQL QueryEditor Tests', () => {
 					return new RunQueryAction(undefined, undefined, undefined);
 				});
 
-			let fileInput = new UntitledEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService.object, undefined, undefined);
+			let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService.object, undefined, undefined, undefined, undefined, undefined);
 			queryModelService = TypeMoq.Mock.ofType(TestQueryModelService, TypeMoq.MockBehavior.Strict);
 			queryModelService.setup(x => x.disposeQuery(TypeMoq.It.isAny()));
 			queryModelService.setup(x => x.onRunQueryComplete).returns(() => Event.None);
@@ -321,7 +321,7 @@ suite('SQL QueryEditor Tests', () => {
 		test('Test that we attempt to dispose query when the queryInput is disposed', () => {
 			let queryResultsInput = new QueryResultsInput('testUri');
 			queryInput['_results'] = queryResultsInput;
-			queryInput.close();
+			queryInput.dispose();
 			queryModelService.verify(x => x.disposeQuery(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
 		});
 	});
