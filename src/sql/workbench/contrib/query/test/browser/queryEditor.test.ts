@@ -24,6 +24,7 @@ import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledText
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
 import { TestQueryModelService } from 'sql/platform/query/test/common/testQueryModelService';
 import { Event } from 'vs/base/common/event';
+import { SimpleUriLabelService } from 'vs/editor/standalone/browser/simpleServices';
 
 suite('SQL QueryEditor Tests', () => {
 	let instantiationService: TypeMoq.Mock<InstantiationService>;
@@ -284,7 +285,7 @@ suite('SQL QueryEditor Tests', () => {
 					return new RunQueryAction(undefined, undefined, undefined);
 				});
 
-			let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService.object, undefined, undefined, undefined, undefined, undefined);
+			let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService.object, undefined, new SimpleUriLabelService(), undefined, undefined, undefined);
 			queryModelService = TypeMoq.Mock.ofType(TestQueryModelService, TypeMoq.MockBehavior.Strict);
 			queryModelService.setup(x => x.disposeQuery(TypeMoq.It.isAny()));
 			queryModelService.setup(x => x.onRunQueryComplete).returns(() => Event.None);
