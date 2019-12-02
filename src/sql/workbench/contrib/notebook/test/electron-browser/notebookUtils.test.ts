@@ -6,11 +6,10 @@
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 
-import { nb, ServerInfo, IConnectionProfile } from 'azdata';
+import { nb, ServerInfo } from 'azdata';
 import { tryMatchCellMagic, getHostAndPortFromEndpoint, isStream, getProvidersForFileName, asyncForEach, clusterEndpointsProperty, getClusterEndpoints, RawEndpoint, IEndpoint, getStandardKernelsForProvider, IStandardKernelWithProvider } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 import { INotebookService, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/electron-browser/common';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 suite('notebookUtils', function (): void {
 	const mockNotebookService = TypeMoq.Mock.ofType<INotebookService>(NotebookServiceStub);
@@ -20,24 +19,6 @@ suite('notebookUtils', function (): void {
 		name: 'testName',
 		displayName: 'testDisplayName',
 		connectionProviderIds: ['testId1', 'testId2']
-	};
-
-	let conn: IConnectionProfile = {
-		connectionName: '',
-		serverName: '',
-		databaseName: '',
-		userName: '',
-		password: '',
-		authenticationType: '',
-		savePassword: true,
-		groupFullName: '',
-		groupId: '',
-		providerName: mssqlProviderName,
-		saveProfile: true,
-		id: '',
-		options: {},
-		azureTenantId: undefined,
-		azureAccount: undefined
 	};
 
 	function setupMockNotebookService() {
