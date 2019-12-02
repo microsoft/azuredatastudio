@@ -265,7 +265,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			let children = hostElem.children;
 			let ele = children[Math.ceil(range.lineNumber / 2)];
 			if (ele) {
-				ele.className = 'rangeHighlight';
+				DOM.addClass(ele, 'rangeHighlight');
 				ele.scrollIntoView({ behavior: 'smooth' });
 			}
 		}
@@ -277,7 +277,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			let children = hostElem.children;
 			let ele = children[Math.ceil(range.lineNumber / 2)];
 			if (ele) {
-				ele.className = ele.className.replace('rangeHighlight', '');
+				DOM.removeClass(ele, 'rangeHighlight');
 			}
 		}
 	}
