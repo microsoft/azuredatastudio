@@ -5,7 +5,7 @@
 
 import * as nls from 'vs/nls';
 import { URI } from 'vs/base/common/uri';
-import { toResource, IEditorCommandsContext, SideBySideEditor, EditorInput } from 'vs/workbench/common/editor'; // {{SQL CARBON EDIT}} add edit input
+import { toResource, IEditorCommandsContext, SideBySideEditor } from 'vs/workbench/common/editor';
 import { IWindowOpenable, IOpenWindowOptions, isWorkspaceToOpen, IOpenEmptyWindowOptions } from 'vs/platform/windows/common/windows';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -126,14 +126,6 @@ async function save(
 	// Save As (or Save untitled with associated path)
 	if (isSaveAs || resource.scheme === Schemas.untitled) {
 		return doSaveAs(resource, isSaveAs, options, editorService, fileService, untitledEditorService, textFileService, editorGroupService, queryEditorService, environmentService); // {{SQL CARBON EDIT}} add paramater
-	}
-
-	if (resource && (fileService.canHandleResource(resource) || resource.scheme === Schemas.untitled)) {
-		// {{SQL CARBON EDIT}}
-		let editorInput = editorService.activeEditor;
-		if (editorInput instanceof EditorInput && !(<EditorInput>editorInput).savingSupported) {
-			return;
-		}
 	}
 
 	// Save

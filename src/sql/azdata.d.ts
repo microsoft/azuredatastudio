@@ -3171,10 +3171,10 @@ declare module 'azdata' {
 
 	export interface DeclarativeTableColumn {
 		displayName: string;
-		categoryValues: CategoryValue[];
 		valueType: DeclarativeDataType;
 		isReadOnly: boolean;
 		width: number | string;
+		categoryValues?: CategoryValue[];
 	}
 
 	export interface DeclarativeTableProperties {

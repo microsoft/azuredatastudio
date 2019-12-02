@@ -364,4 +364,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	public set ariaRole(value: string) {
 		this._tableContainer.setAttribute('role', value);
 	}
+
+	public set ariaLabel(value: string) {
+		this._tableContainer.setAttribute('aria-label', value);
+	}
 }

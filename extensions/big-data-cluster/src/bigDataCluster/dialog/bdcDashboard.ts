@@ -34,11 +34,11 @@ export class BdcDashboard extends BdcDashboardPage {
 	private overviewPage: BdcDashboardOverviewPage;
 
 	private currentTab: NavTab;
-	private currentPage: azdata.FlexContainer;
+	private currentPageContainer: azdata.FlexContainer;
 
 	private refreshButton: azdata.ButtonComponent;
 
-	private serviceTabPageMapping = new Map<string, { navTab: NavTab, servicePage: azdata.FlexContainer }>();
+	private serviceTabPageMapping = new Map<string, { navTab: NavTab, servicePage: BdcServiceStatusPage }>();
 
 	constructor(private title: string, private model: BdcDashboardModel) {
 		super();
@@ -141,7 +141,7 @@ export class BdcDashboard extends BdcDashboardPage {
 			overviewNavItemDiv.addItem(overviewNavItemText, { CSSStyles: { 'user-select': 'text' } });
 			this.overviewPage = new BdcDashboardOverviewPage(this, this.model);
 			const overviewContainer: azdata.FlexContainer = this.overviewPage.create(modelView);
-			this.currentPage = overviewContainer;
+			this.currentPageContainer = overviewContainer;
 			this.currentTab = { serviceName: undefined, div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
 			this.mainAreaContainer.addItem(overviewContainer, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
 
@@ -150,9 +150,9 @@ export class BdcDashboard extends BdcDashboardPage {
 					this.currentTab.text.updateCssStyles(unselectedTabCss);
 					this.currentTab.div.ariaSelected = false;
 				}
-				this.mainAreaContainer.removeItem(this.currentPage);
+				this.mainAreaContainer.removeItem(this.currentPageContainer);
 				this.mainAreaContainer.addItem(overviewContainer, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
-				this.currentPage = overviewContainer;
+				this.currentPageContainer = overviewContainer;
 				this.currentTab = { serviceName: undefined, div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
 				this.currentTab.text.updateCssStyles(selectedTabCss);
 				this.currentTab.div.ariaSelected = true;
@@ -211,9 +211,9 @@ export class BdcDashboard extends BdcDashboardPage {
 			this.currentTab.text.updateCssStyles(unselectedTabCss);
 			this.currentTab.div.ariaSelected = false;
 		}
-		this.mainAreaContainer.removeItem(this.currentPage);
-		this.mainAreaContainer.addItem(tabPageMapping.servicePage, { CSSStyles: { 'margin': '0 20px 0 20px' } });
-		this.currentPage = tabPageMapping.servicePage;
+		this.mainAreaContainer.removeItem(this.currentPageContainer);
+		this.mainAreaContainer.addItem(tabPageMapping.servicePage.container, { CSSStyles: { 'margin': '0 20px 0 20px' } });
+		this.currentPageContainer = tabPageMapping.servicePage.container;
 		this.currentTab = tabPageMapping.navTab;
 		this.currentTab.text.updateCssStyles(selectedTabCss);
 		this.currentTab.div.ariaSelected = true;
@@ -233,7 +233,7 @@ export class BdcDashboard extends BdcDashboardPage {
 				} else {
 					// New service - create the page and tab
 					const navItem = createServiceNavTab(this.modelView.modelBuilder, s);
-					const serviceStatusPage = new BdcServiceStatusPage(s.serviceName, this.model, this.modelView).container;
+					const serviceStatusPage = new BdcServiceStatusPage(s.serviceName, this.model, this.modelView);
 					this.serviceTabPageMapping.set(s.serviceName, { navTab: navItem, servicePage: serviceStatusPage });
 					navItem.div.onDidClick(() => {
 						this.switchToServiceTab(s.serviceName);

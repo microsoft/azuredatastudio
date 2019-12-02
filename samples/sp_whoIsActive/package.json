@@ -241,7 +241,7 @@
         "compile": "gulp compile",
         "watch": "gulp watch",
         "typings": "gulp copytypings",
-        "postinstall": "node ./node_modules/vscode/bin/install && node ./node_modules/azdata/bin/install && gulp copytypings"
+        "postinstall": "node ./node_modules/vscode/bin/install && gulp copytypings"
     },
     "dependencies": {
         "fs-extra": "^5.0.0",
@@ -251,7 +251,6 @@
     "devDependencies": {
         "@types/mocha": "^2.2.42",
         "@types/node": "^7.0.43",
-        "azdata": "^1.0.0",
         "child-process-promise": "^2.2.1",
         "del": "^3.0.0",
         "gulp": "^4.0.0",
