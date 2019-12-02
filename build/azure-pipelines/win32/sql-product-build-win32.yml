@@ -1,0 +1,330 @@
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "10.15.1"
+
+  - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
+    inputs:
+      versionSpec: "1.x"
+
+  - powershell: |
+      git clean -fxd
+    displayName: Clean repo
+
+  # - task: UsePythonVersion@0
+  #   inputs:
+  #     versionSpec: '2.x'
+  #     addToPath: true
+
+  - task: AzureKeyVault@1
+    displayName: 'Azure Key Vault: Get Secrets'
+    inputs:
+      azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+      KeyVaultName: ado-secrets
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      "machine github.com`nlogin azuredatastudio`npassword $(github-distro-mixin-password)" | Out-File "$env:USERPROFILE\_netrc" -Encoding ASCII
+
+      exec { git config user.email "andresse@microsoft.com" }
+      exec { git config user.name "AzureDataStudio" }
+    displayName: Prepare tooling
+
+  - powershell: |
+      git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+      git fetch distro
+      git merge $(node -p "require('./package.json').distro")
+    displayName: Merge distro
+
+  # - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+  #   inputs:
+  #     keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+  #     targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
+  #     vstsFeed: 'BuildCache'
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      $env:CHILD_CONCURRENCY="1"
+      exec { yarn --frozen-lockfile }
+    displayName: Install dependencies
+    # condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+
+  # - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
+  #   inputs:
+  #     keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+  #     targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
+  #     vstsFeed: 'BuildCache'
+  #   condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+
+  # - powershell: |
+  #     . build/azure-pipelines/win32/exec.ps1
+  #     $ErrorActionPreference = "Stop"
+  #     exec { yarn postinstall }
+  #   displayName: Run postinstall scripts
+  #   condition: and(succeeded(), eq(variables['CacheRestored'], 'true'))
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { node build/azure-pipelines/mixin }
+    displayName: Mix in quality
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { yarn gulp "install-sqltoolsservice" }
+    displayName: Install sqltoolsservice
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { yarn gulp "vscode-win32-x64-min" }
+    displayName: Build
+
+  - task: ArchiveFiles@2 # WHY
+    displayName: 'Archive build scripts source'
+    inputs:
+      rootFolderOrFile: '$(Build.SourcesDirectory)/build'
+      archiveType: tar
+      archiveFile: '$(Build.BinariesDirectory)/source.tar.gz'
+
+  - task: PublishBuildArtifacts@1 # WHY
+    displayName: 'Publish Artifact: build scripts source'
+    inputs:
+      PathtoPublish: '$(Build.BinariesDirectory)/source.tar.gz'
+      ArtifactName: source
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { .\scripts\test-unstable.bat --build --coverage --reporter mocha-junit-reporter }
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
+    displayName: Run unstable tests
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { .\scripts\sql-test-integration.bat }
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+    displayName: Run stable tests
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { .\scripts\sql-test-integration.bat }
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+    displayName: Run release tests
+    env:
+      ADS_TEST_GREP: (.*@REL@|integration test setup)
+      ADS_TEST_INVERT_GREP: 0
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { .\scripts\sql-test-integration-unstable.bat }
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
+    displayName: Run unstable integration tests
+
+  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+    displayName: 'Sign out code'
+    inputs:
+      ConnectedServiceName: 'Code Signing'
+      FolderPath: '$(agent.builddirectory)/azuredatastudio-win32-x64'
+      Pattern: '*.exe,*.node,resources/app/node_modules.asar.unpacked/*.dll,swiftshader/*.dll,d3dcompiler_47.dll,libGLESv2.dll,ffmpeg.dll,libEGL.dll,Microsoft.SqlTools.Hosting.dll,Microsoft.SqlTools.ResourceProvider.Core.dll,Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll,MicrosoftSqlToolsCredentials.dll,MicrosoftSqlToolsServiceLayer.dll,Newtonsoft.Json.dll,SqlSerializationService.dll,SqlToolsResourceProviderService.dll,Microsoft.SqlServer.*.dll,Microsoft.Data.Tools.Sql.BatchParser.dll'
+      signConfigType: inlineSignParams
+      inlineOperation: |
+        [
+          {
+            "keyCode": "CP-230012",
+            "operationSetCode": "SigntoolSign",
+            "parameters": [
+            {
+              "parameterName": "OpusName",
+              "parameterValue": "Azure Data Studio"
+            },
+            {
+              "parameterName": "OpusInfo",
+              "parameterValue": "https://github.com/microsoft/azuredatastudio"
+            },
+            {
+              "parameterName": "PageHash",
+              "parameterValue": "/NPH"
+            },
+            {
+              "parameterName": "FileDigest",
+              "parameterValue": "/fd sha256"
+            },
+            {
+              "parameterName": "TimeStamp",
+              "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+            }
+            ],
+            "toolName": "signtool.exe",
+            "toolVersion": "6.2.9304.0"
+          },
+          {
+            "keyCode": "CP-230012",
+            "operationSetCode": "SigntoolVerify",
+            "parameters": [
+            {
+              "parameterName": "VerifyAll",
+              "parameterValue": "/all"
+            }
+                ],
+            "toolName": "signtool.exe",
+            "toolVersion": "6.2.9304.0"
+          }
+        ]
+      SessionTimeout: 600
+      MaxConcurrency: 5
+      MaxRetryAttempts: 20
+    condition: and(succeeded(), eq(variables['signed'], true))
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { yarn gulp "vscode-win32-x64-user-setup" }
+      exec { yarn gulp "vscode-win32-x64-system-setup" }
+      exec { yarn gulp "vscode-win32-x64-archive" }
+    displayName: Archive & User & System setup
+
+  - task: CopyFiles@2
+    displayName: 'Copy Archive to: $(Build.ArtifactStagingDirectory)'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)/.build/win32-x64/archive/'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)' # our release scripts expect the archive to be in the root
+
+  - task: CopyFiles@2
+    displayName: 'Copy User Installer to: $(Build.ArtifactStagingDirectory)'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)/.build/win32-x64/user-setup/'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/user-setup/'
+
+  - task: CopyFiles@2
+    displayName: 'Copy System Install to: $(Build.ArtifactStagingDirectory)'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)/.build/win32-x64/system-setup/'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/' # our release scripts except system exe to be in root and user setup to be under /user-setup
+
+  - task: CopyFiles@2
+    displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/vsix'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)/../vsix'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/vsix'
+
+  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+    displayName: 'Sign installers'
+    inputs:
+      ConnectedServiceName: 'Code Signing'
+      FolderPath: '$(Build.ArtifactStagingDirectory)'
+      Pattern: '*.exe'
+      signConfigType: inlineSignParams
+      inlineOperation: |
+        [
+          {
+            "keyCode": "CP-230012",
+            "operationSetCode": "SigntoolSign",
+            "parameters": [
+            {
+              "parameterName": "OpusName",
+              "parameterValue": "Azure Data Studio"
+            },
+            {
+              "parameterName": "OpusInfo",
+              "parameterValue": "https://github.com/microsoft/azuredatastudio"
+            },
+            {
+              "parameterName": "PageHash",
+              "parameterValue": "/NPH"
+            },
+            {
+              "parameterName": "FileDigest",
+              "parameterValue": "/fd sha256"
+            },
+            {
+              "parameterName": "TimeStamp",
+              "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+            }
+            ],
+            "toolName": "signtool.exe",
+            "toolVersion": "6.2.9304.0"
+          },
+          {
+            "keyCode": "CP-230012",
+            "operationSetCode": "SigntoolVerify",
+            "parameters": [
+            {
+              "parameterName": "VerifyAll",
+              "parameterValue": "/all"
+            }
+                ],
+            "toolName": "signtool.exe",
+            "toolVersion": "6.2.9304.0"
+          }
+        ]
+      SessionTimeout: 600
+      MaxConcurrency: 5
+      MaxRetryAttempts: 20
+    condition: and(succeeded(), eq(variables['signed'], true))
+
+  - powershell: | # WHY!
+      $PackageJson = Get-Content -Raw -Path "$(Build.SourcesDirectory)\package.json" | ConvertFrom-Json
+
+      $jsonResult = @{
+      version = $PackageJson.version
+      quality = $env:VSCODE_QUALITY
+      commit = "$(git rev-parse HEAD)"
+      }
+
+      $jsonResult | ConvertTo-Json | Out-File "$(Build.ArtifactStagingDirectory)\version.json"
+    displayName: 'Create version.json'
+
+  - powershell: | # WHY
+      Get-ChildItem "." |
+      ForEach-Object {
+          certutil.exe -hashfile $_.FullName SHA256 >> sha256hashes.txt
+      }
+    workingDirectory: '$(Build.ArtifactStagingDirectory)'
+    displayName: 'Get SHA256 Hashes'
+    continueOnError: true
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: drop'
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results test-results.xml'
+    inputs:
+      testResultsFiles: 'test-results.xml'
+      searchFolder: '$(Build.SourcesDirectory)'
+      failTaskOnFailedTests: true
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Integration and Smoke Test Results'
+    inputs:
+      testResultsFiles: '*.xml'
+      searchFolder: '$(Build.ArtifactStagingDirectory)\test-results'
+      mergeTestResults: true
+      failTaskOnFailedTests: true
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection'
+    inputs:
+      failOnAlert: true
+
+  - powershell: 'Write-Host "##vso[build.addbuildtag]Scheduled" '
+    displayName: 'Tag build if scheduled'
+    condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['Build.Reason'], 'Schedule'))
+
+  - powershell: 'Write-Host "##vso[build.addbuildtag]PerfTestCandidate" '
+    displayName: 'Tag build for PerfTestCandidate if needed'
+    condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['VSCODE_QUALITY'], 'insider'))

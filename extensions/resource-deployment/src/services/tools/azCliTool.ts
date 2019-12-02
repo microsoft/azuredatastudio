@@ -5,12 +5,12 @@
 import { EOL } from 'os';
 import { SemVer } from 'semver';
 import * as nls from 'vscode-nls';
-import { Command, OsType, ToolType } from '../../interfaces';
+import { Command, OsDistribution, ToolType } from '../../interfaces';
 import { IPlatformService } from '../platformService';
 import { dependencyType, ToolBase } from './toolBase';
 
 const localize = nls.loadMessageBundle();
-const defaultInstallationRoot = '~/.local/bin';
+const defaultInstallationRoot = '/usr/local/bin';
 const win32InstallationRoot = `${process.env['ProgramFiles(x86)']}\\Microsoft SDKs\\Azure\\CLI2\\wbin`;
 export const AzCliToolName = 'azure-cli';
 
@@ -44,19 +44,19 @@ export class AzCliTool extends ToolBase {
 	}
 
 	protected async getSearchPaths(): Promise<string[]> {
-		switch (this.osType) {
-			case OsType.win32:
+		switch (this.osDistribution) {
+			case OsDistribution.win32:
 				return [win32InstallationRoot];
 			default:
 				return [defaultInstallationRoot];
 		}
 	}
 
-	protected readonly allInstallationCommands: Map<OsType, Command[]> = new Map<OsType, Command[]>([
-		[OsType.linux, linuxInstallationCommands],
-		[OsType.win32, win32InstallationCommands],
-		[OsType.darwin, macOsInstallationCommands],
-		[OsType.others, defaultInstallationCommands]
+	protected readonly allInstallationCommands: Map<OsDistribution, Command[]> = new Map<OsDistribution, Command[]>([
+		[OsDistribution.debian, debianInstallationCommands],
+		[OsDistribution.win32, win32InstallationCommands],
+		[OsDistribution.darwin, macOsInstallationCommands],
+		[OsDistribution.others, defaultInstallationCommands]
 	]);
 
 	protected getVersionFromOutput(output: string): SemVer | undefined {
@@ -73,11 +73,11 @@ export class AzCliTool extends ToolBase {
 		};
 	}
 
-	protected dependenciesByOsType: Map<OsType, dependencyType[]> = new Map<OsType, dependencyType[]>([
-		[OsType.linux, []],
-		[OsType.win32, []],
-		[OsType.darwin, [dependencyType.Brew]],
-		[OsType.others, [dependencyType.Curl]]
+	protected dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>([
+		[OsDistribution.debian, []],
+		[OsDistribution.win32, []],
+		[OsDistribution.darwin, [dependencyType.Brew]],
+		[OsDistribution.others, [dependencyType.Curl]]
 	]);
 
 	protected get discoveryCommand(): Command {
@@ -99,12 +99,11 @@ const win32InstallationCommands = [
 	},
 	{
 		comment: localize('resourceDeployment.AziCli.DisplayingInstallationLog', "displaying the installation log …"),
-		command: `type AzureCliInstall.log | findstr /i /v /c:"cached product context" | findstr /i /v /c:"has no eligible binary patches" `,
+		command: `type ADS_AzureCliInstall.log | findstr /i /v "^MSI"`,
 		ignoreError: true
 	}
 ];
 const macOsInstallationCommands = [
-	// try to install brew ourselves
 	{
 		comment: localize('resourceDeployment.AziCli.UpdatingBrewRepository', "updating your brew repository for azure-cli installation …"),
 		command: 'brew update'
@@ -114,7 +113,7 @@ const macOsInstallationCommands = [
 		command: 'brew install azure-cli'
 	}
 ];
-const linuxInstallationCommands = [
+const debianInstallationCommands = [
 	{
 		sudo: true,
 		comment: localize('resourceDeployment.AziCli.AptGetUpdate', "updating repository information before installing azure-cli …"),

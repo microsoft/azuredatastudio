@@ -125,6 +125,10 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		this._changeRef.detectChanges();
 	}
 
+	public focus(): void {
+		this._button.focus();
+	}
+
 	protected updateIcon() {
 		if (this.iconPath) {
 			if (!this._iconClass) {

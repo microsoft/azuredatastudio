@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
-import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
+import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { URI } from 'vs/base/common/uri';
@@ -26,15 +26,12 @@ export function getSqlConfigValue<T>(workspaceConfigService: IConfigurationServi
 
 export function getEditorUri(input: IEditorInput): string {
 	let uri: URI;
-	if (input instanceof QueryInput) {
-		let queryCast: QueryInput = <QueryInput>input;
-		if (queryCast) {
-			uri = queryCast.getResource();
-		}
+	if (input instanceof QueryEditorInput) {
+		uri = input.getResource();
 	}
 
 	if (uri) {
-		return uri.toString();
+		return uri.toString(true);
 	}
 	return undefined;
 }

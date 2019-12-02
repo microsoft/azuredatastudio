@@ -68,12 +68,9 @@
 }
 
 .monaco-editor .suggest-widget .monaco-list {
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: -moz-none;
-	-ms-user-select: none;
-	-o-user-select: none;
 	user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
 }
 
 /** Styles for each row in the list element **/
@@ -279,3 +276,11 @@
 	border-radius: 3px;
 	padding: 0 0.4em;
 }
+
+
+/* replace/insert decorations */
+
+.monaco-editor .suggest-insert-unexpected {
+	font-style: italic;
+}
+

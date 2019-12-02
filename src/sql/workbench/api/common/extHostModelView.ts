@@ -566,6 +566,22 @@ class ComponentWrapper implements azdata.Component {
 		this.setProperty('ariaLabel', v);
 	}
 
+	public get ariaRole(): string {
+		return this.properties['ariaRole'];
+	}
+
+	public set ariaRole(v: string) {
+		this.setProperty('ariaRole', v);
+	}
+
+	public get ariaSelected(): boolean {
+		return this.properties['ariaSelected'];
+	}
+
+	public set ariaSelected(v: boolean) {
+		this.setProperty('ariaSelected', v);
+	}
+
 	public get CSSStyles(): { [key: string]: string } {
 		return this.properties['CSSStyles'];
 	}
@@ -710,6 +726,10 @@ class ComponentWrapper implements azdata.Component {
 
 	public get valid(): boolean {
 		return this._valid;
+	}
+
+	public focus() {
+		return this._proxy.$focus(this._handle, this._id);
 	}
 }
 
@@ -1144,12 +1164,6 @@ class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonC
 	public set checked(v: boolean) {
 		this.setProperty('checked', v);
 	}
-	public get focused(): boolean {
-		return this.properties['focused'];
-	}
-	public set focused(v: boolean) {
-		this.setProperty('focused', v);
-	}
 
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
@@ -1162,7 +1176,6 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Text, id);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
 	}
 
 	public get value(): string {
@@ -1177,11 +1190,6 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	}
 	public set title(title: string) {
 		this.setProperty('title', title);
-	}
-
-	public get onDidClick(): vscode.Event<any> {
-		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
-		return emitter && emitter.event;
 	}
 }
 
@@ -1264,13 +1272,6 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 	}
 	public set moveFocusOutWithTab(v: boolean) {
 		this.setProperty('moveFocusOutWithTab', v);
-	}
-
-	public get focused(): boolean {
-		return this.properties['focused'];
-	}
-	public set focused(v: boolean) {
-		this.setProperty('focused', v);
 	}
 
 	public get updateCells(): azdata.TableCell[] {
@@ -1366,6 +1367,46 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 	public get onDataChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
+	}
+
+	protected notifyPropertyChanged(): Thenable<void> {
+		return this._proxy.$setProperties(this._handle, this._id, this.getPropertiesForMainThread());
+	}
+
+	public toComponentShape(): IComponentShape {
+		// Overridden to ensure we send the correct properties mapping.
+		return <IComponentShape>{
+			id: this.id,
+			type: this.type,
+			layout: this.layout,
+			properties: this.getPropertiesForMainThread(),
+			itemConfigs: this.itemConfigs ? this.itemConfigs.map<IItemConfig>(item => item.toIItemConfig()) : undefined
+		};
+	}
+
+	/**
+	 * Gets the properties map to send to the main thread.
+	 */
+	private getPropertiesForMainThread(): { [key: string]: string } {
+		// This is necessary because we can't send the actual ComponentWrapper objects
+		// and so map them into their IDs instead. We don't want to update the actual
+		// data property though since the caller would still expect that to contain
+		// the Component objects they created
+		const properties = assign({}, this.properties);
+		if (properties.data) {
+			properties.data = properties.data.map((row: any[]) => row.map(cell => {
+				if (cell instanceof ComponentWrapper) {
+					// First ensure that we register the component using addItem
+					// such that it gets added to the ModelStore. We don't want to
+					// make the table component an actual container since that exposes
+					// a lot of functionality we don't need.
+					this.addItem(cell);
+					return cell.id;
+				}
+				return cell;
+			}));
+		}
+		return properties;
 	}
 }
 
@@ -1527,6 +1568,7 @@ class HyperlinkComponentWrapper extends ComponentWrapper implements azdata.Hyper
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Hyperlink, id);
 		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
 	}
 
 	public get label(): string {
@@ -1541,6 +1583,11 @@ class HyperlinkComponentWrapper extends ComponentWrapper implements azdata.Hyper
 	}
 	public set url(v: string) {
 		this.setProperty('url', v);
+	}
+
+	public get onDidClick(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
 	}
 }
 

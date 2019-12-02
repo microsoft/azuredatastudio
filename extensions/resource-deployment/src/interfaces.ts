@@ -201,16 +201,25 @@ export interface NotebookInfo {
 	linux: string;
 }
 
-export enum OsType {
+export enum OsDistribution {
 	win32 = 'win32',
 	darwin = 'darwin',
-	linux = 'linux',
+	debian = 'debian',
 	others = 'others'
+}
+export interface OsRelease extends JSON {
+	type: string;
+	platform: string;
+	hostname: string;
+	arch: string;
+	release: string;
+	id?: string;
+	id_like?: string;
 }
 
 export interface ToolRequirementInfo {
 	name: string;
-	version: string;
+	version?: string;
 }
 
 export enum ToolType {
@@ -247,6 +256,7 @@ export interface ITool {
 	readonly outputChannelName: string;
 	readonly fullVersion: string | undefined;
 	readonly onDidUpdateData: vscode.Event<ITool>;
+
 	showOutputChannel(preserveFocus?: boolean): void;
 	loadInformation(): Promise<void>;
 	install(): Promise<void>;

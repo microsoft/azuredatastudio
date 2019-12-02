@@ -72,12 +72,12 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 		}
 	}
 
-	private handleOnAddFileTree(rootNode: FileNode, selectedNode: FileNode, expandedNodes: FileNode[]) {
-		this.updateFileTree(rootNode, selectedNode, expandedNodes);
+	private async handleOnAddFileTree(rootNode: FileNode, selectedNode: FileNode, expandedNodes: FileNode[]): Promise<void> {
+		await this.updateFileTree(rootNode, selectedNode, expandedNodes);
 	}
 
-	private updateFileTree(rootNode: FileNode, selectedNode: FileNode, expandedNodes: FileNode[]): void {
-		this._treeView.renderBody(this._treeContainer.nativeElement, rootNode, selectedNode, expandedNodes);
+	private async updateFileTree(rootNode: FileNode, selectedNode: FileNode, expandedNodes: FileNode[]): Promise<void> {
+		await this._treeView.renderBody(this._treeContainer.nativeElement, rootNode, selectedNode, expandedNodes);
 		this._treeView.setVisible(true);
 		this.layoutTree();
 		this._changeRef.detectChanges();
