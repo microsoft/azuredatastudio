@@ -105,8 +105,7 @@ const indentationFilter = [
 	'!extensions/mssql/notebooks/**',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
-	'!**/*.patch',
-	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts' // skip this because we have no plans on touching this and its not ours
+	'!**/*.patch'
 ];
 
 const copyrightFilter = [
@@ -197,7 +196,8 @@ const tslintBaseFilter = [
 	'!extensions/**/*.test.ts',
 	'!extensions/html-language-features/server/lib/jquery.d.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts', // {{SQL CARBON EDIT}},
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts' // {{SQL CARBON EDIT}},
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts', // {{SQL CARBON EDIT}},
+	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts' // {{SQL CARBON EDIT}} skip this because we have no plans on touching this and its not ours
 ];
 
 // {{SQL CARBON EDIT}}
