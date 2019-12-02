@@ -307,39 +307,31 @@ CommandsRegistry.registerCommand({
 // Refresh Action for Scriptable objects
 CommandsRegistry.registerCommand({
 	id: OE_REFRESH_COMMAND_ID,
-	handler: async (accessor, args: ObjectExplorerActionsContext) => {
+	handler: (accessor, args: ObjectExplorerActionsContext): void => {
 		const connectionManagementService = accessor.get(IConnectionManagementService);
 		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const objectExplorerService = accessor.get(IObjectExplorerService);
 		const errorMessageService = accessor.get(IErrorMessageService);
 		const connection = new ConnectionProfile(capabilitiesService, args.connectionProfile);
-		let treeNode: TreeNode;
 		if (connectionManagementService.isConnected(undefined, connection)) {
-			treeNode = await getTreeNode(args, objectExplorerService);
-			if (treeNode === undefined) {
-				objectExplorerService.updateObjectExplorerNodes(connection.toIConnectionProfile()).then(() => {
+			getTreeNode(args, objectExplorerService).then(async (treeNode) => {
+				if (!treeNode) {
+					await objectExplorerService.updateObjectExplorerNodes(connection.toIConnectionProfile());
 					treeNode = objectExplorerService.getObjectExplorerNode(connection);
-				});
-			}
-		}
-		const tree = objectExplorerService.getServerTreeView().tree;
-		if (treeNode) {
-			return tree.collapse(treeNode).then(() => {
-				return objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode).then(() => {
-					return tree.refresh(treeNode).then(() => {
-						return tree.expand(treeNode);
-					}, refreshError => {
-						return Promise.resolve(true);
-					});
-				}, error => {
-					errorMessageService.showDialog(Severity.Error, '', error);
-					return Promise.resolve(true);
-				});
-			}, collapseError => {
-				return Promise.resolve(true);
+				}
+				if (treeNode) {
+					const tree = objectExplorerService.getServerTreeView().tree;
+					await tree.collapse(treeNode);
+					await objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode);
+					await tree.refresh(treeNode);
+					await tree.expand(treeNode);
+				} else {
+					throw new Error(`Could not find tree node for node ${args.nodeInfo.label}`);
+				}
+			}).catch(err => {
+				errorMessageService.showDialog(Severity.Error, '', err);
 			});
 		}
-		return Promise.resolve(true);
 	}
 });
 //#endregion
