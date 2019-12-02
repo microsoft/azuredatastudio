@@ -110,6 +110,9 @@ suite('notebookUtils', function (): void {
 		result = tryMatchCellMagic('%%sql\nselect @@VERSION\nselect * from TestTable');
 		assert.strictEqual(result, 'sql');
 
+		result = tryMatchCellMagic('%%sql\n%%help');
+		assert.strictEqual(result, 'sql');
+
 		result = tryMatchCellMagic('%%');
 		assert.strictEqual(result, null);
 
@@ -123,6 +126,20 @@ suite('notebookUtils', function (): void {
 			totalResult += value;
 		});
 		assert.strictEqual(totalResult, 10);
+
+		totalResult = 0;
+		await asyncForEach([], async (value) => {
+			totalResult += value;
+		});
+		assert.strictEqual(totalResult, 0);
+
+		// Shouldn't throw exceptions for these cases
+		await asyncForEach(undefined, async (value) => {
+			totalResult += value;
+		});
+		assert.strictEqual(totalResult, 0);
+
+		await asyncForEach([1, 2, 3, 4], undefined);
 	});
 
 	test('getClusterEndpoints Test', async function (): Promise<void> {
