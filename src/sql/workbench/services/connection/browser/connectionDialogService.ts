@@ -481,7 +481,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				setTimeout(() => {
 					return this._commandService.executeCommand('workbench.action.terminal.paste');
 				}, 10);
-				return undefined;
+				return;
 			}));
 
 		}
