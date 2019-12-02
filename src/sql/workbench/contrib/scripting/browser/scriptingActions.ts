@@ -330,7 +330,8 @@ CommandsRegistry.registerCommand({
 				logService.error(`Could not find tree node for node ${args.nodeInfo.label}`);
 			}
 		}
-	});
+	}
+});
 //#endregion
 
 //#region -- explorer widget
