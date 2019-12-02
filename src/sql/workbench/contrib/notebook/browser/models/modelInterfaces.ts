@@ -491,6 +491,7 @@ export interface ICellModel {
 	isCollapsed: boolean;
 	readonly onCollapseStateChanged: Event<boolean>;
 	modelContentChangedEvent: IModelContentChangedEvent;
+	isEditMode: boolean;
 }
 
 export interface FutureInternal extends nb.IFuture {

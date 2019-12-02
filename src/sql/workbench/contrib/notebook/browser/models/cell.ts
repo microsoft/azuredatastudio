@@ -191,15 +191,11 @@ export class CellModel implements ICellModel {
 	}
 
 	public get notebookModel(): NotebookModel {
-		return <NotebookModel>this.options.notebook;
+		return <NotebookModel>this._options.notebook;
 	}
 
 	public set cellUri(value: URI) {
 		this._cellUri = value;
-	}
-
-	public get options(): ICellModelOptions {
-		return this._options;
 	}
 
 	public get cellType(): CellType {
@@ -234,7 +230,7 @@ export class CellModel implements ICellModel {
 		if (this._language) {
 			return this._language;
 		}
-		return this.options.notebook.language;
+		return this._options.notebook.language;
 	}
 
 	public get cellGuid(): string {
@@ -370,7 +366,7 @@ export class CellModel implements ICellModel {
 	}
 
 	private async getOrStartKernel(notificationService: INotificationService): Promise<nb.IKernel> {
-		let model = this.options.notebook;
+		let model = this._options.notebook;
 		let clientSession = model && model.clientSession;
 		if (!clientSession) {
 			this.sendNotification(notificationService, Severity.Error, localize('notebookNotReady', "The session for this notebook is not yet ready"));
@@ -516,7 +512,7 @@ export class CellModel implements ICellModel {
 			try {
 				let result = output as nb.IDisplayResult;
 				if (result && result.data && result.data['text/html']) {
-					let model = (this as CellModel).options.notebook as NotebookModel;
+					let model = this._options.notebook as NotebookModel;
 					if (model.activeConnection) {
 						let gatewayEndpointInfo = this.getGatewayEndpoint(model.activeConnection);
 						if (gatewayEndpointInfo) {

@@ -13,13 +13,15 @@ import { CellTypes } from 'sql/workbench/contrib/notebook/common/models/contract
 import { ModelFactory } from 'sql/workbench/contrib/notebook/browser/models/modelFactory';
 import { NotebookModelStub } from './common';
 import { EmptyFuture } from 'sql/workbench/services/notebook/browser/sessionManager';
-import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel, ICellModelOptions } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { startsWith } from 'vs/base/common/strings';
+import { Schemas } from 'vs/base/common/network';
+import { URI } from 'vs/base/common/uri';
 
 let instantiationService: IInstantiationService;
 
@@ -591,7 +593,52 @@ suite('Cell Model', function (): void {
 	});
 
 	test('Getters and setters test', async function (): Promise<void> {
-		// let cell = factory.createCell(undefined, undefined);
+		// Code Cell
+		let cellData: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: '1+1',
+			outputs: [],
+			metadata: { language: 'python' },
+			execution_count: 1
+		};
+
+		let cell = factory.createCell(cellData, undefined);
+		assert.strictEqual(cell.trustedMode, false, 'Cell should not be trusted by default');
+
+		cell.trustedMode = true;
+		assert.strictEqual(cell.trustedMode, true, 'Cell should be trusted after manually setting trustedMode');
+
+		assert.strictEqual(cell.isEditMode, true, 'Code cells should be editable by default');
+
+		cell.isEditMode = false;
+		assert.strictEqual(cell.isEditMode, false, 'Cell should not be editable after manually setting isEditMode');
+
+		cell.hover = true;
+		assert.strictEqual(cell.hover, true, 'Cell should be hovered after manually setting hover');
+
+		let cellUri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${cell.id}` });
+		assert.deepStrictEqual(cell.cellUri, cellUri);
+
+		cellUri = URI.from({ scheme: Schemas.untitled, path: `test-uri-12345` });
+		cell.cellUri = cellUri;
+		assert.deepStrictEqual(cell.cellUri, cellUri);
+
+		assert.strictEqual(cell.language, 'python');
+
+		// Markdown cell
+		cellData = {
+			cell_type: CellTypes.Markdown,
+			source: 'some *markdown*',
+			outputs: [],
+			metadata: { language: 'python' }
+		};
+
+		let cellOptions = <ICellModelOptions>{ isTrusted: true };
+		cell = factory.createCell(cellData, cellOptions);
+
+		assert.strictEqual(cell.isEditMode, false, 'Markdown cells should not be editable by default');
+		assert.strictEqual(cell.trustedMode, true, 'Cell should be trusted when providing isTrusted=true in the cell options');
+		assert.strictEqual(cell.language, 'markdown');
 	});
 
 	test('Equals test', async function (): Promise<void> {
