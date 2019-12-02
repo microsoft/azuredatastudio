@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 
 import { nb, ServerInfo } from 'azdata';
-import { tryMatchCellMagic, getHostAndPortFromEndpoint, isStream, getProvidersForFileName, asyncForEach, clusterEndpointsProperty, getClusterEndpoints, RawEndpoint, IEndpoint } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
+import { tryMatchCellMagic, getHostAndPortFromEndpoint, isStream, getProvidersForFileName, asyncForEach, clusterEndpointsProperty, getClusterEndpoints, RawEndpoint, IEndpoint, getStandardKernelsForProvider, IStandardKernelWithProvider } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 import { INotebookService, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/electron-browser/common';
 
@@ -15,6 +15,11 @@ suite('notebookUtils', function (): void {
 	const mockNotebookService = TypeMoq.Mock.ofType<INotebookService>(NotebookServiceStub);
 	const defaultTestProvider = 'testDefaultProvider';
 	const testProvider = 'testProvider';
+	const testKernel: nb.IStandardKernel = {
+		name: 'testName',
+		displayName: 'testDisplayName',
+		connectionProviderIds: ['testId1', 'testId2']
+	};
 
 	function setupMockNotebookService() {
 		mockNotebookService.setup(n => n.getProvidersForFileType(TypeMoq.It.isAnyString()))
@@ -24,6 +29,12 @@ suite('notebookUtils', function (): void {
 				} else {
 					return [testProvider];
 				}
+			});
+
+		// getStandardKernelsForProvider
+		mockNotebookService.setup(n => n.getStandardKernelsForProvider(TypeMoq.It.isAnyString()))
+			.returns((provider) => {
+				return [testKernel];
 			});
 	}
 
@@ -64,6 +75,23 @@ suite('notebookUtils', function (): void {
 
 	test('getStandardKernelsForProvider Test', async function (): Promise<void> {
 		setupMockNotebookService();
+
+		let result = getStandardKernelsForProvider(undefined, undefined);
+		assert.deepStrictEqual(result, []);
+
+		result = getStandardKernelsForProvider(undefined, mockNotebookService.object);
+		assert.deepStrictEqual(result, []);
+
+		result = getStandardKernelsForProvider('testProvider', undefined);
+		assert.deepStrictEqual(result, []);
+
+		result = getStandardKernelsForProvider('testProvider', mockNotebookService.object);
+		assert.deepStrictEqual(result, [<IStandardKernelWithProvider>{
+			name: 'testName',
+			displayName: 'testDisplayName',
+			connectionProviderIds: ['testId1', 'testId2'],
+			notebookProvider: 'testProvider'
+		}]);
 	});
 
 	test('tryMatchCellMagic Test', async function (): Promise<void> {
