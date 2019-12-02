@@ -90,7 +90,7 @@ class ObjectExplorerTester {
 			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Disconnect', 'Delete Connection', 'Refresh'];
 		}
 		else {
-			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Disconnect', 'Delete Connection', 'Refresh', 'Data-tier Application wizard', 'Launch Profiler'];
+			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Disconnect', 'Delete Connection', 'Refresh'];
 		}
 		return await this.verifyContextMenu(server, expectedActions);
 	}
