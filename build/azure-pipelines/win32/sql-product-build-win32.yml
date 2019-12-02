@@ -104,7 +104,6 @@ steps:
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
     displayName: Run unstable tests
 
-steps:
 - task: AzureKeyVault@1
   displayName: 'Azure Key Vault: SqlToolsSecretStore'
   inputs:
