@@ -590,4 +590,21 @@ suite('Cell Model', function (): void {
 		});
 	});
 
+	test('Getters and setters test', async function (): Promise<void> {
+		// let cell = factory.createCell(undefined, undefined);
+	});
+
+	test('Equals test', async function (): Promise<void> {
+		let cell = factory.createCell(undefined, undefined);
+
+		let result = cell.equals(undefined);
+		assert.strictEqual(result, false, 'Cell should not be equal to undefined');
+
+		result = cell.equals(cell);
+		assert.strictEqual(result, true, 'Cell should be equal to itself');
+
+		let otherCell = factory.createCell(undefined, undefined);
+		result = cell.equals(otherCell);
+		assert.strictEqual(result, false, 'Cell should not be equal to a different cell');
+	});
 });

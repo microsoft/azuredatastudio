@@ -80,7 +80,7 @@ export class CellModel implements ICellModel {
 	}
 
 	public equals(other: ICellModel) {
-		return other && other.id === this.id;
+		return other !== undefined && other.id === this.id;
 	}
 
 	public get onCollapseStateChanged(): Event<boolean> {
