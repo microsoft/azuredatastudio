@@ -220,7 +220,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 	}
 
-	private handleDefaultOnConnect(params: INewConnectionParams, connection: IConnectionProfile): void {
+	private async handleDefaultOnConnect(params: INewConnectionParams, connection: IConnectionProfile): Promise<void> {
 		if (this.ignoreNextConnect) {
 			this._connectionDialog.resetConnection();
 			this._connectionDialog.close();
@@ -243,7 +243,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			showFirewallRuleOnError: true
 		};
 
-		this._connectionManagementService.connectAndSaveProfile(connection, uri, options, params && params.input).then(connectionResult => {
+		try {
+			const connectionResult = await this._connectionManagementService.connectAndSaveProfile(connection, uri, options, params && params.input);
 			this._connecting = false;
 			if (connectionResult && connectionResult.connected) {
 				this._connectionDialog.close();
@@ -256,11 +257,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this._connectionDialog.resetConnection();
 				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
 			}
-		}).catch(err => {
+		} catch (err) {
 			this._connecting = false;
 			this._connectionDialog.resetConnection();
 			this.showErrorDialog(Severity.Error, this._connectionErrorTitle, err);
-		});
+		}
 	}
 
 	private get uiController(): IConnectionComponentController {
