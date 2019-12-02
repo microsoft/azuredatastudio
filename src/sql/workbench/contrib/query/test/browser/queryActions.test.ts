@@ -178,7 +178,7 @@ suite('SQL QueryAction Tests', () => {
 		queryModelService.setup(x => x.onRunQueryStart).returns(() => Event.None);
 		queryModelService.setup(x => x.onRunQueryComplete).returns(() => Event.None);
 		const instantiationService = new TestInstantiationService();
-		let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService, undefined, undefined, undefined, undefined, undefined);
+		let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService, undefined, new SimpleUriLabelService(), undefined, undefined, undefined);
 
 		// ... Mock "isSelectionEmpty" in QueryEditor
 		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
@@ -228,7 +228,7 @@ suite('SQL QueryAction Tests', () => {
 
 		// ... Mock "getSelection" in QueryEditor
 		const instantiationService = new TestInstantiationService();
-		let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService, undefined, undefined, undefined, undefined, undefined);
+		let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService, undefined, new SimpleUriLabelService(), undefined, undefined, undefined);
 
 		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Loose, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		queryInput.setup(x => x.uri).returns(() => testUri);
