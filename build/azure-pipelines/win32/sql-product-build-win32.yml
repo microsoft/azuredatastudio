@@ -139,7 +139,6 @@ steps:
     env:
       ADS_TEST_GREP: (.*@REL@|integration test setup)
       ADS_TEST_INVERT_GREP: 0
-    env:
       BDC_BACKEND_USERNAME: $(ads-integration-test-bdc-server-username)
       BDC_BACKEND_PWD: $(ads-integration-test-bdc-server-password)
       BDC_BACKEND_HOSTNAME: $(ads-integration-test-bdc-server)
@@ -157,6 +156,16 @@ steps:
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
     displayName: Run unstable integration tests
+    env:
+      BDC_BACKEND_USERNAME: $(ads-integration-test-bdc-server-username)
+      BDC_BACKEND_PWD: $(ads-integration-test-bdc-server-password)
+      BDC_BACKEND_HOSTNAME: $(ads-integration-test-bdc-server)
+      STANDALONE_SQL_USERNAME: $(ads-integration-test-standalone-server-username)
+      STANDALONE_SQL_PWD: $(ads-integration-test-standalone-server-password)
+      STANDALONE_SQL: $(ads-integration-test-standalone-server)
+      AZURE_SQL_USERNAME: $(ads-integration-test-azure-server-username)
+      AZURE_SQL_PWD: $(ads-integration-test-azure-server-password)
+      AZURE_SQL: $(ads-integration-test-azure-server)
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'Sign out code'
@@ -212,16 +221,6 @@ steps:
       MaxConcurrency: 5
       MaxRetryAttempts: 20
     condition: and(succeeded(), eq(variables['signed'], true))
-      env:
-      BDC_BACKEND_USERNAME: $(ads-integration-test-bdc-server-username)
-      BDC_BACKEND_PWD: $(ads-integration-test-bdc-server-password)
-      BDC_BACKEND_HOSTNAME: $(ads-integration-test-bdc-server)
-      STANDALONE_SQL_USERNAME: $(ads-integration-test-standalone-server-username)
-      STANDALONE_SQL_PWD: $(ads-integration-test-standalone-server-password)
-      STANDALONE_SQL: $(ads-integration-test-standalone-server)
-      AZURE_SQL_USERNAME: $(ads-integration-test-azure-server-username)
-      AZURE_SQL_PWD: $(ads-integration-test-azure-server-password)
-      AZURE_SQL: $(ads-integration-test-azure-server)
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
