@@ -25,6 +25,7 @@ import { getRandomTestPath } from 'vs/base/test/node/testUtils';
 import { IWorkbenchConstructionOptions } from 'vs/workbench/workbench.web.api';
 
 class TestEnvironmentService implements IWorkbenchEnvironmentService {
+	keybindingsSyncPreviewResource: URI;
 	argvResource: URI;
 	userDataSyncLogResource: URI;
 	settingsSyncPreviewResource: URI;

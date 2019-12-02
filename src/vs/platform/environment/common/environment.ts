@@ -134,6 +134,7 @@ export interface IEnvironmentService extends IUserHomeProvider {
 	// sync resources
 	userDataSyncLogResource: URI;
 	settingsSyncPreviewResource: URI;
+	keybindingsSyncPreviewResource: URI;
 
 	machineSettingsHome: URI;
 	machineSettingsResource: URI;
