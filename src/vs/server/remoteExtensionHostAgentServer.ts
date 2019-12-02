@@ -66,6 +66,7 @@ import { URI } from 'vs/base/common/uri';
 import { isEqualOrParent } from 'vs/base/common/extpath';
 import { ServerEnvironmentService } from 'vs/server/remoteExtensionHostAgent';
 import { basename, dirname, join } from 'vs/base/common/path';
+import { assertIsDefined } from 'vs/base/common/types';
 
 const SHUTDOWN_TIMEOUT = 5 * 60 * 1000;
 
@@ -428,7 +429,7 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		server.listen({ host, port }, () => {
 			// Do not change this line. VS Code looks for this in
 			// the output.
-			const address = server.address();
+			const address = assertIsDefined(server.address());
 			console.log(`Extension host agent listening on ${typeof address === 'string' ? address : address.port}`);
 
 			if (this._webClientServer && typeof address !== 'string') {
@@ -618,6 +619,7 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 							}
 							if (msg.args) {
 								this._logService.trace(`${logPrefix}[ExtensionHostConnection] - startParams language: ${startParams.language}`);
+								this._logService.trace(`${logPrefix}[ExtensionHostConnection] - startParams env: ${JSON.stringify(startParams.env)}`);
 							} else {
 								this._logService.trace(`${logPrefix}[ExtensionHostConnection] - no UI language provided by renderer. Falling back to English`);
 							}

@@ -196,8 +196,8 @@ export class WebClientServer {
 			'img-src \'self\' https: data: blob:;',
 			'media-src \'none\';',
 			this._environmentService.isBuilt ?
-				'script-src \'self\' https://az416426.vo.msecnd.net \'unsafe-eval\' https: \'sha256-lrlqPnPED1SjcFocGzCtf6ikbQdTUwJKs8VprSqhvS4=\';' :
-				'script-src \'self\' https://az416426.vo.msecnd.net \'unsafe-eval\' https: \'sha256-/Ua2yZoIzhImbjP5mnPF6fXTgzsTEtN8hPP1XAB1n6U=\' \'sha256-meDZW3XhN5JmdjFUrWGhTouRKBiWYtXHltaKnqn/WMo=\';',
+				'script-src \'self\' https://az416426.vo.msecnd.net \'unsafe-eval\' https: \'sha256-TjRvHR8ymK5LuZUYOUfaQ9aPb3YlSSK9Z0RZVBm/JmQ=\';' :
+				'script-src \'self\' https://az416426.vo.msecnd.net \'unsafe-eval\' https: \'sha256-+us+lSB8206+7MrY2U5puBGklMspIzYUti4zIQYj3RA=\' \'sha256-meDZW3XhN5JmdjFUrWGhTouRKBiWYtXHltaKnqn/WMo=\';',
 			'child-src \'self\';',
 			'frame-src \'self\' https://*.vscode-webview-test.com;',
 			'worker-src \'self\';',
