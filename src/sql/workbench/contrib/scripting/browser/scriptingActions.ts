@@ -311,6 +311,7 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand({
 	id: OE_REFRESH_COMMAND_ID,
 	handler: async (accessor, args: ObjectExplorerActionsContext): Promise<void> => {
+		const connectionManagementService = accessor.get(IConnectionManagementService);
 		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const objectExplorerService = accessor.get(IObjectExplorerService);
 		const logService = accessor.get(ILogService);
