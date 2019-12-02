@@ -478,7 +478,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 		else {
 			this.handleChanges({
-				['dataRows']: this.dataSet.dataRows
+				['dataRows']: { currentValue: this.dataSet.dataRows, firstChange: this.firstRender, previousValue: this.oldDataRows }
 			});
 		}
 	}
