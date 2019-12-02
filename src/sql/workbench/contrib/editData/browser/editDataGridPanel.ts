@@ -477,9 +477,11 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.handleInitializeTable();
 		}
 		else {
+			this.enterEditSession();
 			this.handleChanges({
 				['dataRows']: { currentValue: this.dataSet.dataRows, firstChange: this.firstRender, previousValue: this.oldDataRows }
 			});
+			this.endEditSession();
 		}
 	}
 
@@ -1037,7 +1039,8 @@ export class EditDataGridPanel extends GridParentComponent {
 	private setCallbackOnDataRowsChanged(): void {
 		if (this.dataSet.dataRows) {
 			// We must wait until we get the first set of dataRows before we enable editing or slickgrid will complain
-			console.log('need to check if row is editable or not');
+
+			//line here may be redundant.
 			if (this.enableEditing) {
 				this.enterEditSession();
 			}
