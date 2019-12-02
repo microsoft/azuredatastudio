@@ -104,12 +104,12 @@ steps:
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
     displayName: Run unstable tests
 
-- task: AzureKeyVault@1
-  displayName: 'Azure Key Vault: SqlToolsSecretStore'
-  inputs:
-    azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
-    KeyVaultName: SqlToolsSecretStore
-    SecretsFilter: 'ads-integration-test-azure-server,ads-integration-test-azure-server-password,ads-integration-test-azure-server-username,ads-integration-test-bdc-server,ads-integration-test-bdc-server-password,ads-integration-test-bdc-server-username,ads-integration-test-standalone-server,ads-integration-test-standalone-server-password,ads-integration-test-standalone-server-username'
+  - task: AzureKeyVault@1
+    displayName: 'Azure Key Vault: SqlToolsSecretStore'
+    inputs:
+      azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+      KeyVaultName: SqlToolsSecretStore
+      SecretsFilter: 'ads-integration-test-azure-server,ads-integration-test-azure-server-password,ads-integration-test-azure-server-username,ads-integration-test-bdc-server,ads-integration-test-bdc-server-password,ads-integration-test-bdc-server-username,ads-integration-test-standalone-server,ads-integration-test-standalone-server-password,ads-integration-test-standalone-server-username'
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
