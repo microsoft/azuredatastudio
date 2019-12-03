@@ -303,3 +303,39 @@ export class ClientSessionStub implements IClientSession {
 		throw new Error('Method not implemented.');
 	}
 }
+
+export class KernelStub implements nb.IKernel {
+	get id(): string {
+		throw new Error('Method not implemented.');
+	}
+	get name(): string {
+		throw new Error('Method not implemented.');
+	}
+	get supportsIntellisense(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	get requiresConnection(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	get isReady(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	get ready(): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+	get info(): nb.IInfoReply {
+		throw new Error('Method not implemented.');
+	}
+	getSpec(): Thenable<nb.IKernelSpec> {
+		throw new Error('Method not implemented.');
+	}
+	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean): nb.IFuture {
+		throw new Error('Method not implemented.');
+	}
+	requestComplete(content: nb.ICompleteRequest): Thenable<nb.ICompleteReplyMsg> {
+		throw new Error('Method not implemented.');
+	}
+	interrupt(): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+}
