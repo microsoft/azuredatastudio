@@ -25,7 +25,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 	}
 
 	public initialize(): void {
-		this.pageObject.registerContent((view: azdata.ModelView) => {
+		this.pageObject.registerContent(async (view: azdata.ModelView): Promise<void> => {
 			this._cardContainer = view.modelBuilder.radioCardGroup().withProperties<azdata.RadioCardGroupComponentProperties>({
 				cards: [],
 				cardWidth: '240px',
@@ -62,17 +62,8 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 				}
 			).withLayout({ width: '100%', height: '100%' });
 			const form = formBuilder.withLayout({ width: '100%' }).component();
-			return view.initializeModel(form).then(() => {
-				return this.loadCards().then(() => {
-					this._loadingComponent!.loading = false;
-				}, (error) => {
-					this.wizard.wizardObject.message = {
-						level: azdata.window.MessageLevel.Error,
-						text: localize('deployCluster.loadProfileFailed', "Failed to load the deployment profiles: {0}", error.message)
-					};
-					this._loadingComponent!.loading = false;
-				});
-			});
+			await view.initializeModel(form);
+			await this.loadCards();
 		});
 	}
 
@@ -169,13 +160,20 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 		this.wizard.model.selectedProfile = selectedProfile;
 	}
 
-	private loadCards(): Promise<void> {
-		return this.wizard.azdataService.getDeploymentProfiles(this.wizard.deploymentType).then((profiles: BigDataClusterDeploymentProfile[]) => {
+	private async loadCards(): Promise<void> {
+		try {
+			this._profiles = await this.wizard.azdataService.getDeploymentProfiles(this.wizard.deploymentType);
 			const defaultProfile: string = this.getDefaultProfile();
-			this._profiles = profiles;
-			this._cardContainer!.cards = profiles.map(profile => this.createProfileCard(profile));
+			this._cardContainer!.cards = this._profiles.map(profile => this.createProfileCard(profile));
 			this._cardContainer!.selectedCardId = defaultProfile;
-		});
+		} catch (error) {
+			this.wizard.wizardObject.message = {
+				level: azdata.window.MessageLevel.Error,
+				text: localize('deployCluster.loadProfileFailed', "Failed to load the deployment profiles: {0}", error.message)
+			};
+		} finally {
+			this._loadingComponent!.loading = false;
+		}
 	}
 
 	public onEnter() {
