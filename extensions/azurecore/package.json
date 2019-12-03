@@ -98,6 +98,14 @@
         }
       },
       {
+        "command": "azure.resource.startterminal",
+        "title": "%azure.resource.startterminal.title%",
+        "icon": {
+          "dark": "resources/dark/filter_inverse.svg",
+          "light": "resources/light/filter.svg"
+        }
+      },
+      {
         "command": "azure.resource.connectsqlserver",
         "title": "%azure.resource.connectsqlserver.title%",
         "icon": {
@@ -171,6 +179,11 @@
         {
           "command": "azure.resource.connectsqlserver",
           "when": "viewItem == azure.resource.itemType.databaseServer || viewItem == azure.resource.itemType.database || viewItem == azure.resource.itemType.sqlInstance",
+          "group": "inline"
+        },
+        {
+          "command": "azure.resource.startterminal",
+          "when": "viewItem == azure.resource.itemType.account",
           "group": "inline"
         }
       ]

@@ -20,6 +20,15 @@ import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterServ
 import { AzureResourceServiceNames } from './constants';
 
 export function registerAzureResourceCommands(appContext: AppContext, tree: AzureResourceTreeProvider): void {
+	appContext.apiWrapper.registerCommand('azure.resource.startterminal', async (node?: TreeNode) => {
+		if (!node || !(node instanceof AzureResourceAccountTreeNode)) {
+			return;
+		}
+
+		console.log(node);
+
+		const accountNode = node as AzureResourceAccountTreeNode;
+	});
 	appContext.apiWrapper.registerCommand('azure.resource.selectsubscriptions', async (node?: TreeNode) => {
 		if (!(node instanceof AzureResourceAccountTreeNode)) {
 			return;

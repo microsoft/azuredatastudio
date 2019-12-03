@@ -24,6 +24,10 @@ export interface IAzureResourceSubscriptionFilterService {
 	saveSelectedSubscriptions(account: Account, selectedSubscriptions: azureResource.AzureResourceSubscription[]): Promise<void>;
 }
 
+export interface IAzureTerminalService {
+
+}
+
 export interface IAzureResourceCacheService {
 	generateKey(id: string): string;
 
