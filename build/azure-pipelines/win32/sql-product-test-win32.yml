@@ -4,7 +4,7 @@ steps:
     buildType: 'current'
     targetPath: '$(Agent.TempDirectory)'
     artifactName: drop
-    itemPattern: '**/azuredatastudio-win32-x64.zip'
+    itemPattern: '**/azuredatastudio-win32-x64.zip,**/vsix/**'
 
 - task: NodeTool@0
   inputs:
@@ -33,6 +33,10 @@ steps:
     $ErrorActionPreference = "Stop"
     exec { .\node_modules\7zip\7zip-lite\7z.exe x $(Agent.TempDirectory)\azuredatastudio-win32-x64.zip -o$(Agent.TempDirectory)\azuredatastudio-win32-x64 }
   displayName: Unzip artifact
+
+- powershell: |
+    cp $(Agent.TempDirectory)/vsix/* extensions/integration-tests/extensionInstallers
+  displayName: Copy Extension Installers
 
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
