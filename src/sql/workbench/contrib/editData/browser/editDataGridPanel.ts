@@ -474,14 +474,11 @@ export class EditDataGridPanel extends GridParentComponent {
 				['dataRows']: { currentValue: this.dataSet.dataRows, firstChange: this.firstRender, previousValue: undefined },
 				['columnDefinitions']: { currentValue: this.dataSet.columnDefinitions, firstChange: this.firstRender, previousValue: undefined }
 			});
-			this.handleInitializeTable();
 		}
 		else {
-			this.enterEditSession();
 			this.handleChanges({
 				['dataRows']: { currentValue: this.dataSet.dataRows, firstChange: this.firstRender, previousValue: this.oldDataRows }
 			});
-			this.endEditSession();
 		}
 	}
 
