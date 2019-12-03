@@ -61,7 +61,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private dataSet: IGridDataSet;
 	private oldDataRows: VirtualizedCollection<any>;
 	private firstRender = true;
-	private enableEditing = false;
+	private enableEditing = true;
 	// Current selected cell state
 	private currentCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
 	private currentEditCellValue: string;
@@ -474,6 +474,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				['dataRows']: { currentValue: this.dataSet.dataRows, firstChange: this.firstRender, previousValue: undefined },
 				['columnDefinitions']: { currentValue: this.dataSet.columnDefinitions, firstChange: this.firstRender, previousValue: undefined }
 			});
+			this.handleInitializeTable();
 		}
 		else {
 			this.handleChanges({
@@ -1028,8 +1029,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 
 		if (wasEditing && hasGridStructureChanges) {
-			console.log('need to handle editing of cells');
-			//this.tables[0].grid.editActiveCell();
+			this.tables[0].grid.editActiveCell(this.tables[0].grid.getCellEditor());
 		}
 	}
 
@@ -1125,10 +1125,10 @@ export class EditDataGridPanel extends GridParentComponent {
 		//     this.topRowNumber = 0;
 		// }
 		//not necessary as datarows is already included.
-		// if (!this.firstRender && this.dataSet.dataRows && this.dataSet.dataRows.getLength() > 0) {
-		// 	// this.tables[0].grid.scrollRowToTop(this.topRowNumber);
-		// 	this.tables[0].grid.scrollRowToTop(0);
-		// }
+		if (this.dataSet.dataRows && this.dataSet.dataRows.getLength() > 0) {
+			//  this.tables[0].grid.scrollRowToTop(this.topRowNumber);
+			this.tables[0].grid.scrollRowToTop(0);
+		}
 
 		if (this.dataSet.resized) {
 			// Re-rendering the grid is expensive. Throttle so we only do so every 100ms.
