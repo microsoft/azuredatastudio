@@ -698,7 +698,6 @@ suite('Cell Model', function (): void {
 
 			mockNotebookModel.setup(m => m.updateActiveCell(TypeMoq.It.isAny()));
 			mockNotebookModel.setup(m => m.requestConnection()).returns(() => Promise.resolve(true));
-			mockNotebookModel.setup(m => m.clientSession).returns(() => mockClientSession.object);
 
 			cellOptions = { notebook: mockNotebookModel.object, isTrusted: true };
 		});
@@ -716,7 +715,7 @@ suite('Cell Model', function (): void {
 		});
 
 		test('No Kernel provided', async function (): Promise<void> {
-			mockClientSession.setup(s => s.kernel).returns(() => undefined);
+			mockClientSession.setup(s => s.kernel).returns(() => null);
 
 			let cellContents: nb.ICellContents = {
 				cell_type: CellTypes.Code,
