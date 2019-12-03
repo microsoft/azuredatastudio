@@ -4,13 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ChangeDetectorRef, ElementRef } from '@angular/core';
-
-import { IComponentDescriptor } from 'sql/workbench/browser/modelComponents/interfaces';
 import * as azdata from 'azdata';
-import { URI } from 'vs/base/common/uri';
-import { removeCSSRulesContainingSelector } from 'vs/base/browser/dom';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { IUserFriendlyIcon, getIconClass } from 'sql/workbench/browser/modelComponents/iconUtils';
+import { createIconCssClass, IUserFriendlyIcon } from 'sql/workbench/browser/modelComponents/iconUtils';
+import { IComponentDescriptor } from 'sql/workbench/browser/modelComponents/interfaces';
+import { removeCSSRulesContainingSelector } from 'vs/base/browser/dom';
+import { URI } from 'vs/base/common/uri';
 
 export class ItemDescriptor<T> {
 	constructor(public descriptor: IComponentDescriptor, public config: T) { }
@@ -35,7 +34,7 @@ export abstract class ComponentWithIconBase extends ComponentBase {
 	protected updateIcon() {
 		if (this.iconPath && this.iconPath !== this._iconPath) {
 			this._iconPath = this.iconPath;
-			this._iconClass = getIconClass(this.iconPath, this._iconClass);
+			this._iconClass = createIconCssClass(this.iconPath, this._iconClass);
 			this._changeRef.detectChanges();
 		}
 	}

@@ -2,20 +2,16 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./media/card';
-
-import {
-	Component, Inject, ChangeDetectorRef, forwardRef,
-	ElementRef, OnDestroy, Input, ViewChildren, QueryList
-} from '@angular/core';
-
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
-import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
+import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import * as azdata from 'azdata';
-import { getIconClass } from 'sql/workbench/browser/modelComponents/iconUtils';
+import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
+import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
+import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
+import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import * as DOM from 'vs/base/browser/dom';
+import 'vs/css!./media/card';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('./radioCardGroup.component.html'))
@@ -32,7 +28,9 @@ export default class RadioCardGroup extends ComponentBase implements IComponent,
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) private _logService: ILogService
+	) {
 		super(changeRef, el);
 	}
 
@@ -112,23 +110,22 @@ export default class RadioCardGroup extends ComponentBase implements IComponent,
 		return this.getPropertyOrDefault<azdata.RadioCardGroupComponentProperties, string | undefined>((props) => props.selectedCardId, undefined);
 	}
 
-	public set selectedCardId(newValue: string | undefined) {
-		this.setPropertyFromUI<azdata.RadioCardGroupComponentProperties, string | undefined>((props, value) => props.selectedCardId = value, newValue);
-	}
-
 	public getIconClass(card: azdata.RadioCard): string {
 		if (!this.iconClasses[card.id]) {
-			this.iconClasses[card.id] = `cardIcon icon ${getIconClass(card.icon)}`;
+			this.iconClasses[card.id] = `cardIcon icon ${createIconCssClass(card.icon)}`;
 		}
 		return this.iconClasses[card.id];
 	}
 
 	public setProperties(properties: { [key: string]: any }) {
 		super.setProperties(properties);
+		// This is the entry point for the extension to set the selectedCardId
 		if (this.selectedCardId) {
 			const filteredCards = this.cards.filter(c => { return c.id === this.selectedCardId; });
 			if (filteredCards.length === 1) {
 				this.selectCard(filteredCards[0]);
+			} else {
+				this._logService.error(`There should be one and only one matching card for the giving selectedCardId, actual number: ${filteredCards.length}, selectedCardId: ${this.selectedCardId} $`);
 			}
 		}
 	}
@@ -141,7 +138,7 @@ export default class RadioCardGroup extends ComponentBase implements IComponent,
 		this._changeRef.detectChanges();
 		const cardElement = this.getCardElement(this.selectedCard);
 		cardElement.nativeElement.focus();
-		this.selectedCardId = card.id;
+		this.setPropertyFromUI<azdata.RadioCardGroupComponentProperties, string | undefined>((props, value) => props.selectedCardId = value, card.id);
 		this.fireEvent({
 			eventType: ComponentEventType.onDidChange,
 			args: this.selectedCard.id

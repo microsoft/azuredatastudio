@@ -128,8 +128,8 @@ declare module 'azdata' {
 	export interface RadioCardDescription {
 		ariaLabel: string;
 		labelHeader: string;
-		valueHeader?: string;
 		contents: RadioCardLabelValuePair[];
+		valueHeader?: string;
 	}
 
 	export interface RadioCardLabelValuePair {
@@ -139,10 +139,10 @@ declare module 'azdata' {
 
 	export interface RadioCardGroupComponentProperties extends ComponentProperties, TitledComponentProperties {
 		cards: RadioCard[];
-		iconWidth?: string;
-		iconHeight?: string;
 		cardWidth: string;
 		cardHeight: string;
+		iconWidth?: string;
+		iconHeight?: string;
 		selectedCardId?: string;
 	}
 

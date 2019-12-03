@@ -5,12 +5,12 @@
 
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { DeployClusterWizard } from '../deployClusterWizard';
-import { WizardPageBase } from '../../wizardPageBase';
-import * as VariableNames from '../constants';
-import { createFlexContainer } from '../../modelViewUtils';
 import { BdcDeploymentType } from '../../../interfaces';
 import { BigDataClusterDeploymentProfile } from '../../../services/bigDataClusterDeploymentProfile';
+import { createFlexContainer } from '../../modelViewUtils';
+import { WizardPageBase } from '../../wizardPageBase';
+import * as VariableNames from '../constants';
+import { DeployClusterWizard } from '../deployClusterWizard';
 const localize = nls.loadMessageBundle();
 
 export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
@@ -99,7 +99,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 				}]
 		};
 		const storageDescription: azdata.RadioCardDescription = {
-			ariaLabel: localize('deployCluster.scaleDescription', "Scale description"),
+			ariaLabel: localize('deployCluster.storageDescription', "Storage description"),
 			labelHeader: localize('deployCluster.storageSize', "Storage size"),
 			valueHeader: localize('deployCluster.gbPerInstance', "GB per Instance"),
 			contents: [
