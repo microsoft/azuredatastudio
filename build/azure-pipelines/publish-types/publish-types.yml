@@ -37,13 +37,6 @@ steps:
     node build/azure-pipelines/publish-types/check-version.js
   displayName: Check version
 
-- task: AzureKeyVault@1
-  displayName: 'Azure Key Vault: Get Secrets'
-  inputs:
-    azureSubscription: 'azuredatastudio-adointegration'
-    KeyVaultName: ado-secrets
-    SecretsFilter: 'github-distro-mixin-password'
-
 - bash: |
     git config --global user.email "vscode@microsoft.com"
     git config --global user.name "VSCode"
@@ -63,8 +56,6 @@ steps:
     git push origin "vscode-types-$TAG_VERSION"
 
   displayName: Push update to DefinitelyTyped
-  env:
-    GITHUB_TOKEN: $(github-distro-mixin-password)
 
 - bash: |
     TAG_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
