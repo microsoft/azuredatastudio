@@ -87,6 +87,16 @@ declare module 'azdata' {
 		onDidClick: vscode.Event<any>;
 	}
 
+	export interface DeclarativeTableColumn {
+		headerCssStyles?: { [key: string]: string };
+		rowCssStyles?: { [key: string]: string };
+		ariaLabel?: string;
+	}
+
+	export enum DeclarativeDataType {
+		component = 'component'
+	}
+
 	/*
 	 * Add optional azureAccount for connectionWidget.
 	 */
@@ -148,5 +158,8 @@ declare module 'azdata' {
 
 	export interface RadioCardGroupComponent extends Component, RadioCardGroupComponentProperties {
 		onSelectionChanged: vscode.Event<any>;
+	}
+
+	export interface DeclarativeTableProperties extends ComponentProperties {
 	}
 }
