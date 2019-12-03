@@ -6,7 +6,7 @@
 import { nb, IConnectionProfile } from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange, IKernelPreference } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, INotebookProvider, INavigationProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -202,6 +202,64 @@ export class NotebookServiceStub implements INotebookService {
 		throw new Error('Method not implemented.');
 	}
 	navigateTo(notebookUri: URI, sectionId: string): void {
+		throw new Error('Method not implemented.');
+	}
+}
+
+export class ClientSessionStub implements IClientSession {
+	terminated: Event<void>;
+	kernelChanged: Event<nb.IKernelChangedArgs>;
+	statusChanged: Event<nb.ISession>;
+	iopubMessage: Event<nb.IMessage>;
+	unhandledMessage: Event<nb.IMessage>;
+	propertyChanged: Event<'path' | 'name' | 'type'>;
+	kernel: nb.IKernel;
+	notebookUri: URI;
+	name: string;
+	type: string;
+	status: nb.KernelStatus;
+	isReady: boolean;
+	isInErrorState: boolean;
+	errorMessage: string;
+	ready: Promise<void>;
+	kernelChangeCompleted: Promise<void>;
+	kernelPreference: IKernelPreference;
+	kernelDisplayName: string;
+	cachedKernelSpec: nb.IKernelSpec;
+	initialize(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	changeKernel(options: nb.IKernelSpec, oldKernel?: nb.IKernel): Promise<nb.IKernel> {
+		throw new Error('Method not implemented.');
+	}
+	configureKernel(options: nb.IKernelSpec): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	shutdown(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	selectKernel(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	restart(): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+	setPath(path: string): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	setName(name: string): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	setType(type: string): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	updateConnection(connection: IConnectionProfile): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	onKernelChanging(changeHandler: (kernel: nb.IKernelChangedArgs) => Promise<void>): void {
+		throw new Error('Method not implemented.');
+	}
+	dispose(): void {
 		throw new Error('Method not implemented.');
 	}
 }

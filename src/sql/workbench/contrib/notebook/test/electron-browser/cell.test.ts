@@ -11,9 +11,9 @@ import * as objects from 'vs/base/common/objects';
 
 import { CellTypes } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { ModelFactory } from 'sql/workbench/contrib/notebook/browser/models/modelFactory';
-import { NotebookModelStub } from './common';
+import { NotebookModelStub, ClientSessionStub } from './common';
 import { EmptyFuture } from 'sql/workbench/services/notebook/browser/sessionManager';
-import { ICellModel, ICellModelOptions } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel, ICellModelOptions, IClientSession } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -683,8 +683,12 @@ suite('Cell Model', function (): void {
 
 	suite('Run Cell tests', function (): void {
 		let cellOptions: ICellModelOptions;
+		let mockClientSession: TypeMoq.Mock<IClientSession>;
 
 		setup(() => {
+			mockClientSession = TypeMoq.Mock.ofType<IClientSession>(ClientSessionStub);
+			mockClientSession.setup(s => s.isReady).returns(() => true);
+
 			let notebookModel = new NotebookModelStub({
 				name: 'python',
 				version: '',
@@ -694,6 +698,7 @@ suite('Cell Model', function (): void {
 
 			mockNotebookModel.setup(m => m.updateActiveCell(TypeMoq.It.isAny()));
 			mockNotebookModel.setup(m => m.requestConnection()).returns(() => Promise.resolve(true));
+			mockNotebookModel.setup(m => m.clientSession).returns(() => mockClientSession.object);
 
 			cellOptions = { notebook: mockNotebookModel.object, isTrusted: true };
 		});
@@ -708,6 +713,21 @@ suite('Cell Model', function (): void {
 			let cell = factory.createCell(cellContents, cellOptions);
 			let result = await cell.runCell();
 			assert.strictEqual(result, false, 'Markdown cells should not be runnable');
+		});
+
+		test('No Kernel provided', async function (): Promise<void> {
+			mockClientSession.setup(s => s.kernel).returns(() => undefined);
+
+			let cellContents: nb.ICellContents = {
+				cell_type: CellTypes.Code,
+				source: '1+1',
+				outputs: [],
+				metadata: { language: 'python' },
+				execution_count: 1
+			};
+			let cell = factory.createCell(cellContents, cellOptions);
+			let result = await cell.runCell();
+			assert.strictEqual(result, false, 'Runing code cell without a kernel should fail');
 		});
 	});
 });
