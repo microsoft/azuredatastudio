@@ -1,0 +1,7 @@
+{
+	"sqlDatabaseProjects.displayName": "Database Projects",
+	"sqlDatabaseProjects.description": "View and run previously executed queries",
+
+	"sqlDatabaseProjects.new": "New Database Project",
+	"sqlDatabaseProjects.open": "Open Database Project"
+}
