@@ -350,22 +350,22 @@ export class FutureStub implements nb.IFuture {
 		return this._done;
 	}
 	setReplyHandler(handler: nb.MessageHandler<nb.IShellMessage>): void {
-		throw new Error('Method not implemented.');
+		return;
 	}
 	setStdInHandler(handler: nb.MessageHandler<nb.IStdinMessage>): void {
-		throw new Error('Method not implemented.');
+		return;
 	}
 	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {
-		throw new Error('Method not implemented.');
+		return;
 	}
 	registerMessageHook(hook: (msg: nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
-		throw new Error('Method not implemented.');
+		return;
 	}
 	removeMessageHook(hook: (msg: nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
-		throw new Error('Method not implemented.');
+		return;
 	}
 	sendInputReply(content: nb.IInputReply): void {
-		throw new Error('Method not implemented.');
+		return;
 	}
 	dispose() {
 		return;

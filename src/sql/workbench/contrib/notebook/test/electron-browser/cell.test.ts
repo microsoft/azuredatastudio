@@ -688,6 +688,20 @@ suite('Cell Model', function (): void {
 		let mockNotebookModel: TypeMoq.Mock<INotebookModel>;
 		let mockKernel: TypeMoq.Mock<nb.IKernel>;
 
+		const codeCellContents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: '1+1',
+			outputs: [],
+			metadata: { language: 'python' },
+			execution_count: 1
+		};
+		const markdownCellContents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: 'some *markdown*',
+			outputs: [],
+			metadata: { language: 'python' }
+		};
+
 		setup(() => {
 			mockKernel = TypeMoq.Mock.ofType<nb.IKernel>(KernelStub);
 
@@ -703,13 +717,7 @@ suite('Cell Model', function (): void {
 		});
 
 		test('Run markdown cell', async function (): Promise<void> {
-			let cellContents: nb.ICellContents = {
-				cell_type: CellTypes.Markdown,
-				source: 'some *markdown*',
-				outputs: [],
-				metadata: { language: 'python' }
-			};
-			let cell = factory.createCell(cellContents, cellOptions);
+			let cell = factory.createCell(markdownCellContents, cellOptions);
 			let result = await cell.runCell();
 			assert.strictEqual(result, false, 'Markdown cells should not be runnable');
 		});
@@ -717,19 +725,21 @@ suite('Cell Model', function (): void {
 		test('No Kernel provided', async function (): Promise<void> {
 			mockClientSession.setup(s => s.kernel).returns(() => null);
 
-			let cellContents: nb.ICellContents = {
-				cell_type: CellTypes.Code,
-				source: '1+1',
-				outputs: [],
-				metadata: { language: 'python' },
-				execution_count: 1
-			};
-			let cell = factory.createCell(cellContents, cellOptions);
+			let cell = factory.createCell(codeCellContents, cellOptions);
 			let result = await cell.runCell();
 			assert.strictEqual(result, false, 'Runing code cell without a kernel should fail');
 		});
 
-		test('Normal execution', async function (): Promise<void> {
+		test('Kernel fails to connect', async function (): Promise<void> {
+			mockKernel.setup(k => k.requiresConnection).returns(() => true);
+			mockNotebookModel.setup(m => m.requestConnection()).returns(() => Promise.resolve(false));
+
+			let cell = factory.createCell(codeCellContents, cellOptions);
+			let result = await cell.runCell();
+			assert.strictEqual(result, false, 'Runing code cell should fail after connection fails');
+		});
+
+		test('Normal execute', async function (): Promise<void> {
 			mockKernel.setup(k => k.requiresConnection).returns(() => false);
 			mockKernel.setup(k => k.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
 				let replyMsg: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg>{
@@ -742,16 +752,45 @@ suite('Cell Model', function (): void {
 				return new FutureStub(undefined, Promise.resolve(replyMsg));
 			});
 
-			let cellContents: nb.ICellContents = {
-				cell_type: CellTypes.Code,
-				source: '1+1',
-				outputs: [],
-				metadata: { language: 'python' },
-				execution_count: 1
-			};
-			let cell = factory.createCell(cellContents, cellOptions);
+			let cell = factory.createCell(codeCellContents, cellOptions);
 			let result = await cell.runCell();
-			assert.strictEqual(result, true, 'Runing normal code cell should succeed');
+			assert.strictEqual(result, true, 'Running normal code cell should succeed');
+		});
+
+		test('Execute returns error status', async function (): Promise<void> {
+			mockKernel.setup(k => k.requiresConnection).returns(() => false);
+			mockKernel.setup(k => k.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+				let replyMsg: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg>{
+					content: <nb.IExecuteReply>{
+						execution_count: 1,
+						status: 'error'
+					}
+				};
+
+				return new FutureStub(undefined, Promise.resolve(replyMsg));
+			});
+
+			let cell = factory.createCell(codeCellContents, cellOptions);
+			let result = await cell.runCell();
+			assert.strictEqual(result, false, 'Run cell should fail if execute returns error status');
+		});
+
+		test('Execute returns abort status', async function (): Promise<void> {
+			mockKernel.setup(k => k.requiresConnection).returns(() => false);
+			mockKernel.setup(k => k.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+				let replyMsg: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg>{
+					content: <nb.IExecuteReply>{
+						execution_count: 1,
+						status: 'abort'
+					}
+				};
+
+				return new FutureStub(undefined, Promise.resolve(replyMsg));
+			});
+
+			let cell = factory.createCell(codeCellContents, cellOptions);
+			let result = await cell.runCell();
+			assert.strictEqual(result, false, 'Run cell should fail if execute returns abort status');
 		});
 	});
 });
