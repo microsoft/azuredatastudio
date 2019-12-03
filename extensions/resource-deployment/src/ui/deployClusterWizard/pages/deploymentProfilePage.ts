@@ -165,13 +165,13 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 			this._profiles = await this.wizard.azdataService.getDeploymentProfiles(this.wizard.deploymentType);
 			const defaultProfile: string = this.getDefaultProfile();
 			this._cardContainer!.cards = this._profiles.map(profile => this.createProfileCard(profile));
+			this._loadingComponent!.loading = false;
 			this._cardContainer!.selectedCardId = defaultProfile;
 		} catch (error) {
 			this.wizard.wizardObject.message = {
 				level: azdata.window.MessageLevel.Error,
 				text: localize('deployCluster.loadProfileFailed', "Failed to load the deployment profiles: {0}", error.message)
 			};
-		} finally {
 			this._loadingComponent!.loading = false;
 		}
 	}
