@@ -38,6 +38,13 @@ steps:
     cp $(Agent.TempDirectory)/vsix/* extensions/integration-tests/extensionInstallers
   displayName: Copy Extension Installers
 
+- task: AzureKeyVault@1
+  displayName: 'Azure Key Vault: SqlToolsSecretStore'
+  inputs:
+    azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+    KeyVaultName: SqlToolsSecretStore
+    SecretsFilter: 'ads-integration-test-azure-server,ads-integration-test-azure-server-password,ads-integration-test-azure-server-username,ads-integration-test-bdc-server,ads-integration-test-bdc-server-password,ads-integration-test-bdc-server-username,ads-integration-test-standalone-server,ads-integration-test-standalone-server-password,ads-integration-test-standalone-server-username'
+
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
     $ErrorActionPreference = "Stop"
@@ -48,6 +55,16 @@ steps:
   continueOnError: true
   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
   displayName: Run stable tests
+  env:
+    BDC_BACKEND_USERNAME: $(ads-integration-test-bdc-server-username)
+    BDC_BACKEND_PWD: $(ads-integration-test-bdc-server-password)
+    BDC_BACKEND_HOSTNAME: $(ads-integration-test-bdc-server)
+    STANDALONE_SQL_USERNAME: $(ads-integration-test-standalone-server-username)
+    STANDALONE_SQL_PWD: $(ads-integration-test-standalone-server-password)
+    STANDALONE_SQL: $(ads-integration-test-standalone-server)
+    AZURE_SQL_USERNAME: $(ads-integration-test-azure-server-username)
+    AZURE_SQL_PWD: $(ads-integration-test-azure-server-password)
+    AZURE_SQL: $(ads-integration-test-azure-server)
 
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
@@ -62,6 +79,15 @@ steps:
   env:
     ADS_TEST_GREP: (.*@REL@|integration test setup)
     ADS_TEST_INVERT_GREP: 0
+    BDC_BACKEND_USERNAME: $(ads-integration-test-bdc-server-username)
+    BDC_BACKEND_PWD: $(ads-integration-test-bdc-server-password)
+    BDC_BACKEND_HOSTNAME: $(ads-integration-test-bdc-server)
+    STANDALONE_SQL_USERNAME: $(ads-integration-test-standalone-server-username)
+    STANDALONE_SQL_PWD: $(ads-integration-test-standalone-server-password)
+    STANDALONE_SQL: $(ads-integration-test-standalone-server)
+    AZURE_SQL_USERNAME: $(ads-integration-test-azure-server-username)
+    AZURE_SQL_PWD: $(ads-integration-test-azure-server-password)
+    AZURE_SQL: $(ads-integration-test-azure-server)
 
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
@@ -73,3 +99,13 @@ steps:
   continueOnError: true
   condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
   displayName: Run unstable integration tests
+  env:
+    BDC_BACKEND_USERNAME: $(ads-integration-test-bdc-server-username)
+    BDC_BACKEND_PWD: $(ads-integration-test-bdc-server-password)
+    BDC_BACKEND_HOSTNAME: $(ads-integration-test-bdc-server)
+    STANDALONE_SQL_USERNAME: $(ads-integration-test-standalone-server-username)
+    STANDALONE_SQL_PWD: $(ads-integration-test-standalone-server-password)
+    STANDALONE_SQL: $(ads-integration-test-standalone-server)
+    AZURE_SQL_USERNAME: $(ads-integration-test-azure-server-username)
+    AZURE_SQL_PWD: $(ads-integration-test-azure-server-password)
+    AZURE_SQL: $(ads-integration-test-azure-server)

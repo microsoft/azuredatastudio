@@ -57,12 +57,12 @@ export class ScriptAction extends Action {
 		super(id, label);
 	}
 
-	public run(element: TaskNode): Promise<boolean> {
+	public async run(element: TaskNode): Promise<boolean> {
 		if (element instanceof TaskNode) {
 			if (element.script && element.script !== '') {
 				this._queryEditorService.newSqlEditor(element.script);
 			}
 		}
-		return Promise.resolve(true);
+		return true;
 	}
 }
