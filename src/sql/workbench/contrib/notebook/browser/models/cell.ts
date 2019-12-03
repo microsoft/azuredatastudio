@@ -91,10 +91,6 @@ export class CellModel implements ICellModel {
 		return this._onOutputsChanged.event;
 	}
 
-	public get onCellModeChanged(): Event<boolean> {
-		return this._onCellModeChanged.event;
-	}
-
 	public get isEditMode(): boolean {
 		return this._isEditMode;
 	}
@@ -191,7 +187,7 @@ export class CellModel implements ICellModel {
 	}
 
 	public get notebookModel(): NotebookModel {
-		return <NotebookModel>this._options.notebook;
+		return this._options && <NotebookModel>this._options.notebook;
 	}
 
 	public set cellUri(value: URI) {

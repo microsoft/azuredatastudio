@@ -22,6 +22,7 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { startsWith } from 'vs/base/common/strings';
 import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
+import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 
 let instantiationService: IInstantiationService;
 
@@ -601,29 +602,48 @@ suite('Cell Model', function (): void {
 			metadata: { language: 'python' },
 			execution_count: 1
 		};
-
 		let cell = factory.createCell(cellData, undefined);
-		assert.strictEqual(cell.trustedMode, false, 'Cell should not be trusted by default');
 
+		assert.strictEqual(cell.trustedMode, false, 'Cell should not be trusted by default');
 		cell.trustedMode = true;
 		assert.strictEqual(cell.trustedMode, true, 'Cell should be trusted after manually setting trustedMode');
 
 		assert.strictEqual(cell.isEditMode, true, 'Code cells should be editable by default');
-
 		cell.isEditMode = false;
 		assert.strictEqual(cell.isEditMode, false, 'Cell should not be editable after manually setting isEditMode');
 
 		cell.hover = true;
-		assert.strictEqual(cell.hover, true, 'Cell should be hovered after manually setting hover');
+		assert.strictEqual(cell.hover, true, 'Cell should be hovered after manually setting hover=true');
+		cell.hover = false;
+		assert.strictEqual(cell.hover, false, 'Cell should be hovered after manually setting hover=false');
 
 		let cellUri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${cell.id}` });
 		assert.deepStrictEqual(cell.cellUri, cellUri);
-
 		cellUri = URI.from({ scheme: Schemas.untitled, path: `test-uri-12345` });
 		cell.cellUri = cellUri;
 		assert.deepStrictEqual(cell.cellUri, cellUri);
 
 		assert.strictEqual(cell.language, 'python');
+
+		assert.strictEqual(cell.notebookModel, undefined);
+
+		assert.strictEqual(cell.modelContentChangedEvent, undefined);
+		let contentChangedEvent = <IModelContentChangedEvent>{};
+		cell.modelContentChangedEvent = contentChangedEvent;
+		assert.strictEqual(cell.modelContentChangedEvent, contentChangedEvent);
+
+		assert.strictEqual(cell.stdInVisible, false, 'Cell stdin should not be visible by default');
+		cell.stdInVisible = true;
+		assert.strictEqual(cell.stdInVisible, true, 'Cell stdin should not be visible by default');
+
+		cell.loaded = true;
+		assert.strictEqual(cell.loaded, true, 'Cell should be loaded after manually setting loaded=true');
+		cell.loaded = false;
+		assert.strictEqual(cell.loaded, false, 'Cell should be loaded after manually setting loaded=false');
+
+		assert.ok(cell.onExecutionStateChange !== undefined, 'onExecutionStateChange event should not be undefined');
+
+		assert.ok(cell.onLoaded !== undefined, 'onLoaded event should not be undefined');
 
 		// Markdown cell
 		cellData = {
@@ -632,13 +652,19 @@ suite('Cell Model', function (): void {
 			outputs: [],
 			metadata: { language: 'python' }
 		};
+		let notebookModel = new NotebookModelStub({
+			name: 'python',
+			version: '',
+			mimetype: ''
+		});
 
-		let cellOptions = <ICellModelOptions>{ isTrusted: true };
+		let cellOptions: ICellModelOptions = { notebook: notebookModel, isTrusted: true };
 		cell = factory.createCell(cellData, cellOptions);
 
 		assert.strictEqual(cell.isEditMode, false, 'Markdown cells should not be editable by default');
 		assert.strictEqual(cell.trustedMode, true, 'Cell should be trusted when providing isTrusted=true in the cell options');
 		assert.strictEqual(cell.language, 'markdown');
+		assert.strictEqual(cell.notebookModel, notebookModel);
 	});
 
 	test('Equals test', async function (): Promise<void> {
