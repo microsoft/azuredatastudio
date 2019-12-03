@@ -59,7 +59,7 @@ export class BackupUiService implements IBackupUiService {
 		}
 	}
 
-	public showBackupDialog(connection: IConnectionProfile): Promise<void> {
+	public async showBackupDialog(connection: IConnectionProfile): Promise<void> {
 		let self = this;
 		self._connectionUri = ConnectionUtils.generateUri(connection);
 		self._currentProvider = connection.providerName;
@@ -79,31 +79,27 @@ export class BackupUiService implements IBackupUiService {
 		}
 
 		let backupOptions = this.getOptions(this._currentProvider);
-		return new Promise<void>((resolve) => {
-			let uri = this._connectionManagementService.getConnectionUri(connection)
-				+ ProviderConnectionInfo.idSeparator
-				+ ConnectionUtils.ConnectionUriBackupIdAttributeName
-				+ ProviderConnectionInfo.nameValueSeparator
-				+ BackupUiService._connectionUniqueId;
+		let uri = this._connectionManagementService.getConnectionUri(connection)
+			+ ProviderConnectionInfo.idSeparator
+			+ ConnectionUtils.ConnectionUriBackupIdAttributeName
+			+ ProviderConnectionInfo.nameValueSeparator
+			+ BackupUiService._connectionUniqueId;
 
-			this._connectionUri = uri;
+		this._connectionUri = uri;
 
-			BackupUiService._connectionUniqueId++;
+		BackupUiService._connectionUniqueId++;
 
-			// Create connection if needed
-			if (!this._connectionManagementService.isConnected(uri)) {
-				this._connectionManagementService.connect(connection, uri).then(() => {
-					this._onShowBackupEvent.fire({ connection: connection, ownerUri: uri });
-				});
-			}
+		if (backupOptions) {
+			(backupDialog as OptionsDialog).open(backupOptions, self._optionValues);
+		} else {
+			(backupDialog as BackupDialog).open(connection);
+		}
 
-			if (backupOptions) {
-				(backupDialog as OptionsDialog).open(backupOptions, self._optionValues);
-			} else {
-				(backupDialog as BackupDialog).open(connection);
-			}
-			resolve(void 0);
-		});
+		// Create connection if needed
+		if (!this._connectionManagementService.isConnected(uri)) {
+			await this._connectionManagementService.connect(connection, uri);
+			this._onShowBackupEvent.fire({ connection: connection, ownerUri: uri });
+		}
 	}
 
 	public onShowBackupDialog() {
