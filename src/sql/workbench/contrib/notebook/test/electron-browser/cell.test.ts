@@ -697,7 +697,6 @@ suite('Cell Model', function (): void {
 			mockNotebookModel = TypeMoq.Mock.ofType<INotebookModel>(NotebookModelStub);
 			mockNotebookModel.setup(m => m.clientSession).returns(() => mockClientSession.object);
 			mockNotebookModel.setup(m => m.updateActiveCell(TypeMoq.It.isAny()));
-			mockNotebookModel.setup(m => m.requestConnection()).returns(() => Promise.resolve(true));
 
 			cellOptions = { notebook: mockNotebookModel.object, isTrusted: true };
 		});
@@ -729,7 +728,7 @@ suite('Cell Model', function (): void {
 			assert.strictEqual(result, false, 'Runing code cell without a kernel should fail');
 		});
 
-		test('Kernel fails to connect', async function (): Promise<void> {
+		test('Fails to connect', async function (): Promise<void> {
 			mockKernel.setup(k => k.requiresConnection).returns(() => true);
 			mockNotebookModel.setup(m => m.requestConnection()).returns(() => Promise.resolve(false));
 
