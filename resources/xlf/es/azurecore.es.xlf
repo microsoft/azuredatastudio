@@ -200,4 +200,20 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider" source-language="en" target-language="es" datatype="plaintext">
+    <body>
+      <trans-unit id="azure.resource.providers.sqlInstanceContainerLabel">
+        <source xml:lang="en">SQL Managed Instances</source>
+        <target state="translated">Instancias administradas de SQL</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider" source-language="en" target-language="es" datatype="plaintext">
+    <body>
+      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel">
+        <source xml:lang="en">Azure Database for PostgreSQL Servers</source>
+        <target state="translated">Servidores de Azure Database for PostgreSQL</target>
+      </trans-unit>
+    </body>
+  </file>
 </xliff>
