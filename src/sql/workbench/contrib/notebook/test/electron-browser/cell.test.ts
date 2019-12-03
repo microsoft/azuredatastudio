@@ -11,7 +11,7 @@ import * as objects from 'vs/base/common/objects';
 
 import { CellTypes } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { ModelFactory } from 'sql/workbench/contrib/notebook/browser/models/modelFactory';
-import { NotebookModelStub, ClientSessionStub, KernelStub } from './common';
+import { NotebookModelStub, ClientSessionStub, KernelStub, FutureStub } from './common';
 import { EmptyFuture } from 'sql/workbench/services/notebook/browser/sessionManager';
 import { ICellModel, ICellModelOptions, IClientSession, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
@@ -23,6 +23,7 @@ import { startsWith } from 'vs/base/common/strings';
 import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
+import { Promise } from 'es6-promise';
 
 let instantiationService: IInstantiationService;
 
@@ -728,9 +729,18 @@ suite('Cell Model', function (): void {
 			assert.strictEqual(result, false, 'Runing code cell without a kernel should fail');
 		});
 
-		test('Fails to connect', async function (): Promise<void> {
-			mockKernel.setup(k => k.requiresConnection).returns(() => true);
-			mockNotebookModel.setup(m => m.requestConnection()).returns(() => Promise.resolve(false));
+		test('Normal execution', async function (): Promise<void> {
+			mockKernel.setup(k => k.requiresConnection).returns(() => false);
+			mockKernel.setup(k => k.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+				let replyMsg: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg>{
+					content: <nb.IExecuteReply>{
+						execution_count: 1,
+						status: 'ok'
+					}
+				};
+
+				return new FutureStub(undefined, Promise.resolve(replyMsg));
+			});
 
 			let cellContents: nb.ICellContents = {
 				cell_type: CellTypes.Code,
@@ -741,7 +751,7 @@ suite('Cell Model', function (): void {
 			};
 			let cell = factory.createCell(cellContents, cellOptions);
 			let result = await cell.runCell();
-			assert.strictEqual(result, false, 'Runing code cell should fail after connection fails');
+			assert.strictEqual(result, true, 'Runing normal code cell should succeed');
 		});
 	});
 });

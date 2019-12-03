@@ -339,3 +339,35 @@ export class KernelStub implements nb.IKernel {
 		throw new Error('Method not implemented.');
 	}
 }
+
+export class FutureStub implements nb.IFuture {
+	constructor(private _msg: nb.IMessage, private _done: Thenable<nb.IShellMessage>) {
+	}
+	get msg(): nb.IMessage {
+		return this._msg;
+	}
+	get done(): Thenable<nb.IShellMessage> {
+		return this._done;
+	}
+	setReplyHandler(handler: nb.MessageHandler<nb.IShellMessage>): void {
+		throw new Error('Method not implemented.');
+	}
+	setStdInHandler(handler: nb.MessageHandler<nb.IStdinMessage>): void {
+		throw new Error('Method not implemented.');
+	}
+	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {
+		throw new Error('Method not implemented.');
+	}
+	registerMessageHook(hook: (msg: nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
+		throw new Error('Method not implemented.');
+	}
+	removeMessageHook(hook: (msg: nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
+		throw new Error('Method not implemented.');
+	}
+	sendInputReply(content: nb.IInputReply): void {
+		throw new Error('Method not implemented.');
+	}
+	dispose() {
+		return;
+	}
+}
