@@ -680,4 +680,34 @@ suite('Cell Model', function (): void {
 		result = cell.equals(otherCell);
 		assert.strictEqual(result, false, 'Cell should not be equal to a different cell');
 	});
+
+	suite('Run Cell tests', function (): void {
+		let cellOptions: ICellModelOptions;
+
+		setup(() => {
+			let notebookModel = new NotebookModelStub({
+				name: 'python',
+				version: '',
+				mimetype: ''
+			});
+			let mockNotebookModel = TypeMoq.Mock.ofInstance(notebookModel);
+
+			mockNotebookModel.setup(m => m.updateActiveCell(TypeMoq.It.isAny()));
+			mockNotebookModel.setup(m => m.requestConnection()).returns(() => Promise.resolve(true));
+
+			cellOptions = { notebook: mockNotebookModel.object, isTrusted: true };
+		});
+
+		test('Run markdown cell', async function (): Promise<void> {
+			let cellContents: nb.ICellContents = {
+				cell_type: CellTypes.Markdown,
+				source: 'some *markdown*',
+				outputs: [],
+				metadata: { language: 'python' }
+			};
+			let cell = factory.createCell(cellContents, cellOptions);
+			let result = await cell.runCell();
+			assert.strictEqual(result, false, 'Markdown cells should not be runnable');
+		});
+	});
 });

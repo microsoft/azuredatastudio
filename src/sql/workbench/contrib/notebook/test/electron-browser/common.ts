@@ -15,6 +15,9 @@ import { URI } from 'vs/workbench/workbench.web.api';
 import { RenderMimeRegistry } from 'sql/workbench/contrib/notebook/browser/outputs/registry';
 
 export class NotebookModelStub implements INotebookModel {
+	requestConnection(): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
 	constructor(private _languageInfo?: nb.ILanguageInfo) {
 	}
 	public trustedMode: boolean;

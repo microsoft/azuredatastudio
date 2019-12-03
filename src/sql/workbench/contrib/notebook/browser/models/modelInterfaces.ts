@@ -418,6 +418,8 @@ export interface INotebookModel {
 	 * @param cell New active cell
 	 */
 	updateActiveCell(cell: ICellModel);
+
+	requestConnection(): Promise<boolean>;
 }
 
 export interface NotebookContentChange {
