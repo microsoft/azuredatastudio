@@ -892,15 +892,15 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreColumnCollation">
         <source xml:lang="en">Specifies whether differences in the column collations should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Specifica se le differenze nelle regole di confronto colonna devono essere ignorate o aggiornate quando si pubblicano aggiornamenti in un database.</target>
+        <target state="translated">Specifica se le differenze nelle regole di confronto colonna devono essere ignorate o aggiornate quando si esegue la pubblicazione in un database.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreAuthorizer">
         <source xml:lang="en">Specifies whether differences in the Authorizer should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Specifica se le differenze nel provider di autorizzazioni devono essere ignorate o aggiornate quando si pubblicano aggiornamenti in un database.</target>
+        <target state="translated">Specifica se le differenze nel provider di autorizzazioni devono essere ignorate o aggiornate quando si esegue la pubblicazione in un database.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreAnsiNulls">
         <source xml:lang="en">Specifies whether differences in the ANSI NULLS setting should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Specifica se le differenze nell'impostazione ANSI NULLS devono essere ignorate o aggiornate quando si pubblicano aggiornamenti in un database.</target>
+        <target state="translated">Specifica se le differenze nell'impostazione ANSI NULLS devono essere ignorate o aggiornate quando si esegue la pubblicazione in un database.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.GenerateSmartDefaults">
         <source xml:lang="en">Automatically provides a default value when updating a table that contains data with a column that does not allow null values.</source>
