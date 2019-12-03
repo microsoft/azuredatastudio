@@ -226,6 +226,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
+	radioCardGroup(): azdata.ComponentBuilder<azdata.RadioCardGroupComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.RadioCardGroupComponent> = this.getComponentBuilder(new RadioCardGroupComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	getComponentBuilder<T extends azdata.Component>(component: ComponentWrapper, id: string): ComponentBuilderImpl<T> {
 		let componentBuilder: ComponentBuilderImpl<T> = new ComponentBuilderImpl<T>(component);
 		this._componentBuilders.set(id, componentBuilder);
@@ -1368,6 +1375,46 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
+
+	protected notifyPropertyChanged(): Thenable<void> {
+		return this._proxy.$setProperties(this._handle, this._id, this.getPropertiesForMainThread());
+	}
+
+	public toComponentShape(): IComponentShape {
+		// Overridden to ensure we send the correct properties mapping.
+		return <IComponentShape>{
+			id: this.id,
+			type: this.type,
+			layout: this.layout,
+			properties: this.getPropertiesForMainThread(),
+			itemConfigs: this.itemConfigs ? this.itemConfigs.map<IItemConfig>(item => item.toIItemConfig()) : undefined
+		};
+	}
+
+	/**
+	 * Gets the properties map to send to the main thread.
+	 */
+	private getPropertiesForMainThread(): { [key: string]: string } {
+		// This is necessary because we can't send the actual ComponentWrapper objects
+		// and so map them into their IDs instead. We don't want to update the actual
+		// data property though since the caller would still expect that to contain
+		// the Component objects they created
+		const properties = assign({}, this.properties);
+		if (properties.data) {
+			properties.data = properties.data.map((row: any[]) => row.map(cell => {
+				if (cell instanceof ComponentWrapper) {
+					// First ensure that we register the component using addItem
+					// such that it gets added to the ModelStore. We don't want to
+					// make the table component an actual container since that exposes
+					// a lot of functionality we don't need.
+					this.addItem(cell);
+					return cell.id;
+				}
+				return cell;
+			}));
+		}
+		return properties;
+	}
 }
 
 class ListBoxWrapper extends ComponentWrapper implements azdata.ListBoxComponent {
@@ -1547,6 +1594,66 @@ class HyperlinkComponentWrapper extends ComponentWrapper implements azdata.Hyper
 
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
+	}
+}
+
+class RadioCardGroupComponentWrapper extends ComponentWrapper implements azdata.RadioCardGroupComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.RadioCardGroup, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+	}
+
+	public get iconWidth(): string | undefined {
+		return this.properties['iconWidth'];
+	}
+
+	public set iconWidth(v: string | undefined) {
+		this.setProperty('iconWidth', v);
+	}
+
+	public get iconHeight(): string | undefined {
+		return this.properties['iconHeight'];
+	}
+
+	public set iconHeight(v: string | undefined) {
+		this.setProperty('iconHeight', v);
+	}
+
+	public get cardWidth(): string | undefined {
+		return this.properties['cardWidth'];
+	}
+
+	public set cardWidth(v: string | undefined) {
+		this.setProperty('cardWidth', v);
+	}
+
+	public get cardHeight(): string | undefined {
+		return this.properties['cardHeight'];
+	}
+
+	public set cardHeight(v: string | undefined) {
+		this.setProperty('cardHeight', v);
+	}
+
+	public get cards(): azdata.RadioCard[] {
+		return this.properties['cards'];
+	}
+	public set cards(v: azdata.RadioCard[]) {
+		this.setProperty('cards', v);
+	}
+
+	public get selectedCardId(): string | undefined {
+		return this.properties['selectedCardId'];
+	}
+
+	public set selectedCardId(v: string | undefined) {
+		this.setProperty('selectedCardId', v);
+	}
+
+	public get onSelectionChanged(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
 }

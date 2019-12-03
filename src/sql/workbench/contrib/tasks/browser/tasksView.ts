@@ -97,7 +97,7 @@ export class TaskHistoryView extends Disposable {
 	}
 
 	private updateTask(task: TaskNode): void {
-		this._tree.refresh(task);
+		this._tree.refresh(task).catch(err => errors.onUnexpectedError(err));
 	}
 
 	public refreshTree(): void {

@@ -86,4 +86,80 @@ declare module 'azdata' {
 		 */
 		onDidClick: vscode.Event<any>;
 	}
+
+	export interface DeclarativeTableColumn {
+		headerCssStyles?: { [key: string]: string };
+		rowCssStyles?: { [key: string]: string };
+		ariaLabel?: string;
+	}
+
+	export enum DeclarativeDataType {
+		component = 'component'
+	}
+
+	/*
+	 * Add optional azureAccount for connectionWidget.
+	 */
+	export interface IConnectionProfile extends ConnectionInfo {
+		azureAccount?: string;
+	}
+
+	/*
+	 * Add optional per-OS default value.
+	 */
+	export interface DefaultValueOsOverride {
+		os: string;
+
+		defaultValueOverride: string;
+	}
+
+	export interface ConnectionOption {
+		defaultValueOsOverrides?: DefaultValueOsOverride[];
+	}
+
+	/*
+	 * Add OssRdbms for sqlops AzureResource.
+	 */
+	export enum AzureResource {
+		OssRdbms = 2
+	}
+
+	export interface ModelBuilder {
+		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent>;
+	}
+
+	export interface RadioCard {
+		id: string;
+		label: string;
+		descriptions?: RadioCardDescription[];
+		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+	}
+
+	export interface RadioCardDescription {
+		ariaLabel: string;
+		labelHeader: string;
+		contents: RadioCardLabelValuePair[];
+		valueHeader?: string;
+	}
+
+	export interface RadioCardLabelValuePair {
+		label: string;
+		value?: string;
+	}
+
+	export interface RadioCardGroupComponentProperties extends ComponentProperties, TitledComponentProperties {
+		cards: RadioCard[];
+		cardWidth: string;
+		cardHeight: string;
+		iconWidth?: string;
+		iconHeight?: string;
+		selectedCardId?: string;
+	}
+
+	export interface RadioCardGroupComponent extends Component, RadioCardGroupComponentProperties {
+		onSelectionChanged: vscode.Event<any>;
+	}
+
+	export interface DeclarativeTableProperties extends ComponentProperties {
+	}
 }

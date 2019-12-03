@@ -74,13 +74,28 @@ steps:
 
   - script: |
       set -e
-      yarn gulp vscode-linux-x64
+      yarn gulp install-sqltoolsservice
+    displayName: Install sqltoolsservice
+
+  - script: |
+      set -e
+      yarn gulp install-ssmsmin
+    displayName: Install ssmsmin
+
+  - script: |
+      set -e
+      yarn gulp vscode-linux-x64-min
     displayName: Build
 
   - script: |
       set -e
-      yarn gulp install-sqltoolsservice
-    displayName: Install sqltoolsservice
+      yarn gulp compile-extensions
+    displayName: Compile Extensions
+
+  - script: |
+      set -e
+      yarn gulp package-external-extensions
+    displayName: Package External extensions
 
   - task: ArchiveFiles@2 # WHY ARE WE DOING THIS?
     displayName: 'Archive build scripts source'
@@ -135,10 +150,15 @@ steps:
       Contents: '*.rpm'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
+  - task: CopyFiles@2
+    displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/vsix'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)/../vsix'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/vsix'
+
   - script: | # WHY ARE WE DOING THIS?
       set -e
-      BUILD="$(Build.SourcesDirectory)/../azuredatastudio-linux-x64"
-      PACKAGEJSON="$BUILD/resources/app/package.json"
+      PACKAGEJSON="$(Build.SourcesDirectory)/package.json"
       VERSION=$(node -p "require(\"$PACKAGEJSON\").version")
       COMMIT_ID=$(git rev-parse HEAD)
 

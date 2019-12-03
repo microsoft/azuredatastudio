@@ -75,6 +75,11 @@ interface Settings {
 	sqlResource?: Resource;
 
 	/**
+	 * Information that describes the OSS RDBMS resource
+	 */
+	ossRdbmsResource?: Resource;
+
+	/**
 	 * A list of tenant IDs to authenticate against. If defined, then these IDs will be used
 	 * instead of querying the tenants endpoint of the armResource
 	 */
@@ -122,6 +127,7 @@ export interface AzureAccountProviderMetadata extends azdata.AccountProviderMeta
  * Properties specific to an Azure account
  */
 interface AzureAccountProperties {
+	providerSettings: AzureAccountProviderMetadata;
 	/**
 	 * Whether or not the account is a Microsoft account
 	 */
@@ -146,7 +152,7 @@ export interface AzureAccount extends azdata.Account {
 /**
  * Token returned from a request for an access token
  */
-interface AzureAccountSecurityToken {
+export interface AzureAccountSecurityToken {
 	/**
 	 * Access token, itself
 	 */

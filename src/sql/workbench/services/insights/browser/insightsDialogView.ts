@@ -42,6 +42,7 @@ import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRe
 import { TaskRegistry } from 'sql/platform/tasks/browser/tasksRegistry';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -353,7 +354,7 @@ export class InsightsDialogView extends Modal {
 							return;
 						}
 						let context = this.topInsightContext(resource);
-						this._commandService.executeCommand(action, context);
+						this._commandService.executeCommand(action, context).catch(err => onUnexpectedError(err));
 					}, 'left');
 					button.enabled = false;
 					this._taskButtonDisposables.push(button);

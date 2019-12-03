@@ -14,6 +14,7 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Registry } from 'vs/platform/registry/common/platform';
+import * as path from 'vs/base/common/path';
 
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
 
@@ -53,6 +54,11 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 
 		if (!language) { // in the case the input doesn't have a preferred mode set we will attempt to guess the mode from the file path
 			language = this.modeService.getModeIdByFilepathOrFirstLine(editor.getResource());
+		}
+
+		if (!language) {
+			// just use the extension
+			language = path.extname(editor.getResource().toString()).slice(1); // remove the .
 		}
 
 		if (!language) {
