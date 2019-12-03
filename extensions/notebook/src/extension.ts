@@ -118,6 +118,9 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		},
 		registerPackageManager(providerId: string, packageManagerProvider: IPackageManageProvider): void {
 			controller.registerPackageManager(providerId, packageManagerProvider);
+		},
+		getPackageManagers() {
+			return controller.packageManageProviders;
 		}
 	};
 }

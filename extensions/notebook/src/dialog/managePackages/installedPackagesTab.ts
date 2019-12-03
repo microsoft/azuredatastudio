@@ -35,8 +35,9 @@ export class InstalledPackagesTab {
 
 			// TODO: only supporting single location for now. We should add a drop down for multi locations mode
 			//
+			let locationTitle = await this.dialog.model.getLocationTitle();
 			this.locationComponent = view.modelBuilder.text().withProperties({
-				value: this.dialog.model.getLocationTitle()
+				value: locationTitle
 			}).component();
 
 			let dropdownValues = this.dialog.model.getPackageTypes().map(x => {

@@ -197,7 +197,9 @@ describe('Manage Package Providers', () => {
 				getInstalledCondaPackages: () => { return Promise.resolve([]); },
 				uninstallCondaPackages: (packages: PythonPkgDetails[]) => { return Promise.resolve(); },
 				executeBufferedCommand: (command: string) => { return Promise.resolve(''); },
+				executeStreamedCommand: (command: string) => { return Promise.resolve(); },
 				getCondaExePath: () => { return ''; },
+				pythonExecutable:  '',
 				usingConda: false
 			},
 			piPyClient: {

@@ -223,6 +223,11 @@ export class JupyterController implements vscode.Disposable {
 		}
 	}
 
+	/**
+	 * Register a package provider
+	 * @param providerId Provider Id
+	 * @param packageManageProvider Provider instance
+	 */
 	public registerPackageManager(providerId: string, packageManageProvider: IPackageManageProvider): void {
 		if (packageManageProvider) {
 			if (!this._packageManageProviders.has(providerId)) {
@@ -231,6 +236,13 @@ export class JupyterController implements vscode.Disposable {
 				throw Error(`Package manager provider is already registered. provider id: ${providerId}`);
 			}
 		}
+	}
+
+	/**
+	 * Returns the list of registered providers
+	 */
+	public get packageManageProviders(): Map<string, IPackageManageProvider> {
+		return this._packageManageProviders;
 	}
 
 	private registerDefaultPackageManageProviders(): void {

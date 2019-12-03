@@ -195,7 +195,7 @@ describe('Manage Packages', () => {
 	it('changeProvider should change current provider successfully', async function (): Promise<void> {
 		let testContext1 = createContext();
 		testContext1.provider.providerId = 'providerId1';
-		testContext1.provider.getLocationTitle = () => 'location title 1';
+		testContext1.provider.getLocationTitle = () => Promise.resolve('location title 1');
 		testContext1.provider.packageTarget = {
 			location: 'location1',
 			packageType: 'package-type1'
@@ -203,7 +203,7 @@ describe('Manage Packages', () => {
 
 		let testContext2 = createContext();
 		testContext2.provider.providerId = 'providerId2';
-		testContext2.provider.getLocationTitle = () => 'location title 2';
+		testContext2.provider.getLocationTitle = () => Promise.resolve('location title 2');
 		testContext2.provider.packageTarget = {
 			location: 'location2',
 			packageType: 'package-type2'
@@ -283,7 +283,7 @@ describe('Manage Packages', () => {
 
 		let testContext2 = createContext();
 		testContext2.provider.providerId = 'providerId2';
-		testContext2.provider.getLocationTitle = () => 'location title 2';
+		testContext2.provider.getLocationTitle = () => Promise.resolve('location title 2');
 		testContext2.provider.packageTarget = {
 			location: 'location2',
 			packageType: 'package-type2'
@@ -326,7 +326,7 @@ describe('Manage Packages', () => {
 					packageType: 'package-type'
 				},
 				canUseProvider: () => { return Promise.resolve(true); },
-				getLocationTitle: () => { return 'location-title'; },
+				getLocationTitle: () => { return Promise.resolve('location-title'); },
 				installPackages:() =>  { return Promise.resolve(); },
 				uninstallPackages: (packages: IPackageDetails[]) => { return Promise.resolve(); },
 				listPackages: () => { return Promise.resolve([]); },

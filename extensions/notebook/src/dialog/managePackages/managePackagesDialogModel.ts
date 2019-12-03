@@ -238,12 +238,12 @@ export class ManagePackagesDialogModel {
 	/**
 	 * Returns the location title for current provider
 	 */
-	public getLocationTitle(): string {
+	public async getLocationTitle(): Promise<string> {
 		let provider = this.currentPackageManageProvider;
 		if (provider) {
-			return provider.getLocationTitle();
+			return await provider.getLocationTitle();
 		}
-		return undefined;
+		return Promise.resolve(undefined);
 	}
 
 	/**

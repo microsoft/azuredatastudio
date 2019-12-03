@@ -11,6 +11,7 @@
 export interface IExtensionApi {
 	getJupyterController(): IJupyterController;
 	registerPackageManager(providerId: string, packageManagerProvider: IPackageManageProvider): void;
+	getPackageManagers(): Map<string, IPackageManageProvider>;
 }
 
 export interface IJupyterController {
@@ -49,6 +50,6 @@ export interface IPackageManageProvider {
 	installPackages(package: IPackageDetails[], useMinVersion: boolean): Promise<void>;
 	uninstallPackages(package: IPackageDetails[]): Promise<void>;
 	canUseProvider(): Promise<boolean>;
-	getLocationTitle(): string;
+	getLocationTitle(): Promise<string>;
 	getPackageOverview(packageName: string): Promise<IPackageOverview>;
 }

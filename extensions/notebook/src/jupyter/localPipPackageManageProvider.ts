@@ -69,8 +69,8 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 	/**
 	 * Returns location title
 	 */
-	getLocationTitle(): string {
-		return constants.localhostName;
+	getLocationTitle(): Promise<string> {
+		return Promise.resolve(constants.localhostName);
 	}
 
 	/**

@@ -48,8 +48,10 @@ export interface IJupyterServerInstallation {
 	usingConda: boolean;
 	getCondaExePath(): string;
 	executeBufferedCommand(command: string): Promise<string>;
+	executeStreamedCommand(command: string): Promise<void>;
 	installPipPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void>;
 	uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void>;
+	pythonExecutable: string;
 }
 export class JupyterServerInstallation implements IJupyterServerInstallation {
 	public apiWrapper: ApiWrapper;
@@ -634,7 +636,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 	}
 
-	private async executeStreamedCommand(command: string): Promise<void> {
+	public async executeStreamedCommand(command: string): Promise<void> {
 		await utils.executeStreamedCommand(command, { env: this.execOptions.env }, this.outputChannel);
 	}
 
