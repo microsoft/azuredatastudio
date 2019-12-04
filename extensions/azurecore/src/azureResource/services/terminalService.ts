@@ -171,6 +171,7 @@ class AzureTerminal implements vscode.Pseudoterminal {
 		const terminalUri = terminalResult.socketUri;
 
 		if (!terminalUri) {
+			console.log(terminalUri);
 			throw new Error(terminalResult);
 		}
 
