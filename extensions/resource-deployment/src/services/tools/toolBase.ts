@@ -96,7 +96,7 @@ export abstract class ToolBase implements ITool {
 		return <string>toolStatusLocalized.get(this._status);
 	}
 
-	public get autoInstallRequired(): boolean {
+	public get autoInstallNeeded(): boolean {
 		return this.status !== ToolStatus.Installed && this.autoInstallSupported;
 	}
 
@@ -110,10 +110,6 @@ export abstract class ToolBase implements ITool {
 
 	public get isInstalling(): boolean {
 		return this.status === ToolStatus.Installing;
-	}
-
-	public get needsInstallation(): boolean {
-		return this.status !== ToolStatus.Installed;
 	}
 
 	public get storagePath(): string {
@@ -230,11 +226,9 @@ export abstract class ToolBase implements ITool {
 			if (process.env.PATH) {
 				if (!`${path.delimiter}${process.env.PATH}${path.delimiter}`.includes(`${path.delimiter}${searchPath}${path.delimiter}`)) {
 					process.env.PATH += `${path.delimiter}${searchPath}`;
-					console.log(`Appending to Path -> '${path.delimiter}${searchPath}'`);
 				}
 			} else {
 				process.env.PATH = searchPath;
-				console.log(`Setting PATH to -> '${searchPath}'`);
 			}
 		});
 	}

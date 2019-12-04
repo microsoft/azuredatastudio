@@ -83,9 +83,9 @@ export class AzdataTool extends ToolBase {
 	protected get allInstallationCommands(): Map<OsDistribution, Command[]> {
 		return new Map<OsDistribution, Command[]>([
 			[OsDistribution.debian, this.debianInstallationCommands],
-			[OsDistribution.win32, []], //this.win32InstallationCommands],
+			[OsDistribution.win32, this.win32InstallationCommands],
 			[OsDistribution.darwin, this.macOsInstallationCommands],
-			[OsDistribution.others, this.win32InstallationCommands] //, []]
+			[OsDistribution.others, []]
 		]);
 	}
 
