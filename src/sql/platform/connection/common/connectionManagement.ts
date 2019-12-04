@@ -183,7 +183,7 @@ export interface IConnectionManagementService {
 
 	getDefaultProviderId(): string;
 
-	getDedupeConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string };
+	getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string };
 
 	/**
 	 * Cancels the connection

@@ -732,9 +732,9 @@ suite('SQL ConnectionManagementService tests', () => {
 		}
 	});
 
-	test('getDedupeConnectionProvidersByNameMap should return non CMS providers', () => {
+	test('getUniqueConnectionProvidersByNameMap should return non CMS providers', () => {
 		let nameToDisplayNameMap: { [providerDisplayName: string]: string } = { 'MSSQL': 'SQL Server', 'MSSQL-CMS': 'SQL Server' };
-		let providerNames = Object.keys(connectionManagementService.getDedupeConnectionProvidersByNameMap(nameToDisplayNameMap));
+		let providerNames = Object.keys(connectionManagementService.getUniqueConnectionProvidersByNameMap(nameToDisplayNameMap));
 		assert.equal(providerNames.length, 1);
 		assert.equal(providerNames[0], 'MSSQL');
 	});

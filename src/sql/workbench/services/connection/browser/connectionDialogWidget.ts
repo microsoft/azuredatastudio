@@ -130,7 +130,7 @@ export class ConnectionDialogWidget extends Modal {
 		}
 
 		// Remove duplicate listings (CMS uses the same display name)
-		let dedupMap = this._connectionManagementService.getDedupeConnectionProvidersByNameMap(filteredProviderMap);
+		let dedupMap = this._connectionManagementService.getUniqueConnectionProvidersByNameMap(filteredProviderMap);
 		this._providerTypeSelectBox.setOptions(Object.keys(dedupMap).map(k => dedupMap[k]));
 	}
 

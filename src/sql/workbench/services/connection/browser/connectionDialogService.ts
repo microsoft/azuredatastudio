@@ -306,8 +306,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				});
 			}
 			if (!isProviderInParams) {
-				let dedupMap = this._connectionManagementService.getDedupeConnectionProvidersByNameMap(this._providerNameToDisplayNameMap);
-				this._currentProviderType = find(Object.keys(dedupMap), (key) => dedupMap[key] === input.selectedProviderDisplayName);
+				let uniqueProvidersMap = this._connectionManagementService.getUniqueConnectionProvidersByNameMap(this._providerNameToDisplayNameMap);
+				this._currentProviderType = find(Object.keys(uniqueProvidersMap), (key) => uniqueProvidersMap[key] === input.selectedProviderDisplayName);
 			}
 		}
 		this._model.providerName = this._currentProviderType;

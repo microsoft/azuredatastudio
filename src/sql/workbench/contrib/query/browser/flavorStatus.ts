@@ -203,7 +203,7 @@ export class ChangeFlavorAction extends Action {
 		// so we need a way to filter this using a capabilities check, with isn't yet implemented
 
 		let providerNameToDisplayNameMap = this._connectionManagementService.providerNameToDisplayNameMap;
-		let providerOptions = Object.keys(this._connectionManagementService.getDedupeConnectionProvidersByNameMap(providerNameToDisplayNameMap)).map(p => new SqlProviderEntry(p));
+		let providerOptions = Object.keys(this._connectionManagementService.getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap)).map(p => new SqlProviderEntry(p));
 
 		return this._quickInputService.pick(providerOptions, { placeHolder: nls.localize('pickSqlProvider', "Select SQL Language Provider") }).then(provider => {
 			if (provider) {

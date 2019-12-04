@@ -133,10 +133,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Set the initial value for the connection provider map and listen to the provider change event
 	 */
 	private initializeConnectionProvidersMap() {
-		this.setConnectionProvidersMap();
+		this.updateConnectionProvidersMap();
 		if (this._capabilitiesService) {
 			this._capabilitiesService.onCapabilitiesRegistered(() => {
-				this.setConnectionProvidersMap();
+				this.updateConnectionProvidersMap();
 			});
 		}
 	}
@@ -144,7 +144,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Update the map using the values from capabilities service
 	 */
-	private setConnectionProvidersMap() {
+	private updateConnectionProvidersMap() {
 		if (this._capabilitiesService) {
 			this._providerNameToDisplayNameMap = {};
 			entries(this._capabilitiesService.providers).forEach(p => {
@@ -186,7 +186,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._onLanguageFlavorChanged.event;
 	}
 
-	public get providerNameToDisplayNameMap(): { [providerDisplayName: string]: string } {
+	public get providerNameToDisplayNameMap(): { readonly [providerDisplayName: string]: string } {
 		return this._providerNameToDisplayNameMap;
 	}
 
@@ -251,7 +251,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Get the connection providers map and filter out CMS.
 	 */
-	public getDedupeConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string } {
+	public getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string } {
 		let dedupMap = {};
 		entries(providerNameToDisplayNameMap).forEach(p => {
 			if (p[0] !== Constants.cmsProviderName) {

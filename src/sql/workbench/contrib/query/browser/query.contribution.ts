@@ -51,10 +51,6 @@ export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.query
 export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
 export const ResultsMessagesFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsMessagesFocussedId));
 
-export const Extensions = {
-	WorkbenchActions: 'workbench.contributions.actions'
-};
-
 Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
 	.registerEditorInputFactory(FileQueryEditorInput.ID, FileQueryEditorInputFactory);
 
@@ -80,7 +76,7 @@ Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(new EditorDescriptor(QueryEditor, QueryEditor.ID, localize('queryEditor.name', "Query Editor")), [new SyncDescriptor(FileQueryEditorInput), new SyncDescriptor(UntitledQueryEditorInput)]);
 
-const actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
+const actionRegistry = <IWorkbenchActionRegistry>Registry.as(ActionExtensions.WorkbenchActions);
 
 new NewQueryTask().registerTask();
 
@@ -207,6 +203,16 @@ actionRegistry.registerWorkbenchAction(
 		QueryEditorVisibleCondition
 	),
 	ToggleQueryResultsKeyboardAction.LABEL
+);
+
+// Register Flavor Action
+actionRegistry.registerWorkbenchAction(
+	new SyncActionDescriptor(
+		ChangeFlavorAction,
+		ChangeFlavorAction.ID,
+		ChangeFlavorAction.LABEL
+	),
+	'Change Language Flavor'
 );
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
@@ -580,7 +586,3 @@ workbenchRegistry.registerWorkbenchContribution(TimeElapsedStatusBarContribution
 workbenchRegistry.registerWorkbenchContribution(RowCountStatusBarContributions, LifecyclePhase.Restored);
 workbenchRegistry.registerWorkbenchContribution(QueryStatusStatusBarContributions, LifecyclePhase.Restored);
 workbenchRegistry.registerWorkbenchContribution(SqlFlavorStatusbarItem, LifecyclePhase.Restored);
-
-// Register Flavor Action
-const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
-registry.registerWorkbenchAction(new SyncActionDescriptor(ChangeFlavorAction, ChangeFlavorAction.ID, ChangeFlavorAction.LABEL), 'Change Language Flavor');
