@@ -24,6 +24,8 @@ import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import { Promise } from 'es6-promise';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 
 let instantiationService: IInstantiationService;
 
@@ -809,6 +811,27 @@ suite('Cell Model', function (): void {
 			let cell = factory.createCell(codeCellContents, cellOptions);
 			let result = await cell.runCell();
 			assert.strictEqual(result, false, 'Run cell should fail if execute returns abort status');
+		});
+
+		test('Execute throws exception', async function (): Promise<void> {
+			let testMsg = 'Test message';
+			mockKernel.setup(k => k.requiresConnection).returns(() => false);
+			mockKernel.setup(k => k.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+				throw new Error(testMsg);
+			});
+
+			let actualMsg: string;
+			let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
+			mockNotification.setup(n => n.notify(TypeMoq.It.isAny())).returns(notification => {
+				actualMsg = notification.message;
+				return undefined;
+			});
+
+			let cell = factory.createCell(codeCellContents, cellOptions);
+			let result = await cell.runCell(mockNotification.object);
+			assert.strictEqual(result, true, 'Run cell should report errors via notification service');
+			assert.ok(actualMsg !== undefined, 'Should have received an error notification');
+			assert.strictEqual(actualMsg, testMsg);
 		});
 	});
 });
