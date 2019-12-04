@@ -32,6 +32,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return conEvent.event;
 	}
 
+	public get providerNameToDisplayNameMap(): { [providerDisplayName: string]: string } {
+		return {};
+	}
+
 	registerProvider(providerId: string, provider: azdata.ConnectionProvider): void {
 
 	}
@@ -213,8 +217,8 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return Promise.resolve();
 	}
 
-	getLanguageFlavorProviderNames(): string[] {
-		return [];
+	getDedupeConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string } {
+		return {};
 	}
 
 	getProviderIdFromUri(ownerUri: string): string {

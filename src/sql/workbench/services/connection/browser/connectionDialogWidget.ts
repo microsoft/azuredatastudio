@@ -127,10 +127,9 @@ export class ConnectionDialogWidget extends Modal {
 			}
 		}
 
-		this._providerTypeSelectBox.setOptions(filteredProviderDisplayNames.filter((providerDisplayName, index) =>
-			// Remove duplicate listings (CMS uses the same display name)
-			filteredProviderDisplayNames.indexOf(providerDisplayName) === index)
-		);
+		// Remove duplicate listings (CMS uses the same display name)
+		let dedupMap = this._connectionManagementService.getDedupeConnectionProvidersByNameMap(this.providerNameToDisplayNameMap);
+		this._providerTypeSelectBox.setOptions(Object.keys(dedupMap).map(k => dedupMap[k]));
 	}
 
 	private includeProvider(providerName: string, params?: INewConnectionParams): Boolean {

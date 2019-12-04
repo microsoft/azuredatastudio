@@ -74,6 +74,9 @@ export interface IConnectionManagementService {
 	onConnectionChanged: Event<IConnectionParams>;
 	onLanguageFlavorChanged: Event<azdata.DidChangeLanguageFlavorParams>;
 
+	// Properties
+	providerNameToDisplayNameMap: { [providerDisplayName: string]: string };
+
 	/**
 	 * Opens the connection dialog to create new connection
 	 */
@@ -180,6 +183,8 @@ export interface IConnectionManagementService {
 
 	getDefaultProviderId(): string;
 
+	getDedupeConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string };
+
 	/**
 	 * Cancels the connection
 	 */
@@ -200,11 +205,6 @@ export interface IConnectionManagementService {
 	closeDashboard(uri: string): void;
 
 	getProviderIdFromUri(ownerUri: string): string;
-
-	/**
-	 * Gets the list of provider names that are language flavors
-	 */
-	getLanguageFlavorProviderNames(): string[];
 
 	hasRegisteredServers(): boolean;
 

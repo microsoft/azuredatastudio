@@ -306,10 +306,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				});
 			}
 			if (!isProviderInParams) {
-				this._currentProviderType = find(Object.keys(this._providerNameToDisplayNameMap), (key) =>
-					this._providerNameToDisplayNameMap[key] === input.selectedProviderDisplayName &&
-					key !== Constants.cmsProviderName
-				);
+				this._currentProviderType = find(entries(
+					this._connectionManagementService.getDedupeConnectionProvidersByNameMap(this._providerNameToDisplayNameMap)),
+					([key, value]) => value === input.selectedProviderDisplayName)[0];
 			}
 		}
 		this._model.providerName = this._currentProviderType;

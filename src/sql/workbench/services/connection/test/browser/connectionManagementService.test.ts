@@ -732,10 +732,19 @@ suite('SQL ConnectionManagementService tests', () => {
 		}
 	});
 
-	test('getLanguageFlavorProviderNames should return only language flavor providers', () => {
-		let providerNames = connectionManagementService.getLanguageFlavorProviderNames();
+	test('getDedupeConnectionProvidersByNameMap should return non CMS providers', () => {
+		let nameToDisplayNameMap: { [providerDisplayName: string]: string } = { 'MSSQL': 'SQL Server', 'MSSQL-CMS': 'SQL Server' };
+		let providerNames = Object.keys(connectionManagementService.getDedupeConnectionProvidersByNameMap(nameToDisplayNameMap));
 		assert.equal(providerNames.length, 1);
-		assert.equal(providerNames.indexOf('MSSQL') > -1, true);
+		assert.equal(providerNames[0], 'MSSQL');
+	});
+
+	test('providerNameToDisplayNameMap should return all providers', () => {
+		let expectedNames = ['MSSQL', 'PGSQL'];
+		let providerNames = Object.keys(connectionManagementService.providerNameToDisplayNameMap);
+		assert.equal(providerNames.length, 2);
+		assert.equal(providerNames[0], expectedNames[0]);
+		assert.equal(providerNames[1], expectedNames[1]);
 	});
 
 	test('ensureDefaultLanguageFlavor should not send event if uri is connected', done => {

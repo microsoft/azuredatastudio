@@ -58,6 +58,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	_serviceBrand: undefined;
 
 	private _providers = new Map<string, { onReady: Promise<azdata.ConnectionProvider>, properties: ConnectionProviderProperties }>();
+	private _providerNameToDisplayNameMap: { [providerDisplayName: string]: string } = {};
 	private _iconProviders = new Map<string, azdata.IconProvider>();
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
 	private _onAddConnectionProfile = new Emitter<interfaces.IConnectionProfile>();
@@ -107,6 +108,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			this._mementoObj = this._mementoContext.getMemento(StorageScope.GLOBAL);
 		}
 
+		this.initializeConnectionProvidersMap();
+
 		const registry = platform.Registry.as<IConnectionProviderRegistry>(ConnectionProviderExtensions.ConnectionProviderContributions);
 
 		let providerRegistration = (p: { id: string, properties: ConnectionProviderProperties }) => {
@@ -124,6 +127,30 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		this._register(this._onAddConnectionProfile);
 		this._register(this._onDeleteConnectionProfile);
+	}
+
+	/**
+	 * Set the initial value for the connection provider map and listen to the provider change event
+	 */
+	private initializeConnectionProvidersMap() {
+		this.setConnectionProvidersMap();
+		if (this._capabilitiesService) {
+			this._capabilitiesService.onCapabilitiesRegistered(() => {
+				this.setConnectionProvidersMap();
+			});
+		}
+	}
+
+	/**
+	 * Update the map using the values from capabilities service
+	 */
+	private setConnectionProvidersMap() {
+		if (this._capabilitiesService) {
+			this._providerNameToDisplayNameMap = {};
+			entries(this._capabilitiesService.providers).forEach(p => {
+				this._providerNameToDisplayNameMap[p[0]] = p[1].connection.displayName;
+			});
+		}
 	}
 
 	public providerRegistered(providerId: string): boolean {
@@ -157,6 +184,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	public get onLanguageFlavorChanged(): Event<azdata.DidChangeLanguageFlavorParams> {
 		return this._onLanguageFlavorChanged.event;
+	}
+
+	public get providerNameToDisplayNameMap(): { [providerDisplayName: string]: string } {
+		return this._providerNameToDisplayNameMap;
 	}
 
 	// Connection Provider Registration
@@ -206,13 +237,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
-	 * Gets the list of provider names that are language flavors
-	 */
-	public getLanguageFlavorProviderNames(): string[] {
-		return Object.keys(this._capabilitiesService.providers).filter(p => this._capabilitiesService.providers[p].connection.isLanguageFlavorProvider);
-	}
-
-	/**
 	 * Get the connections provider ID from an connection URI
 	 */
 	public getProviderIdFromUri(ownerUri: string): string {
@@ -222,6 +246,20 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 
 		return providerId;
+	}
+
+	/**
+	 * Get the connection providers map and filter out CMS.
+	 */
+	public getDedupeConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string } {
+		let dedupMap = {};
+		entries(providerNameToDisplayNameMap).forEach(p => {
+			if (p[0] !== Constants.cmsProviderName) {
+				dedupMap[p[0]] = p[1];
+			}
+		});
+
+		return dedupMap;
 	}
 
 	/**
