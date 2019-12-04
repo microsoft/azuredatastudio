@@ -29,15 +29,9 @@
 			{
 				"title": "%deployment.configuration.title%",
 				"properties": {
-					"deployment.azdataPipInstallUri": {
+					"deployment.azdataInstallLocation": {
 						"type": "string",
-						"default": "https://aka.ms/azdata",
-						"description": "%azdata-pip-install-uri-description%"
-					},
-					"deployment.azdataPipInstallArgs": {
-						"type": "string",
-						"default": "",
-						"description": "%azdata-pip-install-args-description%"
+						"description": "%azdata-install-Location-description%"
 					}
 				}
 			}

@@ -27,17 +27,14 @@ const toolStatusLocalized: Map<ToolStatus, string> = new Map<ToolStatus, string>
 ]);
 
 export const enum dependencyType {
-	PythonAndPip3 = 'PythonAndPip3',
 	Brew = 'Brew',
 	Curl = 'Curl'
 }
 
-const pythonAndPip3Localized = localize('deploymentDialog.ToolInformationalMessage.PythonAndPip3', "•	azdata installation needs pip3 and python3 version 3.6 to be pre-installed before necessary tools can be deployed");
 const brewLocalized = localize('deploymentDialog.ToolInformationalMessage.Brew', "•	brew is needed for deployment of the tools and needs to be pre-installed before necessary tools can be deployed");
 const curlLocalized = localize('deploymentDialog.ToolInformationalMessage.Curl', "•	curl is needed for installation and needs to be pre-installed before necessary tools can be deployed");
 
 export const messageByDependencyType: Map<dependencyType, string> = new Map<dependencyType, string>([
-	[dependencyType.PythonAndPip3, pythonAndPip3Localized],
 	[dependencyType.Brew, brewLocalized],
 	[dependencyType.Curl, curlLocalized]
 ]);
@@ -51,7 +48,6 @@ export abstract class ToolBase implements ITool {
 	abstract description: string;
 	abstract type: ToolType;
 	abstract homePage: string;
-	abstract autoInstallSupported: boolean;
 	protected abstract readonly allInstallationCommands: Map<OsDistribution, Command[]>;
 	protected readonly dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>();
 
@@ -177,6 +173,11 @@ export abstract class ToolBase implements ITool {
 		this._platformService.showOutputChannel(preserveFocus);
 	}
 
+
+	get autoInstallSupported(): boolean {
+		return !!this.installationCommands && !!this.installationCommands.length;
+	}
+
 	public async install(): Promise<void> {
 		this._statusDescription = '';
 		try {
@@ -207,7 +208,7 @@ export abstract class ToolBase implements ITool {
 	protected async installCore() {
 		const installationCommands: Command[] | undefined = this.installationCommands;
 		if (!installationCommands || installationCommands.length === 0) {
-			throw new Error(localize('toolBase.installCore.CannotInstallTool', "Cannot install tool:${0}::${1} as installation commands are unknown", this.displayName, this.description));
+			throw new Error(localize('toolBase.installCore.CannotInstallTool', "Cannot install tool:${0}::${1} as installation commands are unknown for your OS distribution, Please install ${0} manually before proceeding", this.displayName, this.description));
 		}
 		for (let i: number = 0; i < installationCommands.length; i++) {
 			await this._platformService.runCommand(installationCommands[i].command,
