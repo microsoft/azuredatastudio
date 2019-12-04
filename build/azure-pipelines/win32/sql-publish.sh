@@ -1,5 +1,5 @@
-. build/azure-pipelines/win32/exec.ps1
-$ErrorActionPreference = "Stop"
+#!/usr/bin/env bash
+set -e
 
 $ExeName = "AzureDataStudioSetup.exe"
 $SystemExe = "$artifactsDir\$ExeName"

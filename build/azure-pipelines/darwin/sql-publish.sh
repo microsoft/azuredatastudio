@@ -1,5 +1,5 @@
-. build/azure-pipelines/win32/exec.ps1
-$ErrorActionPreference = "Stop"
+#!/usr/bin/env bash
+set -e
 
 $VersionJson = Get-Content -Raw -Path "$artifactsDir\version.json" | ConvertFrom-Json
 $Version = $VersionJson.version
