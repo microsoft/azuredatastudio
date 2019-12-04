@@ -16,18 +16,54 @@ import { TreeNode } from './treeNode';
 import { AzureResourceCredentialError } from './errors';
 import { AzureResourceTreeProvider } from './tree/treeProvider';
 import { AzureResourceAccountTreeNode } from './tree/accountTreeNode';
-import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService } from '../azureResource/interfaces';
+import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService } from '../azureResource/interfaces';
 import { AzureResourceServiceNames } from './constants';
+import { AzureAccount, Tenant } from '../account-provider/interfaces';
 
 export function registerAzureResourceCommands(appContext: AppContext, tree: AzureResourceTreeProvider): void {
 	appContext.apiWrapper.registerCommand('azure.resource.startterminal', async (node?: TreeNode) => {
-		if (!node || !(node instanceof AzureResourceAccountTreeNode)) {
-			return;
+		try {
+			if (!node || !(node instanceof AzureResourceAccountTreeNode)) {
+				return;
+			}
+
+			const accountNode = node as AzureResourceAccountTreeNode;
+			const azureAccount = accountNode.account as AzureAccount;
+
+			const tokens = await appContext.apiWrapper.getSecurityToken(azureAccount, azdata.AzureResource.ResourceManagement);
+
+			const terminalService = appContext.getService<IAzureTerminalService>(AzureResourceServiceNames.terminalService);
+
+			const listOfTenants = azureAccount.properties.tenants.map(t => t.displayName);
+
+			if (listOfTenants.length === 0) {
+				window.showErrorMessage(localize('azure.mustPickTenant', "A tenant is required for this feature"));
+				return;
+			}
+
+			let tenant: Tenant;
+			window.showInformationMessage(localize('azure.startingCloudShell', "Starting cloud shell…"));
+
+			if (listOfTenants.length === 1) {
+				// Don't show quickpick for a single option
+				tenant = azureAccount.properties.tenants[0];
+			} else {
+				const pickedTenant = await window.showQuickPick(listOfTenants, { canPickMany: false });
+
+				if (!pickedTenant) {
+					window.showErrorMessage(localize('azure.mustPickTenant', "A tenant is required for this feature"));
+					return;
+				}
+
+				// The tenant the user picked
+				tenant = azureAccount.properties.tenants[listOfTenants.indexOf(pickedTenant)];
+			}
+
+			terminalService.getOrCreateCloudConsole(azureAccount, tenant, tokens);
+		} catch (ex) {
+			console.error(ex);
+			window.showErrorMessage(ex);
 		}
-
-		console.log(node);
-
-		const accountNode = node as AzureResourceAccountTreeNode;
 	});
 	appContext.apiWrapper.registerCommand('azure.resource.selectsubscriptions', async (node?: TreeNode) => {
 		if (!(node instanceof AzureResourceAccountTreeNode)) {
