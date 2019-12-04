@@ -9,6 +9,12 @@ steps:
   inputs:
     versionSpec: '2.x'
     addToPath: true
+- task: AzureKeyVault@1
+  displayName: 'Azure Key Vault: Get Secrets'
+  inputs:
+    azureSubscription: 'azuredatastudio-adointegration'
+    KeyVaultName: ado-secrets
+    SecretsFilter: 'github-distro-mixin-password'
 - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
   inputs:
     keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
@@ -18,7 +24,7 @@ steps:
     yarn --frozen-lockfile
   env:
     CHILD_CONCURRENCY: "1"
-    GITHUB_TOKEN: $(GITHUB_TOKEN) # {{SQL CARBON EDIT}} add github token
+    GITHUB_TOKEN: $(github-distro-mixin-password) # {{SQL CARBON EDIT}} add github token
   displayName: Install Dependencies
   condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
@@ -30,7 +36,7 @@ steps:
 - powershell: |
     yarn electron
   env:
-    GITHUB_TOKEN: $(GITHUB_TOKEN) # {{SQL CARBON EDIT}} add github token
+    GITHUB_TOKEN: $(github-distro-mixin-password) # {{SQL CARBON EDIT}} add github token
 - script: |
     yarn gulp hygiene --skip-tslint
   displayName: Run Hygiene Checks
