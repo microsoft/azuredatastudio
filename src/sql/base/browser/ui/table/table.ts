@@ -19,6 +19,7 @@ import { Widget } from 'vs/base/browser/ui/widget';
 import { isArray, isBoolean } from 'vs/base/common/types';
 import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
+import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
@@ -183,8 +184,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	setData(data: Array<T>): void;
 	setData(data: TableDataView<T>): void;
-	setData(data: Array<T> | TableDataView<T>): void {
-		if (data instanceof TableDataView) {
+	setData(data: AsyncDataProvider<T>): void;
+	setData(data: Array<T> | TableDataView<T> | AsyncDataProvider<T>): void {
+		if (data instanceof TableDataView || data instanceof AsyncDataProvider) {
 			this._data = data;
 		} else {
 			this._data = new TableDataView<T>(data);

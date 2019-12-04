@@ -58,6 +58,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	// FIELDS
 	// All datasets
+	private gridDataProvider: AsyncDataProvider<any>;
 	private dataSet: IGridDataSet;
 	private oldDataRows: VirtualizedCollection<any>;
 	private firstRender = true;
@@ -392,6 +393,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		};
 		self.plugins.push([rowNumberColumn, new AutoColumnSize({ maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth') }), new AdditionalKeyBindings()]);
 		self.dataSet = dataSet;
+		self.gridDataProvider = new AsyncDataProvider(dataSet.dataRows);
 
 		// Create a dataSet to render without rows to reduce DOM size
 		let undefinedDataSet = deepClone(dataSet);
@@ -477,6 +479,8 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.handleInitializeTable();
 		}
 		else {
+
+			this.tables[0].setData(this.gridDataProvider);
 			this.handleChanges({
 				['dataRows']: { currentValue: this.dataSet.dataRows, firstChange: this.firstRender, previousValue: this.oldDataRows }
 			});
@@ -638,6 +642,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					self.dataSet.totalRows,
 					self.loadDataFunction,
 				);
+				self.gridDataProvider = new AsyncDataProvider(self.dataSet.dataRows);
 			});
 	}
 
@@ -653,6 +658,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.dataSet.totalRows,
 			this.loadDataFunction,
 		);
+		this.gridDataProvider = new AsyncDataProvider(this.dataSet.dataRows);
 		// refresh results view
 		return this.refreshGrid().then(() => {
 			// Set focus to the row index column of the removed row if the current selection is in the removed row
@@ -808,7 +814,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			};
 
 			if (dataSet.columnDefinitions) {
-				t = new Table(this.nativeElement, { dataProvider: new AsyncDataProvider(dataSet.dataRows), columns: dataSet.columnDefinitions }, options);
+				t = new Table(this.nativeElement, { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
 
 				this.tables[0] = t;
 				if (this.selectionModel) {
