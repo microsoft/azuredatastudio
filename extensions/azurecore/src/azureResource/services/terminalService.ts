@@ -147,9 +147,7 @@ class AzureTerminal implements vscode.Pseudoterminal {
 				this.socket.ping();
 			}, 5000);
 		} catch (ex) {
-			const str = JSON.stringify(ex.message);
-			console.error(str);
-			this.writeEmitter.fire(str);
+			console.log(ex);
 		}
 	}
 
