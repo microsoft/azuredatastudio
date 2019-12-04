@@ -84,7 +84,7 @@ export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompa
 		if (connection) {
 			ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
 			if (!ownerUri) {
-				let connectionList = await azdata.connection.getActiveConnections();
+				let connectionList = await azdata.connection.getConnections(true);
 				let userConnection;
 				userConnection = connectionList.find(connection =>
 					(endpoint.connectionDetails['authenticationType'] === 'SqlLogin'
