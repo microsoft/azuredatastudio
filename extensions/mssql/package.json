@@ -577,6 +577,10 @@
             {
               "displayName": "%mssql.connectionOptions.authType.categoryValues.azureMFA%",
               "name": "AzureMFA"
+            },
+            {
+              "displayName": "%mssql.connectionOptions.authType.categoryValues.activeDirectoryPassword%",
+              "name": "ActiveDirectoryPassword"
             }
           ],
           "isRequired": true,

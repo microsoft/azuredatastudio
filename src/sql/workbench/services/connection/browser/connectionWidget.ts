@@ -41,7 +41,8 @@ export enum AuthenticationType {
 	SqlLogin = 'SqlLogin',
 	Integrated = 'Integrated',
 	AzureMFA = 'AzureMFA',
-	AzureMFAAndUser = 'AzureMFAAndUser'
+	AzureMFAAndUser = 'AzureMFAAndUser',
+	ActiveDirectoryPassword = 'ActiveDirectoryPassword'
 }
 
 export class ConnectionWidget extends lifecycle.Disposable {
@@ -76,7 +77,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected _databaseNameInputBox: Dropdown;
 	protected _advancedButton: Button;
 	private static readonly _authTypes: AuthenticationType[] =
-		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin];
+		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin, AuthenticationType.ActiveDirectoryPassword];
 	private static readonly _osByName = {
 		Windows: OperatingSystem.Windows,
 		Macintosh: OperatingSystem.Macintosh,
@@ -479,6 +480,14 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._userNameInputBox.enable();
 			this._passwordInputBox.enable();
 			this._rememberPasswordCheckBox.enabled = true;
+		}
+
+		if (currentAuthType === AuthenticationType.ActiveDirectoryPassword) {
+			this._userNameInputBox.enable();
+			this._passwordInputBox.enable();
+			this._password = '';
+			this._rememberPasswordCheckBox.checked = false;
+			this._rememberPasswordCheckBox.enabled = false;
 		}
 
 		if (currentAuthType === AuthenticationType.AzureMFA) {
