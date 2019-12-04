@@ -23,6 +23,8 @@ const generateScriptNoChangesMessage = localize('schemaCompare.generateScriptNoC
 const applyEnabledMessage = localize('schemaCompare.applyButtonEnabledTitle', "Apply changes to target");
 const applyNoChangesMessage = localize('schemaCompare.applyNoChanges', "No changes to apply");
 const includeExcludeInfoMessage = localize('schemaCompare.includeExcludeInfoMessage', "Please note that include/exclude operations can take a moment to calculate affected dependencies");
+const SourceTitle: string = localize('schemaCompareDialog.SourceTitle', "Source");
+const TargetTitle: string = localize('schemaCompareDialog.TargetTitle', "Target");
 
 // Do not localize this, this is used to decide the icon for the editor.
 // TODO : In future icon should be decided based on language id (scmp) and not resource name
@@ -943,7 +945,7 @@ export class SchemaCompareMainWindow {
 
 			if (result.sourceEndpointInfo && result.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
 				// only set endpoint info if able to connect to the database
-				const ownerUri = await verifyConnectionAndGetOwnerUri(result.sourceEndpointInfo);
+				const ownerUri = await verifyConnectionAndGetOwnerUri(result.sourceEndpointInfo, SourceTitle);
 				if (ownerUri) {
 					this.sourceEndpointInfo = result.sourceEndpointInfo;
 					this.sourceEndpointInfo.ownerUri = ownerUri;
@@ -962,7 +964,7 @@ export class SchemaCompareMainWindow {
 			}
 
 			if (result.targetEndpointInfo && result.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
-				const ownerUri = await verifyConnectionAndGetOwnerUri(result.targetEndpointInfo);
+				const ownerUri = await verifyConnectionAndGetOwnerUri(result.targetEndpointInfo, TargetTitle);
 				if (ownerUri) {
 					this.targetEndpointInfo = result.targetEndpointInfo;
 					this.targetEndpointInfo.ownerUri = ownerUri;
