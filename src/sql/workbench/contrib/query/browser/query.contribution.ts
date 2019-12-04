@@ -60,7 +60,7 @@ Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInpu
 Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations)
 	.registerLanguageAssociation('sql', (accessor, editor) => {
 		const instantiationService = accessor.get(IInstantiationService);
-		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, editor.getResource().toString());
+		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, editor.getResource().toString(true));
 		if (editor instanceof FileEditorInput) {
 			return instantiationService.createInstance(FileQueryEditorInput, '', editor, queryResultsInput);
 		} else if (editor instanceof UntitledTextEditorInput) {

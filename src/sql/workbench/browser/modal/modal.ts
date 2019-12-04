@@ -482,16 +482,20 @@ export abstract class Modal extends Disposable implements IThemable {
 				this._messageDetail.innerText = description;
 			}
 			DOM.removeNode(this._messageDetail);
-			if (this._messageSummaryText) {
-				if (this._useDefaultMessageBoxLocation) {
-					DOM.prepend(this._modalContent, (this._messageElement));
-				}
-			} else {
-				// Set the focus manually otherwise it'll escape the dialog to something behind it
-				this.setInitialFocusedElement();
-				DOM.removeNode(this._messageElement);
-			}
+			this.messagesElementVisible = !!this._messageSummaryText;
 			this.updateExpandMessageState();
+		}
+	}
+
+	protected set messagesElementVisible(visible: boolean) {
+		if (visible) {
+			if (this._useDefaultMessageBoxLocation) {
+				DOM.prepend(this._modalContent, (this._messageElement));
+			}
+		} else {
+			// Set the focus manually otherwise it'll escape the dialog to something behind it
+			this.setInitialFocusedElement();
+			DOM.removeNode(this._messageElement);
 		}
 	}
 
