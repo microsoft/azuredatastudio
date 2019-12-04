@@ -217,7 +217,7 @@ describe('Manage Packages', () => {
 
 		await model.init();
 		model.changeProvider('providerId2');
-		should.deepEqual(model.getLocationTitle(), 'location title 2');
+		should.deepEqual(await model.getLocationTitle(), 'location title 2');
 	});
 
 	it('changeProvider should throw exception given invalid provider', async function (): Promise<void> {
@@ -314,7 +314,7 @@ describe('Manage Packages', () => {
 		should(model.installPackages(packages)).resolved();
 		should(model.uninstallPackages(packages)).resolved();
 		should(model.getPackageOverview('p1')).resolved();
-		should.equal(model.getLocationTitle(), 'location title 2');
+		should(model.getLocationTitle()).rejectedWith('location title 2');
 	});
 
 	function createContext(): TestContext {
