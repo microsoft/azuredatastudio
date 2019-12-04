@@ -32,6 +32,11 @@ export class Button extends vsButton {
 			DOM.EventHelper.stop(e);
 			DOM.removeClass(this.element, 'active');
 		}));
+
+		this._register(DOM.addDisposableListener(this.element, DOM.EventType.MOUSE_LEAVE, e => {
+			DOM.EventHelper.stop(e);
+			DOM.removeClass(this.element, 'active');
+		}));
 	}
 
 	public style(styles: IButtonStyles): void {

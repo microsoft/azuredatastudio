@@ -8,7 +8,6 @@ import { FileBrowserController } from 'sql/workbench/services/fileBrowser/browse
 import { FileBrowserRenderer } from 'sql/workbench/services/fileBrowser/browser/fileBrowserRenderer';
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
-import errors = require('vs/base/common/errors');
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
 import nls = require('vs/nls');
@@ -37,7 +36,7 @@ export class FileBrowserTreeView extends Disposable implements IDisposable {
 	/**
 	 * Render the view body
 	 */
-	public renderBody(container: HTMLElement, rootNode: FileNode, selectedNode: FileNode, expandedNodes: FileNode[]): void {
+	public async renderBody(container: HTMLElement, rootNode: FileNode, selectedNode: FileNode, expandedNodes: FileNode[]): Promise<void> {
 		if (!this._tree) {
 			DOM.addClass(container, 'show-file-icons');
 			this._tree = this._register(this.createFileBrowserTree(container, this._instantiationService));
@@ -48,16 +47,15 @@ export class FileBrowserTreeView extends Disposable implements IDisposable {
 		}
 
 		if (rootNode) {
-			this._tree.setInput(rootNode).then(() => {
-				if (expandedNodes) {
-					this._tree.expandAll(expandedNodes);
-				}
-				if (selectedNode) {
-					this._tree.select(selectedNode);
-					this._tree.setFocus(selectedNode);
-				}
-				this._tree.getFocus();
-			}, errors.onUnexpectedError);
+			await this._tree.setInput(rootNode);
+			if (expandedNodes) {
+				await this._tree.expandAll(expandedNodes);
+			}
+			if (selectedNode) {
+				this._tree.select(selectedNode);
+				this._tree.setFocus(selectedNode);
+			}
+			this._tree.getFocus();
 		}
 	}
 
@@ -85,7 +83,7 @@ export class FileBrowserTreeView extends Disposable implements IDisposable {
 	/**
 	 * Refresh the tree
 	 */
-	public refreshTree(rootNode: FileNode): void {
+	public async refreshTree(rootNode: FileNode): Promise<void> {
 		let selectedElement: any;
 		let targetsToExpand: any[];
 
@@ -103,17 +101,16 @@ export class FileBrowserTreeView extends Disposable implements IDisposable {
 		}
 
 		if (rootNode) {
-			this._tree.setInput(rootNode).then(() => {
-				// Make sure to expand all folders that were expanded in the previous session
-				if (targetsToExpand) {
-					this._tree.expandAll(targetsToExpand);
-				}
-				if (selectedElement) {
-					this._tree.select(selectedElement);
-					this._tree.setFocus(selectedElement);
-				}
-				this._tree.getFocus();
-			}, errors.onUnexpectedError);
+			await this._tree.setInput(rootNode);
+			// Make sure to expand all folders that were expanded in the previous session
+			if (targetsToExpand) {
+				await this._tree.expandAll(targetsToExpand);
+			}
+			if (selectedElement) {
+				this._tree.select(selectedElement);
+				this._tree.setFocus(selectedElement);
+			}
+			this._tree.getFocus();
 		}
 	}
 

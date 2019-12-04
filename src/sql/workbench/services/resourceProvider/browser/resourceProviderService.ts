@@ -64,34 +64,24 @@ export class ResourceProviderService implements IResourceProviderService {
 	/**
 	 * Handle a firewall rule
 	 */
-	public handleFirewallRule(errorCode: number, errorMessage: string, connectionTypeId: string): Promise<IHandleFirewallRuleResult> {
-		let self = this;
-		return new Promise<IHandleFirewallRuleResult>((resolve, reject) => {
-			let handleFirewallRuleResult: IHandleFirewallRuleResult;
-			let promises = [];
-			if (self._providers) {
-				for (let key in self._providers) {
-					let provider = self._providers[key];
-					promises.push(provider.handleFirewallRule(errorCode, errorMessage, connectionTypeId)
-						.then(response => {
-							if (response.result) {
-								handleFirewallRuleResult = { canHandleFirewallRule: response.result, ipAddress: response.ipAddress, resourceProviderId: key };
-							}
-						},
-							() => { /* Swallow failures at getting accounts, we'll just hide that provider */
-							}));
-				}
+	public async handleFirewallRule(errorCode: number, errorMessage: string, connectionTypeId: string): Promise<IHandleFirewallRuleResult> {
+		let handleFirewallRuleResult: IHandleFirewallRuleResult = { canHandleFirewallRule: false, ipAddress: undefined, resourceProviderId: undefined };
+		const promises = [];
+		if (this._providers) {
+			for (const key in this._providers) {
+				const provider = this._providers[key];
+				promises.push(provider.handleFirewallRule(errorCode, errorMessage, connectionTypeId)
+					.then(response => {
+						if (response.result) {
+							handleFirewallRuleResult = { canHandleFirewallRule: response.result, ipAddress: response.ipAddress, resourceProviderId: key };
+						}
+					}, () => { /* Swallow failures at getting accounts, we'll just hide that provider */
+					}));
 			}
+		}
 
-			Promise.all(promises).then(() => {
-				if (handleFirewallRuleResult) {
-					resolve(handleFirewallRuleResult);
-				} else {
-					handleFirewallRuleResult = { canHandleFirewallRule: false, ipAddress: undefined, resourceProviderId: undefined };
-					resolve(handleFirewallRuleResult);
-				}
-			});
-		});
+		await Promise.all(promises);
+		return handleFirewallRuleResult;
 	}
 
 	/**

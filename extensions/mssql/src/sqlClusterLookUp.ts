@@ -138,6 +138,7 @@ class ConnectionParam implements azdata.connection.Connection, azdata.IConnectio
 	public saveProfile: boolean;
 	public id: string;
 	public azureTenantId?: string;
+	public azureAccount?: string;
 
 	public providerName: string;
 	public connectionId: string;

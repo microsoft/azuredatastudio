@@ -248,7 +248,8 @@
 						},
 						"requiredTools": [
 							{
-								"name": "kubectl"
+								"name": "kubectl",
+								"version": "1.13.0"
 							},
 							{
 								"name": "azure-cli"
@@ -304,7 +305,7 @@
 						},
 						{
 							"text": "%bdc-agreement-azdata-eula%",
-							"url": "https://aka.ms/azdata-eula"
+							"url": "https://aka.ms/eula-azdata-en"
 						}
 					]
 				}

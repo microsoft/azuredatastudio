@@ -98,10 +98,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	];
 
 	private readonly _expectedPythonPackages = this._commonPackages.concat(this._commonPipPackages);
-
-	private readonly _expectedCondaPackages = this._commonPackages.concat([{ name: 'pykerberos', version: '1.2.1' }]);
-
 	private readonly _expectedCondaPipPackages = this._commonPipPackages;
+	private readonly _expectedCondaPackages: PythonPkgDetails[];
 
 	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
 		this.extensionPath = extensionPath;
@@ -113,6 +111,12 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
 
 		this._prompter = new CodeAdapter();
+
+		if (process.platform !== constants.winPlatform) {
+			this._expectedCondaPackages = this._commonPackages.concat([{ name: 'pykerberos', version: '1.2.1' }]);
+		} else {
+			this._expectedCondaPackages = this._commonPackages;
+		}
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean): Promise<void> {

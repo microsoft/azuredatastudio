@@ -62,7 +62,7 @@
       "notebook/toolbar": [
         {
           "command": "agent.openNotebookDialog",
-          "when": "providerId == sql && !agent:trackedTemplate"
+          "when": "false && providerId == sql && !agent:trackedTemplate"
         },
         {
           "command": "agent.reuploadTemplate",
@@ -72,7 +72,7 @@
       "explorer/context": [
         {
           "command": "agent.openNotebookDialog",
-          "when": "resourceExtname == .ipynb"
+          "when": "false && resourceExtname == .ipynb"
         }
       ]
     }

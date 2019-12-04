@@ -102,13 +102,14 @@ export function createCheckbox(view: azdata.ModelView, info: { initialValue: boo
 	}).component();
 }
 
-export function createDropdown(view: azdata.ModelView, info: { defaultValue?: string | azdata.CategoryValue, values?: string[] | azdata.CategoryValue[], width?: string, editable?: boolean, required?: boolean }): azdata.DropDownComponent {
+export function createDropdown(view: azdata.ModelView, info: { defaultValue?: string | azdata.CategoryValue, values?: string[] | azdata.CategoryValue[], width?: string, editable?: boolean, required?: boolean, label: string }): azdata.DropDownComponent {
 	return view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 		values: info.values,
 		value: info.defaultValue,
 		width: info.width,
 		editable: info.editable,
-		fireOnTextChange: true
+		fireOnTextChange: true,
+		ariaLabel: info.label
 	}).component();
 }
 
@@ -271,7 +272,8 @@ function processOptionsTypeField(context: FieldContext): void {
 		defaultValue: context.fieldInfo.defaultValue,
 		width: context.fieldInfo.inputWidth,
 		editable: context.fieldInfo.editable,
-		required: context.fieldInfo.required
+		required: context.fieldInfo.required,
+		label: context.fieldInfo.label
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, dropdown);
 	addLabelInputPairToContainer(context.view, context.components, label, dropdown, context.fieldInfo.labelPosition);

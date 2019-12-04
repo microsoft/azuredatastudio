@@ -11,7 +11,7 @@ import {
 
 import * as azdata from 'azdata';
 
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 import { TitledComponent } from 'sql/workbench/browser/modelComponents/titledComponent';
 
@@ -19,14 +19,14 @@ import { TitledComponent } from 'sql/workbench/browser/modelComponents/titledCom
 	selector: 'modelview-text',
 	template: `
 	<div *ngIf="showDiv;else noDiv" style="display:flex;flex-flow:row;align-items:center;" [style.width]="getWidth()" [style.height]="getHeight()">
-		<p [innerHTML]="getValue()" [title]="title" [ngStyle]="this.CSSStyles" (click)="onClick()"></p>
+	<p [innerHTML]="getValue()" [title]="title" [ngStyle]="this.CSSStyles" [attr.role]="ariaRole"></p>
 		<p  *ngIf="requiredIndicator" style="color:red;margin-left:5px;">*</p>
 		<div *ngIf="description" tabindex="0" class="modelview-text-tooltip" [attr.aria-label]="description">
 			<div class="modelview-text-tooltip-content" [innerHTML]="description"></div>
 		</div>
 	</div>
 	<ng-template #noDiv>
-		<p [innerHTML]="getValue()" [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title"  [ngStyle]="this.CSSStyles" (click)="onClick()"></p>
+	<p [innerHTML]="getValue()" [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title" [attr.role]="ariaRole" [ngStyle]="this.CSSStyles"></p>
 	</ng-template>`
 })
 export default class TextComponent extends TitledComponent implements IComponent, OnDestroy, AfterViewInit {
@@ -97,12 +97,5 @@ export default class TextComponent extends TitledComponent implements IComponent
 
 	public get showDiv(): boolean {
 		return this.requiredIndicator || !!this.description;
-	}
-
-	public onClick() {
-		this.fireEvent({
-			eventType: ComponentEventType.onDidClick,
-			args: undefined
-		});
 	}
 }

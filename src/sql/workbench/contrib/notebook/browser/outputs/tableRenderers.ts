@@ -14,7 +14,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
-import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/contrib/query/common/resultsGridContribution';
+import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/contrib/query/common/resultsGrid.contribution';
 import { values } from 'vs/base/common/collections';
 
 /**

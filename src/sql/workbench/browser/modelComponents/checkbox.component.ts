@@ -86,6 +86,9 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 		if (this.height) {
 			this._input.setHeight(this.convertSize(this.height));
 		}
+		if (this.ariaLabel) {
+			this._input.ariaLabel = this.ariaLabel;
+		}
 	}
 
 	// CSS-bound properties

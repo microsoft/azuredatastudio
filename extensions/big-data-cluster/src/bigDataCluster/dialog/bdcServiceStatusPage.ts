@@ -16,7 +16,7 @@ type ServiceTab = { div: azdata.DivContainer, dot: azdata.TextComponent, text: a
 export class BdcServiceStatusPage extends BdcDashboardPage {
 
 	private currentTab: { tab: ServiceTab, index: number };
-	private currentTabPage: azdata.FlexContainer;
+	private currentTabPage: BdcDashboardResourceStatusPage;
 	private rootContainer: azdata.FlexContainer;
 	private resourceHeader: azdata.FlexContainer;
 
@@ -25,10 +25,13 @@ export class BdcServiceStatusPage extends BdcDashboardPage {
 	constructor(private serviceName: string, private model: BdcDashboardModel, private modelView: azdata.ModelView) {
 		super();
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.eventuallyRunOnInitialized(() => this.handleBdcStatusUpdate(bdcStatus)));
-		this.createPage();
 	}
 
 	public get container(): azdata.FlexContainer {
+		// Lazily create the container only when needed
+		if (!this.rootContainer) {
+			this.createPage();
+		}
 		return this.rootContainer;
 	}
 
@@ -46,7 +49,9 @@ export class BdcServiceStatusPage extends BdcDashboardPage {
 				width: '100%',
 				height: '25px'
 			}
-		).component();
+		).withProperties({
+			ariaRole: 'tablist'
+		}).component();
 
 		this.rootContainer.addItem(this.resourceHeader, { CSSStyles: { 'padding-top': '15px' } });
 
@@ -65,11 +70,11 @@ export class BdcServiceStatusPage extends BdcDashboardPage {
 		}
 	}
 
-	private changeSelectedTabPage(newPage: azdata.FlexContainer): void {
+	private changeSelectedTabPage(newPage: BdcDashboardResourceStatusPage): void {
 		if (this.currentTabPage) {
-			this.rootContainer.removeItem(this.currentTabPage);
+			this.rootContainer.removeItem(this.currentTabPage.container);
 		}
-		this.rootContainer.addItem(newPage);
+		this.rootContainer.addItem(newPage.container);
 		this.currentTabPage = newPage;
 	}
 
@@ -88,7 +93,7 @@ export class BdcServiceStatusPage extends BdcDashboardPage {
 				const currentIndex = tabIndex++;
 				const resourceHeaderTab = createResourceHeaderTab(this.modelView.modelBuilder, resource);
 				this.createdTabs.set(resource.resourceName, resourceHeaderTab);
-				const resourceStatusPage: azdata.FlexContainer = new BdcDashboardResourceStatusPage(this.model, this.modelView, this.serviceName, resource.resourceName).container;
+				const resourceStatusPage = new BdcDashboardResourceStatusPage(this.model, this.modelView, this.serviceName, resource.resourceName);
 				resourceHeaderTab.div.onDidClick(() => {
 					// Don't need to do anything if this is already the currently selected tab
 					if (this.currentTab.index === currentIndex) {
@@ -96,12 +101,14 @@ export class BdcServiceStatusPage extends BdcDashboardPage {
 					}
 					if (this.currentTab) {
 						this.currentTab.tab.text.updateCssStyles(cssStyles.unselectedResourceHeaderTab);
+						this.currentTab.tab.div.ariaSelected = false;
 						this.resourceHeader.removeItem(this.currentTab.tab.div);
 						this.resourceHeader.insertItem(this.currentTab.tab.div, this.currentTab.index, { flex: '0 0 auto', CSSStyles: cssStyles.unselectedTabDiv });
 					}
 					this.changeSelectedTabPage(resourceStatusPage);
 					this.currentTab = { tab: resourceHeaderTab, index: currentIndex };
 					this.currentTab.tab.text.updateCssStyles(cssStyles.selectedResourceHeaderTab);
+					this.currentTab.tab.div.ariaSelected = true;
 					this.resourceHeader.removeItem(this.currentTab.tab.div);
 					this.resourceHeader.insertItem(this.currentTab.tab.div, this.currentTab.index, { flex: '0 0 auto', CSSStyles: cssStyles.selectedTabDiv });
 				});
@@ -110,6 +117,7 @@ export class BdcServiceStatusPage extends BdcDashboardPage {
 					this.changeSelectedTabPage(resourceStatusPage);
 					this.currentTab = { tab: resourceHeaderTab, index: currentIndex };
 					this.currentTab.tab.text.updateCssStyles(cssStyles.selectedResourceHeaderTab);
+					this.currentTab.tab.div.ariaSelected = true;
 					this.resourceHeader.addItem(resourceHeaderTab.div, { flex: '0 0 auto', CSSStyles: cssStyles.selectedTabDiv });
 				}
 				else {
@@ -127,7 +135,16 @@ export class BdcServiceStatusPage extends BdcDashboardPage {
  * @param resourceStatus The status of the resource we're creating
  */
 function createResourceHeaderTab(modelBuilder: azdata.ModelBuilder, resourceStatus: ResourceStatusModel): ServiceTab {
-	const resourceHeaderTab = modelBuilder.divContainer().withLayout({ width: '100px', height: '25px' }).withProperties({ clickable: true }).component();
+	const resourceHeaderTab = modelBuilder
+		.divContainer()
+		.withLayout({
+			width: '100px',
+			height: '25px'
+		})
+		.withProperties({
+			clickable: true,
+			ariaRole: 'tab'
+		}).component();
 	const innerContainer = modelBuilder.flexContainer().withLayout({ width: '100px', height: '25px', flexFlow: 'row' }).component();
 	const statusDot = modelBuilder.text().withProperties({ value: getHealthStatusDot(resourceStatus.healthStatus), CSSStyles: { 'color': 'red', 'font-size': '40px', 'width': '20px', 'text-align': 'right', ...cssStyles.nonSelectableText } }).component();
 	innerContainer.addItem(statusDot, { flex: '0 0 auto' });

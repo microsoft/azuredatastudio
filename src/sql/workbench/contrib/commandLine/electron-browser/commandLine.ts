@@ -20,7 +20,7 @@ import { ipcRenderer as ipc } from 'electron';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { localize } from 'vs/nls';
-import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
+import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { ILogService } from 'vs/platform/log/common/log';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -202,21 +202,18 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	// If an open and connectable query editor exists for the given URI, attach it to the connection profile
 	private async processFile(uriString: string, profile: IConnectionProfile, warnOnConnectFailure: boolean): Promise<void> {
 		let activeEditor = this._editorService.editors.filter(v => v.getResource().toString() === uriString).pop();
-		if (activeEditor) {
-			let queryInput = activeEditor as QueryInput;
-			if (queryInput && queryInput.state.connected) {
-				let options: IConnectionCompletionOptions = {
-					params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: queryInput },
-					saveTheConnection: false,
-					showDashboard: false,
-					showConnectionDialogOnError: warnOnConnectFailure,
-					showFirewallRuleOnError: warnOnConnectFailure
-				};
-				if (this._notificationService) {
-					this._notificationService.status(localize('connectingQueryLabel', "Connecting query file"), { hideAfter: 2500 });
-				}
-				await this._connectionManagementService.connect(profile, uriString, options);
+		if (activeEditor instanceof QueryEditorInput && activeEditor.state.connected) {
+			let options: IConnectionCompletionOptions = {
+				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: activeEditor },
+				saveTheConnection: false,
+				showDashboard: false,
+				showConnectionDialogOnError: warnOnConnectFailure,
+				showFirewallRuleOnError: warnOnConnectFailure
+			};
+			if (this._notificationService) {
+				this._notificationService.status(localize('connectingQueryLabel', "Connecting query file"), { hideAfter: 2500 });
 			}
+			await this._connectionManagementService.connect(profile, uriString, options);
 		}
 	}
 
