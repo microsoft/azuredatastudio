@@ -110,8 +110,8 @@ export class ManagePackagesDialogModel {
 	}
 
 	/**
- * Returns the current provider
- */
+	 * Returns the current provider
+	 */
 	public get currentPackageType(): string {
 		if (this._currentProvider) {
 			let provider = this._packageManageProviders.get(this._currentProvider);
@@ -149,8 +149,8 @@ export class ManagePackagesDialogModel {
 	}
 
 	/**
- * Returns the default location
- */
+	 * Returns the default location
+	 */
 	public get defaultProviderId(): string {
 		return this.options.defaultProviderId || Array.from(this.packageManageProviders.keys())[0];
 	}
@@ -191,8 +191,8 @@ export class ManagePackagesDialogModel {
 	}
 
 	/**
- * Returns a map of providerId to package types for given location
- */
+	 * Returns a map of providerId to package types for given location
+	 */
 	public getDefaultPackageType(): ProviderPackageType {
 		let defaultProviderId = this.defaultProviderId;
 		let packageTypes = this.getPackageTypes();
