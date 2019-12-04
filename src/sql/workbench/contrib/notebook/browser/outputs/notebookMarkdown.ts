@@ -5,7 +5,6 @@
 import * as path from 'vs/base/common/path';
 
 import { URI } from 'vs/base/common/uri';
-
 import { IMarkdownString, removeMarkdownEscapes } from 'vs/base/common/htmlContent';
 import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
 import * as marked from 'vs/base/common/marked/marked';
@@ -59,7 +58,7 @@ export class NotebookMarkdownRenderer {
 		let signalInnerHTML: () => void;
 		const withInnerHTML = new Promise(c => signalInnerHTML = c);
 
-		let notebookFolder = path.dirname(this._notebookURI.fsPath) + '/';
+		let notebookFolder = this._notebookURI ? path.join(path.dirname(this._notebookURI.fsPath), path.sep) : '';
 		if (!this._baseUrls.some(x => x === notebookFolder)) {
 			this._baseUrls.push(notebookFolder);
 		}
@@ -111,7 +110,12 @@ export class NotebookMarkdownRenderer {
 				text = removeMarkdownEscapes(text);
 			}
 			title = removeMarkdownEscapes(title);
-			href = removeMarkdownEscapes(href);
+			// only remove markdown escapes if it's a hyperlink, filepath usually can start with .{}_
+			// and the below function escapes them if it encounters in the path.
+			// dev note: using path.isAbsolute instead of isPathLocal since the latter accepts resolver (IRenderMime.IResolver) to check isLocal
+			if (!path.isAbsolute(href)) {
+				href = removeMarkdownEscapes(href);
+			}
 			if (
 				!href
 				|| !markdown.isTrusted
@@ -123,7 +127,7 @@ export class NotebookMarkdownRenderer {
 
 			} else {
 				// HTML Encode href
-				href = href.replace(/&/g, '&amp;')
+				href = href.replace(/&(?!amp;)/g, '&amp;')
 					.replace(/</g, '&lt;')
 					.replace(/>/g, '&gt;')
 					.replace(/"/g, '&quot;')
@@ -203,7 +207,7 @@ export class NotebookMarkdownRenderer {
 			href = this.resolveUrl(base, href);
 		}
 		try {
-			href = encodeURI(href).replace(/%5C/g, '\\').replace(/%25/g, '%');
+			href = encodeURI(href).replace(/%5C/g, '\\').replace(/%7C/g, '|').replace(/%25/g, '%');
 		} catch (e) {
 			return null;
 		}

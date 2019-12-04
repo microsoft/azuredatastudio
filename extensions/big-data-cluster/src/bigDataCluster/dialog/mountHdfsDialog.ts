@@ -5,14 +5,9 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
 import { ClusterController, MountInfo, MountState } from '../controller/clusterControllerApi';
 import { HdfsDialogBase, HdfsDialogModelBase, HdfsDialogProperties } from './hdfsDialogBase';
-
-const localize = nls.loadMessageBundle();
-
-const mountConfigutationTitle = localize('mount.main.section', "Mount Configuration");
-const hdfsPathTitle = localize('mount.hdfsPath.title', "HDFS Path");
+import * as loc from '../localizedConstants';
 
 /**
  * Converts a comma-delimited set of key value pair credentials to a JSON object.
@@ -38,7 +33,7 @@ function convertCredsToJson(creds: string): { credentials: {} } {
 	}
 
 	validPairs.forEach(pair => {
-		const formattingErr = localize('mount.err.formatting', "Bad formatting of credentials at {0}", pair);
+		const formattingErr = loc.badCredentialsFormatting(pair);
 		try {
 			// # remove escaped characters for ,
 			pair = pair.replace('\\,', ',').trim();
@@ -82,7 +77,7 @@ export class MountHdfsDialogModel extends HdfsDialogModelBase<MountHdfsPropertie
 		azdata.tasks.startBackgroundOperation(
 			{
 				connection: undefined,
-				displayName: localize('mount.task.name', "Mounting HDFS folder on path {0}", this.props.hdfsPath),
+				displayName: loc.mountTask(this.props.hdfsPath),
 				description: '',
 				isCancelable: false,
 				operation: op => {
@@ -95,16 +90,15 @@ export class MountHdfsDialogModel extends HdfsDialogModelBase<MountHdfsPropertie
 	private async onSubmit(controller: ClusterController, op: azdata.BackgroundOperation): Promise<void> {
 		try {
 			await controller.mountHdfs(this.props.hdfsPath, this.props.remoteUri, this.credentials);
-			op.updateStatus(azdata.TaskStatus.InProgress, localize('mount.task.submitted', "Mount creation has started"));
+			op.updateStatus(azdata.TaskStatus.InProgress, loc.mountTaskSubmitted);
 
 			// Wait until status has changed or some sensible time expired. If it goes over 2 minutes we assume it's "working"
 			// as there's no other API that'll give us this for now
 			let result = await this.waitOnMountStatusChange(controller);
-			let msg = result.state === MountState.Ready ? localize('mount.task.complete', "Mounting HDFS folder is complete")
-				: localize('mount.task.inprogress', "Mounting is likely to complete, check back later to verify");
+			let msg = result.state === MountState.Ready ? loc.mountCompleted : loc.mountInProgress;
 			op.updateStatus(azdata.TaskStatus.Succeeded, msg);
 		} catch (error) {
-			const errMsg = localize('mount.task.error', "Error mounting folder: {0}", (error instanceof Error ? error.message : error));
+			const errMsg = loc.mountError(error);
 			vscode.window.showErrorMessage(errMsg);
 			op.updateStatus(azdata.TaskStatus.Failed, errMsg);
 		}
@@ -118,7 +112,7 @@ export class MountHdfsDialogModel extends HdfsDialogModelBase<MountHdfsPropertie
 				try {
 					let mountInfo = await this.getMountStatus(controller, this.props.hdfsPath);
 					if (mountInfo && mountInfo.error || mountInfo.state === MountState.Error) {
-						reject(new Error(mountInfo.error ? mountInfo.error : localize('mount.error.unknown', "Unknown error occurred during the mount process")));
+						reject(new Error(mountInfo.error ? mountInfo.error : loc.mountErrorUnknown));
 					} else if (mountInfo.state === MountState.Ready || retries <= 0) {
 						resolve(mountInfo);
 					} else {
@@ -149,7 +143,7 @@ export class MountHdfsDialog extends HdfsDialogBase<MountHdfsProperties, void> {
 	private credentialsInputBox: azdata.InputBoxComponent;
 
 	constructor(model: MountHdfsDialogModel) {
-		super(localize('mount.dialog.title', "Mount HDFS Folder (preview)"), model);
+		super(loc.mountFolder, model);
 	}
 
 	protected getMainSectionComponents(): (azdata.FormComponentGroup | azdata.FormComponent)[] {
@@ -177,28 +171,28 @@ export class MountHdfsDialog extends HdfsDialogBase<MountHdfsProperties, void> {
 				components: [
 					{
 						component: this.pathInputBox,
-						title: hdfsPathTitle,
+						title: loc.hdfsPath,
 						required: true,
 						layout: {
-							info: localize('mount.hdfsPath.info', "Path to a new (non-existing) directory which you want to associate with the mount")
+							info: loc.hdfsPathInfo
 						}
 					}, {
 						component: this.remoteUriInputBox,
-						title: localize('mount.remoteUri.title', "Remote URI"),
+						title: loc.remoteUri,
 						required: true,
 						layout: {
-							info: localize('mount.remoteUri.info', "The URI to the remote data source. Example for ADLS: abfs://fs@saccount.dfs.core.windows.net/")
+							info: loc.remoteUriInfo
 						}
 					}, {
 						component: this.credentialsInputBox,
-						title: localize('mount.credentials.title', "Credentials"),
+						title: loc.credentials,
 						required: false,
 						layout: {
-							info: localize('mount.credentials.info', "Mount credentials for authentication to remote data source for reads")
+							info: loc.credentialsInfo
 						}
 					}
 				],
-				title: mountConfigutationTitle
+				title: loc.mountConfiguration
 			}];
 	}
 
@@ -225,7 +219,7 @@ export class RefreshMountDialog extends HdfsDialogBase<MountHdfsProperties, void
 	private pathInputBox: azdata.InputBoxComponent;
 
 	constructor(model: RefreshMountModel) {
-		super(localize('refreshmount.dialog.title', "Refresh Mount"), model);
+		super(loc.refreshMount, model);
 	}
 
 	protected getMainSectionComponents(): (azdata.FormComponentGroup | azdata.FormComponent)[] {
@@ -238,11 +232,11 @@ export class RefreshMountDialog extends HdfsDialogBase<MountHdfsProperties, void
 				components: [
 					{
 						component: this.pathInputBox,
-						title: hdfsPathTitle,
+						title: loc.hdfsPath,
 						required: true
 					}
 				],
-				title: mountConfigutationTitle
+				title: loc.mountConfiguration
 			}];
 	}
 
@@ -280,7 +274,7 @@ export class RefreshMountModel extends HdfsDialogModelBase<MountHdfsProperties, 
 		azdata.tasks.startBackgroundOperation(
 			{
 				connection: undefined,
-				displayName: localize('refreshmount.task.name', "Refreshing HDFS Mount on path {0}", this.props.hdfsPath),
+				displayName: loc.refreshMountTask(this.props.hdfsPath),
 				description: '',
 				isCancelable: false,
 				operation: op => {
@@ -293,7 +287,7 @@ export class RefreshMountModel extends HdfsDialogModelBase<MountHdfsProperties, 
 	private async onSubmit(controller: ClusterController, op: azdata.BackgroundOperation): Promise<void> {
 		try {
 			await controller.refreshMount(this.props.hdfsPath);
-			op.updateStatus(azdata.TaskStatus.Succeeded, localize('refreshmount.task.submitted', "Refresh mount request submitted"));
+			op.updateStatus(azdata.TaskStatus.Succeeded, loc.refreshMountTaskSubmitted);
 		} catch (error) {
 			const errMsg = (error instanceof Error) ? error.message : error;
 			vscode.window.showErrorMessage(errMsg);
@@ -306,7 +300,7 @@ export class DeleteMountDialog extends HdfsDialogBase<MountHdfsProperties, void>
 	private pathInputBox: azdata.InputBoxComponent;
 
 	constructor(model: DeleteMountModel) {
-		super(localize('deleteMount.dialog.title', "Delete Mount"), model);
+		super(loc.deleteMount, model);
 	}
 
 	protected getMainSectionComponents(): (azdata.FormComponentGroup | azdata.FormComponent)[] {
@@ -319,11 +313,11 @@ export class DeleteMountDialog extends HdfsDialogBase<MountHdfsProperties, void>
 				components: [
 					{
 						component: this.pathInputBox,
-						title: hdfsPathTitle,
+						title: loc.hdfsPath,
 						required: true
 					}
 				],
-				title: mountConfigutationTitle
+				title: loc.mountConfiguration
 			}];
 	}
 
@@ -361,7 +355,7 @@ export class DeleteMountModel extends HdfsDialogModelBase<MountHdfsProperties, v
 		azdata.tasks.startBackgroundOperation(
 			{
 				connection: undefined,
-				displayName: localize('deletemount.task.name', "Deleting HDFS Mount on path {0}", this.props.hdfsPath),
+				displayName: loc.deleteMountTask(this.props.hdfsPath),
 				description: '',
 				isCancelable: false,
 				operation: op => {
@@ -374,7 +368,7 @@ export class DeleteMountModel extends HdfsDialogModelBase<MountHdfsProperties, v
 	private async onSubmit(controller: ClusterController, op: azdata.BackgroundOperation): Promise<void> {
 		try {
 			await controller.deleteMount(this.props.hdfsPath);
-			op.updateStatus(azdata.TaskStatus.Succeeded, localize('deletemount.task.submitted', "Delete mount request submitted"));
+			op.updateStatus(azdata.TaskStatus.Succeeded, loc.deleteMountTaskSubmitted);
 		} catch (error) {
 			const errMsg = (error instanceof Error) ? error.message : error;
 			vscode.window.showErrorMessage(errMsg);

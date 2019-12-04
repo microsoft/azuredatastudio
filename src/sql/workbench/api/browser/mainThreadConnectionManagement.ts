@@ -60,6 +60,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 				saveProfile: inputProfile.saveProfile,
 				id: inputProfile.id,
 				azureTenantId: inputProfile.azureTenantId,
+				azureAccount: inputProfile.azureAccount,
 				options: inputProfile.options
 			};
 			return outputProfile;

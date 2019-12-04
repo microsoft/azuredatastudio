@@ -46,9 +46,6 @@ import { AsyncDataTree } from 'vs/base/browser/ui/tree/asyncDataTree';
 import { ExplorerItem, NewExplorerItem } from 'vs/workbench/contrib/files/common/explorerModel';
 import { onUnexpectedError, getErrorMessage } from 'vs/base/common/errors';
 
-// {{SQL CARBON EDIT}}
-import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
-
 export const NEW_FILE_COMMAND_ID = 'explorer.newFile';
 export const NEW_FILE_LABEL = nls.localize('newFile', "New File");
 
@@ -155,15 +152,13 @@ export class GlobalNewUntitledFileAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		// {{SQL CARBON EDIT}} - Make editorService protected and add other services
-		@IEditorService protected readonly editorService: IEditorService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService
+		@IEditorService private readonly editorService: IEditorService
 	) {
 		super(id, label);
 	}
 
 	run(): Promise<any> {
-		return this.instantiationService.invokeFunction(openNewQuery); // {{SQL CARBON EDIT}}
+		return this.editorService.openEditor({ options: { pinned: true } }); // untitled are always pinned
 	}
 }
 

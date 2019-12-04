@@ -583,7 +583,7 @@ if (require.main === module) {
 				console.log('Reading git index versions...');
 
 				createGitIndexVinyls(some)
-					.then(vinyls => new Promise((c, e) => hygiene(es.readArray(vinyls))
+					.then(vinyls => new Promise((c, e) => hygiene(es.readArray(vinyls).pipe(filter(all))) // {{SQL CARBON EDIT}} filter committed files
 						.on('end', () => c())
 						.on('error', e)))
 					.catch(err => {

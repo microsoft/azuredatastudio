@@ -167,7 +167,8 @@ export enum ModelComponentTypes {
 	DiffEditor,
 	Dom,
 	Hyperlink,
-	Image
+	Image,
+	RadioCardGroup
 }
 
 export enum ColumnSizingMode {
@@ -349,7 +350,8 @@ export enum DeclarativeDataType {
 	string = 'string',
 	category = 'category',
 	boolean = 'boolean',
-	editableCategory = 'editableCategory'
+	editableCategory = 'editableCategory',
+	component = 'component'
 }
 
 export enum CardType {
@@ -390,7 +392,8 @@ export class TreeComponentItem extends vsExtTypes.TreeItem {
 
 export enum AzureResource {
 	ResourceManagement = 0,
-	Sql = 1
+	Sql = 1,
+	OssRdbms = 2
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {
@@ -695,6 +698,14 @@ export class ConnectionProfile {
 
 	set azureTenantId(value: string) {
 		this.options['azureTenantId'] = value;
+	}
+
+	get azureAccount(): string {
+		return this.options['azureAccount'];
+	}
+
+	set azureAccount(value: string) {
+		this.options['azureAccount'] = value;
 	}
 
 	options: { [key: string]: any } = {};
