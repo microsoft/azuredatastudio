@@ -20,9 +20,12 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeSelectionHandler } from 'sql/workbench/contrib/objectExplorer/browser/treeSelectionHandler';
 import { TreeUpdateUtils } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
-import Severity from 'vs/base/common/severity';
 import { TreeNode } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
 import { VIEWLET_ID } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
+import { ILogService } from 'vs/platform/log/common/log';
+import { getErrorMessage } from 'vs/base/common/errors';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { localize } from 'vs/nls';
 
 //#region -- Data Explorer
 export const SCRIPT_AS_CREATE_COMMAND_ID = 'dataExplorer.scriptAsCreate';
@@ -307,39 +310,36 @@ CommandsRegistry.registerCommand({
 // Refresh Action for Scriptable objects
 CommandsRegistry.registerCommand({
 	id: OE_REFRESH_COMMAND_ID,
-	handler: async (accessor, args: ObjectExplorerActionsContext) => {
+	handler: async (accessor, args: ObjectExplorerActionsContext): Promise<void> => {
 		const connectionManagementService = accessor.get(IConnectionManagementService);
 		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const objectExplorerService = accessor.get(IObjectExplorerService);
-		const errorMessageService = accessor.get(IErrorMessageService);
+		const logService = accessor.get(ILogService);
+		const notificationService = accessor.get(INotificationService);
 		const connection = new ConnectionProfile(capabilitiesService, args.connectionProfile);
-		let treeNode: TreeNode;
 		if (connectionManagementService.isConnected(undefined, connection)) {
-			treeNode = await getTreeNode(args, objectExplorerService);
-			if (treeNode === undefined) {
-				objectExplorerService.updateObjectExplorerNodes(connection.toIConnectionProfile()).then(() => {
-					treeNode = objectExplorerService.getObjectExplorerNode(connection);
-				});
+			let treeNode = await getTreeNode(args, objectExplorerService);
+			if (!treeNode) {
+				await objectExplorerService.updateObjectExplorerNodes(connection.toIConnectionProfile());
+				treeNode = objectExplorerService.getObjectExplorerNode(connection);
+			}
+			if (treeNode) {
+				const tree = objectExplorerService.getServerTreeView().tree;
+				try {
+					await tree.collapse(treeNode);
+					await objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode);
+					await tree.refresh(treeNode);
+					await tree.expand(treeNode);
+				} catch (err) {
+					// Display message to the user but also log the entire error to the console for the stack trace
+					notificationService.error(localize('refreshError', "An error occurred refreshing node '{0}': {1}", args.nodeInfo.label, getErrorMessage(err)));
+					logService.error(err);
+				}
+
+			} else {
+				logService.error(`Could not find tree node for node ${args.nodeInfo.label}`);
 			}
 		}
-		const tree = objectExplorerService.getServerTreeView().tree;
-		if (treeNode) {
-			return tree.collapse(treeNode).then(() => {
-				return objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode).then(() => {
-					return tree.refresh(treeNode).then(() => {
-						return tree.expand(treeNode);
-					}, refreshError => {
-						return Promise.resolve(true);
-					});
-				}, error => {
-					errorMessageService.showDialog(Severity.Error, '', error);
-					return Promise.resolve(true);
-				});
-			}, collapseError => {
-				return Promise.resolve(true);
-			});
-		}
-		return Promise.resolve(true);
 	}
 });
 //#endregion
