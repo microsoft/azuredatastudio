@@ -734,8 +734,14 @@ suite('Cell Model', function (): void {
 		});
 
 		test('No Kernel provided', async function (): Promise<void> {
+			mockClientSession.reset();
 			mockClientSession.setup(s => s.kernel).returns(() => null);
+			mockClientSession.setup(s => s.isReady).returns(() => true);
+			mockNotebookModel.reset();
 			mockNotebookModel.setup(m => m.defaultKernel).returns(() => null);
+			mockNotebookModel.setup(m => m.clientSession).returns(() => mockClientSession.object);
+			mockNotebookModel.setup(m => m.updateActiveCell(TypeMoq.It.isAny()));
+			cellOptions.notebook = mockNotebookModel.object;
 
 			let cell = factory.createCell(codeCellContents, cellOptions);
 			let result = await cell.runCell();
