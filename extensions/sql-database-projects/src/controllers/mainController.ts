@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 /**
@@ -29,8 +28,8 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	private initializeDatabaseProjects(): void {
-		vscode.commands.registerCommand('sqlDatabaseProjects.new', (profile: azdata.IConnectionProfile) => { console.log('new database project called'); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.open', (profile: azdata.IConnectionProfile) => { console.log('open database project called'); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.new', () => { console.log('new database project called'); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.open', () => { console.log('open database project called'); });
 	}
 
 	public dispose(): void {
