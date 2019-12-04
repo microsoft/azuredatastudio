@@ -167,7 +167,8 @@ export enum ModelComponentTypes {
 	DiffEditor,
 	Dom,
 	Hyperlink,
-	Image
+	Image,
+	RadioCardGroup
 }
 
 export enum ColumnSizingMode {
