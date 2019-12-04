@@ -190,7 +190,3 @@ steps:
     displayName: 'Component Detection'
     inputs:
       failOnAlert: true
-
-  - script: 'echo "##vso[build.addbuildtag]Scheduled" '
-    displayName: 'Add scheduled tag if needed'
-    condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['Build.Reason'], 'Schedule'))

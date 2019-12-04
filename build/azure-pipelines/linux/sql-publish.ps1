@@ -1,12 +1,5 @@
-Param(
-	[string]$sourcesDir,
-	[string]$artifactsDir,
-	[string]$storageKey,
-	[string]$documentDbKey
-)
-
-$env:AZURE_STORAGE_ACCESS_KEY_2 = $storageKey
-$env:AZURE_DOCUMENTDB_MASTERKEY = $documentDbKey
+. build/azure-pipelines/win32/exec.ps1
+$ErrorActionPreference = "Stop"
 
 $VersionJson = Get-Content -Raw -Path "$artifactsDir\version.json" | ConvertFrom-Json
 $Version = $VersionJson.version
