@@ -252,14 +252,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Get the connection providers map and filter out CMS.
 	 */
 	public getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string } {
-		let dedupMap = {};
+		let uniqueProvidersMap = {};
 		entries(providerNameToDisplayNameMap).forEach(p => {
 			if (p[0] !== Constants.cmsProviderName) {
-				dedupMap[p[0]] = p[1];
+				uniqueProvidersMap[p[0]] = p[1];
 			}
 		});
 
-		return dedupMap;
+		return uniqueProvidersMap;
 	}
 
 	/**
