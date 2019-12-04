@@ -722,12 +722,24 @@ suite('Cell Model', function (): void {
 			assert.strictEqual(result, false, 'Markdown cells should not be runnable');
 		});
 
-		test('No Kernel provided', async function (): Promise<void> {
-			mockClientSession.setup(s => s.kernel).returns(() => null);
+		test('No client session provided', async function (): Promise<void> {
+			mockNotebookModel.reset();
+			mockNotebookModel.setup(m => m.clientSession).returns(() => undefined);
+			mockNotebookModel.setup(m => m.updateActiveCell(TypeMoq.It.isAny()));
+			cellOptions.notebook = mockNotebookModel.object;
 
 			let cell = factory.createCell(codeCellContents, cellOptions);
 			let result = await cell.runCell();
-			assert.strictEqual(result, false, 'Runing code cell without a kernel should fail');
+			assert.strictEqual(result, false, 'Running code cell without a client session should fail');
+		});
+
+		test('No Kernel provided', async function (): Promise<void> {
+			mockClientSession.setup(s => s.kernel).returns(() => null);
+			mockNotebookModel.setup(m => m.defaultKernel).returns(() => null);
+
+			let cell = factory.createCell(codeCellContents, cellOptions);
+			let result = await cell.runCell();
+			assert.strictEqual(result, false, 'Running code cell without a kernel should fail');
 		});
 
 		test('Kernel fails to connect', async function (): Promise<void> {
@@ -736,7 +748,7 @@ suite('Cell Model', function (): void {
 
 			let cell = factory.createCell(codeCellContents, cellOptions);
 			let result = await cell.runCell();
-			assert.strictEqual(result, false, 'Runing code cell should fail after connection fails');
+			assert.strictEqual(result, false, 'Running code cell should fail after connection fails');
 		});
 
 		test('Normal execute', async function (): Promise<void> {
