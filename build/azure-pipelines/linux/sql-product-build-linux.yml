@@ -125,15 +125,6 @@ steps:
 
   - script: | # WHY ARE WE DOING THIS?
       set -e
-      PACKAGEJSON="$(Build.SourcesDirectory)/package.json"
-      VERSION=$(node -p "require(\"$PACKAGEJSON\").version")
-      COMMIT_ID=$(git rev-parse HEAD)
-
-      echo -e "{  \"version\": \"$VERSION\", \"quality\": \"$VSCODE_QUALITY\", \"commit\": \"$COMMIT_ID\" }" > "$(Build.ArtifactStagingDirectory)/version.json"
-    displayName: 'Create version.json'
-
-  - script: | # WHY ARE WE DOING THIS?
-      set -e
       for f in *
       do
       shasum -a 256 "$f" >> sha256hashes.txt

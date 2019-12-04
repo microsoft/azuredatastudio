@@ -272,27 +272,6 @@ steps:
       MaxRetryAttempts: 20
     condition: and(succeeded(), eq(variables['signed'], true))
 
-  - powershell: | # WHY!
-      $PackageJson = Get-Content -Raw -Path "$(Build.SourcesDirectory)\package.json" | ConvertFrom-Json
-
-      $jsonResult = @{
-      version = $PackageJson.version
-      quality = $env:VSCODE_QUALITY
-      commit = "$(git rev-parse HEAD)"
-      }
-
-      $jsonResult | ConvertTo-Json | Out-File "$(Build.ArtifactStagingDirectory)\version.json"
-    displayName: 'Create version.json'
-
-  - powershell: | # WHY
-      Get-ChildItem "." |
-      ForEach-Object {
-          certutil.exe -hashfile $_.FullName SHA256 >> sha256hashes.txt
-      }
-    workingDirectory: '$(Build.ArtifactStagingDirectory)'
-    displayName: 'Get SHA256 Hashes'
-    continueOnError: true
-
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
     inputs:
