@@ -57,6 +57,7 @@ jobs:
   - macOS
   - Linux
   - Windows
+  - Windows_Test
   steps:
   - template: sql-release.yml
 
