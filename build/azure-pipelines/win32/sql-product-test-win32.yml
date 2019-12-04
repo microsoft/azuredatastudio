@@ -4,7 +4,9 @@ steps:
     buildType: 'current'
     targetPath: '$(Agent.TempDirectory)'
     artifactName: drop
-    itemPattern: '**/azuredatastudio-win32-x64.zip,*.vsix'
+    itemPattern: |
+      '**/azuredatastudio-win32-x64.zip'
+      '**/vsix/*.vsix'
 
 - task: NodeTool@0
   inputs:
