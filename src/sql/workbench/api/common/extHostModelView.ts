@@ -79,7 +79,12 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return container;
 	}
 
+	private cardDeprecationMessagePrinted = false;
 	card(): azdata.ComponentBuilder<azdata.CardComponent> {
+		if (!this.cardDeprecationMessagePrinted) {
+			console.warn(`Extension '${this._extension.identifier.value}' is using card component which has been replaced by radioCardGroup. the card component will be removed in a future release.`);
+			this.cardDeprecationMessagePrinted = true;
+		}
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.CardComponent> = this.getComponentBuilder(new CardWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
