@@ -59,7 +59,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 				tenant = azureAccount.properties.tenants[listOfTenants.indexOf(pickedTenant)];
 			}
 
-			terminalService.getOrCreateCloudConsole(azureAccount, tenant, tokens);
+			await terminalService.getOrCreateCloudConsole(azureAccount, tenant, tokens);
 		} catch (ex) {
 			console.error(ex);
 			window.showErrorMessage(ex);

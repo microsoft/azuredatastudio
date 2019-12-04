@@ -46,7 +46,7 @@ export class AzureTerminalService implements IAzureTerminalService {
 		}
 
 		const consoleUri = provisionResult.properties.uri;
-		this.createTerminal(consoleUri, token);
+		return this.createTerminal(consoleUri, token);
 	}
 
 
@@ -56,6 +56,7 @@ export class AzureTerminalService implements IAzureTerminalService {
 			name: localize('azure.cloudConsole', "Azure Cloud Shell"),
 			pty: azureTerminal
 		});
+
 		terminal.show();
 	}
 
@@ -94,7 +95,7 @@ class AzureTerminal implements vscode.Pseudoterminal {
 
 		this.shell = this.shell.toLowerCase();
 
-		this.resetTerminalSize(initialDimensions);
+		return this.resetTerminalSize(initialDimensions);
 	}
 
 	close(): void {
@@ -107,8 +108,8 @@ class AzureTerminal implements vscode.Pseudoterminal {
 		this.socket.terminate();
 	}
 
-	setDimensions(dimensions: vscode.TerminalDimensions): void {
-		this.resetTerminalSize(dimensions);
+	async setDimensions(dimensions: vscode.TerminalDimensions): Promise<void> {
+		return this.resetTerminalSize(dimensions);
 	}
 
 	private async resetTerminalSize(dimensions: vscode.TerminalDimensions): Promise<void> {
@@ -139,7 +140,7 @@ class AzureTerminal implements vscode.Pseudoterminal {
 
 			// Reconnect if something bad happens
 			this.socket.on('close', () => {
-				this.resetTerminalSize(this.terminalDimensions);
+				this.resetTerminalSize(this.terminalDimensions).catch(e => console.error(e));
 			});
 
 			// Keep alives
@@ -170,8 +171,12 @@ class AzureTerminal implements vscode.Pseudoterminal {
 
 		const terminalUri = terminalResult.socketUri;
 
+		if (terminalResult.error) {
+			vscode.window.showErrorMessage(terminalResult.error.message);
+		}
+
 		if (!terminalUri) {
-			console.log(terminalUri);
+			console.log(terminalResult);
 			throw new Error(terminalResult);
 		}
 
