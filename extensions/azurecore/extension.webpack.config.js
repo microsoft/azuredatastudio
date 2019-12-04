@@ -12,7 +12,9 @@ const fs = require('fs');
 const path = require('path');
 
 const externals = {
-	'node-fetch': 'commonjs node-fetch'
+	'node-fetch': 'commonjs node-fetch',
+	'bufferutil': 'commonjs bufferutil',
+	'utf-8-validate': 'commonjs utf-8-validate'
 };
 
 // conditionally add ws if we are going to be running in a node environment
