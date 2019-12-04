@@ -13,3 +13,8 @@
 	flex-direction: row;
 	margin-right: 5px;
 }
+
+.monaco-select-box.monaco-select-box-dropdown-padding {
+	padding: 2px 8px;
+	padding: 0 22px 0 6px
+}
