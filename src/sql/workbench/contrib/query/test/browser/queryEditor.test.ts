@@ -24,6 +24,7 @@ import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledText
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
 import { TestQueryModelService } from 'sql/platform/query/test/common/testQueryModelService';
 import { Event } from 'vs/base/common/event';
+import { SimpleUriLabelService } from 'vs/editor/standalone/browser/simpleServices';
 
 suite('SQL QueryEditor Tests', () => {
 	let instantiationService: TypeMoq.Mock<InstantiationService>;
