@@ -34,7 +34,7 @@ steps:
   displayName: Unzip artifact
 
 - powershell: |
-    cp $(Agent.TempDirectory)/vsix/* extensions/integration-tests/extensionInstallers
+    cp $(Agent.TempDirectory)/vsix/* extensions/integration-tests/extensionInstallers --verbose
   displayName: Copy Extension Installers
 
 - task: AzureKeyVault@1
