@@ -14,6 +14,7 @@ import { EncodingMode } from 'vs/workbench/common/editor';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
 import { IFileService } from 'vs/platform/files/common/files';
+import { ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 
 type PublicPart<T> = { [K in keyof T]: T[K] };
 
@@ -79,6 +80,14 @@ export class FileQueryEditorInput extends QueryEditorInput implements PublicPart
 
 	public setForceOpenAsBinary() {
 		this.text.setForceOpenAsBinary();
+	}
+
+	save(groupId: number, options?: ITextFileSaveOptions): Promise<boolean> {
+		return this.text.save(groupId, options);
+	}
+
+	saveAs(group: number, options?: ITextFileSaveOptions): Promise<boolean> {
+		return this.text.saveAs(group, options);
 	}
 
 	public isResolved(): boolean {

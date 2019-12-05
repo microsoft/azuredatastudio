@@ -193,7 +193,7 @@ const externalExtensions = [
     // This is the list of SQL extensions which the source code is included in this repository, but
     // they get packaged separately. Adding extension name here, will make the build to create
     // a separate vsix package for the extension and the extension will be excluded from the main package.
-    // Any extension not included here, will be installed by default.
+    // Any extension not included here will be installed by default.
     'admin-tool-ext-win',
     'agent',
     'import',
@@ -203,7 +203,8 @@ const externalExtensions = [
     'schema-compare',
     'cms',
     'query-history',
-    'liveshare'
+    'liveshare',
+    'database-project'
 ];
 // extensions that require a rebuild since they have native parts
 const rebuildExtensions = [

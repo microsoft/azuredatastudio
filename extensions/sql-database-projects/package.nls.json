@@ -1,0 +1,6 @@
+{
+	"sqlDatabaseProjects.displayName": "Database Projects",
+	"sqlDatabaseProjects.description": "Design and deploy SQL database schemas",
+	"sqlDatabaseProjects.new": "New Database Project",
+	"sqlDatabaseProjects.open": "Open Database Project"
+}

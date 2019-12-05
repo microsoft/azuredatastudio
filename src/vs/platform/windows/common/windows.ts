@@ -25,6 +25,7 @@ export interface IBaseOpenWindowsOptions {
 
 export interface IOpenWindowOptions extends IBaseOpenWindowsOptions {
 	forceNewWindow?: boolean;
+	preferNewWindow?: boolean;
 
 	noRecentEntry?: boolean;
 }
@@ -219,8 +220,9 @@ export interface IAddFoldersRequest {
 }
 
 export interface IWindowConfiguration extends ParsedArgs {
-	machineId: string;
-	windowId: number;
+	machineId?: string; // NOTE: This is undefined in the web, the telemetry service directly resolves this.
+	windowId: number; // TODO: should we deprecate this in favor of sessionId?
+	sessionId: string;
 	logLevel: LogLevel;
 
 	mainPid: number;
@@ -245,19 +247,14 @@ export interface IWindowConfiguration extends ParsedArgs {
 	fullscreen?: boolean;
 	maximized?: boolean;
 	highContrast?: boolean;
-	frameless?: boolean;
 	accessibilitySupport?: boolean;
 	partsSplashPath?: string;
 
-	perfStartTime?: number;
-	perfAppReady?: number;
-	perfWindowLoadTime?: number;
 	perfEntries: ExportData;
 
 	filesToOpenOrCreate?: IPath[];
 	filesToDiff?: IPath[];
 	filesToWait?: IPathsToWaitFor;
-	termProgram?: string;
 }
 
 export interface IRunActionInWindowRequest {
