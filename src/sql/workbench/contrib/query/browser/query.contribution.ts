@@ -7,7 +7,7 @@ import 'vs/css!sql/media/overwriteVsIcons';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
+import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { IConfigurationRegistry, Extensions as ConfigExtensions, IConfigurationPropertySchema } from 'vs/platform/configuration/common/configurationRegistry';
 import { SyncActionDescriptor, MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import { KeyMod, KeyCode, KeyChord } from 'vs/base/common/keyCodes';
@@ -31,7 +31,7 @@ import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } fr
 
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, QueryStatusStatusBarContributions } from 'sql/workbench/contrib/query/browser/statusBarItems';
-import { SqlFlavorStatusbarItem } from 'sql/workbench/contrib/query/browser/flavorStatus';
+import { SqlFlavorStatusbarItem, ChangeFlavorAction } from 'sql/workbench/contrib/query/browser/flavorStatus';
 import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions } from 'vs/workbench/common/editor';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
 import { FileQueryEditorInputFactory, UntitledQueryEditorInputFactory } from 'sql/workbench/contrib/query/common/queryInputFactory';
@@ -76,7 +76,7 @@ Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(new EditorDescriptor(QueryEditor, QueryEditor.ID, localize('queryEditor.name', "Query Editor")), [new SyncDescriptor(FileQueryEditorInput), new SyncDescriptor(UntitledQueryEditorInput)]);
 
-const actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
+const actionRegistry = <IWorkbenchActionRegistry>Registry.as(ActionExtensions.WorkbenchActions);
 
 new NewQueryTask().registerTask();
 
@@ -203,6 +203,16 @@ actionRegistry.registerWorkbenchAction(
 		QueryEditorVisibleCondition
 	),
 	ToggleQueryResultsKeyboardAction.LABEL
+);
+
+// Register Flavor Action
+actionRegistry.registerWorkbenchAction(
+	SyncActionDescriptor.create(
+		ChangeFlavorAction,
+		ChangeFlavorAction.ID,
+		ChangeFlavorAction.LABEL
+	),
+	'Change Language Flavor'
 );
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
