@@ -179,7 +179,7 @@ steps:
       $Repo = "$(pwd)"
       $Root = "$Repo\.."
       $LegacyServer = "$Root\azuredatastudio-reh-win32-x64"
-      $ServerZip = ".build\win32\server\azuredatastudio-server-win32-x64.zip"
+      $ServerZip = ".build\win32-x64\server\azuredatastudio-server-win32-x64.zip"
       exec { .\node_modules\7zip\7zip-lite\7z.exe a -tzip $ServerZip $LegacyServer -r }
     displayName: 'Package server'
 
@@ -241,7 +241,7 @@ steps:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
     inputs:
-      PathtoPublish: '.build'
+      PathtoPublish: '.build/win32-x64'
       ArtifactName: drop
 
   - task: PublishTestResults@2

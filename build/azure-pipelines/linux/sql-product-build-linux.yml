@@ -167,11 +167,12 @@ steps:
     displayName: 'Get SHA256 Hashes'
     continueOnError: true
 
+  - script: |
+      cp .build/**/*.{deb,rpm,zip,.txt} $(Build.ArtifactStagingDirectory)
+    displayName: Copy artifact to staging area
+
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
-    inputs:
-      PathtoPublish: '.build'
-      ArtifactName: drop
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results test-results.xml'
