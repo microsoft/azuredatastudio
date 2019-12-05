@@ -5,8 +5,6 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { normalize, join } from 'path';
-import * as fs from 'fs';
 
 const TEST_SETUP_COMPLETED_TEXT: string = 'Test Setup Completed';
 const EXTENSION_LOADED_TEXT: string = 'Test Extension Loaded';
@@ -17,17 +15,6 @@ let statusBarItemTimer: NodeJS.Timer;
 export function activate(context: vscode.ExtensionContext) {
 	let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 	vscode.commands.registerCommand('test.setupIntegrationTest', async () => {
-		let extensionInstallersFolder = normalize(join(__dirname, '../extensionInstallers'));
-		console.info(`extensionInstallersFolder=${extensionInstallersFolder}`);
-		let installers = fs.readdirSync(extensionInstallersFolder);
-		for (let i = 0; i < installers.length; i++) {
-			if (installers[i].endsWith('.vsix')) {
-				let installerFullPath = join(extensionInstallersFolder, installers[i]);
-				console.info(`installing extension at ${installerFullPath}`);
-				await azdata.extensions.install(installerFullPath);
-				console.info(`extension has been installed successfully. vsix: ${installers[i]}`);
-			}
-		}
 		await setConfiguration('workbench.enablePreviewFeatures', true);
 		await setConfiguration('workbench.showConnectDialogOnStartup', false);
 		await setConfiguration('test.testSetupCompleted', true);

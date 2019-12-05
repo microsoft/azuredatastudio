@@ -17,6 +17,8 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 	:: Run from a built: need to compile all test extensions
 	call yarn gulp compile-extension:integration-tests
 
+	for /r %i in .\extensions\integration-tests\extensionInstallers do %INTEGRATION_TEST_ELECTRON_PATH% --install-extension %i
+
 	echo "Running integration tests with '%INTEGRATION_TEST_ELECTRON_PATH%' as build."
 )
 

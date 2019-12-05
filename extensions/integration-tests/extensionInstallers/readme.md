@@ -1,1 +1,0 @@
-copy the extension installers to this folder
