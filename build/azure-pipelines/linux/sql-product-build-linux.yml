@@ -1,17 +1,27 @@
 steps:
-  - task: NodeTool@0
+  - script: |
+      mkdir -p .build
+      echo -n $BUILD_SOURCEVERSION > .build/commit
+      echo -n $VSCODE_QUALITY > .build/quality
+    displayName: Prepare cache flag
+
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
     inputs:
-      versionSpec: '10.15.1'
+      keyfile: 'build/.cachesalt, .build/commit, .build/quality'
+      targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
+      vstsFeed: 'BuildCache'
+      platformIndependent: true
+      alias: 'Compilation'
 
   - script: |
       set -e
-      sudo apt-get update
-      sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 libkrb5-dev #{{SQL CARBON EDIT}} add kerberos dep
-      sudo cp build/azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
-      sudo chmod +x /etc/init.d/xvfb
-      sudo update-rc.d xvfb defaults
-      sudo service xvfb start
-    displayName: 'System Installs'
+      exit 1
+    displayName: Check RestoreCache
+    condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.15.1'
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
@@ -44,7 +54,7 @@ steps:
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
     inputs:
-      keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+      keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
       targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
       vstsFeed: 'BuildCache'
 
@@ -56,7 +66,7 @@ steps:
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
     inputs:
-      keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+      keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
       targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
       vstsFeed: 'BuildCache'
     condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
@@ -75,33 +85,42 @@ steps:
   - script: |
       set -e
       yarn gulp install-sqltoolsservice
-    displayName: Install sqltoolsservice
-
-  - script: |
-      set -e
       yarn gulp install-ssmsmin
-    displayName: Install ssmsmin
+    displayName: Install extension binaries
 
   - script: |
       set -e
-      yarn gulp vscode-linux-x64-min
+      yarn gulp vscode-linux-x64-min-ci
+      yarn gulp vscode-reh-linux-x64-min-ci
+      yarn gulp vscode-reh-web-linux-x64-min-ci
     displayName: Build
 
   - script: |
       set -e
-      yarn gulp compile-extensions
-    displayName: Compile Extensions
+      service xvfb start
+    displayName: Start xvfb
+    condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
 
   - script: |
       set -e
+      yarn gulp package-rebuild-extensions
+      yarn gulp compile-extensions
       yarn gulp package-external-extensions
     displayName: Package External extensions
 
-  - script: DISPLAY=:10 ./scripts/test-extensions-unit.sh
+  - script: |
+      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
+      APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
+      INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
+      DISPLAY=:10 ./scripts/test-extensions-unit.sh
     displayName: 'Run Stable Extension Unit Tests'
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  - script: DISPLAY=:10 ./scripts/test-extensions-unit-unstable.sh
+  - script: |
+      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
+      APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
+      INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
+      DISPLAY=:10 ./scripts/test-extensions-unit-unstable.sh
     displayName: 'Run Unstable Extension Unit Tests'
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
@@ -122,6 +141,20 @@ steps:
       rootFolder: '$(Build.SourcesDirectory)/../azuredatastudio-linux-x64'
       archiveType: tar
       archiveFile: '.build/linux/azuredatastudio-linux-x64.tar.gz'
+
+  - script: |
+    set -e
+    docker build -t azuredatastudio-server -f build/azure-pipelines/docker/Dockerfile $(agent.builddirectory)/azuredatastudio-reh-linux-x64
+    docker save azuredatastudio-server | gzip > azuredatastudio-server-docker.tar.gz
+    cp azuredatastudio-server-docker.tar.gz .build/docker
+  displayName: "Create docker image"
+
+  - script: |
+    set -e
+    cd $(agent.builddirectory)
+    tar --owner=0 --group=0 -czf azuredatastudio-server-linux-x64.tar.gz azuredatastudio-reh-linux-x64
+    cp azuredatastudio-server-linux-x64.tar.gz .build/linux/server
+  displayName: 'Package server'
 
   - script: | # WHY ARE WE DOING THIS?
       set -e

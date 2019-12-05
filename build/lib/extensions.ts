@@ -242,6 +242,12 @@ const externalExtensions = [
 	'liveshare'
 ];
 
+// extensions that require a rebuild since they have native parts
+const rebuildExtensions = [
+	'big-data-cluster',
+	'mssql'
+];
+
 interface IBuiltInExtension {
 	name: string;
 	version: string;
@@ -302,3 +308,26 @@ export function packageExternalExtensionsStream(): NodeJS.ReadWriteStream {
 	return es.merge(builtExtensions);
 }
 // {{SQL CARBON EDIT}} - End
+
+export function cleanRebuildExtensions(root: string): Promise<void> {
+	return Promise.all(rebuildExtensions.map(async e => {
+		await util2.rimraf(path.join(root, e))();
+	})).then();
+}
+
+export function packageRebuildExtensionsStream(): NodeJS.ReadWriteStream {
+	const extenalExtensionDescriptions = (<string[]>glob.sync('extensions/*/package.json'))
+		.map(manifestPath => {
+			const extensionPath = path.dirname(path.join(root, manifestPath));
+			const extensionName = path.basename(extensionPath);
+			return { name: extensionName, path: extensionPath };
+		})
+		.filter(({ name }) => rebuildExtensions.indexOf(name) >= 0);
+
+	const builtExtensions = extenalExtensionDescriptions.map(extension => {
+		return fromLocal(extension.path)
+			.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
+	});
+
+	return es.merge(builtExtensions);
+}
