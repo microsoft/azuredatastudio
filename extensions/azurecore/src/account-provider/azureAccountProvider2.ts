@@ -279,7 +279,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		let tenants = await Promise.all(promises);
 
 		tenants = tenants.filter(t => t !== undefined);
-		if (tenants.length <= 0) {
+		if (tenants.length === 0) {
 			throw new Error(localize('azure.noTenants', "No azure tenants found. Failing..."));
 		}
 
