@@ -248,7 +248,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		});
 	}
 
-	private async getTenants(userId: string, homeTenant: string): Promise<Tenant[]> {
+	private async getTenants(userId: string, homeTenant?: string): Promise<Tenant[]> {
 		const armToken = await this.getToken(userId, AzureAccountProvider.AadCommonTenant, this.metadata.settings.armResource.id);
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2015-01-01');
 		const armWebResponse: any[] = await this.makeWebRequest(armToken, tenantUri);
@@ -270,7 +270,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			return {
 				id: value.tenantId,
 				userId: userId,
-				displayName: tenantDetailsUri.length && tenantDetails[0].displayName
+				displayName: tenantDetails.length > 0 && tenantDetails[0].displayName
 					? tenantDetails[0].displayName
 					: localize('azureWorkAccountDisplayName', "Work or school account")
 			} as Tenant;
@@ -283,10 +283,12 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			throw new Error(localize('azure.noTenants', "No azure tenants found. Failing..."));
 		}
 
-		const homeTenantIndex = tenants.findIndex(tenant => tenant.id === homeTenant);
-		if (homeTenantIndex >= 0) {
-			const homeTenant = tenants.splice(homeTenantIndex, 1);
-			tenants.unshift(homeTenant[0]);
+		if (homeTenant) {
+			const homeTenantIndex = tenants.findIndex(tenant => tenant.id === homeTenant);
+			if (homeTenantIndex >= 0) {
+				const homeTenant = tenants.splice(homeTenantIndex, 1);
+				tenants.unshift(homeTenant[0]);
+			}
 		}
 		return tenants;
 	}
@@ -298,7 +300,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private async handleAuthentication(code: string): Promise<void> {
 		const token = await this.getTokenWithAuthCode(code, AzureAccountProvider.redirectUrlAAD);
 
-		const tenants = await this.getTenants(token.userId, token.userId);
+		const tenants = await this.getTenants(token.userId, token.tenantId);
 		let identityProvider = token.identityProvider;
 		if (identityProvider) {
 			identityProvider = identityProvider.toLowerCase();
