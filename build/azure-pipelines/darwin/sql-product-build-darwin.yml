@@ -123,6 +123,7 @@ steps:
   - script: |
       set -e
       zip -d ../azuredatastudio-darwin.zip "*.pkg"
+      mkdir -p .build/darwin/archive
       cp ../azuredatastudio-darwin.zip .build/darwin/archive
     displayName: 'Remove pkg from archive'
 
