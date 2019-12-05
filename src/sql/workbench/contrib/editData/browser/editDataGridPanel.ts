@@ -815,6 +815,8 @@ export class EditDataGridPanel extends GridParentComponent {
 
 			if (dataSet.columnDefinitions) {
 				t = new Table(this.nativeElement, { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
+				let editable = jQuery('.slick-cell.editable');
+				console.log(editable);
 
 				let slickgridDom = jQuery('.monaco-workbench');
 				console.log(slickgridDom.css(['input']));
@@ -854,6 +856,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			public keyCaptureList: number[];
 
 			constructor(private _args: any) {
+				console.log(_args.grid);
 				this._textEditor = new Slick.Editors.Text(_args);
 				const END = 35;
 				const HOME = 36;
