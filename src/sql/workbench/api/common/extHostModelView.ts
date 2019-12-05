@@ -79,7 +79,12 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return container;
 	}
 
+	private cardDeprecationMessagePrinted = false;
 	card(): azdata.ComponentBuilder<azdata.CardComponent> {
+		if (!this.cardDeprecationMessagePrinted) {
+			console.warn(`Extension '${this._extension.identifier.value}' is using card component which has been replaced by radioCardGroup. the card component will be removed in a future release.`);
+			this.cardDeprecationMessagePrinted = true;
+		}
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.CardComponent> = this.getComponentBuilder(new CardWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
@@ -222,6 +227,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 	hyperlink(): azdata.ComponentBuilder<azdata.HyperlinkComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.HyperlinkComponent> = this.getComponentBuilder(new HyperlinkComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	radioCardGroup(): azdata.ComponentBuilder<azdata.RadioCardGroupComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.RadioCardGroupComponent> = this.getComponentBuilder(new RadioCardGroupComponentWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -1587,6 +1599,66 @@ class HyperlinkComponentWrapper extends ComponentWrapper implements azdata.Hyper
 
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
+	}
+}
+
+class RadioCardGroupComponentWrapper extends ComponentWrapper implements azdata.RadioCardGroupComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.RadioCardGroup, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+	}
+
+	public get iconWidth(): string | undefined {
+		return this.properties['iconWidth'];
+	}
+
+	public set iconWidth(v: string | undefined) {
+		this.setProperty('iconWidth', v);
+	}
+
+	public get iconHeight(): string | undefined {
+		return this.properties['iconHeight'];
+	}
+
+	public set iconHeight(v: string | undefined) {
+		this.setProperty('iconHeight', v);
+	}
+
+	public get cardWidth(): string | undefined {
+		return this.properties['cardWidth'];
+	}
+
+	public set cardWidth(v: string | undefined) {
+		this.setProperty('cardWidth', v);
+	}
+
+	public get cardHeight(): string | undefined {
+		return this.properties['cardHeight'];
+	}
+
+	public set cardHeight(v: string | undefined) {
+		this.setProperty('cardHeight', v);
+	}
+
+	public get cards(): azdata.RadioCard[] {
+		return this.properties['cards'];
+	}
+	public set cards(v: azdata.RadioCard[]) {
+		this.setProperty('cards', v);
+	}
+
+	public get selectedCardId(): string | undefined {
+		return this.properties['selectedCardId'];
+	}
+
+	public set selectedCardId(v: string | undefined) {
+		this.setProperty('selectedCardId', v);
+	}
+
+	public get onSelectionChanged(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
 }

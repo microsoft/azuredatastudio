@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
 import { BdcDashboardModel } from './bdcDashboardModel';
 import { BdcStatusModel, InstanceStatusModel, ResourceStatusModel } from '../controller/apiGenerated';
 import { getHealthStatusDisplayText, getHealthStatusIcon, getStateDisplayText, Service } from '../utils';
@@ -12,11 +11,7 @@ import { cssStyles } from '../constants';
 import { isNullOrUndefined } from 'util';
 import { createViewDetailsButton } from './commonControls';
 import { BdcDashboardPage } from './bdcDashboardPage';
-
-const localize = nls.loadMessageBundle();
-
-const viewText = localize('bdc.dashboard.viewHyperlink', "View");
-const notAvailableText = localize('bdc.dashboard.notAvailable', "N/A");
+import * as loc from '../localizedConstants';
 
 export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 
@@ -60,7 +55,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 		// Header label
 		const healthStatusHeaderLabel = this.modelView.modelBuilder.text()
 			.withProperties<azdata.TextComponentProperties>({
-				value: localize('bdc.dashboard.healthStatusDetailsHeader', "Health Status Details"),
+				value: loc.healthStatusDetails,
 				CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '10px' }
 			})
 			.component();
@@ -70,7 +65,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 		// Last updated label
 		this.lastUpdatedLabel = this.modelView.modelBuilder.text()
 			.withProperties({
-				value: this.getLastUpdatedText(),
+				value: loc.lastUpdated(this.model.bdcStatusLastUpdated),
 				CSSStyles: { ...cssStyles.lastUpdatedText }
 			}).component();
 
@@ -82,6 +77,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 					columns: [
 						{ // status icon
 							displayName: '',
+							ariaLabel: loc.statusIcon,
 							valueType: azdata.DeclarativeDataType.component,
 							isReadOnly: true,
 							width: 25,
@@ -97,7 +93,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 							},
 						},
 						{ // instance
-							displayName: localize('bdc.dashboard.instanceHeader', "Instance"),
+							displayName: loc.instance,
 							valueType: azdata.DeclarativeDataType.string,
 							isReadOnly: true,
 							width: 100,
@@ -114,7 +110,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 							},
 						},
 						{ // state
-							displayName: localize('bdc.dashboard.stateHeader', "State"),
+							displayName: loc.state,
 							valueType: azdata.DeclarativeDataType.string,
 							isReadOnly: true,
 							width: 150,
@@ -131,7 +127,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 							},
 						},
 						{ // health status
-							displayName: localize('bdc.dashboard.healthStatusHeader', "Health Status"),
+							displayName: loc.healthStatus,
 							valueType: azdata.DeclarativeDataType.string,
 							isReadOnly: true,
 							width: 100,
@@ -150,6 +146,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 						},
 						{ // view details button
 							displayName: '',
+							ariaLabel: loc.viewDetails,
 							valueType: azdata.DeclarativeDataType.component,
 							isReadOnly: true,
 							width: 150,
@@ -165,7 +162,8 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 							},
 						},
 					],
-					data: this.createHealthStatusRows()
+					data: this.createHealthStatusRows(),
+					ariaLabel: loc.healthStatusDetails
 				}).component();
 		this.rootContainer.addItem(this.instanceHealthStatusTable, { flex: '0 0 auto' });
 
@@ -175,14 +173,14 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 
 		// Title label
 		const endpointsLabel = this.modelView.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.metricsAndLogsLabel', "Metrics and Logs"), CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
+			.withProperties<azdata.TextComponentProperties>({ value: loc.metricsAndLogs, CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
 			.component();
 		this.rootContainer.addItem(endpointsLabel, { CSSStyles: { 'padding-left': '10px', ...cssStyles.title } });
 
 		let metricsAndLogsColumns: azdata.DeclarativeTableColumn[] =
 			[
 				{ // instance
-					displayName: localize('bdc.dashboard.instanceHeader', "Instance"),
+					displayName: loc.instance,
 					valueType: azdata.DeclarativeDataType.string,
 					isReadOnly: true,
 					width: 125,
@@ -199,7 +197,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 					},
 				},
 				{ // node metrics
-					displayName: localize('bdc.dashboard.nodeMetricsHeader', "Node Metrics"),
+					displayName: loc.nodeMetrics,
 					valueType: azdata.DeclarativeDataType.component,
 					isReadOnly: true,
 					width: 100,
@@ -221,7 +219,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 		if (this.serviceName.toLowerCase() === Service.sql) {
 			metricsAndLogsColumns.push(
 				{ // sql metrics
-					displayName: localize('bdc.dashboard.sqlMetricsHeader', "SQL Metrics"),
+					displayName: loc.sqlMetrics,
 					valueType: azdata.DeclarativeDataType.component,
 					isReadOnly: true,
 					width: 100,
@@ -242,7 +240,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 
 		metricsAndLogsColumns.push(
 			{ // logs
-				displayName: localize('bdc.dashboard.logsHeader', "Logs"),
+				displayName: loc.logs,
 				valueType: azdata.DeclarativeDataType.component,
 				isReadOnly: true,
 				width: 100,
@@ -264,10 +262,10 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 			.withProperties<azdata.DeclarativeTableProperties>(
 				{
 					columns: metricsAndLogsColumns,
-					data: this.createMetricsAndLogsRows()
+					data: this.createMetricsAndLogsRows(),
+					ariaLabel: loc.metricsAndLogs
 				}).component();
 		this.rootContainer.addItem(this.metricsAndLogsRowsTable, { flex: '0 0 auto' });
-
 		this.initialized = true;
 	}
 
@@ -288,7 +286,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 			return;
 		}
 
-		this.lastUpdatedLabel.value = this.getLastUpdatedText();
+		this.lastUpdatedLabel.value = loc.lastUpdated(this.model.bdcStatusLastUpdated);
 
 		this.instanceHealthStatusTable.data = this.createHealthStatusRows();
 
@@ -308,10 +306,10 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 
 		// Not all instances have all logs available - in that case just display N/A instead of a link
 		if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.nodeMetricsUrl)) {
-			row.push(this.modelView.modelBuilder.text().withProperties({ value: notAvailableText, CSSStyles: { ...cssStyles.text } }).component());
+			row.push(this.modelView.modelBuilder.text().withProperties({ value: loc.notAvailable, CSSStyles: { ...cssStyles.text } }).component());
 		} else {
 			row.push(this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
-				label: viewText,
+				label: loc.view,
 				url: instanceStatus.dashboards.nodeMetricsUrl,
 				title: instanceStatus.dashboards.nodeMetricsUrl,
 				CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink }
@@ -322,10 +320,10 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 		if (this.serviceName === Service.sql) {
 			// Not all instances have all logs available - in that case just display N/A instead of a link
 			if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.sqlMetricsUrl)) {
-				row.push(this.modelView.modelBuilder.text().withProperties({ value: notAvailableText, CSSStyles: { ...cssStyles.text } }).component());
+				row.push(this.modelView.modelBuilder.text().withProperties({ value: loc.notAvailable, CSSStyles: { ...cssStyles.text } }).component());
 			} else {
 				row.push(this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
-					label: viewText,
+					label: loc.view,
 					url: instanceStatus.dashboards.sqlMetricsUrl,
 					title: instanceStatus.dashboards.sqlMetricsUrl,
 					CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink }
@@ -334,10 +332,10 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 		}
 
 		if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.logsUrl)) {
-			row.push(this.modelView.modelBuilder.text().withProperties({ value: notAvailableText, CSSStyles: { ...cssStyles.text } }).component());
+			row.push(this.modelView.modelBuilder.text().withProperties({ value: loc.notAvailable, CSSStyles: { ...cssStyles.text } }).component());
 		} else {
 			row.push(this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
-				label: viewText,
+				label: loc.view,
 				url: instanceStatus.dashboards.logsUrl,
 				title: instanceStatus.dashboards.logsUrl,
 				CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink }
@@ -362,12 +360,5 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 			getStateDisplayText(instanceStatus.state),
 			getHealthStatusDisplayText(instanceStatus.healthStatus),
 			viewDetailsButton];
-	}
-
-	private getLastUpdatedText(): string {
-		return localize('bdc.dashboard.lastUpdated', "Last Updated : {0}",
-			this.model.bdcStatusLastUpdated ?
-				`${this.model.bdcStatusLastUpdated.toLocaleDateString()} ${this.model.bdcStatusLastUpdated.toLocaleTimeString()}`
-				: '-');
 	}
 }

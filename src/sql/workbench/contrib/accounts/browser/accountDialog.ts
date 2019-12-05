@@ -174,7 +174,7 @@ export class AccountDialog extends Modal {
 
 	protected renderBody(container: HTMLElement) {
 		this._container = container;
-		this._splitViewContainer = DOM.$('div.account-view.monaco-panel-view');
+		this._splitViewContainer = DOM.$('div.account-view.monaco-pane-view');
 		DOM.append(container, this._splitViewContainer);
 		this._splitView = new SplitView(this._splitViewContainer);
 
