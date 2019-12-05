@@ -34,7 +34,7 @@ const msgChanging = localize('changing', "Changing kernel...");
 const kernelLabel: string = localize('Kernel', "Kernel: ");
 const attachToLabel: string = localize('AttachTo', "Attach To: ");
 const msgLoadingContexts = localize('loadingContexts', "Loading contexts...");
-const msgAddNewConnection = localize('addNewConnection', "Add New Connection");
+const msgChangeConnection = localize('changeConnection', "Change Connection");
 const msgSelectConnection = localize('selectConnection', "Select Connection");
 const msgLocalHost = localize('localhost', "localhost");
 const HIDE_ICON_CLASS = ' hideIcon';
@@ -383,7 +383,7 @@ export class AttachToDropdown extends SelectBox {
 				});
 		}
 		this.onDidSelect(e => {
-			this.doChangeContext(this.getSelectedConnection(e.selected));
+			this.doChangeContext();
 		});
 	}
 
@@ -442,85 +442,24 @@ export class AttachToDropdown extends SelectBox {
 	// Load "Attach To" dropdown with the values corresponding to Kernel dropdown
 	public async loadAttachToDropdown(model: INotebookModel, currentKernel: string, showSelectConnection?: boolean): Promise<void> {
 		let connProviderIds = this.model.getApplicableConnectionProviderIds(currentKernel);
-		if ((connProviderIds && connProviderIds.length === 0) || currentKernel === noKernel) {
+		if (!connProviderIds || (connProviderIds && connProviderIds.length === 0) || currentKernel === noKernel) {
 			this.setOptions([msgLocalHost]);
 		}
 		else {
-			let connections = this.getConnections(model);
-			this.enable();
-			if (showSelectConnection) {
-				this.loadWithSelectConnection(connections);
+			let connections: string[] = model.context && model.context.title ? [model.context.title] : [];
+			if (connections.length === 0) {
+				connections.push(msgSelectConnection);
 			}
-			else {
-				if (connections.length === 1 && connections[0] === msgAddNewConnection) {
-					connections.unshift(msgSelectConnection);
-				}
-				else {
-					if (!find(connections, x => x === msgAddNewConnection)) {
-						connections.push(msgAddNewConnection);
-					}
-				}
-				this.setOptions(connections, 0);
-			}
-		}
-	}
-
-	private loadWithSelectConnection(connections: string[]): void {
-		if (connections && connections.length > 0) {
-			if (!find(connections, x => x === msgSelectConnection)) {
-				connections.unshift(msgSelectConnection);
-			}
-
-			if (!find(connections, x => x === msgAddNewConnection)) {
-				connections.push(msgAddNewConnection);
+			if (!find(connections, x => x === msgChangeConnection)) {
+				connections.push(msgChangeConnection);
 			}
 			this.setOptions(connections, 0);
-		}
-	}
-
-	//Get connections from context
-	public getConnections(model: INotebookModel): string[] {
-		let otherConnections: ConnectionProfile[] = [];
-		model.contexts.otherConnections.forEach((conn) => { otherConnections.push(conn); });
-		// If current connection connects to master, select the option in the dropdown that doesn't specify a database
-		if (!model.contexts.defaultConnection.databaseName) {
-			this.selectWithOptionName(model.contexts.defaultConnection.serverName);
-		} else {
-			if (model.contexts.defaultConnection) {
-				this.selectWithOptionName(model.contexts.defaultConnection.title ? model.contexts.defaultConnection.title : model.contexts.defaultConnection.serverName);
-			} else {
-				this.select(0);
-			}
-		}
-		otherConnections = this.setConnectionsList(model.contexts.defaultConnection, model.contexts.otherConnections);
-		let connections = otherConnections.map((context) => context.title ? context.title : context.serverName);
-		return connections;
-	}
-
-	private setConnectionsList(defaultConnection: ConnectionProfile, otherConnections: ConnectionProfile[]) {
-		if (defaultConnection.serverName !== msgSelectConnection) {
-			otherConnections = otherConnections.filter(conn => conn.id !== defaultConnection.id);
-			otherConnections.unshift(defaultConnection);
-			if (otherConnections.length > 1) {
-				otherConnections = otherConnections.filter(val => val.serverName !== msgSelectConnection);
-			}
-		}
-		return otherConnections;
-	}
-
-	public getSelectedConnection(selection: string): ConnectionProfile {
-		// Find all connections with the the same server as the selected option
-		let connections = this.model.contexts.otherConnections.filter((c) => selection === c.title);
-		// If only one connection exists with the same server name, use that one
-		if (connections.length === 1) {
-			return connections[0];
-		} else {
-			return find(this.model.contexts.otherConnections, (c) => selection === c.title);
+			this.enable();
 		}
 	}
 
 	public doChangeContext(connection?: ConnectionProfile, hideErrorMessage?: boolean): void {
-		if (this.value === msgAddNewConnection) {
+		if (this.value === msgChangeConnection || this.value === msgSelectConnection) {
 			this.openConnectionDialog();
 		} else {
 			this.model.changeContext(this.value, connection, hideErrorMessage).then(ok => undefined, err => this._notificationService.error(getErrorMessage(err)));

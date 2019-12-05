@@ -6,13 +6,14 @@
 import { nb, IConnectionProfile } from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { INotebookModel, ICellModel, IClientSession, NotebookContentChange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, INotebookProvider, INavigationProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IStandardKernelWithProvider } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 import { URI } from 'vs/workbench/workbench.web.api';
 import { RenderMimeRegistry } from 'sql/workbench/contrib/notebook/browser/outputs/registry';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo) {
@@ -63,7 +64,7 @@ export class NotebookModelStub implements INotebookModel {
 	get specs(): nb.IAllKernels {
 		throw new Error('method not implemented.');
 	}
-	get contexts(): IDefaultConnection {
+	get context(): ConnectionProfile {
 		throw new Error('method not implemented.');
 	}
 	get providerId(): string {

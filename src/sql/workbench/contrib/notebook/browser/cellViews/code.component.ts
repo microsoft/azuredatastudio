@@ -146,8 +146,8 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			let connectionService = this.connectionService;
 			if (!shouldConnect && connectionService && connectionService.isConnected(cellUri)) {
 				connectionService.disconnect(cellUri).catch(e => this.logService.error(e));
-			} else if (shouldConnect && this._model.activeConnection && this._model.activeConnection.id !== '-1') {
-				connectionService.connect(this._model.activeConnection, cellUri).catch(e => this.logService.error(e));
+			} else if (shouldConnect && this._model.context && this._model.context.id !== '-1') {
+				connectionService.connect(this._model.context, cellUri).catch(e => this.logService.error(e));
 			}
 		}
 	}

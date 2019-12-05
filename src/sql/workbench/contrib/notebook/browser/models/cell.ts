@@ -324,7 +324,7 @@ export class CellModel implements ICellModel {
 				this.sendNotification(notificationService, Severity.Info, localize('runCellCancelled', "Cell execution cancelled"));
 			} else {
 				// TODO update source based on editor component contents
-				if (kernel.requiresConnection && !this.notebookModel.activeConnection) {
+				if (kernel.requiresConnection && !this.notebookModel.context) {
 					let connected = await this.notebookModel.requestConnection();
 					if (!connected) {
 						return false;
@@ -517,11 +517,11 @@ export class CellModel implements ICellModel {
 				let result = output as nb.IDisplayResult;
 				if (result && result.data && result.data['text/html']) {
 					let model = (this as CellModel).options.notebook as NotebookModel;
-					if (model.activeConnection) {
-						let gatewayEndpointInfo = this.getGatewayEndpoint(model.activeConnection);
+					if (model.context) {
+						let gatewayEndpointInfo = this.getGatewayEndpoint(model.context);
 						if (gatewayEndpointInfo) {
 							let hostAndIp = notebookUtils.getHostAndPortFromEndpoint(gatewayEndpointInfo.endpoint);
-							let host = hostAndIp.host ? hostAndIp.host : model.activeConnection.serverName;
+							let host = hostAndIp.host ? hostAndIp.host : model.context.serverName;
 							let port = hostAndIp.port ? ':' + hostAndIp.port : defaultPort;
 							let html = result.data['text/html'];
 							// CTP 3.1 and earlier Spark link
