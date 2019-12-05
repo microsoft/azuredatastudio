@@ -11,12 +11,12 @@ const files = [
 	'.build/external/extensions/**/*.vsix', // external extensions
 	'.build/win32-x64/**/*.{exe,zip}', // windows binaries
 	'.build/linux/sha256hashes.txt', // linux hashes
-	'.build/linux/deb/amd64/deb/*.deb', // linux debs
-	'.build/linux/rpm/x86_64/*.rpm', // linux rpms
+	'.build/linux/deb/amd64/deb/*', // linux debs
+	'.build/linux/rpm/x86_64/*', // linux rpms
 	'.build/linux/server/*', // linux server
-	'.build/docker/*', // docker image
-	'.build/linux/archive/*.zip', // linux zip
-	'.build/darwin/**/*.zip' // darwin zip
+	'.build/linux/archive/*', // linux archive
+	'.build/docker/*', // docker images
+	'.build/darwin/**' // darwin binaries
 ];
 
 async function main() {
