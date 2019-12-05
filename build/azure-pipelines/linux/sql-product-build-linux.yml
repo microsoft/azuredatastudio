@@ -143,18 +143,18 @@ steps:
       archiveFile: '.build/linux/azuredatastudio-linux-x64.tar.gz'
 
   - script: |
-    set -e
-    docker build -t azuredatastudio-server -f build/azure-pipelines/docker/Dockerfile $(agent.builddirectory)/azuredatastudio-reh-linux-x64
-    docker save azuredatastudio-server | gzip > azuredatastudio-server-docker.tar.gz
-    cp azuredatastudio-server-docker.tar.gz .build/docker
-  displayName: "Create docker image"
+      set -e
+      docker build -t azuredatastudio-server -f build/azure-pipelines/docker/Dockerfile $(agent.builddirectory)/azuredatastudio-reh-linux-x64
+      docker save azuredatastudio-server | gzip > azuredatastudio-server-docker.tar.gz
+      cp azuredatastudio-server-docker.tar.gz .build/docker
+    displayName: "Create docker image"
 
   - script: |
-    set -e
-    cd $(agent.builddirectory)
-    tar --owner=0 --group=0 -czf azuredatastudio-server-linux-x64.tar.gz azuredatastudio-reh-linux-x64
-    cp azuredatastudio-server-linux-x64.tar.gz .build/linux/server
-  displayName: 'Package server'
+      set -e
+      cd $(agent.builddirectory)
+      tar --owner=0 --group=0 -czf azuredatastudio-server-linux-x64.tar.gz azuredatastudio-reh-linux-x64
+      cp azuredatastudio-server-linux-x64.tar.gz .build/linux/server
+    displayName: 'Package server'
 
   - script: | # WHY ARE WE DOING THIS?
       set -e
