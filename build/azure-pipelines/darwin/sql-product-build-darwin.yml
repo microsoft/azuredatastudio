@@ -98,6 +98,7 @@ steps:
 
   - script: |
       set -e
+      pushd ../azuredatastudio-darwin && zip -r -X -y ../azuredatastudio-darwin.zip * && popd
       zip -d ../azuredatastudio-darwin.zip "*.pkg"
       cp ../azuredatastudio-darwin.zip .build/darwin/archive
     displayName: 'Stable - Run zip'
