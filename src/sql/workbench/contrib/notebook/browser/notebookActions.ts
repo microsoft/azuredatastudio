@@ -292,7 +292,7 @@ export class CollapseCellsAction extends ToggleableAction {
 	public get isCollapsed(): boolean {
 		return this.state.isOn;
 	}
-	public set isCollapsed(value: boolean) {
+	private setCollapsed(value: boolean) {
 		this.toggle(value);
 	}
 
@@ -300,7 +300,7 @@ export class CollapseCellsAction extends ToggleableAction {
 		let self = this;
 		return new Promise<boolean>((resolve, reject) => {
 			try {
-				self.isCollapsed = !self.isCollapsed;
+				self.setCollapsed(!self.isCollapsed);
 				context.cells.forEach(cell => {
 					cell.isCollapsed = self.isCollapsed;
 				});

@@ -13,10 +13,11 @@ import * as assert from 'assert';
 // import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 // import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 // import { IDefaultConnection } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { AddCellAction, ClearAllOutputsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCellAction, ClearAllOutputsAction, ToggleableAction, CollapseCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookComponentStub } from 'sql/workbench/contrib/notebook/test/browser/common';
+import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 
 suite('Notebook Actions', function (): void {
 	test('Add Cell Action', async function (): Promise<void> {
@@ -57,12 +58,6 @@ suite('Notebook Actions', function (): void {
 		mockNotebookComponent.verify(c => c.clearAllOutputs(), TypeMoq.Times.once());
 	});
 
-	test('Toggleable Action', async function (): Promise<void> {
-	});
-
-	test('Multi State Action', async function (): Promise<void> {
-	});
-
 	test('Trusted Action', async function (): Promise<void> {
 	});
 
@@ -70,6 +65,34 @@ suite('Notebook Actions', function (): void {
 	});
 
 	test('Collapse Cells Action', async function (): Promise<void> {
+		let action = new CollapseCellsAction('TestId');
+
+		assert.strictEqual(action.isCollapsed, false, 'Should not be collapsed by default');
+
+		let context = <INotebookEditor>{
+			cells: [<ICellModel>{
+				isCollapsed: false
+			}, <ICellModel>{
+				isCollapsed: true
+			}, <ICellModel>{
+				isCollapsed: false
+			}]
+		};
+		let result = await action.run(context);
+		assert.ok(result, 'Collapse Cells Action should succeed');
+
+		assert.strictEqual(action.isCollapsed, true, 'Action should be collapsed after first toggle');
+		context.cells.forEach(cell => {
+			assert.strictEqual(cell.isCollapsed, true, 'Cells should be collapsed after first toggle');
+		});
+
+		result = await action.run(context);
+		assert.ok(result, 'Collapse Cells Action should succeed');
+
+		assert.strictEqual(action.isCollapsed, false, 'Action should not be collapsed after second toggle');
+		context.cells.forEach(cell => {
+			assert.strictEqual(cell.isCollapsed, false, 'Cells should not be collapsed after second toggle');
+		});
 	});
 
 	test('Kernels Dropdown', async function (): Promise<void> {
