@@ -113,7 +113,8 @@ suite('Notebook Editor Model', function (): void {
 			clearOutput: undefined,
 			executeEdits: undefined,
 			getSections: undefined,
-			navigateToSection: undefined
+			navigateToSection: undefined,
+			addCell: undefined
 		};
 	});
 

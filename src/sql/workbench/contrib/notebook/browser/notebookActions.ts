@@ -22,12 +22,12 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
-import { NotebookComponent } from 'sql/workbench/contrib/notebook/browser/notebook.component';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeUpdateUtils } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
 import { find, firstIndex } from 'vs/base/common/arrays';
+import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
@@ -48,7 +48,7 @@ export class AddCellAction extends Action {
 	) {
 		super(id, label, cssClass);
 	}
-	public run(context: NotebookComponent): Promise<boolean> {
+	public run(context: INotebookEditor): Promise<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
 			try {
 				context.addCell(this.cellType);
@@ -68,7 +68,7 @@ export class ClearAllOutputsAction extends Action {
 	) {
 		super(id, label, cssClass);
 	}
-	public run(context: NotebookComponent): Promise<boolean> {
+	public run(context: INotebookEditor): Promise<boolean> {
 		return context.clearAllOutputs();
 	}
 }
@@ -232,7 +232,7 @@ export class TrustedAction extends ToggleableAction {
 		this.toggle(value);
 	}
 
-	public run(context: NotebookComponent): Promise<boolean> {
+	public run(context: INotebookEditor): Promise<boolean> {
 		let self = this;
 		return new Promise<boolean>((resolve, reject) => {
 			try {
@@ -260,7 +260,7 @@ export class RunAllCellsAction extends Action {
 	) {
 		super(id, label, cssClass);
 	}
-	public async run(context: NotebookComponent): Promise<boolean> {
+	public async run(context: INotebookEditor): Promise<boolean> {
 		try {
 			await context.runAllCells();
 			return true;
@@ -296,7 +296,7 @@ export class CollapseCellsAction extends ToggleableAction {
 		this.toggle(value);
 	}
 
-	public run(context: NotebookComponent): Promise<boolean> {
+	public run(context: INotebookEditor): Promise<boolean> {
 		let self = this;
 		return new Promise<boolean>((resolve, reject) => {
 			try {
