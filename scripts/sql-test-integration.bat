@@ -11,18 +11,20 @@ echo VSCODEEXTENSIONSDIR=%VSCODEEXTENSIONSDIR%
 if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 	:: Run out of sources: no need to compile as code.sh takes care of it
 	set INTEGRATION_TEST_ELECTRON_PATH=.\scripts\code.bat
+	set INTEGRATION_TEST_CLI=.\scripts\code-cli.bat
 
 	echo "Running integration tests out of sources."
 ) else (
 	:: Run from a built: need to compile all test extensions
 	call yarn gulp compile-extension:integration-tests
+	set INTEGRATION_TEST_CLI=%INTEGRATION_TEST_ELECTRON_PATH%
 
 	echo "Running integration tests with '%INTEGRATION_TEST_ELECTRON_PATH%' as build."
 )
 
 for /f "tokens=*" %%i IN ('dir /b /s ".\extensions\integration-tests\extensionInstallers\*"') DO (
 	echo "Installing extension %%i"
-	.\scripts\code-cli.bat --install-extension %%i
+	%INTEGRATION_TEST_CLI% --install-extension %%i --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR%
 )
 
 :: Default to only running stable tests if test grep isn't set
