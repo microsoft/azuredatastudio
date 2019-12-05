@@ -204,7 +204,7 @@ export abstract class ToolBase implements ITool {
 	protected async installCore() {
 		const installationCommands: Command[] | undefined = this.installationCommands;
 		if (!installationCommands || installationCommands.length === 0) {
-			throw new Error(localize('toolBase.installCore.CannotInstallTool', "Cannot install tool:${0}::${1} as installation commands are unknown for your OS distribution, Please install ${0} manually before proceeding", this.displayName, this.description));
+			throw new Error(localize('toolBase.installCore.CannotInstallTool', "Cannot install tool:{0}::{1} as installation commands are unknown for your OS distribution, Please install {0} manually before proceeding", this.displayName, this.description));
 		}
 		for (let i: number = 0; i < installationCommands.length; i++) {
 			await this._platformService.runCommand(installationCommands[i].command,

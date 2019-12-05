@@ -344,7 +344,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		let tool: ITool;
 		try {
 			const toolRequirements = this.getCurrentProvider().requiredTools;
-			let allToolsInstalled: boolean = true;
+			let toolsNotInstalled: ITool[] = [];
 			for (let i: number = 0; i < toolRequirements.length; i++) {
 				const toolReq = toolRequirements[i];
 				tool = this.toolsService.getToolByName(toolReq.name)!;
@@ -362,18 +362,23 @@ export class ResourceTypePickerDialog extends DialogBase {
 							)
 						);
 					}
+				} else {
+					toolsNotInstalled.push(tool);
 				}
-				allToolsInstalled = allToolsInstalled && this._tools[i].isInstalled;
 			}
 			// Update the informational message
-			if (allToolsInstalled) {
+			if (toolsNotInstalled.length === 0) {
 				this._dialogObject.message = {
 					level: azdata.window.MessageLevel.Information,
 					text: localize('deploymentDialog.InstalledTools', "All required tools are installed now.")
 				};
 				this._dialogObject.okButton.enabled = true;
 			} else {
-				this.updateToolsDisplayTable(); // refresh the tools table data which will repaint the UI with current state of all tools.
+				this._dialogObject.message = {
+					level: azdata.window.MessageLevel.Information,
+					text: localize('deploymentDialog.PendingInstallation', "Following tools: {0} were still not discovered. Please make sure that they are installed, running and discoverable", toolsNotInstalled.map(t => t.displayName).join(','))
+				};
+				//this.updateToolsDisplayTable(); // refresh the tools table data which will repaint the UI with current state of all tools.
 			}
 		} catch (error) {
 			const errorMessage = tool!.statusDescription || getErrorMessage(error);
