@@ -28,7 +28,7 @@ export interface IJupyterServerInstallation {
 	/**
 	 * Installs packages using pip
 	 * @param packages packages to install
-	 * @param useMinVersion
+	 * @param useMinVersion if true, minimal version will be used
 	 */
 	installPipPackages(packages: IPackageDetails[], useMinVersion: boolean): Promise<void>;
 
@@ -41,7 +41,7 @@ export interface IJupyterServerInstallation {
 	/**
 	 * Installs conda packages
 	 * @param packages packages to install
-	 * @param useMinVersion
+	 * @param useMinVersion if true, minimal version will be used
 	 */
 	installCondaPackages(packages: IPackageDetails[], useMinVersion: boolean): Promise<void>;
 
@@ -104,13 +104,13 @@ export interface IPackageManageProvider {
 	/**
 	 * Installs give packages
 	 * @param package Packages to install
-	 * @param useMinVersion
+	 * @param useMinVersion if true, minimal version will be used
 	 */
 	installPackages(package: IPackageDetails[], useMinVersion: boolean): Promise<void>;
 
 	/**
 	 * Uninstalls given packages
-	 * @param package
+	 * @param package package to uninstall
 	 */
 	uninstallPackages(package: IPackageDetails[]): Promise<void>;
 
@@ -126,7 +126,7 @@ export interface IPackageManageProvider {
 
 	/**
 	 * Returns Package Overview
-	 * @param packageName
+	 * @param packageName package name
 	 */
 	getPackageOverview(packageName: string): Promise<IPackageOverview>;
 }
