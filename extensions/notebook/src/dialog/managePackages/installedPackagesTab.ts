@@ -108,6 +108,7 @@ export class InstalledPackagesTab {
 			await view.initializeModel(this.installedPackagesLoader);
 
 			await this.loadInstalledPackagesInfo();
+			this.packageTypeDropdown.focus();
 		});
 	}
 
