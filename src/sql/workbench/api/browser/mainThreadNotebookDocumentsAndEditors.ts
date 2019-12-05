@@ -27,7 +27,6 @@ import { disposed } from 'vs/base/common/errors';
 import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellTypes } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
 import { localize } from 'vs/nls';
@@ -35,6 +34,9 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/common/models/untitledNotebookInput';
 import { FileNotebookInput } from 'sql/workbench/contrib/notebook/common/models/fileNotebookInput';
 import { find } from 'vs/base/common/arrays';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -325,7 +327,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 	private _modelToDisposeMap = new Map<string, DisposableStore>();
 	constructor(
 		extHostContext: IExtHostContext,
-		@IUntitledEditorService private _untitledEditorService: IUntitledEditorService,
+		@IUntitledTextEditorService private _untitledEditorService: IUntitledTextEditorService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
@@ -458,9 +460,9 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			this._editorService.createInput({ resource: uri, mode: 'notebook' });
 		let input: NotebookInput;
 		if (isUntitled) {
-			input = this._instantiationService.createInstance(UntitledNotebookInput, path.basename(uri.fsPath), uri, fileInput);
+			input = this._instantiationService.createInstance(UntitledNotebookInput, path.basename(uri.fsPath), uri, fileInput as UntitledTextEditorInput);
 		} else {
-			input = this._instantiationService.createInstance(FileNotebookInput, path.basename(uri.fsPath), uri, fileInput);
+			input = this._instantiationService.createInstance(FileNotebookInput, path.basename(uri.fsPath), uri, fileInput as FileEditorInput);
 		}
 		input.defaultKernel = options.defaultKernel;
 		input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);

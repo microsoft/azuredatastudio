@@ -11,7 +11,6 @@ import * as azdata from 'azdata';
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModel } from 'vs/editor/common/model';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 import { IModeService } from 'vs/editor/common/services/modeService';
@@ -24,6 +23,7 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { SimpleEditorProgressService } from 'vs/editor/standalone/browser/simpleServices';
 import { IProgressService } from 'vs/platform/progress/common/progress';
 import { ILogService } from 'vs/platform/log/common/log';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 
 @Component({
 	template: '',
@@ -33,7 +33,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _editor: QueryTextEditor;
-	private _editorInput: UntitledEditorInput;
+	private _editorInput: UntitledTextEditorInput;
 	private _editorModel: ITextModel;
 	private _renderedContent: string;
 	private _languageMode: string;
@@ -66,7 +66,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		this._editor.create(this._el.nativeElement);
 		this._editor.setVisible(true);
 		let uri = this.createUri();
-		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, 'plaintext', '', '');
+		this._editorInput = instantiationService.createInstance(UntitledTextEditorInput, uri, false, 'plaintext', '', '');
 		await this._editor.setInput(this._editorInput, undefined);
 		const model = await this._editorInput.resolve();
 		this._editorModel = model.textEditorModel;

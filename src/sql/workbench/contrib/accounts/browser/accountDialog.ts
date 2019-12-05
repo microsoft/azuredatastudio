@@ -17,7 +17,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { values } from 'vs/base/common/map';
 
@@ -36,13 +35,14 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { ViewletPane, IViewletPaneOptions } from 'vs/workbench/browser/parts/views/paneViewlet';
 
-class AccountPanel extends ViewletPanel {
+class AccountPanel extends ViewletPane {
 	public index: number;
 	private accountList: List<azdata.Account>;
 
 	constructor(
-		private options: IViewletPanelOptions,
+		private options: IViewletPaneOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
@@ -174,7 +174,7 @@ export class AccountDialog extends Modal {
 
 	protected renderBody(container: HTMLElement) {
 		this._container = container;
-		this._splitViewContainer = DOM.$('div.account-view.monaco-panel-view');
+		this._splitViewContainer = DOM.$('div.account-view.monaco-pane-view');
 		DOM.append(container, this._splitViewContainer);
 		this._splitView = new SplitView(this._splitViewContainer);
 

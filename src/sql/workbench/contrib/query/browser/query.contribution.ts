@@ -8,7 +8,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
-import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
+import { IConfigurationRegistry, Extensions as ConfigExtensions, IConfigurationPropertySchema } from 'vs/platform/configuration/common/configurationRegistry';
 import { SyncActionDescriptor, MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import { KeyMod, KeyCode, KeyChord } from 'vs/base/common/keyCodes';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
@@ -39,13 +39,13 @@ import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/unt
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/contrib/query/browser/queryActions';
 import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
 import { MssqlNodeContext } from 'sql/workbench/contrib/dataExplorer/browser/mssqlNodeContext';
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTreeContext';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 
 export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.queryEditorVisibleId);
 export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
@@ -60,10 +60,10 @@ Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInpu
 Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations)
 	.registerLanguageAssociation('sql', (accessor, editor) => {
 		const instantiationService = accessor.get(IInstantiationService);
-		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, editor.getResource().toString());
+		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, editor.getResource().toString(true));
 		if (editor instanceof FileEditorInput) {
 			return instantiationService.createInstance(FileQueryEditorInput, '', editor, queryResultsInput);
-		} else if (editor instanceof UntitledEditorInput) {
+		} else if (editor instanceof UntitledTextEditorInput) {
 			return instantiationService.createInstance(UntitledQueryEditorInput, '', editor, queryResultsInput);
 		} else {
 			return undefined;
@@ -118,7 +118,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 
 // Query Actions
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		RunQueryKeyboardAction,
 		RunQueryKeyboardAction.ID,
 		RunQueryKeyboardAction.LABEL,
@@ -135,7 +135,7 @@ MenuRegistry.appendMenuItem(MenuId.TouchBarContext, {
 });
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		RunCurrentQueryKeyboardAction,
 		RunCurrentQueryKeyboardAction.ID,
 		RunCurrentQueryKeyboardAction.LABEL,
@@ -145,7 +145,7 @@ actionRegistry.registerWorkbenchAction(
 );
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		RunCurrentQueryWithActualPlanKeyboardAction,
 		RunCurrentQueryWithActualPlanKeyboardAction.ID,
 		RunCurrentQueryWithActualPlanKeyboardAction.LABEL,
@@ -155,7 +155,7 @@ actionRegistry.registerWorkbenchAction(
 );
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		CancelQueryKeyboardAction,
 		CancelQueryKeyboardAction.ID,
 		CancelQueryKeyboardAction.LABEL,
@@ -165,7 +165,7 @@ actionRegistry.registerWorkbenchAction(
 );
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		RefreshIntellisenseKeyboardAction,
 		RefreshIntellisenseKeyboardAction.ID,
 		RefreshIntellisenseKeyboardAction.LABEL
@@ -174,7 +174,7 @@ actionRegistry.registerWorkbenchAction(
 );
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		FocusOnCurrentQueryKeyboardAction,
 		FocusOnCurrentQueryKeyboardAction.ID,
 		FocusOnCurrentQueryKeyboardAction.LABEL,
@@ -184,7 +184,7 @@ actionRegistry.registerWorkbenchAction(
 );
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		ParseSyntaxAction,
 		ParseSyntaxAction.ID,
 		ParseSyntaxAction.LABEL
@@ -195,7 +195,7 @@ actionRegistry.registerWorkbenchAction(
 // Grid actions
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		ToggleQueryResultsKeyboardAction,
 		ToggleQueryResultsKeyboardAction.ID,
 		ToggleQueryResultsKeyboardAction.LABEL,
@@ -320,7 +320,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 });
 
 // Intellisense and other configuration options
-const registryProperties = {
+const registryProperties: { [path: string]: IConfigurationPropertySchema; } = {
 	'sql.saveAsCsv.includeHeaders': {
 		'type': 'boolean',
 		'description': localize('sql.saveAsCsv.includeHeaders', "[Optional] When true, column headers are included when saving results as CSV"),
@@ -332,7 +332,7 @@ const registryProperties = {
 		'default': ','
 	},
 	'sql.saveAsCsv.lineSeperator': {
-		'type': '',
+		'type': 'string',
 		'description': localize('sql.saveAsCsv.lineSeperator', "[Optional] Character(s) used for seperating rows when saving results as CSV"),
 		'default': null
 	},

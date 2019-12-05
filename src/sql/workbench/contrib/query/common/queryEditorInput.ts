@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { EditorInput, ConfirmResult } from 'vs/workbench/common/editor';
+import { EditorInput } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IFileService } from 'vs/platform/files/common/files';
 
@@ -186,9 +186,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	// Forwarding resource functions to the inline sql file editor
-	public save(): Promise<boolean> { return this._text.save(); }
 	public isDirty(): boolean { return this._text.isDirty(); }
-	public confirmSave(): Promise<ConfirmResult> { return this._text.confirmSave(); }
 	public getResource(): URI { return this._text.getResource(); }
 
 	public matchInputInstanceType(inputType: any): boolean {
@@ -295,20 +293,18 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		this.state.executing = false;
 	}
 
-	public close(): void {
-		this.queryModelService.disposeQuery(this.uri);
-		this.connectionManagementService.disconnectEditor(this, true);
-
-		this._text.close();
-		this._results.close();
-		super.close();
-	}
-
 	/**
 	 * Get the color that should be displayed
 	 */
 	public get tabColor(): string {
 		return this.connectionManagementService.getTabColorForUri(this.uri);
+	}
+
+	public dispose() {
+		this.queryModelService.disposeQuery(this.uri);
+		this.connectionManagementService.disconnectEditor(this, true);
+
+		super.dispose();
 	}
 
 	public get isSharedSession(): boolean {

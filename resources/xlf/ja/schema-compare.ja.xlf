@@ -756,7 +756,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.NoAlterStatementsToChangeClrTypes">
         <source xml:lang="en">Specifies that publish should always drop and re-create an assembly if there is a difference instead of issuing an ALTER ASSEMBLY statement</source>
-        <target state="translated">アセンブリに相違がある場合、発行では ALTER ASSEMBLY ステートメントを発行するのではなく、常にアセンブリを削除して作成し直すことを指定します。</target>
+        <target state="translated">アセンブリに相違がある場合、公開では ALTER ASSEMBLY ステートメントを発行するのではなく、常にアセンブリを削除して作成し直すことを指定します。</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IncludeTransactionalScripts">
         <source xml:lang="en">Specifies whether transactional statements should be used where possible when you publish to a database.</source>
@@ -924,7 +924,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreColumnOrder">
         <source xml:lang="en">Specifies whether differences in table column order should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに発行するときに、テーブルの列の順序の違いを無視するか、更新するかを指定します。</target>
+        <target state="translated">データベースに公開するときに、テーブルの列の順序の違いを無視するか、更新するかを指定します。</target>
       </trans-unit>
     </body>
   </file>

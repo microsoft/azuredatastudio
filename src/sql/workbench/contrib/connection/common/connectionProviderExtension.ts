@@ -130,7 +130,7 @@ const ConnectionProviderContrib: IJSONSchema = {
 						type: 'string'
 					},
 					defaultValue: {
-						type: 'any'
+						type: ['string', 'number', 'boolean', 'object', 'integer', 'null', 'array']
 					},
 					defaultValueOsOverrides: {
 						type: 'array',
@@ -142,22 +142,22 @@ const ConnectionProviderContrib: IJSONSchema = {
 									enum: ['Windows', 'Macintosh', 'Linux']
 								},
 								defaultValueOverride: {
-									type: 'any'
+									type: ['string', 'number', 'boolean', 'object', 'integer', 'null', 'array']
 								}
 							}
 						}
 					},
 					objectType: {
-						type: 'any'
+						type: ['string', 'number', 'boolean', 'object', 'integer', 'null', 'array']
 					},
 					categoryValues: {
-						type: 'any'
+						type: ['string', 'number', 'boolean', 'object', 'integer', 'null', 'array']
 					},
 					isRequired: {
 						type: 'boolean'
 					},
 					isArray: {
-						type: 'bolean'
+						type: 'boolean'
 					}
 				}
 			}
