@@ -146,11 +146,12 @@ steps:
       pushd .. && mv azuredatastudio-reh-darwin azuredatastudio-server-darwin && zip -Xry $(Build.SourcesDirectory)/.build/darwin/azuredatastudio-server-darwin.zip azuredatastudio-server-darwin && popd
     displayName: 'Package server'
 
+  - script: |
+      node build/azure-pipelines/common/copyArtifacts.js
+    displayName: Copy artifact to staging area
+
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
-    inputs:
-      PathtoPublish: '.build'
-      ArtifactName: drop
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results test-results.xml'
