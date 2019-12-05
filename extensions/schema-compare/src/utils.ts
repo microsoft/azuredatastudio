@@ -108,7 +108,7 @@ export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompa
 
 					let result = await vscode.window.showWarningMessage(getConnectionString, { modal: true }, yesString);
 					if (result === yesString) {
-						userConnection = await azdata.connection.openConnectionDialog(null, connectionProfile);
+						userConnection = await azdata.connection.openConnectionDialog(undefined, connectionProfile);
 					}
 				}
 
