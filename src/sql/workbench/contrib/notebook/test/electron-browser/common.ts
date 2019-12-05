@@ -6,7 +6,7 @@
 import { nb, IConnectionProfile } from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { INotebookModel, ICellModel, IClientSession, NotebookContentChange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, IKernelPreference } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, INotebookProvider, INavigationProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -18,11 +18,11 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo) {
 	}
-	public trustedMode: boolean;
+	trustedMode: boolean;
 	language: string;
 	standardKernels: IStandardKernelWithProvider[];
 
-	public get languageInfo(): nb.ILanguageInfo {
+	get languageInfo(): nb.ILanguageInfo {
 		return this._languageInfo;
 	}
 	onCellChange(cell: ICellModel, change: NotebookChangeType): void {
@@ -115,7 +115,9 @@ export class NotebookModelStub implements INotebookModel {
 	updateActiveCell(cell: ICellModel) {
 		throw new Error('Method not implemented.');
 	}
-
+	requestConnection(): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
 }
 
 export class NotebookManagerStub implements INotebookManager {
@@ -126,12 +128,12 @@ export class NotebookManagerStub implements INotebookManager {
 }
 
 export class ServerManagerStub implements nb.ServerManager {
-	public onServerStartedEmitter = new Emitter<void>();
+	onServerStartedEmitter = new Emitter<void>();
 	onServerStarted: Event<void> = this.onServerStartedEmitter.event;
 	isStarted: boolean = false;
 	calledStart: boolean = false;
 	calledEnd: boolean = false;
-	public result: Promise<void> = undefined;
+	result: Promise<void> = undefined;
 
 	startServer(): Promise<void> {
 		this.calledStart = true;
@@ -201,5 +203,172 @@ export class NotebookServiceStub implements INotebookService {
 	}
 	navigateTo(notebookUri: URI, sectionId: string): void {
 		throw new Error('Method not implemented.');
+	}
+}
+
+export class ClientSessionStub implements IClientSession {
+	initialize(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	changeKernel(options: nb.IKernelSpec, oldKernel?: nb.IKernel): Promise<nb.IKernel> {
+		throw new Error('Method not implemented.');
+	}
+	configureKernel(options: nb.IKernelSpec): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	shutdown(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	selectKernel(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	restart(): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+	setPath(path: string): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	setName(name: string): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	setType(type: string): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	updateConnection(connection: IConnectionProfile): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	onKernelChanging(changeHandler: (kernel: nb.IKernelChangedArgs) => Promise<void>): void {
+		throw new Error('Method not implemented.');
+	}
+	dispose(): void {
+		throw new Error('Method not implemented.');
+	}
+	get terminated(): Event<void> {
+		throw new Error('Method not implemented.');
+	}
+	get kernelChanged(): Event<nb.IKernelChangedArgs> {
+		throw new Error('Method not implemented.');
+	}
+	get statusChanged(): Event<nb.ISession> {
+		throw new Error('Method not implemented.');
+	}
+	get iopubMessage(): Event<nb.IMessage> {
+		throw new Error('Method not implemented.');
+	}
+	get unhandledMessage(): Event<nb.IMessage> {
+		throw new Error('Method not implemented.');
+	}
+	get propertyChanged(): Event<'path' | 'name' | 'type'> {
+		throw new Error('Method not implemented.');
+	}
+	get kernel(): nb.IKernel | null {
+		throw new Error('Method not implemented.');
+	}
+	get notebookUri(): URI {
+		throw new Error('Method not implemented.');
+	}
+	get name(): string {
+		throw new Error('Method not implemented.');
+	}
+	get type(): string {
+		throw new Error('Method not implemented.');
+	}
+	get status(): nb.KernelStatus {
+		throw new Error('Method not implemented.');
+	}
+	get isReady(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	get ready(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	get kernelChangeCompleted(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	get kernelPreference(): IKernelPreference {
+		throw new Error('Method not implemented.');
+	}
+	set kernelPreference(value: IKernelPreference) {
+		throw new Error('Method not implemented.');
+	}
+	get kernelDisplayName(): string {
+		throw new Error('Method not implemented.');
+	}
+	get errorMessage(): string {
+		throw new Error('Method not implemented.');
+	}
+	get isInErrorState(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	get cachedKernelSpec(): nb.IKernelSpec {
+		throw new Error('Method not implemented.');
+	}
+}
+
+export class KernelStub implements nb.IKernel {
+	get id(): string {
+		throw new Error('Method not implemented.');
+	}
+	get name(): string {
+		throw new Error('Method not implemented.');
+	}
+	get supportsIntellisense(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	get requiresConnection(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	get isReady(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	get ready(): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+	get info(): nb.IInfoReply {
+		throw new Error('Method not implemented.');
+	}
+	getSpec(): Thenable<nb.IKernelSpec> {
+		throw new Error('Method not implemented.');
+	}
+	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean): nb.IFuture {
+		throw new Error('Method not implemented.');
+	}
+	requestComplete(content: nb.ICompleteRequest): Thenable<nb.ICompleteReplyMsg> {
+		throw new Error('Method not implemented.');
+	}
+	interrupt(): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+}
+
+export class FutureStub implements nb.IFuture {
+	constructor(private _msg: nb.IMessage, private _done: Thenable<nb.IShellMessage>) {
+	}
+	get msg(): nb.IMessage {
+		return this._msg;
+	}
+	get done(): Thenable<nb.IShellMessage> {
+		return this._done;
+	}
+	setReplyHandler(handler: nb.MessageHandler<nb.IShellMessage>): void {
+		return;
+	}
+	setStdInHandler(handler: nb.MessageHandler<nb.IStdinMessage>): void {
+		return;
+	}
+	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {
+		return;
+	}
+	registerMessageHook(hook: (msg: nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
+		return;
+	}
+	removeMessageHook(hook: (msg: nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
+		return;
+	}
+	sendInputReply(content: nb.IInputReply): void {
+		return;
+	}
+	dispose() {
+		return;
 	}
 }

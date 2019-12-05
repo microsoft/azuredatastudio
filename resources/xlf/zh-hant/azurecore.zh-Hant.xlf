@@ -200,4 +200,20 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider" source-language="en" target-language="zh-Hant" datatype="plaintext">
+    <body>
+      <trans-unit id="azure.resource.providers.sqlInstanceContainerLabel">
+        <source xml:lang="en">SQL Managed Instances</source>
+        <target state="translated">SQL 受控執行個體</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider" source-language="en" target-language="zh-Hant" datatype="plaintext">
+    <body>
+      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel">
+        <source xml:lang="en">Azure Database for PostgreSQL Servers</source>
+        <target state="translated">適用於 PostgreSQL 伺服器的 Azure 資料庫</target>
+      </trans-unit>
+    </body>
+  </file>
 </xliff>
