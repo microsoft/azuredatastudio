@@ -9,7 +9,7 @@ import * as vfs from 'vinyl-fs';
 
 async function main() {
 	return new Promise((resolve, reject) => {
-		const stream = vfs.src('.build/**/*.{deb,rpm,zip,.txt}')
+		const stream = vfs.src('.build/**/*.{deb,rpm,zip,.txt}', { base: '.' })
 			.pipe(vfs.dest(process.env.BUILD_ARTIFACTSTAGINGDIRECTORY!));
 
 		stream.on('end', () => resolve());

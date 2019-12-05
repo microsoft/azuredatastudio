@@ -238,11 +238,15 @@ steps:
       MaxRetryAttempts: 20
     condition: and(succeeded(), eq(variables['signed'], true))
 
+  - script: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+
+      exec { node build/azure-pipelines/common/copyArtifacts.js }
+    displayName: Copy artifact to staging area
+
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
-    inputs:
-      PathtoPublish: '.build/win32-x64'
-      ArtifactName: drop
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results test-results.xml'
