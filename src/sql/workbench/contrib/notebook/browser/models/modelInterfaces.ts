@@ -453,6 +453,8 @@ export interface INotebookModel {
 
 	onFindCountChange: Event<number>;
 
+	requestConnection(): Promise<boolean>;
+
 }
 export interface NotebookPosition {
 	readonly cell: ICellModel;
@@ -466,7 +468,6 @@ export interface NotebookPosition {
 	 */
 	updateActiveCell(cell: ICellModel);
 
-	requestConnection(): Promise<boolean>;
 }
 
 export interface NotebookContentChange {
