@@ -136,10 +136,12 @@ steps:
     continueOnError: true
 
   - script: |
+      set -e
       pushd .. && mv azuredatastudio-reh-darwin azuredatastudio-server-darwin && zip -Xry $(Build.SourcesDirectory)/.build/darwin/azuredatastudio-server-darwin.zip azuredatastudio-server-darwin && popd
     displayName: 'Package server'
 
   - script: |
+      set -e
       node build/azure-pipelines/common/copyArtifacts.js
     displayName: Copy artifact to staging area
 
