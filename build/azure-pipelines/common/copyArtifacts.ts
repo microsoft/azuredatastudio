@@ -13,6 +13,8 @@ const files = [
 	'.build/linux/sha256hashes.txt', // linux hashes
 	'.build/linux/deb/amd64/deb/*.deb', // linux debs
 	'.build/linux/rpm/x86_64/*.rpm', // linux rpms
+	'.build/linux/server/*', // linux server
+	'.build/docker/*', // docker image
 	'.build/linux/archive/*.zip', // linux zip
 	'.build/darwin/*.zip' // darwin zip
 ];
