@@ -142,7 +142,7 @@ steps:
     inputs:
       rootFolder: '$(Build.SourcesDirectory)/../azuredatastudio-linux-x64'
       archiveType: tar
-      archiveFile: '.build/linux/azuredatastudio-linux-x64.tar.gz'
+      archiveFile: '.build/linux/archive/azuredatastudio-linux-x64.tar.gz'
 
   - script: |
       set -e
