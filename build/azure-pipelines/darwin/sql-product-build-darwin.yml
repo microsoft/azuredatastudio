@@ -99,14 +99,16 @@ steps:
   - script: |
       set -e
       cd $(Build.SourcesDirectory)/../azuredatastudio-darwin
-      zip -r -y .build/darwin/azuredatastudio-darwin.zip "Azure Data Studio.app"
+      mkdir -p $(Build.SourcesDirectory)/.build/darwin
+      zip -r -y $(Build.SourcesDirectory)/.build/darwin/azuredatastudio-darwin.zip "Azure Data Studio.app"
     displayName: 'Stable - Run zip'
     condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'stable'))
 
   - script: |
       set -e
       cd $(Build.SourcesDirectory)/../azuredatastudio-darwin
-      zip -r -y .build/darwin/azuredatastudio-darwin.zip "Azure Data Studio - Insiders.app"
+      mkdir -p $(Build.SourcesDirectory)/.build/darwin
+      zip -r -y $(Build.SourcesDirectory)/.build/darwin/azuredatastudio-darwin.zip "Azure Data Studio - Insiders.app"
     displayName: 'Insiders - Run zip'
     condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'insider'))
 
@@ -131,13 +133,13 @@ steps:
 
   - script: |
       set -e
-      zip -d $(Build.ArtifactStagingDirectory)/azuredatastudio-darwin.zip "Azure Data Studio.pkg"
+      zip -d $(Build.SourcesDirectory)/.build/darwin/azuredatastudio-darwin.zip "Azure Data Studio.pkg"
     displayName: 'Stable - Remove .pkg from signed zip'
     condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'stable'))
 
   - script: |
       set -e
-      zip -d $(Build.ArtifactStagingDirectory)/azuredatastudio-darwin.zip "Azure Data Studio - Insiders.pkg"
+      zip -d $(Build.SourcesDirectory)/.build/darwin/azuredatastudio-darwin.zip "Azure Data Studio - Insiders.pkg"
     displayName: 'Insiders - Remove .pkg from signed zip'
     condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'insider'))
 
@@ -150,7 +152,7 @@ steps:
     continueOnError: true
 
   - script: |
-      pushd .. && mv azuredatastudio-reh-darwin azuredatastudio-server-darwin && zip -Xry $(Build.ArtifactStagingDirectory)/azuredatastudio-server-darwin.zip azuredatastudio-server-darwin && popd
+      pushd .. && mv azuredatastudio-reh-darwin azuredatastudio-server-darwin && zip -Xry $(Build.SourcesDirectory)/.build/darwin/azuredatastudio-server-darwin.zip azuredatastudio-server-darwin && popd
     displayName: 'Package server'
 
   - task: PublishBuildArtifacts@1

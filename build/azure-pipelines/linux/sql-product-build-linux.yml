@@ -151,9 +151,10 @@ steps:
 
   - script: |
       set -e
+      mkdir $(build.SourcesDirectory)/.build/linux/server
       cd $(agent.builddirectory)
       tar --owner=0 --group=0 -czf azuredatastudio-server-linux-x64.tar.gz azuredatastudio-reh-linux-x64
-      cp azuredatastudio-server-linux-x64.tar.gz .build/linux/server
+      cp azuredatastudio-server-linux-x64.tar.gz $(build.SourcesDirectory)/.build/linux/server
     displayName: 'Package server'
 
   - script: | # WHY ARE WE DOING THIS?
