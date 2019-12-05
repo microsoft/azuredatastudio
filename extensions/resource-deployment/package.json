@@ -31,7 +31,7 @@
 				"properties": {
 					"deployment.azdataInstallLocation": {
 						"type": "string",
-						"description": "%azdata-install-Location-description%"
+						"description": "%azdata-install-location-description%"
 					}
 				}
 			}

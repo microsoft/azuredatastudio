@@ -62,5 +62,14 @@
 		"msjsdiag.debugger-for-chrome": "workspace"
 	},
 	"gulp.autoDetect": "off",
-	"files.insertFinalNewline": true
+	"files.insertFinalNewline": true,
+	"spellright.language": [
+		"en"
+	],
+	"spellright.documentTypes": [
+		"markdown",
+		"latex",
+		"plaintext",
+		"typescript"
+	]
 }
