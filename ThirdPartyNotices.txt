@@ -44,7 +44,6 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     native-keymap: https://github.com/Microsoft/node-native-keymap
     native-watchdog: https://github.com/Microsoft/node-native-watchdog
     ng2-charts: https://github.com/valor-software/ng2-charts
-    node-fetch: https://github.com/bitinn/node-fetch
     node-pty: https://github.com/Tyriar/node-pty
     nsfw: https://github.com/Axosoft/nsfw
     primeng: https://github.com/primefaces/primeng
