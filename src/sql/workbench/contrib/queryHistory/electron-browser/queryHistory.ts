@@ -73,7 +73,7 @@ export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution
 
 					const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
 					registry.registerWorkbenchAction(
-						new SyncActionDescriptor(
+						SyncActionDescriptor.create(
 							ToggleQueryHistoryAction,
 							ToggleQueryHistoryAction.ID,
 							ToggleQueryHistoryAction.LABEL,
@@ -83,7 +83,7 @@ export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution
 					);
 
 					// Register Output Panel
-					Registry.as<PanelRegistry>(PanelExtensions.Panels).registerPanel(new PanelDescriptor(
+					Registry.as<PanelRegistry>(PanelExtensions.Panels).registerPanel(PanelDescriptor.create(
 						QueryHistoryPanel,
 						QUERY_HISTORY_PANEL_ID,
 						localize('queryHistory', "Query History"),

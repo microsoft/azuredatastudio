@@ -38,7 +38,6 @@ export class AzdataService implements IAzdataService {
 			default:
 				throw new Error(`Unknown deployment type: ${deploymentType}`);
 		}
-		await this.ensureWorkingDirectoryExists();
 		const profileNames = await this.getDeploymentProfileNames();
 		return await Promise.all(profileNames.filter(profile => profile.startsWith(profilePrefix)).map(profile => this.getDeploymentProfileInfo(profile)));
 	}
@@ -63,10 +62,6 @@ export class AzdataService implements IAzdataService {
 			this.getJsonObjectFromFile(path.join(this.platformService.storagePath(), profileName, 'control.json'))
 		]);
 		return new BigDataClusterDeploymentProfile(profileName, configObjects[0], configObjects[1]);
-	}
-
-	private async ensureWorkingDirectoryExists(): Promise<void> {
-		await this.platformService.ensureDirectoryExists(this.platformService.storagePath());
 	}
 
 	private async getJsonObjectFromFile(path: string): Promise<any> {

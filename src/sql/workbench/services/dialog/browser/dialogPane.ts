@@ -15,12 +15,12 @@ import { DialogModule } from 'sql/workbench/services/dialog/browser/dialog.modul
 import { DialogComponentParams, LayoutRequestParams } from 'sql/workbench/services/dialog/browser/dialogContainer.component';
 
 import * as DOM from 'vs/base/browser/dom';
-import { IThemable } from 'vs/platform/theme/common/styler';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Emitter } from 'vs/base/common/event';
 import { attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IThemable } from 'vs/base/common/styler';
 
 export class DialogPane extends Disposable implements IThemable {
 	private _tabbedPanel: TabbedPanel;

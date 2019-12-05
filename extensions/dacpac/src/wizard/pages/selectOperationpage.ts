@@ -38,10 +38,6 @@ export class SelectOperationPage extends BasePage {
 		let importComponent = await this.createImportRadioButton();
 		let exportComponent = await this.createExportRadioButton();
 
-		// default have the first radio button checked
-		this.deployRadioButton.checked = true;
-		this.deployRadioButton.focused = true;
-
 		this.form = this.view.modelBuilder.formContainer()
 			.withFormItems(
 				[
@@ -54,6 +50,7 @@ export class SelectOperationPage extends BasePage {
 			}).component();
 		await this.view.initializeModel(this.form);
 
+		this.deployRadioButton.focus();
 		this.instance.setDoneButton(Operation.deploy);
 		return true;
 	}
@@ -67,6 +64,7 @@ export class SelectOperationPage extends BasePage {
 			.withProperties({
 				name: 'selectedOperation',
 				label: localize('dacFx.deployRadioButtonLabel', "Deploy a data-tier application .dacpac file to an instance of SQL Server [Deploy Dacpac]"),
+				checked: true // Default to first radio button being selected
 			}).component();
 
 		this.deployRadioButton.onDidClick(() => {

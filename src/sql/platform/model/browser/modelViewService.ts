@@ -31,4 +31,5 @@ export interface IModelView extends IView {
 	onEvent: Event<IModelViewEventArgs>;
 	validate(componentId: string): Thenable<boolean>;
 	readonly onDestroy: Event<void>;
+	focus(componentId: string): void;
 }

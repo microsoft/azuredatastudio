@@ -6,16 +6,16 @@
 import 'vs/css!./media/editorstatus';
 import * as nls from 'vs/nls';
 import { runAtThisOrScheduleAtNextAnimationFrame } from 'vs/base/browser/dom';
-import { format } from 'vs/base/common/strings';
+import { format, compare } from 'vs/base/common/strings';
 import { extname, basename, isEqual } from 'vs/base/common/resources';
 import { areFunctions, withNullAsUndefined, withUndefinedAsNull } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import { Action } from 'vs/base/common/actions';
 import { Language } from 'vs/base/common/platform';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { IFileEditorInput, EncodingMode, IEncodingSupport, toResource, SideBySideEditorInput, IEditor as IBaseEditor, IEditorInput, SideBySideEditor, IModeSupport } from 'vs/workbench/common/editor';
 import { Disposable, MutableDisposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { EndOfLineSequence } from 'vs/editor/common/model';
 import { IModelLanguageChangedEvent, IModelOptionsChangedEvent } from 'vs/editor/common/model/textModelEvents';
@@ -50,9 +50,11 @@ import { Event } from 'vs/base/common/event';
 import { IAccessibilityService, AccessibilitySupport } from 'vs/platform/accessibility/common/accessibility';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment, IStatusbarEntry } from 'vs/workbench/services/statusbar/common/statusbar';
+import { IMarker, IMarkerService, MarkerSeverity, IMarkerData } from 'vs/platform/markers/common/markers';
+import { find } from 'vs/base/common/arrays';
 
 // {{SQL CARBON EDIT}}
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { setMode } from 'sql/workbench/browser/parts/editor/editorStatusModeSelect'; // {{SQL CARBON EDIT}}
 
 class SideBySideEditorEncodingSupport implements IEncodingSupport {
 	constructor(private master: IEncodingSupport, private details: IEncodingSupport) { }
@@ -76,8 +78,8 @@ class SideBySideEditorModeSupport implements IModeSupport {
 
 function toEditorWithEncodingSupport(input: IEditorInput): IEncodingSupport | null {
 
-	// Untitled Editor
-	if (input instanceof UntitledEditorInput) {
+	// Untitled Text Editor
+	if (input instanceof UntitledTextEditorInput) {
 		return input;
 	}
 
@@ -105,8 +107,8 @@ function toEditorWithEncodingSupport(input: IEditorInput): IEncodingSupport | nu
 
 function toEditorWithModeSupport(input: IEditorInput): IModeSupport | null {
 
-	// Untitled Editor
-	if (input instanceof UntitledEditorInput) {
+	// Untitled Text Editor
+	if (input instanceof UntitledTextEditorInput) {
 		return input;
 	}
 
@@ -285,6 +287,7 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 	private readonly eolElement = this._register(new MutableDisposable<IStatusbarEntryAccessor>());
 	private readonly modeElement = this._register(new MutableDisposable<IStatusbarEntryAccessor>());
 	private readonly metadataElement = this._register(new MutableDisposable<IStatusbarEntryAccessor>());
+	private readonly currentProblemStatus: ShowCurrentMarkerInStatusbarContribution = this._register(this.instantiationService.createInstance(ShowCurrentMarkerInStatusbarContribution));
 
 	private readonly state = new State();
 	private readonly activeEditorListeners = this._register(new DisposableStore());
@@ -296,13 +299,14 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 	constructor(
 		@IEditorService private readonly editorService: IEditorService,
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
-		@IUntitledEditorService private readonly untitledEditorService: IUntitledEditorService,
+		@IUntitledTextEditorService private readonly untitledTextEditorService: IUntitledTextEditorService,
 		@IModeService private readonly modeService: IModeService,
 		@ITextFileService private readonly textFileService: ITextFileService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IAccessibilityService private readonly accessibilityService: IAccessibilityService,
-		@IStatusbarService private readonly statusbarService: IStatusbarService
+		@IStatusbarService private readonly statusbarService: IStatusbarService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
 	) {
 		super();
 
@@ -312,7 +316,7 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 
 	private registerListeners(): void {
 		this._register(this.editorService.onDidActiveEditorChange(() => this.updateStatusBar()));
-		this._register(this.untitledEditorService.onDidChangeEncoding(r => this.onResourceEncodingChange(r)));
+		this._register(this.untitledTextEditorService.onDidChangeEncoding(r => this.onResourceEncodingChange(r)));
 		this._register(this.textFileService.models.onModelEncodingChanged(e => this.onResourceEncodingChange((e.resource))));
 		this._register(TabFocus.onDidChangeTabFocus(e => this.onTabFocusModeChange()));
 	}
@@ -580,6 +584,7 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 		this.onEncodingChange(activeControl, activeCodeEditor);
 		this.onIndentationChange(activeCodeEditor);
 		this.onMetadataChange(activeControl);
+		this.currentProblemStatus.update(activeCodeEditor);
 
 		// Dispose old active editor listeners
 		this.activeEditorListeners.clear();
@@ -597,6 +602,7 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 			// Hook Listener for Selection changes
 			this.activeEditorListeners.add(activeCodeEditor.onDidChangeCursorPosition((event: ICursorPositionChangedEvent) => {
 				this.onSelectionChange(activeCodeEditor);
+				this.currentProblemStatus.update(activeCodeEditor);
 			}));
 
 			// Hook Listener for mode changes
@@ -607,6 +613,7 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 			// Hook Listener for content changes
 			this.activeEditorListeners.add(activeCodeEditor.onDidChangeModelContent((e) => {
 				this.onEOLChange(activeCodeEditor);
+				this.currentProblemStatus.update(activeCodeEditor);
 
 				const selections = activeCodeEditor.getSelections();
 				if (selections) {
@@ -662,7 +669,7 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 			const textModel = editorWidget.getModel();
 			if (textModel) {
 				const modeId = textModel.getLanguageIdentifier().language;
-				info = { mode: this.modeService.getLanguageName(modeId) || undefined };
+				info = { mode: withNullAsUndefined(this.modeService.getLanguageName(modeId)) };
 			}
 		}
 
@@ -827,6 +834,130 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 	}
 }
 
+class ShowCurrentMarkerInStatusbarContribution extends Disposable {
+
+	private readonly statusBarEntryAccessor: MutableDisposable<IStatusbarEntryAccessor>;
+	private editor: ICodeEditor | undefined = undefined;
+	private markers: IMarker[] = [];
+	private currentMarker: IMarker | null = null;
+
+	constructor(
+		@IStatusbarService private readonly statusbarService: IStatusbarService,
+		@IMarkerService private readonly markerService: IMarkerService,
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+	) {
+		super();
+		this.statusBarEntryAccessor = this._register(new MutableDisposable<IStatusbarEntryAccessor>());
+		this._register(markerService.onMarkerChanged(changedResources => this.onMarkerChanged(changedResources)));
+		this._register(Event.filter(configurationService.onDidChangeConfiguration, e => e.affectsConfiguration('problems.showCurrentInStatus'))(() => this.updateStatus()));
+	}
+
+	update(editor: ICodeEditor | undefined): void {
+		this.editor = editor;
+		this.updateStatus();
+	}
+
+	private updateStatus(): void {
+		const previousMarker = this.currentMarker;
+		this.currentMarker = this.getMarker();
+		if (this.hasToUpdateStatus(previousMarker, this.currentMarker)) {
+			if (this.currentMarker) {
+				const line = this.currentMarker.message.split(/\r\n|\r|\n/g)[0];
+				const text = `${this.getType(this.currentMarker)} ${line}`;
+				if (!this.statusBarEntryAccessor.value) {
+					this.statusBarEntryAccessor.value = this.statusbarService.addEntry({ text: '' }, 'statusbar.currentProblem', nls.localize('currentProblem', "Current Problem"), StatusbarAlignment.LEFT);
+				}
+				this.statusBarEntryAccessor.value.update({ text });
+			} else {
+				this.statusBarEntryAccessor.clear();
+			}
+		}
+	}
+
+	private hasToUpdateStatus(previousMarker: IMarker | null, currentMarker: IMarker | null): boolean {
+		if (!currentMarker) {
+			return true;
+		}
+		if (!previousMarker) {
+			return true;
+		}
+		return IMarkerData.makeKey(previousMarker) !== IMarkerData.makeKey(currentMarker);
+	}
+
+	private getType(marker: IMarker): string {
+		switch (marker.severity) {
+			case MarkerSeverity.Error: return '$(error)';
+			case MarkerSeverity.Warning: return '$(warning)';
+			case MarkerSeverity.Info: return '$(info)';
+		}
+		return '';
+	}
+
+	private getMarker(): IMarker | null {
+		if (!this.configurationService.getValue<boolean>('problems.showCurrentInStatus')) {
+			return null;
+		}
+		if (!this.editor) {
+			return null;
+		}
+		const model = this.editor.getModel();
+		if (!model) {
+			return null;
+		}
+		const position = this.editor.getPosition();
+		if (!position) {
+			return null;
+		}
+		return find(this.markers, marker => Range.containsPosition(marker, position)) || null;
+	}
+
+	private onMarkerChanged(changedResources: ReadonlyArray<URI>): void {
+		if (!this.editor) {
+			return;
+		}
+		const model = this.editor.getModel();
+		if (!model) {
+			return;
+		}
+		if (model && !changedResources.some(r => isEqual(model.uri, r))) {
+			return;
+		}
+		this.updateMarkers();
+	}
+
+	private updateMarkers(): void {
+		if (!this.editor) {
+			return;
+		}
+		const model = this.editor.getModel();
+		if (!model) {
+			return;
+		}
+		if (model) {
+			this.markers = this.markerService.read({
+				resource: model.uri,
+				severities: MarkerSeverity.Error | MarkerSeverity.Warning | MarkerSeverity.Info
+			});
+			this.markers.sort(compareMarker);
+		} else {
+			this.markers = [];
+		}
+		this.updateStatus();
+	}
+}
+
+function compareMarker(a: IMarker, b: IMarker): number {
+	let res = compare(a.resource.toString(), b.resource.toString());
+	if (res === 0) {
+		res = MarkerSeverity.compare(a.severity, b.severity);
+	}
+	if (res === 0) {
+		res = Range.compareRangesUsingStarts(a, b);
+	}
+	return res;
+}
+
+
 function isWritableCodeEditor(codeEditor: ICodeEditor | undefined): boolean {
 	if (!codeEditor) {
 		return false;
@@ -835,7 +966,7 @@ function isWritableCodeEditor(codeEditor: ICodeEditor | undefined): boolean {
 }
 
 function isWritableBaseEditor(e: IBaseEditor): boolean {
-	return e && isWritableCodeEditor(getCodeEditor(e.getControl()) || undefined);
+	return e && isWritableCodeEditor(withNullAsUndefined(getCodeEditor(e.getControl())));
 }
 
 export class ShowLanguageExtensionsAction extends Action {
@@ -872,8 +1003,7 @@ export class ChangeModeAction extends Action {
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
 		@IPreferencesService private readonly preferencesService: IPreferencesService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@IUntitledEditorService private readonly untitledEditorService: IUntitledEditorService,
-		@IQueryEditorService private readonly queryEditorService: IQueryEditorService // {{ SQL CARBON EDIT }}
+		@IUntitledTextEditorService private readonly untitledTextEditorService: IUntitledTextEditorService
 	) {
 		super(actionId, actionLabel);
 	}
@@ -888,7 +1018,7 @@ export class ChangeModeAction extends Action {
 		const resource = this.editorService.activeEditor ? toResource(this.editorService.activeEditor, { supportSideBySide: SideBySideEditor.MASTER }) : null;
 
 		let hasLanguageSupport = !!resource;
-		if (resource?.scheme === Schemas.untitled && !this.untitledEditorService.hasAssociatedFilePath(resource)) {
+		if (resource?.scheme === Schemas.untitled && !this.untitledTextEditorService.hasAssociatedFilePath(resource)) {
 			hasLanguageSupport = false; // no configuration for untitled resources (e.g. "Untitled-1")
 		}
 
@@ -897,7 +1027,7 @@ export class ChangeModeAction extends Action {
 		let modeId: string | undefined;
 		if (textModel) {
 			modeId = textModel.getLanguageIdentifier().language;
-			currentModeId = this.modeService.getLanguageName(modeId) || undefined;
+			currentModeId = withNullAsUndefined(this.modeService.getLanguageName(modeId));
 		}
 
 		// All languages are valid picks
@@ -973,16 +1103,16 @@ export class ChangeModeAction extends Action {
 		}
 
 		// Change mode for active editor
-		const activeEditor = this.editorService.activeControl; // {{SQL CARBON EDIT}} @anthonydresser change to activeControl from active editor
+		const activeEditor = this.editorService.activeEditor;
 		if (activeEditor) {
-			const modeSupport = toEditorWithModeSupport(activeEditor.input); // {{SQL CARBON EDIT}} @anthonydresser reference input rather than activeeditor directly
+			const modeSupport = toEditorWithModeSupport(activeEditor);
 			if (modeSupport) {
 
 				// Find mode
 				let languageSelection: ILanguageSelection | undefined;
 				if (pick === autoDetectMode) {
 					if (textModel) {
-						const resource = toResource(activeEditor.input, { supportSideBySide: SideBySideEditor.MASTER }); // {{SQL CARBON EDIT}} @anthonydresser reference input rather than activeeditor directly
+						const resource = toResource(activeEditor, { supportSideBySide: SideBySideEditor.MASTER });
 						if (resource) {
 							languageSelection = this.modeService.createByFilepathOrFirstLine(resource, textModel.getLineContent(1));
 						}
@@ -991,14 +1121,9 @@ export class ChangeModeAction extends Action {
 					languageSelection = this.modeService.createByLanguageName(pick.label);
 				}
 
-				// {{SQL CARBON EDIT}} @anthonydresser preform a check before we actuall set the mode
 				// Change mode
 				if (typeof languageSelection !== 'undefined') {
-					this.queryEditorService.sqlLanguageModeCheck(textModel, languageSelection, activeEditor).then(newTextModel => {
-						if (newTextModel) {
-							modeSupport.setMode(languageSelection.languageIdentifier.language);
-						}
-					});
+					return this.instantiationService.invokeFunction(setMode, modeSupport, activeEditor, languageSelection.languageIdentifier.language); // {{SQL CARBON EDIT}} @anthonydresser use custom setMode
 				}
 			}
 		}
@@ -1161,7 +1286,7 @@ export class ChangeEncodingAction extends Action {
 		}
 
 		let action: IQuickPickItem;
-		if (encodingSupport instanceof UntitledEditorInput) {
+		if (encodingSupport instanceof UntitledTextEditorInput) {
 			action = saveWithEncodingPick;
 		} else if (!isWritableBaseEditor(activeControl)) {
 			action = reopenWithEncodingPick;

@@ -245,8 +245,8 @@ export class ProfilerService implements IProfilerService {
 		return config;
 	}
 
-	public saveFilter(filter: ProfilerFilter): void {
+	public async saveFilter(filter: ProfilerFilter): Promise<void> {
 		const config = [filter];
-		this._configurationService.updateValue(PROFILER_FILTER_SETTINGS, config, ConfigurationTarget.USER);
+		await this._configurationService.updateValue(PROFILER_FILTER_SETTINGS, config, ConfigurationTarget.USER);
 	}
 }

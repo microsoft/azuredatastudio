@@ -108,11 +108,15 @@ export class SelectBox extends vsSelectBox {
 				if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Escape) {
 					dom.EventHelper.stop(e, true);
 				}
+				if (e.keyCode === KeyCode.Tab) {
+					// Set focus back to the input box so that it moves to the next item in the list correctly since
+					// the context menu isn't in the same place in the DOM so will likely result in an unexpected element
+					// getting the next focus
+					this.focus();
+				}
 			});
 		}
-
 	}
-
 
 	public style(styles: ISelectBoxStyles): void {
 		super.style(styles);

@@ -29,7 +29,6 @@ const packageJson = require('../package.json');
 const product = require('../product.json');
 const crypto = require('crypto');
 const i18n = require('./lib/i18n');
-const ext = require('./lib/extensions'); // {{SQL CARBON EDIT}}
 const deps = require('./dependencies');
 const { config } = require('./lib/electron');
 const createAsar = require('./lib/asar').createAsar;
@@ -92,8 +91,7 @@ const vscodeResources = [
 	'out-build/vs/code/electron-browser/sharedProcess/sharedProcess.js',
 	'out-build/vs/code/electron-browser/issue/issueReporter.js',
 	'out-build/vs/code/electron-browser/processExplorer/processExplorer.js',
-	// {{SQL CARBON EDIT}}
-	'out-build/sql/workbench/electron-browser/splashscreen/*',
+	'out-build/sql/workbench/electron-browser/splashscreen/*', // {{SQL CARBON EDIT}} STart
 	'out-build/sql/**/*.{svg,png,cur,html}',
 	'out-build/sql/base/browser/ui/table/media/*.{gif,png,svg}',
 	'out-build/sql/base/browser/ui/checkbox/media/*.{gif,png,svg}',
@@ -111,7 +109,8 @@ const vscodeResources = [
 	'out-build/sql/media/objectTypes/*.svg',
 	'out-build/sql/media/icons/*.svg',
 	'out-build/sql/workbench/parts/notebook/media/**/*.svg',
-	'out-build/sql/setup.js',
+	'out-build/sql/setup.js', // {{SQL CARBON EDIT}} end
+	'out-build/vs/platform/auth/common/auth.css',
 	'!**/test/**'
 ];
 
@@ -196,9 +195,6 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		const src = gulp.src(out + '/**', { base: '.' })
 			.pipe(rename(function (path) { path.dirname = path.dirname.replace(new RegExp('^' + out), 'out'); }))
 			.pipe(util.setExecutableBit(['**/*.sh']));
-
-		// {{SQL CARBON EDIT}}
-		ext.packageSQLExtensions();
 
 		const extensions = gulp.src(['.build/extensions/**', '!.build/extensions/node_modules/**'], { base: '.build', dot: true }); // {{SQL CARBON EDIT}} - don't package the node_modules directory
 

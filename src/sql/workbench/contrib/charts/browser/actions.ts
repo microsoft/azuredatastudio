@@ -11,16 +11,16 @@ import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
-import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
 import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
 import { IInsightOptions } from 'sql/workbench/contrib/charts/common/interfaces';
+import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IFileDialogService, FileFilter } from 'vs/platform/dialogs/common/dialogs';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { assign } from 'vs/base/common/objects';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 
 export interface IChartActionContext {
 	options: IInsightOptions;
@@ -35,7 +35,7 @@ export class CreateInsightAction extends Action {
 	constructor(
 		@IEditorService private editorService: IEditorService,
 		@INotificationService private notificationService: INotificationService,
-		@IUntitledEditorService private untitledEditorService: IUntitledEditorService
+		@IUntitledTextEditorService private untitledEditorService: IUntitledTextEditorService
 	) {
 		super(CreateInsightAction.ID, CreateInsightAction.LABEL, CreateInsightAction.ICON);
 	}
@@ -89,7 +89,7 @@ export class CreateInsightAction extends Action {
 
 	private getActiveUriString(): string {
 		let editor = this.editorService.activeEditor;
-		if (editor instanceof QueryInput) {
+		if (editor instanceof QueryEditorInput) {
 			return editor.uri;
 		}
 		return undefined;

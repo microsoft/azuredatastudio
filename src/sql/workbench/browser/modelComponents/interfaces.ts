@@ -27,6 +27,7 @@ export interface IComponent extends IDisposable {
 	validate(): Thenable<boolean>;
 	setDataProvider(handle: number, componentId: string, context: any): void;
 	refreshDataProvider(item: any): void;
+	focus(): void;
 }
 
 export const COMPONENT_CONFIG = new InjectionToken<IComponentConfig>('component_config');

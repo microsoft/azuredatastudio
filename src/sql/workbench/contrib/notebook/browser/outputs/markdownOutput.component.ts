@@ -7,18 +7,13 @@ import 'vs/css!../cellViews/textCell';
 import 'vs/css!../cellViews/media/markdown';
 import 'vs/css!../cellViews/media/highlight';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild } from '@angular/core';
-import { ICommandService } from 'vs/platform/commands/common/commands';
-import { ISanitizer, defaultSanitizer } from 'sql/workbench/contrib/notebook/browser/outputs/sanitizer';
+import { OnInit, Component, Input, Inject, ElementRef, ViewChild } from '@angular/core';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IMimeComponent } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRegistry';
-import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { MimeModel } from 'sql/workbench/contrib/notebook/browser/models/mimemodel';
 import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { useInProcMarkdown, convertVscodeResourceToFileInSubDirectories } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 import { URI } from 'vs/base/common/uri';
 
 @Component({
@@ -30,7 +25,6 @@ export class MarkdownOutputComponent extends AngularDisposable implements IMimeC
 
 	@ViewChild('output', { read: ElementRef }) private output: ElementRef;
 
-	private _sanitizer: ISanitizer;
 	private _lastTrustedMode: boolean;
 
 	private _bundleOptions: MimeModel.IOptions;
@@ -40,15 +34,10 @@ export class MarkdownOutputComponent extends AngularDisposable implements IMimeC
 	private _markdownRenderer: NotebookMarkdownRenderer;
 
 	constructor(
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
-		@Inject(ICommandService) private _commandService: ICommandService,
-		@Inject(INotebookService) private _notebookService: INotebookService,
-		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService
 
 	) {
 		super();
-		this._sanitizer = this._notebookService.getMimeRegistry().sanitizer;
 		this._markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
 	}
 
@@ -80,19 +69,6 @@ export class MarkdownOutputComponent extends AngularDisposable implements IMimeC
 		return this.cellModel.notebookModel.notebookUri;
 	}
 
-	//Gets sanitizer from ISanitizer interface
-	private get sanitizer(): ISanitizer {
-		if (this._sanitizer) {
-			return this._sanitizer;
-		}
-		return this._sanitizer = defaultSanitizer;
-	}
-
-	private setLoading(isLoading: boolean): void {
-		this.loading = isLoading;
-		this._changeRef.detectChanges();
-	}
-
 	ngOnInit() {
 		this.updatePreview();
 	}
@@ -110,39 +86,16 @@ export class MarkdownOutputComponent extends AngularDisposable implements IMimeC
 		if (trustedChanged || !this._initialized) {
 			this._lastTrustedMode = this.isTrusted;
 			let content = this._bundleOptions.data['text/markdown'];
-			if (useInProcMarkdown(this._configurationService)) {
-				this._markdownRenderer.setNotebookURI(this.cellModel.notebookModel.notebookUri);
-				let markdownResult = this._markdownRenderer.render({
-					isTrusted: this.cellModel.trustedMode,
-					value: content.toString()
-				});
-				let outputElement = <HTMLElement>this.output.nativeElement;
-				outputElement.innerHTML = markdownResult.element.innerHTML;
-			} else {
-				if (!content) {
-
-				} else {
-					this._commandService.executeCommand<string>('notebook.showPreview', this._cellModel.notebookModel.notebookUri, content).then((htmlcontent) => {
-						htmlcontent = convertVscodeResourceToFileInSubDirectories(htmlcontent, this._cellModel);
-						htmlcontent = this.sanitizeContent(htmlcontent);
-						let outputElement = <HTMLElement>this.output.nativeElement;
-						outputElement.innerHTML = htmlcontent;
-						this.setLoading(false);
-					});
-				}
-			}
+			this._markdownRenderer.setNotebookURI(this.cellModel.notebookModel.notebookUri);
+			let markdownResult = this._markdownRenderer.render({
+				isTrusted: this.cellModel.trustedMode,
+				value: content.toString()
+			});
+			let outputElement = <HTMLElement>this.output.nativeElement;
+			outputElement.innerHTML = markdownResult.element.innerHTML;
 			this._initialized = true;
 		}
 	}
-
-	//Sanitizes the content based on trusted mode of Cell Model
-	private sanitizeContent(content: string): string {
-		if (this.isTrusted) {
-			content = this.sanitizer.sanitize(content);
-		}
-		return content;
-	}
-
 
 	public layout() {
 		// Do we need to update on layout changed?

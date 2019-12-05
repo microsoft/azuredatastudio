@@ -11,13 +11,11 @@ import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetecto
 import { localize } from 'vs/nls';
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
-import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as DOM from 'vs/base/browser/dom';
 
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
@@ -26,7 +24,6 @@ import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelI
 import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/contrib/notebook/browser/outputs/sanitizer';
 import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions';
-import { useInProcMarkdown, convertVscodeResourceToFileInSubDirectories } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -83,9 +80,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(ICommandService) private _commandService: ICommandService,
-		@Inject(IConfigurationService) private configurationService: IConfigurationService,
-
 	) {
 		super();
 		this.isEditMode = true;
@@ -171,25 +165,15 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this._content = this.cellModel.source;
 			}
 
-			if (useInProcMarkdown(this.configurationService)) {
-				this.markdownRenderer.setNotebookURI(this.cellModel.notebookModel.notebookUri);
-				this.markdownResult = this.markdownRenderer.render({
-					isTrusted: true,
-					value: Array.isArray(this._content) ? this._content.join('') : this._content
-				});
-				this.markdownResult.element.innerHTML = this.sanitizeContent(this.markdownResult.element.innerHTML);
-				this.setLoading(false);
-				let outputElement = <HTMLElement>this.output.nativeElement;
-				outputElement.innerHTML = this.markdownResult.element.innerHTML;
-			} else {
-				this._commandService.executeCommand<string>('notebook.showPreview', this.cellModel.notebookModel.notebookUri, this._content).then((htmlcontent) => {
-					htmlcontent = convertVscodeResourceToFileInSubDirectories(htmlcontent, this.cellModel);
-					htmlcontent = this.sanitizeContent(htmlcontent);
-					let outputElement = <HTMLElement>this.output.nativeElement;
-					outputElement.innerHTML = htmlcontent;
-					this.setLoading(false);
-				});
-			}
+			this.markdownRenderer.setNotebookURI(this.cellModel.notebookModel.notebookUri);
+			this.markdownResult = this.markdownRenderer.render({
+				isTrusted: true,
+				value: Array.isArray(this._content) ? this._content.join('') : this._content
+			});
+			this.markdownResult.element.innerHTML = this.sanitizeContent(this.markdownResult.element.innerHTML);
+			this.setLoading(false);
+			let outputElement = <HTMLElement>this.output.nativeElement;
+			outputElement.innerHTML = this.markdownResult.element.innerHTML;
 		}
 	}
 

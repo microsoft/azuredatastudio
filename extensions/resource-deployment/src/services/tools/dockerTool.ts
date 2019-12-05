@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { SemVer } from 'semver';
 import * as nls from 'vscode-nls';
-import { Command, ToolType, OsType } from '../../interfaces';
+import { Command, ToolType, OsDistribution } from '../../interfaces';
 import { IPlatformService } from '../platformService';
 import { ToolBase } from './toolBase';
 
@@ -51,7 +51,7 @@ export class DockerTool extends ToolBase {
 		return false;
 	}
 
-	protected get allInstallationCommands(): Map<OsType, Command[]> {
+	protected get allInstallationCommands(): Map<OsDistribution, Command[]> {
 		throw Error('Installation of DockerTool is not supported');
 	}
 }

@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 import { EOL } from 'os';
 import * as path from 'path';
-import { SemVer, compare } from 'semver';
+import { SemVer, compare as SemVerCompare } from 'semver';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { Command, ITool, OsType, ToolStatus, ToolType } from '../../interfaces';
+import { Command, ITool, OsDistribution, ToolStatus, ToolType } from '../../interfaces';
 import { getErrorMessage } from '../../utils';
 import { IPlatformService } from '../platformService';
 
@@ -44,7 +44,6 @@ export const messageByDependencyType: Map<dependencyType, string> = new Map<depe
 
 export abstract class ToolBase implements ITool {
 	constructor(private _platformService: IPlatformService) {
-		this._osType = this._platformService.osType();
 	}
 
 	abstract name: string;
@@ -53,8 +52,8 @@ export abstract class ToolBase implements ITool {
 	abstract type: ToolType;
 	abstract homePage: string;
 	abstract autoInstallSupported: boolean;
-	protected abstract readonly allInstallationCommands: Map<OsType, Command[]>;
-	protected readonly dependenciesByOsType: Map<OsType, dependencyType[]> = new Map<OsType, dependencyType[]>();
+	protected abstract readonly allInstallationCommands: Map<OsDistribution, Command[]>;
+	protected readonly dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>();
 
 	protected abstract getVersionFromOutput(output: string): SemVer | undefined;
 	protected readonly _onDidUpdateData = new vscode.EventEmitter<ITool>();
@@ -63,7 +62,7 @@ export abstract class ToolBase implements ITool {
 	protected abstract readonly versionCommand: Command;
 
 	public get dependencyMessages(): string[] {
-		return (this.dependenciesByOsType.get(this.osType) || []).map((msgType: dependencyType) => messageByDependencyType.get(msgType)!);
+		return (this.dependenciesByOsType.get(this.osDistribution) || []).map((msgType: dependencyType) => messageByDependencyType.get(msgType)!);
 	}
 
 	protected async getInstallationPath(): Promise<string | undefined> {
@@ -125,8 +124,8 @@ export abstract class ToolBase implements ITool {
 		return this._platformService.storagePath();
 	}
 
-	public get osType(): OsType {
-		return this._osType;
+	public get osDistribution(): OsDistribution {
+		return this._platformService.osDistribution();
 	}
 
 	protected get version(): SemVer | undefined {
@@ -152,7 +151,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	protected get installationCommands(): Command[] | undefined {
-		return this.allInstallationCommands.get(this.osType);
+		return this.allInstallationCommands.get(this.osDistribution);
 	}
 
 	protected async getPip3InstallLocation(packageName: string): Promise<string> {
@@ -272,10 +271,10 @@ export abstract class ToolBase implements ITool {
 	}
 
 	protected discoveryCommandString(toolBinary: string) {
-		switch (this.osType) {
-			case OsType.win32:
+		switch (this.osDistribution) {
+			case OsDistribution.win32:
 				return `where.exe  ${toolBinary}`;
-			case OsType.darwin:
+			case OsDistribution.darwin:
 				return `command -v ${toolBinary}`;
 			default:
 				return `which ${toolBinary}`;
@@ -299,14 +298,12 @@ export abstract class ToolBase implements ITool {
 		}
 	}
 
-	isSameOrNewerThan(version: string): boolean {
-		return this._version ? compare(this._version, new SemVer(version)) >= 0 : false;
+	isSameOrNewerThan(version?: string): boolean {
+		return !version || (this._version ? SemVerCompare(this._version, version) >= 0 : false);
 	}
 
 	private _status: ToolStatus = ToolStatus.NotInstalled;
-	private _osType: OsType;
 	private _version?: SemVer;
 	private _statusDescription?: string;
 	private _installationPath!: string;
-
 }

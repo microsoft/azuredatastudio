@@ -7,7 +7,6 @@ import * as path from 'vs/base/common/path';
 import { nb, ServerInfo } from 'azdata';
 import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { URI } from 'vs/base/common/uri';
 import { startsWith } from 'vs/base/common/strings';
@@ -127,10 +126,6 @@ export function convertVscodeResourceToFileInSubDirectories(htmlContent: string,
 		htmlContentCopy = htmlContentCopy.slice(pathEndIndex);
 	}
 	return htmlContent;
-}
-
-export function useInProcMarkdown(configurationService: IConfigurationService): boolean {
-	return configurationService.getValue('notebook.useInProcMarkdown');
 }
 
 export function getClusterEndpoints(serverInfo: ServerInfo): IEndpoint[] | undefined {

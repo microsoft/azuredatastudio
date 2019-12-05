@@ -18,7 +18,7 @@ import { IExtHostTerminalService } from 'vs/workbench/api/common/extHostTerminal
 // import { ExtHostDebugService } from 'vs/workbench/api/node/extHostDebugService';
 // import { IExtHostDebugService } from 'vs/workbench/api/common/extHostDebugService';
 import { IExtHostSearch } from 'vs/workbench/api/common/extHostSearch';
-import { ExtHostSearch } from 'vs/workbench/api/node/extHostSearch';
+import { NativeExtHostSearch } from 'vs/workbench/api/node/extHostSearch';
 import { ExtensionStoragePaths } from 'vs/workbench/api/node/extHostStoragePaths';
 import { IExtensionStoragePaths } from 'vs/workbench/api/common/extHostStoragePaths';
 import { IExtHostExtensionService } from 'vs/workbench/api/common/extHostExtensionService';
@@ -38,7 +38,7 @@ registerSingleton(IExtHostDocumentsAndEditors, ExtHostDocumentsAndEditors);
 registerSingleton(IExtHostTerminalService, ExtHostTerminalService);
 // registerSingleton(IExtHostTask, ExtHostTask); {{SQL CABON EDIT}} disable exthost tasks
 // registerSingleton(IExtHostDebugService, ExtHostDebugService); {{SQL CARBON EDIT}} remove debug service
-registerSingleton(IExtHostSearch, ExtHostSearch);
+registerSingleton(IExtHostSearch, NativeExtHostSearch);
 registerSingleton(IExtensionStoragePaths, ExtensionStoragePaths);
 registerSingleton(IExtHostExtensionService, ExtHostExtensionService);
 registerSingleton(IExtHostStorage, ExtHostStorage);

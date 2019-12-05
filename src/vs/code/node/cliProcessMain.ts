@@ -292,7 +292,7 @@ export class Main {
 	}
 }
 
-const eventPrefix = product.quality !== 'stable' ? 'adsworkbench' : 'monacoworkbench';
+const eventPrefix = product.quality !== 'stable' ? 'adsworkbench' : 'monacoworkbench'; // {{SQL CARBON EDIT}}
 
 export async function main(argv: ParsedArgs): Promise<void> {
 	const services = new ServiceCollection();

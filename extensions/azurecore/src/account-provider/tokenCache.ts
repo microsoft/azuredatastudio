@@ -76,19 +76,21 @@ export default class TokenCache implements adal.TokenCache {
 	public find(query: any, callback: (error: Error, results: any[]) => void): void {
 		let self = this;
 
-		this.doOperation(() => {
-			return self.readCache()
-				.then(cache => {
-					return cache.filter(
-						entry => TokenCache.findByPartial(entry, query)
-					);
-				})
-				.then(
-					results => callback(null, results),
-					(err) => callback(err, null)
-				);
+		this.doOperation(async () => {
+			try {
+				const cache = await self.readCache();
+				const filtered = cache.filter(entry => {
+					return TokenCache.findByPartial(entry, query);
+				});
+
+				callback(null, filtered);
+			} catch (ex) {
+				console.log(ex);
+				callback(ex, null);
+			}
 		});
 	}
+
 
 	/**
 	 * Wrapper to make callback-based find method into a thenable method

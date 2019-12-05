@@ -325,4 +325,8 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	public set stopEnterPropagation(newValue: boolean) {
 		this.setPropertyFromUI<azdata.InputBoxProperties, boolean>((props, value) => props.stopEnterPropagation = value, newValue);
 	}
+
+	public focus(): void {
+		this.inputElement.focus();
+	}
 }

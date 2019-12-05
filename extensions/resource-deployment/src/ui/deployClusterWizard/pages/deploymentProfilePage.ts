@@ -34,7 +34,10 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 			}).component();
 			const container = createFlexContainer(view, [this._cardContainer, hintText], false);
 			this._loadingComponent = view.modelBuilder.loadingComponent().withItem(container).withProperties<azdata.LoadingComponentProperties>({
-				loading: true
+				loading: true,
+				loadingText: localize('deployCluster.loadingProfiles', "Loading deployment profiles"),
+				loadingCompletedText: localize('deployCluster.loadingProfilesCompleted', "Loading deployment profiles completed"),
+				showText: true
 			}).component();
 			let formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
@@ -179,6 +182,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 				const card = this.createProfileCard(profile, this._view!);
 				if (profile.profileName === defaultProfile) {
 					card.selected = true;
+					card.focus();
 					this.setModelValuesByProfile(profile);
 				}
 				this._cardContainer!.addItem(card, { flex: '0 0 auto' });

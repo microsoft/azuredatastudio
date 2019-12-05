@@ -27,6 +27,7 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 
 const ClearText: string = localize('profilerFilterDialog.clear', "Clear all");
@@ -184,7 +185,7 @@ export class ProfilerFilterDialog extends Modal {
 	}
 
 	private saveFilter(): void {
-		this.profilerService.saveFilter(this.getFilter());
+		this.profilerService.saveFilter(this.getFilter()).catch(e => onUnexpectedError(e));
 	}
 
 	private loadSavedFilter(): void {

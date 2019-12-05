@@ -62,7 +62,7 @@
       "notebook/toolbar": [
         {
           "command": "agent.openNotebookDialog",
-          "when": "providerId == sql && !agent:trackedTemplate"
+          "when": "false && providerId == sql && !agent:trackedTemplate"
         },
         {
           "command": "agent.reuploadTemplate",
@@ -72,7 +72,7 @@
       "explorer/context": [
         {
           "command": "agent.openNotebookDialog",
-          "when": "resourceExtname == .ipynb"
+          "when": "false && resourceExtname == .ipynb"
         }
       ]
     }
@@ -82,7 +82,7 @@
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",
-    "@types/node": "^10.14.8",
+    "@types/node": "^12.11.7",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",

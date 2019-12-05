@@ -13,6 +13,7 @@ import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/
 import { IDashboardTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { find, firstIndex } from 'vs/base/common/arrays';
+import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 
 export class EditDashboardAction extends Action {
 
@@ -81,9 +82,9 @@ export class ToggleMoreWidgetAction extends Action {
 	private static readonly ICON = 'toggle-more';
 
 	constructor(
-		private _actions: Array<IAction>,
-		private _context: any,
-		@IContextMenuService private _contextMenuService: IContextMenuService
+		private readonly _actions: Array<IAction>,
+		private readonly _context: CellContext,
+		@IContextMenuService private readonly _contextMenuService: IContextMenuService
 	) {
 		super(ToggleMoreWidgetAction.ID, ToggleMoreWidgetAction.LABEL, ToggleMoreWidgetAction.ICON);
 	}
@@ -104,9 +105,9 @@ export class DeleteWidgetAction extends Action {
 	private static readonly ICON = 'close';
 
 	constructor(
-		private _widgetId,
-		private _uri,
-		@IAngularEventingService private angularEventService: IAngularEventingService
+		private _widgetId: string,
+		private _uri: string,
+		@IAngularEventingService private readonly angularEventService: IAngularEventingService
 	) {
 		super(DeleteWidgetAction.ID, DeleteWidgetAction.LABEL, DeleteWidgetAction.ICON);
 	}
