@@ -11,7 +11,7 @@ import * as mssql from '../../mssql';
 import * as os from 'os';
 import * as fs from 'fs';
 const path = require('path');
-import { context } from './testContext';
+import { isTestSetupCompleted } from './testContext';
 import * as assert from 'assert';
 import { getStandaloneServer } from './testConfig';
 import { stressify } from 'adstest';
@@ -25,7 +25,7 @@ const SERVER_CONNECTION_TIMEOUT: number = 3000;
 const retryCount = 24; // 2 minutes
 const folderPath = path.join(os.tmpdir(), 'SchemaCompareTest');
 
-if (context.RunTest) {
+if (isTestSetupCompleted()) {
 	suite('Schema compare integration test suite', () => {
 		suiteSetup(async function () {
 			let attempts: number = 20;
