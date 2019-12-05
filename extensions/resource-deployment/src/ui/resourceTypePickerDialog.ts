@@ -378,7 +378,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 					level: azdata.window.MessageLevel.Information,
 					text: localize('deploymentDialog.PendingInstallation', "Following tools: {0} were still not discovered. Please make sure that they are installed, running and discoverable", toolsNotInstalled.map(t => t.displayName).join(','))
 				};
-				//this.updateToolsDisplayTable(); // refresh the tools table data which will repaint the UI with current state of all tools.
 			}
 		} catch (error) {
 			const errorMessage = tool!.statusDescription || getErrorMessage(error);
