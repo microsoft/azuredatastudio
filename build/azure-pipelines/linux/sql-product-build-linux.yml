@@ -168,7 +168,7 @@ steps:
     continueOnError: true
 
   - script: |
-      cp .build/**/*.{deb,rpm,zip,.txt} $(Build.ArtifactStagingDirectory)
+      node build/azure-pipelines/common/copyArtifacts.js
     displayName: Copy artifact to staging area
 
   - task: PublishBuildArtifacts@1
