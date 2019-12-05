@@ -51,7 +51,7 @@ class ExtensionManifestParser extends ExtensionManifestHandler {
 		return pfs.readFile(this._absoluteManifestPath).then((manifestContents) => {
 			const errors: json.ParseError[] = [];
 			const manifest = json.parse(manifestContents.toString(), errors);
-			if (!!manifest && errors.length === 0) {
+			if (errors.length === 0 && json.getNodeType(manifest) === 'object') {
 				if (manifest.__metadata) {
 					manifest.uuid = manifest.__metadata.id;
 				}
@@ -108,6 +108,9 @@ class ExtensionManifestNLSReplacer extends ExtensionManifestHandler {
 				this._log.error(this._absoluteFolderPath, nls.localize('jsonsParseReportErrors', "Failed to parse {0}: {1}.", localized, getParseErrorMessage(error.error)));
 			});
 		};
+		const reportInvalidFormat = (localized: string | null): void => {
+			this._log.error(this._absoluteFolderPath, nls.localize('jsonInvalidFormat', "Invalid format {0}: JSON object expected.", localized));
+		};
 
 		let extension = path.extname(this._absoluteManifestPath);
 		let basename = this._absoluteManifestPath.substr(0, this._absoluteManifestPath.length - extension.length);
@@ -121,6 +124,9 @@ class ExtensionManifestNLSReplacer extends ExtensionManifestHandler {
 				let translationBundle: TranslationBundle = json.parse(content, errors);
 				if (errors.length > 0) {
 					reportErrors(translationPath, errors);
+					return { values: undefined, default: `${basename}.nls.json` };
+				} else if (json.getNodeType(translationBundle) !== 'object') {
+					reportInvalidFormat(translationPath);
 					return { values: undefined, default: `${basename}.nls.json` };
 				} else {
 					let values = translationBundle.contents ? translationBundle.contents.package : undefined;
@@ -144,6 +150,9 @@ class ExtensionManifestNLSReplacer extends ExtensionManifestHandler {
 						if (errors.length > 0) {
 							reportErrors(messageBundle.localized, errors);
 							return { values: undefined, default: messageBundle.original };
+						} else if (json.getNodeType(messages) !== 'object') {
+							reportInvalidFormat(messageBundle.localized);
+							return { values: undefined, default: messageBundle.original };
 						}
 						return { values: messages, default: messageBundle.original };
 					}, (err) => {
@@ -164,6 +173,9 @@ class ExtensionManifestNLSReplacer extends ExtensionManifestHandler {
 			return ExtensionManifestNLSReplacer.resolveOriginalMessageBundle(localizedMessages.default, errors).then((defaults) => {
 				if (errors.length > 0) {
 					reportErrors(localizedMessages.default, errors);
+					return extensionDescription;
+				} else if (json.getNodeType(localizedMessages) !== 'object') {
+					reportInvalidFormat(localizedMessages.default);
 					return extensionDescription;
 				}
 				const localized = localizedMessages.values || Object.create(null);
@@ -397,7 +409,15 @@ class ExtensionManifestValidator extends ExtensionManifestHandler {
 	}
 
 	private static _isStringArray(arr: string[]): boolean {
-		return Array.isArray(arr) && arr.every(value => typeof value === 'string');
+		if (!Array.isArray(arr)) {
+			return false;
+		}
+		for (let i = 0, len = arr.length; i < len; i++) {
+			if (typeof arr[i] !== 'string') {
+				return false;
+			}
+		}
+		return true;
 	}
 }
 

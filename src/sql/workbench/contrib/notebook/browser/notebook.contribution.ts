@@ -7,7 +7,6 @@ import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } fro
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { localize } from 'vs/nls';
 import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions } from 'vs/workbench/common/editor';
 
@@ -46,6 +45,7 @@ import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { MarkdownOutputComponent } from 'sql/workbench/contrib/notebook/browser/outputs/markdownOutput.component';
 import { registerCellComponent } from 'sql/platform/notebooks/common/outputRegistry';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
 	.registerEditorInputFactory(FileNotebookInput.ID, FileNoteBookEditorInputFactory);
@@ -58,7 +58,7 @@ Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.Language
 		const instantiationService = accessor.get(IInstantiationService);
 		if (editor instanceof FileEditorInput) {
 			return instantiationService.createInstance(FileNotebookInput, editor.getName(), editor.getResource(), editor);
-		} else if (editor instanceof UntitledEditorInput) {
+		} else if (editor instanceof UntitledTextEditorInput) {
 			return instantiationService.createInstance(UntitledNotebookInput, editor.getName(), editor.getResource(), editor);
 		} else {
 			return undefined;
@@ -73,7 +73,7 @@ Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 const actionRegistry = Registry.as<IWorkbenchActionRegistry>(WorkbenchActionsExtensions.WorkbenchActions);
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		NewNotebookAction,
 		NewNotebookAction.ID,
 		NewNotebookAction.LABEL,
