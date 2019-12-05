@@ -98,19 +98,9 @@ steps:
 
   - script: |
       set -e
-      cd $(Build.SourcesDirectory)/../azuredatastudio-darwin
-      mkdir -p $(Build.SourcesDirectory)/.build/darwin
-      zip -r -y $(Build.SourcesDirectory)/.build/darwin/azuredatastudio-darwin.zip "Azure Data Studio.app"
+      zip -d ../azuredatastudio-darwin.zip "*.pkg"
+      cp ../azuredatastudio-darwin.zip .build/darwin/archive
     displayName: 'Stable - Run zip'
-    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'stable'))
-
-  - script: |
-      set -e
-      cd $(Build.SourcesDirectory)/../azuredatastudio-darwin
-      mkdir -p $(Build.SourcesDirectory)/.build/darwin
-      zip -r -y $(Build.SourcesDirectory)/.build/darwin/azuredatastudio-darwin.zip "Azure Data Studio - Insiders.app"
-    displayName: 'Insiders - Run zip'
-    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'insider'))
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning'
