@@ -67,17 +67,16 @@
 			"request": "launch",
 			"name": "Launch azuredatastudio",
 			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat",
-				"timeout": 45000
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
 			},
 			"osx": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
-				"timeout": 45000
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
 			},
 			"linux": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
-				"timeout": 45000
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
 			},
+			"port": 9222,
+			"timeout": 20000,
 			"env": {
 				"VSCODE_EXTHOST_WILL_SEND_SOCKET": null
 			},
@@ -258,6 +257,14 @@
 			"configurations": [
 				"Launch azuredatastudio",
 				"Attach to Main Process"
+			]
+		},
+		{
+			"name": "Debug azuredatastudio Main, Renderer & Extension Host",
+			"configurations": [
+				"Launch azuredatastudio",
+				"Attach to Main Process",
+				"Attach to Extension Host"
 			]
 		},
 		{

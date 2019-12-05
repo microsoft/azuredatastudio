@@ -7,9 +7,9 @@ import { URI } from 'vs/base/common/uri';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 
 export class UntitledNotebookInput extends NotebookInput {
 	public static ID: string = 'workbench.editorinputs.untitledNotebookInput';
@@ -17,7 +17,7 @@ export class UntitledNotebookInput extends NotebookInput {
 	constructor(
 		title: string,
 		resource: URI,
-		textInput: UntitledEditorInput,
+		textInput: UntitledTextEditorInput,
 		@ITextModelService textModelService: ITextModelService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@INotebookService notebookService: INotebookService,
@@ -26,12 +26,17 @@ export class UntitledNotebookInput extends NotebookInput {
 		super(title, resource, textInput, textModelService, instantiationService, notebookService, extensionService);
 	}
 
-	public get textInput(): UntitledEditorInput {
-		return super.textInput as UntitledEditorInput;
+	public get textInput(): UntitledTextEditorInput {
+		return super.textInput as UntitledTextEditorInput;
 	}
 
 	public setMode(mode: string): void {
 		this.textInput.setMode(mode);
+	}
+
+	isUntitled(): boolean {
+		// Subclasses need to explicitly opt-in to being untitled.
+		return true;
 	}
 
 	public getTypeId(): string {
