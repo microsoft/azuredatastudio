@@ -80,7 +80,7 @@ export class SettingsSynchroniser extends Disposable implements ISynchroniser {
 	}
 
 	async sync(_continue?: boolean): Promise<boolean> {
-		if (!this.configurationService.getValue<boolean>('configurationSync.enableSettings')) {
+		if (!this.configurationService.getValue<boolean>('sync.enableSettings')) {
 			this.logService.trace('Settings: Skipping synchronizing settings as it is disabled.');
 			return false;
 		}
@@ -135,10 +135,9 @@ export class SettingsSynchroniser extends Disposable implements ISynchroniser {
 	}
 
 	private async continueSync(): Promise<boolean> {
-		if (this.status !== SyncStatus.HasConflicts) {
-			return false;
+		if (this.status === SyncStatus.HasConflicts) {
+			await this.apply();
 		}
-		await this.apply();
 		return true;
 	}
 
@@ -153,7 +152,7 @@ export class SettingsSynchroniser extends Disposable implements ISynchroniser {
 			if (this.hasErrors(content)) {
 				const error = new Error(localize('errorInvalidSettings', "Unable to sync settings. Please resolve conflicts without any errors/warnings and try again."));
 				this.logService.error(error);
-				return Promise.reject(error);
+				throw error;
 			}
 
 			let { fileContent, remoteUserData, hasLocalChanged, hasRemoteChanged } = await this.syncPreviewResultPromise;
@@ -188,7 +187,7 @@ export class SettingsSynchroniser extends Disposable implements ISynchroniser {
 
 	private hasErrors(content: string): boolean {
 		const parseErrors: ParseError[] = [];
-		parse(content, parseErrors);
+		parse(content, parseErrors, { allowEmptyContent: true, allowTrailingComma: true });
 		return parseErrors.length > 0;
 	}
 
@@ -218,8 +217,8 @@ export class SettingsSynchroniser extends Disposable implements ISynchroniser {
 			}
 
 			if (!lastSyncData // First time sync
-				|| lastSyncData.content !== localContent // Local has moved forwarded
-				|| lastSyncData.content !== remoteContent // Remote has moved forwarded
+				|| lastSyncData.content !== localContent // Local has forwarded
+				|| lastSyncData.content !== remoteContent // Remote has forwarded
 			) {
 				this.logService.trace('Settings: Merging remote settings with local settings...');
 				const result = await this.settingsMergeService.merge(localContent, remoteContent, lastSyncData ? lastSyncData.content : null, this.getIgnoredSettings());
@@ -248,13 +247,23 @@ export class SettingsSynchroniser extends Disposable implements ISynchroniser {
 	}
 
 	private getIgnoredSettings(settingsContent?: string): string[] {
-		const value: string[] = (settingsContent ? parse(settingsContent)['configurationSync.settingsToIgnore'] : this.configurationService.getValue<string[]>('configurationSync.settingsToIgnore')) || [];
+		let value: string[] = [];
+		if (settingsContent) {
+			const setting = parse(settingsContent);
+			if (setting) {
+				value = setting['sync.ignoredSettings'];
+			}
+		} else {
+			value = this.configurationService.getValue<string[]>('sync.ignoredSettings');
+		}
 		const added: string[] = [], removed: string[] = [];
-		for (const key of value) {
-			if (startsWith(key, '-')) {
-				removed.push(key.substring(1));
-			} else {
-				added.push(key);
+		if (Array.isArray(value)) {
+			for (const key of value) {
+				if (startsWith(key, '-')) {
+					removed.push(key.substring(1));
+				} else {
+					added.push(key);
+				}
 			}
 		}
 		return [...DEFAULT_IGNORED_SETTINGS, ...added].filter(setting => removed.indexOf(setting) === -1);

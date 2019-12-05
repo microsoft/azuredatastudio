@@ -10,7 +10,6 @@ import { IConnectableInput, IConnectionManagementService } from 'sql/platform/co
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
 
-import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { URI } from 'vs/base/common/uri';
@@ -21,6 +20,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { replaceConnection } from 'sql/workbench/browser/taskUtilities';
 import { EditDataResultsInput } from 'sql/workbench/contrib/editData/browser/editDataResultsInput';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 
 /**
  * Service wrapper for opening and creating SQL documents as sql editor inputs
@@ -30,7 +30,7 @@ export class QueryEditorService implements IQueryEditorService {
 	public _serviceBrand: undefined;
 
 	constructor(
-		@IUntitledEditorService private _untitledEditorService: IUntitledEditorService,
+		@IUntitledTextEditorService private _untitledEditorService: IUntitledTextEditorService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
