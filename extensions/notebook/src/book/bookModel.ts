@@ -207,8 +207,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		if (notebook) {
 			result = {
 				hasNavigation: true,
-				previous: notebook.previousUri ? this.openAsUntitled ? this.getPlatformSpecificUri(notebook.previousUri) : vscode.Uri.file(notebook.previousUri) : undefined,
-				next: notebook.nextUri ? this.openAsUntitled ? this.getPlatformSpecificUri(notebook.nextUri) : vscode.Uri.file(notebook.nextUri) : undefined
+				previous: notebook.previousUri ? this.openAsUntitled ? this.getUntitledUri(notebook.previousUri) : vscode.Uri.file(notebook.previousUri) : undefined,
+				next: notebook.nextUri ? this.openAsUntitled ? this.getUntitledUri(notebook.nextUri) : vscode.Uri.file(notebook.nextUri) : undefined
 			};
 		} else {
 			result = {
@@ -220,12 +220,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		return Promise.resolve(result);
 	}
 
-	getPlatformSpecificUri(resource: string): vscode.Uri {
-		if (process.platform === 'win32') {
-			return vscode.Uri.parse(`untitled:${resource}`);
-		}
-		else {
-			return vscode.Uri.parse(resource).with({ scheme: 'untitled' });
-		}
+	getUntitledUri(resource: string): vscode.Uri {
+		return vscode.Uri.parse(`untitled:${resource}`);
 	}
 }
