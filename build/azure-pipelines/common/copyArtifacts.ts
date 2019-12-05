@@ -16,7 +16,7 @@ const files = [
 	'.build/linux/server/*', // linux server
 	'.build/docker/*', // docker image
 	'.build/linux/archive/*.zip', // linux zip
-	'.build/darwin/*.zip' // darwin zip
+	'.build/darwin/**/*.zip' // darwin zip
 ];
 
 async function main() {
