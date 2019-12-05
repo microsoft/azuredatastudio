@@ -19,7 +19,7 @@ const files = [
 
 async function main() {
 	return new Promise((resolve, reject) => {
-		const stream = vfs.src(files, { base: '.build' })
+		const stream = vfs.src(files, { base: '.build', allowEmpty: true })
 			.pipe(vfs.dest(process.env.BUILD_ARTIFACTSTAGINGDIRECTORY!));
 
 		stream.on('end', () => resolve());
