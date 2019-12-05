@@ -99,9 +99,7 @@ steps:
   - script: |
       set -e
       pushd ../azuredatastudio-darwin && zip -r -X -y ../azuredatastudio-darwin.zip * && popd
-      zip -d ../azuredatastudio-darwin.zip "*.pkg"
-      cp ../azuredatastudio-darwin.zip .build/darwin/archive
-    displayName: 'Stable - Run zip'
+    displayName: 'Archive'
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning'
@@ -124,15 +122,9 @@ steps:
 
   - script: |
       set -e
-      zip -d $(Build.SourcesDirectory)/.build/darwin/azuredatastudio-darwin.zip "Azure Data Studio.pkg"
-    displayName: 'Stable - Remove .pkg from signed zip'
-    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'stable'))
-
-  - script: |
-      set -e
-      zip -d $(Build.SourcesDirectory)/.build/darwin/azuredatastudio-darwin.zip "Azure Data Studio - Insiders.pkg"
-    displayName: 'Insiders - Remove .pkg from signed zip'
-    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'insider'))
+      zip -d ../azuredatastudio-darwin.zip "*.pkg"
+      cp ../azuredatastudio-darwin.zip .build/darwin/archive
+    displayName: 'Remove pkg from archive'
 
   - script: |
       set -e
