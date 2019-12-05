@@ -39,7 +39,7 @@ export class Driver implements IDriver, IWindowDriverRegistry {
 		private options: IDriverOptions,
 		@IWindowsMainService private readonly windowsMainService: IWindowsMainService,
 		@ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService,
-		@IElectronMainService private readonly electronMainService: any // {{SQL CARBON EDIT}} remove interface, naster work around
+		@IElectronMainService private readonly electronMainService: IElectronMainService
 	) { }
 
 	async registerWindowDriver(windowId: number): Promise<IDriverOptions> {
@@ -212,7 +212,7 @@ export async function serve(
 	instantiationService: IInstantiationService
 ): Promise<IDisposable> {
 	const verbose = environmentService.driverVerbose;
-	const driver = instantiationService.createInstance(Driver, windowServer, { verbose });
+	const driver = instantiationService.createInstance(Driver as any, windowServer, { verbose }) as Driver; // {{SQL CARBON EDIT}} strict-null-check...i guess?
 
 	const windowDriverRegistryChannel = new WindowDriverRegistryChannel(driver);
 	windowServer.registerChannel('windowDriverRegistry', windowDriverRegistryChannel);

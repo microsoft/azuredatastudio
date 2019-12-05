@@ -29,12 +29,13 @@ import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/unt
 import { TestQueryModelService } from 'sql/platform/query/test/common/testQueryModelService';
 import { Event } from 'vs/base/common/event';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { SimpleUriLabelService } from 'vs/editor/standalone/browser/simpleServices';
 
 class TestParsedArgs implements ParsedArgs {
 	[arg: string]: any;
@@ -391,7 +392,7 @@ suite('commandLineService tests', () => {
 		querymodelService.setup(c => c.onRunQueryComplete).returns(() => Event.None);
 		const instantiationService = new TestInstantiationService();
 		let uri = URI.file(args._[0]);
-		const untitledEditorInput = new UntitledEditorInput(uri, false, '', '', '', instantiationService, undefined, undefined);
+		const untitledEditorInput = new UntitledTextEditorInput(uri, false, '', '', '', instantiationService, undefined, new SimpleUriLabelService(), undefined, undefined, undefined);
 		const queryInput = new UntitledQueryEditorInput(undefined, untitledEditorInput, undefined, connectionManagementService.object, querymodelService.object, configurationService.object, undefined);
 		queryInput.state.connected = true;
 		const editorService: TypeMoq.Mock<IEditorService> = TypeMoq.Mock.ofType<IEditorService>(TestEditorService, TypeMoq.MockBehavior.Strict);

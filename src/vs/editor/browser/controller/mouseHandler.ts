@@ -17,18 +17,17 @@ import { IViewCursorRenderData } from 'vs/editor/browser/viewParts/viewCursors/v
 import { EditorZoom } from 'vs/editor/common/config/editorZoom';
 import { Position } from 'vs/editor/common/core/position';
 import { Selection } from 'vs/editor/common/core/selection';
-import { HorizontalRange } from 'vs/editor/common/view/renderingContext';
+import { HorizontalPosition } from 'vs/editor/common/view/renderingContext';
 import { ViewContext } from 'vs/editor/common/view/viewContext';
 import * as viewEvents from 'vs/editor/common/view/viewEvents';
 import { ViewEventHandler } from 'vs/editor/common/viewModel/viewEventHandler';
 import { EditorOption } from 'vs/editor/common/config/editorOptions';
 
-
 /**
  * Merges mouse events when mouse move events are throttled
  */
-function createMouseMoveEventMerger(mouseTargetFactory: MouseTargetFactory | null) {
-	return function (lastEvent: EditorMouseEvent, currentEvent: EditorMouseEvent): EditorMouseEvent {
+export function createMouseMoveEventMerger(mouseTargetFactory: MouseTargetFactory | null) {
+	return function (lastEvent: EditorMouseEvent | null, currentEvent: EditorMouseEvent): EditorMouseEvent {
 		let targetIsWidget = false;
 		if (mouseTargetFactory) {
 			targetIsWidget = mouseTargetFactory.mouseTargetIsWidget(currentEvent);
@@ -59,7 +58,7 @@ export interface IPointerHandlerHelper {
 	 */
 	getPositionFromDOMInfo(spanNode: HTMLElement, offset: number): Position | null;
 
-	visibleRangeForPosition2(lineNumber: number, column: number): HorizontalRange | null;
+	visibleRangeForPosition(lineNumber: number, column: number): HorizontalPosition | null;
 	getLineWidth(lineNumber: number): number;
 }
 
@@ -72,8 +71,7 @@ export class MouseHandler extends ViewEventHandler {
 	protected viewHelper: IPointerHandlerHelper;
 	protected mouseTargetFactory: MouseTargetFactory;
 	private readonly _asyncFocus: RunOnceScheduler;
-
-	private readonly _mouseDownOperation: MouseDownOperation;
+	protected readonly _mouseDownOperation: MouseDownOperation;
 	private lastMouseLeaveTime: number;
 
 	constructor(context: ViewContext, viewController: ViewController, viewHelper: IPointerHandlerHelper) {
@@ -180,7 +178,7 @@ export class MouseHandler extends ViewEventHandler {
 		});
 	}
 
-	private _onMouseMove(e: EditorMouseEvent): void {
+	public _onMouseMove(e: EditorMouseEvent): void {
 		if (this._mouseDownOperation.isActive()) {
 			// In selection/drag operation
 			return;
@@ -197,7 +195,7 @@ export class MouseHandler extends ViewEventHandler {
 		});
 	}
 
-	private _onMouseLeave(e: EditorMouseEvent): void {
+	public _onMouseLeave(e: EditorMouseEvent): void {
 		this.lastMouseLeaveTime = (new Date()).getTime();
 		this.viewController.emitMouseLeave({
 			event: e,

@@ -14,6 +14,7 @@ import { createCSSRule, asCSSUrl } from 'vs/base/browser/dom';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IdGenerator } from 'vs/base/common/idGenerator';
+import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 
 const ids = new IdGenerator('task-icon-');
 
@@ -56,10 +57,12 @@ export const TaskRegistry: ITaskRegistry = new class implements ITaskRegistry {
 		let iconClass: string | undefined;
 		if (this.taskIdToIconClassNameMap.has(item.id)) {
 			iconClass = this.taskIdToIconClassNameMap.get(item.id);
-		} else if (item.iconLocation) {
+		} else if (ThemeIcon.isThemeIcon(item.icon)) {
+			// TODO
+		} else if (item.icon?.dark) { // at the very least we need a dark icon
 			iconClass = ids.nextId();
-			createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(item.iconLocation.light || item.iconLocation.dark)}`);
-			createCSSRule(`.vs-dark .codicon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(item.iconLocation.dark)}`);
+			createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.light || item.icon.dark)}`);
+			createCSSRule(`.vs-dark .codicon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.dark)}`);
 			this.taskIdToIconClassNameMap.set(item.id, iconClass);
 		}
 		return iconClass;
@@ -102,7 +105,7 @@ export abstract class Task {
 
 	private toCommandAction(): ICommandAction {
 		return {
-			iconLocation: this.iconPath,
+			icon: this.iconPath,
 			id: this.id,
 			title: this.title
 		};

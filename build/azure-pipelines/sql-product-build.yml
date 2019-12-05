@@ -45,6 +45,7 @@ jobs:
   pool:
     name: mssqltools
   dependsOn:
+  - Linux
   - Windows
   steps:
   - template: win32/sql-product-test-win32.yml
