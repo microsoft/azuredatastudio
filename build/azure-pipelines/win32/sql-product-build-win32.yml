@@ -21,6 +21,7 @@ steps:
     inputs:
       azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
       KeyVaultName: ado-secrets
+      SecretsFilter: 'github-distro-mixin-password'
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
