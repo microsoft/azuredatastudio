@@ -207,7 +207,7 @@ actionRegistry.registerWorkbenchAction(
 
 // Register Flavor Action
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		ChangeFlavorAction,
 		ChangeFlavorAction.ID,
 		ChangeFlavorAction.LABEL
