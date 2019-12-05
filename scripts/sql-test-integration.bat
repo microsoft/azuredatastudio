@@ -16,6 +16,13 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 ) else (
 	:: Run from a built: need to compile all test extensions
 	call yarn gulp compile-extension:integration-tests
+	call yarn gulp compile-extension:admin-tool-ext-win
+	call yarn gulp compile-extension:agent
+	call yarn gulp compile-extension:cms
+	call yarn gulp compile-extension:dacpac
+	call yarn gulp compile-extension:import
+	call yarn gulp compile-extension:profiler
+	call yarn gulp compile-extension:schema-compare
 
 	echo "Running integration tests with '%INTEGRATION_TEST_ELECTRON_PATH%' as build."
 )
@@ -37,7 +44,16 @@ if "%SKIP_PYTHON_INSTALL_TEST%" == "1" (
 	call %INTEGRATION_TEST_ELECTRON_PATH% --nogpu --extensionDevelopmentPath=%~dp0\..\extensions\notebook --extensionTestsPath=%~dp0\..\extensions\notebook\out\integrationTest --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222
 )
 
-call %INTEGRATION_TEST_ELECTRON_PATH% -nogpu --extensionDevelopmentPath=%~dp0\..\extensions\integration-tests --extensionTestsPath=%~dp0\..\extensions\integration-tests\out --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222
+:: only external extensions are included as additional development here and must be compiled in a previous step if running on pipelines
+call %INTEGRATION_TEST_ELECTRON_PATH% -nogpu --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222 ^
+--extensionDevelopmentPath=%~dp0\..\extensions\integration-tests --extensionTestsPath=%~dp0\..\extensions\integration-tests\out ^
+--extensionDevelopmentPath=%~dp0\..\extensions\admin-tool-ext-win ^
+--extensionDevelopmentPath=%~dp0\..\extensions\agent ^
+--extensionDevelopmentPath=%~dp0\..\extensions\cms ^
+--extensionDevelopmentPath=%~dp0\..\extensions\dacpac ^
+--extensionDevelopmentPath=%~dp0\..\extensions\import ^
+--extensionDevelopmentPath=%~dp0\..\extensions\profiler ^
+--extensionDevelopmentPath=%~dp0\..\extensions\schema-compare ^
 
 rmdir /s /q %VSCODEUSERDATADIR%
 rmdir /s /q %VSCODEEXTENSIONSDIR%
