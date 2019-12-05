@@ -1,3 +1,4 @@
+@echo OFF
 setlocal
 
 pushd %~dp0\..
@@ -33,8 +34,6 @@ if "%ADS_TEST_GREP%" == "" (
 	set ADS_TEST_GREP=@UNSTABLE@
 	SET ADS_TEST_INVERT_GREP=1
 )
-
-@echo OFF
 
 if "%SKIP_PYTHON_INSTALL_TEST%" == "1" (
 	echo Skipping Python installation tests.
