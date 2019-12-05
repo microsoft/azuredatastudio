@@ -21,7 +21,7 @@
     "compile": "gulp compile-extension:liveshare"
   },
   "devDependencies": {
-    "@types/node": "12.0.9",
+    "@types/node": "^12.11.7",
     "ts-loader": "^5.3.3",
     "tslint": "^5.12.1",
     "typescript": "^3.3.1"

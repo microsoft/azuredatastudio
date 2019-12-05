@@ -91,7 +91,7 @@ class NotebookProviderWrapper extends Disposable implements INotebookProvider {
 
 	constructor(
 		private _proxy: Proxies,
-		public readonly providerId,
+		public readonly providerId: string,
 		public readonly providerHandle: number,
 		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
@@ -127,7 +127,7 @@ class NotebookManagerWrapper implements INotebookManager {
 	private managerDetails: INotebookManagerDetails;
 
 	constructor(private _proxy: Proxies,
-		public readonly providerId,
+		public readonly providerId: string,
 		private notebookUri: URI,
 		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) { }
