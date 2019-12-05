@@ -67,7 +67,7 @@ export class LocalCondaPackageManageProvider implements IPackageManageProvider {
 	 * Returns location title
 	 */
 	getLocationTitle(): Promise<string> {
-		return Promise.resolve(constants.localhostName);
+		return Promise.resolve(constants.localhostTitle);
 	}
 
 	/**

@@ -101,7 +101,7 @@ export class ManagePackagesDialogModel {
 	/**
 	 * Returns the current provider
 	 */
-	public get currentPackageManageProvider(): IPackageManageProvider {
+	public get currentPackageManageProvider(): IPackageManageProvider | undefined {
 		if (this._currentProvider) {
 			let provider = this._packageManageProviders.get(this._currentProvider);
 			return provider;
@@ -112,7 +112,7 @@ export class ManagePackagesDialogModel {
 	/**
 	 * Returns the current provider
 	 */
-	public get currentPackageType(): string {
+	public get currentPackageType(): string | undefined {
 		if (this._currentProvider) {
 			let provider = this._packageManageProviders.get(this._currentProvider);
 			return provider.packageTarget.packageType;
@@ -238,7 +238,7 @@ export class ManagePackagesDialogModel {
 	/**
 	 * Returns the location title for current provider
 	 */
-	public async getLocationTitle(): Promise<string> {
+	public async getLocationTitle(): Promise<string | undefined> {
 		let provider = this.currentPackageManageProvider;
 		if (provider) {
 			return await provider.getLocationTitle();
