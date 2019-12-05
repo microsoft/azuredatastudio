@@ -258,8 +258,12 @@ export class SchemaCompareMainWindow {
 			},
 		]);
 
-		// reset buttons to before comparison state
-		this.resetButtons(ResetButtonState.beforeCompareStart);
+		if (!this.sourceName || !this.targetName || this.sourceName === ' ' || this.targetName === ' ') {
+			this.resetButtons(ResetButtonState.noSourceTarget);
+		} else {
+			// reset buttons to before comparison state
+			this.resetButtons(ResetButtonState.beforeCompareStart);
+		}
 	}
 
 	// only for test
@@ -821,7 +825,6 @@ export class SchemaCompareMainWindow {
 
 	// reset state afer loading an scmp
 	private resetForNewCompare(): void {
-		this.resetButtons(ResetButtonState.beforeCompareStart);
 		this.flexModel.removeItem(this.splitView);
 		this.flexModel.removeItem(this.noDifferencesLabel);
 		this.flexModel.addItem(this.startText, { CSSStyles: { 'margin': 'auto' } });
@@ -943,17 +946,18 @@ export class SchemaCompareMainWindow {
 				return;
 			}
 
+			let ownerUri;
 			if (result.sourceEndpointInfo && result.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
 				// only set endpoint info if able to connect to the database
-				const ownerUri = await verifyConnectionAndGetOwnerUri(result.sourceEndpointInfo, SourceTitle);
-				if (ownerUri) {
-					this.sourceEndpointInfo = result.sourceEndpointInfo;
-					this.sourceEndpointInfo.ownerUri = ownerUri;
-				}
+				ownerUri = await verifyConnectionAndGetOwnerUri(result.sourceEndpointInfo, SourceTitle);
+			}
+			if (ownerUri) {
+				this.sourceEndpointInfo = result.sourceEndpointInfo;
+				this.sourceEndpointInfo.ownerUri = ownerUri;
 			} else {
 				// need to do this instead of just setting it to the result.sourceEndpointInfo because some fields are null which will cause an error when sending the compare request
 				this.sourceEndpointInfo = {
-					endpointType: mssql.SchemaCompareEndpointType.Dacpac,
+					endpointType: result.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database ? mssql.SchemaCompareEndpointType.Database : mssql.SchemaCompareEndpointType.Dacpac,
 					serverDisplayName: '',
 					serverName: '',
 					databaseName: '',
@@ -964,15 +968,16 @@ export class SchemaCompareMainWindow {
 			}
 
 			if (result.targetEndpointInfo && result.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
-				const ownerUri = await verifyConnectionAndGetOwnerUri(result.targetEndpointInfo, TargetTitle);
-				if (ownerUri) {
-					this.targetEndpointInfo = result.targetEndpointInfo;
-					this.targetEndpointInfo.ownerUri = ownerUri;
-				}
+				// only set endpoint info if able to connect to the database
+				ownerUri = await verifyConnectionAndGetOwnerUri(result.targetEndpointInfo, TargetTitle);
+			}
+			if (ownerUri) {
+				this.targetEndpointInfo = result.targetEndpointInfo;
+				this.targetEndpointInfo.ownerUri = ownerUri;
 			} else {
 				// need to do this instead of just setting it to the result.targetEndpointInfo because some fields are null which will cause an error when sending the compare request
 				this.targetEndpointInfo = {
-					endpointType: mssql.SchemaCompareEndpointType.Dacpac,
+					endpointType: result.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database ? mssql.SchemaCompareEndpointType.Database : mssql.SchemaCompareEndpointType.Dacpac,
 					serverDisplayName: '',
 					serverName: '',
 					databaseName: '',
