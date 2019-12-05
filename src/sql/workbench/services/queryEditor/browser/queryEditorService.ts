@@ -4,33 +4,23 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
-import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
+import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 import { EditDataInput } from 'sql/workbench/contrib/editData/browser/editDataInput';
 import { IConnectableInput, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryEditorService, IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/workbench/browser/customInputConverter';
-import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
 
-import { ITextModel } from 'vs/editor/common/model';
-import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import Severity from 'vs/base/common/severity';
-import nls = require('vs/nls');
 import { URI } from 'vs/base/common/uri';
-import paths = require('vs/base/common/extpath');
+import * as paths from 'vs/base/common/extpath';
 import { isLinux } from 'vs/base/common/platform';
 import { Schemas } from 'vs/base/common/network';
-import { INotificationService } from 'vs/platform/notification/common/notification';
-import { EditDataResultsInput } from 'sql/workbench/contrib/editData/browser/editDataResultsInput';
-import { IEditorInput, IEditor } from 'vs/workbench/common/editor';
-import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
-import { ILanguageSelection } from 'vs/editor/common/services/modeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { replaceConnection } from 'sql/workbench/browser/taskUtilities';
+import { EditDataResultsInput } from 'sql/workbench/contrib/editData/browser/editDataResultsInput';
 import { ILogService } from 'vs/platform/log/common/log';
-import { assign } from 'vs/base/common/objects';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 
 /**
  * Service wrapper for opening and creating SQL documents as sql editor inputs
@@ -39,19 +29,8 @@ export class QueryEditorService implements IQueryEditorService {
 
 	public _serviceBrand: undefined;
 
-	private static CHANGE_UNSUPPORTED_ERROR_MESSAGE = nls.localize(
-		'queryEditorServiceChangeUnsupportedError',
-		"Change Language Mode is not supported for unsaved queries"
-	);
-
-	private static CHANGE_ERROR_MESSAGE = nls.localize(
-		'queryEditorServiceChangeError',
-		"Please save or discard changes before switching to/from the SQL Language Mode"
-	);
-
 	constructor(
-		@INotificationService private _notificationService: INotificationService,
-		@IUntitledEditorService private _untitledEditorService: IUntitledEditorService,
+		@IUntitledTextEditorService private _untitledEditorService: IUntitledTextEditorService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -83,12 +62,11 @@ export class QueryEditorService implements IQueryEditorService {
 				}
 
 				const queryResultsInput: QueryResultsInput = this._instantiationService.createInstance(QueryResultsInput, docUri.toString());
-				let queryInput: QueryInput = this._instantiationService.createInstance(QueryInput, objectName, fileInput, queryResultsInput, connectionProviderName);
+				let queryInput = this._instantiationService.createInstance(UntitledQueryEditorInput, objectName, fileInput, queryResultsInput);
 
 				this._editorService.openEditor(queryInput, { pinned: true })
 					.then((editor) => {
-						let params = <QueryInput>editor.input;
-						resolve(params);
+						resolve(editor.input as UntitledQueryEditorInput);
 					}, (error) => {
 						reject(error);
 					});
@@ -128,14 +106,14 @@ export class QueryEditorService implements IQueryEditorService {
 		let oldResourceString: string = oldResource.toString();
 
 		this._editorService.editors.forEach(input => {
-			if (input instanceof QueryInput) {
+			if (input instanceof QueryEditorInput) {
 				const resource = input.getResource();
 
 				// Update Editor if file (or any parent of the input) got renamed or moved
 				// Note: must check the new file name for this since this method is called after the rename is completed
 				if (paths.isEqualOrParent(resource.fsPath, newResource.fsPath, !isLinux /* ignorecase */)) {
 					// In this case, we know that this is a straight rename so support this as a rename / replace operation
-					TaskUtilities.replaceConnection(oldResourceString, newResource.toString(), this._connectionManagementService).then(result => {
+					replaceConnection(oldResourceString, newResource.toString(), this._connectionManagementService).then(result => {
 						if (result && result.connected) {
 							input.onConnectSuccess();
 						} else {
@@ -147,84 +125,10 @@ export class QueryEditorService implements IQueryEditorService {
 		});
 	}
 
-	////// Public static functions
-	// These functions are static to reduce extra lines needed in the vscode code base
-
-	/**
-	 * Checks if the Language Mode is being changed to/from SQL. If so, swaps out the input of the
-	 * given editor with a new input, opens a new editor, then returns the new editor's IModel.
-	 *
-	 * Returns an immediately resolved promise if the SQL Language mode is not involved. In this case,
-	 * the calling function in editorStatus.ts will handle the language change normally.
-	 *
-	 * Returns an immediately resolved promise with undefined if SQL is involved in the language change
-	 * and the editor is dirty. In this case, the calling function in editorStatus.ts will not perform
-	 * the language change. TODO: change this -  tracked by issue #727
-	 *
-	 * In all other cases (when SQL is involved in the language change and the editor is not dirty),
-	 * returns a promise that will resolve when the old editor has been replaced by a new editor.
-	 */
-	public async sqlLanguageModeCheck(model: ITextModel, languageSelection: ILanguageSelection, editor: IEditor): Promise<ITextModel> {
-		if (!model || !languageSelection || !editor) {
-			return undefined;
-		}
-
-		let newLanguage: string = languageSelection.languageIdentifier.language;
-		let oldLanguage: string = model.getLanguageIdentifier().language;
-		let changingToSql = sqlModeId === newLanguage;
-		let changingFromSql = sqlModeId === oldLanguage;
-		let changingLanguage = newLanguage !== oldLanguage;
-
-		if (!changingLanguage) {
-			return model;
-		}
-		if (!changingFromSql && !changingToSql) {
-			return model;
-		}
-
-		let uri: URI = QueryEditorService._getEditorChangeUri(editor.input, changingToSql);
-		if (uri.scheme === Schemas.untitled && (editor.input instanceof QueryInput || editor.input instanceof EditDataInput)) {
-			this._notificationService.notify({
-				severity: Severity.Error,
-				message: QueryEditorService.CHANGE_UNSUPPORTED_ERROR_MESSAGE
-			});
-			return undefined;
-		}
-
-		// Return undefined to notify the calling funciton to not perform the language change
-		// TODO change this - tracked by issue #727
-		if (editor.input.isDirty()) {
-			this._notificationService.notify({
-				severity: Severity.Error,
-				message: QueryEditorService.CHANGE_ERROR_MESSAGE
-			});
-			return undefined;
-		}
-
-		let group: IEditorGroup = editor.group;
-		let index: number = group.editors.indexOf(editor.input);
-		let options: IQueryEditorOptions = editor.options ? editor.options : {};
-		options = assign(options, { index: index });
-
-		// Return a promise that will resovle when the old editor has been replaced by a new editor
-		let newEditorInput = this.getNewEditorInput(changingToSql, editor.input, uri);
-
-		// Override queryEditorCheck to not open this file in a QueryEditor
-		if (!changingToSql) {
-			options.denyQueryEditor = true;
-		}
-
-		await group.closeEditor(editor.input);
-		// Reopen a new editor in the same position/index
-		const newEditor = await this._editorService.openEditor(newEditorInput, options, group);
-
-		return QueryEditorService._onEditorOpened(newEditor, uri.toString(), undefined, options.pinned);
-	}
-
 	////// Private functions
 
 	private createUntitledSqlFilePath(): Promise<string> {
-		return this.createPrefixedSqlFilePath(untitledFilePrefix);
+		return this.createPrefixedSqlFilePath('SQLQuery');
 	}
 
 	private async createPrefixedSqlFilePath(prefix: string): Promise<string> {
@@ -241,70 +145,5 @@ export class QueryEditorService implements IQueryEditorService {
 		}
 
 		return filePath;
-	}
-
-	////// Private static functions
-
-	/**
-	 * Returns a QueryInput if we are changingToSql. Returns a FileEditorInput if we are !changingToSql.
-	 */
-	private getNewEditorInput(changingToSql: boolean, input: IEditorInput, uri: URI): IEditorInput {
-		if (!uri) {
-			return undefined;
-		}
-
-		let newEditorInput: IEditorInput = undefined;
-		if (changingToSql) {
-			const queryResultsInput: QueryResultsInput = this._instantiationService.createInstance(QueryResultsInput, uri.toString());
-			let queryInput: QueryInput = this._instantiationService.createInstance(QueryInput, '', input, queryResultsInput, undefined);
-			newEditorInput = queryInput;
-		} else {
-			let uriCopy: URI = URI.from({ scheme: uri.scheme, authority: uri.authority, path: uri.path, query: uri.query, fragment: uri.fragment });
-			newEditorInput = this._instantiationService.createInstance(FileEditorInput, uriCopy, undefined, undefined);
-		}
-
-		return newEditorInput;
-	}
-
-	/**
-	 * Gets the URI for this IEditorInput or returns undefined if one does not exist.
-	 */
-	private static _getEditorChangeUri(input: IEditorInput, changingToSql: boolean): URI {
-		let uriSource: IEditorInput = input;
-
-		// It is assumed that if we got here, !changingToSql is logically equivalent to changingFromSql
-		let changingFromSql = !changingToSql;
-		if (input instanceof QueryInput && changingFromSql) {
-			let queryInput: QueryInput = <QueryInput>input;
-			uriSource = queryInput.sql;
-		}
-		return getSupportedInputResource(uriSource);
-	}
-
-	/**
-	 * Handle all cleanup actions that need to wait until the editor is fully open.
-	 */
-	private static _onEditorOpened(editor: IEditor, uri: string, position: Position, isPinned: boolean): ITextModel {
-
-		// Reset the editor pin state
-		// TODO: change this so it happens automatically in openEditor in sqlLanguageModeCheck. Performing this here
-		// causes the text on the tab to slightly flicker for unpinned files (from non-italic to italic to non-italic).
-		// This is currently unavoidable because vscode ignores "pinned" on IEditorOptions if "index" is not undefined,
-		// and we need to specify "index"" so the editor tab remains in the same place
-		// let group: IEditorGroup = QueryEditorService.editorGroupService.getStacksModel().groupAt(position);
-		// if (isPinned) {
-		// 	QueryEditorService.editorGroupService.pinEditor(group, editor.input);
-		// }
-
-		// @SQLTODO do we need the below
-		// else {
-		// 	QueryEditorService.editorGroupService.p  .unpinEditor(group, editor.input);
-		// }
-
-		// Grab and returns the IModel that will be used to resolve the sqlLanguageModeCheck promise.
-		let control = editor.getControl();
-		let codeEditor: ICodeEditor = <ICodeEditor>control;
-		let newModel = codeEditor ? codeEditor.getModel() : undefined;
-		return newModel;
 	}
 }

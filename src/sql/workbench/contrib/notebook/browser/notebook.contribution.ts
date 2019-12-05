@@ -5,7 +5,16 @@
 import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { localize } from 'vs/nls';
+import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions } from 'vs/workbench/common/editor';
+
+import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
+import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/common/models/untitledNotebookInput';
+import { FileNotebookInput } from 'sql/workbench/contrib/notebook/common/models/fileNotebookInput';
+import { FileNoteBookEditorInputFactory, UntitledNoteBookEditorInputFactory } from 'sql/workbench/contrib/notebook/common/models/nodebookInputFactory';
+import { IWorkbenchActionRegistry, Extensions as WorkbenchActionsExtensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor, registerAction, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
@@ -14,7 +23,6 @@ import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebo
 import { KeyMod } from 'vs/editor/common/standalone/standaloneBase';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
-import { localize } from 'vs/nls';
 import { GridOutputComponent } from 'sql/workbench/contrib/notebook/browser/outputs/gridOutput.component';
 import { PlotlyOutputComponent } from 'sql/workbench/contrib/notebook/browser/outputs/plotlyOutput.component';
 import { registerComponentType } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRegistry';
@@ -30,7 +38,6 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import { ConnectedContext } from 'azdata';
 import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ObjectExplorerActionsContext } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerActions';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTreeContext';
 import { ManageActionContext } from 'sql/workbench/browser/actions';
@@ -38,22 +45,35 @@ import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { MarkdownOutputComponent } from 'sql/workbench/contrib/notebook/browser/outputs/markdownOutput.component';
 import { registerCellComponent } from 'sql/platform/notebooks/common/outputRegistry';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 
-// Model View editor registration
-const viewModelEditorDescriptor = new EditorDescriptor(
-	NotebookEditor,
-	NotebookEditor.ID,
-	'Notebook'
-);
+Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
+	.registerEditorInputFactory(FileNotebookInput.ID, FileNoteBookEditorInputFactory);
+
+Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
+	.registerEditorInputFactory(UntitledNotebookInput.ID, UntitledNoteBookEditorInputFactory);
+
+Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations)
+	.registerLanguageAssociation('notebook', (accessor, editor) => {
+		const instantiationService = accessor.get(IInstantiationService);
+		if (editor instanceof FileEditorInput) {
+			return instantiationService.createInstance(FileNotebookInput, editor.getName(), editor.getResource(), editor);
+		} else if (editor instanceof UntitledTextEditorInput) {
+			return instantiationService.createInstance(UntitledNotebookInput, editor.getName(), editor.getResource(), editor);
+		} else {
+			return undefined;
+		}
+	}, (editor: NotebookInput) => editor.textInput);
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(viewModelEditorDescriptor, [new SyncDescriptor(NotebookInput)]);
+	.registerEditor(new EditorDescriptor(NotebookEditor, NotebookEditor.ID, localize('notebookEditor.name', "Notebook Editor")), [new SyncDescriptor(UntitledNotebookInput), new SyncDescriptor(FileNotebookInput)]);
+
 
 // Global Actions
-let actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
+const actionRegistry = Registry.as<IWorkbenchActionRegistry>(WorkbenchActionsExtensions.WorkbenchActions);
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		NewNotebookAction,
 		NewNotebookAction.ID,
 		NewNotebookAction.LABEL,
@@ -145,7 +165,7 @@ registerAction({
 	}
 });
 
-const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
+const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration);
 configurationRegistry.registerConfiguration({
 	'id': 'notebook',
 	'title': 'Notebook',

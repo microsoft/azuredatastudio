@@ -587,7 +587,8 @@ declare module 'sqlops' {
 		string = 'string',
 		category = 'category',
 		boolean = 'boolean',
-		editableCategory = 'editableCategory'
+		editableCategory = 'editableCategory',
+		component = 'component'
 	}
 
 	export interface RadioButtonProperties {
@@ -625,10 +626,10 @@ declare module 'sqlops' {
 
 	export interface DeclarativeTableColumn {
 		displayName: string;
-		categoryValues: CategoryValue[];
 		valueType: DeclarativeDataType;
 		isReadOnly: boolean;
 		width: number | string;
+		categoryValues?: CategoryValue[];
 	}
 
 	export interface DeclarativeTableProperties {
@@ -736,10 +737,7 @@ declare module 'sqlops' {
 	}
 
 	export interface TextComponent extends Component, TextComponentProperties {
-		/**
-		 * An event called when the text is clicked
-		 */
-		onDidClick: vscode.Event<any>;
+
 	}
 
 	export interface ImageComponent extends Component, ImageComponentProperties {
@@ -747,6 +745,10 @@ declare module 'sqlops' {
 	}
 
 	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
+		/**
+		 * An event called when the text is clicked
+		 */
+		onDidClick: vscode.Event<any>;
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
@@ -1815,5 +1817,12 @@ declare module 'sqlops' {
 		 * @param connectionProfile connection profile
 		 */
 		export function connect(connectionProfile: IConnectionProfile, saveConnection?: boolean, showDashboard?: boolean): Thenable<ConnectionResult>;
+	}
+
+	/*
+	 * Add OssRdbms for sqlops AzureResource.
+	 */
+	export enum AzureResource {
+		OssRdbms = 2
 	}
 }

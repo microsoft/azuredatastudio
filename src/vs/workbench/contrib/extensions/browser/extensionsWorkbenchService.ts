@@ -525,12 +525,12 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		@IOpenerService private readonly openerService: IOpenerService // {{SQL CARBON EDIT}}
 	) {
 		super();
-		if (this.extensionManagementServerService.localExtensionManagementServer) {
+		if (extensionManagementServerService.localExtensionManagementServer) {
 			this.localExtensions = this._register(instantiationService.createInstance(Extensions, extensionManagementServerService.localExtensionManagementServer, ext => this.getExtensionState(ext)));
 			this._register(this.localExtensions.onChange(e => this._onChange.fire(e ? e.extension : undefined)));
 			this._register(Event.filter(this.localExtensions.onChange, e => !!e && e.operation === InstallOperation.Install)(e => this.onDidInstallExtension(e!.extension)));
 		}
-		if (this.extensionManagementServerService.remoteExtensionManagementServer) {
+		if (extensionManagementServerService.remoteExtensionManagementServer) {
 			this.remoteExtensions = this._register(instantiationService.createInstance(Extensions, extensionManagementServerService.remoteExtensionManagementServer, ext => this.getExtensionState(ext)));
 			this._register(this.remoteExtensions.onChange(e => this._onChange.fire(e ? e.extension : undefined)));
 			this._register(Event.filter(this.remoteExtensions.onChange, e => !!e && e.operation === InstallOperation.Install)(e => this.onDidInstallExtension(e!.extension)));

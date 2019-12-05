@@ -4,21 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { Extensions, IEditorInputFactoryRegistry, EditorInput, toResource, IEditorIdentifier, IEditorCloseEvent, GroupIdentifier, SideBySideEditorInput, CloseDirection, IEditorInput, SideBySideEditor } from 'vs/workbench/common/editor';
-import { URI } from 'vs/base/common/uri';
+import { Extensions, IEditorInputFactoryRegistry, EditorInput, IEditorIdentifier, IEditorCloseEvent, GroupIdentifier, CloseDirection, IEditorInput, SideBySideEditorInput } from 'vs/workbench/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
 import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { ResourceMap } from 'vs/base/common/map';
 import { coalesce, firstIndex } from 'vs/base/common/arrays';
 
 // {{SQL CARBON EDIT}}
-import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import * as CustomInputConverter from 'sql/workbench/browser/customInputConverter';
-import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { doHandleUpgrade } from 'sql/workbench/common/languageAssociation';
 
 const EditorOpenPositioning = {
 	LEFT: 'left',
@@ -67,31 +64,31 @@ export class EditorGroup extends Disposable {
 	//#region events
 
 	private readonly _onDidEditorActivate = this._register(new Emitter<EditorInput>());
-	readonly onDidEditorActivate: Event<EditorInput> = this._onDidEditorActivate.event;
+	readonly onDidEditorActivate = this._onDidEditorActivate.event;
 
 	private readonly _onDidEditorOpen = this._register(new Emitter<EditorInput>());
-	readonly onDidEditorOpen: Event<EditorInput> = this._onDidEditorOpen.event;
+	readonly onDidEditorOpen = this._onDidEditorOpen.event;
 
 	private readonly _onDidEditorClose = this._register(new Emitter<EditorCloseEvent>());
-	readonly onDidEditorClose: Event<EditorCloseEvent> = this._onDidEditorClose.event;
+	readonly onDidEditorClose = this._onDidEditorClose.event;
 
 	private readonly _onDidEditorDispose = this._register(new Emitter<EditorInput>());
-	readonly onDidEditorDispose: Event<EditorInput> = this._onDidEditorDispose.event;
+	readonly onDidEditorDispose = this._onDidEditorDispose.event;
 
 	private readonly _onDidEditorBecomeDirty = this._register(new Emitter<EditorInput>());
-	readonly onDidEditorBecomeDirty: Event<EditorInput> = this._onDidEditorBecomeDirty.event;
+	readonly onDidEditorBecomeDirty = this._onDidEditorBecomeDirty.event;
 
 	private readonly _onDidEditorLabelChange = this._register(new Emitter<EditorInput>());
-	readonly onDidEditorLabelChange: Event<EditorInput> = this._onDidEditorLabelChange.event;
+	readonly onDidEditorLabelChange = this._onDidEditorLabelChange.event;
 
 	private readonly _onDidEditorMove = this._register(new Emitter<EditorInput>());
-	readonly onDidEditorMove: Event<EditorInput> = this._onDidEditorMove.event;
+	readonly onDidEditorMove = this._onDidEditorMove.event;
 
 	private readonly _onDidEditorPin = this._register(new Emitter<EditorInput>());
-	readonly onDidEditorPin: Event<EditorInput> = this._onDidEditorPin.event;
+	readonly onDidEditorPin = this._onDidEditorPin.event;
 
 	private readonly _onDidEditorUnpin = this._register(new Emitter<EditorInput>());
-	readonly onDidEditorUnpin: Event<EditorInput> = this._onDidEditorUnpin.event;
+	readonly onDidEditorUnpin = this._onDidEditorUnpin.event;
 
 	//#endregion
 
@@ -100,7 +97,6 @@ export class EditorGroup extends Disposable {
 
 	private editors: EditorInput[] = [];
 	private mru: EditorInput[] = [];
-	private mapResourceToEditorCount: ResourceMap<number> = new ResourceMap<number>();
 
 	private preview: EditorInput | null = null; // editor in preview state
 	private active: EditorInput | null = null;  // editor in active state
@@ -142,26 +138,8 @@ export class EditorGroup extends Disposable {
 		return mru ? this.mru.slice(0) : this.editors.slice(0);
 	}
 
-	getEditor(index: number): EditorInput | undefined;
-	getEditor(resource: URI): EditorInput | undefined;
-	getEditor(arg1: number | URI): EditorInput | undefined {
-		if (typeof arg1 === 'number') {
-			return this.editors[arg1];
-		}
-
-		const resource: URI = arg1;
-		if (!this.contains(resource)) {
-			return undefined; // fast check for resource opened or not
-		}
-
-		for (const editor of this.editors) {
-			const editorResource = toResource(editor, { supportSideBySide: SideBySideEditor.MASTER });
-			if (editorResource?.toString() === resource.toString()) {
-				return editor;
-			}
-		}
-
-		return undefined;
+	getEditorByIndex(index: number): EditorInput | undefined {
+		return this.editors[index];
 	}
 
 	get activeEditor(): EditorInput | null {
@@ -516,7 +494,6 @@ export class EditorGroup extends Disposable {
 		// Add
 		if (!del && editor) {
 			this.mru.push(editor); // make it LRU editor
-			this.updateResourceMap(editor, false /* add */); // add new to resource map
 		}
 
 		// Remove / Replace
@@ -526,41 +503,11 @@ export class EditorGroup extends Disposable {
 			// Remove
 			if (del && !editor) {
 				this.mru.splice(indexInMRU, 1); // remove from MRU
-				this.updateResourceMap(editorToDeleteOrReplace, true /* delete */); // remove from resource map
 			}
 
 			// Replace
 			else if (del && editor) {
 				this.mru.splice(indexInMRU, 1, editor); // replace MRU at location
-				this.updateResourceMap(editor, false /* add */); // add new to resource map
-				this.updateResourceMap(editorToDeleteOrReplace, true /* delete */); // remove replaced from resource map
-			}
-		}
-	}
-
-	private updateResourceMap(editor: EditorInput, remove: boolean): void {
-		const resource = toResource(editor, { supportSideBySide: SideBySideEditor.MASTER });
-		if (resource) {
-
-			// It is possible to have the same resource opened twice (once as normal input and once as diff input)
-			// So we need to do ref counting on the resource to provide the correct picture
-			const counter = this.mapResourceToEditorCount.get(resource) || 0;
-
-			// Add
-			let newCounter: number;
-			if (!remove) {
-				newCounter = counter + 1;
-			}
-
-			// Delete
-			else {
-				newCounter = counter - 1;
-			}
-
-			if (newCounter > 0) {
-				this.mapResourceToEditorCount.set(resource, newCounter);
-			} else {
-				this.mapResourceToEditorCount.delete(resource);
 			}
 		}
 	}
@@ -579,28 +526,20 @@ export class EditorGroup extends Disposable {
 		return -1;
 	}
 
-	contains(editorOrResource: EditorInput | URI): boolean;
-	contains(editor: EditorInput, supportSideBySide?: boolean): boolean;
-	contains(editorOrResource: EditorInput | URI, supportSideBySide?: boolean): boolean {
-		if (editorOrResource instanceof EditorInput) {
-			const index = this.indexOf(editorOrResource);
-			if (index >= 0) {
+	contains(candidate: EditorInput, searchInSideBySideEditors?: boolean): boolean {
+		for (const editor of this.editors) {
+			if (this.matches(editor, candidate)) {
 				return true;
 			}
 
-			if (supportSideBySide && editorOrResource instanceof SideBySideEditorInput) {
-				const index = this.indexOf(editorOrResource.master);
-				if (index >= 0) {
+			if (searchInSideBySideEditors && editor instanceof SideBySideEditorInput) {
+				if (this.matches(editor.master, candidate) || this.matches(editor.details, candidate)) {
 					return true;
 				}
 			}
-
-			return false;
 		}
 
-		const counter = this.mapResourceToEditorCount.get(editorOrResource);
-
-		return typeof counter === 'number' && counter > 0;
+		return false;
 	}
 
 	private setMostRecentlyUsed(editor: EditorInput): void {
@@ -626,7 +565,6 @@ export class EditorGroup extends Disposable {
 		const group = this.instantiationService.createInstance(EditorGroup, undefined);
 		group.editors = this.editors.slice(0);
 		group.mru = this.mru.slice(0);
-		group.mapResourceToEditorCount = this.mapResourceToEditorCount.clone();
 		group.preview = this.preview;
 		group.active = this.active;
 		group.editorOpenPositioning = this.editorOpenPositioning;
@@ -643,21 +581,12 @@ export class EditorGroup extends Disposable {
 		let serializableEditors: EditorInput[] = [];
 		let serializedEditors: ISerializedEditorInput[] = [];
 		let serializablePreviewIndex: number | undefined;
-		// {{SQL CARBON EDIT}}
-		const editors = this.editors.map(e => {
-			if (e instanceof QueryInput) {
-				return e.sql;
-			} else if (e instanceof NotebookInput) {
-				return e.textInput;
-			}
-			return e;
-		});
-		editors.forEach(e => {
+		this.editors.forEach(e => {
 			const factory = registry.getEditorInputFactory(e.getTypeId());
 			if (factory) {
 				// {{SQL CARBON EDIT}}
 				// don't serialize unmodified unitited files
-				if (e instanceof UntitledEditorInput && !e.isDirty()
+				if (e instanceof UntitledTextEditorInput && !e.isDirty()
 					&& !this.configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles')) {
 					return;
 				}
@@ -675,16 +604,7 @@ export class EditorGroup extends Disposable {
 			}
 		});
 
-		// {{SQL CARBON EDIT}}
-		let mru = this.mru.map(e => {
-			if (e instanceof QueryInput) {
-				return e.sql;
-			} else if (e instanceof NotebookInput) {
-				return e.textInput;
-			}
-			return e;
-		});
-		const serializableMru = mru.map(e => this.indexOf(e, serializableEditors)).filter(i => i >= 0);
+		const serializableMru = this.mru.map(e => this.indexOf(e, serializableEditors)).filter(i => i >= 0);
 
 		return {
 			id: this.id,
@@ -708,14 +628,12 @@ export class EditorGroup extends Disposable {
 		this.editors = coalesce(data.editors.map(e => {
 			const factory = registry.getEditorInputFactory(e.id);
 			if (factory) {
-				const editor = factory.deserialize(this.instantiationService, e.value);
+				const editor = this.instantiationService.invokeFunction(doHandleUpgrade, factory.deserialize(this.instantiationService, e.value)); // {{SQL CARBON EDIT}} handle upgrade path to new serialization
 				if (editor) {
 					this.registerEditorListeners(editor);
-					this.updateResourceMap(editor, false /* add */);
 				}
 
-				// {{SQL CARBON EDIT}}
-				return CustomInputConverter.convertEditorInput(editor, undefined, this.instantiationService);
+				return editor;
 			}
 
 			return null;
@@ -737,7 +655,7 @@ export class EditorGroup extends Disposable {
 		let n = 0;
 		while (n < this.editors.length) {
 			let editor = this.editors[n];
-			if (editor instanceof QueryInput && editor.matchInputInstanceType(FileEditorInput) && !editor.isDirty() && await editor.inputFileExists() === false && this.editors.length > 1) {
+			if (editor instanceof QueryEditorInput && editor.matchInputInstanceType(FileEditorInput) && !editor.isDirty() && await editor.inputFileExists() === false && this.editors.length > 1) {
 				// remove from editors list so that they do not get restored
 				this.editors.splice(n, 1);
 				let index = firstIndex(this.mru, e => e.matches(editor));
@@ -745,7 +663,7 @@ export class EditorGroup extends Disposable {
 				// remove from MRU list otherwise later if we try to close them it leaves a sticky active editor with no data
 				this.mru.splice(index, 1);
 				this.active = this.isActive(editor) ? this.editors[0] : this.active;
-				editor.close();
+				editor.dispose();
 			}
 			else {
 				n++;

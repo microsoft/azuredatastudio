@@ -428,8 +428,15 @@ export class SchemaCompareMainWindow {
 						// show the first dependent that caused this to fail in the warning message
 						const diffEntryName = this.createName(diff.sourceValue ? diff.sourceValue : diff.targetValue);
 						const firstDependentName = this.createName(result.blockingDependencies[0].sourceValue ? result.blockingDependencies[0].sourceValue : result.blockingDependencies[0].targetValue);
-						const cannotExcludeMessage = localize('schemaCompare.cannotExcludeMessage', "Cannot exclude {0}. Included dependents exist such as {1}", diffEntryName, firstDependentName);
-						const cannotIncludeMessage = localize('schemaCompare.cannotIncludeMessage', "Cannot include {0}. Excluded dependents exist such as {1}", diffEntryName, firstDependentName);
+						let cannotExcludeMessage;
+						let cannotIncludeMessage;
+						if (firstDependentName) {
+							cannotExcludeMessage = localize('schemaCompare.cannotExcludeMessageWithDependent', "Cannot exclude {0}. Included dependents exist, such as {1}", diffEntryName, firstDependentName);
+							cannotIncludeMessage = localize('schemaCompare.cannotIncludeMessageWithDependent', "Cannot include {0}. Excluded dependents exist, such as {1}", diffEntryName, firstDependentName);
+						} else {
+							cannotExcludeMessage = localize('schemaCompare.cannotExcludeMessage', "Cannot exclude {0}. Included dependents exist", diffEntryName);
+							cannotIncludeMessage = localize('schemaCompare.cannotIncludeMessage', "Cannot include {0}. Excluded dependents exist", diffEntryName);
+						}
 						vscode.window.showWarningMessage(checkboxState.checked ? cannotIncludeMessage : cannotExcludeMessage);
 					} else {
 						vscode.window.showWarningMessage(result.errorMessage);

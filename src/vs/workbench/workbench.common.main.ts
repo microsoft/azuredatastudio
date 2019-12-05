@@ -71,7 +71,7 @@ import 'vs/workbench/services/editor/browser/editorService';
 import 'vs/workbench/services/history/browser/history';
 import 'vs/workbench/services/activity/browser/activityService';
 import 'vs/workbench/services/keybinding/browser/keybindingService';
-import 'vs/workbench/services/untitled/common/untitledEditorService';
+import 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import 'vs/workbench/services/textfile/common/textResourcePropertiesService';
 import 'vs/workbench/services/mode/common/workbenchModeService';
 import 'vs/workbench/services/commands/common/commandService';
@@ -81,7 +81,11 @@ import 'vs/workbench/services/extensionManagement/common/extensionEnablementServ
 import 'vs/workbench/services/notification/common/notificationService';
 import 'vs/workbench/services/extensions/common/staticExtensions';
 import 'vs/workbench/services/userDataSync/common/settingsMergeService';
+import 'vs/workbench/services/userDataSync/common/userDataSyncUtil';
 import 'vs/workbench/services/path/common/remotePathService';
+import 'vs/workbench/services/remote/common/remoteExplorerService';
+import 'vs/workbench/services/workingCopy/common/workingCopyService';
+import 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
 
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
@@ -357,19 +361,28 @@ import 'vs/workbench/contrib/feedback/browser/feedback.contribution';
 // User Data Sync
 import 'vs/workbench/contrib/userDataSync/browser/userDataSync.contribution';
 
+// Code Actions
+import 'vs/workbench/contrib/codeActions/common/codeActions.contribution';
+
+// Test Custom Editors
+import 'vs/workbench/contrib/testCustomEditors/browser/testCustomEditors';
+
 //#endregion
 
 //#region -- contributions
 
 // query
 import 'sql/workbench/contrib/query/browser/query.contribution';
-import 'sql/workbench/contrib/query/common/resultsGridContribution';
+import 'sql/workbench/contrib/query/common/resultsGrid.contribution';
 
 // data explorer
 import 'sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution';
 import 'sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contribution';
 
 // {{SQL CARBON EDIT}}
+//editor replacement
+import 'sql/workbench/common/editorReplacer.contribution';
+
 // tasks
 import 'sql/workbench/contrib/tasks/browser/tasks.contribution';
 import 'sql/workbench/browser/actions.contribution';

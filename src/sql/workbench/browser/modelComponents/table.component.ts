@@ -252,6 +252,10 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.ariaRole = this.ariaRole;
 		}
 
+		if (this.ariaLabel) {
+			this._table.ariaLabel = this.ariaLabel;
+		}
+
 		if (this.updateCells !== undefined) {
 			this.updateTableCells(this.updateCells);
 		}

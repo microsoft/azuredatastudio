@@ -17,19 +17,17 @@ const localize = nls.loadMessageBundle();
 export class ResourceTypePickerDialog extends DialogBase {
 	private toolRefreshTimestamp: number = 0;
 	private _selectedResourceType: ResourceType;
-	private _resourceTypeCards: azdata.CardComponent[] = [];
 	private _view!: azdata.ModelView;
 	private _resourceDescriptionLabel!: azdata.TextComponent;
 	private _optionsContainer!: azdata.FlexContainer;
 	private _toolsTable!: azdata.TableComponent;
-	private _cardResourceTypeMap: Map<string, azdata.CardComponent> = new Map();
+	private _cardGroup!: azdata.RadioCardGroupComponent;
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
 	private _toolsLoadingComponent!: azdata.LoadingComponent;
 	private _agreementContainer!: azdata.DivContainer;
 	private _agreementCheckboxChecked: boolean = false;
 	private _installToolButton: azdata.window.Button;
 	private _tools: ITool[] = [];
-	private _cardsContainer!: azdata.FlexContainer;
 
 	constructor(
 		private toolsService: IToolsService,
@@ -61,10 +59,30 @@ export class ResourceTypePickerDialog extends DialogBase {
 		tab.registerContent((view: azdata.ModelView) => {
 			const tableWidth = 1126;
 			this._view = view;
-			this.resourceTypeService.getResourceTypes().sort((a: ResourceType, b: ResourceType) => {
+			const resourceTypes = this.resourceTypeService.getResourceTypes().sort((a: ResourceType, b: ResourceType) => {
 				return (a.displayIndex || Number.MAX_VALUE) - (b.displayIndex || Number.MAX_VALUE);
-			}).forEach(resourceType => this.addCard(resourceType));
-			this._cardsContainer = view.modelBuilder.flexContainer().withItems(this._resourceTypeCards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row' }).component();
+			});
+			this._cardGroup = view.modelBuilder.radioCardGroup().withProperties<azdata.RadioCardGroupComponentProperties>({
+				cards: resourceTypes.map((resourceType) => {
+					return <azdata.RadioCard>{
+						id: resourceType.name,
+						label: resourceType.displayName,
+						icon: resourceType.icon
+					};
+				}),
+				iconHeight: '50px',
+				iconWidth: '50px',
+				cardWidth: '220px',
+				cardHeight: '180px',
+				ariaLabel: localize('deploymentDialog.deploymentOptions', "Deployment options"),
+				width: '1100px'
+			}).component();
+			this._toDispose.push(this._cardGroup.onSelectionChanged((cardId: string) => {
+				const resourceType = resourceTypes.find(rt => { return rt.name === cardId; });
+				if (resourceType) {
+					this.selectResourceType(resourceType);
+				}
+			}));
 			this._resourceDescriptionLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this._selectedResourceType ? this._selectedResourceType.description : undefined }).component();
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			this._agreementContainer = view.modelBuilder.divContainer().component();
@@ -92,16 +110,21 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 				data: [],
 				columns: [toolColumn, descriptionColumn, installStatusColumn, versionColumn, minVersionColumn],
-				width: tableWidth
+				width: tableWidth,
+				ariaLabel: localize('deploymentDialog.RequiredToolsTitle', "Required tools")
 			}).component();
 
 			const toolsTableWrapper = view.modelBuilder.divContainer().withLayout({ width: tableWidth }).component();
 			toolsTableWrapper.addItem(this._toolsTable, { CSSStyles: { 'border-left': '1px solid silver', 'border-top': '1px solid silver' } });
-			this._toolsLoadingComponent = view.modelBuilder.loadingComponent().withItem(toolsTableWrapper).component();
+			this._toolsLoadingComponent = view.modelBuilder.loadingComponent().withItem(toolsTableWrapper).withProperties<azdata.LoadingComponentProperties>({
+				loadingCompletedText: localize('deploymentDialog.loadingRequiredToolsCompleted', "Loading required tools information completed"),
+				loadingText: localize('deploymentDialog.loadingRequiredTools', "Loading required tools information"),
+				showText: true
+			}).component();
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
-						component: this._cardsContainer,
+						component: this._cardGroup,
 						title: ''
 					}, {
 						component: this._resourceDescriptionLabel,
@@ -127,49 +150,15 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 			return view.initializeModel(form).then(() => {
 				if (this._selectedResourceType) {
-					this.selectResourceType(this._selectedResourceType);
+					this._cardGroup.selectedCardId = this._selectedResourceType.name;
 				}
 			});
 		});
 		this._dialogObject.content = [tab];
 	}
 
-	private addCard(resourceType: ResourceType): void {
-		const card = this._view.modelBuilder.card().withProperties<azdata.CardProperties>({
-			cardType: azdata.CardType.VerticalButton,
-			iconPath: {
-				dark: resourceType.icon.dark,
-				light: resourceType.icon.light
-			},
-			label: resourceType.displayName,
-			selected: (this._selectedResourceType && this._selectedResourceType.name === resourceType.name),
-			width: '220px',
-			height: '180px',
-			iconWidth: '50px',
-			iconHeight: '50px'
-		}).component();
-		this._resourceTypeCards.push(card);
-		this._cardResourceTypeMap.set(resourceType.name, card);
-		this._toDispose.push(card.onCardSelectedChanged(() => this.selectResourceType(resourceType)));
-	}
-
 	private selectResourceType(resourceType: ResourceType): void {
 		this._selectedResourceType = resourceType;
-		const card = this._cardResourceTypeMap.get(this._selectedResourceType.name)!;
-		if (card.selected) {
-			// clear the selected state of the previously selected card
-			this._resourceTypeCards.forEach(c => {
-				if (c !== card) {
-					c.selected = false;
-				}
-			});
-		} else {
-			// keep the selected state if no other card is selected
-			if (this._resourceTypeCards.filter(c => { return c !== card && c.selected; }).length === 0) {
-				card.selected = true;
-			}
-		}
-
 		this._resourceDescriptionLabel.value = resourceType.description;
 		this._agreementCheckboxChecked = false;
 		this._agreementContainer.clearItems();
@@ -188,7 +177,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 			const optionSelectBox = this._view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 				values: option.values,
 				value: option.values[0],
-				width: '300px'
+				width: '300px',
+				ariaLabel: option.displayName
 			}).component();
 
 			this._toDispose.push(optionSelectBox.onValueChanged(() => { this.updateToolsDisplayTable(); }));
@@ -226,7 +216,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				if (this.toolRefreshTimestamp !== currentRefreshTimestamp) {
 					return;
 				}
-				let autoInstallRequired = false;
+				let installationRequired = false;
 				let minVersionCheckFailed = false;
 				const messages: string[] = [];
 				this._toolsTable.data = toolRequirements.map(toolReq => {
@@ -244,22 +234,24 @@ export class ResourceTypePickerDialog extends DialogBase {
 						minVersionCheckFailed = true;
 						messages.push(localize('deploymentDialog.ToolDoesNotMeetVersionRequirement', "'{0}' [ {1} ] does not meet the minimum version requirement, please uninstall it and restart Azure Data Studio.", tool.displayName, tool.homePage));
 					}
-					autoInstallRequired = autoInstallRequired || tool.autoInstallRequired;
+					installationRequired = installationRequired || tool.autoInstallRequired;
 					return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || '', toolReq.version || ''];
 				});
 
-				this._installToolButton.hidden = !autoInstallRequired;
-				this._dialogObject.okButton.enabled = messages.length === 0 && !autoInstallRequired;
+				this._installToolButton.hidden = minVersionCheckFailed || !installationRequired;
+				this._dialogObject.okButton.enabled = messages.length === 0 && !minVersionCheckFailed && !installationRequired;
 				if (messages.length !== 0) {
 					if (!minVersionCheckFailed) {
 						messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed by yourself after Azure Data Studio is launched to pick up the updated PATH environment variable. You may find additional details in the debug console by running the 'Toggle Developer Tools' command in the Azure Data Studio Command Palette."));
 					}
 					this._dialogObject.message = {
 						level: azdata.window.MessageLevel.Error,
-						text: localize('deploymentDialog.ToolCheckFailed', "Some required tools are not installed or do not meet the minimum version requirement."),
-						description: messages.join(EOL)
+						text: [
+							localize('deploymentDialog.ToolCheckFailed', "Some required tools are not installed or do not meet the minimum version requirement."),
+							...messages
+						].join(EOL)
 					};
-				} else if (autoInstallRequired) {
+				} else if (installationRequired) {
 					let infoText: string[] = [localize('deploymentDialog.InstallToolsHint', "Some required tools are not installed, you can click the \"{0}\" button to install them.", this._installToolButton.label)];
 					const informationalMessagesArray = this._tools.reduce<string[]>((returnArray, currentTool) => {
 						if (currentTool.needsInstallation) {
@@ -284,7 +276,9 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	private createAgreementCheckbox(agreementInfo: AgreementInfo): azdata.FlexContainer {
-		const checkbox = this._view.modelBuilder.checkBox().component();
+		const checkbox = this._view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
+			ariaLabel: this.getAgreementDisplayText(agreementInfo)
+		}).component();
 		checkbox.checked = false;
 		this._toDispose.push(checkbox.onChanged(() => {
 			this._agreementCheckboxChecked = !!checkbox.checked;
@@ -295,6 +289,16 @@ export class ResourceTypePickerDialog extends DialogBase {
 			requiredIndicator: true
 		}).component();
 		return createFlexContainer(this._view, [checkbox, text]);
+	}
+
+	private getAgreementDisplayText(agreementInfo: AgreementInfo): string {
+		// the agreement template will have {index} as placeholder for hyperlinks
+		// this method will get the display text after replacing the placeholders
+		let text = agreementInfo.template;
+		for (let i: number = 0; i < agreementInfo.links.length; i++) {
+			text = text.replace(`{${i}}`, agreementInfo.links[i].text);
+		}
+		return text;
 	}
 
 	private getCurrentProvider(): DeploymentProvider {
@@ -325,7 +329,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	private enableUiControlsWhenNotInstalling(enabled: boolean): void {
-		this._cardsContainer.enabled = enabled;
+		this._cardGroup.enabled = enabled;
 		this._agreementContainer.enabled = enabled;
 		this._optionsContainer.enabled = enabled;
 		this._dialogObject.cancelButton.enabled = enabled;

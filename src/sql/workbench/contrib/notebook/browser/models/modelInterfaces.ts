@@ -465,6 +465,8 @@ export interface NotebookPosition {
 	 * @param cell New active cell
 	 */
 	updateActiveCell(cell: ICellModel);
+
+	requestConnection(): Promise<boolean>;
 }
 
 export interface NotebookContentChange {
@@ -538,6 +540,7 @@ export interface ICellModel {
 	isCollapsed: boolean;
 	readonly onCollapseStateChanged: Event<boolean>;
 	modelContentChangedEvent: IModelContentChangedEvent;
+	isEditMode: boolean;
 }
 
 export interface FutureInternal extends nb.IFuture {

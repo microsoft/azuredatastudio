@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as nls from 'vscode-nls';
 import { ProviderSettings } from './interfaces';
 
@@ -31,16 +29,20 @@ const publicAzureSettings: ProviderSettings = {
 				id: 'https://database.windows.net/',
 				endpoint: 'https://database.windows.net'
 			},
+			ossRdbmsResource: {
+				id: 'https://ossrdbms-aad.database.windows.net',
+				endpoint: 'https://ossrdbms-aad.database.windows.net'
+			},
 			redirectUri: 'http://localhost/redirect'
 		}
 	}
 };
 
-/* Leaving for reference
+
 const usGovAzureSettings: ProviderSettings = {
 	configKey: 'enableUsGovCloud',
 	metadata: {
-		displayName: localize('usGovCloudDisplayName', 'Azure (US Government)'),
+		displayName: localize('usGovCloudDisplayName', "Azure (US Government)"),
 		id: 'usGovAzureCloud',
 		settings: {
 			host: 'https://login.microsoftonline.com/',
@@ -59,32 +61,11 @@ const usGovAzureSettings: ProviderSettings = {
 	}
 };
 
-const chinaAzureSettings: ProviderSettings = {
-	configKey: 'enableChinaCloud',
-	metadata: {
-		displayName: localize('chinaCloudDisplayName', 'Azure (China)'),
-		id: 'chinaAzureCloud',
-		settings: {
-			host: 'https://login.chinacloudapi.cn/',
-			clientId: 'TBD',
-			signInResourceId: 'https://management.core.chinacloudapi.cn/',
-			graphResource: {
-				id: 'https://graph.chinacloudapi.cn/',
-				endpoint: 'https://graph.chinacloudapi.cn'
-			},
-			armResource: {
-				id: 'https://management.core.chinacloudapi.cn/',
-				endpoint: 'https://managemement.chinacloudapi.net'
-			},
-			redirectUri: 'http://localhost/redirect'
-		}
-	}
-};
 
 const germanyAzureSettings: ProviderSettings = {
 	configKey: 'enableGermanyCloud',
 	metadata: {
-		displayName: localize('germanyCloud', 'Azure (Germany)'),
+		displayName: localize('germanyCloud', "Azure (Germany)"),
 		id: 'germanyAzureCloud',
 		settings: {
 			host: 'https://login.microsoftazure.de/',
@@ -102,7 +83,27 @@ const germanyAzureSettings: ProviderSettings = {
 		}
 	}
 };
-*/
 
-// TODO: Enable China, Germany, and US Gov clouds: (#3031)
-export default <ProviderSettings[]>[publicAzureSettings, /*chinaAzureSettings, germanyAzureSettings, usGovAzureSettings*/];
+const chinaAzureSettings: ProviderSettings = {
+	configKey: 'enableChinaCloud',
+	metadata: {
+		displayName: localize('chinaCloudDisplayName', "Azure (China)"),
+		id: 'chinaAzureCloud',
+		settings: {
+			host: 'https://login.chinacloudapi.cn/',
+			clientId: 'TBD',
+			signInResourceId: 'https://management.core.chinacloudapi.cn/',
+			graphResource: {
+				id: 'https://graph.chinacloudapi.cn/',
+				endpoint: 'https://graph.chinacloudapi.cn'
+			},
+			armResource: {
+				id: 'https://management.core.chinacloudapi.cn/',
+				endpoint: 'https://managemement.chinacloudapi.net'
+			},
+			redirectUri: 'http://localhost/redirect'
+		}
+	}
+};
+const allSettings = [publicAzureSettings, usGovAzureSettings, germanyAzureSettings, chinaAzureSettings];
+export default allSettings;
