@@ -105,7 +105,7 @@ steps:
     displayName: 'ESRP CodeSigning'
     inputs:
       ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(Build.ArtifactStagingDirectory)'
+      FolderPath: '$(agent.builddirectory)'
       Pattern: 'azuredatastudio-darwin.zip'
       signConfigType: inlineSignParams
       inlineOperation: |
