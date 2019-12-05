@@ -2477,6 +2477,9 @@ declare module 'azdata' {
 		flexContainer(): FlexBuilder;
 		splitViewContainer(): SplitViewBuilder;
 		dom(): ComponentBuilder<DomComponent>;
+		/**
+		 * @deprecated please use radioCardGroup component.
+		 */
 		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
 		checkBox(): ComponentBuilder<CheckBoxComponent>;
