@@ -254,7 +254,15 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		const armWebResponse: any[] = await this.makeWebRequest(armToken, tenantUri);
 
 		const promises = armWebResponse.map(async (value: { tenantId: string }) => {
-			const graphToken = await this.getToken(userId, value.tenantId, this.metadata.settings.graphResource.id);
+			let graphToken: TokenResponse;
+
+			try {
+				graphToken = await this.getToken(userId, value.tenantId, this.metadata.settings.graphResource.id);
+			} catch (ex) {
+				console.log(`Your authentication to the tenant ${value.tenantId} failed: ${ex}`);
+				return undefined;
+			}
+
 			let tenantDetailsUri = url.resolve(this.metadata.settings.graphResource.endpoint, value.tenantId + '/');
 			tenantDetailsUri = url.resolve(tenantDetailsUri, 'tenantDetails?api-version=2013-04-05');
 			const tenantDetails: any[] = await this.makeWebRequest(graphToken, tenantDetailsUri);
@@ -268,7 +276,13 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			} as Tenant;
 		});
 
-		const tenants = await Promise.all(promises);
+		let tenants = await Promise.all(promises);
+
+		tenants = tenants.filter(t => t !== undefined);
+		if (tenants.length <= 0) {
+			throw new Error(localize('azure.noTenants', "No azure tenants found. Failing..."));
+		}
+
 		const homeTenantIndex = tenants.findIndex(tenant => tenant.id === homeTenant);
 		if (homeTenantIndex >= 0) {
 			const homeTenant = tenants.splice(homeTenantIndex, 1);
