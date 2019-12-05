@@ -96,6 +96,8 @@ steps:
       yarn gulp vscode-reh-darwin-min-ci
       yarn gulp vscode-reh-web-darwin-min-ci
     displayName: Build
+    env:
+      VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
 
   - task: ArchiveFiles@2 # WHY ARE WE DOING THIS?
     displayName: 'Archive build scripts source'
