@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorInput, EditorModel, ConfirmResult, EncodingMode } from 'vs/workbench/common/editor';
+import { EditorInput, EditorModel, EncodingMode } from 'vs/workbench/common/editor';
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -12,9 +12,9 @@ import { URI } from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { EditDataResultsInput } from 'sql/workbench/contrib/editData/browser/editDataResultsInput';
 import { IEditorViewState } from 'vs/editor/common/editorCommon';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 
 /**
  * Input for the EditDataEditor.
@@ -38,9 +38,9 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 
 	constructor(
 		private _uri: URI,
-		private _schemaName,
-		private _tableName,
-		private _sql: UntitledEditorInput,
+		private _schemaName: string,
+		private _tableName: string,
+		private _sql: UntitledTextEditorInput,
 		private _queryString: string,
 		private _results: EditDataResultsInput,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -92,7 +92,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	public get tableName(): string { return this._tableName; }
 	public get schemaName(): string { return this._schemaName; }
 	public get uri(): string { return this._uri.toString(); }
-	public get sql(): UntitledEditorInput { return this._sql; }
+	public get sql(): UntitledTextEditorInput { return this._sql; }
 	public get results(): EditDataResultsInput { return this._results; }
 	public getResultsInputResource(): string { return this._results.uri; }
 	public get updateTaskbarEvent(): Event<EditDataInput> { return this._updateTaskbar.event; }
@@ -108,7 +108,6 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	public showResultsEditor(): void { this._showResultsEditor.fire(undefined); }
 	public isDirty(): boolean { return false; }
 	public save(): Promise<boolean> { return Promise.resolve(false); }
-	public confirmSave(): Promise<ConfirmResult> { return Promise.resolve(ConfirmResult.DONT_SAVE); }
 	public getTypeId(): string { return EditDataInput.ID; }
 	public setBootstrappedTrue(): void { this._hasBootstrapped = true; }
 	public getResource(): URI { return this._uri; }

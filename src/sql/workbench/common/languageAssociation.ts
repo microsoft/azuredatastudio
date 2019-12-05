@@ -7,7 +7,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IEditorInput, EditorInput } from 'vs/workbench/common/editor';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { find } from 'vs/base/common/arrays';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { getCodeEditor } from 'vs/editor/browser/editorBrowser';
 
@@ -38,7 +38,7 @@ export const Extensions = {
 Registry.add(Extensions.LanguageAssociations, languageAssociationRegistery);
 
 export function doHandleUpgrade(accessor: ServicesAccessor, editor: EditorInput): EditorInput {
-	if (editor instanceof UntitledEditorInput || editor instanceof FileEditorInput) {
+	if (editor instanceof UntitledTextEditorInput || editor instanceof FileEditorInput) {
 		const instantiationService = accessor.get(IInstantiationService);
 		const activeWidget = getCodeEditor(editor);
 		const textModel = activeWidget.getModel();

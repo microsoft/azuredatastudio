@@ -37,7 +37,6 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { isInDOM, Dimension } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IAction } from 'vs/base/common/actions';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
@@ -47,6 +46,7 @@ import { IGridDataProvider } from 'sql/platform/query/common/gridDataProvider';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { GridPanelState, GridTableState } from 'sql/workbench/contrib/query/common/gridPanelState';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -356,7 +356,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		protected contextMenuService: IContextMenuService,
 		protected instantiationService: IInstantiationService,
 		protected editorService: IEditorService,
-		protected untitledEditorService: IUntitledEditorService,
+		protected untitledEditorService: IUntitledTextEditorService,
 		protected configurationService: IConfigurationService
 	) {
 		super();
@@ -751,7 +751,7 @@ class GridTable<T> extends GridTableBase<T> {
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IEditorService editorService: IEditorService,
-		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
+		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService
 	) {
 		super(state, resultSet, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);

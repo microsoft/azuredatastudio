@@ -52,12 +52,6 @@ export class QueryResultsInput extends EditorInput {
 		super();
 	}
 
-	close() {
-		this.state!.dispose();
-		this._state = undefined;
-		super.close();
-	}
-
 	getTypeId(): string {
 		return QueryResultsInput.ID;
 	}

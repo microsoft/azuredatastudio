@@ -9,7 +9,6 @@ import { IEditorService, IOpenEditorOverride } from 'vs/workbench/services/edito
 import { IEditorInput } from 'vs/workbench/common/editor';
 import { IEditorOptions, ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -17,6 +16,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import * as path from 'vs/base/common/path';
 
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -39,14 +39,14 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 		// 	return undefined;
 		// }
 
-		if (!(editor instanceof FileEditorInput) && !(editor instanceof UntitledEditorInput)) {
+		if (!(editor instanceof FileEditorInput) && !(editor instanceof UntitledTextEditorInput)) {
 			return undefined;
 		}
 
 		let language: string;
 		if (editor instanceof FileEditorInput) {
 			language = editor.getPreferredMode();
-		} else if (editor instanceof UntitledEditorInput) {
+		} else if (editor instanceof UntitledTextEditorInput) {
 			language = editor.getMode();
 		} else {
 			return undefined;

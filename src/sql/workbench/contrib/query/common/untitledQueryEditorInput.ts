@@ -9,15 +9,16 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 
 import { IEncodingSupport, EncodingMode } from 'vs/workbench/common/editor';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
 import { IFileService } from 'vs/platform/files/common/files';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
+import { ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 
 type PublicPart<T> = { [K in keyof T]: T[K] };
 
-export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport, PublicPart<UntitledEditorInput> {
+export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport, PublicPart<UntitledTextEditorInput> {
 
 	public static readonly ID = 'workbench.editorInput.untitledQueryInput';
 
@@ -26,7 +27,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 
 	constructor(
 		description: string,
-		text: UntitledEditorInput,
+		text: UntitledTextEditorInput,
 		results: QueryResultsInput,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
@@ -36,12 +37,12 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		super(description, text, results, connectionManagementService, queryModelService, configurationService, fileService);
 	}
 
-	public resolve(): Promise<UntitledEditorModel & IResolvedTextEditorModel> {
+	public resolve(): Promise<UntitledTextEditorModel & IResolvedTextEditorModel> {
 		return this.text.resolve();
 	}
 
-	public get text(): UntitledEditorInput {
-		return this._text as UntitledEditorInput;
+	public get text(): UntitledTextEditorInput {
+		return this._text as UntitledTextEditorInput;
 	}
 
 	public get hasAssociatedFilePath(): boolean {
@@ -70,6 +71,19 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 
 	public setEncoding(encoding: string, mode: EncodingMode): void {
 		this.text.setEncoding(encoding, mode);
+	}
+
+	save(groupId: number, options?: ITextFileSaveOptions): Promise<boolean> {
+		return this.text.save(groupId, options);
+	}
+
+	saveAs(group: number, options?: ITextFileSaveOptions): Promise<boolean> {
+		return this.text.saveAs(group, options);
+	}
+
+	isUntitled(): boolean {
+		// Subclasses need to explicitly opt-in to being untitled.
+		return true;
 	}
 
 	hasBackup(): boolean {
