@@ -218,11 +218,7 @@ export class ManageAccessDialog {
 		});
 		addUserOrGroupButton.enabled = false; // Init to disabled since we don't have any name entered in yet
 		this.addUserOrGroupInput.onTextChanged(() => {
-			if (this.addUserOrGroupInput.value === '') {
-				addUserOrGroupButton.enabled = false;
-			} else {
-				addUserOrGroupButton.enabled = true;
-			}
+			addUserOrGroupButton.enabled = this.addUserOrGroupInput.value !== '';
 		});
 
 		addUserOrGroupInputRow.addItem(this.addUserOrGroupInput, { flex: '0 0 auto' });
