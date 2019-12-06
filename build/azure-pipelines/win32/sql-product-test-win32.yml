@@ -2,7 +2,7 @@ steps:
 - task: DownloadPipelineArtifact@2
   inputs:
     buildType: 'current'
-    targetPath: '.build'
+    targetPath: '$(Build.SourcesDirectory)/.build'
     artifactName: drop
 
 - task: NodeTool@0
@@ -36,7 +36,7 @@ steps:
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
     $ErrorActionPreference = "Stop"
-    exec { Copy-Item -Path "$(Agent.TempDirectory)\vsix\*" -Destination "$(Build.SourcesDirectory)\extensions\integration-tests\extensionInstallers" -Recursive }
+    exec { Copy-Item -Path ".build\extensions\*" -Destination "$(Build.SourcesDirectory)\extensions\integration-tests\extensionInstallers" -Recursive }
   displayName: Copy Extension Installers
 
 - task: AzureKeyVault@1
