@@ -8,14 +8,14 @@
 import * as vfs from 'vinyl-fs';
 
 const files = [
-	'.build/external/extensions/**/*.vsix', // external extensions
+	'.build/extensions/**/*.vsix', // external extensions
 	'.build/win32-x64/**/*.{exe,zip}', // windows binaries
 	'.build/linux/sha256hashes.txt', // linux hashes
 	'.build/linux/deb/amd64/deb/*', // linux debs
 	'.build/linux/rpm/x86_64/*', // linux rpms
 	'.build/linux/server/*', // linux server
 	'.build/linux/archive/*', // linux archive
-	'.build/docker/*', // docker images
+	'.build/docker/**', // docker images
 	'.build/darwin/**' // darwin binaries
 ];
 
