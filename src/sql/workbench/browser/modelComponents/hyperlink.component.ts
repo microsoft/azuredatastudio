@@ -15,7 +15,7 @@ import { TitledComponent } from 'sql/workbench/browser/modelComponents/titledCom
 
 @Component({
 	selector: 'modelview-hyperlink',
-	template: `<a [href]="getUrl()" [title]="title" target="blank" (click)="onClick()">{{getLabel()}}</a>`
+	template: `<a [href]="getUrl()" [title]="title" [attr.aria-label]="ariaLabel" target="blank" (click)="onClick()">{{getLabel()}}</a>`
 })
 export default class HyperlinkComponent extends TitledComponent implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
