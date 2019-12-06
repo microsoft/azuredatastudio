@@ -248,13 +248,21 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		});
 	}
 
-	private async getTenants(userId: string, homeTenant: string): Promise<Tenant[]> {
+	private async getTenants(userId: string, homeTenant?: string): Promise<Tenant[]> {
 		const armToken = await this.getToken(userId, AzureAccountProvider.AadCommonTenant, this.metadata.settings.armResource.id);
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2015-01-01');
 		const armWebResponse: any[] = await this.makeWebRequest(armToken, tenantUri);
 
 		const promises = armWebResponse.map(async (value: { tenantId: string }) => {
-			const graphToken = await this.getToken(userId, value.tenantId, this.metadata.settings.graphResource.id);
+			let graphToken: TokenResponse;
+
+			try {
+				graphToken = await this.getToken(userId, value.tenantId, this.metadata.settings.graphResource.id);
+			} catch (ex) {
+				console.log(`Your authentication to the tenant ${value.tenantId} failed: ${ex}`);
+				return undefined;
+			}
+
 			let tenantDetailsUri = url.resolve(this.metadata.settings.graphResource.endpoint, value.tenantId + '/');
 			tenantDetailsUri = url.resolve(tenantDetailsUri, 'tenantDetails?api-version=2013-04-05');
 			const tenantDetails: any[] = await this.makeWebRequest(graphToken, tenantDetailsUri);
@@ -262,17 +270,25 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			return {
 				id: value.tenantId,
 				userId: userId,
-				displayName: tenantDetailsUri.length && tenantDetails[0].displayName
+				displayName: tenantDetails.length > 0 && tenantDetails[0].displayName
 					? tenantDetails[0].displayName
 					: localize('azureWorkAccountDisplayName', "Work or school account")
 			} as Tenant;
 		});
 
-		const tenants = await Promise.all(promises);
-		const homeTenantIndex = tenants.findIndex(tenant => tenant.id === homeTenant);
-		if (homeTenantIndex >= 0) {
-			const homeTenant = tenants.splice(homeTenantIndex, 1);
-			tenants.unshift(homeTenant[0]);
+		let tenants = await Promise.all(promises);
+
+		tenants = tenants.filter(t => t !== undefined);
+		if (tenants.length === 0) {
+			throw new Error(localize('azure.noTenants', "No azure tenants found. Failing..."));
+		}
+
+		if (homeTenant) {
+			const homeTenantIndex = tenants.findIndex(tenant => tenant.id === homeTenant);
+			if (homeTenantIndex >= 0) {
+				const homeTenant = tenants.splice(homeTenantIndex, 1);
+				tenants.unshift(homeTenant[0]);
+			}
 		}
 		return tenants;
 	}
@@ -284,7 +300,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private async handleAuthentication(code: string): Promise<void> {
 		const token = await this.getTokenWithAuthCode(code, AzureAccountProvider.redirectUrlAAD);
 
-		const tenants = await this.getTenants(token.userId, token.userId);
+		const tenants = await this.getTenants(token.userId, token.tenantId);
 		let identityProvider = token.identityProvider;
 		if (identityProvider) {
 			identityProvider = identityProvider.toLowerCase();

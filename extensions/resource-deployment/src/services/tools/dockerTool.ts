@@ -47,11 +47,5 @@ export class DockerTool extends ToolBase {
 		return { command: 'docker version --format "{{json .}}"' };
 	}
 
-	get autoInstallSupported(): boolean {
-		return false;
-	}
-
-	protected get allInstallationCommands(): Map<OsDistribution, Command[]> {
-		throw Error('Installation of DockerTool is not supported');
-	}
+	protected readonly allInstallationCommands: Map<OsDistribution, Command[]> = new Map<OsDistribution, Command[]>();
 }
