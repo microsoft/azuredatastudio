@@ -190,7 +190,7 @@ steps:
     displayName: 'Sign installers'
     inputs:
       ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(Build.ArtifactStagingDirectory)'
+      FolderPath: '.build'
       Pattern: '*.exe'
       signConfigType: inlineSignParams
       inlineOperation: |
