@@ -6,18 +6,13 @@
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 
-// import { NotebookContexts } from 'sql/workbench/contrib/notebook/browser/models/notebookContexts';
-// import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-// import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
-// import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-// import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
-// import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-// import { IDefaultConnection } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { AddCellAction, ClearAllOutputsAction, ToggleableAction, CollapseCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, TrustedAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookComponentStub } from 'sql/workbench/contrib/notebook/test/browser/common';
-import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 
 suite('Notebook Actions', function (): void {
 	test('Add Cell Action', async function (): Promise<void> {
@@ -59,6 +54,25 @@ suite('Notebook Actions', function (): void {
 	});
 
 	test('Trusted Action', async function (): Promise<void> {
+		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
+		mockNotification.setup(n => n.notify(TypeMoq.It.isAny()));
+
+		let action = new TrustedAction('TestId', mockNotification.object);
+
+		assert.strictEqual(action.trusted, false, 'Should not be trusted by default');
+
+		let contextStub = <INotebookEditor>{
+			model: <INotebookModel>{
+				trustedMode: false
+			}
+		};
+		let result = await action.run(contextStub);
+		assert.ok(result, 'Trusted Action should succeed');
+		assert.strictEqual(action.trusted, true, 'Should be trusted after toggling trusted state');
+
+		result = await action.run(contextStub);
+		assert.ok(result, 'Trusted Action should succeed again');
+		assert.strictEqual(action.trusted, true, 'Should stay trusted when trying to toggle trsuted to false');
 	});
 
 	test('Run All Cells Action', async function (): Promise<void> {
