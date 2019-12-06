@@ -101,14 +101,21 @@ steps:
 
   - script: |
       set -e
-      pushd ../azuredatastudio-darwin && zip -r -X -y ../azuredatastudio-darwin.zip * && popd
+      ./scripts/test.sh --build --coverage --reporter mocha-junit-reporter
+    displayName: Run unit tests
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - script: |
+      set -e
+      mkdir .build/darwin/archive
+      pushd ../azuredatastudio-darwin && zip -r -X -y .build/darwin/archive/azuredatastudio-darwin.zip * && popd
     displayName: 'Archive'
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning'
     inputs:
       ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(agent.builddirectory)'
+      FolderPath: '$(Build.SourcesDirectory)/.build/darwin/archive'
       Pattern: 'azuredatastudio-darwin.zip'
       signConfigType: inlineSignParams
       inlineOperation: |
@@ -125,27 +132,7 @@ steps:
 
   - script: |
       set -e
-      zip -d ../azuredatastudio-darwin.zip "*.pkg"
-      mkdir -p .build/darwin/archive
-      cp ../azuredatastudio-darwin.zip .build/darwin/archive
-    displayName: 'Remove pkg from archive'
-
-  - script: |
-      set -e
-      ./scripts/test.sh --build --coverage --reporter mocha-junit-reporter
-    displayName: Run unit tests
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-    timeoutInMinutes: 20
-    continueOnError: true
-
-  - script: |
-      set -e
-      pushd .. && mv azuredatastudio-reh-darwin azuredatastudio-server-darwin && zip -Xry $(Build.SourcesDirectory)/.build/darwin/azuredatastudio-server-darwin.zip azuredatastudio-server-darwin && popd
-    displayName: 'Package server'
-
-  - script: |
-      set -e
-      node build/azure-pipelines/common/copyArtifacts.js
+      ./build/azure-pipelines/darwin/createDrop.sh
     displayName: Copy artifact to staging area
 
   - task: PublishBuildArtifacts@1
