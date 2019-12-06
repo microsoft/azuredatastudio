@@ -176,16 +176,6 @@ steps:
       exec { yarn gulp "vscode-win32-x64-archive" }
     displayName: Archive & User & System setup
 
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      $Repo = "$(pwd)"
-      $Root = "$Repo\.."
-      $LegacyServer = "$Root\azuredatastudio-reh-win32-x64"
-      $ServerZip = ".build\win32-x64\server\azuredatastudio-server-win32-x64.zip"
-      exec { .\node_modules\7zip\7zip-lite\7z.exe a -tzip $ServerZip $LegacyServer -r }
-    displayName: 'Package server'
-
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'Sign installers'
     inputs:
@@ -244,9 +234,8 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-
-      exec { node build/azure-pipelines/common/copyArtifacts.js }
-    displayName: Copy artifact to staging area
+      .\build\azure-pipelines\win32\createDrop.ps1
+    displayName: Create Drop
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
