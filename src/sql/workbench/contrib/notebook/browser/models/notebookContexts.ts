@@ -29,9 +29,8 @@ export class NotebookContexts {
 
 	/**
 	 * Get the applicable context for a given kernel
+	 * @param context current connection profile
 	 * @param connProviderIds array of connection provider ids applicable for a kernel
-	 * @param kernelChangedArgs kernel changed args (both old and new kernel info)
-	 * @param profile current connection profile
 	 */
 	public static getContextForKernel(context: ConnectionProfile, connProviderIds: string[]): ConnectionProfile {
 		// If no connection provider ids exist for a given kernel, the attach to should show localhost
