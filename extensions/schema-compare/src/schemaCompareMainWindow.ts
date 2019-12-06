@@ -23,6 +23,8 @@ const generateScriptNoChangesMessage = localize('schemaCompare.generateScriptNoC
 const applyEnabledMessage = localize('schemaCompare.applyButtonEnabledTitle', "Apply changes to target");
 const applyNoChangesMessage = localize('schemaCompare.applyNoChanges', "No changes to apply");
 const includeExcludeInfoMessage = localize('schemaCompare.includeExcludeInfoMessage', "Please note that include/exclude operations can take a moment to calculate affected dependencies");
+const sourceTitle = localize('schemaCompareDialog.SourceTitle', "Source");
+const targetTitle = localize('schemaCompareDialog.TargetTitle', "Target");
 
 // Do not localize this, this is used to decide the icon for the editor.
 // TODO : In future icon should be decided based on language id (scmp) and not resource name
@@ -256,8 +258,12 @@ export class SchemaCompareMainWindow {
 			},
 		]);
 
-		// reset buttons to before comparison state
-		this.resetButtons(ResetButtonState.beforeCompareStart);
+		if (!this.sourceName || !this.targetName || this.sourceName === ' ' || this.targetName === ' ') {
+			this.resetButtons(ResetButtonState.noSourceTarget);
+		} else {
+			// reset buttons to before comparison state
+			this.resetButtons(ResetButtonState.beforeCompareStart);
+		}
 	}
 
 	// only for test
@@ -819,7 +825,6 @@ export class SchemaCompareMainWindow {
 
 	// reset state afer loading an scmp
 	private resetForNewCompare(): void {
-		this.resetButtons(ResetButtonState.beforeCompareStart);
 		this.flexModel.removeItem(this.splitView);
 		this.flexModel.removeItem(this.noDifferencesLabel);
 		this.flexModel.addItem(this.startText, { CSSStyles: { 'margin': 'auto' } });
@@ -941,44 +946,8 @@ export class SchemaCompareMainWindow {
 				return;
 			}
 
-			if (result.sourceEndpointInfo && result.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
-				// only set endpoint info if able to connect to the database
-				const ownerUri = await verifyConnectionAndGetOwnerUri(result.sourceEndpointInfo);
-				if (ownerUri) {
-					this.sourceEndpointInfo = result.sourceEndpointInfo;
-					this.sourceEndpointInfo.ownerUri = ownerUri;
-				}
-			} else {
-				// need to do this instead of just setting it to the result.sourceEndpointInfo because some fields are null which will cause an error when sending the compare request
-				this.sourceEndpointInfo = {
-					endpointType: mssql.SchemaCompareEndpointType.Dacpac,
-					serverDisplayName: '',
-					serverName: '',
-					databaseName: '',
-					ownerUri: '',
-					packageFilePath: result.sourceEndpointInfo.packageFilePath,
-					connectionDetails: undefined
-				};
-			}
-
-			if (result.targetEndpointInfo && result.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
-				const ownerUri = await verifyConnectionAndGetOwnerUri(result.targetEndpointInfo);
-				if (ownerUri) {
-					this.targetEndpointInfo = result.targetEndpointInfo;
-					this.targetEndpointInfo.ownerUri = ownerUri;
-				}
-			} else {
-				// need to do this instead of just setting it to the result.targetEndpointInfo because some fields are null which will cause an error when sending the compare request
-				this.targetEndpointInfo = {
-					endpointType: mssql.SchemaCompareEndpointType.Dacpac,
-					serverDisplayName: '',
-					serverName: '',
-					databaseName: '',
-					ownerUri: '',
-					packageFilePath: result.targetEndpointInfo.packageFilePath,
-					connectionDetails: undefined
-				};
-			}
+			this.sourceEndpointInfo = await this.constructEndpointInfo(result.sourceEndpointInfo, sourceTitle);
+			this.targetEndpointInfo = await this.constructEndpointInfo(result.targetEndpointInfo, targetTitle);
 
 			this.updateSourceAndTarget();
 			this.setDeploymentOptions(result.deploymentOptions);
@@ -993,6 +962,31 @@ export class SchemaCompareMainWindow {
 				'elapsedTime:': (Date.now() - startTime).toString()
 			});
 		});
+	}
+
+	private async  constructEndpointInfo(endpoint: mssql.SchemaCompareEndpointInfo, caller: string): Promise<mssql.SchemaCompareEndpointInfo> {
+		let ownerUri;
+		let endpointInfo;
+		if (endpoint && endpoint.endpointType === mssql.SchemaCompareEndpointType.Database) {
+			// only set endpoint info if able to connect to the database
+			ownerUri = await verifyConnectionAndGetOwnerUri(endpoint, caller);
+		}
+		if (ownerUri) {
+			endpointInfo = endpoint;
+			endpointInfo.ownerUri = ownerUri;
+		} else {
+			// need to do this instead of just setting it to the endpoint because some fields are null which will cause an error when sending the compare request
+			endpointInfo = {
+				endpointType: endpoint.endpointType === mssql.SchemaCompareEndpointType.Database ? mssql.SchemaCompareEndpointType.Database : mssql.SchemaCompareEndpointType.Dacpac,
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: '',
+				packageFilePath: endpoint.packageFilePath,
+				connectionDetails: undefined
+			};
+		}
+		return endpointInfo;
 	}
 
 	private createSaveScmpButton(view: azdata.ModelView): void {

@@ -37,6 +37,7 @@ import { find } from 'vs/base/common/arrays';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -44,7 +45,7 @@ class MainThreadNotebookEditor extends Disposable {
 	private _providerId: string = '';
 	private _providers: string[] = [];
 
-	constructor(public readonly editor: INotebookEditor) {
+	constructor(public readonly editor: INotebookEditor, private readonly textFileService: ITextFileService) {
 		super();
 		editor.modelReady.then(model => {
 			this._providerId = model.providerId;
@@ -94,7 +95,7 @@ class MainThreadNotebookEditor extends Disposable {
 	}
 
 	public save(): Thenable<boolean> {
-		return this.editor.notebookParams.input.save();
+		return this.textFileService.save(this.uri);
 	}
 
 	public matches(input: NotebookInput): boolean {
@@ -333,7 +334,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@INotebookService private readonly _notebookService: INotebookService,
-		@IFileService private readonly _fileService: IFileService
+		@IFileService private readonly _fileService: IFileService,
+		@ITextFileService private readonly _textFileService: ITextFileService
 	) {
 		super();
 		if (extHostContext) {
@@ -515,7 +517,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 
 		// added editors
 		for (const editor of delta.addedEditors) {
-			const mainThreadEditor = new MainThreadNotebookEditor(editor);
+			const mainThreadEditor = new MainThreadNotebookEditor(editor, this._textFileService);
 
 			this._notebookEditors.set(editor.id, mainThreadEditor);
 			addedEditors.push(mainThreadEditor);
