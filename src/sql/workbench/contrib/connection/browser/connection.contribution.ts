@@ -31,7 +31,7 @@ const actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.Workbenc
 
 // Connection Actions
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		ClearRecentConnectionsAction,
 		ClearRecentConnectionsAction.ID,
 		ClearRecentConnectionsAction.LABEL
@@ -40,7 +40,7 @@ actionRegistry.registerWorkbenchAction(
 );
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		AddServerGroupAction,
 		AddServerGroupAction.ID,
 		AddServerGroupAction.LABEL
@@ -49,7 +49,7 @@ actionRegistry.registerWorkbenchAction(
 );
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		AddServerAction,
 		AddServerAction.ID,
 		AddServerAction.LABEL
@@ -102,7 +102,7 @@ CommandsRegistry.registerCommand('azdata.connect',
 	});
 
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
+	SyncActionDescriptor.create(
 		GetCurrentConnectionStringAction,
 		GetCurrentConnectionStringAction.ID,
 		GetCurrentConnectionStringAction.LABEL
@@ -123,7 +123,7 @@ configurationRegistry.registerConfiguration({
 		},
 		'sql.defaultEngine': {
 			'type': 'string',
-			'description': localize('sql.defaultEngineDescription', "Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection. Valid option is currently MSSQL"),
+			'description': localize('sql.defaultEngineDescription', "Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection."),
 			'default': 'MSSQL'
 		},
 		'connection.parseClipboardForConnectionString': {

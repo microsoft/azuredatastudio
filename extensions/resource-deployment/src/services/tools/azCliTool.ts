@@ -39,10 +39,6 @@ export class AzCliTool extends ToolBase {
 		return 'https://docs.microsoft.com/cli/azure/install-azure-cli';
 	}
 
-	get autoInstallSupported(): boolean {
-		return true;
-	}
-
 	protected async getSearchPaths(): Promise<string[]> {
 		switch (this.osDistribution) {
 			case OsDistribution.win32:

@@ -216,4 +216,12 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	private setValuesProperties(properties: azdata.DropDownProperties, values: string[] | azdata.CategoryValue[]): void {
 		properties.values = values;
 	}
+
+	public focus(): void {
+		if (this.editable && !this._isInAccessibilityMode) {
+			this._editableDropdown.focus();
+		} else {
+			this._selectBox.focus();
+		}
+	}
 }

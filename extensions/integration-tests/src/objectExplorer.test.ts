@@ -5,13 +5,13 @@
 
 import 'mocha';
 import * as azdata from 'azdata';
-import { context } from './testContext';
+import { isTestSetupCompleted } from './testContext';
 import { getBdcServer, TestServerProfile, getAzureServer, getStandaloneServer } from './testConfig';
 import { connectToServer, createDB, deleteDB, DefaultConnectTimeoutInMs, asyncTimeout } from './utils';
 import * as assert from 'assert';
 import { stressify } from 'adstest';
 
-if (context.RunTest) {
+if (isTestSetupCompleted()) {
 	suite('Object Explorer integration suite', () => {
 		test('BDC instance node label test', async function () {
 			return await (new ObjectExplorerTester()).bdcNodeLabelTest();

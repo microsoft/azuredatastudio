@@ -57,11 +57,6 @@ export class KubeCtlTool extends ToolBase {
 			command: this.discoveryCommandString('kubectl')
 		};
 	}
-
-	get autoInstallSupported(): boolean {
-		return true;
-	}
-
 	protected async getSearchPaths(): Promise<string[]> {
 		switch (this.osDistribution) {
 			case OsDistribution.win32:
