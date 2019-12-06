@@ -76,7 +76,7 @@ export default class RadioCardGroup extends ComponentBase implements IComponent,
 		if (filteredCards.length === 1) {
 			return filteredCards[0];
 		} else {
-			throw new Error(`There should be one and only one matching card for the giving card id, actual number: ${filteredCards.length}, card id: ${cardId} $`);
+			throw new Error(`There should be one and only one matching card for the giving card id, actual number: ${filteredCards.length}, card id: ${cardId}.`);
 		}
 	}
 
