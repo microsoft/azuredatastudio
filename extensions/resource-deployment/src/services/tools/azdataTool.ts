@@ -108,68 +108,74 @@ export class AzdataTool extends ToolBase {
 		[OsDistribution.others, []]
 	]);
 
-	private readonly win32InstallationCommands = [
-		{
-			comment: localize('resourceDeployment.Azdata.DeletingPreviousAzdata.msi', "deleting previously downloaded Azdata.msi if one exists …"),
-			command: `IF EXIST .\\Azdata.msi DEL /F .\\Azdata.msi`
-		},
-		{
-			sudo: true,
-			comment: localize('resourceDeployment.Azdata.DownloadingAndInstallingAzdata', "downloading Azdata.msi and installing azdata-cli …"),
-			command: `powershell -Command "& {(New-Object System.Net.WebClient).DownloadFile('${this.azdataInstallLocation}', 'Azdata.msi'); Start-Process msiexec.exe -Wait -ArgumentList '/I Azdata.msi /passive /quiet /lvx ADS_AzdataInstall.log'}"`
-		},
-		{
-			comment: localize('resourceDeployment.Azdata.DisplayingInstallationLog', "displaying the installation log …"),
-			command: `type ADS_AzdataInstall.log | findstr /i /v ^MSI"`,
-			ignoreError: true
-		}
-	];
+	private get win32InstallationCommands() {
+		return [
+			{
+				comment: localize('resourceDeployment.Azdata.DeletingPreviousAzdata.msi', "deleting previously downloaded Azdata.msi if one exists …"),
+				command: `IF EXIST .\\Azdata.msi DEL /F .\\Azdata.msi`
+			},
+			{
+				sudo: true,
+				comment: localize('resourceDeployment.Azdata.DownloadingAndInstallingAzdata', "downloading Azdata.msi and installing azdata-cli …"),
+				command: `powershell -Command "& {(New-Object System.Net.WebClient).DownloadFile('${this.azdataInstallLocation}', 'Azdata.msi'); Start-Process msiexec.exe -Wait -ArgumentList '/I Azdata.msi /passive /quiet /lvx ADS_AzdataInstall.log'}"`
+			},
+			{
+				comment: localize('resourceDeployment.Azdata.DisplayingInstallationLog', "displaying the installation log …"),
+				command: `type ADS_AzdataInstall.log | findstr /i /v ^MSI"`,
+				ignoreError: true
+			}
+		];
+	}
 
-	private readonly macOsInstallationCommands = [
-		{
-			comment: localize('resourceDeployment.Azdata.TappingBrewRepository', "tapping into the brew repository for azdata-cli …"),
-			command: `brew tap ${this.azdataInstallLocation}`
-		},
-		{
-			comment: localize('resourceDeployment.Azdata.UpdatingBrewRepository', "updating the brew repository for azdata-cli installation …"),
-			command: 'brew update'
-		},
-		{
-			comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata …"),
-			command: 'brew install azdata-cli'
-		}
-	];
+	private get macOsInstallationCommands() {
+		return [
+			{
+				comment: localize('resourceDeployment.Azdata.TappingBrewRepository', "tapping into the brew repository for azdata-cli …"),
+				command: `brew tap ${this.azdataInstallLocation}`
+			},
+			{
+				comment: localize('resourceDeployment.Azdata.UpdatingBrewRepository', "updating the brew repository for azdata-cli installation …"),
+				command: 'brew update'
+			},
+			{
+				comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata …"),
+				command: 'brew install azdata-cli'
+			}
+		];
+	}
 
-	private readonly debianInstallationCommands = [
-		{
-			sudo: true,
-			comment: localize('resourceDeployment.Azdata.AptGetUpdate', "updating repository information …"),
-			command: 'apt-get update'
-		},
-		{
-			sudo: true,
-			comment: localize('resourceDeployment.Azdata.AptGetPackages', "getting packages needed for azdata installation …"),
-			command: 'apt-get install gnupg ca-certificates curl apt-transport-https lsb-release -y'
-		},
-		{
-			sudo: true,
-			comment: localize('resourceDeployment.Azdata.DownloadAndInstallingSigningKey', "downloading and installing the signing key for azdata …"),
-			command: 'wget -qO- https://packages.microsoft.com/keys/microsoft.asc | apt-key add -'
-		},
-		{
-			sudo: true,
-			comment: localize('resourceDeployment.Azdata.AddingAzdataRepositoryInformation', "adding the azdata repository information …"),
-			command: `add-apt-repository "$(wget -qO- ${this.azdataInstallLocation})"`
-		},
-		{
-			sudo: true,
-			comment: localize('resourceDeployment.Azdata.AptGetUpdate', "updating repository information …"),
-			command: 'apt-get update'
-		},
-		{
-			sudo: true,
-			comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata …"),
-			command: 'apt-get install -y azdata-cli'
-		}
-	];
+	private get debianInstallationCommands() {
+		return [
+			{
+				sudo: true,
+				comment: localize('resourceDeployment.Azdata.AptGetUpdate', "updating repository information …"),
+				command: 'apt-get update'
+			},
+			{
+				sudo: true,
+				comment: localize('resourceDeployment.Azdata.AptGetPackages', "getting packages needed for azdata installation …"),
+				command: 'apt-get install gnupg ca-certificates curl apt-transport-https lsb-release -y'
+			},
+			{
+				sudo: true,
+				comment: localize('resourceDeployment.Azdata.DownloadAndInstallingSigningKey', "downloading and installing the signing key for azdata …"),
+				command: 'wget -qO- https://packages.microsoft.com/keys/microsoft.asc | apt-key add -'
+			},
+			{
+				sudo: true,
+				comment: localize('resourceDeployment.Azdata.AddingAzdataRepositoryInformation', "adding the azdata repository information …"),
+				command: `add-apt-repository "$(wget -qO- ${this.azdataInstallLocation})"`
+			},
+			{
+				sudo: true,
+				comment: localize('resourceDeployment.Azdata.AptGetUpdate', "updating repository information …"),
+				command: 'apt-get update'
+			},
+			{
+				sudo: true,
+				comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata …"),
+				command: 'apt-get install -y azdata-cli'
+			}
+		];
+	}
 }
