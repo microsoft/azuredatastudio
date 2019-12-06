@@ -1292,6 +1292,7 @@ export interface IDataBreakpointDto extends IBreakpointDto {
 	dataId: string;
 	canPersist: boolean;
 	label: string;
+	accessTypes?: DebugProtocol.DataBreakpointAccessType[];
 }
 
 export interface ISourceBreakpointDto extends IBreakpointDto {
