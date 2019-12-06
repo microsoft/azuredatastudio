@@ -7,7 +7,7 @@ import 'mocha';
 import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { context } from './testContext';
+import { isTestSetupCompleted } from './testContext';
 import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySparkKernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent, notebookContentForCellLanguageTest, sqlKernelSpec, pythonKernelSpec, pySparkKernelSpec, CellTypes } from './notebook.util';
 import { getBdcServer, getConfigValue, EnvironmentVariable_PYTHON_PATH } from './testConfig';
 import { connectToServer, sleep } from './utils';
@@ -15,7 +15,7 @@ import * as fs from 'fs';
 import { stressify } from 'adstest';
 import { isNullOrUndefined } from 'util';
 
-if (context.RunTest) {
+if (isTestSetupCompleted()) {
 	suite('Notebook integration test suite', function () {
 		setup(async function () {
 			console.log(`Start "${this.currentTest.title}"`);

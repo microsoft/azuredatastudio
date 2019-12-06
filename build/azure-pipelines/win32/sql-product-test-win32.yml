@@ -34,7 +34,9 @@ steps:
   displayName: Unzip artifact
 
 - powershell: |
-    cp $(Agent.TempDirectory)/vsix/* extensions/integration-tests/extensionInstallers --verbose
+    . build/azure-pipelines/win32/exec.ps1
+    $ErrorActionPreference = "Stop"
+    exec { Copy-Item -Path "$(Agent.TempDirectory)/vsix/*" -Destination "$(Build.SourcesDirectory)/extensions/integration-tests/extensionInstallers" }
   displayName: Copy Extension Installers
 
 - task: AzureKeyVault@1

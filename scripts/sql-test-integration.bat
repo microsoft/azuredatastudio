@@ -1,3 +1,4 @@
+@echo OFF
 setlocal
 
 pushd %~dp0\..
@@ -27,8 +28,6 @@ if "%ADS_TEST_GREP%" == "" (
 	SET ADS_TEST_INVERT_GREP=1
 )
 
-@echo OFF
-
 if "%SKIP_PYTHON_INSTALL_TEST%" == "1" (
 	echo Skipping Python installation tests.
 ) else (
@@ -37,7 +36,8 @@ if "%SKIP_PYTHON_INSTALL_TEST%" == "1" (
 	call %INTEGRATION_TEST_ELECTRON_PATH% --nogpu --extensionDevelopmentPath=%~dp0\..\extensions\notebook --extensionTestsPath=%~dp0\..\extensions\notebook\out\integrationTest --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222
 )
 
-call %INTEGRATION_TEST_ELECTRON_PATH% -nogpu --extensionDevelopmentPath=%~dp0\..\extensions\integration-tests --extensionTestsPath=%~dp0\..\extensions\integration-tests\out --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222
+call %INTEGRATION_TEST_ELECTRON_PATH% -nogpu --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222 ^
+--extensionDevelopmentPath=%~dp0\..\extensions\integration-tests --extensionTestsPath=%~dp0\..\extensions\integration-tests\out
 
 rmdir /s /q %VSCODEUSERDATADIR%
 rmdir /s /q %VSCODEEXTENSIONSDIR%
