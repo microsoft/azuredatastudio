@@ -28,6 +28,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	public initialize(): void {
 		const self = this;
+		const clusterNameFieldDescription = localize('deployCluster.ClusterNameDescription', "The name must consist only of alphanumeric lowercase characters or '-' and must start and end with an alphanumeric character.");
 		const basicSection: SectionInfo = {
 			labelPosition: LabelPosition.Left,
 			title: '',
@@ -37,7 +38,11 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					label: localize('deployCluster.ClusterName', "Cluster name"),
 					required: true,
 					variableName: VariableNames.ClusterName_VariableName,
-					defaultValue: 'mssql-cluster'
+					defaultValue: 'mssql-cluster',
+					textValidationRequired: true,
+					textValidationRegex: '^[a-z0-9]$|^[a-z0-9][a-z0-9-]*[a-z0-9]$',
+					textValidationDescription: clusterNameFieldDescription,
+					description: clusterNameFieldDescription
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.AdminUsername', "Admin username"),
