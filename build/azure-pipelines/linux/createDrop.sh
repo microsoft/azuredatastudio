@@ -8,8 +8,7 @@ mkdir -p $REPO/.build/linux/{archive,server}
 PLATFORM_LINUX="linux-x64"
 BUILDNAME="azuredatastudio-$PLATFORM_LINUX"
 BUILD="$ROOT/$BUILDNAME"
-BUILD_VERSION="$(date +%s)"
-[ -z "$VSCODE_QUALITY" ] && TARBALL_FILENAME="azuredatastudio-$BUILD_VERSION.tar.gz" || TARBALL_FILENAME="azuredatastudio-$VSCODE_QUALITY-$BUILD_VERSION.tar.gz"
+TARBALL_FILENAME="azuredatastudio-$PLATFORM_LINUX.tar.gz"
 TARBALL_PATH="$REPO/.build/linux/archive/$TARBALL_FILENAME"
 
 rm -rf $ROOT/code-*.tar.*
@@ -26,7 +25,7 @@ rm -rf $ROOT/azuredatastudio-server-*.tar.*
 
 # create docker
 mkdir -p $REPO/.build/docker
-docker build -t azuredatastudio-server -f $REPO/build/azure-pipelines/docker/Dockerfile $ROOT/azuredatastudio-reh-linux-x64
+docker build -t azuredatastudio-server -f $REPO/build/azure-pipelines/docker/Dockerfile $SERVER_BUILD_NAME
 docker save azuredatastudio-server | gzip > $REPO/.build/docker/azuredatastudio-server-docker.tar.gz
 
 node build/azure-pipelines/common/copyArtifacts.js
