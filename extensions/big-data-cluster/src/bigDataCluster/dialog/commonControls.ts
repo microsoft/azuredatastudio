@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as loc from '../localizedConstants';
 
 export function createViewDetailsButton(modelBuilder: azdata.ModelBuilder, text: string): azdata.ButtonComponent {
-	const viewDetailsButton = modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.viewDetails }).component();
+	const viewDetailsButton = modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.viewDetails, ariaLabel: loc.viewErrorDetails }).component();
 	viewDetailsButton.onDidClick(() => {
 		vscode.window.showErrorMessage(text, { modal: true });
 	});

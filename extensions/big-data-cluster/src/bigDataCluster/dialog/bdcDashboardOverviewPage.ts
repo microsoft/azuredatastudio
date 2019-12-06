@@ -192,7 +192,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 						},
 						{ // view details button
 							displayName: '',
-							ariaLabel: loc.viewDetails,
+							ariaLabel: loc.viewErrorDetails,
 							valueType: azdata.DeclarativeDataType.component,
 							isReadOnly: true,
 							width: 150,
