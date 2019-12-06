@@ -6,7 +6,7 @@
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 
-import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, TrustedAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, TrustedAction, RunAllCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookComponentStub } from 'sql/workbench/contrib/notebook/test/browser/common';
@@ -76,6 +76,23 @@ suite('Notebook Actions', function (): void {
 	});
 
 	test('Run All Cells Action', async function (): Promise<void> {
+		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
+		mockNotification.setup(n => n.notify(TypeMoq.It.isAny()));
+
+		let action = new RunAllCellsAction('TestId', 'TestLabel', 'TestClass', mockNotification.object);
+
+		let mockNotebookComponent = TypeMoq.Mock.ofType<INotebookEditor>(NotebookComponentStub);
+		mockNotebookComponent.setup(c => c.runAllCells()).returns(() => Promise.resolve(true));
+
+		let result = await action.run(mockNotebookComponent.object);
+		assert.ok(result, 'Run All Cells Action should succeed');
+		mockNotebookComponent.verify(c => c.runAllCells(), TypeMoq.Times.once());
+
+		mockNotebookComponent.reset();
+		mockNotebookComponent.setup(c => c.runAllCells()).returns(() => { throw new Error('Test Error'); });
+
+		result = await action.run(mockNotebookComponent.object);
+		assert.strictEqual(result, false, 'Run All Cells Action should fail on error');
 	});
 
 	test('Collapse Cells Action', async function (): Promise<void> {
