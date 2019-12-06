@@ -36,7 +36,7 @@ steps:
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
     $ErrorActionPreference = "Stop"
-    exec { cp $(Agent.TempDirectory)\vsix\* $(Build.SourcesDirectory)\extensions\integration-tests\extensionInstallers }
+    exec { cp $(Agent.TempDirectory)/vsix/* extensions/integration-tests/extensionInstallers }
   displayName: Copy Extension Installers
 
 - task: AzureKeyVault@1
