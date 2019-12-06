@@ -162,4 +162,36 @@ declare module 'azdata' {
 
 	export interface DeclarativeTableProperties extends ComponentProperties {
 	}
+
+	export interface ComponentProperties {
+		ariaHidden?: boolean;
+	}
+
+	export interface ComponentWithIconProperties {
+		/**
+		 * The path for the icon with optional dark-theme away alternative
+		 */
+		iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		/**
+		 * The height of the icon
+		 */
+		iconHeight?: number | string;
+		/**
+		 * The width of the icon
+		 */
+		iconWidth?: number | string;
+		/**
+		 * The title for the icon. This title will show when hovered over
+		 */
+		title?: string;
+	}
+
+	export interface ComponentWithIcon extends ComponentWithIconProperties {
+	}
+
+	export interface ImageComponent extends ComponentWithIcon {
+	}
+
+	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIconProperties {
+	}
 }
