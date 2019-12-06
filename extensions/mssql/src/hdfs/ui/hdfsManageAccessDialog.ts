@@ -537,8 +537,8 @@ export class ManageAccessDialog {
 	/**
 	 * Creates the header row for the permissions tables. This contains headers for the name and read/write/execute for the
 	 * access section. If the path is for a directory then a default section is included for specifying default permissions.
-	 * @param modelBuilder The builder used to create the model components
-	 * @param nameColumnText The text to display for the name column
+	 * @param rightSpacerWidth The amount of space to include on the right to correctly align the headers with the
+	 * @param middleSpacerWidth The amount of space to include between the text to correctly align the headers with the table sections
 	 */
 	private createPermissionsSectionHeaderRow(rightSpacerWidth: number, middleSpacerWidth: number): azdata.FlexContainer {
 		// Section Headers
@@ -589,6 +589,15 @@ export class ManageAccessDialog {
 	}
 }
 
+/**
+ * Creates a checkbox to be hosted inside of a table cell
+ * @param builder The ModelBuilder used to create the components
+ * @param checked Whether the checkbox is initially checked or not
+ * @param enabled Whether the checkbox is initially enabled or not
+ * @param containerWidth The width of the container holding the checkbox
+ * @param containerHeight The height of the container holding the checkbox
+ * @param ariaLabel The aria label to apply to the checkbox
+ */
 function createCheckbox(builder: azdata.ModelBuilder, checked: boolean, enabled: boolean, containerWidth: number, containerHeight: number, ariaLabel: string): { container: azdata.FlexContainer, checkbox: azdata.CheckBoxComponent } {
 	const checkbox = builder.checkBox()
 		.withProperties<azdata.CheckBoxProperties>({
