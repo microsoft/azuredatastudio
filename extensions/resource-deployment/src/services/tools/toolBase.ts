@@ -138,7 +138,7 @@ export abstract class ToolBase implements ITool {
 		return this._statusDescription;
 	}
 
-	public get installationPath(): string {
+	public get installationPath(): string | undefined {
 		return this._installationPath;
 	}
 
@@ -300,5 +300,5 @@ export abstract class ToolBase implements ITool {
 	private _status: ToolStatus = ToolStatus.NotInstalled;
 	private _version?: SemVer;
 	private _statusDescription?: string;
-	private _installationPath!: string;
+	private _installationPath?: string;
 }
