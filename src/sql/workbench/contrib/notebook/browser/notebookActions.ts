@@ -589,7 +589,7 @@ export class NewNotebookAction extends Action {
 	public static readonly ID = 'notebook.command.new';
 	public static readonly LABEL = localize('newNotebookAction', "New Notebook");
 
-	private static readonly INTERNAL_NEW_NOTEBOOK_CMD_ID = '_notebook.command.new';
+	public static readonly INTERNAL_NEW_NOTEBOOK_CMD_ID = '_notebook.command.new';
 	constructor(
 		id: string,
 		label: string,
@@ -610,5 +610,4 @@ export class NewNotebookAction extends Action {
 		}
 		return this.commandService.executeCommand(NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID, { connectionProfile: connProfile });
 	}
-
 }
