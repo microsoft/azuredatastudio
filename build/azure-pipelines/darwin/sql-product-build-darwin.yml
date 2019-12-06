@@ -107,7 +107,7 @@ steps:
 
   - script: |
       set -e
-      mkdir .build/darwin/archive
+      mkdir -p .build/darwin/archive
       pushd ../azuredatastudio-darwin && zip -r -X -y .build/darwin/archive/azuredatastudio-darwin.zip * && popd
     displayName: 'Archive'
 
@@ -133,7 +133,7 @@ steps:
   - script: |
       set -e
       ./build/azure-pipelines/darwin/createDrop.sh
-    displayName: Copy artifact to staging area
+    displayName: Create Drop
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'

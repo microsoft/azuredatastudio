@@ -140,42 +140,10 @@ steps:
       yarn gulp vscode-linux-x64-build-rpm
     displayName: Build Rpm
 
-  - task: ArchiveFiles@1 # WHY ARE WE DOING THIS?
-    displayName: 'Archive files '
-    inputs:
-      rootFolder: '$(Build.SourcesDirectory)/../azuredatastudio-linux-x64'
-      archiveType: tar
-      archiveFile: '.build/linux/archive/azuredatastudio-linux-x64.tar.gz'
-
   - script: |
       set -e
-      mkdir -p .build/docker
-      docker build -t azuredatastudio-server -f build/azure-pipelines/docker/Dockerfile $(agent.builddirectory)/azuredatastudio-reh-linux-x64
-      docker save azuredatastudio-server | gzip > .build/docker/azuredatastudio-server-docker.tar.gz
-    displayName: "Create docker image"
-
-  - script: |
-      set -e
-      mkdir $(build.SourcesDirectory)/.build/linux/server
-      cd $(agent.builddirectory)
-      tar --owner=0 --group=0 -czf azuredatastudio-server-linux-x64.tar.gz azuredatastudio-reh-linux-x64
-      cp azuredatastudio-server-linux-x64.tar.gz $(build.SourcesDirectory)/.build/linux/server
-    displayName: 'Package server'
-
-  - script: | # WHY ARE WE DOING THIS?
-      set -e
-      for f in *
-      do
-      shasum -a 256 "$f" >> sha256hashes.txt
-      done
-    workingDirectory: '.build/linux'
-    displayName: 'Get SHA256 Hashes'
-    continueOnError: true
-
-  - script: |
-      set -e
-      node build/azure-pipelines/common/copyArtifacts.js
-    displayName: Copy artifact to staging area
+      ./build/azure-pipelines/linux/createDrop.sh
+    displayName: Create Drop
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
