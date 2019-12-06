@@ -815,11 +815,6 @@ export class EditDataGridPanel extends GridParentComponent {
 
 			if (dataSet.columnDefinitions) {
 				t = new Table(this.nativeElement, { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
-				let editable = jQuery('.slick-cell.editable');
-				console.log(editable);
-
-				let slickgridDom = jQuery('.monaco-workbench');
-				console.log(slickgridDom.css(['input']));
 				this.tables[0] = t;
 				if (this.selectionModel) {
 					if (typeof this.selectionModel === 'object') {
