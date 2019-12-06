@@ -191,4 +191,7 @@ declare module 'azdata' {
 
 	export interface ImageComponent extends ComponentWithIcon {
 	}
+
+	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIconProperties {
+	}
 }
