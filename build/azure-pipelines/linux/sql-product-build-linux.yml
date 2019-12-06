@@ -149,6 +149,7 @@ steps:
 
   - script: |
       set -e
+      mkdir -p .build/docker
       docker build -t azuredatastudio-server -f build/azure-pipelines/docker/Dockerfile $(agent.builddirectory)/azuredatastudio-reh-linux-x64
       docker save azuredatastudio-server | gzip > .build/docker/azuredatastudio-server-docker.tar.gz
     displayName: "Create docker image"
