@@ -21,7 +21,7 @@ SERVER_BUILD_NAME="azuredatastudio-server-$PLATFORM_LINUX"
 SERVER_TARBALL_FILENAME="azuredatastudio-server-$PLATFORM_LINUX.tar.gz"
 SERVER_TARBALL_PATH="$REPO/.build/linux/server/$SERVER_TARBALL_FILENAME"
 
-rm -rf $ROOT/vscode-server-*.tar.*
+rm -rf $ROOT/azuredatastudio-server-*.tar.*
 (cd $ROOT && mv $LEGACY_SERVER_BUILD_NAME $SERVER_BUILD_NAME && tar --owner=0 --group=0 -czf $SERVER_TARBALL_PATH $SERVER_BUILD_NAME)
 
 # create docker
