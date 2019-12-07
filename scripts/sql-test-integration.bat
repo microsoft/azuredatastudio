@@ -17,11 +17,13 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 ) else (
 	:: Run from a built: need to compile all test extensions
 	call yarn gulp compile-extension:integration-tests
-	echo "using vsix directory %AGENT_TEMPDIRECTORY%\vsix"
-	for /f %%f IN ('dir /b /s "%AGENT_TEMPDIRECTORY%\vsix\*"') DO (
-		echo "installing extension %%f"
-		:: use the source cli, we could potentially change this if we ever care about testing this, but this is easier atm
-		call .\scripts\code-cli.bat --install-extension "%%f" --force --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR%
+	if NOT "%INTEGRATION_TEST_CLI_PATH%"=="" (
+		echo "using vsix directory %AGENT_TEMPDIRECTORY%\vsix"
+		for /f %%f IN ('dir /b /s "%AGENT_TEMPDIRECTORY%\vsix\*"') DO (
+			echo "installing extension %%f"
+			:: use the source cli, we could potentially change this if we ever care about testing this, but this is easier atm
+			call .\scripts\code-cli.bat --install-extension "%%f" --force --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR%
+		)
 	)
 
 	echo "Running integration tests with '%INTEGRATION_TEST_ELECTRON_PATH%' as build."
