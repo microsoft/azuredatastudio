@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorInput, EditorModel, ISaveOptions } from 'vs/workbench/common/editor';
+import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
@@ -16,7 +16,7 @@ import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { Schemas } from 'vs/base/common/network';
-import { ITextFileService, StateChange } from 'vs/workbench/services/textfile/common/textfiles';
+import { StateChange, ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -43,7 +43,6 @@ export class NotebookEditorModel extends EditorModel {
 	constructor(public readonly notebookUri: URI,
 		private textEditorModel: TextFileEditorModel | UntitledTextEditorModel | ResourceEditorModel,
 		@INotebookService private notebookService: INotebookService,
-		@ITextFileService private textFileService: ITextFileService,
 		@ITextResourcePropertiesService private textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super();
@@ -104,20 +103,6 @@ export class NotebookEditorModel extends EditorModel {
 		}
 		this._dirty = dirty;
 		this._onDidChangeDirty.fire();
-	}
-
-	/**
-	 * UntitledEditor uses TextFileService to save data from UntitledEditorInput
-	 * Titled editor uses TextFileEditorModel to save existing notebook
-	*/
-	save(options: ISaveOptions): Promise<boolean> {
-		if (this.textEditorModel instanceof TextFileEditorModel) {
-			this.textEditorModel.save(options);
-			return Promise.resolve(true);
-		}
-		else {
-			return this.textFileService.save(this.notebookUri, options);
-		}
 	}
 
 	public updateModel(contentChange?: NotebookContentChange, type?: NotebookChangeType): void {
@@ -282,9 +267,12 @@ export abstract class NotebookInput extends EditorInput {
 		return this._standardKernels;
 	}
 
-	public save(): Promise<boolean> {
-		let options: ISaveOptions = { force: false };
-		return this._model.save(options);
+	save(groupId: number, options?: ITextFileSaveOptions): Promise<boolean> {
+		return this.textInput.save(groupId, options);
+	}
+
+	saveAs(group: number, options?: ITextFileSaveOptions): Promise<boolean> {
+		return this.textInput.saveAs(group, options);
 	}
 
 	public set standardKernels(value: IStandardKernelWithProvider[]) {
@@ -452,17 +440,11 @@ export abstract class NotebookInput extends EditorInput {
 	}
 
 	public matches(otherInput: any): boolean {
-		if (super.matches(otherInput) === true) {
-			return true;
-		}
-
 		if (otherInput instanceof NotebookInput) {
-			const otherNotebookEditorInput = <NotebookInput>otherInput;
-
-			// Compare by resource
-			return otherNotebookEditorInput.notebookUri.toString() === this.notebookUri.toString();
+			return this.textInput.matches(otherInput.textInput);
+		} else {
+			return this.textInput.matches(otherInput);
 		}
-		return false;
 	}
 }
 
