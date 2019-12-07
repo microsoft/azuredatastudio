@@ -19,10 +19,10 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 	call yarn gulp compile-extension:integration-tests
 	set EXTENSIONS="";
 	for /f "tokens=*" %%i IN ('dir /b /s "%AGENT_TEMPDIRECTORY%\vsix\*"') DO (
-		if "%EXTENSIONS%" == "" (
+		if %EXTENSIONS% == "" (
 			set EXTENSIONS = %%i
 		) else (
-			set EXTENSIONS="%EXTENSIONS%, %%i"
+			set EXTENSIONS=%EXTENSIONS% and ", %%i"
 		)
 	)
 
