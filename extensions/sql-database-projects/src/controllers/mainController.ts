@@ -5,6 +5,10 @@
 
 import * as vscode from 'vscode';
 
+import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
+
+const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
+
 /**
  * The main controller class that initializes the extension
  */
@@ -27,9 +31,16 @@ export default class MainController implements vscode.Disposable {
 		return Promise.resolve(true);
 	}
 
-	private initializeDatabaseProjects(): void {
-		vscode.commands.registerCommand('sqlDatabaseProjects.new', () => { console.log('new database project called'); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.open', () => { console.log('open database project called'); });
+	private async initializeDatabaseProjects(): Promise<void> {
+		// init commands
+		vscode.commands.registerCommand('sqlDatabaseProjects.new', () => { console.log('"New Database Project" called.'); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.open', () => { console.log('"Open Database Project" called.'); });
+
+		// init view
+		const dbProjectTreeViewProvider = new SqlDatabaseProjectTreeViewProvider();
+		await dbProjectTreeViewProvider.initialized;
+
+		this.extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(SQL_DATABASE_PROJECTS_VIEW_ID, dbProjectTreeViewProvider));
 	}
 
 	public dispose(): void {
