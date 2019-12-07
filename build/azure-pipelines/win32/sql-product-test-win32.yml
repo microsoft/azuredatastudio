@@ -33,12 +33,6 @@ steps:
     exec { .\node_modules\7zip\7zip-lite\7z.exe x $(Agent.TempDirectory)\azuredatastudio-win32-x64.zip -o$(Agent.TempDirectory)\azuredatastudio-win32-x64 }
   displayName: Unzip artifact
 
-- task: CopyFiles@2
-  inputs:
-    SourceFolder: '$(Agent.TempDirectory)\vsix'
-    Contents: '**'
-    TargetFolder: '$(Build.SourcesDirectory)\extensions\integration-tests\extensionInstallers'
-
 - task: AzureKeyVault@1
   displayName: 'Azure Key Vault: SqlToolsSecretStore'
   inputs:
