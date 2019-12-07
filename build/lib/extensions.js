@@ -259,9 +259,7 @@ exports.packageExternalExtensionsStream = packageExternalExtensionsStream;
 // {{SQL CARBON EDIT}} - End
 function cleanRebuildExtensions(root) {
     return Promise.all(rebuildExtensions.map(async (e) => {
-        const cleanpath = path.join(root, e);
-        console.log('cleaning', cleanpath);
-        await util2.rimraf(cleanpath)();
+        await util2.rimraf(path.join(root, e))();
     })).then();
 }
 exports.cleanRebuildExtensions = cleanRebuildExtensions;
