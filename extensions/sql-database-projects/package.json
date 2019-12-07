@@ -15,7 +15,7 @@
   "activationEvents": [
     "*"
   ],
-  "main": "./out/main",
+  "main": "./out/extension",
   "repository": {
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
@@ -45,6 +45,14 @@
             "command": "sqlDatabaseProjects.open"
           }
         ]
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "sqlDatabaseProjectsView",
+          "name": "%title.databaseProjectsView%"
+        }
+      ]
     }
   },
   "dependencies": {
