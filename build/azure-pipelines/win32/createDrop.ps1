@@ -12,7 +12,7 @@ $ServerZipLocation = "$Repo\.build\win32-$Arch\server"
 $ServerZip = "$ServerZipLocation\azuredatastudio-server-win32-$Arch.zip"
 
 # Create server archive
-exec { mkdir $ServerZipLocation -ea 0 } "Make Directory"
+exec { mkdir $ServerZipLocation -ea 0 -Force } "Make Directory"
 exec { Rename-Item -Path $LegacyServer -NewName $ServerName } "Rename Item"
 exec { .\node_modules\7zip\7zip-lite\7z.exe a -tzip $ServerZip $Server -r } "Zip Server"
 
