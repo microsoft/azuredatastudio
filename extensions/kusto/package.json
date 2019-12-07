@@ -45,12 +45,41 @@
         }
       }
     ],
+    "languages": [
+      {
+        "id": "kusto",
+        "aliases": [
+          "Kusto",
+          "kusto"
+        ],
+        "extensions": [
+          ".csl",
+          ".kusto",
+          ".kql"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "kusto",
+        "scopeName": "source.kusto",
+        "path": "./syntaxes/kusto.tmLanguage"
+      }
+    ],
+    "themes": [
+      {
+        "label": "[Kuskus] Kusto (Dark)",
+        "uiTheme": "vs-dark",
+        "path": "./themes/kuskus-kusto-dark.json"
+      }
+    ],
     "outputChannels": [
       "KUSTO"
     ],
     "snippets": [
       {
-        "language": "kql",
+        "language": "kusto",
         "path": "./snippets/kusto.json"
       }
     ],
