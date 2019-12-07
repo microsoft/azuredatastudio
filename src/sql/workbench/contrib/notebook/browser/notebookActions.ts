@@ -17,7 +17,6 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { noKernel } from 'sql/workbench/services/notebook/browser/sessionManager';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
-import { generateUri } from 'sql/platform/connection/common/utils';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -369,14 +368,12 @@ export class AttachToDropdown extends SelectBox {
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@INotificationService private _notificationService: INotificationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@ILogService private readonly logService: ILogService
 	) {
 		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false, ariaLabel: attachToLabel } as ISelectBoxOptionsWithLabel);
 		if (modelReady) {
 			modelReady
 				.then(model => {
 					this.updateModel(model);
-					this.updateAttachToDropdown(model);
 				})
 				.catch(err => {
 					// No-op for now
@@ -408,25 +405,6 @@ export class AttachToDropdown extends SelectBox {
 		}
 	}
 
-	private updateAttachToDropdown(model: INotebookModel): void {
-		if (this.model.connectionProfile && this.model.connectionProfile.serverName) {
-			let connectionUri = generateUri(this.model.connectionProfile, 'notebook');
-			this.model.notebookOptions.connectionService.connect(this.model.connectionProfile, connectionUri).then(result => {
-				if (result.connected) {
-					let connectionProfile = new ConnectionProfile(this._capabilitiesService, result.connectionProfile);
-					this.model.addAttachToConnectionsToBeDisposed(connectionUri);
-					this.doChangeContext(connectionProfile);
-				} else {
-					this.openConnectionDialog(true);
-				}
-			}).catch(err =>
-				this.logService.error(err));
-		}
-		this._register(model.onValidConnectionSelected(validConnection => {
-			this.handleContextsChanged(!validConnection);
-		}));
-	}
-
 	private getKernelDisplayName(): string {
 		let kernelDisplayName: string;
 		if (this.model.clientSession && this.model.clientSession.kernel && this.model.clientSession.kernel.name) {
@@ -446,10 +424,7 @@ export class AttachToDropdown extends SelectBox {
 			this.setOptions([msgLocalHost]);
 		}
 		else {
-			let connections: string[] = model.context && model.context.title ? [model.context.title] : [];
-			if (connections.length === 0) {
-				connections.push(msgSelectConnection);
-			}
+			let connections: string[] = model.context && model.context.title ? [model.context.title] : [msgSelectConnection];
 			if (!find(connections, x => x === msgChangeConnection)) {
 				connections.push(msgChangeConnection);
 			}

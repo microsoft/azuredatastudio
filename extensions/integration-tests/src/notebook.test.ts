@@ -9,8 +9,8 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { context } from './testContext';
 import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySparkKernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent, notebookContentForCellLanguageTest, sqlKernelSpec, pythonKernelSpec, pySparkKernelSpec, CellTypes } from './notebook.util';
-import { getBdcServer, getConfigValue, EnvironmentVariable_PYTHON_PATH } from './testConfig';
-import { connectToServer, sleep } from './utils';
+import { getBdcServer, getConfigValue, EnvironmentVariable_PYTHON_PATH, TestServerProfile } from './testConfig';
+import { connectToServer, sleep, testServerProfileToIConnectionProfile } from './utils';
 import * as fs from 'fs';
 import { stressify } from 'adstest';
 import { isNullOrUndefined } from 'util';
@@ -392,15 +392,20 @@ class NotebookTester {
 	async openNotebook(content: azdata.nb.INotebookContents, kernelMetadata: any, testName: string, connectToDifferentServer?: boolean): Promise<azdata.nb.NotebookEditor> {
 		let notebookConfig = vscode.workspace.getConfiguration('notebook');
 		notebookConfig.update('pythonPath', getConfigValue(EnvironmentVariable_PYTHON_PATH), 1);
+		let server: TestServerProfile;
 		if (!connectToDifferentServer) {
-			let server = await getBdcServer();
+			server = await getBdcServer();
 			assert(server && server.serverName, 'No server could be found in openNotebook');
 			await connectToServer(server, 6000);
 		}
 		let notebookJson = Object.assign({}, content, { metadata: kernelMetadata });
 		let uri = writeNotebookToFile(notebookJson, testName);
 		console.log('Notebook uri ' + uri);
-		let notebook = await azdata.nb.showNotebookDocument(uri);
+		let nbShowOptions: azdata.nb.NotebookShowOptions;
+		if (server) {
+			nbShowOptions = { connectionProfile: testServerProfileToIConnectionProfile(server) };
+		}
+		let notebook = await azdata.nb.showNotebookDocument(uri, nbShowOptions);
 		return notebook;
 	}
 
