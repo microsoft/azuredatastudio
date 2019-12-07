@@ -694,7 +694,6 @@ export class EditDataGridPanel extends GridParentComponent {
 			let gridSelections = grid.getSelectedRanges();
 			let gridObject = grid as any;
 			let viewport = (gridObject._grid.getCanvasNode() as HTMLElement).parentElement;
-			console.log(viewport.scrollTop);
 			this.savedViewState = {
 				gridSelections,
 				scrollTop: viewport.scrollTop,
@@ -816,6 +815,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			if (dataSet.columnDefinitions) {
 				t = new Table(this.nativeElement, { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
 				this.tables[0] = t;
+
 				if (this.selectionModel) {
 					if (typeof this.selectionModel === 'object') {
 						t.grid.setSelectionModel(this.selectionModel);
@@ -851,7 +851,6 @@ export class EditDataGridPanel extends GridParentComponent {
 			public keyCaptureList: number[];
 
 			constructor(private _args: any) {
-				console.log(_args.grid);
 				this._textEditor = new Slick.Editors.Text(_args);
 				const END = 35;
 				const HOME = 36;
