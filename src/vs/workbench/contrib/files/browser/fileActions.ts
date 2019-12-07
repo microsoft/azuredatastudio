@@ -1001,7 +1001,12 @@ const downloadFileHandler = (accessor: ServicesAccessor) => {
 	const explorerService = accessor.get(IExplorerService);
 	const stats = explorerService.getContext(true);
 
+	let canceled = false;
 	stats.forEach(async s => {
+		if (canceled) {
+			return;
+		}
+
 		if (isWeb) {
 			if (!s.isDirectory) {
 				triggerDownload(asDomUri(s.resource), s.name);
@@ -1020,6 +1025,9 @@ const downloadFileHandler = (accessor: ServicesAccessor) => {
 			});
 			if (destination) {
 				await textFileService.copy(s.resource, destination);
+			} else {
+				// User canceled a download. In case there were multiple files selected we should cancel the remainder of the prompts #86100
+				canceled = true;
 			}
 		}
 	});
