@@ -1,4 +1,24 @@
 steps:
+  - powershell: |
+      mkdir .build -ea 0
+      "$env:BUILD_SOURCEVERSION" | Out-File -Encoding ascii -NoNewLine .build\commit
+      "$env:VSCODE_QUALITY" | Out-File -Encoding ascii -NoNewLine .build\quality
+    displayName: Prepare cache flag
+
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+    inputs:
+      keyfile: 'build/.cachesalt, .build/commit, .build/quality'
+      targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
+      vstsFeed: 'BuildCache'
+      platformIndependent: true
+      alias: 'Compilation'
+
+  - powershell: |
+      $ErrorActionPreference = "Stop"
+      exit 1
+    displayName: Check RestoreCache
+    condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+
   - task: NodeTool@0
     inputs:
       versionSpec: "10.15.1"
@@ -7,14 +27,10 @@ steps:
     inputs:
       versionSpec: "1.x"
 
-  - powershell: |
-      git clean -fxd
-    displayName: Clean repo
-
-  # - task: UsePythonVersion@0
-  #   inputs:
-  #     versionSpec: '2.x'
-  #     addToPath: true
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '2.x'
+      addToPath: true
 
   - task: AzureKeyVault@1
     displayName: 'Azure Key Vault: Get Secrets'
@@ -38,11 +54,11 @@ steps:
       git merge $(node -p "require('./package.json').distro")
     displayName: Merge distro
 
-  # - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
-  #   inputs:
-  #     keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
-  #     targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
-  #     vstsFeed: 'BuildCache'
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+    inputs:
+      keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+      targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
+      vstsFeed: 'BuildCache'
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
@@ -50,21 +66,21 @@ steps:
       $env:CHILD_CONCURRENCY="1"
       exec { yarn --frozen-lockfile }
     displayName: Install dependencies
-    # condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+    condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
-  # - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
-  #   inputs:
-  #     keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
-  #     targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
-  #     vstsFeed: 'BuildCache'
-  #   condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
+    inputs:
+      keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+      targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
+      vstsFeed: 'BuildCache'
+    condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
-  # - powershell: |
-  #     . build/azure-pipelines/win32/exec.ps1
-  #     $ErrorActionPreference = "Stop"
-  #     exec { yarn postinstall }
-  #   displayName: Run postinstall scripts
-  #   condition: and(succeeded(), eq(variables['CacheRestored'], 'true'))
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { yarn postinstall }
+    displayName: Run postinstall scripts
+    condition: and(succeeded(), eq(variables['CacheRestored'], 'true'))
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
@@ -81,8 +97,13 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { yarn gulp "vscode-win32-x64-min" }
+      exec { yarn gulp "package-rebuild-extensions" }
+      exec { yarn gulp "vscode-win32-x64-min-ci" }
+      exec { yarn gulp "vscode-reh-win32-x64-min-ci" }
+      exec { yarn gulp "vscode-reh-web-win32-x64-min-ci" }
     displayName: Build
+    env:
+      VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
 
   - task: ArchiveFiles@2 # WHY
     displayName: 'Archive build scripts source'
@@ -104,69 +125,6 @@ steps:
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
     displayName: Run unstable tests
-
-  - task: AzureKeyVault@1
-    displayName: 'Azure Key Vault: SqlToolsSecretStore'
-    inputs:
-      azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
-      KeyVaultName: SqlToolsSecretStore
-      SecretsFilter: 'ads-integration-test-azure-server,ads-integration-test-azure-server-password,ads-integration-test-azure-server-username,ads-integration-test-bdc-server,ads-integration-test-bdc-server-password,ads-integration-test-bdc-server-username,ads-integration-test-standalone-server,ads-integration-test-standalone-server-password,ads-integration-test-standalone-server-username'
-
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { .\scripts\sql-test-integration.bat }
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-    displayName: Run stable tests
-    env:
-      BDC_BACKEND_USERNAME: $(ads-integration-test-bdc-server-username)
-      BDC_BACKEND_PWD: $(ads-integration-test-bdc-server-password)
-      BDC_BACKEND_HOSTNAME: $(ads-integration-test-bdc-server)
-      STANDALONE_SQL_USERNAME: $(ads-integration-test-standalone-server-username)
-      STANDALONE_SQL_PWD: $(ads-integration-test-standalone-server-password)
-      STANDALONE_SQL: $(ads-integration-test-standalone-server)
-      AZURE_SQL_USERNAME: $(ads-integration-test-azure-server-username)
-      AZURE_SQL_PWD: $(ads-integration-test-azure-server-password)
-      AZURE_SQL: $(ads-integration-test-azure-server)
-
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { .\scripts\sql-test-integration.bat }
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-    displayName: Run release tests
-    env:
-      ADS_TEST_GREP: (.*@REL@|integration test setup)
-      ADS_TEST_INVERT_GREP: 0
-      BDC_BACKEND_USERNAME: $(ads-integration-test-bdc-server-username)
-      BDC_BACKEND_PWD: $(ads-integration-test-bdc-server-password)
-      BDC_BACKEND_HOSTNAME: $(ads-integration-test-bdc-server)
-      STANDALONE_SQL_USERNAME: $(ads-integration-test-standalone-server-username)
-      STANDALONE_SQL_PWD: $(ads-integration-test-standalone-server-password)
-      STANDALONE_SQL: $(ads-integration-test-standalone-server)
-      AZURE_SQL_USERNAME: $(ads-integration-test-azure-server-username)
-      AZURE_SQL_PWD: $(ads-integration-test-azure-server-password)
-      AZURE_SQL: $(ads-integration-test-azure-server)
-
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { .\scripts\sql-test-integration-unstable.bat }
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
-    displayName: Run unstable integration tests
-    env:
-      BDC_BACKEND_USERNAME: $(ads-integration-test-bdc-server-username)
-      BDC_BACKEND_PWD: $(ads-integration-test-bdc-server-password)
-      BDC_BACKEND_HOSTNAME: $(ads-integration-test-bdc-server)
-      STANDALONE_SQL_USERNAME: $(ads-integration-test-standalone-server-username)
-      STANDALONE_SQL_PWD: $(ads-integration-test-standalone-server-password)
-      STANDALONE_SQL: $(ads-integration-test-standalone-server)
-      AZURE_SQL_USERNAME: $(ads-integration-test-azure-server-username)
-      AZURE_SQL_PWD: $(ads-integration-test-azure-server-password)
-      AZURE_SQL: $(ads-integration-test-azure-server)
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'Sign out code'
@@ -249,11 +207,15 @@ steps:
       SourceFolder: '$(Build.SourcesDirectory)/.build/win32-x64/system-setup/'
       TargetFolder: '$(Build.ArtifactStagingDirectory)/' # our release scripts except system exe to be in root and user setup to be under /user-setup
 
-  - task: CopyFiles@2
-    displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/vsix'
-    inputs:
-      SourceFolder: '$(Build.SourcesDirectory)/../vsix'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/vsix'
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      $Repo = "$(pwd)"
+      $Root = "$Repo\.."
+      $LegacyServer = "$Root\azuredatastudio-reh-win32-x64"
+      $ServerZip = "$(Build.ArtifactStagingDirectory)\azuredatastudio-server-win32-x64.zip"
+      exec { .\node_modules\7zip\7zip-lite\7z.exe a -tzip $ServerZip $LegacyServer -r }
+    displayName: 'Package server'
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'Sign installers'
