@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import { isTestSetupCompleted } from './testContext';
 import * as assert from 'assert';
 import { getConfigValue, EnvironmentVariable_BDC_SERVER, EnvironmentVariable_BDC_USERNAME, EnvironmentVariable_BDC_PASSWORD, EnvironmentVariable_AZURE_PASSWORD, EnvironmentVariable_AZURE_SERVER, EnvironmentVariable_AZURE_USERNAME, EnvironmentVariable_STANDALONE_PASSWORD, EnvironmentVariable_STANDALONE_SERVER, EnvironmentVariable_STANDALONE_USERNAME, EnvironmentVariable_PYTHON_PATH } from './testConfig';
+import { setupTestEnvironment, ensureAllExtensionsAreLoaded } from './main';
 
 assert(getConfigValue(EnvironmentVariable_BDC_SERVER) !== undefined &&
 	getConfigValue(EnvironmentVariable_BDC_USERNAME) !== undefined &&
@@ -25,9 +26,9 @@ if (!isTestSetupCompleted()) {
 		test('test setup', async function () {
 			this.timeout(5 * 60 * 1000);
 			// Prepare the environment and make it ready for testing
-			await vscode.commands.executeCommand('test.setupIntegrationTest');
+			await setupTestEnvironment();
 			// Wait for the extensions to load
-			await vscode.commands.executeCommand('test.waitForExtensionsToLoad');
+			await ensureAllExtensionsAreLoaded();
 			// Reload the window, this is required for some changes made by the 'test.setupIntegrationTest' to work
 			await vscode.commands.executeCommand('workbench.action.reloadWindow');
 		});
