@@ -95,6 +95,8 @@ steps:
       yarn gulp vscode-reh-linux-x64-min-ci
       yarn gulp vscode-reh-web-linux-x64-min-ci
     displayName: Build
+    env:
+      VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
 
   - script: |
       set -e

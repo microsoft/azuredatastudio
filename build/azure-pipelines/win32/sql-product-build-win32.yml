@@ -102,6 +102,8 @@ steps:
       exec { yarn gulp "vscode-reh-win32-x64-min-ci" }
       exec { yarn gulp "vscode-reh-web-win32-x64-min-ci" }
     displayName: Build
+    env:
+      VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
 
   - task: ArchiveFiles@2 # WHY
     displayName: 'Archive build scripts source'

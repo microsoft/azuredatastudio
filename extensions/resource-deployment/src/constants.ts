@@ -4,5 +4,4 @@
  *--------------------------------------------------------------------------------------------*/
 
 export const DeploymentConfigurationKey: string = 'deployment';
-export const AzdataPipInstallUriKey: string = 'azdataPipInstallUri';
-export const azdataPipInstallArgsKey: string = 'azdataPipInstallArgs';
+export const AzdataInstallLocationKey: string = 'azdataInstallLocation';
