@@ -1276,7 +1276,7 @@ export class ReloadAction extends ExtensionAction {
 						if (this.extension.version !== runningExtension.version) {
 							this.enabled = true;
 							this.label = localize('reloadRequired', "Reload Required");
-							this.tooltip = localize('postUpdateTooltip', "Please reload Visual Studio Code to enable the updated extension.");
+							this.tooltip = localize('postUpdateTooltip', "Please reload Azure Data Studio to enable the updated extension."); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 						}
 					} else {
 						const runningExtensionServer = this.extensionManagementServerService.getExtensionManagementServer(runningExtension.extensionLocation);
