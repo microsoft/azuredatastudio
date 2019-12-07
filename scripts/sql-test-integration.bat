@@ -22,8 +22,10 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 		for /f %%f IN ('dir /b /s "%AGENT_TEMPDIRECTORY%\vsix\*"') DO (
 			echo "installing extension %%f"
 			:: use the source cli, we could potentially change this if we ever care about testing this, but this is easier atm
-			call .\scripts\code-cli.bat --install-extension "%%f" --force --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR%
+			call %INTEGRATION_TEST_CLI_PATH% --install-extension "%%f" --force --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR%
 		)
+	) else (
+		echo "Not installing external extensions"
 	)
 
 	echo "Running integration tests with '%INTEGRATION_TEST_ELECTRON_PATH%' as build."
