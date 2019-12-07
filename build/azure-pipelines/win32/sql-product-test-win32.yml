@@ -33,11 +33,11 @@ steps:
     exec { .\node_modules\7zip\7zip-lite\7z.exe x .build\win32-x64\archive\azuredatastudio-win32-x64.zip -o$(Agent.TempDirectory)\azuredatastudio-win32-x64 }
   displayName: Unzip artifact
 
-- powershell: |
-    . build/azure-pipelines/win32/exec.ps1
-    $ErrorActionPreference = "Stop"
-    exec { Copy-Item -Path ".build\extensions\*" -Destination "$(Build.SourcesDirectory)\extensions\integration-tests\extensionInstallers" -Recursive }
-  displayName: Copy Extension Installers
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)\.build\extensions\*'
+    Contents: '**'
+    TargetFolder: '$(Build.SourcesDirectory)\extensions\integration-tests\extensionInstallers'
 
 - task: AzureKeyVault@1
   displayName: 'Azure Key Vault: SqlToolsSecretStore'
