@@ -231,6 +231,19 @@ steps:
       MaxRetryAttempts: 20
     condition: and(succeeded(), eq(variables['signed'], true))
 
+  - task: ArchiveFiles@2
+    displayName: 'Archive build scripts source'
+    inputs:
+      rootFolderOrFile: '$(Build.SourcesDirectory)/build'
+      archiveType: tar
+      archiveFile: '$(Build.BinariesDirectory)/source.tar.gz'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: build scripts source'
+    inputs:
+      PathtoPublish: '$(Build.BinariesDirectory)/source.tar.gz'
+      ArtifactName: source
+
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
