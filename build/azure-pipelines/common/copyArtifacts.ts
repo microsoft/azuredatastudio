@@ -16,7 +16,8 @@ const files = [
 	'.build/linux/server/*', // linux server
 	'.build/linux/archive/*', // linux archive
 	'.build/docker/**', // docker images
-	'.build/darwin/**' // darwin binaries
+	'.build/darwin/**', // darwin binaries
+	'.build/version.json' // version information
 ];
 
 async function main() {
