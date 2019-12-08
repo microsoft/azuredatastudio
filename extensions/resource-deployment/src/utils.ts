@@ -32,12 +32,10 @@ export function setEnvironmentVariablesForInstallPaths(tools: ITool[]): void {
 			const envVarName = getRuntimeBinaryPathEnvironmentVariableName(t.name);
 			process.env[envVarName] = t.installationPath;
 			installationPaths.add(path.dirname(t.installationPath));
-			console.log(`setting env var:'${envVarName}' to: '${t.installationPath}'`);
 		}
 	});
 	if (installationPaths.size > 0) {
 		const envVarToolsInstallationPath: string = [...installationPaths.values()].join(path.delimiter);
 		process.env[ToolsInstallPath] = envVarToolsInstallationPath;
-		console.log(`setting env var:'${ToolsInstallPath}' to: '${envVarToolsInstallationPath}'`);
 	}
 }

@@ -24,7 +24,7 @@
 		"semver-umd": "^5.5.3",
     "slickgrid": "github:anthonydresser/SlickGrid#2.3.32",
 		"vscode-textmate": "4.4.0",
-		"xterm": "4.3.0-beta.28",
+		"xterm": "4.3.0-beta.28.vscode.1",
 		"xterm-addon-search": "0.4.0-beta4",
 		"xterm-addon-web-links": "0.2.1",
 		"xterm-addon-webgl": "0.4.0-beta.11",

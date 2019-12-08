@@ -123,7 +123,7 @@ configurationRegistry.registerConfiguration({
 		},
 		'sql.defaultEngine': {
 			'type': 'string',
-			'description': localize('sql.defaultEngineDescription', "Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection. Valid option is currently MSSQL"),
+			'description': localize('sql.defaultEngineDescription', "Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection."),
 			'default': 'MSSQL'
 		},
 		'connection.parseClipboardForConnectionString': {

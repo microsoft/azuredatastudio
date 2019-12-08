@@ -31,7 +31,7 @@ export enum DeclarativeDataType {
 	<table role=grid #container *ngIf="columns" class="declarative-table" [style.height]="getHeight()" [attr.aria-label]="ariaLabel">
 	<thead>
 		<ng-container *ngFor="let column of columns;">
-		<th class="declarative-table-header" tabindex="-1" aria-sort="none" [attr.aria-label]="column.ariaLabel" [ngStyle]="column.headerCssStyles">{{column.displayName}}</th>
+		<th class="declarative-table-header" tabindex="-1" aria-sort="none" [style.width]="getColumnWidth(column)" [attr.aria-label]="column.ariaLabel" [ngStyle]="column.headerCssStyles">{{column.displayName}}</th>
 		</ng-container>
 	</thead>
 		<ng-container *ngIf="data">
@@ -159,8 +159,8 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 		return this.columns[colIdx].valueType === DeclarativeDataType.component;
 	}
 
-	public getColumnWidth(colIdx: number): string {
-		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
+	public getColumnWidth(col: number | azdata.DeclarativeTableColumn): string {
+		let column = typeof col === 'number' ? this.columns[col] : col;
 		return this.convertSize(column.width, '30px');
 	}
 
