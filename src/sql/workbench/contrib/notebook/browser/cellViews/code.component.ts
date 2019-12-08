@@ -38,6 +38,7 @@ import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledText
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
+const DEFAULT_OR_LOCAL_CONTEXT_ID = '-1';
 
 @Component({
 	selector: CODE_SELECTOR,
@@ -146,8 +147,8 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			let connectionService = this.connectionService;
 			if (!shouldConnect && connectionService && connectionService.isConnected(cellUri)) {
 				connectionService.disconnect(cellUri).catch(e => this.logService.error(e));
-			} else if (shouldConnect && this._model.activeConnection && this._model.activeConnection.id !== '-1') {
-				connectionService.connect(this._model.activeConnection, cellUri).catch(e => this.logService.error(e));
+			} else if (shouldConnect && this._model.context && this._model.context.id !== DEFAULT_OR_LOCAL_CONTEXT_ID) {
+				connectionService.connect(this._model.context, cellUri).catch(e => this.logService.error(e));
 			}
 		}
 	}
