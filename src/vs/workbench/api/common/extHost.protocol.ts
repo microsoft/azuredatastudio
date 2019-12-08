@@ -560,6 +560,10 @@ export interface WebviewExtensionDescription {
 	readonly location: UriComponents;
 }
 
+export enum WebviewEditorCapabilities {
+	Editable,
+}
+
 export interface MainThreadWebviewsShape extends IDisposable {
 	$createWebviewPanel(extension: WebviewExtensionDescription, handle: WebviewPanelHandle, viewType: string, title: string, showOptions: WebviewPanelShowOptions, options: modes.IWebviewPanelOptions & modes.IWebviewOptions): void;
 	$disposeWebview(handle: WebviewPanelHandle): void;
@@ -577,6 +581,7 @@ export interface MainThreadWebviewsShape extends IDisposable {
 
 	$registerEditorProvider(extension: WebviewExtensionDescription, viewType: string, options: modes.IWebviewPanelOptions): void;
 	$unregisterEditorProvider(viewType: string): void;
+	$registerCapabilities(handle: WebviewPanelHandle, capabilities: readonly WebviewEditorCapabilities[]): void;
 
 	$onEdit(handle: WebviewPanelHandle, editJson: any): void;
 }
@@ -1287,6 +1292,7 @@ export interface IDataBreakpointDto extends IBreakpointDto {
 	dataId: string;
 	canPersist: boolean;
 	label: string;
+	accessTypes?: DebugProtocol.DataBreakpointAccessType[];
 }
 
 export interface ISourceBreakpointDto extends IBreakpointDto {
