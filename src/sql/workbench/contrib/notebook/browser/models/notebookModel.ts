@@ -681,7 +681,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 			if (newConnection) {
 				this._activeConnection = newConnection;
-				this.refreshConnections(newConnection);
+				this.setActiveConnectionIfDifferent(newConnection);
 				this._activeClientSession.updateConnection(newConnection.toIConnectionProfile()).then(
 					result => {
 						//Remove 'Select connection' from 'Attach to' drop-down since its a valid connection
@@ -705,11 +705,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	private refreshConnections(newConnection: ConnectionProfile) {
+	private setActiveConnectionIfDifferent(newConnection: ConnectionProfile) {
 		if (this.isValidConnection(newConnection) &&
 			this._activeConnection.id !== '-1' &&
 			this._activeConnection.id !== newConnection.id) {
-			// Change the defaultConnection to newConnection
+			// Change the active connection to newConnection
 			this._activeConnection = newConnection;
 		}
 	}

@@ -40,26 +40,26 @@ suite('Notebook Contexts', function (): void {
 
 		// No profile info provided
 		let conns = NotebookContexts.getContextForKernel(undefined, [mssqlProviderName]);
-		assert.deepStrictEqual(conns, defaultContext);
+		assert.deepStrictEqual(conns, defaultContext, 'Contexts not the same when no profile info passed in');
 
 		// Profile, but no provider IDs
 		let testConn = createTestConnProfile();
 		conns = NotebookContexts.getContextForKernel(testConn, []);
-		assert.deepStrictEqual(conns, localContext);
+		assert.deepStrictEqual(conns, localContext, 'Contexts not the same when no provider ids passed in');
 
 		// Normal use case
 		connService.setup(c => c.getActiveConnections()).returns(() => [testConn]);
 		conns = NotebookContexts.getContextForKernel(testConn, [mssqlProviderName]);
-		assert.deepStrictEqual(conns, testConn);
+		assert.deepStrictEqual(conns, testConn, 'Contexts not the same when testing mssql provider connections');
 
 		// Multiple provider IDs including mssql
 		connService.setup(c => c.getActiveConnections()).returns(() => [testConn]);
 		conns = NotebookContexts.getContextForKernel(testConn, [mssqlProviderName, 'fakeProvider']);
-		assert.deepStrictEqual(conns, testConn);
+		assert.deepStrictEqual(conns, testConn, 'Contexts not the same when multiple providers passed in');
 
 		// Connection provider IDs do not match
 		connService.setup(c => c.getActiveConnections()).returns(() => [testConn]);
 		conns = NotebookContexts.getContextForKernel(testConn, ['fakeProvider']);
-		assert.deepStrictEqual(conns, defaultContext);
+		assert.deepStrictEqual(conns, defaultContext, 'Contexts not the same when provider ids do not match');
 	});
 });

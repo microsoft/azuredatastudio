@@ -374,6 +374,9 @@ export class AttachToDropdown extends SelectBox {
 			modelReady
 				.then(model => {
 					this.updateModel(model);
+					this._register(model.onValidConnectionSelected(validConnection => {
+						this.handleContextsChanged(!validConnection);
+					}));
 				})
 				.catch(err => {
 					// No-op for now
