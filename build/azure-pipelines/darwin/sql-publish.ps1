@@ -1,5 +1,12 @@
-#!/usr/bin/env bash
-set -e
+Param(
+	[string]$sourcesDir,
+	[string]$artifactsDir,
+	[string]$storageKey,
+	[string]$documentDbKey
+)
+
+$env:AZURE_STORAGE_ACCESS_KEY_2 = $storageKey
+$env:AZURE_DOCUMENTDB_MASTERKEY = $documentDbKey
 
 $VersionJson = Get-Content -Raw -Path "$artifactsDir\version.json" | ConvertFrom-Json
 $Version = $VersionJson.version
