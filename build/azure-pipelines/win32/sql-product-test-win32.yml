@@ -2,7 +2,7 @@ steps:
 - task: DownloadPipelineArtifact@2
   inputs:
     buildType: 'current'
-    targetPath: '$(Build.SourcesDirectory)/.build'
+    targetPath: '$(Build.SourcesDirectory)\.build'
     artifactName: drop
 
 - task: NodeTool@0
