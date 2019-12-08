@@ -1,10 +1,4 @@
 steps:
-- task: DownloadPipelineArtifact@2
-  inputs:
-    buildType: 'current'
-    targetPath: '$(Build.SourcesDirectory)\.build'
-    artifactName: drop
-
 - task: NodeTool@0
   inputs:
     versionSpec: "10.15.1"
@@ -19,6 +13,12 @@ steps:
     $env:CHILD_CONCURRENCY="1"
     exec { git clean -fxd }
   displayName: Clean repo
+
+- task: DownloadPipelineArtifact@2
+  inputs:
+    buildType: 'current'
+    targetPath: '$(Build.SourcesDirectory)\.build'
+    artifactName: drop
 
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
