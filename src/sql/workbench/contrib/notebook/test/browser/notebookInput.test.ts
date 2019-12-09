@@ -12,6 +12,7 @@ import { URI } from 'vs/base/common/uri';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/common/models/untitledNotebookInput';
 import { FileNotebookInput } from 'sql/workbench/contrib/notebook/common/models/fileNotebookInput';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
 
 suite('Notebook Input', function (): void {
 	const instantiationService = workbenchInstantiationService();
@@ -33,19 +34,24 @@ suite('Notebook Input', function (): void {
 	});
 
 	test('Getters and Setters', async function (): Promise<void> {
-		let uri = URI.from({ scheme: Schemas.untitled, path: 'TestPath' });
-		let input = instantiationService.createInstance(UntitledNotebookInput, 'TestInput', uri, undefined);
+		let testUri = URI.from({ scheme: Schemas.untitled, path: 'TestPath' });
+		let input = instantiationService.createInstance(UntitledNotebookInput, 'TestInput', testUri, undefined);
 
+		// Text Input
 		assert.strictEqual(input.textInput, undefined);
 
-		assert.deepStrictEqual(input.notebookUri, uri);
+		// Notebook URI
+		assert.deepStrictEqual(input.notebookUri, testUri);
 
+		// Content Manager
 		assert.ok(input.contentManager !== undefined);
 
+		// Connection Profile
 		let testProfile = <IConnectionProfile>{};
 		input.connectionProfile = testProfile;
 		assert.strictEqual(input.connectionProfile, testProfile);
 
+		// Default Kernel
 		let testKernel: nb.IKernelSpec = {
 			name: 'TestName',
 			language: 'TestLanguage',
@@ -53,5 +59,18 @@ suite('Notebook Input', function (): void {
 		};
 		input.defaultKernel = testKernel;
 		assert.strictEqual(input.defaultKernel, testKernel);
+
+		// Untitled Editor Model
+		let testModel = <UntitledTextEditorModel>{};
+		input.untitledEditorModel = testModel;
+		assert.strictEqual(input.untitledEditorModel, testModel);
+
+		// getResource
+		assert.strictEqual(input.getResource(), testUri);
+
+		// Container
+		let testContainer = <HTMLElement>{};
+		input.container = testContainer;
+		assert.strictEqual(input.container, testContainer);
 	});
 });
