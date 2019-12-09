@@ -324,7 +324,7 @@ export class AttachToDropdown extends SelectBox {
 	}
 
 	// Load "Attach To" dropdown with the values corresponding to Kernel dropdown
-	public async loadAttachToDropdown(model: INotebookModel, currentKernel: string, showSelectConnection?: boolean): Promise<void> {
+	public loadAttachToDropdown(model: INotebookModel, currentKernel: string, showSelectConnection?: boolean): void {
 		let connProviderIds = this.model.getApplicableConnectionProviderIds(currentKernel);
 		if ((connProviderIds && connProviderIds.length === 0) || currentKernel === noKernel) {
 			this.setOptions([msgLocalHost]);
