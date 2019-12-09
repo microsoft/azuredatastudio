@@ -90,28 +90,31 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._agreementContainer = view.modelBuilder.divContainer().component();
 			const toolColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolNameColumnHeader', "Tool"),
-				width: 70
+				width: 55
 			};
 			const descriptionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolDescriptionColumnHeader', "Description"),
-				width: 650
+				width: 270
 			};
 			const installStatusColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolStatusColumnHeader', "Status"),
 				width: 70
 			};
 			const versionColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolVersionColumnHeader', "Installed Version"),
-				width: 90
+				value: localize('deploymentDialog.toolVersionColumnHeader', "Version"),
+				width: 60
 			};
 			const minVersionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolMinimumVersionColumnHeader', "Required Version"),
 				width: 90
 			};
-
+			const installedPathColumn: azdata.TableColumn = {
+				value: localize('deploymentDialog.toolDiscoveredPathColumnHeader', "Discovered Path"),
+				width: 570
+			};
 			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 				data: [],
-				columns: [toolColumn, descriptionColumn, installStatusColumn, versionColumn, minVersionColumn],
+				columns: [toolColumn, descriptionColumn, installStatusColumn, versionColumn, minVersionColumn, installedPathColumn],
 				width: tableWidth,
 				ariaLabel: localize('deploymentDialog.RequiredToolsTitle', "Required tools")
 			}).component();
@@ -229,15 +232,12 @@ export class ResourceTypePickerDialog extends DialogBase {
 					}));
 					if (tool.isNotInstalled && !tool.autoInstallSupported) {
 						messages.push(localize('deploymentDialog.ToolInformation', "'{0}' was not discovered and automated installation is not supported. Kindly install it manually or if installed make sure it is started and discoverable. Once done please restart Azure Data Studio. See [{1}] .", tool.displayName, tool.homePage));
-						if (tool.statusDescription !== undefined) {
-							console.warn(localize('deploymentDialog.DetailToolStatusDescription', "Additional status information for tool: '{0}' [ {1} ]. {2}", tool.name, tool.homePage, tool.statusDescription));
-						}
 					} else if (tool.isInstalled && toolRequirement.version && !tool.isSameOrNewerThan(toolRequirement.version)) {
 						minVersionCheckFailed = true;
 						messages.push(localize('deploymentDialog.ToolDoesNotMeetVersionRequirement', "'{0}' [ {1} ] does not meet the minimum version requirement, please uninstall it and restart Azure Data Studio.", tool.displayName, tool.homePage));
 					}
 					installationNeeded = installationNeeded || tool.autoInstallNeeded;
-					return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || '', toolRequirement.version || ''];
+					return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || '', toolRequirement.version || '', tool.installationPath || ''];
 				});
 
 				this._installToolButton.hidden = minVersionCheckFailed || !installationNeeded;
@@ -322,7 +322,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	protected updateToolsDisplayTableData(tool: ITool) {
 		this._toolsTable.data = this._toolsTable.data.map(rowData => {
 			if (rowData[0] === tool.displayName) {
-				return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || '', rowData[4]];
+				return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || '', rowData[4]/* required version*/, tool.installationPath || ''];
 			} else {
 				return rowData;
 			}
