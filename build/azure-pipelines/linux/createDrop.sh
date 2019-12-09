@@ -30,17 +30,21 @@ rm -rf $ROOT/azuredatastudio-server-*.tar.*
 (cd $ROOT && mv $LEGACY_SERVER_BUILD_NAME $SERVER_BUILD_NAME && tar --owner=0 --group=0 -czf $SERVER_TARBALL_PATH $SERVER_BUILD_NAME)
 
 # Publish Remote Extension Host (Web)
-LEGACY_SERVER_BUILD_NAME="azuredatastudio-reh-web-$PLATFORM_LINUX"
-SERVER_BUILD_NAME="azuredatastudio-server-$PLATFORM_LINUX-web"
-SERVER_TARBALL_FILENAME="azuredatastudio-server-$PLATFORM_LINUX-web.tar.gz"
-SERVER_TARBALL_PATH="$ROOT/.build/linux/server/$SERVER_TARBALL_FILENAME"
+LEGACY_SERVER_BUILD_NAME_WEB="azuredatastudio-reh-web-$PLATFORM_LINUX"
+SERVER_BUILD_NAME_WEB="azuredatastudio-server-$PLATFORM_LINUX-web"
+SERVER_TARBALL_FILENAME_WEB="azuredatastudio-server-$PLATFORM_LINUX-web.tar.gz"
+SERVER_TARBALL_PATH_WEB="$ROOT/.build/linux/server/$SERVER_TARBALL_FILENAME_WEB"
 
 rm -rf $ROOT/azuredatastudio-server-*.tar.*
-(cd $ROOT && mv $LEGACY_SERVER_BUILD_NAME $SERVER_BUILD_NAME && tar --owner=0 --group=0 -czf $SERVER_TARBALL_PATH $SERVER_BUILD_NAME)
+(cd $ROOT && mv $LEGACY_SERVER_BUILD_NAME_WEB $SERVER_BUILD_NAME_WEB && tar --owner=0 --group=0 -czf $SERVER_TARBALL_PATH_WEB $SERVER_BUILD_NAME_WEB)
 
 # create docker
 mkdir -p $REPO/.build/docker
 docker build -t azuredatastudio-server -f $REPO/build/azure-pipelines/docker/Dockerfile $ROOT/$SERVER_BUILD_NAME
 docker save azuredatastudio-server | gzip > $REPO/.build/docker/azuredatastudio-server-docker.tar.gz
+
+# create docker web
+docker build -t azuredatastudio-server-web -f $REPO/build/azure-pipelines/docker/Dockerfile $ROOT/$SERVER_BUILD_NAME_WEB
+docker save azuredatastudio-server-web | gzip > $REPO/.build/docker/azuredatastudio-server-docker-web.tar.gz
 
 node build/azure-pipelines/common/copyArtifacts.js
