@@ -17,8 +17,6 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { noKernel } from 'sql/workbench/services/notebook/browser/sessionManager';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { ILogService } from 'vs/platform/log/common/log';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { getErrorMessage } from 'vs/base/common/errors';
@@ -36,7 +34,6 @@ const msgLoadingContexts = localize('loadingContexts', "Loading contexts...");
 const msgChangeConnection = localize('changeConnection', "Change Connection");
 const msgSelectConnection = localize('selectConnection', "Select Connection");
 const msgLocalHost = localize('localhost', "localhost");
-const HIDE_ICON_CLASS = ' hideIcon';
 
 // Action to add a cell to notebook based on cell type(code/markdown).
 export class AddCellAction extends Action {
@@ -58,7 +55,6 @@ export class AddCellAction extends Action {
 		});
 	}
 }
-
 
 // Action to clear outputs of all code cells.
 export class ClearAllOutputsAction extends Action {
@@ -102,99 +98,6 @@ export abstract class ToggleableAction extends Action {
 
 	protected toggle(isOn: boolean): void {
 		this.state.isOn = isOn;
-		this.updateLabelAndIcon();
-	}
-}
-
-
-export interface IActionStateData {
-	className?: string;
-	label?: string;
-	tooltip?: string;
-	hideIcon?: boolean;
-	commandId?: string;
-}
-
-export class IMultiStateData<T> {
-	private _stateMap = new Map<T, IActionStateData>();
-	constructor(mappings: { key: T, value: IActionStateData }[], private _state: T, private _baseClass?: string) {
-		if (mappings) {
-			mappings.forEach(s => this._stateMap.set(s.key, s.value));
-		}
-	}
-
-	public set state(value: T) {
-		if (!this._stateMap.has(value)) {
-			throw new Error('State value must be in stateMap');
-		}
-		this._state = value;
-	}
-
-	public updateStateData(state: T, updater: (data: IActionStateData) => void): void {
-		let data = this._stateMap.get(state);
-		if (data) {
-			updater(data);
-		}
-	}
-
-	public get classes(): string {
-		let classVal = this.getStateValueOrDefault<string>((data) => data.className, '');
-		let classes = this._baseClass ? `${this._baseClass} ` : '';
-		classes += classVal;
-		if (this.getStateValueOrDefault<boolean>((data) => data.hideIcon, false)) {
-			classes += HIDE_ICON_CLASS;
-		}
-		return classes;
-	}
-
-	public get label(): string {
-		return this.getStateValueOrDefault<string>((data) => data.label, '');
-	}
-
-	public get tooltip(): string {
-		return this.getStateValueOrDefault<string>((data) => data.tooltip, '');
-	}
-
-	public get commandId(): string {
-		return this.getStateValueOrDefault<string>((data) => data.commandId, '');
-	}
-
-	private getStateValueOrDefault<U>(getter: (data: IActionStateData) => U, defaultVal?: U): U {
-		let data = this._stateMap.get(this._state);
-		return data ? getter(data) : defaultVal;
-	}
-}
-
-
-export abstract class MultiStateAction<T> extends Action {
-
-	constructor(
-		id: string,
-		protected states: IMultiStateData<T>,
-		private _keybindingService: IKeybindingService,
-		private readonly logService: ILogService) {
-		super(id, '');
-		this.updateLabelAndIcon();
-	}
-
-	private updateLabelAndIcon() {
-		let keyboardShortcut: string;
-		try {
-			// If a keyboard shortcut exists for the command id passed in, append that to the label
-			if (this.states.commandId !== '') {
-				let binding = this._keybindingService.lookupKeybinding(this.states.commandId);
-				keyboardShortcut = binding ? binding.getLabel() : undefined;
-			}
-		} catch (error) {
-			this.logService.error(error);
-		}
-		this.label = this.states.label;
-		this.tooltip = keyboardShortcut ? this.states.tooltip + ` (${keyboardShortcut})` : this.states.tooltip;
-		this.class = this.states.classes;
-	}
-
-	protected updateState(state: T): void {
-		this.states.state = state;
 		this.updateLabelAndIcon();
 	}
 }
