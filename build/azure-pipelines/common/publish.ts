@@ -13,9 +13,8 @@ import * as mime from 'mime';
 import * as minimist from 'minimist';
 import { DocumentClient, NewDocument } from 'documentdb';
 
-// {{SQL CARBON EDIT}}
-if (process.argv.length < 9) {
-	console.error('Usage: node publish.js <product_quality> <platform> <file_type> <file_name> <version> <is_update> <file> [commit_id]');
+if (process.argv.length < 8) {
+	console.error('Usage: node publish.js <product_quality> <platform> <file_type> <file_name> <version> <is_update> <file>');
 	process.exit(-1);
 }
 
@@ -217,7 +216,7 @@ async function publish(commit: string, quality: string, platform: string, type: 
 
 	// {{SQL CARBON EDIT}}
 	// Insiders: nightly build from master
-	const isReleased = (quality === 'insider' && /^master$|^refs\/heads\/master$/.test(sourceBranch) && /Project Collection Service Accounts|Microsoft.VisualStudio.Services.TFS/.test(queuedBy));
+	const isReleased = (quality === 'insider' && /^master$|^refs\/heads\/master$/.test(sourceBranch));
 
 	const release = {
 		id: commit,
