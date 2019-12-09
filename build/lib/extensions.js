@@ -206,6 +206,11 @@ const externalExtensions = [
     'liveshare',
     'database-project'
 ];
+// extensions that require a rebuild since they have native parts
+const rebuildExtensions = [
+    'big-data-cluster',
+    'mssql'
+];
 const builtInExtensions = process.env['VSCODE_QUALITY'] === 'stable' ? require('../builtInExtensions.json') : require('../builtInExtensions-insiders.json');
 // {{SQL CARBON EDIT}} - End
 function packageLocalExtensionsStream() {
@@ -252,3 +257,24 @@ function packageExternalExtensionsStream() {
 }
 exports.packageExternalExtensionsStream = packageExternalExtensionsStream;
 // {{SQL CARBON EDIT}} - End
+function cleanRebuildExtensions(root) {
+    return Promise.all(rebuildExtensions.map(async (e) => {
+        await util2.rimraf(path.join(root, e))();
+    })).then();
+}
+exports.cleanRebuildExtensions = cleanRebuildExtensions;
+function packageRebuildExtensionsStream() {
+    const extenalExtensionDescriptions = glob.sync('extensions/*/package.json')
+        .map(manifestPath => {
+        const extensionPath = path.dirname(path.join(root, manifestPath));
+        const extensionName = path.basename(extensionPath);
+        return { name: extensionName, path: extensionPath };
+    })
+        .filter(({ name }) => rebuildExtensions.indexOf(name) >= 0);
+    const builtExtensions = extenalExtensionDescriptions.map(extension => {
+        return fromLocal(extension.path)
+            .pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
+    });
+    return es.merge(builtExtensions);
+}
+exports.packageRebuildExtensionsStream = packageRebuildExtensionsStream;

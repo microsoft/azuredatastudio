@@ -77,7 +77,7 @@ export class QueryTextEditor extends BaseTextEditor {
 			if (!this._selected) {
 				options.renderLineHighlight = 'none';
 				options.parameterHints = { enabled: false };
-				options.matchBrackets = false;
+				options.matchBrackets = 'never';
 			}
 			if (this._hideLineNumbers) {
 				options.lineNumbers = 'off';
