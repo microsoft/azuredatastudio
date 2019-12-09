@@ -10,14 +10,12 @@ import {
 	RunQueryOnConnectionMode, IConnectionResult
 } from 'sql/platform/connection/common/connectionManagement';
 import { EditDataInput } from 'sql/workbench/contrib/editData/browser/editDataInput';
-import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
-import { QueryInput } from 'sql/workbench/contrib/query/common/queryInput';
 import { DashboardInput } from 'sql/workbench/contrib/dashboard/browser/dashboardInput';
 import { ProfilerInput } from 'sql/workbench/contrib/profiler/browser/profilerInput';
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
+import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 
 export function replaceConnection(oldUri: string, newUri: string, connectionService: IConnectionManagementService): Promise<IConnectionResult> {
 	return new Promise<IConnectionResult>((resolve, reject) => {
@@ -56,10 +54,6 @@ export function replaceConnection(oldUri: string, newUri: string, connectionServ
 	});
 }
 
-export function openInsight(query: IInsightsConfig, profile: IConnectionProfile, insightDialogService: IInsightsDialogService) {
-	insightDialogService.show(query, profile);
-}
-
 /**
  * Get the current global connection, which is the connection from the active editor, unless OE
  * is focused or there is no such editor, in which case it comes from the OE selection. Returns
@@ -87,7 +81,7 @@ export function getCurrentGlobalConnection(objectExplorerService: IObjectExplore
 
 	let activeInput = workbenchEditorService.activeEditor;
 	if (activeInput) {
-		if (activeInput instanceof QueryInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput) {
+		if (activeInput instanceof QueryEditorInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput) {
 			connection = connectionManagementService.getConnectionProfile(activeInput.uri);
 		}
 		else if (activeInput instanceof ProfilerInput) {

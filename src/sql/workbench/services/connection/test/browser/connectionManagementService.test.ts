@@ -214,35 +214,32 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	}
 
-	function connect(uri: string, options?: IConnectionCompletionOptions, fromDialog?: boolean, connection?: IConnectionProfile, error?: string, errorCode?: number, errorCallStack?: string): Promise<IConnectionResult> {
+	async function connect(uri: string, options?: IConnectionCompletionOptions, fromDialog?: boolean, connection?: IConnectionProfile, error?: string, errorCode?: number, errorCallStack?: string): Promise<IConnectionResult> {
 		let connectionToUse = connection ? connection : connectionProfile;
-		return new Promise<IConnectionResult>((resolve, reject) => {
-			let id = connectionToUse.getOptionsKey();
-			let defaultUri = 'connection:' + (id ? id : connectionToUse.serverName + ':' + connectionToUse.databaseName);
-			connectionManagementService.onConnectionRequestSent(() => {
-				let info: azdata.ConnectionInfoSummary = {
-					connectionId: error ? undefined : 'id',
-					connectionSummary: {
-						databaseName: connectionToUse.databaseName,
-						serverName: connectionToUse.serverName,
-						userName: connectionToUse.userName
-					},
-					errorMessage: error,
-					errorNumber: errorCode,
-					messages: errorCallStack,
-					ownerUri: uri ? uri : defaultUri,
-					serverInfo: undefined
-				};
-				connectionManagementService.onConnectionComplete(0, info);
-			});
-			connectionManagementService.cancelConnectionForUri(uri).then(() => {
-				if (fromDialog) {
-					resolve(connectionManagementService.connectAndSaveProfile(connectionToUse, uri, options));
-				} else {
-					resolve(connectionManagementService.connect(connectionToUse, uri, options));
-				}
-			});
+		let id = connectionToUse.getOptionsKey();
+		let defaultUri = 'connection:' + (id ? id : connectionToUse.serverName + ':' + connectionToUse.databaseName);
+		connectionManagementService.onConnectionRequestSent(() => {
+			let info: azdata.ConnectionInfoSummary = {
+				connectionId: error ? undefined : 'id',
+				connectionSummary: {
+					databaseName: connectionToUse.databaseName,
+					serverName: connectionToUse.serverName,
+					userName: connectionToUse.userName
+				},
+				errorMessage: error,
+				errorNumber: errorCode,
+				messages: errorCallStack,
+				ownerUri: uri ? uri : defaultUri,
+				serverInfo: undefined
+			};
+			connectionManagementService.onConnectionComplete(0, info);
 		});
+		await connectionManagementService.cancelConnectionForUri(uri);
+		if (fromDialog) {
+			return connectionManagementService.connectAndSaveProfile(connectionToUse, uri, options);
+		} else {
+			return connectionManagementService.connect(connectionToUse, uri, options);
+		}
 	}
 
 	test('showConnectionDialog should open the dialog with default type given no parameters', done => {
@@ -730,6 +727,21 @@ suite('SQL ConnectionManagementService tests', () => {
 		} catch (error) {
 			done(error);
 		}
+	});
+
+	test('getUniqueConnectionProvidersByNameMap should return non CMS providers', () => {
+		let nameToDisplayNameMap: { [providerDisplayName: string]: string } = { 'MSSQL': 'SQL Server', 'MSSQL-CMS': 'SQL Server' };
+		let providerNames = Object.keys(connectionManagementService.getUniqueConnectionProvidersByNameMap(nameToDisplayNameMap));
+		assert.equal(providerNames.length, 1);
+		assert.equal(providerNames[0], 'MSSQL');
+	});
+
+	test('providerNameToDisplayNameMap should return all providers', () => {
+		let expectedNames = ['MSSQL', 'PGSQL'];
+		let providerNames = Object.keys(connectionManagementService.providerNameToDisplayNameMap);
+		assert.equal(providerNames.length, 2);
+		assert.equal(providerNames[0], expectedNames[0]);
+		assert.equal(providerNames[1], expectedNames[1]);
 	});
 
 	test('ensureDefaultLanguageFlavor should not send event if uri is connected', done => {

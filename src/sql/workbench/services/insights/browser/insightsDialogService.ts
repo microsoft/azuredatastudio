@@ -31,8 +31,8 @@ export const IInsightsDialogService = createDecorator<IInsightsDialogService>('i
 
 export interface IInsightsDialogService {
 	_serviceBrand: undefined;
-	show(input: IInsightsConfig, connectionProfile: IConnectionProfile): void;
-	close();
+	show(input: IInsightsConfig, connectionProfile: IConnectionProfile): Promise<void>;
+	close(): void;
 }
 
 export interface IInsightDialogActionContext extends BaseActionContext {

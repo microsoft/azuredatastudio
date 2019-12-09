@@ -1,4 +1,24 @@
 steps:
+  - script: |
+      mkdir -p .build
+      echo -n $BUILD_SOURCEVERSION > .build/commit
+      echo -n $VSCODE_QUALITY > .build/quality
+    displayName: Prepare cache flag
+
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+    inputs:
+      keyfile: 'build/.cachesalt, .build/commit, .build/quality'
+      targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
+      vstsFeed: 'BuildCache'
+      platformIndependent: true
+      alias: 'Compilation'
+
+  - script: |
+      set -e
+      exit 1
+    displayName: Check RestoreCache
+    condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+
   - task: NodeTool@0
     inputs:
       versionSpec: '10.15.3'
@@ -7,9 +27,36 @@ steps:
     inputs:
       versionSpec: '1.x'
 
+  - task: AzureKeyVault@1
+    displayName: 'Azure Key Vault: Get Secrets'
+    inputs:
+      azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+      KeyVaultName: ado-secrets
+      SecretsFilter: 'github-distro-mixin-password'
+
+  - script: |
+      set -e
+
+      cat << EOF > ~/.netrc
+      machine github.com
+      login azuredatastudio
+      password $(github-distro-mixin-password)
+      EOF
+
+      git config user.email "andresse@microsoft.com"
+      git config user.name "AzureDataStudio"
+    displayName: Prepare tooling
+
+  - script: |
+      set -e
+      git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+      git fetch distro
+      git merge $(node -p "require('./package.json').distro")
+    displayName: Merge distro
+
   - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
     inputs:
-      keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+      keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
       targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
       vstsFeed: 'BuildCache'
 
@@ -21,7 +68,7 @@ steps:
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
     inputs:
-      keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+      keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
       targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
       vstsFeed: 'BuildCache'
     condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
@@ -34,18 +81,23 @@ steps:
 
   - script: |
       set -e
-      yarn gulp mixin
+      node build/azure-pipelines/mixin
     displayName: Mix in quality
-
-  - script: |
-      set -e
-      yarn gulp vscode-darwin-min
-    displayName: Build
 
   - script: |
       set -e
       yarn gulp install-sqltoolsservice
     displayName: Install sqltoolsservice
+
+  - script: |
+      set -e
+      yarn gulp package-rebuild-extensions
+      yarn gulp vscode-darwin-min-ci
+      yarn gulp vscode-reh-darwin-min-ci
+      yarn gulp vscode-reh-web-darwin-min-ci
+    displayName: Build
+    env:
+      VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
 
   - task: ArchiveFiles@2 # WHY ARE WE DOING THIS?
     displayName: 'Archive build scripts source'
@@ -113,10 +165,13 @@ steps:
     timeoutInMinutes: 20
     continueOnError: true
 
+  - script: |
+      pushd .. && mv azuredatastudio-reh-darwin azuredatastudio-server-darwin && zip -Xry $(Build.ArtifactStagingDirectory)/azuredatastudio-server-darwin.zip azuredatastudio-server-darwin && popd
+    displayName: 'Package server'
+
   - script: | # WHY ARE WE DOING THIS?
       set -e
-      BUILD="$(Build.SourcesDirectory)/../azuredatastudio-darwin"
-      PACKAGEJSON=`ls $BUILD/*.app/Contents/Resources/app/package.json`
+      PACKAGEJSON=`ls $(Build.SourcesDirectory)/package.json`
       VERSION=`node -p "require(\"$PACKAGEJSON\").version"`
       COMMIT_ID=`git rev-parse HEAD`
 
@@ -133,10 +188,39 @@ steps:
     displayName: 'Get SHA256 Hashes'
     continueOnError: true
 
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: drop'
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results test-results.xml'
+    inputs:
+      testResultsFiles: 'test-results.xml'
+      searchFolder: '$(Build.SourcesDirectory)'
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Integration and Smoke Test Results'
+    inputs:
+      testResultsFiles: 'dawin-integration-tests-results.xml'
+      searchFolder: '$(Build.ArtifactStagingDirectory)\test-results'
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - task: PublishCodeCoverageResults@1
+    displayName: 'Publish code coverage from $(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: '$(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
+      reportDirectory: '$(Build.SourcesDirectory)/.build/coverage'
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection'
+    inputs:
+      failOnAlert: true
+
   - script: 'echo "##vso[build.addbuildtag]Scheduled" '
     displayName: 'Add scheduled tag if needed'
     condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['Build.Reason'], 'Schedule'))
-
-  - script: 'echo "##vso[build.addbuildtag]AutoRelease" '
-    displayName: 'Add AutoRelease tag if needed'
-    condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['AUTO_RELEASE'], 'true'))
