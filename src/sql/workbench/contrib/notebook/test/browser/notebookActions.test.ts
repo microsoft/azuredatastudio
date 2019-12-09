@@ -9,11 +9,12 @@ import * as assert from 'assert';
 import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, TrustedAction, RunAllCellsAction, NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
-import { NotebookComponentStub, CommandServiceStub } from 'sql/workbench/contrib/notebook/test/browser/common';
+import { NotebookComponentStub } from 'sql/workbench/contrib/notebook/test/browser/common';
 import { ICellModel, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { TestCommandService } from 'vs/editor/test/browser/editorTestServices';
 
 suite('Notebook Actions', function (): void {
 	test('Add Cell Action', async function (): Promise<void> {
@@ -130,7 +131,7 @@ suite('Notebook Actions', function (): void {
 	test('New Notebook Action', async function (): Promise<void> {
 		let actualCmdId: string;
 
-		let mockCommandService = TypeMoq.Mock.ofType<ICommandService>(CommandServiceStub);
+		let mockCommandService = TypeMoq.Mock.ofType<ICommandService>(TestCommandService);
 		mockCommandService.setup(s => s.executeCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 			.returns((commandId) => {
 				actualCmdId = commandId;

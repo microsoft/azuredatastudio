@@ -7,8 +7,6 @@ import { INotebookEditor, INotebookSection, INotebookParams } from 'sql/workbenc
 import { ICellModel, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
-import { ICommandService, ICommandEvent } from 'vs/platform/commands/common/commands';
-import * as vsEvent from 'vs/base/common/event';
 
 export class NotebookComponentStub implements INotebookEditor {
 	get notebookParams(): INotebookParams {
@@ -57,15 +55,6 @@ export class NotebookComponentStub implements INotebookEditor {
 		throw new Error('Method not implemented.');
 	}
 	addCell(cellType: CellType, index?: number, event?: Event) {
-		throw new Error('Method not implemented.');
-	}
-}
-
-export class CommandServiceStub implements ICommandService {
-	_serviceBrand: undefined;
-	onWillExecuteCommand: vsEvent.Event<ICommandEvent>;
-	onDidExecuteCommand: vsEvent.Event<ICommandEvent>;
-	executeCommand<T = any>(commandId: string, ...args: any[]): Promise<T> {
 		throw new Error('Method not implemented.');
 	}
 }
