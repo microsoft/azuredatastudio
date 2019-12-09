@@ -271,3 +271,21 @@ export async function assertTableCreationResult(databaseName: string, schema: st
 		assert(result.columnInfo[0].columnName !== 'ErrorMessage', `Checking for table creation threw error ${result.rows[0][0].displayValue}`);
 	}
 }
+
+export function testServerProfileToIConnectionProfile(serverProfile: TestServerProfile): azdata.IConnectionProfile {
+	return {
+		serverName: serverProfile.serverName,
+		databaseName: serverProfile.database,
+		authenticationType: serverProfile.authenticationTypeName,
+		providerName: serverProfile.providerName,
+		connectionName: '',
+		userName: serverProfile.userName,
+		password: serverProfile.password,
+		savePassword: false,
+		groupFullName: undefined,
+		saveProfile: true,
+		id: undefined,
+		groupId: undefined,
+		options: {}
+	};
+}

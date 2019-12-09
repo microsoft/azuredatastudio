@@ -160,3 +160,8 @@ gulp.task('package-external-extensions', task.series(
 		return Promise.all(vsixes);
 	})
 ));
+
+gulp.task('package-rebuild-extensions', task.series(
+	task.define('clean-rebuild-extensions', () => ext.cleanRebuildExtensions('.build/extensions')),
+	task.define('rebuild-extensions-build', () => ext.packageLocalExtensionsStream().pipe(gulp.dest('.build'))),
+));

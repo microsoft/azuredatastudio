@@ -406,7 +406,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 		let attachToContainer = document.createElement('div');
 		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
-			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService, this.logService);
+			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
 		attachToDropdown.render(attachToContainer);
 		attachSelectBoxStyler(attachToDropdown, this.themeService);
 
