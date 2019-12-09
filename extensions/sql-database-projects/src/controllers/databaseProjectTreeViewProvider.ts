@@ -14,14 +14,65 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 
 	private _initializeDeferred: Deferred<void> = new Deferred<void>();
 
-	getTreeItem(element: any): vscode.TreeItem | Thenable<vscode.TreeItem> {
-		throw new Error('Method not implemented.  ' + element);
+	private roots: SqlDatabaseProjectItem[] = [];
+
+	constructor() {
+		this._initializeDeferred = new Deferred<void>();
+		this.initialize();
 	}
-	getChildren(element?: any): vscode.ProviderResult<any[]> {
-		throw new Error('Method not implemented.  ' + element);
+
+	async initialize() {
+		this.roots = this.parseTreeNode(this.tree);
+		this._initializeDeferred.resolve();
+	}
+
+	getTreeItem(element: SqlDatabaseProjectItem): SqlDatabaseProjectItem {
+		return element;
+	}
+
+	getChildren(element?: SqlDatabaseProjectItem): SqlDatabaseProjectItem[] {
+		if (element === undefined) {
+			return this.roots;
+		}
+
+		return element.children;
 	}
 
 	public get initialized(): Promise<void> {
 		return this._initializeDeferred.promise;
 	}
+
+	private parseTreeNode(node: any): SqlDatabaseProjectItem[] {
+		let output: SqlDatabaseProjectItem[] = [];
+
+		for (let i = 0; i < Object.keys(node).length; i++) {
+			let grandchildren = this.parseTreeNode(node[Object.keys(node)[i]]);
+			let child = new SqlDatabaseProjectItem(Object.keys(node)[i], grandchildren);
+
+			output.push(child);
+		}
+
+		return output;
+	}
+
+	tree = {
+		'a': {
+			'aa': {
+				'aaa': {
+					'aaaa': {
+						'aaaaa': {
+							'aaaaaa': {
+
+							}
+						}
+					}
+				}
+			},
+			'ab': {}
+		},
+		'b': {
+			'ba': {},
+			'bb': {}
+		}
+	};
 }
