@@ -16,6 +16,8 @@ import { AuthenticationMode } from '../deployClusterWizardModel';
 const localize = nls.loadMessageBundle();
 
 const ConfirmPasswordName = 'ConfirmPassword';
+const clusterNameFieldDescription = localize('deployCluster.ClusterNameDescription', "The cluster name must consist only of alphanumeric lowercase characters or '-' and must start and end with an alphanumeric character.");
+
 export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 	private inputComponents: InputComponents = {};
 	private activeDirectorySection!: azdata.FormComponent;
@@ -28,7 +30,6 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	public initialize(): void {
 		const self = this;
-		const clusterNameFieldDescription = localize('deployCluster.ClusterNameDescription', "The cluster name must consist only of alphanumeric lowercase characters or '-' and must start and end with an alphanumeric character.");
 		const basicSection: SectionInfo = {
 			labelPosition: LabelPosition.Left,
 			title: '',
