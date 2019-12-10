@@ -326,10 +326,8 @@ CommandsRegistry.registerCommand({
 			if (treeNode) {
 				const tree = objectExplorerService.getServerTreeView().tree;
 				try {
-					await tree.collapse(treeNode);
 					await objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode);
 					await tree.refresh(treeNode);
-					await tree.expand(treeNode);
 				} catch (err) {
 					// Display message to the user but also log the entire error to the console for the stack trace
 					notificationService.error(localize('refreshError', "An error occurred refreshing node '{0}': {1}", args.nodeInfo.label, getErrorMessage(err)));
