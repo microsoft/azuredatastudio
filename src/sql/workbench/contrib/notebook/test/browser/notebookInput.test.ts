@@ -14,6 +14,9 @@ import { FileNotebookInput } from 'sql/workbench/contrib/notebook/common/models/
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
 import { NodeStub } from 'sql/workbench/contrib/notebook/test/browser/common';
+import { basenameOrAuthority } from 'vs/base/common/resources';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { SimpleUriLabelService } from 'vs/editor/standalone/browser/simpleServices';
 
 suite('Notebook Input', function (): void {
 	const instantiationService = workbenchInstantiationService();
@@ -35,8 +38,16 @@ suite('Notebook Input', function (): void {
 	});
 
 	test('Getters and Setters', async function (): Promise<void> {
-		let testUri = URI.from({ scheme: Schemas.untitled, path: 'TestPath' });
-		let input = instantiationService.createInstance(UntitledNotebookInput, 'TestInput', testUri, undefined);
+		const testUri = URI.from({ scheme: Schemas.untitled, path: 'TestPath' });
+
+		const testTitle = 'TestTitle';
+		let input = instantiationService.createInstance(UntitledNotebookInput, testTitle, testUri, undefined);
+
+		// Input title
+		assert.strictEqual(input.getTitle(), testTitle);
+
+		let noTitleInput = instantiationService.createInstance(UntitledNotebookInput, undefined, testUri, undefined);
+		assert.strictEqual(noTitleInput.getTitle(), basenameOrAuthority(testUri));
 
 		// Text Input
 		assert.strictEqual(input.textInput, undefined);
@@ -117,6 +128,22 @@ suite('Notebook Input', function (): void {
 		assert.strictEqual(input.container, testContainer);
 		mockParentNode.verify(e => e.removeChild(TypeMoq.It.isAny()), TypeMoq.Times.once());
 		assert.strictEqual(removedContainer, oldContainer);
+	});
+
+	test('Matches other input', async function (): Promise<void> {
+		let testUri = URI.from({ scheme: Schemas.untitled, path: 'TestPath' });
+		let textInput = new UntitledTextEditorInput(testUri, false, '', '', '', instantiationService, undefined, new SimpleUriLabelService(), undefined, undefined, undefined);
+		let input = instantiationService.createInstance(UntitledNotebookInput, 'TestInput', testUri, textInput);
+
+		assert.strictEqual(input.matches(undefined), false, 'Input should not match undefined.');
+
+		assert.ok(input.matches(input), 'Input should match itself.');
+
+		let otherTestUri = URI.from({ scheme: Schemas.untitled, path: 'OtherTestPath' });
+		let otherTextInput = new UntitledTextEditorInput(otherTestUri, false, '', '', '', instantiationService, undefined, new SimpleUriLabelService(), undefined, undefined, undefined);
+		let otherInput = instantiationService.createInstance(UntitledNotebookInput, 'OtherTestInput', otherTestUri, otherTextInput);
+
+		assert.strictEqual(input.matches(otherInput), false, 'Input should not match different input.');
 	});
 
 	// test('IsDirty state', async function (): Promise<void> {
