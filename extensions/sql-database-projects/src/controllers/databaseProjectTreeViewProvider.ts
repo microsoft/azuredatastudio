@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 
 import { SqlDatabaseProjectItem } from './databaseProjectTreeItem';
 import { Deferred } from '../common/promise';
+import { fstat } from 'fs';
 
 export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvider<SqlDatabaseProjectItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<SqlDatabaseProjectItem | undefined> = new vscode.EventEmitter<SqlDatabaseProjectItem | undefined>();
@@ -42,6 +43,11 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		return this._initializeDeferred.promise;
 	}
 
+	openProject(file: vscode.Uri[]) {
+		console.log('Opening project file: ' + file[0].fsPath);
+		//fs.readdir()
+	}
+
 	private parseTreeNode(node: any): SqlDatabaseProjectItem[] {
 		let output: SqlDatabaseProjectItem[] = [];
 
@@ -56,7 +62,7 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 	}
 
 	tree = {
-		'a': {
+		'Connections': {
 			'aa': {
 				'aaa': {
 					'aaaa': {
@@ -70,7 +76,7 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 			},
 			'ab': {}
 		},
-		'b': {
+		'SQL Projects': {
 			'ba': {},
 			'bb': {}
 		}

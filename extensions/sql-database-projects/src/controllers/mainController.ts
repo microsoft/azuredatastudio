@@ -4,16 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import * as nls from 'vscode-nls';
 
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
+import { getErrorMessage } from '../common/utils';
 
 const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
+
+const localize = nls.loadMessageBundle();
 
 /**
  * The main controller class that initializes the extension
  */
 export default class MainController implements vscode.Disposable {
 	protected _context: vscode.ExtensionContext;
+	protected dbProjectTreeViewProvider: SqlDatabaseProjectTreeViewProvider = new SqlDatabaseProjectTreeViewProvider();
 
 	public constructor(context: vscode.ExtensionContext) {
 		this._context = context;
@@ -34,13 +39,32 @@ export default class MainController implements vscode.Disposable {
 	private async initializeDatabaseProjects(): Promise<void> {
 		// init commands
 		vscode.commands.registerCommand('sqlDatabaseProjects.new', () => { console.log('"New Database Project" called.'); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.open', () => { console.log('"Open Database Project" called.'); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.open', async () => { this.openProjectFolder(); });
 
 		// init view
-		const dbProjectTreeViewProvider = new SqlDatabaseProjectTreeViewProvider();
-		await dbProjectTreeViewProvider.initialized;
+		this.dbProjectTreeViewProvider = new SqlDatabaseProjectTreeViewProvider();
+		await this.dbProjectTreeViewProvider.initialized;
 
-		this.extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(SQL_DATABASE_PROJECTS_VIEW_ID, dbProjectTreeViewProvider));
+		this.extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(SQL_DATABASE_PROJECTS_VIEW_ID, this.dbProjectTreeViewProvider));
+	}
+
+	public async openProjectFolder(): Promise<void> {
+		try {
+			console.log('"Open Database Project" called.');
+
+			let filter: { [key: string]: string[] } = {};
+
+			filter[localize('sqlDatabaseProject', "SQL database project")] = ['sqlproj'];
+
+			let file = await vscode.window.showOpenDialog({ filters: filter });
+
+			if (file) {
+				this.dbProjectTreeViewProvider.OpenProject(file);
+			}
+		}
+		catch (err) {
+			vscode.window.showErrorMessage(getErrorMessage(err));
+		}
 	}
 
 	public dispose(): void {
