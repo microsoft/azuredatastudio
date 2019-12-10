@@ -59,7 +59,7 @@ export default class MainController implements vscode.Disposable {
 			let file = await vscode.window.showOpenDialog({ filters: filter });
 
 			if (file) {
-				this.dbProjectTreeViewProvider.OpenProject(file);
+				this.dbProjectTreeViewProvider.openProject(file);
 			}
 		}
 		catch (err) {
