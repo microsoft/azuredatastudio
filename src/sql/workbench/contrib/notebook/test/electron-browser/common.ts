@@ -6,7 +6,7 @@
 import { nb, IConnectionProfile } from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, IKernelPreference } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, IKernelPreference, INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, INotebookProvider, INavigationProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -111,6 +111,25 @@ export class NotebookModelStub implements INotebookModel {
 	serializationStateChanged(changeType: NotebookChangeType): void {
 		throw new Error('Method not implemented.');
 	}
+	get onActiveCellChanged(): Event<ICellModel> {
+		throw new Error('Method not implemented.');
+	}
+	updateActiveCell(cell: ICellModel) {
+		throw new Error('Method not implemented.');
+	}
+	requestConnection(): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+}
+
+export class NotebookFindModelStub implements INotebookFindModel {
+
+	getFindCount(): number {
+		throw new Error('Method not implemented.');
+	}
+	getFindIndex(): number {
+		throw new Error('Method not implemented.');
+	}
 	findNext(): Promise<NotebookRange> {
 		throw new Error('Method not implemented.');
 	}
@@ -123,16 +142,11 @@ export class NotebookModelStub implements INotebookModel {
 	clearFind(): void {
 		throw new Error('Method not implemented.');
 	}
-	getFindCount(): number {
+	findArray: NotebookRange[];
+	getDecorationRange(id: string): NotebookRange {
 		throw new Error('Method not implemented.');
 	}
-	getFindIndex(): number {
-		throw new Error('Method not implemented.');
-	}
-	getDecorationRange(id: string): NotebookRange | null {
-		throw new Error('Method not implemented.');
-	}
-	changeDecorations<T>(callback: (changeAccessor: IModelDecorationsChangeAccessor) => T, ownerId: number): T | null {
+	changeDecorations<T>(callback: (changeAccessor: IModelDecorationsChangeAccessor) => T, ownerId: number): T {
 		throw new Error('Method not implemented.');
 	}
 	getLineMaxColumn(lineNumber: number): number {
@@ -143,16 +157,6 @@ export class NotebookModelStub implements INotebookModel {
 	}
 	findMatches: NotebookFindMatch[];
 	onFindCountChange: Event<number>;
-	findArray: NotebookRange[];
-	get onActiveCellChanged(): Event<ICellModel> {
-		throw new Error('Method not implemented.');
-	}
-	updateActiveCell(cell: ICellModel) {
-		throw new Error('Method not implemented.');
-	}
-	requestConnection(): Promise<boolean> {
-		throw new Error('Method not implemented.');
-	}
 }
 
 export class NotebookManagerStub implements INotebookManager {

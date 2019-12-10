@@ -81,7 +81,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public requestConnectionHandler: () => Promise<boolean>;
 
-	//#endregion
 	constructor(
 		private _notebookOptions: INotebookModelOptions,
 		public connectionProfile: IConnectionProfile | undefined,
@@ -295,7 +294,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (this._notebookOptions && this._notebookOptions.contentManager) {
 				contents = await this._notebookOptions.contentManager.loadContent();
 			}
-			let notebookContent: string = '';
 			let factory = this._notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)
 			this._cells = [];
@@ -306,7 +304,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					this._cells = contents.cells.map(c => {
 						let cellModel = factory.createCell(c, { notebook: this, isTrusted: isTrusted });
 						this.trackMarkdownTelemetry(<nb.ICellContents>c, cellModel);
-						notebookContent = notebookContent.concat(cellModel.source.toString());
 						return cellModel;
 					});
 				}
