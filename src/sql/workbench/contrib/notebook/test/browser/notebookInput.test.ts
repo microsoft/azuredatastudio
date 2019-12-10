@@ -27,6 +27,7 @@ suite('Notebook Input', function (): void {
 
 		let inputId = input.getTypeId();
 		assert.strictEqual(inputId, FileNotebookInput.ID);
+		assert.strictEqual(input.isUntitled(), false, 'File Input should not be untitled');
 	});
 
 	test('Untitled Notebook Input', async function (): Promise<void> {
@@ -35,6 +36,7 @@ suite('Notebook Input', function (): void {
 
 		let inputId = input.getTypeId();
 		assert.strictEqual(inputId, UntitledNotebookInput.ID);
+		assert.ok(input.isUntitled(), 'Untitled Input should be untitled');
 	});
 
 	test('Getters and Setters', async function (): Promise<void> {
@@ -145,12 +147,4 @@ suite('Notebook Input', function (): void {
 
 		assert.strictEqual(input.matches(otherInput), false, 'Input should not match different input.');
 	});
-
-	// test('IsDirty state', async function (): Promise<void> {
-	// 	let testUri = URI.from({ scheme: Schemas.untitled, path: 'TestPath' });
-	// 	let input = instantiationService.createInstance(UntitledNotebookInput, 'TestInput', testUri, undefined);
-
-	// 	let model = await input.resolve();
-	// 	model.setDirty(true);
-	// });
 });
