@@ -45,7 +45,13 @@ suite('Notebook Input', function (): void {
 		assert.deepStrictEqual(input.notebookUri, testUri);
 
 		// Content Manager
-		assert.ok(input.contentManager !== undefined);
+		assert.notStrictEqual(input.editorOpenedTimestamp, undefined);
+
+		// Notebook editor timestamp
+		assert.notStrictEqual(input.contentManager, undefined);
+
+		// Layout changed event
+		assert.notStrictEqual(input.layoutChanged, undefined);
 
 		// Connection Profile
 		let testProfile = <IConnectionProfile>{};
