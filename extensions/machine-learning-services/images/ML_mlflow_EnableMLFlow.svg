@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>ML_mlflow</title>
+  <rect width="16" height="16" fill="none"/>
+  <g>
+    <path d="M9,11H1V7H4V8H5V7h6V8h1V7h3v3.735l1,.584V3H11V1H5V3H0v9H9ZM6,2h4V3H6ZM1,4H15V6H12V5H11V6H5V5H4V6H1Z"/>
+    <path d="M10,8.977l6,3.5-6,3.5Zm1,5.2,3-1.7-3-1.7Z"/>
+  </g>
+</svg>

@@ -240,7 +240,8 @@ const externalExtensions = [
 	'cms',
 	'query-history',
 	'liveshare',
-	'database-project'
+	'database-project',
+	'machine-learning-services'
 ];
 
 interface IBuiltInExtension {
