@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 
 import { SqlDatabaseProjectItem } from './databaseProjectTreeItem';
 import { Deferred } from '../common/promise';
-import { fstat } from 'fs';
 
 export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvider<SqlDatabaseProjectItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<SqlDatabaseProjectItem | undefined> = new vscode.EventEmitter<SqlDatabaseProjectItem | undefined>();
@@ -43,9 +43,26 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		return this._initializeDeferred.promise;
 	}
 
-	openProject(file: vscode.Uri[]) {
-		console.log('Opening project file: ' + file[0].fsPath);
-		//fs.readdir()
+	openProject(projectFiles: vscode.Uri[]) {
+		if (projectFiles.length > 1) { // TODO: how to handle opening a folder with multiple .sqlproj files?
+			vscode.window.showErrorMessage('Multiple .sqlproj files selected; please select only one.');
+		}
+
+		let projectFile = projectFiles[0];
+
+		let files: vscode.Uri[] = [];
+
+		console.log('Opening project file: ' + projectFile.fsPath);
+		fs.readdir(projectFile.fsPath, (err, readFiles: string[]) => {
+			if (err) {
+				console.log(err);
+			}
+
+			readFiles.forEach((file) => {
+				const uri = vscode.Uri.file(file);
+				files.push(uri);
+			});
+		});
 	}
 
 	private parseTreeNode(node: any): SqlDatabaseProjectItem[] {
