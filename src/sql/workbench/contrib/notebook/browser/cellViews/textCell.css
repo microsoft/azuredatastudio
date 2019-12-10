@@ -18,11 +18,11 @@ text-cell-component .notebook-preview {
 }
 
 .vs .notebook-preview .rangeHighlight {
-	background-color: #fdff0033;
+	background-color: rgba(255, 255, 0, 0.2)
 }
 
 .vs-dark .notebook-preview .rangeHighlight {
-	background-color: #ffffff0b;
+	background-color: rgba(255, 255, 0, 0.2)
 }
 
 text-cell-component table {
