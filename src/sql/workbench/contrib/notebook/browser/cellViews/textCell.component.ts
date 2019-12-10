@@ -24,7 +24,7 @@ import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelI
 import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/contrib/notebook/browser/outputs/sanitizer';
 import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions';
-import { NotebookRange } from 'sql/workbench/contrib/notebook/browser/cellViews/NotebookFindDecorations';
+import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -263,7 +263,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (range && this.output && this.output.nativeElement) {
 			let hostElem = this.output.nativeElement;
 			let children = hostElem.children;
-			let ele = children[Math.ceil(range.lineNumber / 2)];
+			// Since when calculating the range we consider \n's as a new lines
+			// but the native elements do not list new line as a seperate child,
+			// to get to the correct element we need ignore line breaks.
+			let ele = children[Math.ceil(range.startLineNumber / 2)];
 			if (ele) {
 				DOM.addClass(ele, 'rangeHighlight');
 				ele.scrollIntoView({ behavior: 'smooth' });
@@ -275,7 +278,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (range && this.output && this.output.nativeElement) {
 			let hostElem = this.output.nativeElement;
 			let children = hostElem.children;
-			let ele = children[Math.ceil(range.lineNumber / 2)];
+			// Since when calculating the range we consider \n's as a new lines
+			// but the native elements do not list new line as a seperate child,
+			// to get to the correct element we need ignore alternate line breaks.
+			let ele = children[Math.ceil(range.startLineNumber / 2)];
 			if (ele) {
 				DOM.removeClass(ele, 'rangeHighlight');
 			}

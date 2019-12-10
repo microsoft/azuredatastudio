@@ -57,7 +57,7 @@ import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
-import { NotebookRange } from 'sql/workbench/contrib/notebook/browser/cellViews/NotebookFindDecorations';
+import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';

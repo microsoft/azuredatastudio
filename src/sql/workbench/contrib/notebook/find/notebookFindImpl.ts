@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NotebookRange } from 'sql/workbench/contrib/notebook/browser/cellViews/NotebookFindDecorations';
+import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { DidChangeDecorationsEmitter, ModelDecorationOptions, createTextBuffer } from 'vs/editor/common/model/textModel';
@@ -57,7 +57,7 @@ export class NotebookFindImpl extends Disposable {
 		return this._versionId;
 	}
 
-	public EmitChangeDecorations(begin: boolean): void {
+	public emitChangeDecorations(begin: boolean): void {
 		if (begin) {
 			this._onDidChangeDecorations.beginDeferredEmit();
 		} else {

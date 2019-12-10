@@ -333,7 +333,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 		}
 
 		if (e.equals(KeyMod.Shift | KeyCode.Enter)) {
-			this._notebookController.getAction(ACTION_IDS.FIND_NEXT).run().then(null, onUnexpectedError);
+			this._notebookController.getAction(ACTION_IDS.FIND_PREVIOUS).run().then(null, onUnexpectedError);
 			e.preventDefault();
 			return;
 		}

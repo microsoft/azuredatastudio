@@ -30,9 +30,9 @@ import * as types from 'vs/base/common/types';
 import { EDITOR_MODEL_DEFAULTS } from 'vs/editor/common/config/editorOptions';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { startsWith } from 'vs/base/common/strings';
-import { NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/cellViews/NotebookFindDecorations';
+import { NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 import * as model from 'vs/editor/common/model';
-import { NotebookFindImpl } from 'sql/workbench/contrib/notebook/browser/models/notebookFindImpl';
+import { NotebookFindImpl } from 'sql/workbench/contrib/notebook/find/notebookFindImpl';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -1062,7 +1062,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._contentChangedEmitter.fire(changeInfo);
 	}
 
-	findNext(): Thenable<NotebookRange> {
+	findNext(): Promise<NotebookRange> {
 		if (this._findArray && this._findArray.length !== 0) {
 			if (this._findIndex === this._findArray.length - 1) {
 				this._findIndex = 0;
@@ -1075,7 +1075,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	findPrevious(): Thenable<NotebookRange> {
+	findPrevious(): Promise<NotebookRange> {
 		if (this._findArray && this._findArray.length !== 0) {
 			if (this._findIndex === 0) {
 				this._findIndex = this._findArray.length - 1;
@@ -1164,6 +1164,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
+	// In markdown links are defined as [Link Text](https://url/of/the/text). when searching for text we shouldn't
+	// look for the values inside the (), below regex replaces that with just the Link Text.
 	cleanMarkdownLinks(cellSrc: string): string {
 		return cellSrc.replace(/(?:__|[*#])|\[(.*?)\]\(.*?\)/gm, '$1');
 	}
@@ -1199,10 +1201,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._assertNotDisposed();
 
 		try {
-			this._notebookFind.EmitChangeDecorations(true);
+			this._notebookFind.emitChangeDecorations(true);
 			return this._notebookFind.ChangeDecorations(ownerId, callback);
 		} finally {
-			this._notebookFind.EmitChangeDecorations(false);
+			this._notebookFind.emitChangeDecorations(false);
 		}
 	}
 

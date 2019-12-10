@@ -12,7 +12,7 @@ import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, IN
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IStandardKernelWithProvider } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 import { IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
-import { NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/cellViews/NotebookFindDecorations';
+import { NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 import { URI } from 'vs/workbench/workbench.web.api';
 import { RenderMimeRegistry } from 'sql/workbench/contrib/notebook/browser/outputs/registry';
 
@@ -110,10 +110,10 @@ export class NotebookModelStub implements INotebookModel {
 	serializationStateChanged(changeType: NotebookChangeType): void {
 		throw new Error('Method not implemented.');
 	}
-	findNext(): Thenable<NotebookRange> {
+	findNext(): Promise<NotebookRange> {
 		throw new Error('Method not implemented.');
 	}
-	findPrevious(): Thenable<NotebookRange> {
+	findPrevious(): Promise<NotebookRange> {
 		throw new Error('Method not implemented.');
 	}
 	find(exp: string, maxMatches?: number): Promise<NotebookRange> {

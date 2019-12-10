@@ -17,7 +17,7 @@ import { ICellModel, INotebookModel } from 'sql/workbench/contrib/notebook/brows
 import { NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
-import { NotebookRange } from 'sql/workbench/contrib/notebook/browser/cellViews/NotebookFindDecorations';
+import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);

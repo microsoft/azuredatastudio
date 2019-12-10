@@ -24,7 +24,7 @@ import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/not
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
-import { NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/cellViews/NotebookFindDecorations';
+import { NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -265,7 +265,7 @@ export interface INotebookModel {
 	/**
 	 * The active cell for this model. May be undefined
 	 */
-	activeCell: ICellModel;
+	activeCell: ICellModel | undefined;
 
 	/**
 	 * Client Session in the notebook, used for sending requests to the notebook service
@@ -421,9 +421,9 @@ export interface INotebookModel {
 
 	getFindIndex(): number;
 
-	findNext(): Thenable<NotebookRange>;
+	findNext(): Promise<NotebookRange>;
 
-	findPrevious(): Thenable<NotebookRange>;
+	findPrevious(): Promise<NotebookRange>;
 
 	find(exp: string, maxMatches?: number): Promise<NotebookRange>;
 
@@ -454,19 +454,6 @@ export interface INotebookModel {
 	onFindCountChange: Event<number>;
 
 	requestConnection(): Promise<boolean>;
-
-}
-export interface NotebookPosition {
-	readonly cell: ICellModel;
-	readonly lineNumber: number;
-	readonly startColumnNumber: number;
-	readonly endColumnNumber: number;
-
-	/**
-	 * Updates the model's view of an active cell to the new active cell
-	 * @param cell New active cell
-	 */
-	updateActiveCell(cell: ICellModel);
 
 }
 
