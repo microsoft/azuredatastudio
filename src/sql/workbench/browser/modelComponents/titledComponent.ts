@@ -20,10 +20,10 @@ export abstract class TitledComponent extends ComponentBase implements ITitledCo
 	}
 
 	public get title(): string {
-		return this.getPropertyOrDefault<azdata.HyperlinkComponentProperties, string>((props) => props.title, '');
+		return this.getPropertyOrDefault<azdata.TitledComponentProperties, string>((props) => props.title, '');
 	}
 
 	public set title(newTitle: string) {
-		this.setPropertyFromUI<azdata.HyperlinkComponentProperties, string>((properties, title) => { properties.title = title; }, newTitle);
+		this.setPropertyFromUI<azdata.TitledComponentProperties, string>((properties, title) => { properties.title = title; }, newTitle);
 	}
 }

@@ -1,4 +1,24 @@
 steps:
+  - script: |
+      mkdir -p .build
+      echo -n $BUILD_SOURCEVERSION > .build/commit
+      echo -n $VSCODE_QUALITY > .build/quality
+    displayName: Prepare cache flag
+
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+    inputs:
+      keyfile: 'build/.cachesalt, .build/commit, .build/quality'
+      targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
+      vstsFeed: 'BuildCache'
+      platformIndependent: true
+      alias: 'Compilation'
+
+  - script: |
+      set -e
+      exit 1
+    displayName: Check RestoreCache
+    condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+
   - task: NodeTool@0
     inputs:
       versionSpec: '10.15.3'
@@ -6,12 +26,6 @@ steps:
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
       versionSpec: '1.x'
-
-  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
-    inputs:
-      keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
-      targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
-      vstsFeed: 'BuildCache'
 
   - task: AzureKeyVault@1
     displayName: 'Azure Key Vault: Get Secrets'
@@ -40,6 +54,12 @@ steps:
       git merge $(node -p "require('./package.json').distro")
     displayName: Merge distro
 
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+    inputs:
+      keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+      targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
+      vstsFeed: 'BuildCache'
+
   - script: |
       set -e
       CHILD_CONCURRENCY=1 yarn --frozen-lockfile
@@ -48,7 +68,7 @@ steps:
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
     inputs:
-      keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+      keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
       targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
       vstsFeed: 'BuildCache'
     condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
@@ -71,41 +91,31 @@ steps:
 
   - script: |
       set -e
-      yarn gulp vscode-darwin-min
+      yarn gulp package-rebuild-extensions
+      yarn gulp vscode-darwin-min-ci
+      yarn gulp vscode-reh-darwin-min-ci
+      yarn gulp vscode-reh-web-darwin-min-ci
     displayName: Build
-
-  - task: ArchiveFiles@2 # WHY ARE WE DOING THIS?
-    displayName: 'Archive build scripts source'
-    inputs:
-      rootFolderOrFile: '$(Build.SourcesDirectory)/build'
-      archiveType: tar
-      archiveFile: '$(Build.BinariesDirectory)/source.tar.gz'
-
-  - task: PublishBuildArtifacts@1 # WHY ARE WE DOING THIS?
-    displayName: 'Publish Artifact: build scripts source'
-    inputs:
-      PathtoPublish: '$(Build.BinariesDirectory)/source.tar.gz'
-      ArtifactName: source
+    env:
+      VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
 
   - script: |
       set -e
-      cd $(Build.SourcesDirectory)/../azuredatastudio-darwin
-      zip -r -y $(Build.ArtifactStagingDirectory)/azuredatastudio-darwin.zip "Azure Data Studio.app"
-    displayName: 'Stable - Run zip'
-    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'stable'))
+      ./scripts/test.sh --build --coverage --reporter mocha-junit-reporter
+    displayName: Run unit tests
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
       set -e
-      cd $(Build.SourcesDirectory)/../azuredatastudio-darwin
-      zip -r -y $(Build.ArtifactStagingDirectory)/azuredatastudio-darwin.zip "Azure Data Studio - Insiders.app"
-    displayName: 'Insiders - Run zip'
-    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'insider'))
+      mkdir -p .build/darwin/archive
+      pushd ../azuredatastudio-darwin && zip -r -X -y $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip * && popd
+    displayName: 'Archive'
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning'
     inputs:
       ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(Build.ArtifactStagingDirectory)'
+      FolderPath: '$(Build.SourcesDirectory)/.build/darwin/archive'
       Pattern: 'azuredatastudio-darwin.zip'
       signConfigType: inlineSignParams
       inlineOperation: |
@@ -120,44 +130,10 @@ steps:
         ]
       SessionTimeout: 20
 
-  - script: | # WHY ARE WE DOING THIS?
-      set -e
-      zip -d $(Build.ArtifactStagingDirectory)/azuredatastudio-darwin.zip "Azure Data Studio.pkg"
-    displayName: 'Stable - Remove .pkg from signed zip'
-    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'stable'))
-
-  - script: | # WHY ARE WE DOING THIS?
-      set -e
-      zip -d $(Build.ArtifactStagingDirectory)/azuredatastudio-darwin.zip "Azure Data Studio - Insiders.pkg"
-    displayName: 'Insiders - Remove .pkg from signed zip'
-    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'insider'))
-
   - script: |
       set -e
-      ./scripts/test.sh --build --coverage --reporter mocha-junit-reporter
-    displayName: Run unit tests
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-    timeoutInMinutes: 20
-    continueOnError: true
-
-  - script: | # WHY ARE WE DOING THIS?
-      set -e
-      PACKAGEJSON=`ls $(Build.SourcesDirectory)/package.json`
-      VERSION=`node -p "require(\"$PACKAGEJSON\").version"`
-      COMMIT_ID=`git rev-parse HEAD`
-
-      echo -e "{  \"version\": \"$VERSION\", \"quality\": \"$VSCODE_QUALITY\", \"commit\": \"$COMMIT_ID\" }" > "$(Build.ArtifactStagingDirectory)/version.json"
-    displayName: 'Create version.json'
-
-  - script: | # WHY ARE WE DOING THIS?
-      set -e
-      for f in *
-      do
-      shasum -a 256 "$f" >> sha256hashes.txt
-      done
-    workingDirectory: '$(Build.ArtifactStagingDirectory)'
-    displayName: 'Get SHA256 Hashes'
-    continueOnError: true
+      ./build/azure-pipelines/darwin/createDrop.sh
+    displayName: Create Drop
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
@@ -191,7 +167,3 @@ steps:
     displayName: 'Component Detection'
     inputs:
       failOnAlert: true
-
-  - script: 'echo "##vso[build.addbuildtag]Scheduled" '
-    displayName: 'Add scheduled tag if needed'
-    condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['Build.Reason'], 'Schedule'))

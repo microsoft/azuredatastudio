@@ -17,6 +17,7 @@ import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 
 import { ISelectionData, ExecutionPlanOptions } from 'azdata';
 import { startsWith } from 'vs/base/common/strings';
+import { ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 
 const MAX_SIZE = 13;
 
@@ -217,6 +218,14 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		} else {
 			return this._text.getName();
 		}
+	}
+
+	save(groupId: number, options?: ITextFileSaveOptions): Promise<boolean> {
+		return this.text.save(groupId, options);
+	}
+
+	saveAs(group: number, options?: ITextFileSaveOptions): Promise<boolean> {
+		return this.text.saveAs(group, options);
 	}
 
 	// Called to get the tooltip of the tab
