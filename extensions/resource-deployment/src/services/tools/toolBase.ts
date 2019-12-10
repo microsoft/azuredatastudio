@@ -27,17 +27,14 @@ const toolStatusLocalized: Map<ToolStatus, string> = new Map<ToolStatus, string>
 ]);
 
 export const enum dependencyType {
-	PythonAndPip3 = 'PythonAndPip3',
 	Brew = 'Brew',
 	Curl = 'Curl'
 }
 
-const pythonAndPip3Localized = localize('deploymentDialog.ToolInformationalMessage.PythonAndPip3', "•	azdata installation needs pip3 and python3 version 3.6 to be pre-installed before necessary tools can be deployed");
 const brewLocalized = localize('deploymentDialog.ToolInformationalMessage.Brew', "•	brew is needed for deployment of the tools and needs to be pre-installed before necessary tools can be deployed");
 const curlLocalized = localize('deploymentDialog.ToolInformationalMessage.Curl', "•	curl is needed for installation and needs to be pre-installed before necessary tools can be deployed");
 
 export const messageByDependencyType: Map<dependencyType, string> = new Map<dependencyType, string>([
-	[dependencyType.PythonAndPip3, pythonAndPip3Localized],
 	[dependencyType.Brew, brewLocalized],
 	[dependencyType.Curl, curlLocalized]
 ]);
@@ -51,7 +48,6 @@ export abstract class ToolBase implements ITool {
 	abstract description: string;
 	abstract type: ToolType;
 	abstract homePage: string;
-	abstract autoInstallSupported: boolean;
 	protected abstract readonly allInstallationCommands: Map<OsDistribution, Command[]>;
 	protected readonly dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>();
 
@@ -100,7 +96,7 @@ export abstract class ToolBase implements ITool {
 		return <string>toolStatusLocalized.get(this._status);
 	}
 
-	public get autoInstallRequired(): boolean {
+	public get autoInstallNeeded(): boolean {
 		return this.status !== ToolStatus.Installed && this.autoInstallSupported;
 	}
 
@@ -114,10 +110,6 @@ export abstract class ToolBase implements ITool {
 
 	public get isInstalling(): boolean {
 		return this.status === ToolStatus.Installing;
-	}
-
-	public get needsInstallation(): boolean {
-		return this.status !== ToolStatus.Installed;
 	}
 
 	public get storagePath(): string {
@@ -146,7 +138,7 @@ export abstract class ToolBase implements ITool {
 		return this._statusDescription;
 	}
 
-	public get installationPath(): string {
+	public get installationPath(): string | undefined {
 		return this._installationPath;
 	}
 
@@ -175,6 +167,11 @@ export abstract class ToolBase implements ITool {
 
 	public showOutputChannel(preserveFocus?: boolean | undefined): void {
 		this._platformService.showOutputChannel(preserveFocus);
+	}
+
+
+	get autoInstallSupported(): boolean {
+		return !!this.installationCommands && !!this.installationCommands.length;
 	}
 
 	public async install(): Promise<void> {
@@ -207,7 +204,7 @@ export abstract class ToolBase implements ITool {
 	protected async installCore() {
 		const installationCommands: Command[] | undefined = this.installationCommands;
 		if (!installationCommands || installationCommands.length === 0) {
-			throw new Error(localize('toolBase.installCore.CannotInstallTool', "Cannot install tool:${0}::${1} as installation commands are unknown", this.displayName, this.description));
+			throw new Error(localize('toolBase.installCore.CannotInstallTool', "Cannot install tool:{0}::{1} as installation commands are unknown for your OS distribution, Please install {0} manually before proceeding", this.displayName, this.description));
 		}
 		for (let i: number = 0; i < installationCommands.length; i++) {
 			await this._platformService.runCommand(installationCommands[i].command,
@@ -229,11 +226,9 @@ export abstract class ToolBase implements ITool {
 			if (process.env.PATH) {
 				if (!`${path.delimiter}${process.env.PATH}${path.delimiter}`.includes(`${path.delimiter}${searchPath}${path.delimiter}`)) {
 					process.env.PATH += `${path.delimiter}${searchPath}`;
-					console.log(`Appending to Path -> '${path.delimiter}${searchPath}'`);
 				}
 			} else {
 				process.env.PATH = searchPath;
-				console.log(`Setting PATH to -> '${searchPath}'`);
 			}
 		});
 	}
@@ -305,5 +300,5 @@ export abstract class ToolBase implements ITool {
 	private _status: ToolStatus = ToolStatus.NotInstalled;
 	private _version?: SemVer;
 	private _statusDescription?: string;
-	private _installationPath!: string;
+	private _installationPath?: string;
 }

@@ -48,15 +48,23 @@ export abstract class ComponentWithIconBase extends ComponentBase {
 	}
 
 	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
-		return this.getPropertyOrDefault<azdata.ComponentWithIcon, IUserFriendlyIcon>((props) => props.iconPath, undefined);
+		return this.getPropertyOrDefault<azdata.ComponentWithIconProperties, IUserFriendlyIcon>((props) => props.iconPath, undefined);
 	}
 
 	public get iconHeight(): number | string {
-		return this.getPropertyOrDefault<azdata.ComponentWithIcon, number | string>((props) => props.iconHeight, '50px');
+		return this.getPropertyOrDefault<azdata.ComponentWithIconProperties, number | string>((props) => props.iconHeight, '50px');
 	}
 
 	public get iconWidth(): number | string {
-		return this.getPropertyOrDefault<azdata.ComponentWithIcon, number | string>((props) => props.iconWidth, '50px');
+		return this.getPropertyOrDefault<azdata.ComponentWithIconProperties, number | string>((props) => props.iconWidth, '50px');
+	}
+
+	public get title(): string {
+		return this.getPropertyOrDefault<azdata.ComponentWithIconProperties, string>((props) => props.title, '');
+	}
+
+	public set title(newTitle: string) {
+		this.setPropertyFromUI<azdata.ComponentWithIconProperties, string>((properties, title) => { properties.title = title; }, newTitle);
 	}
 
 	ngOnDestroy(): void {

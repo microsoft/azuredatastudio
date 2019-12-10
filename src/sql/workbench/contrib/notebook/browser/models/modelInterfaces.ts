@@ -216,11 +216,6 @@ export interface IClientSession extends IDisposable {
 	onKernelChanging(changeHandler: ((kernel: nb.IKernelChangedArgs) => Promise<void>)): void;
 }
 
-export interface IDefaultConnection {
-	defaultConnection: ConnectionProfile;
-	otherConnections: ConnectionProfile[];
-}
-
 /**
  * A kernel preference.
  */
@@ -325,10 +320,10 @@ export interface INotebookModel {
 	readonly specs: nb.IAllKernels | undefined;
 
 	/**
-	 * The specs for available contexts, or undefined if these have
+	 * The specs for available context, or undefined if this has
 	 * not been loaded yet
 	 */
-	readonly contexts: IDefaultConnection | undefined;
+	readonly context: ConnectionProfile | undefined;
 
 	/**
 	 * Event fired on first initialization of the cells and
