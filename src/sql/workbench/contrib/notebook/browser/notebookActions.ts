@@ -341,11 +341,7 @@ export class AttachToDropdown extends SelectBox {
 
 	public doChangeContext(connection?: ConnectionProfile, hideErrorMessage?: boolean): void {
 		if (this.value === msgChangeConnection || this.value === msgSelectConnection) {
-<<<<<<< HEAD
-			this.openConnectionDialog();
-=======
 			this.openConnectionDialog().catch(err => this._notificationService.error(getErrorMessage(err)));
->>>>>>> master
 		} else {
 			this.model.changeContext(this.value, connection, hideErrorMessage).catch(err => this._notificationService.error(getErrorMessage(err)));
 		}
