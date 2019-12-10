@@ -68,8 +68,13 @@ suite('Notebook Input', function (): void {
 
 		// getResource
 		assert.strictEqual(input.getResource(), testUri);
+	});
 
-		// Container
+	test('Parent container', async function (): Promise<void> {
+		let testUri = URI.from({ scheme: Schemas.untitled, path: 'TestPath' });
+		let input = instantiationService.createInstance(UntitledNotebookInput, 'TestInput', testUri, undefined);
+
+		// Undefined container
 		let testContainer = undefined;
 		input.container = testContainer;
 		assert.strictEqual(input.container, testContainer);
