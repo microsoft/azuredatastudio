@@ -320,6 +320,27 @@ function processTextField(context: FieldContext): void {
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelPosition);
+
+	if (context.fieldInfo.textValidationRequired) {
+		let validationRegex: RegExp = new RegExp(context.fieldInfo.textValidationRegex!);
+
+		const removeInvalidInputMessage = (): void => {
+			if (validationRegex.test(input.value!)) { // input is valid
+				removeValidationMessage(context.container, context.fieldInfo.textValidationDescription!);
+			}
+		};
+
+		context.onNewDisposableCreated(input.onTextChanged(() => {
+			removeInvalidInputMessage();
+		}));
+
+		const inputValidator: Validator = (): { valid: boolean; message: string; } => {
+			const inputIsValid = validationRegex.test(input.value!);
+			return { valid: inputIsValid, message: context.fieldInfo.textValidationDescription! };
+		};
+		context.onNewValidatorCreated(inputValidator);
+
+	}
 }
 
 function processPasswordField(context: FieldContext): void {
