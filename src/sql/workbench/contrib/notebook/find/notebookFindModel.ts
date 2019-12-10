@@ -3,19 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
-import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { onUnexpectedError } from 'vs/base/common/errors';
-import { DidChangeDecorationsEmitter, ModelDecorationOptions, createTextBuffer } from 'vs/editor/common/model/textModel';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IModelDecorationsChangedEvent } from 'vs/editor/common/model/textModelEvents';
-import { Range, IRange } from 'vs/editor/common/core/range';
+import { INotebookFindModel, ICellModel, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { Event, Emitter } from 'vs/base/common/event';
+import * as types from 'vs/base/common/types';
+import { NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 import * as model from 'vs/editor/common/model';
-import { Event } from 'vs/base/common/event';
-import { singleLetterHash, isHighSurrogate } from 'vs/base/common/strings';
-import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
+import { ModelDecorationOptions, DidChangeDecorationsEmitter, createTextBuffer } from 'vs/editor/common/model/textModel';
+import { IModelDecorationsChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import { IntervalNode } from 'vs/editor/common/model/intervalTree';
-
+import { EDITOR_MODEL_DEFAULTS } from 'vs/editor/common/config/editorOptions';
+import { Range, IRange } from 'vs/editor/common/core/range';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { singleLetterHash, isHighSurrogate } from 'vs/base/common/strings';
 
 function _normalizeOptions(options: model.IModelDecorationOptions): ModelDecorationOptions {
 	if (options instanceof ModelDecorationOptions) {
@@ -28,20 +28,28 @@ const invalidFunc = () => { throw new Error(`Invalid change accessor`); };
 
 let MODEL_ID = 0;
 
-export class NotebookFindImpl extends Disposable {
+export class NotebookFindModel extends Disposable implements INotebookFindModel {
 
-	//#region Decorations
-	private readonly _onDidChangeDecorations: DidChangeDecorationsEmitter = this._register(new DidChangeDecorationsEmitter());
-	public readonly onDidChangeDecorations: Event<IModelDecorationsChangedEvent> = this._onDidChangeDecorations.event;
-	private _decorations: { [decorationId: string]: NotebookIntervalNode; };
-
+	private _findArray: Array<NotebookRange>;
+	private _findIndex: number;
+	private _onFindCountChange = new Emitter<number>();
+	private _isDisposed: boolean;
+	public readonly id: string;
 	private _buffer: model.ITextBuffer;
 	private readonly _instanceId: string;
 	private _lastDecorationId: number;
 	private _versionId: number;
 
-	constructor() {
+	//#region Decorations
+	private readonly _onDidChangeDecorations: DidChangeDecorationsEmitter = this._register(new DidChangeDecorationsEmitter());
+	public readonly onDidChangeDecorations: Event<IModelDecorationsChangedEvent> = this._onDidChangeDecorations.event;
+	private _decorations: { [decorationId: string]: NotebookIntervalNode; };
+	//#endregion
+
+	constructor(private notebookModel: INotebookModel) {
 		super();
+		this._isDisposed = false;
+
 		this._instanceId = singleLetterHash(MODEL_ID);
 		this._lastDecorationId = 0;
 		// Generate a new unique model id
@@ -49,20 +57,27 @@ export class NotebookFindImpl extends Disposable {
 
 		this._decorations = Object.create(null);
 
-		this._buffer = createTextBuffer('', NotebookModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
+		this._buffer = createTextBuffer('', NotebookFindModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
 		this._versionId = 1;
+		this.id = '$model' + MODEL_ID;
+
 	}
+
+	public static DEFAULT_CREATION_OPTIONS: model.ITextModelCreationOptions = {
+		isForSimpleWidget: false,
+		tabSize: EDITOR_MODEL_DEFAULTS.tabSize,
+		indentSize: EDITOR_MODEL_DEFAULTS.indentSize,
+		insertSpaces: EDITOR_MODEL_DEFAULTS.insertSpaces,
+		detectIndentation: false,
+		defaultEOL: model.DefaultEndOfLine.LF,
+		trimAutoWhitespace: EDITOR_MODEL_DEFAULTS.trimAutoWhitespace,
+		largeFileOptimizations: EDITOR_MODEL_DEFAULTS.largeFileOptimizations,
+	};
+
+	public get onFindCountChange(): Event<number> { return this._onFindCountChange.event; }
 
 	public get VersionId(): number {
 		return this._versionId;
-	}
-
-	public emitChangeDecorations(begin: boolean): void {
-		if (begin) {
-			this._onDidChangeDecorations.beginDeferredEmit();
-		} else {
-			this._onDidChangeDecorations.endDeferredEmit();
-		}
 	}
 
 	public get Buffer(): model.ITextBuffer {
@@ -224,7 +239,7 @@ export class NotebookFindImpl extends Disposable {
 	 */
 	private _validateRangeRelaxedNoAllocations(range: IRange): NotebookRange {
 		if (range instanceof NotebookRange) {
-			this._buffer = createTextBuffer(range.cell.source instanceof Array ? range.cell.source.join('\n') : range.cell.source, NotebookModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
+			this._buffer = createTextBuffer(range.cell.source instanceof Array ? range.cell.source.join('\n') : range.cell.source, NotebookFindModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
 		}
 
 		const linesCount = this._buffer.getLineCount();
@@ -403,6 +418,157 @@ export class NotebookFindImpl extends Disposable {
 	}
 
 
+	findNext(): Promise<NotebookRange> {
+		if (this._findArray && this._findArray.length !== 0) {
+			if (this._findIndex === this._findArray.length - 1) {
+				this._findIndex = 0;
+			} else {
+				++this._findIndex;
+			}
+			return Promise.resolve(this._findArray[this._findIndex]);
+		} else {
+			return Promise.reject(new Error('no search running'));
+		}
+	}
+
+	findPrevious(): Promise<NotebookRange> {
+		if (this._findArray && this._findArray.length !== 0) {
+			if (this._findIndex === 0) {
+				this._findIndex = this._findArray.length - 1;
+			} else {
+				--this._findIndex;
+			}
+			return Promise.resolve(this._findArray[this._findIndex]);
+		} else {
+			return Promise.reject(new Error('no search running'));
+		}
+	}
+
+	find(exp: string, maxMatches?: number): Promise<NotebookRange> {
+		this._findArray = new Array<NotebookRange>();
+		this._findIndex = 0;
+		this._onFindCountChange.fire(this._findArray.length);
+		if (exp) {
+			return new Promise<NotebookRange>((resolve) => {
+				const disp = this.onFindCountChange(e => {
+					resolve(this._findArray[0]);
+					disp.dispose();
+				});
+				this._startSearch(exp, maxMatches);
+			});
+		} else {
+			return Promise.reject(new Error('no expression'));
+		}
+	}
+
+	public get findMatches(): NotebookFindMatch[] {
+		let findMatches: NotebookFindMatch[] = [];
+		this._findArray.forEach(element => {
+			findMatches = findMatches.concat(new NotebookFindMatch(element, null));
+		});
+		return findMatches;
+	}
+
+	public get findArray(): NotebookRange[] {
+		return this.findArray;
+	}
+
+	private _startSearch(exp: string, maxMatches: number = 0): void {
+		let searchFn = (cell: ICellModel, exp: string): NotebookRange[] => {
+			let findResults: NotebookRange[] = [];
+			let cellVal = cell.source;
+			let index: number;
+			let start: number;
+			let end: number;
+			if (cellVal) {
+				if (typeof cellVal === 'string') {
+					index = 0;
+					while (cellVal.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) > -1) {
+						start = cellVal.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index;
+						end = start + exp.length;
+						let range = new NotebookRange(cell, 0, start, 0, end);
+						findResults = findResults.concat(range);
+						index = end;
+					}
+				} else {
+					for (let j = 0; j < cellVal.length; j++) {
+						index = 0;
+						let cellValFormatted = cell.cellType === 'markdown' ? this.cleanMarkdownLinks(cellVal[j]) : cellVal[j];
+						while (cellValFormatted.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) > -1) {
+							start = cellValFormatted.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index + 1;
+							end = start + exp.length;
+							// lineNumber: j+1 since notebook editors aren't zero indexed.
+							let range = new NotebookRange(cell, j + 1, start, j + 1, end);
+							findResults = findResults.concat(range);
+							index = end;
+						}
+					}
+				}
+			}
+			return findResults;
+		};
+		for (let i = 0; i < this.notebookModel.cells.length; i++) {
+			const item = this.notebookModel.cells[i];
+			const result = searchFn!(item, exp);
+			if (result) {
+				this._findArray = this._findArray.concat(result);
+				this._onFindCountChange.fire(this._findArray.length);
+				if (maxMatches > 0 && this._findArray.length === maxMatches) {
+					break;
+				}
+			}
+		}
+	}
+
+	// In markdown links are defined as [Link Text](https://url/of/the/text). when searching for text we shouldn't
+	// look for the values inside the (), below regex replaces that with just the Link Text.
+	cleanMarkdownLinks(cellSrc: string): string {
+		return cellSrc.replace(/(?:__|[*#])|\[(.*?)\]\(.*?\)/gm, '$1');
+	}
+
+	clearFind(): void {
+		this._findArray = new Array<NotebookRange>();
+		this._findIndex = 0;
+		this._onFindCountChange.fire(this._findArray.length);
+	}
+
+	getFindIndex(): number {
+		return types.isUndefinedOrNull(this._findIndex) ? 0 : this._findIndex + 1;
+	}
+
+	getFindCount(): number {
+		return types.isUndefinedOrNull(this._findArray) ? 0 : this._findArray.length;
+	}
+
+
+	//#region Decorations
+
+	public isDisposed(): boolean {
+		return this._isDisposed;
+	}
+
+	private _assertNotDisposed(): void {
+		if (this._isDisposed) {
+			throw new Error('Model is disposed!');
+		}
+	}
+
+	public changeDecorations<T>(callback: (changeAccessor: model.IModelDecorationsChangeAccessor) => T, ownerId: number = 0): T | null {
+		this._assertNotDisposed();
+
+		try {
+			this._onDidChangeDecorations.beginDeferredEmit();
+			return this.ChangeDecorations(ownerId, callback);
+		} finally {
+			this._onDidChangeDecorations.endDeferredEmit();
+		}
+	}
+
+	public dispose(): void {
+		super.dispose();
+		this._findArray = [];
+		this._isDisposed = true;
+	}
 
 }
 
@@ -412,4 +578,3 @@ export class NotebookIntervalNode {
 
 	}
 }
-

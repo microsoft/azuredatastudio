@@ -412,18 +412,29 @@ export interface INotebookModel {
 
 	standardKernels: IStandardKernelWithProvider[];
 
+	requestConnection(): Promise<boolean>;
+
+}
+
+export interface INotebookFindModel {
+
+	/** Get the find count */
 	getFindCount(): number;
 
+	/** Get the find index */
 	getFindIndex(): number;
 
+	/** find the next match */
 	findNext(): Promise<NotebookRange>;
 
+	/** find the previous match */
 	findPrevious(): Promise<NotebookRange>;
 
+	/** search the notebook model for the given exp upto maxMatch occurances */
 	find(exp: string, maxMatches?: number): Promise<NotebookRange>;
-
+	/** cleat the results of the find */
 	clearFind(): void;
-
+	/** return the find results with their ranges */
 	findArray: NotebookRange[];
 
 	/**
@@ -432,7 +443,12 @@ export interface INotebookModel {
 	 * @return The decoration range or null if the decoration was not found.
 	 */
 	getDecorationRange(id: string): NotebookRange | null;
-
+	/**
+	 * Get the range associated with a decoration.
+	 * @param callback that accepts changeAccessor which applies the decorations
+	 * @param ownerId the owner id
+	 * @return The decoration range or null if the decoration was not found.
+	 */
 	changeDecorations<T>(callback: (changeAccessor: IModelDecorationsChangeAccessor) => T, ownerId: number): T | null;
 	/**
 	 * Get the maximum legal column for line at `lineNumber`
@@ -446,10 +462,8 @@ export interface INotebookModel {
 
 	findMatches: NotebookFindMatch[];
 
+	/** Emit event when the find count changes */
 	onFindCountChange: Event<number>;
-
-	requestConnection(): Promise<boolean>;
-
 }
 
 export interface NotebookContentChange {

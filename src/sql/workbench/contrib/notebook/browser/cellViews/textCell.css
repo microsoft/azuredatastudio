@@ -17,8 +17,12 @@ text-cell-component .notebook-preview {
 	user-select: text;
 }
 
-.notebook-preview .rangeHighlight {
-	background-color: rgba(253, 255, 0, 0.2);
+.vs .notebook-preview .rangeHighlight {
+	background-color: #fdff0033;
+}
+
+.vs-dark .notebook-preview .rangeHighlight {
+	background-color: #ffffff0b;
 }
 
 text-cell-component table {

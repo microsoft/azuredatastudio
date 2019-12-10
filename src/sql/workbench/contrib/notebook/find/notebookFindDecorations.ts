@@ -55,7 +55,7 @@ export class NotebookFindDecorations implements IDisposable {
 
 	public getFindScope(): NotebookRange | null {
 		if (this._findScopeDecorationId) {
-			return this._editor.getNotebookModel().getDecorationRange(this._findScopeDecorationId);
+			return this._editor.getNotebookFindModel().getDecorationRange(this._findScopeDecorationId);
 		}
 		return null;
 	}
@@ -80,7 +80,7 @@ export class NotebookFindDecorations implements IDisposable {
 		let matchPosition = 0;
 		if (nextMatch) {
 			for (let i = 0, len = this._decorations.length; i < len; i++) {
-				let range = this._editor.getNotebookModel().getDecorationRange(this._decorations[i]);
+				let range = this._editor.getNotebookFindModel().getDecorationRange(this._decorations[i]);
 				if (nextMatch.equalsRange(range)) {
 					newCurrentDecorationId = this._decorations[i];
 					matchPosition = (i + 1);
@@ -103,10 +103,10 @@ export class NotebookFindDecorations implements IDisposable {
 					}
 
 					if (newCurrentDecorationId !== null) {
-						let rng = this._editor.getNotebookModel().getDecorationRange(newCurrentDecorationId)!;
+						let rng = this._editor.getNotebookFindModel().getDecorationRange(newCurrentDecorationId)!;
 						if (rng.startLineNumber !== rng.endLineNumber && rng.endColumn === 1) {
 							let lineBeforeEnd = rng.endLineNumber - 1;
-							let lineBeforeEndMaxColumn = this._editor.getNotebookModel().getLineMaxColumn(lineBeforeEnd);
+							let lineBeforeEndMaxColumn = this._editor.getNotebookFindModel().getLineMaxColumn(lineBeforeEnd);
 							rng = new NotebookRange(rng.cell, rng.startLineNumber, rng.startColumn, lineBeforeEnd, lineBeforeEndMaxColumn);
 						}
 						this._rangeHighlightDecorationId = changeAccessor.addDecoration(rng, NotebookFindDecorations._RANGE_HIGHLIGHT_DECORATION);
@@ -155,7 +155,7 @@ export class NotebookFindDecorations implements IDisposable {
 				findMatchesOptions = NotebookFindDecorations._FIND_MATCH_NO_OVERVIEW_DECORATION;
 
 				// approximate a distance in lines where matches should be merged
-				const lineCount = this._editor.getNotebookModel().getLineCount();
+				const lineCount = this._editor.getNotebookFindModel().getLineCount();
 				const height = this._editor.getConfiguration().layoutInfo.height;
 				const approxPixelsPerLine = height / lineCount;
 				const mergeLinesDelta = Math.max(2, Math.ceil(3 / approxPixelsPerLine));

@@ -26,13 +26,8 @@ import { keys } from 'vs/base/common/map';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { getErrorMessage } from 'vs/base/common/errors';
-import * as types from 'vs/base/common/types';
-import { EDITOR_MODEL_DEFAULTS } from 'vs/editor/common/config/editorOptions';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { startsWith } from 'vs/base/common/strings';
-import { NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
-import * as model from 'vs/editor/common/model';
-import { NotebookFindImpl } from 'sql/workbench/contrib/notebook/find/notebookFindImpl';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -83,27 +78,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _connectionUrisToDispose: string[] = [];
 	private _textCellsLoading: number = 0;
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[];
-	private _findArray: Array<NotebookRange>;
-	private _findIndex: number;
-	private _onFindCountChange = new Emitter<number>();
-	public get onFindCountChange(): Event<number> { return this._onFindCountChange.event; }
+
 	public requestConnectionHandler: () => Promise<boolean>;
-	private _isDisposed: boolean;
 
-
-	public readonly id: string;
-	private _notebookFind: NotebookFindImpl;
-
-	public static DEFAULT_CREATION_OPTIONS: model.ITextModelCreationOptions = {
-		isForSimpleWidget: false,
-		tabSize: EDITOR_MODEL_DEFAULTS.tabSize,
-		indentSize: EDITOR_MODEL_DEFAULTS.indentSize,
-		insertSpaces: EDITOR_MODEL_DEFAULTS.insertSpaces,
-		detectIndentation: false,
-		defaultEOL: model.DefaultEndOfLine.LF,
-		trimAutoWhitespace: EDITOR_MODEL_DEFAULTS.trimAutoWhitespace,
-		largeFileOptimizations: EDITOR_MODEL_DEFAULTS.largeFileOptimizations,
-	};
 	//#endregion
 	constructor(
 		private _notebookOptions: INotebookModelOptions,
@@ -123,12 +100,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._notebookOptions.layoutChanged(() => this._layoutChanged.fire());
 		}
 		this._defaultKernel = _notebookOptions.defaultKernel;
-		this._isDisposed = false;
-
-		// create the find implmentation object
-		this._notebookFind = new NotebookFindImpl();
-		this.id = '$model' + this._notebookFind.ModelId;
-
 	}
 
 	public get notebookManagers(): INotebookManager[] {
@@ -808,8 +779,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		super.dispose();
 		this.disconnectAttachToConnections().catch(e => this.logService.error(e));
 		this.handleClosed().catch(e => this.logService.error(e));
-		this._findArray = [];
-		this._isDisposed = true;
 	}
 
 	public async handleClosed(): Promise<void> {
@@ -1030,161 +999,4 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 		this._contentChangedEmitter.fire(changeInfo);
 	}
-
-	findNext(): Promise<NotebookRange> {
-		if (this._findArray && this._findArray.length !== 0) {
-			if (this._findIndex === this._findArray.length - 1) {
-				this._findIndex = 0;
-			} else {
-				++this._findIndex;
-			}
-			return Promise.resolve(this._findArray[this._findIndex]);
-		} else {
-			return Promise.reject(new Error('no search running'));
-		}
-	}
-
-	findPrevious(): Promise<NotebookRange> {
-		if (this._findArray && this._findArray.length !== 0) {
-			if (this._findIndex === 0) {
-				this._findIndex = this._findArray.length - 1;
-			} else {
-				--this._findIndex;
-			}
-			return Promise.resolve(this._findArray[this._findIndex]);
-		} else {
-			return Promise.reject(new Error('no search running'));
-		}
-	}
-
-	find(exp: string, maxMatches?: number): Promise<NotebookRange> {
-		this._findArray = new Array<NotebookRange>();
-		this._findIndex = 0;
-		this._onFindCountChange.fire(this._findArray.length);
-		if (exp) {
-			return new Promise<NotebookRange>((resolve) => {
-				const disp = this.onFindCountChange(e => {
-					resolve(this._findArray[0]);
-					disp.dispose();
-				});
-				this._startSearch(exp, maxMatches);
-			});
-		} else {
-			return Promise.reject(new Error('no expression'));
-		}
-	}
-
-	public get findMatches(): NotebookFindMatch[] {
-		let findMatches: NotebookFindMatch[] = [];
-		this._findArray.forEach(element => {
-			findMatches = findMatches.concat(new NotebookFindMatch(element, null));
-		});
-		return findMatches;
-	}
-
-	public get findArray(): NotebookRange[] {
-		return this.findArray;
-	}
-
-	private _startSearch(exp: string, maxMatches: number = 0): void {
-		let searchFn = (cell: ICellModel, exp: string): NotebookRange[] => {
-			let findResults: NotebookRange[] = [];
-			let cellVal = cell.source;
-			let index: number;
-			let start: number;
-			let end: number;
-			if (cellVal) {
-				if (typeof cellVal === 'string') {
-					index = 0;
-					while (cellVal.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) > -1) {
-						start = cellVal.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index;
-						end = start + exp.length;
-						let range = new NotebookRange(cell, 0, start, 0, end);
-						findResults = findResults.concat(range);
-						index = end;
-					}
-				} else {
-					for (let j = 0; j < cellVal.length; j++) {
-						index = 0;
-						let cellValFormatted = cell.cellType === 'markdown' ? this.cleanMarkdownLinks(cellVal[j]) : cellVal[j];
-						while (cellValFormatted.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) > -1) {
-							start = cellValFormatted.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index + 1;
-							end = start + exp.length;
-							// lineNumber: j+1 since notebook editors aren't zero indexed.
-							let range = new NotebookRange(cell, j + 1, start, j + 1, end);
-							findResults = findResults.concat(range);
-							index = end;
-						}
-					}
-				}
-			}
-			return findResults;
-		};
-		for (let i = 0; i < this.cells.length; i++) {
-			const item = this.cells[i];
-			const result = searchFn!(item, exp);
-			if (result) {
-				this._findArray = this._findArray.concat(result);
-				this._onFindCountChange.fire(this._findArray.length);
-				if (maxMatches > 0 && this._findArray.length === maxMatches) {
-					break;
-				}
-			}
-		}
-	}
-
-	// In markdown links are defined as [Link Text](https://url/of/the/text). when searching for text we shouldn't
-	// look for the values inside the (), below regex replaces that with just the Link Text.
-	cleanMarkdownLinks(cellSrc: string): string {
-		return cellSrc.replace(/(?:__|[*#])|\[(.*?)\]\(.*?\)/gm, '$1');
-	}
-
-	clearFind(): void {
-		this._findArray = new Array<NotebookRange>();
-		this._findIndex = 0;
-		this._onFindCountChange.fire(this._findArray.length);
-	}
-
-	getFindIndex(): number {
-		return types.isUndefinedOrNull(this._findIndex) ? 0 : this._findIndex + 1;
-	}
-
-	getFindCount(): number {
-		return types.isUndefinedOrNull(this._findArray) ? 0 : this._findArray.length;
-	}
-
-
-	//#region Decorations
-
-	public isDisposed(): boolean {
-		return this._isDisposed;
-	}
-
-	private _assertNotDisposed(): void {
-		if (this._isDisposed) {
-			throw new Error('Model is disposed!');
-		}
-	}
-
-	public changeDecorations<T>(callback: (changeAccessor: model.IModelDecorationsChangeAccessor) => T, ownerId: number = 0): T | null {
-		this._assertNotDisposed();
-
-		try {
-			this._notebookFind.emitChangeDecorations(true);
-			return this._notebookFind.ChangeDecorations(ownerId, callback);
-		} finally {
-			this._notebookFind.emitChangeDecorations(false);
-		}
-	}
-
-	public getDecorationRange(id: string): NotebookRange {
-		return this._notebookFind.getDecorationRange(id);
-	}
-	getLineMaxColumn(lineNumber: number): number {
-		return this._notebookFind.getLineMaxColumn(lineNumber);
-	}
-	getLineCount(): number {
-		return this._notebookFind.getLineCount();
-	}
-
 }
