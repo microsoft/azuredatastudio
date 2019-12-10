@@ -240,7 +240,7 @@ const externalExtensions = [
 	'cms',
 	'query-history',
 	'liveshare',
-	'database-project'
+	'sql-database-projects'
 ];
 
 // extensions that require a rebuild since they have native parts
