@@ -53,13 +53,13 @@ suite('Notebook Input', function (): void {
 		assert.strictEqual(input.connectionProfile, testProfile);
 
 		// Default Kernel
-		let testKernel: nb.IKernelSpec = {
+		let testDefaultKernel: nb.IKernelSpec = {
 			name: 'TestName',
 			language: 'TestLanguage',
 			display_name: 'TestDisplayName'
 		};
-		input.defaultKernel = testKernel;
-		assert.strictEqual(input.defaultKernel, testKernel);
+		input.defaultKernel = testDefaultKernel;
+		assert.strictEqual(input.defaultKernel, testDefaultKernel);
 
 		// Untitled Editor Model
 		let testModel = <UntitledTextEditorModel>{};
@@ -68,6 +68,21 @@ suite('Notebook Input', function (): void {
 
 		// getResource
 		assert.strictEqual(input.getResource(), testUri);
+
+		// Standard kernels
+		let testKernels = [{
+			name: 'TestName1',
+			displayName: 'TestDisplayName1',
+			connectionProviderIds: ['TestId1'],
+			notebookProvider: 'TestProvider1'
+		}, {
+			name: 'TestName2',
+			displayName: 'TestDisplayName2',
+			connectionProviderIds: ['TestId2'],
+			notebookProvider: 'TestProvider2'
+		}];
+		input.standardKernels = testKernels;
+		assert.deepStrictEqual(input.standardKernels, testKernels);
 	});
 
 	test('Parent container', async function (): Promise<void> {
@@ -97,4 +112,12 @@ suite('Notebook Input', function (): void {
 		mockParentNode.verify(e => e.removeChild(TypeMoq.It.isAny()), TypeMoq.Times.once());
 		assert.strictEqual(removedContainer, oldContainer);
 	});
+
+	// test('IsDirty state', async function (): Promise<void> {
+	// 	let testUri = URI.from({ scheme: Schemas.untitled, path: 'TestPath' });
+	// 	let input = instantiationService.createInstance(UntitledNotebookInput, 'TestInput', testUri, undefined);
+
+	// 	let model = await input.resolve();
+	// 	model.setDirty(true);
+	// });
 });
