@@ -334,7 +334,7 @@ function processTextField(context: FieldContext): void {
 			removeInvalidInputMessage();
 		}));
 
-		const inputValidator = (): { valid: boolean; message: string; } => {
+		const inputValidator: Validator = (): { valid: boolean; message: string; } => {
 			const inputIsValid = validationRegex.test(input.value!);
 			return { valid: inputIsValid, message: context.fieldInfo.textValidationDescription! };
 		};
