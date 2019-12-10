@@ -311,32 +311,18 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand({
 	id: OE_REFRESH_COMMAND_ID,
 	handler: async (accessor, args: ObjectExplorerActionsContext): Promise<void> => {
-		const connectionManagementService = accessor.get(IConnectionManagementService);
-		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const objectExplorerService = accessor.get(IObjectExplorerService);
 		const logService = accessor.get(ILogService);
 		const notificationService = accessor.get(INotificationService);
-		const connection = new ConnectionProfile(capabilitiesService, args.connectionProfile);
-		if (connectionManagementService.isConnected(undefined, connection)) {
-			let treeNode = await getTreeNode(args, objectExplorerService);
-			if (!treeNode) {
-				await objectExplorerService.updateObjectExplorerNodes(connection.toIConnectionProfile());
-				treeNode = objectExplorerService.getObjectExplorerNode(connection);
-			}
-			if (treeNode) {
-				const tree = objectExplorerService.getServerTreeView().tree;
-				try {
-					await objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode);
-					await tree.refresh(treeNode);
-				} catch (err) {
-					// Display message to the user but also log the entire error to the console for the stack trace
-					notificationService.error(localize('refreshError', "An error occurred refreshing node '{0}': {1}", args.nodeInfo.label, getErrorMessage(err)));
-					logService.error(err);
-				}
-
-			} else {
-				logService.error(`Could not find tree node for node ${args.nodeInfo.label}`);
-			}
+		const treeNode = await getTreeNode(args, objectExplorerService);
+		const tree = objectExplorerService.getServerTreeView().tree;
+		try {
+			await objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode);
+			await tree.refresh(treeNode);
+		} catch (err) {
+			// Display message to the user but also log the entire error to the console for the stack trace
+			notificationService.error(localize('refreshError', "An error occurred refreshing node '{0}': {1}", args.nodeInfo.label, getErrorMessage(err)));
+			logService.error(err);
 		}
 	}
 });
