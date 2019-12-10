@@ -204,7 +204,7 @@ const externalExtensions = [
     'cms',
     'query-history',
     'liveshare',
-    'sql-database-project'
+    'sql-database-projects'
 ];
 // extensions that require a rebuild since they have native parts
 const rebuildExtensions = [
