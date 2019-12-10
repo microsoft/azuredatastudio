@@ -28,7 +28,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	public initialize(): void {
 		const self = this;
-		const clusterNameFieldDescription = localize('deployCluster.ClusterNameDescription', "The name must consist only of alphanumeric lowercase characters or '-' and must start and end with an alphanumeric character.");
+		const clusterNameFieldDescription = localize('deployCluster.ClusterNameDescription', "The cluster name must consist only of alphanumeric lowercase characters or '-' and must start and end with an alphanumeric character.");
 		const basicSection: SectionInfo = {
 			labelPosition: LabelPosition.Left,
 			title: '',
@@ -313,6 +313,13 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					if (!isValidSQLPassword(password, getInputBoxComponent(VariableNames.AdminUserName_VariableName, this.inputComponents).value!)) {
 						messages.push(getInvalidSQLPasswordMessage(localize('deployCluster.AdminPasswordField', "Password")));
 					}
+
+					this.validators.forEach(validator => {
+						const result = validator();
+						if (!result.valid) {
+							messages.push(result.message);
+						}
+					});
 
 					if (messages.length > 0) {
 						this.wizard.wizardObject.message = {

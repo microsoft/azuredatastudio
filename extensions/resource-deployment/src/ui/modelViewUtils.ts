@@ -322,13 +322,10 @@ function processTextField(context: FieldContext): void {
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelPosition);
 
 	if (context.fieldInfo.textValidationRequired) {
-		console.log(`TCL: context.fieldInfo.textValidationRequired`, context.fieldInfo.textValidationRequired);
 		let validationRegex: RegExp = new RegExp(context.fieldInfo.textValidationRegex!);
-		console.log(`TCL: context.fieldInfo.textValidationRegex`, context.fieldInfo.textValidationRegex);
 
 		const removeInvalidInputMessage = (): void => {
 			if (validationRegex.test(input.value!)) { // input is valid
-				console.log(`TCL: removeInvalidInputMessage -> validationRegex.test(input.value!)`, validationRegex.test(input.value!));
 				removeValidationMessage(context.container, context.fieldInfo.textValidationDescription!);
 			}
 		};
@@ -339,8 +336,6 @@ function processTextField(context: FieldContext): void {
 
 		const inputValidator = (): { valid: boolean; message: string; } => {
 			const inputIsValid = validationRegex.test(input.value!);
-			console.log(`TCL: inputValidator -> input.value`, input.value);
-			console.log(`TCL: inputValidator -> inputIsValid`, inputIsValid);
 			return { valid: inputIsValid, message: context.fieldInfo.textValidationDescription! };
 		};
 		context.onNewValidatorCreated(inputValidator);
