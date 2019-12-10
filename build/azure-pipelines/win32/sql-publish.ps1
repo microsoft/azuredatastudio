@@ -9,11 +9,11 @@ $env:AZURE_STORAGE_ACCESS_KEY_2 = $storageKey
 $env:AZURE_DOCUMENTDB_MASTERKEY = $documentDbKey
 
 $ExeName = "AzureDataStudioSetup.exe"
-$SystemExe = "$artifactsDir\$ExeName"
-$UserExe = "$artifactsDir\user-setup\$ExeName"
+$SystemExe = "$artifactsDir\win32-x64\system-setup\$ExeName"
+$UserExe = "$artifactsDir\win32-x64\user-setup\$ExeName"
 $UserExeName = "AzureDataStudioUserSetup.exe"
 $ZipName = "azuredatastudio-win32-x64.zip"
-$Zip = "$artifactsDir\$ZipName"
+$Zip = "$artifactsDir\win32-x64\archive\$ZipName"
 
 $VersionJson = Get-Content -Raw -Path "$artifactsDir\version.json" | ConvertFrom-Json
 $Version = $VersionJson.version

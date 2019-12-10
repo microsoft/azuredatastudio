@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 
-import { Event } from 'vs/base/common/event';
+import * as vsEvent from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { URI } from 'vs/base/common/uri';
 import { RenderMimeRegistry } from 'sql/workbench/contrib/notebook/browser/outputs/registry';
@@ -14,7 +14,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ICellModel, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { NotebookChangeType, CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
@@ -37,9 +37,9 @@ export interface ILanguageMagic {
 export interface INotebookService {
 	_serviceBrand: undefined;
 
-	readonly onNotebookEditorAdd: Event<INotebookEditor>;
-	readonly onNotebookEditorRemove: Event<INotebookEditor>;
-	onNotebookEditorRename: Event<INotebookEditor>;
+	readonly onNotebookEditorAdd: vsEvent.Event<INotebookEditor>;
+	readonly onNotebookEditorRemove: vsEvent.Event<INotebookEditor>;
+	onNotebookEditorRename: vsEvent.Event<INotebookEditor>;
 
 	readonly isRegistrationComplete: boolean;
 	readonly registrationComplete: Promise<void>;
@@ -170,6 +170,7 @@ export interface INotebookEditor {
 	getSections(): INotebookSection[];
 	navigateToSection(sectionId: string): void;
 	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void;
+	addCell(cellType: CellType, index?: number, event?: Event);
 }
 
 export interface INavigationProvider {
