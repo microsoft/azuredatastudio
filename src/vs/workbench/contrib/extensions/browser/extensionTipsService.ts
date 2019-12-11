@@ -49,6 +49,7 @@ import { platform, env as processEnv } from 'vs/base/common/process';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys'; // {{SQL CARBON EDIT}}
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+// import { Schemas } from 'vs/base/common/network';
 
 const milliSecondsInADay = 1000 * 60 * 60 * 24;
 const choiceNever = localize('neverShowAgain', "Don't Show Again");
@@ -712,7 +713,8 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	 */
 	/*private promptFiletypeBasedRecommendations(model: ITextModel): void { {{SQL CARBON EDIT}} comment out for no unused
 		const uri = model.uri;
-		if (!uri || uri.scheme === 'gitfs' || !this.fileService.canHandleResource(uri)) {
+		const supportedSchemes = [Schemas.untitled, Schemas.file, Schemas.vscodeRemote];
+		if (!uri || supportedSchemes.indexOf(uri.scheme) === -1) {
 			return;
 		}
 
