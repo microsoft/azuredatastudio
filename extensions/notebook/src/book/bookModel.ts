@@ -12,11 +12,11 @@ import { maxBookSearchDepth, notebookConfigKey } from '../common/constants';
 import * as path from 'path';
 import * as fileServices from 'fs';
 import * as fs from 'fs-extra';
-import * as nls from 'vscode-nls';
+import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, IJupyterBookSection } from '../contracts/content';
 import { isNullOrUndefined } from 'util';
 
-const localize = nls.loadMessageBundle();
+
 const fsPromises = fileServices.promises;
 
 export class BookModel implements azdata.nb.NavigationProvider {
@@ -56,10 +56,9 @@ export class BookModel implements azdata.nb.NavigationProvider {
 			let tableOfContentPaths = await glob(p, { deep: maxDepth });
 			if (tableOfContentPaths.length > 0) {
 				this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
-				let bookOpened: boolean = this._tableOfContentPaths.length > 0;
-				vscode.commands.executeCommand('setContext', 'bookOpened', bookOpened);
+				vscode.commands.executeCommand('setContext', 'bookOpened', true);
 			} else {
-				vscode.window.showErrorMessage(localize('bookInitializeFailed', "Book initialize failed: Failed to recognize the structure."));
+				vscode.window.showErrorMessage(loc.errBookInitialize);
 			}
 
 		} catch (error) {
@@ -173,7 +172,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 						);
 						notebooks.push(markdown);
 					} else {
-						let error = localize('missingFileError', "Missing file : {0}", sections[i].title);
+						let error = loc.missingFileError(sections[i].title);
 						vscode.window.showErrorMessage(error);
 					}
 				}
@@ -192,9 +191,9 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		try {
 			return section.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.parseJupyterSections(val.sections)) : acc.concat(val), []);
 		} catch (error) {
-			let err: string = localize('InvalidError.tocFile', "{0}", error);
+			let err: string = loc.invalidTocFileError(error);
 			if (section.length > 0) {
-				err = localize('Invalid toc.yml', "Error: {0} has an incorrect toc.yml file", section[0].title); //need to find a way to get title.
+				err = loc.invalidTocError(section[0].title);
 			}
 			vscode.window.showErrorMessage(err);
 			throw err;
