@@ -28,12 +28,13 @@ import { ResourceQueue, timeout } from 'vs/base/common/async';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { EditorActivation, ITextEditorOptions } from 'vs/platform/editor/common/editor';
+import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 
 // {{SQL CARBON EDIT}}
 import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 
 export class FileEditorTracker extends Disposable implements IWorkbenchContribution {
-	private closeOnFileDelete: boolean | undefined;
+	private closeOnFileDelete: boolean = false;
 	private readonly modelLoadQueue = new ResourceQueue();
 	private readonly activeOutOfWorkspaceWatchers = new ResourceMap<IDisposable>();
 
@@ -46,7 +47,8 @@ export class FileEditorTracker extends Disposable implements IWorkbenchContribut
 		@IEnvironmentService private readonly environmentService: IEnvironmentService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
-		@IHostService private readonly hostService: IHostService
+		@IHostService private readonly hostService: IHostService,
+		@ICodeEditorService private readonly codeEditorService: ICodeEditorService
 	) {
 		super();
 
@@ -67,7 +69,7 @@ export class FileEditorTracker extends Disposable implements IWorkbenchContribut
 		this._register(this.textFileService.models.onModelsDirty(e => this.onTextFilesDirty(e)));
 
 		// Out of workspace file watchers
-		this._register(this.editorService.onDidVisibleEditorsChange(() => this.handleOutOfWorkspaceWatchers()));
+		this._register(this.editorService.onDidVisibleEditorsChange(() => this.onDidVisibleEditorsChange()));
 
 		// Update visible editors when focus is gained
 		this._register(this.hostService.onDidChangeFocus(e => this.onWindowFocusChange(e)));
@@ -79,31 +81,7 @@ export class FileEditorTracker extends Disposable implements IWorkbenchContribut
 		this.lifecycleService.onShutdown(this.dispose, this);
 	}
 
-	private onConfigurationUpdated(configuration: IWorkbenchEditorConfiguration): void {
-		if (typeof configuration.workbench?.editor?.closeOnFileDelete === 'boolean') {
-			this.closeOnFileDelete = configuration.workbench.editor.closeOnFileDelete;
-		} else {
-			this.closeOnFileDelete = false; // default
-		}
-	}
-
-	private onWindowFocusChange(focused: boolean): void {
-		if (focused) {
-			// the window got focus and we use this as a hint that files might have been changed outside
-			// of this window. since file events can be unreliable, we queue a load for models that
-			// are visible in any editor. since this is a fast operation in the case nothing has changed,
-			// we tolerate the additional work.
-			distinct(
-				coalesce(this.editorService.visibleEditors
-					.map(editorInput => {
-						const resource = toResource(editorInput, { supportSideBySide: SideBySideEditorChoice.MASTER });
-						return resource ? this.textFileService.models.get(resource) : undefined;
-					}))
-					.filter(model => !model.isDirty()),
-				model => model.resource.toString()
-			).forEach(model => this.queueModelLoad(model));
-		}
-	}
+	//#region Handle deletes and moves in opened editors
 
 	// Note: there is some duplication with the other file event handler below. Since we cannot always rely on the disk events
 	// carrying all necessary data in all environments, we also use the file operation events to make sure operations are handled.
@@ -122,17 +100,86 @@ export class FileEditorTracker extends Disposable implements IWorkbenchContribut
 		}
 	}
 
-	private onFileChanges(e: FileChangesEvent): void {
+	private handleMovedFileInOpenedEditors(oldResource: URI, newResource: URI): void {
+		this.editorGroupService.groups.forEach(group => {
+			group.editors.forEach(editor => {
+				const resource = editor.getResource();
+				if (resource && (editor instanceof FileEditorInput || editor instanceof QueryEditorInput || editor.handleMove)) { // {{SQL CARBON EDIT}} #TODO we can remove this edit by just implementing handlemove
 
-		// Handle updates
-		if (e.gotAdded() || e.gotUpdated()) {
-			this.handleUpdates(e);
+					// Update Editor if file (or any parent of the input) got renamed or moved
+					if (resources.isEqualOrParent(resource, oldResource)) {
+						let reopenFileResource: URI;
+						if (oldResource.toString() === resource.toString()) {
+							reopenFileResource = newResource; // file got moved
+						} else {
+							const index = this.getIndexOfPath(resource.path, oldResource.path, resources.hasToIgnoreCase(resource));
+							reopenFileResource = resources.joinPath(newResource, resource.path.substr(index + oldResource.path.length + 1)); // parent folder got moved
+						}
+
+						const options: ITextEditorOptions = {
+							preserveFocus: true,
+							pinned: group.isPinned(editor),
+							index: group.getIndexOfEditor(editor),
+							inactive: !group.isActive(editor),
+						};
+
+						if (editor.handleMove) {
+							const replacement = editor.handleMove(group.id, reopenFileResource, options);
+							if (replacement) {
+								this.editorService.replaceEditors([{ editor, replacement }], group);
+								return;
+							}
+						}
+
+						this.editorService.replaceEditors([{
+							editor: { resource },
+							replacement: {
+								resource: reopenFileResource,
+								options: {
+									...options,
+									viewState: this.getViewStateFor(oldResource, group)
+								}
+							},
+						}], group);
+					}
+				}
+			});
+		});
+	}
+
+	private getIndexOfPath(path: string, candidate: string, ignoreCase: boolean): number {
+		if (candidate.length > path.length) {
+			return -1;
 		}
 
-		// Handle deletes
-		if (e.gotDeleted()) {
-			this.handleDeletes(e, true);
+		if (path === candidate) {
+			return 0;
 		}
+
+		if (ignoreCase) {
+			path = path.toLowerCase();
+			candidate = candidate.toLowerCase();
+		}
+
+		return path.indexOf(candidate);
+	}
+
+	private getViewStateFor(resource: URI, group: IEditorGroup): IEditorViewState | undefined {
+		const editors = this.editorService.visibleControls;
+
+		for (const editor of editors) {
+			if (editor?.input && editor.group === group) {
+				const editorResource = editor.input.getResource();
+				if (editorResource && resource.toString() === editorResource.toString()) {
+					const control = editor.getControl();
+					if (isCodeEditor(control)) {
+						return withNullAsUndefined(control.saveViewState());
+					}
+				}
+			}
+		}
+
+		return undefined;
 	}
 
 	private handleDeletes(arg1: URI | FileChangesEvent, isExternal: boolean, movedTo?: URI): void {
@@ -218,86 +265,21 @@ export class FileEditorTracker extends Disposable implements IWorkbenchContribut
 		return editors;
 	}
 
-	private handleMovedFileInOpenedEditors(oldResource: URI, newResource: URI): void {
-		this.editorGroupService.groups.forEach(group => {
-			group.editors.forEach(editor => {
-				const resource = editor.getResource();
-				if (resource && (editor instanceof FileEditorInput || editor instanceof QueryEditorInput || editor.handleMove)) { // {{SQL CARBON EDIT}} #TODO we can remove this edit by just implementing handlemove
+	//#endregion
 
-					// Update Editor if file (or any parent of the input) got renamed or moved
-					if (resources.isEqualOrParent(resource, oldResource)) {
-						let reopenFileResource: URI;
-						if (oldResource.toString() === resource.toString()) {
-							reopenFileResource = newResource; // file got moved
-						} else {
-							const index = this.getIndexOfPath(resource.path, oldResource.path, resources.hasToIgnoreCase(resource));
-							reopenFileResource = resources.joinPath(newResource, resource.path.substr(index + oldResource.path.length + 1)); // parent folder got moved
-						}
+	//#region Update text models and binary editors on external changes
 
-						const options: ITextEditorOptions = {
-							preserveFocus: true,
-							pinned: group.isPinned(editor),
-							index: group.getIndexOfEditor(editor),
-							inactive: !group.isActive(editor),
-						};
+	private onFileChanges(e: FileChangesEvent): void {
 
-						if (editor.handleMove) {
-							const replacement = editor.handleMove(group.id, reopenFileResource, options);
-							if (replacement) {
-								this.editorService.replaceEditors([{ editor, replacement }], group);
-								return;
-							}
-						}
-
-						this.editorService.replaceEditors([{
-							editor: { resource },
-							replacement: {
-								resource: reopenFileResource,
-								options: {
-									...options,
-									viewState: this.getViewStateFor(oldResource, group)
-								}
-							},
-						}], group);
-					}
-				}
-			});
-		});
-	}
-
-	private getIndexOfPath(path: string, candidate: string, ignoreCase: boolean): number {
-		if (candidate.length > path.length) {
-			return -1;
+		// Handle updates
+		if (e.gotAdded() || e.gotUpdated()) {
+			this.handleUpdates(e);
 		}
 
-		if (path === candidate) {
-			return 0;
+		// Handle deletes
+		if (e.gotDeleted()) {
+			this.handleDeletes(e, true);
 		}
-
-		if (ignoreCase) {
-			path = path.toLowerCase();
-			candidate = candidate.toLowerCase();
-		}
-
-		return path.indexOf(candidate);
-	}
-
-	private getViewStateFor(resource: URI, group: IEditorGroup): IEditorViewState | undefined {
-		const editors = this.editorService.visibleControls;
-
-		for (const editor of editors) {
-			if (editor?.input && editor.group === group) {
-				const editorResource = editor.input.getResource();
-				if (editorResource && resource.toString() === editorResource.toString()) {
-					const control = editor.getControl();
-					if (isCodeEditor(control)) {
-						return withNullAsUndefined(control.saveViewState());
-					}
-				}
-			}
-		}
-
-		return undefined;
 	}
 
 	private handleUpdates(e: FileChangesEvent): void {
@@ -353,7 +335,40 @@ export class FileEditorTracker extends Disposable implements IWorkbenchContribut
 		});
 	}
 
-	private handleOutOfWorkspaceWatchers(): void {
+	//#endregion
+
+	//#region Open dirty text files if not opened already
+
+	private onTextFilesDirty(e: readonly TextFileModelChangeEvent[]): void {
+
+		// If files become dirty but are not opened, we open it in the background unless there are pending to be saved
+		this.doOpenDirtyResources(distinct(e.filter(e => {
+
+			// Only dirty models that are not PENDING_SAVE
+			const model = this.textFileService.models.get(e.resource);
+			const shouldOpen = model?.isDirty() && !model.hasState(ModelState.PENDING_SAVE);
+
+			// Only if not open already
+			return shouldOpen && !this.editorService.isOpen({ resource: e.resource });
+		}).map(e => e.resource), r => r.toString()));
+	}
+
+	private doOpenDirtyResources(resources: URI[]): void {
+
+		// Open
+		this.editorService.openEditors(resources.map(resource => {
+			return {
+				resource,
+				options: { inactive: true, pinned: true, preserveFocus: true }
+			};
+		}));
+	}
+
+	//#endregion
+
+	//#region Out of workspace file watchers
+
+	private onDidVisibleEditorsChange(): void {
 		const visibleOutOfWorkspacePaths = new ResourceMap<URI>();
 		coalesce(this.editorService.visibleEditors.map(editorInput => {
 			return toResource(editorInput, { supportSideBySide: SideBySideEditorChoice.MASTER });
@@ -380,30 +395,53 @@ export class FileEditorTracker extends Disposable implements IWorkbenchContribut
 		});
 	}
 
-	private onTextFilesDirty(e: readonly TextFileModelChangeEvent[]): void {
+	//#endregion
 
-		// If files become dirty but are not opened, we open it in the background unless there are pending to be saved
-		this.doOpenDirtyResources(distinct(e.filter(e => {
+	//#region Window Focus Change: Update visible code editors when focus is gained
 
-			// Only dirty models that are not PENDING_SAVE
-			const model = this.textFileService.models.get(e.resource);
-			const shouldOpen = model?.isDirty() && !model.hasState(ModelState.PENDING_SAVE);
+	private onWindowFocusChange(focused: boolean): void {
+		if (focused) {
+			// the window got focus and we use this as a hint that files might have been changed outside
+			// of this window. since file events can be unreliable, we queue a load for models that
+			// are visible in any editor. since this is a fast operation in the case nothing has changed,
+			// we tolerate the additional work.
+			distinct(
+				coalesce(this.codeEditorService.listCodeEditors()
+					.map(codeEditor => {
+						const resource = codeEditor.getModel()?.uri;
+						if (!resource) {
+							return undefined;
+						}
 
-			// Only if not open already
-			return shouldOpen && !this.editorService.isOpen({ resource: e.resource });
-		}).map(e => e.resource), r => r.toString()));
+						const model = this.textFileService.models.get(resource);
+						if (!model) {
+							return undefined;
+						}
+
+						if (model.isDirty()) {
+							return undefined;
+						}
+
+						return model;
+					})),
+				model => model.resource.toString()
+			).forEach(model => this.queueModelLoad(model));
+		}
 	}
 
-	private doOpenDirtyResources(resources: URI[]): void {
+	//#endregion
 
-		// Open
-		this.editorService.openEditors(resources.map(resource => {
-			return {
-				resource,
-				options: { inactive: true, pinned: true, preserveFocus: true }
-			};
-		}));
+	//#region Configuration Change
+
+	private onConfigurationUpdated(configuration: IWorkbenchEditorConfiguration): void {
+		if (typeof configuration.workbench?.editor?.closeOnFileDelete === 'boolean') {
+			this.closeOnFileDelete = configuration.workbench.editor.closeOnFileDelete;
+		} else {
+			this.closeOnFileDelete = false; // default
+		}
 	}
+
+	//#endregion
 
 	dispose(): void {
 		super.dispose();
