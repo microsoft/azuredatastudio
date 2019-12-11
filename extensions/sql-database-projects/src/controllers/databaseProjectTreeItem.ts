@@ -3,18 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-
-export class SqlDatabaseProjectItem extends vscode.TreeItem {
-	readonly fileName: string;
+export class SqlDatabaseProjectItem {
+	readonly label: string;
 	readonly children: SqlDatabaseProjectItem[];
 
-	constructor(fileName: string, children: SqlDatabaseProjectItem[]) {
-		super(fileName);
+	constructor(itemName: string, children: SqlDatabaseProjectItem[]) {
 
-		this.fileName = fileName;
+		this.label = itemName;
 		this.children = children;
-
-		this.collapsibleState = this.children.length === 0 ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Expanded;
 	}
 }
