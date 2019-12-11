@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 export class SqlDatabaseProjectItem {
-	readonly label: string;
-	readonly children: SqlDatabaseProjectItem[];
+	label: string;
+	readonly isFolder: boolean;
+	children: SqlDatabaseProjectItem[] = [];
 
-	constructor(itemName: string, children: SqlDatabaseProjectItem[]) {
-
-		this.label = itemName;
-		this.children = children;
+	constructor(label: string, isFolder: boolean) {
+		this.label = label;
+		this.isFolder = isFolder;
 	}
 }

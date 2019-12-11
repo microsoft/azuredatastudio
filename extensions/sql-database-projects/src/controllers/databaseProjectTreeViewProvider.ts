@@ -29,7 +29,7 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 	}
 
 	async initialize() {
-		this.roots = [new SqlDatabaseProjectItem(localize('noProjectOpenMessage', "No open Database Project"), [])];
+		this.roots = [new SqlDatabaseProjectItem(localize('noProjectOpenMessage', "No open database project"), false)];
 
 
 		this._initializeDeferred.resolve();
@@ -38,7 +38,7 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 	getTreeItem(element: SqlDatabaseProjectItem): vscode.TreeItem {
 		return {
 			label: element.label,
-			collapsibleState: element.children.length === 0 ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Expanded
+			collapsibleState: element.isFolder ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None
 		};
 	}
 
@@ -76,20 +76,17 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 	}
 
 	private async constructProjectTree(directoryPath: string): Promise<SqlDatabaseProjectItem> {
-		let connectionsNode = new SqlDatabaseProjectItem(localize('projectNodeName', "Database Project"), []);
+		let projectsNode = await this.constructFileTreeNode(directoryPath);
 
-		let contents = await fs.promises.readdir(directoryPath);
+		projectsNode.label = localize('projectNodeName', "Database Project");
 
-		for (const entry of contents) {
-			connectionsNode.children.push(await this.constructFileTreeNode(path.join(directoryPath, entry)));
-		}
-
-		return connectionsNode;
+		return projectsNode;
 	}
 
 	private async constructFileTreeNode(entryPath: string): Promise<SqlDatabaseProjectItem> {
-		let output = new SqlDatabaseProjectItem(path.basename(entryPath), []);
 		let stat = await fs.promises.stat(entryPath);
+
+		let output = new SqlDatabaseProjectItem(path.basename(entryPath), stat.isDirectory());
 
 		if (stat.isDirectory()) {
 			let contents = await fs.promises.readdir(entryPath);
@@ -97,13 +94,20 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 			for (const entry of contents) {
 				output.children.push(await this.constructFileTreeNode(path.join(entryPath, entry)));
 			}
+
+			// sort children so that folders come first, then alphabetical
+			output.children.sort((a: SqlDatabaseProjectItem, b: SqlDatabaseProjectItem) => {
+				if (a.isFolder && !b.isFolder) { return -1; }
+				else if (!a.isFolder && b.isFolder) { return 1; }
+				else { return a.label.localeCompare(b.label); }
+			});
 		}
 
 		return output;
 	}
 
 	private async constructConnectionsTree(directoryPath: string): Promise<SqlDatabaseProjectItem> {
-		let connectionsNode = new SqlDatabaseProjectItem(localize('connectionsNodeName', "Connections"), []);
+		let connectionsNode = new SqlDatabaseProjectItem(localize('connectionsNodeName', "Connections"), true);
 
 		let connectionsFilePath = path.join(directoryPath, 'connections.json');
 
@@ -112,10 +116,10 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 
 			// TODO: parse connections.json
 
-			connectionsNode.children.push(new SqlDatabaseProjectItem('Found connections.json: ' + connections.length, []));
+			connectionsNode.children.push(new SqlDatabaseProjectItem('Found connections.json: ' + connections.length, false));
 		}
 		catch {
-			connectionsNode.children.push(new SqlDatabaseProjectItem(localize('noConnectionsFile', "No connections.json found"), []));
+			connectionsNode.children.push(new SqlDatabaseProjectItem(localize('noConnectionsFile', "No connections.json found"), false));
 		}
 
 		return connectionsNode;
