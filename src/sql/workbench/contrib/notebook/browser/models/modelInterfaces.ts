@@ -417,7 +417,6 @@ export interface INotebookModel {
 }
 
 export interface INotebookFindModel {
-
 	/** Get the find count */
 	getFindCount(): number;
 
@@ -430,10 +429,12 @@ export interface INotebookFindModel {
 	/** find the previous match */
 	findPrevious(): Promise<NotebookRange>;
 
-	/** search the notebook model for the given exp upto maxMatch occurances */
+	/** search the notebook model for the given exp up to maxMatch occurances */
 	find(exp: string, maxMatches?: number): Promise<NotebookRange>;
-	/** cleat the results of the find */
+
+	/** clear the results of the find */
 	clearFind(): void;
+
 	/** return the find results with their ranges */
 	findArray: NotebookRange[];
 
@@ -443,6 +444,7 @@ export interface INotebookFindModel {
 	 * @return The decoration range or null if the decoration was not found.
 	 */
 	getDecorationRange(id: string): NotebookRange | null;
+
 	/**
 	 * Get the range associated with a decoration.
 	 * @param callback that accepts changeAccessor which applies the decorations
@@ -450,6 +452,7 @@ export interface INotebookFindModel {
 	 * @return The decoration range or null if the decoration was not found.
 	 */
 	changeDecorations<T>(callback: (changeAccessor: IModelDecorationsChangeAccessor) => T, ownerId: number): T | null;
+
 	/**
 	 * Get the maximum legal column for line at `lineNumber`
 	 */
