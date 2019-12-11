@@ -202,11 +202,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	}
 
 	public dispose(): void {
-		this._queryModelService.disposeQuery(this.uri);
-		this._sql.dispose();
-		this._results.dispose();
-
-		super.dispose();
+		this.close();
 	}
 
 	public close(): void {
@@ -214,7 +210,11 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		this._queryModelService.disposeEdit(this.uri).then(() => {
 			return this._connectionManagementService.disconnectEditor(this, true);
 		}).then(() => {
-			this.dispose();
+			this._queryModelService.disposeQuery(this.uri);
+			this._sql.dispose();
+			this._results.dispose();
+
+			super.dispose();
 		});
 	}
 
