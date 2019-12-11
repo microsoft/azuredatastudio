@@ -24,7 +24,7 @@ export class AzCliTool extends ToolBase {
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.AzCLIDescription', "A tool for managing Azure resources");
+		return localize('resourceDeployment.AzCLIDescription', "Manages Azure resources");
 	}
 
 	get type(): ToolType {
