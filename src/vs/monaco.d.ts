@@ -5527,9 +5527,9 @@ declare namespace monaco.languages {
 	}
 
 	export interface ResourceFileEdit {
-		oldUri: Uri;
-		newUri: Uri;
-		options: {
+		oldUri?: Uri;
+		newUri?: Uri;
+		options?: {
 			overwrite?: boolean;
 			ignoreIfNotExists?: boolean;
 			ignoreIfExists?: boolean;
