@@ -18,8 +18,8 @@ import { basenameOrAuthority } from 'vs/base/common/resources';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { SimpleUriLabelService } from 'vs/editor/standalone/browser/simpleServices';
 import { IExtensionService, NullExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { INotebookService, IProviderInfo } from 'sql/workbench/services/notebook/browser/notebookService';
-// import { Emitter } from 'vs/base/common/event';
+import { INotebookService, IProviderInfo, INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
+import { Emitter } from 'vs/base/common/event';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
 suite('Notebook Input', function (): void {
@@ -29,25 +29,26 @@ suite('Notebook Input', function (): void {
 	const testProvider = 'TestProvider';
 	const untitledUri = URI.from({ scheme: Schemas.untitled, path: 'TestPath' });
 
+	const mockExtensionService = TypeMoq.Mock.ofType<IExtensionService>(NullExtensionService);
+	mockExtensionService.setup(s => s.whenInstalledExtensionsRegistered()).returns(() => Promise.resolve(true));
+
+	const mockNotebookService = TypeMoq.Mock.ofType<INotebookService>(NotebookServiceStub);
+	mockNotebookService.setup(s => s.getProvidersForFileType(TypeMoq.It.isAny())).returns(() => [testProvider]);
+	mockNotebookService.setup(s => s.getStandardKernelsForProvider(TypeMoq.It.isAny())).returns(() => {
+		return [{
+			name: 'TestName',
+			displayName: 'TestDisplayName',
+			connectionProviderIds: ['TestId'],
+			notebookProvider: 'TestProvider'
+		}];
+	});
+	const onNotebookEditorAdd = new Emitter<INotebookEditor>();
+	mockNotebookService.setup(s => s.onNotebookEditorAdd).returns(() => onNotebookEditorAdd.event);
+
 	let untitledTextInput: UntitledTextEditorInput;
 	let untitledNotebookInput: UntitledNotebookInput;
 
 	setup(() => {
-		let mockExtensionService = TypeMoq.Mock.ofType<IExtensionService>(NullExtensionService);
-		mockExtensionService.setup(s => s.whenInstalledExtensionsRegistered()).returns(() => Promise.resolve(true));
-
-		let mockNotebookService = TypeMoq.Mock.ofType<INotebookService>(NotebookServiceStub);
-		mockNotebookService.setup(s => s.getProvidersForFileType(TypeMoq.It.isAny())).returns(() => [testProvider]);
-		mockNotebookService.setup(s => s.getStandardKernelsForProvider(TypeMoq.It.isAny())).returns(() => {
-			return [{
-				name: 'TestName',
-				displayName: 'TestDisplayName',
-				connectionProviderIds: ['TestId'],
-				notebookProvider: 'TestProvider'
-			}];
-		});
-		// mockNotebookService.setup(s => s.onNotebookEditorAdd).returns(() => (new Emitter<INotebookEditor>()).event);
-
 		untitledTextInput = new UntitledTextEditorInput(untitledUri, false, '', '', '', instantiationService, undefined, new SimpleUriLabelService(), undefined, undefined, undefined);
 		untitledNotebookInput = new UntitledNotebookInput(
 			testTitle, untitledUri, untitledTextInput,
