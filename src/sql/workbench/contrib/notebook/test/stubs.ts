@@ -147,12 +147,24 @@ export class ServerManagerStub implements nb.ServerManager {
 
 export class NotebookServiceStub implements INotebookService {
 	_serviceBrand: undefined;
-	onNotebookEditorAdd: vsEvent.Event<INotebookEditor>;
-	onNotebookEditorRemove: vsEvent.Event<INotebookEditor>;
-	onNotebookEditorRename: vsEvent.Event<INotebookEditor>;
-	isRegistrationComplete: boolean;
-	registrationComplete: Promise<void>;
-	languageMagics: ILanguageMagic[];
+	get onNotebookEditorAdd(): vsEvent.Event<INotebookEditor> {
+		throw new Error('Method not implemented.');
+	}
+	get onNotebookEditorRemove(): vsEvent.Event<INotebookEditor> {
+		throw new Error('Method not implemented.');
+	}
+	get onNotebookEditorRename(): vsEvent.Event<INotebookEditor> {
+		throw new Error('Method not implemented.');
+	}
+	get isRegistrationComplete(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	get registrationComplete(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	get languageMagics(): ILanguageMagic[] {
+		throw new Error('Method not implemented.');
+	}
 	registerProvider(providerId: string, provider: INotebookProvider): void {
 		throw new Error('Method not implemented.');
 	}
