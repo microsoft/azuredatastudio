@@ -38,7 +38,11 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 	getTreeItem(element: SqlDatabaseProjectItem): vscode.TreeItem {
 		return {
 			label: element.label,
-			collapsibleState: element.isFolder ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None
+			collapsibleState: element.parent === undefined
+				? vscode.TreeItemCollapsibleState.Expanded
+				: element.isFolder
+					? vscode.TreeItemCollapsibleState.Collapsed
+					: vscode.TreeItemCollapsibleState.None
 		};
 	}
 
@@ -76,23 +80,25 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 	}
 
 	private async constructProjectTree(directoryPath: string): Promise<SqlDatabaseProjectItem> {
-		let projectsNode = await this.constructFileTreeNode(directoryPath);
+		let projectsNode = await this.constructFileTreeNode(directoryPath, undefined);
 
 		projectsNode.label = localize('projectNodeName', "Database Project");
 
 		return projectsNode;
 	}
 
-	private async constructFileTreeNode(entryPath: string): Promise<SqlDatabaseProjectItem> {
+	private async constructFileTreeNode(entryPath: string, parentNode: SqlDatabaseProjectItem | undefined): Promise<SqlDatabaseProjectItem> {
 		let stat = await fs.promises.stat(entryPath);
 
-		let output = new SqlDatabaseProjectItem(path.basename(entryPath), stat.isDirectory());
+		let output = parentNode === undefined
+			? new SqlDatabaseProjectItem(path.basename(entryPath), stat.isDirectory())
+			: parentNode.createChild(path.basename(entryPath), stat.isDirectory());
 
 		if (stat.isDirectory()) {
 			let contents = await fs.promises.readdir(entryPath);
 
 			for (const entry of contents) {
-				output.children.push(await this.constructFileTreeNode(path.join(entryPath, entry)));
+				await this.constructFileTreeNode(path.join(entryPath, entry), output);
 			}
 
 			// sort children so that folders come first, then alphabetical
@@ -116,10 +122,10 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 
 			// TODO: parse connections.json
 
-			connectionsNode.children.push(new SqlDatabaseProjectItem('Found connections.json: ' + connections.length, false));
+			connectionsNode.createChild('Found connections.json: ' + connections.length, false);
 		}
 		catch {
-			connectionsNode.children.push(new SqlDatabaseProjectItem(localize('noConnectionsFile', "No connections.json found"), false));
+			connectionsNode.createChild(localize('noConnectionsFile', "No connections.json found"), false);
 		}
 
 		return connectionsNode;
