@@ -20,7 +20,6 @@ import { SimpleUriLabelService } from 'vs/editor/standalone/browser/simpleServic
 import { IExtensionService, NullExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { INotebookService, IProviderInfo, INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
 import { Emitter } from 'vs/base/common/event';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
 suite('Notebook Input', function (): void {
 	const instantiationService = workbenchInstantiationService();
@@ -57,8 +56,9 @@ suite('Notebook Input', function (): void {
 
 	test('File Notebook Input', async function (): Promise<void> {
 		let fileUri = URI.from({ scheme: Schemas.file, path: 'TestPath' });
-		let fileInput = instantiationService.createInstance(FileEditorInput, fileUri, undefined, undefined);
-		let fileNotebookInput = instantiationService.createInstance(FileNotebookInput, testTitle, fileUri, fileInput);
+		let fileNotebookInput = new FileNotebookInput(
+			testTitle, fileUri, undefined,
+			undefined, instantiationService, mockNotebookService.object, mockExtensionService.object);
 
 		let inputId = fileNotebookInput.getTypeId();
 		assert.strictEqual(inputId, FileNotebookInput.ID);
