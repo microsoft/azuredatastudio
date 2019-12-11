@@ -360,7 +360,7 @@ export class AttachToDropdown extends SelectBox {
 					connectionType: ConnectionType.temporary,
 					providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name)
 				},
-				useProfile ? this.model.connectionProfile : undefined, undefined);
+				useProfile ? this.model.connectionProfile : undefined);
 
 			let attachToConnections = this.values;
 			if (!connection) {
