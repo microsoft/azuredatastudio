@@ -712,7 +712,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	 */
 	/*private promptFiletypeBasedRecommendations(model: ITextModel): void { {{SQL CARBON EDIT}} comment out for no unused
 		const uri = model.uri;
-		if (!uri || !this.fileService.canHandleResource(uri)) {
+		if (!uri || uri.scheme === 'gitfs' || !this.fileService.canHandleResource(uri)) {
 			return;
 		}
 
