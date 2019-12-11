@@ -153,6 +153,9 @@ export interface FieldInfo {
 	defaultValue?: string;
 	confirmationRequired?: boolean;
 	confirmationLabel?: string;
+	textValidationRequired?: boolean;
+	textValidationRegex?: string;
+	textValidationDescription?: string;
 	min?: number;
 	max?: number;
 	required?: boolean;
