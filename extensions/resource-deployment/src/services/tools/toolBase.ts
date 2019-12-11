@@ -303,7 +303,7 @@ export abstract class ToolBase implements ITool {
 		return !version || (this._version ? SemVerCompare(this._version, version) >= 0 : false);
 	}
 
-	private _pendingVersionAndStatusUpdate: Promise<void> = Promise.reject();
+	private _pendingVersionAndStatusUpdate!: Promise<void>;
 	private _status: ToolStatus = ToolStatus.NotInstalled;
 	private _version?: SemVer;
 	private _statusDescription?: string;
