@@ -44,6 +44,7 @@ export const EDITDATA_SELECTOR: string = 'editdatagridpanel';
 // 	templateUrl: decodeURI(require.toUrl('./editData.component.html'))
 // })
 
+
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
 	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
@@ -791,6 +792,9 @@ export class EditDataGridPanel extends GridParentComponent {
 	private createNewTable(): void {
 
 		let t: Table<any>;
+		let newGridContainer = document.createElement('div');
+		newGridContainer.className = 'grid';
+
 		if (this.placeHolderDataSets) {
 			let dataSet = this.placeHolderDataSets[0];
 			let options = {
@@ -809,12 +813,20 @@ export class EditDataGridPanel extends GridParentComponent {
 				},
 				formatterFactory: {
 					getFormatter: this.getFormatter
-				}
+				},
+				selectedCellCssClass: ''
 			};
 
+
 			if (dataSet.columnDefinitions) {
-				t = new Table(this.nativeElement, { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
+
+
+
+				t = new Table(this.nativeElement.appendChild(newGridContainer), { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
+
+
 				this.tables[0] = t;
+
 
 				if (this.selectionModel) {
 					if (typeof this.selectionModel === 'object') {
@@ -838,7 +850,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 		}
 		else {
-			this.tables[0] = new Table(this.nativeElement);
+			this.tables[0] = new Table(this.nativeElement.appendChild(newGridContainer));
 		}
 	}
 
