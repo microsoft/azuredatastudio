@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-//import {promises as fs} from 'fs'; // TODO: how to access I/O flags in fs (not fs.promises) when aliased?
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as nls from 'vscode-nls';
 
@@ -88,14 +87,14 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 	}
 
 	private async constructFileTreeNode(entryPath: string, parentNode: SqlDatabaseProjectItem | undefined): Promise<SqlDatabaseProjectItem> {
-		let stat = await fs.promises.stat(entryPath);
+		let stat = await fs.stat(entryPath);
 
 		let output = parentNode === undefined
 			? new SqlDatabaseProjectItem(path.basename(entryPath), stat.isDirectory())
 			: parentNode.createChild(path.basename(entryPath), stat.isDirectory());
 
 		if (stat.isDirectory()) {
-			let contents = await fs.promises.readdir(entryPath);
+			let contents = await fs.readdir(entryPath);
 
 			for (const entry of contents) {
 				await this.constructFileTreeNode(path.join(entryPath, entry), output);
@@ -118,7 +117,7 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		let connectionsFilePath = path.join(directoryPath, 'connections.json');
 
 		try {
-			let connections = await fs.promises.readFile(connectionsFilePath, 'r');
+			let connections = await fs.readFile(connectionsFilePath, 'r');
 
 			// TODO: parse connections.json
 
