@@ -77,7 +77,7 @@ suite('Notebook Actions', function (): void {
 		assert.ok(result, 'Trusted Action should succeed');
 		assert.strictEqual(action.trusted, true, 'Should be trusted after toggling trusted state');
 
-		// Should stay trusted when trying to toggle again
+		// Should toggle trusted to false on subsequent action
 		result = await action.run(contextStub);
 		assert.ok(result, 'Trusted Action should succeed again');
 		assert.strictEqual(action.trusted, false, 'Should toggle trusted to false');
