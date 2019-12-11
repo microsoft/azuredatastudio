@@ -28,7 +28,7 @@ export class AzdataTool extends ToolBase {
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.AzdataDescription', "A utility to bootstrap and manage the Big Data Cluster");
+		return localize('resourceDeployment.AzdataDescription', "Bootstraps and manages the Big Data Cluster");
 	}
 
 	get type(): ToolType {

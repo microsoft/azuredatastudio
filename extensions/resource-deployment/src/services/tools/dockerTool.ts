@@ -21,7 +21,7 @@ export class DockerTool extends ToolBase {
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.DockerDescription', "A utility to package and run an application in isolated containers");
+		return localize('resourceDeployment.DockerDescription', "Packages and runs applications in isolated containers");
 	}
 
 	get type(): ToolType {
