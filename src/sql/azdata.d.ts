@@ -3094,6 +3094,7 @@ declare module 'azdata' {
 		 * means the event will propagate up to any parents that have handlers (such as validate on Dialogs)
 		 */
 		stopEnterPropagation?: boolean;
+		validationErrorMessage?: string;
 	}
 
 	export interface TableColumn {
