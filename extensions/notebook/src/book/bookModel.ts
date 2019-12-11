@@ -54,9 +54,14 @@ export class BookModel implements azdata.nb.NavigationProvider {
 
 			let p = path.join(workspacePath, '**', '_data', 'toc.yml').replace(/\\/g, '/');
 			let tableOfContentPaths = await glob(p, { deep: maxDepth });
-			this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
-			let bookOpened: boolean = this._tableOfContentPaths.length > 0;
-			vscode.commands.executeCommand('setContext', 'bookOpened', bookOpened);
+			if (tableOfContentPaths.length > 0) {
+				this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
+				let bookOpened: boolean = this._tableOfContentPaths.length > 0;
+				vscode.commands.executeCommand('setContext', 'bookOpened', bookOpened);
+			} else {
+				vscode.window.showErrorMessage(localize('bookInitializeFailed', "Book initialize failed: Failed to recognize the structure."));
+			}
+
 		} catch (error) {
 			console.log(error);
 		}

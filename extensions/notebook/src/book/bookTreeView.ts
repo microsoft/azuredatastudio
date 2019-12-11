@@ -200,6 +200,23 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
+	public async openNewBook(): Promise<void> {
+		const allFilesFilter = localize('allFiles', "All Files");
+		let filter: any = {};
+		filter[allFilesFilter] = '*';
+		let uris = await vscode.window.showOpenDialog({
+			filters: filter,
+			canSelectFiles: false,
+			canSelectMany: false,
+			canSelectFolders: true,
+			openLabel: localize('labelBookFolder', "Select Book")
+		});
+		if (uris && uris.length > 0) {
+			let bookPath = uris[0];
+			await this.openBook(bookPath.fsPath);
+		}
+	}
+
 	private runThrottledAction(resource: string, action: () => void) {
 		const isResourceChange = resource !== this._resource;
 		if (isResourceChange) {
