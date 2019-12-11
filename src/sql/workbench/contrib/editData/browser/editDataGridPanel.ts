@@ -813,7 +813,8 @@ export class EditDataGridPanel extends GridParentComponent {
 				},
 				formatterFactory: {
 					getFormatter: this.getFormatter
-				}
+				},
+				selectedCellCssClass: ''
 			};
 
 
