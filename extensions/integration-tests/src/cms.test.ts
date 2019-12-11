@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
 import * as mssql from '../../mssql';
 import * as utils from './utils';
 import * as uuid from './uuid';
-import { context } from './testContext';
+import { isTestSetupCompleted } from './testContext';
 import assert = require('assert');
 import { getStandaloneServer, TestServerProfile, getBdcServer } from './testConfig';
 
@@ -23,7 +23,7 @@ const TEST_CMS_GROUP = `adsTestCmsGroup_${uuid.v4()}`;
 const TEST_CMS_SERVER = `adsTestCmsServer_${uuid.v4()}`;
 const TEST_CMS_REG_SERVER = `adsTestCmsRegisteredServer_${uuid.v4()}`;
 
-if (context.RunTest) {
+if (isTestSetupCompleted()) {
 	suite('CMS integration test suite', () => {
 
 		setup(async function () {

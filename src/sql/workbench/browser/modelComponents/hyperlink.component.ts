@@ -10,12 +10,12 @@ import {
 
 import * as azdata from 'azdata';
 
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { TitledComponent } from 'sql/workbench/browser/modelComponents/titledComponent';
 
 @Component({
 	selector: 'modelview-hyperlink',
-	template: `<a [href]="getUrl()" [title]="title" target="blank">{{getLabel()}}</a>`
+	template: `<a [href]="getUrl()" [title]="title" [attr.aria-label]="ariaLabel" target="blank" (click)="onClick()">{{getLabel()}}</a>`
 })
 export default class HyperlinkComponent extends TitledComponent implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
@@ -64,5 +64,15 @@ export default class HyperlinkComponent extends TitledComponent implements IComp
 
 	public getUrl(): string {
 		return this.url;
+	}
+
+	public onClick(): boolean {
+		this.fireEvent({
+			eventType: ComponentEventType.onDidClick,
+			args: undefined
+		});
+		// If we don't have a URL then return false since that just defaults to the URL for the workbench. We assume
+		// if a blank url is specified then the caller is handling the click themselves.
+		return !!this.url;
 	}
 }

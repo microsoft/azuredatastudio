@@ -302,7 +302,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	findNextUntitledFileName(filePath: string): string {
 		const baseName = path.basename(filePath);
 		let idx = 0;
-		let title = `${baseName}`;
+		let title;
 		do {
 			const suffix = idx === 0 ? '' : `-${idx}`;
 			title = `${baseName}${suffix}`;

@@ -20,7 +20,7 @@ import { EditorInput, toResource, Verbosity, SideBySideEditor } from 'vs/workben
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { IWorkspaceContextService, WorkbenchState, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
 import { IThemeService, registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
-import { TITLE_BAR_ACTIVE_BACKGROUND, TITLE_BAR_ACTIVE_FOREGROUND, TITLE_BAR_INACTIVE_FOREGROUND, TITLE_BAR_INACTIVE_BACKGROUND, TITLE_BAR_BORDER } from 'vs/workbench/common/theme';
+import { TITLE_BAR_ACTIVE_BACKGROUND, TITLE_BAR_ACTIVE_FOREGROUND, TITLE_BAR_INACTIVE_FOREGROUND, TITLE_BAR_INACTIVE_BACKGROUND, TITLE_BAR_BORDER, WORKBENCH_BACKGROUND } from 'vs/workbench/common/theme';
 import { isMacintosh, isWindows, isLinux, isWeb } from 'vs/base/common/platform';
 import { URI } from 'vs/base/common/uri';
 import { Color } from 'vs/base/common/color';
@@ -39,12 +39,12 @@ import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/m
 import { IMenuService, IMenu, MenuId } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
+import { IProductService } from 'vs/platform/product/common/productService';
+import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
 
 // TODO@sbatten https://github.com/microsoft/vscode/issues/81360
 // tslint:disable-next-line: import-patterns layering
 import { IElectronService } from 'vs/platform/electron/node/electron';
-// tslint:disable-next-line: import-patterns layering
-import { IElectronEnvironmentService } from 'vs/workbench/services/electron/electron-browser/electronEnvironmentService';
 
 export class TitlebarPart extends Part implements ITitleService {
 
@@ -104,8 +104,8 @@ export class TitlebarPart extends Part implements ITitleService {
 		@IMenuService menuService: IMenuService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IHostService private readonly hostService: IHostService,
-		@optional(IElectronService) private electronService: IElectronService,
-		@optional(IElectronEnvironmentService) private readonly electronEnvironmentService: IElectronEnvironmentService
+		@IProductService private readonly productService: IProductService,
+		@optional(IElectronService) private electronService: IElectronService
 	) {
 		super(Parts.TITLEBAR_PART, { hasTitle: false }, themeService, storageService, layoutService);
 
@@ -176,7 +176,7 @@ export class TitlebarPart extends Part implements ITitleService {
 	}
 
 	private onMenubarFocusChanged(focused: boolean) {
-		if (!isWeb && (isWindows || isLinux) && this.currentMenubarVisibility === 'compact' && this.dragRegion) {
+		if (!isWeb && (isWindows || isLinux) && this.currentMenubarVisibility !== 'compact' && this.dragRegion) {
 			if (focused) {
 				hide(this.dragRegion);
 			} else {
@@ -207,7 +207,7 @@ export class TitlebarPart extends Part implements ITitleService {
 		// Always set the native window title to identify us properly to the OS
 		let nativeTitle = title;
 		if (!trim(nativeTitle)) {
-			nativeTitle = this.environmentService.appNameLong;
+			nativeTitle = this.productService.nameLong;
 		}
 		window.document.title = nativeTitle;
 
@@ -229,15 +229,15 @@ export class TitlebarPart extends Part implements ITitleService {
 		let title = this.doGetWindowTitle();
 
 		if (this.properties.isAdmin) {
-			title = `${title || this.environmentService.appNameLong} ${TitlebarPart.NLS_USER_IS_ADMIN}`;
+			title = `${title || this.productService.nameLong} ${TitlebarPart.NLS_USER_IS_ADMIN}`;
 		}
 
 		if (!this.properties.isPure) {
-			title = `${title || this.environmentService.appNameLong} ${TitlebarPart.NLS_UNSUPPORTED}`;
+			title = `${title || this.productService.nameLong} ${TitlebarPart.NLS_UNSUPPORTED}`;
 		}
 
 		if (this.environmentService.isExtensionDevelopment) {
-			title = `${TitlebarPart.NLS_EXTENSION_HOST} - ${title || this.environmentService.appNameLong}`;
+			title = `${TitlebarPart.NLS_EXTENSION_HOST} - ${title || this.productService.nameLong}`;
 		}
 
 		return title;
@@ -317,8 +317,8 @@ export class TitlebarPart extends Part implements ITitleService {
 		const folderName = folder ? folder.name : '';
 		const folderPath = folder ? this.labelService.getUriLabel(folder.uri) : '';
 		const dirty = editor?.isDirty() ? TitlebarPart.TITLE_DIRTY : '';
-		const appName = this.environmentService.appNameLong;
-		const remoteName = this.environmentService.configuration.remoteAuthority;
+		const appName = this.productService.nameLong;
+		const remoteName = this.labelService.getHostLabel(REMOTE_HOST_SCHEME, this.environmentService.configuration.remoteAuthority);
 		const separator = TitlebarPart.TITLE_SEPARATOR;
 		const titleTemplate = this.configurationService.getValue<string>('window.title');
 
@@ -445,13 +445,8 @@ export class TitlebarPart extends Part implements ITitleService {
 			// Resizer
 			this.resizer = append(this.element, $('div.resizer'));
 
-			const isMaximized = this.environmentService.configuration.maximized ? true : false;
-			this.onDidChangeMaximized(isMaximized);
-
-			this._register(Event.any(
-				Event.map(Event.filter(this.electronService.onWindowMaximize, id => id === this.electronEnvironmentService.windowId), _ => true),
-				Event.map(Event.filter(this.electronService.onWindowUnmaximize, id => id === this.electronEnvironmentService.windowId), _ => false)
-			)(e => this.onDidChangeMaximized(e)));
+			this._register(this.layoutService.onMaximizeChange(maximized => this.onDidChangeMaximized(maximized)));
+			this.onDidChangeMaximized(this.layoutService.isWindowMaximized());
 		}
 
 		// Since the title area is used to drag the window, we do not want to steal focus from the
@@ -507,7 +502,13 @@ export class TitlebarPart extends Part implements ITitleService {
 				removeClass(this.element, 'inactive');
 			}
 
-			const titleBackground = this.getColor(this.isInactive ? TITLE_BAR_INACTIVE_BACKGROUND : TITLE_BAR_ACTIVE_BACKGROUND) || '';
+			const titleBackground = this.getColor(this.isInactive ? TITLE_BAR_INACTIVE_BACKGROUND : TITLE_BAR_ACTIVE_BACKGROUND, (color, theme) => {
+				// LCD Rendering Support: the title bar part is a defining its own GPU layer.
+				// To benefit from LCD font rendering, we must ensure that we always set an
+				// opaque background color. As such, we compute an opaque color given we know
+				// the background color is the workbench background.
+				return color.isOpaque() ? color : color.makeOpaque(WORKBENCH_BACKGROUND(theme));
+			}) || '';
 			this.element.style.backgroundColor = titleBackground;
 			if (titleBackground && Color.fromHex(titleBackground).isLighter()) {
 				addClass(this.element, 'light');

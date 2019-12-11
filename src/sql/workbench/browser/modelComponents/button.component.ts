@@ -125,6 +125,10 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		this._changeRef.detectChanges();
 	}
 
+	public focus(): void {
+		this._button.focus();
+	}
+
 	protected updateIcon() {
 		if (this.iconPath) {
 			if (!this._iconClass) {
@@ -179,13 +183,5 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 
 	private setFileProperties(properties: azdata.ButtonProperties, isFile: boolean): void {
 		properties.isFile = isFile;
-	}
-
-	private get title(): string {
-		return this.getPropertyOrDefault<azdata.ButtonProperties, string>((props) => props.title, '');
-	}
-
-	private set title(newValue: string) {
-		this.setPropertyFromUI<azdata.ButtonProperties, string>((properties, title) => { properties.title = title; }, newValue);
 	}
 }

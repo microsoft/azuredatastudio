@@ -8,7 +8,7 @@ import {
 	ElementRef, OnInit, ChangeDetectorRef, ReflectiveInjector, Injector, ComponentRef
 } from '@angular/core';
 
-import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/browser/core/componentHost.directive';
+import { ComponentHostDirective } from 'sql/workbench/contrib/dashboard/browser/core/componentHost.directive';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IComponent, IComponentConfig, IComponentDescriptor, IModelStore, COMPONENT_CONFIG } from './interfaces';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/browser/modelComponentRegistry';

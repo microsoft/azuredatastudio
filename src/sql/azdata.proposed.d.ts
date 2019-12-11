@@ -79,4 +79,119 @@ declare module 'azdata' {
 	export namespace dataprotocol {
 		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;
 	}
+
+	export interface HyperlinkComponent {
+		/**
+		 * An event called when the text is clicked
+		 */
+		onDidClick: vscode.Event<any>;
+	}
+
+	export interface DeclarativeTableColumn {
+		headerCssStyles?: { [key: string]: string };
+		rowCssStyles?: { [key: string]: string };
+		ariaLabel?: string;
+	}
+
+	export enum DeclarativeDataType {
+		component = 'component'
+	}
+
+	/*
+	 * Add optional azureAccount for connectionWidget.
+	 */
+	export interface IConnectionProfile extends ConnectionInfo {
+		azureAccount?: string;
+	}
+
+	/*
+	 * Add optional per-OS default value.
+	 */
+	export interface DefaultValueOsOverride {
+		os: string;
+
+		defaultValueOverride: string;
+	}
+
+	export interface ConnectionOption {
+		defaultValueOsOverrides?: DefaultValueOsOverride[];
+	}
+
+	/*
+	 * Add OssRdbms for sqlops AzureResource.
+	 */
+	export enum AzureResource {
+		OssRdbms = 2
+	}
+
+	export interface ModelBuilder {
+		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent>;
+	}
+
+	export interface RadioCard {
+		id: string;
+		label: string;
+		descriptions?: RadioCardDescription[];
+		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+	}
+
+	export interface RadioCardDescription {
+		ariaLabel: string;
+		labelHeader: string;
+		contents: RadioCardLabelValuePair[];
+		valueHeader?: string;
+	}
+
+	export interface RadioCardLabelValuePair {
+		label: string;
+		value?: string;
+	}
+
+	export interface RadioCardGroupComponentProperties extends ComponentProperties, TitledComponentProperties {
+		cards: RadioCard[];
+		cardWidth: string;
+		cardHeight: string;
+		iconWidth?: string;
+		iconHeight?: string;
+		selectedCardId?: string;
+	}
+
+	export interface RadioCardGroupComponent extends Component, RadioCardGroupComponentProperties {
+		onSelectionChanged: vscode.Event<any>;
+	}
+
+	export interface DeclarativeTableProperties extends ComponentProperties {
+	}
+
+	export interface ComponentProperties {
+		ariaHidden?: boolean;
+	}
+
+	export interface ComponentWithIconProperties {
+		/**
+		 * The path for the icon with optional dark-theme away alternative
+		 */
+		iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		/**
+		 * The height of the icon
+		 */
+		iconHeight?: number | string;
+		/**
+		 * The width of the icon
+		 */
+		iconWidth?: number | string;
+		/**
+		 * The title for the icon. This title will show when hovered over
+		 */
+		title?: string;
+	}
+
+	export interface ComponentWithIcon extends ComponentWithIconProperties {
+	}
+
+	export interface ImageComponent extends ComponentWithIcon {
+	}
+
+	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIconProperties {
+	}
 }

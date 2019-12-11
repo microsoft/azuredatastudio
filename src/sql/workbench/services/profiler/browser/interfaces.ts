@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
+import { ProfilerInput } from 'sql/workbench/contrib/profiler/browser/profilerInput';
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import * as azdata from 'azdata';
-import { INewProfilerState } from 'sql/workbench/parts/profiler/common/profilerState';
+import { INewProfilerState } from 'sql/workbench/contrib/profiler/common/profilerState';
 
 const PROFILER_SERVICE_ID = 'profilerService';
 export const IProfilerService = createDecorator<IProfilerService>(PROFILER_SERVICE_ID);
@@ -139,7 +139,7 @@ export interface IProfilerService {
 	 * Saves the filter
 	 * @param filter filter object
 	 */
-	saveFilter(filter: ProfilerFilter): void;
+	saveFilter(filter: ProfilerFilter): Promise<void>;
 }
 
 export interface IProfilerSettings {

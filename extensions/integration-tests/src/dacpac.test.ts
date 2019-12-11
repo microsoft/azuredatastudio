@@ -11,13 +11,13 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as mssql from '../../mssql';
 import * as vscode from 'vscode';
-import { context } from './testContext';
+import { isTestSetupCompleted } from './testContext';
 import { getStandaloneServer } from './testConfig';
 import * as assert from 'assert';
 
 const retryCount = 24; // 2 minutes
 const dacpac1: string = path.join(__dirname, '../testData/Database1.dacpac');
-if (context.RunTest) {
+if (isTestSetupCompleted()) {
 	suite('Dacpac integration test suite', () => {
 		suiteSetup(async function () {
 			await utils.sleep(5000); // To ensure the providers are registered.

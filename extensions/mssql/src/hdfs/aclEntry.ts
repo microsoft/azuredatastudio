@@ -5,6 +5,7 @@
 
 import { IconPathHelper, IconPath } from '../iconHelper';
 import { groupBy } from '../util/arrays';
+import * as loc from '../localizedConstants';
 
 /**
  * The permission status of an HDFS path - this consists of :
@@ -353,17 +354,17 @@ export function parseAclPermissionFromOctal(octal: string): { sticky: boolean, o
 	};
 }
 
-export function getImageForType(type: AclType | PermissionType): IconPath {
+export function getImageForType(type: AclType | PermissionType): { iconPath: IconPath, title: string } {
 	switch (type) {
 		case AclType.user:
 		case PermissionType.owner:
-			return IconPathHelper.user;
+			return { iconPath: IconPathHelper.user, title: loc.owner };
 		case AclType.group:
 		case PermissionType.group:
 		case PermissionType.other:
-			return IconPathHelper.group;
+			return { iconPath: IconPathHelper.group, title: loc.group };
 	}
-	return { dark: '', light: '' };
+	return { iconPath: { dark: '', light: '' }, title: '' };
 }
 
 /**

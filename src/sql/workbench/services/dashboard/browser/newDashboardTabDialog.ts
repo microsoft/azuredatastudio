@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IDashboardTab } from 'sql/workbench/parts/dashboard/browser/dashboardRegistry';
+import { IDashboardTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 
 export const INewDashboardTabDialogService = createDecorator<INewDashboardTabDialogService>('addNewDashboardTabService');
 export interface INewDashboardTabDialogService {

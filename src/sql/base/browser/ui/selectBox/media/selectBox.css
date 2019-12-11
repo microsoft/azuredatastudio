@@ -13,3 +13,8 @@
 	flex-direction: row;
 	margin-right: 5px;
 }
+
+.monaco-select-box {
+	padding: 2px 8px;
+	padding: 0 22px 0 6px !important; /* I don't like this but for now its fine */
+}

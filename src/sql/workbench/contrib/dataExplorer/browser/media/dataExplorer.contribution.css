@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/* Activity Bar */
+.monaco-workbench .activitybar .monaco-action-bar .action-label.dataExplorer {
+	-webkit-mask: url('server_page_inverse.svg') 50% 50% / 24px no-repeat;
+	background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Activity Bar */
+.monaco-workbench .activitybar .monaco-action-bar .checked .action-label.dataExplorer {
+	background-color: rgb(255, 255, 255); /* this is a patch, will need to find a better long term fix*/
+}

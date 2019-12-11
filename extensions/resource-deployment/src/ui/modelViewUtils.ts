@@ -102,13 +102,14 @@ export function createCheckbox(view: azdata.ModelView, info: { initialValue: boo
 	}).component();
 }
 
-export function createDropdown(view: azdata.ModelView, info: { defaultValue?: string | azdata.CategoryValue, values?: string[] | azdata.CategoryValue[], width?: string, editable?: boolean, required?: boolean }): azdata.DropDownComponent {
+export function createDropdown(view: azdata.ModelView, info: { defaultValue?: string | azdata.CategoryValue, values?: string[] | azdata.CategoryValue[], width?: string, editable?: boolean, required?: boolean, label: string }): azdata.DropDownComponent {
 	return view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 		values: info.values,
 		value: info.defaultValue,
 		width: info.width,
 		editable: info.editable,
-		fireOnTextChange: true
+		fireOnTextChange: true,
+		ariaLabel: info.label
 	}).component();
 }
 
@@ -271,7 +272,8 @@ function processOptionsTypeField(context: FieldContext): void {
 		defaultValue: context.fieldInfo.defaultValue,
 		width: context.fieldInfo.inputWidth,
 		editable: context.fieldInfo.editable,
-		required: context.fieldInfo.required
+		required: context.fieldInfo.required,
+		label: context.fieldInfo.label
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, dropdown);
 	addLabelInputPairToContainer(context.view, context.components, label, dropdown, context.fieldInfo.labelPosition);
@@ -318,6 +320,27 @@ function processTextField(context: FieldContext): void {
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelPosition);
+
+	if (context.fieldInfo.textValidationRequired) {
+		let validationRegex: RegExp = new RegExp(context.fieldInfo.textValidationRegex!);
+
+		const removeInvalidInputMessage = (): void => {
+			if (validationRegex.test(input.value!)) { // input is valid
+				removeValidationMessage(context.container, context.fieldInfo.textValidationDescription!);
+			}
+		};
+
+		context.onNewDisposableCreated(input.onTextChanged(() => {
+			removeInvalidInputMessage();
+		}));
+
+		const inputValidator: Validator = (): { valid: boolean; message: string; } => {
+			const inputIsValid = validationRegex.test(input.value!);
+			return { valid: inputIsValid, message: context.fieldInfo.textValidationDescription! };
+		};
+		context.onNewValidatorCreated(inputValidator);
+
+	}
 }
 
 function processPasswordField(context: FieldContext): void {

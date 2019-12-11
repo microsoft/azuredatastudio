@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { SemVer } from 'semver';
 import * as nls from 'vscode-nls';
-import { Command, ToolType, OsType } from '../../interfaces';
+import { Command, ToolType, OsDistribution } from '../../interfaces';
 import { IPlatformService } from '../platformService';
 import { ToolBase } from './toolBase';
 
@@ -21,7 +21,7 @@ export class DockerTool extends ToolBase {
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.DockerDescription', "Provides the ability to package and run an application in isolated containers");
+		return localize('resourceDeployment.DockerDescription', "Packages and runs applications in isolated containers");
 	}
 
 	get type(): ToolType {
@@ -47,11 +47,5 @@ export class DockerTool extends ToolBase {
 		return { command: 'docker version --format "{{json .}}"' };
 	}
 
-	get autoInstallSupported(): boolean {
-		return false;
-	}
-
-	protected get allInstallationCommands(): Map<OsType, Command[]> {
-		throw Error('Installation of DockerTool is not supported');
-	}
+	protected readonly allInstallationCommands: Map<OsDistribution, Command[]> = new Map<OsDistribution, Command[]>();
 }

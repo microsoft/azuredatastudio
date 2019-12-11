@@ -12,8 +12,8 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { Memento } from 'vs/workbench/common/memento';
 
 import AccountStore from 'sql/platform/accounts/common/accountStore';
-import { AccountDialogController } from 'sql/workbench/parts/accounts/browser/accountDialogController';
-import { AutoOAuthDialogController } from 'sql/workbench/parts/accounts/browser/autoOAuthDialogController';
+import { AccountDialogController } from 'sql/workbench/contrib/accounts/browser/accountDialogController';
+import { AutoOAuthDialogController } from 'sql/workbench/contrib/accounts/browser/autoOAuthDialogController';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
@@ -22,6 +22,7 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
 import { firstIndex } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -314,8 +315,8 @@ export class AccountManagementService implements IAccountManagementService {
 	 * Copy the user code to the clipboard and open a browser to the verification URI
 	 */
 	public copyUserCodeAndOpenBrowser(userCode: string, uri: string): void {
-		this._clipboardService.writeText(userCode);
-		this._openerService.open(URI.parse(uri));
+		this._clipboardService.writeText(userCode).catch(err => onUnexpectedError(err));
+		this._openerService.open(URI.parse(uri)).catch(err => onUnexpectedError(err));
 	}
 
 	// SERVICE MANAGEMENT METHODS //////////////////////////////////////////

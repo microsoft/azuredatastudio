@@ -15,18 +15,17 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import * as Utils from 'sql/platform/connection/common/utils';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
-import * as ConnectionContracts from 'sql/workbench/parts/connection/common/connection';
+import * as ConnectionContracts from 'sql/workbench/contrib/connection/common/connection';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
-import { DashboardInput } from 'sql/workbench/parts/dashboard/browser/dashboardInput';
-import { ConnectionGlobalStatus } from 'sql/workbench/parts/connection/common/connectionGlobalStatus';
+import { DashboardInput } from 'sql/workbench/contrib/dashboard/browser/dashboardInput';
+import { ConnectionGlobalStatus } from 'sql/workbench/contrib/connection/common/connectionGlobalStatus';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/browser/angularEventingService';
-import * as QueryConstants from 'sql/workbench/parts/query/common/constants';
+import * as QueryConstants from 'sql/workbench/contrib/query/common/constants';
 import { Deferred } from 'sql/base/common/promise';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
+import { IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/contrib/connection/common/connectionProviderExtension';
 import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
 
 import * as azdata from 'azdata';
@@ -37,7 +36,6 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import * as platform from 'vs/platform/registry/common/platform';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
@@ -53,12 +51,14 @@ import { entries } from 'sql/base/common/collections';
 import { find } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
 import { assign } from 'vs/base/common/objects';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
 	_serviceBrand: undefined;
 
 	private _providers = new Map<string, { onReady: Promise<azdata.ConnectionProvider>, properties: ConnectionProviderProperties }>();
+	private _providerNameToDisplayNameMap: { [providerDisplayName: string]: string } = {};
 	private _iconProviders = new Map<string, azdata.IconProvider>();
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
 	private _onAddConnectionProfile = new Emitter<interfaces.IConnectionProfile>();
@@ -73,6 +73,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _mementoContext: Memento;
 	private _mementoObj: any;
 	private static readonly CONNECTION_MEMENTO = 'ConnectionManagement';
+	private static readonly _azureResources: AzureResource[] =
+		[AzureResource.ResourceManagement, AzureResource.Sql, AzureResource.OssRdbms];
 
 	constructor(
 		private _connectionStore: ConnectionStore,
@@ -80,7 +82,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
-		@ITelemetryService private _telemetryService: ITelemetryService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IQuickInputService private _quickInputService: IQuickInputService,
@@ -106,6 +108,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			this._mementoObj = this._mementoContext.getMemento(StorageScope.GLOBAL);
 		}
 
+		this.initializeConnectionProvidersMap();
+
 		const registry = platform.Registry.as<IConnectionProviderRegistry>(ConnectionProviderExtensions.ConnectionProviderContributions);
 
 		let providerRegistration = (p: { id: string, properties: ConnectionProviderProperties }) => {
@@ -123,6 +127,30 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		this._register(this._onAddConnectionProfile);
 		this._register(this._onDeleteConnectionProfile);
+	}
+
+	/**
+	 * Set the initial value for the connection provider map and listen to the provider change event
+	 */
+	private initializeConnectionProvidersMap() {
+		this.updateConnectionProvidersMap();
+		if (this._capabilitiesService) {
+			this._capabilitiesService.onCapabilitiesRegistered(() => {
+				this.updateConnectionProvidersMap();
+			});
+		}
+	}
+
+	/**
+	 * Update the map using the values from capabilities service
+	 */
+	private updateConnectionProvidersMap() {
+		if (this._capabilitiesService) {
+			this._providerNameToDisplayNameMap = {};
+			entries(this._capabilitiesService.providers).forEach(p => {
+				this._providerNameToDisplayNameMap[p[0]] = p[1].connection.displayName;
+			});
+		}
 	}
 
 	public providerRegistered(providerId: string): boolean {
@@ -156,6 +184,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	public get onLanguageFlavorChanged(): Event<azdata.DidChangeLanguageFlavorParams> {
 		return this._onLanguageFlavorChanged.event;
+	}
+
+	public get providerNameToDisplayNameMap(): { readonly [providerDisplayName: string]: string } {
+		return this._providerNameToDisplayNameMap;
 	}
 
 	// Connection Provider Registration
@@ -214,6 +246,20 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 
 		return providerId;
+	}
+
+	/**
+	 * Get the connection providers map and filter out CMS.
+	 */
+	public getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string } {
+		let uniqueProvidersMap = {};
+		entries(providerNameToDisplayNameMap).forEach(p => {
+			if (p[0] !== Constants.cmsProviderName) {
+				uniqueProvidersMap[p[0]] = p[1];
+			}
+		});
+
+		return uniqueProvidersMap;
 	}
 
 	/**
@@ -590,7 +636,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
-		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.AddServerGroup).catch((e) => this._logService.error(e));
+		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.AddServerGroup);
 		return this._connectionStore.saveProfileGroup(profile).then(groupId => {
 			this._onAddConnectionProfile.fire(undefined);
 			return groupId;
@@ -671,6 +717,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 */
 	public doChangeLanguageFlavor(uri: string, language: string, provider: string): void {
 		if (this._providers.has(provider)) {
+			this._uriToProvider[uri] = provider;
 			this._onLanguageFlavorChanged.fire({
 				uri: uri,
 				language: language,
@@ -688,9 +735,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public ensureDefaultLanguageFlavor(uri: string): void {
 		if (!this.getProviderIdFromUri(uri)) {
 			// Lookup the default settings and use this
-			let defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultEngine);
-			if (defaultProvider && this._providers.has(defaultProvider)) {
-				// Only set a default if it's in the list of registered providers
+			let defaultProvider = this.getDefaultProviderId();
+			if (defaultProvider) {
 				this.doChangeLanguageFlavor(uri, 'sql', defaultProvider);
 			}
 		}
@@ -702,21 +748,39 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
+	 * Previously, the only resource available for AAD access tokens was for Azure SQL / SQL Server.
+	 * Use that as a default if the provider extension does not configure a different one. If one is
+	 * configured, then use it.
+	 * @param connection The connection to fill in or update
+	 */
+	private getAzureResourceForConnection(connection: interfaces.IConnectionProfile): azdata.AzureResource {
+		let provider = this._providers.get(connection.providerName);
+		if (!provider || !provider.properties || !provider.properties.azureResource) {
+			return AzureResource.Sql;
+		}
+
+		let result = find(ConnectionManagementService._azureResources, r => AzureResource[r] === provider.properties.azureResource);
+		return result ? result : AzureResource.Sql;
+	}
+
+	/**
 	 * Fills in the Azure account token if it's needed for this connection and doesn't already have one
 	 * and clears it if it isn't.
 	 * @param connection The connection to fill in or update
 	 */
 	private async fillInOrClearAzureToken(connection: interfaces.IConnectionProfile): Promise<boolean> {
-		if (connection.authenticationType !== Constants.azureMFA) {
+		if (connection.authenticationType !== Constants.azureMFA && connection.authenticationType !== Constants.azureMFAAndUser) {
 			connection.options['azureAccountToken'] = undefined;
 			return true;
 		}
 		if (connection.options['azureAccountToken']) {
 			return true;
 		}
+		let azureResource = this.getAzureResourceForConnection(connection);
 		let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
 		if (accounts && accounts.length > 0) {
-			let account = find(accounts, account => account.key.accountId === connection.userName);
+			let accountName = (connection.authenticationType !== Constants.azureMFA) ? connection.azureAccount : connection.userName;
+			let account = find(accounts, account => account.key.accountId === accountName);
 			if (account) {
 				if (account.isStale) {
 					try {
@@ -726,7 +790,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						return false;
 					}
 				}
-				let tokensByTenant = await this._accountManagementService.getSecurityToken(account, AzureResource.Sql);
+				let tokensByTenant = await this._accountManagementService.getSecurityToken(account, azureResource);
 				let token: string;
 				let tenantId = connection.azureTenantId;
 				if (tenantId && tokensByTenant[tenantId]) {
@@ -751,9 +815,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let connectionInfo = assign({}, {
 			options: connection.options
 		});
-
-		// setup URI to provider ID map for connection
-		this._uriToProvider[uri] = connection.providerName;
 
 		return this._providers.get(connection.providerName).onReady.then((provider) => {
 			provider.connect(uri, connectionInfo);
@@ -829,21 +890,25 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	private addTelemetryForConnection(connection: ConnectionManagementInfo): void {
-		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.DatabaseConnected, {
-			connectionType: connection.serverInfo ? (connection.serverInfo.isCloud ? 'Azure' : 'Standalone') : '',
-			provider: connection.connectionProfile.providerName,
-			serverVersion: connection.serverInfo ? connection.serverInfo.serverVersion : '',
-			serverEdition: connection.serverInfo ? connection.serverInfo.serverEdition : '',
-
-			extensionConnectionTime: connection.extensionTimer.elapsed() - connection.serviceTimer.elapsed(),
-			serviceConnectionTime: connection.serviceTimer.elapsed()
-		}).catch((e) => this._logService.error(e));
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DatabaseConnected)
+			.withAdditionalProperties({
+				connectionType: connection.serverInfo ? (connection.serverInfo.isCloud ? 'Azure' : 'Standalone') : '',
+				provider: connection.connectionProfile.providerName,
+				serverVersion: connection.serverInfo ? connection.serverInfo.serverVersion : '',
+				serverEdition: connection.serverInfo ? connection.serverInfo.serverEdition : '',
+				serverEngineEdition: connection.serverInfo ? connection.serverInfo.engineEditionId : '',
+				extensionConnectionTime: connection.extensionTimer.elapsed() - connection.serviceTimer.elapsed(),
+				serviceConnectionTime: connection.serviceTimer.elapsed()
+			})
+			.send();
 	}
 
 	private addTelemetryForConnectionDisconnected(connection: interfaces.IConnectionProfile): void {
-		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.DatabaseDisconnected, {
-			provider: connection.providerName
-		}).catch((e) => this._logService.error(e));
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DatabaseDisconnected)
+			.withAdditionalProperties({
+				provider: connection.providerName
+			})
+			.send();
 	}
 
 	public onConnectionComplete(handle: number, info: azdata.ConnectionInfoSummary): void {
@@ -885,13 +950,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void> {
-		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.MoveServerConnection).catch((e) => this._logService.error(e));
+		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.MoveServerConnection);
 		return this._connectionStore.changeGroupIdForConnectionGroup(source, target);
 	}
 
 	public changeGroupIdForConnection(source: ConnectionProfile, targetGroupId: string): Promise<void> {
 		let id = Utils.generateUri(source);
-		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.MoveServerGroup).catch((e) => this._logService.error(e));
+		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.MoveServerGroup);
 		return this._connectionStore.changeGroupIdForConnection(source, targetGroupId).then(result => {
 			if (id && targetGroupId) {
 				source.groupId = targetGroupId;
@@ -1146,8 +1211,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Disconnects a connection before removing from settings.
 	 */
 	public deleteConnection(connection: ConnectionProfile): Promise<boolean> {
-
-		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.DeleteConnection, {}, connection).catch((e) => this._logService.error(e));
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DeleteConnection)
+			.withAdditionalProperties({
+				provider: connection.providerName
+			}).send();
 		// Disconnect if connected
 		let uri = Utils.generateUri(connection);
 		if (this.isConnected(uri) || this.isConnecting(uri)) {
@@ -1177,7 +1244,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Disconnects a connection before removing from config. If disconnect fails, settings is not modified.
 	 */
 	public deleteConnectionGroup(group: ConnectionProfileGroup): Promise<boolean> {
-		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.DeleteServerGroup).catch((e) => this._logService.error(e));
+		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DeleteServerGroup);
 		// Get all connections for this group
 		let connections = ConnectionProfileGroup.getConnectionsInGroup(group);
 

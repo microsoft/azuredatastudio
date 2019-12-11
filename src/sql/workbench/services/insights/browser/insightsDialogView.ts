@@ -26,7 +26,6 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as nls from 'vs/nls';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IAction } from 'vs/base/common/actions';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as types from 'vs/base/common/types';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -34,7 +33,6 @@ import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { MenuRegistry, ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { SplitView, Orientation, Sizing } from 'vs/base/browser/ui/splitview/splitview';
-import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -42,12 +40,15 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
 import { TaskRegistry } from 'sql/platform/tasks/browser/tasksRegistry';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { ViewletPane, IViewletPaneOptions } from 'vs/workbench/browser/parts/views/paneViewlet';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
 const iconClass = 'codicon';
 
-class InsightTableView<T> extends ViewletPanel {
+class InsightTableView<T> extends ViewletPane {
 	private _table: Table<T>;
 	public get table(): Table<T> {
 		return this._table;
@@ -57,7 +58,7 @@ class InsightTableView<T> extends ViewletPanel {
 		private columns: Slick.Column<T>[],
 		private data: IDisposableDataProvider<T> | Array<T>,
 		private tableOptions: Slick.GridOptions<T>,
-		options: IViewletPanelOptions,
+		options: IViewletPaneOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
@@ -162,7 +163,7 @@ export class InsightsDialogView extends Modal {
 		@IThemeService themeService: IThemeService,
 		@IClipboardService clipboardService: IClipboardService,
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
-		@ITelemetryService telemetryService: ITelemetryService,
+		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
@@ -353,7 +354,7 @@ export class InsightsDialogView extends Modal {
 							return;
 						}
 						let context = this.topInsightContext(resource);
-						this._commandService.executeCommand(action, context);
+						this._commandService.executeCommand(action, context).catch(err => onUnexpectedError(err));
 					}, 'left');
 					button.enabled = false;
 					this._taskButtonDisposables.push(button);
@@ -400,7 +401,7 @@ export class InsightsDialogView extends Modal {
 			let task = tasks.some(x => x === action);
 			let commandAction = MenuRegistry.getCommand(action);
 			if (task) {
-				returnActions.push(this._instantiationService.createInstance(ExecuteCommandAction, commandAction.id, commandAction.title));
+				returnActions.push(this._instantiationService.createInstance(ExecuteCommandAction, commandAction.id as string, commandAction.title as string));
 			}
 		}
 		return returnActions;

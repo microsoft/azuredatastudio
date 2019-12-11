@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 import { EOL } from 'os';
 import * as path from 'path';
-import { SemVer, compare } from 'semver';
+import { SemVer, compare as SemVerCompare } from 'semver';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { Command, ITool, OsType, ToolStatus, ToolType } from '../../interfaces';
+import { Command, ITool, OsDistribution, ToolStatus, ToolType } from '../../interfaces';
 import { getErrorMessage } from '../../utils';
 import { IPlatformService } from '../platformService';
 
@@ -27,24 +27,20 @@ const toolStatusLocalized: Map<ToolStatus, string> = new Map<ToolStatus, string>
 ]);
 
 export const enum dependencyType {
-	PythonAndPip3 = 'PythonAndPip3',
 	Brew = 'Brew',
 	Curl = 'Curl'
 }
 
-const pythonAndPip3Localized = localize('deploymentDialog.ToolInformationalMessage.PythonAndPip3', "•	azdata installation needs pip3 and python3 version 3.6 to be pre-installed before necessary tools can be deployed");
 const brewLocalized = localize('deploymentDialog.ToolInformationalMessage.Brew', "•	brew is needed for deployment of the tools and needs to be pre-installed before necessary tools can be deployed");
 const curlLocalized = localize('deploymentDialog.ToolInformationalMessage.Curl', "•	curl is needed for installation and needs to be pre-installed before necessary tools can be deployed");
 
 export const messageByDependencyType: Map<dependencyType, string> = new Map<dependencyType, string>([
-	[dependencyType.PythonAndPip3, pythonAndPip3Localized],
 	[dependencyType.Brew, brewLocalized],
 	[dependencyType.Curl, curlLocalized]
 ]);
 
 export abstract class ToolBase implements ITool {
 	constructor(private _platformService: IPlatformService) {
-		this._osType = this._platformService.osType();
 	}
 
 	abstract name: string;
@@ -52,9 +48,8 @@ export abstract class ToolBase implements ITool {
 	abstract description: string;
 	abstract type: ToolType;
 	abstract homePage: string;
-	abstract autoInstallSupported: boolean;
-	protected abstract readonly allInstallationCommands: Map<OsType, Command[]>;
-	protected readonly dependenciesByOsType: Map<OsType, dependencyType[]> = new Map<OsType, dependencyType[]>();
+	protected abstract readonly allInstallationCommands: Map<OsDistribution, Command[]>;
+	protected readonly dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>();
 
 	protected abstract getVersionFromOutput(output: string): SemVer | undefined;
 	protected readonly _onDidUpdateData = new vscode.EventEmitter<ITool>();
@@ -63,7 +58,7 @@ export abstract class ToolBase implements ITool {
 	protected abstract readonly versionCommand: Command;
 
 	public get dependencyMessages(): string[] {
-		return (this.dependenciesByOsType.get(this.osType) || []).map((msgType: dependencyType) => messageByDependencyType.get(msgType)!);
+		return (this.dependenciesByOsType.get(this.osDistribution) || []).map((msgType: dependencyType) => messageByDependencyType.get(msgType)!);
 	}
 
 	protected async getInstallationPath(): Promise<string | undefined> {
@@ -101,7 +96,7 @@ export abstract class ToolBase implements ITool {
 		return <string>toolStatusLocalized.get(this._status);
 	}
 
-	public get autoInstallRequired(): boolean {
+	public get autoInstallNeeded(): boolean {
 		return this.status !== ToolStatus.Installed && this.autoInstallSupported;
 	}
 
@@ -117,16 +112,12 @@ export abstract class ToolBase implements ITool {
 		return this.status === ToolStatus.Installing;
 	}
 
-	public get needsInstallation(): boolean {
-		return this.status !== ToolStatus.Installed;
-	}
-
 	public get storagePath(): string {
 		return this._platformService.storagePath();
 	}
 
-	public get osType(): OsType {
-		return this._osType;
+	public get osDistribution(): OsDistribution {
+		return this._platformService.osDistribution();
 	}
 
 	protected get version(): SemVer | undefined {
@@ -147,12 +138,12 @@ export abstract class ToolBase implements ITool {
 		return this._statusDescription;
 	}
 
-	public get installationPath(): string {
+	public get installationPath(): string | undefined {
 		return this._installationPath;
 	}
 
 	protected get installationCommands(): Command[] | undefined {
-		return this.allInstallationCommands.get(this.osType);
+		return this.allInstallationCommands.get(this.osDistribution);
 	}
 
 	protected async getPip3InstallLocation(packageName: string): Promise<string> {
@@ -176,6 +167,11 @@ export abstract class ToolBase implements ITool {
 
 	public showOutputChannel(preserveFocus?: boolean | undefined): void {
 		this._platformService.showOutputChannel(preserveFocus);
+	}
+
+
+	get autoInstallSupported(): boolean {
+		return !!this.installationCommands && !!this.installationCommands.length;
 	}
 
 	public async install(): Promise<void> {
@@ -208,7 +204,7 @@ export abstract class ToolBase implements ITool {
 	protected async installCore() {
 		const installationCommands: Command[] | undefined = this.installationCommands;
 		if (!installationCommands || installationCommands.length === 0) {
-			throw new Error(localize('toolBase.installCore.CannotInstallTool', "Cannot install tool:${0}::${1} as installation commands are unknown", this.displayName, this.description));
+			throw new Error(localize('toolBase.installCore.CannotInstallTool', "Cannot install tool:{0}::{1} as installation commands are unknown for your OS distribution, Please install {0} manually before proceeding", this.displayName, this.description));
 		}
 		for (let i: number = 0; i < installationCommands.length; i++) {
 			await this._platformService.runCommand(installationCommands[i].command,
@@ -230,11 +226,9 @@ export abstract class ToolBase implements ITool {
 			if (process.env.PATH) {
 				if (!`${path.delimiter}${process.env.PATH}${path.delimiter}`.includes(`${path.delimiter}${searchPath}${path.delimiter}`)) {
 					process.env.PATH += `${path.delimiter}${searchPath}`;
-					console.log(`Appending to Path -> '${path.delimiter}${searchPath}'`);
 				}
 			} else {
 				process.env.PATH = searchPath;
-				console.log(`Setting PATH to -> '${searchPath}'`);
 			}
 		});
 	}
@@ -272,10 +266,10 @@ export abstract class ToolBase implements ITool {
 	}
 
 	protected discoveryCommandString(toolBinary: string) {
-		switch (this.osType) {
-			case OsType.win32:
+		switch (this.osDistribution) {
+			case OsDistribution.win32:
 				return `where.exe  ${toolBinary}`;
-			case OsType.darwin:
+			case OsDistribution.darwin:
 				return `command -v ${toolBinary}`;
 			default:
 				return `which ${toolBinary}`;
@@ -299,14 +293,12 @@ export abstract class ToolBase implements ITool {
 		}
 	}
 
-	isSameOrNewerThan(version: string): boolean {
-		return this._version ? compare(this._version, new SemVer(version)) >= 0 : false;
+	isSameOrNewerThan(version?: string): boolean {
+		return !version || (this._version ? SemVerCompare(this._version, version) >= 0 : false);
 	}
 
 	private _status: ToolStatus = ToolStatus.NotInstalled;
-	private _osType: OsType;
 	private _version?: SemVer;
 	private _statusDescription?: string;
-	private _installationPath!: string;
-
+	private _installationPath?: string;
 }

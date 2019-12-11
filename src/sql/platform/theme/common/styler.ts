@@ -8,9 +8,10 @@ import * as editorColors from 'vs/editor/common/view/editorColorRegistry';
 
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
-import { IThemable, attachStyler } from 'vs/platform/theme/common/styler';
+import { attachStyler } from 'vs/platform/theme/common/styler';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_FOREGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, SIDE_BAR_DRAG_AND_DROP_BACKGROUND, PANEL_INACTIVE_TITLE_FOREGROUND, PANEL_ACTIVE_TITLE_BORDER, PANEL_ACTIVE_TITLE_FOREGROUND } from 'vs/workbench/common/theme';
+import { IThemable } from 'vs/base/common/styler';
 
 export function attachModalDialogStyler(widget: IThemable, themeService: IThemeService, style?:
 	{

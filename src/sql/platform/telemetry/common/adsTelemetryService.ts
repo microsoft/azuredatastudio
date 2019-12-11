@@ -55,6 +55,18 @@ class TelemetryEventImpl implements ITelemetryEvent {
 	}
 }
 
+class NullTelemetryEventImpl implements ITelemetryEvent {
+	constructor() { }
+
+	public send(): void { }
+
+	public withAdditionalProperties(additionalProperties: ITelemetryEventProperties): ITelemetryEvent { return this; }
+
+	public withAdditionalMeasurements(additionalMeasurements: ITelemetryEventMeasures): ITelemetryEvent { return this; }
+
+	public withConnectionInfo(connectionInfo: ITelemetryConnectionInfo): ITelemetryEvent { return this; }
+}
+
 export class AdsTelemetryService implements IAdsTelemetryService {
 
 	_serviceBrand: undefined;
@@ -187,4 +199,32 @@ export class AdsTelemetryService implements IAdsTelemetryService {
 	public sendTelemetryEvent(eventName: string, properties?: ITelemetryEventProperties, measurements?: ITelemetryEventMeasures): void {
 		this.createTelemetryEvent(eventName, properties, measurements).send();
 	}
+}
+
+export class NullAdsTelemetryService implements IAdsTelemetryService {
+
+	_serviceBrand: undefined;
+
+	get isOptedIn(): boolean {
+		return false;
+	}
+
+	setEnabled(value: boolean): void { }
+	getTelemetryInfo(): Promise<ITelemetryInfo> {
+		return Promise.resolve({
+			sessionId: '',
+			machineId: '',
+			instanceId: ''
+		});
+	}
+	createViewEvent(view: string): ITelemetryEvent { return new NullTelemetryEventImpl(); }
+	sendViewEvent(view: string): void { }
+	createActionEvent(view: string, action: string, target?: string, source?: string, durationInMs?: number): ITelemetryEvent { return new NullTelemetryEventImpl(); }
+	sendActionEvent(view: string, action: string, target?: string, source?: string, durationInMs?: number): void { }
+	createMetricsEvent(metrics: ITelemetryEventMeasures, groupName: string): ITelemetryEvent { return new NullTelemetryEventImpl(); }
+	sendMetricsEvent(metrics: ITelemetryEventMeasures, groupName: string): void { }
+	createErrorEvent(view: string, name: string, errorCode?: string, errorType?: string): ITelemetryEvent { return new NullTelemetryEventImpl(); }
+	sendErrorEvent(view: string, name: string, errorCode?: string, errorType?: string): void { }
+	createTelemetryEvent(eventName: string, properties?: ITelemetryEventProperties, measurements?: ITelemetryEventMeasures): ITelemetryEvent { return new NullTelemetryEventImpl(); }
+	sendTelemetryEvent(eventName: string, properties?: ITelemetryEventProperties, measurements?: ITelemetryEventMeasures): void { }
 }

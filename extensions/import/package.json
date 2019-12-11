@@ -71,7 +71,7 @@
 		"vscode-nls": "^3.2.1"
 	},
 	"devDependencies": {
-		"@types/node": "10"
+		"@types/node": "^12.11.7"
 	},
 	"__metadata": {
 		"id": "23",

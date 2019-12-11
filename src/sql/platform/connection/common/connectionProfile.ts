@@ -43,6 +43,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			this.saveProfile = model.saveProfile;
 			this._id = model.id;
 			this.azureTenantId = model.azureTenantId;
+			this.azureAccount = model.azureAccount;
 			if (this.capabilitiesService && model.providerName) {
 				let capabilities = this.capabilitiesService.getCapabilities(model.providerName);
 				if (capabilities && capabilities.connection && capabilities.connection.connectionOptions) {
@@ -110,6 +111,14 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public set azureTenantId(value: string | undefined) {
 		this.options['azureTenantId'] = value;
+	}
+
+	public get azureAccount(): string | undefined {
+		return this.options['azureAccount'];
+	}
+
+	public set azureAccount(value: string | undefined) {
+		this.options['azureAccount'] = value;
 	}
 
 	public get registeredServerDescription(): string {
@@ -196,7 +205,8 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			options: this.options,
 			saveProfile: this.saveProfile,
 			id: this.id,
-			azureTenantId: this.azureTenantId
+			azureTenantId: this.azureTenantId,
+			azureAccount: this.azureAccount
 		};
 
 		return result;

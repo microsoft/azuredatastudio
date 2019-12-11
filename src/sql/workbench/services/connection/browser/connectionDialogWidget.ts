@@ -10,20 +10,19 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { IConnectionManagementService, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
-import { TreeCreationUtils } from 'sql/workbench/parts/objectExplorer/browser/treeCreationUtils';
-import { TreeUpdateUtils, IExpandableTree } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
+import { TreeCreationUtils } from 'sql/workbench/contrib/objectExplorer/browser/treeCreationUtils';
+import { TreeUpdateUtils, IExpandableTree } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
-import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/workbench/parts/connection/browser/recentConnectionTreeController';
-import { SavedConnectionTreeController } from 'sql/workbench/parts/connection/browser/savedConnectionTreeController';
+import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/workbench/contrib/connection/browser/recentConnectionTreeController';
+import { SavedConnectionTreeController } from 'sql/workbench/contrib/connection/browser/savedConnectionTreeController';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { ClearRecentConnectionsAction } from 'sql/workbench/parts/connection/browser/connectionActions';
+import { ClearRecentConnectionsAction } from 'sql/workbench/contrib/connection/browser/connectionActions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { localize } from 'vs/nls';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -37,6 +36,8 @@ import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { entries } from 'sql/base/common/collections';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -92,7 +93,7 @@ export class ConnectionDialogWidget extends Modal {
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IThemeService themeService: IThemeService,
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
-		@ITelemetryService telemetryService: ITelemetryService,
+		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IContextViewService private _contextViewService: IContextViewService,
@@ -116,21 +117,21 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	public refresh(): void {
-		let filteredProviderDisplayNames = this.providerDisplayNameOptions;
-
+		let filteredProviderMap = this.providerNameToDisplayNameMap;
 		if (this._newConnectionParams && this._newConnectionParams.providers) {
-			const validProviderNames = Object.keys(this.providerNameToDisplayNameMap).filter(x => this.includeProvider(x, this._newConnectionParams));
-			if (validProviderNames && validProviderNames.length > 0) {
-				filteredProviderDisplayNames = filteredProviderDisplayNames.filter(x => validProviderNames.some(
-					v => this.providerNameToDisplayNameMap[v] === x) !== undefined
-				);
+			const validProviderMap = entries(this.providerNameToDisplayNameMap).filter(x => this.includeProvider(x[0], this._newConnectionParams));
+			if (validProviderMap && validProviderMap.length > 0) {
+				let map: { [providerDisplayName: string]: string } = {};
+				validProviderMap.forEach(v => {
+					map[v[0]] = v[1];
+				});
+				filteredProviderMap = map;
 			}
 		}
 
-		this._providerTypeSelectBox.setOptions(filteredProviderDisplayNames.filter((providerDisplayName, index) =>
-			// Remove duplicate listings (CMS uses the same display name)
-			filteredProviderDisplayNames.indexOf(providerDisplayName) === index)
-		);
+		// Remove duplicate listings (CMS uses the same display name)
+		let uniqueProvidersMap = this._connectionManagementService.getUniqueConnectionProvidersByNameMap(filteredProviderMap);
+		this._providerTypeSelectBox.setOptions(Object.keys(uniqueProvidersMap).map(k => uniqueProvidersMap[k]));
 	}
 
 	private includeProvider(providerName: string, params?: INewConnectionParams): Boolean {

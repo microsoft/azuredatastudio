@@ -9,15 +9,15 @@ import {
 } from '@angular/core';
 
 import * as DOM from 'vs/base/browser/dom';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore, ITitledComponent } from 'sql/workbench/browser/modelComponents/interfaces';
 import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
 
 @Component({
 	selector: 'modelview-image',
 	template: `
-		<div #imageContainer [style.title]="title" [style.width]="getWidth()" [style.height]="getHeight()" [style.background-size]="getImageSize()">`
+		<div #imageContainer [title]="title" [style.width]="getWidth()" [style.height]="getHeight()" [style.background-size]="getImageSize()">`
 })
-export default class ImageComponent extends ComponentWithIconBase implements IComponent, OnDestroy, AfterViewInit {
+export default class ImageComponent extends ComponentWithIconBase implements ITitledComponent, IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	@ViewChild('imageContainer', { read: ElementRef }) imageContainer: ElementRef;
@@ -55,7 +55,7 @@ export default class ImageComponent extends ComponentWithIconBase implements ICo
 		if (this.iconPath) {
 			if (!this._iconClass) {
 				super.updateIcon();
-				DOM.addClasses(this.imageContainer.nativeElement, this._iconClass, 'codicon');
+				DOM.addClasses(this.imageContainer.nativeElement, this._iconClass, 'icon');
 			} else {
 				super.updateIcon();
 			}

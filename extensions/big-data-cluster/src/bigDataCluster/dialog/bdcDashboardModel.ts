@@ -20,10 +20,10 @@ export type BdcErrorEvent = { error: Error, errorType: BdcErrorType };
 export class BdcDashboardModel {
 
 	private _clusterController: ClusterController;
-	private _bdcStatus: BdcStatusModel;
-	private _endpoints: EndpointModel[] = [];
-	private _bdcStatusLastUpdated: Date;
-	private _endpointsLastUpdated: Date;
+	private _bdcStatus: BdcStatusModel | undefined;
+	private _endpoints: EndpointModel[] | undefined;
+	private _bdcStatusLastUpdated: Date | undefined;
+	private _endpointsLastUpdated: Date | undefined;
 	private readonly _onDidUpdateEndpoints = new vscode.EventEmitter<EndpointModel[]>();
 	private readonly _onDidUpdateBdcStatus = new vscode.EventEmitter<BdcStatusModel>();
 	private readonly _onBdcError = new vscode.EventEmitter<BdcErrorEvent>();
@@ -49,15 +49,15 @@ export class BdcDashboardModel {
 		return this._bdcStatus;
 	}
 
-	public get serviceEndpoints(): EndpointModel[] {
-		return this._endpoints || [];
+	public get serviceEndpoints(): EndpointModel[] | undefined {
+		return this._endpoints;
 	}
 
-	public get bdcStatusLastUpdated(): Date {
+	public get bdcStatusLastUpdated(): Date | undefined {
 		return this._bdcStatusLastUpdated;
 	}
 
-	public get endpointsLastUpdated(): Date {
+	public get endpointsLastUpdated(): Date | undefined {
 		return this._endpointsLastUpdated;
 	}
 
@@ -75,7 +75,7 @@ export class BdcDashboardModel {
 					this._onDidUpdateBdcStatus.fire(this.bdcStatus);
 				}).catch(error => this._onBdcError.fire({ error: error, errorType: 'bdcStatus' })),
 				this._clusterController.getEndPoints(true).then(response => {
-					this._endpoints = response.endPoints || [];
+					this._endpoints = response.endPoints;
 					fixEndpoints(this._endpoints);
 					this._endpointsLastUpdated = new Date();
 					this._onDidUpdateEndpoints.fire(this.serviceEndpoints);
@@ -92,7 +92,7 @@ export class BdcDashboardModel {
 	 * @returns The IConnectionProfile - or undefined if the endpoints haven't been loaded yet
 	 */
 	public getSqlServerMasterConnectionProfile(): azdata.IConnectionProfile | undefined {
-		const sqlServerMasterEndpoint = this.serviceEndpoints.find(e => e.name === Endpoint.sqlServerMaster);
+		const sqlServerMasterEndpoint = this.serviceEndpoints && this.serviceEndpoints.find(e => e.name === Endpoint.sqlServerMaster);
 		if (!sqlServerMasterEndpoint) {
 			return undefined;
 		}
@@ -166,7 +166,10 @@ export function getTroubleshootNotebookUrl(service?: string): string {
  * Applies fixes to the endpoints received so they are displayed correctly
  * @param endpoints The endpoints received to modify
  */
-function fixEndpoints(endpoints: EndpointModel[]) {
+function fixEndpoints(endpoints?: EndpointModel[]): void {
+	if (!endpoints) {
+		return;
+	}
 	endpoints.forEach(e => {
 		if (e.name === Endpoint.metricsui && e.endpoint && e.endpoint.indexOf('/d/wZx3OUdmz') === -1) {
 			// Update to have correct URL

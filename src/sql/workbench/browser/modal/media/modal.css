@@ -56,6 +56,8 @@
 .modal .modal-title {
 	font-size: 15px;
 	font-weight: 600;
+	margin-block-start: 0px;
+	margin-block-end: 0px;
 }
 
 .modal .modal-title-icon {

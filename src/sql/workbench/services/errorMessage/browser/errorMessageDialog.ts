@@ -14,7 +14,6 @@ import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_FOREGROUND } from 'vs/workbench/common/theme';
 import { Event, Emitter } from 'vs/base/common/event';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
@@ -23,6 +22,8 @@ import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 const maxActions = 1;
 
@@ -46,7 +47,7 @@ export class ErrorMessageDialog extends Modal {
 		@IThemeService themeService: IThemeService,
 		@IClipboardService clipboardService: IClipboardService,
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
-		@ITelemetryService telemetryService: ITelemetryService,
+		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
@@ -66,7 +67,7 @@ export class ErrorMessageDialog extends Modal {
 		this.createCopyButton();
 		this._actionButtons = [];
 		for (let i = 0; i < maxActions; i++) {
-			this._actionButtons.unshift(this.createStandardButton('Action', () => this.onActionSelected(i)));
+			this._actionButtons.unshift(this.createStandardButton(localize('errorMessageDialog.action', "Action"), () => this.onActionSelected(i)));
 		}
 		this._okButton = this.addFooterButton(this._okLabel, () => this.ok());
 		this._register(attachButtonStyler(this._okButton, this._themeService));
@@ -74,7 +75,7 @@ export class ErrorMessageDialog extends Modal {
 
 	private createCopyButton() {
 		let copyButtonLabel = localize('copyDetails', "Copy details");
-		this._copyButton = this.addFooterButton(copyButtonLabel, () => this._clipboardService.writeText(this._messageDetails), 'left');
+		this._copyButton = this.addFooterButton(copyButtonLabel, () => this._clipboardService.writeText(this._messageDetails).catch(err => onUnexpectedError(err)), 'left');
 		this._copyButton.icon = 'codicon scriptToClipboard';
 		this._copyButton.element.title = copyButtonLabel;
 		this._register(attachButtonStyler(this._copyButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_FOREGROUND }));
@@ -91,7 +92,7 @@ export class ErrorMessageDialog extends Modal {
 		this.ok();
 		// Run the action if possible
 		if (this._actions && index < this._actions.length) {
-			this._actions[index].run();
+			this._actions[index].run().catch(err => onUnexpectedError(err));
 		}
 	}
 

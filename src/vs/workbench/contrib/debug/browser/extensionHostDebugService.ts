@@ -16,6 +16,9 @@ import { URI } from 'vs/base/common/uri';
 import { mapToSerializable } from 'vs/base/common/map';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { IWorkspaceProvider, IWorkspace } from 'vs/workbench/services/host/browser/browserHostService';
+import { IProcessEnvironment } from 'vs/base/common/platform';
+import { hasWorkspaceFileExtension } from 'vs/platform/workspaces/common/workspaces';
+import { ILogService } from 'vs/platform/log/common/log';
 
 class BrowserExtensionHostDebugService extends ExtensionHostDebugChannelClient implements IExtensionHostDebugService {
 
@@ -23,7 +26,8 @@ class BrowserExtensionHostDebugService extends ExtensionHostDebugChannelClient i
 
 	constructor(
 		@IRemoteAgentService remoteAgentService: IRemoteAgentService,
-		@IWorkbenchEnvironmentService environmentService: IWorkbenchEnvironmentService
+		@IWorkbenchEnvironmentService environmentService: IWorkbenchEnvironmentService,
+		@ILogService logService: ILogService
 	) {
 		const connection = remoteAgentService.getConnection();
 		let channel: IChannel;
@@ -32,7 +36,7 @@ class BrowserExtensionHostDebugService extends ExtensionHostDebugChannelClient i
 		} else {
 			channel = { call: async () => undefined, listen: () => Event.None } as any;
 			// TODO@weinand TODO@isidorn fallback?
-			console.warn('Extension Host Debugging not available due to missing connection.');
+			logService.warn('Extension Host Debugging not available due to missing connection.');
 		}
 
 		super(channel);
@@ -41,13 +45,8 @@ class BrowserExtensionHostDebugService extends ExtensionHostDebugChannelClient i
 			this.workspaceProvider = environmentService.options.workspaceProvider;
 		} else {
 			this.workspaceProvider = { open: async () => undefined, workspace: undefined };
-			console.warn('Extension Host Debugging not available due to missing workspace provider.');
+			logService.warn('Extension Host Debugging not available due to missing workspace provider.');
 		}
-
-		this.registerListeners(environmentService);
-	}
-
-	private registerListeners(environmentService: IWorkbenchEnvironmentService): void {
 
 		// Reload window on reload request
 		this._register(this.onReload(event => {
@@ -64,7 +63,8 @@ class BrowserExtensionHostDebugService extends ExtensionHostDebugChannelClient i
 		}));
 	}
 
-	async openExtensionDevelopmentHostWindow(args: string[]): Promise<void> {
+	openExtensionDevelopmentHostWindow(args: string[], env: IProcessEnvironment): Promise<void> {
+
 		if (!this.workspaceProvider.payload) {
 			// TODO@Ben remove me once environment is adopted
 			return this.openExtensionDevelopmentHostWindowLegacy(args);
@@ -75,14 +75,29 @@ class BrowserExtensionHostDebugService extends ExtensionHostDebugChannelClient i
 		const folderUriArg = this.findArgument('folder-uri', args);
 		if (folderUriArg) {
 			debugWorkspace = { folderUri: URI.parse(folderUriArg) };
+		} else {
+			const fileUriArg = this.findArgument('file-uri', args);
+			if (fileUriArg && hasWorkspaceFileExtension(fileUriArg)) {
+				debugWorkspace = { workspaceUri: URI.parse(fileUriArg) };
+			}
 		}
 
 		// Add environment parameters required for debug to work
 		const environment = new Map<string, string>();
 
+		const fileUriArg = this.findArgument('file-uri', args);
+		if (fileUriArg && !hasWorkspaceFileExtension(fileUriArg)) {
+			environment.set('openFile', fileUriArg);
+		}
+
 		const extensionDevelopmentPath = this.findArgument('extensionDevelopmentPath', args);
 		if (extensionDevelopmentPath) {
 			environment.set('extensionDevelopmentPath', extensionDevelopmentPath);
+		}
+
+		const extensionTestsPath = this.findArgument('extensionTestsPath', args);
+		if (extensionTestsPath) {
+			environment.set('extensionTestsPath', extensionTestsPath);
 		}
 
 		const debugId = this.findArgument('debugId', args);
@@ -96,13 +111,13 @@ class BrowserExtensionHostDebugService extends ExtensionHostDebugChannelClient i
 		}
 
 		// Open debug window as new window. Pass ParsedArgs over.
-		this.workspaceProvider.open(debugWorkspace, {
+		return this.workspaceProvider.open(debugWorkspace, {
 			reuse: false, 							// debugging always requires a new window
 			payload: mapToSerializable(environment)	// mandatory properties to enable debugging
 		});
 	}
 
-	private async openExtensionDevelopmentHostWindowLegacy(args: string[]): Promise<void> {
+	private openExtensionDevelopmentHostWindowLegacy(args: string[]): Promise<void> {
 		// we pass the "args" as query parameters of the URL
 
 		let newAddress = `${document.location.origin}${document.location.pathname}?`;
@@ -140,6 +155,11 @@ class BrowserExtensionHostDebugService extends ExtensionHostDebugChannelClient i
 		const ep = findArgument('extensionDevelopmentPath');
 		if (ep) {
 			addQueryParameter('extensionDevelopmentPath', ep);
+		}
+
+		const etp = findArgument('extensionTestsPath');
+		if (etp) {
+			addQueryParameter('extensionTestsPath', etp);
 		}
 
 		const di = findArgument('debugId');

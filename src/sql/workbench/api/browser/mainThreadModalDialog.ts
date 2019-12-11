@@ -5,7 +5,7 @@
 
 import 'vs/css!sql/media/icons/common-icons';
 
-import { WebViewDialog } from 'sql/workbench/parts/webview/browser/webViewDialog';
+import { WebViewDialog } from 'sql/workbench/contrib/webview/browser/webViewDialog';
 import { MainThreadModalDialogShape, SqlMainContext, SqlExtHostContext, ExtHostModalDialogsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';

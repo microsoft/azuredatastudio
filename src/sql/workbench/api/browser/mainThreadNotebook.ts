@@ -15,7 +15,7 @@ import { INotebookService, INotebookProvider, INotebookManager } from 'sql/workb
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, FutureMessageType, INotebookFutureDetails, INotebookFutureDone } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { Deferred } from 'sql/base/common/promise';
-import { FutureInternal } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { FutureInternal } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebook)
@@ -91,7 +91,7 @@ class NotebookProviderWrapper extends Disposable implements INotebookProvider {
 
 	constructor(
 		private _proxy: Proxies,
-		public readonly providerId,
+		public readonly providerId: string,
 		public readonly providerHandle: number,
 		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
@@ -127,7 +127,7 @@ class NotebookManagerWrapper implements INotebookManager {
 	private managerDetails: INotebookManagerDetails;
 
 	constructor(private _proxy: Proxies,
-		public readonly providerId,
+		public readonly providerId: string,
 		private notebookUri: URI,
 		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) { }

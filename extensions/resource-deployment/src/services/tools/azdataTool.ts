@@ -7,13 +7,16 @@ import * as path from 'path';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { azdataPipInstallArgsKey, AzdataPipInstallUriKey, DeploymentConfigurationKey } from '../../constants';
-import { Command, OsType, ToolType } from '../../interfaces';
+import { AzdataInstallLocationKey, DeploymentConfigurationKey } from '../../constants';
+import { Command, OsDistribution, ToolType } from '../../interfaces';
 import { IPlatformService } from '../platformService';
 import { dependencyType, ToolBase } from './toolBase';
 
 const localize = nls.loadMessageBundle();
 export const AzdataToolName = 'azdata';
+const win32InstallationRoot = `${process.env['ProgramFiles(x86)']}\\Microsoft SDKs\\Azdata\\CLI\\wbin`;
+const macInstallationRoot = '/usr/local/bin';
+const debianInstallationRoot = '/usr/local/bin';
 
 export class AzdataTool extends ToolBase {
 	constructor(platformService: IPlatformService) {
@@ -25,7 +28,7 @@ export class AzdataTool extends ToolBase {
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.AzdataDescription', "A command-line utility written in Python that enables cluster administrators to bootstrap and manage the Big Data Cluster via REST APIs");
+		return localize('resourceDeployment.AzdataDescription', "Bootstraps and manages the Big Data Cluster");
 	}
 
 	get type(): ToolType {
@@ -59,13 +62,14 @@ export class AzdataTool extends ToolBase {
 		}
 		return version;
 	}
-
-	get autoInstallSupported(): boolean {
-		return true;
-	}
-
 	protected async getSearchPaths(): Promise<string[]> {
-		switch (this.osType) {
+		switch (this.osDistribution) {
+			case OsDistribution.win32:
+				return [win32InstallationRoot];
+			case OsDistribution.darwin:
+				return [macInstallationRoot];
+			case OsDistribution.debian:
+				return [debianInstallationRoot];
 			default:
 				const azdataCliInstallLocation = await this.getPip3InstallLocation('azdata-cli');
 				if (azdataCliInstallLocation) {
@@ -76,83 +80,102 @@ export class AzdataTool extends ToolBase {
 		}
 	}
 
-	protected get allInstallationCommands(): Map<OsType, Command[]> {
-		return new Map<OsType, Command[]>([
-			[OsType.linux, this.defaultInstallationCommands],
-			[OsType.win32, this.defaultInstallationCommands],
-			[OsType.darwin, this.defaultInstallationCommands],
-			[OsType.others, this.defaultInstallationCommands]
+	protected get allInstallationCommands(): Map<OsDistribution, Command[]> {
+		return new Map<OsDistribution, Command[]>([
+			[OsDistribution.debian, this.debianInstallationCommands],
+			[OsDistribution.win32, this.win32InstallationCommands],
+			[OsDistribution.darwin, this.macOsInstallationCommands],
+			[OsDistribution.others, []]
 		]);
 	}
 
-	protected get uninstallCommand(): string | undefined {
-		return this.defaultUninstallCommand;
+
+	private get azdataInstallLocation(): string {
+		return vscode.workspace.getConfiguration(DeploymentConfigurationKey)[AzdataInstallLocationKey] || this.defaultInstallLocationByDistribution.get(this.osDistribution);
 	}
 
-	private get defaultInstallationCommands(): Command[] {
+	private defaultInstallLocationByDistribution: Map<OsDistribution, string> = new Map<OsDistribution, string>([
+		[OsDistribution.debian, 'https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2019.list'],
+		[OsDistribution.win32, 'https://aka.ms/azdata-msi'],
+		[OsDistribution.darwin, 'microsoft/azdata-cli-release'],
+		[OsDistribution.others, '']
+	]);
+
+	protected dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>([
+		[OsDistribution.debian, []],
+		[OsDistribution.win32, []],
+		[OsDistribution.darwin, [dependencyType.Brew]],
+		[OsDistribution.others, []]
+	]);
+
+	private get win32InstallationCommands() {
 		return [
 			{
-				comment: localize('resourceDeployment.Azdata.InstallUpdatePythonRequestsPackage', "installing/updating to latest version of requests python package azdata …"),
-				command: `pip3 install -U requests`
+				comment: localize('resourceDeployment.Azdata.DeletingPreviousAzdata.msi', "deleting previously downloaded Azdata.msi if one exists …"),
+				command: `IF EXIST .\\Azdata.msi DEL /F .\\Azdata.msi`
 			},
 			{
-				comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata …"),
-				command: `pip3 install -r ${this.azdataInstallUri} ${this.azdataInstallAdditionalArgs} --quiet --user`
+				sudo: true,
+				comment: localize('resourceDeployment.Azdata.DownloadingAndInstallingAzdata', "downloading Azdata.msi and installing azdata-cli …"),
+				command: `powershell -Command "& {(New-Object System.Net.WebClient).DownloadFile('${this.azdataInstallLocation}', 'Azdata.msi'); Start-Process msiexec.exe -Wait -ArgumentList '/I Azdata.msi /passive /quiet /lvx ADS_AzdataInstall.log'}"`
+			},
+			{
+				comment: localize('resourceDeployment.Azdata.DisplayingInstallationLog', "displaying the installation log …"),
+				command: `type ADS_AzdataInstall.log | findstr /i /v ^MSI"`,
+				ignoreError: true
 			}
 		];
 	}
 
-	private get defaultUninstallCommand(): string {
-		return `pip3 uninstall -r ${this.azdataInstallUri} ${this.azdataInstallAdditionalArgs} -y `;
+	private get macOsInstallationCommands() {
+		return [
+			{
+				comment: localize('resourceDeployment.Azdata.TappingBrewRepository', "tapping into the brew repository for azdata-cli …"),
+				command: `brew tap ${this.azdataInstallLocation}`
+			},
+			{
+				comment: localize('resourceDeployment.Azdata.UpdatingBrewRepository', "updating the brew repository for azdata-cli installation …"),
+				command: 'brew update'
+			},
+			{
+				comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata …"),
+				command: 'brew install azdata-cli'
+			}
+		];
 	}
 
-	private get azdataInstallUri(): string {
-		return vscode.workspace.getConfiguration(DeploymentConfigurationKey)[AzdataPipInstallUriKey];
+	private get debianInstallationCommands() {
+		return [
+			{
+				sudo: true,
+				comment: localize('resourceDeployment.Azdata.AptGetUpdate', "updating repository information …"),
+				command: 'apt-get update'
+			},
+			{
+				sudo: true,
+				comment: localize('resourceDeployment.Azdata.AptGetPackages', "getting packages needed for azdata installation …"),
+				command: 'apt-get install gnupg ca-certificates curl apt-transport-https lsb-release -y'
+			},
+			{
+				sudo: true,
+				comment: localize('resourceDeployment.Azdata.DownloadAndInstallingSigningKey', "downloading and installing the signing key for azdata …"),
+				command: 'wget -qO- https://packages.microsoft.com/keys/microsoft.asc | apt-key add -'
+			},
+			{
+				sudo: true,
+				comment: localize('resourceDeployment.Azdata.AddingAzdataRepositoryInformation', "adding the azdata repository information …"),
+				command: `add-apt-repository "$(wget -qO- ${this.azdataInstallLocation})"`
+			},
+			{
+				sudo: true,
+				comment: localize('resourceDeployment.Azdata.AptGetUpdate', "updating repository information …"),
+				command: 'apt-get update'
+			},
+			{
+				sudo: true,
+				comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata …"),
+				command: 'apt-get install -y azdata-cli'
+			}
+		];
 	}
-
-	private get azdataInstallAdditionalArgs(): string {
-		return vscode.workspace.getConfiguration(DeploymentConfigurationKey)[azdataPipInstallArgsKey];
-	}
-
-	protected dependenciesByOsType: Map<OsType, dependencyType[]> = new Map<OsType, dependencyType[]>([
-		[OsType.linux, [dependencyType.PythonAndPip3]],
-		[OsType.win32, [dependencyType.PythonAndPip3]],
-		[OsType.darwin, [dependencyType.PythonAndPip3]],
-		[OsType.others, [dependencyType.PythonAndPip3]]
-	]);
 }
-
-/*
-const linuxInstallationCommands = [
-	{
-		sudo: true,
-		comment: localize('resourceDeployment.Azdata.AptGetUpdate', "updating repository information …"),
-		command: 'apt-get update'
-	},
-	{
-		sudo: true,
-		comment: localize('resourceDeployment.Azdata.AptGetPackages', "getting packages needed for azdata installation …"),
-		command: 'apt-get install gnupg ca-certificates curl apt-transport-https lsb-release -y'
-	},
-	{
-		sudo: true,
-		comment: localize('resourceDeployment.Azdata.DownloadAndInstallingSigningKey', "downloading and installing the signing key for azdata …"),
-		command: 'wget -qO- https://packages.microsoft.com/keys/microsoft.asc | apt-key add -'
-	},
-	{
-		sudo: true,
-		comment: localize('resourceDeployment.Azdata.AddingAzureCliRepositoryInformation', "adding the azdata repository information …"),
-		command: 'add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-preview.list)"'
-	},
-	{
-		sudo: true,
-		comment: localize('resourceDeployment.Azdata.AptGetUpdate', "updating repository information …"),
-		command: 'apt-get update'
-	},
-	{
-		sudo: true,
-		comment: localize('resourceDeployment.Azdata.InstallingAzdata', "installing azdata …"),
-		command: 'apt-get install -y azdata-cli'
-	}
-];
-*/

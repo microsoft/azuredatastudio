@@ -1,0 +1,169 @@
+steps:
+  - script: |
+      mkdir -p .build
+      echo -n $BUILD_SOURCEVERSION > .build/commit
+      echo -n $VSCODE_QUALITY > .build/quality
+    displayName: Prepare cache flag
+
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+    inputs:
+      keyfile: 'build/.cachesalt, .build/commit, .build/quality'
+      targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
+      vstsFeed: 'BuildCache'
+      platformIndependent: true
+      alias: 'Compilation'
+
+  - script: |
+      set -e
+      exit 1
+    displayName: Check RestoreCache
+    condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.15.3'
+
+  - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
+    inputs:
+      versionSpec: '1.x'
+
+  - task: AzureKeyVault@1
+    displayName: 'Azure Key Vault: Get Secrets'
+    inputs:
+      azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+      KeyVaultName: ado-secrets
+      SecretsFilter: 'github-distro-mixin-password'
+
+  - script: |
+      set -e
+
+      cat << EOF > ~/.netrc
+      machine github.com
+      login azuredatastudio
+      password $(github-distro-mixin-password)
+      EOF
+
+      git config user.email "andresse@microsoft.com"
+      git config user.name "AzureDataStudio"
+    displayName: Prepare tooling
+
+  - script: |
+      set -e
+      git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+      git fetch distro
+      git merge $(node -p "require('./package.json').distro")
+    displayName: Merge distro
+
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+    inputs:
+      keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+      targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
+      vstsFeed: 'BuildCache'
+
+  - script: |
+      set -e
+      CHILD_CONCURRENCY=1 yarn --frozen-lockfile
+    displayName: Install dependencies
+    condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
+    inputs:
+      keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+      targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
+      vstsFeed: 'BuildCache'
+    condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+
+  - script: |
+      set -e
+      yarn postinstall
+    displayName: Run postinstall scripts
+    condition: and(succeeded(), eq(variables['CacheRestored'], 'true'))
+
+  - script: |
+      set -e
+      node build/azure-pipelines/mixin
+    displayName: Mix in quality
+
+  - script: |
+      set -e
+      yarn gulp install-sqltoolsservice
+    displayName: Install sqltoolsservice
+
+  - script: |
+      set -e
+      yarn gulp package-rebuild-extensions
+      yarn gulp vscode-darwin-min-ci
+      yarn gulp vscode-reh-darwin-min-ci
+      yarn gulp vscode-reh-web-darwin-min-ci
+    displayName: Build
+    env:
+      VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
+
+  - script: |
+      set -e
+      ./scripts/test.sh --build --coverage --reporter mocha-junit-reporter
+    displayName: Run unit tests
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - script: |
+      set -e
+      mkdir -p .build/darwin/archive
+      pushd ../azuredatastudio-darwin && zip -r -X -y $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip * && popd
+    displayName: 'Archive'
+
+  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+    displayName: 'ESRP CodeSigning'
+    inputs:
+      ConnectedServiceName: 'Code Signing'
+      FolderPath: '$(Build.SourcesDirectory)/.build/darwin/archive'
+      Pattern: 'azuredatastudio-darwin.zip'
+      signConfigType: inlineSignParams
+      inlineOperation: |
+        [
+          {
+            "keyCode": "CP-401337-Apple",
+            "operationSetCode": "MacAppDeveloperSign",
+            "parameters": [],
+            "toolName": "sign",
+            "toolVersion": "1.0"
+          }
+        ]
+      SessionTimeout: 20
+
+  - script: |
+      set -e
+      ./build/azure-pipelines/darwin/createDrop.sh
+    displayName: Create Drop
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: drop'
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results test-results.xml'
+    inputs:
+      testResultsFiles: 'test-results.xml'
+      searchFolder: '$(Build.SourcesDirectory)'
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Integration and Smoke Test Results'
+    inputs:
+      testResultsFiles: 'dawin-integration-tests-results.xml'
+      searchFolder: '$(Build.ArtifactStagingDirectory)\test-results'
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - task: PublishCodeCoverageResults@1
+    displayName: 'Publish code coverage from $(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: '$(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
+      reportDirectory: '$(Build.SourcesDirectory)/.build/coverage'
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection'
+    inputs:
+      failOnAlert: true

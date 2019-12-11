@@ -1,0 +1,31 @@
+<div role="radiogroup" *ngIf="cards" class="card-group" style="flex-wrap:wrap" [style.height]="height"
+	[style.width]="width" [attr.aria-label]="ariaLabel" (keydown)="onKeyDown($event)">
+	<div #cardDiv role="radio" *ngFor="let card of cards" class="model-card" (click)="selectCard(card.id)"
+		[attr.aria-checked]="isCardSelected(card.id)" [tabIndex]="getTabIndex(card.id)" [style.width]="cardWidth"
+		[style.height]="cardHeight" (focus)="onCardFocus(card.id)" (blur)="onCardBlur(card.id)" style="flex:0 0 auto;">
+		<span class="selection-indicator-container">
+			<div *ngIf="isCardSelected(card.id)" class="selection-indicator"></div>
+		</span>
+		<div class="card-vertical-button">
+			<div *ngIf="card.icon" class="iconContainer">
+				<div [class]="getIconClass(card.id)" [style.width]="iconWidth" [style.height]="iconHeight"></div>
+			</div>
+			<h4 class="card-label">{{card.label}}</h4>
+			<div *ngIf="card.descriptions && card.descriptions.length > 0" class="model-card-description-container">
+				<ng-container *ngFor="let desc of card.descriptions">
+					<table class="model-card-description-table" [attr.aria-label]="desc.ariaLabel">
+						<tr>
+							<th class="model-card-description-label-column">{{desc.labelHeader}}</th>
+							<th class="model-card-description-value-column" *ngIf="desc.valueHeader">
+								{{desc.valueHeader}}</th>
+						</tr>
+						<tr *ngFor="let content of desc.contents">
+							<td class="model-card-description-label-column">{{content.label}}</td>
+							<td class="model-card-description-value-column" *ngIf="content.value">{{content.value}}</td>
+						</tr>
+					</table>
+				</ng-container>
+			</div>
+		</div>
+	</div>
+</div>
