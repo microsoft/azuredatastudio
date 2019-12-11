@@ -18,7 +18,7 @@ import { basenameOrAuthority } from 'vs/base/common/resources';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { SimpleUriLabelService } from 'vs/editor/standalone/browser/simpleServices';
 import { IExtensionService, NullExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookService, IProviderInfo } from 'sql/workbench/services/notebook/browser/notebookService';
 
 suite('Notebook Input', function (): void {
 	const instantiationService = workbenchInstantiationService();
@@ -121,15 +121,22 @@ suite('Notebook Input', function (): void {
 			name: 'TestName1',
 			displayName: 'TestDisplayName1',
 			connectionProviderIds: ['TestId1'],
-			notebookProvider: 'TestProvider1'
+			notebookProvider: 'TestProvider'
 		}, {
 			name: 'TestName2',
 			displayName: 'TestDisplayName2',
 			connectionProviderIds: ['TestId2'],
-			notebookProvider: 'TestProvider2'
+			notebookProvider: 'TestProvider'
 		}];
 		untitledInput.standardKernels = testKernels;
 		assert.deepStrictEqual(untitledInput.standardKernels, testKernels);
+
+		// Provider Info
+		let provider = await untitledInput.getProviderInfo();
+		assert.deepStrictEqual(provider, <IProviderInfo>{
+			providerId: testProvider,
+			providers: [testProvider]
+		});
 	});
 
 	test('Parent container', async function (): Promise<void> {
