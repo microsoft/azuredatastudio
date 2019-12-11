@@ -204,7 +204,7 @@ export class InsightsDialogView extends Modal {
 
 	protected renderBody(container: HTMLElement) {
 		this._container = container;
-		container.classList.add('monaco-panel-view');
+		container.classList.add('monaco-pane-view');
 
 		this._splitView = new SplitView(container);
 

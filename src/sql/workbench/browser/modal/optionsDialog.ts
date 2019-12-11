@@ -123,7 +123,7 @@ export class OptionsDialog extends Modal {
 
 		this._dividerBuilder = append(this._body, $('div'));
 
-		this._optionGroups = append(this._body, $('div.optionsDialog-options-groups.monaco-panel-view'));
+		this._optionGroups = append(this._body, $('div.optionsDialog-options-groups.monaco-pane-view'));
 		this.splitview = new ScrollableSplitView(this._optionGroups, { enableResizing: false, scrollDebounce: 0 });
 
 		const descriptionContainer = append(this._body, $('div.optionsDialog-description'));
@@ -231,6 +231,7 @@ export class OptionsDialog extends Modal {
 
 			let viewSize = this._optionCategoryPadding + serviceOptions.length * this._optionRowSize;
 			let categoryView = this._instantiationService.createInstance(CategoryView, bodyContainer, viewSize, { title: category, ariaHeaderLabel: category, id: category });
+			categoryView.headerVisible = true;
 			this.splitview.addView(categoryView, viewSize);
 			categoryView.render();
 			attachPanelStyler(categoryView, this._themeService);
