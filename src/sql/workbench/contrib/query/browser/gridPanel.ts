@@ -21,7 +21,7 @@ import { escape } from 'sql/base/common/strings';
 import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
-import { GridTable as HighPerfGridTable } from 'sql/workbench/parts/query/browser/highPerfGridPanel';
+import { GridTable as HighPerfGridTable } from 'sql/workbench/contrib/query/browser/highPerfGridPanel';
 
 import * as azdata from 'azdata';
 

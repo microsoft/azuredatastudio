@@ -13,3 +13,8 @@
 	width : 100%;
 	display: flex;
 }
+
+.grid-panel .cell {
+	text-overflow: ellipsis;
+	overflow: hidden;
+}

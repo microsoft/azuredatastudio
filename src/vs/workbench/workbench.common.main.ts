@@ -371,7 +371,7 @@ import 'vs/workbench/contrib/codeActions/common/codeActions.contribution';
 // query
 import 'sql/workbench/contrib/query/browser/query.contribution';
 import 'sql/workbench/contrib/query/common/resultsGrid.contribution';
-import 'sql/workbench/parts/tableTest/browser/tabletest.contribution';
+import 'sql/workbench/contrib/tableTest/browser/tabletest.contribution';
 
 // data explorer
 import 'sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution';

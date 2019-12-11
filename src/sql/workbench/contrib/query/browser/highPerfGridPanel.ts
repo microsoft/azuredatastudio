@@ -22,7 +22,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { GridTableState } from 'sql/workbench/parts/query/common/gridPanelState';
+import { GridTableState } from 'sql/workbench/contrib/query/common/gridPanelState';
 
 type ICellTemplate = HTMLElement;
 

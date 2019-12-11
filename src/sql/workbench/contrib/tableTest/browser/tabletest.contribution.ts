@@ -5,9 +5,9 @@
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IEditorRegistry, Extensions as EditorExtensions, EditorDescriptor } from 'vs/workbench/browser/editor';
-import { SlickGridTableTest, AsyncTableTestEditor } from 'sql/workbench/parts/tableTest/browser/tableTestEditor';
+import { SlickGridTableTest, AsyncTableTestEditor } from 'sql/workbench/contrib/tableTest/browser/tableTestEditor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { SlickGridTableTestInput, AsyncTableTestInput } from 'sql/workbench/parts/tableTest/browser/tabletestinput';
+import { SlickGridTableTestInput, AsyncTableTestInput } from 'sql/workbench/contrib/tableTest/browser/tabletestinput';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { IWorkbenchActionRegistry, Extensions as WorkbenchActionExtensions } from 'vs/workbench/common/actions';
 import { Action } from 'vs/base/common/actions';
@@ -61,5 +61,5 @@ class SlickOpenTableTest extends Action {
 	}
 }
 
-Registry.as<IWorkbenchActionRegistry>(WorkbenchActionExtensions.WorkbenchActions).registerWorkbenchAction(new SyncActionDescriptor(SlickOpenTableTest, SlickOpenTableTest.ID, SlickOpenTableTest.LABEL), 'Open slick table test');
-Registry.as<IWorkbenchActionRegistry>(WorkbenchActionExtensions.WorkbenchActions).registerWorkbenchAction(new SyncActionDescriptor(AsyncOpenTableTest, AsyncOpenTableTest.ID, AsyncOpenTableTest.LABEL), 'Open async table test');
+Registry.as<IWorkbenchActionRegistry>(WorkbenchActionExtensions.WorkbenchActions).registerWorkbenchAction(SyncActionDescriptor.create(SlickOpenTableTest, SlickOpenTableTest.ID, SlickOpenTableTest.LABEL), 'Open slick table test');
+Registry.as<IWorkbenchActionRegistry>(WorkbenchActionExtensions.WorkbenchActions).registerWorkbenchAction(SyncActionDescriptor.create(AsyncOpenTableTest, AsyncOpenTableTest.ID, AsyncOpenTableTest.LABEL), 'Open async table test');

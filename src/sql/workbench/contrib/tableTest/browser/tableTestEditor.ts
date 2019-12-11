@@ -13,7 +13,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { range } from 'vs/base/common/arrays';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { SlickGridTableTestInput, AsyncTableTestInput } from 'sql/workbench/parts/tableTest/browser/tabletestinput';
+import { SlickGridTableTestInput, AsyncTableTestInput } from 'sql/workbench/contrib/tableTest/browser/tabletestinput';
 import { AsyncDataProvider, VirtualizedCollection } from 'sql/base/browser/ui/table/asyncDataView';
 import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
