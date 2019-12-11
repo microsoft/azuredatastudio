@@ -50,8 +50,6 @@ export default class MainController implements vscode.Disposable {
 
 	public async openProjectFolder(): Promise<void> {
 		try {
-			console.log('"Open Database Project" called.');
-
 			let filter: { [key: string]: string[] } = {};
 
 			filter[localize('sqlDatabaseProject', "SQL database project")] = ['sqlproj'];
@@ -59,7 +57,7 @@ export default class MainController implements vscode.Disposable {
 			let file = await vscode.window.showOpenDialog({ filters: filter });
 
 			if (file) {
-				this.dbProjectTreeViewProvider.openProject(file);
+				await this.dbProjectTreeViewProvider.openProject(file);
 			}
 		}
 		catch (err) {

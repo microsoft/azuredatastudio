@@ -4,10 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+//import {promises as fs} from 'fs'; // TODO: how to access I/O flags in fs (not fs.promises) when aliased?
 import * as fs from 'fs';
+import * as path from 'path';
+import * as nls from 'vscode-nls';
 
 import { SqlDatabaseProjectItem } from './databaseProjectTreeItem';
 import { Deferred } from '../common/promise';
+
+
+const localize = nls.loadMessageBundle();
 
 export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvider<SqlDatabaseProjectItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<SqlDatabaseProjectItem | undefined> = new vscode.EventEmitter<SqlDatabaseProjectItem | undefined>();
@@ -23,12 +29,17 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 	}
 
 	async initialize() {
-		this.roots = this.parseTreeNode(this.tree);
+		this.roots = [new SqlDatabaseProjectItem(localize('noProjectOpenMessage', "No open Database Project"), [])];
+
+
 		this._initializeDeferred.resolve();
 	}
 
-	getTreeItem(element: SqlDatabaseProjectItem): SqlDatabaseProjectItem {
-		return element;
+	getTreeItem(element: SqlDatabaseProjectItem): vscode.TreeItem {
+		return {
+			label: element.label,
+			collapsibleState: element.children.length === 0 ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Expanded
+		};
 	}
 
 	getChildren(element?: SqlDatabaseProjectItem): SqlDatabaseProjectItem[] {
@@ -43,59 +54,70 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		return this._initializeDeferred.promise;
 	}
 
-	openProject(projectFiles: vscode.Uri[]) {
+	async openProject(projectFiles: vscode.Uri[]) {
 		if (projectFiles.length > 1) { // TODO: how to handle opening a folder with multiple .sqlproj files?
 			vscode.window.showErrorMessage('Multiple .sqlproj files selected; please select only one.');
 		}
 
-		let projectFile = projectFiles[0];
+		if (projectFiles.length === 0) {
+			vscode.window.showErrorMessage('No .sqlproj file selected; please select one.');
+		}
 
-		let files: vscode.Uri[] = [];
+		let directoryPath = path.dirname(projectFiles[0].fsPath);
+		console.log('Opening project directory: ' + directoryPath);
 
-		console.log('Opening project file: ' + projectFile.fsPath);
-		fs.readdir(projectFile.fsPath, (err, readFiles: string[]) => {
-			if (err) {
-				console.log(err);
-			}
+		let newRoots: SqlDatabaseProjectItem[] = [];
 
-			readFiles.forEach((file) => {
-				const uri = vscode.Uri.file(file);
-				files.push(uri);
-			});
-		});
+		newRoots.push(await this.constructConnectionsTree(directoryPath));
+		newRoots.push(await this.constructProjectTree(directoryPath));
+
+		this.roots = newRoots;
+		this._onDidChangeTreeData.fire();
 	}
 
-	private parseTreeNode(node: any): SqlDatabaseProjectItem[] {
-		let output: SqlDatabaseProjectItem[] = [];
+	private async constructProjectTree(directoryPath: string): Promise<SqlDatabaseProjectItem> {
+		let connectionsNode = new SqlDatabaseProjectItem(localize('projectNodeName', "Database Project"), []);
 
-		for (let i = 0; i < Object.keys(node).length; i++) {
-			let grandchildren = this.parseTreeNode(node[Object.keys(node)[i]]);
-			let child = new SqlDatabaseProjectItem(Object.keys(node)[i], grandchildren);
+		let contents = await fs.promises.readdir(directoryPath);
 
-			output.push(child);
+		for (const entry of contents) {
+			connectionsNode.children.push(await this.constructFileTreeNode(path.join(directoryPath, entry)));
+		}
+
+		return connectionsNode;
+	}
+
+	private async constructFileTreeNode(entryPath: string): Promise<SqlDatabaseProjectItem> {
+		let output = new SqlDatabaseProjectItem(path.basename(entryPath), []);
+		let stat = await fs.promises.stat(entryPath);
+
+		if (stat.isDirectory()) {
+			let contents = await fs.promises.readdir(entryPath);
+
+			for (const entry of contents) {
+				output.children.push(await this.constructFileTreeNode(path.join(entryPath, entry)));
+			}
 		}
 
 		return output;
 	}
 
-	tree = {
-		'Connections': {
-			'aa': {
-				'aaa': {
-					'aaaa': {
-						'aaaaa': {
-							'aaaaaa': {
+	private async constructConnectionsTree(directoryPath: string): Promise<SqlDatabaseProjectItem> {
+		let connectionsNode = new SqlDatabaseProjectItem(localize('connectionsNodeName', "Connections"), []);
 
-							}
-						}
-					}
-				}
-			},
-			'ab': {}
-		},
-		'SQL Projects': {
-			'ba': {},
-			'bb': {}
+		let connectionsFilePath = path.join(directoryPath, 'connections.json');
+
+		try {
+			let connections = await fs.promises.readFile(connectionsFilePath, 'r');
+
+			// TODO: parse connections.json
+
+			connectionsNode.children.push(new SqlDatabaseProjectItem('Found connections.json: ' + connections.length, []));
 		}
-	};
+		catch {
+			connectionsNode.children.push(new SqlDatabaseProjectItem(localize('noConnectionsFile', "No connections.json found"), []));
+		}
+
+		return connectionsNode;
+	}
 }
