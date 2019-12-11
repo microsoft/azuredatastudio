@@ -19,6 +19,8 @@ import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledText
 import { SimpleUriLabelService } from 'vs/editor/standalone/browser/simpleServices';
 import { IExtensionService, NullExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { INotebookService, IProviderInfo } from 'sql/workbench/services/notebook/browser/notebookService';
+// import { Emitter } from 'vs/base/common/event';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
 suite('Notebook Input', function (): void {
 	const instantiationService = workbenchInstantiationService();
@@ -27,19 +29,10 @@ suite('Notebook Input', function (): void {
 	const testProvider = 'TestProvider';
 	const untitledUri = URI.from({ scheme: Schemas.untitled, path: 'TestPath' });
 
-	let fileInput: FileNotebookInput;
-
 	let untitledTextInput: UntitledTextEditorInput;
-	let untitledInput: UntitledNotebookInput;
+	let untitledNotebookInput: UntitledNotebookInput;
 
 	setup(() => {
-		let fileUri = URI.from({ scheme: Schemas.file, path: 'TestPath' });
-		fileInput = instantiationService.createInstance(FileNotebookInput, testTitle, fileUri, undefined);
-
-		untitledTextInput = new UntitledTextEditorInput(untitledUri, false, '', '', '', instantiationService, undefined, new SimpleUriLabelService(), undefined, undefined, undefined);
-		untitledInput = instantiationService.createInstance(UntitledNotebookInput, testTitle, untitledUri, untitledTextInput);
-
-		// Override private service fields
 		let mockExtensionService = TypeMoq.Mock.ofType<IExtensionService>(NullExtensionService);
 		mockExtensionService.setup(s => s.whenInstalledExtensionsRegistered()).returns(() => Promise.resolve(true));
 
@@ -53,51 +46,56 @@ suite('Notebook Input', function (): void {
 				notebookProvider: 'TestProvider'
 			}];
 		});
+		// mockNotebookService.setup(s => s.onNotebookEditorAdd).returns(() => (new Emitter<INotebookEditor>()).event);
 
-		(<any>untitledInput).textModelService = undefined;
-		(<any>untitledInput).instantiationService = instantiationService;
-		(<any>untitledInput).notebookService = mockNotebookService.object;
-		(<any>untitledInput).extensionService = mockExtensionService.object;
+		untitledTextInput = new UntitledTextEditorInput(untitledUri, false, '', '', '', instantiationService, undefined, new SimpleUriLabelService(), undefined, undefined, undefined);
+		untitledNotebookInput = new UntitledNotebookInput(
+			testTitle, untitledUri, untitledTextInput,
+			undefined, instantiationService, mockNotebookService.object, mockExtensionService.object);
 	});
 
 	test('File Notebook Input', async function (): Promise<void> {
-		let inputId = fileInput.getTypeId();
+		let fileUri = URI.from({ scheme: Schemas.file, path: 'TestPath' });
+		let fileInput = instantiationService.createInstance(FileEditorInput, fileUri, undefined, undefined);
+		let fileNotebookInput = instantiationService.createInstance(FileNotebookInput, testTitle, fileUri, fileInput);
+
+		let inputId = fileNotebookInput.getTypeId();
 		assert.strictEqual(inputId, FileNotebookInput.ID);
-		assert.strictEqual(fileInput.isUntitled(), false, 'File Input should not be untitled');
+		assert.strictEqual(fileNotebookInput.isUntitled(), false, 'File Input should not be untitled');
 	});
 
 	test('Untitled Notebook Input', async function (): Promise<void> {
-		let inputId = untitledInput.getTypeId();
+		let inputId = untitledNotebookInput.getTypeId();
 		assert.strictEqual(inputId, UntitledNotebookInput.ID);
-		assert.ok(untitledInput.isUntitled(), 'Untitled Input should be untitled');
+		assert.ok(untitledNotebookInput.isUntitled(), 'Untitled Input should be untitled');
 	});
 
 	test('Getters and Setters', async function (): Promise<void> {
 		// Input title
-		assert.strictEqual(untitledInput.getTitle(), testTitle);
+		assert.strictEqual(untitledNotebookInput.getTitle(), testTitle);
 
 		let noTitleInput = instantiationService.createInstance(UntitledNotebookInput, undefined, untitledUri, undefined);
 		assert.strictEqual(noTitleInput.getTitle(), basenameOrAuthority(untitledUri));
 
 		// Text Input
-		assert.strictEqual(untitledInput.textInput, untitledTextInput);
+		assert.strictEqual(untitledNotebookInput.textInput, untitledTextInput);
 
 		// Notebook URI
-		assert.deepStrictEqual(untitledInput.notebookUri, untitledUri);
+		assert.deepStrictEqual(untitledNotebookInput.notebookUri, untitledUri);
 
 		// Content Manager
-		assert.notStrictEqual(untitledInput.editorOpenedTimestamp, undefined);
+		assert.notStrictEqual(untitledNotebookInput.editorOpenedTimestamp, undefined);
 
 		// Notebook editor timestamp
-		assert.notStrictEqual(untitledInput.contentManager, undefined);
+		assert.notStrictEqual(untitledNotebookInput.contentManager, undefined);
 
 		// Layout changed event
-		assert.notStrictEqual(untitledInput.layoutChanged, undefined);
+		assert.notStrictEqual(untitledNotebookInput.layoutChanged, undefined);
 
 		// Connection Profile
 		let testProfile = <IConnectionProfile>{};
-		untitledInput.connectionProfile = testProfile;
-		assert.strictEqual(untitledInput.connectionProfile, testProfile);
+		untitledNotebookInput.connectionProfile = testProfile;
+		assert.strictEqual(untitledNotebookInput.connectionProfile, testProfile);
 
 		// Default Kernel
 		let testDefaultKernel: nb.IKernelSpec = {
@@ -105,16 +103,16 @@ suite('Notebook Input', function (): void {
 			language: 'TestLanguage',
 			display_name: 'TestDisplayName'
 		};
-		untitledInput.defaultKernel = testDefaultKernel;
-		assert.strictEqual(untitledInput.defaultKernel, testDefaultKernel);
+		untitledNotebookInput.defaultKernel = testDefaultKernel;
+		assert.strictEqual(untitledNotebookInput.defaultKernel, testDefaultKernel);
 
 		// Untitled Editor Model
 		let testModel = <UntitledTextEditorModel>{};
-		untitledInput.untitledEditorModel = testModel;
-		assert.strictEqual(untitledInput.untitledEditorModel, testModel);
+		untitledNotebookInput.untitledEditorModel = testModel;
+		assert.strictEqual(untitledNotebookInput.untitledEditorModel, testModel);
 
 		// getResource
-		assert.strictEqual(untitledInput.getResource(), untitledUri);
+		assert.strictEqual(untitledNotebookInput.getResource(), untitledUri);
 
 		// Standard kernels
 		let testKernels = [{
@@ -128,11 +126,11 @@ suite('Notebook Input', function (): void {
 			connectionProviderIds: ['TestId2'],
 			notebookProvider: 'TestProvider'
 		}];
-		untitledInput.standardKernels = testKernels;
-		assert.deepStrictEqual(untitledInput.standardKernels, testKernels);
+		untitledNotebookInput.standardKernels = testKernels;
+		assert.deepStrictEqual(untitledNotebookInput.standardKernels, testKernels);
 
 		// Provider Info
-		let provider = await untitledInput.getProviderInfo();
+		let provider = await untitledNotebookInput.getProviderInfo();
 		assert.deepStrictEqual(provider, <IProviderInfo>{
 			providerId: testProvider,
 			providers: [testProvider]
@@ -142,8 +140,8 @@ suite('Notebook Input', function (): void {
 	test('Parent container', async function (): Promise<void> {
 		// Undefined container
 		let testContainer = undefined;
-		untitledInput.container = testContainer;
-		assert.strictEqual(untitledInput.container, testContainer);
+		untitledNotebookInput.container = testContainer;
+		assert.strictEqual(untitledNotebookInput.container, testContainer);
 
 		// Dispose old container when setting new one
 		let removedContainer: HTMLElement;
@@ -153,26 +151,31 @@ suite('Notebook Input', function (): void {
 			return oldChild;
 		});
 		testContainer = <HTMLElement>{ parentNode: mockParentNode.object };
-		untitledInput.container = testContainer;
-		assert.strictEqual(untitledInput.container, testContainer);
+		untitledNotebookInput.container = testContainer;
+		assert.strictEqual(untitledNotebookInput.container, testContainer);
 
 		let oldContainer = testContainer;
 		testContainer = <HTMLElement>{};
-		untitledInput.container = testContainer;
-		assert.strictEqual(untitledInput.container, testContainer);
+		untitledNotebookInput.container = testContainer;
+		assert.strictEqual(untitledNotebookInput.container, testContainer);
 		mockParentNode.verify(e => e.removeChild(TypeMoq.It.isAny()), TypeMoq.Times.once());
 		assert.strictEqual(removedContainer, oldContainer);
 	});
 
 	test('Matches other input', async function (): Promise<void> {
-		assert.strictEqual(untitledInput.matches(undefined), false, 'Input should not match undefined.');
+		assert.strictEqual(untitledNotebookInput.matches(undefined), false, 'Input should not match undefined.');
 
-		assert.ok(untitledInput.matches(untitledInput), 'Input should match itself.');
+		assert.ok(untitledNotebookInput.matches(untitledNotebookInput), 'Input should match itself.');
 
 		let otherTestUri = URI.from({ scheme: Schemas.untitled, path: 'OtherTestPath' });
 		let otherTextInput = new UntitledTextEditorInput(otherTestUri, false, '', '', '', instantiationService, undefined, new SimpleUriLabelService(), undefined, undefined, undefined);
 		let otherInput = instantiationService.createInstance(UntitledNotebookInput, 'OtherTestInput', otherTestUri, otherTextInput);
 
-		assert.strictEqual(untitledInput.matches(otherInput), false, 'Input should not match different input.');
+		assert.strictEqual(untitledNotebookInput.matches(otherInput), false, 'Input should not match different input.');
+	});
+
+	test('Resolve model', async function (): Promise<void> {
+		let model = await untitledNotebookInput.resolve();
+		assert.ok(model !== undefined, 'Model should not be undefined.');
 	});
 });
