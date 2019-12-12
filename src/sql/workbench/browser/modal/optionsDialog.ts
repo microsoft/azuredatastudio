@@ -123,7 +123,7 @@ export class OptionsDialog extends Modal {
 
 		this._dividerBuilder = append(this._body, $('div'));
 
-		this._optionGroups = append(this._body, $('div.optionsDialog-options-groups.monaco-panel-view'));
+		this._optionGroups = append(this._body, $('div.optionsDialog-options-groups.monaco-pane-view'));
 		this.splitview = new ScrollableSplitView(this._optionGroups, { enableResizing: false, scrollDebounce: 0 });
 
 		const descriptionContainer = append(this._body, $('div.optionsDialog-description'));
