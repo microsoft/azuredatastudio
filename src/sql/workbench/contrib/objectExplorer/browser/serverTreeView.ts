@@ -46,7 +46,8 @@ export class ServerTreeView extends Disposable {
 	private _buttonSection: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;
 	private _activeConnectionsFilterAction: ActiveConnectionsFilterAction;
-	private _tree: ITree;
+	// Public set for testing only - this should not be set directly
+	public tree: ITree;
 	private _onSelectionOrFocusChange: Emitter<void>;
 	private _actionProvider: ServerTreeActionProvider;
 
@@ -95,10 +96,6 @@ export class ServerTreeView extends Disposable {
 		return this._actionProvider;
 	}
 
-	public get tree(): ITree {
-		return this._tree;
-	}
-
 	/**
 	 *
 	 * Register search related commands
@@ -139,14 +136,14 @@ export class ServerTreeView extends Disposable {
 				this._connectionManagementService.showConnectionDialog();
 			}));
 		}
-		this._tree = this._register(TreeCreationUtils.createRegisteredServersTree(container, this._instantiationService));
+		this.tree = this._register(TreeCreationUtils.createRegisteredServersTree(container, this._instantiationService));
 		//this._tree.setInput(undefined);
-		this._register(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
-		this._register(this._tree.onDidBlur(() => this._onSelectionOrFocusChange.fire()));
-		this._register(this._tree.onDidChangeFocus(() => this._onSelectionOrFocusChange.fire()));
+		this._register(this.tree.onDidChangeSelection((event) => this.onSelected(event)));
+		this._register(this.tree.onDidBlur(() => this._onSelectionOrFocusChange.fire()));
+		this._register(this.tree.onDidChangeFocus(() => this._onSelectionOrFocusChange.fire()));
 
 		// Theme styler
-		this._register(attachListStyler(this._tree, this._themeService));
+		this._register(attachListStyler(this.tree, this._themeService));
 
 		// Refresh Tree when these events are emitted
 		this._register(this._connectionManagementService.onAddConnectionProfile((newProfile: IConnectionProfile) => {
@@ -174,11 +171,11 @@ export class ServerTreeView extends Disposable {
 
 		return new Promise<void>(async (resolve, reject) => {
 			await this.refreshTree();
-			const root = <ConnectionProfileGroup>this._tree.getInput();
+			const root = <ConnectionProfileGroup>this.tree.getInput();
 
 			const expandGroups: boolean = this._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_AUTOEXPAND_CONFIG];
 			if (expandGroups) {
-				await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(root));
+				await this.tree.expandAll(ConnectionProfileGroup.getSubgroups(root));
 			}
 
 			if (root && !root.hasValidConnections) {
@@ -209,16 +206,16 @@ export class ServerTreeView extends Disposable {
 			hide(this._buttonSection);
 			this._activeConnectionsFilterAction.enabled = true;
 		}
-		const currentSelections = this._tree.getSelection();
+		const currentSelections = this.tree.getSelection();
 		const currentSelectedElement = currentSelections && currentSelections.length >= 1 ? currentSelections[0] : undefined;
 		const newProfileIsSelected = currentSelectedElement && newProfile ? currentSelectedElement.id === newProfile.id : false;
 		if (newProfile && currentSelectedElement && !newProfileIsSelected) {
-			this._tree.clearSelection();
+			this.tree.clearSelection();
 		}
 		await this.refreshTree();
 		if (newProfile && !newProfileIsSelected) {
-			await this._tree.reveal(newProfile);
-			this._tree.select(newProfile);
+			await this.tree.reveal(newProfile);
+			this.tree.select(newProfile);
 		}
 	}
 
@@ -247,9 +244,9 @@ export class ServerTreeView extends Disposable {
 	private onObjectExplorerSessionCreated(connection: IConnectionProfile) {
 		const conn = this.getConnectionInTreeInput(connection.id);
 		if (conn) {
-			this._tree.refresh(conn).then(() => {
-				return this._tree.expand(conn).then(() => {
-					return this._tree.reveal(conn, 0.5).then(() => {
+			this.tree.refresh(conn).then(() => {
+				return this.tree.expand(conn).then(() => {
+					return this.tree.reveal(conn, 0.5).then(() => {
 						this._treeSelectionHandler.onTreeActionStateChange(false);
 					});
 				});
@@ -272,8 +269,8 @@ export class ServerTreeView extends Disposable {
 			const conn = this.getConnectionInTreeInput(connection.id);
 			if (conn) {
 				return this._objectExplorerService.deleteObjectExplorerNode(conn).then(async () => {
-					await this._tree.collapse(conn);
-					return this._tree.refresh(conn);
+					await this.tree.collapse(conn);
+					return this.tree.refresh(conn);
 				});
 			}
 		}
@@ -283,11 +280,11 @@ export class ServerTreeView extends Disposable {
 	public refreshTree(): Promise<void> {
 		hide(this.messages);
 		this.clearOtherActions();
-		return TreeUpdateUtils.registeredServerUpdate(this._tree, this._connectionManagementService);
+		return TreeUpdateUtils.registeredServerUpdate(this.tree, this._connectionManagementService);
 	}
 
 	public refreshElement(element: any): Thenable<void> {
-		return this._tree.refresh(element);
+		return this.tree.refresh(element);
 	}
 
 	/**
@@ -343,12 +340,12 @@ export class ServerTreeView extends Disposable {
 			} else {
 				treeInput = filteredResults[0];
 			}
-			this._tree.setInput(treeInput).then(async () => {
+			this.tree.setInput(treeInput).then(async () => {
 				if (isHidden(this.messages)) {
-					this._tree.getFocus();
-					await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
+					this.tree.getFocus();
+					await this.tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
 				} else {
-					this._tree.clearFocus();
+					this.tree.clearFocus();
 				}
 			}, errors.onUnexpectedError);
 		} else {
@@ -375,12 +372,12 @@ export class ServerTreeView extends Disposable {
 		// Add all connections to tree root and set tree input
 		const treeInput = new ConnectionProfileGroup('searchroot', undefined, 'searchroot', undefined, undefined);
 		treeInput.addConnections(filteredResults);
-		this._tree.setInput(treeInput).then(async () => {
+		this.tree.setInput(treeInput).then(async () => {
 			if (isHidden(this.messages)) {
-				this._tree.getFocus();
-				await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
+				this.tree.getFocus();
+				await this.tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
 			} else {
-				this._tree.clearFocus();
+				this.tree.clearFocus();
 			}
 		}, errors.onUnexpectedError);
 	}
@@ -435,7 +432,7 @@ export class ServerTreeView extends Disposable {
 	}
 
 	private onSelected(event: any): void {
-		this._treeSelectionHandler.onTreeSelect(event, this._tree, this._connectionManagementService, this._objectExplorerService, () => this._onSelectionOrFocusChange.fire());
+		this._treeSelectionHandler.onTreeSelect(event, this.tree, this._connectionManagementService, this._objectExplorerService, () => this._onSelectionOrFocusChange.fire());
 		this._onSelectionOrFocusChange.fire();
 	}
 
@@ -443,7 +440,7 @@ export class ServerTreeView extends Disposable {
 	 * set the layout of the view
 	 */
 	public layout(height: number): void {
-		this._tree.layout(height);
+		this.tree.layout(height);
 	}
 
 	/**
@@ -451,9 +448,9 @@ export class ServerTreeView extends Disposable {
 	 */
 	public setVisible(visible: boolean): void {
 		if (visible) {
-			this._tree.onVisible();
+			this.tree.onVisible();
 		} else {
-			this._tree.onHidden();
+			this.tree.onHidden();
 		}
 	}
 
@@ -461,14 +458,14 @@ export class ServerTreeView extends Disposable {
 	 * Get the list of selected nodes in the tree
 	*/
 	public getSelection(): any[] {
-		return this._tree.getSelection();
+		return this.tree.getSelection();
 	}
 
 	/**
 	 * Get whether the tree view currently has focus
 	*/
 	public isFocused(): boolean {
-		return this._tree.isDOMFocused();
+		return this.tree.isDOMFocused();
 	}
 
 	/**
@@ -476,9 +473,9 @@ export class ServerTreeView extends Disposable {
 	 */
 	public setExpandedState(element: TreeNode | ConnectionProfile, expandedState: TreeItemCollapsibleState): Thenable<void> {
 		if (expandedState === TreeItemCollapsibleState.Collapsed) {
-			return this._tree.collapse(element);
+			return this.tree.collapse(element);
 		} else if (expandedState === TreeItemCollapsibleState.Expanded) {
-			return this._tree.expand(element);
+			return this.tree.expand(element);
 		}
 		return Promise.resolve();
 	}
@@ -487,7 +484,7 @@ export class ServerTreeView extends Disposable {
 	 * Reveal the given element in the tree
 	 */
 	public reveal(element: TreeNode | ConnectionProfile): Thenable<void> {
-		return this._tree.reveal(element);
+		return this.tree.reveal(element);
 	}
 
 	/**
@@ -495,13 +492,13 @@ export class ServerTreeView extends Disposable {
 	 */
 	public setSelected(element: TreeNode | ConnectionProfile, selected: boolean, clearOtherSelections: boolean): Thenable<void> {
 		if (clearOtherSelections || (selected && clearOtherSelections !== false)) {
-			this._tree.clearSelection();
+			this.tree.clearSelection();
 		}
 		if (selected) {
-			this._tree.select(element);
-			return this._tree.reveal(element);
+			this.tree.select(element);
+			return this.tree.reveal(element);
 		} else {
-			this._tree.deselect(element);
+			this.tree.deselect(element);
 			return Promise.resolve();
 		}
 	}
@@ -510,6 +507,6 @@ export class ServerTreeView extends Disposable {
 	 * Check if the given element in the tree is expanded
 	 */
 	public isExpanded(element: TreeNode | ConnectionProfile): boolean {
-		return this._tree.isExpanded(element);
+		return this.tree.isExpanded(element);
 	}
 }
