@@ -74,16 +74,18 @@ suite('Scripting Actions', () => {
 		collection.set(INotificationService, new TestNotificationService());
 	});
 
-	test('objectExplorer.refreshNode - refresh should be called when action is invoked', async () => {
-		await instantiationService.invokeFunction(handleOeRefreshCommand, oeActionArgs);
-		treeMock.verify(x => x.refresh(TypeMoq.It.isAny()), TypeMoq.Times.once());
-	});
+	suite('objectExplorer.refreshNode', () => {
 
-	test('objectExplorer.refreshNode - errors should be logged when refresh throws', async () => {
-		treeMock.setup(x => x.refresh(TypeMoq.It.isAny())).throws(new Error());
-		await instantiationService.invokeFunction(handleOeRefreshCommand, oeActionArgs);
-		treeMock.verify(x => x.refresh(TypeMoq.It.isAny()), TypeMoq.Times.once());
-		logServiceMock.verify(x => x.error(TypeMoq.It.isAny()), TypeMoq.Times.once());
-	});
+		test('refresh should be called when action is invoked', async () => {
+			await instantiationService.invokeFunction(handleOeRefreshCommand, oeActionArgs);
+			treeMock.verify(x => x.refresh(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		});
 
+		test('errors should be logged when refresh throws', async () => {
+			treeMock.setup(x => x.refresh(TypeMoq.It.isAny())).throws(new Error());
+			await instantiationService.invokeFunction(handleOeRefreshCommand, oeActionArgs);
+			treeMock.verify(x => x.refresh(TypeMoq.It.isAny()), TypeMoq.Times.once());
+			logServiceMock.verify(x => x.error(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		});
+	});
 });
