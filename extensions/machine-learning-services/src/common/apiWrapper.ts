@@ -58,4 +58,8 @@ export class ApiWrapper {
 	public startBackgroundOperation(operationInfo: azdata.BackgroundOperationInfo): void {
 		azdata.tasks.startBackgroundOperation(operationInfo);
 	}
+
+	public getExtension(extensionId: string): vscode.Extension<any> | undefined {
+		return vscode.extensions.getExtension(extensionId);
+	}
 }

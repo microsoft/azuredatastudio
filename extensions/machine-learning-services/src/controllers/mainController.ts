@@ -13,65 +13,101 @@ import * as constants from '../common/constants';
 import { ApiWrapper } from '../common/apiWrapper';
 import { QueryRunner } from '../common/queryRunner';
 import { ProcessService } from '../common/processService';
-
-const NotebookExtensionName = 'Microsoft.notebook';
+import { Config } from '../common/config';
 
 /**
  * The main controller class that initializes the extension
  */
 export default class MainController implements vscode.Disposable {
-	protected _context: vscode.ExtensionContext;
-	private _nbExtensionApis: nbExtensionApis.IExtensionApi;
-	private _packageManager: PackageManager;
-	private _outputChannel: vscode.OutputChannel;
-	private _rootPath: string;
-	private _apiWrapper: ApiWrapper;
-	private _queryRunner: QueryRunner;
-	private _processService: ProcessService;
 
-	public constructor(context: vscode.ExtensionContext) {
-		this._context = context;
-		this._outputChannel = vscode.window.createOutputChannel(constants.extensionOutputChannel);
+	private _nbExtensionApis: nbExtensionApis.IExtensionApi;
+	private _outputChannel: vscode.OutputChannel;
+	private _rootPath = this._context.extensionPath;
+	private _config: Config;
+	private _packageManager: PackageManager;
+
+	public constructor(
+		private _context: vscode.ExtensionContext,
+		private _apiWrapper: ApiWrapper,
+		private _queryRunner: QueryRunner,
+		private _processService: ProcessService,
+	) {
+		this._outputChannel = this._apiWrapper.createOutputChannel(constants.extensionOutputChannel);
+		this._rootPath = this._context.extensionPath;
+		this._config = new Config(this._rootPath);
 	}
 
+	/**
+	 * Deactivates the extension
+	 */
 	public deactivate(): void {
 	}
 
+	/**
+	 * Activates the extension
+	 */
 	public async activate(): Promise<boolean> {
-		this.initialize();
+		await this.initialize();
 		return Promise.resolve(true);
 	}
 
 	/**
-	 * Returns an instance of Jupyter Server Installation from notebook extension
+	 * Returns an instance of Server Installation from notebook extension
 	 */
-	private async getNotebookExtensionApis(): Promise<nbExtensionApis.IExtensionApi> {
+	private async loadNotebookExtensionApis(): Promise<void> {
 		if (isNullOrUndefined(this._nbExtensionApis)) {
-			let nbExtension = vscode.extensions.getExtension(NotebookExtensionName);
+			let nbExtension = this._apiWrapper.getExtension(constants.notebookExtensionName);
 			await nbExtension.activate();
 			this._nbExtensionApis = (nbExtension.exports as nbExtensionApis.IExtensionApi);
 		}
-		return this._nbExtensionApis;
+		return;
 	}
 
 	private async initialize(): Promise<void> {
 		this._outputChannel.show(true);
-		this._rootPath = this._context.extensionPath;
-		this._apiWrapper = new ApiWrapper();
-		this._queryRunner = new QueryRunner(this._apiWrapper);
-		this._processService = new ProcessService();
-		let nbApis = await this.getNotebookExtensionApis();
-		this._packageManager = new PackageManager(nbApis, this._outputChannel, this._rootPath, this._apiWrapper, this._queryRunner, this._processService);
-		vscode.commands.registerCommand(constants.mlManagePackagesCommand, (() => {
-			this._packageManager.managePackages();
+		await this.loadNotebookExtensionApis();
+		await this._config.load();
+
+		let packageManager = await this.getPackageManager();
+
+		this._apiWrapper.registerCommand(constants.mlManagePackagesCommand, (async () => {
+			await packageManager.managePackages();
 		}));
 		try {
-			await this._packageManager.installDependencies();
+			await packageManager.installDependencies();
 		} catch (err) {
 			this._outputChannel.appendLine(err);
 		}
 	}
 
+	/**
+	 * Returns the package manager instance
+	 */
+	public async getPackageManager(): Promise<PackageManager> {
+		if (!this._packageManager) {
+			this._packageManager = new PackageManager(this._nbExtensionApis, this._outputChannel, this._rootPath, this._apiWrapper, this._queryRunner, this._processService, this._config);
+			this._packageManager.init();
+		}
+		return this._packageManager;
+	}
+
+	/**
+	 * Package manager instance
+	 */
+	public set packageManager(value: PackageManager) {
+		this._packageManager = value;
+	}
+
+	/**
+	 * Config instance
+	 */
+	public get config(): Config {
+		return this._config;
+	}
+
+	/**
+	 * Disposes the extension
+	 */
 	public dispose(): void {
 		this.deactivate();
 	}

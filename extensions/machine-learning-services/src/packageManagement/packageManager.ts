@@ -13,15 +13,9 @@ import { QueryRunner } from '../common/queryRunner';
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
 import { ApiWrapper } from '../common/apiWrapper';
-import { Deferred } from '../common/promise';
 import { ProcessService } from '../common/processService';
-
-// Required python packages for mls extension
-//
-const requiredPackages = [
-	{ name: 'pymssql', version: '2.1.4' },
-	{ name: 'sqlmlutils' }
-];
+import { Config } from '../common/config';
+import { isNullOrUndefined } from 'util';
 
 export class PackageManager {
 
@@ -38,8 +32,8 @@ export class PackageManager {
 		private _rootFolder: string,
 		private _apiWrapper: ApiWrapper,
 		private _queryRunner: QueryRunner,
-		private _processService: ProcessService) {
-		this.init();
+		private _processService: ProcessService,
+		private _config: Config) {
 	}
 
 	/**
@@ -76,35 +70,34 @@ export class PackageManager {
 	 * Installs dependencies for the extension
 	 */
 	public async installDependencies(): Promise<void> {
-		let installCompletion = new Deferred<void>();
-		let msgTaskName = constants.installDependenciesMsgTaskName;
-		this._apiWrapper.startBackgroundOperation({
-			displayName: msgTaskName,
-			description: msgTaskName,
-			isCancelable: false,
-			operation: async op => {
-				try {
-					if (!(await utils.exists(this._pythonExecutable))) {
-						// Install python
+		return new Promise<void>((resolve, reject) => {
+			let msgTaskName = constants.installDependenciesMsgTaskName;
+			this._apiWrapper.startBackgroundOperation({
+				displayName: msgTaskName,
+				description: msgTaskName,
+				isCancelable: false,
+				operation: async op => {
+					try {
+						if (!(await utils.exists(this._pythonExecutable))) {
+							// Install python
+							//
+							await utils.createFolder(this._pythonInstallationLocation);
+							await this.jupyterInstallation.installPythonPackage(op, false, this._pythonInstallationLocation, this._outputChannel);
+						}
+
+						// Install required packages
 						//
-						await utils.createFolder(this._pythonInstallationLocation);
-						await this.jupyterInstallation.installPythonPackage(op, false, this._pythonInstallationLocation, this._outputChannel);
+						await this.installRequiredPythonPackages();
+						op.updateStatus(azdata.TaskStatus.Succeeded);
+						resolve();
+					} catch (error) {
+						let errorMsg = constants.installDependenciesError(error);
+						op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
+						reject(errorMsg);
 					}
-
-					// Install required packages
-					//
-					await this.installRequiredPythonPackages();
-					op.updateStatus(azdata.TaskStatus.Succeeded);
-					installCompletion.resolve();
-				} catch (error) {
-					let errorMsg = constants.installDependenciesError(error);
-					op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
-					installCompletion.reject(errorMsg);
 				}
-			}
+			});
 		});
-
-		return installCompletion.promise;
 	}
 
 	/**
@@ -113,8 +106,8 @@ export class PackageManager {
 	private async installRequiredPythonPackages(): Promise<void> {
 		let installedPackages = await this.getInstalledPipPackages();
 		let fileContent = '';
-		requiredPackages.forEach(packageDetails => {
-			let hasVersion = ('version' in packageDetails);
+		this._config.requiredPythonPackages.forEach(packageDetails => {
+			let hasVersion = ('version' in packageDetails) && !isNullOrUndefined(packageDetails['version']) && packageDetails['version'].length > 0;
 			if (!installedPackages.find(x => x.name === packageDetails['name'] && (!hasVersion || packageDetails['version'] === x.version))) {
 				let packageNameDetail = hasVersion ? `${packageDetails.name}==${packageDetails.version}` : `${packageDetails.name}`;
 				fileContent = `${fileContent}${packageNameDetail}\n`;

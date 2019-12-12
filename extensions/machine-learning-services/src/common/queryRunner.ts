@@ -8,7 +8,6 @@
 import * as azdata from 'azdata';
 import * as nbExtensionApis from '../typings/notebookServices';
 import { ApiWrapper } from './apiWrapper';
-import { log } from 'util';
 
 const listPythonPackagesQuery = `
 EXEC sp_execute_external_script
@@ -118,7 +117,7 @@ export class QueryRunner {
 				}
 			}
 		} catch (error) {
-			log(error);
+			console.log(error);
 		}
 		return result;
 	}

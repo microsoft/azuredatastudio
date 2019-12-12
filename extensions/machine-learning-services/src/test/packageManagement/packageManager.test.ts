@@ -203,13 +203,20 @@ describe('Package Manager', () => {
 	});
 
 	function createPackageManager(testContext: TestContext): PackageManager {
-		return new PackageManager(
+		testContext.config.setup(x => x.requiredPythonPackages).returns( x => [
+			{ name: 'pymssql', version: '2.1.4' },
+			{ name: 'sqlmlutils', version: '' }
+		]);
+		let packageManager = new PackageManager(
 			testContext.nbExtensionApis,
 			testContext.outputChannel,
 			'',
 			testContext.apiWrapper.object,
 			testContext.queryRunner.object,
-			testContext.processService.object);
+			testContext.processService.object,
+			testContext.config.object);
+		packageManager.init();
+		return packageManager;
 	}
 });
 

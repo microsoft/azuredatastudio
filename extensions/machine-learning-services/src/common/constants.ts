@@ -14,6 +14,7 @@ export const pythonBundleVersion = '0.0.1';
 export const managePackagesCommand = 'jupyter.cmd.managePackages';
 export const mlManagePackagesCommand = 'ml.command.managePackages';
 export const extensionOutputChannel = 'Machine Learning Services';
+export const notebookExtensionName = 'Microsoft.notebook';
 
 // Localized texts
 //

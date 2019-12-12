@@ -8,9 +8,8 @@
 import * as uuid from 'uuid';
 import * as path from 'path';
 import * as os from 'os';
-import { promises as fs } from 'fs';
+import { promises as fs, existsSync } from 'fs';
 import * as constants from '../common/constants';
-import { Deferred } from './promise';
 import * as childProcess from 'child_process';
 
 export async function execCommandOnTempFile<T>(content: string, command: (filePath: string) => Promise<T>): Promise<T> {
@@ -29,40 +28,41 @@ export async function execCommandOnTempFile<T>(content: string, command: (filePa
 	}
 }
 
-export async function execPythonScripts(scripts: string, pythonPath: string): Promise<string> {
-	let installCompletion = new Deferred<string>();
-	let lines = scripts.split('\n');
-	const scriptExecution = childProcess.spawn(pythonPath);
-	lines.forEach(line => {
-		scriptExecution.stdin.write(`${line}\n`);
+export function execPythonScripts(scripts: string, pythonPath: string): Promise<string> {
+	return new Promise<string>((resolve, reject) => {
+		let lines = scripts.split('\n');
+		const scriptExecution = childProcess.spawn(pythonPath);
+		lines.forEach(line => {
+			scriptExecution.stdin.write(`${line}\n`);
+		});
+		scriptExecution.stdin.end();
+
+		// Handle normal output
+		scriptExecution.stdout.on('data', (data) => {
+
+		});
+
+		// Handle error output
+		scriptExecution.stderr.on('data', (data) => {
+			// As said before, convert the Uint8Array to a readable string.
+			reject(data.toString());
+		});
+
+		scriptExecution.on('exit', (code) => {
+			resolve(code.toString());
+		});
 	});
-	scriptExecution.stdin.end();
-
-	// Handle normal output
-	scriptExecution.stdout.on('data', (data) => {
-
-	});
-
-	// Handle error output
-	scriptExecution.stderr.on('data', (data) => {
-		// As said before, convert the Uint8Array to a readable string.
-		installCompletion.reject(data.toString());
-	});
-
-	scriptExecution.on('exit', (code) => {
-		installCompletion.resolve(code.toString());
-	});
-
-	return installCompletion.promise;
 }
 
 export async function exists(path: string): Promise<boolean> {
-	try {
-		await fs.access(path);
-		return true;
-	} catch (e) {
-		return false;
-	}
+	return new Promise<boolean>(resolve => {
+		try {
+			// tslint:disable-next-line:no-sync
+			resolve(existsSync(path));
+		} catch (e) {
+			resolve(false);
+		}
+	});
 }
 
 export async function createFolder(dirPath: string): Promise<void> {
