@@ -121,10 +121,6 @@ export class EditDataEditor extends BaseEditor {
 		super.clearInput();
 	}
 
-	public close(): void {
-		this.editDataInput.close();
-	}
-
 	/**
 	 * Called to create the editor in the parent element.
 	 */
