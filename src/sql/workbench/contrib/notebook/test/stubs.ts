@@ -437,20 +437,46 @@ export class NotebookComponentStub implements INotebookEditor {
 }
 
 export class NodeStub implements Node {
-	baseURI: string;
-	childNodes: NodeListOf<ChildNode>;
-	firstChild: ChildNode;
-	isConnected: boolean;
-	lastChild: ChildNode;
-	namespaceURI: string;
-	nextSibling: ChildNode;
-	nodeName: string;
-	nodeType: number;
+	get baseURI(): string {
+		throw new Error('Method not implemented.');
+	}
+	get childNodes(): NodeListOf<ChildNode> {
+		throw new Error('Method not implemented.');
+	}
+	get firstChild(): ChildNode {
+		throw new Error('Method not implemented.');
+	}
+	get isConnected(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	get lastChild(): ChildNode {
+		throw new Error('Method not implemented.');
+	}
+	get namespaceURI(): string {
+		throw new Error('Method not implemented.');
+	}
+	get nextSibling(): ChildNode {
+		throw new Error('Method not implemented.');
+	}
+	get nodeName(): string {
+		throw new Error('Method not implemented.');
+	}
+	get nodeType(): number {
+		throw new Error('Method not implemented.');
+	}
+	get ownerDocument(): Document {
+		throw new Error('Method not implemented.');
+	}
+	get parentElement(): HTMLElement {
+		throw new Error('Method not implemented.');
+	}
+	get parentNode(): Node & ParentNode {
+		throw new Error('Method not implemented.');
+	}
+	get previousSibling(): Node {
+		throw new Error('Method not implemented.');
+	}
 	nodeValue: string;
-	ownerDocument: Document;
-	parentElement: HTMLElement;
-	parentNode: Node & ParentNode;
-	previousSibling: Node;
 	textContent: string;
 	appendChild<T extends Node>(newChild: T): T {
 		throw new Error('Method not implemented.');
@@ -497,24 +523,60 @@ export class NodeStub implements Node {
 	replaceChild<T extends Node>(newChild: Node, oldChild: T): T {
 		throw new Error('Method not implemented.');
 	}
-	ATTRIBUTE_NODE: number;
-	CDATA_SECTION_NODE: number;
-	COMMENT_NODE: number;
-	DOCUMENT_FRAGMENT_NODE: number;
-	DOCUMENT_NODE: number;
-	DOCUMENT_POSITION_CONTAINED_BY: number;
-	DOCUMENT_POSITION_CONTAINS: number;
-	DOCUMENT_POSITION_DISCONNECTED: number;
-	DOCUMENT_POSITION_FOLLOWING: number;
-	DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: number;
-	DOCUMENT_POSITION_PRECEDING: number;
-	DOCUMENT_TYPE_NODE: number;
-	ELEMENT_NODE: number;
-	ENTITY_NODE: number;
-	ENTITY_REFERENCE_NODE: number;
-	NOTATION_NODE: number;
-	PROCESSING_INSTRUCTION_NODE: number;
-	TEXT_NODE: number;
+	get ATTRIBUTE_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get CDATA_SECTION_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get COMMENT_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get DOCUMENT_FRAGMENT_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get DOCUMENT_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get DOCUMENT_POSITION_CONTAINED_BY(): number {
+		throw new Error('Method not implemented.');
+	}
+	get DOCUMENT_POSITION_CONTAINS(): number {
+		throw new Error('Method not implemented.');
+	}
+	get DOCUMENT_POSITION_DISCONNECTED(): number {
+		throw new Error('Method not implemented.');
+	}
+	get DOCUMENT_POSITION_FOLLOWING(): number {
+		throw new Error('Method not implemented.');
+	}
+	get DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC(): number {
+		throw new Error('Method not implemented.');
+	}
+	get DOCUMENT_POSITION_PRECEDING(): number {
+		throw new Error('Method not implemented.');
+	}
+	get DOCUMENT_TYPE_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get ELEMENT_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get ENTITY_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get ENTITY_REFERENCE_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get NOTATION_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get PROCESSING_INSTRUCTION_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get TEXT_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
 	addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
 		throw new Error('Method not implemented.');
 	}

@@ -20,7 +20,7 @@ import { SimpleUriLabelService } from 'vs/editor/standalone/browser/simpleServic
 import { IExtensionService, NullExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { INotebookService, IProviderInfo } from 'sql/workbench/services/notebook/browser/notebookService';
 
-suite('NotebookInput', function (): void {
+suite('Notebook Input', function (): void {
 	const instantiationService = workbenchInstantiationService();
 
 	const testTitle = 'TestTitle';
