@@ -56,7 +56,6 @@ export class RefreshAction extends Action {
 
 		if (treeNode) {
 			try {
-				await this._tree.collapse(this.element);
 				try {
 					await this._objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode);
 				} catch (error) {
@@ -64,7 +63,6 @@ export class RefreshAction extends Action {
 					return true;
 				}
 				await this._tree.refresh(this.element);
-				return this._tree.expand(this.element);
 			} catch (ex) {
 				this._logService.error(ex);
 				return true;

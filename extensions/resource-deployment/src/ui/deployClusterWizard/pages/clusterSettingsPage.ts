@@ -16,6 +16,8 @@ import { AuthenticationMode } from '../deployClusterWizardModel';
 const localize = nls.loadMessageBundle();
 
 const ConfirmPasswordName = 'ConfirmPassword';
+const clusterNameFieldDescription = localize('deployCluster.ClusterNameDescription', "The cluster name must consist only of alphanumeric lowercase characters or '-' and must start and end with an alphanumeric character.");
+
 export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 	private inputComponents: InputComponents = {};
 	private activeDirectorySection!: azdata.FormComponent;
@@ -37,7 +39,11 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					label: localize('deployCluster.ClusterName', "Cluster name"),
 					required: true,
 					variableName: VariableNames.ClusterName_VariableName,
-					defaultValue: 'mssql-cluster'
+					defaultValue: 'mssql-cluster',
+					textValidationRequired: true,
+					textValidationRegex: '^[a-z0-9]$|^[a-z0-9][a-z0-9-]*[a-z0-9]$',
+					textValidationDescription: clusterNameFieldDescription,
+					description: clusterNameFieldDescription
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.AdminUsername', "Admin username"),
@@ -308,6 +314,13 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					if (!isValidSQLPassword(password, getInputBoxComponent(VariableNames.AdminUserName_VariableName, this.inputComponents).value!)) {
 						messages.push(getInvalidSQLPasswordMessage(localize('deployCluster.AdminPasswordField', "Password")));
 					}
+
+					this.validators.forEach(validator => {
+						const result = validator();
+						if (!result.valid) {
+							messages.push(result.message);
+						}
+					});
 
 					if (messages.length > 0) {
 						this.wizard.wizardObject.message = {

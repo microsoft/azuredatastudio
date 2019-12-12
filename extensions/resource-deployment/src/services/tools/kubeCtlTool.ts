@@ -24,7 +24,7 @@ export class KubeCtlTool extends ToolBase {
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.KubeCtlDescription', "A tool to run commands against Kubernetes clusters");
+		return localize('resourceDeployment.KubeCtlDescription', "Runs commands against Kubernetes clusters");
 	}
 
 	get type(): ToolType {
