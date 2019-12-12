@@ -1,7 +1,7 @@
 {
 	"extension-displayName": "SQL Server Deployment extension for Azure Data Studio",
 	"extension-description": "Provides a notebook-based experience to deploy Microsoft SQL Server",
-	"deploy-resource-command-name": "Deploy SQL Server…",
+	"deploy-resource-command-name": "New Deployment…",
 	"deploy-resource-command-category": "Deployment",
 	"resource-type-sql-image-display-name": "SQL Server container image",
 	"resource-type-sql-image-description": "Run SQL Server container image with docker",
