@@ -18,10 +18,9 @@ import { basenameOrAuthority } from 'vs/base/common/resources';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { SimpleUriLabelService } from 'vs/editor/standalone/browser/simpleServices';
 import { IExtensionService, NullExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { INotebookService, IProviderInfo, INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
-import { Emitter } from 'vs/base/common/event';
+import { INotebookService, IProviderInfo } from 'sql/workbench/services/notebook/browser/notebookService';
 
-suite('Notebook Input', function (): void {
+suite('NotebookInput', function (): void {
 	const instantiationService = workbenchInstantiationService();
 
 	const testTitle = 'TestTitle';
@@ -41,8 +40,6 @@ suite('Notebook Input', function (): void {
 			notebookProvider: 'TestProvider'
 		}];
 	});
-	const onNotebookEditorAdd = new Emitter<INotebookEditor>();
-	mockNotebookService.setup(s => s.onNotebookEditorAdd).returns(() => onNotebookEditorAdd.event);
 
 	let untitledTextInput: UntitledTextEditorInput;
 	let untitledNotebookInput: UntitledNotebookInput;
@@ -173,10 +170,5 @@ suite('Notebook Input', function (): void {
 		let otherInput = instantiationService.createInstance(UntitledNotebookInput, 'OtherTestInput', otherTestUri, otherTextInput);
 
 		assert.strictEqual(untitledNotebookInput.matches(otherInput), false, 'Input should not match different input.');
-	});
-
-	test('Resolve model', async function (): Promise<void> {
-		let model = await untitledNotebookInput.resolve();
-		assert.ok(model !== undefined, 'Model should not be undefined.');
 	});
 });
