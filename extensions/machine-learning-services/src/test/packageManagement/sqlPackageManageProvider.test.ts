@@ -6,36 +6,25 @@
 'use strict';
 
 import * as azdata from 'azdata';
-
 import * as should from 'should';
 import 'mocha';
 import * as TypeMoq from 'typemoq';
 import * as fs from 'fs-extra';
 import * as constants from '../../common/constants';
 import { SqlPythonPackageManageProvider } from '../../packageManagement/sqlPackageManageProvider';
-import { createContext } from './utils';
+import { createContext, TestContext } from './utils';
 import * as utils from '../../common/utils';
 import * as nbExtensionApis from '../../typings/notebookServices';
 
 describe('SQL Package Manager', () => {
 	it('Should create SQL package manager successfully', async function (): Promise<void> {
 		let testContext = createContext();
-		should.doesNotThrow(() => new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object));
+		should.doesNotThrow(() => createProvider(testContext));
 	});
 
 	it('Should return provider Id and target correctly', async function (): Promise<void> {
 		let testContext = createContext();
-		let provider = new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let provider = createProvider(testContext);
 		should.deepEqual(SqlPythonPackageManageProvider.ProviderId, provider.providerId);
 		should.deepEqual({ location: 'SQL', packageType: 'Python' }, provider.packageTarget);
 	});
@@ -53,16 +42,11 @@ describe('SQL Package Manager', () => {
 			}
 		];
 
-		let connection  = new azdata.connection.ConnectionProfile();
-		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(connection);});
+		let connection = new azdata.connection.ConnectionProfile();
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
 		testContext.queryRunner.setup(x => x.getPythonPackages(TypeMoq.It.isAny())).returns(x => Promise.resolve(packages));
 
-		let provider = new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let provider = createProvider(testContext);
 		let actual = await provider.listPackages();
 		let expected = [
 			{
@@ -80,16 +64,11 @@ describe('SQL Package Manager', () => {
 	it('listPackages Should return empty packages if undefined packages returned', async function (): Promise<void> {
 		let testContext = createContext();
 
-		let connection  = new azdata.connection.ConnectionProfile();
-		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(connection);});
+		let connection = new azdata.connection.ConnectionProfile();
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
 		testContext.queryRunner.setup(x => x.getPythonPackages(TypeMoq.It.isAny())).returns(x => Promise.resolve(undefined));
 
-		let provider = new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let provider = createProvider(testContext);
 		let actual = await provider.listPackages();
 		let expected = [];
 		should.deepEqual(actual, expected);
@@ -98,16 +77,11 @@ describe('SQL Package Manager', () => {
 	it('listPackages Should return empty packages if empty packages returned', async function (): Promise<void> {
 		let testContext = createContext();
 
-		let connection  = new azdata.connection.ConnectionProfile();
-		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(connection);});
+		let connection = new azdata.connection.ConnectionProfile();
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
 		testContext.queryRunner.setup(x => x.getPythonPackages(TypeMoq.It.isAny())).returns(x => Promise.resolve([]));
 
-		let provider = new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let provider = createProvider(testContext);
 		let actual = await provider.listPackages();
 		let expected = [];
 		should.deepEqual(actual, expected);
@@ -127,34 +101,28 @@ describe('SQL Package Manager', () => {
 			}
 		];
 
-		let connection  = new azdata.connection.ConnectionProfile();
+		let connection = new azdata.connection.ConnectionProfile();
 		connection.serverName = 'serverName';
 		connection.databaseName = 'databaseName';
-		let credentials = {[azdata.ConnectionOptionSpecialType.password] : 'password'};
-		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(connection);});
-		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => {return Promise.resolve(credentials);});
-		testContext.jupyterInstallation.executeBufferedCommand = (command: string) => {
-			let fileName = command.replace(`"${utils.getPythonExePath('')}" `, '');
-			const data: string = fs.readFileSync(fileName, 'utf8');
-			if (data.indexOf('script_mode = "install"') > 0 &&
-				data.indexOf('port = 1433') > 0 &&
-				data.indexOf('server = "serverName"') > 0 &&
-				data.indexOf('database = "databaseName"') > 0 &&
-				data.indexOf('package_name = "a-name"') > 0 &&
-				data.indexOf('package_version = "1.1.2"') > 0 &&
-				data.indexOf('password = "password"') > 0) {
-					packagesUpdated = true;
+		let credentials = { [azdata.ConnectionOptionSpecialType.password]: 'password' };
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
+		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
+		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((path: string, scripts: string[], outputChannel) => {
+
+			if (scripts.find(x => x.indexOf('install') > 0) &&
+				scripts.find(x => x.indexOf('port=1433') > 0) &&
+				scripts.find(x => x.indexOf('server="serverName"') > 0) &&
+				scripts.find(x => x.indexOf('database="databaseName"') > 0) &&
+				scripts.find(x => x.indexOf('package="a-name"') > 0) &&
+				scripts.find(x => x.indexOf('version="1.1.2"') > 0) &&
+				scripts.find(x => x.indexOf('pwd="password"') > 0)) {
+				packagesUpdated = true;
 			}
 
-			return Promise.resolve('');
-		};
+			return Promise.resolve();
+		});
 
-		let provider = new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let provider = createProvider(testContext);
 		await provider.installPackages(packages, false);
 
 		should.deepEqual(packagesUpdated, true);
@@ -174,34 +142,27 @@ describe('SQL Package Manager', () => {
 			}
 		];
 
-		let connection  = new azdata.connection.ConnectionProfile();
+		let connection = new azdata.connection.ConnectionProfile();
 		connection.serverName = 'serverName';
 		connection.databaseName = 'databaseName';
-		let credentials = {[azdata.ConnectionOptionSpecialType.password] : 'password'};
-		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(connection);});
-		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => {return Promise.resolve(credentials);});
-		testContext.jupyterInstallation.executeBufferedCommand = (command: string) => {
-			let fileName = command.replace(`"${utils.getPythonExePath('')}" `, '');
-			const data: string = fs.readFileSync(fileName, 'utf8');
-			if (data.indexOf('script_mode = "uninstall"') > 0 &&
-				data.indexOf('port = 1433') > 0 &&
-				data.indexOf('server = "serverName"') > 0 &&
-				data.indexOf('database = "databaseName"') > 0 &&
-				data.indexOf('package_name = "a-name"') > 0 &&
-				data.indexOf('package_version = "1.1.2"') > 0 &&
-				data.indexOf('password = "password"') > 0) {
-					packagesUpdated = true;
+		let credentials = { [azdata.ConnectionOptionSpecialType.password]: 'password' };
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
+		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
+		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((path: string, scripts: string[], outputChannel) => {
+
+			if (scripts.find(x => x.indexOf('uninstall') > 0) &&
+				scripts.find(x => x.indexOf('port=1433') > 0) &&
+				scripts.find(x => x.indexOf('server="serverName"') > 0) &&
+				scripts.find(x => x.indexOf('database="databaseName"') > 0) &&
+				scripts.find(x => x.indexOf('package_name="a-name"') > 0) &&
+				scripts.find(x => x.indexOf('pwd="password"') > 0)) {
+				packagesUpdated = true;
 			}
 
-			return Promise.resolve('');
-		};
+			return Promise.resolve();
+		});
 
-		let provider = new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let provider = createProvider(testContext);
 		await provider.uninstallPackages(packages);
 
 		should.deepEqual(packagesUpdated, true);
@@ -221,34 +182,28 @@ describe('SQL Package Manager', () => {
 			}
 		];
 
-		let connection  = new azdata.connection.ConnectionProfile();
+		let connection = new azdata.connection.ConnectionProfile();
 		connection.serverName = 'serverName,3433';
 		connection.databaseName = 'databaseName';
-		let credentials = {[azdata.ConnectionOptionSpecialType.password] : 'password'};
-		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(connection);});
-		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => {return Promise.resolve(credentials);});
-		testContext.jupyterInstallation.executeBufferedCommand = (command: string) => {
-			let fileName = command.replace(`"${utils.getPythonExePath('')}" `, '');
-			const data: string = fs.readFileSync(fileName, 'utf8');
-			if (data.indexOf('script_mode = "install"') > 0 &&
-				data.indexOf('port = 3433') > 0 &&
-				data.indexOf('server = "serverName"') > 0 &&
-				data.indexOf('database = "databaseName"') > 0 &&
-				data.indexOf('package_name = "a-name"') > 0 &&
-				data.indexOf('package_version = "1.1.2"') > 0 &&
-				data.indexOf('password = "password"') > 0) {
-					packagesUpdated = true;
+		let credentials = { [azdata.ConnectionOptionSpecialType.password]: 'password' };
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
+		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
+		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((path: string, scripts: string[], outputChannel) => {
+
+			if (scripts.find(x => x.indexOf('install') > 0) &&
+				scripts.find(x => x.indexOf('port=3433') > 0) &&
+				scripts.find(x => x.indexOf('server="serverName"') > 0) &&
+				scripts.find(x => x.indexOf('database="databaseName"') > 0) &&
+				scripts.find(x => x.indexOf('package="a-name"') > 0) &&
+				scripts.find(x => x.indexOf('version="1.1.2"') > 0) &&
+				scripts.find(x => x.indexOf('pwd="password"') > 0)) {
+				packagesUpdated = true;
 			}
 
-			return Promise.resolve('');
-		};
+			return Promise.resolve();
+		});
 
-		let provider = new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let provider = createProvider(testContext);
 		await provider.installPackages(packages, false);
 
 		should.deepEqual(packagesUpdated, true);
@@ -260,22 +215,17 @@ describe('SQL Package Manager', () => {
 		let packages = [
 		];
 
-		let connection  = new azdata.connection.ConnectionProfile();
-		let credentials = {['azdata.ConnectionOptionSpecialType.password'] : 'password'};
-		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(connection);});
-		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => {return Promise.resolve(credentials);});
-		testContext.jupyterInstallation.executeBufferedCommand = (command: string) => {
+		let connection = new azdata.connection.ConnectionProfile();
+		let credentials = { ['azdata.ConnectionOptionSpecialType.password']: 'password' };
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
+		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
+		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
 			packagesUpdated = true;
-			return Promise.resolve('');
-		};
+			return Promise.resolve();
+		});
 
 
-		let provider = new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let provider = createProvider(testContext);
 		await provider.installPackages(packages, false);
 
 		should.deepEqual(packagesUpdated, false);
@@ -287,22 +237,17 @@ describe('SQL Package Manager', () => {
 		let packages = [
 		];
 
-		let connection  = new azdata.connection.ConnectionProfile();
-		let credentials = {['azdata.ConnectionOptionSpecialType.password'] : 'password'};
-		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(connection);});
-		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => {return Promise.resolve(credentials);});
-		testContext.jupyterInstallation.executeBufferedCommand = (command: string) => {
+		let connection = new azdata.connection.ConnectionProfile();
+		let credentials = { ['azdata.ConnectionOptionSpecialType.password']: 'password' };
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
+		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
+		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
 			packagesUpdated = true;
-			return Promise.resolve('');
-		};
+			return Promise.resolve();
+		});
 
 
-		let provider = new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let provider = createProvider(testContext);
 		await provider.uninstallPackages(packages);
 
 		should.deepEqual(packagesUpdated, false);
@@ -311,14 +256,9 @@ describe('SQL Package Manager', () => {
 	it('canUseProvider Should return false for no connection', async function (): Promise<void> {
 		let testContext = createContext();
 
-		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(undefined);});
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(undefined); });
 
-		let provider = new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let provider = createProvider(testContext);
 		let actual = await provider.canUseProvider();
 
 		should.deepEqual(actual, false);
@@ -327,16 +267,11 @@ describe('SQL Package Manager', () => {
 	it('canUseProvider Should return false if connection does not have python installed', async function (): Promise<void> {
 		let testContext = createContext();
 
-		let connection  = new azdata.connection.ConnectionProfile();
-		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(connection);});
+		let connection = new azdata.connection.ConnectionProfile();
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
 		testContext.queryRunner.setup(x => x.isPythonInstalled(TypeMoq.It.isAny())).returns(x => Promise.resolve(false));
 
-		let provider = new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let provider = createProvider(testContext);
 		let actual = await provider.canUseProvider();
 
 		should.deepEqual(actual, false);
@@ -345,16 +280,11 @@ describe('SQL Package Manager', () => {
 	it('canUseProvider Should return true if connection has python installed', async function (): Promise<void> {
 		let testContext = createContext();
 
-		let connection  = new azdata.connection.ConnectionProfile();
-		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(connection);});
+		let connection = new azdata.connection.ConnectionProfile();
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
 		testContext.queryRunner.setup(x => x.isPythonInstalled(TypeMoq.It.isAny())).returns(x => Promise.resolve(true));
 
-		let provider = new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let provider = createProvider(testContext);
 		let actual = await provider.canUseProvider();
 
 		should.deepEqual(actual, true);
@@ -363,12 +293,7 @@ describe('SQL Package Manager', () => {
 	it('getPackageOverview Should return undefined if python package provider not found', async function (): Promise<void> {
 		let testContext = createContext();
 
-		let provider = new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let provider = createProvider(testContext);
 		let actual = await provider.getPackageOverview('package name');
 
 		should.deepEqual(actual, undefined);
@@ -381,24 +306,19 @@ describe('SQL Package Manager', () => {
 			'versions': ['1.1.2'],
 			'summary': ''
 		};
-		let pythonPackageManager : nbExtensionApis.IPackageManageProvider = {
+		let pythonPackageManager: nbExtensionApis.IPackageManageProvider = {
 			providerId: 'localhost_Pip',
-			packageTarget: {location: '', packageType: ''},
-			listPackages: () => {return Promise.resolve([]);},
-			installPackages: (packageDetails: nbExtensionApis.IPackageDetails[], useMinVersion: boolean) => {return Promise.resolve();},
-			uninstallPackages: (packageDetails: nbExtensionApis.IPackageDetails[]) => {return Promise.resolve();},
-			canUseProvider: () => {return Promise.resolve(true);},
-			getLocationTitle: () => {return Promise.resolve('');},
-			getPackageOverview: (packageName: string) => {return Promise.resolve(packagePreview);}
+			packageTarget: { location: '', packageType: '' },
+			listPackages: () => { return Promise.resolve([]); },
+			installPackages: (packageDetails: nbExtensionApis.IPackageDetails[], useMinVersion: boolean) => { return Promise.resolve(); },
+			uninstallPackages: (packageDetails: nbExtensionApis.IPackageDetails[]) => { return Promise.resolve(); },
+			canUseProvider: () => { return Promise.resolve(true); },
+			getLocationTitle: () => { return Promise.resolve(''); },
+			getPackageOverview: (packageName: string) => { return Promise.resolve(packagePreview); }
 		};
 		testContext.nbExtensionApis.registerPackageManager(pythonPackageManager.providerId, pythonPackageManager);
 
-		let provider = new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let provider = createProvider(testContext);
 		let actual = await provider.getPackageOverview('package name');
 
 		should.deepEqual(actual, packagePreview);
@@ -407,14 +327,9 @@ describe('SQL Package Manager', () => {
 	it('getLocationTitle Should default string for no connection', async function (): Promise<void> {
 		let testContext = createContext();
 
-		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(undefined);});
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(undefined); });
 
-		let provider = new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let provider = createProvider(testContext);
 		let actual = await provider.getLocationTitle();
 
 		should.deepEqual(actual, constants.packageManagerNoConnection);
@@ -423,17 +338,12 @@ describe('SQL Package Manager', () => {
 	it('getLocationTitle Should return connection title string for valid connection', async function (): Promise<void> {
 		let testContext = createContext();
 
-		let connection  = new azdata.connection.ConnectionProfile();
+		let connection = new azdata.connection.ConnectionProfile();
 		connection.serverName = 'serverName';
 		connection.databaseName = 'databaseName';
-		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(connection);});
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
 
-		let provider = new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let provider = createProvider(testContext);
 		let actual = await provider.getLocationTitle();
 
 		should.deepEqual(actual, `${connection.serverName} ${connection.databaseName}`);
@@ -442,18 +352,23 @@ describe('SQL Package Manager', () => {
 	it('getLocationTitle Should return server name as connection title if there is not database name', async function (): Promise<void> {
 		let testContext = createContext();
 
-		let connection  = new azdata.connection.ConnectionProfile();
+		let connection = new azdata.connection.ConnectionProfile();
 		connection.serverName = 'serverName';
-		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(connection);});
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
 
-		let provider = new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let provider = createProvider(testContext);
 		let actual = await provider.getLocationTitle();
 
 		should.deepEqual(actual, `${connection.serverName} `);
 	});
+
+	function createProvider(testContext: TestContext): SqlPythonPackageManageProvider {
+		return new SqlPythonPackageManageProvider(
+			testContext.nbExtensionApis,
+			testContext.outputChannel,
+			'',
+			testContext.apiWrapper.object,
+			testContext.queryRunner.object,
+			testContext.processService.object);
+	}
 });

@@ -27,7 +27,6 @@ export interface IJupyterServerInstallation {
 	installCondaPackages(packages: IPackageDetails[], useMinVersion: boolean): Promise<void>;
 	uninstallCondaPackages(packages: IPackageDetails[]): Promise<void>;
 	getInstalledPipPackages(): Promise<IPackageDetails[]>;
-	executeBufferedCommand(command: string): Promise<string>;
 	pythonExecutable: string;
 	pythonInstallationPath: string;
 	executeBufferedCommand(command: string): Promise<string>;

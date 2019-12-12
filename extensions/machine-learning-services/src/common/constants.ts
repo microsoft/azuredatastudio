@@ -18,9 +18,9 @@ export const extensionOutputChannel = 'Machine Learning Services';
 // Localized texts
 //
 export const managePackageCommandError = localize('ml.managePackages.error', "Either no connection is available or the server does not have external script enabled.");
-export const installDependenciesError = localize('ml.installDependencies.error', "Failed to install dependencies. Error:");
+export function installDependenciesError(err: string): string { return localize('ml.installDependencies.error', "Failed to install dependencies. Error: {0}", err); }
 export const installDependenciesMsgTaskName = localize('ml.installDependencies.msgTaskName', "Installing Machine Learning extension dependencies");
 export const installDependenciesPackages = localize('ml.installDependencies.packages', "Installing required packages ...");
 export const installDependenciesPackagesAlreadyInstalled = localize('ml.installDependencies.packagesAlreadyInstalled', "Required packages are already installed.");
-export const installDependenciesGetPackagesError = localize('ml.installDependencies.getPackagesError', "Failed to get installed python packages. Error:");
+export function installDependenciesGetPackagesError(err: string): string { return localize('ml.installDependencies.getPackagesError', "Failed to get installed python packages. Error: {0}", err); }
 export const packageManagerNoConnection = localize('ml.packageManager.NoConnection', "No connection selected");

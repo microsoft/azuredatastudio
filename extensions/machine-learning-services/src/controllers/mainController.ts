@@ -12,6 +12,7 @@ import { PackageManager } from '../packageManagement/packageManager';
 import * as constants from '../common/constants';
 import { ApiWrapper } from '../common/apiWrapper';
 import { QueryRunner } from '../common/queryRunner';
+import { ProcessService } from '../common/processService';
 
 const NotebookExtensionName = 'Microsoft.notebook';
 
@@ -26,6 +27,7 @@ export default class MainController implements vscode.Disposable {
 	private _rootPath: string;
 	private _apiWrapper: ApiWrapper;
 	private _queryRunner: QueryRunner;
+	private _processService: ProcessService;
 
 	public constructor(context: vscode.ExtensionContext) {
 		this._context = context;
@@ -35,7 +37,7 @@ export default class MainController implements vscode.Disposable {
 	public deactivate(): void {
 	}
 
-	public activate(): Promise<boolean> {
+	public async activate(): Promise<boolean> {
 		this.initialize();
 		return Promise.resolve(true);
 	}
@@ -43,10 +45,11 @@ export default class MainController implements vscode.Disposable {
 	/**
 	 * Returns an instance of Jupyter Server Installation from notebook extension
 	 */
-	private getNotebookExtensionApis(): nbExtensionApis.IExtensionApi {
+	private async getNotebookExtensionApis(): Promise<nbExtensionApis.IExtensionApi> {
 		if (isNullOrUndefined(this._nbExtensionApis)) {
-			// TODO: wait for extension to load
-			this._nbExtensionApis = (vscode.extensions.getExtension(NotebookExtensionName).exports as nbExtensionApis.IExtensionApi);
+			let nbExtension = vscode.extensions.getExtension(NotebookExtensionName);
+			await nbExtension.activate();
+			this._nbExtensionApis = (nbExtension.exports as nbExtensionApis.IExtensionApi);
 		}
 		return this._nbExtensionApis;
 	}
@@ -56,7 +59,9 @@ export default class MainController implements vscode.Disposable {
 		this._rootPath = this._context.extensionPath;
 		this._apiWrapper = new ApiWrapper();
 		this._queryRunner = new QueryRunner(this._apiWrapper);
-		this._packageManager = new PackageManager(this.getNotebookExtensionApis(), this._outputChannel, this._rootPath, this._apiWrapper, this._queryRunner);
+		this._processService = new ProcessService();
+		let nbApis = await this.getNotebookExtensionApis();
+		this._packageManager = new PackageManager(nbApis, this._outputChannel, this._rootPath, this._apiWrapper, this._queryRunner, this._processService);
 		vscode.commands.registerCommand(constants.mlManagePackagesCommand, (() => {
 			this._packageManager.managePackages();
 		}));

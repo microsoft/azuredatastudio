@@ -3,13 +3,8 @@
 	"description": "SQL Server Machine Learning Services",
 	"mlServices.enable": "Enable Machine Learning Services",
 	"mlServices.disable": "Disable Machine Learning Services",
-	"title.notebooks": "Notebooks",
-	"title.assets": "Assets",
-	"title.manage": "Manage",
 	"title.tasks": "Getting Started",
-	"title.datasets": "Datasets",
-	"mlservice.command.refreshDataSets": "Refresh",
 	"title.endpoints": "Endpoints",
-	"title.books": "Machine Learning Books",
+	"title.books": "Machine Learning Services Books",
 	"ml.command.managePackages": "Manage Packages in SQL Server"
 }

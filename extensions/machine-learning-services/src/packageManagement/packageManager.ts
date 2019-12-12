@@ -14,6 +14,7 @@ import * as utils from '../common/utils';
 import * as constants from '../common/constants';
 import { ApiWrapper } from '../common/apiWrapper';
 import { Deferred } from '../common/promise';
+import { ProcessService } from '../common/processService';
 
 // Required python packages for mls extension
 //
@@ -36,7 +37,8 @@ export class PackageManager {
 		private _outputChannel: vscode.OutputChannel,
 		private _rootFolder: string,
 		private _apiWrapper: ApiWrapper,
-		private _queryRunner: QueryRunner) {
+		private _queryRunner: QueryRunner,
+		private _processService: ProcessService) {
 		this.init();
 	}
 
@@ -46,7 +48,7 @@ export class PackageManager {
 	public init(): void {
 		this._pythonInstallationLocation = utils.getPythonInstallationLocation(this._rootFolder);
 		this._pythonExecutable = utils.getPythonExePath(this._rootFolder);
-		this._sqlPackageManager = new SqlPythonPackageManageProvider(this._nbExtensionApis, this._outputChannel, this._rootFolder, this._apiWrapper, this._queryRunner);
+		this._sqlPackageManager = new SqlPythonPackageManageProvider(this._nbExtensionApis, this._outputChannel, this._rootFolder, this._apiWrapper, this._queryRunner, this._processService);
 		this._nbExtensionApis.registerPackageManager(SqlPythonPackageManageProvider.ProviderId, this._sqlPackageManager);
 	}
 
@@ -58,7 +60,8 @@ export class PackageManager {
 		// Only execute the command if there's a valid connection with ml configuration enabled
 		//
 		let connection = await this.getCurrentConnection();
-		if (connection && await this._queryRunner.isPythonInstalled(connection)) {
+		let isPythonInstalled = await this._queryRunner.isPythonInstalled(connection);
+		if (connection && isPythonInstalled) {
 			this._apiWrapper.executeCommand(constants.managePackagesCommand, {
 				multiLocations: false,
 				defaultLocation: this._sqlPackageManager.packageTarget.location,
@@ -82,7 +85,6 @@ export class PackageManager {
 			operation: async op => {
 				try {
 					if (!(await utils.exists(this._pythonExecutable))) {
-
 						// Install python
 						//
 						await utils.createFolder(this._pythonInstallationLocation);
@@ -95,7 +97,7 @@ export class PackageManager {
 					op.updateStatus(azdata.TaskStatus.Succeeded);
 					installCompletion.resolve();
 				} catch (error) {
-					let errorMsg = `${constants.installDependenciesError}' ${error}'`;
+					let errorMsg = constants.installDependenciesError(error);
 					op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
 					installCompletion.reject(errorMsg);
 				}
@@ -133,7 +135,7 @@ export class PackageManager {
 	private async getInstalledPipPackages(): Promise<nbExtensionApis.IPackageDetails[]> {
 		try {
 			let cmd = `"${this._pythonExecutable}" -m pip list --format=json`;
-			let packagesInfo = await this.jupyterInstallation.executeBufferedCommand(cmd);
+			let packagesInfo = await this._processService.executeBufferedCommand(cmd, this._outputChannel);
 			let packagesResult: nbExtensionApis.IPackageDetails[] = [];
 			if (packagesInfo) {
 				packagesResult = <nbExtensionApis.IPackageDetails[]>JSON.parse(packagesInfo);
@@ -141,7 +143,7 @@ export class PackageManager {
 			return packagesResult;
 		}
 		catch (err) {
-			this._outputChannel.appendLine(`${constants.installDependenciesGetPackagesError} '${err}'`);
+			this._outputChannel.appendLine(constants.installDependenciesGetPackagesError(err));
 			return [];
 		}
 	}
@@ -155,12 +157,7 @@ export class PackageManager {
 	}
 
 	private async installPackages(requirementFilePath: string): Promise<string> {
-		try {
-			let cmd = `"${this._pythonExecutable}" -m pip install -r "${requirementFilePath}"`;
-			return await this.jupyterInstallation.executeBufferedCommand(cmd);
-		}
-		catch (err) {
-			throw err;
-		}
+		let cmd = `"${this._pythonExecutable}" -m pip install -r "${requirementFilePath}"`;
+		return await this._processService.executeBufferedCommand(cmd, this._outputChannel);
 	}
 }

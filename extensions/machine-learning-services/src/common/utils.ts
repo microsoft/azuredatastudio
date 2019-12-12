@@ -8,8 +8,10 @@
 import * as uuid from 'uuid';
 import * as path from 'path';
 import * as os from 'os';
-import * as fs from 'fs-extra';
+import { promises as fs } from 'fs';
 import * as constants from '../common/constants';
+import { Deferred } from './promise';
+import * as childProcess from 'child_process';
 
 export async function execCommandOnTempFile<T>(content: string, command: (filePath: string) => Promise<T>): Promise<T> {
 	let tempFilePath: string;
@@ -27,6 +29,33 @@ export async function execCommandOnTempFile<T>(content: string, command: (filePa
 	}
 }
 
+export async function execPythonScripts(scripts: string, pythonPath: string): Promise<string> {
+	let installCompletion = new Deferred<string>();
+	let lines = scripts.split('\n');
+	const scriptExecution = childProcess.spawn(pythonPath);
+	lines.forEach(line => {
+		scriptExecution.stdin.write(`${line}\n`);
+	});
+	scriptExecution.stdin.end();
+
+	// Handle normal output
+	scriptExecution.stdout.on('data', (data) => {
+
+	});
+
+	// Handle error output
+	scriptExecution.stderr.on('data', (data) => {
+		// As said before, convert the Uint8Array to a readable string.
+		installCompletion.reject(data.toString());
+	});
+
+	scriptExecution.on('exit', (code) => {
+		installCompletion.resolve(code.toString());
+	});
+
+	return installCompletion.promise;
+}
+
 export async function exists(path: string): Promise<boolean> {
 	try {
 		await fs.access(path);
@@ -37,8 +66,9 @@ export async function exists(path: string): Promise<boolean> {
 }
 
 export async function createFolder(dirPath: string): Promise<void> {
-	if (!fs.exists(dirPath)) {
-		fs.mkdir(dirPath);
+	let folderExists = await exists(dirPath);
+	if (!folderExists) {
+		await fs.mkdir(dirPath);
 	}
 }
 

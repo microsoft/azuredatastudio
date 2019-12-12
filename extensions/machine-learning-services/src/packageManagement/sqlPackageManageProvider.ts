@@ -12,35 +12,11 @@ import * as utils from '../common/utils';
 import * as constants from '../common/constants';
 import { QueryRunner } from '../common/queryRunner';
 import { ApiWrapper } from '../common/apiWrapper';
+import { ProcessService } from '../common/processService';
 
 const installMode = 'install';
 const uninstallMode = 'uninstall';
 const localPythonProviderId = 'localhost_Pip';
-
-const updatePackageScript = `
-import sys
-import os
-
-database = "#DATABASE#"
-username = "#USER#"
-password = "#PASSWORD#"
-server = "#SERVER#"
-port = #PORT#
-package_name = "#PACKAGE_NAME#"
-package_version = "#PACKAGE_VERSION#"
-script_mode = "#SCRIPT_MODE#"
-packages_path = r"#PYTHON_LOCATION#"
-
-import sqlmlutils
-
-connection = sqlmlutils.ConnectionInfo(driver="ODBC Driver 17 for SQL Server", server=server, port=port, uid=username, pwd=password, database=database)
-sqlpy = sqlmlutils.SQLPythonExecutor(connection)
-pkgmanager = sqlmlutils.SQLPackageManager(connection)
-if script_mode == "${installMode}":
-	pkgmanager.install(package=package_name, version=package_version);
-else:
-	pkgmanager.uninstall(package_name=package_name);
-`;
 
 /**
  * Manage Package Provider for python packages inside SQL server databases
@@ -60,7 +36,8 @@ export class SqlPythonPackageManageProvider implements nbExtensionApis.IPackageM
 		private _outputChannel: vscode.OutputChannel,
 		private _rootFolder: string,
 		private _apiWrapper: ApiWrapper,
-		private _queryRunner: QueryRunner) {
+		private _queryRunner: QueryRunner,
+		private _processService: ProcessService) {
 		this._pythonInstallationLocation = utils.getPythonInstallationLocation(this._rootFolder);
 		this._pythonExecutable = utils.getPythonExePath(this._rootFolder);
 	}
@@ -114,30 +91,29 @@ export class SqlPythonPackageManageProvider implements nbExtensionApis.IPackageM
 	private async updatePackage(packageDetails: nbExtensionApis.IPackageDetails, scriptMode: string): Promise<void> {
 		let connection = await this.getCurrentConnection();
 		let credentials = await this._apiWrapper.getCredentials(connection.connectionId);
+
 		if (connection) {
-			let script = updatePackageScript;
 			let port = '1433';
 			let server = connection.serverName;
-			let database = connection.databaseName ? connection.databaseName : 'master';
+			let database = connection.databaseName ? `, database="${connection.databaseName}"` : '';
 			let index = connection.serverName.indexOf(',');
 			if (index > 0) {
 				port = connection.serverName.substring(index + 1);
 				server = connection.serverName.substring(0, index);
 			}
-			script = script.replace('#SERVER#', server);
-			script = script.replace('#PORT#', port);
-			script = script.replace('#DATABASE#', database);
-			script = script.replace('#USER#', connection.userName);
-			script = script.replace('#PACKAGE_NAME#', packageDetails.name);
-			script = script.replace('#PACKAGE_VERSION#', packageDetails.version);
-			script = script.replace('#SCRIPT_MODE#', scriptMode);
-			script = script.replace('#PYTHON_LOCATION#', this._pythonInstallationLocation);
-			script = script.replace('#PASSWORD#', credentials[azdata.ConnectionOptionSpecialType.password]);
 
-			await utils.execCommandOnTempFile<void>(script, async (tempFilePath) => {
-				let result = await this.runPythonCommand(`${tempFilePath}`);
-				this._outputChannel.appendLine(result);
-			});
+			let pythonConnectionParts = `server="${server}", port=${port}, uid="${connection.userName}", pwd="${credentials[azdata.ConnectionOptionSpecialType.password]}"${database})`;
+			let pythonCommandScript = scriptMode === installMode ?
+				`pkgmanager.install(package="${packageDetails.name}", version="${packageDetails.version}")` :
+				`pkgmanager.uninstall(package_name="${packageDetails.name}")`;
+
+			let scripts: string[] = [
+				'import sqlmlutils',
+				`connection = sqlmlutils.ConnectionInfo(driver="ODBC Driver 17 for SQL Server", ${pythonConnectionParts}`,
+				'pkgmanager = sqlmlutils.SQLPackageManager(connection)',
+				pythonCommandScript
+			];
+			await this._processService.execScripts(this._pythonExecutable, scripts, this._outputChannel);
 		}
 	}
 
@@ -186,26 +162,12 @@ export class SqlPythonPackageManageProvider implements nbExtensionApis.IPackageM
 		return constants.packageManagerNoConnection;
 	}
 
-	private get jupyterInstallation(): nbExtensionApis.IJupyterServerInstallation {
-		return this._nbExtensionApis.getJupyterController().jupyterInstallation;
-	}
-
 	private get pythonPackageProvider(): nbExtensionApis.IPackageManageProvider {
 		let providers = this._nbExtensionApis.getPackageManagers();
 		if (providers && providers.has(localPythonProviderId)) {
 			return providers.get(localPythonProviderId);
 		}
 		return undefined;
-	}
-
-	private async runPythonCommand(cmd: string): Promise<string> {
-		try {
-			let commandToRun = `"${this._pythonExecutable}" ${cmd}`;
-			return await this.jupyterInstallation.executeBufferedCommand(commandToRun);
-		}
-		catch (err) {
-			throw err;
-		}
 	}
 
 	private async getCurrentConnection(): Promise<azdata.connection.ConnectionProfile> {

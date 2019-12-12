@@ -13,17 +13,12 @@ import 'mocha';
 import * as TypeMoq from 'typemoq';
 import { PackageManager } from '../../packageManagement/packageManager';
 import { SqlPythonPackageManageProvider } from '../../packageManagement/sqlPackageManageProvider';
-import { createContext } from './utils';
+import { createContext, TestContext } from './utils';
 
 describe('Package Manager', () => {
 	it('Should initialize SQL package manager successfully', async function (): Promise<void> {
 		let testContext = createContext();
-		should.doesNotThrow(() => new PackageManager(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object));
+		should.doesNotThrow(() => createPackageManager(testContext));
 		should.equal(testContext.nbExtensionApis.getPackageManagers().has(SqlPythonPackageManageProvider.ProviderId), true);
 	});
 
@@ -33,29 +28,19 @@ describe('Package Manager', () => {
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(connection);});
 		testContext.apiWrapper.setup(x => x.executeCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {return Promise.resolve();});
 		testContext.queryRunner.setup(x => x.isPythonInstalled(connection)).returns(() => {return Promise.resolve(true);});
-		let packageManager = new PackageManager(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let packageManager = createPackageManager(testContext);
 		await packageManager.managePackages();
 		testContext.apiWrapper.verify(x => x.executeCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
-	it('Manage Package command Should show an error for invalid connection', async function (): Promise<void> {
+	it('Manage Package command Should show an error for connection without python installed', async function (): Promise<void> {
 		let testContext = createContext();
 		let connection  = new azdata.connection.ConnectionProfile();
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(connection);});
 		testContext.apiWrapper.setup(x => x.executeCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {return Promise.resolve();});
 		testContext.apiWrapper.setup(x => x.showInfoMessage(TypeMoq.It.isAny()));
 		testContext.queryRunner.setup(x => x.isPythonInstalled(connection)).returns(() => {return Promise.resolve(false);});
-		let packageManager = new PackageManager(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let packageManager = createPackageManager(testContext);
 		await packageManager.managePackages();
 		testContext.apiWrapper.verify(x => x.showInfoMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
@@ -66,12 +51,7 @@ describe('Package Manager', () => {
 		testContext.apiWrapper.setup(x => x.executeCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {return Promise.resolve();});
 		testContext.apiWrapper.setup(x => x.showInfoMessage(TypeMoq.It.isAny()));
 
-		let packageManager = new PackageManager(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let packageManager = createPackageManager(testContext);
 		await packageManager.managePackages();
 		testContext.apiWrapper.verify(x => x.showInfoMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
@@ -90,14 +70,9 @@ describe('Package Manager', () => {
 			pythonInstalled = true;
 			return Promise.resolve();
 		};
-		testContext.jupyterInstallation.executeBufferedCommand = (command: string) => {return Promise.resolve(installedPackages);};
+		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {return Promise.resolve(installedPackages);});
 
-		let packageManager = new PackageManager(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let packageManager = createPackageManager(testContext);
 		await packageManager.installDependencies();
 		should.equal(testContext.getOpStatus(), azdata.TaskStatus.Succeeded);
 		should.equal(pythonInstalled, true);
@@ -115,14 +90,9 @@ describe('Package Manager', () => {
 		testContext.jupyterInstallation.installPythonPackage = (backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel)  => {
 			return Promise.reject();
 		};
-		testContext.jupyterInstallation.executeBufferedCommand = (command: string) => {return Promise.resolve(installedPackages);};
+		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {return Promise.resolve(installedPackages);});
 
-		let packageManager = new PackageManager(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let packageManager = createPackageManager(testContext);
 		await should(packageManager.installDependencies()).rejected();
 		should.equal(testContext.getOpStatus(), azdata.TaskStatus.Failed);
 	});
@@ -140,19 +110,14 @@ describe('Package Manager', () => {
 		testContext.jupyterInstallation.installPythonPackage = (backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel)  => {
 			return Promise.resolve();
 		};
-		testContext.jupyterInstallation.executeBufferedCommand = (command: string) => {
+		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command, outputChannel) => {
 			if (command.indexOf('pip install') > 0) {
 				packagesInstalled = true;
 			}
 			return Promise.resolve(installedPackages);
-		};
+		});
 
-		let packageManager = new PackageManager(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let packageManager = createPackageManager(testContext);
 		await packageManager.installDependencies();
 		should.equal(testContext.getOpStatus(), azdata.TaskStatus.Succeeded);
 		should.equal(packagesInstalled, false);
@@ -170,19 +135,14 @@ describe('Package Manager', () => {
 		testContext.jupyterInstallation.installPythonPackage = (backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel)  => {
 			return Promise.resolve();
 		};
-		testContext.jupyterInstallation.executeBufferedCommand = (command: string) => {
+		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command, outputChannel) => {
 			if (command.indexOf('pip install') > 0) {
 				packagesInstalled = true;
 			}
 			return Promise.resolve(installedPackages);
-		};
+		});
 
-		let packageManager = new PackageManager(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let packageManager = createPackageManager(testContext);
 		await packageManager.installDependencies();
 		should.equal(testContext.getOpStatus(), azdata.TaskStatus.Succeeded);
 		should.equal(packagesInstalled, true);
@@ -197,7 +157,7 @@ describe('Package Manager', () => {
 		testContext.jupyterInstallation.installPythonPackage = (backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel)  => {
 			return Promise.resolve();
 		};
-		testContext.jupyterInstallation.executeBufferedCommand = (command: string) => {
+		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command, outputChannel) => {
 			if (command.indexOf('pip list') > 0) {
 				return Promise.reject();
 			} else if (command.indexOf('pip install') > 0) {
@@ -206,14 +166,9 @@ describe('Package Manager', () => {
 			} else {
 				return Promise.resolve('');
 			}
-		};
+		});
 
-		let packageManager = new PackageManager(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let packageManager = createPackageManager(testContext);
 		await packageManager.installDependencies();
 		should.equal(testContext.getOpStatus(), azdata.TaskStatus.Succeeded);
 		should.equal(packagesInstalled, true);
@@ -231,7 +186,7 @@ describe('Package Manager', () => {
 		testContext.jupyterInstallation.installPythonPackage = (backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel)  => {
 			return Promise.resolve();
 		};
-		testContext.jupyterInstallation.executeBufferedCommand = (command: string) => {
+		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command, outputChannel) => {
 			if (command.indexOf('pip list') > 0) {
 				return Promise.resolve(installedPackages);
 			} else if (command.indexOf('pip install') > 0) {
@@ -239,16 +194,23 @@ describe('Package Manager', () => {
 			} else {
 				return Promise.resolve('');
 			}
-		};
+		});
 
-		let packageManager = new PackageManager(
-			testContext.nbExtensionApis,
-			testContext.outputChannel,
-			'',
-			testContext.apiWrapper.object,
-			testContext.queryRunner.object);
+		let packageManager = createPackageManager(testContext);
 		await should(packageManager.installDependencies()).rejected();
 		should.equal(testContext.getOpStatus(), azdata.TaskStatus.Failed);
 		should.equal(packagesInstalled, false);
 	});
+
+	function createPackageManager(testContext: TestContext): PackageManager {
+		return new PackageManager(
+			testContext.nbExtensionApis,
+			testContext.outputChannel,
+			'',
+			testContext.apiWrapper.object,
+			testContext.queryRunner.object,
+			testContext.processService.object);
+	}
 });
+
+

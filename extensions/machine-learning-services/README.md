@@ -7,7 +7,7 @@ Machine Learning Services for Azure Data Studio (Preview) provides support for n
 * Follow along with machine learning notebooks.
 
 ## Prerequisites ##
-In order to use Machine Learning Services for Azure Data Studio (Preview), your SQL Server must have Machine Learning Services installed. Follow the instructions [here](https://docs.microsoft.com/en-us/sql/advanced-analytics/install/sql-machine-learning-services-windows-install?view=sql-server-ver15) to do so.
+In order to use Machine Learning Services for Azure Data Studio (Preview), your SQL Server must have Machine Learning Services installed. Follow the instructions [here](https://docs.microsoft.com/sql/advanced-analytics/install/sql-machine-learning-services-windows-install?view=sql-server-ver15) to do so.
 
 ## Code of Conduct
 
@@ -15,7 +15,7 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Privacy Statement
 
-The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement) describes the privacy statement of this software.
+The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.microsoft.com/privacystatement) describes the privacy statement of this software.
 
 ## License
 

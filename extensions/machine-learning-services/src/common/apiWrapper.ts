@@ -27,25 +27,12 @@ export class ApiWrapper {
 		return azdata.connection.getCredentials(connectionId);
 	}
 
-	public getWorkspacePathFromUri(uri: vscode.Uri): string | undefined {
-		let workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
-		return workspaceFolder ? workspaceFolder.uri.fsPath : undefined;
-	}
-
 	public registerCommand(command: string, callback: (...args: any[]) => any, thisArg?: any): vscode.Disposable {
 		return vscode.commands.registerCommand(command, callback, thisArg);
 	}
 
 	public executeCommand<T>(command: string, ...rest: any[]): Thenable<T | undefined> {
 		return vscode.commands.executeCommand(command, ...rest);
-	}
-
-	public registerCompletionItemProvider(selector: vscode.DocumentSelector, provider: vscode.CompletionItemProvider, ...triggerCharacters: string[]): vscode.Disposable {
-		return vscode.languages.registerCompletionItemProvider(selector, provider, ...triggerCharacters);
-	}
-
-	public registerTaskHandler(taskId: string, handler: (profile: azdata.IConnectionProfile) => void): void {
-		azdata.tasks.registerTask(taskId, handler);
 	}
 
 	public getUriForConnection(connectionId: string): Thenable<string> {
@@ -70,28 +57,5 @@ export class ApiWrapper {
 
 	public startBackgroundOperation(operationInfo: azdata.BackgroundOperationInfo): void {
 		azdata.tasks.startBackgroundOperation(operationInfo);
-	}
-
-	/**
-	 * Get the configuration for a extensionName
-	 * @param extensionName The string name of the extension to get the configuration for
-	 * @param resource The optional URI, as a URI object or a string, to use to get resource-scoped configurations
-	 */
-	public getConfiguration(extensionName?: string, resource?: vscode.Uri | string): vscode.WorkspaceConfiguration {
-		if (typeof resource === 'string') {
-			try {
-				resource = this.parseUri(resource);
-			} catch (e) {
-				resource = undefined;
-			}
-		} else if (!resource) {
-			// Fix to avoid adding lots of errors to debug console. Expects a valid resource or null, not undefined
-			resource = null;
-		}
-		return vscode.workspace.getConfiguration(extensionName, resource as vscode.Uri);
-	}
-
-	public parseUri(uri: string): vscode.Uri {
-		return vscode.Uri.parse(uri);
 	}
 }

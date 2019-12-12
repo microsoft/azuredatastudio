@@ -59,16 +59,13 @@ export class QueryRunner {
 	public async getPythonPackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
 		let packages = [];
 		let result = await this.runQuery(connection, listPythonPackagesQuery);
-		if (result) {
-			if (result.rows.length > 0) {
-
-				packages = result.rows.map(row => {
-					return {
-						name: row[0].displayValue,
-						version: row[1].displayValue
-					};
-				});
-			}
+		if (result && result.rows.length > 0) {
+			packages = result.rows.map(row => {
+				return {
+					name: row[0].displayValue,
+					version: row[1].displayValue
+				};
+			});
 		}
 		return packages;
 	}
@@ -113,7 +110,6 @@ export class QueryRunner {
 	private async runQuery(connection: azdata.connection.ConnectionProfile, query: string): Promise<azdata.SimpleExecuteResult | undefined> {
 		let result: azdata.SimpleExecuteResult = undefined;
 		try {
-
 			if (connection) {
 				let connectionUri = await this._apiWrapper.getUriForConnection(connection.connectionId);
 				let queryProvider = this._apiWrapper.getProvider<azdata.QueryProvider>(connection.providerId, azdata.DataProviderType.QueryProvider);

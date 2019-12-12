@@ -11,12 +11,14 @@ import * as nbExtensionApis from '../../typings/notebookServices';
 import * as TypeMoq from 'typemoq';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { QueryRunner } from '../../common/queryRunner';
+import { ProcessService } from '../../common/processService';
 
 export interface TestContext {
 	jupyterInstallation: nbExtensionApis.IJupyterServerInstallation;
 	jupyterController: nbExtensionApis.IJupyterController;
 	nbExtensionApis: nbExtensionApis.IExtensionApi;
 	outputChannel: vscode.OutputChannel;
+	processService: TypeMoq.IMock<ProcessService>;
 	apiWrapper: TypeMoq.IMock<ApiWrapper>;
 	queryRunner: TypeMoq.IMock<QueryRunner>;
 	op: azdata.BackgroundOperation;
@@ -61,6 +63,7 @@ export function createContext(): TestContext {
 			hide: () => { },
 			dispose: () => { }
 		},
+		processService: TypeMoq.Mock.ofType(ProcessService),
 		apiWrapper: TypeMoq.Mock.ofType(ApiWrapper),
 		queryRunner: TypeMoq.Mock.ofType(QueryRunner),
 		op: {
