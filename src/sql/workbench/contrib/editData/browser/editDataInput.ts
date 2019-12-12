@@ -202,20 +202,15 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	}
 
 	public dispose(): void {
+		// Dispose our edit session then disconnect our input
+		this._queryModelService.disposeEdit(this.uri).then(() => {
+			return this._connectionManagementService.disconnectEditor(this, true);
+		});
 		this._queryModelService.disposeQuery(this.uri);
 		this._sql.dispose();
 		this._results.dispose();
 
 		super.dispose();
-	}
-
-	public close(): void {
-		// Dispose our edit session then disconnect our input
-		this._queryModelService.disposeEdit(this.uri).then(() => {
-			return this._connectionManagementService.disconnectEditor(this, true);
-		}).then(() => {
-			this.dispose();
-		});
 	}
 
 	public get tabColor(): string {
