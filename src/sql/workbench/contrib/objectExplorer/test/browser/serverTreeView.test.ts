@@ -12,12 +12,13 @@ import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 
 import * as TypeMoq from 'typemoq';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
+import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { TestTree } from 'sql/workbench/contrib/objectExplorer/test/browser/treeMock';
 
 suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
 	let serverTreeView: ServerTreeView;
-	let mockTree: TypeMoq.Mock<TestTree>;
+	let mockTree: TypeMoq.Mock<ITree>;
 	let mockRefreshTreeMethod: TypeMoq.Mock<Function>;
 	let capabilitiesService = new TestCapabilitiesService();
 
@@ -28,7 +29,7 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 		mockConnectionManagementService.setup(x => x.hasRegisteredServers()).returns(() => true);
 		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, undefined, undefined, undefined, capabilitiesService);
 		mockTree = TypeMoq.Mock.ofType(TestTree);
-		serverTreeView.tree = mockTree.object;
+		(serverTreeView as any)._tree = mockTree.object;
 		mockRefreshTreeMethod = TypeMoq.Mock.ofType(Function);
 		mockRefreshTreeMethod.setup(x => x()).returns(() => Promise.resolve());
 		(serverTreeView as any).refreshTree = mockRefreshTreeMethod.object;
