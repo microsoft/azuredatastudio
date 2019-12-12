@@ -261,12 +261,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private addDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
-			let hostElem = this.output.nativeElement;
-			let children = hostElem.children;
-			// Since when calculating the range we consider \n's as a new lines
-			// but the native elements do not list new line as a seperate child,
-			// to get to the correct element we need ignore line breaks.
-			let ele = children[Math.ceil(range.startLineNumber / 2)];
+			let children = this.getHtmlElements();
+			let ele = children[range.startLineNumber - 1];
 			if (ele) {
 				DOM.addClass(ele, 'rangeHighlight');
 				ele.scrollIntoView({ behavior: 'smooth' });
@@ -276,15 +272,42 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private removeDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
-			let hostElem = this.output.nativeElement;
-			let children = hostElem.children;
-			// Since when calculating the range we consider \n's as a new lines
-			// but the native elements do not list new line as a seperate child,
-			// to get to the correct element we need ignore alternate line breaks.
-			let ele = children[Math.ceil(range.startLineNumber / 2)];
+			let children = this.getHtmlElements();
+			let ele = children[range.startLineNumber - 1];
 			if (ele) {
 				DOM.removeClass(ele, 'rangeHighlight');
 			}
 		}
+	}
+
+	private getHtmlElements(): any[] {
+		let hostElem = this.output.nativeElement;
+		let children = [];
+		for (let element of hostElem.children) {
+			if (element.nodeName.toLowerCase() === 'table') {
+				// add table header and table rows.
+				children.push(element.children[0]);
+				for (let trow of element.children[1].children) {
+					children.push(trow);
+				}
+			} else if (element.children.length > 1) {
+				children = children.concat(this.getChildren(element));
+			} else {
+				children.push(element);
+			}
+		}
+		return children;
+	}
+
+	private getChildren(parent: any): any[] {
+		let children: any = [];
+		if (parent.children.length > 1) {
+			for (let child of parent.children) {
+				children = children.concat(this.getChildren(child));
+			}
+		} else {
+			return parent;
+		}
+		return children;
 	}
 }
