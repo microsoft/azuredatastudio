@@ -123,9 +123,9 @@ steps:
           {
             "keyCode": "CP-401337-Apple",
             "operationSetCode": "MacAppDeveloperSign",
-            "parameters": [
+            "parameters": {
               "Hardening": "--options=runtime"
-            ],
+            },
             "toolName": "sign",
             "toolVersion": "1.0"
           }
@@ -144,9 +144,9 @@ steps:
           {
             "keyCode": "CP-401337-Apple",
             "operationSetCode": "MacAppNotarize",
-            "parameters": [
+            "parameters": {
               "BundleId": "com.microsoft.azuredatastudio-$(VSCODE_QUALITY)"
-            ],
+            },
             "toolName": "sign",
             "toolVersion": "1.0"
           }
