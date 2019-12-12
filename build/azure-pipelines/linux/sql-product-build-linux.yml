@@ -148,21 +148,21 @@ steps:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
 
-  - task: PublishTestResults@2
-    displayName: 'Publish Test Results test-results.xml'
-    inputs:
-      testResultsFiles: 'test-results.xml'
-      searchFolder: '$(Build.SourcesDirectory)'
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+  # - task: PublishTestResults@2
+  #   displayName: 'Publish Test Results test-results.xml'
+  #   inputs:
+  #     testResultsFiles: 'test-results.xml'
+  #     searchFolder: '$(Build.SourcesDirectory)'
+  #   continueOnError: true
+  #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  - task: PublishCodeCoverageResults@1
-    displayName: 'Publish code coverage from $(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
-    inputs:
-      codeCoverageTool: Cobertura
-      summaryFileLocation: '$(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
-      reportDirectory: '$(Build.SourcesDirectory)/.build/coverage'
-    continueOnError: true
+  # - task: PublishCodeCoverageResults@1
+  #   displayName: 'Publish code coverage from $(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
+  #   inputs:
+  #     codeCoverageTool: Cobertura
+  #     summaryFileLocation: '$(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
+  #     reportDirectory: '$(Build.SourcesDirectory)/.build/coverage'
+  #   continueOnError: true
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Detection'
