@@ -13,7 +13,8 @@
 		"azdata": ">=1.6.0"
 	},
 	"activationEvents": [
-		"*"
+    "onCommand:azdata.resource.deploy",
+    "onCommand:azdata.openNotebookInputDialog"
 	],
 	"main": "./out/main",
 	"repository": {
