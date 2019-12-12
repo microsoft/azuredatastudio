@@ -80,7 +80,6 @@ import 'vs/workbench/services/label/common/labelService';
 import 'vs/workbench/services/extensionManagement/common/extensionEnablementService';
 import 'vs/workbench/services/notification/common/notificationService';
 import 'vs/workbench/services/extensions/common/staticExtensions';
-import 'vs/workbench/services/userDataSync/common/settingsMergeService';
 import 'vs/workbench/services/userDataSync/common/userDataSyncUtil';
 import 'vs/workbench/services/path/common/remotePathService';
 import 'vs/workbench/services/remote/common/remoteExplorerService';
@@ -268,6 +267,7 @@ import 'vs/workbench/contrib/debug/browser/debug.contribution';
 import 'vs/workbench/contrib/debug/browser/debugQuickOpen';
 import 'vs/workbench/contrib/debug/browser/debugEditorContribution';
 import 'vs/workbench/contrib/debug/browser/breakpointEditorContribution';
+import 'vs/workbench/contrib/debug/browser/callStackEditorContribution';
 import 'vs/workbench/contrib/debug/browser/repl';
 import 'vs/workbench/contrib/debug/browser/debugViewlet';
 */
