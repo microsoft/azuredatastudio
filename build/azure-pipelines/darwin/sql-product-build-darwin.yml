@@ -132,6 +132,27 @@ steps:
         ]
       SessionTimeout: 20
 
+  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+    displayName: 'ESRP Notarization'
+    inputs:
+      ConnectedServiceName: 'Code Signing'
+      FolderPath: '$(Build.SourcesDirectory)/.build/darwin/archive'
+      Pattern: 'azuredatastudio-darwin.zip'
+      signConfigType: inlineSignParams
+      inlineOperation: |
+        [
+          {
+            "keyCode": "CP-401337-Apple",
+            "operationSetCode": "MacAppNotarize",
+            "parameters": [
+              "BundleId": "com.microsoft.azuredatastudio-$(VSCODE_QUALITY)"
+            ],
+            "toolName": "sign",
+            "toolVersion": "1.0"
+          }
+        ]
+      SessionTimeout: 20
+
   - script: |
       set -e
       ./build/azure-pipelines/darwin/createDrop.sh
