@@ -21,7 +21,6 @@ import { IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
 import { ITreeRenderer, ITreeNode, IAsyncDataSource, ITreeContextMenuEvent } from 'vs/base/browser/ui/tree/tree';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { Disposable, IDisposable, toDisposable, MutableDisposable, dispose } from 'vs/base/common/lifecycle';
-import { ViewletPane, IViewletPaneOptions } from 'vs/workbench/browser/parts/views/paneViewlet';
 import { ActionBar, ActionViewItem, IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IconLabel } from 'vs/base/browser/ui/iconLabel/iconLabel';
 import { ActionRunner, IAction } from 'vs/base/common/actions';
@@ -36,6 +35,7 @@ import { once } from 'vs/base/common/functional';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { URI } from 'vs/base/common/uri';
 
 class TunnelTreeVirtualDelegate implements IListVirtualDelegate<ITunnelItem> {
@@ -51,7 +51,7 @@ class TunnelTreeVirtualDelegate implements IListVirtualDelegate<ITunnelItem> {
 export interface ITunnelViewModel {
 	onForwardedPortsChanged: Event<void>;
 	readonly forwarded: TunnelItem[];
-	readonly published: TunnelItem[];
+	readonly detected: TunnelItem[];
 	readonly candidates: TunnelItem[];
 	readonly groups: ITunnelGroup[];
 }
@@ -79,11 +79,11 @@ export class TunnelViewModel extends Disposable implements ITunnelViewModel {
 				items: this.forwarded
 			});
 		}
-		if (this.model.published.size > 0) {
+		if (this.model.detected.size > 0) {
 			groups.push({
-				label: nls.localize('remote.tunnelsView.published', "Published"),
-				tunnelType: TunnelType.Published,
-				items: this.published
+				label: nls.localize('remote.tunnelsView.detected', "Detected"),
+				tunnelType: TunnelType.Detected,
+				items: this.detected
 			});
 		}
 		const candidates = this.candidates;
@@ -95,7 +95,7 @@ export class TunnelViewModel extends Disposable implements ITunnelViewModel {
 			});
 		}
 		groups.push({
-			label: nls.localize('remote.tunnelsView.add', "Add a Port..."),
+			label: nls.localize('remote.tunnelsView.add', "Forward Port..."),
 			tunnelType: TunnelType.Add,
 		});
 		return groups;
@@ -107,9 +107,9 @@ export class TunnelViewModel extends Disposable implements ITunnelViewModel {
 		});
 	}
 
-	get published(): TunnelItem[] {
-		return Array.from(this.model.published.values()).map(tunnel => {
-			return new TunnelItem(TunnelType.Published, tunnel.remote, tunnel.localAddress, false, tunnel.name, tunnel.description);
+	get detected(): TunnelItem[] {
+		return Array.from(this.model.detected.values()).map(tunnel => {
+			return new TunnelItem(TunnelType.Detected, tunnel.remote, tunnel.localAddress, false, tunnel.name, tunnel.description);
 		});
 	}
 
@@ -118,7 +118,7 @@ export class TunnelViewModel extends Disposable implements ITunnelViewModel {
 		const values = this.model.candidates.values();
 		let iterator = values.next();
 		while (!iterator.done) {
-			if (!this.model.forwarded.has(iterator.value.remote) && !this.model.published.has(iterator.value.remote)) {
+			if (!this.model.forwarded.has(iterator.value.remote) && !this.model.detected.has(iterator.value.remote)) {
 				candidates.push(new TunnelItem(TunnelType.Candidate, iterator.value.remote, iterator.value.localAddress, false, undefined, iterator.value.description));
 			}
 			iterator = values.next();
@@ -255,6 +255,7 @@ class TunnelTreeRenderer extends Disposable implements ITreeRenderer<ITunnelGrou
 
 		inputBox.value = value;
 		inputBox.focus();
+		inputBox.select({ start: 0, end: editableData.startingValue ? editableData.startingValue.length : 0 });
 
 		const done = once((success: boolean, finishEditing: boolean) => {
 			inputBox.element.style.display = 'none';
@@ -323,7 +324,7 @@ class TunnelDataSource implements IAsyncDataSource<ITunnelViewModel, ITunnelItem
 
 enum TunnelType {
 	Candidate = 'Candidate',
-	Published = 'Published',
+	Detected = 'Detected',
 	Forwarded = 'Forwarded',
 	Add = 'Add'
 }
@@ -376,7 +377,7 @@ class TunnelItem implements ITunnelItem {
 export const TunnelTypeContextKey = new RawContextKey<TunnelType>('tunnelType', TunnelType.Add);
 export const TunnelCloseableContextKey = new RawContextKey<boolean>('tunnelCloseable', false);
 
-export class TunnelPanel extends ViewletPane {
+export class TunnelPanel extends ViewPane {
 	static readonly ID = '~remote.tunnelPanel';
 	static readonly TITLE = nls.localize('remote.tunnel', "Tunnels");
 	private tree!: WorkbenchAsyncDataTree<any, any, any>;
@@ -388,7 +389,7 @@ export class TunnelPanel extends ViewletPane {
 
 	constructor(
 		protected viewModel: ITunnelViewModel,
-		options: IViewletPaneOptions,
+		options: IViewPaneOptions,
 		@IKeybindingService protected keybindingService: IKeybindingService,
 		@IContextMenuService protected contextMenuService: IContextMenuService,
 		@IContextKeyService protected contextKeyService: IContextKeyService,
@@ -450,6 +451,7 @@ export class TunnelPanel extends ViewletPane {
 						return item.label;
 					}
 				},
+				multipleSelectionSupport: false
 			}
 		);
 		const actionRunner: ActionRunner = new ActionRunner();
@@ -495,6 +497,11 @@ export class TunnelPanel extends ViewletPane {
 
 	getActions(): IAction[] {
 		return this.titleActions;
+	}
+
+	focus(): void {
+		super.focus();
+		this.tree.domFocus();
 	}
 
 	private onContextMenu(treeEvent: ITreeContextMenuEvent<ITunnelItem | ITunnelGroup>, actionRunner: ActionRunner): void {
@@ -559,9 +566,9 @@ export class TunnelPanelDescriptor implements IViewDescriptor {
 	}
 }
 
-namespace NameTunnelAction {
-	export const ID = 'remote.tunnel.name';
-	export const LABEL = nls.localize('remote.tunnel.name', "Rename");
+namespace LabelTunnelAction {
+	export const ID = 'remote.tunnel.label';
+	export const LABEL = nls.localize('remote.tunnel.label', "Set Label");
 
 	export function handler(): ICommandHandler {
 		return async (accessor, arg) => {
@@ -575,7 +582,7 @@ namespace NameTunnelAction {
 						remoteExplorerService.setEditable(arg.remote, null);
 					},
 					validationMessage: () => null,
-					placeholder: nls.localize('remote.tunnelsView.namePlaceholder', "Port name"),
+					placeholder: nls.localize('remote.tunnelsView.labelPlaceholder', "Port label"),
 					startingValue: arg.name
 				});
 			}
@@ -603,7 +610,7 @@ namespace ForwardPortAction {
 					},
 					validationMessage: (value) => {
 						const asNumber = Number(value);
-						if (isNaN(asNumber) || (asNumber < 0) || (asNumber > 65535)) {
+						if ((value === '') || isNaN(asNumber) || (asNumber < 0) || (asNumber > 65535)) {
 							return nls.localize('remote.tunnelsView.portNumberValid', "Port number is invalid");
 						}
 						return null;
@@ -638,7 +645,7 @@ namespace OpenPortInBrowserAction {
 			if (arg instanceof TunnelItem) {
 				const model = accessor.get(IRemoteExplorerService).tunnelModel;
 				const openerService = accessor.get(IOpenerService);
-				const tunnel = model.forwarded.has(arg.remote) ? model.forwarded.get(arg.remote) : model.published.get(arg.remote);
+				const tunnel = model.forwarded.has(arg.remote) ? model.forwarded.get(arg.remote) : model.detected.get(arg.remote);
 				let address: string | undefined;
 				if (tunnel && tunnel.localAddress && (address = model.address(tunnel.remote))) {
 					return openerService.open(URI.parse('http://' + address));
@@ -667,7 +674,7 @@ namespace CopyAddressAction {
 	}
 }
 
-CommandsRegistry.registerCommand(NameTunnelAction.ID, NameTunnelAction.handler());
+CommandsRegistry.registerCommand(LabelTunnelAction.ID, LabelTunnelAction.handler());
 CommandsRegistry.registerCommand(ForwardPortAction.ID, ForwardPortAction.handler());
 CommandsRegistry.registerCommand(ClosePortAction.ID, ClosePortAction.handler());
 CommandsRegistry.registerCommand(OpenPortInBrowserAction.ID, OpenPortInBrowserAction.handler());
@@ -689,7 +696,7 @@ MenuRegistry.appendMenuItem(MenuId.TunnelContext, ({
 		id: CopyAddressAction.ID,
 		title: CopyAddressAction.LABEL,
 	},
-	when: ContextKeyExpr.or(TunnelTypeContextKey.isEqualTo(TunnelType.Forwarded), TunnelTypeContextKey.isEqualTo(TunnelType.Published))
+	when: ContextKeyExpr.or(TunnelTypeContextKey.isEqualTo(TunnelType.Forwarded), TunnelTypeContextKey.isEqualTo(TunnelType.Detected))
 }));
 MenuRegistry.appendMenuItem(MenuId.TunnelContext, ({
 	group: '0_manage',
@@ -698,14 +705,14 @@ MenuRegistry.appendMenuItem(MenuId.TunnelContext, ({
 		id: OpenPortInBrowserAction.ID,
 		title: OpenPortInBrowserAction.LABEL,
 	},
-	when: ContextKeyExpr.or(TunnelTypeContextKey.isEqualTo(TunnelType.Forwarded), TunnelTypeContextKey.isEqualTo(TunnelType.Published))
+	when: ContextKeyExpr.or(TunnelTypeContextKey.isEqualTo(TunnelType.Forwarded), TunnelTypeContextKey.isEqualTo(TunnelType.Detected))
 }));
 MenuRegistry.appendMenuItem(MenuId.TunnelContext, ({
 	group: '0_manage',
 	order: 2,
 	command: {
-		id: NameTunnelAction.ID,
-		title: NameTunnelAction.LABEL,
+		id: LabelTunnelAction.ID,
+		title: LabelTunnelAction.LABEL,
 	},
 	when: TunnelTypeContextKey.isEqualTo(TunnelType.Forwarded)
 }));
@@ -716,7 +723,7 @@ MenuRegistry.appendMenuItem(MenuId.TunnelContext, ({
 		id: ForwardPortAction.ID,
 		title: ForwardPortAction.LABEL,
 	},
-	when: ContextKeyExpr.or(TunnelTypeContextKey.isEqualTo(TunnelType.Candidate), TunnelTypeContextKey.isEqualTo(TunnelType.Published))
+	when: TunnelTypeContextKey.isEqualTo(TunnelType.Candidate)
 }));
 MenuRegistry.appendMenuItem(MenuId.TunnelContext, ({
 	group: '0_manage',
@@ -735,7 +742,7 @@ MenuRegistry.appendMenuItem(MenuId.TunnelInline, ({
 		title: OpenPortInBrowserAction.LABEL,
 		icon: { id: 'codicon/globe' }
 	},
-	when: ContextKeyExpr.or(TunnelTypeContextKey.isEqualTo(TunnelType.Forwarded), TunnelTypeContextKey.isEqualTo(TunnelType.Published))
+	when: ContextKeyExpr.or(TunnelTypeContextKey.isEqualTo(TunnelType.Forwarded), TunnelTypeContextKey.isEqualTo(TunnelType.Detected))
 }));
 MenuRegistry.appendMenuItem(MenuId.TunnelInline, ({
 	order: 0,
@@ -744,7 +751,7 @@ MenuRegistry.appendMenuItem(MenuId.TunnelInline, ({
 		title: ForwardPortAction.LABEL,
 		icon: { id: 'codicon/plus' }
 	},
-	when: ContextKeyExpr.or(TunnelTypeContextKey.isEqualTo(TunnelType.Candidate), TunnelTypeContextKey.isEqualTo(TunnelType.Published))
+	when: TunnelTypeContextKey.isEqualTo(TunnelType.Candidate)
 }));
 MenuRegistry.appendMenuItem(MenuId.TunnelInline, ({
 	order: 2,

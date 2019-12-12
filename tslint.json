@@ -81,6 +81,7 @@
 				"target": "**/{vs,sql}/base/test/common/**",
 				"restrictions": [
 					"assert",
+					"sinon",
 					"vs/nls",
 					"**/{vs,sql}/base/common/**",
 					"**/{vs,sql}/base/test/common/**"
