@@ -13,7 +13,7 @@ import { URI } from 'vs/base/common/uri';
 
 import { ClientSession } from 'sql/workbench/contrib/notebook/browser/models/clientSession';
 import { SessionManager } from 'sql/workbench/services/notebook/browser/sessionManager';
-import { NotebookManagerStub, ServerManagerStub } from './common';
+import { NotebookManagerStub, ServerManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 
 suite('Client Session', function (): void {
