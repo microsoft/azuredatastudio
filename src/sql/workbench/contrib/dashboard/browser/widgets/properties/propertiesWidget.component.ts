@@ -102,9 +102,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 				this.handleClipping();
 			}
 		}, error => {
-			if (this._bootstrap.connectionManagementService.connectionInfo.serverInfo.engineEditionId !== DatabaseEngineEdition.SqlOnDemand) {
-				(<HTMLElement>this._el.nativeElement).innerText = nls.localize('dashboard.properties.error', "Unable to load dashboard properties");
-			}
+			(<HTMLElement>this._el.nativeElement).innerText = nls.localize('dashboard.properties.error', "Unable to load dashboard properties");
 		})));
 	}
 
