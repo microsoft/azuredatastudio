@@ -76,8 +76,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	//list of column names to index.
 	private _columnNameToIndex: any;
 
-	//used for selection models that are different from the one in gridParentComponent.
-	private externalSelectionModel = '';
+
 
 
 	// Edit Data functions
@@ -794,7 +793,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	//my code here:
 	private createNewTable(): void {
 
-		let t: Table<any>;
 		let newGridContainer = document.createElement('div');
 		newGridContainer.className = 'grid';
 
@@ -822,25 +820,8 @@ export class EditDataGridPanel extends GridParentComponent {
 
 			if (dataSet.columnDefinitions) {
 
+				this.tables[0] = new Table(this.nativeElement.appendChild(newGridContainer), { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
 
-
-				t = new Table(this.nativeElement.appendChild(newGridContainer), { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
-
-
-				this.tables[0] = t;
-
-
-				if (this.externalSelectionModel) {
-					if (typeof this.externalSelectionModel === 'object') {
-						t.grid.setSelectionModel(this.externalSelectionModel);
-					} else if (typeof this.externalSelectionModel === 'string' && Slick[this.externalSelectionModel] && typeof Slick[this.externalSelectionModel] === 'function') {
-						t.grid.setSelectionModel(Slick[this.externalSelectionModel]);
-					} else {
-						console.error(`Tried to register selection model ${this.externalSelectionModel},
-						but none was found to be attached to Slick Grid or it was not a function.
-						Please extend the Slick namespace with the selection model as a function before registering`);
-					}
-				}
 				for (let plugin of this.plugins[0]) {
 					this.tables[0].registerPlugin(plugin);
 				}
