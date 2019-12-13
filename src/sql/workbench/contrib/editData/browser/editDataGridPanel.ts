@@ -76,6 +76,9 @@ export class EditDataGridPanel extends GridParentComponent {
 	//list of column names to index.
 	private _columnNameToIndex: any;
 
+	//used for selection models that are different from the one in gridParentComponent.
+	private externalSelectionModel = '';
+
 
 	// Edit Data functions
 	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
@@ -827,17 +830,17 @@ export class EditDataGridPanel extends GridParentComponent {
 				this.tables[0] = t;
 
 
-				/*if (this.selectionModel) {
-					if (typeof this.selectionModel === 'object') {
-						t.grid.setSelectionModel(this.selectionModel);
-					} else if (typeof this.selectionModel === 'string' && Slick[this.selectionModel] && typeof Slick[this.selectionModel] === 'function') {
-						t.grid.setSelectionModel(Slick[this.selectionModel]);
+				if (this.externalSelectionModel) {
+					if (typeof this.externalSelectionModel === 'object') {
+						t.grid.setSelectionModel(this.externalSelectionModel);
+					} else if (typeof this.externalSelectionModel === 'string' && Slick[this.externalSelectionModel] && typeof Slick[this.externalSelectionModel] === 'function') {
+						t.grid.setSelectionModel(Slick[this.externalSelectionModel]);
 					} else {
-						console.error(`Tried to register selection model ${this.selectionModel},
+						console.error(`Tried to register selection model ${this.externalSelectionModel},
 						but none was found to be attached to Slick Grid or it was not a function.
 						Please extend the Slick namespace with the selection model as a function before registering`);
 					}
-				}*/
+				}
 				for (let plugin of this.plugins[0]) {
 					this.tables[0].registerPlugin(plugin);
 				}
