@@ -67,7 +67,7 @@ export default class MainController implements vscode.Disposable {
 		let nbApis = await this.getNotebookExtensionApis();
 		await this._config.load();
 
-		let packageManager = await this.getPackageManager(nbApis);
+		let packageManager = this.getPackageManager(nbApis);
 		this._apiWrapper.registerCommand(constants.mlManagePackagesCommand, (async () => {
 			await packageManager.managePackages();
 		}));
