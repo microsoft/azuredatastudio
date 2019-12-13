@@ -104,3 +104,13 @@ steps:
     AZURE_SQL_USERNAME: $(ads-integration-test-azure-server-username)
     AZURE_SQL_PWD: $(ads-integration-test-azure-server-password)
     AZURE_SQL: $(ads-integration-test-azure-server)
+
+- task: PublishTestResults@2
+  displayName: 'Publish Integration and Smoke Test Results'
+  inputs:
+    testResultsFiles: '*.xml'
+    searchFolder: '$(Build.ArtifactStagingDirectory)\test-results'
+    mergeTestResults: true
+    failTaskOnFailedTests: true
+  continueOnError: true
+  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
