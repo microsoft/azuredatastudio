@@ -121,14 +121,13 @@ steps:
       inlineOperation: |
         [
           {
-            "keyCode": "CP-401337-Apple",
-            "operationSetCode": "MacAppDeveloperSign",
-            "parameters":
-              {
-                "hardening": "--options=runtime"
-              },
-            "toolName": "sign",
-            "toolVersion": "1.0"
+            "KeyCode": "CP-401337-Apple",
+            "OperationCode": "MacAppDeveloperSign",
+            "Parameters": {
+              "Hardening": "--options=runtime"
+            },
+            "ToolName": "sign",
+            "ToolVersion": "1.0"
           }
         ]
       SessionTimeout: 20
@@ -143,15 +142,15 @@ steps:
       inlineOperation: |
         [
           {
-            "keyCode": "CP-401337-Apple",
-            "operationSetCode": "MacAppNotarize",
-            "parameters": [
+            "KeyCode": "CP-401337-Apple",
+            "OperationCode": "MacAppNotarize",
+            "Parameters": [
               {
                 "BundleId": "com.microsoft.azuredatastudio-$(VSCODE_QUALITY)"
               }
             ],
-            "toolName": "sign",
-            "toolVersion": "1.0"
+            "ToolName": "sign",
+            "ToolVersion": "1.0"
           }
         ]
       SessionTimeout: 20
