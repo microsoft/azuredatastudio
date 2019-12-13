@@ -147,7 +147,7 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 			if (isLinux) {
 				options.icon = path.join(this.environmentService.appRoot, 'resources/linux/code.png');
 			} else if (isWindows && !this.environmentService.isBuilt) {
-				options.icon = path.join(this.environmentService.appRoot, 'resources/win32/code_150x150.png');
+				// options.icon = path.join(this.environmentService.appRoot, 'resources/win32/code_150x150.png'); {{SQL CARBON EDIT}} This causes the icon to be very small with our icon
 			}
 
 			const windowConfig = this.configurationService.getValue<IWindowSettings>('window');
