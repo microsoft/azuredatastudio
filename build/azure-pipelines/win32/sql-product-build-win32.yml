@@ -111,15 +111,15 @@ steps:
       exec { .\scripts\test.bat --build --tfs "Unit Tests" }
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-    displayName: Run unstable tests
+    displayName: Run unit tests
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { .\scripts\test-unstable.bat --build --tfs "Unit Tests" }
+      exec { .\scripts\test-unstable.bat --build --tfs "Unstable Unit Tests" }
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
-    displayName: Run unstable tests
+    displayName: Run unstable unit tests
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'Sign out code'
@@ -267,15 +267,6 @@ steps:
       testResultsFiles: '*.xml'
       searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-
-  - task: PublishTestResults@2
-    displayName: 'Publish Test Results test-results.xml'
-    inputs:
-      testResultsFiles: 'test-results.xml'
-      searchFolder: '$(Build.SourcesDirectory)'
-      failTaskOnFailedTests: true
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Detection'
