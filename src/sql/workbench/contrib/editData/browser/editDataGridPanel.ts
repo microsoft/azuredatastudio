@@ -500,6 +500,25 @@ export class EditDataGridPanel extends GridParentComponent {
 		return handled;
 	}
 
+	/**
+	 * Force re-rendering of the results grids. Calling this upon unhide (upon focus) fixes UI
+	 * glitches that occur when a QueryRestulsEditor is hidden then unhidden while it is running a query.
+	 */
+	refreshResultsets(): void {
+		let tempRenderedDataSets = this.renderedDataSets;
+		this.renderedDataSets = [];
+		this.handleChanges({
+			['dataRows']: { currentValue: undefined, firstChange: this.firstRender, previousValue: this.dataSet.dataRows },
+			['columnDefinitions']: { currentValue: undefined, firstChange: this.firstRender, previousValue: this.dataSet.columnDefinitions }
+		});
+		this.renderedDataSets = tempRenderedDataSets;
+		this.handleChanges({
+			['dataRows']: { currentValue: this.renderedDataSets[0].dataRows, firstChange: this.firstRender, previousValue: undefined },
+			['columnDefinitions']: { currentValue: this.renderedDataSets[0].columnDefinitions, firstChange: this.firstRender, previousValue: undefined }
+		});
+	}
+
+
 	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
 
 	private async revertCurrentRow(): Promise<void> {

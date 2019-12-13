@@ -458,13 +458,14 @@ export abstract class GridParentComponent extends Disposable {
 	/**
 	 * Force re-rendering of the results grids. Calling this upon unhide (upon focus) fixes UI
 	 * glitches that occur when a QueryRestulsEditor is hidden then unhidden while it is running a query.
+	 * Detect Changes has been moved to editDataGridPanel version of this.
 	 */
 	refreshResultsets(): void {
 		let tempRenderedDataSets = this.renderedDataSets;
-
 		this.renderedDataSets = [];
 		this.renderedDataSets = tempRenderedDataSets;
 	}
+
 
 	getSelectedRangeUnderMessages(): Selection {
 		if (document.activeElement === this.getMessagesElement()) {
