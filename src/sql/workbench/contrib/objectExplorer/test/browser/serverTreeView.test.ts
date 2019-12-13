@@ -7,17 +7,18 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 
 import * as TypeMoq from 'typemoq';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
+import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { TestTree } from 'sql/workbench/contrib/objectExplorer/test/browser/treeMock';
 
 suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
 	let serverTreeView: ServerTreeView;
-	let mockTree: TypeMoq.Mock<Tree>;
+	let mockTree: TypeMoq.Mock<ITree>;
 	let mockRefreshTreeMethod: TypeMoq.Mock<Function>;
 	let capabilitiesService = new TestCapabilitiesService();
 
@@ -27,13 +28,7 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 		mockConnectionManagementService.setup(x => x.getConnectionGroups()).returns(x => []);
 		mockConnectionManagementService.setup(x => x.hasRegisteredServers()).returns(() => true);
 		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, undefined, undefined, undefined, capabilitiesService);
-		let tree = <Tree>{
-			clearSelection() { },
-			getSelection() { },
-			select(selection) { },
-			reveal(reveal) { }
-		};
-		mockTree = TypeMoq.Mock.ofInstance(tree);
+		mockTree = TypeMoq.Mock.ofType(TestTree);
 		(serverTreeView as any)._tree = mockTree.object;
 		mockRefreshTreeMethod = TypeMoq.Mock.ofType(Function);
 		mockRefreshTreeMethod.setup(x => x()).returns(() => Promise.resolve());
