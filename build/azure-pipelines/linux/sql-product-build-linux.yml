@@ -159,7 +159,6 @@ steps:
     inputs:
       testResultsFiles: '*.xml'
       searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
-    continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0

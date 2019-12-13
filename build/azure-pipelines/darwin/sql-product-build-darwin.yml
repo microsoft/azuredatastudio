@@ -143,7 +143,6 @@ steps:
     inputs:
       testResultsFiles: '*.xml'
       searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
-    continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - task: PublishCodeCoverageResults@1
@@ -152,7 +151,6 @@ steps:
       codeCoverageTool: Cobertura
       summaryFileLocation: '$(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
       reportDirectory: '$(Build.SourcesDirectory)/.build/coverage'
-    continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
