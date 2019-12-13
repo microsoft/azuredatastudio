@@ -269,7 +269,7 @@ suite('ConnectionConfig', () => {
 		let savedConnectionProfile = await config.addConnection(connectionProfile);
 
 		assert.ok(!!savedConnectionProfile.id);
-		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').user.length, testConnections.length + 1);
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue.length, testConnections.length + 1);
 	});
 
 	test('addConnection should not add the new profile to user settings if already exists', async () => {
@@ -303,7 +303,7 @@ suite('ConnectionConfig', () => {
 		let savedConnectionProfile = await config.addConnection(connectionProfile);
 
 		assert.equal(savedConnectionProfile.id, existingConnection.id);
-		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').user.length, testConnections.length);
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue.length, testConnections.length);
 	});
 
 	test('addConnection should add the new group to user settings if does not exist', async () => {
@@ -333,8 +333,8 @@ suite('ConnectionConfig', () => {
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.addConnection(connectionProfile);
 
-		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').user.length, testConnections.length + 1);
-		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connectionGroups').user.length, testGroups.length + 1);
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue.length, testConnections.length + 1);
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connectionGroups').userValue.length, testGroups.length + 1);
 	});
 
 	test('getConnections should return connections from user and workspace settings given getWorkspaceConnections set to true', () => {
@@ -452,7 +452,7 @@ suite('ConnectionConfig', () => {
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.deleteConnection(connectionProfile);
 
-		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').user.length, testConnections.length - 1);
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue.length, testConnections.length - 1);
 	});
 
 	test('deleteConnectionGroup should remove the children connections and subgroups from config', async () => {
@@ -488,8 +488,8 @@ suite('ConnectionConfig', () => {
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.deleteGroup(connectionProfileGroup);
 
-		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').user.length, testConnections.length - 1);
-		assert.equal(configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').user.length, testGroups.length - 2);
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue.length, testConnections.length - 1);
+		assert.equal(configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue.length, testGroups.length - 2);
 	});
 
 	test('deleteConnection should not throw error for connection not in config', async () => {
@@ -517,7 +517,7 @@ suite('ConnectionConfig', () => {
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.deleteConnection(connectionProfile);
 
-		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').user.length, testConnections.length);
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue.length, testConnections.length);
 	});
 
 	test('renameGroup should change group name', async () => {
@@ -528,7 +528,7 @@ suite('ConnectionConfig', () => {
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.editGroup(connectionProfileGroup);
 
-		let editedGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').user;
+		let editedGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue;
 
 		assert.equal(editedGroups.length, testGroups.length);
 		let editedGroup = find(editedGroups, group => group.id === 'g2');
@@ -547,7 +547,7 @@ suite('ConnectionConfig', () => {
 			await config.editGroup(sameNameGroup);
 			assert.fail();
 		} catch (e) {
-			let groups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').user;
+			let groups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue;
 			let originalGroup = find(groups, g => g.id === 'g2');
 			assert.ok(!!originalGroup);
 			assert.equal(originalGroup.name, 'g2');
@@ -563,7 +563,7 @@ suite('ConnectionConfig', () => {
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.changeGroupIdForConnectionGroup(sourceProfileGroup, targetProfileGroup);
 
-		let editedGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').user;
+		let editedGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue;
 
 		assert.equal(editedGroups.length, testGroups.length);
 		let editedGroup = find(editedGroups, group => group.id === 'g2');
@@ -620,7 +620,7 @@ suite('ConnectionConfig', () => {
 			await config.changeGroupIdForConnection(connectionProfile, 'test');
 			assert.fail();
 		} catch (e) {
-			let editedConnections = configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').user;
+			let editedConnections = configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue;
 			// two
 			assert.equal(editedConnections.length, _testConnections.length);
 			let editedConnection = find(editedConnections, con => con.id === 'server3-2');
@@ -657,7 +657,7 @@ suite('ConnectionConfig', () => {
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.changeGroupIdForConnection(connectionProfile, newId);
 
-		let editedConnections = configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').user;
+		let editedConnections = configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue;
 		assert.equal(editedConnections.length, testConnections.length);
 		let editedConnection = find(editedConnections, con => con.id === 'server3');
 		assert.ok(!!editedConnection);
@@ -704,7 +704,7 @@ suite('ConnectionConfig', () => {
 
 		await config.addGroup(newGroup);
 
-		let editGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').user;
+		let editGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue;
 
 		assert.equal(editGroups.length, testGroups.length + 1);
 	});
@@ -725,7 +725,7 @@ suite('ConnectionConfig', () => {
 			await config.addGroup(existingGroupName);
 			assert.fail();
 		} catch (e) {
-			let editGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').user;
+			let editGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue;
 
 			assert.equal(editGroups.length, testGroups.length);
 		}
