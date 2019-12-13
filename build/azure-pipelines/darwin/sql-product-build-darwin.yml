@@ -111,7 +111,7 @@ steps:
       pushd ../azuredatastudio-darwin && zip -r -X -y $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip * && popd
     displayName: 'Archive'
 
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  - task: EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning'
     inputs:
       ConnectedServiceName: 'Code Signing'
@@ -123,9 +123,11 @@ steps:
           {
             "keyCode": "CP-401337-Apple",
             "operationSetCode": "MacAppDeveloperSign",
-            "parameters": {
-              "hardening": "--options=runtime"
-            },
+            "parameters": [
+              {
+                "hardening": "--options=runtime"
+              }
+            ],
             "toolName": "sign",
             "toolVersion": "1.0"
           }
@@ -144,9 +146,11 @@ steps:
           {
             "keyCode": "CP-401337-Apple",
             "operationSetCode": "MacAppNotarize",
-            "parameters": {
-              "BundleId": "com.microsoft.azuredatastudio-$(VSCODE_QUALITY)"
-            },
+            "parameters": [
+              {
+                "BundleId": "com.microsoft.azuredatastudio-$(VSCODE_QUALITY)"
+              }
+            ],
             "toolName": "sign",
             "toolVersion": "1.0"
           }
