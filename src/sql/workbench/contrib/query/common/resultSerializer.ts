@@ -21,10 +21,11 @@ import { getBaseLabel } from 'vs/base/common/labels';
 import { ShowFileInFolderAction, OpenFileInFolderAction } from 'sql/workbench/common/workspaceActions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { getRootPath, resolveCurrentDirectory, resolveFilePath } from 'sql/platform/common/pathUtilities';
-import { IOutputService, IOutputChannelRegistry, IOutputChannel, Extensions as OutputExtensions } from 'vs/workbench/contrib/output/common/output';
+import { IOutputService, IOutputChannel } from 'vs/workbench/contrib/output/common/output';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IFileDialogService, FileFilter } from 'vs/platform/dialogs/common/dialogs';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IOutputChannelRegistry, Extensions as OutputExtensions } from 'vs/workbench/services/output/common/output';
 
 let prevSavePath: string;
 

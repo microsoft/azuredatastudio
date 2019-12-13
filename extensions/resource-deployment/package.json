@@ -29,15 +29,9 @@
 			{
 				"title": "%deployment.configuration.title%",
 				"properties": {
-					"deployment.azdataPipInstallUri": {
+					"deployment.azdataInstallLocation": {
 						"type": "string",
-						"default": "https://aka.ms/azdata",
-						"description": "%azdata-pip-install-uri-description%"
-					},
-					"deployment.azdataPipInstallArgs": {
-						"type": "string",
-						"default": "",
-						"description": "%azdata-pip-install-args-description%"
+						"description": "%azdata-install-location-description%"
 					}
 				}
 			}
@@ -356,7 +350,7 @@
 	"dependencies": {
 		"linux-release-info": "^2.0.0",
 		"promisify-child-process": "^3.1.1",
-		"sudo-prompt": "^9.0.0",
+    "sudo-prompt": "9.1.1",
 		"vscode-nls": "^4.0.0",
 		"yamljs": "^0.3.0"
 	},

@@ -24,7 +24,7 @@ export class KubeCtlTool extends ToolBase {
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.KubeCtlDescription', "A command-line tool allows you to run commands against Kubernetes clusters");
+		return localize('resourceDeployment.KubeCtlDescription', "Runs commands against Kubernetes clusters");
 	}
 
 	get type(): ToolType {
@@ -57,11 +57,6 @@ export class KubeCtlTool extends ToolBase {
 			command: this.discoveryCommandString('kubectl')
 		};
 	}
-
-	get autoInstallSupported(): boolean {
-		return true;
-	}
-
 	protected async getSearchPaths(): Promise<string[]> {
 		switch (this.osDistribution) {
 			case OsDistribution.win32:

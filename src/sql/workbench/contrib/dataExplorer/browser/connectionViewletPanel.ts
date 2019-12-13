@@ -10,7 +10,6 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IAction } from 'vs/base/common/actions';
 import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
 import {
@@ -20,8 +19,9 @@ import {
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 
-export class ConnectionViewletPanel extends ViewletPanel {
+export class ConnectionViewletPanel extends ViewPane {
 
 	public static readonly ID = 'dataExplorer.servers';
 
@@ -40,7 +40,7 @@ export class ConnectionViewletPanel extends ViewletPanel {
 		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService,
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
-		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService, contextKeyService);
+		super({ ...(options as IViewPaneOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService, contextKeyService);
 		this._addServerAction = this.instantiationService.createInstance(AddServerAction,
 			AddServerAction.ID,
 			AddServerAction.LABEL);

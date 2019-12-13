@@ -11,12 +11,11 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { ViewContainerViewlet, IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
+import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IAddedViewDescriptorRef } from 'vs/workbench/browser/parts/views/views';
-import { ViewletPanel } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { ConnectionViewletPanel } from 'sql/workbench/contrib/dataExplorer/browser/connectionViewletPanel';
 import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry, IViewContainersRegistry } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -24,9 +23,10 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { ShowViewletAction } from 'vs/workbench/browser/viewlet';
+import { ShowViewletAction, Viewlet } from 'vs/workbench/browser/viewlet';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
+import { ViewPaneContainer, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 
 export const VIEWLET_ID = 'workbench.view.connections';
 
@@ -72,7 +72,23 @@ export class DataExplorerViewletViewsContribution implements IWorkbenchContribut
 	}
 }
 
-export class DataExplorerViewlet extends ViewContainerViewlet {
+export class DataExplorerViewlet extends Viewlet {
+	constructor(
+		@ITelemetryService telemetryService: ITelemetryService,
+		@IStorageService protected storageService: IStorageService,
+		@IInstantiationService protected instantiationService: IInstantiationService,
+		@IThemeService themeService: IThemeService,
+		@IContextMenuService protected contextMenuService: IContextMenuService,
+		@IExtensionService protected extensionService: IExtensionService,
+		@IWorkspaceContextService protected contextService: IWorkspaceContextService,
+		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
+		@IConfigurationService protected configurationService: IConfigurationService
+	) {
+		super(VIEWLET_ID, instantiationService.createInstance(DataExplorerViewPaneContainer), telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService, layoutService, configurationService);
+	}
+}
+
+export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 	private root: HTMLElement;
 
 	private dataSourcesBox: HTMLElement;
@@ -90,7 +106,7 @@ export class DataExplorerViewlet extends ViewContainerViewlet {
 		@IMenuService private menuService: IMenuService,
 		@IContextKeyService private contextKeyService: IContextKeyService
 	) {
-		super(VIEWLET_ID, `${VIEWLET_ID}.state`, true, configurationService, layoutService, telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService);
+		super(VIEWLET_ID, `${VIEWLET_ID}.state`, { showHeaderInTitleWhenSingleView: true }, instantiationService, configurationService, layoutService, contextMenuService, telemetryService, extensionService, themeService, storageService, contextService);
 	}
 
 	create(parent: HTMLElement): void {
@@ -134,13 +150,13 @@ export class DataExplorerViewlet extends ViewContainerViewlet {
 		return actions;
 	}
 
-	protected onDidAddViews(added: IAddedViewDescriptorRef[]): ViewletPanel[] {
+	protected onDidAddViews(added: IAddedViewDescriptorRef[]): ViewPane[] {
 		const addedViews = super.onDidAddViews(added);
 		return addedViews;
 	}
 
-	protected createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewletPanel {
-		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewletPanel;
+	protected createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
+		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewPane;
 		this._register(viewletPanel);
 		return viewletPanel;
 	}

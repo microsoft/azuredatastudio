@@ -125,6 +125,7 @@ const copyrightFilter = [
 	'!**/*.opts',
 	'!**/*.disabled',
 	'!**/*.code-workspace',
+	'!**/*.js.map',
 	'!**/promise-polyfill/polyfill.js',
 	'!build/**/*.init',
 	'!resources/linux/snap/snapcraft.yaml',
@@ -194,7 +195,8 @@ const tslintBaseFilter = [
 	'!extensions/**/*.test.ts',
 	'!extensions/html-language-features/server/lib/jquery.d.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts', // {{SQL CARBON EDIT}},
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts' // {{SQL CARBON EDIT}},
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts', // {{SQL CARBON EDIT}},
+	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts' // {{SQL CARBON EDIT}} skip this because we have no plans on touching this and its not ours
 ];
 
 // {{SQL CARBON EDIT}}
@@ -424,7 +426,12 @@ function hygiene(some) {
 	let input;
 
 	if (Array.isArray(some) || typeof some === 'string' || !some) {
-		input = vfs.src(some || all, { base: '.', follow: true, allowEmpty: true });
+		const options = { base: '.', follow: true, allowEmpty: true };
+		if (some) {
+			input = vfs.src(some, options).pipe(filter(all)); // split this up to not unnecessarily filter all a second time
+		} else {
+			input = vfs.src(all, options);
+		}
 	} else {
 		input = some;
 	}
@@ -583,7 +590,7 @@ if (require.main === module) {
 				console.log('Reading git index versions...');
 
 				createGitIndexVinyls(some)
-					.then(vinyls => new Promise((c, e) => hygiene(es.readArray(vinyls).pipe(filter(all))) // {{SQL CARBON EDIT}} filter committed files
+					.then(vinyls => new Promise((c, e) => hygiene(es.readArray(vinyls))
 						.on('end', () => c())
 						.on('error', e)))
 					.catch(err => {

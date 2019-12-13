@@ -24,7 +24,7 @@ export class AzCliTool extends ToolBase {
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.AzCLIDescription', "A command-line tool for managing Azure resources");
+		return localize('resourceDeployment.AzCLIDescription', "Manages Azure resources");
 	}
 
 	get type(): ToolType {
@@ -37,10 +37,6 @@ export class AzCliTool extends ToolBase {
 
 	get homePage(): string {
 		return 'https://docs.microsoft.com/cli/azure/install-azure-cli';
-	}
-
-	get autoInstallSupported(): boolean {
-		return true;
 	}
 
 	protected async getSearchPaths(): Promise<string[]> {

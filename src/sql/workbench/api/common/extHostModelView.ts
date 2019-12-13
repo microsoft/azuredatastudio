@@ -79,7 +79,12 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return container;
 	}
 
+	private cardDeprecationMessagePrinted = false;
 	card(): azdata.ComponentBuilder<azdata.CardComponent> {
+		if (!this.cardDeprecationMessagePrinted) {
+			console.warn(`Extension '${this._extension.identifier.value}' is using card component which has been replaced by radioCardGroup. the card component will be removed in a future release.`);
+			this.cardDeprecationMessagePrinted = true;
+		}
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.CardComponent> = this.getComponentBuilder(new CardWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
@@ -589,6 +594,14 @@ class ComponentWrapper implements azdata.Component {
 		this.setProperty('ariaSelected', v);
 	}
 
+	public get ariaHidden(): boolean {
+		return this.properties['ariaHidden'];
+	}
+
+	public set ariaHidden(v: boolean) {
+		this.setProperty('ariaHidden', v);
+	}
+
 	public get CSSStyles(): { [key: string]: string } {
 		return this.properties['CSSStyles'];
 	}
@@ -765,6 +778,13 @@ class ComponentWithIconWrapper extends ComponentWrapper {
 	}
 	public set iconWidth(v: string | number) {
 		this.setProperty('iconWidth', v);
+	}
+
+	public get title(): string {
+		return this.properties['title'];
+	}
+	public set title(v: string) {
+		this.setProperty('title', v);
 	}
 }
 
@@ -1458,13 +1478,6 @@ class ButtonWrapper extends ComponentWithIconWrapper implements azdata.ButtonCom
 	}
 	public set label(v: string) {
 		this.setProperty('label', v);
-	}
-
-	public get title(): string {
-		return this.properties['title'];
-	}
-	public set title(v: string) {
-		this.setProperty('title', v);
 	}
 
 	public get onDidClick(): vscode.Event<any> {

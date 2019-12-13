@@ -15,9 +15,9 @@ import { IFilesConfiguration } from 'vs/platform/files/common/files';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { ITelemetryData } from 'vs/platform/telemetry/common/telemetry';
 import { Event } from 'vs/base/common/event';
-import { ViewContainer, IViewContainersRegistry, Extensions as ViewContainerExtensions } from 'vs/workbench/common/views';
-import { Registry } from 'vs/platform/registry/common/platform';
 import { relative } from 'vs/base/common/path';
+import { Extensions as ViewContainerExtensions, ViewContainer, IViewContainersRegistry } from 'vs/workbench/common/views';
+import { Registry } from 'vs/platform/registry/common/platform';
 
 export const VIEWLET_ID = 'workbench.view.search';
 export const PANEL_ID = 'workbench.view.search';
@@ -329,6 +329,10 @@ export interface ISearchConfigurationProperties {
 	actionsPosition: 'auto' | 'right';
 	maintainFileSearchCache: boolean;
 	collapseResults: 'auto' | 'alwaysCollapse' | 'alwaysExpand';
+	searchOnType: boolean;
+	searchOnTypeDebouncePeriod: number;
+	enableSearchEditorPreview: boolean;
+	searchEditorPreviewForceAbsolutePaths: boolean;
 }
 
 export interface ISearchConfiguration extends IFilesConfiguration {

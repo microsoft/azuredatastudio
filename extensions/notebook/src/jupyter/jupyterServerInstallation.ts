@@ -38,7 +38,22 @@ function msgDependenciesInstallationFailed(errorMessage: string): string { retur
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 function msgPackageRetrievalFailed(errorMessage: string): string { return localize('msgPackageRetrievalFailed', "Encountered an error when trying to retrieve list of installed packages: {0}", errorMessage); }
 
-export class JupyterServerInstallation {
+export interface IJupyterServerInstallation {
+	installCondaPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void>;
+	configurePackagePaths(): Promise<void>;
+	startInstallProcess(forceInstall: boolean, installSettings?: { installPath: string, existingPython: boolean }): Promise<void>;
+	getInstalledPipPackages(): Promise<PythonPkgDetails[]>;
+	getInstalledCondaPackages(): Promise<PythonPkgDetails[]>;
+	uninstallCondaPackages(packages: PythonPkgDetails[]): Promise<void>;
+	usingConda: boolean;
+	getCondaExePath(): string;
+	executeBufferedCommand(command: string): Promise<string>;
+	executeStreamedCommand(command: string): Promise<void>;
+	installPipPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void>;
+	uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void>;
+	pythonExecutable: string;
+}
+export class JupyterServerInstallation implements IJupyterServerInstallation {
 	public apiWrapper: ApiWrapper;
 	public extensionPath: string;
 	public pythonBinPath: string;
@@ -83,10 +98,8 @@ export class JupyterServerInstallation {
 	];
 
 	private readonly _expectedPythonPackages = this._commonPackages.concat(this._commonPipPackages);
-
-	private readonly _expectedCondaPackages = this._commonPackages.concat([{ name: 'pykerberos', version: '1.2.1' }]);
-
 	private readonly _expectedCondaPipPackages = this._commonPipPackages;
+	private readonly _expectedCondaPackages: PythonPkgDetails[];
 
 	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
 		this.extensionPath = extensionPath;
@@ -98,6 +111,12 @@ export class JupyterServerInstallation {
 		this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
 
 		this._prompter = new CodeAdapter();
+
+		if (process.platform !== constants.winPlatform) {
+			this._expectedCondaPackages = this._commonPackages.concat([{ name: 'pykerberos', version: '1.2.1' }]);
+		} else {
+			this._expectedCondaPackages = this._commonPackages;
+		}
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean): Promise<void> {
@@ -621,7 +640,7 @@ export class JupyterServerInstallation {
 		}
 	}
 
-	private async executeStreamedCommand(command: string): Promise<void> {
+	public async executeStreamedCommand(command: string): Promise<void> {
 		await utils.executeStreamedCommand(command, { env: this.execOptions.env }, this.outputChannel);
 	}
 

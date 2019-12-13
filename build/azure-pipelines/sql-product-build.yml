@@ -1,30 +1,54 @@
+resources:
+  containers:
+  - container: linux-x64
+    image: sqltoolscontainers.azurecr.io/linux-build-agent:x64
+    endpoint: ContainerRegistry
+
 jobs:
+- job: Compile
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  container: linux-x64
+  steps:
+  - template: sql-product-compile.yml
+
 - job: macOS
   condition: eq(variables['VSCODE_BUILD_MACOS'], 'true')
   pool:
     vmImage: macOS 10.13
+  dependsOn:
+  - Compile
   steps:
   - template: darwin/sql-product-build-darwin.yml
-  timeoutInMinutes: 90
-  cancelTimeoutInMinutes: 5
 
 - job: Linux
   condition: eq(variables['VSCODE_BUILD_LINUX'], 'true')
   pool:
     vmImage: 'Ubuntu-16.04'
+  container: linux-x64
+  dependsOn:
+  - Compile
   steps:
   - template: linux/sql-product-build-linux.yml
-  timeoutInMinutes: 90
-  cancelTimeoutInMinutes: 5
-  
+
 - job: Windows
   condition: eq(variables['VSCODE_BUILD_WIN32'], 'true')
   pool:
-    name: mssqltools
+    vmImage: VS2017-Win2016
+  dependsOn:
+  - Compile
   steps:
   - template: win32/sql-product-build-win32.yml
-  timeoutInMinutes: 90
-  cancelTimeoutInMinutes: 5
+
+- job: Windows_Test
+  condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
+  pool:
+    name: mssqltools
+  dependsOn:
+  - Linux
+  - Windows
+  steps:
+  - template: win32/sql-product-test-win32.yml
 
 - job: Release
   condition: and(succeeded(), or(eq(variables['VSCODE_RELEASE'], 'true'), and(eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))))
@@ -34,6 +58,7 @@ jobs:
   - macOS
   - Linux
   - Windows
+  - Windows_Test
   steps:
   - template: sql-release.yml
 

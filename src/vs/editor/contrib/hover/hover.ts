@@ -21,11 +21,12 @@ import { ModesContentHoverWidget } from 'vs/editor/contrib/hover/modesContentHov
 import { ModesGlyphHoverWidget } from 'vs/editor/contrib/hover/modesGlyphHover';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
-import { editorHoverBackground, editorHoverBorder, editorHoverHighlight, textCodeBlockBackground, textLinkForeground, editorHoverStatusBarBackground } from 'vs/platform/theme/common/colorRegistry';
+import { editorHoverBackground, editorHoverBorder, editorHoverHighlight, textCodeBlockBackground, textLinkForeground, editorHoverStatusBarBackground, editorHoverForeground } from 'vs/platform/theme/common/colorRegistry';
 import { IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { IMarkerDecorationsService } from 'vs/editor/common/services/markersDecorationService';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { AccessibilitySupport } from 'vs/platform/accessibility/common/accessibility';
+import { GotoDefinitionAtPositionEditorContribution } from 'vs/editor/contrib/gotoSymbol/link/goToDefinitionAtPosition';
 
 export class ModesHoverController implements IEditorContribution {
 
@@ -258,8 +259,50 @@ class ShowHoverAction extends EditorAction {
 	}
 }
 
+class ShowDefinitionPreviewHoverAction extends EditorAction {
+
+	constructor() {
+		super({
+			id: 'editor.action.showDefinitionPreviewHover',
+			label: nls.localize({
+				key: 'showDefinitionPreviewHover',
+				comment: [
+					'Label for action that will trigger the showing of definition preview hover in the editor.',
+					'This allows for users to show the definition preview hover without using the mouse.'
+				]
+			}, "Show Definition Preview Hover"),
+			alias: 'Show Definition Preview Hover',
+			precondition: undefined
+		});
+	}
+
+	public run(accessor: ServicesAccessor, editor: ICodeEditor): void {
+		let controller = ModesHoverController.get(editor);
+		if (!controller) {
+			return;
+		}
+		const position = editor.getPosition();
+
+		if (!position) {
+			return;
+		}
+
+		const range = new Range(position.lineNumber, position.column, position.lineNumber, position.column);
+		const goto = GotoDefinitionAtPositionEditorContribution.get(editor);
+		const promise = goto.startFindDefinitionFromCursor(position);
+		if (promise) {
+			promise.then(() => {
+				controller.showContentHover(range, HoverStartMode.Immediate, true);
+			});
+		} else {
+			controller.showContentHover(range, HoverStartMode.Immediate, true);
+		}
+	}
+}
+
 registerEditorContribution(ModesHoverController.ID, ModesHoverController);
 registerEditorAction(ShowHoverAction);
+registerEditorAction(ShowDefinitionPreviewHoverAction);
 
 // theming
 registerThemingParticipant((theme, collector) => {
@@ -281,6 +324,10 @@ registerThemingParticipant((theme, collector) => {
 	const link = theme.getColor(textLinkForeground);
 	if (link) {
 		collector.addRule(`.monaco-editor .monaco-editor-hover a { color: ${link}; }`);
+	}
+	const hoverForeground = theme.getColor(editorHoverForeground);
+	if (hoverForeground) {
+		collector.addRule(`.monaco-editor .monaco-editor-hover { color: ${hoverForeground}; }`);
 	}
 	const actionsBackground = theme.getColor(editorHoverStatusBarBackground);
 	if (actionsBackground) {

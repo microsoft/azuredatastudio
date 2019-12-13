@@ -39,7 +39,7 @@ import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHos
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CellMagicMapper } from 'sql/workbench/contrib/notebook/browser/models/cellMagicMapper';
-import { IExtensionsViewlet, VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
+import { VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
 import { CellModel } from 'sql/workbench/contrib/notebook/browser/models/cell';
 import { FileOperationError, FileOperationResult } from 'vs/platform/files/common/files';
 import { isValidBasename } from 'vs/base/common/extpath';
@@ -55,6 +55,7 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { find, firstIndex } from 'vs/base/common/arrays';
+import { ExtensionsViewlet, ExtensionsViewPaneContainer } from 'vs/workbench/contrib/extensions/browser/extensionsViewlet';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -343,8 +344,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private async openExtensionGallery(): Promise<void> {
 		try {
-			let viewlet = await this.viewletService.openViewlet(VIEWLET_ID, true) as IExtensionsViewlet;
-			viewlet.search('sql-vnext');
+			let viewlet = await this.viewletService.openViewlet(VIEWLET_ID, true) as ExtensionsViewlet;
+			(viewlet.getViewPaneContainer() as ExtensionsViewPaneContainer).search('sql-vnext');
 			viewlet.focus();
 		} catch (error) {
 			this.notificationService.error(error.message);
@@ -406,7 +407,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 		let attachToContainer = document.createElement('div');
 		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
-			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService, this.logService);
+			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
 		attachToDropdown.render(attachToContainer);
 		attachSelectBoxStyler(attachToDropdown, this.themeService);
 

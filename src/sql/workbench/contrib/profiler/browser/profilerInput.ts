@@ -11,15 +11,13 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 
-import { EditorInput, ConfirmResult } from 'vs/workbench/common/editor';
+import { EditorInput } from 'vs/workbench/common/editor';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
-import { IDialogService, IShowResult } from 'vs/platform/dialogs/common/dialogs';
 import * as types from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
-import Severity from 'vs/base/common/severity';
 import { FilterData } from 'sql/workbench/services/profiler/browser/profilerFilter';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { find } from 'vs/base/common/arrays';
@@ -46,8 +44,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	constructor(
 		public connection: IConnectionProfile,
 		@IProfilerService private _profilerService: IProfilerService,
-		@INotificationService private _notificationService: INotificationService,
-		@IDialogService private _dialogService: IDialogService
+		@INotificationService private _notificationService: INotificationService
 	) {
 		super();
 		this._state = new ProfilerState();
@@ -280,29 +277,6 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	clearFilter() {
 		this._filter = { clauses: [] };
 		this.data.clearFilter();
-	}
-
-	confirmSave(): Promise<ConfirmResult> {
-		if (this.state.isRunning || this.state.isPaused) {
-			return this._dialogService.show(Severity.Warning,
-				nls.localize('confirmStopProfilerSession', "Would you like to stop the running XEvent session?"),
-				[
-					nls.localize('profilerClosingActions.yes', "Yes"),
-					nls.localize('profilerClosingActions.no', "No"),
-					nls.localize('profilerClosingActions.cancel', "Cancel")
-				]).then((selection: IShowResult) => {
-					if (selection.choice === 0) {
-						this._profilerService.stopSession(this.id);
-						return ConfirmResult.DONT_SAVE;
-					} else if (selection.choice === 1) {
-						return ConfirmResult.DONT_SAVE;
-					} else {
-						return ConfirmResult.CANCEL;
-					}
-				});
-		} else {
-			return Promise.resolve(ConfirmResult.DONT_SAVE);
-		}
 	}
 
 	isDirty(): boolean {

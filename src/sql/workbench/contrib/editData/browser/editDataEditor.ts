@@ -29,7 +29,7 @@ import {
 import { TextResourceEditor } from 'vs/workbench/browser/parts/editor/textResourceEditor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { IFlexibleSash, HorizontalFlexibleSash } from 'sql/workbench/contrib/query/browser/flexibleSash';
 import { EditDataResultsEditor } from 'sql/workbench/contrib/editData/browser/editDataResultsEditor';
 import { EditDataResultsInput } from 'sql/workbench/contrib/editData/browser/editDataResultsInput';
@@ -119,10 +119,6 @@ export class EditDataEditor extends BaseEditor {
 		}
 		this._disposeEditors();
 		super.clearInput();
-	}
-
-	public close(): void {
-		this.editDataInput.close();
 	}
 
 	/**
@@ -491,7 +487,7 @@ export class EditDataEditor extends BaseEditor {
 	/**
 	 * Sets input for the SQL editor after it has been created.
 	 */
-	private _onSqlEditorCreated(sqlEditor: TextResourceEditor, sqlInput: UntitledEditorInput, options: EditorOptions): Thenable<void> {
+	private _onSqlEditorCreated(sqlEditor: TextResourceEditor, sqlInput: UntitledTextEditorInput, options: EditorOptions): Thenable<void> {
 		this._sqlEditor = sqlEditor;
 		return this._sqlEditor.setInput(sqlInput, options, CancellationToken.None);
 	}
@@ -522,7 +518,7 @@ export class EditDataEditor extends BaseEditor {
 			createEditors = () => {
 				return Promise.all([
 					this._createEditor(<EditDataResultsInput>newInput.results, this._resultsEditorContainer),
-					this._createEditor(<UntitledEditorInput>newInput.sql, this._sqlEditorContainer)
+					this._createEditor(<UntitledTextEditorInput>newInput.sql, this._sqlEditorContainer)
 				]);
 			};
 			onEditorsCreated = (result: IEditor[]) => {
@@ -535,7 +531,7 @@ export class EditDataEditor extends BaseEditor {
 			// If only the sql editor exists, create a promise and wait for the sql editor to be created
 		} else {
 			createEditors = () => {
-				return this._createEditor(<UntitledEditorInput>newInput.sql, this._sqlEditorContainer);
+				return this._createEditor(<UntitledTextEditorInput>newInput.sql, this._sqlEditorContainer);
 			};
 			onEditorsCreated = (result: TextResourceEditor) => {
 				return Promise.all([

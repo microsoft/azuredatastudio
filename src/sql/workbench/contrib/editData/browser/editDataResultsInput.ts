@@ -100,6 +100,6 @@ export class EditDataResultsInput extends EditorInput {
 	}
 
 	get uri(): string {
-		return this._uri;
+		return unescape(this._uri);
 	}
 }

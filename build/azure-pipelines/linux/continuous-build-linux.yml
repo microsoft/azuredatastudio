@@ -9,32 +9,28 @@ steps:
     sudo service xvfb start
 - task: NodeTool@0
   inputs:
-    versionSpec: "10.15.1"
+    versionSpec: "12.13.0"
+- task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
+  inputs:
+    versionSpec: "1.x"
 - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
   inputs:
     keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
     targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
-    vstsFeed: '$(build-cache)' # {{SQL CARBON EDIT}} update build cache
-- task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3 # {{SQL CARBON EDIT}} update version
-  inputs:
-    versionSpec: "1.x"
+    vstsFeed: 'npm-cache' # {{SQL CARBON EDIT}} update build cache
 - script: |
     CHILD_CONCURRENCY=1 yarn --frozen-lockfile
   displayName: Install Dependencies
   condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
-  env:
-    GITHUB_TOKEN: $(GITHUB_TOKEN)  # {{SQL CARBON EDIT}} add github token
 - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
   inputs:
     keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
     targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
-    vstsFeed: '$(build-cache)' # {{SQL CARBON EDIT}} update build cache
+    vstsFeed: 'npm-cache' # {{SQL CARBON EDIT}} update build cache
   condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 - script: |
     yarn electron x64
   displayName: Download Electron
-  env:
-    GITHUB_TOKEN: $(GITHUB_TOKEN) # {{SQL CARBON EDIT}} add github token
 - script: |
     yarn gulp hygiene --skip-tslint
   displayName: Run Hygiene Checks

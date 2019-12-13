@@ -214,11 +214,6 @@ export interface IClientSession extends IDisposable {
 	onKernelChanging(changeHandler: ((kernel: nb.IKernelChangedArgs) => Promise<void>)): void;
 }
 
-export interface IDefaultConnection {
-	defaultConnection: ConnectionProfile;
-	otherConnections: ConnectionProfile[];
-}
-
 /**
  * A kernel preference.
  */
@@ -323,10 +318,10 @@ export interface INotebookModel {
 	readonly specs: nb.IAllKernels | undefined;
 
 	/**
-	 * The specs for available contexts, or undefined if these have
+	 * The specs for available context, or undefined if this has
 	 * not been loaded yet
 	 */
-	readonly contexts: IDefaultConnection | undefined;
+	readonly context: ConnectionProfile | undefined;
 
 	/**
 	 * Event fired on first initialization of the cells and
@@ -418,6 +413,8 @@ export interface INotebookModel {
 	 * @param cell New active cell
 	 */
 	updateActiveCell(cell: ICellModel);
+
+	requestConnection(): Promise<boolean>;
 }
 
 export interface NotebookContentChange {
@@ -491,6 +488,7 @@ export interface ICellModel {
 	isCollapsed: boolean;
 	readonly onCollapseStateChanged: Event<boolean>;
 	modelContentChangedEvent: IModelContentChangedEvent;
+	isEditMode: boolean;
 }
 
 export interface FutureInternal extends nb.IFuture {
