@@ -134,7 +134,7 @@ steps:
         ]
       SessionTimeout: 20
 
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  - task: EsrpCodeSigning@1
     displayName: 'ESRP Notarization'
     inputs:
       ConnectedServiceName: 'Code Signing'
