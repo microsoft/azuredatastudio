@@ -144,11 +144,9 @@ steps:
           {
             "KeyCode": "CP-401337-Apple",
             "OperationCode": "MacAppNotarize",
-            "Parameters": [
-              {
-                "BundleId": "com.microsoft.azuredatastudio-$(VSCODE_QUALITY)"
-              }
-            ],
+            "Parameters": {
+              "BundleId": "com.microsoft.azuredatastudio-$(VSCODE_QUALITY)"
+            },
             "ToolName": "sign",
             "ToolVersion": "1.0"
           }
