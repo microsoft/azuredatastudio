@@ -1496,7 +1496,7 @@ suite('ExtensionsActions Test', () => {
 		onDidInstallEvent.fire({ identifier: localExtension.identifier, local: localExtension, operation: InstallOperation.Install });
 
 		assert.ok(testObject.enabled);
-		assert.equal(testObject.tooltip, 'Please reload Azure Data Studio to enable this extension.'); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+		assert.equal(testObject.tooltip, 'Please reload Visual Studio Code to enable this extension.');
 	});
 
 	test('Test ReloadAction for remote ui extension is disabled when it is installed and enabled in local server', async () => {
