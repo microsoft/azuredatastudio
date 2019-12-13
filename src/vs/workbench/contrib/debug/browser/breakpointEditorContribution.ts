@@ -641,7 +641,7 @@ registerThemingParticipant((theme, collector) => {
 		.monaco-workbench .codicon-debug-breakpoint-function,
 		.monaco-workbench .codicon-debug-breakpoint-data,
 		.monaco-workbench .codicon-debug-breakpoint-unsupported,
-		.monaco-workbench .codicon-debug-hint:not([class*='codicon-debug-breakpoint']),
+		.monaco-workbench .codicon-debug-hint:not([class*='codicon-debug-breakpoint']):not([class*='codicon-debug-stackframe']),
 		.monaco-workbench .codicon-debug-breakpoint.codicon-debug-stackframe-focused::after,
 		.monaco-workbench .codicon-debug-breakpoint.codicon-debug-stackframe::after {
 			color: ${debugIconBreakpointColor} !important;
@@ -662,7 +662,7 @@ registerThemingParticipant((theme, collector) => {
 	if (debugIconBreakpointUnverifiedColor) {
 		collector.addRule(`
 		.monaco-workbench .codicon[class*='-unverified'] {
-			color: ${debugIconBreakpointUnverifiedColor} !important;
+			color: ${debugIconBreakpointUnverifiedColor};
 		}
 		`);
 	}
@@ -670,7 +670,8 @@ registerThemingParticipant((theme, collector) => {
 	const debugIconBreakpointCurrentStackframeForegroundColor = theme.getColor(debugIconBreakpointCurrentStackframeForeground);
 	if (debugIconBreakpointCurrentStackframeForegroundColor) {
 		collector.addRule(`
-		.monaco-workbench .codicon-debug-stackframe {
+		.monaco-workbench .codicon-debug-stackframe,
+		.monaco-editor .debug-top-stack-frame-column::before {
 			color: ${debugIconBreakpointCurrentStackframeForegroundColor} !important;
 		}
 		`);
