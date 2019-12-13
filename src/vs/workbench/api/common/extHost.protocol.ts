@@ -47,6 +47,7 @@ import { createExtHostContextProxyIdentifier as createExtId, createMainContextPr
 import * as search from 'vs/workbench/services/search/common/search';
 import { SaveReason } from 'vs/workbench/common/editor';
 import { ExtensionActivationReason } from 'vs/workbench/api/common/extHostExtensionActivator';
+import { TunnelOptions, TunnelDto } from 'vs/workbench/api/common/extHostTunnelService';
 
 // {{SQL CARBON EDIT}}
 import { ITreeItem as sqlITreeItem } from 'sql/workbench/common/views';
@@ -90,6 +91,7 @@ export interface IInitData {
 	telemetryInfo: ITelemetryInfo;
 	logLevel: LogLevel;
 	logsLocation: URI;
+	logFile: URI;
 	autoStart: boolean;
 	remote: { isRemote: boolean; authority: string | undefined; };
 	uiKind: UIKind;
@@ -614,7 +616,6 @@ export interface MainThreadUrlsShape extends IDisposable {
 	$registerUriHandler(handle: number, extensionId: ExtensionIdentifier): Promise<void>;
 	$unregisterUriHandler(handle: number): Promise<void>;
 	$createAppUri(uri: UriComponents): Promise<UriComponents>;
-	$proposedCreateAppUri(extensionId: ExtensionIdentifier, options?: { payload?: Partial<UriComponents>; }): Promise<UriComponents>;
 }
 
 export interface ExtHostUrlsShape {
@@ -779,6 +780,12 @@ export interface MainThreadWindowShape extends IDisposable {
 	$getWindowVisibility(): Promise<boolean>;
 	$openUri(uri: UriComponents, uriString: string | undefined, options: IOpenUriOptions): Promise<boolean>;
 	$asExternalUri(uri: UriComponents, options: IOpenUriOptions): Promise<UriComponents>;
+}
+
+export interface MainThreadTunnelServiceShape extends IDisposable {
+	$openTunnel(tunnelOptions: TunnelOptions): Promise<TunnelDto | undefined>;
+	$closeTunnel(remotePort: number): Promise<void>;
+	$addDetected(tunnels: { remote: { port: number, host: string }, localAddress: string }[]): Promise<void>;
 }
 
 // -- extension host
@@ -1395,6 +1402,11 @@ export interface ExtHostStorageShape {
 	$acceptValue(shared: boolean, key: string, value: object | undefined): void;
 }
 
+
+export interface ExtHostTunnelServiceShape {
+
+}
+
 // --- proxy identifiers
 
 export const MainContext = {
@@ -1435,7 +1447,8 @@ export const MainContext = {
 	MainThreadSearch: createMainId<MainThreadSearchShape>('MainThreadSearch'),
 	MainThreadTask: createMainId<MainThreadTaskShape>('MainThreadTask'),
 	MainThreadWindow: createMainId<MainThreadWindowShape>('MainThreadWindow'),
-	MainThreadLabelService: createMainId<MainThreadLabelServiceShape>('MainThreadLabelService')
+	MainThreadLabelService: createMainId<MainThreadLabelServiceShape>('MainThreadLabelService'),
+	MainThreadTunnelService: createMainId<MainThreadTunnelServiceShape>('MainThreadTunnelService')
 };
 
 export const ExtHostContext = {
@@ -1469,5 +1482,6 @@ export const ExtHostContext = {
 	ExtHostStorage: createMainId<ExtHostStorageShape>('ExtHostStorage'),
 	ExtHostUrls: createExtId<ExtHostUrlsShape>('ExtHostUrls'),
 	ExtHostOutputService: createMainId<ExtHostOutputServiceShape>('ExtHostOutputService'),
-	ExtHosLabelService: createMainId<ExtHostLabelServiceShape>('ExtHostLabelService')
+	ExtHosLabelService: createMainId<ExtHostLabelServiceShape>('ExtHostLabelService'),
+	ExtHostTunnelService: createMainId<ExtHostTunnelServiceShape>('ExtHostTunnelService')
 };

@@ -364,8 +364,10 @@ export class AttachToDropdown extends SelectBox {
 
 			let attachToConnections = this.values;
 			if (!connection) {
-				this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
-				this.doChangeContext(undefined, true);
+				// If there is no connection, we should choose the previous connection,
+				// which will always be the first item in the list. Either "Select Connection"
+				// or a real connection name
+				this.select(0);
 				return false;
 			}
 			let connectionUri = this._connectionManagementService.getConnectionUri(connection);
