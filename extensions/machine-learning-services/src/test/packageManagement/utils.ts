@@ -31,22 +31,24 @@ export function createContext(): TestContext {
 	let opStatus: azdata.TaskStatus;
 	let packages = new Map<string, nbExtensionApis.IPackageManageProvider>();
 	let jupyterInstallation: nbExtensionApis.IJupyterServerInstallation = {
-		installCondaPackages: (packages: nbExtensionApis.IPackageDetails[], useMinVersion: boolean) => { return Promise.resolve(); },
+		installCondaPackages: () => { return Promise.resolve(); },
 		getInstalledPipPackages: () => { return Promise.resolve([]); },
-		installPipPackages: (packages: nbExtensionApis.IPackageDetails[], useMinVersion: boolean) => { return Promise.resolve(); },
-		uninstallPipPackages: (packages: nbExtensionApis.IPackageDetails[]) => { return Promise.resolve(); },
-		uninstallCondaPackages: (packages: nbExtensionApis.IPackageDetails[]) => { return Promise.resolve(); },
-		executeBufferedCommand: (command: string) => { return Promise.resolve(''); },
-		executeStreamedCommand: (command: string) => { return Promise.resolve(); },
+		installPipPackages: () => { return Promise.resolve(); },
+		uninstallPipPackages: () => { return Promise.resolve(); },
+		uninstallCondaPackages: () => { return Promise.resolve(); },
+		executeBufferedCommand: () => { return Promise.resolve(''); },
+		executeStreamedCommand: () => { return Promise.resolve(); },
 		pythonExecutable: '',
 		pythonInstallationPath: '',
-		installPythonPackage: (backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel) => { return Promise.resolve(); }
+		installPythonPackage: () => { return Promise.resolve(); }
 	};
 
 	let jupyterController = {
 		jupyterInstallation: jupyterInstallation
 	};
+
 	return {
+
 		jupyterInstallation: jupyterInstallation,
 		jupyterController: jupyterController,
 		nbExtensionApis: {
@@ -58,8 +60,8 @@ export function createContext(): TestContext {
 		},
 		outputChannel: {
 			name: '',
-			append: (value: string) => { },
-			appendLine: (value: string) => { },
+			append: () => { },
+			appendLine: () => { },
 			clear: () => { },
 			show: () => { },
 			hide: () => { },
@@ -70,11 +72,11 @@ export function createContext(): TestContext {
 		queryRunner: TypeMoq.Mock.ofType(QueryRunner),
 		config: TypeMoq.Mock.ofType(Config),
 		op: {
-			updateStatus: (status: azdata.TaskStatus, message?: string) => {
+			updateStatus: (status: azdata.TaskStatus) => {
 				opStatus = status;
 			},
 			id: '',
-			onCanceled: undefined,
+			onCanceled: new vscode.EventEmitter<void>().event,
 		},
 		getOpStatus: () => { return opStatus; }
 	};

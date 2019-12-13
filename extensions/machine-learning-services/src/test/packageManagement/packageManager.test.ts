@@ -5,7 +5,6 @@
 
 'use strict';
 
-import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
 import * as should from 'should';
@@ -47,7 +46,8 @@ describe('Package Manager', () => {
 
 	it('Manage Package command Should show an error for no connection', async function (): Promise<void> {
 		let testContext = createContext();
-		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(undefined);});
+		let connection: azdata.connection.ConnectionProfile;
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => {return Promise.resolve(connection);});
 		testContext.apiWrapper.setup(x => x.executeCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {return Promise.resolve();});
 		testContext.apiWrapper.setup(x => x.showInfoMessage(TypeMoq.It.isAny()));
 
@@ -66,7 +66,7 @@ describe('Package Manager', () => {
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
 			operationInfo.operation(testContext.op);
 		});
-		testContext.jupyterInstallation.installPythonPackage = (backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel)  => {
+		testContext.jupyterInstallation.installPythonPackage = ()  => {
 			pythonInstalled = true;
 			return Promise.resolve();
 		};
@@ -87,7 +87,7 @@ describe('Package Manager', () => {
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
 			operationInfo.operation(testContext.op);
 		});
-		testContext.jupyterInstallation.installPythonPackage = (backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel)  => {
+		testContext.jupyterInstallation.installPythonPackage = ()  => {
 			return Promise.reject();
 		};
 		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {return Promise.resolve(installedPackages);});
@@ -107,10 +107,10 @@ describe('Package Manager', () => {
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
 			operationInfo.operation(testContext.op);
 		});
-		testContext.jupyterInstallation.installPythonPackage = (backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel)  => {
+		testContext.jupyterInstallation.installPythonPackage = ()  => {
 			return Promise.resolve();
 		};
-		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command, outputChannel) => {
+		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command) => {
 			if (command.indexOf('pip install') > 0) {
 				packagesInstalled = true;
 			}
@@ -132,10 +132,10 @@ describe('Package Manager', () => {
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
 			operationInfo.operation(testContext.op);
 		});
-		testContext.jupyterInstallation.installPythonPackage = (backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel)  => {
+		testContext.jupyterInstallation.installPythonPackage = ()  => {
 			return Promise.resolve();
 		};
-		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command, outputChannel) => {
+		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command) => {
 			if (command.indexOf('pip install') > 0) {
 				packagesInstalled = true;
 			}
@@ -154,10 +154,10 @@ describe('Package Manager', () => {
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
 			operationInfo.operation(testContext.op);
 		});
-		testContext.jupyterInstallation.installPythonPackage = (backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel)  => {
+		testContext.jupyterInstallation.installPythonPackage = ()  => {
 			return Promise.resolve();
 		};
-		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command, outputChannel) => {
+		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command,) => {
 			if (command.indexOf('pip list') > 0) {
 				return Promise.reject();
 			} else if (command.indexOf('pip install') > 0) {
@@ -183,10 +183,10 @@ describe('Package Manager', () => {
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
 			operationInfo.operation(testContext.op);
 		});
-		testContext.jupyterInstallation.installPythonPackage = (backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel)  => {
+		testContext.jupyterInstallation.installPythonPackage = ()  => {
 			return Promise.resolve();
 		};
-		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command, outputChannel) => {
+		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command) => {
 			if (command.indexOf('pip list') > 0) {
 				return Promise.resolve(installedPackages);
 			} else if (command.indexOf('pip install') > 0) {
@@ -203,7 +203,7 @@ describe('Package Manager', () => {
 	});
 
 	function createPackageManager(testContext: TestContext): PackageManager {
-		testContext.config.setup(x => x.requiredPythonPackages).returns( x => [
+		testContext.config.setup(x => x.requiredPythonPackages).returns( () => [
 			{ name: 'pymssql', version: '2.1.4' },
 			{ name: 'sqlmlutils', version: '' }
 		]);

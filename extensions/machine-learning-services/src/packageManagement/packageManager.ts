@@ -19,9 +19,9 @@ import { isNullOrUndefined } from 'util';
 
 export class PackageManager {
 
-	private _pythonExecutable: string;
-	private _pythonInstallationLocation: string;
-	private _sqlPackageManager: SqlPythonPackageManageProvider;
+	private _pythonExecutable: string = '';
+	private _pythonInstallationLocation: string = '';
+	private _sqlPackageManager: SqlPythonPackageManageProvider | undefined = undefined;
 
 	/**
 	 * Creates a new instance of PackageManager
@@ -55,7 +55,7 @@ export class PackageManager {
 		//
 		let connection = await this.getCurrentConnection();
 		let isPythonInstalled = await this._queryRunner.isPythonInstalled(connection);
-		if (connection && isPythonInstalled) {
+		if (connection && isPythonInstalled && this._sqlPackageManager) {
 			this._apiWrapper.executeCommand(constants.managePackagesCommand, {
 				multiLocations: false,
 				defaultLocation: this._sqlPackageManager.packageTarget.location,

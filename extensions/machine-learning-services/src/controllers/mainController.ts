@@ -7,7 +7,6 @@
 
 import * as vscode from 'vscode';
 import * as nbExtensionApis from '../typings/notebookServices';
-import { isNullOrUndefined } from 'util';
 import { PackageManager } from '../packageManagement/packageManager';
 import * as constants from '../common/constants';
 import { ApiWrapper } from '../common/apiWrapper';
@@ -20,17 +19,16 @@ import { Config } from '../common/config';
  */
 export default class MainController implements vscode.Disposable {
 
-	private _nbExtensionApis: nbExtensionApis.IExtensionApi;
 	private _outputChannel: vscode.OutputChannel;
 	private _rootPath = this._context.extensionPath;
 	private _config: Config;
-	private _packageManager: PackageManager;
 
 	public constructor(
 		private _context: vscode.ExtensionContext,
 		private _apiWrapper: ApiWrapper,
 		private _queryRunner: QueryRunner,
 		private _processService: ProcessService,
+		private _packageManager?: PackageManager
 	) {
 		this._outputChannel = this._apiWrapper.createOutputChannel(constants.extensionOutputChannel);
 		this._rootPath = this._context.extensionPath;
@@ -54,22 +52,22 @@ export default class MainController implements vscode.Disposable {
 	/**
 	 * Returns an instance of Server Installation from notebook extension
 	 */
-	private async loadNotebookExtensionApis(): Promise<void> {
-		if (isNullOrUndefined(this._nbExtensionApis)) {
-			let nbExtension = this._apiWrapper.getExtension(constants.notebookExtensionName);
+	private async getNotebookExtensionApis(): Promise<nbExtensionApis.IExtensionApi> {
+		let nbExtension = this._apiWrapper.getExtension(constants.notebookExtensionName);
+		if (nbExtension) {
 			await nbExtension.activate();
-			this._nbExtensionApis = (nbExtension.exports as nbExtensionApis.IExtensionApi);
+			return (nbExtension.exports as nbExtensionApis.IExtensionApi);
+		} else {
+			throw new Error();
 		}
-		return;
 	}
 
 	private async initialize(): Promise<void> {
 		this._outputChannel.show(true);
-		await this.loadNotebookExtensionApis();
+		let nbApis = await this.getNotebookExtensionApis();
 		await this._config.load();
 
-		let packageManager = await this.getPackageManager();
-
+		let packageManager = await this.getPackageManager(nbApis);
 		this._apiWrapper.registerCommand(constants.mlManagePackagesCommand, (async () => {
 			await packageManager.managePackages();
 		}));
@@ -83,9 +81,9 @@ export default class MainController implements vscode.Disposable {
 	/**
 	 * Returns the package manager instance
 	 */
-	public async getPackageManager(): Promise<PackageManager> {
+	public getPackageManager(nbApis: nbExtensionApis.IExtensionApi): PackageManager {
 		if (!this._packageManager) {
-			this._packageManager = new PackageManager(this._nbExtensionApis, this._outputChannel, this._rootPath, this._apiWrapper, this._queryRunner, this._processService, this._config);
+			this._packageManager = new PackageManager(nbApis, this._outputChannel, this._rootPath, this._apiWrapper, this._queryRunner, this._processService, this._config);
 			this._packageManager.init();
 		}
 		return this._packageManager;

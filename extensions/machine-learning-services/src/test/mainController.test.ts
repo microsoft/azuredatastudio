@@ -35,30 +35,36 @@ function createContext(): TestContext {
 		processService: TypeMoq.Mock.ofType(ProcessService),
 		packageManager: TypeMoq.Mock.ofType(PackageManager),
 		context: {
-			subscriptions: undefined,
-			workspaceState: undefined,
-			globalState: undefined,
+			subscriptions: [],
+			workspaceState: {
+				get: () => {return undefined;},
+				update: () => {return Promise.resolve();}
+			},
+			globalState: {
+				get:  () => {return Promise.resolve();},
+				update: () => {return Promise.resolve();}
+			},
 			extensionPath: extensionPath,
-			asAbsolutePath: undefined,
-			storagePath: undefined,
-			globalStoragePath: undefined,
-			logPath: undefined
+			asAbsolutePath: () => {return '';},
+			storagePath: '',
+			globalStoragePath: '',
+			logPath: ''
 		},
 		outputChannel: {
 			name: '',
-			append: (value: string) => { },
-			appendLine: (value: string) => { },
+			append: () => { },
+			appendLine: () => { },
 			clear: () => { },
 			show: () => { },
 			hide: () => { },
 			dispose: () => { }
 		},
 		extension: {
-			id: undefined,
-			extensionPath: undefined,
+			id: '',
+			extensionPath: '',
 			isActive: true,
-			packageJSON: undefined,
-			extensionKind: undefined,
+			packageJSON: {},
+			extensionKind: vscode.ExtensionKind.UI,
 			exports: {},
 			activate: () => { return Promise.resolve(); }
 		}
@@ -84,10 +90,7 @@ describe('Main Controller', () => {
 		testContext.apiWrapper.setup(x => x.getExtension(TypeMoq.It.isAny())).returns(() => testContext.extension);
 		testContext.packageManager.setup(x => x.managePackages()).returns(() => Promise.resolve());
 		testContext.packageManager.setup(x => x.installDependencies()).returns(() => Promise.resolve());
-		testContext.apiWrapper.setup(x => x.registerCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command: string, callback: (...args: any[]) => any) => {
-			callback();
-			return undefined;
-		});
+		testContext.apiWrapper.setup(x => x.registerCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny()));
 		let controller = createController(testContext);
 		await controller.activate();
 		should.deepEqual(controller.config.requiredPythonPackages, [
@@ -103,10 +106,7 @@ describe('Main Controller', () => {
 		testContext.apiWrapper.setup(x => x.getExtension(TypeMoq.It.isAny())).returns(() => testContext.extension);
 		testContext.packageManager.setup(x => x.managePackages()).returns(() => Promise.resolve());
 		testContext.packageManager.setup(x => x.installDependencies()).returns(() => Promise.reject());
-		testContext.apiWrapper.setup(x => x.registerCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command: string, callback: (...args: any[]) => any) => {
-			callback();
-			return undefined;
-		});
+		testContext.apiWrapper.setup(x => x.registerCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny()));
 		testContext.outputChannel.appendLine = () => {
 			errorReported = true;
 		};

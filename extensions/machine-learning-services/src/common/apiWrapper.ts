@@ -40,7 +40,7 @@ export class ApiWrapper {
 	}
 
 	public getProvider<T extends azdata.DataProvider>(providerId: string, providerType: azdata.DataProviderType): T {
-		return azdata.dataprotocol.getProvider<T>(providerId, azdata.DataProviderType.QueryProvider);
+		return azdata.dataprotocol.getProvider<T>(providerId, providerType);
 	}
 
 	public showErrorMessage(message: string, ...items: string[]): Thenable<string | undefined> {

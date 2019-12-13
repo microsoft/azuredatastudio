@@ -23,7 +23,6 @@ const localPythonProviderId = 'localhost_Pip';
  */
 export class SqlPythonPackageManageProvider implements nbExtensionApis.IPackageManageProvider {
 
-	private _pythonInstallationLocation: string;
 	private _pythonExecutable: string;
 
 	public static ProviderId = 'sql_Python';
@@ -38,7 +37,6 @@ export class SqlPythonPackageManageProvider implements nbExtensionApis.IPackageM
 		private _apiWrapper: ApiWrapper,
 		private _queryRunner: QueryRunner,
 		private _processService: ProcessService) {
-		this._pythonInstallationLocation = utils.getPythonInstallationLocation(this._rootFolder);
 		this._pythonExecutable = utils.getPythonExePath(this._rootFolder);
 	}
 
@@ -81,6 +79,8 @@ export class SqlPythonPackageManageProvider implements nbExtensionApis.IPackageM
 				await this.updatePackage(element, installMode);
 			}
 		}
+		//TODO: use useMinVersion
+		console.log(useMinVersion);
 	}
 
 	/**
@@ -143,12 +143,17 @@ export class SqlPythonPackageManageProvider implements nbExtensionApis.IPackageM
 	 * Returns package overview for given name
 	 * @param packageName Package Name
 	 */
-	getPackageOverview(packageName: string): Promise<nbExtensionApis.IPackageOverview> {
+	async getPackageOverview(packageName: string): Promise<nbExtensionApis.IPackageOverview> {
+		let packagePreview: nbExtensionApis.IPackageOverview = {
+			name: packageName,
+			versions: [],
+			summary: ''
+		};
 		let pythonPackageProvider = this.pythonPackageProvider;
 		if (pythonPackageProvider) {
-			return pythonPackageProvider.getPackageOverview(packageName);
+			packagePreview = await pythonPackageProvider.getPackageOverview(packageName);
 		}
-		return Promise.resolve(undefined);
+		return packagePreview;
 	}
 
 	/**
@@ -162,7 +167,7 @@ export class SqlPythonPackageManageProvider implements nbExtensionApis.IPackageM
 		return constants.packageManagerNoConnection;
 	}
 
-	private get pythonPackageProvider(): nbExtensionApis.IPackageManageProvider {
+	private get pythonPackageProvider(): nbExtensionApis.IPackageManageProvider | undefined {
 		let providers = this._nbExtensionApis.getPackageManagers();
 		if (providers && providers.has(localPythonProviderId)) {
 			return providers.get(localPythonProviderId);

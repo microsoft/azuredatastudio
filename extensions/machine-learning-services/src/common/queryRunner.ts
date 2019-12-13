@@ -56,7 +56,7 @@ export class QueryRunner {
 	 * @param connection SQL Connection
 	 */
 	public async getPythonPackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
-		let packages = [];
+		let packages: nbExtensionApis.IPackageDetails[] = [];
 		let result = await this.runQuery(connection, listPythonPackagesQuery);
 		if (result && result.rows.length > 0) {
 			packages = result.rows.map(row => {
@@ -107,7 +107,7 @@ export class QueryRunner {
 	}
 
 	private async runQuery(connection: azdata.connection.ConnectionProfile, query: string): Promise<azdata.SimpleExecuteResult | undefined> {
-		let result: azdata.SimpleExecuteResult = undefined;
+		let result: azdata.SimpleExecuteResult | undefined = undefined;
 		try {
 			if (connection) {
 				let connectionUri = await this._apiWrapper.getUriForConnection(connection.connectionId);
