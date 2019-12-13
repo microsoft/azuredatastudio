@@ -108,7 +108,7 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { .\scripts\test.bat --build --coverage --tfs "Unit Tests" }
+      exec { .\scripts\test.bat --build --tfs "Unit Tests" }
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
     displayName: Run unstable tests
@@ -116,7 +116,7 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { .\scripts\test-unstable.bat --build --coverage --tfs "Unit Tests" }
+      exec { .\scripts\test-unstable.bat --build --tfs "Unit Tests" }
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
     displayName: Run unstable tests
