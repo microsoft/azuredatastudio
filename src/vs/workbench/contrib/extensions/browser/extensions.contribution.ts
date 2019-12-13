@@ -129,8 +129,10 @@ actionRegistry.registerWorkbenchAction(builtinActionDescriptor, 'Extensions: Sho
 const updateAllActionDescriptor = SyncActionDescriptor.create(UpdateAllAction, UpdateAllAction.ID, UpdateAllAction.LABEL);
 actionRegistry.registerWorkbenchAction(updateAllActionDescriptor, 'Extensions: Update All Extensions', ExtensionsLabel);
 
-const installVSIXActionDescriptor = SyncActionDescriptor.create(InstallVSIXAction, InstallVSIXAction.ID, InstallVSIXAction.LABEL);
-actionRegistry.registerWorkbenchAction(installVSIXActionDescriptor, 'Extensions: Install from VSIX...', ExtensionsLabel);
+if (InstallVSIXAction.AVAILABLE) { // {{SQL CARBON EDIT}} add disable logic
+	const installVSIXActionDescriptor = SyncActionDescriptor.create(InstallVSIXAction, InstallVSIXAction.ID, InstallVSIXAction.LABEL);
+	actionRegistry.registerWorkbenchAction(installVSIXActionDescriptor, 'Extensions: Install from VSIX...', ExtensionsLabel);
+}
 
 const disableAllAction = SyncActionDescriptor.create(DisableAllAction, DisableAllAction.ID, DisableAllAction.LABEL);
 actionRegistry.registerWorkbenchAction(disableAllAction, 'Extensions: Disable All Installed Extensions', ExtensionsLabel);
