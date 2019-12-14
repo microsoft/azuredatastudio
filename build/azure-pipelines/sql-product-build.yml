@@ -20,6 +20,7 @@ jobs:
   - Compile
   steps:
   - template: darwin/sql-product-build-darwin.yml
+  timeoutInMinutes: 120
 
 - job: Linux
   condition: eq(variables['VSCODE_BUILD_LINUX'], 'true')
