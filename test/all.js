@@ -10,7 +10,7 @@ const assert = require('assert');
 const path = require('path');
 const glob = require('glob');
 const jsdom = require('jsdom-no-contextify');
-const TEST_GLOB = '**/test/**/*.test.js|**/sqltest/**/*.test.js';
+const TEST_GLOB = '**/test/**/*.test.js';
 const coverage = require('./coverage');
 
 var optimist = require('optimist')
@@ -92,14 +92,6 @@ function main() {
 	global.Node = global.window.Node;
 	global.navigator = global.window.navigator;
 	global.XMLHttpRequest = global.window.XMLHttpRequest;
-
-	require('reflect-metadata');
-	global.window.Reflect = global.Reflect;
-	global.window.Zone = global.Zone;
-	global["Zone"]["__zone_symbol__ignoreConsoleErrorUncaughtError"] = true;
-	global["Zone"]["__zone_symbol__unhandledPromiseRejectionHandler"] = e => setImmediate(() => {
-		global.window.dispatchEvent(new global.PromiseRejectionEvent('unhandledrejection', e));
-	}); // let window handle this
 
 	var didErr = false;
 	var write = process.stderr.write;
