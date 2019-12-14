@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 /*eslint-env mocha*/
-/*global define,run,PromiseRejectionEvent*/
+/*global define,run*/
 
 const assert = require('assert');
 const path = require('path');
@@ -98,7 +98,7 @@ function main() {
 	global.window.Zone = global.Zone;
 	global.window["Zone"]["__zone_symbol__ignoreConsoleErrorUncaughtError"] = true;
 	global.window["Zone"]["__zone_symbol__unhandledPromiseRejectionHandler"] = e => setImmediate(() => {
-		global.window.dispatchEvent(new PromiseRejectionEvent('unhandledrejection', e));
+		global.window.dispatchEvent(new global.PromiseRejectionEvent('unhandledrejection', e));
 	}); // let window handle this
 
 	var didErr = false;
@@ -202,6 +202,14 @@ function main() {
 
 		// replace the default unexpected error handler to be useful during tests
 		loader(['vs/base/common/errors'], function (errors) {
+			global.window.addEventListener('unhandledrejection', (event) => {
+
+				// See https://developer.mozilla.org/en-US/docs/Web/API/PromiseRejectionEvent
+				errors.onUnexpectedError(event.reason);
+
+				// Prevent the printing of this event to the console
+				event.preventDefault();
+			});
 			errors.setUnexpectedErrorHandler(function (err) {
 				let stack = (err && err.stack) || (new Error().stack);
 				unexpectedErrors.push((err && err.message ? err.message : err) + '\n' + stack);
