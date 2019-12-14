@@ -222,7 +222,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 					return;
 				}
 				let minVersionCheckFailed = false;
-				let toolsToAutoInstall: ITool[] = [];
+				const toolsToAutoInstall: ITool[] = [];
 				let messages: string[] = [];
 				this._toolsTable.data = toolRequirements.map(toolRequirement => {
 					const tool = this.toolsService.getToolByName(toolRequirement.name)!;
