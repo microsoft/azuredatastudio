@@ -37,7 +37,6 @@ function initLoader(opts) {
 		baseUrl: bootstrap.uriFromPath(path.join(__dirname, '../../src')),
 		paths: {
 			'vs': `../${outdir}/vs`,
-			'sqltest': `../${outdir}/sqltest`,  // {{SQL CARBON EDIT}}
 			'sql': `../${outdir}/sql`, // {{SQL CARBON EDIT}}
 			'lib': `../${outdir}/lib`,
 			'bootstrap-fork': `../${outdir}/bootstrap-fork`
