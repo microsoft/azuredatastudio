@@ -98,7 +98,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	public get autoInstallNeeded(): boolean {
-		return this.status !== ToolStatus.Installed && this.autoInstallSupported;
+		return this.status === ToolStatus.NotInstalled && this.autoInstallSupported;
 	}
 
 	public get isNotInstalled(): boolean {
