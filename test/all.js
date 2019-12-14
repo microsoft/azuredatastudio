@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 /*eslint-env mocha*/
-/*global define,run*/
+/*global define,run,PromiseRejectionEvent*/
 
 const assert = require('assert');
 const path = require('path');
@@ -98,6 +98,10 @@ function main() {
 	require('reflect-metadata');
 	global.window.Reflect = global.Reflect;
 	global.window.Zone = global.Zone;
+	global.window["Zone"]["__zone_symbol__ignoreConsoleErrorUncaughtError"] = true;
+	global.window["Zone"]["__zone_symbol__unhandledPromiseRejectionHandler"] = e => setImmediate(() => {
+		global.window.dispatchEvent(new PromiseRejectionEvent('unhandledrejection', e));
+	}); // let window handle this
 
 	var didErr = false;
 	var write = process.stderr.write;
