@@ -187,8 +187,6 @@ function main() {
 			});
 		}
 
-		// {{SQL CARBON EDIT}}
-		/*
 		// report failing test for every unexpected error during any of the tests
 		var unexpectedErrors = [];
 		suite('Errors', function () {
@@ -203,15 +201,12 @@ function main() {
 				}
 			});
 		});
-	// {{SQL CARBON EDIT}}
-		*/
 
 		// replace the default unexpected error handler to be useful during tests
 		loader(['vs/base/common/errors'], function (errors) {
 			errors.setUnexpectedErrorHandler(function (err) {
 				let stack = (err && err.stack) || (new Error().stack);
-				// {{SQL CARBON EDIT}}
-				//unexpectedErrors.push((err && err.message ? err.message : err) + '\n' + stack);
+				unexpectedErrors.push((err && err.message ? err.message : err) + '\n' + stack);
 			});
 
 			// fire up mocha
