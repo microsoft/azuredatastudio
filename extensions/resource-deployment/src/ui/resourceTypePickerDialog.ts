@@ -215,7 +215,16 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._toolsLoadingComponent.loading = true;
 			this._dialogObject.okButton.enabled = false;
 			Promise.all(
-				this._tools.map(tool => tool.loadInformation())
+				this._tools.map(tool => tool.loadInformation().catch(error => {
+					const errorMessage = tool!.statusDescription || getErrorMessage(error);
+					if (errorMessage) {
+						this._dialogObject.message = {
+							level: azdata.window.MessageLevel.Error,
+							text: errorMessage
+						};
+					}
+					// If we are here that implies that the '.then' block of the enclosing Promise.all method is not called so the okButton will continue to remain disabled.
+				}))
 			).then(async () => {
 				// If the local timestamp does not match the class level timestamp, it means user has changed options, ignore the results
 				if (this.toolRefreshTimestamp !== currentRefreshTimestamp) {

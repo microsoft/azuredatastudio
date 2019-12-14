@@ -242,8 +242,10 @@ export abstract class ToolBase implements ITool {
 		}
 	}
 
-	private startVersionAndStatusUpdate() {
-		this._pendingVersionAndStatusUpdate = this.updateVersionAndStatus();
+	private startVersionAndStatusUpdate(): void {
+		this._pendingVersionAndStatusUpdate = this.updateVersionAndStatus().catch(error => {
+			this._platformService.showErrorMessage(error);
+		});
 	}
 
 	private async updateVersionAndStatus(): Promise<void> {
