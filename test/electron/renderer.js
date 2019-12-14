@@ -120,6 +120,11 @@ function loadTests(opts) {
 
 	// collect unexpected errors
 	loader.require(['vs/base/common/errors'], function (errors) {
+		global.window.addEventListener('unhandledrejection', event => {
+			errors.onUnexpectedError(event.reason);
+			event.preventDefault();
+		});
+
 		errors.setUnexpectedErrorHandler(function (err) {
 			let stack = (err ? err.stack : null);
 			if (!stack) {

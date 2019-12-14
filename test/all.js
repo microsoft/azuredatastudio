@@ -13,6 +13,8 @@ const jsdom = require('jsdom-no-contextify');
 const TEST_GLOB = '**/test/**/*.test.js';
 const coverage = require('./coverage');
 
+require('reflect-metadata'); // {{SQL CARBON EDIT}}
+
 var optimist = require('optimist')
 	.usage('Run the Code tests. All mocha options apply.')
 	.describe('build', 'Run from out-build').boolean('build')
@@ -39,7 +41,6 @@ function main() {
 		console.error(e.stack || e);
 	});
 
-	// {{SQL CARBON EDIT}}
 	var loaderConfig = {
 		nodeRequire: require,
 		nodeMain: __filename,
@@ -47,14 +48,12 @@ function main() {
 		paths: {
 			'vs/css': '../test/css.mock',
 			'vs': `../${out}/vs`,
-			'sqltest': `../${out}/sqltest`,
-			'sql': `../${out}/sql`,
+			'sql': `../${out}/sql`, // {{SQL CARBON EDIT}}
 			'lib': `../${out}/lib`,
 			'bootstrap-fork': `../${out}/bootstrap-fork`
 		},
 		catchError: true,
-		// {{SQL CARBON EDIT}}
-		nodeModules: [
+		nodeModules: [ // {{SQL CARBON EDIT}}
 			'@angular/common',
 			'@angular/core',
 			'@angular/forms',
@@ -194,6 +193,10 @@ function main() {
 
 		// replace the default unexpected error handler to be useful during tests
 		loader(['vs/base/common/errors'], function (errors) {
+			global.window.addEventListener('unhandledrejection', event => {
+				errors.onUnexpectedError(event.reason);
+				event.preventDefault();
+			});
 			errors.setUnexpectedErrorHandler(function (err) {
 				let stack = (err && err.stack) || (new Error().stack);
 				unexpectedErrors.push((err && err.message ? err.message : err) + '\n' + stack);
