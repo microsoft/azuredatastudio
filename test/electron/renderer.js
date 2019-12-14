@@ -13,8 +13,6 @@ const util = require('util');
 const bootstrap = require('../../src/bootstrap');
 const coverage = require('../coverage');
 
-require('reflect-metadata'); // {{SQL CARBON EDIT}}
-
 // Disabled custom inspect. See #38847
 if (util.inspect && util.inspect['defaultOptions']) {
 	util.inspect['defaultOptions'].customInspect = false;
@@ -37,7 +35,6 @@ function initLoader(opts) {
 		baseUrl: bootstrap.uriFromPath(path.join(__dirname, '../../src')),
 		paths: {
 			'vs': `../${outdir}/vs`,
-			'sqltest': `../${outdir}/sqltest`,  // {{SQL CARBON EDIT}}
 			'sql': `../${outdir}/sql`, // {{SQL CARBON EDIT}}
 			'lib': `../${outdir}/lib`,
 			'bootstrap-fork': `../${outdir}/bootstrap-fork`
@@ -49,14 +46,15 @@ function initLoader(opts) {
 			'@angular/platform-browser',
 			'@angular/platform-browser-dynamic',
 			'@angular/router',
-			'angular2-grid',
-			'ng2-charts',
 			'rxjs/add/observable/of',
 			'rxjs/Observable',
 			'rxjs/Subject',
 			'rxjs/Observer'
 		]
 	};
+
+	// {{SQL CARBON EDIT}}
+	require('reflect-metadata');
 
 	if (opts.coverage) {
 		// initialize coverage if requested
