@@ -6,7 +6,7 @@ REPO="$(pwd)"
 mkdir -p $REPO/.build/darwin/{archive,server}
 
 # remove pkg from archive
-if [[ "$signed" == "true" ]]; then
+if [[ "$SIGNED" == "true" ]]; then
 	zip -d $REPO/.build/darwin/archive/azuredatastudio-darwin.zip "*.pkg"
 fi
 
