@@ -92,8 +92,6 @@ function main() {
 	global.Node = global.window.Node;
 	global.navigator = global.window.navigator;
 	global.XMLHttpRequest = global.window.XMLHttpRequest;
-	// {{SQL CARBON EDIT}}
-	global.Event = global.window.Event;
 
 	require('reflect-metadata');
 	global.window.Reflect = global.Reflect;
