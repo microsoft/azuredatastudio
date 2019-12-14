@@ -19,7 +19,6 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { TestCommandService } from 'vs/editor/test/browser/editorTestServices';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { assertThrowsAsync } from 'sql/base/test/common/async';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
@@ -295,7 +294,10 @@ suite('commandLineService tests', () => {
 			.verifiable(TypeMoq.Times.once());
 		const configurationService = getConfigurationServiceMock(true);
 		let contribution = getCommandLineContribution(connectionManagementService.object, configurationService.object, capabilitiesService, commandService.object);
-		assertThrowsAsync(async () => await contribution.processCommandLine(args));
+		try {
+			await contribution.processCommandLine(args);
+			assert.fail('expected to throw');
+		} catch (e) { }
 	});
 
 	test('processCommandLine uses Integrated auth if no user name or auth type is passed', async () => {
