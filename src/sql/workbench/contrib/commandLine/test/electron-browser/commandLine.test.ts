@@ -138,7 +138,7 @@ suite('commandLineService tests', () => {
 		return configurationService;
 	}
 
-	test('processCommandLine shows connection dialog by default', done => {
+	test('processCommandLine shows connection dialog by default', () => {
 		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
 			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 
@@ -151,10 +151,9 @@ suite('commandLineService tests', () => {
 			.verifiable(TypeMoq.Times.never());
 		const configurationService = getConfigurationServiceMock(true);
 		let contribution = getCommandLineContribution(connectionManagementService.object, configurationService.object);
-		contribution.processCommandLine(new TestParsedArgs()).then(() => {
+		return contribution.processCommandLine(new TestParsedArgs()).then(() => {
 			connectionManagementService.verifyAll();
-			done();
-		}, error => { assert.fail(error, null, 'processCommandLine rejected ' + error); done(); });
+		}, error => { assert.fail(error, null, 'processCommandLine rejected ' + error); });
 	});
 
 	test('processCommandLine does nothing if no server name and command name is provided and the configuration \'workbench.showConnectDialogOnStartup\' is set to false, even if registered servers exist', async () => {
