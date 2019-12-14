@@ -11,7 +11,7 @@ import * as objects from 'vs/base/common/objects';
 
 import { CellTypes } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { ModelFactory } from 'sql/workbench/contrib/notebook/browser/models/modelFactory';
-import { NotebookModelStub, ClientSessionStub, KernelStub, FutureStub } from './common';
+import { NotebookModelStub, ClientSessionStub, KernelStub, FutureStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { EmptyFuture } from 'sql/workbench/services/notebook/browser/sessionManager';
 import { ICellModel, ICellModelOptions, IClientSession, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
