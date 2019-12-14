@@ -234,7 +234,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 						if (tool.autoInstallSupported) {
 							toolsToAutoInstall.push(tool);
 						} else {
-							messages.push(localize('deploymentDialog.ToolInformation', "'{0}' was not discovered and automated installation is not supported at the moment. Install '{0}' manually or ensure it is started and discoverable. Once done please restart Azure Data Studio. See [{1}] .", tool.displayName, tool.homePage));
+							messages.push(localize('deploymentDialog.ToolInformation', "'{0}' was not discovered and automated installation is not currently supported. Install '{0}' manually or ensure it is started and discoverable. Once done please restart Azure Data Studio. See [{1}] .", tool.displayName, tool.homePage));
 						}
 					} else if (tool.isInstalled && toolRequirement.version && !tool.isSameOrNewerThan(toolRequirement.version)) {
 						minVersionCheckFailed = true;
