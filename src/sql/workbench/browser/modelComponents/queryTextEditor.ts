@@ -82,6 +82,9 @@ export class QueryTextEditor extends BaseTextEditor {
 			if (this._hideLineNumbers) {
 				options.lineNumbers = 'off';
 			}
+			options.scrollbar = {
+				alwaysConsumeMouseWheel: false;
+			};
 		}
 		return options;
 	}
