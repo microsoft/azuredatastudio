@@ -115,6 +115,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _themeParticipant: IDisposable;
 	private _overrideEditorThemeSetting: boolean;
 	private _trustedCacheQueue: URI[] = [];
+	private _unTrustedCacheQueue: URI[] = [];
 	private _updateTrustCacheScheduler: RunOnceScheduler;
 
 	constructor(
@@ -589,8 +590,12 @@ export class NotebookService extends Disposable implements INotebookService {
 			if (changeType === NotebookChangeType.Saved && firstIndex(this._trustedCacheQueue, uri => uri.toString() === notebookUriString) < 0) {
 				// Only save if it's trusted
 				let notebook = find(this.listNotebookEditors(), n => n.id === notebookUriString);
-				if (notebook && notebook.model.trustedMode) {
-					this._trustedCacheQueue.push(notebookUri);
+				if (notebook && notebook.model) {
+					if (notebook.model.trustedMode) {
+						this._trustedCacheQueue.push(notebookUri);
+					} else {
+						this._unTrustedCacheQueue.push(notebookUri);
+					}
 					this._updateTrustCacheScheduler.schedule();
 				}
 			}
@@ -625,7 +630,19 @@ export class NotebookService extends Disposable implements INotebookService {
 						};
 					}
 				}
-
+				this._trustedNotebooksMemento.saveMemento();
+			}
+			if (this._unTrustedCacheQueue.length > 0) {
+				// Copy out all items from the cache
+				let items = this._unTrustedCacheQueue;
+				this._unTrustedCacheQueue = [];
+				let trustedCache = this.trustedNotebooksMemento.trustedNotebooksCache;
+				//Remove the trusted intry from the cache
+				for (let i = 0; i < items.length; i++) {
+					if (trustedCache[items[i].toString()]) {
+						trustedCache[items[i].toString()] = null;
+					}
+				}
 				this._trustedNotebooksMemento.saveMemento();
 			}
 		} catch (err) {

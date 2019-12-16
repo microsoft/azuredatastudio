@@ -129,6 +129,7 @@ steps:
           }
         ]
       SessionTimeout: 20
+    condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
       set -e
