@@ -301,7 +301,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private getChildren(parent: any): any[] {
 		let children: any = [];
-		if (parent.children.length > 1) {
+		if (parent.children.length > 1 && parent.nodeName.toLowerCase() !== 'li' && parent.nodeName.toLowerCase() !== 'p') {
 			for (let child of parent.children) {
 				children = children.concat(this.getChildren(child));
 			}
