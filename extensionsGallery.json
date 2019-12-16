@@ -1740,14 +1740,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.0.1",
-							"lastUpdated": "5/31/2019",
+							"version": "0.0.2",
+							"lastUpdated": "9/12/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/admin-tool-ext-win/admin-tool-ext-win-0.0.1.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/admin-tool-ext-win/admin-tool-ext-win-0.0.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
