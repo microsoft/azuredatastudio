@@ -130,7 +130,7 @@ steps:
             "ToolVersion": "1.0"
           }
         ]
-      SessionTimeout: 65
+      SessionTimeout: 90
 
   - task: EsrpCodeSigning@1
     displayName: 'ESRP Notarization'
@@ -151,7 +151,7 @@ steps:
             "ToolVersion": "1.0"
           }
         ]
-      SessionTimeout: 90
+      SessionTimeout: 120
 
   - script: |
       set -e
