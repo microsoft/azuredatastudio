@@ -6,35 +6,25 @@
 import * as vscode from 'vscode';
 import { promises as fs } from 'fs';
 import * as path from 'path';
-import * as nls from 'vscode-nls';
+import * as constants from '../common/constants';
 
 import { SqlDatabaseProjectItem } from './databaseProjectTreeItem';
-import { Deferred } from '../common/promise';
-
-
-const localize = nls.loadMessageBundle();
 
 export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvider<SqlDatabaseProjectItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<SqlDatabaseProjectItem | undefined> = new vscode.EventEmitter<SqlDatabaseProjectItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<SqlDatabaseProjectItem | undefined> = this._onDidChangeTreeData.event;
 
-	private _initializeDeferred: Deferred<void> = new Deferred<void>();
-
 	private roots: SqlDatabaseProjectItem[] = [];
 
 	constructor() {
-		this._initializeDeferred = new Deferred<void>();
 		this.initialize();
 	}
 
-	async initialize() {
-		this.roots = [new SqlDatabaseProjectItem(localize('noProjectOpenMessage', "No open database project"), false)];
-
-
-		this._initializeDeferred.resolve();
+	private async initialize() {
+		this.roots = [new SqlDatabaseProjectItem(constants.noOpenProjectMessage, false)];
 	}
 
-	getTreeItem(element: SqlDatabaseProjectItem): vscode.TreeItem {
+	public getTreeItem(element: SqlDatabaseProjectItem): vscode.TreeItem {
 		return {
 			label: element.label,
 			collapsibleState: element.parent === undefined
@@ -45,7 +35,7 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		};
 	}
 
-	getChildren(element?: SqlDatabaseProjectItem): SqlDatabaseProjectItem[] {
+	public getChildren(element?: SqlDatabaseProjectItem): SqlDatabaseProjectItem[] {
 		if (element === undefined) {
 			return this.roots;
 		}
@@ -53,17 +43,13 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		return element.children;
 	}
 
-	public get initialized(): Promise<void> {
-		return this._initializeDeferred.promise;
-	}
-
-	async openProject(projectFiles: vscode.Uri[]) {
+	public async openProject(projectFiles: vscode.Uri[]) {
 		if (projectFiles.length > 1) { // TODO: how to handle opening a folder with multiple .sqlproj files?
-			vscode.window.showErrorMessage('Multiple .sqlproj files selected; please select only one.');
+			vscode.window.showErrorMessage(constants.multipleSqlProjFiles);
 		}
 
 		if (projectFiles.length === 0) {
-			vscode.window.showErrorMessage('No .sqlproj file selected; please select one.');
+			vscode.window.showErrorMessage(constants.noSqlProjFiles);
 		}
 
 		let directoryPath = path.dirname(projectFiles[0].fsPath);
@@ -71,7 +57,7 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 
 		let newRoots: SqlDatabaseProjectItem[] = [];
 
-		newRoots.push(await this.constructConnectionsTree(directoryPath));
+		newRoots.push(await this.constructDataSourcesTree(directoryPath));
 		newRoots.push(await this.constructProjectTree(directoryPath));
 
 		this.roots = newRoots;
@@ -81,7 +67,7 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 	private async constructProjectTree(directoryPath: string): Promise<SqlDatabaseProjectItem> {
 		let projectsNode = await this.constructFileTreeNode(directoryPath, undefined);
 
-		projectsNode.label = localize('projectNodeName', "Database Project");
+		projectsNode.label = constants.projectNodeName;
 
 		return projectsNode;
 	}
@@ -111,22 +97,22 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		return output;
 	}
 
-	private async constructConnectionsTree(directoryPath: string): Promise<SqlDatabaseProjectItem> {
-		let connectionsNode = new SqlDatabaseProjectItem(localize('connectionsNodeName', "Connections"), true);
+	private async constructDataSourcesTree(directoryPath: string): Promise<SqlDatabaseProjectItem> {
+		let dataSourceNode = new SqlDatabaseProjectItem(constants.dataSourcesNodeName, true);
 
-		let connectionsFilePath = path.join(directoryPath, 'connections.json');
+		let dataSourcesFilePath = path.join(directoryPath, constants.dataSourcesFileName);
 
 		try {
-			let connections = await fs.readFile(connectionsFilePath, 'r');
+			let connections = await fs.readFile(dataSourcesFilePath, 'r');
 
 			// TODO: parse connections.json
 
-			connectionsNode.createChild('Found connections.json: ' + connections.length, false);
+			dataSourceNode.createChild(constants.foundDataSourcesFile + connections.length, false);
 		}
 		catch {
-			connectionsNode.createChild(localize('noConnectionsFile', "No connections.json found"), false);
+			dataSourceNode.createChild(constants.noDataSourcesFile, false);
 		}
 
-		return connectionsNode;
+		return dataSourceNode;
 	}
 }

@@ -31,9 +31,8 @@ export default class MainController implements vscode.Disposable {
 	public deactivate(): void {
 	}
 
-	public activate(): Promise<boolean> {
+	public activate(): void {
 		this.initializeDatabaseProjects();
-		return Promise.resolve(true);
 	}
 
 	private async initializeDatabaseProjects(): Promise<void> {
@@ -43,7 +42,6 @@ export default class MainController implements vscode.Disposable {
 
 		// init view
 		this.dbProjectTreeViewProvider = new SqlDatabaseProjectTreeViewProvider();
-		await this.dbProjectTreeViewProvider.initialized;
 
 		this.extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(SQL_DATABASE_PROJECTS_VIEW_ID, this.dbProjectTreeViewProvider));
 	}
