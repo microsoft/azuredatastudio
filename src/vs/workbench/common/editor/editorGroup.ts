@@ -228,7 +228,7 @@ export class EditorGroup extends Disposable {
 
 			// Handle active
 			if (makeActive) {
-				this.setActive(newEditor);
+				this.doSetActive(newEditor);
 			}
 
 			return newEditor;
@@ -239,12 +239,12 @@ export class EditorGroup extends Disposable {
 
 			// Pin it
 			if (makePinned) {
-				this.pin(existingEditor);
+				this.doPin(existingEditor);
 			}
 
 			// Activate it
 			if (makeActive) {
-				this.setActive(existingEditor);
+				this.doSetActive(existingEditor);
 			}
 
 			// Respect index
@@ -334,7 +334,7 @@ export class EditorGroup extends Disposable {
 					}
 				}
 
-				this.setActive(newActive);
+				this.doSetActive(newActive);
 			}
 
 			// One Editor
@@ -412,6 +412,10 @@ export class EditorGroup extends Disposable {
 			return; // not found
 		}
 
+		this.doSetActive(editor);
+	}
+
+	private doSetActive(editor: EditorInput): void {
 		if (this.matches(this.active, editor)) {
 			return; // already active
 		}
@@ -419,7 +423,9 @@ export class EditorGroup extends Disposable {
 		this.active = editor;
 
 		// Bring to front in MRU list
-		this.setMostRecentlyUsed(editor);
+		const mruIndex = this.indexOf(editor, this.mru);
+		this.mru.splice(mruIndex, 1);
+		this.mru.unshift(editor);
 
 		// Event
 		this._onDidEditorActivate.fire(editor);
@@ -431,6 +437,10 @@ export class EditorGroup extends Disposable {
 			return; // not found
 		}
 
+		this.doPin(editor);
+	}
+
+	private doPin(editor: EditorInput): void {
 		if (!this.isPreview(editor)) {
 			return; // can only pin a preview editor
 		}
@@ -448,6 +458,10 @@ export class EditorGroup extends Disposable {
 			return; // not found
 		}
 
+		this.doUnpin(editor);
+	}
+
+	private doUnpin(editor: EditorInput): void {
 		if (!this.isPinned(editor)) {
 			return; // can only unpin a pinned editor
 		}
@@ -569,21 +583,6 @@ export class EditorGroup extends Disposable {
 		}
 
 		return false;
-	}
-
-	private setMostRecentlyUsed(candidate: EditorInput): void {
-		const editor = this.findEditor(candidate);
-		if (!editor) {
-			return; // not found
-		}
-
-		const mruIndex = this.indexOf(editor, this.mru);
-
-		// Remove old index
-		this.mru.splice(mruIndex, 1);
-
-		// Set editor as most recent one (first)
-		this.mru.unshift(editor);
 	}
 
 	private matches(editorA: IEditorInput | null, editorB: IEditorInput | null): boolean {
