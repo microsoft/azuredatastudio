@@ -449,7 +449,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (!this._activeClientSession) {
 				this.updateActiveClientSession(clientSession);
 			}
-			let profile = new ConnectionProfile(this._notebookOptions.capabilitiesService, this.connectionProfile);
+
+			// If a connection profile is passed in and _activeConnection isn't yet set, use that. Otherwise, use _activeConnection
+			let profile = this._activeConnection ? this._activeConnection : new ConnectionProfile(this._notebookOptions.capabilitiesService, this.connectionProfile);
 
 			if (this.isValidConnection(profile)) {
 				this._activeConnection = profile;
