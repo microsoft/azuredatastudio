@@ -598,6 +598,10 @@ export class WelcomeInputFactory implements IEditorInputFactory {
 
 	static readonly ID = welcomeInputTypeId;
 
+	public canSerialize(editorInput: EditorInput): boolean {
+		return true;
+	}
+
 	public serialize(editorInput: EditorInput): string {
 		return '{}';
 	}
