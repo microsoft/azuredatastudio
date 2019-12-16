@@ -5,13 +5,13 @@
 
 import { nb, IConnectionProfile } from 'azdata';
 
-import { Event, Emitter } from 'vs/base/common/event';
+import * as vsEvent from 'vs/base/common/event';
 import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, IKernelPreference } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
-import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, INotebookProvider, INavigationProvider } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, INotebookProvider, INavigationProvider, INotebookParams, INotebookSection } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IStandardKernelWithProvider } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
-import { URI } from 'vs/workbench/workbench.web.api';
+import { URI, Emitter } from 'vs/workbench/workbench.web.api';
 import { RenderMimeRegistry } from 'sql/workbench/contrib/notebook/browser/outputs/registry';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
@@ -40,25 +40,25 @@ export class NotebookModelStub implements INotebookModel {
 	get notebookManagers(): INotebookManager[] {
 		throw new Error('method not implemented.');
 	}
-	get kernelChanged(): Event<nb.IKernelChangedArgs> {
+	get kernelChanged(): vsEvent.Event<nb.IKernelChangedArgs> {
 		throw new Error('method not implemented.');
 	}
-	get kernelsChanged(): Event<nb.IKernelSpec> {
+	get kernelsChanged(): vsEvent.Event<nb.IKernelSpec> {
 		throw new Error('method not implemented.');
 	}
-	get layoutChanged(): Event<void> {
+	get layoutChanged(): vsEvent.Event<void> {
 		throw new Error('method not implemented.');
 	}
 	get defaultKernel(): nb.IKernelSpec {
 		throw new Error('method not implemented.');
 	}
-	get contextsChanged(): Event<void> {
+	get contextsChanged(): vsEvent.Event<void> {
 		throw new Error('method not implemented.');
 	}
-	get contextsLoading(): Event<void> {
+	get contextsLoading(): vsEvent.Event<void> {
 		throw new Error('method not implemented.');
 	}
-	get contentChanged(): Event<NotebookContentChange> {
+	get contentChanged(): vsEvent.Event<NotebookContentChange> {
 		throw new Error('method not implemented.');
 	}
 	get specs(): nb.IAllKernels {
@@ -97,10 +97,10 @@ export class NotebookModelStub implements INotebookModel {
 	getApplicableConnectionProviderIds(kernelName: string): string[] {
 		throw new Error('Method not implemented.');
 	}
-	get onValidConnectionSelected(): Event<boolean> {
+	get onValidConnectionSelected(): vsEvent.Event<boolean> {
 		throw new Error('method not implemented.');
 	}
-	get onProviderIdChange(): Event<string> {
+	get onProviderIdChange(): vsEvent.Event<string> {
 		throw new Error('method not impelemented.');
 	}
 	toJSON(): nb.INotebookContents {
@@ -109,7 +109,7 @@ export class NotebookModelStub implements INotebookModel {
 	serializationStateChanged(changeType: NotebookChangeType): void {
 		throw new Error('Method not implemented.');
 	}
-	get onActiveCellChanged(): Event<ICellModel> {
+	get onActiveCellChanged(): vsEvent.Event<ICellModel> {
 		throw new Error('Method not implemented.');
 	}
 	updateActiveCell(cell: ICellModel) {
@@ -129,7 +129,7 @@ export class NotebookManagerStub implements INotebookManager {
 
 export class ServerManagerStub implements nb.ServerManager {
 	onServerStartedEmitter = new Emitter<void>();
-	onServerStarted: Event<void> = this.onServerStartedEmitter.event;
+	onServerStarted: vsEvent.Event<void> = this.onServerStartedEmitter.event;
 	isStarted: boolean = false;
 	calledStart: boolean = false;
 	calledEnd: boolean = false;
@@ -147,12 +147,24 @@ export class ServerManagerStub implements nb.ServerManager {
 
 export class NotebookServiceStub implements INotebookService {
 	_serviceBrand: undefined;
-	onNotebookEditorAdd: Event<INotebookEditor>;
-	onNotebookEditorRemove: Event<INotebookEditor>;
-	onNotebookEditorRename: Event<INotebookEditor>;
-	isRegistrationComplete: boolean;
-	registrationComplete: Promise<void>;
-	languageMagics: ILanguageMagic[];
+	get onNotebookEditorAdd(): vsEvent.Event<INotebookEditor> {
+		throw new Error('Method not implemented.');
+	}
+	get onNotebookEditorRemove(): vsEvent.Event<INotebookEditor> {
+		throw new Error('Method not implemented.');
+	}
+	get onNotebookEditorRename(): vsEvent.Event<INotebookEditor> {
+		throw new Error('Method not implemented.');
+	}
+	get isRegistrationComplete(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	get registrationComplete(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	get languageMagics(): ILanguageMagic[] {
+		throw new Error('Method not implemented.');
+	}
 	registerProvider(providerId: string, provider: INotebookProvider): void {
 		throw new Error('Method not implemented.');
 	}
@@ -243,22 +255,22 @@ export class ClientSessionStub implements IClientSession {
 	dispose(): void {
 		throw new Error('Method not implemented.');
 	}
-	get terminated(): Event<void> {
+	get terminated(): vsEvent.Event<void> {
 		throw new Error('Method not implemented.');
 	}
-	get kernelChanged(): Event<nb.IKernelChangedArgs> {
+	get kernelChanged(): vsEvent.Event<nb.IKernelChangedArgs> {
 		throw new Error('Method not implemented.');
 	}
-	get statusChanged(): Event<nb.ISession> {
+	get statusChanged(): vsEvent.Event<nb.ISession> {
 		throw new Error('Method not implemented.');
 	}
-	get iopubMessage(): Event<nb.IMessage> {
+	get iopubMessage(): vsEvent.Event<nb.IMessage> {
 		throw new Error('Method not implemented.');
 	}
-	get unhandledMessage(): Event<nb.IMessage> {
+	get unhandledMessage(): vsEvent.Event<nb.IMessage> {
 		throw new Error('Method not implemented.');
 	}
-	get propertyChanged(): Event<'path' | 'name' | 'type'> {
+	get propertyChanged(): vsEvent.Event<'path' | 'name' | 'type'> {
 		throw new Error('Method not implemented.');
 	}
 	get kernel(): nb.IKernel | null {
@@ -370,5 +382,208 @@ export class FutureStub implements nb.IFuture {
 	}
 	dispose() {
 		return;
+	}
+}
+
+export class NotebookComponentStub implements INotebookEditor {
+	get notebookParams(): INotebookParams {
+		throw new Error('Method not implemented.');
+	}
+	get id(): string {
+		throw new Error('Method not implemented.');
+	}
+	get cells(): ICellModel[] {
+		throw new Error('Method not implemented.');
+	}
+	get modelReady(): Promise<INotebookModel> {
+		throw new Error('Method not implemented.');
+	}
+	get model(): INotebookModel {
+		throw new Error('Method not implemented.');
+	}
+	isDirty(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	isActive(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	isVisible(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	executeEdits(edits: ISingleNotebookEditOperation[]): boolean {
+		throw new Error('Method not implemented.');
+	}
+	runCell(cell: ICellModel): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+	runAllCells(startCell?: ICellModel, endCell?: ICellModel): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+	clearOutput(cell: ICellModel): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+	clearAllOutputs(): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+	getSections(): INotebookSection[] {
+		throw new Error('Method not implemented.');
+	}
+	navigateToSection(sectionId: string): void {
+		throw new Error('Method not implemented.');
+	}
+	addCell(cellType: CellType, index?: number, event?: Event) {
+		throw new Error('Method not implemented.');
+	}
+}
+
+export class NodeStub implements Node {
+	get baseURI(): string {
+		throw new Error('Method not implemented.');
+	}
+	get childNodes(): NodeListOf<ChildNode> {
+		throw new Error('Method not implemented.');
+	}
+	get firstChild(): ChildNode {
+		throw new Error('Method not implemented.');
+	}
+	get isConnected(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	get lastChild(): ChildNode {
+		throw new Error('Method not implemented.');
+	}
+	get namespaceURI(): string {
+		throw new Error('Method not implemented.');
+	}
+	get nextSibling(): ChildNode {
+		throw new Error('Method not implemented.');
+	}
+	get nodeName(): string {
+		throw new Error('Method not implemented.');
+	}
+	get nodeType(): number {
+		throw new Error('Method not implemented.');
+	}
+	get ownerDocument(): Document {
+		throw new Error('Method not implemented.');
+	}
+	get parentElement(): HTMLElement {
+		throw new Error('Method not implemented.');
+	}
+	get parentNode(): Node & ParentNode {
+		throw new Error('Method not implemented.');
+	}
+	get previousSibling(): Node {
+		throw new Error('Method not implemented.');
+	}
+	nodeValue: string;
+	textContent: string;
+	appendChild<T extends Node>(newChild: T): T {
+		throw new Error('Method not implemented.');
+	}
+	cloneNode(deep?: boolean): Node {
+		throw new Error('Method not implemented.');
+	}
+	compareDocumentPosition(other: Node): number {
+		throw new Error('Method not implemented.');
+	}
+	contains(other: Node): boolean {
+		throw new Error('Method not implemented.');
+	}
+	getRootNode(options?: GetRootNodeOptions): Node {
+		throw new Error('Method not implemented.');
+	}
+	hasChildNodes(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	insertBefore<T extends Node>(newChild: T, refChild: Node): T {
+		throw new Error('Method not implemented.');
+	}
+	isDefaultNamespace(namespace: string): boolean {
+		throw new Error('Method not implemented.');
+	}
+	isEqualNode(otherNode: Node): boolean {
+		throw new Error('Method not implemented.');
+	}
+	isSameNode(otherNode: Node): boolean {
+		throw new Error('Method not implemented.');
+	}
+	lookupNamespaceURI(prefix: string): string {
+		throw new Error('Method not implemented.');
+	}
+	lookupPrefix(namespace: string): string {
+		throw new Error('Method not implemented.');
+	}
+	normalize(): void {
+		throw new Error('Method not implemented.');
+	}
+	removeChild<T extends Node>(oldChild: T): T {
+		throw new Error('Method not implemented.');
+	}
+	replaceChild<T extends Node>(newChild: Node, oldChild: T): T {
+		throw new Error('Method not implemented.');
+	}
+	get ATTRIBUTE_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get CDATA_SECTION_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get COMMENT_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get DOCUMENT_FRAGMENT_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get DOCUMENT_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get DOCUMENT_POSITION_CONTAINED_BY(): number {
+		throw new Error('Method not implemented.');
+	}
+	get DOCUMENT_POSITION_CONTAINS(): number {
+		throw new Error('Method not implemented.');
+	}
+	get DOCUMENT_POSITION_DISCONNECTED(): number {
+		throw new Error('Method not implemented.');
+	}
+	get DOCUMENT_POSITION_FOLLOWING(): number {
+		throw new Error('Method not implemented.');
+	}
+	get DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC(): number {
+		throw new Error('Method not implemented.');
+	}
+	get DOCUMENT_POSITION_PRECEDING(): number {
+		throw new Error('Method not implemented.');
+	}
+	get DOCUMENT_TYPE_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get ELEMENT_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get ENTITY_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get ENTITY_REFERENCE_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get NOTATION_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get PROCESSING_INSTRUCTION_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	get TEXT_NODE(): number {
+		throw new Error('Method not implemented.');
+	}
+	addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
+		throw new Error('Method not implemented.');
+	}
+	dispatchEvent(event: Event): boolean {
+		throw new Error('Method not implemented.');
+	}
+	removeEventListener(type: string, callback: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void {
+		throw new Error('Method not implemented.');
 	}
 }

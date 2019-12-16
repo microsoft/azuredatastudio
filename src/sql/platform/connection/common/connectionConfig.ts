@@ -109,7 +109,7 @@ export class ConnectionConfig {
 			return Promise.resolve(profile.groupId);
 		} else {
 			let groups = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).user;
-			let result = this.saveGroup(groups, profile.groupFullName, undefined, undefined);
+			let result = this.saveGroup(groups!, profile.groupFullName, undefined, undefined);
 			groups = result.groups;
 
 			return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER).then(() => result.newGroupId!);
@@ -129,7 +129,7 @@ export class ConnectionConfig {
 				let errMessage: string = nls.localize('invalidServerName', "A server group with the same name already exists.");
 				return Promise.reject(errMessage);
 			} else {
-				let result = this.saveGroup(groups, profileGroup.name, profileGroup.color, profileGroup.description);
+				let result = this.saveGroup(groups!, profileGroup.name, profileGroup.color, profileGroup.description);
 				groups = result.groups;
 
 				return this.configurationService.updateValue(GROUPS_CONFIG_KEY, groups, ConfigurationTarget.USER).then(() => result.newGroupId!);
@@ -220,7 +220,7 @@ export class ConnectionConfig {
 		// Get all connections in the settings
 		let profiles = this.configurationService.inspect<IConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).user;
 		// Remove the profile from the connections
-		profiles = profiles.filter(value => {
+		profiles = profiles!.filter(value => {
 			let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
 			return providerConnectionProfile.getOptionsKey() !== profile.getOptionsKey();
 		});
@@ -241,7 +241,7 @@ export class ConnectionConfig {
 		// Get all connections in the settings
 		let profiles = this.configurationService.inspect<IConnectionProfileStore[]>(CONNECTIONS_CONFIG_KEY).user;
 		// Remove the profiles from the connections
-		profiles = profiles.filter(value => {
+		profiles = profiles!.filter(value => {
 			let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
 			return !connections.some((val) => val.getOptionsKey() === providerConnectionProfile.getOptionsKey());
 		});
@@ -249,7 +249,7 @@ export class ConnectionConfig {
 		// Get all groups in the settings
 		let groups = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).user;
 		// Remove subgroups in the settings
-		groups = groups.filter((grp) => {
+		groups = groups!.filter((grp) => {
 			return !subgroups.some((item) => item.id === grp.id);
 		});
 		return Promise.all([
@@ -263,7 +263,7 @@ export class ConnectionConfig {
 	 */
 	public changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void> {
 		let groups = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY).user;
-		groups = groups.map(g => {
+		groups = groups!.map(g => {
 			if (g.id === source.id) {
 				g.parentId = target.id;
 			}
@@ -334,7 +334,7 @@ export class ConnectionConfig {
 			let errMessage: string = nls.localize('invalidServerName', "A server group with the same name already exists.");
 			return Promise.reject(errMessage);
 		}
-		groups = groups.map(g => {
+		groups = groups!.map(g => {
 			if (g.id === source.id) {
 				g.name = source.name;
 				g.description = source.description;

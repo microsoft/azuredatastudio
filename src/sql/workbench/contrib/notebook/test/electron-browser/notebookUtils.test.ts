@@ -9,7 +9,7 @@ import * as TypeMoq from 'typemoq';
 import { nb, ServerInfo } from 'azdata';
 import { tryMatchCellMagic, getHostAndPortFromEndpoint, isStream, getProvidersForFileName, asyncForEach, clusterEndpointsProperty, getClusterEndpoints, RawEndpoint, IEndpoint, getStandardKernelsForProvider, IStandardKernelWithProvider } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
 import { INotebookService, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
-import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/electron-browser/common';
+import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/stubs';
 
 suite('notebookUtils', function (): void {
 	const mockNotebookService = TypeMoq.Mock.ofType<INotebookService>(NotebookServiceStub);

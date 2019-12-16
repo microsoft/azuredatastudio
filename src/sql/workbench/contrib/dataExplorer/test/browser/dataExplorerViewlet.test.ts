@@ -13,7 +13,7 @@ suite('Data Explorer Viewlet', () => {
 	class DataExplorerTestViewlet extends Viewlet {
 
 		constructor() {
-			super('dataExplorer', null, null, null, null, null);
+			super('dataExplorer', undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
 		}
 
 		public layout(dimension: any): void {

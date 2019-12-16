@@ -247,6 +247,10 @@ export abstract class NotebookInput extends EditorInput {
 		return this._title;
 	}
 
+	public isReadonly(): boolean {
+		return false;
+	}
+
 	public async getProviderInfo(): Promise<IProviderInfo> {
 		await this._providersLoaded;
 		return {

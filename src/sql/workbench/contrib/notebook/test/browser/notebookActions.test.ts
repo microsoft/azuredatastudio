@@ -9,12 +9,12 @@ import * as assert from 'assert';
 import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, TrustedAction, RunAllCellsAction, NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
-import { NotebookComponentStub } from 'sql/workbench/contrib/notebook/test/browser/common';
 import { ICellModel, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { TestCommandService } from 'vs/editor/test/browser/editorTestServices';
+import { NotebookComponentStub } from 'sql/workbench/contrib/notebook/test/stubs';
 
 suite('Notebook Actions', function (): void {
 	test('Add Cell Action', async function (): Promise<void> {
