@@ -279,8 +279,12 @@ export class Dropdown extends Disposable {
 				return previous.value.length > current.value.length ? previous : current;
 			}, { value: '' });
 			this._widthControlElement.innerText = longestOption.value;
-			if (longestOption.value.length > 10) {
-				this._treeContainer.style.width = DOM.getTotalWidth(this._widthControlElement) + 'px';
+
+			const inputContainerWidth = DOM.getContentWidth(this._inputContainer);
+			if (longestOption.value.length > inputContainerWidth) {
+				this._treeContainer.style.width = `${DOM.getTotalWidth(this._widthControlElement)}px`;
+			} else {
+				this._treeContainer.style.width = `${inputContainerWidth}px`;
 			}
 			// Don't let it get too large
 			this._treeContainer.style.maxWidth = `500px`;
