@@ -9,7 +9,8 @@
 		"vscode": "^1.4.0"
 	},
 	"activationEvents": [
-		"onCommand:workspaceFun.addFolder"
+    "onCommand:workspaceFun.addFolder",
+    "onCommand:workspaceFun.addJson"
 	],
 	"main": "./out/extension",
 	"dependencies": {
@@ -19,13 +20,23 @@
       {
         "command": "workspaceFun.addFolder",
         "title": "Add Folder To Workspace"
+      },
+      {
+        "command": "workspaceFun.addJson",
+        "title": "Add json as resource"
       }
     ],
     "menus": {
-      "commandPalette": [{
-        "command": "workspaceFun.addFolder",
-        "group": "workspaceFun.commands"
-      }]
+      "commandPalette": [
+        {
+          "command": "workspaceFun.addFolder",
+          "group": "workspaceFun.commands"
+        },
+        {
+          "command": "workspaceFun.addJson",
+          "group": "workspaceFun.commands"
+        }
+      ]
     }
 	},
 	"devDependencies": {
