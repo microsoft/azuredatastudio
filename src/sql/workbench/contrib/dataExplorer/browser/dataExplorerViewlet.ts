@@ -134,10 +134,6 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 		return 400;
 	}
 
-	getActions(): IAction[] {
-		return [];
-	}
-
 	getSecondaryActions(): IAction[] {
 		let menu = this.menuService.createMenu(MenuId.DataExplorerAction, this.contextKeyService);
 		let actions = [];
