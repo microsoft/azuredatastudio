@@ -6,7 +6,7 @@
 import 'vs/css!./media/dropdownList';
 
 import { ToggleDropdownAction } from './actions';
-import { DropdownDataSource, DropdownFilter, DropdownModel, DropdownRenderer, DropdownController, Resource } from './dropdownTree';
+import { DropdownDataSource, DropdownFilter, DropdownModel, DropdownRenderer, DropdownController } from './dropdownTree';
 
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { mixin } from 'vs/base/common/objects';
@@ -275,7 +275,7 @@ export class Dropdown extends Disposable {
 	 */
 	private updateTreeWidth(): void {
 		if (this._dataSource && this._dataSource.options) {
-			const longestOption = this._dataSource.options.reduce((previous: Resource, current: Resource) => {
+			const longestOption = this._dataSource.options.reduce((previous, current) => {
 				return previous.value.length > current.value.length ? previous : current;
 			}, { value: '' });
 			this._widthControlElement.innerText = longestOption.value;
