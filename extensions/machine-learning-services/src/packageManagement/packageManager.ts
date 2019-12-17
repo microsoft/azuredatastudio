@@ -91,7 +91,7 @@ export class PackageManager {
 						op.updateStatus(azdata.TaskStatus.Succeeded);
 						resolve();
 					} catch (error) {
-						let errorMsg = constants.installDependenciesError(error);
+						let errorMsg = constants.installDependenciesError(error ? error.message : '');
 						op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
 						reject(errorMsg);
 					}
@@ -136,7 +136,7 @@ export class PackageManager {
 			return packagesResult;
 		}
 		catch (err) {
-			this._outputChannel.appendLine(constants.installDependenciesGetPackagesError(err));
+			this._outputChannel.appendLine(constants.installDependenciesGetPackagesError(err ? err.message : ''));
 			return [];
 		}
 	}
