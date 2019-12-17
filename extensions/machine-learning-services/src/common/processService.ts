@@ -8,6 +8,7 @@
 import * as vscode from 'vscode';
 import * as childProcess from 'child_process';
 
+const ExecScriptsTimeoutInSeconds = 600000;
 export class ProcessService {
 
 	public async execScripts(exeFilePath: string, scripts: string[], outputChannel?: vscode.OutputChannel): Promise<void> {
@@ -39,6 +40,13 @@ export class ProcessService {
 					reject(`Process exited with code: ${code}. output: ${output}`);
 				}
 			});
+			setTimeout(() => {
+				try {
+					scriptExecution.kill();
+				} catch (error) {
+					console.log(error);
+				}
+			}, ExecScriptsTimeoutInSeconds);
 		});
 	}
 

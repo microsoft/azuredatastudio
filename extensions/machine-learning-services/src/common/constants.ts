@@ -25,3 +25,4 @@ export const installDependenciesPackages = localize('ml.installDependencies.pack
 export const installDependenciesPackagesAlreadyInstalled = localize('ml.installDependencies.packagesAlreadyInstalled', "Required packages are already installed.");
 export function installDependenciesGetPackagesError(err: string): string { return localize('ml.installDependencies.getPackagesError', "Failed to get installed python packages. Error: {0}", err); }
 export const packageManagerNoConnection = localize('ml.packageManager.NoConnection', "No connection selected");
+export const notebookExtensionNotLoaded = localize('ml.notebookExtensionNotLoaded', "Notebook extension is not loaded");

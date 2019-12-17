@@ -58,7 +58,7 @@ export default class MainController implements vscode.Disposable {
 			await nbExtension.activate();
 			return (nbExtension.exports as nbExtensionApis.IExtensionApi);
 		} else {
-			throw new Error();
+			throw new Error(constants.notebookExtensionNotLoaded);
 		}
 	}
 

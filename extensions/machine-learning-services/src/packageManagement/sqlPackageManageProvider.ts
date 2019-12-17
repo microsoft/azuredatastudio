@@ -74,6 +74,8 @@ export class SqlPythonPackageManageProvider implements nbExtensionApis.IPackageM
 	 */
 	async installPackages(packages: nbExtensionApis.IPackageDetails[], useMinVersion: boolean): Promise<void> {
 		if (packages) {
+
+			// TODO: install package as parallel
 			for (let index = 0; index < packages.length; index++) {
 				const element = packages[index];
 				await this.updatePackage(element, installMode);
