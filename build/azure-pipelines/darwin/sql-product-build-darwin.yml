@@ -113,6 +113,12 @@ steps:
       pushd ../azuredatastudio-darwin && zip -r -X -y $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip * && popd
     displayName: 'Archive'
 
+  - task: PublishPipelineArtifact@0
+  displayName: 'Publish Unsigned'
+  inputs:
+    artifactName: darwin-unsigned
+    targetPath: ../azuredatastudio-darwin.zip
+
   - task: EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning'
     inputs:
@@ -135,6 +141,18 @@ steps:
       SessionTimeout: 90
     condition: and(succeeded(), eq(variables['signed'], true))
 
+  - script: |
+    zip -d ../azuredatastudio-darwin.zip "*.pkg"
+  displayName: Clean Archive
+  condition: and(succeeded(), eq(variables['signed'], true))
+
+  - task: PublishPipelineArtifact@0
+  displayName: 'Publish Signed'
+  inputs:
+    artifactName: darwin-signed
+    targetPath: ../azuredatastudio-darwin.zip
+  condition: and(succeeded(), eq(variables['signed'], true))
+
   - task: EsrpCodeSigning@1
     displayName: 'ESRP Notarization'
     inputs:
@@ -156,6 +174,13 @@ steps:
         ]
       SessionTimeout: 120
     condition: and(succeeded(), eq(variables['signed'], true))
+
+- task: PublishPipelineArtifact@0
+  displayName: 'Publish Notarized'
+  inputs:
+    artifactName: darwin-notarized
+    targetPath: ../azuredatastudio-darwin.zip
+  condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
       set -e
