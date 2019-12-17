@@ -6,7 +6,7 @@
 import 'vs/css!./media/dropdownList';
 
 import { ToggleDropdownAction } from './actions';
-import { DropdownDataSource, DropdownFilter, DropdownModel, DropdownRenderer, DropdownController } from './dropdownTree';
+import { DropdownDataSource, DropdownFilter, DropdownModel, DropdownRenderer, DropdownController, Resource } from './dropdownTree';
 
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { mixin } from 'vs/base/common/objects';
@@ -264,31 +264,37 @@ export class Dropdown extends Disposable {
 			}, 0);
 			let height = filteredLength * this._renderer.getHeight() > this._options.maxHeight! ? this._options.maxHeight! : filteredLength * this._renderer.getHeight();
 			this._treeContainer.style.height = height + 'px';
-			this._treeContainer.style.width = DOM.getContentWidth(this._inputContainer) - 2 + 'px';
+			this.updateTreeWidth();
 			this._tree.layout(parseInt(this._treeContainer.style.height));
 			this._tree.refresh().catch(e => onUnexpectedError(e));
 		}
 	}
 
-	public set values(vals: string[] | undefined) {
-		if (vals) {
-			const longestString = vals.reduce((previous, current) => {
-				return previous.length > current.length ? previous : current;
-			}, '');
-
-			this._widthControlElement.innerText = longestString;
-
-			this._filter.filterString = '';
-			this._dataSource.options = vals.map(i => { return { value: i }; });
-			let height = this._dataSource.options.length * 22 > this._options.maxHeight! ? this._options.maxHeight! : this._dataSource.options.length * 22;
-
-			this._treeContainer.style.height = height + 'px';
-
-			if (longestString.length > 10) {
+	/**
+	 * Update the width of the context tree to better fit the contents.
+	 */
+	private updateTreeWidth(): void {
+		if (this._dataSource && this._dataSource.options) {
+			const longestOption = this._dataSource.options.reduce((previous: Resource, current: Resource) => {
+				return previous.value.length > current.value.length ? previous : current;
+			}, { value: '' });
+			this._widthControlElement.innerText = longestOption.value;
+			if (longestOption.value.length > 10) {
 				this._treeContainer.style.width = DOM.getTotalWidth(this._widthControlElement) + 'px';
 			}
+			// Don't let it get too large
 			this._treeContainer.style.maxWidth = `500px`;
+		}
 
+	}
+
+	public set values(vals: string[] | undefined) {
+		if (vals) {
+			this._filter.filterString = '';
+			this._dataSource.options = vals.map(i => { return { value: i }; });
+			this.updateTreeWidth();
+			let height = this._dataSource.options.length * 22 > this._options.maxHeight! ? this._options.maxHeight! : this._dataSource.options.length * 22;
+			this._treeContainer.style.height = height + 'px';
 			this._tree.layout(parseInt(this._treeContainer.style.height));
 			this._tree.setInput(new DropdownModel()).catch(e => onUnexpectedError(e));
 			this._input.validate();
