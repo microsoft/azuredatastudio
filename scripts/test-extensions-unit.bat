@@ -78,6 +78,11 @@ echo *** starting resource deployment tests ***
 echo ******************************************
 call "%INTEGRATION_TEST_ELECTRON_PATH%" --nogpu --extensionDevelopmentPath=%~dp0\..\extensions\resource-deployment --extensionTestsPath=%~dp0\..\extensions\resource-deployment\out\test --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222
 
+echo *******************************
+echo *** starting machine-learning-services tests ***
+echo *******************************
+call .\scripts\code.bat --extensionDevelopmentPath=%~dp0\..\extensions\machine-learning-services --extensionTestsPath=%~dp0\..\extensions\machine-learning-services\out\test --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222
+
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 rmdir /s /q %VSCODEUSERDATADIR%
