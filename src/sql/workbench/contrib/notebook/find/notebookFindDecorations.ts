@@ -11,6 +11,7 @@ import { themeColorFromId } from 'vs/platform/theme/common/themeService';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { Range } from 'vs/editor/common/core/range';
+import { ScrollType } from 'vs/editor/common/editorCommon';
 
 export class NotebookFindDecorations implements IDisposable {
 
@@ -55,7 +56,7 @@ export class NotebookFindDecorations implements IDisposable {
 
 	public getFindScope(): NotebookRange | null {
 		if (this._findScopeDecorationId) {
-			return this._editor.getNotebookFindModel().getDecorationRange(this._findScopeDecorationId);
+			return this._editor.notebookFindModel.getDecorationRange(this._findScopeDecorationId);
 		}
 		return null;
 	}
@@ -80,9 +81,10 @@ export class NotebookFindDecorations implements IDisposable {
 		let matchPosition = 0;
 		if (nextMatch) {
 			for (let i = 0, len = this._decorations.length; i < len; i++) {
-				let range = this._editor.getNotebookFindModel().getDecorationRange(this._decorations[i]);
+				let range = this._editor.notebookFindModel.getDecorationRange(this._decorations[i]);
 				if (nextMatch.equalsRange(range)) {
 					newCurrentDecorationId = this._decorations[i];
+					this._findScopeDecorationId = newCurrentDecorationId;
 					matchPosition = (i + 1);
 					break;
 				}
@@ -103,13 +105,14 @@ export class NotebookFindDecorations implements IDisposable {
 					}
 
 					if (newCurrentDecorationId !== null) {
-						let rng = this._editor.getNotebookFindModel().getDecorationRange(newCurrentDecorationId)!;
+						let rng = this._editor.notebookFindModel.getDecorationRange(newCurrentDecorationId)!;
 						if (rng.startLineNumber !== rng.endLineNumber && rng.endColumn === 1) {
 							let lineBeforeEnd = rng.endLineNumber - 1;
-							let lineBeforeEndMaxColumn = this._editor.getNotebookFindModel().getLineMaxColumn(lineBeforeEnd);
+							let lineBeforeEndMaxColumn = this._editor.notebookFindModel.getLineMaxColumn(lineBeforeEnd);
 							rng = new NotebookRange(rng.cell, rng.startLineNumber, rng.startColumn, lineBeforeEnd, lineBeforeEndMaxColumn);
 						}
 						this._rangeHighlightDecorationId = changeAccessor.addDecoration(rng, NotebookFindDecorations._RANGE_HIGHLIGHT_DECORATION);
+						this._revealRangeInCenterIfOutsideViewport(nextMatch);
 						this._currentMatch = nextMatch;
 					}
 				});
@@ -139,6 +142,14 @@ export class NotebookFindDecorations implements IDisposable {
 		}
 	}
 
+	private _revealRangeInCenterIfOutsideViewport(match: NotebookRange): void {
+		let matchEditor = this._editor.getCellEditor(match.cell.cellGuid);
+		if (matchEditor) {
+			matchEditor.getContainer().scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+			matchEditor.getControl().revealRangeInCenterIfOutsideViewport(match, ScrollType.Smooth);
+		}
+	}
+
 	public checkValidEditor(range: NotebookRange): boolean {
 		return range && range.cell && !!(this._editor.getCellEditor(range.cell.cellGuid));
 	}
@@ -155,7 +166,7 @@ export class NotebookFindDecorations implements IDisposable {
 				findMatchesOptions = NotebookFindDecorations._FIND_MATCH_NO_OVERVIEW_DECORATION;
 
 				// approximate a distance in lines where matches should be merged
-				const lineCount = this._editor.getNotebookFindModel().getLineCount();
+				const lineCount = this._editor.notebookFindModel.getLineCount();
 				const height = this._editor.getConfiguration().layoutInfo.height;
 				const approxPixelsPerLine = height / lineCount;
 				const mergeLinesDelta = Math.max(2, Math.ceil(3 / approxPixelsPerLine));

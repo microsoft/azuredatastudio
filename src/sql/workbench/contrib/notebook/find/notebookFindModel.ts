@@ -7,7 +7,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { INotebookFindModel, ICellModel, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as types from 'vs/base/common/types';
-import { NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
+import { NotebookRange, NotebookFindMatch, NotebookFindDecorations } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 import * as model from 'vs/editor/common/model';
 import { ModelDecorationOptions, DidChangeDecorationsEmitter, createTextBuffer } from 'vs/editor/common/model/textModel';
 import { IModelDecorationsChangedEvent } from 'vs/editor/common/model/textModelEvents';
@@ -16,6 +16,13 @@ import { EDITOR_MODEL_DEFAULTS } from 'vs/editor/common/config/editorOptions';
 import { Range, IRange } from 'vs/editor/common/core/range';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { singleLetterHash, isHighSurrogate } from 'vs/base/common/strings';
+import { Command, ServicesAccessor } from 'vs/editor/browser/editorExtensions';
+import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { NOTEBOOK_COMMAND_SEARCH, NotebookEditorVisibleContext, NOTEBOOK_COMMAND_CLOSE_SEARCH } from 'sql/workbench/services/notebook/common/notebookContext';
+import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
+import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 
 function _normalizeOptions(options: model.IModelDecorationOptions): ModelDecorationOptions {
 	if (options instanceof ModelDecorationOptions) {
@@ -39,6 +46,9 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 	private readonly _instanceId: string;
 	private _lastDecorationId: number;
 	private _versionId: number;
+	private _findDecorations: NotebookFindDecorations;
+	public currentMatch: NotebookRange;
+	public previousMatch: NotebookRange;
 
 	//#region Decorations
 	private readonly _onDidChangeDecorations: DidChangeDecorationsEmitter = this._register(new DidChangeDecorationsEmitter());
@@ -46,8 +56,9 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 	private _decorations: { [decorationId: string]: NotebookIntervalNode; };
 	//#endregion
 
-	constructor(private notebookModel: INotebookModel) {
+	constructor(private _notebookModel: INotebookModel) {
 		super();
+
 		this._isDisposed = false;
 
 		this._instanceId = singleLetterHash(MODEL_ID);
@@ -60,7 +71,23 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		this._buffer = createTextBuffer('', NotebookFindModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
 		this._versionId = 1;
 		this.id = '$model' + MODEL_ID;
+	}
 
+	public set notebookModel(model: INotebookModel) {
+		this._notebookModel = model;
+	}
+
+	public get notebookModel(): INotebookModel {
+		return this._notebookModel;
+	}
+
+	public get findDecorations(): NotebookFindDecorations {
+		return this._findDecorations;
+	}
+
+	public setNotebookFindDecorations(editor: NotebookEditor): void {
+		this._findDecorations = new NotebookFindDecorations(editor);
+		this._findDecorations.setStartPosition(this.getPosition());
 	}
 
 	public static DEFAULT_CREATION_OPTIONS: model.ITextModelCreationOptions = {
@@ -86,6 +113,19 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 
 	public get ModelId(): number {
 		return MODEL_ID;
+	}
+
+	public getPosition(): NotebookRange {
+		return this.currentMatch;
+	}
+
+	public getLastPosition(): NotebookRange {
+		return this.previousMatch;
+	}
+
+	public setSelection(range: NotebookRange): void {
+		this.previousMatch = this.currentMatch;
+		this.currentMatch = range;
 	}
 
 	public ChangeDecorations<T>(ownerId: number, callback: (changeAccessor: model.IModelDecorationsChangeAccessor) => T): T | null {
@@ -589,3 +629,55 @@ export class NotebookIntervalNode {
 
 	}
 }
+
+abstract class SettingsCommand extends Command {
+
+	protected getNotebookEditor(accessor: ServicesAccessor): NotebookEditor {
+		const activeEditor = accessor.get(IEditorService).activeControl;
+		if (activeEditor instanceof NotebookEditor) {
+			return activeEditor;
+		}
+		return null;
+	}
+
+}
+
+class StartSearchNotebookCommand extends SettingsCommand {
+
+	public runCommand(accessor: ServicesAccessor, args: any): void {
+		const notebookEditor = this.getNotebookEditor(accessor);
+		if (notebookEditor) {
+			notebookEditor.toggleSearch(true);
+		}
+	}
+
+}
+
+export const findCommand = new StartSearchNotebookCommand({
+	id: NOTEBOOK_COMMAND_SEARCH,
+	precondition: ContextKeyExpr.and(NotebookEditorVisibleContext),
+	kbOpts: {
+		primary: KeyMod.CtrlCmd | KeyCode.KEY_F,
+		weight: KeybindingWeight.EditorContrib
+	}
+});
+
+class CloseSearchNotebookCommand extends SettingsCommand {
+
+	public runCommand(accessor: ServicesAccessor, args: any): void {
+		const NotebookEditor = this.getNotebookEditor(accessor);
+		if (NotebookEditor) {
+			NotebookEditor.toggleSearch(false);
+		}
+	}
+
+}
+
+export const closeFindcommand = new CloseSearchNotebookCommand({
+	id: NOTEBOOK_COMMAND_CLOSE_SEARCH,
+	precondition: ContextKeyExpr.and(NotebookEditorVisibleContext),
+	kbOpts: {
+		primary: KeyCode.Escape,
+		weight: KeybindingWeight.EditorContrib
+	}
+});
