@@ -1,0 +1,6 @@
+{
+	"requiredPythonPackages": [
+		{ "name": "pymssql", "version": "2.1.4" },
+		{ "name": "sqlmlutils", "version": ""}
+	]
+}
