@@ -253,9 +253,16 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 */
 	public getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string } {
 		let uniqueProvidersMap = {};
-		entries(providerNameToDisplayNameMap).forEach(p => {
+		let providerNames = entries(providerNameToDisplayNameMap);
+		providerNames.forEach(p => {
+			// Only add CMS provider if explicitly called from CMS extension
+			// otherwise avoid duplicate listing in dropdown
 			if (p[0] !== Constants.cmsProviderName) {
 				uniqueProvidersMap[p[0]] = p[1];
+			} else {
+				if (providerNames.length === 1) {
+					uniqueProvidersMap[p[0]] = p[1];
+				}
 			}
 		});
 
