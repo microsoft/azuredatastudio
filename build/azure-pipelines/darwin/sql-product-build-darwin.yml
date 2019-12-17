@@ -114,10 +114,10 @@ steps:
     displayName: 'Archive'
 
   - task: PublishPipelineArtifact@0
-  displayName: 'Publish Unsigned'
-  inputs:
-    artifactName: darwin-unsigned
-    targetPath: ../azuredatastudio-darwin.zip
+    displayName: 'Publish Unsigned'
+    inputs:
+      artifactName: darwin-unsigned
+      targetPath: ../azuredatastudio-darwin.zip
 
   - task: EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning'
