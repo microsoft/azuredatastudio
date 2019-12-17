@@ -117,7 +117,7 @@ steps:
     displayName: 'Publish Unsigned'
     inputs:
       artifactName: darwin-unsigned
-      targetPath: ../azuredatastudio-darwin.zip
+      targetPath: $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
 
   - task: EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning'
@@ -150,7 +150,7 @@ steps:
     displayName: 'Publish Signed'
     inputs:
       artifactName: darwin-signed
-      targetPath: ../azuredatastudio-darwin.zip
+      targetPath: $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
     condition: and(succeeded(), eq(variables['signed'], true))
 
   - task: EsrpCodeSigning@1
@@ -179,7 +179,7 @@ steps:
     displayName: 'Publish Notarized'
     inputs:
       artifactName: darwin-notarized
-      targetPath: ../azuredatastudio-darwin.zip
+      targetPath: $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
     condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
