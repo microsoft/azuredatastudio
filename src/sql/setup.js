@@ -22,4 +22,7 @@ define(["require", "exports"], function (require) {
 	require.__$__nodeRequire('zone.js/dist/zone-error');
 	require.__$__nodeRequire('chart.js');
 	window["Zone"]["__zone_symbol__ignoreConsoleErrorUncaughtError"] = true;
+	window["Zone"]["__zone_symbol__unhandledPromiseRejectionHandler"] = e => setImmediate(() => {
+		window.dispatchEvent(new PromiseRejectionEvent('unhandledrejection', e));
+	}); // let window handle this
 });
