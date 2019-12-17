@@ -33,4 +33,8 @@ export class Deferred<T> implements Promise<T> {
 	finally(onfinally?: () => void): Promise<T> {
 		return this.promise.finally(onfinally);
 	}
+
+	get [Symbol.toStringTag](): string {
+		return this.toString();
+	}
 }

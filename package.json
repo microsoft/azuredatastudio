@@ -96,7 +96,7 @@
     "@types/iconv-lite": "0.0.1",
     "@types/keytar": "^4.4.0",
     "@types/mocha": "2.2.39",
-    "@types/node": "^10.12.12",
+    "@types/node": "^12.11.7",
     "@types/plotly.js": "^1.44.9",
     "@types/sanitize-html": "^1.18.2",
     "@types/sinon": "^1.16.36",
