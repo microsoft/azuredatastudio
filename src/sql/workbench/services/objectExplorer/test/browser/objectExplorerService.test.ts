@@ -517,7 +517,7 @@ suite('SQL Object Explorer Service tests', () => {
 		assert.equal(isExpanded, false);
 	});
 
-	test('isExpanded returns false when the parent of the requested node is not expanded', (done) => {
+	test('isExpanded returns false when the parent of the requested node is not expanded', async () => {
 		const table1NodePath = objectExplorerExpandInfo.nodes[0].nodePath;
 		const tableExpandInfo = {
 			sessionId: sessionId,
@@ -530,26 +530,17 @@ suite('SQL Object Explorer Service tests', () => {
 			return treeNode.nodePath === table1NodePath;
 		});
 		objectExplorerService.registerServerTreeView(serverTreeView.object);
-		objectExplorerService.createNewSession(mssqlProviderName, connection).then(result => {
-			objectExplorerService.onSessionCreated(1, objectExplorerSession);
-			objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, objectExplorerService.getObjectExplorerNode(connection)).then(childNodes => {
-				sqlOEProvider.setup(x => x.expandNode(TypeMoq.It.isAny())).callback(() => {
-					objectExplorerService.onNodeExpanded(tableExpandInfo);
-				}).returns(() => Promise.resolve(true));
-				objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, find(childNodes, node => node.nodePath === table1NodePath)).then(() => {
-					// If I check whether the table is expanded, the answer should be yes
-					const tableNode = find(childNodes, node => node.nodePath === table1NodePath);
-					tableNode.isExpanded().then(isExpanded => {
-						try {
-							assert.equal(isExpanded, false);
-							done();
-						} catch (err) {
-							done(err);
-						}
-					}, err => done(err));
-				}, err => done(err));
-			}, err => done(err));
-		}, err => done(err));
+		await objectExplorerService.createNewSession(mssqlProviderName, connection);
+		objectExplorerService.onSessionCreated(1, objectExplorerSession);
+		const childNodes = await objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, objectExplorerService.getObjectExplorerNode(connection));
+		sqlOEProvider.setup(x => x.expandNode(TypeMoq.It.isAny())).callback(() => {
+			objectExplorerService.onNodeExpanded(tableExpandInfo);
+		}).returns(() => Promise.resolve(true));
+		await objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, find(childNodes, node => node.nodePath === table1NodePath));
+		// If I check whether the table is expanded, the answer should be yes
+		const tableNode = find(childNodes, node => node.nodePath === table1NodePath);
+		const isExpanded = await tableNode.isExpanded();
+		assert.equal(isExpanded, false);
 	});
 
 	test('setting a node to expanded calls expand on the requested tree node', async () => {

@@ -193,7 +193,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	// Connection Provider Registration
 	public registerProvider(providerId: string, provider: azdata.ConnectionProvider): void {
 		if (!this._providers.has(providerId)) {
-			console.error('Provider', providerId, 'attempted to register but has no metadata');
+			this._logService.warn('Provider', providerId, 'attempted to register but has no metadata');
 			let providerType = {
 				onReady: new Deferred<azdata.ConnectionProvider>(),
 				properties: undefined

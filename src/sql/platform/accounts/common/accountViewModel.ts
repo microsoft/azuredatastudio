@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
+import { coalesce } from 'vs/base/common/arrays';
 
 /**
  * View model for account dialog
@@ -57,7 +58,7 @@ export class AccountViewModel {
 								},
 								() => { /* Swallow failures at getting accounts, we'll just hide that provider */ });
 					});
-					return Promise.all(promises);
+					return Promise.all(promises).then(accounts => coalesce(accounts));
 				}, () => {
 					/* Swallow failures and just pretend we don't have any providers */
 					return [];

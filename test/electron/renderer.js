@@ -37,7 +37,6 @@ function initLoader(opts) {
 		baseUrl: bootstrap.uriFromPath(path.join(__dirname, '../../src')),
 		paths: {
 			'vs': `../${outdir}/vs`,
-			'sqltest': `../${outdir}/sqltest`,  // {{SQL CARBON EDIT}}
 			'sql': `../${outdir}/sql`, // {{SQL CARBON EDIT}}
 			'lib': `../${outdir}/lib`,
 			'bootstrap-fork': `../${outdir}/bootstrap-fork`
@@ -120,6 +119,11 @@ function loadTests(opts) {
 
 	// collect unexpected errors
 	loader.require(['vs/base/common/errors'], function (errors) {
+		global.window.addEventListener('unhandledrejection', event => {
+			errors.onUnexpectedError(event.reason);
+			event.preventDefault();
+		});
+
 		errors.setUnexpectedErrorHandler(function (err) {
 			let stack = (err ? err.stack : null);
 			if (!stack) {
