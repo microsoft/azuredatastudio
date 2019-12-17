@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as TypeMoq from 'typemoq';
+import * as assert from 'assert';
 import { Emitter } from 'vs/base/common/event';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 
@@ -70,7 +71,7 @@ suite('auto OAuth dialog controller tests', () => {
 
 	});
 
-	test('Open auto OAuth when the flyout is already open, return an error', (done) => {
+	test('Open auto OAuth when the flyout is already open, return an error', async () => {
 
 		// If: Open auto OAuth dialog first time
 		autoOAuthDialogController.openAutoOAuthDialog(providerId, title, message, userCode, uri);
@@ -80,8 +81,8 @@ suite('auto OAuth dialog controller tests', () => {
 		mockErrorMessageService.verify(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.never());
 
 		// If: a oauth flyout is already open
-		autoOAuthDialogController.openAutoOAuthDialog(providerId, title, message, userCode, uri)
-			.then(success => done('Failure: Expected error on 2nd dialog open'), error => done());
+		await autoOAuthDialogController.openAutoOAuthDialog(providerId, title, message, userCode, uri)
+			.then(success => assert.fail('Failure: Expected error on 2nd dialog open'), error => Promise.resolve());
 
 		// Then: An error dialog should have been opened
 		mockErrorMessageService.verify(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
