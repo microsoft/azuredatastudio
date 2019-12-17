@@ -15,6 +15,15 @@ export function activate() {
 			}
 		}
 	});
+	vscode.commands.registerCommand('workspaceFun.addJson', async () => {
+		const uris = await vscode.window.showOpenDialog({ canSelectFiles: true, canSelectFolders: false, canSelectMany: true, filters: { 'json': ['json'] } });
+		if (uris) {
+			for (const uri of uris) {
+				const jsonUri = uri.with({ scheme: 'json' });
+				vscode.workspace.updateWorkspaceFolders(0, 0, { name: path.basename(jsonUri.toString()), uri: jsonUri });
+			}
+		}
+	});
 
 	vscode.workspace.registerFileSystemProvider('json', new JSONFileSystemProvider());
 }
