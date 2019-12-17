@@ -64,7 +64,7 @@ suite('Notebook Actions', function (): void {
 		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
 		mockNotification.setup(n => n.notify(TypeMoq.It.isAny()));
 
-		let action = new TrustedAction('TestId', mockNotification.object);
+		let action = new TrustedAction('TestId');
 		assert.strictEqual(action.trusted, false, 'Should not be trusted by default');
 
 		// Normal use case
@@ -77,10 +77,10 @@ suite('Notebook Actions', function (): void {
 		assert.ok(result, 'Trusted Action should succeed');
 		assert.strictEqual(action.trusted, true, 'Should be trusted after toggling trusted state');
 
-		// Should stay trusted when trying to toggle again
+		// Should toggle trusted to false on subsequent action
 		result = await action.run(contextStub);
 		assert.ok(result, 'Trusted Action should succeed again');
-		assert.strictEqual(action.trusted, true, 'Should stay trusted when trying to toggle trusted to false');
+		assert.strictEqual(action.trusted, false, 'Should toggle trusted to false');
 	});
 
 	test('Run All Cells Action', async function (): Promise<void> {
