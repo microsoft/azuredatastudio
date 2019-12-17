@@ -142,9 +142,9 @@ steps:
     condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
-    zip -d ../azuredatastudio-darwin.zip "*.pkg"
-  displayName: Clean Archive
-  condition: and(succeeded(), eq(variables['signed'], true))
+      zip -d ../azuredatastudio-darwin.zip "*.pkg"
+    displayName: Clean Archive
+    condition: and(succeeded(), eq(variables['signed'], true))
 
   - task: PublishPipelineArtifact@0
   displayName: 'Publish Signed'
