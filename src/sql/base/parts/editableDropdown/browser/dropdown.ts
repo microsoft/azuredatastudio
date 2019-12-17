@@ -23,6 +23,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { clamp } from 'vs/base/common/numbers';
 
 export interface IDropdownOptions extends IDropdownStyles {
 	/**
@@ -281,13 +282,8 @@ export class Dropdown extends Disposable {
 			this._widthControlElement.innerText = longestOption.value;
 
 			const inputContainerWidth = DOM.getContentWidth(this._inputContainer);
-			if (longestOption.value.length > inputContainerWidth) {
-				this._treeContainer.style.width = `${DOM.getTotalWidth(this._widthControlElement)}px`;
-			} else {
-				this._treeContainer.style.width = `${inputContainerWidth}px`;
-			}
-			// Don't let it get too large
-			this._treeContainer.style.maxWidth = `500px`;
+			const longestOptionWidth = DOM.getTotalWidth(this._widthControlElement);
+			this._treeContainer.style.width = `${clamp(longestOptionWidth, inputContainerWidth, 500)}px`;
 		}
 
 	}
