@@ -5,6 +5,8 @@
 
 'use strict';
 
+import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import * as should from 'should';
 import 'mocha';
 import * as TypeMoq from 'typemoq';
@@ -200,7 +202,9 @@ describe('Manage Package Providers', () => {
 				executeStreamedCommand: (command: string) => { return Promise.resolve(); },
 				getCondaExePath: () => { return ''; },
 				pythonExecutable:  '',
-				usingConda: false
+				pythonInstallationPath: '',
+				usingConda: false,
+				installPythonPackage: (backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel) => {return Promise.resolve(); }
 			},
 			piPyClient: {
 				fetchPypiPackage: (packageName) => { return Promise.resolve(); }

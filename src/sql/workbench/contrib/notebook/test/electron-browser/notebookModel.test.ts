@@ -12,7 +12,7 @@ import { TestNotificationService } from 'vs/platform/notification/test/common/te
 import { URI } from 'vs/base/common/uri';
 
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
-import { NotebookManagerStub } from './common';
+import { NotebookManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/contrib/notebook/browser/models/modelFactory';
 import { IClientSession, INotebookModelOptions, NotebookContentChange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';

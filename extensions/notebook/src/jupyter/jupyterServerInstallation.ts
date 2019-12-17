@@ -52,6 +52,8 @@ export interface IJupyterServerInstallation {
 	installPipPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void>;
 	uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void>;
 	pythonExecutable: string;
+	pythonInstallationPath: string;
+	installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: OutputChannel): Promise<void>;
 }
 export class JupyterServerInstallation implements IJupyterServerInstallation {
 	public apiWrapper: ApiWrapper;
@@ -128,7 +130,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgInstallPkgProgress);
 
 			try {
-				await this.installPythonPackage(backgroundOperation);
+				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
 
 				if (this._usingExistingPython) {
 					await this.upgradePythonPackages(false, forceInstall);
@@ -146,8 +148,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 	}
 
-	private installPythonPackage(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
-		if (this._usingExistingPython) {
+	public installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: OutputChannel): Promise<void> {
+		if (usingExistingPython) {
 			return Promise.resolve();
 		}
 
@@ -174,7 +176,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 
 		return new Promise((resolve, reject) => {
-			let installPath = this._pythonInstallationPath;
+			let installPath = pythonInstallationPath;
 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgDownloadPython(platformId, pythonDownloadUrl));
 			fs.mkdirs(installPath, (err) => {
 				if (err) {
@@ -198,7 +200,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 						let totalBytes = parseInt(response.headers['content-length']);
 						totalMegaBytes = totalBytes / (1024 * 1024);
-						this.outputChannel.appendLine(`${msgPythonDownloadPending} (0 / ${totalMegaBytes.toFixed(2)} MB)`);
+						outputChannel.appendLine(`${msgPythonDownloadPending} (0 / ${totalMegaBytes.toFixed(2)} MB)`);
 					})
 					.on('data', (data) => {
 						receivedBytes += data.length;
@@ -206,7 +208,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 							let receivedMegaBytes = receivedBytes / (1024 * 1024);
 							let percentage = receivedMegaBytes / totalMegaBytes;
 							if (percentage >= printThreshold) {
-								this.outputChannel.appendLine(`${msgPythonDownloadPending} (${receivedMegaBytes.toFixed(2)} / ${totalMegaBytes.toFixed(2)} MB)`);
+								outputChannel.appendLine(`${msgPythonDownloadPending} (${receivedMegaBytes.toFixed(2)} / ${totalMegaBytes.toFixed(2)} MB)`);
 								printThreshold += 0.1;
 							}
 						}
@@ -216,7 +218,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				downloadRequest.pipe(fs.createWriteStream(pythonPackagePathLocal))
 					.on('close', async () => {
 						//unpack python zip/tar file
-						this.outputChannel.appendLine(msgPythonUnpackPending);
+						outputChannel.appendLine(msgPythonUnpackPending);
 						let pythonSourcePath = path.join(installPath, constants.pythonBundleVersion);
 						if (await utils.exists(pythonSourcePath)) {
 							try {
@@ -235,7 +237,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 								}
 							});
 
-							this.outputChannel.appendLine(msgPythonDownloadComplete);
+							outputChannel.appendLine(msgPythonDownloadComplete);
 							backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
 							resolve();
 						}).catch(err => {
@@ -655,6 +657,13 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	public getCondaExePath(): string {
 		return path.join(this._pythonInstallationPath,
 			process.platform === constants.winPlatform ? 'Scripts\\conda.exe' : 'bin/conda');
+	}
+
+	/**
+	 * Returns Python installation path
+	 */
+	public get pythonInstallationPath(): string {
+		return this._pythonInstallationPath;
 	}
 
 	public get usingConda(): boolean {

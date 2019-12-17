@@ -77,44 +77,29 @@ suite('ExtHostModelView Validation Tests', () => {
 			extHostModelView.$registerWidget(handle, widgetId, undefined, undefined);
 		});
 
-		test('The custom validation output of a component gets set when it is initialized', done => {
-			extHostModelView.$runCustomValidations(handle, inputBox.id).then(valid => {
-				try {
-					assert.equal(valid, false, 'Empty input box did not validate as false');
-					done();
-				} catch (err) {
-					done(err);
-				}
-			}, err => done(err));
+		test('The custom validation output of a component gets set when it is initialized', () => {
+			return extHostModelView.$runCustomValidations(handle, inputBox.id).then(valid => {
+				assert.equal(valid, false, 'Empty input box did not validate as false');
+			});
 		});
 
-		test('The custom validation output of a component changes if its value changes', done => {
+		test('The custom validation output of a component changes if its value changes', () => {
 			inputBox.value = validText;
-			extHostModelView.$runCustomValidations(handle, inputBox.id).then(valid => {
-				try {
-					assert.equal(valid, true, 'Valid input box did not validate as valid');
-					done();
-				} catch (err) {
-					done(err);
-				}
-			}, err => done(err));
+			return extHostModelView.$runCustomValidations(handle, inputBox.id).then(valid => {
+				assert.equal(valid, true, 'Valid input box did not validate as valid');
+			});
 		});
 
-		test('The custom validation output of a component changes after a PropertiesChanged event', done => {
+		test('The custom validation output of a component changes after a PropertiesChanged event', () => {
 			extHostModelView.$handleEvent(handle, inputBox.id, {
 				args: {
 					'value': validText
 				},
 				eventType: ComponentEventType.PropertiesChanged
 			} as IComponentEventArgs);
-			extHostModelView.$runCustomValidations(handle, inputBox.id).then(valid => {
-				try {
-					assert.equal(valid, true, 'Valid input box did not validate as valid after PropertiesChanged event');
-					done();
-				} catch (err) {
-					done(err);
-				}
-			}, err => done(err));
+			return extHostModelView.$runCustomValidations(handle, inputBox.id).then(valid => {
+				assert.equal(valid, true, 'Valid input box did not validate as valid after PropertiesChanged event');
+			});
 		});
 
 		test('The validity of a component is set by main thread validationChanged events', () => {
