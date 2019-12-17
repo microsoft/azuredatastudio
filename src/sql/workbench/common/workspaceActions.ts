@@ -27,6 +27,6 @@ export class OpenFileInFolderAction extends Action {
 	}
 
 	run() {
-		return this.openerService.open(URI.file(this.path));
+		return this.openerService.open(URI.file(this.path), { openExternal: true });
 	}
 }
