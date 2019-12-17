@@ -147,11 +147,11 @@ steps:
     condition: and(succeeded(), eq(variables['signed'], true))
 
   - task: PublishPipelineArtifact@0
-  displayName: 'Publish Signed'
-  inputs:
-    artifactName: darwin-signed
-    targetPath: ../azuredatastudio-darwin.zip
-  condition: and(succeeded(), eq(variables['signed'], true))
+    displayName: 'Publish Signed'
+    inputs:
+      artifactName: darwin-signed
+      targetPath: ../azuredatastudio-darwin.zip
+    condition: and(succeeded(), eq(variables['signed'], true))
 
   - task: EsrpCodeSigning@1
     displayName: 'ESRP Notarization'
