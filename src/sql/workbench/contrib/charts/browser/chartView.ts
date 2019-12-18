@@ -27,6 +27,7 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { ChartState, IInsightOptions, ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
 import * as nls from 'vs/nls';
 import { find } from 'vs/base/common/arrays';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -83,6 +84,7 @@ export class ChartView extends Disposable implements IPanelView {
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IThemeService private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
+		@INotificationService private readonly _notificationService: INotificationService
 	) {
 		super();
 		this.taskbarContainer = DOM.$('div.taskbar-container');
@@ -204,11 +206,16 @@ export class ChartView extends Disposable implements IPanelView {
 			if (batch) {
 				let summary = batch.resultSetSummaries[this._currentData.resultId];
 				if (summary) {
-					this._queryRunner.getQueryRows(0, summary.rowCount, 0, 0).then(d => {
-						this._data = {
-							columns: summary.columnInfo.map(c => c.columnName),
-							rows: d.resultSubset.rows.map(r => r.map(c => c.displayValue))
-						};
+					this._queryRunner.getQueryRows(0, summary.rowCount, this._currentData.batchId, this._currentData.resultId).then(d => {
+						if (!d.resultSubset.rows) { // be defensive against this
+							this._data = { columns: [], rows: [] };
+							this._notificationService.error(nls.localize('charting.failedToGetRows', "Failed to get rows for the dataset to chart."));
+						} else {
+							this._data = {
+								columns: summary.columnInfo.map(c => c.columnName),
+								rows: d.resultSubset.rows.map(r => r.map(c => c.displayValue))
+							};
+						}
 						if (this.insight) {
 							this.insight.data = this._data;
 						}
@@ -273,15 +280,17 @@ export class ChartView extends Disposable implements IPanelView {
 	}
 
 	private createOption(option: IChartOption, container: HTMLElement) {
-		let label = DOM.$('div');
+		const label = DOM.$('div.option-label');
 		label.innerText = option.label;
-		let optionContainer = DOM.$('div.option-container');
+		const optionContainer = DOM.$('div.option-container');
+		const optionInput = DOM.$('div.option-input');
 		optionContainer.appendChild(label);
+		optionContainer.appendChild(optionInput);
 		let setFunc: (val) => void;
 		let value = this.state ? this.state.options[option.configEntry] || option.default : option.default;
 		switch (option.type) {
 			case ControlType.checkbox:
-				let checkbox = new Checkbox(optionContainer, {
+				let checkbox = new Checkbox(optionInput, {
 					label: '',
 					ariaLabel: option.label,
 					checked: value,
@@ -302,7 +311,7 @@ export class ChartView extends Disposable implements IPanelView {
 				//pass options into changeAltNames in order for SelectBox to show user-friendly names.
 				let dropdown = new SelectBox(option.displayableOptions || this.changeToAltNames(option.options), undefined, this._contextViewService);
 				dropdown.select(option.options.indexOf(value));
-				dropdown.render(optionContainer);
+				dropdown.render(optionInput);
 				dropdown.onDidSelect(e => {
 					if (this.options[option.configEntry] !== option.options[e.index]) {
 						this.options[option.configEntry] = option.options[e.index];
@@ -319,7 +328,7 @@ export class ChartView extends Disposable implements IPanelView {
 				this.optionDisposables.push(attachSelectBoxStyler(dropdown, this._themeService));
 				break;
 			case ControlType.input:
-				let input = new InputBox(optionContainer, this._contextViewService);
+				let input = new InputBox(optionInput, this._contextViewService);
 				input.value = value || '';
 				input.onDidChange(e => {
 					if (this.options[option.configEntry] !== e) {
@@ -337,7 +346,7 @@ export class ChartView extends Disposable implements IPanelView {
 				this.optionDisposables.push(attachInputBoxStyler(input, this._themeService));
 				break;
 			case ControlType.numberInput:
-				let numberInput = new InputBox(optionContainer, this._contextViewService, { type: 'number' });
+				let numberInput = new InputBox(optionInput, this._contextViewService, { type: 'number' });
 				numberInput.value = value || '';
 				numberInput.onDidChange(e => {
 					if (this.options[option.configEntry] !== Number(e)) {
@@ -355,7 +364,7 @@ export class ChartView extends Disposable implements IPanelView {
 				this.optionDisposables.push(attachInputBoxStyler(numberInput, this._themeService));
 				break;
 			case ControlType.dateInput:
-				let dateInput = new InputBox(optionContainer, this._contextViewService, { type: 'datetime-local' });
+				let dateInput = new InputBox(optionInput, this._contextViewService, { type: 'datetime-local' });
 				dateInput.value = value || '';
 				dateInput.onDidChange(e => {
 					if (this.options[option.configEntry] !== e) {

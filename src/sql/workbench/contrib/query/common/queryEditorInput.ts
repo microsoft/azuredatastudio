@@ -177,6 +177,10 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public supportsSplitEditor(): boolean { return false; }
 	public revert(): Promise<boolean> { return this._text.revert(); }
 
+	public isReadonly(): boolean {
+		return false;
+	}
+
 	public matches(otherInput: any): boolean {
 		// we want to be able to match against our underlying input as well, bascially we are our underlying input
 		if (otherInput instanceof QueryEditorInput) {

@@ -12,7 +12,10 @@
 		"azdata": "*"
 	},
 	"activationEvents": [
-		"*"
+    "onCommand:bigDataClusters.command.mount",
+    "onCommand:bigDataClusters.command.refreshmount",
+    "onCommand:bigDataClusters.command.deletemount",
+    "onView:sqlBigDataCluster"
 	],
 	"repository": {
 		"type": "git",

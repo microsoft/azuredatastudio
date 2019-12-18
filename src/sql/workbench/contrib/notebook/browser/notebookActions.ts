@@ -108,7 +108,6 @@ export class TrustedAction extends ToggleableAction {
 	// Constants
 	private static readonly trustedLabel = localize('trustLabel', "Trusted");
 	private static readonly notTrustedLabel = localize('untrustLabel', "Not Trusted");
-	private static readonly alreadyTrustedMsg = localize('alreadyTrustedMsg', "Notebook is already trusted.");
 	private static readonly baseClass = 'notebook-button';
 	private static readonly trustedCssClass = 'icon-trusted';
 	private static readonly notTrustedCssClass = 'icon-notTrusted';
@@ -116,8 +115,7 @@ export class TrustedAction extends ToggleableAction {
 	// Properties
 
 	constructor(
-		id: string,
-		@INotificationService private _notificationService: INotificationService
+		id: string
 	) {
 		super(id, {
 			baseClass: TrustedAction.baseClass,
@@ -140,14 +138,8 @@ export class TrustedAction extends ToggleableAction {
 		let self = this;
 		return new Promise<boolean>((resolve, reject) => {
 			try {
-				if (self.trusted) {
-					const actions: INotificationActions = { primary: [] };
-					self._notificationService.notify({ severity: Severity.Info, message: TrustedAction.alreadyTrustedMsg, actions });
-				}
-				else {
-					self.trusted = !self.trusted;
-					context.model.trustedMode = self.trusted;
-				}
+				self.trusted = !self.trusted;
+				context.model.trustedMode = self.trusted;
 				resolve(true);
 			} catch (e) {
 				reject(e);
@@ -366,8 +358,10 @@ export class AttachToDropdown extends SelectBox {
 
 			let attachToConnections = this.values;
 			if (!connection) {
-				this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
-				this.doChangeContext(undefined, true);
+				// If there is no connection, we should choose the previous connection,
+				// which will always be the first item in the list. Either "Select Connection"
+				// or a real connection name
+				this.select(0);
 				return false;
 			}
 			let connectionUri = this._connectionManagementService.getConnectionUri(connection);

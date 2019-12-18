@@ -33,13 +33,11 @@ import { Deferred } from 'sql/base/common/promise';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
-import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CellMagicMapper } from 'sql/workbench/contrib/notebook/browser/models/cellMagicMapper';
-import { IExtensionsViewlet, VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
+import { VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
 import { CellModel } from 'sql/workbench/contrib/notebook/browser/models/cell';
 import { FileOperationError, FileOperationResult } from 'vs/platform/files/common/files';
 import { isValidBasename } from 'vs/base/common/extpath';
@@ -58,6 +56,7 @@ import { find, firstIndex } from 'vs/base/common/arrays';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
+import { ExtensionsViewlet, ExtensionsViewPaneContainer } from 'vs/workbench/contrib/extensions/browser/extensionsViewlet';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -92,7 +91,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IConnectionManagementService) private connectionManagementService: IConnectionManagementService,
-		@Inject(IObjectExplorerService) private objectExplorerService: IObjectExplorerService,
 		@Inject(IEditorService) private editorService: IEditorService,
 		@Inject(INotificationService) private notificationService: INotificationService,
 		@Inject(INotebookService) private notebookService: INotebookService,
@@ -117,21 +115,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private updateProfile(): void {
 		this.profile = this.notebookParams ? this.notebookParams.profile : undefined;
-		if (!this.profile) {
-			// Second use global connection if possible
-			let profile: IConnectionProfile = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
-
-			// TODO use generic method to match kernel with valid connection that's compatible. For now, we only have 1
-			if (profile && profile.providerName) {
-				this.profile = profile;
-			} else {
-				// if not, try 1st active connection that matches our filter
-				let activeProfiles = this.connectionManagementService.getActiveConnections();
-				if (activeProfiles && activeProfiles.length > 0) {
-					this.profile = activeProfiles[0];
-				}
-			}
-		}
 	}
 
 	ngOnInit() {
@@ -371,8 +354,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private async openExtensionGallery(): Promise<void> {
 		try {
-			let viewlet = await this.viewletService.openViewlet(VIEWLET_ID, true) as IExtensionsViewlet;
-			viewlet.search('sql-vnext');
+			let viewlet = await this.viewletService.openViewlet(VIEWLET_ID, true) as ExtensionsViewlet;
+			(viewlet.getViewPaneContainer() as ExtensionsViewPaneContainer).search('sql-vnext');
 			viewlet.focus();
 		} catch (error) {
 			this.notificationService.error(error.message);

@@ -79,5 +79,10 @@ echo *** starting resource deployment tests ***
 echo ******************************************
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX --nogpu --extensionDevelopmentPath=$ROOT/extensions/resource-deployment --extensionTestsPath=$ROOT/extensions/resource-deployment/out/test --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR
 
+echo ******************************************
+echo *** starting machine-learning-services tests ***
+echo ******************************************
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX --nogpu --extensionDevelopmentPath=$ROOT/extensions/machine-learning-services --extensionTestsPath=$ROOT/extensions/machine-learning-services/out/test --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR
+
 rm -r $VSCODEUSERDATADIR
 rm -r $VSCODEEXTDIR
