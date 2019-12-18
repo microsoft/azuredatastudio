@@ -135,9 +135,9 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		}
 	}
 
-	public getNotebookModel(): INotebookModel {
+	public async getNotebookModel(): Promise<INotebookModel> {
 		if (!this._notebookModel) {
-			this.setNotebookModel();
+			await this.setNotebookModel();
 		}
 		return this._notebookModel;
 
@@ -400,7 +400,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 			matchesCount: false,
 			currentMatch: false
 		};
-		this._onFindStateChange(changeEvent);
+		this._onFindStateChange(changeEvent).catch(e => { onUnexpectedError(e); });
 	}
 }
 
