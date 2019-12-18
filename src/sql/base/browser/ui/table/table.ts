@@ -236,7 +236,10 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	}
 
 	getSelectedRanges(): Slick.Range[] {
-		return this._grid.getSelectionModel().getSelectedRanges();
+		let selectionModel = this._grid.getSelectionModel();
+		if (selectionModel && selectionModel.getSelectedRanges) {
+			return selectionModel.getSelectedRanges();
+		}
 	}
 
 	focus(): void {
