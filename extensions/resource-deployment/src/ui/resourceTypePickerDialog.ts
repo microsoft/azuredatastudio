@@ -197,88 +197,104 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private updateToolsDisplayTable(): void {
 		this.toolRefreshTimestamp = new Date().getTime();
 		const currentRefreshTimestamp = this.toolRefreshTimestamp;
-		const toolRequirements = this.getCurrentProvider().requiredTools;
 		const headerRowHeight = 28;
-		this._toolsTable.height = 25 * Math.max(toolRequirements.length, 1) + headerRowHeight;
+		this._toolsTable.height = 25 * Math.max(this.toolRequirements.length, 1) + headerRowHeight;
 		this._dialogObject.message = {
 			text: ''
 		};
 		this._installToolButton.hidden = true;
-		if (toolRequirements.length === 0) {
+		if (this.toolRequirements.length === 0) {
 			this._dialogObject.okButton.enabled = true;
 			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
 			this._tools = [];
 		} else {
-			this._tools = toolRequirements.map(toolReq => {
+			this._tools = this.toolRequirements.map(toolReq => {
 				return this.toolsService.getToolByName(toolReq.name)!;
 			});
 			this._toolsLoadingComponent.loading = true;
 			this._dialogObject.okButton.enabled = false;
-			Promise.all(
-				this._tools.map(tool => tool.loadInformation())
-			).then(async () => {
-				// If the local timestamp does not match the class level timestamp, it means user has changed options, ignore the results
-				if (this.toolRefreshTimestamp !== currentRefreshTimestamp) {
-					return;
-				}
-				let minVersionCheckFailed = false;
-				const toolsToAutoInstall: ITool[] = [];
-				let messages: string[] = [];
-				this._toolsTable.data = toolRequirements.map(toolRequirement => {
-					const tool = this.toolsService.getToolByName(toolRequirement.name)!;
-					// subscribe to onUpdateData event of the tool.
-					this._toDispose.push(tool.onDidUpdateData((t: ITool) => {
-						this.updateToolsDisplayTableData(t);
-					}));
-					if (tool.isNotInstalled) {
-						if (tool.autoInstallSupported) {
-							toolsToAutoInstall.push(tool);
-						} else {
-							messages.push(localize('deploymentDialog.ToolInformation', "'{0}' was not discovered and automated installation is not currently supported. Install '{0}' manually or ensure it is started and discoverable. Once done please restart Azure Data Studio. See [{1}] .", tool.displayName, tool.homePage));
-						}
-					} else if (tool.isInstalled && toolRequirement.version && !tool.isSameOrNewerThan(toolRequirement.version)) {
-						minVersionCheckFailed = true;
-						messages.push(localize('deploymentDialog.ToolDoesNotMeetVersionRequirement', "'{0}' [ {1} ] does not meet the minimum version requirement, please uninstall it and restart Azure Data Studio.", tool.displayName, tool.homePage));
+			Promise.all(this._tools.map(tool => tool.loadInformation()))
+				.then(this.toolsTableWorkflow(currentRefreshTimestamp))
+				.catch(error => {
+					const errorMessage = getErrorMessage(error);
+					if (errorMessage) {
+						this._dialogObject.message = {
+							level: azdata.window.MessageLevel.Error,
+							text: errorMessage
+						};
 					}
-
-					return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || '', toolRequirement.version || '', tool.installationPath || ''];
 				});
-
-				this._installToolButton.hidden = minVersionCheckFailed || (toolsToAutoInstall.length === 0);
-				this._dialogObject.okButton.enabled = messages.length === 0 && !minVersionCheckFailed && (toolsToAutoInstall.length === 0);
-				if (messages.length !== 0) {
-					if (messages.length > 1) {
-						messages = messages.map(message => `•	${message}`);
-					}
-					messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed manually after Azure Data Studio is launched to pick up the updated PATH environment variable. You may find additional details in 'Deployments' output channel"));
-					this._dialogObject.message = {
-						level: azdata.window.MessageLevel.Error,
-						text: messages.join(EOL)
-					};
-				} else if ((toolsToAutoInstall.length !== 0) && !this._installationInProgress) {
-					const installationNeededHeader = toolsToAutoInstall.length === 1
-						? localize('deploymentDialog.InstallToolsHintOne', "Tool: {0} is not installed, you can click the \"{1}\" button to install it.", toolsToAutoInstall[0].displayName, this._installToolButton.label)
-						: localize('deploymentDialog.InstallToolsHintMany', "Tools: {0} are not installed, you can click the \"{1}\" button to install them.", toolsToAutoInstall.map(t => t.displayName).join(', '), this._installToolButton.label);
-					let infoText: string[] = [installationNeededHeader];
-					const informationalMessagesArray = this._tools.reduce<string[]>((returnArray, currentTool) => {
-						if (currentTool.autoInstallNeeded) {
-							returnArray.push(...currentTool.dependencyMessages);
-						}
-						return returnArray;
-					}, /* initial Value of return array*/[]);
-					const informationalMessagesSet: Set<string> = new Set<string>(informationalMessagesArray);
-					if (informationalMessagesSet.size > 0) {
-						infoText.push(...informationalMessagesSet.values());
-					}
-					// we don't have scenarios that have mixed type of tools - either we don't support auto install: docker, or we support auto install for all required tools
-					this._dialogObject.message = {
-						level: azdata.window.MessageLevel.Warning,
-						text: infoText.join(EOL)
-					};
-				}
-				this._toolsLoadingComponent.loading = false;
-			});
 		}
+	}
+
+	private toolsTableWorkflow(currentRefreshTimestamp: number): (() => PromiseLike<void>) {
+		return async () => {
+			// If the local timestamp does not match the class level timestamp, it means user has changed options, ignore the results
+			if (this.toolRefreshTimestamp !== currentRefreshTimestamp) {
+				return;
+			}
+			let minVersionCheckFailed = false;
+			const toolsToAutoInstall: ITool[] = [];
+			let messages: string[] = [];
+			this._toolsTable.data = this.toolRequirements.map(toolRequirement => {
+				const tool = this.toolsService.getToolByName(toolRequirement.name)!;
+				// subscribe to onUpdateData event of the tool.
+				this._toDispose.push(tool.onDidUpdateData((t: ITool) => {
+					this.updateToolsDisplayTableData(t);
+				}));
+				if (tool.isNotInstalled) {
+					if (tool.autoInstallSupported) {
+						toolsToAutoInstall.push(tool);
+					}
+					else {
+						messages.push(localize('deploymentDialog.ToolInformation', "'{0}' was not discovered and automated installation is not currently supported. Install '{0}' manually or ensure it is started and discoverable. Once done please restart Azure Data Studio. See [{1}] .", tool.displayName, tool.homePage));
+					}
+				}
+				else if (tool.isInstalled && toolRequirement.version && !tool.isSameOrNewerThan(toolRequirement.version)) {
+					minVersionCheckFailed = true;
+					messages.push(localize('deploymentDialog.ToolDoesNotMeetVersionRequirement', "'{0}' [ {1} ] does not meet the minimum version requirement, please uninstall it and restart Azure Data Studio.", tool.displayName, tool.homePage));
+				}
+				return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || '', toolRequirement.version || '', tool.installationPath || ''];
+			});
+			this._installToolButton.hidden = minVersionCheckFailed || (toolsToAutoInstall.length === 0);
+			this._dialogObject.okButton.enabled = messages.length === 0 && !minVersionCheckFailed && (toolsToAutoInstall.length === 0);
+			if (messages.length !== 0) {
+				if (messages.length > 1) {
+					messages = messages.map(message => `•	${message}`);
+				}
+				messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed manually after Azure Data Studio is launched to pick up the updated PATH environment variable. You may find additional details in 'Deployments' output channel"));
+				this._dialogObject.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: messages.join(EOL)
+				};
+			}
+			else if ((toolsToAutoInstall.length !== 0) && !this._installationInProgress) {
+				const installationNeededHeader = toolsToAutoInstall.length === 1
+					? localize('deploymentDialog.InstallToolsHintOne', "Tool: {0} is not installed, you can click the \"{1}\" button to install it.", toolsToAutoInstall[0].displayName, this._installToolButton.label)
+					: localize('deploymentDialog.InstallToolsHintMany', "Tools: {0} are not installed, you can click the \"{1}\" button to install them.", toolsToAutoInstall.map(t => t.displayName).join(', '), this._installToolButton.label);
+				let infoText: string[] = [installationNeededHeader];
+				const informationalMessagesArray = this._tools.reduce<string[]>((returnArray, currentTool) => {
+					if (currentTool.autoInstallNeeded) {
+						returnArray.push(...currentTool.dependencyMessages);
+					}
+					return returnArray;
+				}, /* initial Value of return array*/[]);
+				const informationalMessagesSet: Set<string> = new Set<string>(informationalMessagesArray);
+				if (informationalMessagesSet.size > 0) {
+					infoText.push(...informationalMessagesSet.values());
+				}
+				// we don't have scenarios that have mixed type of tools - either we don't support auto install: docker, or we support auto install for all required tools
+				this._dialogObject.message = {
+					level: azdata.window.MessageLevel.Warning,
+					text: infoText.join(EOL)
+				};
+			}
+			this._toolsLoadingComponent.loading = false;
+		};
+	}
+
+	private get toolRequirements() {
+		return this.getCurrentProvider().requiredTools;
 	}
 
 	private createAgreementCheckbox(agreementInfo: AgreementInfo): azdata.FlexContainer {
@@ -347,7 +363,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._installationInProgress = true;
 		let tool: ITool;
 		try {
-			const toolRequirements = this.getCurrentProvider().requiredTools;
+			const toolRequirements = this.toolRequirements;
 			let toolsNotInstalled: ITool[] = [];
 			for (let i: number = 0; i < toolRequirements.length; i++) {
 				const toolReq = toolRequirements[i];
