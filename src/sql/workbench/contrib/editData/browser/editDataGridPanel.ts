@@ -139,7 +139,6 @@ export class EditDataGridPanel extends GridParentComponent {
 					this.logService.error('Unexpected query event type "' + event.type + '" sent');
 					break;
 			}
-			//self._cd.detectChanges();
 		});
 
 		this.dataService.onLoaded();
