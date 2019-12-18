@@ -841,18 +841,6 @@ export class EditDataGridPanel extends GridParentComponent {
 
 				this.tables[0] = new Table(this.nativeElement.appendChild(newGridContainer), { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
 
-				if (this.selectionModel) {
-					if (typeof this.selectionModel === 'object') {
-						this.tables[0].setSelectionModel(this.selectionModel);
-					} else if (typeof this.selectionModel === 'string' && Slick[this.selectionModel] && typeof Slick[this.selectionModel] === 'function') {
-						this.tables[0].grid.setSelectionModel(Slick[this.selectionModel]);
-					} else {
-						console.error(`Tried to register selection model ${this.selectionModel},
-						but none was found to be attached to Slick Grid or it was not a function.
-						Please extend the Slick namespace with the selection model as a function before registering`);
-					}
-				}
-
 				for (let plugin of this.plugins[0]) {
 					this.tables[0].registerPlugin(plugin);
 				}
