@@ -166,9 +166,8 @@ export class EditDataGridPanel extends GridParentComponent {
 		self.oldDataRows = undefined;
 		self.placeHolderDataSets = [];
 		self.renderedDataSets = self.placeHolderDataSets;
-		//this._cd.detectChanges();
 
-		// Hooking up edit functionshandle
+		// Hooking up edit functions handle
 		this.onIsCellEditValid = (row, column, value): boolean => {
 			// TODO can only run sync code
 			return true;
