@@ -915,6 +915,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	private getMatchingAuthType(displayName: string): AuthenticationType {
+		if (!displayName) {
+			return undefined;
+		}
 		return find(ConnectionWidget._authTypes, authType => this.getAuthTypeDisplayName(authType) === displayName);
 	}
 
