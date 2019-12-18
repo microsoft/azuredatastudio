@@ -196,11 +196,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 
 		super.setInput(input, options, CancellationToken.None);
 		DOM.clearNode(parentElement);
-		parentElement.appendChild(this._overlay);
-		await this.setNotebookModel();
-		if (this._findState.isRevealed) {
-			this._triggerInputChange();
-		}
+		await this.setFindInput(parentElement);
 		if (!input.hasBootstrapped) {
 			let container = DOM.$<HTMLElement>('.notebookEditor');
 			container.style.height = '100%';
@@ -211,6 +207,16 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 			this._notebookContainer = DOM.append(parentElement, input.container);
 			input.doChangeLayout();
 			return Promise.resolve(null);
+		}
+	}
+
+	private async setFindInput(parentElement: HTMLElement): Promise<void> {
+		parentElement.appendChild(this._overlay);
+		await this.setNotebookModel();
+		if (this._findState.isRevealed) {
+			this._triggerInputChange();
+		} else {
+			this._findDecorations.clearDecorations();
 		}
 	}
 
