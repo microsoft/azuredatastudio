@@ -46,10 +46,12 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 	public async openProject(projectFiles: vscode.Uri[]) {
 		if (projectFiles.length > 1) { // TODO: how to handle opening a folder with multiple .sqlproj files?
 			vscode.window.showErrorMessage(constants.multipleSqlProjFiles);
+			return;
 		}
 
 		if (projectFiles.length === 0) {
 			vscode.window.showErrorMessage(constants.noSqlProjFiles);
+			return;
 		}
 
 		let directoryPath = path.dirname(projectFiles[0].fsPath);
