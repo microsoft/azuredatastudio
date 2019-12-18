@@ -31,8 +31,8 @@ export default class MainController implements vscode.Disposable {
 	public deactivate(): void {
 	}
 
-	public activate(): void {
-		this.initializeDatabaseProjects();
+	public async activate(): Promise<void> {
+		await this.initializeDatabaseProjects();
 	}
 
 	private async initializeDatabaseProjects(): Promise<void> {

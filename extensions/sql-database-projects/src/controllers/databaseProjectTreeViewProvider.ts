@@ -20,7 +20,7 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		this.initialize();
 	}
 
-	private async initialize() {
+	private initialize() {
 		this.roots = [new SqlDatabaseProjectItem(constants.noOpenProjectMessage, false)];
 	}
 
