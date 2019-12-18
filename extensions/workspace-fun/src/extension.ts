@@ -34,15 +34,25 @@ class JSONFileSystemProvider implements vscode.FileSystemProvider {
 	public readonly onDidChangeFile = this._onDidChangeFile.event;
 
 	watch(uri: vscode.Uri, options: { recursive: boolean; excludes: string[]; }): vscode.Disposable {
-		throw new Error('Method not implemented.');
+		return vscode.workspace.createFileSystemWatcher(uri.fsPath);
 	}
 
-	stat(uri: vscode.Uri): vscode.FileStat | Thenable<vscode.FileStat> {
-		throw new Error('Method not implemented.');
+	async stat(uri: vscode.Uri): Promise<vscode.FileStat> {
+		if (uri.path.endsWith('.json')) {
+			const stats = await vscode.workspace.fs.stat(uri.with({ scheme: 'file' }));
+			return { size: stats.size, ctime: stats.ctime, mtime: stats.mtime, type: vscode.FileType.Directory };
+		} else {
+			return { size: 0, ctime: 0, mtime: 0, type: vscode.FileType.Unknown };
+		}
 	}
 
-	readDirectory(uri: vscode.Uri): [string, vscode.FileType][] | Thenable<[string, vscode.FileType][]> {
-		throw new Error('Method not implemented.');
+	async readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
+		let json = JSON.parse((await vscode.workspace.fs.readFile(uri.with({ scheme: 'file' }))).toString());
+		if (Array.isArray(json)) {
+			json = json[0];
+		}
+
+		return Object.keys(json).map(k => [k, vscode.FileType.Unknown]);
 	}
 
 	createDirectory(uri: vscode.Uri): void | Thenable<void> {

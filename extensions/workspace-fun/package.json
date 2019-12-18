@@ -10,7 +10,8 @@
 	},
 	"activationEvents": [
     "onCommand:workspaceFun.addFolder",
-    "onCommand:workspaceFun.addJson"
+    "onCommand:workspaceFun.addJson",
+    "onFileSystem:json"
 	],
 	"main": "./out/extension",
 	"dependencies": {

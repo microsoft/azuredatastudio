@@ -9,7 +9,7 @@
     "azdata": "*"
   },
   "activationEvents": [
-    "*"
+    "onCommand:setupIntegrationTest"
   ],
   "main": "./out/main",
   "extensionDependencies": [
