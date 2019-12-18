@@ -14,7 +14,8 @@
   "aiKey": "AIF-c5594e2d-38b5-4d3b-ab1b-ed5d4fe8ee40",
   "activationEvents": [
     "onCommand:sqlDatabaseProjects.new",
-    "onCommand:sqlDatabaseProjects.open"
+    "onCommand:sqlDatabaseProjects.open",
+    "workspaceContains:**/*.sqlproj"
   ],
   "main": "./out/extension",
   "repository": {
