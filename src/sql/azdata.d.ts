@@ -3037,8 +3037,17 @@ declare module 'azdata' {
 	}
 
 	export interface ComponentWithIcon {
+		/**
+		 * @deprecated This will be moved to `ComponentWithIconProperties`
+		 */
 		iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		/**
+		 * @deprecated This will be moved to `ComponentWithIconProperties`
+		 */
 		iconHeight?: number | string;
+		/**
+		 * @deprecated This will be moved to `ComponentWithIconProperties`
+		 */
 		iconWidth?: number | string;
 	}
 
@@ -3244,6 +3253,8 @@ declare module 'azdata' {
 		 */
 		fileContent?: string;
 		/**
+		 * @deprecated This will be moved to `ComponentWithIconProperties`
+		 *
 		 * The title for the button. This title will show when hovered over
 		 */
 		title?: string;

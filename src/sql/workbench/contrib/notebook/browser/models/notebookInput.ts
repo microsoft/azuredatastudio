@@ -24,7 +24,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { Deferred } from 'sql/base/common/promise';
 import { NotebookTextFileModel } from 'sql/workbench/contrib/notebook/browser/models/notebookTextFileModel';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
 import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
@@ -245,6 +245,10 @@ export abstract class NotebookInput extends EditorInput {
 			this._title = resources.basenameOrAuthority(this.resource);
 		}
 		return this._title;
+	}
+
+	public isReadonly(): boolean {
+		return false;
 	}
 
 	public async getProviderInfo(): Promise<IProviderInfo> {

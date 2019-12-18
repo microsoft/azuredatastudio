@@ -1,17 +1,27 @@
 steps:
-  - task: NodeTool@0
+  - script: |
+      mkdir -p .build
+      echo -n $BUILD_SOURCEVERSION > .build/commit
+      echo -n $VSCODE_QUALITY > .build/quality
+    displayName: Prepare cache flag
+
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
     inputs:
-      versionSpec: '10.15.1'
+      keyfile: 'build/.cachesalt, .build/commit, .build/quality'
+      targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
+      vstsFeed: 'BuildCache'
+      platformIndependent: true
+      alias: 'Compilation'
 
   - script: |
       set -e
-      sudo apt-get update
-      sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 libkrb5-dev #{{SQL CARBON EDIT}} add kerberos dep
-      sudo cp build/azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
-      sudo chmod +x /etc/init.d/xvfb
-      sudo update-rc.d xvfb defaults
-      sudo service xvfb start
-    displayName: 'System Installs'
+      exit 1
+    displayName: Check RestoreCache
+    condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.15.1'
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
@@ -45,7 +55,7 @@ steps:
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
     inputs:
-      keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+      keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
       targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
       vstsFeed: 'BuildCache'
 
@@ -53,11 +63,13 @@ steps:
       set -e
       CHILD_CONCURRENCY=1 yarn --frozen-lockfile
     displayName: Install dependencies
+    env:
+      GITHUB_TOKEN: $(github-distro-mixin-password)
     condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
     inputs:
-      keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
+      keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
       targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
       vstsFeed: 'BuildCache'
     condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
@@ -76,46 +88,46 @@ steps:
   - script: |
       set -e
       yarn gulp install-sqltoolsservice
-    displayName: Install sqltoolsservice
-
-  - script: |
-      set -e
       yarn gulp install-ssmsmin
-    displayName: Install ssmsmin
+    displayName: Install extension binaries
 
   - script: |
       set -e
-      yarn gulp vscode-linux-x64-min
+      yarn gulp vscode-linux-x64-min-ci
+      yarn gulp vscode-reh-linux-x64-min-ci
+      yarn gulp vscode-reh-web-linux-x64-min-ci
     displayName: Build
+    env:
+      VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
 
   - script: |
       set -e
+      service xvfb start
+    displayName: Start xvfb
+    condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
+
+  - script: |
+      set -e
+      yarn gulp package-rebuild-extensions
       yarn gulp compile-extensions
-    displayName: Compile Extensions
-
-  - script: |
-      set -e
       yarn gulp package-external-extensions
     displayName: Package External extensions
 
-  - task: ArchiveFiles@2 # WHY ARE WE DOING THIS?
-    displayName: 'Archive build scripts source'
-    inputs:
-      rootFolderOrFile: '$(Build.SourcesDirectory)/build'
-      archiveType: tar
-      archiveFile: '$(Build.BinariesDirectory)/source.tar.gz'
-
-  - task: PublishBuildArtifacts@1 # WHY ARE WE DOING THIS?
-    displayName: 'Publish Artifact: build scripts source'
-    inputs:
-      PathtoPublish: '$(Build.BinariesDirectory)/source.tar.gz'
-      ArtifactName: source
-
-  - script: DISPLAY=:10 ./scripts/test-extensions-unit.sh
+  - script: |
+      set -e
+      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
+      APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
+      INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
+      DISPLAY=:10 ./scripts/test-extensions-unit.sh
     displayName: 'Run Stable Extension Unit Tests'
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  - script: DISPLAY=:10 ./scripts/test-extensions-unit-unstable.sh
+  - script: |
+      set -e
+      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
+      APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
+      INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
+      DISPLAY=:10 ./scripts/test-extensions-unit-unstable.sh
     displayName: 'Run Unstable Extension Unit Tests'
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
@@ -130,51 +142,10 @@ steps:
       yarn gulp vscode-linux-x64-build-rpm
     displayName: Build Rpm
 
-  - task: ArchiveFiles@1 # WHY ARE WE DOING THIS?
-    displayName: 'Archive files '
-    inputs:
-      rootFolder: '$(Build.SourcesDirectory)/../azuredatastudio-linux-x64'
-      archiveType: tar
-      archiveFile: '$(Build.ArtifactStagingDirectory)/azuredatastudio-linux-x64.tar.gz'
-
-  - task: CopyFiles@2
-    displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory) (deb)'
-    inputs:
-      SourceFolder: '$(Build.SourcesDirectory)/.build/linux/deb/amd64/deb'
-      Contents: '*.deb'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)'
-
-  - task: CopyFiles@2
-    displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory) (rpm)'
-    inputs:
-      SourceFolder: '$(Build.SourcesDirectory)/.build/linux/rpm/x86_64/'
-      Contents: '*.rpm'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)'
-
-  - task: CopyFiles@2
-    displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/vsix'
-    inputs:
-      SourceFolder: '$(Build.SourcesDirectory)/../vsix'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/vsix'
-
-  - script: | # WHY ARE WE DOING THIS?
+  - script: |
       set -e
-      PACKAGEJSON="$(Build.SourcesDirectory)/package.json"
-      VERSION=$(node -p "require(\"$PACKAGEJSON\").version")
-      COMMIT_ID=$(git rev-parse HEAD)
-
-      echo -e "{  \"version\": \"$VERSION\", \"quality\": \"$VSCODE_QUALITY\", \"commit\": \"$COMMIT_ID\" }" > "$(Build.ArtifactStagingDirectory)/version.json"
-    displayName: 'Create version.json'
-
-  - script: | # WHY ARE WE DOING THIS?
-      set -e
-      for f in *
-      do
-      shasum -a 256 "$f" >> sha256hashes.txt
-      done
-    workingDirectory: '$(Build.ArtifactStagingDirectory)'
-    displayName: 'Get SHA256 Hashes'
-    continueOnError: true
+      ./build/azure-pipelines/linux/createDrop.sh
+    displayName: Create Drop
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
@@ -199,11 +170,3 @@ steps:
     displayName: 'Component Detection'
     inputs:
       failOnAlert: true
-
-  - script: 'echo "##vso[build.addbuildtag]Scheduled" '
-    displayName: 'Add scheduled tag if needed'
-    condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['Build.Reason'], 'Schedule'))
-
-  - script: 'echo "##vso[build.addbuildtag]PerfTestCandidate" '
-    displayName: 'Add PerfTestCandidate tag if needed'
-    condition: and(in(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['VSCODE_QUALITY'], 'insider'))

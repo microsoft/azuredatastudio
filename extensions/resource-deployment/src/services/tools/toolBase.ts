@@ -41,6 +41,7 @@ export const messageByDependencyType: Map<dependencyType, string> = new Map<depe
 
 export abstract class ToolBase implements ITool {
 	constructor(private _platformService: IPlatformService) {
+		this.startVersionAndStatusUpdate();
 	}
 
 	abstract name: string;
@@ -97,7 +98,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	public get autoInstallNeeded(): boolean {
-		return this.status !== ToolStatus.Installed && this.autoInstallSupported;
+		return this.status === ToolStatus.NotInstalled && this.autoInstallSupported;
 	}
 
 	public get isNotInstalled(): boolean {
@@ -138,7 +139,7 @@ export abstract class ToolBase implements ITool {
 		return this._statusDescription;
 	}
 
-	public get installationPath(): string {
+	public get installationPath(): string | undefined {
 		return this._installationPath;
 	}
 
@@ -179,8 +180,8 @@ export abstract class ToolBase implements ITool {
 		try {
 			this.status = ToolStatus.Installing;
 			await this.installCore();
-			await this.addInstallationSearchPathsToSystemPath();
-			this.status = await this.updateVersionAndGetStatus();
+			this.startVersionAndStatusUpdate();
+			await this._pendingVersionAndStatusUpdate;
 		} catch (error) {
 			const errorMessage = getErrorMessage(error);
 			this._statusDescription = localize('toolBase.InstallError', "Error installing tool '{0}' [ {1} ].{2}Error: {3}{2}See output channel '{4}' for more details", this.displayName, this.homePage, EOL, errorMessage, this.outputChannelName);
@@ -190,7 +191,7 @@ export abstract class ToolBase implements ITool {
 
 		// Since we just completed installation, the status should be ToolStatus.Installed
 		// but if it is ToolStatus.NotInstalled then it means that installation failed with 0 exit code.
-		if (this.status === ToolStatus.NotInstalled) {
+		if ((this.status as ToolStatus) === ToolStatus.NotInstalled) {
 			this._statusDescription = localize('toolBase.InstallFailed', "Installation commands completed but version of tool '{0}' could not be detected so our installation attempt has failed. Detection Error: {1}{2}Cleaning up previous installations would help.", this.displayName, this._statusDescription, EOL);
 			if (this.uninstallCommand) {
 				this._statusDescription += localize('toolBase.ManualUninstallCommand', " A possibly way to uninstall is using this command:{0}   >{1}", EOL, this.uninstallCommand);
@@ -220,7 +221,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	protected async addInstallationSearchPathsToSystemPath(): Promise<void> {
-		const searchPaths = [...await this.getSearchPaths(), this.storagePath].filter(path => !!path);
+		const searchPaths = [...(new Set<string>([...await this.getSearchPaths(), this.storagePath].filter(path => !!path))).values()]; // collect all unique installation search paths
 		this.logToOutputChannel(localize('toolBase.addInstallationSearchPathsToSystemPath.SearchPaths', "Search Paths for tool '{0}': {1}", this.displayName, JSON.stringify(searchPaths, undefined, '\t'))); //this.displayName is localized and searchPaths are OS filesystem paths.
 		searchPaths.forEach(searchPath => {
 			if (process.env.PATH) {
@@ -234,14 +235,16 @@ export abstract class ToolBase implements ITool {
 	}
 
 	public async loadInformation(): Promise<void> {
-		if (this.status === ToolStatus.NotInstalled) {
-			await this.addInstallationSearchPathsToSystemPath();
-			this.status = await this.updateVersionAndGetStatus();
-		}
+		await this._pendingVersionAndStatusUpdate;
 	}
 
-	private async updateVersionAndGetStatus(): Promise<ToolStatus> {
+	private startVersionAndStatusUpdate() {
+		this._pendingVersionAndStatusUpdate = this.updateVersionAndStatus();
+	}
+
+	private async updateVersionAndStatus(): Promise<void> {
 		this._statusDescription = '';
+		await this.addInstallationSearchPathsToSystemPath();
 		const commandOutput = await this._platformService.runCommand(
 			this.versionCommand.command,
 			{
@@ -257,11 +260,11 @@ export abstract class ToolBase implements ITool {
 				// discover and set the installationPath
 				await this.setInstallationPath();
 			}
-			return ToolStatus.Installed;
+			this.status = ToolStatus.Installed;
 		}
 		else {
 			this._statusDescription = localize('deployCluster.GetToolVersionError', "Error retrieving version information.{0}Invalid output received, get version command output: '{1}' ", EOL, commandOutput);
-			return ToolStatus.NotInstalled;
+			this.status = ToolStatus.NotInstalled;
 		}
 	}
 
@@ -297,8 +300,9 @@ export abstract class ToolBase implements ITool {
 		return !version || (this._version ? SemVerCompare(this._version, version) >= 0 : false);
 	}
 
+	private _pendingVersionAndStatusUpdate!: Promise<void>;
 	private _status: ToolStatus = ToolStatus.NotInstalled;
 	private _version?: SemVer;
 	private _statusDescription?: string;
-	private _installationPath!: string;
+	private _installationPath?: string;
 }

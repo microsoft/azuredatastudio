@@ -18,7 +18,6 @@ import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
-import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
@@ -102,9 +101,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 				this.handleClipping();
 			}
 		}, error => {
-			if (this._bootstrap.connectionManagementService.connectionInfo.serverInfo.engineEditionId !== DatabaseEngineEdition.SqlOnDemand) {
-				(<HTMLElement>this._el.nativeElement).innerText = nls.localize('dashboard.properties.error', "Unable to load dashboard properties");
-			}
+			(<HTMLElement>this._el.nativeElement).innerText = nls.localize('dashboard.properties.error', "Unable to load dashboard properties");
 		})));
 	}
 

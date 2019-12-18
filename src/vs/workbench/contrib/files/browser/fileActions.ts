@@ -7,7 +7,7 @@ import 'vs/css!./media/fileactions';
 import * as nls from 'vs/nls';
 import { isWindows, isWeb } from 'vs/base/common/platform';
 import * as extpath from 'vs/base/common/extpath';
-import { extname, basename } from 'vs/base/common/path';
+import { extname, basename, posix, win32 } from 'vs/base/common/path';
 import * as resources from 'vs/base/common/resources';
 import { URI } from 'vs/base/common/uri';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
@@ -18,7 +18,7 @@ import { VIEWLET_ID, IExplorerService, IFilesConfiguration } from 'vs/workbench/
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { IFileService } from 'vs/platform/files/common/files';
 import { toResource, SideBySideEditor } from 'vs/workbench/common/editor';
-import { ExplorerViewlet } from 'vs/workbench/contrib/files/browser/explorerViewlet';
+import { ExplorerViewPaneContainer } from 'vs/workbench/contrib/files/browser/explorerViewlet';
 import { IQuickOpenService } from 'vs/platform/quickOpen/common/quickOpen';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
@@ -45,6 +45,7 @@ import { asDomUri, triggerDownload } from 'vs/base/browser/dom';
 import { mnemonicButtonLabel } from 'vs/base/common/labels';
 import { IFilesConfigurationService } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
 import { IWorkingCopyService, IWorkingCopy } from 'vs/workbench/services/workingCopy/common/workingCopyService';
+import { ILabelService } from 'vs/platform/label/common/label';
 
 export const NEW_FILE_COMMAND_ID = 'explorer.newFile';
 export const NEW_FILE_LABEL = nls.localize('newFile', "New File");
@@ -349,12 +350,12 @@ function containsBothDirectoryAndFile(distinctElements: ExplorerItem[]): boolean
 }
 
 
-export function findValidPasteFileTarget(targetFolder: ExplorerItem, fileToPaste: { resource: URI, isDirectory?: boolean, allowOverwrite: boolean }, incrementalNaming: 'simple' | 'smart'): URI {
+export function findValidPasteFileTarget(explorerService: IExplorerService, targetFolder: ExplorerItem, fileToPaste: { resource: URI, isDirectory?: boolean, allowOverwrite: boolean }, incrementalNaming: 'simple' | 'smart'): URI {
 	let name = resources.basenameOrAuthority(fileToPaste.resource);
 
 	let candidate = resources.joinPath(targetFolder.resource, name);
 	while (true && !fileToPaste.allowOverwrite) {
-		if (!targetFolder.root.find(candidate)) {
+		if (!explorerService.findClosest(candidate)) {
 			break;
 		}
 
@@ -673,7 +674,7 @@ export class CollapseExplorerView extends Action {
 	}
 
 	async run(): Promise<any> {
-		const explorerViewlet = await this.viewletService.openViewlet(VIEWLET_ID) as ExplorerViewlet;
+		const explorerViewlet = (await this.viewletService.openViewlet(VIEWLET_ID))?.getViewPaneContainer() as ExplorerViewPaneContainer;
 		const explorerView = explorerViewlet.getExplorerView();
 		if (explorerView) {
 			explorerView.collapseAll();
@@ -875,6 +876,7 @@ async function openExplorerAndCreate(accessor: ServicesAccessor, isFolder: boole
 	const editorService = accessor.get(IEditorService);
 	const viewletService = accessor.get(IViewletService);
 	const notificationService = accessor.get(INotificationService);
+	const labelService = accessor.get(ILabelService);
 
 	await viewletService.openViewlet(VIEWLET_ID, true);
 
@@ -891,13 +893,16 @@ async function openExplorerAndCreate(accessor: ServicesAccessor, isFolder: boole
 		throw new Error('Parent folder is readonly.');
 	}
 
-	const newStat = new NewExplorerItem(folder, isFolder);
+	const newStat = new NewExplorerItem(explorerService, folder, isFolder);
 	await folder.fetchChildren(fileService, explorerService);
 
 	folder.addChild(newStat);
 
 	const onSuccess = (value: string): Promise<void> => {
-		const createPromise = isFolder ? fileService.createFolder(resources.joinPath(folder.resource, value)) : textFileService.create(resources.joinPath(folder.resource, value));
+		const separator = labelService.getSeparator(folder.resource.scheme);
+		const resource = folder.resource.with({ path: separator === '/' ? posix.join(folder.resource.path, value) : win32.join(folder.resource.path, value) });
+		const createPromise = isFolder ? fileService.createFolder(resource) : textFileService.create(resource);
+
 		return createPromise.then(created => {
 			refreshIfSeparator(value, explorerService);
 			return isFolder ? explorerService.select(created.resource, true)
@@ -1001,7 +1006,12 @@ const downloadFileHandler = (accessor: ServicesAccessor) => {
 	const explorerService = accessor.get(IExplorerService);
 	const stats = explorerService.getContext(true);
 
+	let canceled = false;
 	stats.forEach(async s => {
+		if (canceled) {
+			return;
+		}
+
 		if (isWeb) {
 			if (!s.isDirectory) {
 				triggerDownload(asDomUri(s.resource), s.name);
@@ -1020,6 +1030,9 @@ const downloadFileHandler = (accessor: ServicesAccessor) => {
 			});
 			if (destination) {
 				await textFileService.copy(s.resource, destination);
+			} else {
+				// User canceled a download. In case there were multiple files selected we should cancel the remainder of the prompts #86100
+				canceled = true;
 			}
 		}
 	});
@@ -1062,7 +1075,7 @@ export const pasteFileHandler = async (accessor: ServicesAccessor) => {
 			}
 
 			const incrementalNaming = configurationService.getValue<IFilesConfiguration>().explorer.incrementalNaming;
-			const targetFile = findValidPasteFileTarget(target, { resource: fileToPaste, isDirectory: fileToPasteStat.isDirectory, allowOverwrite: pasteShouldMove }, incrementalNaming);
+			const targetFile = findValidPasteFileTarget(explorerService, target, { resource: fileToPaste, isDirectory: fileToPasteStat.isDirectory, allowOverwrite: pasteShouldMove }, incrementalNaming);
 
 			// Move/Copy File
 			if (pasteShouldMove) {

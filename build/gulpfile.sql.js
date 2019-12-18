@@ -146,7 +146,7 @@ gulp.task('package-external-extensions', task.series(
 			return { name: extensionName, path: extensionPath };
 		}).map(element => {
 			const pkgJson = require(path.join(element.path, 'package.json'));
-			const vsixDirectory = path.join(path.dirname(root), 'vsix');
+			const vsixDirectory = path.join(root, '.build', 'extensions');
 			mkdirp.sync(vsixDirectory);
 			const packagePath = path.join(vsixDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
 			console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
@@ -159,4 +159,9 @@ gulp.task('package-external-extensions', task.series(
 
 		return Promise.all(vsixes);
 	})
+));
+
+gulp.task('package-rebuild-extensions', task.series(
+	task.define('clean-rebuild-extensions', () => ext.cleanRebuildExtensions('.build/extensions')),
+	task.define('rebuild-extensions-build', () => ext.packageRebuildExtensionsStream().pipe(gulp.dest('.build'))),
 ));
