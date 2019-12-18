@@ -587,6 +587,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			let tenant = account.properties.tenants[tenantIndex];
 			if (tenant) {
 				this._azureTenantId = tenant.id;
+				this._callbacks.onAzureTenantSelection(tenant.id);
 			}
 		}
 	}
