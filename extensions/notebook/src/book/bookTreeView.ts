@@ -110,7 +110,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				vscode.window.showTextDocument(doc);
 			}
 		} catch (e) {
-			vscode.window.showErrorMessage(loc.opeNotebookError(resource, e instanceof Error ? e.message : e));
+			vscode.window.showErrorMessage(loc.openNotebookError(resource, e instanceof Error ? e.message : e));
 		}
 	}
 
@@ -119,7 +119,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			try {
 				vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(resource));
 			} catch (e) {
-				vscode.window.showErrorMessage(loc.opeMarkdownError(resource, e instanceof Error ? e.message : e));
+				vscode.window.showErrorMessage(loc.openMarkdownError(resource, e instanceof Error ? e.message : e));
 			}
 		});
 	}
