@@ -1130,13 +1130,9 @@ export class EditDataGridPanel extends GridParentComponent {
 	handleInitializeTable(): void {
 		// handleInitializeTable() will be called *after* the first time handleChanges() is called
 		// so, grid must be there already
-		if (this.topRowNumber === undefined) {
-			this.topRowNumber = 0;
-		}
 
 		if (this.dataSet.dataRows && this.dataSet.dataRows.getLength() > 0) {
-			this.tables[0].grid.scrollRowToTop(this.topRowNumber);
-			//this.tables[0].grid.scrollRowToTop(0);
+			this.tables[0].grid.scrollRowToTop(0);
 		}
 
 		if (this.dataSet.resized) {
