@@ -1,0 +1,34 @@
+{
+	"name": "workspace-fun",
+	"displayName": "Workspace Fun",
+	"description": "Workspace Fun",
+	"version": "1.0.0",
+	"publisher": "anthonydresser",
+	"license": "MIT",
+	"engines": {
+		"vscode": "^1.4.0"
+	},
+	"activationEvents": [
+		"onCommand:workspaceFun.addFolder"
+	],
+	"main": "./out/extension",
+	"dependencies": {
+	},
+	"contributes": {
+    "commands": [
+      {
+        "command": "workspaceFun.addFolder",
+        "title": "Add Folder To Workspace"
+      }
+    ],
+    "menus": {
+      "commandPalette": [{
+        "command": "workspaceFun.addFolder",
+        "group": "workspaceFun.commands"
+      }]
+    }
+	},
+	"devDependencies": {
+		"@types/node": "^12.11.7"
+	}
+}
