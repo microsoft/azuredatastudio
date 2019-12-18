@@ -8,7 +8,6 @@ import 'vs/css!./media/editData';
 import { VirtualizedCollection, AsyncDataProvider, ISlickColumn } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 
-
 import { IGridDataSet } from 'sql/workbench/contrib/grid/common/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
 import { IEditDataComponentParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
@@ -38,17 +37,10 @@ import { equals } from 'vs/base/common/arrays';
 
 export const EDITDATA_SELECTOR: string = 'editdatagridpanel';
 
-// @Component({
-// 	selector: EDITDATA_SELECTOR,
-// 	host: { '(window:keydown)': 'keyEvent($event)', '(window:gridnav)': 'keyEvent($event)' },
-// 	templateUrl: decodeURI(require.toUrl('./editData.component.html'))
-// })
-
-
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
 	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
-	private refreshGridTimeoutInMs = 200; //original value was 200.
+	private refreshGridTimeoutInMs = 200;
 
 	// The timeout handle for the refresh grid task
 	private refreshGridTimeoutHandle: any;
@@ -118,7 +110,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	/**
-	 * Called by Angular when the object is initialized
+	 * Called when the object is initialized
 	 */
 	onInit(): void {
 		const self = this;
