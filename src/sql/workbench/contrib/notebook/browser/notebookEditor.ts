@@ -126,12 +126,12 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 
 	async setNotebookModel(): Promise<void> {
 		let notebookEditorModel = await this.notebookInput.resolve();
-		if (notebookEditorModel) {
+		if (notebookEditorModel && !this.notebookInput.notebookFindModel.notebookModel) {
 			this._notebookModel = notebookEditorModel.getNotebookModel();
 			this.notebookInput.notebookFindModel.notebookModel = this._notebookModel;
-			if (!this.notebookInput.notebookFindModel.findDecorations) {
-				this.notebookInput.notebookFindModel.setNotebookFindDecorations(this);
-			}
+		}
+		if (!this.notebookInput.notebookFindModel.findDecorations) {
+			this.notebookInput.notebookFindModel.setNotebookFindDecorations(this);
 		}
 	}
 
@@ -287,34 +287,35 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 				if (this._findState.searchString) {
 					let findScope = this._findDecorations.getFindScope();
 					if (findScope !== null) {
-						if (findScope && findScope.startLineNumber !== findScope.endLineNumber) {
-							if (findScope.endColumn === 1) {
-								findScope = new NotebookRange(findScope.cell, findScope.startLineNumber, 1, findScope.endLineNumber - 1, this.notebookInput.notebookFindModel.getLineMaxColumn(findScope.endLineNumber - 1));
-							} else {
-								// multiline find scope => expand to line starts / ends
-								findScope = new NotebookRange(findScope.cell, findScope.startLineNumber, 1, findScope.endLineNumber, this.notebookInput.notebookFindModel.getLineMaxColumn(findScope.endLineNumber));
-							}
+						if (findScope) {
+							this._updateFinderMatchState();
+							this._findState.changeMatchInfo(
+								this.notebookFindModel.getFindIndex(),
+								this._findDecorations.getCount(),
+								this._currentMatch
+							);
 							this._setCurrentFindMatch(findScope);
 						}
+					} else {
+						this.notebookInput.notebookFindModel.find(this._findState.searchString, NOTEBOOK_MAX_MATCHES).then(findRange => {
+							if (findRange) {
+								this.updatePosition(findRange);
+							} else if (this.notebookInput.notebookFindModel.findMatches.length > 0) {
+								this.updatePosition(this.notebookInput.notebookFindModel.findMatches[0].range);
+							} else {
+								return;
+							}
+							this._updateFinderMatchState();
+							this._finder.focusFindInput();
+							this._findDecorations.set(this.notebookInput.notebookFindModel.findMatches, this._currentMatch);
+							this._findState.changeMatchInfo(
+								this.notebookFindModel.getFindIndex(),
+								this._findDecorations.getCount(),
+								this._currentMatch
+							);
+							this._setCurrentFindMatch(this._currentMatch);
+						});
 					}
-					this.notebookInput.notebookFindModel.find(this._findState.searchString, NOTEBOOK_MAX_MATCHES).then(findRange => {
-						if (findRange) {
-							this.updatePosition(findRange);
-						} else if (this.notebookInput.notebookFindModel.findMatches.length > 0) {
-							this.updatePosition(this.notebookInput.notebookFindModel.findMatches[0].range);
-						} else {
-							return;
-						}
-						this._updateFinderMatchState();
-						this._finder.focusFindInput();
-						this._findDecorations.set(this.notebookInput.notebookFindModel.findMatches, this._currentMatch);
-						this._findState.changeMatchInfo(
-							this.notebookFindModel.getFindIndex(),
-							this._findDecorations.getCount(),
-							this._currentMatch
-						);
-						this._setCurrentFindMatch(this._currentMatch);
-					});
 				} else {
 					this.notebookInput.notebookFindModel.clearFind();
 				}

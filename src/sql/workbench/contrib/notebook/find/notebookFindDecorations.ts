@@ -55,8 +55,8 @@ export class NotebookFindDecorations implements IDisposable {
 	}
 
 	public getFindScope(): NotebookRange | null {
-		if (this._findScopeDecorationId) {
-			return this._editor.notebookFindModel.getDecorationRange(this._findScopeDecorationId);
+		if (this._currentMatch) {
+			return this._currentMatch;
 		}
 		return null;
 	}

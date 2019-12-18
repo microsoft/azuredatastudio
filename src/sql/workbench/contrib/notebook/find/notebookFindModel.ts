@@ -38,7 +38,7 @@ let MODEL_ID = 0;
 export class NotebookFindModel extends Disposable implements INotebookFindModel {
 
 	private _findArray: Array<NotebookRange>;
-	private _findIndex: number;
+	private _findIndex: number = 0;
 	private _onFindCountChange = new Emitter<number>();
 	private _isDisposed: boolean;
 	public readonly id: string;
@@ -486,12 +486,11 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 
 	find(exp: string, maxMatches?: number): Promise<NotebookRange> {
 		this._findArray = new Array<NotebookRange>();
-		this._findIndex = 0;
 		this._onFindCountChange.fire(this._findArray.length);
 		if (exp) {
 			return new Promise<NotebookRange>((resolve) => {
 				const disp = this.onFindCountChange(e => {
-					resolve(this._findArray[0]);
+					resolve(this._findArray[this._findIndex]);
 					disp.dispose();
 				});
 				this._startSearch(exp, maxMatches);
