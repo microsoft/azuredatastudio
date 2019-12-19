@@ -18,10 +18,10 @@ let server: TestServerProfile;
 let connectionId: string;
 let ownerUri: string;
 const SERVER_CONNECTION_TIMEOUT: number = 3000;
-const TEST_CMS_NAME = `adsTestCms_${uuid.v4()}`;
-const TEST_CMS_GROUP = `adsTestCmsGroup_${uuid.v4()}`;
-const TEST_CMS_SERVER = `adsTestCmsServer_${uuid.v4()}`;
-const TEST_CMS_REG_SERVER = `adsTestCmsRegisteredServer_${uuid.v4()}`;
+const TEST_CMS_NAME = `adsTestCms_${uuid.v4().asHex()}`;
+const TEST_CMS_GROUP = `adsTestCmsGroup_${uuid.v4().asHex()}`;
+const TEST_CMS_SERVER = `adsTestCmsServer_${uuid.v4().asHex()}`;
+const TEST_CMS_REG_SERVER = `adsTestCmsRegisteredServer_${uuid.v4().asHex()}`;
 
 if (isTestSetupCompleted()) {
 	suite('CMS integration test suite', () => {
@@ -101,7 +101,7 @@ if (isTestSetupCompleted()) {
 				async () => cmsService.addRegisteredServer(ownerUri, '', undefined, 'test_description', undefined),
 				'Cannot add a registered without a name or connection');
 
-			let server = await getStandaloneServer();
+			let server = await getStandaloneServer('2019');
 			let connection = {
 				serverName: server.serverName,
 				userName: server.userName,
@@ -140,7 +140,7 @@ if (isTestSetupCompleted()) {
 				`Registered Server Group ${TEST_CMS_GROUP} was not found after being added. Groups : [${cmsResources.registeredServerGroups.map(g => g.name).join(', ')}]`);
 
 			// Should create a registered server under the group
-			let server = await getStandaloneServer();
+			let server = await getStandaloneServer('2019');
 			let connection = {
 				serverName: server.serverName,
 				userName: server.userName,
