@@ -118,7 +118,6 @@ export class EditDataResultsEditor extends BaseEditor {
 		// Note: pass in input so on disposal this is cleaned up.
 		// Otherwise many components will be left around and be subscribed
 		// to events from the backing data service
-
 		let params: IEditDataComponentParams = {
 			dataService: dataService,
 			onSaveViewState: input.onSaveViewStateEmitter.event,

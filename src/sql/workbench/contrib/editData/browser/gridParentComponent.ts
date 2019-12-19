@@ -7,7 +7,6 @@ import 'vs/css!./media/flexbox';
 import 'vs/css!./media/styles';
 
 import { Table } from 'sql/base/browser/ui/table/table';
-
 import { Subscription, Subject } from 'rxjs/Rx';
 import * as Constants from 'sql/workbench/contrib/query/common/constants';
 import * as LocalizedConstants from 'sql/workbench/contrib/query/common/localizedConstants';
@@ -71,11 +70,8 @@ export abstract class GridParentComponent extends Disposable {
 	protected resultActive = true;
 	protected _messageActive = true;
 	protected activeGrid = 0;
-
-
 	protected nativeElement: HTMLElement;
 	protected tables: Table<any>[] = [];
-
 
 	set messageActive(input: boolean) {
 		this._messageActive = input;
@@ -513,13 +509,12 @@ export abstract class GridParentComponent extends Disposable {
 		});
 	}
 
-	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
-
-	//own helper functions
+	/**
+	 * used to render the native element into the container.
+	 * */
 	public render(container: HTMLElement): void {
 		this.nativeElement.style.width = '100%';
 		this.nativeElement.style.height = '100%';
-
 		container.appendChild(this.nativeElement);
 	}
 }
