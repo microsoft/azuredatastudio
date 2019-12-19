@@ -2905,6 +2905,62 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "60",
+					"extensionName": "db-snapshot-creator",
+					"displayName": "DB Snapshot Creator",
+					"shortDescription": "Adds ability to create a snaphot of a database",
+					"publisher": {
+						"displayName": "Sean Price",
+						"publisherId": "ecirpnaes",
+						"publisherName": "ecirpnaes"
+					},
+					"versions": [
+						{
+							"version": "0.1.0",
+							"lastUpdated": "12/19/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/ecirpnaes/DbSnapshotCreator/releases/tag/0.1.0"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/ecirpnaes/DbSnapshotCreator/master/images/logo.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/ecirpnaes/DbSnapshotCreator/master/README.md"														},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/ecirpnaes/DbSnapshotCreator/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/ecirpnaes/DbSnapshotCreator/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/ecirpnaes/DbSnapshotCreator"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -2913,7 +2969,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 49
+							"count": 50
 						}
 					]
 				}
