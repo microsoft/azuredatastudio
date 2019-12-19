@@ -11,7 +11,7 @@ import * as utils from './utils';
 import * as uuid from './uuid';
 import { isTestSetupCompleted } from './testContext';
 import assert = require('assert');
-import { getStandaloneServer, TestServerProfile, getBdcServer } from './testConfig';
+import { getStandaloneServer, TestServerProfile } from './testConfig';
 
 let cmsService: mssql.ICmsService;
 let server: TestServerProfile;
@@ -101,26 +101,26 @@ if (isTestSetupCompleted()) {
 				async () => cmsService.addRegisteredServer(ownerUri, '', undefined, 'test_description', undefined),
 				'Cannot add a registered without a name or connection');
 
-			let bdcServer = await getBdcServer();
-			let bdcConnection = {
-				serverName: bdcServer.serverName,
-				userName: bdcServer.userName,
-				password: bdcServer.password,
-				authenticationType: bdcServer.authenticationTypeName,
-				database: bdcServer.database,
-				provider: bdcServer.provider,
-				version: bdcServer.version,
-				engineType: bdcServer.engineType,
+			let server = await getStandaloneServer();
+			let connection = {
+				serverName: server.serverName,
+				userName: server.userName,
+				password: server.password,
+				authenticationType: server.authenticationTypeName,
+				database: server.database,
+				provider: server.provider,
+				version: server.version,
+				engineType: server.engineType,
 				options: {}
 			};
 
 			// Should create a registered server
-			let result = await cmsService.addRegisteredServer(ownerUri, '', TEST_CMS_SERVER, 'test_description', bdcConnection);
+			let result = await cmsService.addRegisteredServer(ownerUri, '', TEST_CMS_SERVER, 'test_description', connection);
 			assert(result === true, `Registered server ${TEST_CMS_SERVER} was not added to CMS server successfully`);
 
 			// Shouldn't be able to create a new registered server with same name
 			await utils.assertThrowsAsync(
-				async () => await cmsService.addRegisteredServer(ownerUri, '', TEST_CMS_SERVER, 'test_description', bdcConnection),
+				async () => await cmsService.addRegisteredServer(ownerUri, '', TEST_CMS_SERVER, 'test_description', connection),
 				'Cannot add a registered server with existing name');
 
 			// Should remove the registered server we added above
@@ -140,21 +140,21 @@ if (isTestSetupCompleted()) {
 				`Registered Server Group ${TEST_CMS_GROUP} was not found after being added. Groups : [${cmsResources.registeredServerGroups.map(g => g.name).join(', ')}]`);
 
 			// Should create a registered server under the group
-			let bdcServer = await getBdcServer();
-			let bdcConnection = {
-				serverName: bdcServer.serverName,
-				userName: bdcServer.userName,
-				password: bdcServer.password,
-				authenticationType: bdcServer.authenticationTypeName,
-				database: bdcServer.database,
-				provider: bdcServer.provider,
-				version: bdcServer.version,
-				engineType: bdcServer.engineType,
+			let server = await getStandaloneServer();
+			let connection = {
+				serverName: server.serverName,
+				userName: server.userName,
+				password: server.password,
+				authenticationType: server.authenticationTypeName,
+				database: server.database,
+				provider: server.provider,
+				version: server.version,
+				engineType: server.engineType,
 				options: {}
 			};
 			let relativePath = cmsResources.registeredServerGroups[0].relativePath;
 
-			result = await cmsService.addRegisteredServer(ownerUri, relativePath, TEST_CMS_REG_SERVER, 'test_description', bdcConnection);
+			result = await cmsService.addRegisteredServer(ownerUri, relativePath, TEST_CMS_REG_SERVER, 'test_description', connection);
 			assert(result === true, `Registered server ${TEST_CMS_REG_SERVER} was not added to server group successfully`);
 
 			// Should remove the server group we added above

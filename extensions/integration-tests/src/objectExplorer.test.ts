@@ -13,7 +13,7 @@ import { stressify } from 'adstest';
 
 if (isTestSetupCompleted()) {
 	suite('Object Explorer integration suite', () => {
-		test('BDC instance node label test', async function () {
+		test.skip('BDC instance node label test', async function () {
 			return await (new ObjectExplorerTester()).bdcNodeLabelTest();
 		});
 		test('Standalone instance node label test', async function () {
@@ -22,7 +22,7 @@ if (isTestSetupCompleted()) {
 		test('Azure SQL DB instance node label test @UNSTABLE@', async function () {
 			return await (new ObjectExplorerTester()).sqlDbNodeLabelTest();
 		});
-		test('BDC instance context menu test', async function () {
+		test.skip('BDC instance context menu test', async function () {
 			return await (new ObjectExplorerTester()).bdcContextMenuTest();
 		});
 		test('Azure SQL DB context menu test @UNSTABLE@', async function () {
