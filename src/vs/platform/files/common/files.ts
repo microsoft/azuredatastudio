@@ -251,7 +251,7 @@ export interface IFileSystemProvider {
 
 	stat(resource: URI): Promise<IStat>;
 	mkdir(resource: URI): Promise<void>;
-	readdir(resource: URI): Promise<[string, FileType][]>;
+	readdir(resource: URI): Promise<[string, FileType, URI?][]>;
 	delete(resource: URI, opts: FileDeleteOptions): Promise<void>;
 
 	rename(from: URI, to: URI, opts: FileOverwriteOptions): Promise<void>;

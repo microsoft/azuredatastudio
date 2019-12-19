@@ -5920,7 +5920,7 @@ declare module 'vscode' {
 		 * @return An array of name/type-tuples or a thenable that resolves to such.
 		 * @throws [`FileNotFound`](#FileSystemError.FileNotFound) when `uri` doesn't exist.
 		 */
-		readDirectory(uri: Uri): [string, FileType][] | Thenable<[string, FileType][]>;
+		readDirectory(uri: Uri): [string, FileType][] | Thenable<[string, FileType, Uri?][]>;
 
 		/**
 		 * Create a new directory (Note, that new files are created via `write`-calls).

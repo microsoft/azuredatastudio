@@ -142,7 +142,7 @@ export class ExplorerItem {
 		}
 		this._name = value;
 		if (this._parent) {
-			this._parent.addChild(this);
+			this._parent.addChild(this, false);
 		}
 	}
 
@@ -171,7 +171,7 @@ export class ExplorerItem {
 			if (raw.children) {
 				for (let i = 0, len = raw.children.length; i < len; i++) {
 					const child = ExplorerItem.create(service, raw.children[i], stat, resolveTo);
-					stat.addChild(child);
+					stat.addChild(child, false);
 				}
 			}
 		}
@@ -231,7 +231,7 @@ export class ExplorerItem {
 
 				// New child: add
 				else {
-					local.addChild(diskChild);
+					local.addChild(diskChild, false);
 				}
 			});
 
@@ -244,10 +244,10 @@ export class ExplorerItem {
 	/**
 	 * Adds a child element to this folder.
 	 */
-	addChild(child: ExplorerItem): void {
+	addChild(child: ExplorerItem, overwrite: boolean = true): void {
 		// Inherit some parent properties to child
 		child._parent = this;
-		child.updateResource(false);
+		child.updateResource(false, overwrite);
 		this.children.set(this.getPlatformAwareName(child.name), child);
 	}
 
@@ -317,8 +317,8 @@ export class ExplorerItem {
 		this.updateResource(true);
 	}
 
-	private updateResource(recursive: boolean): void {
-		if (this._parent) {
+	private updateResource(recursive: boolean, overwrite?: boolean): void {
+		if (overwrite && this._parent) {
 			this.resource = resources.joinPath(this._parent.resource, this.name);
 		}
 

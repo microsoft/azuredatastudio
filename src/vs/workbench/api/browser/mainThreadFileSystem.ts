@@ -201,8 +201,8 @@ class RemoteFileSystemProvider implements IFileSystemProviderWithFileReadWriteCa
 		return this._proxy.$mkdir(this._handle, resource);
 	}
 
-	readdir(resource: URI): Promise<[string, FileType][]> {
-		return this._proxy.$readdir(this._handle, resource);
+	readdir(resource: URI): Promise<[string, FileType, URI?][]> {
+		return this._proxy.$readdir(this._handle, resource).then(v => v.map(([value, type, uri]) => [value, type, URI.revive(uri)]));
 	}
 
 	rename(resource: URI, target: URI, opts: FileOverwriteOptions): Promise<void> {

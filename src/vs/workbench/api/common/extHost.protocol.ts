@@ -877,7 +877,7 @@ export interface ExtHostWorkspaceShape {
 
 export interface ExtHostFileSystemShape {
 	$stat(handle: number, resource: UriComponents): Promise<files.IStat>;
-	$readdir(handle: number, resource: UriComponents): Promise<[string, files.FileType][]>;
+	$readdir(handle: number, resource: UriComponents): Promise<[string, files.FileType, UriComponents?][]>;
 	$readFile(handle: number, resource: UriComponents): Promise<VSBuffer>;
 	$writeFile(handle: number, resource: UriComponents, content: VSBuffer, opts: files.FileWriteOptions): Promise<void>;
 	$rename(handle: number, resource: UriComponents, target: UriComponents, opts: files.FileOverwriteOptions): Promise<void>;

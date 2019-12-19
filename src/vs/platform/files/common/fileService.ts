@@ -230,12 +230,12 @@ export class FileService extends Disposable implements IFileService {
 		if (fileStat.isDirectory && recurse(fileStat, siblings)) {
 			try {
 				const entries = await provider.readdir(resource);
-				const resolvedEntries = await Promise.all(entries.map(async ([name, type]) => {
+				const resolvedEntries = await Promise.all(entries.map(async ([name, type, override]) => {
 					try {
-						const childResource = joinPath(resource, name);
-						const childStat = resolveMetadata ? await provider.stat(childResource) : { type };
+						const childResource = override || joinPath(resource, name);
+						const childStat = resolveMetadata ? await (await this.withProvider(childResource)).stat(childResource) : { type };
 
-						return await this.toFileStat(provider, childResource, childStat, entries.length, resolveMetadata, recurse);
+						return await this.toFileStat(await this.withProvider(childResource), childResource, childStat, entries.length, resolveMetadata, recurse);
 					} catch (error) {
 						this.logService.trace(error);
 

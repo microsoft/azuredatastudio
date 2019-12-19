@@ -72,7 +72,7 @@ export class FileUserDataProvider extends Disposable implements
 		throw new Error('not supported');
 	}
 
-	readdir(resource: URI): Promise<[string, FileType][]> {
+	readdir(resource: URI): Promise<[string, FileType, URI?][]> {
 		return this.fileSystemProvider.readdir(this.toFileSystemResource(resource));
 	}
 

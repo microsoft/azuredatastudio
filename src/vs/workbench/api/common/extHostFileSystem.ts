@@ -260,8 +260,8 @@ export class ExtHostFileSystem implements ExtHostFileSystemShape {
 		return Promise.resolve(this._getFsProvider(handle).stat(URI.revive(resource))).then(ExtHostFileSystem._asIStat);
 	}
 
-	$readdir(handle: number, resource: UriComponents): Promise<[string, files.FileType][]> {
-		return Promise.resolve(this._getFsProvider(handle).readDirectory(URI.revive(resource)));
+	$readdir(handle: number, resource: UriComponents): Promise<[string, files.FileType, UriComponents?][]> {
+		return Promise.resolve(this._getFsProvider(handle).readDirectory(URI.revive(resource))).then(v => v.map(([name, type, uri]) => [name, type, uri?.toJSON()]));
 	}
 
 	$readFile(handle: number, resource: UriComponents): Promise<VSBuffer> {
