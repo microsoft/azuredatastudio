@@ -465,6 +465,8 @@ export interface INotebookFindModel {
 
 	findMatches: NotebookFindMatch[];
 
+	findExpression: string;
+
 	/** Emit event when the find count changes */
 	onFindCountChange: Event<number>;
 }

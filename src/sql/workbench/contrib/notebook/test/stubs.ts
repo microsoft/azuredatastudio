@@ -155,6 +155,7 @@ export class NotebookFindModelStub implements INotebookFindModel {
 		throw new Error('Method not implemented.');
 	}
 	findMatches: NotebookFindMatch[];
+	findExpression: string;
 	onFindCountChange: vsEvent.Event<number>;
 }
 

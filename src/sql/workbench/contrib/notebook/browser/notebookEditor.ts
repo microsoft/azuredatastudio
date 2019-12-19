@@ -8,7 +8,7 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
 import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
-import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
@@ -24,14 +24,9 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { NotebookFindNextAction, NotebookFindPreviousAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { INotebookModel, INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { Command } from 'vs/editor/browser/editorExtensions';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
-import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
-import { NOTEBOOK_COMMAND_SEARCH, NOTEBOOK_COMMAND_CLOSE_SEARCH, NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
 import { IDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import { IModelDecorationsChangeAccessor, IModelDeltaDecoration } from 'vs/editor/common/model';
 import { NotebookFindDecorations, NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
@@ -292,7 +287,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 			if (this._notebookModel) {
 				if (this._findState.searchString) {
 					let findScope = this._findDecorations.getFindScope();
-					if (findScope !== null) {
+					if (this._findState.searchString === this.notebookFindModel.findExpression && findScope !== null) {
 						if (findScope) {
 							this._updateFinderMatchState();
 							this._findState.changeMatchInfo(
@@ -303,17 +298,22 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 							this._setCurrentFindMatch(findScope);
 						}
 					} else {
+						this.notebookInput.notebookFindModel.clearDecorations();
+						this.notebookFindModel.findExpression = this._findState.searchString;
 						this.notebookInput.notebookFindModel.find(this._findState.searchString, NOTEBOOK_MAX_MATCHES).then(findRange => {
 							if (findRange) {
 								this.updatePosition(findRange);
-							} else if (this.notebookInput.notebookFindModel.findMatches.length > 0) {
-								this.updatePosition(this.notebookInput.notebookFindModel.findMatches[0].range);
+							} else if (this.notebookFindModel.findMatches.length > 0) {
+								this.updatePosition(this.notebookFindModel.findMatches[0].range);
 							} else {
+								this.notebookInput.notebookFindModel.clearFind();
+								this._updateFinderMatchState();
+								this._finder.focusFindInput();
 								return;
 							}
 							this._updateFinderMatchState();
 							this._finder.focusFindInput();
-							this._findDecorations.set(this.notebookInput.notebookFindModel.findMatches, this._currentMatch);
+							this._findDecorations.set(this.notebookFindModel.findMatches, this._currentMatch);
 							this._findState.changeMatchInfo(
 								this.notebookFindModel.getFindIndex(),
 								this._findDecorations.getCount(),
@@ -323,30 +323,27 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 						});
 					}
 				} else {
-					this.notebookInput.notebookFindModel.clearFind();
+					this.notebookFindModel.clearFind();
 				}
 			}
 		}
 	}
+
 	public setSelection(range: NotebookRange): void {
 		this._previousMatch = this._currentMatch;
 		this._currentMatch = range;
 	}
-	public toggleSearch(reveal: boolean): void {
-		if (reveal) {
-			this._findState.change({
-				isRevealed: true
-			}, false);
+	public toggleSearch(): void {
+		this._findState.change({
+			isRevealed: !this._findState.isRevealed
+		}, false);
+		if (this._findState.isRevealed) {
 			this._finder.focusFindInput();
-		} else {
-			this._findState.change({
-				isRevealed: false
-			}, false);
 		}
 	}
 
 	public findNext(): void {
-		this.notebookInput.notebookFindModel.findNext().then(p => {
+		this.notebookFindModel.findNext().then(p => {
 			this.updatePosition(p);
 			this._updateFinderMatchState();
 			this._setCurrentFindMatch(p);
@@ -355,7 +352,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 
 
 	public findPrevious(): void {
-		this.notebookInput.notebookFindModel.findPrevious().then(p => {
+		this.notebookFindModel.findPrevious().then(p => {
 			this.updatePosition(p);
 			this._updateFinderMatchState();
 			this._setCurrentFindMatch(p);
@@ -364,7 +361,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 
 	private _updateFinderMatchState(): void {
 		if (this.notebookInput && this.notebookInput.notebookFindModel) {
-			this._findState.changeMatchInfo(this.notebookInput.notebookFindModel.getFindIndex(), this.notebookInput.notebookFindModel.getFindCount(), this._currentMatch);
+			this._findState.changeMatchInfo(this.notebookFindModel.getFindIndex(), this.notebookFindModel.getFindCount(), this._currentMatch);
 		} else {
 			this._findState.changeMatchInfo(0, 0, undefined);
 		}
@@ -403,57 +400,3 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		this._onFindStateChange(changeEvent).catch(e => { onUnexpectedError(e); });
 	}
 }
-
-abstract class SettingsCommand extends Command {
-
-	protected getNotebookEditor(accessor: ServicesAccessor): NotebookEditor {
-		const activeEditor = accessor.get(IEditorService).activeControl;
-		if (activeEditor instanceof NotebookEditor) {
-			return activeEditor;
-		}
-		return null;
-	}
-
-}
-
-class StartSearchNotebookCommand extends SettingsCommand {
-
-	public runCommand(accessor: ServicesAccessor, args: any): void {
-		const NotebookEditor = this.getNotebookEditor(accessor);
-		if (NotebookEditor) {
-			NotebookEditor.toggleSearch(true);
-		}
-	}
-
-}
-
-const command = new StartSearchNotebookCommand({
-	id: NOTEBOOK_COMMAND_SEARCH,
-	precondition: ContextKeyExpr.and(NotebookEditorVisibleContext),
-	kbOpts: {
-		primary: KeyMod.CtrlCmd | KeyCode.KEY_F,
-		weight: KeybindingWeight.EditorContrib
-	}
-});
-command.register();
-
-class CloseSearchNotebookCommand extends SettingsCommand {
-
-	public runCommand(accessor: ServicesAccessor, args: any): void {
-		const NotebookEditor = this.getNotebookEditor(accessor);
-		if (NotebookEditor) {
-			NotebookEditor.toggleSearch(false);
-		}
-	}
-
-}
-
-const command2 = new CloseSearchNotebookCommand({
-	id: NOTEBOOK_COMMAND_CLOSE_SEARCH,
-	precondition: ContextKeyExpr.and(NotebookEditorVisibleContext),
-	kbOpts: {
-		primary: KeyCode.Escape,
-		weight: KeybindingWeight.EditorContrib
-	}
-});
-command2.register();

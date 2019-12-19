@@ -19,7 +19,7 @@ import { singleLetterHash, isHighSurrogate } from 'vs/base/common/strings';
 import { Command, ServicesAccessor } from 'vs/editor/browser/editorExtensions';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { NOTEBOOK_COMMAND_SEARCH, NotebookEditorVisibleContext, NOTEBOOK_COMMAND_CLOSE_SEARCH } from 'sql/workbench/services/notebook/common/notebookContext';
+import { NOTEBOOK_COMMAND_SEARCH, NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
@@ -49,6 +49,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 	private _findDecorations: NotebookFindDecorations;
 	public currentMatch: NotebookRange;
 	public previousMatch: NotebookRange;
+	public findExpression: string;
 
 	//#region Decorations
 	private readonly _onDidChangeDecorations: DidChangeDecorationsEmitter = this._register(new DidChangeDecorationsEmitter());
@@ -88,6 +89,11 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 	public setNotebookFindDecorations(editor: NotebookEditor): void {
 		this._findDecorations = new NotebookFindDecorations(editor);
 		this._findDecorations.setStartPosition(this.getPosition());
+	}
+
+	public clearDecorations(): void {
+		this._findDecorations.dispose();
+		this.clearFind();
 	}
 
 	public static DEFAULT_CREATION_OPTIONS: model.ITextModelCreationOptions = {
@@ -641,18 +647,18 @@ abstract class SettingsCommand extends Command {
 
 }
 
-class StartSearchNotebookCommand extends SettingsCommand {
+class SearchNotebookCommand extends SettingsCommand {
 
 	public runCommand(accessor: ServicesAccessor, args: any): void {
 		const notebookEditor = this.getNotebookEditor(accessor);
 		if (notebookEditor) {
-			notebookEditor.toggleSearch(true);
+			notebookEditor.toggleSearch();
 		}
 	}
 
 }
 
-export const findCommand = new StartSearchNotebookCommand({
+export const findCommand = new SearchNotebookCommand({
 	id: NOTEBOOK_COMMAND_SEARCH,
 	precondition: ContextKeyExpr.and(NotebookEditorVisibleContext),
 	kbOpts: {
@@ -660,23 +666,4 @@ export const findCommand = new StartSearchNotebookCommand({
 		weight: KeybindingWeight.EditorContrib
 	}
 });
-
-class CloseSearchNotebookCommand extends SettingsCommand {
-
-	public runCommand(accessor: ServicesAccessor, args: any): void {
-		const NotebookEditor = this.getNotebookEditor(accessor);
-		if (NotebookEditor) {
-			NotebookEditor.toggleSearch(false);
-		}
-	}
-
-}
-
-export const closeFindcommand = new CloseSearchNotebookCommand({
-	id: NOTEBOOK_COMMAND_CLOSE_SEARCH,
-	precondition: ContextKeyExpr.and(NotebookEditorVisibleContext),
-	kbOpts: {
-		primary: KeyCode.Escape,
-		weight: KeybindingWeight.EditorContrib
-	}
-});
+findCommand.register();
