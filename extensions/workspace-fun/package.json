@@ -11,7 +11,9 @@
 	"activationEvents": [
     "onCommand:workspaceFun.addFolder",
     "onCommand:workspaceFun.addJson",
-    "onFileSystem:json"
+    "onCommand:workspaceFun.addDataWorkspace",
+    "onFileSystem:json",
+    "onFileSystem:dataworkspace"
 	],
 	"main": "./out/extension",
 	"dependencies": {
@@ -25,6 +27,10 @@
       {
         "command": "workspaceFun.addJson",
         "title": "Add json as resource"
+      },
+      {
+        "command": "workspaceFun.addDataWorkspace",
+        "title": "Add data workspace file as resource"
       }
     ],
     "menus": {
