@@ -105,7 +105,7 @@ export async function createDB(dbName: string, ownerUri: string): Promise<void> 
 			SELECT ERROR_MESSAGE() AS ErrorMessage;
 		END CATCH`;
 
-	let dbCreatedResult = await this.runQuery(query, ownerUri);
+	let dbCreatedResult = await runQuery(query, ownerUri);
 	assert(dbCreatedResult.columnInfo[0].columnName !== 'ErrorMessage', 'DB creation threw error');
 }
 
@@ -122,7 +122,7 @@ export async function deleteDB(server: TestServerProfile, dbName: string, ownerU
 		END CATCH`;
 
 	ownerUri = await ensureServerConnected(server, ownerUri);
-	let dbDeleteResult = await this.runQuery(query, ownerUri);
+	let dbDeleteResult = await runQuery(query, ownerUri);
 	assert(dbDeleteResult.columnInfo[0].columnName !== 'ErrorMessage', 'DB deletion threw error');
 }
 
