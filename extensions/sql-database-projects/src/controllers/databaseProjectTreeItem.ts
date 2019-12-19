@@ -87,7 +87,11 @@ async function constructFileSystemChildNodes(parent: FolderNode | ProjectRootTre
 
 		if ((await fs.stat(filePath)).isDirectory()) {
 			const child = new FolderNode(vscode.Uri.file(filePath), parent);
-			await constructFileSystemChildNodes(child);
+
+			for (const grandchild of await constructFileSystemChildNodes(child)) {
+				child.children.push(grandchild);
+			}
+
 			output.push(child);
 		}
 		else {
