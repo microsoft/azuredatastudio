@@ -60,9 +60,9 @@ steps:
     AZURE_SQL_USERNAME: $(ads-integration-test-azure-server-username)
     AZURE_SQL_PWD: $(ads-integration-test-azure-server-password)
     AZURE_SQL: $(ads-integration-test-azure-server)
-    STANDALONE_SQL_USERNAME: $(ads-integration-test-standalone-server-username-2019)
-    STANDALONE_SQL_PWD: $(ads-integration-test-standalone-server-password-2019)
-    STANDALONE_SQL: $(ads-integration-test-standalone-server-2019)
+    STANDALONE_SQL_USERNAME_2019: $(ads-integration-test-standalone-server-username-2019)
+    STANDALONE_SQL_PWD_2019: $(ads-integration-test-standalone-server-password-2019)
+    STANDALONE_SQL_2019: $(ads-integration-test-standalone-server-2019)
 
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
@@ -86,9 +86,9 @@ steps:
     AZURE_SQL_USERNAME: $(ads-integration-test-azure-server-username)
     AZURE_SQL_PWD: $(ads-integration-test-azure-server-password)
     AZURE_SQL: $(ads-integration-test-azure-server)
-    STANDALONE_SQL_USERNAME: $(ads-integration-test-standalone-server-username-2019)
-    STANDALONE_SQL_PWD: $(ads-integration-test-standalone-server-password-2019)
-    STANDALONE_SQL: $(ads-integration-test-standalone-server-2019)
+    STANDALONE_SQL_USERNAME_2019: $(ads-integration-test-standalone-server-username-2019)
+    STANDALONE_SQL_PWD_2019: $(ads-integration-test-standalone-server-password-2019)
+    STANDALONE_SQL_2019: $(ads-integration-test-standalone-server-2019)
 
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
@@ -110,9 +110,9 @@ steps:
     AZURE_SQL_USERNAME: $(ads-integration-test-azure-server-username)
     AZURE_SQL_PWD: $(ads-integration-test-azure-server-password)
     AZURE_SQL: $(ads-integration-test-azure-server)
-    STANDALONE_SQL_USERNAME: $(ads-integration-test-standalone-server-username-2019)
-    STANDALONE_SQL_PWD: $(ads-integration-test-standalone-server-password-2019)
-    STANDALONE_SQL: $(ads-integration-test-standalone-server-2019)
+    STANDALONE_SQL_USERNAME_2019: $(ads-integration-test-standalone-server-username-2019)
+    STANDALONE_SQL_PWD_2019: $(ads-integration-test-standalone-server-password-2019)
+    STANDALONE_SQL_2019: $(ads-integration-test-standalone-server-2019)
 
 - task: PublishTestResults@2
   displayName: 'Publish Integration and Smoke Test Results'
