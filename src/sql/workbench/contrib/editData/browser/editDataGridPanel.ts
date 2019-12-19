@@ -937,8 +937,8 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		let columnId = column.id;
 		//  let isColumnLoading = this.columnsLoading && this.columnsLoading.indexOf(columnId) !== -1;,
-		let isColumnLoading = false;
-		let canEditColumn = columnId !== undefined && !isColumnLoading;
+		// let isColumnLoading = false;
+		let canEditColumn = columnId !== undefined; //&& !isColumnLoading;
 		if (canEditColumn) {
 			return this.getOverridableTextEditorClass();
 		}
