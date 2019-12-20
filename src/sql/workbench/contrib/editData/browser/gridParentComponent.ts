@@ -395,12 +395,14 @@ export abstract class GridParentComponent extends Disposable {
 		};
 
 		let anchor = { x: event.pageX + 1, y: event.pageY };
-		this.contextMenuService.showContextMenu({
-			getAnchor: () => anchor,
-			getActions: () => this.actionProvider.getGridActions(),
-			getKeyBinding: (action) => this._keybindingFor(action),
-			getActionsContext: () => (actionContext)
-		});
+		if (grid.getDataLength() - 1 !== rowIndex) {
+			this.contextMenuService.showContextMenu({
+				getAnchor: () => anchor,
+				getActions: () => this.actionProvider.getGridActions(),
+				getKeyBinding: (action) => this._keybindingFor(action),
+				getActionsContext: () => (actionContext)
+			});
+		}
 	}
 
 	/**

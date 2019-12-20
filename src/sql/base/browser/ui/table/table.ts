@@ -240,7 +240,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		if (selectionModel && selectionModel.getSelectedRanges) {
 			return selectionModel.getSelectedRanges();
 		}
-		return [];
+		return <Slick.Range[]><unknown>undefined;
 	}
 
 	focus(): void {
