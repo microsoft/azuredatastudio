@@ -31,7 +31,6 @@ export class EditDataResultsEditor extends BaseEditor {
 
 	private styleSheet = DOM.createStyleSheet();
 
-
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
@@ -71,8 +70,6 @@ export class EditDataResultsEditor extends BaseEditor {
 	public setInput(input: EditDataResultsInput, options: EditorOptions): Promise<void> {
 		super.setInput(input, options, CancellationToken.None);
 		this._applySettings();
-
-
 		if (!input.hasBootstrapped) {
 			this.createGridPanel();
 		}

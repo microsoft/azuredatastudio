@@ -369,6 +369,7 @@ export class QueryModelService implements IQueryModelService {
 		}
 
 		if (queryRunner === undefined || !queryRunner.isExecuting) {
+			// TODO: Cannot cancel query as no query is running.
 			return;
 		}
 
