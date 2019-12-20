@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nb } from 'azdata';
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
+import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, ViewChildren, QueryList } from '@angular/core';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -25,7 +25,7 @@ import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { CellTypes, CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { ICellModel, IModelFactory, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/contrib/notebook/browser/models/modelFactory';
 import * as notebookUtils from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
@@ -51,8 +51,11 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
-import { getErrorMessage } from 'vs/base/common/errors';
+import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { find, firstIndex } from 'vs/base/common/arrays';
+import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
+import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
+import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 import { ExtensionsViewlet, ExtensionsViewPaneContainer } from 'vs/workbench/contrib/extensions/browser/extensionsViewlet';
 
 
@@ -67,6 +70,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	@ViewChild('toolbar', { read: ElementRef }) private toolbar: ElementRef;
 	@ViewChild('container', { read: ElementRef }) private container: ElementRef;
 	@ViewChild('bookNav', { read: ElementRef }) private bookNav: ElementRef;
+
+	@ViewChildren(CodeCellComponent) private codeCells: QueryList<CodeCellComponent>;
+	@ViewChildren(TextCellComponent) private textCells: QueryList<ICellEditorProvider>;
 
 	private _model: NotebookModel;
 	protected _actionBar: Taskbar;
@@ -116,7 +122,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
 		this.setScrollPosition();
-		this.doLoad();
+		this.doLoad().catch(e => onUnexpectedError(e));
 		this.initNavSection();
 	}
 
@@ -137,6 +143,28 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	public get cells(): ICellModel[] {
 		return this._model ? this._model.cells : [];
+	}
+
+	public get cellEditors(): ICellEditorProvider[] {
+		let editors: ICellEditorProvider[] = [];
+		if (this.codeCells) {
+			this.codeCells.toArray().forEach(cell => editors.push(...cell.cellEditors));
+		}
+		if (this.textCells) {
+			editors.push(...this.textCells.toArray());
+		}
+		return editors;
+	}
+
+	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
+		if (newDecorationRange && newDecorationRange.cell && newDecorationRange.cell.cellType === 'markdown') {
+			let cell = this.cellEditors.filter(c => c.cellGuid() === newDecorationRange.cell.cellGuid)[0];
+			cell.deltaDecorations(newDecorationRange, undefined);
+		}
+		if (oldDecorationRange && oldDecorationRange.cell && oldDecorationRange.cell.cellType === 'markdown') {
+			let cell = this.cellEditors.filter(c => c.cellGuid() === oldDecorationRange.cell.cellGuid)[0];
+			cell.deltaDecorations(undefined, oldDecorationRange);
+		}
 	}
 
 	public get addCodeLabel(): string {
