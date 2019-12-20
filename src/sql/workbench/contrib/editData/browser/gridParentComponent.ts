@@ -391,22 +391,24 @@ export abstract class GridParentComponent {
 		}
 
 		let rowIndex = grid.getCellFromEvent(event).row;
+		if (rowIndex !== grid.getDataLength() - 1) {
+			let actionContext: IGridInfo = {
+				batchIndex: batchId,
+				resultSetNumber: resultId,
+				selection: selection,
+				gridIndex: index,
+				rowIndex: rowIndex
+			};
 
-		let actionContext: IGridInfo = {
-			batchIndex: batchId,
-			resultSetNumber: resultId,
-			selection: selection,
-			gridIndex: index,
-			rowIndex: rowIndex
-		};
+			let anchor = { x: event.pageX + 1, y: event.pageY };
 
-		let anchor = { x: event.pageX + 1, y: event.pageY };
-		this.contextMenuService.showContextMenu({
-			getAnchor: () => anchor,
-			getActions: () => this.actionProvider.getGridActions(),
-			getKeyBinding: (action) => this._keybindingFor(action),
-			getActionsContext: () => (actionContext)
-		});
+			this.contextMenuService.showContextMenu({
+				getAnchor: () => anchor,
+				getActions: () => this.actionProvider.getGridActions(),
+				getKeyBinding: (action) => this._keybindingFor(action),
+				getActionsContext: () => (actionContext)
+			});
+		}
 	}
 
 	/**
