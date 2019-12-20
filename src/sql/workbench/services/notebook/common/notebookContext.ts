@@ -11,3 +11,8 @@ import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 export const notebookEditorVisibleId = 'notebookEditorVisible';
 
 export const NotebookEditorVisibleContext = new RawContextKey<boolean>(notebookEditorVisibleId, false);
+
+export const NOTEBOOK_COMMAND_SEARCH = 'notebook.command.search';
+
+export const NOTEBOOK_COMMAND_CLOSE_SEARCH = 'notebook.command.closeSearch';
+
