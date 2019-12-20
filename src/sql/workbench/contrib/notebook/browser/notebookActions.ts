@@ -20,6 +20,8 @@ import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/not
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { getErrorMessage } from 'vs/base/common/errors';
+import { IEditorAction } from 'vs/editor/common/editorCommon';
+import { IFindNotebookController } from 'sql/workbench/contrib/notebook/find/notebookFindWidget';
 import { INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeUpdateUtils } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
@@ -423,5 +425,37 @@ export class NewNotebookAction extends Action {
 			connProfile = context.connectionProfile;
 		}
 		return this.commandService.executeCommand(NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID, { connectionProfile: connProfile });
+	}
+}
+
+export class NotebookFindNextAction implements IEditorAction {
+	public readonly id = 'notebook.findNext';
+	public readonly label = localize('notebook.findNext', "Find Next String");
+	public readonly alias = '';
+
+	constructor(private notebook: IFindNotebookController) { }
+
+	async run(): Promise<void> {
+		await this.notebook.findNext();
+	}
+
+	isSupported(): boolean {
+		return true;
+	}
+}
+
+export class NotebookFindPreviousAction implements IEditorAction {
+	public readonly id = 'notebook.findPrevious';
+	public readonly label = localize('notebook.findPrevious', "Find Previous String");
+	public readonly alias = '';
+
+	constructor(private notebook: IFindNotebookController) { }
+
+	async run(): Promise<void> {
+		await this.notebook.findPrevious();
+	}
+
+	isSupported(): boolean {
+		return true;
 	}
 }

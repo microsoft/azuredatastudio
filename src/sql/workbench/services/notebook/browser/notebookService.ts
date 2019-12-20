@@ -16,6 +16,8 @@ import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHos
 import { ICellModel, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
+import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
+import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -143,10 +145,18 @@ export interface INotebookSection {
 	relativeUri: string;
 }
 
+export interface ICellEditorProvider {
+	hasEditor(): boolean;
+	cellGuid(): string;
+	getEditor(): BaseTextEditor;
+	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void;
+}
+
 export interface INotebookEditor {
 	readonly notebookParams: INotebookParams;
 	readonly id: string;
 	readonly cells?: ICellModel[];
+	readonly cellEditors: ICellEditorProvider[];
 	readonly modelReady: Promise<INotebookModel>;
 	readonly model: INotebookModel | null;
 	isDirty(): boolean;
@@ -159,6 +169,7 @@ export interface INotebookEditor {
 	clearAllOutputs(): Promise<boolean>;
 	getSections(): INotebookSection[];
 	navigateToSection(sectionId: string): void;
+	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void;
 	addCell(cellType: CellType, index?: number, event?: Event);
 }
 

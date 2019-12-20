@@ -24,6 +24,7 @@ import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelI
 import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/contrib/notebook/browser/outputs/sanitizer';
 import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions';
+import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -139,6 +140,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 	}
 
+	public cellGuid(): string {
+		return this.cellModel.cellGuid;
+	}
+
 	public get isTrusted(): boolean {
 		return this.model.trustedMode;
 	}
@@ -242,5 +247,67 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	protected toggleMoreActionsButton(isActiveOrHovered: boolean) {
 		this._cellToggleMoreActions.toggleVisible(!isActiveOrHovered);
+	}
+
+	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
+		if (oldDecorationRange) {
+			this.removeDecoration(oldDecorationRange);
+		}
+
+		if (newDecorationRange) {
+			this.addDecoration(newDecorationRange);
+		}
+	}
+
+	private addDecoration(range: NotebookRange): void {
+		if (range && this.output && this.output.nativeElement) {
+			let children = this.getHtmlElements();
+			let ele = children[range.startLineNumber - 1];
+			if (ele) {
+				DOM.addClass(ele, 'rangeHighlight');
+				ele.scrollIntoView({ behavior: 'smooth' });
+			}
+		}
+	}
+
+	private removeDecoration(range: NotebookRange): void {
+		if (range && this.output && this.output.nativeElement) {
+			let children = this.getHtmlElements();
+			let ele = children[range.startLineNumber - 1];
+			if (ele) {
+				DOM.removeClass(ele, 'rangeHighlight');
+			}
+		}
+	}
+
+	private getHtmlElements(): any[] {
+		let hostElem = this.output.nativeElement;
+		let children = [];
+		for (let element of hostElem.children) {
+			if (element.nodeName.toLowerCase() === 'table') {
+				// add table header and table rows.
+				children.push(element.children[0]);
+				for (let trow of element.children[1].children) {
+					children.push(trow);
+				}
+			} else if (element.children.length > 1) {
+				children = children.concat(this.getChildren(element));
+			} else {
+				children.push(element);
+			}
+		}
+		return children;
+	}
+
+	private getChildren(parent: any): any[] {
+		let children: any = [];
+		if (parent.children.length > 1 && parent.nodeName.toLowerCase() !== 'li' && parent.nodeName.toLowerCase() !== 'p') {
+			for (let child of parent.children) {
+				children = children.concat(this.getChildren(child));
+			}
+		} else {
+			return parent;
+		}
+		return children;
 	}
 }
