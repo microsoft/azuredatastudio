@@ -37,7 +37,6 @@ export function registerCmsServerCommand(appContext: AppContext, tree: CmsResour
 			// don't allow duplicate server entries
 			if (serverExists) {
 				let errorText = localize('cms.errors.sameCmsServerName', "Central Management Server Group already has a Registered Server with the name {0}", registeredCmsServerName);
-				//appContext.apiWrapper.showErrorMessage(errorText);
 				throw new Error(errorText);
 			}
 
@@ -45,7 +44,6 @@ export function registerCmsServerCommand(appContext: AppContext, tree: CmsResour
 			let isCloud: boolean = connection.options.isCloud;
 			if (isCloud) {
 				let errorText = localize('cms.errors.azureNotAllowed', "Azure SQL Servers cannot be used as Central Management Servers");
-				//appContext.apiWrapper.showErrorMessage(errorText);
 				throw new Error(errorText);
 			}
 
