@@ -10,6 +10,7 @@ export function activate() {
 	commands.AddDataWorkspaceCommand.register();
 	commands.AddFolderCommand.register();
 	commands.AddJsonCommand.register();
+	commands.AddConnectionsToWorkspaceCommand.register();
 	fileSystems.JSONFileSystemProvider.register();
 	fileSystems.DataWorkspaceFileProvider.register();
 }

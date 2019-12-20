@@ -12,6 +12,7 @@
     "onCommand:workspaceFun.addFolder",
     "onCommand:workspaceFun.addJson",
     "onCommand:workspaceFun.addDataWorkspace",
+    "onCommand:workspaceFun.addConnectionToWorkspace",
     "onFileSystem:json",
     "onFileSystem:dataworkspace"
 	],
@@ -31,20 +32,12 @@
       {
         "command": "workspaceFun.addDataWorkspace",
         "title": "Add data workspace file as resource"
+      },
+      {
+        "command": "workspaceFun.addConnectionToWorkspace",
+        "title": "Add connection to workspace"
       }
-    ],
-    "menus": {
-      "commandPalette": [
-        {
-          "command": "workspaceFun.addFolder",
-          "group": "workspaceFun.commands"
-        },
-        {
-          "command": "workspaceFun.addJson",
-          "group": "workspaceFun.commands"
-        }
-      ]
-    }
+    ]
 	},
 	"devDependencies": {
 		"@types/node": "^12.11.7"

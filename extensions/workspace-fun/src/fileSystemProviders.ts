@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { DataWorkspaceJsonFile } from './utils';
 
 export class JSONFileSystemProvider implements vscode.FileSystemProvider {
 	static readonly ID = 'json';
@@ -102,14 +103,7 @@ export class JSONFileSystemProvider implements vscode.FileSystemProvider {
 interface DataWorkspace {
 	folders?: vscode.Uri[];
 	files?: vscode.Uri[];
-	// connections?: vscode.Uri[];
-}
-
-export interface DataWorkspaceJsonFile {
-	name: string;
-	folders?: string[];
-	files?: string[];
-	connections?: string[];
+	connections?: vscode.Uri[];
 }
 
 export class DataWorkspaceFileProvider implements vscode.FileSystemProvider {
@@ -129,8 +123,6 @@ export class DataWorkspaceFileProvider implements vscode.FileSystemProvider {
 
 	async stat(uri: vscode.Uri): Promise<vscode.FileStat> {
 		const extLocation = uri.path.lastIndexOf('.json');
-		const file = uri.path.slice(0, extLocation + 5);
-		const dataWorkspace = await this.asWorkspace(uri.with({ scheme: 'file', path: file }));
 
 		// asking about the workspace itself
 		if (extLocation + 5 === uri.path.length) {
@@ -138,27 +130,13 @@ export class DataWorkspaceFileProvider implements vscode.FileSystemProvider {
 		}
 
 		const path = uri.path.slice(extLocation + 6).split('/');
-		const type = path[0] as 'files' | 'folders';
-		const index = path[1];
-		const uriIndex = path.slice(2).join('/');
+		const type = path[0] as keyof DataWorkspace;
 
-		if (['files', 'folders'].indexOf(type) === -1) {
+		if (['files', 'folders', 'connections'].indexOf(type) === -1) {
 			throw new Error('invalid uri for files/folders');
 		}
 
-		if (!index) {
-			return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
-		} else {
-			const assetUri = dataWorkspace[type]!.find(f => f.fsPath === index);
-			if (!assetUri) {
-				throw new Error('invalid uri for index path');
-			}
-			if (uriIndex) {
-				return vscode.workspace.fs.stat(assetUri.with({ path: assetUri.path + '/' + uriIndex }));
-			} else {
-				return vscode.workspace.fs.stat(assetUri);
-			}
-		}
+		return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
 	}
 
 	async readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType, vscode.Uri?][]> {
@@ -175,36 +153,27 @@ export class DataWorkspaceFileProvider implements vscode.FileSystemProvider {
 			if (dataWorkspace.folders && dataWorkspace.folders.length > 0) {
 				children.push(['folders', vscode.FileType.Directory]);
 			}
+			if (dataWorkspace.connections && dataWorkspace.connections.length > 0) {
+				children.push(['connections', vscode.FileType.Directory]);
+			}
 			return children;
 		}
 
 		const pathIndex = uri.path.slice(extLocation + 6).split('/');
-		const type = pathIndex[0] as 'files' | 'folders';
-		// const index = pathIndex[1];
-		// const uriIndex = pathIndex.slice(2).join('/');
+		const type = pathIndex[0] as keyof DataWorkspace;
 
-		if (['files', 'folders'].indexOf(type) === -1) {
+		if (['files', 'folders', 'connections'].indexOf(type) === -1) {
 			throw new Error('invalid uri for files/folders');
 		}
 
-		// if (!index) {
 		return Promise.all(dataWorkspace[type]!.map(async f => {
-			const stat = await vscode.workspace.fs.stat(f);
-			return [path.basename(f.fsPath), stat.type, f] as [string, vscode.FileType, vscode.Uri];
+			if (['files', 'folders'].indexOf(type) >= 0) {
+				const stat = await vscode.workspace.fs.stat(f);
+				return [path.basename(f.fsPath), stat.type, f] as [string, vscode.FileType, vscode.Uri];
+			} else {
+				return [f.path, vscode.FileType.Directory, f] as [string, vscode.FileType, vscode.Uri];
+			}
 		}));
-		// } else {
-		// 	const assetUri = dataWorkspace[type]!.find(f => f.fsPath === index);
-		// 	if (!assetUri) {
-		// 		throw new Error('invalid uri for index path');
-		// 	}
-		// 	if (uriIndex) {
-		// 		const stats = await vscode.workspace.fs.readDirectory(assetUri.with({ path: assetUri.path + '/' + uriIndex }));
-		// 		return stats.map(([name, type]) => [name, type, assetUri.with({ path: assetUri.path + '/' + uriIndex + '/' + name })]);
-		// 	} else {
-		// 		const stats = await vscode.workspace.fs.readDirectory(assetUri);
-		// 		return stats.map(([name, type]) => [name, type, assetUri.with({ path: assetUri.path + '/' + name })]);
-		// 	}
-		// }
 	}
 
 	private async asWorkspace(uri: vscode.Uri): Promise<DataWorkspace> {
@@ -220,6 +189,9 @@ export class DataWorkspaceFileProvider implements vscode.FileSystemProvider {
 		if (json.folders) {
 			dataWorkspace.folders = json.folders.map(f => vscode.Uri.file(f));
 		}
+		if (json.connections) {
+			dataWorkspace.connections = json.connections.map(f => vscode.Uri.parse(f));
+		}
 		return dataWorkspace;
 	}
 
@@ -228,53 +200,11 @@ export class DataWorkspaceFileProvider implements vscode.FileSystemProvider {
 	}
 
 	async readFile(uri: vscode.Uri): Promise<Uint8Array> {
-		const extLocation = uri.path.lastIndexOf('.json');
-		const file = uri.path.slice(0, extLocation + 5);
-		const dataWorkspace = await this.asWorkspace(uri.with({ scheme: 'file', path: file }));
-
-		const path = uri.path.slice(extLocation + 6).split('/');
-		const type = path[0] as 'files' | 'folders';
-		const index = path[1];
-		const uriIndex = path.slice(2).join('/');
-
-		if (['files', 'folders'].indexOf(type) === -1) {
-			throw new Error('invalid uri for files/folders');
-		}
-
-		const assetUri = dataWorkspace[type]!.find(f => f.fsPath === index);
-		if (!assetUri) {
-			throw new Error('invalid uri for index path');
-		}
-		if (uriIndex) {
-			return vscode.workspace.fs.readFile(assetUri.with({ path: assetUri.path + '/' + uriIndex }));
-		} else {
-			return vscode.workspace.fs.readFile(assetUri);
-		}
+		throw new Error('Method not implemented.');
 	}
 
 	async writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean; overwrite: boolean; }): Promise<void> {
-		const extLocation = uri.path.lastIndexOf('.json');
-		const file = uri.path.slice(0, extLocation + 5);
-		const dataWorkspace = await this.asWorkspace(uri.with({ scheme: 'file', path: file }));
-
-		const path = uri.path.slice(extLocation + 6).split('/');
-		const type = path[0] as 'files' | 'folders';
-		const index = path[1];
-		const uriIndex = path.slice(2).join('/');
-
-		if (['files', 'folders'].indexOf(type) === -1) {
-			throw new Error('invalid uri for files/folders');
-		}
-
-		const assetUri = dataWorkspace[type]!.find(f => f.fsPath === index);
-		if (!assetUri) {
-			throw new Error('invalid uri for index path');
-		}
-		if (uriIndex) {
-			return vscode.workspace.fs.writeFile(assetUri.with({ path: assetUri.path + '/' + uriIndex }), content);
-		} else {
-			return vscode.workspace.fs.writeFile(assetUri, content);
-		}
+		throw new Error('Method not implemented.');
 	}
 
 	delete(uri: vscode.Uri, options: { recursive: boolean; }): void | Thenable<void> {

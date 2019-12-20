@@ -5,7 +5,8 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { DataWorkspaceFileProvider, JSONFileSystemProvider, DataWorkspaceJsonFile } from './fileSystemProviders';
+import { DataWorkspaceFileProvider, JSONFileSystemProvider } from './fileSystemProviders';
+import { validateWorkspaceFile, DataWorkspaceJsonFile, addUriToSpace, uriFromConnection } from './utils';
 
 export class AddFolderCommand {
 	public static readonly ID = 'workspaceFun.addFolder';
@@ -54,7 +55,7 @@ export class AddDataWorkspaceCommand {
 		if (uris) {
 			let didFail = false;
 			for (const uri of uris) {
-				if (await this.validateWorkspaceFile(uri)) {
+				if (await validateWorkspaceFile(uri)) {
 					const name = (JSON.parse((await vscode.workspace.fs.readFile(uri.with({ scheme: 'file' }))).toString()) as DataWorkspaceJsonFile).name;
 					const jsonUri = uri.with({ scheme: DataWorkspaceFileProvider.ID });
 					vscode.workspace.updateWorkspaceFolders(0, 0, { name, uri: jsonUri });
@@ -67,30 +68,51 @@ export class AddDataWorkspaceCommand {
 			}
 		}
 	}
+}
 
-	private async validateWorkspaceFile(uri: vscode.Uri): Promise<boolean> {
+export class AddConnectionsToWorkspaceCommand {
+	public static readonly ID = 'workspaceFun.addConnectionToWorkspace';
+	static register(): void {
+		vscode.commands.registerCommand(AddConnectionsToWorkspaceCommand.ID, () => new AddConnectionsToWorkspaceCommand().run());
+	}
+
+	public async run(): Promise<void> {
 		try {
-			let json = JSON.parse((await vscode.workspace.fs.readFile(uri.with({ scheme: 'file' }))).toString());
-			if (Array.isArray(json)) {
-				throw new Error('Arrays not valid for workspace json');
+			const azdata = await import('azdata');
+			const connections = await azdata.connection.getConnections();
+			const selected = await vscode.window.showQuickPick(connections.map(c => c.serverName));
+			if (selected) {
+				const selectedConnection = connections.find(c => c.serverName === selected)!;
+				const spaces = vscode.workspace.workspaceFolders;
+				if (spaces && spaces.length > 0) {
+					let space: vscode.Uri;
+					if (spaces.length === 1) {
+						if (spaces[0].uri.scheme === DataWorkspaceFileProvider.ID) {
+							space = spaces[0].uri;
+						} else {
+							vscode.window.showErrorMessage('Must have at least 1 data space open');
+							return;
+						}
+					} else {
+						const pickSpaces = spaces.filter(s => s.uri.scheme === DataWorkspaceFileProvider.ID);
+						if (pickSpaces.length === 0) {
+							vscode.window.showErrorMessage('Must have at least 1 data space open');
+							return;
+						}
+						const selectedSpace = await vscode.window.showQuickPick(pickSpaces.map(s => s.name));
+						if (selectedSpace) {
+							space = pickSpaces.find(c => c.name === selectedSpace)!.uri;
+						} else {
+							return;
+						}
+					}
+					await addUriToSpace(space.with({ scheme: 'file' }), 'connections', uriFromConnection(selectedConnection));
+				} else {
+					vscode.window.showErrorMessage('Must have a workspace open');
+				}
 			}
-			const { connections, files, folders, name } = (json as DataWorkspaceJsonFile);
-			if (!name || typeof name !== 'string') {
-				throw new Error('name must be a string and be present');
-			}
-			// if we have connections and it is not an array or every value isn't a string
-			if (connections && (!Array.isArray(connections) || connections.some(c => typeof c !== 'string'))) {
-				throw new Error('connections must be array of strings');
-			}
-			if (files && (!Array.isArray(files) || files.some(c => typeof c !== 'string'))) {
-				throw new Error('connections must be array of strings');
-			}
-			if (folders && (!Array.isArray(folders) || folders.some(c => typeof c !== 'string'))) {
-				throw new Error('connections must be array of strings');
-			}
-			return true;
 		} catch (e) {
-			return false;
+			vscode.window.showErrorMessage('Can only add connections in Azure Data Studio');
 		}
 	}
 }

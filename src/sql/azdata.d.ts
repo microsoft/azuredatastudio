@@ -278,18 +278,18 @@ declare module 'azdata' {
 	}
 
 	export interface IConnectionProfile extends ConnectionInfo {
-		connectionName: string;
+		connectionName?: string;
 		serverName: string;
 		databaseName: string;
-		userName: string;
-		password: string;
+		userName?: string;
+		password?: string;
 		authenticationType: string;
-		savePassword: boolean;
+		savePassword?: boolean;
 		groupFullName?: string;
-		groupId: string;
+		groupId?: string;
 		providerName: string;
-		saveProfile: boolean;
-		id: string;
+		saveProfile?: boolean;
+		id?: string;
 		azureTenantId?: string;
 	}
 

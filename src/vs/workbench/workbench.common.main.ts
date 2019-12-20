@@ -390,6 +390,7 @@ import 'sql/workbench/contrib/telemetry/common/telemetry.contribution';
 // connection
 import 'sql/workbench/contrib/connection/browser/connection.contribution';
 import 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
+import 'sql/workbench/contrib/connection/common/connectionProviderContribution';
 
 // edit data editor
 import 'sql/workbench/contrib/editData/browser/editData.contribution';
