@@ -1398,6 +1398,12 @@ export interface ExtHostStorageShape {
 	$acceptValue(shared: boolean, key: string, value: object | undefined): void;
 }
 
+export interface ExtHostThemingShape {
+	$onColorThemeChange(themeType: string): void;
+}
+
+export interface MainThreadThemingShape extends IDisposable {
+}
 
 export interface ExtHostTunnelServiceShape {
 	$findCandidatePorts(): Promise<{ host: string, port: number, detail: string }[]>;
@@ -1446,6 +1452,7 @@ export const MainContext = {
 	MainThreadTask: createMainId<MainThreadTaskShape>('MainThreadTask'),
 	MainThreadWindow: createMainId<MainThreadWindowShape>('MainThreadWindow'),
 	MainThreadLabelService: createMainId<MainThreadLabelServiceShape>('MainThreadLabelService'),
+	MainThreadTheming: createMainId<MainThreadThemingShape>('MainThreadTheming'),
 	MainThreadTunnelService: createMainId<MainThreadTunnelServiceShape>('MainThreadTunnelService')
 };
 
@@ -1480,6 +1487,7 @@ export const ExtHostContext = {
 	ExtHostStorage: createMainId<ExtHostStorageShape>('ExtHostStorage'),
 	ExtHostUrls: createExtId<ExtHostUrlsShape>('ExtHostUrls'),
 	ExtHostOutputService: createMainId<ExtHostOutputServiceShape>('ExtHostOutputService'),
-	ExtHosLabelService: createMainId<ExtHostLabelServiceShape>('ExtHostLabelService'),
+	ExtHostLabelService: createMainId<ExtHostLabelServiceShape>('ExtHostLabelService'),
+	ExtHostTheming: createMainId<ExtHostThemingShape>('ExtHostTheming'),
 	ExtHostTunnelService: createMainId<ExtHostTunnelServiceShape>('ExtHostTunnelService')
 };
