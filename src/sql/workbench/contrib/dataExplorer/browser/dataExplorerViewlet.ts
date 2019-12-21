@@ -46,8 +46,6 @@ export class OpenDataExplorerViewletAction extends ShowViewletAction {
 	}
 }
 
-export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({ id: VIEWLET_ID, name: localize('dataexplorer.name', "Connections") }, ViewContainerLocation.Sidebar);
-
 export class DataExplorerViewletViewsContribution implements IWorkbenchContribution {
 
 	constructor() {
@@ -157,3 +155,9 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 		return viewletPanel;
 	}
 }
+
+export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
+	id: VIEWLET_ID,
+	name: localize('dataexplorer.name', "Connections"),
+	ctorDescriptor: { ctor: DataExplorerViewPaneContainer }
+}, ViewContainerLocation.Sidebar);

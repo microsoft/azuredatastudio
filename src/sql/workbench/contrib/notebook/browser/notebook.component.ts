@@ -37,7 +37,7 @@ import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHos
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CellMagicMapper } from 'sql/workbench/contrib/notebook/browser/models/cellMagicMapper';
-import { VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
+import { VIEWLET_ID, IExtensionsViewPaneContainer } from 'vs/workbench/contrib/extensions/common/extensions';
 import { CellModel } from 'sql/workbench/contrib/notebook/browser/models/cell';
 import { FileOperationError, FileOperationResult } from 'vs/platform/files/common/files';
 import { isValidBasename } from 'vs/base/common/extpath';
@@ -56,7 +56,6 @@ import { find, firstIndex } from 'vs/base/common/arrays';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
-import { ExtensionsViewlet, ExtensionsViewPaneContainer } from 'vs/workbench/contrib/extensions/browser/extensionsViewlet';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -354,8 +353,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private async openExtensionGallery(): Promise<void> {
 		try {
-			let viewlet = await this.viewletService.openViewlet(VIEWLET_ID, true) as ExtensionsViewlet;
-			(viewlet.getViewPaneContainer() as ExtensionsViewPaneContainer).search('sql-vnext');
+			let viewlet = await this.viewletService.openViewlet(VIEWLET_ID, true);
+			(viewlet.getViewPaneContainer() as IExtensionsViewPaneContainer).search('sql-vnext');
 			viewlet.focus();
 		} catch (error) {
 			this.notificationService.error(error.message);
