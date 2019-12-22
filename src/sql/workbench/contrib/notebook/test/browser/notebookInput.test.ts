@@ -19,6 +19,7 @@ import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledText
 import { SimpleUriLabelService } from 'vs/editor/standalone/browser/simpleServices';
 import { IExtensionService, NullExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { INotebookService, IProviderInfo } from 'sql/workbench/services/notebook/browser/notebookService';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 
 suite('Notebook Input', function (): void {
 	const instantiationService = workbenchInstantiationService();
@@ -40,6 +41,8 @@ suite('Notebook Input', function (): void {
 			notebookProvider: 'TestProvider'
 		}];
 	});
+
+	(instantiationService as TestInstantiationService).stub(INotebookService, mockNotebookService.object);
 
 	let untitledTextInput: UntitledTextEditorInput;
 	let untitledNotebookInput: UntitledNotebookInput;

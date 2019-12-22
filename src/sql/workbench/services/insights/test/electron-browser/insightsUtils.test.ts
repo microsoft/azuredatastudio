@@ -172,7 +172,7 @@ suite('Insights Utils tests', function () {
 		equal(resolvedPath, queryFilePath);
 	});
 
-	test('resolveQueryFilePath throws with workspaceRoot var and non-empty workspace not containing file', async (done) => {
+	test('resolveQueryFilePath throws with workspaceRoot var and non-empty workspace not containing file', async () => {
 		const tokenizedPath = path.join('${workspaceRoot}', 'test.sql');
 		// Create mock context service with a folder NOT containing our test file to verify it returns original path
 		const contextService = new TestContextService(
@@ -204,11 +204,10 @@ suite('Insights Utils tests', function () {
 			fail('Should have thrown');
 		}
 		catch (e) {
-			done();
 		}
 	});
 
-	test('resolveQueryFilePath throws with workspaceRoot var and empty workspace', async (done) => {
+	test('resolveQueryFilePath throws with workspaceRoot var and empty workspace', async () => {
 		const tokenizedPath = path.join('${workspaceRoot}', 'test.sql');
 		// Create mock context service with an empty workspace
 		const contextService = new TestContextService(
@@ -238,7 +237,6 @@ suite('Insights Utils tests', function () {
 			fail('Should have thrown');
 		}
 		catch (e) {
-			done();
 		}
 	});
 
@@ -298,7 +296,7 @@ suite('Insights Utils tests', function () {
 		equal(resolvedPath, queryFilePath);
 	});
 
-	test('resolveQueryFilePath throws if invalid param var specified', async (done) => {
+	test('resolveQueryFilePath throws if invalid param var specified', async () => {
 		const invalidPath = path.join('${INVALID}', 'test.sql');
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
@@ -323,7 +321,6 @@ suite('Insights Utils tests', function () {
 			await instantiationService.invokeFunction(resolveQueryFilePath, invalidPath);
 			fail('Should have thrown');
 		} catch (e) {
-			done();
 		}
 
 	});

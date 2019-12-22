@@ -13,7 +13,8 @@
 		"azdata": ">=1.6.0"
 	},
 	"activationEvents": [
-		"*"
+    "onCommand:azdata.resource.deploy",
+    "onCommand:azdata.openNotebookInputDialog"
 	],
 	"main": "./out/main",
 	"repository": {
@@ -339,7 +340,7 @@
 						"when": "version=sql2017"
 					},
 					{
-						"webPageUrl": "https://www.microsoft.com/evalcenter/evaluate-sql-server-2019-rc",
+						"downloadUrl": "https://go.microsoft.com/fwlink/?linkid=866662",
 						"requiredTools": [],
 						"when": "version=sql2019"
 					}

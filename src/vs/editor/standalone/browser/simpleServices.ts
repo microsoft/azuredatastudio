@@ -23,7 +23,7 @@ import { ITextModel, ITextSnapshot } from 'vs/editor/common/model';
 import { TextEdit, WorkspaceEdit, isResourceTextEdit } from 'vs/editor/common/modes';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { IResolvedTextEditorModel, ITextModelContentProvider, ITextModelService } from 'vs/editor/common/services/resolverService';
-import { IResourceConfigurationService, ITextResourcePropertiesService, IResourceConfigurationChangeEvent } from 'vs/editor/common/services/resourceConfiguration';
+import { ITextResourceConfigurationService, ITextResourcePropertiesService, ITextResourceConfigurationChangeEvent } from 'vs/editor/common/services/textResourceConfigurationService';
 import { CommandsRegistry, ICommand, ICommandEvent, ICommandHandler, ICommandService } from 'vs/platform/commands/common/commands';
 import { IConfigurationChangeEvent, IConfigurationData, IConfigurationOverrides, IConfigurationService, IConfigurationModel, IConfigurationValue, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { Configuration, ConfigurationModel, DefaultConfigurationModel } from 'vs/platform/configuration/common/configurationModels';
@@ -312,30 +312,29 @@ export class StandaloneKeybindingService extends AbstractKeybindingService {
 
 	public addDynamicKeybinding(commandId: string, _keybinding: number, handler: ICommandHandler, when: ContextKeyExpr | undefined): IDisposable {
 		const keybinding = createKeybinding(_keybinding, OS);
-		if (!keybinding) {
-			throw new Error(`Invalid keybinding`);
-		}
 
 		const toDispose = new DisposableStore();
 
-		this._dynamicKeybindings.push({
-			keybinding: keybinding,
-			command: commandId,
-			when: when,
-			weight1: 1000,
-			weight2: 0
-		});
+		if (keybinding) {
+			this._dynamicKeybindings.push({
+				keybinding: keybinding,
+				command: commandId,
+				when: when,
+				weight1: 1000,
+				weight2: 0
+			});
 
-		toDispose.add(toDisposable(() => {
-			for (let i = 0; i < this._dynamicKeybindings.length; i++) {
-				let kb = this._dynamicKeybindings[i];
-				if (kb.command === commandId) {
-					this._dynamicKeybindings.splice(i, 1);
-					this.updateResolver({ source: KeybindingSource.Default });
-					return;
+			toDispose.add(toDisposable(() => {
+				for (let i = 0; i < this._dynamicKeybindings.length; i++) {
+					let kb = this._dynamicKeybindings[i];
+					if (kb.command === commandId) {
+						this._dynamicKeybindings.splice(i, 1);
+						this.updateResolver({ source: KeybindingSource.Default });
+						return;
+					}
 				}
-			}
-		}));
+			}));
+		}
 
 		let commandService = this._commandService;
 		if (commandService instanceof StandaloneCommandService) {
@@ -487,11 +486,11 @@ export class SimpleConfigurationService implements IConfigurationService {
 	}
 }
 
-export class SimpleResourceConfigurationService implements IResourceConfigurationService {
+export class SimpleResourceConfigurationService implements ITextResourceConfigurationService {
 
 	_serviceBrand: undefined;
 
-	private readonly _onDidChangeConfiguration = new Emitter<IResourceConfigurationChangeEvent>();
+	private readonly _onDidChangeConfiguration = new Emitter<ITextResourceConfigurationChangeEvent>();
 	public readonly onDidChangeConfiguration = this._onDidChangeConfiguration.event;
 
 	constructor(private readonly configurationService: SimpleConfigurationService) {

@@ -587,6 +587,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			let tenant = account.properties.tenants[tenantIndex];
 			if (tenant) {
 				this._azureTenantId = tenant.id;
+				this._callbacks.onAzureTenantSelection(tenant.id);
 			}
 		}
 	}
@@ -915,6 +916,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	private getMatchingAuthType(displayName: string): AuthenticationType {
+		if (!displayName) {
+			return undefined;
+		}
 		return find(ConnectionWidget._authTypes, authType => this.getAuthTypeDisplayName(authType) === displayName);
 	}
 

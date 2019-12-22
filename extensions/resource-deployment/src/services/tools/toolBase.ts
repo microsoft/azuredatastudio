@@ -98,7 +98,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	public get autoInstallNeeded(): boolean {
-		return this.status !== ToolStatus.Installed && this.autoInstallSupported;
+		return this.status === ToolStatus.NotInstalled && this.autoInstallSupported;
 	}
 
 	public get isNotInstalled(): boolean {
@@ -180,7 +180,6 @@ export abstract class ToolBase implements ITool {
 		try {
 			this.status = ToolStatus.Installing;
 			await this.installCore();
-			await this.addInstallationSearchPathsToSystemPath();
 			this.startVersionAndStatusUpdate();
 			await this._pendingVersionAndStatusUpdate;
 		} catch (error) {
@@ -222,7 +221,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	protected async addInstallationSearchPathsToSystemPath(): Promise<void> {
-		const searchPaths = [...await this.getSearchPaths(), this.storagePath].filter(path => !!path);
+		const searchPaths = [...(new Set<string>([...await this.getSearchPaths(), this.storagePath].filter(path => !!path))).values()]; // collect all unique installation search paths
 		this.logToOutputChannel(localize('toolBase.addInstallationSearchPathsToSystemPath.SearchPaths', "Search Paths for tool '{0}': {1}", this.displayName, JSON.stringify(searchPaths, undefined, '\t'))); //this.displayName is localized and searchPaths are OS filesystem paths.
 		searchPaths.forEach(searchPath => {
 			if (process.env.PATH) {
@@ -237,9 +236,6 @@ export abstract class ToolBase implements ITool {
 
 	public async loadInformation(): Promise<void> {
 		await this._pendingVersionAndStatusUpdate;
-		if (this.status === ToolStatus.NotInstalled) {
-			await this.addInstallationSearchPathsToSystemPath();
-		}
 	}
 
 	private startVersionAndStatusUpdate() {
@@ -248,6 +244,7 @@ export abstract class ToolBase implements ITool {
 
 	private async updateVersionAndStatus(): Promise<void> {
 		this._statusDescription = '';
+		await this.addInstallationSearchPathsToSystemPath();
 		const commandOutput = await this._platformService.runCommand(
 			this.versionCommand.command,
 			{

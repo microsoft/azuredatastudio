@@ -4,14 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nb, IConnectionProfile } from 'azdata';
-
 import * as vsEvent from 'vs/base/common/event';
-import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, IKernelPreference } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, IKernelPreference, INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
-import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, INotebookProvider, INavigationProvider, INotebookParams, INotebookSection } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, INotebookProvider, INavigationProvider, INotebookParams, INotebookSection, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IStandardKernelWithProvider } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
-import { URI, Emitter } from 'vs/workbench/workbench.web.api';
+import { IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
+import { NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
+import { URI } from 'vs/workbench/workbench.web.api';
 import { RenderMimeRegistry } from 'sql/workbench/contrib/notebook/browser/outputs/registry';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
@@ -120,6 +121,44 @@ export class NotebookModelStub implements INotebookModel {
 	}
 }
 
+export class NotebookFindModelStub implements INotebookFindModel {
+
+	getFindCount(): number {
+		throw new Error('Method not implemented.');
+	}
+	getFindIndex(): number {
+		throw new Error('Method not implemented.');
+	}
+	findNext(): Promise<NotebookRange> {
+		throw new Error('Method not implemented.');
+	}
+	findPrevious(): Promise<NotebookRange> {
+		throw new Error('Method not implemented.');
+	}
+	find(exp: string, maxMatches?: number): Promise<NotebookRange> {
+		throw new Error('Method not implemented.');
+	}
+	clearFind(): void {
+		throw new Error('Method not implemented.');
+	}
+	findArray: NotebookRange[];
+	getDecorationRange(id: string): NotebookRange {
+		throw new Error('Method not implemented.');
+	}
+	changeDecorations<T>(callback: (changeAccessor: IModelDecorationsChangeAccessor) => T, ownerId: number): T {
+		throw new Error('Method not implemented.');
+	}
+	getLineMaxColumn(lineNumber: number): number {
+		throw new Error('Method not implemented.');
+	}
+	getLineCount(): number {
+		throw new Error('Method not implemented.');
+	}
+	findMatches: NotebookFindMatch[];
+	findExpression: string;
+	onFindCountChange: vsEvent.Event<number>;
+}
+
 export class NotebookManagerStub implements INotebookManager {
 	providerId: string;
 	contentManager: nb.ContentManager;
@@ -128,7 +167,7 @@ export class NotebookManagerStub implements INotebookManager {
 }
 
 export class ServerManagerStub implements nb.ServerManager {
-	onServerStartedEmitter = new Emitter<void>();
+	onServerStartedEmitter = new vsEvent.Emitter<void>();
 	onServerStarted: vsEvent.Event<void> = this.onServerStartedEmitter.event;
 	isStarted: boolean = false;
 	calledStart: boolean = false;
@@ -386,6 +425,10 @@ export class FutureStub implements nb.IFuture {
 }
 
 export class NotebookComponentStub implements INotebookEditor {
+	cellEditors: ICellEditorProvider[];
+	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
+		throw new Error('Method not implemented.');
+	}
 	get notebookParams(): INotebookParams {
 		throw new Error('Method not implemented.');
 	}

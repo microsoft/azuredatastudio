@@ -6,11 +6,10 @@
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
-import { IExtensionsWorkbenchService, VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
+import { IExtensionsWorkbenchService, VIEWLET_ID, IExtensionsViewPaneContainer } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IExtensionRecommendation } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { PagedModel } from 'vs/base/common/paging';
-import { ExtensionsViewlet, ExtensionsViewPaneContainer } from 'vs/workbench/contrib/extensions/browser/extensionsViewlet';
 
 function getScenarioID(scenarioType: string) {
 	return 'workbench.extensions.action.show' + scenarioType;
@@ -26,8 +25,9 @@ export class ShowRecommendedExtensionsByScenarioAction extends Action {
 
 	run(): Promise<void> {
 		return this.viewletService.openViewlet(VIEWLET_ID, true)
-			.then((viewlet: ExtensionsViewlet) => {
-				(viewlet.getViewPaneContainer() as ExtensionsViewPaneContainer).search('@' + this.scenarioType);
+			.then(viewlet => viewlet?.getViewPaneContainer())
+			.then((viewlet: IExtensionsViewPaneContainer) => {
+				viewlet.search('@' + this.scenarioType);
 				viewlet.focus();
 			});
 	}
@@ -51,8 +51,9 @@ export class InstallRecommendedExtensionsByScenarioAction extends Action {
 	run(): Promise<any> {
 		if (!this.recommendations.length) { return Promise.resolve(); }
 		return this.viewletService.openViewlet(VIEWLET_ID, true)
-			.then((viewlet: ExtensionsViewlet) => {
-				(viewlet.getViewPaneContainer() as ExtensionsViewPaneContainer).search('@' + this.scenarioType);
+			.then(viewlet => viewlet?.getViewPaneContainer())
+			.then((viewlet: IExtensionsViewPaneContainer) => {
+				viewlet.search('@' + this.scenarioType);
 				viewlet.focus();
 				const names = this.recommendations.map(({ extensionId }) => extensionId);
 				return this.extensionWorkbenchService.queryGallery({ names, source: 'install-' + this.scenarioType }, CancellationToken.None).then(pager => {
