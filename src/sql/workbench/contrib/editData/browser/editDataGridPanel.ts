@@ -957,16 +957,17 @@ export class EditDataGridPanel extends GridParentComponent {
 				// let isColumnLoading = this.columnsLoading && this.columnsLoading.indexOf(columnId) !== -1;
 				// let isShadowed = this.blurredColumns && !!this.blurredColumns.find(c => c === columnId);
 				// let isContext = this.contextColumns && !!this.contextColumns.find(c => c === columnId);
-				// let overrideValue = this.overrideCellFn && this.overrideCellFn(row, columnId, value, dataContext);
+				let overrideValue = this.overrideCellFn && this.overrideCellFn(row, columnId, value, dataContext);
 				let valueToDisplay = (value + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 				let cellClasses = 'grid-cell-value-container';
-				// /* tslint:disable:no-null-keyword */
-				// let valueMissing = value === undefined || value === null;
-				// /* tslint:disable:no-null-keyword */
-				// let isOverridden = overrideValue !== undefined && overrideValue !== null;
-				// if (valueMissing && !isOverridden) {
-				//     cellClasses += ' missing-value';
-				// }
+				/* tslint:disable:no-null-keyword */
+				let valueMissing = value === undefined || value === null;
+				/* tslint:disable:no-null-keyword */
+				let isOverridden = (overrideValue !== undefined && overrideValue !== null) || (overrideValue !== 'NULL' && row !== this.tables[0].grid.getDataLength() - 1);
+				console.log(isOverridden);
+				if (valueMissing && !isOverridden) {
+					cellClasses += ' missing-value';
+				}
 				// if (isColumnLoading === true && !isOverridden) {
 				//     cellClasses += ' loading-cell';
 				//     valueToDisplay = '';
