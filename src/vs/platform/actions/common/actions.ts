@@ -70,6 +70,8 @@ export const enum MenuId {
 	EditorTitleContext,
 	EmptyEditorGroupContext,
 	ExplorerContext,
+	ExtensionContext,
+	GlobalActivity,
 	MenubarAppearanceMenu,
 	MenubarDebugMenu,
 	MenubarEditMenu,
@@ -111,7 +113,6 @@ export const enum MenuId {
 	CommentThreadActions,
 	CommentTitle,
 	CommentActions,
-	GlobalActivity
 }
 
 export interface IMenuActionOptions {
