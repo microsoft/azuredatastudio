@@ -235,7 +235,9 @@ export class EditDataGridPanel extends GridParentComponent {
 				// should add null row?
 				if (offset + count > this.dataSet.totalRows - 1) {
 					gridData.push(this.dataSet.columnDefinitions.reduce((p, c) => {
-						p[c.field] = 'NULL';
+						if (c.id !== 'rowNumber') {
+							p[c.field] = { displayValue: 'NULL', ariaLabel: 'NULL', isNull: true };
+						}
 						return p;
 					}, {}));
 				}
