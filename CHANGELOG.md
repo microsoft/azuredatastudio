@@ -1,5 +1,17 @@
 # Change Log
 
+## Version 1.14.0
+* Release date: December 19, 2019
+* Release status: General Availability
+* Added bigdatacluster.ignoreSslVerification setting to allow ignoring SSL verification errors when connecting to a BDC [#8129](https://github.com/microsoft/azuredatastudio/issues/8129)
+* Changed attach to connection dropdown in Notebooks to only list the currently active connection [#8582](https://github.com/microsoft/azuredatastudio/pull/8582)
+* Allow changing default language flavor for offline query editors [#8419](https://github.com/microsoft/azuredatastudio/pull/8419)
+* GA status for Big Data Cluster/SQL 2019 features [#8269](https://github.com/microsoft/azuredatastudio/issues/8269)
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/44?closed=1).
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+
 ## Version 1.13.1
 * Release date: November 15, 2019
 * Release status: General Availability

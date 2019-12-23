@@ -43,6 +43,7 @@ export interface IConnectionComponentCallbacks {
 	onAdvancedProperties?: () => void;
 	onSetAzureTimeOut?: () => void;
 	onFetchDatabases?: (serverName: string, authenticationType: string, userName?: string, password?: string) => Promise<string[]>;
+	onAzureTenantSelection?: (azureTenantId?: string) => void;
 }
 
 export interface IConnectionComponentController {

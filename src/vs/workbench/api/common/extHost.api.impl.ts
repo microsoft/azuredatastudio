@@ -68,6 +68,7 @@ import { IURITransformerService } from 'vs/workbench/api/common/extHostUriTransf
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitDataService';
 import { find } from 'vs/base/common/arrays';
+import { ExtHostTheming } from 'vs/workbench/api/common/extHostTheming';
 import { IExtHostTunnelService } from 'vs/workbench/api/common/extHostTunnelService';
 
 export interface IExtensionApiFactory {
@@ -126,7 +127,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostComment = rpcProtocol.set(ExtHostContext.ExtHostComments, new ExtHostComments(rpcProtocol, extHostCommands, extHostDocuments));
 	const extHostWindow = rpcProtocol.set(ExtHostContext.ExtHostWindow, new ExtHostWindow(rpcProtocol));
 	const extHostProgress = rpcProtocol.set(ExtHostContext.ExtHostProgress, new ExtHostProgress(rpcProtocol.getProxy(MainContext.MainThreadProgress)));
-	const extHostLabelService = rpcProtocol.set(ExtHostContext.ExtHosLabelService, new ExtHostLabelService(rpcProtocol));
+	const extHostLabelService = rpcProtocol.set(ExtHostContext.ExtHostLabelService, new ExtHostLabelService(rpcProtocol));
+	const extHostTheming = rpcProtocol.set(ExtHostContext.ExtHostTheming, new ExtHostTheming(rpcProtocol));
 
 	// Check that no named customers are missing
 	// {{SQL CARBON EDIT}} filter out the services we don't expose
@@ -538,9 +540,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			registerWebviewPanelSerializer: (viewType: string, serializer: vscode.WebviewPanelSerializer) => {
 				return extHostWebviews.registerWebviewPanelSerializer(extension, viewType, serializer);
 			},
-			registerWebviewEditorProvider: (viewType: string, provider: vscode.WebviewEditorProvider, options?: vscode.WebviewPanelOptions) => {
+			registerWebviewCustomEditorProvider: (viewType: string, provider: vscode.WebviewCustomEditorProvider, options?: vscode.WebviewPanelOptions) => {
 				checkProposedApiEnabled(extension);
-				return extHostWebviews.registerWebviewEditorProvider(extension, viewType, provider, options);
+				return extHostWebviews.registerWebviewCustomEditorProvider(extension, viewType, provider, options);
 			},
 			registerDecorationProvider(provider: vscode.DecorationProvider) {
 				checkProposedApiEnabled(extension);
@@ -554,6 +556,14 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			},
 			createInputBox(): vscode.InputBox {
 				return extHostQuickOpen.createInputBox(extension.identifier);
+			},
+			get activeColorTheme(): vscode.ColorTheme {
+				checkProposedApiEnabled(extension);
+				return extHostTheming.activeColorTheme;
+			},
+			onDidChangeActiveColorTheme(listener, thisArg?, disposables?) {
+				checkProposedApiEnabled(extension);
+				return extHostTheming.onDidChangeActiveColorTheme(listener, thisArg, disposables);
 			}
 		};
 
@@ -670,9 +680,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			onDidChangeConfiguration: (listener: (_: any) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) => {
 				return configProvider.onDidChangeConfiguration(listener, thisArgs, disposables);
 			},
-			getConfiguration(section?: string, resource?: vscode.Uri): vscode.WorkspaceConfiguration {
-				resource = arguments.length === 1 ? undefined : resource;
-				return configProvider.getConfiguration(section, resource, extension.identifier);
+			getConfiguration(section?: string, scope?: vscode.ConfigurationScope | null): vscode.WorkspaceConfiguration {
+				scope = arguments.length === 1 ? undefined : scope;
+				return configProvider.getConfiguration(section, scope, extension);
 			},
 			registerTextDocumentContentProvider(scheme: string, provider: vscode.TextDocumentContentProvider) {
 				return extHostDocumentContentProviders.registerTextDocumentContentProvider(scheme, provider);
@@ -720,9 +730,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			onWillRenameFiles: (listener: (e: vscode.FileWillRenameEvent) => any, thisArg?: any, disposables?: vscode.Disposable[]) => {
 				return extHostFileSystemEvent.getOnWillRenameFileEvent(extension)(listener, thisArg, disposables);
 			},
-			makeTunnel: (forward: vscode.TunnelOptions) => {
+			openTunnel: (forward: vscode.TunnelOptions) => {
 				checkProposedApiEnabled(extension);
-				return extHostTunnelService.makeTunnel(forward);
+				return extHostTunnelService.openTunnel(forward);
 			}
 		};
 
@@ -940,7 +950,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			DebugConsoleMode: extHostTypes.DebugConsoleMode,
 			Decoration: extHostTypes.Decoration,
 			WebviewContentState: extHostTypes.WebviewContentState,
-			UIKind: UIKind
+			UIKind: UIKind,
+			ColorThemeKind: extHostTypes.ColorThemeKind
 		};
 	};
 }

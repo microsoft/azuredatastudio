@@ -645,6 +645,7 @@ export abstract class AbstractExtHostExtensionService implements ExtHostExtensio
 
 		try {
 			const result = await resolver.resolve(remoteAuthority, { resolveAttempt });
+			this._disposables.add(await this._extHostTunnelService.setForwardPortProvider(resolver));
 
 			// Split merged API result into separate authority/options
 			const authority: ResolvedAuthority = {
@@ -656,13 +657,12 @@ export abstract class AbstractExtHostExtensionService implements ExtHostExtensio
 				extensionHostEnv: result.extensionHostEnv
 			};
 
-			await this._extHostTunnelService.addDetected(result.detectedTunnels);
-
 			return {
 				type: 'ok',
 				value: {
 					authority,
-					options
+					options,
+					tunnelInformation: { environmentTunnels: result.environmentTunnels }
 				}
 			};
 		} catch (err) {

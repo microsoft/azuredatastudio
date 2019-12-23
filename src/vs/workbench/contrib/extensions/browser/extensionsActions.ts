@@ -726,13 +726,11 @@ export class ManageExtensionAction extends ExtensionDropDownAction {
 		groups.push([this.instantiationService.createInstance(UninstallAction)]);
 		groups.push([this.instantiationService.createInstance(InstallAnotherVersionAction)]);
 
-		if (this.extension) {
-			const extensionActions: ExtensionAction[] = [this.instantiationService.createInstance(ExtensionInfoAction)];
-			if (this.extension.local && this.extension.local.manifest.contributes && this.extension.local.manifest.contributes.configuration) {
-				extensionActions.push(this.instantiationService.createInstance(ExtensionSettingsAction));
-			}
-			groups.push(extensionActions);
+		const extensionActions: ExtensionAction[] = [this.instantiationService.createInstance(CopyExtensionInfoAction), this.instantiationService.createInstance(CopyExtensionIdAction)];
+		if (this.extension && this.extension.local && this.extension.local.manifest.contributes && this.extension.local.manifest.contributes.configuration) {
+			extensionActions.push(this.instantiationService.createInstance(ExtensionSettingsAction));
 		}
+		groups.push(extensionActions);
 
 		groups.forEach(group => group.forEach(extensionAction => extensionAction.extension = this.extension));
 
@@ -810,15 +808,15 @@ export class InstallAnotherVersionAction extends ExtensionAction {
 	}
 }
 
-export class ExtensionInfoAction extends ExtensionAction {
+export class CopyExtensionInfoAction extends ExtensionAction {
 
-	static readonly ID = 'extensions.extensionInfo';
-	static readonly LABEL = localize('extensionInfoAction', "Copy Extension Information");
+	static readonly ID = 'workbench.extensions.action.copyExtension';
+	static readonly LABEL = localize('workbench.extensions.action.copyExtension', "Copy");
 
 	constructor(
 		@IClipboardService private readonly clipboardService: IClipboardService
 	) {
-		super(ExtensionInfoAction.ID, ExtensionInfoAction.LABEL);
+		super(CopyExtensionInfoAction.ID, CopyExtensionInfoAction.LABEL);
 		this.update();
 	}
 
@@ -841,6 +839,30 @@ export class ExtensionInfoAction extends ExtensionAction {
 		const clipboardStr = `${name}\n${id}\n${description}\n${verision}\n${publisher}${link ? '\n' + link : ''}`;
 
 		return this.clipboardService.writeText(clipboardStr);
+	}
+}
+
+export class CopyExtensionIdAction extends ExtensionAction {
+
+	static readonly ID = 'workbench.extensions.action.copyExtensionId';
+	static readonly LABEL = localize('workbench.extensions.action.copyExtensionId', "Copy Extension Id");
+
+	constructor(
+		@IClipboardService private readonly clipboardService: IClipboardService
+	) {
+		super(CopyExtensionIdAction.ID, CopyExtensionIdAction.LABEL);
+		this.update();
+	}
+
+	update(): void {
+		this.enabled = !!this.extension;
+	}
+
+	async run(): Promise<any> {
+		if (!this.extension) {
+			return;
+		}
+		return this.clipboardService.writeText(this.extension.identifier.id);
 	}
 }
 
@@ -1399,7 +1421,7 @@ export class SetColorThemeAction extends ExtensionAction {
 				ignoreFocusLost
 			});
 		let confValue = this.configurationService.inspect(COLOR_THEME_SETTING);
-		const target = typeof confValue.workspace !== 'undefined' ? ConfigurationTarget.WORKSPACE : ConfigurationTarget.USER;
+		const target = typeof confValue.workspaceValue !== 'undefined' ? ConfigurationTarget.WORKSPACE : ConfigurationTarget.USER;
 		return this.workbenchThemeService.setColorTheme(pickedTheme ? pickedTheme.id : currentTheme.id, target);
 	}
 }
@@ -1465,7 +1487,7 @@ export class SetFileIconThemeAction extends ExtensionAction {
 				ignoreFocusLost
 			});
 		let confValue = this.configurationService.inspect(ICON_THEME_SETTING);
-		const target = typeof confValue.workspace !== 'undefined' ? ConfigurationTarget.WORKSPACE : ConfigurationTarget.USER;
+		const target = typeof confValue.workspaceValue !== 'undefined' ? ConfigurationTarget.WORKSPACE : ConfigurationTarget.USER;
 		return this.workbenchThemeService.setFileIconTheme(pickedTheme ? pickedTheme.id : currentTheme.id, target);
 	}
 }
