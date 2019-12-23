@@ -159,5 +159,6 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
 	name: localize('dataexplorer.name', "Connections"),
-	ctorDescriptor: { ctor: DataExplorerViewPaneContainer }
+	ctorDescriptor: { ctor: DataExplorerViewPaneContainer },
+	icon: 'dataExplorer'
 }, ViewContainerLocation.Sidebar);
