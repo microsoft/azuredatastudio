@@ -21,7 +21,7 @@ import { Sash, Orientation, ISashEvent as IBaseSashEvent } from 'vs/base/browser
 import { firstIndex } from 'vs/base/common/arrays';
 
 import { CellCache, ICell } from 'sql/base/browser/ui/table/highPerf/cellCache';
-import { ITableRenderer, ITableDataSource, ITableMouseEvent, IStaticTableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
+import { ITableRenderer, ITableDataSource, ITableMouseEvent, IStaticTableRenderer, ITableColumn } from 'sql/base/browser/ui/table/highPerf/table';
 import { GridPosition } from 'sql/base/common/gridPosition';
 
 export interface IAriaSetProvider<T> {
@@ -45,48 +45,7 @@ const DefaultOptions = {
 	headerHeight: 22
 };
 
-export interface IColumn<T, TTemplateData> {
-	/**
-	 * Renderer associated with this column
-	 */
-	renderer: ITableRenderer<T, TTemplateData> | IStaticTableRenderer<T, TTemplateData>;
-	/**
-	 * Initial width of this column
-	 */
-	width?: number;
-	/**
-	 * Minimum allowed width of this column
-	 */
-	minWidth?: number;
-	/**
-	 * Is this column resizable?
-	 */
-	resizeable?: boolean;
-	/**
-	 * This string will be added to the cell as a class
-	 * Useful for styling specific columns
-	 */
-	cellClass?: string;
-	/**
-	 * Specifies this column doesn't need data to render
-	 * Useful when you don't need to wait for data you render a column
-	 */
-	static?: boolean;
-	id: string;
-	/**
-	 * Name to display in the column header
-	 */
-	name: string;
-}
-
-export interface IStaticColumn<T, TTemplateData> extends IColumn<T, TTemplateData> {
-	/**
-	 * Renderer associated with this column
-	 */
-	renderer: IStaticTableRenderer<T, TTemplateData>;
-}
-
-interface IInternalColumn<T, TTemplateData> extends IColumn<T, TTemplateData> {
+interface IInternalColumn<T, TTemplateData> extends ITableColumn<T, TTemplateData> {
 	domNode?: HTMLElement;
 	left?: number;
 }
@@ -198,7 +157,7 @@ export class TableView<T> implements IDisposable {
 
 	constructor(
 		container: HTMLElement,
-		columns: IColumn<T, any>[],
+		columns: ITableColumn<T, any>[],
 		private readonly dataSource: ITableDataSource<T>,
 		options: ITableViewOptions<T> = DefaultOptions as ITableViewOptions<T>,
 	) {
@@ -281,7 +240,7 @@ export class TableView<T> implements IDisposable {
 		}
 	}
 
-	private createHeaderSash(sashContainer: HTMLElement, column: IColumn<T, any>): void {
+	private createHeaderSash(sashContainer: HTMLElement, column: ITableColumn<T, any>): void {
 		const layoutProvider = {
 			getVerticalSashLeft: (sash: Sash) => {
 				let left = 0;
@@ -547,7 +506,7 @@ export class TableView<T> implements IDisposable {
 		return this.visibleRows[index].element;
 	}
 
-	column(index: number): IColumn<T, any> | undefined {
+	column(index: number): ITableColumn<T, any> | undefined {
 		return this.columns[index];
 	}
 

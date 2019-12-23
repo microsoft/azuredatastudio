@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { IColumn, TableView } from 'sql/base/browser/ui/table/highPerf/tableView';
-import { ITableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
+import { TableView } from 'sql/base/browser/ui/table/highPerf/tableView';
+import { ITableRenderer, ITableColumn } from 'sql/base/browser/ui/table/highPerf/table';
 import * as DOM from 'vs/base/browser/dom';
 import { IStringDictionary } from 'vs/base/common/collections';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -212,7 +212,7 @@ export class AsyncTableTestEditor extends BaseEditor {
 		range(input.count).forEach(() => {
 			const container = DOM.append(this.getContainer(), DOM.$('div'));
 			const renderer = new ColumnRenderer<IDataShape>();
-			const columns: Array<IColumn<IDataShape, { element: HTMLElement }>> = [
+			const columns: Array<ITableColumn<IDataShape, { element: HTMLElement }>> = [
 				{
 					renderer,
 					id: 'columnA',

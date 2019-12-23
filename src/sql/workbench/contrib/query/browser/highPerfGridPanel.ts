@@ -7,11 +7,10 @@ import 'vs/css!./media/optimizedGridPanel';
 
 import * as azdata from 'azdata';
 
-import { ITableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
+import { ITableRenderer, ITableColumn } from 'sql/base/browser/ui/table/highPerf/table';
 import { Table, ITableStyles } from 'sql/base/browser/ui/table/highPerf/tableWidget';
 import { IView, Orientation } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { VirtualizedWindow } from 'sql/base/browser/ui/table/highPerf/virtualizedWindow';
-import { IColumn } from 'sql/base/browser/ui/table/highPerf/tableView';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { attachHighPerfTableStyler } from 'sql/platform/theme/common/styler';
 
@@ -61,7 +60,7 @@ export class GridTable<T> extends Disposable implements IView {
 	private virtWindow: VirtualizedWindow<T>;
 	private table: Table<T>;
 	private tableContainer: HTMLElement;
-	private columns: IColumn<T, ICellTemplate>[];
+	private columns: ITableColumn<T, ICellTemplate>[];
 
 	public id = generateUuid();
 	readonly element = $('.grid-panel.optimized');
@@ -95,7 +94,7 @@ export class GridTable<T> extends Disposable implements IView {
 		this.rowHeight = config && config.rowHeight ? config.rowHeight : ROW_HEIGHT;
 		this.state = state;
 
-		this.columns = this.resultSet.columnInfo.map<IColumn<T, any>>((c, i) => ({
+		this.columns = this.resultSet.columnInfo.map<ITableColumn<T, any>>((c, i) => ({
 			id: i.toString(),
 			name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
 				? 'XML Showplan'

@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ITableEvent, ITableRenderer, ITableMouseEvent, ITableContextMenuEvent, ITableDataSource, IStaticTableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
+import { ITableEvent, ITableRenderer, ITableMouseEvent, ITableContextMenuEvent, ITableDataSource, IStaticTableRenderer, IStaticColumn, ITableColumn } from 'sql/base/browser/ui/table/highPerf/table';
 
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, DisposableStore } from 'vs/base/common/lifecycle';
 import { memoize } from 'vs/base/common/decorators';
 import { Event, Emitter, EventBufferer } from 'vs/base/common/event';
 import { firstIndex, find } from 'vs/base/common/arrays';
 import * as DOM from 'vs/base/browser/dom';
-import { TableView, ITableViewOptions, IColumn, IStaticColumn } from 'sql/base/browser/ui/table/highPerf/tableView';
+import { TableView, ITableViewOptions } from 'sql/base/browser/ui/table/highPerf/tableView';
 import { ScrollEvent } from 'vs/base/common/scrollable';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { domEvent } from 'vs/base/browser/event';
@@ -318,7 +318,7 @@ const rowCountColumnDef: IStaticColumn<any, HTMLElement> = {
 	resizeable: false
 };
 
-function rowCountFilter(column: IColumn<any, any>): boolean {
+function rowCountFilter(column: ITableColumn<any, any>): boolean {
 	return column.id !== rowCountColumnDef.id;
 }
 
@@ -707,7 +707,7 @@ export class Table<T> implements IDisposable {
 
 	public inDrag = false;
 
-	protected disposables: IDisposable[] = [];
+	protected readonly disposables = new DisposableStore();
 
 	@memoize get onFocusChange(): Event<ITableEvent<T>> {
 		return Event.map(this.eventBufferer.wrapEvent(this.focus.onChange), e => this.toTableEvent(e));
@@ -766,9 +766,15 @@ export class Table<T> implements IDisposable {
 	get onKeyUp(): Event<KeyboardEvent> { return domEvent(this.view.domNode, 'keyup'); }
 	get onKeyPress(): Event<KeyboardEvent> { return domEvent(this.view.domNode, 'keypress'); }
 
+	readonly onDidFocus: Event<void>;
+	readonly onDidBlur: Event<void>;
+
+	private readonly _onDidDispose = new Emitter<void>();
+	readonly onDidDispose: Event<void> = this._onDidDispose.event;
+
 	constructor(
 		container: HTMLElement,
-		columns: IColumn<T, any>[],
+		columns: ITableColumn<T, any>[],
 		dataSource: ITableDataSource<T>,
 		options: ITableOptions<T> = DefaultOptions
 	) {
@@ -796,14 +802,17 @@ export class Table<T> implements IDisposable {
 
 		this.styleController = new DefaultStyleController(this.styleElement, this.view.domId);
 
-		this.disposables.push(new DOMFocusController(this, this.view));
+		this.disposables.add(new DOMFocusController(this, this.view));
 
 		if (!options || typeof options.keyboardSupport !== 'boolean' || options.keyboardSupport) {
 			const controller = new KeyboardController(this, this.view, options);
-			this.disposables.push(controller);
+			this.disposables.add(controller);
 		}
 
-		this.disposables.push(this.createMouseController());
+		this.onDidFocus = Event.map(domEvent(this.view.domNode, 'focus', true), () => null!);
+		this.onDidBlur = Event.map(domEvent(this.view.domNode, 'blur', true), () => null!);
+
+		this.disposables.add(this.createMouseController());
 
 		this.onFocusChange(this._onFocusChange, this, this.disposables);
 		this.onSelectionChange(this._onSelectionChange, this, this.disposables);
@@ -884,7 +893,7 @@ export class Table<T> implements IDisposable {
 	}
 
 
-	focusNextCell(n = 1, loop = false, browserEvent?: UIEvent, filter: (column: IColumn<T, any>) => boolean = rowCountFilter): void {
+	focusNextCell(n = 1, loop = false, browserEvent?: UIEvent, filter: (column: ITableColumn<T, any>) => boolean = rowCountFilter): void {
 		if (this.length === 0) { return; }
 
 		const focus = this.focus.get();
@@ -897,7 +906,7 @@ export class Table<T> implements IDisposable {
 		}
 	}
 
-	focusPreviousCell(n = 1, loop = false, browserEvent?: UIEvent, filter: (column: IColumn<T, any>) => boolean = rowCountFilter): void {
+	focusPreviousCell(n = 1, loop = false, browserEvent?: UIEvent, filter: (column: ITableColumn<T, any>) => boolean = rowCountFilter): void {
 		if (this.length === 0) { return; }
 
 		const focus = this.focus.get();
@@ -936,7 +945,7 @@ export class Table<T> implements IDisposable {
 		}
 	}
 
-	private findNextColumn(index: number, loop = false, filter?: (column: IColumn<T, any>) => boolean): number {
+	private findNextColumn(index: number, loop = false, filter?: (column: ITableColumn<T, any>) => boolean): number {
 		for (let i = 0; i < this.columnLength; i++) {
 			if (index >= this.columnLength && !loop) {
 				return -1;
@@ -954,7 +963,7 @@ export class Table<T> implements IDisposable {
 		return -1;
 	}
 
-	private findPreviousColumn(index: number, loop = false, filter?: (column: IColumn<T, any>) => boolean): number {
+	private findPreviousColumn(index: number, loop = false, filter?: (column: ITableColumn<T, any>) => boolean): number {
 		for (let i = 0; i < this.columnLength; i++) {
 			if (index < 0 && !loop) {
 				return -1;
@@ -1016,6 +1025,10 @@ export class Table<T> implements IDisposable {
 		this.styleController.style(styles);
 	}
 
+	getHTMLElement(): HTMLElement {
+		return this.view.domNode;
+	}
+
 	private _onFocusChange(): void {
 		const focus = this.focus.get();
 
@@ -1038,6 +1051,9 @@ export class Table<T> implements IDisposable {
 	}
 
 	dispose(): void {
-		this.disposables = dispose(this.disposables);
+		this._onDidDispose.fire();
+		this.disposables.dispose();
+
+		this._onDidDispose.dispose();
 	}
 }

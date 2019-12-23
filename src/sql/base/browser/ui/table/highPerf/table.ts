@@ -45,3 +45,44 @@ export interface ITableDragEvent {
 	start: IGridPosition;
 	current: IGridPosition;
 }
+
+export interface ITableColumn<T, TTemplateData> {
+	/**
+	 * Renderer associated with this column
+	 */
+	renderer: ITableRenderer<T, TTemplateData> | IStaticTableRenderer<T, TTemplateData>;
+	/**
+	 * Initial width of this column
+	 */
+	width?: number;
+	/**
+	 * Minimum allowed width of this column
+	 */
+	minWidth?: number;
+	/**
+	 * Is this column resizable?
+	 */
+	resizeable?: boolean;
+	/**
+	 * This string will be added to the cell as a class
+	 * Useful for styling specific columns
+	 */
+	cellClass?: string;
+	/**
+	 * Specifies this column doesn't need data to render
+	 * Useful when you don't need to wait for data you render a column
+	 */
+	static?: boolean;
+	id: string;
+	/**
+	 * Name to display in the column header
+	 */
+	name: string;
+}
+
+export interface IStaticColumn<T, TTemplateData> extends ITableColumn<T, TTemplateData> {
+	/**
+	 * Renderer associated with this column
+	 */
+	renderer: IStaticTableRenderer<T, TTemplateData>;
+}
