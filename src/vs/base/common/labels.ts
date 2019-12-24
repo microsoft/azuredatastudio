@@ -81,7 +81,7 @@ export function getBaseLabel(resource: URI | string | undefined): string | undef
 		resource = URI.file(resource);
 	}
 
-	const base = basename(resource) || (resource.scheme === Schemas.file ? resource.fsPath : resource.path) /* can be empty string if '/' is passed in */;
+	const base = basename(resource) || resource.authority || (resource.scheme === Schemas.file ? resource.fsPath : resource.path) /* can be empty string if '/' is passed in */;
 
 	// convert c: => C:
 	if (hasDriveLetter(base)) {

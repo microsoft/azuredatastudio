@@ -22,9 +22,39 @@ export interface ConnectionProfile {
 	options: { [name: string]: any };
 }
 
+class QueryString {
+	private readonly queryMap = new Map<string, string>();
+
+	add(key: string, value?: string): void {
+		if (!value) {
+			return;
+		}
+		this.queryMap.set(key, value);
+	}
+
+	toString(): string {
+		if (this.queryMap.size === 0) {
+			return '';
+		}
+
+		let ret = '?';
+
+		for (const [entry, value] of this.queryMap.entries()) {
+			if (ret !== '?') {
+				ret += '&';
+			}
+			ret += `${entry}=${value}`;
+		}
+
+		return ret;
+	}
+}
+
 export function uriFromConnection(profile: ConnectionProfile): vscode.Uri {
 	// we have to create a uri string then parse that
-	const connString = `connection://${profile.providerId}/${profile.serverName}/${profile.databaseName}?userName=${profile.userName}`;
+	const queryString = new QueryString();
+	queryString.add('authenticationType', profile.authenticationType);
+	const connString = `${profile.providerId}://${profile.userName ? `${profile.userName}@` : ''}${profile.serverName}/${profile.databaseName}${queryString.toString()}`;
 	return vscode.Uri.parse(connString);
 }
 

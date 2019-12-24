@@ -12,7 +12,7 @@ import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { joinPath } from 'vs/base/common/resources';
 
 export class ConnectionSystemProvider implements IFileSystemProvider {
-	public static readonly SCHEME = 'connection';
+	public static readonly SCHEME = 'MSSQL';
 
 	private readonly handleMap = new Map<string, string>();
 
@@ -51,10 +51,20 @@ export class ConnectionSystemProvider implements IFileSystemProvider {
 	}
 
 	async readdir(resource: URI): Promise<[string, FileType, URI?][]> {
-		const provider = resource.authority;
-		const [, server, database] = resource.path.split('/');
-		const { userName } = this.queryToObject(resource.query);
-		const children = await this.oeService.getChildren({ payload: { providerName: provider, databaseName: database !== 'undefined' ? database : undefined, serverName: server, userName, authenticationType: 'SqlLogin', options: {} }, childProvider: provider, handle: this.handleMap.get(resource.toString()) || resource.toString(), collapsibleState: TreeItemCollapsibleState.None }, 'filexplorer');
+		const provider = resource.scheme;
+		let server: string;
+		let userName: string | undefined;
+		let authority = resource.authority.split('@');
+		if (authority.length === 1) {
+			server = authority[0];
+		} else {
+			userName = authority[0];
+			server = authority.slice(1).join('@');
+		}
+
+		const { authenticationType } = this.queryToObject(resource.query);
+		const [, database] = resource.path.split('/');
+		const children = await this.oeService.getChildren({ payload: { providerName: provider, databaseName: database, serverName: server, userName, authenticationType, options: {} }, childProvider: provider, handle: this.handleMap.get(resource.toString()) || resource.toString(), collapsibleState: TreeItemCollapsibleState.None }, 'filexplorer');
 		return children.map(v => {
 			this.handleMap.set(joinPath(resource, v.label.label).toString(), v.handle);
 			return [v.label.label, FileType.Directory];

@@ -171,7 +171,7 @@ export class DataWorkspaceFileProvider implements vscode.FileSystemProvider {
 				const stat = await vscode.workspace.fs.stat(f);
 				return [path.basename(f.fsPath), stat.type, f] as [string, vscode.FileType, vscode.Uri];
 			} else {
-				return [f.path, vscode.FileType.Directory, f] as [string, vscode.FileType, vscode.Uri];
+				return [f.authority, vscode.FileType.Directory, f] as [string, vscode.FileType, vscode.Uri];
 			}
 		}));
 	}
