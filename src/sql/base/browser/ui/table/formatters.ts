@@ -44,6 +44,10 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 	let valueToDisplay = '';
 	let titleValue = '';
 
+	if (value === null) {
+		value = { displayValue: 'NULL', ariaLabel: 'NULL', isNull: true };
+	}
+
 	if (DBCellValue.isDBCellValue(value)) {
 		valueToDisplay = 'NULL';
 		if (!value.isNull) {
