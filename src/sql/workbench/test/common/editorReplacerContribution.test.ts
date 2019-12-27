@@ -6,7 +6,6 @@
 import * as assert from 'assert';
 import { EditorReplacementContribution } from 'sql/workbench/common/editorReplacerContribution';
 import { TestEditorService, workbenchInstantiationService } from 'vs/workbench/test/workbenchTestServices';
-import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IModeService, ILanguageSelection } from 'vs/editor/common/services/modeService';
 import { Event } from 'vs/base/common/event';
 import { IMode, LanguageId, LanguageIdentifier } from 'vs/editor/common/modes';
@@ -32,9 +31,8 @@ suite('Editor Replacer Contribution', () => {
 
 	test('does proper lifecycle', () => {
 		const editorService = new MockEditorService();
-		const instantiationService = new TestInstantiationService();
 		const modeService = new TestModeService();
-		const contrib = new EditorReplacementContribution(editorService, instantiationService, modeService);
+		const contrib = new EditorReplacementContribution(editorService, modeService);
 		assert.equal(editorService.overridenOpens.length, 1);
 		contrib.dispose();
 		assert.equal(editorService.overridenOpens.length, 0);
