@@ -44,7 +44,11 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 	let valueToDisplay = '';
 	let titleValue = '';
 
-	if (DBCellValue.isDBCellValue(value)) {
+	if (value === null) {
+		value = { displayValue: 'NULL', ariaLabel: 'NULL', isNull: true };
+	}
+
+	if (value !== null && DBCellValue.isDBCellValue(value)) {
 		valueToDisplay = 'NULL';
 		if (!value.isNull) {
 			valueToDisplay = value.displayValue.replace(/(\r\n|\n|\r)/g, ' ');

@@ -187,10 +187,17 @@ export class EditDataGridPanel extends GridParentComponent {
 			let returnVal = '';
 			// replace the line breaks with space since the edit text control cannot
 			// render line breaks and strips them, updating the value.
-			if (Services.DBCellValue.isDBCellValue(value)) {
-				returnVal = this.spacefyLinebreaks(value.displayValue);
+			if (value !== null && Services.DBCellValue.isDBCellValue(value)) {
+				if (value.isNull !== true) {
+					returnVal = this.spacefyLinebreaks(value.displayValue);
+				}
+				else {
+					returnVal = null;
+				}
 			} else if (typeof value === 'string') {
 				returnVal = this.spacefyLinebreaks(value);
+			} else if (value === null) {
+				returnVal = null;
 			}
 			return returnVal;
 		};
