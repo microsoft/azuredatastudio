@@ -9,14 +9,12 @@ import { ServicesAccessor, IInstantiationService, BrandedService } from 'vs/plat
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { getCodeEditor } from 'vs/editor/browser/editorBrowser';
-import { ILogService } from 'vs/platform/log/common/log';
+import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 
 export type InputCreator = (servicesAccessor: ServicesAccessor, activeEditor: IEditorInput) => EditorInput | undefined;
 export type BaseInputCreator = (activeEditor: IEditorInput) => IEditorInput;
 
 export interface ILanguageAssociation {
-	readonly isDefault?: boolean;
-	readonly languages: Array<string>;
 	convertInput(activeEditor: IEditorInput): EditorInput | undefined;
 	createBase(activeEditor: IEditorInput): IEditorInput;
 }
@@ -24,9 +22,9 @@ export interface ILanguageAssociation {
 type ILanguageAssociationSignature<Services extends BrandedService[]> = new (...services: Services) => ILanguageAssociation;
 
 export interface ILanguageAssociationRegistry {
-	registerLanguageAssociation<Services extends BrandedService[]>(contribution: ILanguageAssociationSignature<Services>): void;
+	registerLanguageAssociation<Services extends BrandedService[]>(languages: string[], contribution: ILanguageAssociationSignature<Services>, isDefault?: boolean): IDisposable;
 	getAssociationForLanguage(language: string): ILanguageAssociation;
-	readonly defaultAssociation: ILanguageAssociation;
+	readonly defaultAssociation: [string, ILanguageAssociation];
 
 	/**
 	 * Starts the registry by providing the required services.
@@ -35,35 +33,41 @@ export interface ILanguageAssociationRegistry {
 }
 
 const languageAssociationRegistery = new class implements ILanguageAssociationRegistry {
-	private associationsInstances = new Array<ILanguageAssociation>();
-	private associationContructors = new Array<ILanguageAssociationSignature<BrandedService[]>>();
-	private defaultAssociationsInstance?: ILanguageAssociation;
+	private associationsInstances = new Map<string, ILanguageAssociation>();
+	private associationContructors = new Map<string, ILanguageAssociationSignature<BrandedService[]>>();
+	private defaultAssociationsInstance?: [string, ILanguageAssociation];
+	private defaultAssociationsConstructor?: [string, ILanguageAssociationSignature<BrandedService[]>];
 
 	start(accessor: ServicesAccessor): void {
 		const instantiationService = accessor.get(IInstantiationService);
-		for (const ctor of this.associationContructors) {
+
+		for (const [language, ctor] of this.associationContructors) {
 			const instance = instantiationService.createInstance(ctor);
-			this.associationsInstances.push(instance);
-			if (instance.isDefault) {
-				if (this.defaultAssociationsInstance) {
-					const logService = accessor.get(ILogService);
-					logService.warn('Multiple attempts to register default language association');
-				} else {
-					this.defaultAssociationsInstance = instance;
-				}
-			}
+			this.associationsInstances.set(language, instance);
+		}
+
+		if (this.defaultAssociationsConstructor) {
+			this.defaultAssociationsInstance = [this.defaultAssociationsConstructor[0], instantiationService.createInstance(this.defaultAssociationsConstructor[1])];
 		}
 	}
 
-	registerLanguageAssociation<Services extends BrandedService[]>(contribution: ILanguageAssociationSignature<Services>): void {
-		this.associationContructors.push(contribution);
+	registerLanguageAssociation<Services extends BrandedService[]>(languages: string[], contribution: ILanguageAssociationSignature<Services>, isDefault?: boolean): IDisposable {
+		for (const language of languages) {
+			this.associationContructors.set(language, contribution);
+		}
+		return toDisposable(() => {
+			for (const language of languages) {
+				this.associationContructors.delete(language);
+				this.associationsInstances.delete(language);
+			}
+		});
 	}
 
 	getAssociationForLanguage(language: string): ILanguageAssociation | undefined {
-		return this.associationsInstances.find(v => v.languages.includes(language));
+		return this.associationsInstances.get(language);
 	}
 
-	get defaultAssociation(): ILanguageAssociation | undefined {
+	get defaultAssociation(): [string, ILanguageAssociation] | undefined {
 		return this.defaultAssociationsInstance;
 	}
 };

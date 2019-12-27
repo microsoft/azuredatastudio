@@ -17,7 +17,7 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorInputExtensions.EditorInputFactories);
 
 export class NotebookEditorInputAssociation implements ILanguageAssociation {
-	readonly languages = ['notebook'];
+	static readonly languages = ['notebook'];
 
 	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService) { }
 

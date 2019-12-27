@@ -12,7 +12,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ILanguageAssociation } from 'sql/workbench/common/languageAssociation';
 
 export class QueryPlanConverter implements ILanguageAssociation {
-	readonly languages = ['sqlplan'];
+	static readonly languages = ['sqlplan'];
 
 	constructor(@IInstantiationService private instantiationService: IInstantiationService) { }
 

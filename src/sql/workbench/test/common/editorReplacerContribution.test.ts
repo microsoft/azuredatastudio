@@ -5,28 +5,39 @@
 
 import * as assert from 'assert';
 import { EditorReplacementContribution } from 'sql/workbench/common/editorReplacerContribution';
-import { TestEditorService, workbenchInstantiationService } from 'vs/workbench/test/workbenchTestServices';
+import { TestEditorService } from 'vs/workbench/test/workbenchTestServices';
 import { IModeService, ILanguageSelection } from 'vs/editor/common/services/modeService';
 import { Event } from 'vs/base/common/event';
 import { IMode, LanguageId, LanguageIdentifier } from 'vs/editor/common/modes';
 import { URI } from 'vs/base/common/uri';
 import { IOpenEditorOverrideHandler, IOpenEditorOverride, IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
+import { IDisposable, toDisposable, dispose } from 'vs/base/common/lifecycle';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IEditorInput, EditorInput } from 'vs/workbench/common/editor';
 import { ITextEditorOptions, IEditorOptions } from 'vs/platform/editor/common/editor';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
+import { Registry } from 'vs/platform/registry/common/platform';
+import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
+import { QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/common/queryInputFactory';
+import { workbenchInstantiationService } from 'sql/workbench/test/workbenchTestServices';
+
+const languageAssociations = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
 suite('Editor Replacer Contribution', () => {
+	let disposables: IDisposable[] = [];
 
 	setup(() => {
-
+		disposables.push(languageAssociations.registerLanguageAssociation(QueryEditorLanguageAssociation.languages, QueryEditorLanguageAssociation, QueryEditorLanguageAssociation.isDefault));
+		const instantiationService = workbenchInstantiationService();
+		instantiationService.invokeFunction(accessor => {
+			languageAssociations.start(accessor);
+		});
 	});
 
 	teardown(() => {
-
+		disposables = dispose(disposables);
 	});
 
 	test('does proper lifecycle', () => {

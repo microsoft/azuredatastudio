@@ -22,4 +22,4 @@ Registry.as<IEditorRegistry>(Extensions.Editors)
 	.registerEditor(queryPlanEditorDescriptor, [new SyncDescriptor(QueryPlanInput)]);
 
 Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations)
-	.registerLanguageAssociation(QueryPlanConverter);
+	.registerLanguageAssociation(QueryPlanConverter.languages, QueryPlanConverter);

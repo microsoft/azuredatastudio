@@ -62,8 +62,8 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 		if (!language) {
 			const defaultInputCreator = languageAssociationRegistry.defaultAssociation;
 			if (defaultInputCreator) {
-				editor.setMode(defaultInputCreator.languages[0]);
-				const newInput = defaultInputCreator.convertInput(editor);
+				editor.setMode(defaultInputCreator[0]);
+				const newInput = defaultInputCreator[1].convertInput(editor);
 				if (newInput) {
 					return { override: this.editorService.openEditor(newInput, options, group) };
 				}

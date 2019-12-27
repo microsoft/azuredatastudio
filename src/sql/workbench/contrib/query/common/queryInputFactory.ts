@@ -18,8 +18,8 @@ import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditor
 const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorInputExtensions.EditorInputFactories);
 
 export class QueryEditorLanguageAssociation implements ILanguageAssociation {
-	readonly isDefault = true;
-	readonly languages = ['sql'];
+	static readonly isDefault = true;
+	static readonly languages = ['sql'];
 
 	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService) { }
 
