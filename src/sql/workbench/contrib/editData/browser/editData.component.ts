@@ -181,8 +181,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				}
 			} else if (typeof value === 'string') {
 				returnVal = this.spacefyLinebreaks(value);
-			}
-			else if (value === null) {
+			} else if (value === null) {
 				returnVal = null;
 			}
 			return returnVal;
