@@ -22,6 +22,10 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
 import { QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/common/queryInputFactory';
 import { workbenchInstantiationService } from 'sql/workbench/test/workbenchTestServices';
+import { NotebookEditorInputAssociation } from 'sql/workbench/contrib/notebook/common/models/nodebookInputFactory';
+import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
 
 const languageAssociations = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -30,6 +34,7 @@ suite('Editor Replacer Contribution', () => {
 
 	setup(() => {
 		disposables.push(languageAssociations.registerLanguageAssociation(QueryEditorLanguageAssociation.languages, QueryEditorLanguageAssociation, QueryEditorLanguageAssociation.isDefault));
+		disposables.push(languageAssociations.registerLanguageAssociation(NotebookEditorInputAssociation.languages, NotebookEditorInputAssociation));
 		const instantiationService = workbenchInstantiationService();
 		instantiationService.invokeFunction(accessor => {
 			languageAssociations.start(accessor);
@@ -49,7 +54,7 @@ suite('Editor Replacer Contribution', () => {
 		assert.equal(editorService.overridenOpens.length, 0);
 	});
 
-	test('does replace sql file input', async () => {
+	test('does replace sql file input from uri (no mode service)', async () => {
 		const editorService = new MockEditorService();
 		const instantiationService = workbenchInstantiationService();
 		instantiationService.stub(IEditorService, editorService);
@@ -60,6 +65,91 @@ suite('Editor Replacer Contribution', () => {
 		const newinput = <any>(await response.override) as EditorInput; // our test service returns this so we are fine to cast this
 
 		assert(newinput instanceof QueryEditorInput);
+
+		contrib.dispose();
+	});
+
+	test('does replace sql file input using input mode', async () => {
+		const editorService = new MockEditorService();
+		const instantiationService = workbenchInstantiationService();
+		instantiationService.stub(IEditorService, editorService);
+		const contrib = instantiationService.createInstance(EditorReplacementContribution);
+		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.other'), undefined, 'sql');
+		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
+		assert(response?.override);
+		const newinput = <any>(await response.override) as EditorInput; // our test service returns this so we are fine to cast this
+
+		assert(newinput instanceof QueryEditorInput);
+
+		contrib.dispose();
+	});
+
+	test('does replace notebook file input using input mode', async () => {
+		const editorService = new MockEditorService();
+		const instantiationService = workbenchInstantiationService();
+		instantiationService.stub(IEditorService, editorService);
+		const contrib = instantiationService.createInstance(EditorReplacementContribution);
+		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.notebook'), undefined, undefined);
+		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
+		assert(response?.override);
+		const newinput = <any>(await response.override) as EditorInput; // our test service returns this so we are fine to cast this
+
+		assert(newinput instanceof NotebookInput);
+
+		contrib.dispose();
+	});
+
+	test('does replace notebook file input using input mode', async () => {
+		const editorService = new MockEditorService();
+		const instantiationService = workbenchInstantiationService();
+		instantiationService.stub(IEditorService, editorService);
+		const contrib = instantiationService.createInstance(EditorReplacementContribution);
+		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.iynb'), undefined, 'notebook');
+		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
+		assert(response?.override);
+		const newinput = <any>(await response.override) as EditorInput; // our test service returns this so we are fine to cast this
+
+		assert(newinput instanceof NotebookInput);
+
+		contrib.dispose();
+	});
+
+	test('does replace notebook file input using input mode', async () => {
+		const editorService = new MockEditorService();
+		const instantiationService = workbenchInstantiationService();
+		instantiationService.stub(IEditorService, editorService);
+		const contrib = instantiationService.createInstance(EditorReplacementContribution);
+		const input = instantiationService.createInstance(UntitledTextEditorInput, URI.file('/test/file'), false, undefined, undefined, undefined);
+		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
+		assert(response?.override);
+		const newinput = <any>(await response.override) as EditorInput; // our test service returns this so we are fine to cast this
+
+		assert(newinput instanceof QueryEditorInput);
+
+		contrib.dispose();
+	});
+
+	test('does not replace editors that it shouldnt', async () => {
+		const editorService = new MockEditorService();
+		const instantiationService = workbenchInstantiationService();
+		instantiationService.stub(IEditorService, editorService);
+		const contrib = instantiationService.createInstance(EditorReplacementContribution);
+		const untitled = instantiationService.createInstance(UntitledTextEditorInput, URI.file('/test/file'), false, undefined, undefined, undefined);
+		const input = instantiationService.createInstance(UntitledQueryEditorInput, '', untitled, undefined);
+		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
+		assert(response === undefined);
+
+		contrib.dispose();
+	});
+
+	test('does not replace editors if it doesnt have a replacer', async () => {
+		const editorService = new MockEditorService();
+		const instantiationService = workbenchInstantiationService();
+		instantiationService.stub(IEditorService, editorService);
+		const contrib = instantiationService.createInstance(EditorReplacementContribution);
+		const input = instantiationService.createInstance(UntitledTextEditorInput, URI.file('/test/file.unknown'), false, undefined, undefined, undefined);
+		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
+		assert(response === undefined);
 
 		contrib.dispose();
 	});

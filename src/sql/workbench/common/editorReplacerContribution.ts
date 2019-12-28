@@ -46,8 +46,6 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 			language = editor.getPreferredMode();
 		} else if (editor instanceof UntitledTextEditorInput) {
 			language = editor.getMode();
-		} else {
-			return undefined;
 		}
 
 		if (!language) { // in the case the input doesn't have a preferred mode set we will attempt to guess the mode from the file path

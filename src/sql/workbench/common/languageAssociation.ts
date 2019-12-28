@@ -55,6 +55,11 @@ const languageAssociationRegistery = new class implements ILanguageAssociationRe
 		for (const language of languages) {
 			this.associationContructors.set(language, contribution);
 		}
+
+		if (isDefault) {
+			this.defaultAssociationsConstructor = [languages[0], contribution];
+		}
+
 		return toDisposable(() => {
 			for (const language of languages) {
 				this.associationContructors.delete(language);
