@@ -130,8 +130,8 @@ class SchemaCompareTester {
 
 			assert(result1.success === true, 'Deploy source database should succeed');
 			assert(result2.success === true, 'Deploy target database should succeed');
-			utils.assertDatabaseCreationResult(sourceDB, ownerUri, retryCount);
-			utils.assertDatabaseCreationResult(targetDB, ownerUri, retryCount);
+			await utils.assertDatabaseCreationResult(sourceDB, ownerUri, retryCount);
+			await utils.assertDatabaseCreationResult(targetDB, ownerUri, retryCount);
 
 			assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 
@@ -258,8 +258,7 @@ class SchemaCompareTester {
 	@stressify({ dop: SchemaCompareTester.ParallelCount })
 	async SchemaCompareIncludeExcludeDacpacToDacpac(): Promise<void> {
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
-		const now = new Date();
-		const operationId = 'testOperationId_' + now.getTime().toString();
+		const operationId = 'testOperationId_' + new Date().getTime().toString();
 
 		let source: mssql.SchemaCompareEndpointInfo = {
 			endpointType: mssql.SchemaCompareEndpointType.Dacpac,
