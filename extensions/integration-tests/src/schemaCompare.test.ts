@@ -164,7 +164,7 @@ class SchemaCompareTester {
 			await this.assertScriptGenerationResult(status, target.serverName, target.databaseName);
 
 			// save to scmp
-			const filepath = path.join(folderPath,`ads_schemaCompare_${now.getTime().toString()}.scmp`);
+			const filepath = path.join(folderPath, `ads_schemaCompare_${now.getTime().toString()}.scmp`);
 			if (!fs.existsSync(folderPath)) {
 				fs.mkdirSync(folderPath);
 			}
@@ -289,32 +289,38 @@ class SchemaCompareTester {
 		const t2Difference = schemaCompareResult.differences.find(e => e.sourceValue && e.sourceValue[1] === 't2' && e.name === 'SqlTable');
 		assert(t2Difference !== undefined, 'The difference Table t2 should be found. Should not be undefined');
 		const excludeResult = await schemaCompareService.schemaCompareIncludeExcludeNode(operationId, t2Difference, false, azdata.TaskExecutionMode.execute);
-		assert(excludeResult.success === false, 'Exclude should have been unsuccessful');
-		assert(excludeResult.blockingDependencies.length === 1, `There should be one blocking dependency. Actual: ${excludeResult.blockingDependencies.length}`);
-		assert(excludeResult.blockingDependencies[0].sourceValue[1] === 'v1', `Blocking dependency should be view v1. Actual ${excludeResult.blockingDependencies[0].sourceValue[1]}`);
+		this.assertIncludeExcludeResult(excludeResult, false, 1, 0);
+		assert(excludeResult.blockingDependencies[0].sourceValue[1] === 'v1', `Blocking dependency should be view v1. Actual: ${excludeResult.blockingDependencies[0].sourceValue[1]}`);
 
 		// Exclude the view v1 that t2 was a dependency for and it should succeed and t2 should also be excluded
 		const v1Difference = schemaCompareResult.differences.find(e => e.sourceValue && e.sourceValue[1] === 'v1' && e.name === 'SqlView');
 		assert(v1Difference !== undefined, 'The difference View v1 should be found. Should not be undefined');
 		const excludeResult2 = await schemaCompareService.schemaCompareIncludeExcludeNode(operationId, v1Difference, false, azdata.TaskExecutionMode.execute);
-		assert(excludeResult2.success === true, 'Exclude should have been successful');
-		assert(excludeResult2.affectedDependencies.length === 1, `There should be one affected dependency. Actual: ${excludeResult2.affectedDependencies.length}`);
+		this.assertIncludeExcludeResult(excludeResult2, true, 0, 1);
 		assert(excludeResult2.affectedDependencies[0].sourceValue[1] === 't2', `Table t2 should be the affected dependency. Actual: ${excludeResult2.affectedDependencies[0].sourceValue[1]}`);
 		assert(excludeResult2.affectedDependencies[0].included === false, 'Table t2 should be excluded as a result of excluding v1. Actual: true');
 
 		// including the view v1 should also include the table t2
 		const includeResult = await schemaCompareService.schemaCompareIncludeExcludeNode(operationId, v1Difference, true, azdata.TaskExecutionMode.execute);
-		assert(includeResult.success === true, 'Include should have been successful');
-		assert(includeResult.affectedDependencies.length === 1, `There should be one affected dependency. Actual: ${includeResult.affectedDependencies.length}`);
+		this.assertIncludeExcludeResult(includeResult, true, 0, 1);
 		assert(includeResult.affectedDependencies[0].sourceValue[1] === 't2', `Table t2 should be the affected dependency. Actual: ${includeResult.affectedDependencies[0].sourceValue[1]}`);
-		assert(includeResult.affectedDependencies[0].included === true, 'Table t2 should be include as a result of including v1. Actual: false');
+		assert(includeResult.affectedDependencies[0].included === true, 'Table t2 should be included as a result of including v1. Actual: false');
 
 		// excluding views from the comparison should make it so t2 can be excluded
 		deploymentOptions.excludeObjectTypes.push(mssql.SchemaObjectType.Views);
 		await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, deploymentOptions);
 		const excludeResult3 = await schemaCompareService.schemaCompareIncludeExcludeNode(operationId, t2Difference, false, azdata.TaskExecutionMode.execute);
-		assert(excludeResult3.success === true, 'Exclude should have been successful');
-		assert(excludeResult3.affectedDependencies.length === 0, `There should be no affected dependencies. Actual: ${excludeResult3.affectedDependencies}`);
+		this.assertIncludeExcludeResult(excludeResult3, true, 0, 0);
+	}
+
+	private assertIncludeExcludeResult(result: mssql.SchemaCompareIncludeExcludeResult, expectedSuccess: boolean, expectedBlockingDependenciesLength: number, expectedAffectedDependenciesLength: number): void {
+		assert(result.success === expectedSuccess, `Operation success should have been ${expectedSuccess}. Actual: ${result.success}`);
+		if (result.blockingDependencies) {
+			assert(result.blockingDependencies.length === expectedBlockingDependenciesLength, `Expected ${expectedBlockingDependenciesLength} blocking dependencies. Actual: ${result.blockingDependencies}`);
+		}
+		if (result.affectedDependencies) {
+			assert(result.affectedDependencies.length === expectedAffectedDependenciesLength, `Expected ${expectedAffectedDependenciesLength} affected dependencies. Actual: ${result.affectedDependencies}`);
+		}
 	}
 
 	private assertSchemaCompareResult(schemaCompareResult: mssql.SchemaCompareResult, operationId: string, expectedDifferenceCount: number): void {
