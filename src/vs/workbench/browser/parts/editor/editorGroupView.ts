@@ -823,6 +823,13 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 
 	private doOpenEditor(editor: EditorInput, options?: EditorOptions): Promise<IEditor | undefined> {
 
+		// Guard against invalid inputs. Disposed inputs
+		// should never open because they emit no events
+		// e.g. to indicate dirty changes.
+		if (editor.isDisposed()) {
+			return Promise.resolve(undefined);
+		}
+
 		// Determine options
 		const openEditorOptions: IEditorOpenOptions = {
 			index: options ? options.index : undefined,
@@ -1494,10 +1501,10 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		});
 
 		// Handle inactive first
-		inactiveReplacements.forEach(({ editor, replacement, options }) => {
+		inactiveReplacements.forEach(async ({ editor, replacement, options }) => {
 
 			// Open inactive editor
-			this.openEditor(replacement, options);  // {{SQL CARBON EDIT}} use this.openEditor to allow us to override the open, we could potentially add this to vscode but i don't think they would care
+			await this.openEditor(replacement, options); // {{SQL CARBON EDIT}} use this.openEditor to allow us to override the open, we could potentially add this to vscode but i don't think they would care
 
 			// Close replaced inactive editor unless they match
 			if (!editor.matches(replacement)) {
