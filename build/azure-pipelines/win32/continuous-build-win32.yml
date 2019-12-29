@@ -43,6 +43,9 @@ steps:
 # - powershell: | {{SQL CARBON EDIT}} remove step
 #     yarn monaco-compile-check
 #   displayName: Run Monaco Editor Checks
+- script: |
+    yarn valid-globals-check
+  displayName: Run Valid Globals Checks
 - powershell: |
     yarn compile
   displayName: Compile Sources

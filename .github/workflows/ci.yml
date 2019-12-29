@@ -42,7 +42,9 @@ jobs:
     - run: yarn strict-null-check # {{SQL CARBON EDIT}} add step
       name: Run Strict Null Check
     # - run: yarn monaco-compile-check {{SQL CARBON EDIT}} remove step
-    #   name: Run Monaco Editor Checks
+    #   name: Run Monaco Editor Checks    - run: yarn valid-globals-check
+    - run: yarn valid-globals-check
+      name: Run Valid Globals Checks
     - run: yarn compile
       name: Compile Sources
     # - run: yarn download-builtin-extensions {{SQL CARBON EDIT}} remove step
@@ -77,6 +79,8 @@ jobs:
       name: Run Strict Null Check
     # - run: yarn monaco-compile-check {{SQL CARBON EDIT}} remove step
     #   name: Run Monaco Editor Checks
+    - run: yarn valid-globals-check
+      name: Run Valid Globals Checks
     - run: yarn compile
       name: Compile Sources
     # - run: yarn download-builtin-extensions {{SQL CARBON EDIT}} remove step
@@ -108,6 +112,8 @@ jobs:
       name: Run Strict Null Check
     # - run: yarn monaco-compile-check {{SQL CARBON EDIT}} remove step
     #   name: Run Monaco Editor Checks
+    - run: yarn valid-globals-check
+      name: Run Valid Globals Checks
     - run: yarn compile
       name: Compile Sources
     # - run: yarn download-builtin-extensions {{SQL CARBON EDIT}} remove step
