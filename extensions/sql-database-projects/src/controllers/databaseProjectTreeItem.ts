@@ -21,6 +21,16 @@ export abstract class BaseProjectTreeItem {
 	abstract get children(): BaseProjectTreeItem[];
 
 	abstract get treeItem(): vscode.TreeItem;
+
+	public get root() {
+		let node: BaseProjectTreeItem = this;
+
+		while (node.parent !== undefined) {
+			node = node.parent;
+		}
+
+		return node;
+	}
 }
 
 export class MessageTreeItem extends BaseProjectTreeItem {
@@ -107,7 +117,7 @@ export class FolderNode extends BaseProjectTreeItem {
 	public fileSystemUri: vscode.Uri;
 
 	constructor(folderPath: vscode.Uri, parent: FolderNode | ProjectRootTreeItem) {
-		super(fsPathToProjectUri(folderPath, parent.projectFile), parent);
+		super(fsPathToProjectUri(folderPath, parent.root as ProjectRootTreeItem), parent);
 		this.fileSystemUri = folderPath;
 	}
 
@@ -124,8 +134,8 @@ export class FolderNode extends BaseProjectTreeItem {
 	}
 }
 
-function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectFileUri: vscode.Uri): vscode.Uri {
-	const projBaseDir = path.dirname(projectFileUri.fsPath);
+function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootTreeItem): vscode.Uri {
+	const projBaseDir = path.dirname(projectNode.projectFile.fsPath);
 	let localUri = '';
 
 	if (fileSystemUri.fsPath.startsWith(projBaseDir)) {
@@ -136,14 +146,14 @@ function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectFileUri: vscode.Ur
 		throw new Error('Project pointing to file outside of directory');
 	}
 
-	return vscode.Uri.parse(localUri); // Not totally sure what I want this output to look like
+	return vscode.Uri.file(path.join(projectNode.uri.path, localUri));
 }
 
 export class FileNode extends BaseProjectTreeItem {
 	public fileSystemUri: vscode.Uri;
 
 	constructor(filePath: vscode.Uri, parent: FolderNode | ProjectRootTreeItem) {
-		super(fsPathToProjectUri(filePath, parent.projectFile), parent);
+		super(fsPathToProjectUri(filePath, parent.root as ProjectRootTreeItem), parent);
 		this.fileSystemUri = filePath;
 	}
 
@@ -160,7 +170,7 @@ export class DataSourcesTreeItem extends BaseProjectTreeItem {
 	private dataSources: DataSourceTreeItem[] = [];
 
 	constructor(project: ProjectRootTreeItem) {
-		super(vscode.Uri.parse(path.join(project.uri.path, constants.dataSourcesNodeName)), project);
+		super(vscode.Uri.file(path.join(project.uri.path, constants.dataSourcesNodeName)), project);
 	}
 
 	public createDataSource(json: string) {
