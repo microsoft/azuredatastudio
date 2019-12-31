@@ -38,7 +38,7 @@ export default class MainController implements vscode.Disposable {
 	private async initializeDatabaseProjects(): Promise<void> {
 		// init commands
 		vscode.commands.registerCommand('sqlDatabaseProjects.new', () => { console.log('"New Database Project" called.'); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.open', async () => { this.openProjectFolder(); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.open', async () => { this.openProjectFromFile(); });
 
 		// init view
 		this.dbProjectTreeViewProvider = new SqlDatabaseProjectTreeViewProvider();
@@ -46,16 +46,16 @@ export default class MainController implements vscode.Disposable {
 		this.extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(SQL_DATABASE_PROJECTS_VIEW_ID, this.dbProjectTreeViewProvider));
 	}
 
-	public async openProjectFolder(): Promise<void> {
+	public async openProjectFromFile(): Promise<void> {
 		try {
 			let filter: { [key: string]: string[] } = {};
 
 			filter[localize('sqlDatabaseProject', "SQL database project")] = ['sqlproj'];
 
-			let file = await vscode.window.showOpenDialog({ filters: filter });
+			let files: vscode.Uri[] | undefined = await vscode.window.showOpenDialog({ filters: filter });
 
-			if (file) {
-				await this.dbProjectTreeViewProvider.openProject(file);
+			if (files) {
+				await this.dbProjectTreeViewProvider.openProject(files);
 			}
 		}
 		catch (err) {

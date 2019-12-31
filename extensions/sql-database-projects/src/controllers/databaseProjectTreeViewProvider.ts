@@ -6,7 +6,9 @@
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 
-import { BaseProjectTreeItem, MessageTreeItem, ProjectRootTreeItem } from './databaseProjectTreeItem';
+import { BaseProjectTreeItem, MessageTreeItem } from '../models/tree/baseTreeItem';
+import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
+import { Project } from '../models/project';
 
 export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvider<BaseProjectTreeItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<BaseProjectTreeItem | undefined> = new vscode.EventEmitter<BaseProjectTreeItem | undefined>();
@@ -32,6 +34,23 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		}
 
 		return element.children;
+	}
+
+	public load(projects: Project[]) {
+		if (projects.length === 0) {
+			vscode.window.showErrorMessage(constants.noSqlProjFiles);
+			return;
+		}
+
+		let newRoots: BaseProjectTreeItem[] = [];
+
+		for (const proj of projects) {
+			newRoots.push(new ProjectRootTreeItem(proj.projectFile);
+		}
+
+		this.roots = newRoots;
+		this._onDidChangeTreeData.fire();
+
 	}
 
 	public async openProject(projectFiles: vscode.Uri[]) {
