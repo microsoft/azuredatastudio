@@ -25,11 +25,11 @@ Declare @external_script_enabled bit
 SELECT @external_script_enabled=config_value FROM @tablevar WHERE name = 'external scripts enabled'
 SELECT @external_script_enabled`;
 
-const checkPythonInstalledQuery = `
+const checkLanguageInstalledQuery = `
 
 SELECT is_installed
 FROM sys.dm_db_external_language_stats s, sys.external_languages l
-WHERE s.external_language_id = l.external_language_id AND language = 'Python'`;
+WHERE s.external_language_id = l.external_language_id AND language = '#LANGUAGE#'`;
 
 const modifyExternalScriptConfigQuery = `
 
@@ -86,7 +86,21 @@ export class QueryRunner {
 	 * Returns true if python installed in the give SQL server instance
 	 */
 	public async isPythonInstalled(connection: azdata.connection.ConnectionProfile): Promise<boolean> {
-		let result = await this.runQuery(connection, checkPythonInstalledQuery);
+		return this.isLanguageInstalled(connection, 'Python');
+	}
+
+	/**
+	 * Returns true if R installed in the give SQL server instance
+	 */
+	public async isRInstalled(connection: azdata.connection.ConnectionProfile): Promise<boolean> {
+		return this.isLanguageInstalled(connection, 'R');
+	}
+
+	/**
+	 * Returns true if language installed in the give SQL server instance
+	 */
+	private async isLanguageInstalled(connection: azdata.connection.ConnectionProfile, language: string): Promise<boolean> {
+		let result = await this.runQuery(connection, checkLanguageInstalledQuery.replace('#LANGUAGE#', language));
 		let isInstalled = false;
 		if (result && result.rows && result.rows.length > 0) {
 			isInstalled = result.rows[0][0].displayValue === '1';
