@@ -24,7 +24,7 @@ if (isTestSetupCompleted()) {
 			console.log(`Start dacpac tests`);
 		});
 
-		test('Deploy and extract dacpac @REL@', async function () {
+		test('Deploy and extract dacpac @UNSTABLE@ @REL@', async function () {
 			const server = await getStandaloneServer();
 			await utils.connectToServer(server);
 
