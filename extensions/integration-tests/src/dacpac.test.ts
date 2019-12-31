@@ -73,7 +73,7 @@ if (isTestSetupCompleted()) {
 		// Tracking bug https://github.com/microsoft/azuredatastudio/issues/7323
 
 		const bacpac1: string = path.join(__dirname, '..', 'testData', 'Database1.bacpac');
-		test('Import and export bacpac', async function () {
+		test('Import and export bacpac @UNSTABLE@', async function () {
 			const server = await getStandaloneServer();
 			await utils.connectToServer(server);
 
