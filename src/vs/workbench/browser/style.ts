@@ -18,7 +18,6 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const iconForegroundColor = theme.getColor(iconForeground);
 	if (iconForegroundColor) {
 		collector.addRule(`.monaco-workbench .codicon { color: ${iconForegroundColor}; }`);
-		collector.addRule(`.monaco-workbench .icon { color: ${iconForegroundColor}; }`);
 	}
 
 	// Foreground
