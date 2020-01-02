@@ -50,7 +50,6 @@ export class CollapseComponent extends CellView implements OnInit, OnChanges {
 
 	private handleCellCollapse(isCollapsed: boolean): void {
 		let collapseButton = <HTMLElement>this.collapseCellButtonElement.nativeElement;
-
 		if (isCollapsed) {
 			collapseButton.classList.remove(this.collapseButtonClass);
 			collapseButton.classList.add(this.expandButtonClass);
