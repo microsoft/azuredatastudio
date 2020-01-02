@@ -44,11 +44,11 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 	let valueToDisplay = '';
 	let titleValue = '';
 
-	if (value === null) {
+	if (value === '') {
 		value = { displayValue: 'NULL', ariaLabel: 'NULL', isNull: true };
 	}
 
-	if (value !== null && DBCellValue.isDBCellValue(value)) {
+	if (DBCellValue.isDBCellValue(value)) {
 		valueToDisplay = 'NULL';
 		if (!value.isNull) {
 			valueToDisplay = value.displayValue.replace(/(\r\n|\n|\r)/g, ' ');
