@@ -21,11 +21,9 @@ import { ServerConfigManager } from '../serverConfig/serverConfigManager';
  * The main controller class that initializes the extension
  */
 export default class MainController implements vscode.Disposable {
-
 	private _outputChannel: vscode.OutputChannel;
 	private _rootPath = this._context.extensionPath;
 	private _config: Config;
-	private _disposables = new Array<vscode.Disposable>();
 
 	public constructor(
 		private _context: vscode.ExtensionContext,
@@ -109,7 +107,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	/**
- * Returns the package manager instance
+ * Returns the server config manager instance
  */
 	public get serverConfigManager(): ServerConfigManager {
 		if (!this._serverConfigManager) {
@@ -129,7 +127,6 @@ export default class MainController implements vscode.Disposable {
 	 * Disposes the extension
 	 */
 	public dispose(): void {
-		this._disposables = this._disposables.map(i => i.dispose());
 		this.deactivate();
 	}
 }
