@@ -69,7 +69,7 @@ export class QueryEditorService implements IQueryEditorService {
 		return new Promise<IConnectableInput>(async (resolve, reject) => {
 			try {
 				// Create file path and file URI
-				let filePath = await this.createUntitledSqlFilePath();
+				let filePath = await this.createUntitledSqlFilePath(connectionProviderName);
 				let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 				// Create a sql document pane with accoutrements
@@ -223,8 +223,12 @@ export class QueryEditorService implements IQueryEditorService {
 
 	////// Private functions
 
-	private createUntitledSqlFilePath(): Promise<string> {
-		return this.createPrefixedSqlFilePath(untitledFilePrefix);
+	private createUntitledSqlFilePath(providerName: string): Promise<string> {
+		if (providerName === 'MSSQL') {
+			return this.createPrefixedSqlFilePath(untitledFilePrefix);
+		}
+
+		return this.createPrefixedSqlFilePath(providerName + 'Query');
 	}
 
 	private async createPrefixedSqlFilePath(prefix: string): Promise<string> {
