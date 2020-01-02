@@ -733,10 +733,13 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (this.savedViewState) {
 			//get all rows shown in gridSelections Range to use setSelectedRows directly.
 			let rowArray: number[] = [];
-			let fromRow = this.savedViewState.gridSelections[0].fromRow;
-			let toRow = this.savedViewState.gridSelections[0].toRow;
-			for (let i = fromRow; i <= toRow; i++) {
-				rowArray.push(i);
+
+			if (this.savedViewState.gridSelections) {
+				let fromRow = this.savedViewState.gridSelections[0].fromRow;
+				let toRow = this.savedViewState.gridSelections[0].toRow;
+				for (let i = fromRow; i <= toRow; i++) {
+					rowArray.push(i);
+				}
 			}
 
 			this.tables[0].setSelectedRows(rowArray);
