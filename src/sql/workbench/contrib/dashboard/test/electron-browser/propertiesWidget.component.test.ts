@@ -37,9 +37,7 @@ class TestChangeDetectorRef extends ChangeDetectorRef {
 }
 
 suite('Dashboard Properties Widget Tests', () => {
-	test('Parses good config', function (done) {
-		// for some reason mocha thinks this test takes 26 seconds even though it doesn't, so it says this failed because it took longer than 2 seconds
-		this.timeout(30000);
+	test('Parses good config', () => {
 		let propertiesConfig = {
 			properties: [
 				{
@@ -106,13 +104,15 @@ suite('Dashboard Properties Widget Tests', () => {
 
 		let testComponent = new PropertiesWidgetComponent(dashboardService.object, new TestChangeDetectorRef(), undefined, widgetConfig, testLogService);
 
-		// because config parsing is done async we need to put our asserts on the thread stack
-		setTimeout(() => {
-			// because properties is private we need to do some work arounds to access it.
-			assert.equal((<any>testComponent).properties.length, 1);
-			assert.equal((<any>testComponent).properties[0].displayName, 'Test');
-			assert.equal((<any>testComponent).properties[0].value, 'Test Property');
-			done();
+		return new Promise(resolve => {
+			// because config parsing is done async we need to put our asserts on the thread stack
+			setImmediate(() => {
+				// because properties is private we need to do some work arounds to access it.
+				assert.equal((<any>testComponent).properties.length, 1);
+				assert.equal((<any>testComponent).properties[0].displayName, 'Test');
+				assert.equal((<any>testComponent).properties[0].value, 'Test Property');
+				resolve();
+			});
 		});
 	});
 });

@@ -30,6 +30,10 @@ export class FileQueryEditorInputFactory implements IEditorInputFactory {
 		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, fileEditorInput.getResource().toString());
 		return instantiationService.createInstance(FileQueryEditorInput, '', fileEditorInput, queryResultsInput);
 	}
+
+	canSerialize(): boolean { // we can always serialize query inputs
+		return true;
+	}
 }
 
 export class UntitledQueryEditorInputFactory implements IEditorInputFactory {
@@ -46,5 +50,9 @@ export class UntitledQueryEditorInputFactory implements IEditorInputFactory {
 		const untitledEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as UntitledTextEditorInput;
 		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, untitledEditorInput.getResource().toString());
 		return instantiationService.createInstance(UntitledQueryEditorInput, '', untitledEditorInput, queryResultsInput);
+	}
+
+	canSerialize(): boolean { // we can always serialize query inputs
+		return true;
 	}
 }

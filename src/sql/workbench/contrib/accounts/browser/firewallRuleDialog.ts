@@ -28,7 +28,7 @@ import { IAccountPickerService } from 'sql/workbench/contrib/accounts/browser/ac
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 

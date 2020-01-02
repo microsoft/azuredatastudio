@@ -13,7 +13,6 @@ import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
 import { MainThreadNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import * as testUtils from '../../../../base/test/common/async';
 import { INotebookManagerDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
@@ -40,7 +39,10 @@ suite('ExtHostNotebook Tests', () => {
 
 	suite('getNotebookManager', () => {
 		test('Should throw if no matching provider is defined', async () => {
-			await testUtils.assertThrowsAsync(() => extHostNotebook.$getNotebookManager(-1, notebookUri));
+			try {
+				await extHostNotebook.$getNotebookManager(-1, notebookUri);
+				assert.fail('expected to throw');
+			} catch (e) { }
 		});
 		suite('with provider', () => {
 			let providerHandle: number = -1;

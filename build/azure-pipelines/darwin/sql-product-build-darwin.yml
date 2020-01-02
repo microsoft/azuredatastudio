@@ -64,6 +64,8 @@ steps:
       set -e
       CHILD_CONCURRENCY=1 yarn --frozen-lockfile
     displayName: Install dependencies
+    env:
+      GITHUB_TOKEN: $(github-distro-mixin-password)
     condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
@@ -129,6 +131,7 @@ steps:
           }
         ]
       SessionTimeout: 20
+    condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
       set -e

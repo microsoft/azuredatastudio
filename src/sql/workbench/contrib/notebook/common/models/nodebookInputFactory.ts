@@ -28,6 +28,10 @@ export class FileNoteBookEditorInputFactory implements IEditorInputFactory {
 		const fileEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as FileEditorInput;
 		return instantiationService.createInstance(FileNotebookInput, fileEditorInput.getName(), fileEditorInput.getResource(), fileEditorInput);
 	}
+
+	canSerialize(): boolean { // we can always serialize notebooks
+		return true;
+	}
 }
 
 export class UntitledNoteBookEditorInputFactory implements IEditorInputFactory {
@@ -43,5 +47,9 @@ export class UntitledNoteBookEditorInputFactory implements IEditorInputFactory {
 		const factory = editorInputFactoryRegistry.getEditorInputFactory(UntitledTextEditorInput.ID);
 		const untitledEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as UntitledTextEditorInput;
 		return instantiationService.createInstance(UntitledNotebookInput, untitledEditorInput.getName(), untitledEditorInput.getResource(), untitledEditorInput);
+	}
+
+	canSerialize(): boolean { // we can always serialize notebooks
+		return true;
 	}
 }

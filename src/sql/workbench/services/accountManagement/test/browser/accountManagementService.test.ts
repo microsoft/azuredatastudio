@@ -56,7 +56,7 @@ suite('Account Management Service Tests:', () => {
 		assert.ok(ams.updateAccountListEvent);
 	});
 
-	test('Account Updated - account added', done => {
+	test('Account Updated - account added', async () => {
 		// Setup:
 		// ... Create account management service and to mock up the store
 		let state = getTestState();
@@ -79,19 +79,16 @@ suite('Account Management Service Tests:', () => {
 		};
 
 		// If: I update an account that doesn't exist
-		state.accountManagementService.accountUpdated(account)
-			.then(() => {
-				// Then: Make sure the mocked methods are called
-				state.mockAccountStore.verify(x => x.addOrUpdate(TypeMoq.It.isAny()), TypeMoq.Times.once());
-				state.mockAccountStore.verify(x => x.remove(TypeMoq.It.isAny()), TypeMoq.Times.once());
-			})
-			.then(
-				() => done(),
-				err => done(err)
-			);
+		try {
+			await state.accountManagementService.accountUpdated(account);
+			assert.fail('Should have failed with new account being added');
+		} catch (e) {
+			state.mockAccountStore.verify(x => x.addOrUpdate(TypeMoq.It.isAny()), TypeMoq.Times.once());
+			state.mockAccountStore.verify(x => x.remove(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		}
 	});
 
-	test('Account Updated - account modified', done => {
+	test('Account Updated - account modified', () => {
 		// Setup:
 		// ... Create account management service and to mock up the store
 		let state = getTestState();
@@ -111,7 +108,7 @@ suite('Account Management Service Tests:', () => {
 			metadata: hasAccountProvider
 		};
 		// If: I update an account that exists
-		state.accountManagementService.accountUpdated(account)
+		return state.accountManagementService.accountUpdated(account)
 			.then(() => {
 				// Then:
 				// ... The mocked method was called
@@ -123,14 +120,10 @@ suite('Account Management Service Tests:', () => {
 					assert.ok(Array.isArray(params.accountList));
 					assert.equal(params.accountList.length, 1);
 				});
-			})
-			.then(
-				() => done(),
-				err => done(err)
-			);
+			});
 	});
 
-	test('Add account - provider exists, account does not exist', done => {
+	test('Add account - provider exists, account does not exist', () => {
 		// Setup:
 		// ... Create account management service with a provider
 		let state = getTestState();
@@ -166,14 +159,10 @@ suite('Account Management Service Tests:', () => {
 					assert.equal(param.accountList.length, 1);
 					assert.equal(param.accountList[0], account);
 				});
-			})
-			.then(
-				() => done(),
-				err => done(err)
-			);
+			});
 	});
 
-	test('Add account - provider exists, account exists', done => {
+	test('Add account - provider exists, account exists', () => {
 		// Setup:
 		// ... Create account management service with a provider
 		let state = getTestState();
@@ -209,28 +198,22 @@ suite('Account Management Service Tests:', () => {
 					assert.equal(param.accountList.length, 1);
 					assert.equal(param.accountList[0], account);
 				});
-			})
-			.then(
-				() => done(),
-				err => done(err)
-			);
+			});
 	});
 
-	test('Add account - provider doesn\'t exist', done => {
+	test('Add account - provider doesn\'t exist', () => {
 		// Setup: Create account management service
 		let ams = getTestState().accountManagementService;
 
 		// If: I add an account when the provider doesn't exist
 		// Then: It should not resolve
-		Promise.race([
+		return Promise.race([
 			new Promise((resolve, reject) => setTimeout(() => resolve(), 100)),
-			ams.addAccount('doesNotExist').then((
-				() => done('Promise resolved when the provider did not exist')
-			))
-		]).then(() => done(), err => done(err));
+			ams.addAccount('doesNotExist').then(() => { throw new Error('Promise resolved when the provider did not exist'); })
+		]);
 	});
 
-	test('Add account - provider exists, provider fails', done => {
+	test('Add account - provider exists, provider fails', async () => {
 		// Setup: Create account management service with a provider
 		let state = getTestState();
 		let mockProvider = getFailingMockAccountProvider(false);
@@ -238,14 +221,13 @@ suite('Account Management Service Tests:', () => {
 
 		// If: I ask to add an account and the user cancels
 		// Then: Nothing should have happened and the promise should be resolved
-		return state.accountManagementService.addAccount(noAccountProvider.id)
-			.then(
-				() => done('Add account promise resolved when it should have rejected'),
-				() => done()
-			);
+		try {
+			await state.accountManagementService.addAccount(noAccountProvider.id);
+			assert.fail('Add account promise resolved when it should have rejected');
+		} catch (e) { }
 	});
 
-	test('Add account - provider exists, user cancelled', done => {
+	test('Add account - provider exists, user cancelled', () => {
 		// Setup: Create account management service with a provider
 		let state = getTestState();
 		let mockProvider = getFailingMockAccountProvider(true);
@@ -253,14 +235,10 @@ suite('Account Management Service Tests:', () => {
 
 		// If: I ask to add an account and the user cancels
 		// Then: Nothing should have happened and the promise should be resolved
-		return state.accountManagementService.addAccount(noAccountProvider.id)
-			.then(
-				() => done(),
-				err => done(err)
-			);
+		return state.accountManagementService.addAccount(noAccountProvider.id);
 	});
 
-	test('Get account provider metadata - providers exist', done => {
+	test('Get account provider metadata - providers exist', () => {
 		// Setup: Create account management service with a provider
 		let state = getTestState();
 		state.accountManagementService._providers[noAccountProvider.id] = {
@@ -276,45 +254,35 @@ suite('Account Management Service Tests:', () => {
 				assert.ok(Array.isArray(result));
 				assert.equal(result.length, 1);
 				assert.equal(result[0], noAccountProvider);
-			})
-			.then(
-				() => done(),
-				err => done(err)
-			);
+			});
 	});
 
-	test('Get account provider metadata - no providers', done => {
+	test('Get account provider metadata - no providers', () => {
 		// Setup: Create account management service
 		let ams = getTestState().accountManagementService;
 
 		// If: I ask for account provider metadata when there isn't any providers
-		ams.getAccountProviderMetadata()
+		return ams.getAccountProviderMetadata()
 			.then(result => {
 				// Then: The results should be an empty array
 				assert.ok(Array.isArray(result));
 				assert.equal(result.length, 0);
-			})
-			.then(
-				() => done(),
-				err => done(err)
-			);
+			});
 	});
 
-	test('Get accounts by provider - provider does not exist', done => {
+	test('Get accounts by provider - provider does not exist', () => {
 		// Setup: Create account management service
 		let ams = getTestState().accountManagementService;
 
 		// If: I get accounts when the provider doesn't exist
 		// Then: It should not resolve
-		Promise.race([
+		return Promise.race([
 			new Promise((resolve, reject) => setTimeout(() => resolve(), 100)),
-			ams.getAccountsForProvider('doesNotExist').then((
-				() => done('Promise resolved when the provider did not exist')
-			))
-		]).then(() => done(), err => done(err));
+			ams.getAccountsForProvider('doesNotExist').then(() => { throw new Error('Promise resolved when the provider did not exist'); })
+		]);
 	});
 
-	test('Get accounts by provider - provider exists, no accounts', done => {
+	test('Get accounts by provider - provider exists, no accounts', () => {
 		// Setup: Create account management service
 		let ams = getTestState().accountManagementService;
 		ams._providers[noAccountProvider.id] = {
@@ -324,19 +292,15 @@ suite('Account Management Service Tests:', () => {
 		};
 
 		// If: I ask for the accounts for a provider with no accounts
-		ams.getAccountsForProvider(noAccountProvider.id)
+		return ams.getAccountsForProvider(noAccountProvider.id)
 			.then(result => {
 				// Then: I should get back an empty array
 				assert.ok(Array.isArray(result));
 				assert.equal(result.length, 0);
-			})
-			.then(
-				() => done(),
-				err => done(err)
-			);
+			});
 	});
 
-	test('Get accounts by provider - provider exists, has accounts', done => {
+	test('Get accounts by provider - provider exists, has accounts', () => {
 		// Setup: Create account management service
 		let ams = getTestState().accountManagementService;
 		ams._providers[hasAccountProvider.id] = {
@@ -346,18 +310,14 @@ suite('Account Management Service Tests:', () => {
 		};
 
 		// If: I ask for the accounts for a provider with accounts
-		ams.getAccountsForProvider(hasAccountProvider.id)
+		return ams.getAccountsForProvider(hasAccountProvider.id)
 			.then(result => {
 				// Then: I should get back the list of accounts
 				assert.equal(result, accountList);
-			})
-			.then(
-				() => done(),
-				err => done(err)
-			);
+			});
 	});
 
-	test('Remove account - account exists', done => {
+	test('Remove account - account exists', () => {
 		// Setup:
 		// ... Create account management service and to fake removing an account that exists
 		let state = getTestState();
@@ -374,7 +334,7 @@ suite('Account Management Service Tests:', () => {
 		};
 
 		// If: I remove an account that exists
-		state.accountManagementService.removeAccount(account.key)
+		return state.accountManagementService.removeAccount(account.key)
 			.then(result => {
 				// Then:
 				// ... I should have gotten true back
@@ -392,14 +352,10 @@ suite('Account Management Service Tests:', () => {
 					assert.ok(Array.isArray(params.accountList));
 					assert.equal(params.accountList.length, 0);
 				});
-			})
-			.then(
-				() => done(),
-				err => done(err)
-			);
+			});
 	});
 
-	test('Remove account - account doesn\'t exist', done => {
+	test('Remove account - account doesn\'t exist', () => {
 		// Setup:
 		// ... Create account management service and to fake removing an account that doesn't exist
 		let state = getTestState();
@@ -417,7 +373,7 @@ suite('Account Management Service Tests:', () => {
 
 		// If: I remove an account that doesn't exist
 		let accountKey = { providerId: noAccountProvider.id, accountId: 'foobar' };
-		state.accountManagementService.removeAccount(accountKey)
+		return state.accountManagementService.removeAccount(accountKey)
 			.then(result => {
 				// Then:
 				// ... I should have gotten false back
@@ -431,14 +387,10 @@ suite('Account Management Service Tests:', () => {
 
 				// ... The updated account list event should not have fired
 				state.eventVerifierUpdate.assertNotFired();
-			})
-			.then(
-				() => done(),
-				err => done(err)
-			);
+			});
 	});
 
-	test('Open account dialog - first call', done => {
+	test('Open account dialog - first call', () => {
 		// Setup:
 		// ... Create account management ervice
 		let state = getTestState();
@@ -450,7 +402,7 @@ suite('Account Management Service Tests:', () => {
 			.returns(() => mockDialogController.object);
 
 		// If: I open the account dialog when it doesn't exist
-		state.accountManagementService.openAccountListDialog()
+		return state.accountManagementService.openAccountListDialog()
 			.then(() => {
 				// Then:
 				// ... The instantiation service should have been called once
@@ -458,14 +410,10 @@ suite('Account Management Service Tests:', () => {
 
 				// ... The dialog should have been opened
 				mockDialogController.verify(x => x.openAccountDialog(), TypeMoq.Times.once());
-			})
-			.then(
-				() => done(),
-				err => done(err)
-			);
+			});
 	});
 
-	test('Open account dialog - subsequent calls', done => {
+	test('Open account dialog - subsequent calls', () => {
 		// Setup:
 		// ... Create account management ervice
 		let state = getTestState();
@@ -477,7 +425,7 @@ suite('Account Management Service Tests:', () => {
 			.returns(() => mockDialogController.object);
 
 		// If: I open the account dialog for a second time
-		state.accountManagementService.openAccountListDialog()
+		return state.accountManagementService.openAccountListDialog()
 			.then(() => state.accountManagementService.openAccountListDialog())
 			.then(() => {
 				// Then:
@@ -486,18 +434,14 @@ suite('Account Management Service Tests:', () => {
 
 				// ... The dialog should have been opened twice
 				mockDialogController.verify(x => x.openAccountDialog(), TypeMoq.Times.exactly(2));
-			})
-			.then(
-				() => done(),
-				err => done(err)
-			);
+			});
 	});
 
 	// test('Perform oauth - success', done => {
 	// TODO: implement this test properly once we remove direct IPC calls (see https://github.com/Microsoft/carbon/issues/2091)
 	// });
 
-	test('Register provider - success', done => {
+	test('Register provider - success', () => {
 		// Setup:
 		// ... Create ams, account store that will accept account add/update
 		let mocks = getTestState();
@@ -508,7 +452,7 @@ suite('Account Management Service Tests:', () => {
 		let mockProvider = getMockAccountProvider();
 
 		// If: I register a new provider
-		mocks.accountManagementService.registerProvider(noAccountProvider, mockProvider.object)
+		return mocks.accountManagementService.registerProvider(noAccountProvider, mockProvider.object)
 			.then(() => {
 				// Then:
 				// ... Account store should have been called to get dehydrated accounts
@@ -523,29 +467,24 @@ suite('Account Management Service Tests:', () => {
 					assert.ok(Array.isArray(param.initialAccounts));
 					assert.equal(param.initialAccounts.length, 0);
 				});
-			})
-			.then(
-				() => done(),
-				err => done(err)
-			);
+			});
 	});
 
-	test('Unregister provider - success', done => {
+	test('Unregister provider - success', () => {
 		// Setup:
 		// ... Create ams
 		let mocks = getTestState();
 
 		// ... Register a provider to remove
 		let mockProvider = getMockAccountProvider();
-		mocks.accountManagementService.registerProvider(noAccountProvider, mockProvider.object)
+		return mocks.accountManagementService.registerProvider(noAccountProvider, mockProvider.object)
 			.then((success) => {
 				// If: I remove an account provider
 				mocks.accountManagementService.unregisterProvider(noAccountProvider);
 
 				// Then: The provider removed event should have fired
 				mocks.eventVerifierProviderRemoved.assertFired(noAccountProvider);
-			}, error => {
-			}).then(() => done(), err => done(err));
+			});
 
 	});
 });

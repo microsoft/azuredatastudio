@@ -20,6 +20,8 @@ import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/not
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { getErrorMessage } from 'vs/base/common/errors';
+import { IEditorAction } from 'vs/editor/common/editorCommon';
+import { IFindNotebookController } from 'sql/workbench/contrib/notebook/find/notebookFindWidget';
 import { INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeUpdateUtils } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
@@ -106,7 +108,6 @@ export class TrustedAction extends ToggleableAction {
 	// Constants
 	private static readonly trustedLabel = localize('trustLabel', "Trusted");
 	private static readonly notTrustedLabel = localize('untrustLabel', "Not Trusted");
-	private static readonly alreadyTrustedMsg = localize('alreadyTrustedMsg', "Notebook is already trusted.");
 	private static readonly baseClass = 'notebook-button';
 	private static readonly trustedCssClass = 'icon-trusted';
 	private static readonly notTrustedCssClass = 'icon-notTrusted';
@@ -114,8 +115,7 @@ export class TrustedAction extends ToggleableAction {
 	// Properties
 
 	constructor(
-		id: string,
-		@INotificationService private _notificationService: INotificationService
+		id: string
 	) {
 		super(id, {
 			baseClass: TrustedAction.baseClass,
@@ -138,14 +138,8 @@ export class TrustedAction extends ToggleableAction {
 		let self = this;
 		return new Promise<boolean>((resolve, reject) => {
 			try {
-				if (self.trusted) {
-					const actions: INotificationActions = { primary: [] };
-					self._notificationService.notify({ severity: Severity.Info, message: TrustedAction.alreadyTrustedMsg, actions });
-				}
-				else {
-					self.trusted = !self.trusted;
-					context.model.trustedMode = self.trusted;
-				}
+				self.trusted = !self.trusted;
+				context.model.trustedMode = self.trusted;
 				resolve(true);
 			} catch (e) {
 				reject(e);
@@ -431,5 +425,37 @@ export class NewNotebookAction extends Action {
 			connProfile = context.connectionProfile;
 		}
 		return this.commandService.executeCommand(NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID, { connectionProfile: connProfile });
+	}
+}
+
+export class NotebookFindNextAction implements IEditorAction {
+	public readonly id = 'notebook.findNext';
+	public readonly label = localize('notebook.findNext', "Find Next String");
+	public readonly alias = '';
+
+	constructor(private notebook: IFindNotebookController) { }
+
+	async run(): Promise<void> {
+		await this.notebook.findNext();
+	}
+
+	isSupported(): boolean {
+		return true;
+	}
+}
+
+export class NotebookFindPreviousAction implements IEditorAction {
+	public readonly id = 'notebook.findPrevious';
+	public readonly label = localize('notebook.findPrevious', "Find Previous String");
+	public readonly alias = '';
+
+	constructor(private notebook: IFindNotebookController) { }
+
+	async run(): Promise<void> {
+		await this.notebook.findPrevious();
+	}
+
+	isSupported(): boolean {
+		return true;
 	}
 }

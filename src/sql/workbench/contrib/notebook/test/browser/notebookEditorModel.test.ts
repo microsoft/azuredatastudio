@@ -114,6 +114,8 @@ suite('Notebook Editor Model', function (): void {
 			executeEdits: undefined,
 			getSections: undefined,
 			navigateToSection: undefined,
+			cellEditors: undefined,
+			deltaDecorations: undefined,
 			addCell: undefined
 		};
 	});

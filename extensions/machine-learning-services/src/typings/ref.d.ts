@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-declare module 'vscode-windows-registry' {
-	export type HKEY = "HKEY_CURRENT_USER" | "HKEY_LOCAL_MACHINE" | "HKEY_CLASSES_ROOT" | "HKEY_USERS" | "HKEY_CURRENT_CONFIG";
-	export function GetStringRegKey(hive: HKEY, path: string, name: string): string | undefined;
-}
+/// <reference path='../../../../src/vs/vscode.d.ts'/>
+/// <reference path='../../../../src/sql/azdata.d.ts'/>
+/// <reference path='../../../../src/sql/azdata.proposed.d.ts'/>
+/// <reference types='@types/node'/>

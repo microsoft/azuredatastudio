@@ -24,6 +24,7 @@ import { attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Event } from 'vs/base/common/event';
 import { startsWith } from 'vs/base/common/strings';
+import { URI } from 'vs/base/common/uri';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
@@ -317,8 +318,8 @@ export class QueryResultsView extends Disposable {
 			this.setQueryRunner(info.queryRunner);
 		} else {
 			let disposable = this.queryModelService.onRunQueryStart(c => {
-				if (c === input.uri) {
-					let info = this.queryModelService._getQueryInfo(input.uri);
+				if (URI.parse(c).toString() === URI.parse(input.uri).toString()) {
+					let info = this.queryModelService._getQueryInfo(c);
 					this.setQueryRunner(info.queryRunner);
 					disposable.dispose();
 				}

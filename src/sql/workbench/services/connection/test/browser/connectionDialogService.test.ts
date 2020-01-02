@@ -75,15 +75,11 @@ suite('ConnectionDialogService tests', () => {
 		});
 	}
 
-	test('handleDefaultOnConnect uses params URI for editor connections', done => {
-		testHandleDefaultOnConnectUri(true).then(() => done(), err => {
-			done(err);
-		});
+	test('handleDefaultOnConnect uses params URI for editor connections', () => {
+		return testHandleDefaultOnConnectUri(true);
 	});
 
-	test('handleDefaultOnConnect uses undefined URI for non-editor connections', done => {
-		testHandleDefaultOnConnectUri(false).then(() => done(), err => {
-			done(err);
-		});
+	test('handleDefaultOnConnect uses undefined URI for non-editor connections', () => {
+		return testHandleDefaultOnConnectUri(false);
 	});
 });
