@@ -144,6 +144,8 @@ export class NotebookFindDecorations implements IDisposable {
 
 	private _revealRangeInCenterIfOutsideViewport(match: NotebookRange): void {
 		let matchEditor = this._editor.getCellEditor(match.cell.cellGuid);
+		// expand the cell if it's collapsed and scroll into view
+		match.cell.isCollapsed = false;
 		if (matchEditor) {
 			matchEditor.getContainer().scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 			matchEditor.getControl().revealRangeInCenterIfOutsideViewport(match, ScrollType.Smooth);
