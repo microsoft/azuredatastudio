@@ -649,9 +649,10 @@ abstract class SettingsCommand extends Command {
 
 class SearchNotebookCommand extends SettingsCommand {
 
-	public runCommand(accessor: ServicesAccessor, args: any): void {
+	public async runCommand(accessor: ServicesAccessor, args: any): Promise<void> {
 		const notebookEditor = this.getNotebookEditor(accessor);
 		if (notebookEditor) {
+			await notebookEditor.setNotebookModel();
 			notebookEditor.toggleSearch();
 		}
 	}
