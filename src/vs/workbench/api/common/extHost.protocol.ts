@@ -47,7 +47,8 @@ import { createExtHostContextProxyIdentifier as createExtId, createMainContextPr
 import * as search from 'vs/workbench/services/search/common/search';
 import { SaveReason } from 'vs/workbench/common/editor';
 import { ExtensionActivationReason } from 'vs/workbench/api/common/extHostExtensionActivator';
-import { TunnelOptions, TunnelDto } from 'vs/workbench/api/common/extHostTunnelService';
+import { TunnelDto } from 'vs/workbench/api/common/extHostTunnelService';
+import { TunnelOptions } from 'vs/platform/remote/common/tunnel';
 
 // {{SQL CARBON EDIT}}
 import { ITreeItem as sqlITreeItem } from 'sql/workbench/common/views';
@@ -778,7 +779,7 @@ export interface MainThreadWindowShape extends IDisposable {
 
 export interface MainThreadTunnelServiceShape extends IDisposable {
 	$openTunnel(tunnelOptions: TunnelOptions): Promise<TunnelDto | undefined>;
-	$closeTunnel(remotePort: number): Promise<void>;
+	$closeTunnel(remote: { host: string, port: number }): Promise<void>;
 	$registerCandidateFinder(): Promise<void>;
 	$setTunnelProvider(): Promise<void>;
 }
@@ -1397,9 +1398,15 @@ export interface ExtHostStorageShape {
 	$acceptValue(shared: boolean, key: string, value: object | undefined): void;
 }
 
+export interface ExtHostThemingShape {
+	$onColorThemeChange(themeType: string): void;
+}
+
+export interface MainThreadThemingShape extends IDisposable {
+}
 
 export interface ExtHostTunnelServiceShape {
-	$findCandidatePorts(): Promise<{ port: number, detail: string }[]>;
+	$findCandidatePorts(): Promise<{ host: string, port: number, detail: string }[]>;
 	$forwardPort(tunnelOptions: TunnelOptions): Promise<TunnelDto> | undefined;
 	$closeTunnel(remote: { host: string, port: number }): Promise<void>;
 }
@@ -1445,6 +1452,7 @@ export const MainContext = {
 	MainThreadTask: createMainId<MainThreadTaskShape>('MainThreadTask'),
 	MainThreadWindow: createMainId<MainThreadWindowShape>('MainThreadWindow'),
 	MainThreadLabelService: createMainId<MainThreadLabelServiceShape>('MainThreadLabelService'),
+	MainThreadTheming: createMainId<MainThreadThemingShape>('MainThreadTheming'),
 	MainThreadTunnelService: createMainId<MainThreadTunnelServiceShape>('MainThreadTunnelService')
 };
 
@@ -1479,6 +1487,7 @@ export const ExtHostContext = {
 	ExtHostStorage: createMainId<ExtHostStorageShape>('ExtHostStorage'),
 	ExtHostUrls: createExtId<ExtHostUrlsShape>('ExtHostUrls'),
 	ExtHostOutputService: createMainId<ExtHostOutputServiceShape>('ExtHostOutputService'),
-	ExtHosLabelService: createMainId<ExtHostLabelServiceShape>('ExtHostLabelService'),
+	ExtHostLabelService: createMainId<ExtHostLabelServiceShape>('ExtHostLabelService'),
+	ExtHostTheming: createMainId<ExtHostThemingShape>('ExtHostTheming'),
 	ExtHostTunnelService: createMainId<ExtHostTunnelServiceShape>('ExtHostTunnelService')
 };
