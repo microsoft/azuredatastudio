@@ -5,15 +5,12 @@
 
 import * as azdata from 'azdata';
 import { ApiWrapper } from '../common/apiWrapper';
-import { ServerConfigManager } from '../controllers/serverConfigManager';
+import { ServerConfigManager } from '../serverConfig/serverConfigManager';
 import * as constants from '../common/constants';
 
 export class ConfigTable {
 	private _statusTable: azdata.DeclarativeTableComponent;
 
-	/**
-	 *
-	 */
 	constructor(private _apiWrapper: ApiWrapper, private _serverConfigManager: ServerConfigManager, private _modelBuilder: azdata.ModelBuilder, private _loadingComponent: azdata.LoadingComponent) {
 		this._statusTable = this._modelBuilder.declarativeTable()
 			.withProperties<azdata.DeclarativeTableProperties>(
@@ -77,10 +74,16 @@ export class ConfigTable {
 			.component();
 	}
 
+	/**
+	 * Returns the config table component
+	 */
 	public get component(): azdata.DeclarativeTableComponent {
 		return this._statusTable;
 	}
 
+	/**
+	 * Refreshes the config table
+	 */
 	public async refresh(): Promise<void> {
 		this._loadingComponent.updateProperties({ loading: true });
 		let connection = await this.getCurrentConnection();
@@ -92,7 +95,6 @@ export class ConfigTable {
 				this.refresh();
 			}
 		);
-
 		const pythonConfig = await this.addTableRow(constants.mlsPythonLanguageTitle,
 			async () => {
 				return await this._serverConfigManager.isPythonInstalled(connection);
@@ -165,7 +167,7 @@ export class ConfigTable {
 		}
 	}
 
-	getLabel(isEnabled: boolean): string {
+	private getLabel(isEnabled: boolean): string {
 		let enable = constants.mlsEnableButtonTitle;
 		let disable = constants.mlsDisableButtonTitle;
 		let title = enable;
@@ -177,5 +179,4 @@ export class ConfigTable {
 		}
 		return title;
 	}
-
 }

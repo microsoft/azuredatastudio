@@ -11,6 +11,16 @@ import * as childProcess from 'child_process';
 const ExecScriptsTimeoutInSeconds = 600000;
 export class ProcessService {
 
+	private _timeout = ExecScriptsTimeoutInSeconds;
+
+	public set Timeout(value: number) {
+		this._timeout = value;
+	}
+
+	public get Timeout(): number {
+		return this._timeout;
+	}
+
 	public async execScripts(exeFilePath: string, scripts: string[], outputChannel?: vscode.OutputChannel): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 
@@ -46,7 +56,7 @@ export class ProcessService {
 				} catch (error) {
 					console.log(error);
 				}
-			}, ExecScriptsTimeoutInSeconds);
+			}, this._timeout);
 		});
 	}
 

@@ -9,33 +9,42 @@ import * as azdata from 'azdata';
 import { QueryRunner } from '../common/queryRunner';
 import * as constants from '../common/constants';
 import { ApiWrapper } from '../common/apiWrapper';
+import * as utils from '../common/utils';
 
 export class ServerConfigManager {
+
 	/**
-		 * Creates a new instance of PackageManager
-		 */
+	 * Creates a new instance of ServerConfigManager
+	 */
 	constructor(
 		private _apiWrapper: ApiWrapper,
 		private _queryRunner: QueryRunner,
 	) {
 	}
 
+	/**
+	 * Opens server config documents
+	 */
 	public async openDocuments(): Promise<boolean> {
 		return await this._apiWrapper.openExternal(vscode.Uri.parse(constants.mlsDocuments));
 	}
 
+	/**
+	 * Opens ODBC driver documents
+	 */
 	public async openOdbcDriverDocuments(): Promise<boolean> {
-		let isWindows = process.platform === 'win32';
-		if (isWindows) {
+		if (utils.isWindows()) {
 			return await this._apiWrapper.openExternal(vscode.Uri.parse(constants.odbcDriverWindowsDocuments));
 		} else {
 			return await this._apiWrapper.openExternal(vscode.Uri.parse(constants.odbcDriverLinuxDocuments));
 		}
 	}
 
+	/**
+	 * Opens install MLS documents
+	 */
 	public async openInstallDocuments(): Promise<boolean> {
-		let isWindows = process.platform === 'win32';
-		if (isWindows) {
+		if (utils.isWindows()) {
 			return await this._apiWrapper.openExternal(vscode.Uri.parse(constants.installMlsWindowsDocs));
 		} else {
 			return await this._apiWrapper.openExternal(vscode.Uri.parse(constants.installMlsLinuxDocs));
@@ -63,6 +72,11 @@ export class ServerConfigManager {
 		return this._queryRunner.isPythonInstalled(connection);
 	}
 
+	/**
+	 * Updates external script config
+	 * @param connection SQL Connection
+	 * @param enable if true external script will be enabled
+	 */
 	public async updateExternalScriptConfig(connection: azdata.connection.ConnectionProfile, enable: boolean): Promise<boolean> {
 		await this._queryRunner.updateExternalScriptConfig(connection, enable);
 		let current = await this._queryRunner.isMachineLearningServiceEnabled(connection);

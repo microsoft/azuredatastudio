@@ -14,8 +14,8 @@ import { ApiWrapper } from '../common/apiWrapper';
 import { QueryRunner } from '../common/queryRunner';
 import { ProcessService } from '../common/processService';
 import { Config } from '../common/config';
-import { TasksWidget } from '../widgets/tasksWidgets';
-import { ServerConfigManager } from './serverConfigManager';
+import { ServerConfigWidget } from '../widgets/serverConfigWidgets';
+import { ServerConfigManager } from '../serverConfig/serverConfigManager';
 
 /**
  * The main controller class that initializes the extension
@@ -73,8 +73,8 @@ export default class MainController implements vscode.Disposable {
 		let nbApis = await this.getNotebookExtensionApis();
 		await this._config.load();
 
-		let tasks = new TasksWidget(this._apiWrapper, this.serverConfigManager);
-		tasks.registerMlTasksWidget();
+		let tasks = new ServerConfigWidget(this._apiWrapper, this.serverConfigManager);
+		tasks.register();
 
 		let packageManager = this.getPackageManager(nbApis);
 		this._apiWrapper.registerCommand(constants.mlManagePackagesCommand, (async () => {

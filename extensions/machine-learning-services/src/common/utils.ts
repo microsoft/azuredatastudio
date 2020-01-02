@@ -46,3 +46,7 @@ export function getPythonExePath(rootFolder: string): string {
 		constants.pythonBundleVersion,
 		process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 }
+
+export function isWindows(): boolean {
+	return process.platform === 'win32';
+}

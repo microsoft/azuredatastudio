@@ -3,38 +3,20 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-//import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { ApiWrapper } from '../common/apiWrapper';
-import { ServerConfigManager } from '../controllers/serverConfigManager';
+import { ServerConfigManager } from '../serverConfig/serverConfigManager';
 import { ConfigTable } from './configTable';
 
-export class TasksWidget {
+export class ServerConfigWidget {
 
-	/**
-	 *
-	 */
 	constructor(private _apiWrapper: ApiWrapper, private _serverConfigManager: ServerConfigManager) {
 	}
 
-	addRow(container: azdata.FlexContainer, view: azdata.ModelView, component: azdata.Component) {
-		const bookRow = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'row',
-			justifyContent: 'space-between',
-			height: '100'
-		}).component();
-		bookRow.addItem(component, {
-			CSSStyles: {
-				'width': '100',
-				'hight': '100',
-				'padding-top': '10px',
-				'text-align': 'left'
-			}
-		});
-		container.addItems([bookRow]);
-	}
-
-	public registerMlTasksWidget(): void {
+	/**
+	 * Registers the widget and initializes the components
+	 */
+	public register(): void {
 		azdata.ui.registerModelViewProvider('ml.tasks', async (view) => {
 			const container = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'column',
@@ -64,6 +46,23 @@ export class TasksWidget {
 			configTable.refresh();
 			await view.initializeModel(spinner);
 		});
+	}
+
+	private addRow(container: azdata.FlexContainer, view: azdata.ModelView, component: azdata.Component) {
+		const bookRow = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'row',
+			justifyContent: 'space-between',
+			height: '100'
+		}).component();
+		bookRow.addItem(component, {
+			CSSStyles: {
+				'width': '100',
+				'hight': '100',
+				'padding-top': '10px',
+				'text-align': 'left'
+			}
+		});
+		container.addItems([bookRow]);
 	}
 }
 
