@@ -265,7 +265,6 @@ export abstract class ToolBase implements ITool {
 	 */
 	private async updateVersionAndStatus(): Promise<void> {
 		this._statusDescription = '';
-		throw new Error(`Unexpected error while discovering the status of tool: '${this.displayName}'`);
 		await this.addInstallationSearchPathsToSystemPath();
 		const commandOutput = await this._platformService.runCommand(
 			this.versionCommand.command,
