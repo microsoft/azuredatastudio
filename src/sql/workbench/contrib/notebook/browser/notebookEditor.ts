@@ -334,8 +334,10 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		this._currentMatch = range;
 	}
 	public toggleSearch(): void {
+		// reveal only when the model is loaded
+		let isRevealed: boolean = !this._findState.isRevealed && this._notebookModel ? !this._findState.isRevealed : false;
 		this._findState.change({
-			isRevealed: !this._findState.isRevealed
+			isRevealed: isRevealed
 		}, false);
 		if (this._findState.isRevealed) {
 			this._finder.focusFindInput();
