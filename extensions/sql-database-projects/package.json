@@ -13,9 +13,11 @@
   "icon": "images/sqlserver.png",
   "aiKey": "AIF-c5594e2d-38b5-4d3b-ab1b-ed5d4fe8ee40",
   "activationEvents": [
-    "*"
+    "onCommand:sqlDatabaseProjects.new",
+    "onCommand:sqlDatabaseProjects.open",
+    "workspaceContains:**/*.sqlproj"
   ],
-  "main": "./out/main",
+  "main": "./out/extension",
   "repository": {
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
@@ -45,6 +47,15 @@
             "command": "sqlDatabaseProjects.open"
           }
         ]
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "sqlDatabaseProjectsView",
+          "name": "%title.projectsView%",
+          "when": ""
+        }
+      ]
     }
   },
   "dependencies": {
