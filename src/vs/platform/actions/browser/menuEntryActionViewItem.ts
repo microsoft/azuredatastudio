@@ -135,6 +135,8 @@ export function createActionViewItem(action: IAction, keybindingService: IKeybin
 
 const ids = new IdGenerator('icon-menu-item-');
 
+// {{SQL CARBON EDIT}} - This is here to use the 'ids' generator above
+// General Menu Entry Action Item, may or may not be labeled.
 export class MenuEntryActionViewItem extends ActionViewItem {
 
 	static readonly ICON_PATH_TO_CSS_RULES: Map<string /* path*/, string /* CSS rule */> = new Map<string, string>();
@@ -262,17 +264,17 @@ export class MenuEntryActionViewItem extends ActionViewItem {
 					iconClass = MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!;
 				} else {
 					iconClass = ids.nextId();
-					createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.light || item.icon.dark)}`);
-					createCSSRule(`.vs-dark .codicon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.dark)}`);
+					createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.light || item.icon.dark)}`);
+					createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.dark)}`);
 					MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
 				}
 
 				if (this.label) {
 
-					addClasses(this.label, 'codicon', iconClass);
+					addClasses(this.label, 'icon', iconClass);
 					this._itemClassDispose.value = toDisposable(() => {
 						if (this.label) {
-							removeClasses(this.label, 'codicon', iconClass);
+							removeClasses(this.label, 'icon', iconClass);
 						}
 					});
 				}
