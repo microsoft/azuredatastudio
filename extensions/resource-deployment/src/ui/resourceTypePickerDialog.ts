@@ -38,7 +38,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._selectedResourceType = resourceType;
 		this._installToolButton = azdata.window.createButton(localize('deploymentDialog.InstallToolsButton', "Install tools"));
 		this._toDispose.push(this._installToolButton.onClick(() => {
-			this.installTools().catch(() => {/* Empty catch to keep linter happy */ });
+			this.installTools().catch(error => console.log(error));
 		}));
 		this._dialogObject.customButtons = [this._installToolButton];
 		this._installToolButton.hidden = true;
@@ -208,21 +208,21 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
 			this._tools = [];
 		} else {
-			this._tools = this.toolRequirements.map(toolReq => {
-				return this.toolsService.getToolByName(toolReq.name)!;
-			});
+			this._tools = this.toolRequirements.map(toolReq => this.toolsService.getToolByName(toolReq.name)!);
 			this._toolsLoadingComponent.loading = true;
 			this._dialogObject.okButton.enabled = false;
 			let toolsLoadingErrors: string[] = [];
-			Promise.all(this._tools.map(tool => tool.loadInformation().catch(() => {
-				toolsLoadingErrors.push(`${tool.displayName}:${tool.statusDescription!}`);
-			})))
+			Promise.all(
+				this._tools.map(
+					tool => tool.loadInformation().catch(() => toolsLoadingErrors.push(`${tool.displayName}:${tool.statusDescription!}`))
+				)
+			)
 				.then(() => this.executeToolsTableWorkflow(currentRefreshTimestamp, toolsLoadingErrors))
-				.catch(() => {/* Empty catch to keep linter happy */ });
+				.catch(error => console.log(error));
 		}
 	}
 
-	private async executeToolsTableWorkflow(currentRefreshTimestamp: number, toolsLoadingErrors: string[]): Promise<void> {
+	private executeToolsTableWorkflow(currentRefreshTimestamp: number, toolsLoadingErrors: string[]): void {
 		// If the local timestamp does not match the class level timestamp, it means user has changed options, ignore the results
 		if (this.toolRefreshTimestamp !== currentRefreshTimestamp) {
 			return;

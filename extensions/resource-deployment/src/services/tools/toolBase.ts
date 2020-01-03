@@ -237,7 +237,7 @@ export abstract class ToolBase implements ITool {
 
 	/**
 	 * Sets the tool with discovered state and version information.
-	 * Upon error the status field is set to ToolStatus.Error and statusDescription is set to the corresponding error message
+	 * Upon error the this.status field is set to ToolStatus.Error and this.statusDescription && this.installationPathOrAdditionalInformation is set to the corresponding error message
 	 * and original error encountered is re-thrown so that it gets bubbled up to the caller.
 	 */
 	public async loadInformation(): Promise<void> {
@@ -252,8 +252,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	/**
-	 * 	Invokes the async method to update version and status for the tool
-	 * 	Any errors from underlying code execution are handled to set this.status and this.statusDescription.
+	 * 	Invokes the async method to update version and status for the tool.
 	 */
 	private startVersionAndStatusUpdate(): void {
 		this._statusDescription = '';
@@ -261,7 +260,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	/**
-	 * updates the version and status for the tool. Returns a promise that never rejects but instead handles
+	 * updates the version and status for the tool.
 	 */
 	private async updateVersionAndStatus(): Promise<void> {
 		this._statusDescription = '';
