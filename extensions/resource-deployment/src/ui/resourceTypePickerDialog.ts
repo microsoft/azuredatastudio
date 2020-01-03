@@ -215,7 +215,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._dialogObject.okButton.enabled = false;
 			let toolsLoadingErrors: string[] = [];
 			Promise.all(this._tools.map(tool => tool.loadInformation().catch(() => {
-				toolsLoadingErrors.push(`${tool.displayName}::${tool.statusDescription!}`);
+				toolsLoadingErrors.push(`${tool.displayName}:${tool.statusDescription!}`);
 			})))
 				.then(() => this.executeToolsTableWorkflow(currentRefreshTimestamp, toolsLoadingErrors))
 				.catch(() => {/* Empty catch to keep linter happy */ });
