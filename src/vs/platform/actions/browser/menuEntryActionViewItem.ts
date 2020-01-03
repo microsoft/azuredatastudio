@@ -133,7 +133,7 @@ export function createActionViewItem(action: IAction, keybindingService: IKeybin
 	return undefined;
 }
 
-const ids = new IdGenerator('icon-menu-item-');
+const ids = new IdGenerator('menu-item-action-item-icon-');
 
 // {{SQL CARBON EDIT}} - This is here to use the 'ids' generator above
 // General Menu Entry Action Item, may or may not be labeled.
