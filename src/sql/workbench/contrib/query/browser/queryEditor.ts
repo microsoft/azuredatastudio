@@ -183,14 +183,6 @@ export class QueryEditor extends BaseEditor {
 		this._estimatedQueryPlanAction = this.instantiationService.createInstance(actions.EstimatedQueryPlanAction, this);
 		this._actualQueryPlanAction = this.instantiationService.createInstance(actions.ActualQueryPlanAction, this);
 		this._toggleSqlcmdMode = this.instantiationService.createInstance(actions.ToggleSqlCmdModeAction, this, false);
-
-		this.setTaskbarContent();
-
-		this._register(this.configurationService.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration('workbench.enablePreviewFeatures')) {
-				this.setTaskbarContent();
-			}
-		}));
 	}
 
 	/**
@@ -252,22 +244,42 @@ export class QueryEditor extends BaseEditor {
 		return this._listDatabasesActionItem;
 	}
 
-	private setTaskbarContent(): void {
+	private setTaskbarContent(input: QueryInput): void {
+		// Remove current actions from the taskbar
+		while (this.taskbar.length() > 0) {
+			this.taskbar.pull(0);
+		}
+
 		// Create HTML Elements for the taskbar
 		let separator = Taskbar.createTaskbarSeparator();
 
 		// Set the content in the order we desire
-		let content: ITaskbarContent[] = [
-			{ action: this._runQueryAction },
-			{ action: this._cancelQueryAction },
-			{ element: separator },
-			{ action: this._toggleConnectDatabaseAction },
-			{ action: this._changeConnectionAction },
-			{ action: this._listDatabasesAction },
-			{ element: separator },
-			{ action: this._estimatedQueryPlanAction },
-			{ action: this._toggleSqlcmdMode }
-		];
+		let content: ITaskbarContent[];
+
+		if (input.ConnectionProviderName === 'MSSQL') {
+			content = [
+				{ action: this._runQueryAction },
+				{ action: this._cancelQueryAction },
+				{ element: separator },
+				{ action: this._toggleConnectDatabaseAction },
+				{ action: this._changeConnectionAction },
+				{ action: this._listDatabasesAction },
+				{ element: separator },
+				{ action: this._estimatedQueryPlanAction },
+				{ action: this._toggleSqlcmdMode }
+			];
+		}
+		else {
+			// Actions without SQL specific actions.
+			content = [
+				{ action: this._runQueryAction },
+				{ action: this._cancelQueryAction },
+				{ element: separator },
+				{ action: this._toggleConnectDatabaseAction },
+				{ action: this._changeConnectionAction },
+				{ action: this._listDatabasesAction }
+			];
+		}
 
 		// Remove the estimated query plan action if preview features are not enabled
 		let previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
@@ -291,6 +303,14 @@ export class QueryEditor extends BaseEditor {
 			this.currentTextEditor.clearInput();
 			this.resultsEditor.clearInput();
 		}
+
+		this.setTaskbarContent(newInput);
+
+		this._register(this.configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration('workbench.enablePreviewFeatures')) {
+				this.setTaskbarContent(newInput);
+			}
+		}));
 
 		// If we're switching editor types switch out the views
 		const newTextEditor = newInput.sql instanceof FileEditorInput ? this.textFileEditor : this.textResourceEditor;
