@@ -45,7 +45,7 @@ if (isTestSetupCompleted()) {
 			}
 		});
 
-		test('Create CMS Server @UNSTABLE@ @REL@', async function () {
+		test('Create CMS Server', async function () {
 			// Should fail
 			await utils.assertThrowsAsync(
 				async () => await cmsService.createCmsServer(undefined, 'test_description', undefined, ownerUri),
@@ -66,7 +66,7 @@ if (isTestSetupCompleted()) {
 			await cmsService.createCmsServer(TEST_CMS_NAME, 'test_description', connection, ownerUri);
 		});
 
-		test('Add and delete registered group to/from CMS server @UNSTABLE@ @REL@', async function () {
+		test('Add and delete registered group to/from CMS server', async function () {
 			await utils.assertThrowsAsync(
 				async () => await cmsService.addServerGroup(ownerUri, '', undefined, 'test_description'),
 				'Cannot add a server group without a name');
@@ -95,7 +95,7 @@ if (isTestSetupCompleted()) {
 				`The server group ${TEST_CMS_GROUP} was not removed successfully. Groups : [${cmsResources.registeredServerGroups.map(g => g.name).join(', ')}]`);
 		});
 
-		test('Add and delete registered server to/from CMS server @UNSTABLE@ @REL@', async function () {
+		test('Add and delete registered server to/from CMS server', async function () {
 
 			await utils.assertThrowsAsync(
 				async () => cmsService.addRegisteredServer(ownerUri, '', undefined, 'test_description', undefined),
@@ -128,7 +128,7 @@ if (isTestSetupCompleted()) {
 			assert(deleteResult === true, `Registered server ${TEST_CMS_SERVER} was not removed correctly`);
 		});
 
-		test('Add and delete registered server to/from server group @UNSTABLE@ @REL@', async function () {
+		test('Add and delete registered server to/from server group', async function () {
 
 			// Should create a server group
 			let result = await cmsService.addServerGroup(ownerUri, '', TEST_CMS_GROUP, 'test_description');
