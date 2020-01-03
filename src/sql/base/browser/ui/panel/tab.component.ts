@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, Input, ContentChild, OnDestroy, TemplateRef, ChangeDetectorRef, forwardRef, Inject, ContentChildren, QueryList } from '@angular/core';
+import { Component, Input, ContentChild, OnDestroy, TemplateRef, ChangeDetectorRef, forwardRef, Inject } from '@angular/core';
 
 import { Action } from 'vs/base/common/actions';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -29,6 +29,7 @@ export class TabComponent implements OnDestroy {
 	@Input() public iconClass: string;
 	public _active = false;
 	@Input() public identifier: string;
+	@Input() public type: 'tab' | 'header' = 'tab';
 	@Input() private visibilityType: 'if' | 'visibility' = 'if';
 	private rendered = false;
 	private destroyed: boolean = false;
@@ -90,33 +91,5 @@ export class TabComponent implements OnDestroy {
 		if (this._child) {
 			this._child.layout();
 		}
-	}
-}
-
-@Component({
-	selector: 'tab-group',
-	template: `
-		<div>
-			<div>{{title}}<div>
-			<div role="presentation" *ngFor="let tab of _tabs">
-				<tab-header role="presentation" [active]="_activeTab === tab" [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
-			</div>
-		</div>
-	`
-})
-
-export class TabGroupComponent implements OnDestroy {
-	@Input()
-	public title: string;
-
-	@ContentChildren(TabComponent)
-	private _tabs: QueryList<TabComponent>;
-
-	constructor(
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef
-	) { }
-
-	ngOnDestroy(): void {
-
 	}
 }

@@ -206,7 +206,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			title: this.homeTabTitle,
 			container: { 'widgets-container': homeWidgets },
 			context: this.context,
-			originalConfig: this._originalConfig,
+			originalConfig: [],
 			editable: true,
 			canClose: false,
 			actions: []
@@ -221,6 +221,18 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			homeTabConfig.container = tabConfig.container;
 		}
 		this.addNewTab(homeTabConfig);
+		this.addNewTab({
+			id: 'extensionsGroup',
+			provider: Constants.anyProviderName,
+			originalConfig: [],
+			publisher: undefined,
+			title: 'Extensions',
+			context: this.context,
+			type: 'header',
+			editable: false,
+			canClose: false,
+			actions: []
+		});
 		return allTabs;
 	}
 

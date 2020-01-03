@@ -42,6 +42,7 @@ export interface TabConfig extends IDashboardTab {
 	canClose: boolean;
 	actions?: Array<Action>;
 	iconClass?: string;
+	type?: 'tab' | 'header';
 }
 
 export type IUserFriendlyIcon = string | { light: string; dark: string; };
