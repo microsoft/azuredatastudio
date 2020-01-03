@@ -38,7 +38,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._selectedResourceType = resourceType;
 		this._installToolButton = azdata.window.createButton(localize('deploymentDialog.InstallToolsButton', "Install tools"));
 		this._toDispose.push(this._installToolButton.onClick(() => {
-			this.installTools().catch(() => { });
+			this.installTools().catch(() => {/* Empty catch to keep linter happy */ });
 		}));
 		this._dialogObject.customButtons = [this._installToolButton];
 		this._installToolButton.hidden = true;
@@ -218,9 +218,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				toolsLoadingErrors.push(`${tool.displayName}::${tool.statusDescription!}`);
 			})))
 				.then(() => this.executeToolsTableWorkflow(currentRefreshTimestamp, toolsLoadingErrors))
-				.catch(() => {
-
-				});
+				.catch(() => {/* Empty catch to keep linter happy */ });
 		}
 	}
 
