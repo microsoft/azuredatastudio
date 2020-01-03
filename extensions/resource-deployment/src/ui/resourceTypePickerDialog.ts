@@ -38,7 +38,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._selectedResourceType = resourceType;
 		this._installToolButton = azdata.window.createButton(localize('deploymentDialog.InstallToolsButton', "Install tools"));
 		this._toDispose.push(this._installToolButton.onClick(() => {
-			this.installTools();
+			this.installTools().catch(() => { });
 		}));
 		this._dialogObject.customButtons = [this._installToolButton];
 		this._installToolButton.hidden = true;
@@ -213,35 +213,25 @@ export class ResourceTypePickerDialog extends DialogBase {
 			});
 			this._toolsLoadingComponent.loading = true;
 			this._dialogObject.okButton.enabled = false;
-			let messages: string[] = [];
+			let toolsLoadingErrors: string[] = [];
 			Promise.all(this._tools.map(tool => tool.loadInformation().catch(() => {
-				messages.push(tool.statusDescription!);
-			}))
-			)
-				.then(() => this.toolsTableWorkflow(currentRefreshTimestamp))
+				toolsLoadingErrors.push(`${tool.displayName}::${tool.statusDescription!}`);
+			})))
+				.then(() => this.executeToolsTableWorkflow(currentRefreshTimestamp, toolsLoadingErrors))
 				.catch(() => {
-					const errorMessage = [
-						localize('deploymentDialog.LoadErrors', "Errors encountered while discovering one or more tools:"),
-						...messages.map(message => `•	${message}`)
-					].join(EOL);
-					if (errorMessage) {
-						this._dialogObject.message = {
-							level: azdata.window.MessageLevel.Error,
-							text: errorMessage
-						};
-					}
+
 				});
 		}
 	}
 
-	private async toolsTableWorkflow(currentRefreshTimestamp: number): Promise<void> {
+	private async executeToolsTableWorkflow(currentRefreshTimestamp: number, toolsLoadingErrors: string[]): Promise<void> {
 		// If the local timestamp does not match the class level timestamp, it means user has changed options, ignore the results
 		if (this.toolRefreshTimestamp !== currentRefreshTimestamp) {
 			return;
 		}
 		let minVersionCheckFailed = false;
 		const toolsToAutoInstall: ITool[] = [];
-		let messages: string[] = [];
+		let messages: string[] = toolsLoadingErrors!;
 		this._toolsTable.data = this.toolRequirements.map(toolRequirement => {
 			const tool = this.toolsService.getToolByName(toolRequirement.name)!;
 			// subscribe to onUpdateData event of the tool.
