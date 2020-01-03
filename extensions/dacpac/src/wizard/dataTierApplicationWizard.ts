@@ -261,44 +261,28 @@ export class DataTierApplicationWizard {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		const result = await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('alertData.deployErrorMessage', "Deploy failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-		}
+		service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
 	private async extract() {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		const result = await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('alertData.extractErrorMessage', "Extract failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-		}
+		service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
 	private async export() {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		const result = await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('alertData.exportErrorMessage', "Export failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-		}
+		service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
 	private async import() {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		const result = await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('alertData.importErrorMessage', "Import failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-		}
+		service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
 	private async generateDeployScript() {
@@ -310,11 +294,7 @@ export class DataTierApplicationWizard {
 			description: ''
 		};
 
-		const result = await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('alertData.deployErrorMessage', "Deploy failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-		}
+		service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
 	}
 
 	private getPage(idx: number): Page {
