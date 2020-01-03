@@ -10,8 +10,10 @@ const assert = require('assert');
 const path = require('path');
 const glob = require('glob');
 const jsdom = require('jsdom-no-contextify');
-const TEST_GLOB = '**/test/**/*.test.js|**/sqltest/**/*.test.js';
+const TEST_GLOB = '**/test/**/*.test.js';
 const coverage = require('./coverage');
+
+require('reflect-metadata'); // {{SQL CARBON EDIT}}
 
 var optimist = require('optimist')
 	.usage('Run the Code tests. All mocha options apply.')
@@ -39,7 +41,6 @@ function main() {
 		console.error(e.stack || e);
 	});
 
-	// {{SQL CARBON EDIT}}
 	var loaderConfig = {
 		nodeRequire: require,
 		nodeMain: __filename,
@@ -47,14 +48,12 @@ function main() {
 		paths: {
 			'vs/css': '../test/css.mock',
 			'vs': `../${out}/vs`,
-			'sqltest': `../${out}/sqltest`,
-			'sql': `../${out}/sql`,
+			'sql': `../${out}/sql`, // {{SQL CARBON EDIT}}
 			'lib': `../${out}/lib`,
 			'bootstrap-fork': `../${out}/bootstrap-fork`
 		},
 		catchError: true,
-		// {{SQL CARBON EDIT}}
-		nodeModules: [
+		nodeModules: [ // {{SQL CARBON EDIT}}
 			'@angular/common',
 			'@angular/core',
 			'@angular/forms',
@@ -92,12 +91,6 @@ function main() {
 	global.Node = global.window.Node;
 	global.navigator = global.window.navigator;
 	global.XMLHttpRequest = global.window.XMLHttpRequest;
-	// {{SQL CARBON EDIT}}
-	global.Event = global.window.Event;
-
-	require('reflect-metadata');
-	global.window.Reflect = global.Reflect;
-	global.window.Zone = global.Zone;
 
 	var didErr = false;
 	var write = process.stderr.write;
@@ -183,8 +176,6 @@ function main() {
 			});
 		}
 
-		// {{SQL CARBON EDIT}}
-		/*
 		// report failing test for every unexpected error during any of the tests
 		var unexpectedErrors = [];
 		suite('Errors', function () {
@@ -199,15 +190,16 @@ function main() {
 				}
 			});
 		});
-	// {{SQL CARBON EDIT}}
-		*/
 
 		// replace the default unexpected error handler to be useful during tests
 		loader(['vs/base/common/errors'], function (errors) {
+			global.window.addEventListener('unhandledrejection', event => {
+				errors.onUnexpectedError(event.reason);
+				event.preventDefault();
+			});
 			errors.setUnexpectedErrorHandler(function (err) {
 				let stack = (err && err.stack) || (new Error().stack);
-				// {{SQL CARBON EDIT}}
-				//unexpectedErrors.push((err && err.message ? err.message : err) + '\n' + stack);
+				unexpectedErrors.push((err && err.message ? err.message : err) + '\n' + stack);
 			});
 
 			// fire up mocha

@@ -1,0 +1,10 @@
+{
+	"displayName": "SQL Server Machine Learning Services",
+	"description": "SQL Server Machine Learning Services",
+	"mlServices.enable": "Enable Machine Learning Services",
+	"mlServices.disable": "Disable Machine Learning Services",
+	"title.tasks": "Getting Started",
+	"title.endpoints": "Endpoints",
+	"title.books": "Machine Learning Services Books",
+	"ml.command.managePackages": "Manage Packages in SQL Server"
+}
