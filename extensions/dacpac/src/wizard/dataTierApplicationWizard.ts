@@ -109,7 +109,7 @@ export class DataTierApplicationWizard {
 
 		this.model.serverId = this.connection.connectionId;
 
-		this.wizard = azdata.window.createWizard('Data-tier Application Wizard');
+		this.wizard = azdata.window.createWizard(localize('dacfx.wizardTitle', "Data-tier Application Wizard"));
 		let selectOperationWizardPage = azdata.window.createWizardPage(localize('dacFx.selectOperationPageName', "Select an Operation"));
 		let deployConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.deployConfigPageName', "Select Deploy Dacpac Settings"));
 		let deployPlanWizardPage = azdata.window.createWizardPage(localize('dacFx.deployPlanPage', "Review the deploy plan"));
@@ -261,28 +261,28 @@ export class DataTierApplicationWizard {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
+		await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute).then();
 	}
 
 	private async extract() {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
+		await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
 	private async export() {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
+		await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
 	private async import() {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
+		await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
 	private async generateDeployScript() {
@@ -294,7 +294,7 @@ export class DataTierApplicationWizard {
 			description: ''
 		};
 
-		service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
+		await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
 	}
 
 	private getPage(idx: number): Page {
