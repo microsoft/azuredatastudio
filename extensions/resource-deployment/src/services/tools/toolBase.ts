@@ -139,8 +139,8 @@ export abstract class ToolBase implements ITool {
 		return this._statusDescription;
 	}
 
-	public get installationPath(): string | undefined {
-		return this._installationPath;
+	public get installationPathOrAdditionalInformation(): string | undefined {
+		return this._installationPathOrAdditionalInformation;
 	}
 
 	protected get installationCommands(): Command[] | undefined {
@@ -186,6 +186,7 @@ export abstract class ToolBase implements ITool {
 			const errorMessage = getErrorMessage(error);
 			this._statusDescription = localize('toolBase.InstallError', "Error installing tool '{0}' [ {1} ].{2}Error: {3}{2}See output channel '{4}' for more details", this.displayName, this.homePage, EOL, errorMessage, this.outputChannelName);
 			this.status = ToolStatus.Error;
+			this._installationPathOrAdditionalInformation = errorMessage;
 			throw error;
 		}
 
@@ -234,14 +235,33 @@ export abstract class ToolBase implements ITool {
 		});
 	}
 
+	/**
+	 * Sets the tool with discovered state and version information.
+	 * Upon error the this.status field is set to ToolStatus.Error and this.statusDescription && this.installationPathOrAdditionalInformation is set to the corresponding error message
+	 * and original error encountered is re-thrown so that it gets bubbled up to the caller.
+	 */
 	public async loadInformation(): Promise<void> {
-		await this._pendingVersionAndStatusUpdate;
+		try {
+			await this._pendingVersionAndStatusUpdate;
+		} catch (error) {
+			this.status = ToolStatus.Error;
+			this._statusDescription = getErrorMessage(error);
+			this._installationPathOrAdditionalInformation = this._statusDescription;
+			throw error;
+		}
 	}
 
-	private startVersionAndStatusUpdate() {
+	/**
+	 * 	Invokes the async method to update version and status for the tool.
+	 */
+	private startVersionAndStatusUpdate(): void {
+		this._statusDescription = '';
 		this._pendingVersionAndStatusUpdate = this.updateVersionAndStatus();
 	}
 
+	/**
+	 * updates the version and status for the tool.
+	 */
 	private async updateVersionAndStatus(): Promise<void> {
 		this._statusDescription = '';
 		await this.addInstallationSearchPathsToSystemPath();
@@ -292,7 +312,7 @@ export abstract class ToolBase implements ITool {
 		if (!commandOutput) {
 			throw new Error(`Install location of tool:'${this.displayName}' could not be discovered`);
 		} else {
-			this._installationPath = path.resolve(commandOutput.split(EOL)[0]);
+			this._installationPathOrAdditionalInformation = path.resolve(commandOutput.split(EOL)[0]);
 		}
 	}
 
@@ -304,5 +324,5 @@ export abstract class ToolBase implements ITool {
 	private _status: ToolStatus = ToolStatus.NotInstalled;
 	private _version?: SemVer;
 	private _statusDescription?: string;
-	private _installationPath?: string;
+	private _installationPathOrAdditionalInformation?: string;
 }

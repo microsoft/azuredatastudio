@@ -254,7 +254,7 @@ export interface ITool {
 	readonly autoInstallNeeded: boolean;
 	readonly isNotInstalled: boolean;
 	readonly isInstalled: boolean;
-	readonly installationPath?: string;
+	readonly installationPathOrAdditionalInformation?: string;
 	readonly outputChannelName: string;
 	readonly fullVersion?: string;
 	readonly onDidUpdateData: vscode.Event<ITool>;
