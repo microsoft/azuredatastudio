@@ -129,15 +129,15 @@ export class DataExplorerContainerExtensionHandler implements IWorkbenchContribu
 
 		for (let descriptor of viewDescriptors) {
 			if (typeof descriptor.id !== 'string') {
-				collector.error(localize('requirestring', "property `{0}` is mandatory and must be of type `string`", "id"));
+				collector.error(localize('requirestring', "property `{0}` is mandatory and must be of type `string`", 'id'));
 				return false;
 			}
 			if (typeof descriptor.name !== 'string') {
-				collector.error(localize('requirestring', "property `{0}` is mandatory and must be of type `string`", "name"));
+				collector.error(localize('requirestring', "property `{0}` is mandatory and must be of type `string`", 'name'));
 				return false;
 			}
 			if (descriptor.when && typeof descriptor.when !== 'string') {
-				collector.error(localize('optstring', "property `{0}` can be omitted or must be of type `string`", "when"));
+				collector.error(localize('optstring', "property `{0}` can be omitted or must be of type `string`", 'when'));
 				return false;
 			}
 		}
