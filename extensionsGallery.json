@@ -2508,14 +2508,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.2.0",
-							"lastUpdated": "9/7/2019",
+							"version": "0.4.0",
+							"lastUpdated": "1/5/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/dzsquared/query-editor-boost/releases/tag/0.2.0"
+									"source": "https://github.com/dzsquared/query-editor-boost/releases/tag/0.4.0"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
