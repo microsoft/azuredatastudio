@@ -292,7 +292,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				}
 			} else if (element.children.length > 1) {
 				children = children.concat(this.getChildren(element));
-			} else {
+			} else if (element.nodeName.toLowerCase() !== 'hr') {
 				children.push(element);
 			}
 		}

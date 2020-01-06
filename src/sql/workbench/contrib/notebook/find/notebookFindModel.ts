@@ -575,7 +575,19 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 	cleanUpCellSource(cellValue: string | string[]): string | string[] {
 		let trimmedCellSrc: string[] = [];
 		if (cellValue instanceof Array) {
-			trimmedCellSrc = cellValue.filter(c => c !== '\n' && c !== '\r\n' && c.indexOf('|-') === -1);
+			const newline = new RegExp(/^([-]+[//n]*)$/gm);
+			const tabelSeperator = new RegExp(/^(([|]+[ :]*[-]+[ :]*[|]*)+[\\r\\n]*)$/gm);
+			trimmedCellSrc = cellValue.filter(c => c !== '\n' && c !== '\r\n' && !c.match(tabelSeperator) && !c.match(newline));
+			// code blocks to one line since html element codeblock is a single element.
+			let codeblocks: string[] = trimmedCellSrc.filter(c => c.indexOf('```') > -1);
+			if (codeblocks.length > 0) {
+				for (let i = 0; i < codeblocks.length; i = i + 2) {
+					let startIndex: number = trimmedCellSrc.indexOf(codeblocks[i]);
+					let endIndex: number = trimmedCellSrc.indexOf(codeblocks[i + 1], startIndex + 1);
+					let codeBlockString: string = trimmedCellSrc.slice(startIndex, endIndex + 1).join();
+					trimmedCellSrc.splice(startIndex, endIndex - startIndex + 1, codeBlockString);
+				}
+			}
 		} else {
 			return cellValue;
 		}

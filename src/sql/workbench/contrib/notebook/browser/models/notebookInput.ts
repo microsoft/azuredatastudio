@@ -451,6 +451,7 @@ export abstract class NotebookInput extends EditorInput {
 
 	updateModel(): void {
 		this._model.updateModel();
+		this._notebookFindModel = new NotebookFindModel(this._model.getNotebookModel());
 	}
 
 	public matches(otherInput: any): boolean {
