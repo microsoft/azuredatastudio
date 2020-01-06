@@ -105,7 +105,7 @@ const indentationFilter = [
 	'!extensions/mssql/notebooks/**',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
-	'!extensions/integration-tests/src/testData/**'
+	'!extensions/integration-tests/testData/**'
 ];
 
 const copyrightFilter = [
