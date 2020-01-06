@@ -991,7 +991,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						this._connectionStatusManager.deleteConnection(uri);
 						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
 					} else {
-						connection.options.isCloud = connectionMngInfo.serverInfo.isCloud;
+						if (connectionMngInfo.serverInfo) {
+							connection.options.isCloud = connectionMngInfo.serverInfo.isCloud;
+						}
 						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
 					}
 				}
