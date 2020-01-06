@@ -866,15 +866,6 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 			restoreGroup = !activateGroup;
 		}
 
-		// Do this before we open the editor in the group to prevent a false
-		// active editor change event before the editor is loaded
-		// (see https://github.com/Microsoft/vscode/issues/51679)
-		if (activateGroup) {
-			this.accessor.activateGroup(this);
-		} else if (restoreGroup) {
-			this.accessor.restoreGroup(this);
-		}
-
 		// Actually move the editor if a specific index is provided and we figure
 		// out that the editor is already opened at a different index. This
 		// ensures the right set of events are fired to the outside.
@@ -891,7 +882,16 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		const openedEditor = this._group.openEditor(editor, openEditorOptions);
 
 		// Show editor
-		return this.doShowEditor(openedEditor, !!openEditorOptions.active, options);
+		const showEditorResult = this.doShowEditor(openedEditor, !!openEditorOptions.active, options);
+
+		// Finally make sure the group is active or restored as instructed
+		if (activateGroup) {
+			this.accessor.activateGroup(this);
+		} else if (restoreGroup) {
+			this.accessor.restoreGroup(this);
+		}
+
+		return showEditorResult;
 	}
 
 	private async doShowEditor(editor: EditorInput, active: boolean, options?: EditorOptions): Promise<IEditor | undefined> {
