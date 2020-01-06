@@ -1,8 +1,6 @@
 {
 	"displayName": "SQL Server Machine Learning Services",
 	"description": "SQL Server Machine Learning Services",
-	"mlServices.enable": "Enable Machine Learning Services",
-	"mlServices.disable": "Disable Machine Learning Services",
 	"title.tasks": "Tasks",
 	"title.configurations": "Configurations",
 	"title.endpoints": "Endpoints",

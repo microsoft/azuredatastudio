@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { QueryRunner } from '../common/queryRunner';

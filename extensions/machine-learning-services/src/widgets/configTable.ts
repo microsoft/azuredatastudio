@@ -22,15 +22,10 @@ export class ConfigTable {
 							isReadOnly: true,
 							width: 175,
 							headerCssStyles: {
-								'border': 'none',
-								'background-color': '#FFFFFF',
 								...constants.cssStyles.tableHeader
 							},
 							rowCssStyles: {
-								'border-top': 'solid 1px #ccc',
-								'border-bottom': 'solid 1px #ccc',
-								'border-left': 'none',
-								'border-right': 'none'
+								...constants.cssStyles.tableRow
 							},
 						},
 						{ // Status icon
@@ -40,14 +35,10 @@ export class ConfigTable {
 							isReadOnly: true,
 							width: 25,
 							headerCssStyles: {
-								'border': 'none',
-								'background-color': '#FFFFFF'
+								...constants.cssStyles.tableHeader
 							},
 							rowCssStyles: {
-								'border-top': 'solid 1px #ccc',
-								'border-bottom': 'solid 1px #ccc',
-								'border-left': 'none',
-								'border-right': 'none'
+								...constants.cssStyles.tableRow
 							},
 						},
 						{ // Action
@@ -56,15 +47,10 @@ export class ConfigTable {
 							isReadOnly: true,
 							width: 150,
 							headerCssStyles: {
-								'border': 'none',
-								'background-color': '#FFFFFF',
 								...constants.cssStyles.tableHeader
 							},
 							rowCssStyles: {
-								'border-top': 'solid 1px #ccc',
-								'border-bottom': 'solid 1px #ccc',
-								'border-left': 'none',
-								'border-right': 'none'
+								...constants.cssStyles.tableRow
 							},
 						}
 					],
@@ -87,29 +73,30 @@ export class ConfigTable {
 	public async refresh(): Promise<void> {
 		this._loadingComponent.updateProperties({ loading: true });
 		let connection = await this.getCurrentConnection();
-		const speesConfig = await this.addTableRow(constants.mlsExternalExecuteScriptTitle,
+		const externalScriptsConfig = await this.createTableRowComponents(constants.mlsExternalExecuteScriptTitle,
 			async () => {
 				return await this._serverConfigManager.isMachineLearningServiceEnabled(connection);
 			}, async (enable) => {
+				this._loadingComponent.updateProperties({ loading: true });
 				await this._serverConfigManager.updateExternalScriptConfig(connection, enable);
-				this.refresh();
+				await this.refresh();
 			}
 		);
-		const pythonConfig = await this.addTableRow(constants.mlsPythonLanguageTitle,
+		const pythonConfig = await this.createTableRowComponents(constants.mlsPythonLanguageTitle,
 			async () => {
 				return await this._serverConfigManager.isPythonInstalled(connection);
 			}, async () => {
 				await this._serverConfigManager.openInstallDocuments();
 			}
 		);
-		const rConfig = await this.addTableRow(constants.mlsRLanguageTitle,
+		const rConfig = await this.createTableRowComponents(constants.mlsRLanguageTitle,
 			async () => {
 				return await this._serverConfigManager.isRInstalled(connection);
 			}, async () => {
 				await this._serverConfigManager.openInstallDocuments();
 			}
 		);
-		this._statusTable.data = [speesConfig, pythonConfig, rConfig];
+		this._statusTable.data = [externalScriptsConfig, pythonConfig, rConfig];
 		this._loadingComponent.updateProperties({ loading: false });
 	}
 
@@ -117,7 +104,7 @@ export class ConfigTable {
 		return await this._apiWrapper.getCurrentConnection();
 	}
 
-	private async addTableRow(configName: string, checkEnabledFunction: () => Promise<boolean>, updateFunction: (enable: boolean) => Promise<void>): Promise<azdata.Component[]> {
+	private async createTableRowComponents(configName: string, checkEnabledFunction: () => Promise<boolean>, updateFunction: (enable: boolean) => Promise<void>): Promise<azdata.Component[]> {
 		const isEnabled = await checkEnabledFunction();
 
 		const nameCell = this._modelBuilder.text()
@@ -168,15 +155,6 @@ export class ConfigTable {
 	}
 
 	private getLabel(isEnabled: boolean): string {
-		let enable = constants.mlsEnableButtonTitle;
-		let disable = constants.mlsDisableButtonTitle;
-		let title = enable;
-		if (!isEnabled) {
-			title = enable;
-
-		} else {
-			title = disable;
-		}
-		return title;
+		return isEnabled ? constants.mlsDisableButtonTitle : constants.mlsEnableButtonTitle;
 	}
 }

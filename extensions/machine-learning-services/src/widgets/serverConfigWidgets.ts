@@ -43,8 +43,9 @@ export class ServerConfigWidget {
 			const configTable = new ConfigTable(this._apiWrapper, this._serverConfigManager, view.modelBuilder, spinner);
 
 			this.addRow(container, view, configTable.component);
-			configTable.refresh();
+
 			await view.initializeModel(spinner);
+			await configTable.refresh();
 		});
 	}
 

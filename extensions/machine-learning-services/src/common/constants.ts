@@ -12,6 +12,8 @@ const localize = nls.loadMessageBundle();
 export const winPlatform = 'win32';
 export const pythonBundleVersion = '0.0.1';
 export const managePackagesCommand = 'jupyter.cmd.managePackages';
+export const pythonLanguageName = 'Python';
+export const rLanguageName = 'R';
 
 export const mlEnableMlsCommand = 'mls.command.enableMls';
 export const mlDisableMlsCommand = 'mls.command.disableMls';
@@ -48,16 +50,18 @@ export const mlsRLanguageTitle = localize('mls.rLanguageTitle', "R");
 
 // Links
 //
-export const mlsDocuments = 'https://docs.microsoft.com/en-us/sql/advanced-analytics/?view=sql-server-ver15';
-export const odbcDriverWindowsDocuments = 'https://docs.microsoft.com/en-us/sql/connect/odbc/windows/microsoft-odbc-driver-for-sql-server-on-windows?view=sql-server-ver15';
-export const odbcDriverLinuxDocuments = 'https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver15';
-export const installMlsDocs = 'https://docs.microsoft.com/en-us/sql/advanced-analytics/install/sql-machine-learning-services-windows-install?view=sql-server-ver15">here</a> to download and install SQL Machine Learning Services';
-export const installMlsLinuxDocs = 'https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-setup-machine-learning?toc=%2fsql%2fadvanced-analytics%2ftoc.json&view=sql-server-ver15';
-export const installMlsWindowsDocs = 'https://docs.microsoft.com/en-us/sql/advanced-analytics/install/sql-machine-learning-services-windows-install?view=sql-server-ver15';
+export const mlsDocuments = 'https://docs.microsoft.com/sql/advanced-analytics/?view=sql-server-ver15';
+export const odbcDriverWindowsDocuments = 'https://docs.microsoft.com/sql/connect/odbc/windows/microsoft-odbc-driver-for-sql-server-on-windows?view=sql-server-ver15';
+export const odbcDriverLinuxDocuments = 'https://docs.microsoft.com/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver15';
+export const installMlsLinuxDocs = 'https://docs.microsoft.com/sql/linux/sql-server-linux-setup-machine-learning?toc=%2fsql%2fadvanced-analytics%2ftoc.json&view=sql-server-ver15';
+export const installMlsWindowsDocs = 'https://docs.microsoft.com/sql/advanced-analytics/install/sql-machine-learning-services-windows-install?view=sql-server-ver15';
 
+// CSS Styles
+//
 export namespace cssStyles {
 	export const title = { 'font-size': '14px', 'font-weight': '600' };
-	export const tableHeader = { 'text-align': 'left', 'font-weight': 'bold', 'text-transform': 'uppercase', 'font-size': '10px', 'user-select': 'text' };
+	export const tableHeader = { 'text-align': 'left', 'font-weight': 'bold', 'text-transform': 'uppercase', 'font-size': '10px', 'user-select': 'text', 'border': 'none', 'background-color': '#FFFFFF' };
+	export const tableRow = { 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none' };
 	export const hyperlink = { 'user-select': 'text', 'color': '#0078d4', 'text-decoration': 'underline', 'cursor': 'pointer' };
 	export const text = { 'margin-block-start': '0px', 'margin-block-end': '0px' };
 	export const overflowEllipsisText = { ...text, 'overflow': 'hidden', 'text-overflow': 'ellipsis' };

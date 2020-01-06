@@ -39,9 +39,9 @@ function execFolderListCommand(context: TestContext, service : ProcessService): 
 
 function execFolderListBufferedCommand(context: TestContext, service : ProcessService): Promise<string> {
 	if (utils.isWindows()) {
-		return service.executeBufferedCommand('cmd', context.outputChannel);
+		return service.executeBufferedCommand('dir', context.outputChannel);
 	} else {
-		return service.executeBufferedCommand('/bin/sh', context.outputChannel);
+		return service.executeBufferedCommand('ls', context.outputChannel);
 	}
 }
 
@@ -49,20 +49,21 @@ describe('Process Service', () => {
 	it('Executing a valid script should return successfully', async function (): Promise<void> {
 		const context = createContext();
 		let service = new ProcessService();
-		should(execFolderListCommand(context, service)).resolved();
+		await should(execFolderListCommand(context, service)).resolved();
 	});
 
 	it('execFolderListCommand should reject if command time out', async function (): Promise<void> {
 		const context = createContext();
 		let service = new ProcessService();
-		service.Timeout = 1;
-		should(execFolderListCommand(context, service)).rejected();
+		service.timeout = 1000;
+		await should(execFolderListCommand(context, service)).rejected();
 	});
 
 	it('executeBufferedCommand should resolve give valid script', async function (): Promise<void> {
 		const context = createContext();
 		let service = new ProcessService();
-		should(execFolderListBufferedCommand(context, service)).resolved();
+		service.timeout = 2000;
+		await should(execFolderListBufferedCommand(context, service)).resolved();
 	});
 
 });

@@ -8,6 +8,7 @@
 import * as azdata from 'azdata';
 import * as nbExtensionApis from '../typings/notebookServices';
 import { ApiWrapper } from './apiWrapper';
+import * as constants from '../common/constants';
 
 const listPythonPackagesQuery = `
 EXEC sp_execute_external_script
@@ -86,14 +87,14 @@ export class QueryRunner {
 	 * Returns true if python installed in the give SQL server instance
 	 */
 	public async isPythonInstalled(connection: azdata.connection.ConnectionProfile): Promise<boolean> {
-		return this.isLanguageInstalled(connection, 'Python');
+		return this.isLanguageInstalled(connection, constants.pythonLanguageName);
 	}
 
 	/**
 	 * Returns true if R installed in the give SQL server instance
 	 */
 	public async isRInstalled(connection: azdata.connection.ConnectionProfile): Promise<boolean> {
-		return this.isLanguageInstalled(connection, 'R');
+		return this.isLanguageInstalled(connection, constants.rLanguageName);
 	}
 
 	/**

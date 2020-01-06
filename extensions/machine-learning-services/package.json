@@ -42,10 +42,10 @@
     ],
     "dashboard.tabs": [
       {
-        "id": "ml-server",
-        "description": "Machine Learning Services",
+        "id": "mls-dashboard",
+        "description": "%description%",
         "provider": "MSSQL",
-        "title": "Machine Learning Services",
+        "title": "%displayName%",
         "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
         "container": {
           "grid-container": [
