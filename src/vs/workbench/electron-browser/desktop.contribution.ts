@@ -249,7 +249,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 					nls.localize('window.reopenFolders.one', "Reopen the last active window."),
 					nls.localize('window.reopenFolders.none', "Never reopen a window. Always start with an empty one.")
 				],
-				'default': 'one',
+				'default': 'all',
 				'scope': ConfigurationScope.APPLICATION,
 				'description': nls.localize('restoreWindows', "Controls how windows are being reopened after a restart.")
 			},

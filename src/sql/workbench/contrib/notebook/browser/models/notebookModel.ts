@@ -360,7 +360,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return cell;
 	}
 
-	public updateActiveCell(cell: ICellModel) {
+	public updateActiveCell(cell: ICellModel): void {
 		if (this._activeCell) {
 			this._activeCell.active = false;
 		}
@@ -426,8 +426,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._activeCell;
 	}
 
-	public set activeCell(value: ICellModel) {
-		this._activeCell = value;
+	public set activeCell(cell: ICellModel) {
+		this._activeCell = cell;
 	}
 
 	private notifyError(error: string): void {
@@ -597,7 +597,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public changeKernel(displayName: string): void {
 		this._contextsLoadingEmitter.fire();
-		this.doChangeKernel(displayName, true);
+		this.doChangeKernel(displayName, true).catch(e => this.logService.error(e));
 	}
 
 	private async doChangeKernel(displayName: string, mustSetProvider: boolean = true, restoreOnFail: boolean = true): Promise<void> {
@@ -776,8 +776,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public dispose(): void {
 		super.dispose();
-		this.disconnectAttachToConnections();
-		this.handleClosed();
+		this.disconnectAttachToConnections().catch(e => this.logService.error(e));
+		this.handleClosed().catch(e => this.logService.error(e));
 	}
 
 	public async handleClosed(): Promise<void> {
@@ -998,5 +998,4 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 		this._contentChangedEmitter.fire(changeInfo);
 	}
-
 }

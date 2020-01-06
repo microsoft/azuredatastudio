@@ -27,7 +27,7 @@ import { IClipboardService } from 'sql/platform/clipboard/common/clipboardServic
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { Color } from 'vs/base/common/color';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export class ServerGroupDialog extends Modal {

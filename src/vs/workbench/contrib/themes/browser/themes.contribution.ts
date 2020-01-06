@@ -64,7 +64,7 @@ export class SelectColorThemeAction extends Action {
 					let target: ConfigurationTarget | undefined = undefined;
 					if (applyTheme) {
 						const confValue = this.configurationService.inspect(COLOR_THEME_SETTING);
-						target = typeof confValue.workspace !== 'undefined' ? ConfigurationTarget.WORKSPACE : ConfigurationTarget.USER;
+						target = typeof confValue.workspaceValue !== 'undefined' ? ConfigurationTarget.WORKSPACE : ConfigurationTarget.USER;
 					}
 
 					this.themeService.setColorTheme(themeId, target).then(undefined,
@@ -150,7 +150,7 @@ class SelectIconThemeAction extends Action {
 					let target: ConfigurationTarget | undefined = undefined;
 					if (applyTheme) {
 						const confValue = this.configurationService.inspect(ICON_THEME_SETTING);
-						target = typeof confValue.workspace !== 'undefined' ? ConfigurationTarget.WORKSPACE : ConfigurationTarget.USER;
+						target = typeof confValue.workspaceValue !== 'undefined' ? ConfigurationTarget.WORKSPACE : ConfigurationTarget.USER;
 					}
 					this.themeService.setFileIconTheme(themeId, target).then(undefined,
 						err => {
