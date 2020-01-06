@@ -103,9 +103,9 @@ const indentationFilter = [
 	'!extensions/admin-tool-ext-win/ssmsmin/**',
 	'!extensions/resource-deployment/notebooks/**',
 	'!extensions/mssql/notebooks/**',
+	'!extensions/integration-tests/testData/**',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
-	'!extensions/integration-tests/testData/**'
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts'
 ];
 
 const copyrightFilter = [
