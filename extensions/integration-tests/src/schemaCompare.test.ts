@@ -19,10 +19,10 @@ import { stressify } from 'adstest';
 let schemaCompareService: mssql.ISchemaCompareService;
 let dacfxService: mssql.IDacFxService;
 let schemaCompareTester: SchemaCompareTester;
-const dacpac1: string = path.join(__dirname, '../testData/Database1.dacpac');
-const dacpac2: string = path.join(__dirname, '../testData/Database2.dacpac');
-const includeExcludeSourceDacpac: string = path.join(__dirname, '../testData/SchemaCompareIncludeExcludeSource.dacpac');
-const includeExcludeTargetDacpac: string = path.join(__dirname, '../testData/SchemaCompareIncludeExcludeTarget.dacpac');
+const dacpac1: string = path.join(__dirname, '..','testData', 'Database1.dacpac');
+const dacpac2: string = path.join(__dirname, '..', 'testData', 'Database2.dacpac');
+const includeExcludeSourceDacpac: string = path.join(__dirname, '..', 'testData', 'SchemaCompareIncludeExcludeSource.dacpac');
+const includeExcludeTargetDacpac: string = path.join(__dirname, '..', 'testData', 'SchemaCompareIncludeExcludeTarget.dacpac');
 const SERVER_CONNECTION_TIMEOUT: number = 3000;
 const retryCount = 24; // 2 minutes
 const folderPath = path.join(os.tmpdir(), 'SchemaCompareTest');
@@ -49,10 +49,10 @@ if (isTestSetupCompleted()) {
 		test('Schema compare database to database comparison, script generation, and scmp', async function () {
 			await schemaCompareTester.SchemaCompareDatabaseToDatabase();
 		});
-		test('Schema compare dacpac to database comparison, script generation, and scmp @UNSTABLE@', async function () {
+		test('Schema compare dacpac to database comparison, script generation, and scmp', async function () {
 			await schemaCompareTester.SchemaCompareDacpacToDatabase();
 		});
-		test('Schema compare dacpac to dacpac comparison with include exclude @UNSTABLE@', async function () {
+		test('Schema compare dacpac to dacpac comparison with include exclude', async function () {
 			await schemaCompareTester.SchemaCompareIncludeExcludeDacpacToDacpac();
 		});
 	});
@@ -316,9 +316,13 @@ class SchemaCompareTester {
 		assert(result.success === expectedSuccess, `Operation success should have been ${expectedSuccess}. Actual: ${result.success}`);
 		if (result.blockingDependencies) {
 			assert(result.blockingDependencies.length === expectedBlockingDependenciesLength, `Expected ${expectedBlockingDependenciesLength} blocking dependencies. Actual: ${result.blockingDependencies}`);
+		} else if (expectedBlockingDependenciesLength !== 0) {
+			throw new Error(`ExpectedBlockingDependencies length was ${expectedBlockingDependenciesLength} but blockingDependencies was undefined`);
 		}
 		if (result.affectedDependencies) {
 			assert(result.affectedDependencies.length === expectedAffectedDependenciesLength, `Expected ${expectedAffectedDependenciesLength} affected dependencies. Actual: ${result.affectedDependencies}`);
+		} else if (expectedAffectedDependenciesLength !== 0) {
+			throw new Error(`ExpectedAffectedDependencies length was ${expectedAffectedDependenciesLength} but affectedDependencies was undefined`);
 		}
 	}
 
@@ -333,7 +337,7 @@ class SchemaCompareTester {
 	private async assertScriptGenerationResult(resultstatus: azdata.ResultStatus, server: string, database: string): Promise<void> {
 		// TODO add more validation
 		assert(resultstatus.success === true, `Expected: success true Actual: "${resultstatus.success}" Error Message: "${resultstatus.errorMessage}`);
-		const taskService = await azdata.dataprotocol.getProvider<azdata.TaskServicesProvider>('MSSQL', azdata.DataProviderType.TaskServicesProvider);
+		const taskService = azdata.dataprotocol.getProvider<azdata.TaskServicesProvider>('MSSQL', azdata.DataProviderType.TaskServicesProvider);
 		const tasks = await taskService.getAllTasks({ listActiveTasksOnly: true });
 		let foundTask: azdata.TaskInfo;
 		tasks.tasks.forEach(t => {
