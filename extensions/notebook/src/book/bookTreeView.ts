@@ -46,7 +46,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		await vscode.commands.executeCommand('setContext', 'unsavedBooks', this._openAsUntitled);
 		await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
 			try {
-				await this.createBookModel(workspaceFolder.uri.fsPath);
+				await this.createAndAddBookModel(workspaceFolder.uri.fsPath);
 			} catch {
 				// no-op, not all workspace folders are going to be valid books
 			}
@@ -67,7 +67,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				await this.showPreviewFile(urlToOpen);
 			}
 			else {
-				await this.createBookModel(bookPath);
+				await this.createAndAddBookModel(bookPath);
 				let bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
 				this.currentBook = this.books.filter(book => book.bookPath === bookPath)[0];
 				bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
@@ -78,7 +78,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	private async createBookModel(bookPath: string): Promise<void> {
+	/**
+	 * Creates a model for the specified folder path and adds it to the known list of books if we
+	 * were able to successfully parse it.
+	 * @param bookPath The path to the book folder to create the model for
+	 */
+	private async createAndAddBookModel(bookPath: string): Promise<void> {
 		const book: BookModel = new BookModel(bookPath, this._openAsUntitled, this._extensionContext);
 		await book.initializeContents();
 		this.books.push(book);
