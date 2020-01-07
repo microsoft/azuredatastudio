@@ -12,6 +12,7 @@ import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/t
 import * as TypeMoq from 'typemoq';
 import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
+import { NullLogService } from 'vs/platform/log/common/log';
 
 suite('ConnectionDialogService tests', () => {
 
@@ -22,7 +23,7 @@ suite('ConnectionDialogService tests', () => {
 	setup(() => {
 		let errorMessageService = getMockErrorMessageService();
 		connectionDialogService = new ConnectionDialogService(undefined, undefined, errorMessageService.object,
-			undefined, undefined, undefined);
+			undefined, undefined, undefined, new NullLogService());
 		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict, {}, {}, new TestStorageService());
 		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;
 		mockConnectionDialog = TypeMoq.Mock.ofType(ConnectionDialogWidget, TypeMoq.MockBehavior.Strict,
