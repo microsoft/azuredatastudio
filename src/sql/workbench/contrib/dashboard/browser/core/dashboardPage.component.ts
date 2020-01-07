@@ -121,7 +121,11 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				tempWidgets = cb.apply(this, [tempWidgets, this._originalConfig]);
 			});
 			this.propertiesWidget = properties ? properties[0] : undefined;
-			this._panel.options.layout = NavigationBarLayout.vertical;
+			this._panel.options = {
+				showTabsWhenOne: true,
+				layout: NavigationBarLayout.vertical,
+				showIcon: false
+			};
 			this.createTabs(tempWidgets);
 		}
 	}

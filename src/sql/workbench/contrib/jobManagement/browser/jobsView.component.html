@@ -4,12 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<div class="job-heading-container">
-	<h1 class="job-heading" *ngIf="_isCloud === false">Jobs</h1>
-	<h1 class="job-heading" *ngIf="_isCloud === true">No Jobs Available</h1>
-	<div class="codicon in-progress" *ngIf="_showProgressWheel === true"></div>
-</div>
-
+<div class="codicon in-progress agent-loading-icon" *ngIf="_showProgressWheel === true"></div>
+<h1 class="job-heading" *ngIf="_isCloud === true">No Jobs Available</h1>
 <div #actionbarContainer class="agent-actionbar-container"></div>
-
 <div #jobsgrid class="jobview-grid"></div>

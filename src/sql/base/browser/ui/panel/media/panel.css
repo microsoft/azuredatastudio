@@ -143,3 +143,8 @@ panel {
 	width: 100%;
 	height: 100%;
 }
+
+.tabbedPanel .tab-group-header {
+	font-weight: bold;
+	padding:0px 5px;
+}

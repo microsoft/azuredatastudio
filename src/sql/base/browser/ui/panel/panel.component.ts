@@ -54,7 +54,10 @@ let idPool = 0;
 							<tab-header role="presentation" [active]="_activeTab === tab" [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
 						</ng-container>
 						<ng-container *ngIf="tab.type==='header'">
-							<span>{{tab.title}}</span>
+							<div class="tab-group-header">
+								<span>{{tab.title}}</span>
+								<hr/>
+							</div>
 						</ng-container >
 						</div>
 					</div>
