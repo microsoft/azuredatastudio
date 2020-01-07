@@ -36,18 +36,19 @@ export function equalBookItems(book: BookTreeItem, expectedBook: ExpectedBookIte
 
 describe('BookTreeViewProviderTests', function() {
 
-	let mockExtensionContext: vscode.ExtensionContext;
-	let nonBookFolderPath: string;
-	let bookFolderPath: string;
-	let rootFolderPath: string;
-	let expectedNotebook1: ExpectedBookItem;
-	let expectedNotebook2: ExpectedBookItem;
-	let expectedNotebook3: ExpectedBookItem;
-	let expectedMarkdown: ExpectedBookItem;
-	let expectedExternalLink: ExpectedBookItem;
-	let expectedBook: ExpectedBookItem;
-
 	describe('BookTreeViewProvider', () => {
+
+		let mockExtensionContext: vscode.ExtensionContext;
+		let nonBookFolderPath: string;
+		let bookFolderPath: string;
+		let rootFolderPath: string;
+		let expectedNotebook1: ExpectedBookItem;
+		let expectedNotebook2: ExpectedBookItem;
+		let expectedNotebook3: ExpectedBookItem;
+		let expectedMarkdown: ExpectedBookItem;
+		let expectedExternalLink: ExpectedBookItem;
+		let expectedBook: ExpectedBookItem;
+
 		this.beforeAll(async () => {
 			mockExtensionContext = new MockExtensionContext();
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
@@ -206,7 +207,7 @@ describe('BookTreeViewProviderTests', function() {
 			let tableOfContentsFileIgnore = path.join(rootFolderPath, 'toc.yml');
 			await fs.mkdir(rootFolderPath);
 			await fs.mkdir(dataFolderPath);
-			await fs.writeFile(tableOfContentsFile, '');
+			await fs.writeFile(tableOfContentsFile, '- title: Notebook1\n  url: /notebook1\n  sections:\n  - title: Notebook2\n    url: /notebook2\n  - title: Notebook3\n    url: /notebook3\n- title: Markdown\n  url: /markdown\n- title: GitHub\n  url: https://github.com/\n  external: true');
 			await fs.writeFile(tableOfContentsFileIgnore, '');
 			const mockExtensionContext = new MockExtensionContext();
 			folder = {
@@ -219,8 +220,8 @@ describe('BookTreeViewProviderTests', function() {
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 		});
 
-		it('should ignore toc.yml files not in _data folder', function(): void {
-			bookTreeViewProvider.currentBook.getTableOfContentFiles(folder.uri.toString());
+		it('should ignore toc.yml files not in _data folder', async () => {
+			await bookTreeViewProvider.currentBook.getTableOfContentFiles(rootFolderPath);
 			for (let p of bookTreeViewProvider.currentBook.tableOfContentPaths) {
 				should(p.toLocaleLowerCase()).equal(tableOfContentsFile.replace(/\\/g, '/').toLocaleLowerCase());
 			}
@@ -260,13 +261,14 @@ describe('BookTreeViewProviderTests', function() {
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 		});
 
-		it('should show error message if config.yml file not found', function(): void {
-			bookTreeViewProvider.currentBook.readBooks();
+		it('should show error message if config.yml file not found', async () => {
+			await bookTreeViewProvider.currentBook.readBooks();
 			should(bookTreeViewProvider.errorMessage.toLocaleLowerCase()).equal(('ENOENT: no such file or directory, open \'' + configFile + '\'').toLocaleLowerCase());
 		});
+
 		it('should show error if toc.yml file format is invalid', async function(): Promise<void> {
 			await fs.writeFile(configFile, 'title: Test Book');
-			bookTreeViewProvider.currentBook.readBooks();
+			await bookTreeViewProvider.currentBook.readBooks();
 			should(bookTreeViewProvider.errorMessage).equal('Error: Test Book has an incorrect toc.yml file');
 		});
 
