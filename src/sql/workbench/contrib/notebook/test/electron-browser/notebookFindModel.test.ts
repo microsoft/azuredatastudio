@@ -52,7 +52,7 @@ let expectedNotebookContent: nb.INotebookContents = {
 };
 
 let defaultUri = URI.file('/some/path.ipynb');
-
+let max_find_count = 3;
 let mockClientSession: TypeMoq.Mock<IClientSession>;
 let sessionReady: Deferred<void>;
 let mockModelFactory: TypeMoq.Mock<ModelFactory>;
@@ -69,7 +69,6 @@ suite('Notebook Find Model', function (): void {
 	let defaultModelOptions: INotebookModelOptions;
 	const logService = new NullLogService();
 	let model: NotebookModel;
-	//const retryCount = 24; // 2 minutes
 
 	setup(async () => {
 		sessionReady = new Deferred<void>();
@@ -111,21 +110,29 @@ suite('Notebook Find Model', function (): void {
 	test('Should find results in the notebook', async function (): Promise<void> {
 		//initialize find
 		let notebookFindModel = new NotebookFindModel(model);
-		await notebookFindModel.find('markdown', 5);
+		await notebookFindModel.find('markdown', max_find_count);
 
 		assert(notebookFindModel.findMatches, new Error('Find in notebook failed.'));
-		assert.equal(notebookFindModel.findMatches.length, 2, new Error('Find couldnt find all occurances'));
+		assert.equal(notebookFindModel.findMatches.length, 2, 'Find couldnt find all occurances');
+	});
+
+	test('Should not find results in the notebook', async function (): Promise<void> {
+		//initialize find
+		let notebookFindModel = new NotebookFindModel(model);
+		await notebookFindModel.find('notFound', max_find_count);
+
+		assert.equal(notebookFindModel.findMatches.length, 0, 'Find failed');
 	});
 
 	test('Should match find result ranges', async function (): Promise<void> {
 		let notebookFindModel = new NotebookFindModel(model);
-		await notebookFindModel.find('markdown', 5);
+		await notebookFindModel.find('markdown', max_find_count);
 
 		let expectedFindRange1 = new NotebookRange(model.cells[0], 2, 13, 2, 21);
-		assert.deepEqual(notebookFindModel.findMatches[0].range, expectedFindRange1, new Error('Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange1) + '\n ' + JSON.stringify(notebookFindModel.findMatches[0].range)));
+		assert.deepEqual(notebookFindModel.findMatches[0].range, expectedFindRange1, 'Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange1) + '\n ' + JSON.stringify(notebookFindModel.findMatches[0].range));
 
 		let expectedFindRange2 = new NotebookRange(model.cells[1], 1, 6, 1, 14);
-		assert.deepEqual(notebookFindModel.findMatches[1].range, expectedFindRange2, new Error('Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange2) + '\n ' + JSON.stringify(notebookFindModel.findMatches[1].range)));
+		assert.deepEqual(notebookFindModel.findMatches[1].range, expectedFindRange2, 'Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange2) + '\n ' + JSON.stringify(notebookFindModel.findMatches[1].range));
 	});
 
 	test('Should ignore hyperlink markdown data and find correctly', async function (): Promise<void> {
@@ -148,14 +155,38 @@ suite('Notebook Find Model', function (): void {
 		await initNotebookModel(markdownContent);
 
 		let notebookFindModel = new NotebookFindModel(model);
-		await notebookFindModel.find('best', 5);
+		await notebookFindModel.find('best', max_find_count);
 
-		assert.equal(notebookFindModel.findMatches.length, 1, new Error('Find failed on markdown link'));
+		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed on markdown link');
 
 		let expectedFindRange1 = new NotebookRange(model.cells[0], 1, 21, 1, 25);
-		assert.deepEqual(notebookFindModel.findMatches[0].range, expectedFindRange1, new Error('Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange1) + '\n ' + JSON.stringify(notebookFindModel.findMatches[0].range)));
+		assert.deepEqual(notebookFindModel.findMatches[0].range, expectedFindRange1, 'Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange1) + '\n ' + JSON.stringify(notebookFindModel.findMatches[0].range));
 
+	});
 
+	test('Should not find more than max results in the notebook', async function (): Promise<void> {
+		let codeContent: nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Code,
+				source: ['import x', 'x.init()', 'x.show()', 'x.analyze()'],
+				metadata: { language: 'python' },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'python',
+					language: 'python'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		await initNotebookModel(codeContent);
+		//initialize find
+		let notebookFindModel = new NotebookFindModel(model);
+		await notebookFindModel.find('x', max_find_count);
+
+		assert.equal(notebookFindModel.findMatches.length, 3, 'Find failed');
 	});
 
 	async function initNotebookModel(contents: nb.INotebookContents): Promise<void> {

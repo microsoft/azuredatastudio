@@ -496,9 +496,9 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		if (exp) {
 			for (let i = 0; i < this.notebookModel.cells.length; i++) {
 				const item = this.notebookModel.cells[i];
-				const result = this.searchFn(item, exp);
+				const result = this.searchFn(item, exp, maxMatches);
 				if (result) {
-					this._findArray = this._findArray.concat(result);
+					this._findArray.push(...result);
 					this._onFindCountChange.fire(this._findArray.length);
 					if (maxMatches > 0 && this._findArray.length === maxMatches) {
 						break;
@@ -523,7 +523,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		return this.findArray;
 	}
 
-	private searchFn(cell: ICellModel, exp: string): NotebookRange[] {
+	private searchFn(cell: ICellModel, exp: string, maxMatches?: number): NotebookRange[] {
 		let findResults: NotebookRange[] = [];
 		let cellVal = cell.cellType === 'markdown' ? this.cleanUpCellSource(cell.source) : cell.source;
 		let index: number;
@@ -550,6 +550,9 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 						let range = new NotebookRange(cell, j + 1, start, j + 1, end);
 						findResults = findResults.concat(range);
 						index = end;
+					}
+					if (findResults.length >= maxMatches) {
+						break;
 					}
 				}
 			}
