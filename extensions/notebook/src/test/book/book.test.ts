@@ -34,7 +34,7 @@ export function equalBookItems(book: BookTreeItem, expectedBook: ExpectedBookIte
 	}
 }
 
-describe('BookTreeViewProviderTests @UNSTABLE@', function() {
+describe('BookTreeViewProviderTests', function() {
 
 	let mockExtensionContext: vscode.ExtensionContext;
 	let nonBookFolderPath: string;
@@ -234,7 +234,7 @@ describe('BookTreeViewProviderTests @UNSTABLE@', function() {
 	});
 
 
-	describe.skip('BookTreeViewProvider.getBooks', function (): void {
+	describe('BookTreeViewProvider.getBooks @UNSTABLE@', function (): void {
 		let rootFolderPath: string;
 		let configFile: string;
 		let folder: vscode.WorkspaceFolder;
@@ -278,7 +278,7 @@ describe('BookTreeViewProviderTests @UNSTABLE@', function() {
 	});
 
 
-	describe.skip('BookTreeViewProvider.getSections', function (): void {
+	describe('BookTreeViewProvider.getSections @UNSTABLE@', function (): void {
 		let rootFolderPath: string;
 		let tableOfContentsFile: string;
 		let bookTreeViewProvider: BookTreeViewProvider;
