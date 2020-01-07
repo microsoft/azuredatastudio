@@ -13,6 +13,7 @@ import * as os from 'os';
 import * as uuid from 'uuid';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { BookTreeItem } from '../../book/bookTreeItem';
+import { promisify } from 'util';
 
 export interface ExpectedBookItem {
 	title: string;
@@ -150,8 +151,8 @@ describe('BookTreeViewProviderTests @UNSTABLE@', function() {
 
 		this.afterAll(async function () {
 			console.log('Removing temporary files...');
-			if (fs.existsSync(rootFolderPath)) {
-				rimraf.sync(rootFolderPath);
+			if (await promisify(fs.exists)(rootFolderPath)) {
+				await promisify(rimraf)(rootFolderPath);
 			}
 			console.log('Successfully removed temporary files.');
 		});
@@ -192,8 +193,8 @@ describe('BookTreeViewProviderTests @UNSTABLE@', function() {
 		});
 
 		this.afterAll(async function () {
-			if (fs.existsSync(rootFolderPath)) {
-				rimraf.sync(rootFolderPath);
+			if (await promisify(fs.exists)(rootFolderPath)) {
+				await promisify(rimraf)(rootFolderPath);
 			}
 		});
 	});
@@ -237,8 +238,8 @@ describe('BookTreeViewProviderTests @UNSTABLE@', function() {
 		});
 
 		this.afterAll(async function () {
-			if (fs.existsSync(rootFolderPath)) {
-				rimraf.sync(rootFolderPath);
+			if (await promisify(fs.exists)(rootFolderPath)) {
+				await promisify(rimraf)(rootFolderPath);
 			}
 		});
 	});
@@ -292,12 +293,9 @@ describe('BookTreeViewProviderTests @UNSTABLE@', function() {
 		});
 
 		this.afterAll(async function () {
-			if (fs.existsSync(rootFolderPath)) {
-				rimraf.sync(rootFolderPath);
+			if (await promisify(fs.exists)(rootFolderPath)) {
+				await promisify(rimraf)(rootFolderPath);
 			}
 		});
 	});
 });
-
-
-

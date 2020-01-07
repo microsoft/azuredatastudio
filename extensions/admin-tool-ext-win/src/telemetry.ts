@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import AdsTelemetryReporter from 'ads-extension-telemetry';
 
 import * as Utils from './utils';
@@ -19,8 +18,3 @@ export enum TelemetryViews {
 	SsmsMinGsw = 'SsmsMinGsw',
 	SsmsMinDialog = 'SsmsMinDialog'
 }
-
-
-
-
-
