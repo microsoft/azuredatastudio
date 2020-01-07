@@ -98,7 +98,7 @@ panel {
 	flex: 0 0 auto;
 }
 
-.tab>.tabLabel.active {
+.tab > .tabLabel.active {
 	border-bottom: 1px solid;
 }
 
@@ -111,22 +111,22 @@ panel {
 	flex-direction: row;
 }
 
-.tabbedPanel.vertical>.title {
+.tabbedPanel.vertical > .title {
 	flex: 0 0 auto;
 	flex-direction: column;
 	height: 100%;
 }
 
-.tabbedPanel>.tab-content {
+.tabbedPanel > .tab-content {
 	flex: 1;
 	position: relative;
 }
 
-.tabbedPanel.vertical > .title > .tabContainer > .monaco-scrollable-element >.tabList {
+.tabbedPanel.vertical > .title > .tabContainer > .monaco-scrollable-element > .tabList {
 	flex-flow: column;
 }
 
-.tabbedPanel.horizontal > .title > .tabContainer > .monaco-scrollable-element >.tabList {
+.tabbedPanel.horizontal > .title > .tabContainer > .monaco-scrollable-element > .tabList {
 	flex-flow: row;
 }
 
