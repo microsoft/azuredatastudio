@@ -27,7 +27,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	// For testing
 	private _errorMessage: string;
-	private _onReadAllTOCFiles: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	private _openAsUntitled: boolean;
 	public viewId: string;
 	public books: BookModel[];
@@ -37,27 +36,22 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
 		this.books = [];
-		this.initialize(workspaceFolders.map(a => a.uri.fsPath)).catch(e => console.error(e));
+		this.initialize(workspaceFolders).catch(e => console.error(e));
 		this.viewId = view;
 		this.prompter = new CodeAdapter();
 
 	}
 
-	private async initialize(bookPaths: string[]): Promise<void> {
+	private async initialize(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
 		await vscode.commands.executeCommand('setContext', 'unsavedBooks', this._openAsUntitled);
-		await Promise.all(bookPaths.map(async (bookPath) => {
-			let book: BookModel = new BookModel(bookPath, this._openAsUntitled, this._extensionContext);
-			await book.initializeContents();
-			this.books.push(book);
-			if (!this.currentBook) {
-				this.currentBook = book;
+		await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
+			try {
+				await this.createBookModel(workspaceFolder.uri.fsPath);
+			} catch {
+				// no-op, not all workspace folders are going to be valid books
 			}
 		}));
 		this._initializeDeferred.resolve();
-	}
-
-	public get onReadAllTOCFiles(): vscode.Event<void> {
-		return this._onReadAllTOCFiles.event;
 	}
 
 	public get initialized(): Promise<void> {
@@ -73,7 +67,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				await this.showPreviewFile(urlToOpen);
 			}
 			else {
-				await this.initialize([bookPath]);
+				await this.createBookModel(bookPath);
 				let bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
 				this.currentBook = this.books.filter(book => book.bookPath === bookPath)[0];
 				bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
@@ -81,6 +75,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
+		}
+	}
+
+	private async createBookModel(bookPath: string): Promise<void> {
+		const book: BookModel = new BookModel(bookPath, this._openAsUntitled, this._extensionContext);
+		await book.initializeContents();
+		this.books.push(book);
+		if (!this.currentBook) {
+			this.currentBook = book;
 		}
 	}
 
