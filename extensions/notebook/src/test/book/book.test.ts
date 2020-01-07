@@ -298,3 +298,6 @@ describe('BookTreeViewProviderTests @UNSTABLE@', function() {
 		});
 	});
 });
+
+
+
