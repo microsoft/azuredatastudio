@@ -38,7 +38,7 @@ export class ProcessService {
 
 			scriptExecution.on('exit', (code) => {
 				if (timer) {
-					timer.unref();
+					clearTimeout(timer);
 				}
 				if (code === 0) {
 					resolve();

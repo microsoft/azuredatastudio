@@ -33,7 +33,7 @@ function execFolderListCommand(context: TestContext, service : ProcessService): 
 	if (utils.isWindows()) {
 		return service.execScripts('cmd', ['dir', '.'], context.outputChannel);
 	} else {
-		return service.execScripts('/bin/sh', ['ls', '.'], context.outputChannel);
+		return service.execScripts('/bin/sh', ['-c', 'ls'], context.outputChannel);
 	}
 }
 
@@ -55,7 +55,7 @@ describe('Process Service', () => {
 	it('execFolderListCommand should reject if command time out', async function (): Promise<void> {
 		const context = createContext();
 		let service = new ProcessService();
-		service.timeout = 1000;
+		service.timeout = 10;
 		await should(execFolderListCommand(context, service)).rejected();
 	});
 
