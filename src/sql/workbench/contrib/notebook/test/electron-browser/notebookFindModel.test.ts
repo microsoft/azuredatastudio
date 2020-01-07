@@ -106,14 +106,6 @@ suite('Notebook Find Model', function (): void {
 		});
 
 		await initNotebookModel(expectedNotebookContent);
-
-		/* let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
-		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
-		defaultModelOptions.contentManager = mockContentManager.object;
-		// When I initialize the model
-		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
-		await model.loadContents();
-		await model.requestModelLoad(); */
 	});
 
 	test('Should find results in the notebook', async function (): Promise<void> {
@@ -170,7 +162,7 @@ suite('Notebook Find Model', function (): void {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(contents));
 		defaultModelOptions.contentManager = mockContentManager.object;
-		// When I initialize the model
+		// Initialize the model
 		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
 		await model.loadContents();
 		await model.requestModelLoad();
