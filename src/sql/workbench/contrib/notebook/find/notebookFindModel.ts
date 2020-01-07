@@ -505,12 +505,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 					}
 				}
 			}
-			return new Promise<NotebookRange>((resolve) => {
-				const disp = this.onFindCountChange(e => {
-					resolve(this._findArray[this._findIndex]);
-					disp.dispose();
-				});
-			});
+			return Promise.resolve(this._findArray[this._findIndex]);
 		} else {
 			return Promise.reject(new Error('no expression'));
 		}
