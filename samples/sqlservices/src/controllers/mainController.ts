@@ -5,13 +5,13 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as Utils from '../utils';
 import * as vscode from 'vscode';
 import SplitPropertiesPanel from './splitPropertiesPanel';
 import * as fs from 'fs';
 import * as path from 'path';
-import {TreeNode, TreeDataProvider} from './treeDataProvider';
+import { TreeNode, TreeDataProvider } from './treeDataProvider';
 
 /**
  * The main controller class that initializes the extension
@@ -41,7 +41,7 @@ export default class MainController implements vscode.Disposable {
 		this.registerSqlServicesModelView();
 		this.registerSplitPanelModelView();
 
-		sqlops.tasks.registerTask('sqlservices.clickTask', (profile) => {
+		azdata.tasks.registerTask('sqlservices.clickTask', (profile) => {
 			vscode.window.showInformationMessage(`Clicked from profile ${profile.serverName}.${profile.databaseName}`);
 		});
 
@@ -50,7 +50,7 @@ export default class MainController implements vscode.Disposable {
 		});
 
 		vscode.commands.registerCommand('sqlservices.openConnectionDialog', async () => {
-			let connection = await sqlops.connection.openConnectionDialog();
+			let connection = await azdata.connection.openConnectionDialog();
 			if (connection) {
 				console.info('Connection Opened: ' + connection.options['server']);
 			}
@@ -75,7 +75,7 @@ export default class MainController implements vscode.Disposable {
 		return Promise.resolve(true);
 	}
 
-	private async getTab3Content(view: sqlops.ModelView): Promise<void> {
+	private async getTab3Content(view: azdata.ModelView): Promise<void> {
 		let treeData = {
 			label: '1',
 			children: [
@@ -118,7 +118,7 @@ export default class MainController implements vscode.Disposable {
 
 		let treeDataProvider = new TreeDataProvider(root);
 
-		let tree: sqlops.TreeComponent<TreeNode> = view.modelBuilder.tree<TreeNode>().withProperties({
+		let tree: azdata.TreeComponent<TreeNode> = view.modelBuilder.tree<TreeNode>().withProperties({
 			'withCheckbox': true
 		}).component();
 		let treeView = tree.registerDataProvider(treeDataProvider);
@@ -139,16 +139,16 @@ export default class MainController implements vscode.Disposable {
 				component: tree,
 				title: 'Tree'
 			}], {
-					horizontal: false,
-					componentWidth: 800,
-					componentHeight: 800
-				}).component();
+				horizontal: false,
+				componentWidth: 800,
+				componentHeight: 800
+			}).component();
 		let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
 		formWrapper.loading = false;
 
 		await view.initializeModel(formWrapper);
 	}
-	private async getTabContent(view: sqlops.ModelView, customButton1: sqlops.window.Button, customButton2: sqlops.window.Button, componentWidth: number | string
+	private async getTabContent(view: azdata.ModelView, customButton1: azdata.window.Button, customButton2: azdata.window.Button, componentWidth: number | string
 	): Promise<void> {
 		let inputBox = view.modelBuilder.inputBox()
 			.withProperties({
@@ -226,8 +226,8 @@ export default class MainController implements vscode.Disposable {
 				component: inputBox4,
 				title: 'inputBox4'
 			}], {
-					horizontal: true
-				}).component();
+				horizontal: true
+			}).component();
 		let groupModel1 = view.modelBuilder.groupContainer()
 			.withLayout({
 			}).withItems([
@@ -255,22 +255,22 @@ export default class MainController implements vscode.Disposable {
 			.withProperties({
 				columns: [{
 					displayName: 'Column 1',
-					valueType: sqlops.DeclarativeDataType.string,
+					valueType: azdata.DeclarativeDataType.string,
 					width: '20px',
 					isReadOnly: true
 				}, {
 					displayName: 'Column 2',
-					valueType: sqlops.DeclarativeDataType.string,
+					valueType: azdata.DeclarativeDataType.string,
 					width: '100px',
 					isReadOnly: false
 				}, {
 					displayName: 'Column 3',
-					valueType: sqlops.DeclarativeDataType.boolean,
+					valueType: azdata.DeclarativeDataType.boolean,
 					width: '20px',
 					isReadOnly: false
 				}, {
 					displayName: 'Column 4',
-					valueType: sqlops.DeclarativeDataType.category,
+					valueType: azdata.DeclarativeDataType.category,
 					isReadOnly: false,
 					width: '120px',
 					categoryValues: [
@@ -317,23 +317,24 @@ export default class MainController implements vscode.Disposable {
 				title: 'Declarative Table'
 			}], formItemLayout);
 		let groupItems = {
-				components: [{
-					component: table,
-					title: 'Table'
-					}, {
-							component: listBox,
-							title: 'List Box'
-				}], title: 'group'};
+			components: [{
+				component: table,
+				title: 'Table'
+			}, {
+				component: listBox,
+				title: 'List Box'
+			}], title: 'group'
+		};
 		formBuilder.addFormItem(groupItems, formItemLayout);
 
 		formBuilder.insertFormItem({
 			component: inputBoxWrapper,
 			title: 'Backup name'
-			}, 0, formItemLayout);
+		}, 0, formItemLayout);
 		formBuilder.insertFormItem({
 			component: inputBox2,
 			title: 'Recovery model'
-			}, 1, formItemLayout);
+		}, 1, formItemLayout);
 		formBuilder.insertFormItem({
 			component: dropdown,
 			title: 'Backup type'
@@ -375,20 +376,20 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	private openDialog(): void {
-		let dialog = sqlops.window.createModelViewDialog('Test dialog');
-		let tab1 = sqlops.window.createTab('Test tab 1');
+		let dialog = azdata.window.createModelViewDialog('Test dialog');
+		let tab1 = azdata.window.createTab('Test tab 1');
 
-		let tab2 = sqlops.window.createTab('Test tab 2');
-		let tab3 = sqlops.window.createTab('Test tab 3');
+		let tab2 = azdata.window.createTab('Test tab 2');
+		let tab3 = azdata.window.createTab('Test tab 3');
 		tab2.content = 'sqlservices';
 		dialog.content = [tab1, tab2, tab3];
 		dialog.okButton.onClick(() => console.log('ok clicked!'));
 		dialog.cancelButton.onClick(() => console.log('cancel clicked!'));
 		dialog.okButton.label = 'ok';
 		dialog.cancelButton.label = 'no';
-		let customButton1 = sqlops.window.createButton('Load name');
+		let customButton1 = azdata.window.createButton('Load name');
 		customButton1.onClick(() => console.log('button 1 clicked!'));
-		let customButton2 = sqlops.window.createButton('Load all');
+		let customButton2 = azdata.window.createButton('Load all');
 		customButton2.onClick(() => console.log('button 2 clicked!'));
 		dialog.customButtons = [customButton1, customButton2];
 		tab1.registerContent(async (view) => {
@@ -398,17 +399,17 @@ export default class MainController implements vscode.Disposable {
 		tab3.registerContent(async (view) => {
 			await this.getTab3Content(view);
 		});
-		sqlops.window.openDialog(dialog);
+		azdata.window.openDialog(dialog);
 	}
 
 	private openWizard(): void {
-		let wizard = sqlops.window.createWizard('Test wizard');
-		let page1 = sqlops.window.createWizardPage('First wizard page');
-		let page2 = sqlops.window.createWizardPage('Second wizard page');
+		let wizard = azdata.window.createWizard('Test wizard');
+		let page1 = azdata.window.createWizardPage('First wizard page');
+		let page2 = azdata.window.createWizardPage('Second wizard page');
 		page2.content = 'sqlservices';
-		let customButton1 = sqlops.window.createButton('Load name');
+		let customButton1 = azdata.window.createButton('Load name');
 		customButton1.onClick(() => console.log('button 1 clicked!'));
-		let customButton2 = sqlops.window.createButton('Load all');
+		let customButton2 = azdata.window.createButton('Load all');
 		customButton2.onClick(() => console.log('button 2 clicked!'));
 		wizard.customButtons = [customButton1, customButton2];
 		page1.registerContent(async (view) => {
@@ -421,10 +422,10 @@ export default class MainController implements vscode.Disposable {
 			isCancelable: true,
 			connection: undefined,
 			operation: op => {
-				op.updateStatus(sqlops.TaskStatus.InProgress);
-				op.updateStatus(sqlops.TaskStatus.InProgress, 'Task is running');
+				op.updateStatus(azdata.TaskStatus.InProgress);
+				op.updateStatus(azdata.TaskStatus.InProgress, 'Task is running');
 				setTimeout(() => {
-					op.updateStatus(sqlops.TaskStatus.Succeeded);
+					op.updateStatus(azdata.TaskStatus.Succeeded);
 				}, 5000);
 			}
 		});
@@ -433,7 +434,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	private openEditor(): void {
-		let editor = sqlops.workspace.createModelViewEditor('Test Model View');
+		let editor = azdata.workspace.createModelViewEditor('Test Model View');
 		editor.registerContent(async view => {
 			let inputBox = view.modelBuilder.inputBox()
 				.withValidation(component => component.value !== 'valid')
@@ -452,7 +453,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	private openEditorWithWebview(html1: string, html2: string): void {
-		let editor = sqlops.workspace.createModelViewEditor('Editor webview', { retainContextWhenHidden: true });
+		let editor = azdata.workspace.createModelViewEditor('Editor webview', { retainContextWhenHidden: true });
 		editor.registerContent(async view => {
 			let count = 0;
 			let webview1 = view.modelBuilder.webView()
@@ -502,7 +503,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	private openEditorWithWebview2(): void {
-		let editor = sqlops.workspace.createModelViewEditor('Editor webview2', { retainContextWhenHidden: true });
+		let editor = azdata.workspace.createModelViewEditor('Editor webview2', { retainContextWhenHidden: true });
 		editor.registerContent(async view => {
 
 			let inputBox = view.modelBuilder.inputBox().component();
@@ -571,7 +572,7 @@ export default class MainController implements vscode.Disposable {
 
 
 	private registerSqlServicesModelView(): void {
-		sqlops.ui.registerModelViewProvider('sqlservices', async (view) => {
+		azdata.ui.registerModelViewProvider('sqlservices', async (view) => {
 			let flexModel = view.modelBuilder.flexContainer()
 				.withLayout({
 					flexFlow: 'row',
@@ -586,7 +587,7 @@ export default class MainController implements vscode.Disposable {
 						})
 						.withItems([
 							view.modelBuilder.card()
-								.withProperties<sqlops.CardProperties>({
+								.withProperties<azdata.CardProperties>({
 									label: 'label1',
 									value: 'value1',
 									actions: [{ label: 'action' }]
@@ -598,7 +599,7 @@ export default class MainController implements vscode.Disposable {
 						.withLayout({ flexFlow: 'column' })
 						.withItems([
 							view.modelBuilder.card()
-								.withProperties<sqlops.CardProperties>({
+								.withProperties<azdata.CardProperties>({
 									label: 'label2',
 									value: 'value2',
 									actions: [{ label: 'action' }]
@@ -612,7 +613,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	private registerSplitPanelModelView(): void {
-		sqlops.ui.registerModelViewProvider('splitPanel', async (view) => {
+		azdata.ui.registerModelViewProvider('splitPanel', async (view) => {
 			let numPanels = 3;
 			let splitPanel = new SplitPropertiesPanel(view, numPanels);
 			await view.initializeModel(splitPanel.modelBase);

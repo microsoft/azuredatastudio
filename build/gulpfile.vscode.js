@@ -236,7 +236,6 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		const api = gulp.src('src/vs/vscode.d.ts').pipe(rename('out/vs/vscode.d.ts'));
 		// {{SQL CARBON EDIT}}
 		const dataApi = gulp.src('src/sql/azdata.d.ts').pipe(rename('out/sql/azdata.d.ts'));
-		const sqlopsAPI = gulp.src('src/sql/sqlops.d.ts').pipe(rename('out/sql/sqlops.d.ts'));
 
 		const telemetry = gulp.src('.build/telemetry/**', { base: '.build/telemetry', dot: true });
 
@@ -253,8 +252,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			productJsonStream,
 			license,
 			api,
-			dataApi,
-			sqlopsAPI, // {{SQL CARBON EDIT}}
+			dataApi, // {{SQL CARBON EDIT}}
 			telemetry,
 			sources,
 			deps
