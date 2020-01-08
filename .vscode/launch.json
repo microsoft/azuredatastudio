@@ -68,11 +68,8 @@
 		{
 			"type": "chrome",
 			"request": "attach",
-			"name": "Attach to azuredatastudio",
-			"port": 9222,
-			"presentation": {
-				"hidden": true
-			}
+			"name": "Attach to VS Code",
+			"port": 9222
 		},
 		{
 			"type": "chrome",
@@ -98,10 +95,7 @@
 				"--inspect=5875",
 				"--no-cached-data"
 			],
-			"webRoot": "${workspaceFolder}",
-			"presentation": {
-				"hidden": true
-			}
+			"webRoot": "${workspaceFolder}"
 		},
 		{
 			"type": "node",
