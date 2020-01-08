@@ -7,7 +7,6 @@ import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { SqlMainContext, MainThreadDashboardShape, ExtHostDashboardShape, SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
-import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadDashboard)
 export class MainThreadDashboard implements MainThreadDashboardShape {
@@ -15,12 +14,10 @@ export class MainThreadDashboard implements MainThreadDashboardShape {
 
 	constructor(
 		context: IExtHostContext,
-		@IExtensionService extensionService: IExtensionService,
 		@IDashboardService dashboardService: IDashboardService
 	) {
 		this._proxy = context.getProxy(SqlExtHostContext.ExtHostDashboard);
 		dashboardService.onDidChangeToDashboard(e => {
-			extensionService.activateByEvent('onDashboardOpen');
 			this._proxy.$onDidChangeToDashboard(e);
 		});
 
