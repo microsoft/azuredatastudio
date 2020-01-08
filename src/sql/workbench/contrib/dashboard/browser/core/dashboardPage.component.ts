@@ -199,7 +199,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			publisher: undefined,
 			title: nls.localize('dashboard.extensionGroupHeader', "Extensions"),
 			context: this.context,
-			type: 'header',
+			type: 'group-header',
 			editable: false,
 			canClose: false,
 			actions: []

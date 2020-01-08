@@ -12,6 +12,8 @@ export abstract class TabChild extends Disposable {
 	public abstract layout(): void;
 }
 
+export type TabType = 'tab' | 'group-header';
+
 @Component({
 	selector: 'tab',
 	template: `
