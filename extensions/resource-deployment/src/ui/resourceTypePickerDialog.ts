@@ -343,15 +343,15 @@ export class ResourceTypePickerDialog extends DialogBase {
 				return rowData;
 			}
 		});
-		this.toggleUiControls(tool.status !== ToolStatus.Installing); // if installing then disable ui controls else enable them
+		this.adjustUiControls(tool.status !== ToolStatus.Installing); // if installing then disable ui controls else enable them
 	}
 
-	private toggleUiControls(enable: boolean): void {
+	private adjustUiControls(enable: boolean): void {
 		this._cardGroup.enabled = enable;
 		this._agreementContainer.enabled = enable;
 		this._optionsContainer.enabled = enable;
 		this._dialogObject.cancelButton.enabled = enable;
-		// select and install tools button are controlled separately
+		// select and install tools buttons are controlled separately
 	}
 
 	private async installTools(): Promise<void> {
