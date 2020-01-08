@@ -5,15 +5,15 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 /**
  * The main controller class that initializes the extension
  */
 export default class SplitPropertiesPanel {
-	private panels: sqlops.FlexContainer[];
-	private _modelBase: sqlops.FlexContainer;
-	constructor(view: sqlops.ModelView, numPanels: number) {
+	private panels: azdata.FlexContainer[];
+	private _modelBase: azdata.FlexContainer;
+	constructor(view: azdata.ModelView, numPanels: number) {
 		this.panels = [];
 		let ratio = Math.round(100 / numPanels);
 		for (let i = 0; i < numPanels; i++) {
@@ -29,11 +29,11 @@ export default class SplitPropertiesPanel {
 			.component();
 	}
 
-	public get modelBase(): sqlops.Component {
+	public get modelBase(): azdata.Component {
 		return this._modelBase;
 	}
 
-	public addItem(item: sqlops.Component, panel: number): void {
+	public addItem(item: azdata.Component, panel: number): void {
 		if (panel >= this.panels.length) {
 			throw new Error(`Cannot add to panel ${panel} as only ${this.panels.length - 1} panels defined`);
 		}
