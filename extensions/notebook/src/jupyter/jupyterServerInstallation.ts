@@ -222,6 +222,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 						let pythonSourcePath = path.join(installPath, constants.pythonBundleVersion);
 						if (await utils.exists(pythonSourcePath)) {
 							try {
+								// eslint-disable-next-line no-sync
 								fs.removeSync(pythonSourcePath);
 							} catch (err) {
 								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
@@ -676,7 +677,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 
 		let condaExePath = this.getCondaExePath();
-		// tslint:disable-next-line:no-sync
+		// eslint-disable-next-line no-sync
 		return fs.existsSync(condaExePath);
 	}
 
@@ -693,7 +694,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		let useExistingInstall = JupyterServerInstallation.getExistingPythonSetting(apiWrapper);
 		let pythonExe = JupyterServerInstallation.getPythonExePath(pathSetting, useExistingInstall);
-		// tslint:disable-next-line:no-sync
+		// eslint-disable-next-line no-sync
 		return fs.existsSync(pythonExe);
 	}
 
@@ -724,7 +725,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			let notebookConfig = apiWrapper.getConfiguration(constants.notebookConfigKey);
 			if (notebookConfig) {
 				let configPythonPath = notebookConfig[constants.pythonPathConfigKey];
-				// tslint:disable-next-line:no-sync
+				// eslint-disable-next-line no-sync
 				if (configPythonPath && fs.existsSync(configPythonPath)) {
 					path = configPythonPath;
 				}

@@ -202,32 +202,11 @@ const tsHygieneFilter = [
 	'!src/vs/workbench/contrib/extensions/browser/extensionTipsService.ts' // {{SQL CARBON EDIT}} skip this because known issue
 ];
 
-// {{SQL CARBON EDIT}}
-const sqlFilter = [
-	'src/sql/**',
-	'extensions/**',
-	// Ignore VS Code extensions
-	'!extensions/bat/**',
-	'!extensions/configuration-editing/**',
-	'!extensions/docker/**',
-	'!extensions/extension-editing/**',
-	'!extensions/git/**',
-	'!extensions/git-ui/**',
-	'!extensions/image-preview/**',
-	'!extensions/insights-default/**',
-	'!extensions/json/**',
-	'!extensions/json-language-features/**',
-	'!extensions/markdown-basics/**',
-	'!extensions/markdown-language-features/**',
-	'!extensions/merge-conflict/**',
-	'!extensions/powershell/**',
-	'!extensions/python/**',
-	'!extensions/r/**',
-	'!extensions/theme-*/**',
-	'!extensions/vscode-*/**',
-	'!extensions/xml/**',
-	'!extensions/xml-language-features/**',
-	'!extensions/yarml/**',
+const sqlHygieneFilter = [ // for rules we want to only apply to our code
+	'src/sql/**/*.ts',
+	'!**/node_modules/**',
+	'extensions/**/*.ts',
+	'!extensions/{git,search-result,vscode-test-resolver,extension-editing,json-language-features,vscode-colorize-tests}/**/*.ts',
 ];
 
 const copyrightHeaderLines = [
@@ -369,22 +348,9 @@ function hygiene(some) {
 		input = some;
 	}
 
-	// {{SQL CARBON EDIT}} Linting for SQL
-	// const tslintSqlConfiguration = tslint.Configuration.findConfiguration('tslint-sql.json', '.');
-	// const tslintSqlOptions = { fix: false, formatter: 'json' };
-	// const sqlTsLinter = new tslint.Linter(tslintSqlOptions);
-
-	// const sqlTsl = es.through(function (file) { //TODO restore
-	// 	const contents = file.contents.toString('utf8');
-	// 	sqlTsLinter.lint(file.relative, contents, tslintSqlConfiguration.results);
-	// });
-
 	const productJsonFilter = filter('product.json', { restore: true });
 
 	const result = input
-		// .pipe(fileLengthFilter)
-		// .pipe(filelength)
-		// .pipe(fileLengthFilter.restore)
 		.pipe(filter(f => !f.stat.isDirectory()))
 		.pipe(productJsonFilter)
 		.pipe(process.env['BUILD_SOURCEVERSION'] ? es.through() : productJson)
@@ -410,8 +376,20 @@ function hygiene(some) {
 			errorCount += results.errorCount;
 		}));
 
+	const sqlJavascript = result
+		.pipe(filter(sqlHygieneFilter))
+		.pipe(gulpeslint({
+			configFile: '.eslintrc.sql.json',
+			rulePaths: ['./build/lib/eslint']
+		}))
+		.pipe(gulpeslint.formatEach('compact'))
+		.pipe(gulpeslint.results(results => {
+			errorCount += results.warningCount;
+			errorCount += results.errorCount;
+		}));
+
 	let count = 0;
-	return es.merge(typescript, javascript)
+	return es.merge(typescript, javascript, sqlJavascript)
 		.pipe(es.through(function (data) {
 			count++;
 			if (process.env['TRAVIS'] && count % 10 === 0) {
