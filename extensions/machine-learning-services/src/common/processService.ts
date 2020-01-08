@@ -9,10 +9,13 @@ import * as childProcess from 'child_process';
 const ExecScriptsTimeoutInSeconds = 600000;
 export class ProcessService {
 
+	public timeout = ExecScriptsTimeoutInSeconds;
+
 	public async execScripts(exeFilePath: string, scripts: string[], outputChannel?: vscode.OutputChannel): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 
 			const scriptExecution = childProcess.spawn(exeFilePath);
+			let timer: NodeJS.Timeout;
 			let output: string;
 			scripts.forEach(script => {
 				scriptExecution.stdin.write(`${script}\n`);
@@ -32,19 +35,23 @@ export class ProcessService {
 			}
 
 			scriptExecution.on('exit', (code) => {
+				if (timer) {
+					clearTimeout(timer);
+				}
 				if (code === 0) {
 					resolve();
 				} else {
 					reject(`Process exited with code: ${code}. output: ${output}`);
 				}
+
 			});
-			setTimeout(() => {
+			timer = setTimeout(() => {
 				try {
 					scriptExecution.kill();
 				} catch (error) {
 					console.log(error);
 				}
-			}, ExecScriptsTimeoutInSeconds);
+			}, this.timeout);
 		});
 	}
 
@@ -54,7 +61,9 @@ export class ProcessService {
 				outputChannel.appendLine(`    > ${cmd}`);
 			}
 
-			let child = childProcess.exec(cmd, (err, stdout) => {
+			let child = childProcess.exec(cmd, {
+				timeout: this.timeout
+			}, (err, stdout) => {
 				if (err) {
 					reject(err);
 				} else {
