@@ -343,10 +343,14 @@ export class ResourceTypePickerDialog extends DialogBase {
 				return rowData;
 			}
 		});
-		this.adjustUiControls(tool.status !== ToolStatus.Installing); // if installing then disable ui controls else enable them
+		this.setUiControlsEnabled(tool.status !== ToolStatus.Installing); // if installing then disable ui controls else enable them
 	}
 
-	private adjustUiControls(enable: boolean): void {
+	/**
+	 *
+	 * @param enable - if true the UiControls are set to be enabled, if not they are set to be disabled.
+	 */
+	private setUiControlsEnabled(enable: boolean): void {
 		this._cardGroup.enabled = enable;
 		this._agreementContainer.enabled = enable;
 		this._optionsContainer.enabled = enable;
