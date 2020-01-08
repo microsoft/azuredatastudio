@@ -41,28 +41,23 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		return this._allNotebooks;
 	}
 
-	public async getTableOfContentFiles(workspacePath: string): Promise<void> {
-		try {
-			let notebookConfig = vscode.workspace.getConfiguration(notebookConfigKey);
-			let maxDepth = notebookConfig[maxBookSearchDepth];
-			// Use default value if user enters an invalid value
-			if (isNullOrUndefined(maxDepth) || maxDepth < 0) {
-				maxDepth = 5;
-			} else if (maxDepth === 0) { // No limit of search depth if user enters 0
-				maxDepth = undefined;
-			}
+	public async getTableOfContentFiles(folderPath: string): Promise<void> {
+		let notebookConfig = vscode.workspace.getConfiguration(notebookConfigKey);
+		let maxDepth = notebookConfig[maxBookSearchDepth];
+		// Use default value if user enters an invalid value
+		if (isNullOrUndefined(maxDepth) || maxDepth < 0) {
+			maxDepth = 5;
+		} else if (maxDepth === 0) { // No limit of search depth if user enters 0
+			maxDepth = undefined;
+		}
 
-			let p = path.join(workspacePath, '**', '_data', 'toc.yml').replace(/\\/g, '/');
-			let tableOfContentPaths = await glob(p, { deep: maxDepth });
-			if (tableOfContentPaths.length > 0) {
-				this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
-				vscode.commands.executeCommand('setContext', 'bookOpened', true);
-			} else {
-				vscode.window.showErrorMessage(loc.errBookInitialize);
-			}
-
-		} catch (error) {
-			console.log(error);
+		let p = path.join(folderPath, '**', '_data', 'toc.yml').replace(/\\/g, '/');
+		let tableOfContentPaths = await glob(p, { deep: maxDepth });
+		if (tableOfContentPaths.length > 0) {
+			this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
+			vscode.commands.executeCommand('setContext', 'bookOpened', true);
+		} else {
+			throw new Error(loc.missingTocError);
 		}
 	}
 
