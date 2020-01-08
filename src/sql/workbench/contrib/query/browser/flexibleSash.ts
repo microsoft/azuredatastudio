@@ -137,8 +137,6 @@ export class HorizontalFlexibleSash extends Disposable implements IHorizontalSas
 	private computeSashPosition(sashRatio: number = this.ratio) {
 		let contentHeight = this.dimension.height;
 		let sashPosition = Math.floor((sashRatio || 0.5) * contentHeight);
-
-
 		let midPoint = Math.floor(0.5 * contentHeight);
 
 		if (contentHeight > this.minHeight * 4) {
