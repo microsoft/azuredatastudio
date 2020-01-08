@@ -197,7 +197,6 @@ suite('notebook model', function (): void {
 		// When I initalize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
 		await model.loadContents();
-		//await model.requestModelLoad();
 
 		// Then I expect all cells to be in the model
 		assert.equal(model.cells.length, 2);
@@ -216,9 +215,6 @@ suite('notebook model', function (): void {
 		sessionReady.resolve();
 		let sessionFired = false;
 
-		/* let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>> {
-			factory: mockModelFactory.object
-		}); */
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
 		model.onClientSessionReady((session) => sessionFired = true);
 		await model.loadContents();
@@ -263,7 +259,7 @@ suite('notebook model', function (): void {
 		await model.startSession(notebookManagers[0]);
 
 		// Then I expect load to succeed
-		assert(!isUndefinedOrNull(model.clientSession)); //assert(!isUndefinedOrNull(model.clientSession));
+		assert(!isUndefinedOrNull(model.clientSession));
 		// but on server load completion I expect error state to be set
 		// Note: do not expect serverLoad event to throw even if failed
 		await model.sessionLoadFinished;
@@ -305,16 +301,3 @@ suite('notebook model', function (): void {
 		assert.equal(actualChanged.changeType, NotebookChangeType.TrustChanged);
 	});
 });
-
-export async function assertThrowsAsync(fn: () => Promise<any>, msg: string): Promise<void> {
-	let f = () => {
-		// Empty
-	};
-	try {
-		await fn();
-	} catch (e) {
-		f = () => { throw e; };
-	} finally {
-		assert.throws(f, msg);
-	}
-}
