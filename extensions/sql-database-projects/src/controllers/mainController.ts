@@ -8,6 +8,7 @@ import * as nls from 'vscode-nls';
 
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { getErrorMessage } from '../common/utils';
+import { ProjectsController } from './projectController';
 
 const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
 
@@ -19,9 +20,11 @@ const localize = nls.loadMessageBundle();
 export default class MainController implements vscode.Disposable {
 	protected _context: vscode.ExtensionContext;
 	protected dbProjectTreeViewProvider: SqlDatabaseProjectTreeViewProvider = new SqlDatabaseProjectTreeViewProvider();
+	protected projectsController: ProjectsController;
 
 	public constructor(context: vscode.ExtensionContext) {
 		this._context = context;
+		this.projectsController = new ProjectsController(this.dbProjectTreeViewProvider);
 	}
 
 	public get extensionContext(): vscode.ExtensionContext {
@@ -55,7 +58,9 @@ export default class MainController implements vscode.Disposable {
 			let files: vscode.Uri[] | undefined = await vscode.window.showOpenDialog({ filters: filter });
 
 			if (files) {
-				await this.dbProjectTreeViewProvider.openProject(files);
+				for (const file of files) {
+					this.projectsController.openProject(file);
+				}
 			}
 		}
 		catch (err) {
