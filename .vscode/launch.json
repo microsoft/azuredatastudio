@@ -68,7 +68,7 @@
 		{
 			"type": "chrome",
 			"request": "attach",
-			"name": "Attach to VS Code",
+			"name": "Attach to azuredatastudio",
 			"port": 9222
 		},
 		{
