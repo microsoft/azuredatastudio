@@ -12,9 +12,8 @@ import { DashboardServiceInterface } from 'sql/workbench/contrib/dashboard/brows
 import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { WidgetConfig, TabConfig, TabSettingConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { IPropertiesConfig } from 'sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution';
-import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
+import { PanelComponent, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
 import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
-import { PinUnpinTabAction, AddFeatureTabAction } from './actions';
 import { TabComponent, TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { AngularEventType, IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { DashboardTab, IConfigModifierCollection } from 'sql/workbench/contrib/dashboard/browser/core/interfaces';
@@ -33,13 +32,11 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { Action } from 'vs/base/common/actions';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import Severity from 'vs/base/common/severity';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ILogService } from 'vs/platform/log/common/log';
 import { firstIndex, find } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
-
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 
 @Component({
@@ -94,7 +91,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ElementRef)) protected _el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef,
-		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(INotificationService) private notificationService: INotificationService,
 		@Inject(IAngularEventingService) private angularEventingService: IAngularEventingService,
 		@Inject(IConfigurationService) private configurationService: IConfigurationService,
@@ -122,7 +118,11 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				tempWidgets = cb.apply(this, [tempWidgets, this._originalConfig]);
 			});
 			this.propertiesWidget = properties ? properties[0] : undefined;
-
+			this._panel.options = {
+				showTabsWhenOne: true,
+				layout: NavigationBarLayout.vertical,
+				showIcon: false
+			};
 			this.createTabs(tempWidgets);
 		}
 	}
@@ -148,36 +148,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		// Load tab setting configs
 		this._tabSettingConfigs = this.dashboardService.getSettings<Array<TabSettingConfig>>([this.context, 'tabs'].join('.'));
 
-		const pinnedDashboardTabs: IDashboardTab[] = [];
-		const alwaysShowTabs = allTabs.filter(tab => tab.alwaysShow);
+		this.loadNewTabs(allTabs);
 
-		this._tabSettingConfigs.forEach(config => {
-			if (config.tabId && types.isBoolean(config.isPinned)) {
-				const tab = find(allTabs, i => i.id === config.tabId);
-				if (tab) {
-					if (config.isPinned) {
-						pinnedDashboardTabs.push(tab);
-					} else {
-						// overwrite always show if specify in user settings
-						const index = firstIndex(alwaysShowTabs, i => i.id === tab.id);
-						alwaysShowTabs.splice(index, 1);
-					}
-				}
-			}
-		});
+		this.panelActions = [];
 
-		this.loadNewTabs(pinnedDashboardTabs);
-		this.loadNewTabs(alwaysShowTabs);
-
-		// Set panel actions
-		const openedTabs = [...pinnedDashboardTabs, ...alwaysShowTabs];
-		if (extensionTabsEnabled) {
-			const addNewTabAction = this.instantiationService.createInstance(AddFeatureTabAction, allTabs, openedTabs, this.dashboardService.getUnderlyingUri());
-			this._tabsDispose.push(addNewTabAction);
-			this.panelActions = [addNewTabAction];
-		} else {
-			this.panelActions = [];
-		}
 		this._cd.detectChanges();
 
 		this._tabsDispose.push(this.dashboardService.onPinUnpinTab(e => {
@@ -203,7 +177,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			title: this.homeTabTitle,
 			container: { 'widgets-container': homeWidgets },
 			context: this.context,
-			originalConfig: this._originalConfig,
+			originalConfig: [],
 			editable: true,
 			canClose: false,
 			actions: []
@@ -218,6 +192,18 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			homeTabConfig.container = tabConfig.container;
 		}
 		this.addNewTab(homeTabConfig);
+		this.addNewTab({
+			id: 'extensionGroupHeader',
+			provider: Constants.anyProviderName,
+			originalConfig: [],
+			publisher: undefined,
+			title: nls.localize('dashboard.extensionGroupHeader', "Extensions"),
+			context: this.context,
+			type: 'group-header',
+			editable: false,
+			canClose: false,
+			actions: []
+		});
 		return allTabs;
 	}
 
@@ -231,21 +217,11 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	private loadNewTabs(dashboardTabs: IDashboardTab[], openLastTab: boolean = false) {
 		if (dashboardTabs && dashboardTabs.length > 0) {
 			const selectedTabs = dashboardTabs.map(v => this.initTabComponents(v)).map(v => {
-				const actions = [];
-				const tabSettingConfig = find(this._tabSettingConfigs, i => i.tabId === v.id);
-				let isPinned = false;
-				if (tabSettingConfig) {
-					isPinned = tabSettingConfig.isPinned;
-				} else if (v.alwaysShow) {
-					isPinned = true;
-				}
-				actions.push(this.instantiationService.createInstance(PinUnpinTabAction, v.id, this.dashboardService.getUnderlyingUri(), isPinned));
-
 				const config = v as TabConfig;
 				config.context = this.context;
 				config.editable = false;
-				config.canClose = true;
-				config.actions = actions;
+				config.canClose = false;
+				config.actions = [];
 				this.addNewTab(config);
 				return config;
 			});

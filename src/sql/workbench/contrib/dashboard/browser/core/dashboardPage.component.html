@@ -7,7 +7,7 @@
 <panel class="dashboard-panel" (onTabChange)="handleTabChange($event)" (onTabClose)="handleTabClose($event)"
 	[actions]="panelActions">
 	<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize"
-		[identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions">
+		[identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions" [type]="tab.type">
 		<ng-template>
 			<dashboard-home-container *ngIf="tab.id === 'homeTab'; else not_home" [properties]="propertiesWidget"
 				[tab]="tab">
