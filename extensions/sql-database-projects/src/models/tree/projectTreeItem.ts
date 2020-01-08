@@ -19,6 +19,8 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 		this.projectFile = projectFile;
 		this.dataSourceNode = new DataSourcesTreeItem(this);
+
+		// Tree buildout
 	}
 
 	public get children(): BaseProjectTreeItem[] {
