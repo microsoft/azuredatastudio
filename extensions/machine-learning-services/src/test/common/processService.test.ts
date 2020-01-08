@@ -52,7 +52,7 @@ describe('Process Service', () => {
 		await should(execFolderListCommand(context, service)).resolved();
 	});
 
-	it('execFolderListCommand should reject if command time out', async function (): Promise<void> {
+	it('execFolderListCommand should reject if command time out @UNSTABLE@', async function (): Promise<void> {
 		const context = createContext();
 		let service = new ProcessService();
 		service.timeout = 10;
