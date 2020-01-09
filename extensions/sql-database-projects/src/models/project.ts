@@ -40,27 +40,34 @@ export class Project {
 		for (const itemGroup of result['ItemGroup']) {
 			if (itemGroup['Build'] !== undefined) {
 				for (const fileEntry of itemGroup['Build']) {
-					this.files.push(this.createProjectEntry(fileEntry.$['Include']));
+					this.files.push(this.createProjectEntry(fileEntry.$['Include'], EntryType.File));
 				}
 			}
 
 			if (itemGroup['Folder'] !== undefined) {
 				for (const folderEntry of itemGroup['Folder']) {
-					this.files.push(this.createProjectEntry(folderEntry.$['Include']));
+					this.files.push(this.createProjectEntry(folderEntry.$['Include'], EntryType.Folder));
 				}
 			}
 		}
 	}
 
-	private createProjectEntry(relativePath: string): ProjectEntry {
-		return new ProjectEntry(vscode.Uri.file(path.join(this.projectFile.fsPath, relativePath)));
+	private createProjectEntry(relativePath: string, entryType: EntryType): ProjectEntry {
+		return new ProjectEntry(vscode.Uri.file(path.join(this.projectFile.fsPath, relativePath)), entryType);
 	}
 }
 
 export class ProjectEntry {
-	entryUri: vscode.Uri;
+	uri: vscode.Uri;
+	type: EntryType;
 
-	constructor(uri: vscode.Uri) {
-		this.entryUri = uri;
+	constructor(uri: vscode.Uri, type: EntryType) {
+		this.uri = uri;
+		this.type = type;
 	}
+}
+
+enum EntryType {
+	File,
+	Folder
 }
