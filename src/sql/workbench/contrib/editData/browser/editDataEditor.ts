@@ -45,7 +45,7 @@ export class EditDataEditor extends BaseEditor {
 	public static ID: string = 'workbench.editor.editDataEditor';
 
 	// The minimum width/height of the editors hosted in the QueryEditor
-	private readonly _minEditorSize: number = 50; //original value was 220 (causes sash to be immobile)
+	private readonly _minEditorSize: number = 55; //original value was 220 (causes sash to be immobile)
 
 	private _sash: IFlexibleSash;
 	private _dimension: DOM.Dimension;
