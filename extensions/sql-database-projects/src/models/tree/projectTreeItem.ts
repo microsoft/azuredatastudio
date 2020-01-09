@@ -46,7 +46,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	private construct() {
 		for (const entry of this.project.files) {
 			const parentNode = this.getEntryParentNode(entry);
-			parentNode.fileChildren[path.basename(entry.entryUri.path)] = new fileTree.FileNode(entry.entryUri, parentNode);
+			parentNode.fileChildren[path.basename(entry.uri.path)] = new fileTree.FileNode(entry.uri, parentNode);
 		}
 	}
 
@@ -55,7 +55,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	}
 
 	private getEntryParentNode(entry: ProjectEntry): fileTree.FolderNode | ProjectRootTreeItem {
-		const relativePathParts = utils.trimUri(this.project.projectFile, entry.entryUri).split('/').slice(0, -1); // remove the last part because we only care about the parent
+		const relativePathParts = utils.trimUri(this.project.projectFile, entry.uri).split('/').slice(0, -1); // remove the last part because we only care about the parent
 
 		if (relativePathParts.length === 0) {
 			return this; // if nothing left after trimming the entry itself, must been root

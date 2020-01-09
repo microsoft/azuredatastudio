@@ -63,31 +63,3 @@ function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootT
 
 	return vscode.Uri.file(path.join(projectNode.uri.path, localUri));
 }
-
-// TODO: responsibility of reading file system shouldn't be in TreeItem
-export async function constructFileSystemChildNodes(parent: FolderNode | ProjectRootTreeItem): Promise<(FolderNode | FileNode)[]> {
-	const parentFolderUri: vscode.Uri = parent instanceof FolderNode ? parent.fileSystemUri : vscode.Uri.file(path.dirname(parent.project.projectFile.fsPath));
-
-	const output: (FolderNode | FileNode)[] = [];
-
-	let contents = await fs.readdir(parentFolderUri.fsPath);
-
-	for (const entry of contents) {
-		const filePath = path.join(parentFolderUri.fsPath, entry);
-
-		if ((await fs.stat(filePath)).isDirectory()) {
-			const child = new FolderNode(vscode.Uri.file(filePath), parent);
-
-			for (const grandchild of await constructFileSystemChildNodes(child)) {
-				child.children.push(grandchild);
-			}
-
-			output.push(child);
-		}
-		else {
-			output.push(new FileNode(vscode.Uri.file(filePath), parent));
-		}
-	}
-
-	return output;
-}
