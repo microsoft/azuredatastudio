@@ -44,8 +44,6 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.open', async () => { this.openProjectFromFile(); });
 
 		// init view
-		this.dbProjectTreeViewProvider = new SqlDatabaseProjectTreeViewProvider();
-
 		this.extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(SQL_DATABASE_PROJECTS_VIEW_ID, this.dbProjectTreeViewProvider));
 	}
 
