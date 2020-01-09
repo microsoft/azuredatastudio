@@ -59,7 +59,7 @@ export default class MainController implements vscode.Disposable {
 
 			if (files) {
 				for (const file of files) {
-					this.projectsController.openProject(file);
+					await this.projectsController.openProject(file);
 				}
 			}
 		}

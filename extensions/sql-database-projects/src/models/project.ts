@@ -16,7 +16,7 @@ export class Project {
 		this.projectFile = projectFile;
 	}
 
-	public async construct() {
+	public async readProjFile() {
 		let projFileContents = await fs.readFile(this.projectFile.fsPath);
 
 		const parser = new xml2js.Parser({

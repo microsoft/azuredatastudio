@@ -21,7 +21,7 @@ export class ProjectsController {
 
 		// Read project file
 		const newProject = new Project(projectFile);
-		await newProject.construct();
+		await newProject.readProjFile();
 		this.projects.push(newProject);
 
 		// Read datasources.json (if present)
