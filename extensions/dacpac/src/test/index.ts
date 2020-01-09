@@ -11,7 +11,7 @@ const suite = 'dacpac Extension Tests';
 const testOptions: any = {
 	ui: 'bdd',
 	useColors: true,
-	timeout: 60000
+	timeout: 10000
 };
 
 // set relevant mocha options from the environment
