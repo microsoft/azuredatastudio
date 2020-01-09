@@ -7,7 +7,6 @@ import * as azdata from 'azdata';
 import * as constants from './constants';
 
 const cloudIcon = 'kusto:cloud';
-const clusterIcon = 'kusto:cluster';
 
 export class MssqlIconProvider implements azdata.IconProvider {
 	public readonly providerId: string = constants.sqlProviderName;
