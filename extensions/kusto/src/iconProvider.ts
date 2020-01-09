@@ -15,11 +15,7 @@ export class MssqlIconProvider implements azdata.IconProvider {
 	getConnectionIconId(connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> {
 		let iconName: string = undefined;
 		if (connection.providerName === 'KUSTO') {
-			if (serverInfo.isCloud) {
-				iconName = cloudIcon;
-			} else if (serverInfo.options['isBigDataCluster']) {
-				iconName = clusterIcon;
-			}
+			iconName = cloudIcon;
 		}
 		return Promise.resolve(iconName);
 	}
