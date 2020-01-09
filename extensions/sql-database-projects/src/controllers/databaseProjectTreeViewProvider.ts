@@ -45,31 +45,7 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		let newRoots: BaseProjectTreeItem[] = [];
 
 		for (const proj of projects) {
-			newRoots.push(new ProjectRootTreeItem(proj.projectFile));
-
-		}
-
-		this.roots = newRoots;
-		this._onDidChangeTreeData.fire();
-
-	}
-
-	public async openProject(projectFiles: vscode.Uri[]) {
-		if (projectFiles.length === 0) {
-			vscode.window.showErrorMessage(constants.noSqlProjFiles);
-			return;
-		}
-
-		let newRoots: BaseProjectTreeItem[] = [];
-		console.log(`Loading ${projectFiles.length} projects.`);
-
-		for (const proj of projectFiles) {
-			console.log('Loading project: ' + proj.fsPath);
-
-			let projectNode = new ProjectRootTreeItem(proj);
-			await projectNode.construct();
-
-			newRoots.push(projectNode);
+			newRoots.push(new ProjectRootTreeItem(proj));
 		}
 
 		this.roots = newRoots;

@@ -8,19 +8,21 @@ import * as path from 'path';
 import { DataSourcesTreeItem } from './dataSourceTreeItem';
 import { BaseProjectTreeItem } from './baseTreeItem';
 import * as fileTree from './fileFolderTreeItem';
+import { Project, ProjectEntry } from '../project';
+import * as utils from '../../common/utils';
 
 export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	dataSourceNode: DataSourcesTreeItem;
-	fileChildren: (fileTree.FolderNode | fileTree.FileNode)[] = [];
-	projectFile: vscode.Uri;
+	fileChildren: { [childName: string]: (fileTree.FolderNode | fileTree.FileNode) } = {};
+	project: Project;
 
-	constructor(projectFile: vscode.Uri) {
-		super(vscode.Uri.parse(path.basename(projectFile.fsPath)), undefined);
+	constructor(project: Project) {
+		super(vscode.Uri.parse(path.basename(project.projectFile.fsPath)), undefined);
 
-		this.projectFile = projectFile;
+		this.project = project;
 		this.dataSourceNode = new DataSourcesTreeItem(this);
 
-		// Tree buildout
+		this.construct();
 	}
 
 	public get children(): BaseProjectTreeItem[] {
@@ -28,20 +30,52 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 		output.push(this.dataSourceNode);
 
 		// sort children so that folders come first, then alphabetical
-		this.fileChildren.sort((a: (fileTree.FolderNode | fileTree.FileNode), b: (fileTree.FolderNode | fileTree.FileNode)) => {
+		const sortedChildren = Object.values(this.fileChildren).sort((a: (fileTree.FolderNode | fileTree.FileNode), b: (fileTree.FolderNode | fileTree.FileNode)) => {
 			if (a instanceof fileTree.FolderNode && !(b instanceof fileTree.FolderNode)) { return -1; }
 			else if (!(a instanceof fileTree.FolderNode) && b instanceof fileTree.FolderNode) { return 1; }
 			else { return a.uri.fsPath.localeCompare(b.uri.fsPath); }
 		});
 
-		return output.concat(this.fileChildren);
+		return output.concat(sortedChildren);
 	}
 
 	public get treeItem(): vscode.TreeItem {
 		return new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Expanded);
 	}
 
-	public async construct(): Promise<void> {
-		this.fileChildren = await fileTree.constructFileSystemChildNodes(this);
+	private construct() {
+		for (const entry of this.project.files) {
+			const parentNode = this.getEntryParentNode(entry);
+			parentNode.fileChildren[path.basename(entry.entryUri.path)] = new fileTree.FileNode(entry.entryUri, parentNode);
+		}
+	}
+
+	public get fileSystemUri(): vscode.Uri {
+		return vscode.Uri.file(path.dirname(this.project.projectFile.fsPath));
+	}
+
+	private getEntryParentNode(entry: ProjectEntry): fileTree.FolderNode | ProjectRootTreeItem {
+		const relativePathParts = utils.trimUri(this.project.projectFile, entry.entryUri).split('/').slice(0, -1); // remove the last part because we only care about the parent
+
+		if (relativePathParts.length === 0) {
+			return this; // if nothing left after trimming the entry itself, must been root
+		}
+
+		let current: fileTree.FolderNode | ProjectRootTreeItem = this;
+
+		for (const part of relativePathParts) {
+			if (current.fileChildren[part] === undefined) {
+				current.fileChildren[part] = new fileTree.FolderNode(vscode.Uri.file(path.join(current.fileSystemUri.fsPath, part)), current);
+			}
+
+			if (current.fileChildren[part] instanceof fileTree.FileNode) {
+				return current;
+			}
+			else {
+				current = current.fileChildren[part] as fileTree.FolderNode | ProjectRootTreeItem;
+			}
+		}
+
+		return current;
 	}
 }

@@ -8,9 +8,10 @@ import * as path from 'path';
 import { promises as fs } from 'fs';
 import { BaseProjectTreeItem } from './baseTreeItem';
 import { ProjectRootTreeItem } from './projectTreeItem';
+import { Project } from '../project';
 
 export class FolderNode extends BaseProjectTreeItem {
-	private fileChildren: (FolderNode | FileNode)[] = [];
+	public fileChildren: { [childName: string]: (FolderNode | FileNode) } = {};
 	public fileSystemUri: vscode.Uri;
 
 	constructor(folderPath: vscode.Uri, parent: FolderNode | ProjectRootTreeItem) {
@@ -19,15 +20,15 @@ export class FolderNode extends BaseProjectTreeItem {
 	}
 
 	public get children(): BaseProjectTreeItem[] {
-		return this.fileChildren;
+		return Object.values(this.fileChildren).sort();
 	}
 
 	public get treeItem(): vscode.TreeItem {
 		return new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Expanded);
 	}
 
-	public get projectFile(): vscode.Uri {
-		return (<FolderNode | ProjectRootTreeItem>this.parent).projectFile;
+	public get project(): Project {
+		return (<FolderNode | ProjectRootTreeItem>this.parent).project;
 	}
 }
 
@@ -49,7 +50,7 @@ export class FileNode extends BaseProjectTreeItem {
 }
 
 function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootTreeItem): vscode.Uri {
-	const projBaseDir = path.dirname(projectNode.projectFile.fsPath);
+	const projBaseDir = path.dirname(projectNode.project.projectFile.fsPath);
 	let localUri = '';
 
 	if (fileSystemUri.fsPath.startsWith(projBaseDir)) {
@@ -65,7 +66,7 @@ function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootT
 
 // TODO: responsibility of reading file system shouldn't be in TreeItem
 export async function constructFileSystemChildNodes(parent: FolderNode | ProjectRootTreeItem): Promise<(FolderNode | FileNode)[]> {
-	const parentFolderUri: vscode.Uri = parent instanceof FolderNode ? parent.fileSystemUri : vscode.Uri.file(path.dirname(parent.projectFile.fsPath));
+	const parentFolderUri: vscode.Uri = parent instanceof FolderNode ? parent.fileSystemUri : vscode.Uri.file(path.dirname(parent.project.projectFile.fsPath));
 
 	const output: (FolderNode | FileNode)[] = [];
 
