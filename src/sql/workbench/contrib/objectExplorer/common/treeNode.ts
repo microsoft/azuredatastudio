@@ -5,7 +5,7 @@
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { NodeType, SqlThemeIcon } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
-import * as azdata from 'sqlops';
+import * as azdata from 'azdata';
 
 import * as UUID from 'vs/base/common/uuid';
 import { URI } from 'vs/base/common/uri';

@@ -6,6 +6,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
+
 import * as nbExtensionApis from '../typings/notebookServices';
 import { PackageManager } from '../packageManagement/packageManager';
 import * as constants from '../common/constants';
@@ -13,12 +14,13 @@ import { ApiWrapper } from '../common/apiWrapper';
 import { QueryRunner } from '../common/queryRunner';
 import { ProcessService } from '../common/processService';
 import { Config } from '../common/config';
+import { ServerConfigWidget } from '../widgets/serverConfigWidgets';
+import { ServerConfigManager } from '../serverConfig/serverConfigManager';
 
 /**
  * The main controller class that initializes the extension
  */
 export default class MainController implements vscode.Disposable {
-
 	private _outputChannel: vscode.OutputChannel;
 	private _rootPath = this._context.extensionPath;
 	private _config: Config;
@@ -28,7 +30,8 @@ export default class MainController implements vscode.Disposable {
 		private _apiWrapper: ApiWrapper,
 		private _queryRunner: QueryRunner,
 		private _processService: ProcessService,
-		private _packageManager?: PackageManager
+		private _packageManager?: PackageManager,
+		private _serverConfigManager?: ServerConfigManager
 	) {
 		this._outputChannel = this._apiWrapper.createOutputChannel(constants.extensionOutputChannel);
 		this._rootPath = this._context.extensionPath;
@@ -63,14 +66,28 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	private async initialize(): Promise<void> {
+
 		this._outputChannel.show(true);
 		let nbApis = await this.getNotebookExtensionApis();
 		await this._config.load();
+
+		let tasks = new ServerConfigWidget(this._apiWrapper, this.serverConfigManager);
+		tasks.register();
 
 		let packageManager = this.getPackageManager(nbApis);
 		this._apiWrapper.registerCommand(constants.mlManagePackagesCommand, (async () => {
 			await packageManager.managePackages();
 		}));
+		this._apiWrapper.registerTaskHandler(constants.mlManagePackagesCommand, async () => {
+			await packageManager.managePackages();
+		});
+		this._apiWrapper.registerTaskHandler(constants.mlOdbcDriverCommand, async () => {
+			await this.serverConfigManager.openOdbcDriverDocuments();
+		});
+		this._apiWrapper.registerTaskHandler(constants.mlsDocumentsCommand, async () => {
+			await this.serverConfigManager.openDocuments();
+		});
+
 		try {
 			await packageManager.installDependencies();
 		} catch (err) {
@@ -90,10 +107,13 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	/**
-	 * Package manager instance
-	 */
-	public set packageManager(value: PackageManager) {
-		this._packageManager = value;
+ * Returns the server config manager instance
+ */
+	public get serverConfigManager(): ServerConfigManager {
+		if (!this._serverConfigManager) {
+			this._serverConfigManager = new ServerConfigManager(this._apiWrapper, this._queryRunner);
+		}
+		return this._serverConfigManager;
 	}
 
 	/**

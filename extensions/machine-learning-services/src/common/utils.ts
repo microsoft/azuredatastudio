@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as uuid from 'uuid';
+import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs';
@@ -15,7 +15,7 @@ import { promisify } from 'util';
 export async function execCommandOnTempFile<T>(content: string, command: (filePath: string) => Promise<T>): Promise<T> {
 	let tempFilePath: string = '';
 	try {
-		tempFilePath = path.join(os.tmpdir(), `ads_ml_temp_${uuid.v4()}`);
+		tempFilePath = path.join(os.tmpdir(), `ads_ml_temp_${UUID.generateUuid()}`);
 		await fs.promises.writeFile(tempFilePath, content);
 		let result = await command(tempFilePath);
 		return result;
@@ -45,4 +45,8 @@ export function getPythonExePath(rootFolder: string): string {
 		getPythonInstallationLocation(rootFolder),
 		constants.pythonBundleVersion,
 		process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
+}
+
+export function isWindows(): boolean {
+	return process.platform === 'win32';
 }

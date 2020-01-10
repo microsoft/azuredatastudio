@@ -72,8 +72,7 @@ function createContext(): TestContext {
 }
 
 function createController(testContext: TestContext): MainController {
-	let controller = new MainController(testContext.context, testContext.apiWrapper.object, testContext.queryRunner.object, testContext.processService.object);
-	controller.packageManager = testContext.packageManager.object;
+	let controller = new MainController(testContext.context, testContext.apiWrapper.object, testContext.queryRunner.object, testContext.processService.object, testContext.packageManager.object);
 	return controller;
 }
 

@@ -10,7 +10,7 @@ let controllers: MainController[] = [];
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	// Start the main controller
-	let mainController = new MainController(context);
+	const mainController = new MainController(context);
 	controllers.push(mainController);
 	context.subscriptions.push(mainController);
 
