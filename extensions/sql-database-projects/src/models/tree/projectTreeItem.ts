@@ -8,7 +8,7 @@ import * as path from 'path';
 import { DataSourcesTreeItem } from './dataSourceTreeItem';
 import { BaseProjectTreeItem } from './baseTreeItem';
 import * as fileTree from './fileFolderTreeItem';
-import { Project, ProjectEntry } from '../project';
+import { Project, ProjectEntry, EntryType } from '../project';
 import * as utils from '../../common/utils';
 
 export class ProjectRootTreeItem extends BaseProjectTreeItem {
@@ -46,7 +46,21 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	private construct() {
 		for (const entry of this.project.files) {
 			const parentNode = this.getEntryParentNode(entry);
-			parentNode.fileChildren[path.basename(entry.uri.path)] = new fileTree.FileNode(entry.uri, parentNode);
+
+			let newNode: fileTree.FolderNode | fileTree.FileNode;
+
+			switch (entry.type) {
+				case EntryType.File:
+					newNode = new fileTree.FileNode(entry.uri, parentNode);
+					break;
+				case EntryType.Folder:
+					newNode = new fileTree.FolderNode(entry.uri, parentNode);
+					break;
+				default:
+					throw new Error(`Unknown EntryType: '${entry.type}'`);
+			}
+
+			parentNode.fileChildren[path.basename(entry.uri.path)] = newNode;
 		}
 	}
 
@@ -55,7 +69,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	}
 
 	private getEntryParentNode(entry: ProjectEntry): fileTree.FolderNode | ProjectRootTreeItem {
-		const relativePathParts = utils.trimUri(this.project.projectFile, entry.uri).split('/').slice(0, -1); // remove the last part because we only care about the parent
+		const relativePathParts = utils.trimUri(this.project.projectFile, entry.uri).trimChars('/').split('/').slice(0, -1); // remove the last part because we only care about the parent
 
 		if (relativePathParts.length === 0) {
 			return this; // if nothing left after trimming the entry itself, must been root
