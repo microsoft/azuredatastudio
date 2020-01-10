@@ -37,8 +37,8 @@ export abstract class GridParentComponent extends Disposable {
 	// tslint:disable:no-unused-variable
 
 	protected get selectionModel() { return new CellSelectionModel(); }
-	protected _rowHeight = 29;
-	protected _defaultNumShowingRows = 8;
+	protected rowHeight = 29;
+	protected defaultNumShowingRows = 8;
 	protected Constants = Constants;
 	protected LocalizedConstants = LocalizedConstants;
 	protected Utils = Utils;
@@ -68,20 +68,20 @@ export abstract class GridParentComponent extends Disposable {
 	// Datasets currently being rendered on the DOM
 	protected renderedDataSets: IGridDataSet[] = this.placeHolderDataSets;
 	protected resultActive = true;
-	protected _messageActive = true;
+	protected messageActiveBool = true;
 	protected activeGrid = 0;
 	protected nativeElement: HTMLElement;
 	protected tables: Table<any>[] = [];
 
 	set messageActive(input: boolean) {
-		this._messageActive = input;
+		this.messageActiveBool = input;
 		if (this.resultActive) {
 			this.resizeGrids();
 		}
 	}
 
 	get messageActive(): boolean {
-		return this._messageActive;
+		return this.messageActiveBool;
 	}
 
 	constructor(
@@ -102,7 +102,7 @@ export abstract class GridParentComponent extends Disposable {
 		if (this.configurationService) {
 			let sqlConfig = this.configurationService.getValue('sql');
 			if (sqlConfig) {
-				this._messageActive = sqlConfig['messagesDefaultOpen'];
+				this.messageActiveBool = sqlConfig['messagesDefaultOpen'];
 			}
 		}
 		this.subscribeWithDispose(this.dataService.gridContentObserver, (type) => {

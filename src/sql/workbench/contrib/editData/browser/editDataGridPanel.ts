@@ -673,14 +673,14 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	private getMaxHeight(rowCount: number): any {
-		return rowCount < this._defaultNumShowingRows
-			? ((rowCount + 1) * this._rowHeight) + 10
+		return rowCount < this.defaultNumShowingRows
+			? ((rowCount + 1) * this.rowHeight) + 10
 			: 'inherit';
 	}
 
 	private getMinHeight(rowCount: number): any {
-		return rowCount > this._defaultNumShowingRows
-			? (this._defaultNumShowingRows + 1) * this._rowHeight + 10
+		return rowCount > this.defaultNumShowingRows
+			? (this.defaultNumShowingRows + 1) * this.rowHeight + 10
 			: this.getMaxHeight(rowCount);
 	}
 
@@ -798,7 +798,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				enableColumnReorder: false,
 				renderRowWithRange: true,
 				showHeader: true,
-				rowHeight: this._rowHeight,
+				rowHeight: this.rowHeight,
 				defaultColumnWidth: 120,
 				editable: this.enableEditing,
 				autoEdit: this.enableEditing,
@@ -913,15 +913,11 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	private getColumnEditor(column: ISlickColumn<any>): any {
-
 		if (column.isEditable === false || typeof column.isEditable === 'undefined') {
 			return undefined;
 		}
-
 		let columnId = column.id;
-		//  let isColumnLoading = this.columnsLoading && this.columnsLoading.indexOf(columnId) !== -1;,
-		// let isColumnLoading = false;
-		let canEditColumn = columnId !== undefined; //&& !isColumnLoading;
+		let canEditColumn = columnId !== undefined;
 		if (canEditColumn) {
 			return this.getOverridableTextEditorClass();
 		}
@@ -936,10 +932,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		return (row, cell, value, columnDef, dataContext) => {
 			let columnId = cell > 0 && this.dataSet.columnDefinitions.length > cell - 1 ? this.dataSet.columnDefinitions[cell - 1].id : undefined;
 			if (columnId) {
-				// let isHighlighted = this.dataSet.highlightedCells && !!this.highlightedCells.find(c => c.row === row && c.column + 1 === cell);
-				// let isColumnLoading = this.columnsLoading && this.columnsLoading.indexOf(columnId) !== -1;
-				// let isShadowed = this.blurredColumns && !!this.blurredColumns.find(c => c === columnId);
-				// let isContext = this.contextColumns && !!this.contextColumns.find(c => c === columnId);
 				let overrideValue = this.overrideCellFn && this.overrideCellFn(row, columnId, value, dataContext);
 				let valueToDisplay = (value + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 				let cellClasses = 'grid-cell-value-container';
@@ -951,23 +943,6 @@ export class EditDataGridPanel extends GridParentComponent {
 				if (valueMissing && !isOverridden) {
 					cellClasses += ' missing-value';
 				}
-				// if (isColumnLoading === true && !isOverridden) {
-				//     cellClasses += ' loading-cell';
-				//     valueToDisplay = '';
-				// }
-				// if (isOverridden) {
-				//     cellClasses += ' override-cell';
-				//     valueToDisplay = overrideValue;
-				// }
-				// if (isContext) {
-				//     cellClasses += ' context';
-				// }
-				// if (isHighlighted === true) {
-				//     cellClasses += ' highlighted';
-				// }
-				// if (isShadowed && !isHighlighted && !isOverridden) {
-				//     cellClasses += ' blurred';
-				// }
 				return '<span title="' + valueToDisplay + '" class="' + cellClasses + '">' + valueToDisplay + '</span>';
 			}
 			return undefined;
