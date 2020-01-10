@@ -26,6 +26,8 @@ import { NotebookEditorInputAssociation } from 'sql/workbench/contrib/notebook/c
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/stubs';
 
 const languageAssociations = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -88,6 +90,7 @@ suite('Editor Replacer Contribution', () => {
 		const editorService = new MockEditorService();
 		const instantiationService = workbenchInstantiationService();
 		instantiationService.stub(IEditorService, editorService);
+		instantiationService.stub(INotebookService, new NotebookServiceStub());
 		const contrib = instantiationService.createInstance(EditorReplacementContribution);
 		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.notebook'), undefined, undefined);
 		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
