@@ -328,6 +328,21 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 	};
 }
 
+const filelength = es.through(function (file) {
+
+	const fileName = path.basename(file);
+	const fileDir = path.dirname(file);
+	//check the filename is < 50 characters (basename gets the filename with extension).
+	if (fileName.length > 50) {
+		console.error(`File name '${fileName}' under ${fileDir} is too long. Rename file to have less than 50 characters.`);
+	}
+	if (file.length > 150) {
+		console.error(`File path ${file.relative} exceeds acceptable file-length. Rename the path to have less than 150 characters.`);
+	}
+
+	this.emit('data', file);
+});
+
 const buildRoot = path.dirname(root);
 
 const BUILD_TARGETS = [
@@ -355,11 +370,18 @@ BUILD_TARGETS.forEach(buildTarget => {
 		));
 		gulp.task(vscodeTaskCI);
 
+		const checkFileLenTask = task.define(`vscode${dashed(platform)}${dashed(arch)}${dashed(minified)}-fileLengthCheck`, task.series(
+			util.rimraf(path.join(buildRoot, destinationFolderName)),
+			filelength(path.join(buildRoot, destinationFolderName))
+		));
+		gulp.task(checkFileLenTask);
+
 		const vscodeTask = task.define(`vscode${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
 			compileBuildTask,
 			compileExtensionsBuildTask,
 			minified ? minifyVSCodeTask : optimizeVSCodeTask,
-			vscodeTaskCI
+			vscodeTaskCI,
+			checkFileLenTask
 		));
 		gulp.task(vscodeTask);
 	});
