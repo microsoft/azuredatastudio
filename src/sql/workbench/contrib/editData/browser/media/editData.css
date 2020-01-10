@@ -7,6 +7,11 @@
 	box-sizing: border-box;
 }
 
+.slickgridContainer {
+	height: 100%;
+	width: 100%;
+}
+
 #workbench\.editor\.editDataEditor .monaco-toolbar .monaco-select-box {
 	margin-top: 4px;
 	margin-bottom: 4px;

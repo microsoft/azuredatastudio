@@ -714,18 +714,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private restoreViewState(): void {
 		if (this.savedViewState) {
-			//get all rows shown in gridSelections Range to use setSelectedRows directly.
-			let rowArray: number[] = [];
-
-			if (this.savedViewState.gridSelections && this.savedViewState.gridSelections.length > 0) {
-				let fromRow = this.savedViewState.gridSelections[0].fromRow;
-				let toRow = this.savedViewState.gridSelections[0].toRow;
-				for (let i = fromRow; i <= toRow; i++) {
-					rowArray.push(i);
-				}
-			}
-
-			this.tables[0].setSelectedRows(rowArray);
+			// Row selections are undefined in original slickgrid, removed for no purpose -alma1 1/10/19
 			let viewport = ((this.tables[0] as any)._grid.getCanvasNode() as HTMLElement).parentElement;
 			viewport.scrollLeft = this.savedViewState.scrollLeft;
 			viewport.scrollTop = this.savedViewState.scrollTop;
@@ -824,8 +813,6 @@ export class EditDataGridPanel extends GridParentComponent {
 				for (let i = 0; i < this.placeHolderDataSets[0].columnDefinitions.length; i++) {
 					this.columnNameToIndex[this.placeHolderDataSets[0].columnDefinitions[i].name] = i;
 				}
-
-				this.tables[0].setSelectionModel(this.selectionModel);
 			}
 		}
 		else {
