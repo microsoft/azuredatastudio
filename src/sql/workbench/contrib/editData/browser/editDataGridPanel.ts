@@ -35,8 +35,6 @@ import { deepClone, assign } from 'vs/base/common/objects';
 import { Emitter } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
 
-export const EDITDATA_SELECTOR: string = 'editdatagridpanel';
-
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
 	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
@@ -64,13 +62,8 @@ export class EditDataGridPanel extends GridParentComponent {
 	private rowIdMappings: { [gridRowId: number]: number } = {};
 	private dirtyCells: number[] = [];
 	protected plugins = new Array<Array<Slick.Plugin<any>>>();
-
-	//list of column names to index.
-	private _columnNameToIndex: any;
-
-
-
-
+	// List of column names with their indexes stored.
+	private columnNameToIndex: { [columnNumber: number]: string } = {};
 	// Edit Data functions
 	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
 	public onCellEditEnd: (event: Slick.OnCellChangeEventArgs<any>) => void;
@@ -144,14 +137,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.dataService.onLoaded();
 	}
 
-
 	public render(container: HTMLElement): void {
-		this.nativeElement.style.width = '100%';
-		this.nativeElement.style.height = '100%';
-
 		container.appendChild(this.nativeElement);
 	}
-
 
 	protected initShortcuts(shortcuts: { [name: string]: Function }): void {
 		// TODO add any Edit Data-specific shortcuts here
@@ -423,13 +411,11 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	private refreshGrid(): Thenable<void> {
-		//handle complete happens before refreshGrid is called for firstRender, something is not right.
 		return new Promise<void>((resolve, reject) => {
 			const self = this;
 			clearTimeout(self.refreshGridTimeoutHandle);
 			this.refreshGridTimeoutHandle = setTimeout(() => {
 				for (let i = 0; i < self.placeHolderDataSets.length; i++) {
-					// TODO figure out why these values can now be null in some cases
 					if (self.dataSet && self.placeHolderDataSets[i].resized) {
 						self.placeHolderDataSets[i].dataRows = self.dataSet.dataRows;
 						self.placeHolderDataSets[i].resized.fire();
@@ -443,14 +429,11 @@ export class EditDataGridPanel extends GridParentComponent {
 
 
 				if (self.firstRender) {
-					//TODO: Need to be able to add onClick function with working editor.
-
 					let setActive = function () {
 						if (self.firstRender && self.tables.length > 0) {
 							self.tables[0].setActive();
 							self.tables[0].rerenderGrid(0, self.dataSet.dataRows.getLength());
 							self.tables[0].resizeCanvas();
-
 							self.firstRender = false;
 						}
 					};
@@ -734,7 +717,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			//get all rows shown in gridSelections Range to use setSelectedRows directly.
 			let rowArray: number[] = [];
 
-			if (this.savedViewState.gridSelections) {
+			if (this.savedViewState.gridSelections && this.savedViewState.gridSelections.length > 0) {
 				let fromRow = this.savedViewState.gridSelections[0].fromRow;
 				let toRow = this.savedViewState.gridSelections[0].toRow;
 				for (let i = fromRow; i <= toRow; i++) {
@@ -804,9 +787,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	}
 
-	//my code here:
 	private createNewTable(): void {
-
 		let newGridContainer = document.createElement('div');
 		newGridContainer.className = 'grid';
 
@@ -840,10 +821,11 @@ export class EditDataGridPanel extends GridParentComponent {
 					this.tables[0].registerPlugin(plugin);
 				}
 
-				this._columnNameToIndex = {};
 				for (let i = 0; i < this.placeHolderDataSets[0].columnDefinitions.length; i++) {
-					this._columnNameToIndex[this.placeHolderDataSets[0].columnDefinitions[i].name] = i;
+					this.columnNameToIndex[this.placeHolderDataSets[0].columnDefinitions[i].name] = i;
 				}
+
+				this.tables[0].setSelectionModel(this.selectionModel);
 			}
 		}
 		else {
@@ -951,7 +933,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	public getColumnIndex(name: string): number {
-		return this._columnNameToIndex[name];
+		return this.columnNameToIndex[name];
 	}
 
 	private getFormatter = (column: any): any => {

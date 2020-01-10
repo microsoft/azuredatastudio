@@ -119,28 +119,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
 	}
 
-	private invalidateRange(start: number, end: number): void {
-		let refreshedRows = range(start, end);
-		this._grid.invalidateRows(refreshedRows, true);
-		this._grid.render();
-	}
-
-	private renderGridRange(startIndex: number, count: number): void {
-		let editor = this._grid.getCellEditor();
-		let oldValue = editor ? (<Slick.Editors.Text<T>>editor).getValue() : undefined;
-		let wasValueChanged = editor ? editor.isValueChanged() : false;
-		this.invalidateRange(startIndex, startIndex + count);
-		let activeCell = this.activeCell;
-		if (editor && activeCell.row >= startIndex && activeCell.row < startIndex + count) {
-			if (oldValue && wasValueChanged) {
-				(<Slick.Editors.Text<T>>editor).setValue(oldValue);
-			}
-		}
-	}
-
 	public rerenderGrid(start: number, end: number) {
-		//render grid range seems to have problems loading.
-		this.renderGridRange(start, end);
 		this._grid.updateRowCount();
 		this._grid.setColumns(this._grid.getColumns());
 		this._grid.invalidateAllRows();
