@@ -53,10 +53,9 @@ let idPool = 0;
 							<ng-container *ngIf="tab.type!=='group-header'">
 								<tab-header role="presentation" [active]="_activeTab === tab" [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
 							</ng-container>
-							<ng-container *ngIf="tab.type==='group-header'">
+							<ng-container *ngIf="tab.type==='group-header' && options.layout === NavigationBarLayout.vertical">
 								<div class="tab-group-header">
 									<span>{{tab.title}}</span>
-									<hr/>
 								</div>
 							</ng-container >
 						</div>

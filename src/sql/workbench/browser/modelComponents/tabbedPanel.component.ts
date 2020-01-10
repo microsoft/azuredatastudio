@@ -2,16 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./media/tabbedPanel';
-import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef,
-	OnDestroy, AfterViewInit, ElementRef, ViewChild
-} from '@angular/core';
-
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
-import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnDestroy, ViewChild } from '@angular/core';
+import * as azdata from 'azdata';
+import { NavigationBarLayout, PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { TabType } from 'sql/base/browser/ui/panel/tab.component';
-import { PanelComponent, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
+import { TabOrientation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
+import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
+import 'vs/css!./media/tabbedPanel';
 
 export interface TabConfig {
 	title: string;
@@ -45,11 +43,17 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 
 	ngOnInit(): void {
 		this.baseInit();
-		this._panel.options = {
-			showTabsWhenOne: true,
-			layout: NavigationBarLayout.vertical,
-			showIcon: false
-		};
+	}
+
+	public setProperties(properties: { [key: string]: any }) {
+		super.setProperties(properties);
+		if ('orientation' in properties) {
+			this._panel.options = {
+				showTabsWhenOne: true,
+				layout: this.orientation === TabOrientation.Horizontal ? NavigationBarLayout.horizontal : NavigationBarLayout.vertical,
+				showIcon: false
+			};
+		}
 	}
 
 	ngAfterViewInit(): void {
@@ -69,9 +73,13 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 		});
 	}
 
+	public get orientation(): TabOrientation {
+		return this.getPropertyOrDefault<azdata.TabbedPanelComponentProperties, TabOrientation>((props) => props.orientation, TabOrientation.Vertical);
+	}
+
 	get tabs(): Tab[] {
 		if (this.items.length > this._itemIndexToProcess) {
-			let currentGroup: string | undefined = this.items.length === 1 ? undefined : this.items[0].config.group;
+			let currentGroup: string | undefined = this.items.length === 1 ? undefined : this.items[this._itemIndexToProcess - 1].config.group;
 			for (let i = this._itemIndexToProcess; i < this.items.length; i++) {
 				const item = this.items[i];
 				if (item.config.group !== currentGroup) {

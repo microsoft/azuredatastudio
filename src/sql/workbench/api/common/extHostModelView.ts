@@ -1715,6 +1715,14 @@ class TabbedPanelComponentWrapper extends ComponentWrapper implements azdata.Tab
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
+
+	public get orientation(): azdata.TabOrientation {
+		return this.properties['orientation'];
+	}
+
+	public set orientation(v: azdata.TabOrientation) {
+		this.setProperty('orientation', v);
+	}
 }
 class GroupContainerComponentWrapper extends ComponentWrapper implements azdata.GroupContainer {
 	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {

@@ -196,8 +196,17 @@ declare module 'azdata' {
 	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIconProperties {
 	}
 
-	export interface TabbedPanelComponent extends Component {
+	export interface TabbedPanelComponent extends Component, TabbedPanelComponentProperties {
 		onTabChanged: vscode.Event<string>;
+	}
+
+	export enum TabOrientation {
+		Vertical = 0,
+		Horizontal = 1
+	}
+
+	export interface TabbedPanelComponentProperties {
+		orientation: TabOrientation;
 	}
 
 	export interface Tab {

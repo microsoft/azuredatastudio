@@ -57,9 +57,10 @@ panel {
 
 .tabbedPanel .tabList .tab-header {
 	display: flex;
-	padding-left: 5px;
-	padding-right: 5px;
-	min-width: 65px;
+	padding-left: 10px;
+	padding-right: 10px;
+	min-width: 75px;
+	cursor: pointer;
 }
 
 .tabbedPanel.vertical .tabList .tab-header {
@@ -146,5 +147,9 @@ panel {
 
 .tabbedPanel .tab-group-header {
 	font-weight: bold;
-	padding:0px 5px;
+	padding: 15px 10px 0px 10px;
+	line-height: 35px;
+	border-style: solid;
+	border-width: 0 0 1px 0;
+	border-color: rgb(214, 214, 214);
 }

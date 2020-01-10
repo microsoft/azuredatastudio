@@ -826,3 +826,8 @@ export type QueryEventType =
 	| 'queryStop'
 	| 'executionPlan'
 	| 'visualize';
+
+export enum TabOrientation {
+	Vertical = 0,
+	Horizontal = 1
+}

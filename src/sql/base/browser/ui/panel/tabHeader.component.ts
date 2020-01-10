@@ -19,8 +19,8 @@ import { CloseTabAction } from 'sql/base/browser/ui/panel/tabActions';
 @Component({
 	selector: 'tab-header',
 	template: `
-		<div #actionHeader role="presentation" class="tab-header" style="flex: 0 0; flex-direction: row; height: 100%" [class.active]="tab.active" tabindex="0" (keyup)="onKey($event)">
-			<span class="tab" (click)="selectTab(tab)" role="tab" [attr.aria-selected]="tab.active" [attr.aria-controls]="tab.title">
+		<div #actionHeader role="presentation" class="tab-header" style="flex: 0 0; flex-direction: row; height: 100%" [class.active]="tab.active" tabindex="0" (click)="selectTab(tab)" (keyup)="onKey($event)">
+			<span class="tab" role="tab" [attr.aria-selected]="tab.active" [attr.aria-controls]="tab.title">
 				<a class="tabLabel" [class.active]="tab.active" #tabLabel>
 				</a>
 			</span>
@@ -90,7 +90,7 @@ export class TabHeaderComponent extends Disposable implements AfterContentInit, 
 	onKey(e: Event) {
 		if (DOM.isAncestor(<HTMLElement>e.target, this._actionHeaderRef.nativeElement) && e instanceof KeyboardEvent) {
 			let event = new StandardKeyboardEvent(e);
-			if (event.equals(KeyCode.Enter)) {
+			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 				this.onSelectTab.emit(this.tab);
 				e.stopPropagation();
 			}
