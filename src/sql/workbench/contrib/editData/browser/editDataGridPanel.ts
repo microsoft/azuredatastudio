@@ -93,7 +93,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		@ILogService logService: ILogService
 	) {
 		super(contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, logService);
-		this.nativeElement = document.createElement('div');
+		this.nativeElement = document.createElement('editdatagridpanel');
 		this.nativeElement.className = 'slickgridContainer';
 		this.dataService = params.dataService;
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
