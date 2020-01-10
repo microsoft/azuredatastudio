@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { NotebookBasedDialogInfo } from './interfaces';
@@ -46,45 +45,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		openDialog('sql-bdc');
 	});
 	vscode.commands.registerCommand('azdata.resource.deploy', (resourceType: string) => {
-		const editor = azdata.workspace.createModelViewEditor('Test', { retainContextWhenHidden: true, supportsSave: true, resourceName: '' });
-		editor.registerContent(view => {
-			const text = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'abc' }).component();
-			const text2 = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'abc2' }).component();
-			const text3 = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'abc3' }).component();
-			const text4 = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'abc4' }).component();
-			const text5 = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: 'abc5' }).component();
-			const tab1 = view.modelBuilder.flexContainer().withItems([text, text5]).component();
-
-			const dashboard = view.modelBuilder.tabbedPanel().withTabs([{
-				content: tab1,
-				title: 'Tab2',
-				id: 'tab2'
-			},
-			{
-				title: 'Group1',
-				tabs: [{
-					content: text3,
-					title: 'Tab3',
-					id: 'tab3'
-				}]
-			}, {
-				title: 'Group2',
-				tabs: [{
-					content: text4,
-					title: 'Tab4',
-					id: 'tab4'
-				}]
-			}, {
-				content: text2,
-				title: 'Tab1',
-				id: 'tab1'
-			}]).component();
-			dashboard.onTabChanged((tabId: string) => {
-				vscode.window.showInformationMessage(tabId);
-			});
-			return view.initializeModel(dashboard);
-		});
-		editor.openEditor();
+		if (typeof resourceType === 'string') {
+			openDialog(resourceType);
+		} else {
+			openDialog('sql-image');
+		}
 	});
 	vscode.commands.registerCommand('azdata.openNotebookInputDialog', (dialogInfo: NotebookBasedDialogInfo) => {
 		const dialog = new DeploymentInputDialog(notebookService, platformService, dialogInfo);
