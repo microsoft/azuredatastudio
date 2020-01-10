@@ -901,8 +901,6 @@ export class EditDataGridPanel extends GridParentComponent {
 				let result: any = { valid: true, msg: undefined };
 				let colIndex: number = self.getColumnIndex(this._args.column.name);
 				let newValue: any = this._textEditor.getValue();
-
-				// TODO: It would be nice if we could support the isCellEditValid as a promise
 				if (self.onIsCellEditValid && !self.onIsCellEditValid(activeRow, colIndex, newValue)) {
 					result.valid = false;
 				}
