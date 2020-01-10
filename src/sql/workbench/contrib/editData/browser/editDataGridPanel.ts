@@ -61,7 +61,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private removingNewRow: boolean;
 	private rowIdMappings: { [gridRowId: number]: number } = {};
 	private dirtyCells: number[] = [];
-	protected plugins = new Array<Array<Slick.Plugin<any>>>();
+	protected plugins = new Array<Slick.Plugin<any>>();
 	// List of column names with their indexes stored.
 	private columnNameToIndex: { [columnNumber: number]: string } = {};
 	// Edit Data functions
@@ -374,7 +374,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				};
 			}))
 		};
-		self.plugins.push([rowNumberColumn, new AutoColumnSize({ maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth') }), new AdditionalKeyBindings()]);
+		self.plugins.push(rowNumberColumn, new AutoColumnSize({ maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth') }), new AdditionalKeyBindings());
 		self.dataSet = dataSet;
 		self.gridDataProvider = new AsyncDataProvider(dataSet.dataRows);
 
@@ -817,7 +817,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 				this.tables[0] = new Table(this.nativeElement.appendChild(newGridContainer), { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
 
-				for (let plugin of this.plugins[0]) {
+				for (let plugin of this.plugins) {
 					this.tables[0].registerPlugin(plugin);
 				}
 
@@ -832,8 +832,6 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.tables[0] = new Table(this.nativeElement.appendChild(newGridContainer));
 		}
 	}
-
-
 
 	getOverridableTextEditorClass(): any {
 		let self = this;
