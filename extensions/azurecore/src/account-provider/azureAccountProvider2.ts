@@ -41,8 +41,6 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 	constructor(private metadata: AzureAccountProviderMetadata, private _tokenCache: TokenCache) {
 		this.commonAuthorityUrl = url.resolve(this.metadata.settings.host, AzureAccountProvider.AadCommonTenant);
-		// Temporary override
-		this.metadata.settings.clientId = 'aebc6443-996d-45c2-90f0-388ff96faa56';
 	}
 
 	// interface method
@@ -178,7 +176,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 			return account;
 		} finally {
-			server.close();
+			//server.close();
 		}
 	}
 
@@ -298,8 +296,13 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	 * @param code Code from authenticating
 	 */
 	private async handleAuthentication(code: string): Promise<void> {
-		const token = await this.getTokenWithAuthCode(code, AzureAccountProvider.redirectUrlAAD);
-
+		let token: TokenResponse;
+		try {
+			token = await this.getTokenWithAuthCode(code, AzureAccountProvider.redirectUrlAAD);
+		} catch (err) {
+			console.log(err);
+			return;
+		}
 		const tenants = await this.getTenants(token.userId, token.tenantId);
 		let identityProvider = token.identityProvider;
 		if (identityProvider) {
@@ -383,7 +386,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			if (method) {
 				method(req, res, reqUrl);
 			} else {
-				console.error('undefined request ', reqUrl, req);
+				console.error('undefined request ', reqUrl.pathname, req);
 			}
 		});
 
