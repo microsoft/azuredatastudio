@@ -4858,6 +4858,7 @@ declare namespace monaco.languages {
 	export interface CompletionList {
 		suggestions: CompletionItem[];
 		incomplete?: boolean;
+		isDetailsResolved?: boolean;
 		dispose?(): void;
 	}
 

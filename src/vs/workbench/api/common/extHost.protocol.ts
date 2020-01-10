@@ -1017,6 +1017,7 @@ export interface ISuggestResultDto {
 	a: { insert: IRange, replace: IRange; };
 	b: ISuggestDataDto[];
 	c?: boolean;
+	d?: boolean;
 }
 
 export interface ISignatureHelpDto {
