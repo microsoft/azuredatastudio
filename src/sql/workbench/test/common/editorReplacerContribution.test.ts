@@ -106,6 +106,7 @@ suite('Editor Replacer Contribution', () => {
 		const editorService = new MockEditorService();
 		const instantiationService = workbenchInstantiationService();
 		instantiationService.stub(IEditorService, editorService);
+		instantiationService.stub(INotebookService, new NotebookServiceStub());
 		const contrib = instantiationService.createInstance(EditorReplacementContribution);
 		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.iynb'), undefined, 'notebook');
 		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
