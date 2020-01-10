@@ -36,6 +36,11 @@ exports.config = {
     productAppName: product.nameLong,
     companyName: 'Microsoft Corporation',
     copyright: 'Copyright (C) 2019 Microsoft. All rights reserved',
+    darwinEntitlements: [
+        'com.apple.security.cs.allow-jit',
+        'com.apople.security.cs.allow-unsigned-executable-memory',
+        'com.apple.security.cs.allow-dyld-environment-variables'
+    ],
     darwinIcon: 'resources/darwin/code.icns',
     darwinBundleIdentifier: product.darwinBundleIdentifier,
     darwinApplicationCategoryType: 'public.app-category.developer-tools',
