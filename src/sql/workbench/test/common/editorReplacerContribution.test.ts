@@ -38,6 +38,7 @@ suite('Editor Replacer Contribution', () => {
 		disposables.push(languageAssociations.registerLanguageAssociation(QueryEditorLanguageAssociation.languages, QueryEditorLanguageAssociation, QueryEditorLanguageAssociation.isDefault));
 		disposables.push(languageAssociations.registerLanguageAssociation(NotebookEditorInputAssociation.languages, NotebookEditorInputAssociation));
 		const instantiationService = workbenchInstantiationService();
+		instantiationService.stub(INotebookService, new NotebookServiceStub());
 		instantiationService.invokeFunction(accessor => {
 			languageAssociations.start(accessor);
 		});
@@ -90,7 +91,6 @@ suite('Editor Replacer Contribution', () => {
 		const editorService = new MockEditorService();
 		const instantiationService = workbenchInstantiationService();
 		instantiationService.stub(IEditorService, editorService);
-		instantiationService.stub(INotebookService, new NotebookServiceStub());
 		const contrib = instantiationService.createInstance(EditorReplacementContribution);
 		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.notebook'), undefined, undefined);
 		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
@@ -106,7 +106,6 @@ suite('Editor Replacer Contribution', () => {
 		const editorService = new MockEditorService();
 		const instantiationService = workbenchInstantiationService();
 		instantiationService.stub(IEditorService, editorService);
-		instantiationService.stub(INotebookService, new NotebookServiceStub());
 		const contrib = instantiationService.createInstance(EditorReplacementContribution);
 		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.iynb'), undefined, 'notebook');
 		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
