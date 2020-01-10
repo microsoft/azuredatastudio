@@ -20,3 +20,23 @@ export function trimUri(innerUri: vscode.Uri, outerUri: vscode.Uri): string {
 
 	return outerParts.join('/');
 }
+
+declare global {
+	interface String {
+		trimChars(chars: string): string;
+	}
+}
+
+String.prototype.trimChars = function (chars: string): string {
+	let output = this as string;
+
+	let i = 0;
+	while (chars.includes(output[i])) { i++; }
+	output = output.substr(i);
+
+	i = 0;
+	while (chars.includes(output[output.length - i - 1])) { i++; }
+	output = output.substring(0, output.length - i);
+
+	return output;
+};

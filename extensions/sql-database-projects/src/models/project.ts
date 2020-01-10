@@ -65,9 +65,13 @@ export class ProjectEntry {
 		this.uri = uri;
 		this.type = type;
 	}
+
+	public toString(): string {
+		return this.uri.path;
+	}
 }
 
-enum EntryType {
+export enum EntryType {
 	File,
 	Folder
 }
