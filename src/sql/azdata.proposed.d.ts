@@ -126,6 +126,7 @@ declare module 'azdata' {
 
 	export interface ModelBuilder {
 		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent>;
+		tabbedPanel(): TabbedPanelComponentBuilder;
 	}
 
 	export interface RadioCard {
@@ -193,5 +194,24 @@ declare module 'azdata' {
 	}
 
 	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIconProperties {
+	}
+
+	export interface TabbedPanelComponent extends Component {
+		onTabChanged: vscode.Event<string>;
+	}
+
+	export interface Tab {
+		title: string;
+		content: Component;
+		id: string;
+	}
+
+	export interface TabGroup {
+		title: string;
+		tabs: Tab[];
+	}
+
+	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, any, any> {
+		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, any, any>;
 	}
 }

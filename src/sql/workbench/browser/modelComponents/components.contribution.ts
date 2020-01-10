@@ -30,6 +30,7 @@ import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 import HyperlinkComponent from 'sql/workbench/browser/modelComponents/hyperlink.component';
 import SplitViewContainer from 'sql/workbench/browser/modelComponents/splitviewContainer.component';
 import RadioCardGroup from 'sql/workbench/browser/modelComponents/radioCardGroup.component';
+import TabbedPanelComponent from 'sql/workbench/browser/modelComponents/tabbedPanel.component';
 
 export const DIV_CONTAINER = 'div-container';
 registerComponentType(DIV_CONTAINER, ModelComponentTypes.DivContainer, DivContainer);
@@ -109,4 +110,7 @@ registerComponentType(HYPERLINK_COMPONENT, ModelComponentTypes.Hyperlink, Hyperl
 
 export const RADIOCARDGROUP_COMPONENT = 'radiocardgroup-component';
 registerComponentType(RADIOCARDGROUP_COMPONENT, ModelComponentTypes.RadioCardGroup, RadioCardGroup);
+
+export const TABBEDPANEL_COMPONENT = 'tabbedpanel-component';
+registerComponentType(TABBEDPANEL_COMPONENT, ModelComponentTypes.TabbedPanel, TabbedPanelComponent);
 
