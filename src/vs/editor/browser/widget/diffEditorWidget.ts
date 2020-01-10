@@ -2162,6 +2162,7 @@ class InlineViewZonesComputer extends ViewZonesComputer {
 			lineTokens,
 			actualDecorations,
 			tabSize,
+			0,
 			fontInfo.spaceWidth,
 			options.get(EditorOption.stopRenderingLineAfter),
 			options.get(EditorOption.renderWhitespace),
