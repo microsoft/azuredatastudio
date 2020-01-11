@@ -220,7 +220,7 @@ export class NotebookServiceStub implements INotebookService {
 		throw new Error('Method not implemented.');
 	}
 	getProvidersForFileType(fileType: string): string[] {
-		throw new Error('Method not implemented.');
+		return [];
 	}
 	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] {
 		throw new Error('Method not implemented.');
