@@ -38,8 +38,9 @@ exports.config = {
     copyright: 'Copyright (C) 2019 Microsoft. All rights reserved',
     darwinEntitlements: [
         'com.apple.security.cs.allow-jit',
-        'com.apople.security.cs.allow-unsigned-executable-memory',
-        'com.apple.security.cs.allow-dyld-environment-variables'
+        'com.apple.security.cs.allow-unsigned-executable-memory',
+        'com.apple.security.cs.allow-dyld-environment-variables',
+        'com.apple.security.files.user-selected.read-write'
     ],
     darwinIcon: 'resources/darwin/code.icns',
     darwinBundleIdentifier: product.darwinBundleIdentifier,
