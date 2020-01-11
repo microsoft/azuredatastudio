@@ -10,7 +10,7 @@ import * as should from 'should';
 import 'mocha';
 import * as TypeMoq from 'typemoq';
 import * as constants from '../../common/constants';
-import { SqlPythonPackageManageProvider } from '../../packageManagement/sqlPackageManageProvider';
+import { SqlPythonPackageManageProvider } from '../../packageManagement/sqlPythonPackageManageProvider';
 import { createContext, TestContext } from './utils';
 import * as nbExtensionApis from '../../typings/notebookServices';
 
@@ -362,12 +362,13 @@ describe('SQL Package Manager', () => {
 	});
 
 	function createProvider(testContext: TestContext): SqlPythonPackageManageProvider {
+		testContext.userConfig.setup(x => x.pythonExecutable).returns(() => 'python');
 		return new SqlPythonPackageManageProvider(
 			testContext.nbExtensionApis,
 			testContext.outputChannel,
-			'',
 			testContext.apiWrapper.object,
 			testContext.queryRunner.object,
-			testContext.processService.object);
+			testContext.processService.object,
+			testContext.userConfig.object);
 	}
 });

@@ -8,20 +8,24 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nbExtensionApis from '../typings/notebookServices';
-import { SqlPythonPackageManageProvider } from './sqlPackageManageProvider';
+import { SqlPythonPackageManageProvider } from './sqlPythonPackageManageProvider';
 import { QueryRunner } from '../common/queryRunner';
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
 import { ApiWrapper } from '../common/apiWrapper';
 import { ProcessService } from '../common/processService';
-import { Config } from '../common/config';
+import { AppConfig } from '../config/appConfig';
 import { isNullOrUndefined } from 'util';
+import { UserConfig } from '../config/userConfig';
+import { SqlRPackageManageProvider } from './sqlRPackageManageProvider';
 
 export class PackageManager {
 
 	private _pythonExecutable: string = '';
-	private _pythonInstallationLocation: string = '';
-	private _sqlPackageManager: SqlPythonPackageManageProvider | undefined = undefined;
+	private _rExecutable: string = '';
+	//private _pythonInstallationLocation: string = '';
+	private _sqlPackagePackageManager: SqlPythonPackageManageProvider | undefined = undefined;
+	private _sqlRPackageManager: SqlRPackageManageProvider | undefined = undefined;
 
 	/**
 	 * Creates a new instance of PackageManager
@@ -33,17 +37,21 @@ export class PackageManager {
 		private _apiWrapper: ApiWrapper,
 		private _queryRunner: QueryRunner,
 		private _processService: ProcessService,
-		private _config: Config) {
+		private _appConfig: AppConfig,
+		private _userConfig: UserConfig) {
 	}
 
 	/**
 	 * Initializes the instance and resister SQL package manager with manage package dialog
 	 */
 	public init(): void {
-		this._pythonInstallationLocation = utils.getPythonInstallationLocation(this._rootFolder);
-		this._pythonExecutable = utils.getPythonExePath(this._rootFolder);
-		this._sqlPackageManager = new SqlPythonPackageManageProvider(this._nbExtensionApis, this._outputChannel, this._rootFolder, this._apiWrapper, this._queryRunner, this._processService);
-		this._nbExtensionApis.registerPackageManager(SqlPythonPackageManageProvider.ProviderId, this._sqlPackageManager);
+		//this._pythonInstallationLocation = utils.getPythonInstallationLocation(this._rootFolder);
+		this._pythonExecutable = this._userConfig.pythonExecutable;
+		this._rExecutable = this._userConfig.rExecutable;
+		this._sqlPackagePackageManager = new SqlPythonPackageManageProvider(this._nbExtensionApis, this._outputChannel, this._apiWrapper, this._queryRunner, this._processService, this._userConfig);
+		this._sqlRPackageManager = new SqlRPackageManageProvider(this._outputChannel, this._apiWrapper, this._queryRunner, this._processService, this._userConfig);
+		this._nbExtensionApis.registerPackageManager(SqlPythonPackageManageProvider.ProviderId, this._sqlPackagePackageManager);
+		this._nbExtensionApis.registerPackageManager(SqlRPackageManageProvider.ProviderId, this._sqlRPackageManager);
 	}
 
 	/**
@@ -55,11 +63,17 @@ export class PackageManager {
 		//
 		let connection = await this.getCurrentConnection();
 		let isPythonInstalled = await this._queryRunner.isPythonInstalled(connection);
-		if (connection && isPythonInstalled && this._sqlPackageManager) {
+		let defaultProvider: SqlRPackageManageProvider | SqlPythonPackageManageProvider | undefined;
+		if (connection && isPythonInstalled) {
+			defaultProvider = this._sqlPackagePackageManager;
+		} else if (connection && this._sqlRPackageManager) {
+			defaultProvider = this._sqlRPackageManager;
+		}
+		if (connection && defaultProvider) {
 			this._apiWrapper.executeCommand(constants.managePackagesCommand, {
 				multiLocations: false,
-				defaultLocation: this._sqlPackageManager.packageTarget.location,
-				defaultProviderId: SqlPythonPackageManageProvider.ProviderId
+				defaultLocation: defaultProvider.packageTarget.location,
+				defaultProviderId: defaultProvider.providerId
 			});
 		} else {
 			this._apiWrapper.showInfoMessage(constants.managePackageCommandError);
@@ -78,16 +92,19 @@ export class PackageManager {
 				isCancelable: false,
 				operation: async op => {
 					try {
+						/*
 						if (!(await utils.exists(this._pythonExecutable))) {
 							// Install python
 							//
 							await utils.createFolder(this._pythonInstallationLocation);
 							await this.jupyterInstallation.installPythonPackage(op, false, this._pythonInstallationLocation, this._outputChannel);
 						}
+						*/
 
 						// Install required packages
 						//
 						await this.installRequiredPythonPackages();
+						await this.installRequiredRPackages();
 						op.updateStatus(azdata.TaskStatus.Succeeded);
 						resolve();
 					} catch (error) {
@@ -100,13 +117,21 @@ export class PackageManager {
 		});
 	}
 
+	private async installRequiredRPackages(): Promise<string> {
+		let cmd = `"${this._rExecutable}" -e "install.packages('RODBCext', repos='https://cran.microsoft.com')"`;
+		await this._processService.executeBufferedCommand(cmd, this._outputChannel);
+
+		cmd = `"${this._rExecutable}" CMD INSTALL ${utils.getSqlMlUtilsPath('r', this._rootFolder)}`;
+		return await this._processService.executeBufferedCommand(cmd, this._outputChannel);
+	}
+
 	/**
 	 * Installs required python packages
 	 */
 	private async installRequiredPythonPackages(): Promise<void> {
 		let installedPackages = await this.getInstalledPipPackages();
 		let fileContent = '';
-		this._config.requiredPythonPackages.forEach(packageDetails => {
+		this._appConfig.requiredPythonPackages.forEach(packageDetails => {
 			let hasVersion = ('version' in packageDetails) && !isNullOrUndefined(packageDetails['version']) && packageDetails['version'].length > 0;
 			if (!installedPackages.find(x => x.name === packageDetails['name'] && (!hasVersion || packageDetails['version'] === x.version))) {
 				let packageNameDetail = hasVersion ? `${packageDetails.name}==${packageDetails.version}` : `${packageDetails.name}`;
@@ -117,7 +142,7 @@ export class PackageManager {
 		if (fileContent) {
 			this._outputChannel.appendLine(constants.installDependenciesPackages);
 			let result = await utils.execCommandOnTempFile<string>(fileContent, async (tempFilePath) => {
-				return await this.installPackages(tempFilePath);
+				return await this.installPipPackages(tempFilePath);
 			});
 			this._outputChannel.appendLine(result);
 		} else {
@@ -145,11 +170,13 @@ export class PackageManager {
 		return await this._apiWrapper.getCurrentConnection();
 	}
 
+	/*
 	private get jupyterInstallation(): nbExtensionApis.IJupyterServerInstallation {
 		return this._nbExtensionApis.getJupyterController().jupyterInstallation;
 	}
+	*/
 
-	private async installPackages(requirementFilePath: string): Promise<string> {
+	private async installPipPackages(requirementFilePath: string): Promise<string> {
 		let cmd = `"${this._pythonExecutable}" -m pip install -r "${requirementFilePath}"`;
 		return await this._processService.executeBufferedCommand(cmd, this._outputChannel);
 	}

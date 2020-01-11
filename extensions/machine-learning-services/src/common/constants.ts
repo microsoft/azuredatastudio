@@ -26,6 +26,12 @@ export const mlManagePackagesCommand = 'mls.command.managePackages';
 export const mlOdbcDriverCommand = 'mls.command.odbcdriver';
 export const mlsDocumentsCommand = 'mls.command.mlsdocs';
 
+// Configurations
+//
+export const mlsConfigKey = 'machineLearningServices';
+export const pythonPathConfigKey = 'pythonPath';
+export const rPathConfigKey = 'rPath';
+
 // Localized texts
 //
 export const managePackageCommandError = localize('mls.managePackages.error', "Either no connection is available or the server does not have external script enabled.");

@@ -11,7 +11,7 @@ import * as should from 'should';
 import 'mocha';
 import * as TypeMoq from 'typemoq';
 import { PackageManager } from '../../packageManagement/packageManager';
-import { SqlPythonPackageManageProvider } from '../../packageManagement/sqlPackageManageProvider';
+import { SqlPythonPackageManageProvider } from '../../packageManagement/sqlPythonPackageManageProvider';
 import { createContext, TestContext } from './utils';
 
 describe('Package Manager', () => {
@@ -207,6 +207,8 @@ describe('Package Manager', () => {
 			{ name: 'pymssql', version: '2.1.4' },
 			{ name: 'sqlmlutils', version: '' }
 		]);
+		testContext.userConfig.setup(x => x.pythonExecutable).returns(() => 'python');
+		testContext.userConfig.setup(x => x.rExecutable).returns(() => 'r');
 		let packageManager = new PackageManager(
 			testContext.nbExtensionApis,
 			testContext.outputChannel,
@@ -214,7 +216,8 @@ describe('Package Manager', () => {
 			testContext.apiWrapper.object,
 			testContext.queryRunner.object,
 			testContext.processService.object,
-			testContext.config.object);
+			testContext.config.object,
+			testContext.userConfig.object);
 		packageManager.init();
 		return packageManager;
 	}

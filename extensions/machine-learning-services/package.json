@@ -10,7 +10,8 @@
     "azdata": ">=1.13.0"
   },
   "activationEvents": [
-    "*"
+    "onCommand:mls.command.managePackages",
+    "onDashboardOpen"
   ],
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
   "icon": "images/ML_ExtensionIcon.png",
@@ -25,6 +26,22 @@
     "Microsoft.notebook"
   ],
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "%mls.configuration.title%",
+      "properties": {
+        "machineLearningServices.pythonPath": {
+          "type": "string",
+          "default": "python",
+          "description": "%mls.pythonPath.description%"
+        },
+        "machineLearningServices.rPath": {
+          "type": "string",
+          "default": "r",
+          "description": "%mls.rPath.description%"
+        }
+      }
+    },
     "commands": [
       {
         "command": "mls.command.managePackages",

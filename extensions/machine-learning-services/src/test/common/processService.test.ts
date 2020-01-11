@@ -29,11 +29,11 @@ function createContext(): TestContext {
 	};
 }
 
-function execFolderListCommand(context: TestContext, service : ProcessService): Promise<void> {
+function execFolderListCommand(context: TestContext, service : ProcessService): Promise<string> {
 	if (utils.isWindows()) {
-		return service.execScripts('cmd', ['dir', '.'], context.outputChannel);
+		return service.execScripts('cmd', ['dir', '.'], [], context.outputChannel);
 	} else {
-		return service.execScripts('/bin/sh', ['-c', 'ls'], context.outputChannel);
+		return service.execScripts('/bin/sh', ['-c', 'ls'], [], context.outputChannel);
 	}
 }
 

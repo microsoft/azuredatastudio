@@ -10,9 +10,9 @@ import * as nbExtensionApis from '../typings/notebookServices';
 const configFileName = 'config.json';
 
 /**
- * Extension Configuration
+ * Extension Configuration from app settings
  */
-export class Config {
+export class AppConfig {
 
 	private _configValues: any;
 

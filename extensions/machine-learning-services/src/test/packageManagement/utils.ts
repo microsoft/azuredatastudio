@@ -12,7 +12,8 @@ import * as TypeMoq from 'typemoq';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { QueryRunner } from '../../common/queryRunner';
 import { ProcessService } from '../../common/processService';
-import { Config } from '../../common/config';
+import { AppConfig } from '../../config/appConfig';
+import { UserConfig } from '../../config/userConfig';
 
 export interface TestContext {
 	jupyterInstallation: nbExtensionApis.IJupyterServerInstallation;
@@ -22,7 +23,8 @@ export interface TestContext {
 	processService: TypeMoq.IMock<ProcessService>;
 	apiWrapper: TypeMoq.IMock<ApiWrapper>;
 	queryRunner: TypeMoq.IMock<QueryRunner>;
-	config: TypeMoq.IMock<Config>;
+	config: TypeMoq.IMock<AppConfig>;
+	userConfig: TypeMoq.IMock<UserConfig>;
 	op: azdata.BackgroundOperation;
 	getOpStatus: () => azdata.TaskStatus;
 }
@@ -70,7 +72,8 @@ export function createContext(): TestContext {
 		processService: TypeMoq.Mock.ofType(ProcessService),
 		apiWrapper: TypeMoq.Mock.ofType(ApiWrapper),
 		queryRunner: TypeMoq.Mock.ofType(QueryRunner),
-		config: TypeMoq.Mock.ofType(Config),
+		config: TypeMoq.Mock.ofType(AppConfig),
+		userConfig: TypeMoq.Mock.ofType(UserConfig),
 		op: {
 			updateStatus: (status: azdata.TaskStatus) => {
 				opStatus = status;

@@ -47,6 +47,14 @@ export function getPythonExePath(rootFolder: string): string {
 		process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 }
 
+export function getSqlMlUtilsPath(type: string, rootFolder: string, ): string {
+	return path.join(
+		rootFolder,
+		'resources',
+		type,
+		'sqlmlutils_0.7.1.zip');
+}
+
 export function isWindows(): boolean {
 	return process.platform === 'win32';
 }

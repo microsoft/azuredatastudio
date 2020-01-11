@@ -13,9 +13,10 @@ import * as constants from '../common/constants';
 import { ApiWrapper } from '../common/apiWrapper';
 import { QueryRunner } from '../common/queryRunner';
 import { ProcessService } from '../common/processService';
-import { Config } from '../common/config';
+import { AppConfig } from '../config/appConfig';
 import { ServerConfigWidget } from '../widgets/serverConfigWidgets';
 import { ServerConfigManager } from '../serverConfig/serverConfigManager';
+import { UserConfig } from '../config/userConfig';
 
 /**
  * The main controller class that initializes the extension
@@ -23,7 +24,8 @@ import { ServerConfigManager } from '../serverConfig/serverConfigManager';
 export default class MainController implements vscode.Disposable {
 	private _outputChannel: vscode.OutputChannel;
 	private _rootPath = this._context.extensionPath;
-	private _config: Config;
+	private _appConfig: AppConfig;
+	private _userConfig: UserConfig;
 
 	public constructor(
 		private _context: vscode.ExtensionContext,
@@ -31,11 +33,12 @@ export default class MainController implements vscode.Disposable {
 		private _queryRunner: QueryRunner,
 		private _processService: ProcessService,
 		private _packageManager?: PackageManager,
-		private _serverConfigManager?: ServerConfigManager
+		private _serverConfigManager?: ServerConfigManager,
 	) {
 		this._outputChannel = this._apiWrapper.createOutputChannel(constants.extensionOutputChannel);
 		this._rootPath = this._context.extensionPath;
-		this._config = new Config(this._rootPath);
+		this._appConfig = new AppConfig(this._rootPath);
+		this._userConfig = new UserConfig(this._apiWrapper);
 	}
 
 	/**
@@ -69,7 +72,7 @@ export default class MainController implements vscode.Disposable {
 
 		this._outputChannel.show(true);
 		let nbApis = await this.getNotebookExtensionApis();
-		await this._config.load();
+		await this._appConfig.load();
 
 		let tasks = new ServerConfigWidget(this._apiWrapper, this.serverConfigManager);
 		tasks.register();
@@ -100,7 +103,7 @@ export default class MainController implements vscode.Disposable {
 	 */
 	public getPackageManager(nbApis: nbExtensionApis.IExtensionApi): PackageManager {
 		if (!this._packageManager) {
-			this._packageManager = new PackageManager(nbApis, this._outputChannel, this._rootPath, this._apiWrapper, this._queryRunner, this._processService, this._config);
+			this._packageManager = new PackageManager(nbApis, this._outputChannel, this._rootPath, this._apiWrapper, this._queryRunner, this._processService, this._appConfig, this._userConfig);
 			this._packageManager.init();
 		}
 		return this._packageManager;
@@ -119,8 +122,8 @@ export default class MainController implements vscode.Disposable {
 	/**
 	 * Config instance
 	 */
-	public get config(): Config {
-		return this._config;
+	public get config(): AppConfig {
+		return this._appConfig;
 	}
 
 	/**
