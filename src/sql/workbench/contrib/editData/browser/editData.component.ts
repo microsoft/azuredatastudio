@@ -172,7 +172,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			let returnVal = '';
 			// replace the line breaks with space since the edit text control cannot
 			// render line breaks and strips them, updating the value.
-			if (Services.DBCellValue.isDBCellValue(value)) {
+			if (Services.DBCellValue.isDBCellValue(value) && !value.isNull) {
 				returnVal = this.spacefyLinebreaks(value.displayValue);
 			} else if (typeof value === 'string') {
 				returnVal = this.spacefyLinebreaks(value);
@@ -220,7 +220,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				// should add null row?
 				if (offset + count > this.dataSet.totalRows - 1) {
 					gridData.push(this.dataSet.columnDefinitions.reduce((p, c) => {
-						p[c.field] = 'NULL';
+						if (c.id !== 'rowNumber') {
+							p[c.field] = { displayValue: 'NULL', ariaLabel: 'NULL', isNull: true };
+						}
 						return p;
 					}, {}));
 				}
