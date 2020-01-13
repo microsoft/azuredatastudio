@@ -16,6 +16,7 @@ import { coalesce } from 'vs/base/common/arrays';
 
 import { CustomTreeViewPanel, CustomTreeView } from 'sql/workbench/browser/parts/views/customView';
 import { VIEWLET_ID } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
+import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 
 interface IUserFriendlyViewDescriptor {
 	id: string;
@@ -105,11 +106,13 @@ export class DataExplorerContainerExtensionHandler implements IWorkbenchContribu
 						const viewDescriptor = <ITreeViewDescriptor>{
 							id: item.id,
 							name: item.name,
-							ctorDescriptor: { ctor: CustomTreeViewPanel },
+							ctorDescriptor: new SyncDescriptor(CustomTreeViewPanel),
 							when: ContextKeyExpr.deserialize(item.when),
 							canToggleVisibility: true,
 							collapsed: this.showCollapsed(container),
-							treeView: this.instantiationService.createInstance(CustomTreeView, item.id, item.name, container)
+							treeView: this.instantiationService.createInstance(CustomTreeView, item.id, item.name, container),
+							extensionId: extension.description.identifier,
+							originalContainerId: entry.key
 						};
 
 						viewIds.push(viewDescriptor.id);
