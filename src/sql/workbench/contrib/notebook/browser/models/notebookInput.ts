@@ -16,7 +16,7 @@ import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { Schemas } from 'vs/base/common/network';
-import { StateChange, ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
+import { ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -73,12 +73,14 @@ export class NotebookEditorModel extends EditorModel {
 			}));
 		} else {
 			if (this.textEditorModel instanceof TextFileEditorModel) {
-				this._register(this.textEditorModel.onDidChangeState(change => {
+				this._register(this.textEditorModel.onDidSave(() => {
 					let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
 					this.setDirty(dirty);
-					if (change === StateChange.SAVED) {
-						this.sendNotebookSerializationStateChange();
-					}
+					this.sendNotebookSerializationStateChange();
+				}));
+				this._register(this.textEditorModel.onDidChangeDirty(() => {
+					let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
+					this.setDirty(dirty);
 				}));
 			}
 		}

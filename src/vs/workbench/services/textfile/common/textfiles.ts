@@ -275,16 +275,6 @@ export const enum ModelState {
 	ERROR
 }
 
-export const enum StateChange {
-	LOADED,
-	DIRTY,
-	SAVE_ERROR,
-	SAVED,
-	REVERTED,
-	ENCODING,
-	ORPHANED_CHANGE
-}
-
 export interface ITextFileOperationResult {
 	results: IResult[];
 }
@@ -360,16 +350,25 @@ export interface IModelLoadOrCreateOptions {
 	allowBinary?: boolean;
 }
 
+export interface ITextFileModelSaveEvent {
+	model: ITextFileEditorModel;
+	reason: SaveReason;
+}
+
+export interface ITextFileModelLoadEvent {
+	model: ITextFileEditorModel;
+	reason: LoadReason;
+}
+
 export interface ITextFileEditorModelManager {
 
-	readonly onModelEncodingChanged: Event<ITextFileEditorModel>;
-	readonly onModelOrphanedChanged: Event<ITextFileEditorModel>;
-
-	readonly onModelLoaded: Event<ITextFileEditorModel>;
-	readonly onModelDirty: Event<ITextFileEditorModel>;
-	readonly onModelSaveError: Event<ITextFileEditorModel>;
-	readonly onModelSaved: Event<ITextFileEditorModel>;
-	readonly onModelReverted: Event<ITextFileEditorModel>;
+	readonly onDidLoad: Event<ITextFileModelLoadEvent>;
+	readonly onDidChangeDirty: Event<ITextFileEditorModel>;
+	readonly onDidSaveError: Event<ITextFileEditorModel>;
+	readonly onDidSave: Event<ITextFileModelSaveEvent>;
+	readonly onDidRevert: Event<ITextFileEditorModel>;
+	readonly onDidChangeEncoding: Event<ITextFileEditorModel>;
+	readonly onDidChangeOrphaned: Event<ITextFileEditorModel>;
 
 	get(resource: URI): ITextFileEditorModel | undefined;
 
@@ -407,7 +406,13 @@ export interface ILoadOptions {
 
 export interface ITextFileEditorModel extends ITextEditorModel, IEncodingSupport, IModeSupport, IWorkingCopy {
 
-	readonly onDidChangeState: Event<StateChange>;
+	readonly onDidChangeContent: Event<void>;
+	readonly onDidLoad: Event<LoadReason>;
+	readonly onDidSaveError: Event<void>;
+	readonly onDidSave: Event<SaveReason>;
+	readonly onDidRevert: Event<void>;
+	readonly onDidChangeEncoding: Event<void>;
+	readonly onDidChangeOrphaned: Event<void>;
 
 	hasState(state: ModelState): boolean;
 
