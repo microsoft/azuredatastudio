@@ -17,6 +17,7 @@ import { AppConfig } from '../config/appConfig';
 import { ServerConfigWidget } from '../widgets/serverConfigWidgets';
 import { ServerConfigManager } from '../serverConfig/serverConfigManager';
 import { UserConfig } from '../config/userConfig';
+import { HttpClient } from '../common/httpClient';
 
 /**
  * The main controller class that initializes the extension
@@ -34,6 +35,7 @@ export default class MainController implements vscode.Disposable {
 		private _processService: ProcessService,
 		private _packageManager?: PackageManager,
 		private _serverConfigManager?: ServerConfigManager,
+		private _httpClient?: HttpClient
 	) {
 		this._outputChannel = this._apiWrapper.createOutputChannel(constants.extensionOutputChannel);
 		this._rootPath = this._context.extensionPath;
@@ -81,6 +83,9 @@ export default class MainController implements vscode.Disposable {
 		this._apiWrapper.registerCommand(constants.mlManagePackagesCommand, (async () => {
 			await packageManager.managePackages();
 		}));
+		this._apiWrapper.registerCommand(constants.mlsDependenciesCommand, (async () => {
+			await packageManager.installDependencies();
+		}));
 		this._apiWrapper.registerTaskHandler(constants.mlManagePackagesCommand, async () => {
 			await packageManager.managePackages();
 		});
@@ -90,12 +95,6 @@ export default class MainController implements vscode.Disposable {
 		this._apiWrapper.registerTaskHandler(constants.mlsDocumentsCommand, async () => {
 			await this.serverConfigManager.openDocuments();
 		});
-
-		try {
-			await packageManager.installDependencies();
-		} catch (err) {
-			this._outputChannel.appendLine(err);
-		}
 	}
 
 	/**
@@ -103,21 +102,32 @@ export default class MainController implements vscode.Disposable {
 	 */
 	public getPackageManager(nbApis: nbExtensionApis.IExtensionApi): PackageManager {
 		if (!this._packageManager) {
-			this._packageManager = new PackageManager(nbApis, this._outputChannel, this._rootPath, this._apiWrapper, this._queryRunner, this._processService, this._appConfig, this._userConfig);
+			this._packageManager = new PackageManager(nbApis, this._outputChannel, this._rootPath, this._apiWrapper, this._queryRunner, this._processService, this._appConfig, this._userConfig, this.httpClient);
 			this._packageManager.init();
 		}
 		return this._packageManager;
 	}
 
 	/**
- * Returns the server config manager instance
- */
+	 * Returns the server config manager instance
+	 */
 	public get serverConfigManager(): ServerConfigManager {
 		if (!this._serverConfigManager) {
 			this._serverConfigManager = new ServerConfigManager(this._apiWrapper, this._queryRunner);
 		}
 		return this._serverConfigManager;
 	}
+
+	/**
+	 * Returns the server config manager instance
+	 */
+	public get httpClient(): HttpClient {
+		if (!this._httpClient) {
+			this._httpClient = new HttpClient();
+		}
+		return this._httpClient;
+	}
+
 
 	/**
 	 * Config instance

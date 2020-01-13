@@ -14,7 +14,7 @@ import { SqlPythonPackageManageProvider } from '../../packageManagement/sqlPytho
 import { createContext, TestContext } from './utils';
 import * as nbExtensionApis from '../../typings/notebookServices';
 
-describe('SQL Package Manager', () => {
+describe('SQL Python Package Manager', () => {
 	it('Should create SQL package manager successfully', async function (): Promise<void> {
 		let testContext = createContext();
 		should.doesNotThrow(() => createProvider(testContext));
@@ -106,7 +106,7 @@ describe('SQL Package Manager', () => {
 		let credentials = { [azdata.ConnectionOptionSpecialType.password]: 'password' };
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
 		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
-		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((path, scripts: string[]) => {
+		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((path, scripts: string[]) => {
 
 			if (path && scripts.find(x => x.indexOf('install') > 0) &&
 				scripts.find(x => x.indexOf('port=1433') > 0) &&
@@ -118,7 +118,7 @@ describe('SQL Package Manager', () => {
 				packagesUpdated = true;
 			}
 
-			return Promise.resolve();
+			return Promise.resolve('');
 		});
 
 		let provider = createProvider(testContext);
@@ -147,7 +147,7 @@ describe('SQL Package Manager', () => {
 		let credentials = { [azdata.ConnectionOptionSpecialType.password]: 'password' };
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
 		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
-		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((path, scripts: string[]) => {
+		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((path, scripts: string[]) => {
 
 			if (path && scripts.find(x => x.indexOf('uninstall') > 0) &&
 				scripts.find(x => x.indexOf('port=1433') > 0) &&
@@ -158,7 +158,7 @@ describe('SQL Package Manager', () => {
 				packagesUpdated = true;
 			}
 
-			return Promise.resolve();
+			return Promise.resolve('');
 		});
 
 		let provider = createProvider(testContext);
@@ -187,7 +187,7 @@ describe('SQL Package Manager', () => {
 		let credentials = { [azdata.ConnectionOptionSpecialType.password]: 'password' };
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
 		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
-		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((path, scripts: string[]) => {
+		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((path, scripts: string[]) => {
 
 			if (path && scripts.find(x => x.indexOf('install') > 0) &&
 				scripts.find(x => x.indexOf('port=3433') > 0) &&
@@ -199,7 +199,7 @@ describe('SQL Package Manager', () => {
 				packagesUpdated = true;
 			}
 
-			return Promise.resolve();
+			return Promise.resolve('');
 		});
 
 		let provider = createProvider(testContext);
@@ -218,9 +218,9 @@ describe('SQL Package Manager', () => {
 		let credentials = { ['azdata.ConnectionOptionSpecialType.password']: 'password' };
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
 		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
-		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
 			packagesUpdated = true;
-			return Promise.resolve();
+			return Promise.resolve('');
 		});
 
 
@@ -240,9 +240,9 @@ describe('SQL Package Manager', () => {
 		let credentials = { ['azdata.ConnectionOptionSpecialType.password']: 'password' };
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
 		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
-		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
 			packagesUpdated = true;
-			return Promise.resolve();
+			return Promise.resolve('');
 		});
 
 

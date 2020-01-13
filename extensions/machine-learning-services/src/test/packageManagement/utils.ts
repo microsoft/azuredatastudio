@@ -14,6 +14,7 @@ import { QueryRunner } from '../../common/queryRunner';
 import { ProcessService } from '../../common/processService';
 import { AppConfig } from '../../config/appConfig';
 import { UserConfig } from '../../config/userConfig';
+import { HttpClient } from '../../common/httpClient';
 
 export interface TestContext {
 	jupyterInstallation: nbExtensionApis.IJupyterServerInstallation;
@@ -27,6 +28,7 @@ export interface TestContext {
 	userConfig: TypeMoq.IMock<UserConfig>;
 	op: azdata.BackgroundOperation;
 	getOpStatus: () => azdata.TaskStatus;
+	httpClient: TypeMoq.IMock<HttpClient>;
 }
 
 export function createContext(): TestContext {
@@ -74,6 +76,7 @@ export function createContext(): TestContext {
 		queryRunner: TypeMoq.Mock.ofType(QueryRunner),
 		config: TypeMoq.Mock.ofType(AppConfig),
 		userConfig: TypeMoq.Mock.ofType(UserConfig),
+		httpClient: TypeMoq.Mock.ofType(HttpClient),
 		op: {
 			updateStatus: (status: azdata.TaskStatus) => {
 				opStatus = status;

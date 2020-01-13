@@ -1,2 +1,3 @@
 *.vsix
-python/**
+packages/**
+*.zip

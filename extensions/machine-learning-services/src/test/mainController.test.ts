@@ -97,20 +97,4 @@ describe('Main Controller', () => {
 			{ name: 'sqlmlutils', version: '' }
 		]);
 	});
-
-	it('initialize Should show and error in output channel if installing dependencies fails', async function (): Promise<void> {
-		let errorReported = false;
-		let testContext = createContext();
-		testContext.apiWrapper.setup(x => x.createOutputChannel(TypeMoq.It.isAny())).returns(() => testContext.outputChannel);
-		testContext.apiWrapper.setup(x => x.getExtension(TypeMoq.It.isAny())).returns(() => testContext.extension);
-		testContext.packageManager.setup(x => x.managePackages()).returns(() => Promise.resolve());
-		testContext.packageManager.setup(x => x.installDependencies()).returns(() => Promise.reject());
-		testContext.apiWrapper.setup(x => x.registerCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny()));
-		testContext.outputChannel.appendLine = () => {
-			errorReported = true;
-		};
-		let controller = createController(testContext);
-		await controller.activate();
-		should.equal(errorReported, true);
-	});
 });

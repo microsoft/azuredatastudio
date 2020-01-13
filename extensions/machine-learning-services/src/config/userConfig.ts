@@ -15,24 +15,29 @@ const defaultRExecutable = 'r';
  */
 export class UserConfig {
 
-	private _mlsConfig: vscode.WorkspaceConfiguration;
-
+	private _mlsConfig: vscode.WorkspaceConfiguration | undefined;
 
 	constructor(private _apiWrapper: ApiWrapper) {
-		this._mlsConfig = this._apiWrapper.getConfiguration(constants.mlsConfigKey);
+	}
+
+	private get config(): vscode.WorkspaceConfiguration {
+		if (!this._mlsConfig) {
+			this._mlsConfig = this._apiWrapper.getConfiguration(constants.mlsConfigKey);
+		}
+		return this._mlsConfig;
 	}
 
 	/**
 	 * Returns python path from user settings
 	 */
 	public get pythonExecutable(): string {
-		return this._mlsConfig.get(constants.pythonPathConfigKey) || defaultPythonExecutable;
+		return this.config.get(constants.pythonPathConfigKey) || defaultPythonExecutable;
 	}
 
 	/**
 	 * Returns r path from user settings
 	 */
 	public get rExecutable(): string {
-		return this._mlsConfig.get(constants.rPathConfigKey) || defaultRExecutable;
+		return this.config.get(constants.rPathConfigKey) || defaultRExecutable;
 	}
 }
