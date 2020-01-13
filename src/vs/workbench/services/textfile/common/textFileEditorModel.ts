@@ -680,7 +680,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 				overwriteEncoding: options.overwriteEncoding,
 				mtime: lastResolvedFileStat.mtime,
 				encoding: this.getEncoding(),
-				etag: (options.ignoreModifiedSince || !this.filesConfigurationService.preventSaveConflicts(lastResolvedFileStat.resource)) ? ETAG_DISABLED : lastResolvedFileStat.etag,
+				etag: (options.ignoreModifiedSince || !this.filesConfigurationService.preventSaveConflicts(lastResolvedFileStat.resource, this.getMode())) ? ETAG_DISABLED : lastResolvedFileStat.etag,
 				writeElevated: options.writeElevated
 			}).then(stat => {
 				this.logService.trace(`[text file model] doSave(${versionId}) - after write()`, this.resource.toString());
@@ -893,6 +893,8 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		}
 	}
 
+	getMode(this: IResolvedTextFileEditorModel): string;
+	getMode(): string | undefined;
 	getMode(): string | undefined {
 		if (this.textEditorModel) {
 			return this.textEditorModel.getModeId();
