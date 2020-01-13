@@ -10,7 +10,8 @@
     "azdata": ">=1.13.0"
   },
   "activationEvents": [
-    "*"
+    "onCommand:mls.command.managePackages",
+    "onDashboardOpen"
   ],
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
   "icon": "images/ML_ExtensionIcon.png",
