@@ -44,7 +44,7 @@ import { IKeymapService } from 'vs/workbench/services/keybinding/common/keymapIn
 import { getDispatchConfig } from 'vs/workbench/services/keybinding/common/dispatchConfig';
 import { isArray } from 'vs/base/common/types';
 import { INavigatorWithKeyboard, IKeyboard } from 'vs/workbench/services/keybinding/browser/navigatorKeyboard';
-import { ScanCodeUtils, IMMUTABLE_CODE_TO_KEY_CODE } from 'vs/base/common/scanCode';
+import { ScanCode, ScanCodeUtils, IMMUTABLE_CODE_TO_KEY_CODE, IMMUTABLE_KEY_CODE_TO_CODE } from 'vs/base/common/scanCode';
 import { flatten } from 'vs/base/common/arrays';
 import { BrowserFeatures, KeyboardSupport } from 'vs/base/browser/canIUse';
 
@@ -142,6 +142,24 @@ const keybindingsExtPoint = ExtensionsRegistry.registerExtensionPoint<Contribute
 		]
 	}
 });
+
+const NUMPAD_PRINTABLE_SCANCODES = [
+	ScanCode.NumpadDivide,
+	ScanCode.NumpadMultiply,
+	ScanCode.NumpadSubtract,
+	ScanCode.NumpadAdd,
+	ScanCode.Numpad1,
+	ScanCode.Numpad2,
+	ScanCode.Numpad3,
+	ScanCode.Numpad4,
+	ScanCode.Numpad5,
+	ScanCode.Numpad6,
+	ScanCode.Numpad7,
+	ScanCode.Numpad8,
+	ScanCode.Numpad9,
+	ScanCode.Numpad0,
+	ScanCode.NumpadDecimal
+];
 
 export class WorkbenchKeybindingService extends AbstractKeybindingService {
 
@@ -559,24 +577,34 @@ export class WorkbenchKeybindingService extends AbstractKeybindingService {
 			return false;
 		}
 		const code = ScanCodeUtils.toEnum(event.code);
-		const keycode = IMMUTABLE_CODE_TO_KEY_CODE[code];
-		if (keycode !== -1) {
-			// https://github.com/microsoft/vscode/issues/74934
-			return false;
+
+		if (NUMPAD_PRINTABLE_SCANCODES.indexOf(code) === -1) {
+			const keycode = IMMUTABLE_CODE_TO_KEY_CODE[code];
+			if (keycode !== -1) {
+				// https://github.com/microsoft/vscode/issues/74934
+				return false;
+			}
+			// consult the KeyboardMapperFactory to check the given event for
+			// a printable value.
+			const mapping = this.keymapService.getRawKeyboardMapping();
+			if (!mapping) {
+				return false;
+			}
+			const keyInfo = mapping[event.code];
+			if (!keyInfo) {
+				return false;
+			}
+			if (!keyInfo.value || /\s/.test(keyInfo.value)) {
+				return false;
+			}
+		} else {
+			const immutableScanCode = IMMUTABLE_KEY_CODE_TO_CODE[event.keyCode];
+			if (code !== immutableScanCode) {
+				// NumLock is disabled
+				return false;
+			}
 		}
-		// consult the KeyboardMapperFactory to check the given event for
-		// a printable value.
-		const mapping = this.keymapService.getRawKeyboardMapping();
-		if (!mapping) {
-			return false;
-		}
-		const keyInfo = mapping[event.code];
-		if (!keyInfo) {
-			return false;
-		}
-		if (!keyInfo.value || /\s/.test(keyInfo.value)) {
-			return false;
-		}
+
 		return true;
 	}
 }
