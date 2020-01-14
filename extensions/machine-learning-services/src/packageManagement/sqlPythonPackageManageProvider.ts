@@ -12,7 +12,7 @@ import * as constants from '../common/constants';
 import { QueryRunner } from '../common/queryRunner';
 import { ApiWrapper } from '../common/apiWrapper';
 import { ProcessService } from '../common/processService';
-import { Config } from '../configurations/Config';
+import { Config } from '../configurations/config';
 
 const installMode = 'install';
 const uninstallMode = 'uninstall';

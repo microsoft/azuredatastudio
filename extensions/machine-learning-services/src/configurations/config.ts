@@ -30,7 +30,7 @@ export class Config {
 	 * Loads the config values
 	 */
 	public async load(): Promise<void> {
-		const rawConfig = await fs.readFile(path.join(this._root, 'configurations', configFileName));
+		const rawConfig = await fs.readFile(path.join(this._root, 'src', 'configurations', configFileName));
 		this._configValues = JSON.parse(rawConfig.toString());
 	}
 
