@@ -12,7 +12,7 @@ import * as constants from '../common/constants';
 import { QueryRunner } from '../common/queryRunner';
 import { ApiWrapper } from '../common/apiWrapper';
 import { ProcessService } from '../common/processService';
-import { UserConfig } from '../config/userConfig';
+import { Config } from '../configurations/Config';
 
 const installMode = 'install';
 const uninstallMode = 'uninstall';
@@ -36,8 +36,8 @@ export class SqlPythonPackageManageProvider implements nbExtensionApis.IPackageM
 		private _apiWrapper: ApiWrapper,
 		private _queryRunner: QueryRunner,
 		private _processService: ProcessService,
-		private _userConfig: UserConfig) {
-		this._pythonExecutable = this._userConfig.pythonExecutable;
+		private _config: Config) {
+		this._pythonExecutable = this._config.pythonExecutable;
 	}
 
 	/**

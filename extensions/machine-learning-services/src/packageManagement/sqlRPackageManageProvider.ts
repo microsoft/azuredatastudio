@@ -12,7 +12,7 @@ import * as constants from '../common/constants';
 import { QueryRunner } from '../common/queryRunner';
 import { ApiWrapper } from '../common/apiWrapper';
 import { ProcessService } from '../common/processService';
-import { UserConfig } from '../config/userConfig';
+import { Config } from '../configurations/config';
 
 const installMode = 'install';
 const uninstallMode = 'uninstall';
@@ -34,8 +34,8 @@ export class SqlRPackageManageProvider implements nbExtensionApis.IPackageManage
 		private _apiWrapper: ApiWrapper,
 		private _queryRunner: QueryRunner,
 		private _processService: ProcessService,
-		private _userConfig: UserConfig) {
-		this._rExecutable = this._userConfig.rExecutable;
+		private _config: Config) {
+		this._rExecutable = this._config.rExecutable;
 	}
 
 	/**

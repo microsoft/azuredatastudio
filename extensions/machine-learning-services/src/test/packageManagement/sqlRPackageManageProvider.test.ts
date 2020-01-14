@@ -302,12 +302,12 @@ describe('SQL R Package Manager', () => {
 	});
 
 	function createProvider(testContext: TestContext): SqlRPackageManageProvider {
-		testContext.userConfig.setup(x => x.rExecutable).returns(() => 'r');
+		testContext.config.setup(x => x.rExecutable).returns(() => 'r');
 		return new SqlRPackageManageProvider(
 			testContext.outputChannel,
 			testContext.apiWrapper.object,
 			testContext.queryRunner.object,
 			testContext.processService.object,
-			testContext.userConfig.object);
+			testContext.config.object);
 	}
 });

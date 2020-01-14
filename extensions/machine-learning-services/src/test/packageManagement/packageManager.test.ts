@@ -190,8 +190,8 @@ describe('Package Manager', () => {
 			{ name: 'sqlmlutils', version: '' }
 		]);
 		testContext.httpClient.setup(x => x.download(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
-		testContext.userConfig.setup(x => x.pythonExecutable).returns(() => 'python');
-		testContext.userConfig.setup(x => x.rExecutable).returns(() => 'r');
+		testContext.config.setup(x => x.pythonExecutable).returns(() => 'python');
+		testContext.config.setup(x => x.rExecutable).returns(() => 'r');
 		let packageManager = new PackageManager(
 			testContext.nbExtensionApis,
 			testContext.outputChannel,
@@ -200,7 +200,6 @@ describe('Package Manager', () => {
 			testContext.queryRunner.object,
 			testContext.processService.object,
 			testContext.config.object,
-			testContext.userConfig.object,
 			testContext.httpClient.object);
 		packageManager.init();
 		packageManager.dependenciesInstalled = true;

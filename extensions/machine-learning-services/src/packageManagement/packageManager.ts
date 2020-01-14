@@ -14,9 +14,8 @@ import * as utils from '../common/utils';
 import * as constants from '../common/constants';
 import { ApiWrapper } from '../common/apiWrapper';
 import { ProcessService } from '../common/processService';
-import { AppConfig } from '../config/appConfig';
+import { Config } from '../configurations/config';
 import { isNullOrUndefined } from 'util';
-import { UserConfig } from '../config/userConfig';
 import { SqlRPackageManageProvider } from './sqlRPackageManageProvider';
 import { HttpClient } from '../common/httpClient';
 
@@ -38,8 +37,7 @@ export class PackageManager {
 		private _apiWrapper: ApiWrapper,
 		private _queryRunner: QueryRunner,
 		private _processService: ProcessService,
-		private _appConfig: AppConfig,
-		private _userConfig: UserConfig,
+		private _config: Config,
 		private _httpClient: HttpClient) {
 	}
 
@@ -48,10 +46,10 @@ export class PackageManager {
 	 */
 	public init(): void {
 		//this._pythonInstallationLocation = utils.getPythonInstallationLocation(this._rootFolder);
-		this._pythonExecutable = this._userConfig.pythonExecutable;
-		this._rExecutable = this._userConfig.rExecutable;
-		this._sqlPythonPackagePackageManager = new SqlPythonPackageManageProvider(this._nbExtensionApis, this._outputChannel, this._apiWrapper, this._queryRunner, this._processService, this._userConfig);
-		this._sqlRPackageManager = new SqlRPackageManageProvider(this._outputChannel, this._apiWrapper, this._queryRunner, this._processService, this._userConfig);
+		this._pythonExecutable = this._config.pythonExecutable;
+		this._rExecutable = this._config.rExecutable;
+		this._sqlPythonPackagePackageManager = new SqlPythonPackageManageProvider(this._nbExtensionApis, this._outputChannel, this._apiWrapper, this._queryRunner, this._processService, this._config);
+		this._sqlRPackageManager = new SqlRPackageManageProvider(this._outputChannel, this._apiWrapper, this._queryRunner, this._processService, this._config);
 		this._nbExtensionApis.registerPackageManager(SqlPythonPackageManageProvider.ProviderId, this._sqlPythonPackagePackageManager);
 		this._nbExtensionApis.registerPackageManager(SqlRPackageManageProvider.ProviderId, this._sqlRPackageManager);
 	}
@@ -153,7 +151,7 @@ export class PackageManager {
 		}
 		let installedPackages = await this.getInstalledPipPackages();
 		let fileContent = '';
-		this._appConfig.requiredPythonPackages.forEach(packageDetails => {
+		this._config.requiredPythonPackages.forEach(packageDetails => {
 			let hasVersion = ('version' in packageDetails) && !isNullOrUndefined(packageDetails['version']) && packageDetails['version'].length > 0;
 			if (!installedPackages.find(x => x.name === packageDetails['name'] && (!hasVersion || packageDetails['version'] === x.version))) {
 				let packageNameDetail = hasVersion ? `${packageDetails.name}==${packageDetails.version}` : `${packageDetails.name}`;
