@@ -464,7 +464,6 @@ export abstract class GridParentComponent extends Disposable {
 		this.renderedDataSets = tempRenderedDataSets;
 	}
 
-
 	getSelectedRangeUnderMessages(): Selection {
 		if (document.activeElement === this.getMessagesElement()) {
 			return window.getSelection();
@@ -515,8 +514,6 @@ export abstract class GridParentComponent extends Disposable {
 	 * used to render the native element into the container.
 	 * */
 	public render(container: HTMLElement): void {
-		this.nativeElement.style.width = '100%';
-		this.nativeElement.style.height = '100%';
 		container.appendChild(this.nativeElement);
 	}
 }

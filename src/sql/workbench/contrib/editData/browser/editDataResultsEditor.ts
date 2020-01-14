@@ -50,7 +50,7 @@ export class EditDataResultsEditor extends BaseEditor {
 	}
 
 	public get input(): EditDataResultsInput {
-		return this._input as EditDataResultsInput;
+		return this._input;
 	}
 
 	public createEditor(parent: HTMLElement): void {
@@ -74,10 +74,6 @@ export class EditDataResultsEditor extends BaseEditor {
 			this.createGridPanel();
 		}
 		return Promise.resolve<void>(null);
-	}
-
-	clearInput() {
-		super.clearInput();
 	}
 
 	private _applySettings() {

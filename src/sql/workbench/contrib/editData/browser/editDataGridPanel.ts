@@ -434,7 +434,6 @@ export class EditDataGridPanel extends GridParentComponent {
 							self.tables[0].setActive();
 							self.tables[0].rerenderGrid(0, self.dataSet.dataRows.getLength());
 							self.tables[0].resizeCanvas();
-							self.firstRender = false;
 						}
 					};
 
@@ -455,6 +454,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				['columnDefinitions']: { currentValue: this.dataSet.columnDefinitions, firstChange: this.firstRender, previousValue: undefined }
 			});
 			this.handleInitializeTable();
+			this.firstRender = false;
 		}
 		else {
 
