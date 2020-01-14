@@ -176,7 +176,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 			return account;
 		} finally {
-			//server.close();
+			server.close();
 		}
 	}
 
@@ -220,7 +220,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			res.write(localize('azureAuth.authSuccessful', "Authentication was successful, you can now close this page."));
 			res.end();
 
-			this.handleAuthentication(code).catch(console.error);
+			this.handleAuthentication(code).catch((e) => console.error(e));
 		});
 
 		pathMappings.set('/signin', initialSignIn);
@@ -297,12 +297,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	 */
 	private async handleAuthentication(code: string): Promise<void> {
 		let token: TokenResponse;
-		try {
-			token = await this.getTokenWithAuthCode(code, AzureAccountProvider.redirectUrlAAD);
-		} catch (err) {
-			console.log(err);
-			return;
-		}
+		token = await this.getTokenWithAuthCode(code, AzureAccountProvider.redirectUrlAAD);
 		const tenants = await this.getTenants(token.userId, token.tenantId);
 		let identityProvider = token.identityProvider;
 		if (identityProvider) {
@@ -386,7 +381,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			if (method) {
 				method(req, res, reqUrl);
 			} else {
-				console.error('undefined request ', reqUrl.pathname, req);
+				console.log('undefined request ', reqUrl.pathname, req);
 			}
 		});
 
