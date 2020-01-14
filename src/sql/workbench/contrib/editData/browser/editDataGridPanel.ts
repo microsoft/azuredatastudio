@@ -427,7 +427,6 @@ export class EditDataGridPanel extends GridParentComponent {
 					self.oldDataRows = self.placeHolderDataSets[0].dataRows;
 				}
 
-
 				if (self.firstRender) {
 					let setActive = function () {
 						if (self.firstRender && self.tables.length > 0) {
@@ -801,15 +800,11 @@ export class EditDataGridPanel extends GridParentComponent {
 				}
 			};
 
-
 			if (dataSet.columnDefinitions) {
-
 				this.tables[0] = new Table(this.nativeElement.appendChild(newGridContainer), { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
-
 				for (let plugin of this.plugins) {
 					this.tables[0].registerPlugin(plugin);
 				}
-
 				for (let i = 0; i < this.placeHolderDataSets[0].columnDefinitions.length; i++) {
 					this.columnNameToIndex[this.placeHolderDataSets[0].columnDefinitions[i].name] = i;
 				}
