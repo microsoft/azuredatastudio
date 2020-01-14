@@ -70,6 +70,7 @@ import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitData
 import { find } from 'vs/base/common/arrays';
 import { ExtHostTheming } from 'vs/workbench/api/common/extHostTheming';
 import { IExtHostTunnelService } from 'vs/workbench/api/common/extHostTunnelService';
+import { ExtHostAuthentication } from 'vs/workbench/api/common/extHostAuthentication';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -129,6 +130,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostProgress = rpcProtocol.set(ExtHostContext.ExtHostProgress, new ExtHostProgress(rpcProtocol.getProxy(MainContext.MainThreadProgress)));
 	const extHostLabelService = rpcProtocol.set(ExtHostContext.ExtHostLabelService, new ExtHostLabelService(rpcProtocol));
 	const extHostTheming = rpcProtocol.set(ExtHostContext.ExtHostTheming, new ExtHostTheming(rpcProtocol));
+	const extHostAuthentication = rpcProtocol.set(ExtHostContext.ExtHostAuthentication, new ExtHostAuthentication(rpcProtocol));
 
 	// Check that no named customers are missing
 	// {{SQL CARBON EDIT}} filter out the services we don't expose
@@ -178,6 +180,11 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			};
 		})();
 
+		const authentication: typeof vscode.authentication = {
+			registerAuthenticationProvider(provider: vscode.AuthenticationProvider): vscode.Disposable {
+				return extHostAuthentication.registerAuthenticationProvider(provider);
+			}
+		};
 
 		// namespace: commands
 		const commands: typeof vscode.commands = {
@@ -835,6 +842,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			// {{SQL CARBON EDIT}} - Expose the VS Code version here for extensions that rely on it
 			version: initData.vscodeVersion,
 			// namespaces
+			authentication,
 			commands,
 			debug,
 			env,
