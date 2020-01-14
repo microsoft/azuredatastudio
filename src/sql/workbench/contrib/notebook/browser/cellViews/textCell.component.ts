@@ -117,7 +117,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	 */
 	getEditor(): BaseTextEditor | undefined {
 		if (this.markdowncodeCell.length > 0) {
-			return this.markdowncodeCell.toArray()[0].getEditor();
+			return this.markdowncodeCell.first.getEditor();
 		}
 		return undefined;
 	}
