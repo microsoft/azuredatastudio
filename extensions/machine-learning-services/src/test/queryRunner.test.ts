@@ -161,7 +161,6 @@ describe('Query Runner', () => {
 		testContext.apiWrapper.setup(x => x.getProvider<azdata.QueryProvider>(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => testContext.queryProvider);
 
 		await should(queryRunner.updateExternalScriptConfig(connection, true)).resolved();
-
 	});
 
 	it('isPythonInstalled Should return true is provider returns valid result', async function (): Promise<void> {

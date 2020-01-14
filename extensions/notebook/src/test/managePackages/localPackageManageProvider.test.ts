@@ -163,7 +163,7 @@ describe('Manage Package Providers', () => {
 		let client = createPipyClient(testContext);
 		let provider = new LocalPipPackageManageProvider(serverInstallation.object, client.object);
 
-		should(provider.getPackageOverview('name')).resolvedWith({
+		await should(provider.getPackageOverview('name')).resolvedWith({
 			name: 'name',
 			versions: ['0.0.1', '0.0.2'],
 			summary: 'summary'
@@ -180,7 +180,7 @@ describe('Manage Package Providers', () => {
 
 		let provider = new LocalCondaPackageManageProvider(serverInstallation.object);
 
-		should(provider.getPackageOverview('name')).resolvedWith({
+		await should(provider.getPackageOverview('name')).resolvedWith({
 			name: 'name',
 			versions: ['0.0.1', '0.0.2'],
 			summary: undefined
