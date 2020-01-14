@@ -8,11 +8,12 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nbExtensionApis from '../typings/notebookServices';
-import * as constants from '../common/constants';
+
 import { QueryRunner } from '../common/queryRunner';
 import { ApiWrapper } from '../common/apiWrapper';
 import { ProcessService } from '../common/processService';
 import { Config } from '../configurations/config';
+import { SqlPackageManageProviderBase } from './SqPackageManageProviderBase';
 
 const installMode = 'install';
 const uninstallMode = 'uninstall';
@@ -20,7 +21,7 @@ const uninstallMode = 'uninstall';
 /**
  * Manage Package Provider for python packages inside SQL server databases
  */
-export class SqlRPackageManageProvider implements nbExtensionApis.IPackageManageProvider {
+export class SqlRPackageManageProvider extends SqlPackageManageProviderBase implements nbExtensionApis.IPackageManageProvider {
 
 	private _rExecutable: string;
 
@@ -31,10 +32,11 @@ export class SqlRPackageManageProvider implements nbExtensionApis.IPackageManage
 	 */
 	constructor(
 		private _outputChannel: vscode.OutputChannel,
-		private _apiWrapper: ApiWrapper,
+		apiWrapper: ApiWrapper,
 		private _queryRunner: QueryRunner,
 		private _processService: ProcessService,
 		private _config: Config) {
+		super(apiWrapper);
 		this._rExecutable = this._config.rExecutable;
 	}
 
@@ -148,18 +150,5 @@ export class SqlRPackageManageProvider implements nbExtensionApis.IPackageManage
 		return packagePreview;
 	}
 
-	/**
-	 * Returns location title
-	 */
-	async getLocationTitle(): Promise<string> {
-		let connection = await this.getCurrentConnection();
-		if (connection) {
-			return `${connection.serverName} ${connection.databaseName ? connection.databaseName : ''}`;
-		}
-		return constants.packageManagerNoConnection;
-	}
 
-	private async getCurrentConnection(): Promise<azdata.connection.ConnectionProfile> {
-		return await this._apiWrapper.getCurrentConnection();
-	}
 }

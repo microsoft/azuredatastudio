@@ -8,11 +8,11 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nbExtensionApis from '../typings/notebookServices';
-import * as constants from '../common/constants';
 import { QueryRunner } from '../common/queryRunner';
 import { ApiWrapper } from '../common/apiWrapper';
 import { ProcessService } from '../common/processService';
 import { Config } from '../configurations/config';
+import { SqlPackageManageProviderBase } from './SqPackageManageProviderBase';
 
 const installMode = 'install';
 const uninstallMode = 'uninstall';
@@ -21,7 +21,7 @@ const localPythonProviderId = 'localhost_Pip';
 /**
  * Manage Package Provider for python packages inside SQL server databases
  */
-export class SqlPythonPackageManageProvider implements nbExtensionApis.IPackageManageProvider {
+export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase implements nbExtensionApis.IPackageManageProvider {
 
 	private _pythonExecutable: string;
 
@@ -33,10 +33,11 @@ export class SqlPythonPackageManageProvider implements nbExtensionApis.IPackageM
 	constructor(
 		private _nbExtensionApis: nbExtensionApis.IExtensionApi,
 		private _outputChannel: vscode.OutputChannel,
-		private _apiWrapper: ApiWrapper,
+		apiWrapper: ApiWrapper,
 		private _queryRunner: QueryRunner,
 		private _processService: ProcessService,
 		private _config: Config) {
+		super(apiWrapper);
 		this._pythonExecutable = this._config.pythonExecutable;
 	}
 
@@ -158,26 +159,11 @@ export class SqlPythonPackageManageProvider implements nbExtensionApis.IPackageM
 		return packagePreview;
 	}
 
-	/**
-	 * Returns location title
-	 */
-	async getLocationTitle(): Promise<string> {
-		let connection = await this.getCurrentConnection();
-		if (connection) {
-			return `${connection.serverName} ${connection.databaseName ? connection.databaseName : ''}`;
-		}
-		return constants.packageManagerNoConnection;
-	}
-
 	private get pythonPackageProvider(): nbExtensionApis.IPackageManageProvider | undefined {
 		let providers = this._nbExtensionApis.getPackageManagers();
 		if (providers && providers.has(localPythonProviderId)) {
 			return providers.get(localPythonProviderId);
 		}
 		return undefined;
-	}
-
-	private async getCurrentConnection(): Promise<azdata.connection.ConnectionProfile> {
-		return await this._apiWrapper.getCurrentConnection();
 	}
 }
