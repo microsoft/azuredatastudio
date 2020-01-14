@@ -1629,7 +1629,7 @@ const DECORATIONS = {
 	}),
 	lineInsertWithSign: ModelDecorationOptions.register({
 		className: 'line-insert',
-		linesDecorationsClassName: 'insert-sign.codicon-add',
+		linesDecorationsClassName: 'insert-sign codicon codicon-add',
 		marginClassName: 'line-insert',
 		isWholeLine: true
 	}),
@@ -1641,7 +1641,7 @@ const DECORATIONS = {
 	}),
 	lineDeleteWithSign: ModelDecorationOptions.register({
 		className: 'line-delete',
-		linesDecorationsClassName: 'delete-sign.codicon-remove',
+		linesDecorationsClassName: 'delete-sign codicon codicon-remove',
 		marginClassName: 'line-delete',
 		isWholeLine: true
 
