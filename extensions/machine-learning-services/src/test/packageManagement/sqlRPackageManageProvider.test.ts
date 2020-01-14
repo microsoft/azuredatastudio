@@ -256,7 +256,7 @@ describe('SQL R Package Manager', () => {
 			'name': 'a-name',
 			'version': '1.1.2'
 		}];
-		testContext.queryRunner.setup( x => x.getRAvailablePackages(TypeMoq.It.isAny())).returns( () => Promise.resolve(allPackages));
+		testContext.queryRunner.setup(x => x.getRAvailablePackages(TypeMoq.It.isAny())).returns(() => Promise.resolve(allPackages));
 		let provider = createProvider(testContext);
 		let actual = await provider.getPackageOverview('a-name');
 
