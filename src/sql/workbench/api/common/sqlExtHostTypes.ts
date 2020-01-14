@@ -828,6 +828,11 @@ export type QueryEventType =
 	| 'visualize';
 
 export enum TabOrientation {
-	Vertical = 0,
-	Horizontal = 1
+	Vertical = 'vertical',
+	Horizontal = 'horizontal'
+}
+
+
+export interface TabbedPanelLayout {
+	orientation: TabOrientation;
 }

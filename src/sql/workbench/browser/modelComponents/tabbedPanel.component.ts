@@ -3,10 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnDestroy, ViewChild } from '@angular/core';
-import * as azdata from 'azdata';
 import { NavigationBarLayout, PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { TabType } from 'sql/base/browser/ui/panel/tab.component';
-import { TabOrientation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { TabOrientation, TabbedPanelLayout } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
 import 'vs/css!./media/tabbedPanel';
@@ -45,17 +44,6 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 		this.baseInit();
 	}
 
-	public setProperties(properties: { [key: string]: any }) {
-		super.setProperties(properties);
-		if ('orientation' in properties) {
-			this._panel.options = {
-				showTabsWhenOne: true,
-				layout: this.orientation === TabOrientation.Horizontal ? NavigationBarLayout.horizontal : NavigationBarLayout.vertical,
-				showIcon: false
-			};
-		}
-	}
-
 	ngAfterViewInit(): void {
 	}
 
@@ -63,7 +51,12 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 		this.baseDestroy();
 	}
 
-	setLayout(layout: any): void {
+	setLayout(layout: TabbedPanelLayout): void {
+		this._panel.options = {
+			showTabsWhenOne: true,
+			layout: layout.orientation === TabOrientation.Horizontal ? NavigationBarLayout.horizontal : NavigationBarLayout.vertical,
+			showIcon: false
+		};
 	}
 
 	handleTabChange(event: any): void {
@@ -71,10 +64,6 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 			eventType: ComponentEventType.onDidChange,
 			args: event.identifier
 		});
-	}
-
-	public get orientation(): TabOrientation {
-		return this.getPropertyOrDefault<azdata.TabbedPanelComponentProperties, TabOrientation>((props) => props.orientation, TabOrientation.Vertical);
 	}
 
 	get tabs(): Tab[] {

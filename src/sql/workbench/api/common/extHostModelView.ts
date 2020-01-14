@@ -482,8 +482,8 @@ class ToolbarContainerBuilder extends GenericContainerBuilder<azdata.ToolbarCont
 	}
 }
 
-class TabbedPanelComponentBuilder extends ContainerBuilderImpl<azdata.TabbedPanelComponent, any, any> implements azdata.TabbedPanelComponentBuilder {
-	withTabs(items: (azdata.Tab | azdata.TabGroup)[]): azdata.ContainerBuilder<azdata.TabbedPanelComponent, any, any> {
+class TabbedPanelComponentBuilder extends ContainerBuilderImpl<azdata.TabbedPanelComponent, azdata.TabbedPanelLayout, any> implements azdata.TabbedPanelComponentBuilder {
+	withTabs(items: (azdata.Tab | azdata.TabGroup)[]): azdata.ContainerBuilder<azdata.TabbedPanelComponent, azdata.TabbedPanelLayout, any> {
 		const itemConfigs = [];
 		items.forEach(item => {
 			if (item && 'tabs' in item) {
