@@ -11,7 +11,6 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import CredentialServiceTokenCache from './tokenCache';
 import providerSettings from './providerSettings';
-import { AzureAccountProvider as AzureAccountProviderDeprecated } from './azureAccountProvider';
 import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider2';
 import { AzureAccountProviderMetadata, ProviderSettings } from './interfaces';
 
