@@ -139,6 +139,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		// Before separating tabs into pinned / shown, ensure that the home tab is always set up as expected
 		allTabs = this.setAndRemoveHomeTab(allTabs, homeWidgets);
 
+		this.loadNewTabs(allTabs.filter((tab) => tab.isTopLevelTab));
+		this.addExtensionsTabGroup();
+
 		// If preview features are disabled only show the home tab
 		const extensionTabsEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!extensionTabsEnabled) {
@@ -148,7 +151,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		// Load tab setting configs
 		this._tabSettingConfigs = this.dashboardService.getSettings<Array<TabSettingConfig>>([this.context, 'tabs'].join('.'));
 
-		this.loadNewTabs(allTabs);
+		this.loadNewTabs(allTabs.filter((tab) => !tab.isTopLevelTab));
 
 		this.panelActions = [];
 
@@ -167,6 +170,21 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this._tabsDispose.push(this.dashboardService.onAddNewTabs(e => {
 			this.loadNewTabs(e, true);
 		}));
+	}
+
+	private addExtensionsTabGroup(): void {
+		this.addNewTab({
+			id: 'extensionGroupHeader',
+			provider: Constants.anyProviderName,
+			originalConfig: [],
+			publisher: undefined,
+			title: nls.localize('dashboard.extensionGroupHeader', "Extensions"),
+			context: this.context,
+			type: 'group-header',
+			editable: false,
+			canClose: false,
+			actions: []
+		});
 	}
 
 	private setAndRemoveHomeTab(allTabs: IDashboardTab[], homeWidgets: WidgetConfig[]): IDashboardTab[] {
@@ -192,18 +210,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			homeTabConfig.container = tabConfig.container;
 		}
 		this.addNewTab(homeTabConfig);
-		this.addNewTab({
-			id: 'extensionGroupHeader',
-			provider: Constants.anyProviderName,
-			originalConfig: [],
-			publisher: undefined,
-			title: nls.localize('dashboard.extensionGroupHeader', "Extensions"),
-			context: this.context,
-			type: 'group-header',
-			editable: false,
-			canClose: false,
-			actions: []
-		});
 		return allTabs;
 	}
 

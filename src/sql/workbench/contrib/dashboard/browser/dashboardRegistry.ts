@@ -29,6 +29,7 @@ export interface IDashboardTab {
 	when?: string;
 	alwaysShow?: boolean;
 	isHomeTab?: boolean;
+	isTopLevelTab?: boolean;
 }
 
 export interface IDashboardRegistry {

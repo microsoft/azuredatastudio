@@ -25,6 +25,7 @@ export interface IDashboardTabContrib {
 	description?: string;
 	alwaysShow?: boolean;
 	isHomeTab?: boolean;
+	isTopLevelTab?: boolean;
 }
 
 const tabSchema: IJSONSchema = {
@@ -63,6 +64,10 @@ const tabSchema: IJSONSchema = {
 		isHomeTab: {
 			description: localize('azdata.extension.contributes.dashboard.tab.isHomeTab', "Whether or not this tab should be used as the Home tab for a connection type."),
 			type: 'boolean'
+		},
+		isTopLevelTab: {
+			description: localize('azdata.extension.contributes.dashboard.tab.isTopLevelTab', "Whether or not this tab should be next to Home tab, if not it will be shown under Extensions group."),
+			type: 'boolean'
 		}
 	}
 };
@@ -81,12 +86,18 @@ const tabContributionSchema: IJSONSchema = {
 ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabContrib[]>({ extensionPoint: 'dashboard.tabs', jsonSchema: tabContributionSchema }).setHandler(extensions => {
 
 	function handleCommand(tab: IDashboardTabContrib, extension: IExtensionPointUser<any>) {
-		let { description, container, provider, title, when, id, alwaysShow, isHomeTab } = tab;
+		let { description, container, provider, title, when, id, alwaysShow, isHomeTab, isTopLevelTab } = tab;
 
 		// If always show is not specified, set it to true by default.
 		if (!types.isBoolean(alwaysShow)) {
 			alwaysShow = true;
 		}
+
+		// If isTopLevelTab is not specified, set it to true by default.
+		if (!types.isBoolean(isTopLevelTab)) {
+			isTopLevelTab = false;
+		}
+
 		const publisher = extension.description.publisher;
 		if (!title) {
 			extension.collector.error(localize('dashboardTab.contribution.noTitleError', "No title specified for extension."));
@@ -131,7 +142,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 		}
 
 		if (result) {
-			registerTab({ description, title, container, provider, when, id, alwaysShow, publisher, isHomeTab });
+			registerTab({ description, title, container, provider, when, id, alwaysShow, publisher, isHomeTab, isTopLevelTab });
 		}
 	}
 
