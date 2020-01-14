@@ -105,6 +105,9 @@ import 'vs/workbench/contrib/splash/electron-browser/partsSplash.contribution';
 import 'vs/workbench/contrib/files/electron-browser/files.contribution';
 import 'vs/workbench/contrib/files/electron-browser/fileActions.contribution';
 
+// Backup
+import 'vs/workbench/contrib/backup/electron-browser/backup.contribution';
+
 // Debug
 // import 'vs/workbench/contrib/debug/node/debugHelperService'; {{SQL CARBON EDIT}}
 import 'vs/workbench/contrib/debug/electron-browser/extensionHostDebugService';
