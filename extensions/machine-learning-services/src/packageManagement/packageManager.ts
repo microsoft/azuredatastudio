@@ -26,7 +26,7 @@ export class PackageManager {
 	private _rExecutable: string = '';
 	private _sqlPythonPackagePackageManager: SqlPythonPackageManageProvider | undefined = undefined;
 	private _sqlRPackageManager: SqlRPackageManageProvider | undefined = undefined;
-	private _dependenciesInstalled: boolean = false;
+	public dependenciesInstalled: boolean = false;
 
 	/**
 	 * Creates a new instance of PackageManager
@@ -76,9 +76,10 @@ export class PackageManager {
 
 				// Install dependencies
 				//
-				if (!this._dependenciesInstalled) {
+				if (!this.dependenciesInstalled) {
+					this._apiWrapper.showInfoMessage(constants.installingDependencies);
 					await this.installDependencies();
-					this._dependenciesInstalled = true;
+					this.dependenciesInstalled = true;
 				}
 
 				// Execute the command
@@ -108,8 +109,8 @@ export class PackageManager {
 				isCancelable: false,
 				operation: async op => {
 					try {
-
 						await utils.createFolder(utils.getPackagesFolderPath(this._rootFolder));
+
 						// Install required packages
 						//
 						await this.installRequiredPythonPackages();
@@ -128,7 +129,7 @@ export class PackageManager {
 
 	private async installRequiredRPackages(startBackgroundOperation: azdata.BackgroundOperation): Promise<string> {
 		if (!this._rExecutable) {
-			throw new Error('R Executable is not configured');
+			throw new Error(constants.pythonConfigError);
 		}
 
 		const sqlMlUtilsPackage = utils.getRSqlMlUtilsPath(this._rootFolder);
@@ -148,7 +149,7 @@ export class PackageManager {
 	 */
 	private async installRequiredPythonPackages(): Promise<void> {
 		if (!this._pythonExecutable) {
-			throw new Error('Python executable is not configured');
+			throw new Error(constants.pythonConfigError);
 		}
 		let installedPackages = await this.getInstalledPipPackages();
 		let fileContent = '';

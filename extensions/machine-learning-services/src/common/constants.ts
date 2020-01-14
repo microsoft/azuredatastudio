@@ -57,6 +57,9 @@ export const mlsPythonLanguageTitle = localize('mls.pythonLanguageTitle', "Pytho
 export const mlsRLanguageTitle = localize('mls.rLanguageTitle', "R");
 export const downloadError = localize('mls.downloadError', "Error while downloading");
 export const downloadingProgress = localize('mls.downloadingProgress', "Downloading");
+export const pythonConfigError = localize('mls.pythonConfigError', "Python executable is not configured");
+export const rConfigError = localize('mls.rConfigError', "R executable is not configured");
+export const installingDependencies = localize('mls.installingDependencies', "Installing Dependencies ...");
 
 // Links
 //
