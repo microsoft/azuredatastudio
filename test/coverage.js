@@ -17,7 +17,8 @@ const REPO_PATH = toUpperDriveLetter(path.join(__dirname, '..'));
 exports.initialize = function (loaderConfig) {
 	const instrumenter = iLibInstrument.createInstrumenter();
 	loaderConfig.nodeInstrumenter = function (contents, source) {
-		if (minimatch(source, '**/test/**')) { // {{SQL CARBON EDIT}} Don't instrument test helper stuff either
+		if (minimatch(source, '**/test/**')) {
+			// tests don't get instrumented
 			return contents;
 		}
 		// Try to find a .map file
