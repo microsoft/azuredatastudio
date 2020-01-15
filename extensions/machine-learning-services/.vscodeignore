@@ -1,4 +1,5 @@
 src/**
 tsconfig.json
 python/**
+r_packages/**
 out/test/**
