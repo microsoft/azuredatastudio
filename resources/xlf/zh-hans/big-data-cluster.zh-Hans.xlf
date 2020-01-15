@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/big-data-cluster/package" source-language="en" target-language="zh-Hans" datatype="plaintext">
+  <file original="extensions/big-data-cluster/package" source-language="en" datatype="plaintext" target-language="zh-HANS">
     <body>
       <trans-unit id="description">
         <source xml:lang="en">Support for managing SQL Server Big Data Clusters</source>
-        <target state="translated">支持管理 SQL Server 大数据集群</target>
+        <target state="translated">支持管理 SQL Server 大数据群集</target>
       </trans-unit>
       <trans-unit id="text.sqlServerBigDataClusters">
         <source xml:lang="en">SQL Server Big Data Clusters</source>
-        <target state="translated">SQL Server 大数据集群</target>
+        <target state="translated">SQL Server 大数据群集</target>
       </trans-unit>
       <trans-unit id="command.addController.title">
         <source xml:lang="en">Connect to Controller</source>
@@ -48,7 +48,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/utils" source-language="en" target-language="zh-Hans" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/utils" source-language="en" datatype="plaintext" target-language="zh-HANS">
     <body>
       <trans-unit id="state.creating">
         <source xml:lang="en">Creating</source>
@@ -56,11 +56,11 @@
       </trans-unit>
       <trans-unit id="state.waiting">
         <source xml:lang="en">Waiting</source>
-        <target state="translated">等待中</target>
+        <target state="translated">正在等待</target>
       </trans-unit>
       <trans-unit id="state.ready">
         <source xml:lang="en">Ready</source>
-        <target state="translated">就绪</target>
+        <target state="translated">准备就绪</target>
       </trans-unit>
       <trans-unit id="state.deleting">
         <source xml:lang="en">Deleting</source>
@@ -80,23 +80,23 @@
       </trans-unit>
       <trans-unit id="state.applyingmanagedupgrade">
         <source xml:lang="en">Applying Managed Upgrade</source>
-        <target state="translated">应用托管升级</target>
+        <target state="translated">正在应用托管升级</target>
       </trans-unit>
       <trans-unit id="state.managedUpgrading">
         <source xml:lang="en">Managed Upgrading</source>
-        <target state="translated">托管升级</target>
+        <target state="translated">正在托管升级</target>
       </trans-unit>
       <trans-unit id="state.rollback">
         <source xml:lang="en">Rollback</source>
-        <target state="translated">回滚</target>
+        <target state="translated">回退</target>
       </trans-unit>
       <trans-unit id="state.rollbackInProgress">
         <source xml:lang="en">Rollback In Progress</source>
-        <target state="translated">回滚正在进行中</target>
+        <target state="translated">正在回退</target>
       </trans-unit>
       <trans-unit id="state.rollbackComplete">
         <source xml:lang="en">Rollback Complete</source>
-        <target state="translated">回滚完成</target>
+        <target state="translated">回退完成</target>
       </trans-unit>
       <trans-unit id="state.error">
         <source xml:lang="en">Error</source>
@@ -104,11 +104,11 @@
       </trans-unit>
       <trans-unit id="state.creatingSecrets">
         <source xml:lang="en">Creating Secrets</source>
-        <target state="translated">正在创建密钥</target>
+        <target state="translated">正在创建机密</target>
       </trans-unit>
       <trans-unit id="state.waitingForSecrets">
         <source xml:lang="en">Waiting For Secrets</source>
-        <target state="translated">等待密钥</target>
+        <target state="translated">正在等待机密</target>
       </trans-unit>
       <trans-unit id="state.creatingGroups">
         <source xml:lang="en">Creating Groups</source>
@@ -128,15 +128,15 @@
       </trans-unit>
       <trans-unit id="state.creatingKerberosDelegationSetup">
         <source xml:lang="en">Creating Kerberos Delegation Setup</source>
-        <target state="translated">创建 Kerberos 代理设置</target>
+        <target state="translated">正在创建 Kerberos 委派设置</target>
       </trans-unit>
       <trans-unit id="state.waitingForKerberosDelegationSetup">
         <source xml:lang="en">Waiting For Kerberos Delegation Setup</source>
-        <target state="translated">创建 Kerberos 代理设置</target>
+        <target state="translated">正在等待 Kerberos 委派设置</target>
       </trans-unit>
       <trans-unit id="state.waitingForDeletion">
         <source xml:lang="en">Waiting For Deletion</source>
-        <target state="translated">等待删除</target>
+        <target state="translated">正在等待删除</target>
       </trans-unit>
       <trans-unit id="state.waitingForUpgrade">
         <source xml:lang="en">Waiting For Upgrade</source>
@@ -204,7 +204,7 @@
       </trans-unit>
       <trans-unit id="service.hdfs">
         <source xml:lang="en">HDFS</source>
-        <target state="translated">Hdfs</target>
+        <target state="translated">HDFS</target>
       </trans-unit>
       <trans-unit id="service.spark">
         <source xml:lang="en">Spark</source>
@@ -224,11 +224,11 @@
       </trans-unit>
       <trans-unit id="bdc.healthy">
         <source xml:lang="en">Healthy</source>
-        <target state="translated">正常运行</target>
+        <target state="translated">正常</target>
       </trans-unit>
       <trans-unit id="bdc.unhealthy">
         <source xml:lang="en">Unhealthy</source>
-        <target state="translated">运行不正常</target>
+        <target state="translated">不正常</target>
       </trans-unit>
       <trans-unit id="endpointsError">
         <source xml:lang="en">Unexpected error retrieving BDC Endpoints: {0}</source>
@@ -236,7 +236,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase" source-language="en" target-language="zh-Hans" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase" source-language="en" datatype="plaintext" target-language="zh-HANS">
     <body>
       <trans-unit id="basicAuthName">
         <source xml:lang="en">Basic</source>
@@ -256,7 +256,7 @@
       </trans-unit>
       <trans-unit id="err.controller.username.required">
         <source xml:lang="en">Username is required</source>
-        <target state="translated">用户名是必需的</target>
+        <target state="translated">用户名为必填项</target>
       </trans-unit>
       <trans-unit id="err.controller.password.required">
         <source xml:lang="en">Password is required</source>
@@ -304,7 +304,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi" source-language="en" target-language="zh-Hans" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi" source-language="en" datatype="plaintext" target-language="zh-HANS">
     <body>
       <trans-unit id="error.no.activedirectory">
         <source xml:lang="en">This cluster does not support Windows authentication</source>
@@ -340,15 +340,15 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/connectControllerDialog" source-language="en" target-language="zh-Hans" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/connectControllerDialog" source-language="en" datatype="plaintext" target-language="zh-HANS">
     <body>
       <trans-unit id="connectController.dialog.title">
         <source xml:lang="en">Connect to Controller (preview)</source>
-        <target state="translated">连接到控制器（预览）</target>
+        <target state="translated">连接到控制器(预览)</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/commonControls" source-language="en" target-language="zh-Hans" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/commonControls" source-language="en" datatype="plaintext" target-language="zh-HANS">
     <body>
       <trans-unit id="bdc.dashboard.viewDetails">
         <source xml:lang="en">View Details</source>
@@ -356,15 +356,15 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/extension" source-language="en" target-language="zh-Hans" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/extension" source-language="en" datatype="plaintext" target-language="zh-HANS">
     <body>
       <trans-unit id="mount.error.endpointNotFound">
         <source xml:lang="en">Controller endpoint information was not found</source>
-        <target state="translated">找不到控制器终结点信息</target>
+        <target state="translated">未找到控制器终结点信息</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.title">
         <source xml:lang="en">Big Data Cluster Dashboard (preview) -</source>
-        <target state="translated">大数据群集仪表板（预览） -</target>
+        <target state="translated">大数据群集仪表板(预览) -</target>
       </trans-unit>
       <trans-unit id="textYes">
         <source xml:lang="en">Yes</source>
@@ -376,15 +376,15 @@
       </trans-unit>
       <trans-unit id="textConfirmDeleteController">
         <source xml:lang="en">Are you sure you want to delete '{0}'?</source>
-        <target state="translated">是否确实要删除“{0}”?</target>
+        <target state="translated">确定要删除“{0}”吗?</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/addControllerNode" source-language="en" target-language="zh-Hans" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/addControllerNode" source-language="en" datatype="plaintext" target-language="zh-HANS">
     <body>
       <trans-unit id="textBigDataClusterControllerWithDots">
         <source xml:lang="en">Add SQL Server Big Data Cluster controller...</source>
-        <target state="translated">正在添加 SQL Server 大数据群集控制器...</target>
+        <target state="translated">添加 SQL Server 大数据群集控制器…</target>
       </trans-unit>
       <trans-unit id="textConnectToController">
         <source xml:lang="en">Connect to Controller</source>
@@ -392,15 +392,15 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/loadingControllerNode" source-language="en" target-language="zh-Hans" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/loadingControllerNode" source-language="en" datatype="plaintext" target-language="zh-HANS">
     <body>
       <trans-unit id="textLoadingWithDots">
         <source xml:lang="en">Loading...</source>
-        <target state="translated">正在加载...</target>
+        <target state="translated">正在加载…</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog" source-language="en" target-language="zh-Hans" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog" source-language="en" datatype="plaintext" target-language="zh-HANS">
     <body>
       <trans-unit id="basicAuthName">
         <source xml:lang="en">Basic</source>
@@ -412,7 +412,7 @@
       </trans-unit>
       <trans-unit id="err.controller.username.required">
         <source xml:lang="en">Username is required</source>
-        <target state="translated">用户名是必需的</target>
+        <target state="translated">用户名为必填项</target>
       </trans-unit>
       <trans-unit id="err.controller.password.required">
         <source xml:lang="en">Password is required</source>
@@ -420,7 +420,7 @@
       </trans-unit>
       <trans-unit id="textAddNewController">
         <source xml:lang="en">Add New Controller (preview)</source>
-        <target state="translated">添加新控制器（预览）</target>
+        <target state="translated">新增控制器(预览)</target>
       </trans-unit>
       <trans-unit id="textUrlLower">
         <source xml:lang="en">url</source>
@@ -464,7 +464,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboard" source-language="en" target-language="zh-Hans" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboard" source-language="en" datatype="plaintext" target-language="zh-HANS">
     <body>
       <trans-unit id="bdc.dashboard.refreshButton">
         <source xml:lang="en">Refresh</source>
@@ -484,15 +484,15 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage" source-language="en" target-language="zh-Hans" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage" source-language="en" datatype="plaintext" target-language="zh-HANS">
     <body>
       <trans-unit id="bdc.dashboard.viewHyperlink">
         <source xml:lang="en">View</source>
-        <target state="translated">视图</target>
+        <target state="translated">查看</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.notAvailable">
         <source xml:lang="en">N/A</source>
-        <target state="translated">不可用</target>
+        <target state="translated">不适用</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.healthStatusDetailsHeader">
         <source xml:lang="en">Health Status Details</source>
@@ -532,7 +532,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage" source-language="en" target-language="zh-Hans" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage" source-language="en" datatype="plaintext" target-language="zh-HANS">
     <body>
       <trans-unit id="bdc.dashboard.propertiesHeader">
         <source xml:lang="en">Cluster Properties</source>
@@ -600,7 +600,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog" source-language="en" target-language="zh-Hans" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog" source-language="en" datatype="plaintext" target-language="zh-HANS">
     <body>
       <trans-unit id="mount.main.section">
         <source xml:lang="en">Mount Configuration</source>
@@ -640,7 +640,7 @@
       </trans-unit>
       <trans-unit id="mount.dialog.title">
         <source xml:lang="en">Mount HDFS Folder (preview)</source>
-        <target state="translated">装载 HDFS 文件夹（预览）</target>
+        <target state="translated">装载 HDFS 文件夹(预览)</target>
       </trans-unit>
       <trans-unit id="mount.hdfsPath.info">
         <source xml:lang="en">Path to a new (non-existing) directory which you want to associate with the mount</source>
@@ -680,11 +680,11 @@
       </trans-unit>
       <trans-unit id="deletemount.task.name">
         <source xml:lang="en">Deleting HDFS Mount on path {0}</source>
-        <target state="translated">删除路径 {0} 上的 HDFS 装载</target>
+        <target state="translated">正在删除路径 {0} 上的 HDFS 装载</target>
       </trans-unit>
       <trans-unit id="deletemount.task.submitted">
         <source xml:lang="en">Delete mount request submitted</source>
-        <target state="translated">删除提交的装入请求</target>
+        <target state="translated">删除已提交的装载请求</target>
       </trans-unit>
     </body>
   </file>

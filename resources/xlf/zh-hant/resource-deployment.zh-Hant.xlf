@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/resource-deployment/package" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/package" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="extension-displayName">
         <source xml:lang="en">SQL Server Deployment extension for Azure Data Studio</source>
@@ -64,7 +64,7 @@
       </trans-unit>
       <trans-unit id="bdc-deployment-target-new-aks">
         <source xml:lang="en">New Azure Kubernetes Service Cluster</source>
-        <target state="translated">新 Azure Kubernetes Service 叢集</target>
+        <target state="translated">新增 Azure Kubernetes Service 叢集</target>
       </trans-unit>
       <trans-unit id="bdc-deployment-target-existing-aks">
         <source xml:lang="en">Existing Azure Kubernetes Service Cluster</source>
@@ -124,7 +124,7 @@
       </trans-unit>
       <trans-unit id="bdc-new-aks-dialog-title">
         <source xml:lang="en">Deployment target: new AKS cluster</source>
-        <target state="translated">部署目標: 新的 AKS 叢集</target>
+        <target state="translated">部署目標: 新增 AKS 叢集</target>
       </trans-unit>
       <trans-unit id="bdc-existing-aks-dialog-title">
         <source xml:lang="en">Deployment target: existing AKS cluster</source>
@@ -140,7 +140,7 @@
       </trans-unit>
       <trans-unit id="bdc-controller-username-field">
         <source xml:lang="en">Controller username</source>
-        <target state="translated">控制站使用者名稱</target>
+        <target state="translated">控制器使用者名稱</target>
       </trans-unit>
       <trans-unit id="bdc-password-field">
         <source xml:lang="en">Password</source>
@@ -224,7 +224,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/modelViewUtils" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/modelViewUtils" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="UnknownFieldTypeError">
         <source xml:lang="en">Unknown field type: "{0}"</source>
@@ -244,7 +244,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/services/tools/toolBase" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/services/tools/toolBase" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="deployCluster.InvalidToolVersionOutput">
         <source xml:lang="en">Invalid output received.</source>
@@ -256,7 +256,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/deploymentInputDialog" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/deploymentInputDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="deploymentDialog.OKButtonText">
         <source xml:lang="en">Open Notebook</source>
@@ -264,7 +264,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/main" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/main" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="resourceDeployment.FailedToLoadExtension">
         <source xml:lang="en">Failed to load extension: {0}, Error detected in the resource type definition in package.json, check debug console for details.</source>
@@ -276,7 +276,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/services/notebookService" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/services/notebookService" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="resourceDeployment.notebookNotFound">
         <source xml:lang="en">The notebook {0} does not exist</source>
@@ -284,7 +284,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/services/resourceTypeService" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/services/resourceTypeService" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="resourceDeployment.DownloadAndLaunchTaskName">
         <source xml:lang="en">Download and launch installer, URL: {0}</source>
@@ -296,7 +296,7 @@
       </trans-unit>
       <trans-unit id="resourceDeployment.DownloadCompleteText">
         <source xml:lang="en">Successfully downloaded: {0}</source>
-        <target state="translated">已成功下載： {0}</target>
+        <target state="translated">已成功下載: {0}</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.LaunchingProgramText">
         <source xml:lang="en">Launching: {0}</source>
@@ -304,7 +304,7 @@
       </trans-unit>
       <trans-unit id="resourceDeployment.ProgramLaunchedText">
         <source xml:lang="en">Successfully launched: {0}</source>
-        <target state="translated">已成功啟動： {0}</target>
+        <target state="translated">已成功啟動: {0}</target>
       </trans-unit>
       <trans-unit id="downloadError">
         <source xml:lang="en">Download failed, status code: {0}, message: {1}</source>
@@ -312,7 +312,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/deployClusterWizard" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/deployClusterWizard" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="deployCluster.SaveConfigFiles">
         <source xml:lang="en">Save config files</source>
@@ -320,7 +320,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.ScriptToNotebook">
         <source xml:lang="en">Script to Notebook</source>
-        <target state="translated">筆記本的指令碼</target>
+        <target state="translated">Notebook 的指令碼</target>
       </trans-unit>
       <trans-unit id="deployCluster.Deploy">
         <source xml:lang="en">Deploy</source>
@@ -384,7 +384,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/summaryPage" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/summaryPage" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="deployCluster.summaryPageTitle">
         <source xml:lang="en">Summary</source>
@@ -420,7 +420,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.ControllerUsername">
         <source xml:lang="en">Controller username</source>
-        <target state="translated">控制站使用者名稱</target>
+        <target state="translated">控制器使用者名稱</target>
       </trans-unit>
       <trans-unit id="deployCluster.AuthenticationMode">
         <source xml:lang="en">Authentication mode</source>
@@ -440,7 +440,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.DomainControllerFQDNs">
         <source xml:lang="en">Domain controller FQDNs</source>
-        <target state="translated">網域控制站 FQDN</target>
+        <target state="translated">網域控制器 FQDN</target>
       </trans-unit>
       <trans-unit id="deployCluster.DomainDNSIPAddresses">
         <source xml:lang="en">Domain DNS IP addresses</source>
@@ -564,7 +564,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.StorageSettings">
         <source xml:lang="en">Storage settings</source>
-        <target state="translated">儲存設定</target>
+        <target state="translated">儲存設定值</target>
       </trans-unit>
       <trans-unit id="deployCluster.SqlServerText">
         <source xml:lang="en">SQL Server Master</source>
@@ -592,7 +592,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/wizardBase" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/wizardBase" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="resourceDeployment.DisposableError">
         <source xml:lang="en">Error occured while closing the wizard: {0}, open 'Debugger Console' for more information.</source>
@@ -600,7 +600,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/azureSettingsPage" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/azureSettingsPage" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="deployCluster.AzureSettingsPageTitle">
         <source xml:lang="en">Azure settings</source>
@@ -668,7 +668,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/clusterSettingsPage" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/clusterSettingsPage" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="deployCluster.ClusterSettingsPageTitle">
         <source xml:lang="en">Cluster settings</source>
@@ -688,7 +688,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.AdminUsernameDescription">
         <source xml:lang="en">This username will be used for controller and SQL Server. Username for the gateway will be root.</source>
-        <target state="translated">這個使用者名稱會用於控制站與 SQL Server。閘道的使用者名稱會成為根。</target>
+        <target state="translated">這個使用者名稱會用於控制器與 SQL Server。閘道的使用者名稱會成為根。</target>
       </trans-unit>
       <trans-unit id="deployCluster.AdminPassword">
         <source xml:lang="en">Password</source>
@@ -696,7 +696,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.AdminPasswordDescription">
         <source xml:lang="en">This password can be used to access the controller, SQL Server and gateway.</source>
-        <target state="translated">此密碼可用於存取控制站、SQL Server 和閘道。</target>
+        <target state="translated">此密碼可用於存取控制器、SQL Server 和閘道。</target>
       </trans-unit>
       <trans-unit id="deployCluster.ConfirmPassword">
         <source xml:lang="en">Confirm password</source>
@@ -724,7 +724,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.DockerRepository">
         <source xml:lang="en">Repository</source>
-        <target state="translated">儲存庫</target>
+        <target state="translated">存放庫</target>
       </trans-unit>
       <trans-unit id="deployCluster.DockerImageTag">
         <source xml:lang="en">Image tag</source>
@@ -752,7 +752,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.DomainControllerFQDNs">
         <source xml:lang="en">Domain controller FQDNs</source>
-        <target state="translated">網域控制站 FQDN</target>
+        <target state="translated">網域控制器 FQDN</target>
       </trans-unit>
       <trans-unit id="deployCluster.DomainControllerFQDNsPlaceHolder">
         <source xml:lang="en">Use comma to separate the values.</source>
@@ -760,7 +760,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.DomainControllerFQDNDescription">
         <source xml:lang="en">Fully qualified domain names for the domain controller. For example: DC1.CONTOSO.COM. Use comma to separate multiple FQDNs.</source>
-        <target state="translated">網域控制站的完整網域名稱。例如: DC1.CONTOSO.COM。請使用逗號分隔多個 FQDN。</target>
+        <target state="translated">網域控制器的完整網域名稱。例如: DC1.CONTOSO.COM。請使用逗號分隔多個 FQDN。</target>
       </trans-unit>
       <trans-unit id="deployCluster.DomainDNSIPAddresses">
         <source xml:lang="en">Domain DNS IP addresses</source>
@@ -844,7 +844,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/serviceSettingsPage" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/serviceSettingsPage" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="deployCluster.ServiceSettingsPageTitle">
         <source xml:lang="en">Service settings</source>
@@ -880,7 +880,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.storageFieldTooltip">
         <source xml:lang="en">Use controller settings</source>
-        <target state="translated">使用者控制站設定</target>
+        <target state="translated">使用者控制器設定</target>
       </trans-unit>
       <trans-unit id="deployCluster.DataStorageClassName">
         <source xml:lang="en">Storage class for data</source>
@@ -904,7 +904,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.AdvancedStorageDescription">
         <source xml:lang="en">By default Controller storage settings will be applied to other services as well, you can expand the advanced storage settings to configure storage for other services.</source>
-        <target state="translated">根據預設，控制站儲存設定也會套用到其他服務，您可以展開進階儲存設定來設定其他服務的儲存。</target>
+        <target state="translated">根據預設，控制器儲存設定也會套用到其他服務，您可以展開進階儲存設定來設定其他服務的儲存。</target>
       </trans-unit>
       <trans-unit id="deployCluster.AdvancedStorageSectionTitle">
         <source xml:lang="en">Advanced storage settings</source>
@@ -924,7 +924,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.StorageSectionTitle">
         <source xml:lang="en">Storage settings</source>
-        <target state="translated">儲存設定</target>
+        <target state="translated">儲存設定值</target>
       </trans-unit>
       <trans-unit id="deployCluster.DNSNameHeader">
         <source xml:lang="en">DNS name</source>
@@ -936,11 +936,11 @@
       </trans-unit>
       <trans-unit id="deployCluster.ControllerDNSName">
         <source xml:lang="en">Controller DNS name</source>
-        <target state="translated">控制站 DNS 名稱</target>
+        <target state="translated">控制器 DNS 名稱</target>
       </trans-unit>
       <trans-unit id="deployCluster.ControllerPortName">
         <source xml:lang="en">Controller port</source>
-        <target state="translated">控制站連接埠</target>
+        <target state="translated">控制器連接埠</target>
       </trans-unit>
       <trans-unit id="deployCluster.MasterSQLServerDNSName">
         <source xml:lang="en">SQL Server Master DNS name</source>
@@ -1008,7 +1008,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/targetClusterPage" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/targetClusterPage" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="deployCluster.TargetClusterContextPageTitle">
         <source xml:lang="en">Target cluster context</source>
@@ -1048,7 +1048,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/deploymentProfilePage" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/deploymentProfilePage" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="deployCluster.summaryPageTitle">
         <source xml:lang="en">Deployment configuration template</source>
@@ -1064,7 +1064,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.loadProfileFailed">
         <source xml:lang="en">Failed to load the deployment profiles: {0}</source>
-        <target state="translated">無法載入部署設定檔： {0}</target>
+        <target state="translated">無法載入部署設定檔: {0}</target>
       </trans-unit>
       <trans-unit id="deployCluster.serviceLabel">
         <source xml:lang="en">Service</source>
@@ -1128,7 +1128,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/services/tools/dockerTool" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/services/tools/dockerTool" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="resourceDeployment.DockerDescription">
         <source xml:lang="en">Provides the ability to package and run an application in isolated containers</source>
@@ -1140,7 +1140,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/services/tools/azCliTool" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/services/tools/azCliTool" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="resourceDeployment.AzCLIDescription">
         <source xml:lang="en">A command-line tool for managing Azure resources</source>
@@ -1152,7 +1152,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/services/tools/azdataTool" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/services/tools/azdataTool" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="resourceDeployment.AzdataDescription">
         <source xml:lang="en">A command-line utility written in Python that enables cluster administrators to bootstrap and manage the Big Data Cluster via REST APIs</source>
@@ -1164,7 +1164,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/services/tools/kubeCtlTool" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/services/tools/kubeCtlTool" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="resourceDeployment.KubeCtlDescription">
         <source xml:lang="en">A command-line tool allows you to run commands against Kubernetes clusters</source>
@@ -1176,7 +1176,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/resourceTypePickerDialog" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/resourceTypePickerDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="resourceTypePickerDialog.title">
         <source xml:lang="en">Select the deployment options</source>
