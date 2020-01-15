@@ -136,5 +136,7 @@
 	"contents-tab-group-title" : "Contents",
 	"databases-tab-description": "Databases tab of server dashboard",
 	"databases-tab-title": "Databases",
-	"databases-widget-title": "Search"
+	"explorer-widget-title": "Search",
+	"database-objects-tab-description": "Objects tab of database dashboard",
+	"database-objects-tab-title": "Objects",
 }

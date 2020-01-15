@@ -90,7 +90,7 @@ const tabContributionSchema: IJSONSchema = {
 
 ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabContrib[]>({ extensionPoint: 'dashboard.tabs', jsonSchema: tabContributionSchema }).setHandler(extensions => {
 
-	function handleCommand(tab: IDashboardTabContrib, extension: IExtensionPointUser<any>) {
+	function handleTab(tab: IDashboardTabContrib, extension: IExtensionPointUser<any>) {
 		let { description, container, provider, title, when, id, alwaysShow, isHomeTab, group } = tab;
 
 		// If always show is not specified, set it to true by default.
@@ -149,10 +149,10 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 		const { value } = extension;
 		if (Array.isArray<IDashboardTabContrib>(value)) {
 			for (const command of value) {
-				handleCommand(command, extension);
+				handleTab(command, extension);
 			}
 		} else {
-			handleCommand(value, extension);
+			handleTab(value, extension);
 		}
 	}
 });
@@ -184,7 +184,7 @@ const tabGroupContributionSchema: IJSONSchema = {
 
 ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabContrib[]>({ extensionPoint: 'dashboard.tabGroups', jsonSchema: tabGroupContributionSchema }).setHandler(extensions => {
 
-	function handleCommand(tabgroup: IDashboardTabGroupContrib, extension: IExtensionPointUser<any>) {
+	function handleTabGroup(tabgroup: IDashboardTabGroupContrib, extension: IExtensionPointUser<any>) {
 		let { id, title } = tabgroup;
 
 		if (!id) {
@@ -203,10 +203,10 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 		const { value } = extension;
 		if (Array.isArray<IDashboardTabGroupContrib>(value)) {
 			for (const command of value) {
-				handleCommand(command, extension);
+				handleTabGroup(command, extension);
 			}
 		} else {
-			handleCommand(value, extension);
+			handleTabGroup(value, extension);
 		}
 	}
 });
