@@ -108,7 +108,7 @@ export abstract class GridParentComponent extends Disposable {
 		this.subscribeWithDispose(this.dataService.gridContentObserver, (type) => {
 			switch (type) {
 				case GridContentEvents.RefreshContents:
-					self.refreshResultsets();
+					self.refreshDatasets();
 					break;
 				case GridContentEvents.ResizeContents:
 					self.resizeGrids();
@@ -458,7 +458,7 @@ export abstract class GridParentComponent extends Disposable {
 	 * glitches that occur when a QueryRestulsEditor is hidden then unhidden while it is running a query.
 	 * Detect Changes has been moved to editDataGridPanel version of this.
 	 */
-	refreshResultsets(): void {
+	refreshDatasets(): void {
 		let tempRenderedDataSets = this.renderedDataSets;
 		this.renderedDataSets = [];
 		this.renderedDataSets = tempRenderedDataSets;
