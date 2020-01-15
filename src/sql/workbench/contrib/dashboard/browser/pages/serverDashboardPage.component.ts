@@ -8,7 +8,7 @@ import { OnInit, Inject, forwardRef, ChangeDetectorRef, ElementRef } from '@angu
 import { DashboardPage } from 'sql/workbench/contrib/dashboard/browser/core/dashboardPage.component';
 import { BreadcrumbClass } from 'sql/workbench/contrib/dashboard/browser/services/breadcrumb.service';
 import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
-import { WidgetConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
+import { WidgetConfig, TabConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/workbench/contrib/dashboard/browser/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
@@ -18,7 +18,7 @@ import * as nls from 'vs/nls';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { mssqlProviderName, anyProviderName } from 'sql/platform/connection/common/constants';
 
 export class ServerDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
@@ -67,5 +67,33 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 			this.init();
 			this._cd.detectChanges();
 		});
+	}
+
+	getContentTabs(): TabConfig[] {
+		return [{
+			id: 'databasesTab',
+			provider: anyProviderName,
+			publisher: undefined,
+			title: nls.localize('databasesTabName', "Databases"),
+			container: {
+				'widgets-container': [
+					{
+						name: nls.localize('explorerWidgetTitle', "Search"),
+						gridItemConfig: {
+							sizex: 3,
+							sizey: 3
+						},
+						widget: {
+							'explorer-widget': {}
+						}
+					}
+				]
+			},
+			context: this.context,
+			originalConfig: [],
+			editable: true,
+			canClose: false,
+			actions: []
+		}];
 	}
 }

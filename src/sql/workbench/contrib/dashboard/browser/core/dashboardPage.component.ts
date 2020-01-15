@@ -140,6 +140,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		allTabs = this.setAndRemoveHomeTab(allTabs, homeWidgets);
 
 		this.loadNewTabs(allTabs.filter((tab) => tab.isTopLevelTab));
+
+		this.addContentTabGroup();
 		this.addExtensionsTabGroup();
 
 		// If preview features are disabled only show the home tab
@@ -170,6 +172,32 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this._tabsDispose.push(this.dashboardService.onAddNewTabs(e => {
 			this.loadNewTabs(e, true);
 		}));
+	}
+
+	private addContentTabGroup(): void {
+		const contentTabs = this.getContentTabs();
+		if (contentTabs) {
+			this.addNewTab({
+				id: 'contentGroupHeader',
+				provider: Constants.anyProviderName,
+				originalConfig: [],
+				publisher: undefined,
+				title: nls.localize('dashboard.contentsGroupHeader', "Contents"),
+				context: this.context,
+				type: 'group-header',
+				editable: false,
+				canClose: false,
+				actions: []
+			});
+			contentTabs.forEach((tab) => {
+				this.addNewTab(tab);
+			});
+		}
+	}
+
+
+	protected getContentTabs(): TabConfig[] | undefined {
+		return undefined;
 	}
 
 	private addExtensionsTabGroup(): void {
