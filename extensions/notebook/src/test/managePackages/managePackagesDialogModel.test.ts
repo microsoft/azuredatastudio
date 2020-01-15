@@ -275,7 +275,6 @@ describe('Manage Packages', () => {
 		await should(model.uninstallPackages(TypeMoq.It.isAny())).rejected();
 	});
 
-	/* Test disabled. Tracking issue: https://github.com/microsoft/azuredatastudio/issues/8877
 	it('current provider should install and uninstall packages successfully', async function (): Promise<void> {
 		let testContext1 = createContext();
 		testContext1.provider.providerId = 'providerId1';
@@ -318,9 +317,8 @@ describe('Manage Packages', () => {
 		await should(model.installPackages(packages)).resolved();
 		await should(model.uninstallPackages(packages)).resolved();
 		await should(model.getPackageOverview('p1')).resolved();
-		await should(model.getLocationTitle()).rejectedWith('location title 2');
+		await should(model.getLocationTitle()).resolvedWith('location title 2');
 	});
-	*/
 
 	function createContext(): TestContext {
 		return {
