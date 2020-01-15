@@ -16,12 +16,6 @@ export interface IQueryComponentParams extends IBootstrapParams {
 	onRestoreViewState: Event<void>;
 }
 
-export interface IEditDataComponentParams extends IBootstrapParams {
-	dataService: DataService;
-	onSaveViewState: Event<void>;
-	onRestoreViewState: Event<void>;
-}
-
 export interface IDefaultComponentParams extends IBootstrapParams {
 	connection: IConnectionProfile;
 	ownerUri: string;

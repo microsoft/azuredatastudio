@@ -10,7 +10,6 @@ import { Table } from 'sql/base/browser/ui/table/table';
 
 import { IGridDataSet } from 'sql/workbench/contrib/grid/common/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
-import { IEditDataComponentParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { GridParentComponent } from 'sql/workbench/contrib/editData/browser/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/workbench/contrib/editData/browser/editDataGridActions';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
@@ -18,7 +17,7 @@ import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColu
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { escape } from 'sql/base/common/strings';
-
+import { DataService } from 'sql/workbench/contrib/grid/common/dataService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -32,7 +31,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { EditUpdateCellResult } from 'azdata';
 import { ILogService } from 'vs/platform/log/common/log';
 import { deepClone, assign } from 'vs/base/common/objects';
-import { Emitter } from 'vs/base/common/event';
+import { Emitter, Event } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
 
 export class EditDataGridPanel extends GridParentComponent {
@@ -81,24 +80,26 @@ export class EditDataGridPanel extends GridParentComponent {
 	};
 
 	constructor(
-		params: IEditDataComponentParams,
-		@IInstantiationService private instantiationService: IInstantiationService,
-		@INotificationService private notificationService: INotificationService,
-		@IContextMenuService contextMenuService: IContextMenuService,
-		@IKeybindingService keybindingService: IKeybindingService,
-		@IContextKeyService contextKeyService: IContextKeyService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@IClipboardService clipboardService: IClipboardService,
-		@IQueryEditorService queryEditorService: IQueryEditorService,
-		@ILogService logService: ILogService
+		dataService: DataService,
+		onSaveViewState: Event<void>,
+		onRestoreViewState: Event<void>,
+		@IInstantiationService protected instantiationService: IInstantiationService,
+		@INotificationService protected notificationService: INotificationService,
+		@IContextMenuService protected contextMenuService: IContextMenuService,
+		@IKeybindingService protected keybindingService: IKeybindingService,
+		@IContextKeyService protected contextKeyService: IContextKeyService,
+		@IConfigurationService protected configurationService: IConfigurationService,
+		@IClipboardService protected clipboardService: IClipboardService,
+		@IQueryEditorService protected queryEditorService: IQueryEditorService,
+		@ILogService protected logService: ILogService
 	) {
 		super(contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, logService);
 		this.nativeElement = document.createElement('editdatagridpanel');
 		this.nativeElement.className = 'slickgridContainer';
-		this.dataService = params.dataService;
+		this.dataService = dataService;
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
-		params.onRestoreViewState(() => this.restoreViewState());
-		params.onSaveViewState(() => this.saveViewState());
+		onRestoreViewState(() => this.restoreViewState());
+		onSaveViewState(() => this.saveViewState());
 		this.onInit();
 	}
 
@@ -415,12 +416,12 @@ export class EditDataGridPanel extends GridParentComponent {
 			const self = this;
 			clearTimeout(self.refreshGridTimeoutHandle);
 			this.refreshGridTimeoutHandle = setTimeout(() => {
-				for (let i = 0; i < self.placeHolderDataSets.length; i++) {
-					if (self.dataSet && self.placeHolderDataSets[i].resized) {
-						self.placeHolderDataSets[i].dataRows = self.dataSet.dataRows;
-						self.placeHolderDataSets[i].resized.fire();
-					}
+
+				if (self.dataSet && self.placeHolderDataSets[0].resized) {
+					self.placeHolderDataSets[0].dataRows = self.dataSet.dataRows;
+					self.placeHolderDataSets[0].resized.fire();
 				}
+
 
 				if (self.oldDataRows !== self.placeHolderDataSets[0].dataRows) {
 					self.detectChange();
@@ -476,7 +477,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	/**
 	 * Force re-rendering of the results grids. Calling this upon unhide (upon focus) fixes UI
-	 * glitches that occur when a QueryRestulsEditor is hidden then unhidden while it is running a query.
+	 * glitches that occur when a QueryResultsEditor is hidden then unhidden while it is running a query.
 	 */
 	refreshResultsets(): void {
 		let tempRenderedDataSets = this.renderedDataSets;
@@ -713,7 +714,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private restoreViewState(): void {
 		if (this.savedViewState) {
-			// Row selections are undefined in original slickgrid, removed for no purpose -alma1 1/10/19
+			// Row selections are undefined in original slickgrid, removed for no purpose
 			let viewport = ((this.tables[0] as any)._grid.getCanvasNode() as HTMLElement).parentElement;
 			viewport.scrollLeft = this.savedViewState.scrollLeft;
 			viewport.scrollTop = this.savedViewState.scrollTop;
