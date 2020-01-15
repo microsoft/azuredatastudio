@@ -27,6 +27,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IBootstrapParams, ISelector } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { startsWith } from 'vs/base/common/strings';
+import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
 
 export const DialogModule = (params, selector: string, instantiationService: IInstantiationService): any => {
 
@@ -50,7 +51,8 @@ export const DialogModule = (params, selector: string, instantiationService: IIn
 		imports: [
 			FormsModule,
 			CommonModule,
-			BrowserModule
+			BrowserModule,
+			PanelModule
 		],
 		providers: [
 			{ provide: APP_BASE_HREF, useValue: '/' },

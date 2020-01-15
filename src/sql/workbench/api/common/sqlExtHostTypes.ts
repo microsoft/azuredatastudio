@@ -168,7 +168,8 @@ export enum ModelComponentTypes {
 	Dom,
 	Hyperlink,
 	Image,
-	RadioCardGroup
+	RadioCardGroup,
+	TabbedPanel
 }
 
 export enum ColumnSizingMode {
@@ -825,3 +826,13 @@ export type QueryEventType =
 	| 'queryStop'
 	| 'executionPlan'
 	| 'visualize';
+
+export enum TabOrientation {
+	Vertical = 'vertical',
+	Horizontal = 'horizontal'
+}
+
+
+export interface TabbedPanelLayout {
+	orientation: TabOrientation;
+}
