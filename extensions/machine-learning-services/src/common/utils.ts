@@ -47,17 +47,17 @@ export function getPythonExePath(rootFolder: string): string {
 		process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 }
 
-export function getRSqlMlUtilsPath(rootFolder: string): string {
+export function getPackageFilePath(rootFolder: string, packageName: string): string {
 	return path.join(
 		rootFolder,
-		'packages',
-		'sqlmlutils_0.7.1.zip');
+		constants.rLPackagedFolderName,
+		packageName);
 }
 
-export function getPackagesFolderPath(rootFolder: string): string {
+export function getRPackagesFolderPath(rootFolder: string): string {
 	return path.join(
 		rootFolder,
-		'packages');
+		constants.rLPackagedFolderName);
 }
 
 /**

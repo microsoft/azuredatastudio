@@ -8,7 +8,7 @@ import { ApiWrapper } from '../common/apiWrapper';
 import * as constants from '../common/constants';
 import { promises as fs } from 'fs';
 import * as path from 'path';
-import * as nbExtensionApis from '../typings/notebookServices';
+import { PackageConfigModel } from './packageConfigModel';
 
 const configFileName = 'config.json';
 const defaultPythonExecutable = 'python';
@@ -35,10 +35,31 @@ export class Config {
 	}
 
 	/**
-	 * Returns the config value of required packages
+	 * Returns the config value of required python packages
 	 */
-	public get requiredPythonPackages(): nbExtensionApis.IPackageDetails[] {
+	public get requiredPythonPackages(): PackageConfigModel[] {
 		return this._configValues.requiredPythonPackages;
+	}
+
+	/**
+	 * Returns the config value of required r packages
+	 */
+	public get requiredRPackages(): PackageConfigModel[] {
+		return this._configValues.requiredRPackages;
+	}
+
+	/**
+	 * Returns the config value of sqlmlutils R download url
+	 */
+	public get sqlmlutilsRDownloadUrl(): string {
+		return this._configValues.sqlmlutilsRDownloadUrl;
+	}
+
+	/**
+ * Returns the config value of sqlmlutils R package name
+ */
+	public get sqlmlutilsRPackageName(): string {
+		return this._configValues.sqlmlutilsRPackageName;
 	}
 
 	/**

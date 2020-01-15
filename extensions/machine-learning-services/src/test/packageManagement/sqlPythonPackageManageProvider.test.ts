@@ -59,6 +59,38 @@ describe('SQL Python Package Manager', () => {
 		should.deepEqual(actual, expected);
 	});
 
+	it('listPackages Should return packages sorted by name and version', async function (): Promise<void> {
+		let testContext = createContext();
+		let packages: nbExtensionApis.IPackageDetails[] = [
+			{
+				'name': 'b-name',
+				'version': '1.1.1'
+			},
+			{
+				'name': 'b-name',
+				'version': '1.1.2'
+			}
+		];
+
+		let connection = new azdata.connection.ConnectionProfile();
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
+		testContext.queryRunner.setup(x => x.getPythonPackages(TypeMoq.It.isAny())).returns(() => Promise.resolve(packages));
+
+		let provider = createProvider(testContext);
+		let actual = await provider.listPackages();
+		let expected = [
+			{
+				'name': 'b-name',
+				'version': '1.1.1'
+			},
+			{
+				'name': 'b-name',
+				'version': '1.1.2'
+			}
+		];
+		should.deepEqual(actual, expected);
+	});
+
 	it('listPackages Should return empty packages if undefined packages returned', async function (): Promise<void> {
 		let testContext = createContext();
 

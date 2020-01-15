@@ -18,6 +18,7 @@ import { Config } from '../configurations/config';
 import { isNullOrUndefined } from 'util';
 import { SqlRPackageManageProvider } from './sqlRPackageManageProvider';
 import { HttpClient } from '../common/httpClient';
+import { PackageConfigModel } from '../configurations/packageConfigModel';
 
 export class PackageManager {
 
@@ -113,7 +114,7 @@ export class PackageManager {
 				isCancelable: false,
 				operation: async op => {
 					try {
-						await utils.createFolder(utils.getPackagesFolderPath(this._rootFolder));
+						await utils.createFolder(utils.getRPackagesFolderPath(this._rootFolder));
 
 						// Install required packages
 						//
@@ -132,21 +133,12 @@ export class PackageManager {
 		});
 	}
 
-	private async installRequiredRPackages(startBackgroundOperation: azdata.BackgroundOperation): Promise<string> {
+	private async installRequiredRPackages(startBackgroundOperation: azdata.BackgroundOperation): Promise<void> {
 		if (!this._rExecutable) {
 			throw new Error(constants.rConfigError);
 		}
 
-		const sqlMlUtilsPackage = utils.getRSqlMlUtilsPath(this._rootFolder);
-		const packageExist = await utils.exists(sqlMlUtilsPackage);
-		if (!packageExist) {
-			await this._httpClient.download(constants.sqlMlUtilsRDownloadUrl, sqlMlUtilsPackage, startBackgroundOperation, this._outputChannel);
-		}
-		let cmd = `"${this._rExecutable}" -e "install.packages('RODBCext', repos='https://cran.microsoft.com')"`;
-		await this._processService.executeBufferedCommand(cmd, this._outputChannel);
-
-		cmd = `"${this._rExecutable}" CMD INSTALL ${sqlMlUtilsPackage}`;
-		return await this._processService.executeBufferedCommand(cmd, this._outputChannel);
+		await Promise.all(this._config.requiredRPackages.map(x => this.installRPackage(x, startBackgroundOperation)));
 	}
 
 	/**
@@ -169,7 +161,7 @@ export class PackageManager {
 		if (fileContent) {
 			this._outputChannel.appendLine(constants.installDependenciesPackages);
 			let result = await utils.execCommandOnTempFile<string>(fileContent, async (tempFilePath) => {
-				return await this.installPipPackages(tempFilePath);
+				return await this.installPipPackage(tempFilePath);
 			});
 			this._outputChannel.appendLine(result);
 		} else {
@@ -197,8 +189,26 @@ export class PackageManager {
 		return await this._apiWrapper.getCurrentConnection();
 	}
 
-	private async installPipPackages(requirementFilePath: string): Promise<string> {
+	private async installPipPackage(requirementFilePath: string): Promise<string> {
 		let cmd = `"${this._pythonExecutable}" -m pip install -r "${requirementFilePath}"`;
 		return await this._processService.executeBufferedCommand(cmd, this._outputChannel);
+	}
+
+	private async installRPackage(model: PackageConfigModel, startBackgroundOperation: azdata.BackgroundOperation): Promise<string> {
+		let output = '';
+		let cmd = '';
+		if (model.downloadUrl) {
+			const packageFile = utils.getPackageFilePath(this._rootFolder, model.fileName || model.name);
+			const packageExist = await utils.exists(packageFile);
+			if (!packageExist) {
+				await this._httpClient.download(model.downloadUrl, packageFile, startBackgroundOperation, this._outputChannel);
+			}
+			cmd = `"${this._rExecutable}" CMD INSTALL ${packageFile}`;
+			output = await this._processService.executeBufferedCommand(cmd, this._outputChannel);
+		} else if (model.repository) {
+			cmd = `"${this._rExecutable}" -e "install.packages('${model.name}', repos='${model.repository}')"`;
+			output = output + await this._processService.executeBufferedCommand(cmd, this._outputChannel);
+		}
+		return output;
 	}
 }

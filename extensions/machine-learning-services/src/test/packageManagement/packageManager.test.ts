@@ -187,6 +187,10 @@ describe('Package Manager', () => {
 			{ name: 'pymssql', version: '2.1.4' },
 			{ name: 'sqlmlutils', version: '' }
 		]);
+		testContext.config.setup(x => x.requiredRPackages).returns( () => [
+			{ name: 'RODBCext', repository: 'https://cran.microsoft.com' },
+			{ name: 'sqlmlutils', fileName: 'sqlmlutils_0.7.1.zip', downloadUrl: 'https://github.com/microsoft/sqlmlutils/blob/master/R/dist/sqlmlutils_0.7.1.zip?raw=true'}
+		]);
 		testContext.httpClient.setup(x => x.download(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		testContext.config.setup(x => x.pythonExecutable).returns(() => 'python');
 		testContext.config.setup(x => x.rExecutable).returns(() => 'r');

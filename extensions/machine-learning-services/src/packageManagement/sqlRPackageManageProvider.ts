@@ -11,10 +11,9 @@ import { QueryRunner } from '../common/queryRunner';
 import { ApiWrapper } from '../common/apiWrapper';
 import { ProcessService } from '../common/processService';
 import { Config } from '../configurations/config';
-import { SqlPackageManageProviderBase } from './SqlPackageManageProviderBase';
+import { SqlPackageManageProviderBase, ScriptMode } from './SqlPackageManageProviderBase';
 
-const installMode = 'install';
-const uninstallMode = 'uninstall';
+
 
 /**
  * Manage Package Provider for r packages inside SQL server databases
@@ -52,32 +51,8 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 	/**
 	 * Returns list of packages
 	 */
-	public async listPackages(): Promise<nbExtensionApis.IPackageDetails[]> {
-		let packages = await this._queryRunner.getRPackages(await this.getCurrentConnection());
-		if (packages) {
-			packages = packages.sort((a, b) => a.name.localeCompare(b.name));
-		} else {
-			packages = [];
-		}
-		return packages;
-	}
-
-	/**
-	 * Installs given packages
-	 * @param packages Packages to install
-	 * @param useMinVersion minimum version
-	 */
-	async installPackages(packages: nbExtensionApis.IPackageDetails[], useMinVersion: boolean): Promise<void> {
-		if (packages) {
-
-			// TODO: install package as parallel
-			for (let index = 0; index < packages.length; index++) {
-				const element = packages[index];
-				await this.executeScripts(installMode, element);
-			}
-		}
-		//TODO: use useMinVersion
-		console.log(useMinVersion);
+	protected async fetchPackages(): Promise<nbExtensionApis.IPackageDetails[]> {
+		return await this._queryRunner.getRPackages(await this.getCurrentConnection());
 	}
 
 	/**
@@ -85,14 +60,14 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 	 * @param packageDetails Packages to install or uninstall
 	 * @param scriptMode can be 'install' or 'uninstall'
 	 */
-	private async executeScripts(scriptMode: string, packageDetails: nbExtensionApis.IPackageDetails): Promise<void> {
+	protected async executeScripts(scriptMode: ScriptMode, packageDetails: nbExtensionApis.IPackageDetails): Promise<void> {
 		let connection = await this.getCurrentConnection();
 		let credentials = await this._apiWrapper.getCredentials(connection.connectionId);
 
 		if (connection) {
 			let database = connection.databaseName ? `, database="${connection.databaseName}"` : '';
 			let connectionParts = `server="${connection.serverName}", uid="${connection.userName}", pwd="${credentials[azdata.ConnectionOptionSpecialType.password]}"${database}`;
-			let rCommandScript = scriptMode === installMode ? 'sql_install.packages' : 'sql_remove.packages';
+			let rCommandScript = scriptMode === ScriptMode.Install ? 'sql_install.packages' : 'sql_remove.packages';
 
 			let scripts: string[] = [
 				'formals(quit)$save <- formals(q)$save <- "no"',
@@ -104,17 +79,6 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 			];
 			let rExecutable = this._config.rExecutable;
 			await this._processService.execScripts(`${rExecutable}`, scripts, ['--vanilla'], this._outputChannel);
-		}
-	}
-
-	/**
-	 * Uninstalls given packages
-	 * @param packages Packages to uninstall
-	 */
-	async uninstallPackages(packages: nbExtensionApis.IPackageDetails[]): Promise<void> {
-		for (let index = 0; index < packages.length; index++) {
-			const element = packages[index];
-			await this.executeScripts(uninstallMode, element);
 		}
 	}
 
@@ -133,7 +97,7 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 	 * Returns package overview for given name
 	 * @param packageName Package Name
 	 */
-	async getPackageOverview(packageName: string): Promise<nbExtensionApis.IPackageOverview> {
+	protected async fetchPackage(packageName: string): Promise<nbExtensionApis.IPackageOverview> {
 		let packagePreview: nbExtensionApis.IPackageOverview = {
 			name: packageName,
 			versions: [],
@@ -145,6 +109,4 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 		packagePreview.versions = versions;
 		return packagePreview;
 	}
-
-
 }

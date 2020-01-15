@@ -14,7 +14,7 @@ export const pythonBundleVersion = '0.0.1';
 export const managePackagesCommand = 'jupyter.cmd.managePackages';
 export const pythonLanguageName = 'Python';
 export const rLanguageName = 'R';
-export const sqlMlUtilsRDownloadUrl = 'https://github.com/microsoft/sqlmlutils/blob/master/R/dist/sqlmlutils_0.7.1.zip?raw=true';
+export const rLPackagedFolderName = 'r_packages';
 
 export const mlEnableMlsCommand = 'mls.command.enableMls';
 export const mlDisableMlsCommand = 'mls.command.disableMls';
