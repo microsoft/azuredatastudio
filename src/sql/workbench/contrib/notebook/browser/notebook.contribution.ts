@@ -14,7 +14,7 @@ import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/common/mod
 import { FileNotebookInput } from 'sql/workbench/contrib/notebook/common/models/fileNotebookInput';
 import { FileNoteBookEditorInputFactory, UntitledNoteBookEditorInputFactory, NotebookEditorInputAssociation } from 'sql/workbench/contrib/notebook/common/models/nodebookInputFactory';
 import { IWorkbenchActionRegistry, Extensions as WorkbenchActionsExtensions } from 'vs/workbench/common/actions';
-import { SyncActionDescriptor, registerAction, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
+import { SyncActionDescriptor, registerAction2, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
@@ -130,9 +130,9 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 	order: 1
 });
 
-registerAction({
-	id: 'workbench.action.setWorkspaceAndOpen',
-	handler: async (accessor, options: { forceNewWindow: boolean, folderPath: URI }) => {
+registerAction2({
+	desc: { id: 'workbench.action.setWorkspaceAndOpen', title: localize('workbench.action.setWorkspaceAndOpen', "Set Workspace And Open") },
+	run: async (accessor, options: { forceNewWindow: boolean, folderPath: URI }) => {
 		const viewletService = accessor.get(IViewletService);
 		const workspaceEditingService = accessor.get(IWorkspaceEditingService);
 		const hostService = accessor.get(IHostService);
@@ -163,14 +163,6 @@ configurationRegistry.registerConfiguration({
 			'default': true,
 			'description': localize('notebook.sqlStopOnError', "SQL kernel: stop Notebook execution when error occurs in a cell.")
 		}
-	}
-});
-
-registerAction({
-	id: 'workbench.books.action.focusBooksExplorer',
-	handler: async (accessor) => {
-		const viewletService = accessor.get(IViewletService);
-		viewletService.openViewlet('workbench.view.extension.books-explorer', true);
 	}
 });
 
