@@ -49,20 +49,6 @@ export class Config {
 	}
 
 	/**
-	 * Returns the config value of sqlmlutils R download url
-	 */
-	public get sqlmlutilsRDownloadUrl(): string {
-		return this._configValues.sqlmlutilsRDownloadUrl;
-	}
-
-	/**
- * Returns the config value of sqlmlutils R package name
- */
-	public get sqlmlutilsRPackageName(): string {
-		return this._configValues.sqlmlutilsRPackageName;
-	}
-
-	/**
 	 * Returns python path from user settings
 	 */
 	public get pythonExecutable(): string {
