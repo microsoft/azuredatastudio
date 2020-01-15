@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/cms/package" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/cms/package" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="cms.displayName">
         <source xml:lang="en">SQL Server Central Management Servers</source>
@@ -36,7 +36,7 @@
       </trans-unit>
       <trans-unit id="cms.resource.addRegisteredServer.title">
         <source xml:lang="en">New Server Registration...</source>
-        <target state="translated">Новая регистрация сервера...</target>
+        <target state="translated">Новая регистрация сервера…</target>
       </trans-unit>
       <trans-unit id="cms.resource.deleteServerGroup.title">
         <source xml:lang="en">Delete</source>
@@ -44,7 +44,7 @@
       </trans-unit>
       <trans-unit id="cms.resource.addServerGroup.title">
         <source xml:lang="en">New Server Group...</source>
-        <target state="translated">Новая группа серверов...</target>
+        <target state="translated">Новая группа серверов…</target>
       </trans-unit>
       <trans-unit id="cms.resource.registerCmsServer.title">
         <source xml:lang="en">Add Central Management Server</source>
@@ -60,7 +60,7 @@
       </trans-unit>
       <trans-unit id="cms.query.displayBitAsNumber">
         <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
-        <target state="translated">Нужно ли отображать столбцы BIT как числа (1 или 0)? Если задано значение false, столбцы BIT будут отображаться как "true" или "false"</target>
+        <target state="translated">Нужно ли отображать столбцы BIT как числа (1 или 0)? Если задано значение FALSE, столбцы BIT будут отображаться как "TRUE" или "FALSE"</target>
       </trans-unit>
       <trans-unit id="cms.format.alignColumnDefinitionsInColumns">
         <source xml:lang="en">Should column definitions be aligned?</source>
@@ -76,23 +76,23 @@
       </trans-unit>
       <trans-unit id="cms.format.placeCommasBeforeNextStatement">
         <source xml:lang="en">should commas be placed at the beginning of each statement in a list e.g. ', mycolumn2' instead of at the end e.g. 'mycolumn1,'</source>
-        <target state="translated">нужно ли ставить запятые в начале каждого оператора в списке, например ", mycolumn2", а не в конце, например "mycolumn1,"</target>
+        <target state="translated">Следует ли ставить запятые в начале каждой инструкции в списке, например ", mycolumn2", а не в конце, например "mycolumn1,"</target>
       </trans-unit>
       <trans-unit id="cms.format.placeSelectStatementReferencesOnNewLine">
         <source xml:lang="en">Should references to objects in a select statements be split into separate lines? E.g. for 'SELECT C1, C2 FROM T1' both C1 and C2 will be on separate lines</source>
-        <target state="translated">Нужно ли разделять на отдельные строки ссылки на объекты в выбранных операторах? Например, для "SELECT C1, C2 FROM T1" как C1, так и C2 будут находиться на отдельных строках</target>
+        <target state="translated">Нужно ли разделять на отдельные строки ссылки на объекты в выбранных инструкциях? Например, для "SELECT C1, C2 FROM T1" как C1, так и C2 будут находиться на отдельных строках</target>
       </trans-unit>
       <trans-unit id="cms.logDebugInfo">
         <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
-        <target state="translated">[Дополнительно] Выведите выходные данные отладки в консоль (Вид -&gt; Вывод), а затем выберите подходящий выходной канал в раскрывающемся списке</target>
+        <target state="translated">[Необязательно] Выведите выходные данные отладки в консоль (Вид -&gt; Вывод), а затем выберите подходящий выходной канал в раскрывающемся списке</target>
       </trans-unit>
       <trans-unit id="cms.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
-        <target state="translated">[Дополнительно] Уровень ведения журнала для серверных служб. Azure Data Studio создает имя файла при каждом запуске, а если такой файл уже существует, записи журналов добавляются в него. Для очистки старых файлов журналов см. описание параметров logRetentionMinutes и logFilesRemovalLimit. Параметр tracingLevel по умолчанию регистрирует не слишком многое. Изменение детализации может привести к тому, что журналы будут занимать слишком много места. Ошибка включает критический уровень, предупреждение включает ошибку, информационный уровень включает предупреждение, а подробный уровень включает информационный уровень</target>
+        <target state="translated">[Необязательно] Уровень ведения журнала для серверных служб. Azure Data Studio создает имя файла при каждом запуске, а если такой файл уже существует, записи журналов добавляются в него. Для очистки старых файлов журналов см. описание параметров logRetentionMinutes и logFilesRemovalLimit. Параметр tracingLevel по умолчанию регистрирует не слишком многое. Изменение детализации может привести к тому, что журналы будут занимать слишком много места. Ошибка включает критический уровень, предупреждение включает ошибку, информационный уровень включает предупреждение, а подробный уровень включает информационный уровень.</target>
       </trans-unit>
       <trans-unit id="cms.logRetentionMinutes">
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
-        <target state="translated">Срок хранения файлов журналов (в минутах) для серверных служб. По умолчанию задана 1 неделя.</target>
+        <target state="translated">Срок хранения файлов журналов (в минутах) для серверных служб. По умолчанию задана 1 неделя.</target>
       </trans-unit>
       <trans-unit id="cms.logFilesRemovalLimit">
         <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
@@ -100,11 +100,11 @@
       </trans-unit>
       <trans-unit id="ignorePlatformWarning">
         <source xml:lang="en">[Optional] Do not show unsupported platform warnings</source>
-        <target state="translated">[Дополнительно] Не показывать предупреждения для неподдерживаемых платформ</target>
+        <target state="translated">[Необязательно] Не показывать предупреждения для неподдерживаемых платформ</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.recoveryModel">
         <source xml:lang="en">Recovery Model</source>
-        <target state="translated">Recovery Model</target>
+        <target state="translated">Модель восстановления</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.lastBackupDate">
         <source xml:lang="en">Last Database Backup</source>
@@ -116,7 +116,7 @@
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.compatibilityLevel">
         <source xml:lang="en">Compatibility Level</source>
-        <target state="translated">Compatibility Level</target>
+        <target state="translated">Уровень совместимости</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.owner">
         <source xml:lang="en">Owner</source>
@@ -148,7 +148,7 @@
       </trans-unit>
       <trans-unit id="cloud.databaseProperties.compatibilityLevel">
         <source xml:lang="en">Compatibility Level</source>
-        <target state="translated">Compatibility Level</target>
+        <target state="translated">Уровень совместимости</target>
       </trans-unit>
       <trans-unit id="cloud.databaseProperties.owner">
         <source xml:lang="en">Owner</source>
@@ -200,7 +200,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.authType.categoryValues.sqlLogin">
         <source xml:lang="en">SQL Login</source>
-        <target state="translated">SQL Login</target>
+        <target state="translated">Имя входе SQL</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.authType.categoryValues.integrated">
         <source xml:lang="en">Windows Authentication</source>
@@ -208,7 +208,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.authType.categoryValues.azureMFA">
         <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory — универсальный с поддержкой MFA</target>
+        <target state="translated">Azure Active Directory — универсальный с поддержкой MFA</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.userName.displayName">
         <source xml:lang="en">User name</source>
@@ -232,7 +232,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.applicationIntent.description">
         <source xml:lang="en">Declares the application workload type when connecting to a server</source>
-        <target state="translated">Объявляет тип рабочей нагрузки приложения при соединении с сервером</target>
+        <target state="translated">Объявляет тип рабочей нагрузки приложения при подключении к серверу</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.asynchronousProcessing.displayName">
         <source xml:lang="en">Asynchronous processing</source>
@@ -240,7 +240,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.asynchronousProcessing.description">
         <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
-        <target state="translated">Когда задано значение true, разрешено использовать асинхронные функции в поставщике данных .NET Framework</target>
+        <target state="translated">Когда задано значение TRUE, разрешено использовать асинхронные функции в поставщике данных .NET Framework</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.connectTimeout.displayName">
         <source xml:lang="en">Connect timeout</source>
@@ -272,7 +272,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.encrypt.description">
         <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
-        <target state="translated">Когда задано значение true, SQL Server использует шифрование SSL для всех данных, передаваемых между клиентом и сервером, если на сервере установлен сертификат</target>
+        <target state="translated">Когда задано значение TRUE, SQL Server использует шифрование SSL для всех данных, передаваемых между клиентом и сервером, если на сервере установлен сертификат</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.persistSecurityInfo.displayName">
         <source xml:lang="en">Persist security info</source>
@@ -280,7 +280,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.persistSecurityInfo.description">
         <source xml:lang="en">When false, security-sensitive information, such as the password, is not returned as part of the connection</source>
-        <target state="translated">Если задано значение false, то секретные данные (например, пароль) не возвращаются в составе подключения</target>
+        <target state="translated">Если задано значение FALSE, то секретные данные (например, пароль) не возвращаются в составе подключения</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.trustServerCertificate.displayName">
         <source xml:lang="en">Trust server certificate</source>
@@ -288,7 +288,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.trustServerCertificate.description">
         <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
-        <target state="translated">Когда задано значение true (и encrypt=true), SQL Server использует шифрование SSL для всех данных, передаваемых между клиентом и сервером без проверки сертификата сервера</target>
+        <target state="translated">Когда задано значение TRUE (и encrypt=true), SQL Server использует шифрование SSL для всех данных, передаваемых между клиентом и сервером без проверки сертификата сервера</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.attachedDBFileName.displayName">
         <source xml:lang="en">Attached DB file name</source>
@@ -304,7 +304,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.contextConnection.description">
         <source xml:lang="en">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</source>
-        <target state="translated">Если задано значение true, указывает, что подключение должно быть произведено в контексте SQL Server. Доступно только при выполнении в процессе SQL Server</target>
+        <target state="translated">Если задано значение TRUE, указывает, что подключение должно быть произведено в контексте SQL Server. Доступно только при выполнении в процессе SQL Server.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.port.displayName">
         <source xml:lang="en">Port</source>
@@ -320,7 +320,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.connectRetryInterval.displayName">
         <source xml:lang="en">Connect retry interval</source>
-        <target state="translated">Интервал повторных попыток для подключения</target>
+        <target state="translated">Интервал повторных попыток подключения</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.connectRetryInterval.description">
         <source xml:lang="en">Delay between attempts to restore connection</source>
@@ -348,7 +348,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.pooling.description">
         <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
-        <target state="translated">Если задано значение true, объект соединения извлекается из соответствующего пула или при необходимости создается и добавляется в соответствующий пул</target>
+        <target state="translated">Если задано значение TRUE, объект соединения извлекается из соответствующего пула или при необходимости создается и добавляется в соответствующий пул</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.maxPoolSize.displayName">
         <source xml:lang="en">Max pool size</source>
@@ -404,7 +404,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.multipleActiveResultSets.description">
         <source xml:lang="en">When true, multiple result sets can be returned and read from one connection</source>
-        <target state="translated">Если задано значение true, из одного подключения может быть возвращено и считано несколько результирующих наборов</target>
+        <target state="translated">Если задано значение TRUE, из одного подключения может быть возвращено и считано несколько результирующих наборов</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.packetSize.displayName">
         <source xml:lang="en">Packet size</source>
@@ -424,15 +424,15 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsResource/tree/treeProvider" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/cms/out/cmsResource/tree/treeProvider" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="cms.resource.tree.treeProvider.loadingLabel">
         <source xml:lang="en">Loading ...</source>
-        <target state="translated">Идет загрузка...</target>
+        <target state="translated">Идет загрузка…</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsResource/tree/cmsResourceTreeNode" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/cms/out/cmsResource/tree/cmsResourceTreeNode" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="cms.resource.cmsResourceTreeNode.noResourcesLabel">
         <source xml:lang="en">No resources found</source>
@@ -440,19 +440,23 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsResource/tree/cmsResourceEmptyTreeNode" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/cms/out/cmsResource/tree/cmsResourceEmptyTreeNode" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="cms.resource.tree.CmsTreeNode.addCmsServerLabel">
         <source xml:lang="en">Add Central Management Server...</source>
-        <target state="translated">Добавить центральный сервер управления...</target>
+        <target state="translated">Добавить центральный сервер управления…</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsResource/cmsResourceCommands" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/cms/out/cmsResource/cmsResourceCommands" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="cms.errors.sameCmsServerName">
         <source xml:lang="en">Central Management Server Group already has a Registered Server with the name {0}</source>
         <target state="translated">Группа центральных серверов управления уже содержит зарегистрированный сервер с именем {0}</target>
+      </trans-unit>
+      <trans-unit id="cms.errors.azureNotAllowed">
+        <source xml:lang="en">Azure SQL Database Servers cannot be used as Central Management Servers</source>
+        <target state="translated">Серверы базы данных SQL Azure не могут использоваться в качестве центральных серверов управления.</target>
       </trans-unit>
       <trans-unit id="cms.confirmDeleteServer">
         <source xml:lang="en">Are you sure you want to delete</source>
@@ -488,7 +492,7 @@
       </trans-unit>
       <trans-unit id="cms.errors.sameServerGroupName">
         <source xml:lang="en">{0} already has a Server Group with the name {1}</source>
-        <target state="translated">{0} уже имеет группу серверов с именем {1}</target>
+        <target state="translated">В {0} уже имеется группа серверов с именем {1}</target>
       </trans-unit>
       <trans-unit id="cms.confirmDeleteGroup">
         <source xml:lang="en">Are you sure you want to delete</source>
@@ -496,7 +500,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsUtils" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/cms/out/cmsUtils" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="cms.errors.sameServerUnderCms">
         <source xml:lang="en">You cannot add a shared registered server with the same name as the Configuration Server</source>

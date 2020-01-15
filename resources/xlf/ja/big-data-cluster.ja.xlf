@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/big-data-cluster/package" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/big-data-cluster/package" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="description">
         <source xml:lang="en">Support for managing SQL Server Big Data Clusters</source>
@@ -48,7 +48,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/utils" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/utils" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="state.creating">
         <source xml:lang="en">Creating</source>
@@ -72,7 +72,7 @@
       </trans-unit>
       <trans-unit id="state.applyingUpgrade">
         <source xml:lang="en">Applying Upgrade</source>
-        <target state="translated">アップグレードの適用</target>
+        <target state="translated">アップグレードの適用中</target>
       </trans-unit>
       <trans-unit id="state.upgrading">
         <source xml:lang="en">Upgrading</source>
@@ -84,7 +84,7 @@
       </trans-unit>
       <trans-unit id="state.managedUpgrading">
         <source xml:lang="en">Managed Upgrading</source>
-        <target state="translated">マネージド アップグレード</target>
+        <target state="translated">マネージド アップグレード中</target>
       </trans-unit>
       <trans-unit id="state.rollback">
         <source xml:lang="en">Rollback</source>
@@ -132,7 +132,7 @@
       </trans-unit>
       <trans-unit id="state.waitingForKerberosDelegationSetup">
         <source xml:lang="en">Waiting For Kerberos Delegation Setup</source>
-        <target state="translated">Kerberos 委任のセットアップを待機しています</target>
+        <target state="translated">Kerberos 委任のセットアップの待機中</target>
       </trans-unit>
       <trans-unit id="state.waitingForDeletion">
         <source xml:lang="en">Waiting For Deletion</source>
@@ -148,7 +148,7 @@
       </trans-unit>
       <trans-unit id="state.running">
         <source xml:lang="en">Running</source>
-        <target state="translated">実行しています</target>
+        <target state="translated">実行中</target>
       </trans-unit>
       <trans-unit id="endpoint.appproxy">
         <source xml:lang="en">Application Proxy</source>
@@ -204,7 +204,7 @@
       </trans-unit>
       <trans-unit id="service.hdfs">
         <source xml:lang="en">HDFS</source>
-        <target state="translated">Hdfs</target>
+        <target state="translated">HDFS</target>
       </trans-unit>
       <trans-unit id="service.spark">
         <source xml:lang="en">Spark</source>
@@ -212,7 +212,7 @@
       </trans-unit>
       <trans-unit id="service.control">
         <source xml:lang="en">Control</source>
-        <target state="translated">Control</target>
+        <target state="translated">コントロール</target>
       </trans-unit>
       <trans-unit id="service.gateway">
         <source xml:lang="en">Gateway</source>
@@ -236,7 +236,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="basicAuthName">
         <source xml:lang="en">Basic</source>
@@ -256,11 +256,11 @@
       </trans-unit>
       <trans-unit id="err.controller.username.required">
         <source xml:lang="en">Username is required</source>
-        <target state="translated">ユーザー名が必要です</target>
+        <target state="translated">ユーザー名が必須です</target>
       </trans-unit>
       <trans-unit id="err.controller.password.required">
         <source xml:lang="en">Password is required</source>
-        <target state="translated">パスワードが必要です</target>
+        <target state="translated">パスワードが必須です</target>
       </trans-unit>
       <trans-unit id="textUrlLower">
         <source xml:lang="en">url</source>
@@ -304,7 +304,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="error.no.activedirectory">
         <source xml:lang="en">This cluster does not support Windows authentication</source>
@@ -340,7 +340,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/connectControllerDialog" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/connectControllerDialog" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="connectController.dialog.title">
         <source xml:lang="en">Connect to Controller (preview)</source>
@@ -348,7 +348,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/commonControls" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/commonControls" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="bdc.dashboard.viewDetails">
         <source xml:lang="en">View Details</source>
@@ -356,7 +356,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/extension" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/extension" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="mount.error.endpointNotFound">
         <source xml:lang="en">Controller endpoint information was not found</source>
@@ -380,7 +380,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/addControllerNode" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/addControllerNode" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="textBigDataClusterControllerWithDots">
         <source xml:lang="en">Add SQL Server Big Data Cluster controller...</source>
@@ -392,7 +392,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/loadingControllerNode" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/loadingControllerNode" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="textLoadingWithDots">
         <source xml:lang="en">Loading...</source>
@@ -400,7 +400,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="basicAuthName">
         <source xml:lang="en">Basic</source>
@@ -412,11 +412,11 @@
       </trans-unit>
       <trans-unit id="err.controller.username.required">
         <source xml:lang="en">Username is required</source>
-        <target state="translated">ユーザー名が必要です</target>
+        <target state="translated">ユーザー名が必須です</target>
       </trans-unit>
       <trans-unit id="err.controller.password.required">
         <source xml:lang="en">Password is required</source>
-        <target state="translated">パスワードが必要です</target>
+        <target state="translated">パスワードが必須です</target>
       </trans-unit>
       <trans-unit id="textAddNewController">
         <source xml:lang="en">Add New Controller (preview)</source>
@@ -436,7 +436,7 @@
       </trans-unit>
       <trans-unit id="textRememberPassword">
         <source xml:lang="en">Remember Password</source>
-        <target state="translated">パスワードを記録する</target>
+        <target state="translated">パスワードを記憶する</target>
       </trans-unit>
       <trans-unit id="textUrlCapital">
         <source xml:lang="en">Cluster Management URL</source>
@@ -464,7 +464,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboard" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboard" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="bdc.dashboard.refreshButton">
         <source xml:lang="en">Refresh</source>
@@ -484,15 +484,15 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="bdc.dashboard.viewHyperlink">
         <source xml:lang="en">View</source>
-        <target state="translated">ビュー</target>
+        <target state="translated">表示</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.notAvailable">
         <source xml:lang="en">N/A</source>
-        <target state="translated">なし</target>
+        <target state="translated">該当なし</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.healthStatusDetailsHeader">
         <source xml:lang="en">Health Status Details</source>
@@ -524,7 +524,7 @@
       </trans-unit>
       <trans-unit id="bdc.dashboard.sqlMetricsHeader">
         <source xml:lang="en">SQL Metrics</source>
-        <target state="translated">SQL 指標</target>
+        <target state="translated">SQL メトリック</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.logsHeader">
         <source xml:lang="en">Logs</source>
@@ -532,7 +532,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="bdc.dashboard.propertiesHeader">
         <source xml:lang="en">Cluster Properties</source>
@@ -600,7 +600,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="mount.main.section">
         <source xml:lang="en">Mount Configuration</source>
@@ -628,7 +628,7 @@
       </trans-unit>
       <trans-unit id="mount.task.inprogress">
         <source xml:lang="en">Mounting is likely to complete, check back later to verify</source>
-        <target state="translated">マウントが完了しようとしています。後でご確認ください。</target>
+        <target state="translated">マウントが完了しようとしています。後でご確認ください</target>
       </trans-unit>
       <trans-unit id="mount.task.error">
         <source xml:lang="en">Error mounting folder: {0}</source>
@@ -684,7 +684,7 @@
       </trans-unit>
       <trans-unit id="deletemount.task.submitted">
         <source xml:lang="en">Delete mount request submitted</source>
-        <target state="translated">送信されたマウント要求の削除</target>
+        <target state="translated">マウントの削除要求が送信されました</target>
       </trans-unit>
     </body>
   </file>

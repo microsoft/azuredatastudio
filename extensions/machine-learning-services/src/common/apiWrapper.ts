@@ -69,4 +69,8 @@ export class ApiWrapper {
 	public getExtension(extensionId: string): vscode.Extension<any> | undefined {
 		return vscode.extensions.getExtension(extensionId);
 	}
+
+	public getConfiguration(section?: string, resource?: vscode.Uri | null): vscode.WorkspaceConfiguration {
+		return vscode.workspace.getConfiguration(section, resource);
+	}
 }
