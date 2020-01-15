@@ -29,19 +29,27 @@ export interface IDashboardTab {
 	when?: string;
 	alwaysShow?: boolean;
 	isHomeTab?: boolean;
-	isTopLevelTab?: boolean;
+	group?: string;
+}
+
+export interface IDashboardTabGroup {
+	id: string;
+	title: string;
 }
 
 export interface IDashboardRegistry {
 	registerDashboardProvider(id: string, properties: ProviderProperties): void;
 	getProperties(id: string): ProviderProperties;
 	registerTab(tab: IDashboardTab): void;
+	registerTabGroup(tabGroup: IDashboardTabGroup): void;
 	tabs: Array<IDashboardTab>;
+	tabGroups: Array<IDashboardTabGroup>;
 }
 
 class DashboardRegistry implements IDashboardRegistry {
 	private _properties = new Map<string, ProviderProperties>();
 	private _tabs = new Array<IDashboardTab>();
+	private _tabGroups = new Array<IDashboardTabGroup>();
 	private _configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtension.Configuration);
 
 	/**
@@ -73,8 +81,18 @@ class DashboardRegistry implements IDashboardRegistry {
 		}
 	}
 
+	registerTabGroup(tabGroup: IDashboardTabGroup): void {
+		if (this.tabGroups.findIndex(group => group.id === tabGroup.id) === -1) {
+			this.tabGroups.push(tabGroup);
+		}
+	}
+
 	public get tabs(): Array<IDashboardTab> {
 		return this._tabs;
+	}
+
+	public get tabGroups(): Array<IDashboardTabGroup> {
+		return this._tabGroups;
 	}
 }
 
@@ -83,6 +101,10 @@ Registry.add(Extensions.DashboardContributions, dashboardRegistry);
 
 export function registerTab(tab: IDashboardTab): void {
 	dashboardRegistry.registerTab(tab);
+}
+
+export function registerTabGroup(tabGroup: IDashboardTabGroup): void {
+	dashboardRegistry.registerTabGroup(tabGroup);
 }
 
 const dashboardPropertiesPropertyContrib: IJSONSchema = {
