@@ -103,16 +103,6 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 					'configureDashboard'
 				]
 			}
-		},
-		{
-			name: 'Search',
-			gridItemConfig: {
-				sizex: 1,
-				sizey: 2
-			},
-			widget: {
-				'explorer-widget': {}
-			}
 		}
 	]
 };

@@ -502,7 +502,29 @@
         "container": {
           "widgets-container": [
             {
-              "name": "%databases-widget-title%",
+              "name": "%explorer-widget-title%",
+              "gridItemConfig": {
+                "sizex": 3,
+                "sizey": 3
+              },
+              "widget": {
+                "explorer-widget": {}
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "database-objects-tab",
+        "description": "%database-objects-tab-description%",
+        "provider": "MSSQL",
+        "title": "%database-objects-tab-title%",
+        "when": "dashboardContext == 'database'",
+        "group": "contents",
+        "container": {
+          "widgets-container": [
+            {
+              "name": "%explorer-widget-title%",
               "gridItemConfig": {
                 "sizex": 3,
                 "sizey": 3
