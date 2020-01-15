@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/big-data-cluster/package" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/big-data-cluster/package" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="description">
         <source xml:lang="en">Support for managing SQL Server Big Data Clusters</source>
@@ -44,11 +44,11 @@
       </trans-unit>
       <trans-unit id="bdc.ignoreSslVerification.desc">
         <source xml:lang="en">Ignore SSL verification errors against SQL Server Big Data Cluster endpoints such as HDFS, Spark, and Controller if true</source>
-        <target state="translated">True인 경우 HDFS, Spark 및 Controller와 같은 SQL Server 빅 데이터 클러스터 엔드포인트에 대한 SSL 확인 오류 무시</target>
+        <target state="translated">True인 경우 HDFS, Spark 및 Controller와 같은 SQL Server 빅 데이터 클러스터 엔드포인트를 대상으로 SSL 확인 오류 무시</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/utils" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/utils" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="state.creating">
         <source xml:lang="en">Creating</source>
@@ -56,7 +56,7 @@
       </trans-unit>
       <trans-unit id="state.waiting">
         <source xml:lang="en">Waiting</source>
-        <target state="translated">대기 중</target>
+        <target state="translated">기다리는 중</target>
       </trans-unit>
       <trans-unit id="state.ready">
         <source xml:lang="en">Ready</source>
@@ -80,11 +80,11 @@
       </trans-unit>
       <trans-unit id="state.applyingmanagedupgrade">
         <source xml:lang="en">Applying Managed Upgrade</source>
-        <target state="translated">관리되는 업그레이드를 적용하는 중</target>
+        <target state="translated">관리형 업그레이드를 적용하는 중</target>
       </trans-unit>
       <trans-unit id="state.managedUpgrading">
         <source xml:lang="en">Managed Upgrading</source>
-        <target state="translated">관리되는 업그레이드</target>
+        <target state="translated">관리형 업그레이드</target>
       </trans-unit>
       <trans-unit id="state.rollback">
         <source xml:lang="en">Rollback</source>
@@ -116,7 +116,7 @@
       </trans-unit>
       <trans-unit id="state.waitingForGroups">
         <source xml:lang="en">Waiting For Groups</source>
-        <target state="translated">그룹 대기 중</target>
+        <target state="translated">그룹을 대기하는 중</target>
       </trans-unit>
       <trans-unit id="state.creatingResources">
         <source xml:lang="en">Creating Resources</source>
@@ -124,7 +124,7 @@
       </trans-unit>
       <trans-unit id="state.waitingForResources">
         <source xml:lang="en">Waiting For Resources</source>
-        <target state="translated">리소스 대기 중</target>
+        <target state="translated">리소스를 대기하는 중</target>
       </trans-unit>
       <trans-unit id="state.creatingKerberosDelegationSetup">
         <source xml:lang="en">Creating Kerberos Delegation Setup</source>
@@ -132,15 +132,15 @@
       </trans-unit>
       <trans-unit id="state.waitingForKerberosDelegationSetup">
         <source xml:lang="en">Waiting For Kerberos Delegation Setup</source>
-        <target state="translated">Kerberos 위임 설정 대기 중</target>
+        <target state="translated">Kerberos 위임 설정을 대기하는 중</target>
       </trans-unit>
       <trans-unit id="state.waitingForDeletion">
         <source xml:lang="en">Waiting For Deletion</source>
-        <target state="translated">삭제 대기 중</target>
+        <target state="translated">삭제를 대기하는 중</target>
       </trans-unit>
       <trans-unit id="state.waitingForUpgrade">
         <source xml:lang="en">Waiting For Upgrade</source>
-        <target state="translated">업그레이드 대기 중</target>
+        <target state="translated">업그레이드를 대기하는 중</target>
       </trans-unit>
       <trans-unit id="state.upgradePaused">
         <source xml:lang="en">Upgrade Paused</source>
@@ -148,7 +148,7 @@
       </trans-unit>
       <trans-unit id="state.running">
         <source xml:lang="en">Running</source>
-        <target state="translated">실행</target>
+        <target state="translated">실행하는 중</target>
       </trans-unit>
       <trans-unit id="endpoint.appproxy">
         <source xml:lang="en">Application Proxy</source>
@@ -212,7 +212,7 @@
       </trans-unit>
       <trans-unit id="service.control">
         <source xml:lang="en">Control</source>
-        <target state="translated">제어</target>
+        <target state="translated">컨트롤</target>
       </trans-unit>
       <trans-unit id="service.gateway">
         <source xml:lang="en">Gateway</source>
@@ -220,7 +220,7 @@
       </trans-unit>
       <trans-unit id="service.app">
         <source xml:lang="en">App</source>
-        <target state="translated">응용 프로그램</target>
+        <target state="translated">앱</target>
       </trans-unit>
       <trans-unit id="bdc.healthy">
         <source xml:lang="en">Healthy</source>
@@ -236,7 +236,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="basicAuthName">
         <source xml:lang="en">Basic</source>
@@ -256,11 +256,11 @@
       </trans-unit>
       <trans-unit id="err.controller.username.required">
         <source xml:lang="en">Username is required</source>
-        <target state="translated">사용자 이름은 필수임</target>
+        <target state="translated">사용자 이름은 필수입니다.</target>
       </trans-unit>
       <trans-unit id="err.controller.password.required">
         <source xml:lang="en">Password is required</source>
-        <target state="translated">암호는 필수임</target>
+        <target state="translated">암호는 필수입니다.</target>
       </trans-unit>
       <trans-unit id="textUrlLower">
         <source xml:lang="en">url</source>
@@ -304,7 +304,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="error.no.activedirectory">
         <source xml:lang="en">This cluster does not support Windows authentication</source>
@@ -316,31 +316,31 @@
       </trans-unit>
       <trans-unit id="bdc.error.unauthorized">
         <source xml:lang="en">You do not have permission to log into this cluster using Windows Authentication</source>
-        <target state="translated">Windows 인증을 사용하여 이 클러스터에 로그인할 권한이 없습니다.</target>
+        <target state="translated">Windows 인증을 사용하여 이 클러스터에 로그인할 수 있는 권한이 없습니다.</target>
       </trans-unit>
       <trans-unit id="bdc.error.getEndPoints">
         <source xml:lang="en">Error retrieving endpoints from {0}</source>
-        <target state="translated">{0}에서 엔드포인트 검색 오류</target>
+        <target state="translated">{0}에서 엔드포인트 검색 중 오류 발생</target>
       </trans-unit>
       <trans-unit id="bdc.error.getBdcStatus">
         <source xml:lang="en">Error retrieving BDC status from {0}</source>
-        <target state="translated">{0}에서 BDC 상태 검색 오류</target>
+        <target state="translated">{0}에서 BDC 상태 검색 중 오류 발생</target>
       </trans-unit>
       <trans-unit id="bdc.error.mountHdfs">
         <source xml:lang="en">Error creating mount</source>
-        <target state="translated">탑재 생성 오류</target>
+        <target state="translated">탑재를 만드는 중 오류 발생</target>
       </trans-unit>
       <trans-unit id="bdc.error.refreshHdfs">
         <source xml:lang="en">Error refreshing mount</source>
-        <target state="translated">탑재 새로 고침 오류</target>
+        <target state="translated">탑재를 새로 고치는 중 오류 발생</target>
       </trans-unit>
       <trans-unit id="bdc.error.deleteHdfs">
         <source xml:lang="en">Error deleting mount</source>
-        <target state="translated">탑재 삭제 오류</target>
+        <target state="translated">탑재를 삭제하는 중 오류 발생</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/connectControllerDialog" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/connectControllerDialog" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="connectController.dialog.title">
         <source xml:lang="en">Connect to Controller (preview)</source>
@@ -348,7 +348,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/commonControls" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/commonControls" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="bdc.dashboard.viewDetails">
         <source xml:lang="en">View Details</source>
@@ -356,7 +356,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/extension" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/extension" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="mount.error.endpointNotFound">
         <source xml:lang="en">Controller endpoint information was not found</source>
@@ -376,11 +376,11 @@
       </trans-unit>
       <trans-unit id="textConfirmDeleteController">
         <source xml:lang="en">Are you sure you want to delete '{0}'?</source>
-        <target state="translated">'{0}'을(를) 삭제할까요?</target>
+        <target state="translated">'{0}'을(를) 삭제하시겠습니까?</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/addControllerNode" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/addControllerNode" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="textBigDataClusterControllerWithDots">
         <source xml:lang="en">Add SQL Server Big Data Cluster controller...</source>
@@ -392,7 +392,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/loadingControllerNode" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/tree/loadingControllerNode" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="textLoadingWithDots">
         <source xml:lang="en">Loading...</source>
@@ -400,7 +400,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="basicAuthName">
         <source xml:lang="en">Basic</source>
@@ -412,11 +412,11 @@
       </trans-unit>
       <trans-unit id="err.controller.username.required">
         <source xml:lang="en">Username is required</source>
-        <target state="translated">사용자 이름은 필수임</target>
+        <target state="translated">사용자 이름은 필수입니다.</target>
       </trans-unit>
       <trans-unit id="err.controller.password.required">
         <source xml:lang="en">Password is required</source>
-        <target state="translated">암호는 필수임</target>
+        <target state="translated">암호는 필수입니다.</target>
       </trans-unit>
       <trans-unit id="textAddNewController">
         <source xml:lang="en">Add New Controller (preview)</source>
@@ -436,7 +436,7 @@
       </trans-unit>
       <trans-unit id="textRememberPassword">
         <source xml:lang="en">Remember Password</source>
-        <target state="translated">암호 기억</target>
+        <target state="translated">암호 저장</target>
       </trans-unit>
       <trans-unit id="textUrlCapital">
         <source xml:lang="en">Cluster Management URL</source>
@@ -464,7 +464,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboard" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboard" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="bdc.dashboard.refreshButton">
         <source xml:lang="en">Refresh</source>
@@ -484,7 +484,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="bdc.dashboard.viewHyperlink">
         <source xml:lang="en">View</source>
@@ -492,7 +492,7 @@
       </trans-unit>
       <trans-unit id="bdc.dashboard.notAvailable">
         <source xml:lang="en">N/A</source>
-        <target state="translated">N/A</target>
+        <target state="translated">해당 없음</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.healthStatusDetailsHeader">
         <source xml:lang="en">Health Status Details</source>
@@ -500,7 +500,7 @@
       </trans-unit>
       <trans-unit id="bdc.dashboard.lastUpdated">
         <source xml:lang="en">Last Updated : {0}</source>
-        <target state="translated">마지막 업데이트: {0}</target>
+        <target state="translated">마지막으로 업데이트한 날짜: {0}</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.instanceHeader">
         <source xml:lang="en">Instance</source>
@@ -532,7 +532,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="bdc.dashboard.propertiesHeader">
         <source xml:lang="en">Cluster Properties</source>
@@ -552,7 +552,7 @@
       </trans-unit>
       <trans-unit id="bdc.dashboard.lastUpdated">
         <source xml:lang="en">Last Updated : {0}</source>
-        <target state="translated">마지막 업데이트: {0}</target>
+        <target state="translated">마지막으로 업데이트한 날짜: {0}</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.serviceNameHeader">
         <source xml:lang="en">Service Name</source>
@@ -576,11 +576,11 @@
       </trans-unit>
       <trans-unit id="bdc.dashboard.endpointHeader">
         <source xml:lang="en">Endpoint</source>
-        <target state="translated">끝점</target>
+        <target state="translated">엔드포인트</target>
       </trans-unit>
       <trans-unit id="endpointsError">
         <source xml:lang="en">Unexpected error retrieving BDC Endpoints: {0}</source>
-        <target state="translated">BDC 엔드포인트를 검색하는 동안 예기치 않은 오류가 발생했습니다. {0}</target>
+        <target state="translated">BDC 엔드포인트를 검색하는 동안 예기치 않은 오류 발생: {0}</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.noConnection">
         <source xml:lang="en">The dashboard requires a connection. Please click retry to enter your credentials.</source>
@@ -600,7 +600,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="mount.main.section">
         <source xml:lang="en">Mount Configuration</source>
@@ -620,15 +620,15 @@
       </trans-unit>
       <trans-unit id="mount.task.submitted">
         <source xml:lang="en">Mount creation has started</source>
-        <target state="translated">탑재 만들기가 시작됨</target>
+        <target state="translated">탑재 만들기를 시작했습니다.</target>
       </trans-unit>
       <trans-unit id="mount.task.complete">
         <source xml:lang="en">Mounting HDFS folder is complete</source>
-        <target state="translated">HDFS 폴더 탑재가 완료됨</target>
+        <target state="translated">HDFS 폴더 탑재가 완료되었습니다.</target>
       </trans-unit>
       <trans-unit id="mount.task.inprogress">
         <source xml:lang="en">Mounting is likely to complete, check back later to verify</source>
-        <target state="translated">탑재가 완료될 수 있음, 나중에 다시 확인</target>
+        <target state="translated">탑재가 완료될 수 있습니다. 나중에 다시 확인하세요.</target>
       </trans-unit>
       <trans-unit id="mount.task.error">
         <source xml:lang="en">Error mounting folder: {0}</source>
@@ -640,11 +640,11 @@
       </trans-unit>
       <trans-unit id="mount.dialog.title">
         <source xml:lang="en">Mount HDFS Folder (preview)</source>
-        <target state="translated">HDFS 폴더 마운트(미리 보기)</target>
+        <target state="translated">HDFS 폴더 탑재(미리 보기)</target>
       </trans-unit>
       <trans-unit id="mount.hdfsPath.info">
         <source xml:lang="en">Path to a new (non-existing) directory which you want to associate with the mount</source>
-        <target state="translated">마운트와 연결하려는 새(존재하지 않는) 디렉터리 경로</target>
+        <target state="translated">탑재와 연결하려는 새(기존 항목 아님) 디렉터리의 경로</target>
       </trans-unit>
       <trans-unit id="mount.remoteUri.title">
         <source xml:lang="en">Remote URI</source>
@@ -660,7 +660,7 @@
       </trans-unit>
       <trans-unit id="mount.credentials.info">
         <source xml:lang="en">Mount credentials for authentication to remote data source for reads</source>
-        <target state="translated">읽기 위해 원격 데이터 원본에 인증을 위한 자격 증명 마운트</target>
+        <target state="translated">읽기 위해 원격 데이터 원본에 인증용 자격 증명 탑재</target>
       </trans-unit>
       <trans-unit id="refreshmount.dialog.title">
         <source xml:lang="en">Refresh Mount</source>

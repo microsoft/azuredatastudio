@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/notebook/package" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/package" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="displayName">
         <source xml:lang="en">Notebook Core Extensions</source>
@@ -12,11 +12,11 @@
       </trans-unit>
       <trans-unit id="notebook.configuration.title">
         <source xml:lang="en">Notebook configuration</source>
-        <target state="translated">Configuration du notebook</target>
+        <target state="translated">Configuration de notebook</target>
       </trans-unit>
       <trans-unit id="notebook.pythonPath.description">
         <source xml:lang="en">Local path to python installation used by Notebooks.</source>
-        <target state="translated">Chemin local de l'installation de Python utilisé par Notebooks.</target>
+        <target state="translated">Chemin local de l'installation Python utilisé par Notebooks.</target>
       </trans-unit>
       <trans-unit id="notebook.useExistingPython.description">
         <source xml:lang="en">Local path to a preexisting python installation used by Notebooks.</source>
@@ -140,7 +140,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/common/utils" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/common/utils" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="mkdirOutputMsg">
         <source xml:lang="en">... Creating {0}</source>
@@ -148,11 +148,11 @@
       </trans-unit>
       <trans-unit id="executeCommandProcessExited">
         <source xml:lang="en">Process exited with code {0}</source>
-        <target state="translated">Processus terminé avec le code {0}</target>
+        <target state="translated">Le processus s'est arrêté avec le code {0}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/common/localizedConstants" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/common/localizedConstants" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="msgYes">
         <source xml:lang="en">Yes</source>
@@ -168,7 +168,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterServerInstallation" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/jupyter/jupyterServerInstallation" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="msgInstallPkgProgress">
         <source xml:lang="en">Notebook dependencies installation is in progress</source>
@@ -232,7 +232,7 @@
       </trans-unit>
       <trans-unit id="confirmPackageUpgrade">
         <source xml:lang="en">Some installed python packages need to be upgraded. Would you like to upgrade them now?</source>
-        <target state="translated">Des packages Python installés ont besoin d'être mis à jour. Voulez-vous les mettre à jour maintenant ?</target>
+        <target state="translated">Des packages Python installés ont besoin d'être mis à niveau. Voulez-vous les mettre à niveau maintenant ?</target>
       </trans-unit>
       <trans-unit id="upgradePackages.pipInstall">
         <source xml:lang="en">Installing {0}</source>
@@ -240,7 +240,7 @@
       </trans-unit>
       <trans-unit id="msgInstallStart">
         <source xml:lang="en">Installing required packages to run Notebooks...</source>
-        <target state="translated">Installation des packages nécessaires pour exécuter Notebooks...</target>
+        <target state="translated">Installation des packages obligatoires pour l'exécution de Notebooks...</target>
       </trans-unit>
       <trans-unit id="msgJupyterInstallDone">
         <source xml:lang="en">... Jupyter installation complete.</source>
@@ -248,7 +248,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/dialog/configurePythonDialog" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/dialog/configurePythonDialog" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="configurePython.dialogName">
         <source xml:lang="en">Configure Python for Notebooks</source>
@@ -304,7 +304,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/extension" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/extension" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="msgSampleCodeDataFrame">
         <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
@@ -332,7 +332,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterController" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/jupyter/jupyterController" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="notebookFileType">
         <source xml:lang="en">Notebooks</source>
@@ -348,7 +348,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterServerManager" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/jupyter/jupyterServerManager" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="shutdownError">
         <source xml:lang="en">Shutdown of Notebook server failed: {0}</source>
@@ -356,7 +356,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/serverInstance" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/jupyter/serverInstance" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="serverStopError">
         <source xml:lang="en">Error stopping Notebook Server: {0}</source>
@@ -368,7 +368,7 @@
       </trans-unit>
       <trans-unit id="jupyterError">
         <source xml:lang="en">Error sent from Jupyter: {0}</source>
-        <target state="translated">Erreur envoyée par Jupyter : {0}</target>
+        <target state="translated">Erreur envoyée par Jupyter : {0}</target>
       </trans-unit>
       <trans-unit id="jupyterOutputMsgStartSuccessful">
         <source xml:lang="en">... Jupyter is running at {0}</source>
@@ -380,15 +380,15 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterNotebookProvider" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/jupyter/jupyterNotebookProvider" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="errNotebookUriMissing">
         <source xml:lang="en">A notebook path is required</source>
-        <target state="translated">Un chemin de notebook est nécessaire</target>
+        <target state="translated">Le chemin du notebook est obligatoire</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterSessionManager" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/jupyter/jupyterSessionManager" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="errorStartBeforeReady">
         <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
@@ -400,7 +400,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/dialog/managePackages/managePackagesDialog" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/dialog/managePackages/managePackagesDialog" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="managePackages.dialogName">
         <source xml:lang="en">Manage Packages</source>
@@ -412,11 +412,11 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/dialog/managePackages/installedPackagesTab" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/dialog/managePackages/installedPackagesTab" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="managePackages.installedTabTitle">
         <source xml:lang="en">Installed</source>
-        <target state="translated">INSTALLÉ</target>
+        <target state="translated">Installé</target>
       </trans-unit>
       <trans-unit id="managePackages.pkgNameColumn">
         <source xml:lang="en">Name</source>
@@ -440,7 +440,7 @@
       </trans-unit>
       <trans-unit id="managePackages.confirmUninstall">
         <source xml:lang="en">Are you sure you want to uninstall the specified packages?</source>
-        <target state="translated">Voulez-vous vraiment désinstaller les packages spécifiés ?</target>
+        <target state="translated">Voulez-vous vraiment désinstaller les packages spécifiés ?</target>
       </trans-unit>
       <trans-unit id="managePackages.backgroundUninstallStarted">
         <source xml:lang="en">Uninstalling {0}</source>
@@ -456,7 +456,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/dialog/managePackages/addNewPackageTab" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/dialog/managePackages/addNewPackageTab" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="managePackages.invalidTextPlaceholder">
         <source xml:lang="en">N/A</source>
@@ -516,7 +516,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/protocol/notebookUriHandler" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/protocol/notebookUriHandler" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="notebook.unsupportedAction">
         <source xml:lang="en">Action {0} is not supported for this handler</source>
@@ -540,7 +540,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/book/bookTreeView" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/book/bookTreeView" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="openBookError">
         <source xml:lang="en">Open book {0} failed: {1}</source>
@@ -568,7 +568,7 @@
       </trans-unit>
       <trans-unit id="openExternalLinkError">
         <source xml:lang="en">Open link {0} failed: {1}</source>
-        <target state="translated">Échec de l'ouverture du lien {0} : {1}</target>
+        <target state="translated">L'ouverture du lien {0} a échoué : {1}</target>
       </trans-unit>
       <trans-unit id="confirmReplace">
         <source xml:lang="en">Folder already exists. Are you sure you want to delete and replace this folder?</source>
@@ -576,11 +576,11 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/book/bookModel" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/book/bookModel" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="missingFileError">
         <source xml:lang="en">Missing file : {0}</source>
-        <target state="translated">Fichier manquant : {0}</target>
+        <target state="translated">Fichier manquant : {0}</target>
       </trans-unit>
       <trans-unit id="InvalidError.tocFile">
         <source xml:lang="en">{0}</source>
@@ -592,7 +592,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/book/bookTreeItem" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/notebook/dist/book/bookTreeItem" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="openNotebookCommand">
         <source xml:lang="en">Open Notebook</source>
@@ -600,7 +600,7 @@
       </trans-unit>
       <trans-unit id="openMarkdownCommand">
         <source xml:lang="en">Open Markdown</source>
-        <target state="translated">Ouvrir Markdown</target>
+        <target state="translated">Ouvrir le fichier Markdown</target>
       </trans-unit>
       <trans-unit id="openExternalLinkCommand">
         <source xml:lang="en">Open External Link</source>
