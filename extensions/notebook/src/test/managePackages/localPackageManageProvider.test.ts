@@ -153,6 +153,7 @@ describe('Manage Package Providers', () => {
 		should.equal(await provider.canUseProvider(), true);
 	});
 
+	/* Tests disabled. Tracking issue: https://github.com/microsoft/azuredatastudio/issues/8877
 	it('Pip getPackageOverview should return package info successfully', async function (): Promise<void> {
 		let testContext = createContext();
 		testContext.piPyClient.fetchPypiPackage = (packageName) => {
@@ -186,6 +187,7 @@ describe('Manage Package Providers', () => {
 			summary: undefined
 		});
 	});
+	*/
 
 	function createContext(): TestContext {
 		return {

@@ -73,6 +73,7 @@ describe('Manage Packages', () => {
 		await should(model.init()).rejectedWith(`Invalid default provider id '${options.defaultProviderId}`);
 	});
 
+	/* Test disabled. Tracking issue: https://github.com/microsoft/azuredatastudio/issues/8877
 	it('Init should throw exception not given valid default location for single location mode', async function (): Promise<void> {
 		let testContext = createContext();
 		let provider = createProvider(testContext);
@@ -85,6 +86,7 @@ describe('Manage Packages', () => {
 		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, options);
 		await should(model.init()).rejectedWith(`Default location not specified for single location mode`);
 	});
+	*/
 
 
 	it('Init should set default options given undefined', async function (): Promise<void> {
@@ -273,6 +275,7 @@ describe('Manage Packages', () => {
 		await should(model.uninstallPackages(TypeMoq.It.isAny())).rejected();
 	});
 
+	/* Test disabled. Tracking issue: https://github.com/microsoft/azuredatastudio/issues/8877
 	it('current provider should install and uninstall packages successfully', async function (): Promise<void> {
 		let testContext1 = createContext();
 		testContext1.provider.providerId = 'providerId1';
@@ -317,6 +320,7 @@ describe('Manage Packages', () => {
 		await should(model.getPackageOverview('p1')).resolved();
 		await should(model.getLocationTitle()).rejectedWith('location title 2');
 	});
+	*/
 
 	function createContext(): TestContext {
 		return {
