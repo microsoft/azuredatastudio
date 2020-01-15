@@ -238,12 +238,12 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 				return;
 			}
 
-			sendFile(res, path.join(__dirname, 'media/landing.html'), 'text/html; charset=utf-8');
+			sendFile(res, path.join(__dirname, 'media/landing.html'), 'text/html; charset=utf-8').catch(console.error);
 			this.handleAuthentication(code).catch((e) => console.error(e));
 		};
 
 		const css = (req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => {
-			sendFile(res, path.join(__dirname, 'media/landing.css'), 'text/css; charset=utf-8');
+			sendFile(res, path.join(__dirname, 'media/landing.css'), 'text/css; charset=utf-8').catch(console.error);
 		};
 
 		pathMappings.set('/signin', initialSignIn);
