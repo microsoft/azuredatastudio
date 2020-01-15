@@ -113,6 +113,7 @@ export const enum MenuId {
 	CommentThreadActions,
 	CommentTitle,
 	CommentActions,
+	BulkEditPaneContext,
 }
 
 export interface IMenuActionOptions {
