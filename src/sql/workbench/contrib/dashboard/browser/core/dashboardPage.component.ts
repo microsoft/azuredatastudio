@@ -154,8 +154,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this.addCustomTabGroups(allTabs);
 		this.addExtensionsTabGroup(allTabs);
 
-		this.loadNewTabs(allTabs.filter((tab) => !tab.group));
-
 		this.panelActions = [];
 
 		this._cd.detectChanges();
