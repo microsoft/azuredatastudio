@@ -289,33 +289,16 @@ describe('SQL Python Package Manager', () => {
 		should.deepEqual(actual, true);
 	});
 
-	it('getPackageOverview Should not return undefined if python package provider not found', async function (): Promise<void> {
-		let testContext = createContext();
-
-		let provider = createProvider(testContext);
-		let actual = await provider.getPackageOverview('package name');
-
-		should.notEqual(actual, undefined);
-	});
-
 	it('getPackageOverview Should return package info using python packages provider', async function (): Promise<void> {
 		let testContext = createContext();
 		let packagePreview = {
-			'name': 'a-name',
-			'versions': ['1.1.2'],
-			'summary': ''
+			name: 'package name',
+			versions: ['0.0.2', '0.0.1'],
+			summary: 'package summary'
 		};
-		let pythonPackageManager: nbExtensionApis.IPackageManageProvider = {
-			providerId: 'localhost_Pip',
-			packageTarget: { location: '', packageType: '' },
-			listPackages: () => { return Promise.resolve([]); },
-			installPackages: () => { return Promise.resolve(); },
-			uninstallPackages: () => { return Promise.resolve(); },
-			canUseProvider: () => { return Promise.resolve(true); },
-			getLocationTitle: () => { return Promise.resolve(''); },
-			getPackageOverview: () => { return Promise.resolve(packagePreview); }
-		};
-		testContext.nbExtensionApis.registerPackageManager(pythonPackageManager.providerId, pythonPackageManager);
+		testContext.httpClient.setup(x => x.fetch(TypeMoq.It.isAny())).returns(() => {
+			return Promise.resolve(`{"info":{"summary":"package summary"}, "releases":{"0.0.1":[{"comment_text":""}], "0.0.2":[{"comment_text":""}]}}`);
+		});
 
 		let provider = createProvider(testContext);
 		let actual = await provider.getPackageOverview('package name');
@@ -364,11 +347,11 @@ describe('SQL Python Package Manager', () => {
 	function createProvider(testContext: TestContext): SqlPythonPackageManageProvider {
 		testContext.config.setup(x => x.pythonExecutable).returns(() => 'python');
 		return new SqlPythonPackageManageProvider(
-			testContext.nbExtensionApis,
 			testContext.outputChannel,
 			testContext.apiWrapper.object,
 			testContext.queryRunner.object,
 			testContext.processService.object,
-			testContext.config.object);
+			testContext.config.object,
+			testContext.httpClient.object);
 	}
 });

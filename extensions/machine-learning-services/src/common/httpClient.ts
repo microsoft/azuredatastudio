@@ -10,7 +10,32 @@ import * as request from 'request';
 import * as constants from './constants';
 
 const DownloadTimeout = 20000;
+const GetTimeout = 10000;
 export class HttpClient {
+
+	public async fetch(url: string): Promise<any> {
+		return new Promise<any>((resolve, reject) => {
+			request.get(url, { timeout: GetTimeout }, (error, response, body) => {
+				if (error) {
+					return reject(error);
+				}
+
+				if (response.statusCode === 404) {
+					return reject(constants.resourceNotFoundError);
+				}
+
+				if (response.statusCode !== 200) {
+					return reject(
+						constants.httpGetRequestError(
+							response.statusCode,
+							response.statusMessage));
+				}
+
+				resolve(body);
+			});
+		});
+	}
+
 	public download(downloadUrl: string, targetPath: string, backgroundOperation: azdata.BackgroundOperation, outputChannel: vscode.OutputChannel): Promise<void> {
 		return new Promise((resolve, reject) => {
 

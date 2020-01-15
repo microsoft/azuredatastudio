@@ -59,7 +59,14 @@ export const downloadError = localize('mls.downloadError', "Error while download
 export const downloadingProgress = localize('mls.downloadingProgress', "Downloading");
 export const pythonConfigError = localize('mls.pythonConfigError', "Python executable is not configured");
 export const rConfigError = localize('mls.rConfigError', "R executable is not configured");
-export const installingDependencies = localize('mls.installingDependencies', "Installing Dependencies ...");
+export const installingDependencies = localize('mls.installingDependencies', "Installing dependencies ...");
+export const resourceNotFoundError = localize('mls.resourceNotFound', "Could not find the specified resource");
+export function httpGetRequestError(code: number, message: string): string {
+	return localize('mls.httpGetRequestError', "Package info request failed with error: {0} {1}",
+		code,
+		message);
+}
+
 
 // Links
 //

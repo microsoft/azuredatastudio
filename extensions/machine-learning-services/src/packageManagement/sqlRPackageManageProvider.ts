@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nbExtensionApis from '../typings/notebookServices';
@@ -13,17 +11,15 @@ import { QueryRunner } from '../common/queryRunner';
 import { ApiWrapper } from '../common/apiWrapper';
 import { ProcessService } from '../common/processService';
 import { Config } from '../configurations/config';
-import { SqlPackageManageProviderBase } from './SqPackageManageProviderBase';
+import { SqlPackageManageProviderBase } from './SqlPackageManageProviderBase';
 
 const installMode = 'install';
 const uninstallMode = 'uninstall';
 
 /**
- * Manage Package Provider for python packages inside SQL server databases
+ * Manage Package Provider for r packages inside SQL server databases
  */
 export class SqlRPackageManageProvider extends SqlPackageManageProviderBase implements nbExtensionApis.IPackageManageProvider {
-
-	private _rExecutable: string;
 
 	public static ProviderId = 'sql_R';
 
@@ -37,7 +33,6 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 		private _processService: ProcessService,
 		private _config: Config) {
 		super(apiWrapper);
-		this._rExecutable = this._config.rExecutable;
 	}
 
 	/**
@@ -86,7 +81,7 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 	}
 
 	/**
-	 * Execute a script to install or uninstall a python package inside current SQL Server connection
+	 * Execute a script to install or uninstall a r package inside current SQL Server connection
 	 * @param packageDetails Packages to install or uninstall
 	 * @param scriptMode can be 'install' or 'uninstall'
 	 */
@@ -96,18 +91,19 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 
 		if (connection) {
 			let database = connection.databaseName ? `, database="${connection.databaseName}"` : '';
-			let pythonConnectionParts = `server="${connection.serverName}", uid="${connection.userName}", pwd="${credentials[azdata.ConnectionOptionSpecialType.password]}"${database}`;
+			let connectionParts = `server="${connection.serverName}", uid="${connection.userName}", pwd="${credentials[azdata.ConnectionOptionSpecialType.password]}"${database}`;
 			let rCommandScript = scriptMode === installMode ? 'sql_install.packages' : 'sql_remove.packages';
 
 			let scripts: string[] = [
 				'formals(quit)$save <- formals(q)$save <- "no"',
 				'library(sqlmlutils)',
-				`connection <- connectionInfo(${pythonConnectionParts})`,
+				`connection <- connectionInfo(${connectionParts})`,
 				`pkgs <- c("${packageDetails.name}")`,
 				`${rCommandScript}(connectionString = connection, pkgs, scope = "PUBLIC")`,
 				'q()'
 			];
-			await this._processService.execScripts(`${this._rExecutable}`, scripts, ['--vanilla'], this._outputChannel);
+			let rExecutable = this._config.rExecutable;
+			await this._processService.execScripts(`${rExecutable}`, scripts, ['--vanilla'], this._outputChannel);
 		}
 	}
 

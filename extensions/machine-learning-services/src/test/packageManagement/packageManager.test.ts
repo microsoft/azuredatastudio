@@ -11,14 +11,12 @@ import * as should from 'should';
 import 'mocha';
 import * as TypeMoq from 'typemoq';
 import { PackageManager } from '../../packageManagement/packageManager';
-import { SqlPythonPackageManageProvider } from '../../packageManagement/sqlPythonPackageManageProvider';
 import { createContext, TestContext } from './utils';
 
 describe('Package Manager', () => {
 	it('Should initialize SQL package manager successfully', async function (): Promise<void> {
 		let testContext = createContext();
 		should.doesNotThrow(() => createPackageManager(testContext));
-		should.equal(testContext.nbExtensionApis.getPackageManagers().has(SqlPythonPackageManageProvider.ProviderId), true);
 	});
 
 	it('Manage Package command Should execute the command for valid connection', async function (): Promise<void> {
@@ -193,7 +191,6 @@ describe('Package Manager', () => {
 		testContext.config.setup(x => x.pythonExecutable).returns(() => 'python');
 		testContext.config.setup(x => x.rExecutable).returns(() => 'r');
 		let packageManager = new PackageManager(
-			testContext.nbExtensionApis,
 			testContext.outputChannel,
 			'',
 			testContext.apiWrapper.object,

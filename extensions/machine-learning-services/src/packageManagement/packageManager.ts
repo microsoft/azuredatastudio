@@ -23,15 +23,14 @@ export class PackageManager {
 
 	private _pythonExecutable: string = '';
 	private _rExecutable: string = '';
-	private _sqlPythonPackagePackageManager: SqlPythonPackageManageProvider | undefined = undefined;
-	private _sqlRPackageManager: SqlRPackageManageProvider | undefined = undefined;
+	private _sqlPythonPackagePackageManager: SqlPythonPackageManageProvider;
+	private _sqlRPackageManager: SqlRPackageManageProvider;
 	public dependenciesInstalled: boolean = false;
 
 	/**
 	 * Creates a new instance of PackageManager
 	 */
 	constructor(
-		private _nbExtensionApis: nbExtensionApis.IExtensionApi,
 		private _outputChannel: vscode.OutputChannel,
 		private _rootFolder: string,
 		private _apiWrapper: ApiWrapper,
@@ -39,19 +38,26 @@ export class PackageManager {
 		private _processService: ProcessService,
 		private _config: Config,
 		private _httpClient: HttpClient) {
+		this._sqlPythonPackagePackageManager = new SqlPythonPackageManageProvider(this._outputChannel, this._apiWrapper, this._queryRunner, this._processService, this._config, this._httpClient);
+		this._sqlRPackageManager = new SqlRPackageManageProvider(this._outputChannel, this._apiWrapper, this._queryRunner, this._processService, this._config);
 	}
 
 	/**
 	 * Initializes the instance and resister SQL package manager with manage package dialog
 	 */
 	public init(): void {
-		//this._pythonInstallationLocation = utils.getPythonInstallationLocation(this._rootFolder);
 		this._pythonExecutable = this._config.pythonExecutable;
 		this._rExecutable = this._config.rExecutable;
-		this._sqlPythonPackagePackageManager = new SqlPythonPackageManageProvider(this._nbExtensionApis, this._outputChannel, this._apiWrapper, this._queryRunner, this._processService, this._config);
-		this._sqlRPackageManager = new SqlRPackageManageProvider(this._outputChannel, this._apiWrapper, this._queryRunner, this._processService, this._config);
-		this._nbExtensionApis.registerPackageManager(SqlPythonPackageManageProvider.ProviderId, this._sqlPythonPackagePackageManager);
-		this._nbExtensionApis.registerPackageManager(SqlRPackageManageProvider.ProviderId, this._sqlRPackageManager);
+	}
+
+	/**
+	 * Returns packageManageProviders
+	 */
+	public get packageManageProviders(): nbExtensionApis.IPackageManageProvider[] {
+		return [
+			this._sqlPythonPackagePackageManager,
+			this._sqlRPackageManager
+		];
 	}
 
 	/**
@@ -111,8 +117,9 @@ export class PackageManager {
 
 						// Install required packages
 						//
-						await this.installRequiredPythonPackages();
-						await this.installRequiredRPackages(op);
+						await Promise.all([
+							this.installRequiredPythonPackages(),
+							this.installRequiredRPackages(op)]);
 						op.updateStatus(azdata.TaskStatus.Succeeded);
 						resolve();
 					} catch (error) {
@@ -127,7 +134,7 @@ export class PackageManager {
 
 	private async installRequiredRPackages(startBackgroundOperation: azdata.BackgroundOperation): Promise<string> {
 		if (!this._rExecutable) {
-			throw new Error(constants.pythonConfigError);
+			throw new Error(constants.rConfigError);
 		}
 
 		const sqlMlUtilsPackage = utils.getRSqlMlUtilsPath(this._rootFolder);

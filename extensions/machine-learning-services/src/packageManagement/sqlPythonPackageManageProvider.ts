@@ -12,33 +12,30 @@ import { QueryRunner } from '../common/queryRunner';
 import { ApiWrapper } from '../common/apiWrapper';
 import { ProcessService } from '../common/processService';
 import { Config } from '../configurations/config';
-import { SqlPackageManageProviderBase } from './SqPackageManageProviderBase';
+import { SqlPackageManageProviderBase } from './SqlPackageManageProviderBase';
+import { HttpClient } from '../common/httpClient';
+import * as utils from '../common/utils';
 
 const installMode = 'install';
 const uninstallMode = 'uninstall';
-const localPythonProviderId = 'localhost_Pip';
 
 /**
  * Manage Package Provider for python packages inside SQL server databases
  */
 export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase implements nbExtensionApis.IPackageManageProvider {
-
-	private _pythonExecutable: string;
-
 	public static ProviderId = 'sql_Python';
 
 	/**
 	 * Creates new a instance
 	 */
 	constructor(
-		private _nbExtensionApis: nbExtensionApis.IExtensionApi,
 		private _outputChannel: vscode.OutputChannel,
 		apiWrapper: ApiWrapper,
 		private _queryRunner: QueryRunner,
 		private _processService: ProcessService,
-		private _config: Config) {
+		private _config: Config,
+		private _httpClient: HttpClient) {
 		super(apiWrapper);
-		this._pythonExecutable = this._config.pythonExecutable;
 	}
 
 	/**
@@ -116,7 +113,8 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 				'pkgmanager = sqlmlutils.SQLPackageManager(connection)',
 				pythonCommandScript
 			];
-			await this._processService.execScripts(this._pythonExecutable, scripts, [], this._outputChannel);
+			let pythonExecutable = this._config.pythonExecutable;
+			await this._processService.execScripts(pythonExecutable, scripts, [], this._outputChannel);
 		}
 	}
 
@@ -147,23 +145,38 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 	 * @param packageName Package Name
 	 */
 	async getPackageOverview(packageName: string): Promise<nbExtensionApis.IPackageOverview> {
-		let packagePreview: nbExtensionApis.IPackageOverview = {
-			name: packageName,
-			versions: [],
-			summary: ''
-		};
-		let pythonPackageProvider = this.pythonPackageProvider;
-		if (pythonPackageProvider) {
-			packagePreview = await pythonPackageProvider.getPackageOverview(packageName);
-		}
+		let packagePreview: nbExtensionApis.IPackageOverview = await this.fetchPypiPackage(packageName);
 		return packagePreview;
 	}
 
-	private get pythonPackageProvider(): nbExtensionApis.IPackageManageProvider | undefined {
-		let providers = this._nbExtensionApis.getPackageManagers();
-		if (providers && providers.has(localPythonProviderId)) {
-			return providers.get(localPythonProviderId);
+	private getPackageLink(packageName: string): string {
+		return `https://pypi.org/pypi/${packageName}/json`;
+	}
+
+	private async fetchPypiPackage(packageName: string): Promise<nbExtensionApis.IPackageOverview> {
+		let body = await this._httpClient.fetch(this.getPackageLink(packageName));
+		let packagesJson = JSON.parse(body);
+		let versionNums: string[] = [];
+		let packageSummary = '';
+		if (packagesJson) {
+			if (packagesJson.releases) {
+				let versionKeys = Object.keys(packagesJson.releases);
+				versionKeys = versionKeys.filter(versionKey => {
+					let releaseInfo = packagesJson.releases[versionKey];
+					return Array.isArray(releaseInfo) && releaseInfo.length > 0;
+				});
+				versionNums = utils.sortPackageVersions(versionKeys, false);
+			}
+
+			if (packagesJson.info && packagesJson.info.summary) {
+				packageSummary = packagesJson.info.summary;
+			}
 		}
-		return undefined;
+
+		return {
+			name: packageName,
+			versions: versionNums,
+			summary: packageSummary
+		};
 	}
 }

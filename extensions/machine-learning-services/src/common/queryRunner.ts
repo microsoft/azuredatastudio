@@ -10,6 +10,8 @@ import * as nbExtensionApis from '../typings/notebookServices';
 import { ApiWrapper } from './apiWrapper';
 import * as constants from '../common/constants';
 
+const maxNumberOfRetries = 3;
+
 const listPythonPackagesQuery = `
 EXEC sp_execute_external_script
 @language=N'Python',
@@ -94,7 +96,7 @@ export class QueryRunner {
 		let packages: nbExtensionApis.IPackageDetails[] = [];
 		let result: azdata.SimpleExecuteResult | undefined = undefined;
 
-		for (let index = 0; index < 3; index++) {
+		for (let index = 0; index < maxNumberOfRetries; index++) {
 			result = await this.runQuery(connection, script);
 			if (result && result.rowCount > 0) {
 				break;

@@ -99,8 +99,11 @@ export default class MainController implements vscode.Disposable {
 	 */
 	public getPackageManager(nbApis: nbExtensionApis.IExtensionApi): PackageManager {
 		if (!this._packageManager) {
-			this._packageManager = new PackageManager(nbApis, this._outputChannel, this._rootPath, this._apiWrapper, this._queryRunner, this._processService, this._config, this.httpClient);
+			this._packageManager = new PackageManager(this._outputChannel, this._rootPath, this._apiWrapper, this._queryRunner, this._processService, this._config, this.httpClient);
 			this._packageManager.init();
+			this._packageManager.packageManageProviders.forEach(provider => {
+				nbApis.registerPackageManager(provider.providerId, provider);
+			});
 		}
 		return this._packageManager;
 	}
