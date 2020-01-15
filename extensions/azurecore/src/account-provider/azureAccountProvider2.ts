@@ -23,6 +23,8 @@ import { AddressInfo } from 'net';
 import { AuthenticationContext, TokenResponse, ErrorResponse } from 'adal-node';
 import { promisify } from 'util';
 import * as events from 'events';
+import { promises as fs } from 'fs';
+import * as path from 'path';
 
 const localize = nls.loadMessageBundle();
 const notInitalizedMessage = localize('accountProviderNotInitialized', "Account provider not initialized, cannot perform action");
@@ -185,7 +187,27 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		nonce: string,
 		authUrl: string) {
 
-		const initialSignIn = ((req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => {
+		// Utility function
+		const sendFile = async (res: http.ServerResponse, filePath: string, contentType: string): Promise<void> => {
+			let fileContents;
+			try {
+				fileContents = await fs.readFile(filePath);
+			} catch (ex) {
+				console.error(ex);
+				res.writeHead(200);
+				res.end();
+				return;
+			}
+
+			res.writeHead(200, {
+				'Content-Length': fileContents.length,
+				'Content-Type': contentType
+			});
+
+			res.end(fileContents);
+		};
+
+		const initialSignIn = (req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => {
 			const receivedNonce = (reqUrl.query.nonce as string || '').replace(/ /g, '+');
 			if (receivedNonce !== nonce) {
 				res.writeHead(400, { 'content-type': 'text/html' });
@@ -195,9 +217,9 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			}
 			res.writeHead(302, { Location: authUrl });
 			res.end();
-		});
+		};
 
-		const callback = ((req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => {
+		const authCallback = (req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => {
 			const state = reqUrl.query.state as string ?? '';
 			const code = reqUrl.query.code as string ?? '';
 
@@ -216,16 +238,19 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 				return;
 			}
 
-			res.writeHead(200, { 'content-type': 'text/html' });
-			res.write(localize('azureAuth.authSuccessful', "Authentication was successful, you can now close this page."));
-			res.end();
-
+			sendFile(res, path.join(__dirname, 'media/landing.html'), 'text/html; charset=utf-8');
 			this.handleAuthentication(code).catch((e) => console.error(e));
-		});
+		};
+
+		const css = (req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => {
+			sendFile(res, path.join(__dirname, 'media/landing.css'), 'text/css; charset=utf-8');
+		};
 
 		pathMappings.set('/signin', initialSignIn);
-		pathMappings.set('/callback', callback);
+		pathMappings.set('/callback', authCallback);
+		pathMappings.set('/landing.css', css);
 	}
+
 	private async makeWebRequest(accessToken: TokenResponse, uri: string): Promise<any> {
 		const params = {
 			headers: {
