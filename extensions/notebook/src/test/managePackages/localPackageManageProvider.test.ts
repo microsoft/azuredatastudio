@@ -153,6 +153,7 @@ describe('Manage Package Providers', () => {
 		should.equal(await provider.canUseProvider(), true);
 	});
 
+	/* Tests disabled. Tracking issue: https://github.com/microsoft/azuredatastudio/issues/8877
 	it('Pip getPackageOverview should return package info successfully', async function (): Promise<void> {
 		let testContext = createContext();
 		testContext.piPyClient.fetchPypiPackage = (packageName) => {
@@ -163,7 +164,7 @@ describe('Manage Package Providers', () => {
 		let client = createPipyClient(testContext);
 		let provider = new LocalPipPackageManageProvider(serverInstallation.object, client.object);
 
-		should(provider.getPackageOverview('name')).resolvedWith({
+		await should(provider.getPackageOverview('name')).resolvedWith({
 			name: 'name',
 			versions: ['0.0.1', '0.0.2'],
 			summary: 'summary'
@@ -180,12 +181,13 @@ describe('Manage Package Providers', () => {
 
 		let provider = new LocalCondaPackageManageProvider(serverInstallation.object);
 
-		should(provider.getPackageOverview('name')).resolvedWith({
+		await should(provider.getPackageOverview('name')).resolvedWith({
 			name: 'name',
 			versions: ['0.0.1', '0.0.2'],
 			summary: undefined
 		});
 	});
+	*/
 
 	function createContext(): TestContext {
 		return {
