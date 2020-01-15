@@ -38,6 +38,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { firstIndex, find } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
+const homeTabGroupId = 'home';
 
 @Component({
 	selector: 'dashboard-page',
@@ -139,10 +140,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		// Before separating tabs into pinned / shown, ensure that the home tab is always set up as expected
 		allTabs = this.setAndRemoveHomeTab(allTabs, homeWidgets);
 
-		this.loadNewTabs(allTabs.filter((tab) => tab.isTopLevelTab));
-
-		this.addContentTabGroup();
-		this.addExtensionsTabGroup();
+		this.loadNewTabs(allTabs.filter((tab) => tab.group === homeTabGroupId));
 
 		// If preview features are disabled only show the home tab
 		const extensionTabsEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
@@ -153,7 +151,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		// Load tab setting configs
 		this._tabSettingConfigs = this.dashboardService.getSettings<Array<TabSettingConfig>>([this.context, 'tabs'].join('.'));
 
-		this.loadNewTabs(allTabs.filter((tab) => !tab.isTopLevelTab));
+		this.addCustomTabGroups(allTabs);
+		this.addExtensionsTabGroup(allTabs);
+
+		this.loadNewTabs(allTabs.filter((tab) => !tab.group));
 
 		this.panelActions = [];
 
@@ -174,45 +175,52 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		}));
 	}
 
-	private addContentTabGroup(): void {
-		const contentTabs = this.getContentTabs();
-		if (contentTabs) {
+	/**
+	 * Add the custom tab groups and their child tabs.
+	 * @param allTabs The available tabs
+	 */
+	private addCustomTabGroups(allTabs: IDashboardTab[]): void {
+		dashboardRegistry.tabGroups.forEach((tabGroup) => {
+			const tabs = allTabs.filter(tab => tab.group === tabGroup.id);
+			if (tabs.length > 0) {
+				this.addNewTab({
+					id: tabGroup.id,
+					provider: Constants.anyProviderName,
+					originalConfig: [],
+					publisher: undefined,
+					title: tabGroup.title,
+					context: this.context,
+					type: 'group-header',
+					editable: false,
+					canClose: false,
+					actions: []
+				});
+				this.loadNewTabs(tabs);
+			}
+		});
+	}
+
+	/**
+	 * Add the "Extensions" tab group, tabs without a group will be added here.
+	 * @param allTabs The available tabs
+	 */
+	private addExtensionsTabGroup(allTabs: IDashboardTab[]): void {
+		const tabs = allTabs.filter(tab => !tab.group);
+		if (tabs.length > 0) {
 			this.addNewTab({
-				id: 'contentGroupHeader',
+				id: 'extensionGroupHeader',
 				provider: Constants.anyProviderName,
 				originalConfig: [],
 				publisher: undefined,
-				title: nls.localize('dashboard.contentsGroupHeader', "Contents"),
+				title: nls.localize('dashboard.extensionGroupHeader', "Extensions"),
 				context: this.context,
 				type: 'group-header',
 				editable: false,
 				canClose: false,
 				actions: []
 			});
-			contentTabs.forEach((tab) => {
-				this.addNewTab(tab);
-			});
+			this.loadNewTabs(tabs);
 		}
-	}
-
-
-	protected getContentTabs(): TabConfig[] | undefined {
-		return undefined;
-	}
-
-	private addExtensionsTabGroup(): void {
-		this.addNewTab({
-			id: 'extensionGroupHeader',
-			provider: Constants.anyProviderName,
-			originalConfig: [],
-			publisher: undefined,
-			title: nls.localize('dashboard.extensionGroupHeader', "Extensions"),
-			context: this.context,
-			type: 'group-header',
-			editable: false,
-			canClose: false,
-			actions: []
-		});
 	}
 
 	private setAndRemoveHomeTab(allTabs: IDashboardTab[], homeWidgets: WidgetConfig[]): IDashboardTab[] {

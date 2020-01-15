@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import * as types from 'vs/base/common/types';
 
 import * as Constants from 'sql/platform/connection/common/constants';
-import { registerTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
+import { registerTab, registerTabGroup } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 import { generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 import { NAV_SECTION, validateNavSectionContributionAndRegisterIcon } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardNavSection.contribution';
 import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardWidgetContainer.contribution';
@@ -25,7 +25,12 @@ export interface IDashboardTabContrib {
 	description?: string;
 	alwaysShow?: boolean;
 	isHomeTab?: boolean;
-	isTopLevelTab?: boolean;
+	group?: string;
+}
+
+export interface IDashboardTabGroupContrib {
+	id: string;
+	title: string;
 }
 
 const tabSchema: IJSONSchema = {
@@ -65,9 +70,9 @@ const tabSchema: IJSONSchema = {
 			description: localize('azdata.extension.contributes.dashboard.tab.isHomeTab', "Whether or not this tab should be used as the Home tab for a connection type."),
 			type: 'boolean'
 		},
-		isTopLevelTab: {
-			description: localize('azdata.extension.contributes.dashboard.tab.isTopLevelTab', "Whether or not this tab should be next to Home tab, if not it will be shown under Extensions group."),
-			type: 'boolean'
+		group: {
+			description: localize('azdata.extension.contributes.dashboard.tab.group', "The unique identifier of the group this tab belongs to, value for home group: home."),
+			type: 'string'
 		}
 	}
 };
@@ -86,18 +91,12 @@ const tabContributionSchema: IJSONSchema = {
 ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabContrib[]>({ extensionPoint: 'dashboard.tabs', jsonSchema: tabContributionSchema }).setHandler(extensions => {
 
 	function handleCommand(tab: IDashboardTabContrib, extension: IExtensionPointUser<any>) {
-		let { description, container, provider, title, when, id, alwaysShow, isHomeTab, isTopLevelTab } = tab;
+		let { description, container, provider, title, when, id, alwaysShow, isHomeTab, group } = tab;
 
 		// If always show is not specified, set it to true by default.
 		if (!types.isBoolean(alwaysShow)) {
 			alwaysShow = true;
 		}
-
-		// If isTopLevelTab is not specified, set it to true by default.
-		if (!types.isBoolean(isTopLevelTab)) {
-			isTopLevelTab = false;
-		}
-
 		const publisher = extension.description.publisher;
 		if (!title) {
 			extension.collector.error(localize('dashboardTab.contribution.noTitleError', "No title specified for extension."));
@@ -142,13 +141,67 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 		}
 
 		if (result) {
-			registerTab({ description, title, container, provider, when, id, alwaysShow, publisher, isHomeTab, isTopLevelTab });
+			registerTab({ description, title, container, provider, when, id, alwaysShow, publisher, isHomeTab, group });
 		}
 	}
 
 	for (const extension of extensions) {
 		const { value } = extension;
 		if (Array.isArray<IDashboardTabContrib>(value)) {
+			for (const command of value) {
+				handleCommand(command, extension);
+			}
+		} else {
+			handleCommand(value, extension);
+		}
+	}
+});
+
+const tabGroupSchema: IJSONSchema = {
+	type: 'object',
+	properties: {
+		id: {
+			type: 'string',
+			description: localize('azdata.extension.contributes.dashboard.tabGroup.id', "Unique identifier for this tab group.")
+		},
+		title: {
+			type: 'string',
+			description: localize('azdata.extension.contributes.dashboard.tabGroup.title', "Title of the tab group.")
+		}
+	}
+};
+
+const tabGroupContributionSchema: IJSONSchema = {
+	description: localize('azdata.extension.contributes.tabGroups', "Contributes a single or multiple tab groups for users to add to their dashboard."),
+	oneOf: [
+		tabGroupSchema,
+		{
+			type: 'array',
+			items: tabGroupSchema
+		}
+	]
+};
+
+ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabContrib[]>({ extensionPoint: 'dashboard.tabGroups', jsonSchema: tabGroupContributionSchema }).setHandler(extensions => {
+
+	function handleCommand(tabgroup: IDashboardTabGroupContrib, extension: IExtensionPointUser<any>) {
+		let { id, title } = tabgroup;
+
+		if (!id) {
+			extension.collector.error(localize('dashboardTabGroup.contribution.noIdError', "No id specified for tab group."));
+			return;
+		}
+
+		if (!title) {
+			extension.collector.error(localize('dashboardTabGroup.contribution.noTitleError', "No title specified for tab group."));
+			return;
+		}
+		registerTabGroup({ id, title });
+	}
+
+	for (const extension of extensions) {
+		const { value } = extension;
+		if (Array.isArray<IDashboardTabGroupContrib>(value)) {
 			for (const command of value) {
 				handleCommand(command, extension);
 			}
