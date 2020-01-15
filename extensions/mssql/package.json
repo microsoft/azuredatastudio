@@ -497,7 +497,7 @@
         "description": "%databases-tab-description%",
         "provider": "MSSQL",
         "title": "%databases-tab-title%",
-        "when": "",
+        "when": "dashboardContext == 'server'",
         "group": "contents",
         "container": {
           "widgets-container": [
