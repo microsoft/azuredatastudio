@@ -151,12 +151,10 @@ describe('Manage Package Providers', () => {
 		should.equal(await provider.canUseProvider(), true);
 	});
 
-	/* Tests disabled. Tracking issue: https://github.com/microsoft/azuredatastudio/issues/8877
 	it('Pip getPackageOverview should return package info successfully', async function (): Promise<void> {
 		let testContext = createContext();
 		testContext.piPyClient.fetchPypiPackage = (packageName) => {
-			return Promise.resolve(`
-			"{"info":{"summary":"package summary"}, "releases":{"0.0.1":[{"comment_text":""}], "0.0.2":[{"comment_text":""}]}"`);
+			return Promise.resolve(`{"info":{"summary":"package summary"}, "releases":{"0.0.1":[{"comment_text":""}], "0.0.2":[{"comment_text":""}]}}`);
 		};
 		let serverInstallation = createJupyterServerInstallation(testContext);
 		let client = createPipyClient(testContext);
@@ -164,16 +162,15 @@ describe('Manage Package Providers', () => {
 
 		await should(provider.getPackageOverview('name')).resolvedWith({
 			name: 'name',
-			versions: ['0.0.1', '0.0.2'],
-			summary: 'summary'
+			versions: ['0.0.2', '0.0.1'],
+			summary: 'package summary'
 		});
 	});
 
 	it('Conda getPackageOverview should return package info successfully', async function (): Promise<void> {
 		let testContext = createContext();
 		testContext.serverInstallation.executeBufferedCommand = (command) => {
-			return Promise.resolve(`
-			"{"name":[{"version":"0.0.1"}, {"version":"0.0.2}]"`);
+			return Promise.resolve(`{"name":[{"version":"0.0.1"}, {"version":"0.0.2"}]}`);
 		};
 		let serverInstallation = createJupyterServerInstallation(testContext);
 
@@ -181,11 +178,10 @@ describe('Manage Package Providers', () => {
 
 		await should(provider.getPackageOverview('name')).resolvedWith({
 			name: 'name',
-			versions: ['0.0.1', '0.0.2'],
+			versions: ['0.0.2', '0.0.1'],
 			summary: undefined
 		});
 	});
-	*/
 
 	function createContext(): TestContext {
 		return {
@@ -220,6 +216,7 @@ describe('Manage Package Providers', () => {
 		mockInstance.setup(x => x.uninstallPipPackages(TypeMoq.It.isAny())).returns((packages, useMinVersion) => testContext.serverInstallation.uninstallPipPackages(packages));
 		mockInstance.setup(x => x.getInstalledPipPackages()).returns(() => testContext.serverInstallation.getInstalledPipPackages());
 		mockInstance.setup(x => x.getInstalledCondaPackages()).returns(() => testContext.serverInstallation.getInstalledCondaPackages());
+		mockInstance.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny())).returns((command) => testContext.serverInstallation.executeBufferedCommand(command));
 		mockInstance.setup(x => x.usingConda).returns(() => testContext.serverInstallation.usingConda);
 		return mockInstance;
 	}
