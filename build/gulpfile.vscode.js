@@ -342,11 +342,13 @@ const filelength = es.through(function (file) {
 	const fileName = path.basename(file.relative);
 	const fileDir = path.dirname(file.relative);
 	//check the filename is < 50 characters (basename gets the filename with extension).
-	if (fileName.length > 50) {
+	if (fileName.length > 10) {
 		console.error(`File name '${fileName}' under ${fileDir} is too long. Rename file to have less than 50 characters.`);
+		throw new Error('File name exceeds acceptable lenght of 50 characters: ' + fileName);
 	}
-	if (file.relative.length > 150) {
+	if (file.relative.length > 50) {
 		console.error(`File path ${file.relative} exceeds acceptable file-length. Rename the path to have less than 150 characters.`);
+		throw new Error('File path exceeds acceptable path-length of 150 characters: ' + file.relative);
 	}
 
 	this.emit('data', file);
