@@ -14,6 +14,7 @@ export const pythonBundleVersion = '0.0.1';
 export const managePackagesCommand = 'jupyter.cmd.managePackages';
 export const pythonLanguageName = 'Python';
 export const rLanguageName = 'R';
+export const rLPackagedFolderName = 'r_packages';
 
 export const mlEnableMlsCommand = 'mls.command.enableMls';
 export const mlDisableMlsCommand = 'mls.command.disableMls';
@@ -25,6 +26,13 @@ export const notebookExtensionName = 'Microsoft.notebook';
 export const mlManagePackagesCommand = 'mls.command.managePackages';
 export const mlOdbcDriverCommand = 'mls.command.odbcdriver';
 export const mlsDocumentsCommand = 'mls.command.mlsdocs';
+export const mlsDependenciesCommand = 'mls.command.dependencies';
+
+// Configurations
+//
+export const mlsConfigKey = 'machineLearningServices';
+export const pythonPathConfigKey = 'pythonPath';
+export const rPathConfigKey = 'rPath';
 
 // Localized texts
 //
@@ -47,6 +55,18 @@ export const mlsConfigAction = localize('mls.configAction', "Action");
 export const mlsExternalExecuteScriptTitle = localize('mls.externalExecuteScriptTitle', "External Execute Script");
 export const mlsPythonLanguageTitle = localize('mls.pythonLanguageTitle', "Python");
 export const mlsRLanguageTitle = localize('mls.rLanguageTitle', "R");
+export const downloadError = localize('mls.downloadError', "Error while downloading");
+export const downloadingProgress = localize('mls.downloadingProgress', "Downloading");
+export const pythonConfigError = localize('mls.pythonConfigError', "Python executable is not configured");
+export const rConfigError = localize('mls.rConfigError', "R executable is not configured");
+export const installingDependencies = localize('mls.installingDependencies', "Installing dependencies ...");
+export const resourceNotFoundError = localize('mls.resourceNotFound', "Could not find the specified resource");
+export function httpGetRequestError(code: number, message: string): string {
+	return localize('mls.httpGetRequestError', "Package info request failed with error: {0} {1}",
+		code,
+		message);
+}
+
 
 // Links
 //

@@ -10,7 +10,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import * as azdata from 'azdata';
-import { Event, Emitter } from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 
 // Test stubs for commonly used objects
@@ -23,13 +23,11 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	onLanguageFlavorChanged = undefined;
 
 	public get onConnect(): Event<any> {
-		let conEvent = new Emitter<any>();
-		return conEvent.event;
+		return Event.None;
 	}
 
 	public get onDisconnect(): Event<any> {
-		let conEvent = new Emitter<any>();
-		return conEvent.event;
+		return Event.None;
 	}
 
 	public get providerNameToDisplayNameMap(): { [providerDisplayName: string]: string } {

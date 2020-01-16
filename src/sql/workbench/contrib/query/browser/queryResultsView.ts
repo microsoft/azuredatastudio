@@ -313,7 +313,7 @@ export class QueryResultsView extends Disposable {
 			dynamicTab.captureState(this.input.state.dynamicModelViewTabsState);
 		});
 
-		let info = this.queryModelService._getQueryInfo(input.uri);
+		let info = this.queryModelService._getQueryInfo(input.uri) || this.queryModelService._getQueryInfo(URI.parse(input.uri).toString(true));
 		if (info) {
 			this.setQueryRunner(info.queryRunner);
 		} else {

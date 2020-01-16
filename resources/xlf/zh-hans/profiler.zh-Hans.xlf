@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/profiler/client/out/dialogs/profilerCreateSessionDialog" source-language="en" target-language="zh-Hans" datatype="plaintext">
+  <file original="extensions/profiler/client/out/dialogs/profilerCreateSessionDialog" source-language="en" datatype="plaintext" target-language="zh-HANS">
     <body>
       <trans-unit id="createSessionDialog.cancel">
         <source xml:lang="en">Cancel</source>
@@ -8,7 +8,7 @@
       </trans-unit>
       <trans-unit id="createSessionDialog.create">
         <source xml:lang="en">Start</source>
-        <target state="translated">启动</target>
+        <target state="translated">开始</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.title">
         <source xml:lang="en">Start New Profiler Session</source>
@@ -16,15 +16,15 @@
       </trans-unit>
       <trans-unit id="createSessionDialog.templatesInvalid">
         <source xml:lang="en">Invalid templates list, cannot open dialog</source>
-        <target state="translated">模板列表无效，无法打开对话框</target>
+        <target state="translated">模板列表无效，无法打开对话</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.dialogOwnerInvalid">
         <source xml:lang="en">Invalid dialog owner, cannot open dialog</source>
-        <target state="translated">对话框所有者无效，无法打开对话框</target>
+        <target state="translated">对话所有者无效，无法打开对话</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.invalidProviderType">
         <source xml:lang="en">Invalid provider type, cannot open dialog</source>
-        <target state="translated">提供程序类型无效，无法打开对话框</target>
+        <target state="translated">提供程序类型无效，无法打开对话</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.selectTemplates">
         <source xml:lang="en">Select session template:</source>
