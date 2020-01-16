@@ -21,7 +21,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { Emitter, Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { URI } from 'vs/base/common/uri';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IGridDataProvider, getResultsString } from 'sql/platform/query/common/gridDataProvider';

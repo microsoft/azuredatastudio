@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/import/out/wizard/pages/summaryPage" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/import/out/wizard/pages/summaryPage" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="flatFileImport.importInformation">
         <source xml:lang="en">Import information</source>
@@ -36,7 +36,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/import/out/wizard/pages/prosePreviewPage" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/import/out/wizard/pages/prosePreviewPage" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="flatFileImport.prosePreviewMessage">
         <source xml:lang="en">This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.</source>
@@ -52,7 +52,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/import/out/wizard/pages/modifyColumnsPage" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/import/out/wizard/pages/modifyColumnsPage" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="flatFileImport.importData">
         <source xml:lang="en">Import Data</source>
@@ -80,7 +80,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/import/out/wizard/pages/fileConfigPage" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/import/out/wizard/pages/fileConfigPage" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="flatFileImport.serverDropdownTitle">
         <source xml:lang="en">Server the database is in</source>
@@ -112,7 +112,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/import/out/wizard/flatFileWizard" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/import/out/wizard/flatFileWizard" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="import.needConnection">
         <source xml:lang="en">Please connect to a server before using this wizard.</source>
@@ -144,7 +144,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/import/out/services/telemetry" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/import/out/services/telemetry" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="import.serviceCrashButton">
         <source xml:lang="en">Give Feedback</source>
@@ -156,7 +156,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/import/out/services/serviceClient" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/import/out/services/serviceClient" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="serviceStarted">
         <source xml:lang="en">Service Started</source>
@@ -192,7 +192,7 @@
       </trans-unit>
       <trans-unit id="downloadingServiceStatus">
         <source xml:lang="en">Downloading Service</source>
-        <target state="translated">ダウンロード サービス</target>
+        <target state="translated">サービスをダウンロードしています</target>
       </trans-unit>
       <trans-unit id="downloadingServiceComplete">
         <source xml:lang="en">Done!</source>

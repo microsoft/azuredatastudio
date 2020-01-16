@@ -6,7 +6,6 @@
 import { IEditorOptions, EditorOption } from 'vs/editor/common/config/editorOptions';
 import * as nls from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
 import * as editorCommon from 'vs/editor/common/editorCommon';
 
@@ -15,8 +14,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { ITextResourceConfigurationService } from 'vs/editor/common/services/resourceConfiguration';
-import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
+import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { StandaloneCodeEditor } from 'vs/editor/standalone/browser/standaloneCodeEditor';
 import { CancellationToken } from 'vs/base/common/cancellation';
@@ -24,7 +22,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IHostService } from 'vs/workbench/services/host/browser/host';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
@@ -47,16 +45,14 @@ export class QueryTextEditor extends BaseTextEditor {
 		@IStorageService storageService: IStorageService,
 		@ITextResourceConfigurationService configurationService: ITextResourceConfigurationService,
 		@IThemeService themeService: IThemeService,
-		@ITextFileService textFileService: ITextFileService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IEditorService protected editorService: IEditorService,
-		@IHostService hostService: IHostService,
-		@IConfigurationService private workspaceConfigurationService: IConfigurationService,
+		@IConfigurationService private workspaceConfigurationService: IConfigurationService
 
 	) {
 		super(
 			QueryTextEditor.ID, telemetryService, instantiationService, storageService,
-			configurationService, themeService, textFileService, editorService, editorGroupService, hostService);
+			configurationService, themeService, editorService, editorGroupService);
 	}
 
 	public createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
@@ -75,13 +71,16 @@ export class QueryTextEditor extends BaseTextEditor {
 			options.minimap = {
 				enabled: false
 			};
+			options.scrollbar = {
+				alwaysConsumeMouseWheel: false
+			};
 			options.overviewRulerLanes = 0;
 			options.overviewRulerBorder = false;
 			options.hideCursorInOverviewRuler = true;
 			if (!this._selected) {
 				options.renderLineHighlight = 'none';
 				options.parameterHints = { enabled: false };
-				options.matchBrackets = false;
+				options.matchBrackets = 'never';
 			}
 			if (this._hideLineNumbers) {
 				options.lineNumbers = 'off';
@@ -90,7 +89,7 @@ export class QueryTextEditor extends BaseTextEditor {
 		return options;
 	}
 
-	setInput(input: UntitledEditorInput, options: EditorOptions): Promise<void> {
+	setInput(input: UntitledTextEditorInput, options: EditorOptions): Promise<void> {
 		return super.setInput(input, options, CancellationToken.None)
 			.then(() => this.input.resolve()
 				.then(editorModel => editorModel.load())

@@ -171,6 +171,15 @@
           "dark": "resources/dark/search_inverse.svg",
           "light": "resources/light/search.svg"
         }
+      },
+      {
+        "command": "notebook.command.openBook",
+        "title": "%title.openJupyterBook%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/open_notebook_inverse.svg",
+          "light": "resources/light/open_notebook.svg"
+        }
       }
     ],
     "languages": [
@@ -310,6 +319,13 @@
           "command": "notebook.command.saveBook",
           "when": "view == unsavedBookTreeView && viewItem == unsavedBook && unsavedBooks",
           "group": "inline"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "notebook.command.openBook",
+          "when": "view == bookTreeView",
+          "group": "navigation"
         }
       ],
       "notebook/toolbar": [
@@ -457,7 +473,7 @@
     "@types/glob": "^7.1.1",
     "@types/js-yaml": "^3.12.1",
     "@types/mocha": "^5.2.5",
-    "@types/node": "^11.9.3",
+    "@types/node": "^12.11.7",
     "@types/request": "^2.48.1",
     "@types/rimraf": "^2.0.2",
     "@types/temp-write": "^3.3.0",

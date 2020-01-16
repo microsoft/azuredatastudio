@@ -182,7 +182,7 @@ export class PlatformService implements IPlatformService {
 		}
 	}
 
-	private sudoExec(command: string, options: sudo.SudoOptions): Promise<CommandOutput> {
+	private sudoExec(command: string, options: { [key: string]: any }): Promise<CommandOutput> {
 		return new Promise<CommandOutput>((resolve, reject) => {
 			sudo.exec(command, options, (error, stdout, stderr) => {
 				if (error) {
@@ -252,11 +252,11 @@ export class PlatformService implements IPlatformService {
 				outputChannel.appendLine(localize('platformService.RunStreamedCommand.ExitedWithSignal', "    >>> {0}   … exited with signal: {1}", command, signal));
 			}
 		});
-		child.stdout.on('data', (data: string | Buffer) => {
+		child.stdout!.on('data', (data: string | Buffer) => {
 			stdoutData.push(data.toString());
 			this.outputDataChunk(data, outputChannel, localize('platformService.RunCommand.stdout', "    stdout: "));
 		});
-		child.stderr.on('data', (data: string | Buffer) => { this.outputDataChunk(data, outputChannel, localize('platformService.RunCommand.stderr', "    stderr: ")); });
+		child.stderr!.on('data', (data: string | Buffer) => { this.outputDataChunk(data, outputChannel, localize('platformService.RunCommand.stderr', "    stderr: ")); });
 
 		await child;
 		return stdoutData.join('');

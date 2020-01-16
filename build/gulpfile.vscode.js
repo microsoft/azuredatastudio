@@ -91,8 +91,7 @@ const vscodeResources = [
 	'out-build/vs/code/electron-browser/sharedProcess/sharedProcess.js',
 	'out-build/vs/code/electron-browser/issue/issueReporter.js',
 	'out-build/vs/code/electron-browser/processExplorer/processExplorer.js',
-	// {{SQL CARBON EDIT}}
-	'out-build/sql/workbench/electron-browser/splashscreen/*',
+	'out-build/sql/workbench/electron-browser/splashscreen/*', // {{SQL CARBON EDIT}} STart
 	'out-build/sql/**/*.{svg,png,cur,html}',
 	'out-build/sql/base/browser/ui/table/media/*.{gif,png,svg}',
 	'out-build/sql/base/browser/ui/checkbox/media/*.{gif,png,svg}',
@@ -110,7 +109,8 @@ const vscodeResources = [
 	'out-build/sql/media/objectTypes/*.svg',
 	'out-build/sql/media/icons/*.svg',
 	'out-build/sql/workbench/parts/notebook/media/**/*.svg',
-	'out-build/sql/setup.js',
+	'out-build/sql/setup.js', // {{SQL CARBON EDIT}} end
+	'out-build/vs/platform/auth/common/auth.css',
 	'!**/test/**'
 ];
 
@@ -236,7 +236,6 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		const api = gulp.src('src/vs/vscode.d.ts').pipe(rename('out/vs/vscode.d.ts'));
 		// {{SQL CARBON EDIT}}
 		const dataApi = gulp.src('src/sql/azdata.d.ts').pipe(rename('out/sql/azdata.d.ts'));
-		const sqlopsAPI = gulp.src('src/sql/sqlops.d.ts').pipe(rename('out/sql/sqlops.d.ts'));
 
 		const telemetry = gulp.src('.build/telemetry/**', { base: '.build/telemetry', dot: true });
 
@@ -253,8 +252,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			productJsonStream,
 			license,
 			api,
-			dataApi,
-			sqlopsAPI, // {{SQL CARBON EDIT}}
+			dataApi, // {{SQL CARBON EDIT}}
 			telemetry,
 			sources,
 			deps

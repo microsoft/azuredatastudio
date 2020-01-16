@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/Microsoft.sqlservernotebook/package" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="title.sqlServerNotebooks">
+        <source xml:lang="en">SQL Server Notebooks</source>
+        <target state="translated">SQL Server Notebook</target>
+      </trans-unit>
+      <trans-unit id="title.sqlServer2019Book">
+        <source xml:lang="en">SQL Server 2019 Guide</source>
+        <target state="translated">SQL Server 2019 가이드</target>
+      </trans-unit>
+      <trans-unit id="description.sqlserverNotebooks">
+        <source xml:lang="en">Notebooks to help get started with and troubleshoot SQL Server</source>
+        <target state="translated">SQL Server를 시작하고 문제를 해결하는 데 도움이 되는 Notebook</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

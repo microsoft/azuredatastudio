@@ -28,7 +28,6 @@ import { dirname, basename } from 'vs/base/common/resources';
 import { LIGHT, FileThemeIcon, FolderThemeIcon, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { FileKind } from 'vs/platform/files/common/files';
 import { WorkbenchAsyncDataTree, TreeResourceNavigator2 } from 'vs/platform/list/browser/listService';
-import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { localize } from 'vs/nls';
 import { timeout } from 'vs/base/common/async';
 import { editorFindMatchHighlight, editorFindMatchHighlightBorder, textLinkForeground, textCodeBlockBackground, focusBorder } from 'vs/platform/theme/common/colorRegistry';
@@ -50,8 +49,9 @@ import { IOEShimService } from 'sql/workbench/contrib/objectExplorer/browser/obj
 import { NodeContextKey } from 'sql/workbench/contrib/dataExplorer/browser/nodeContext';
 import { UserCancelledConnectionError } from 'sql/base/common/errors';
 import { firstIndex } from 'vs/base/common/arrays';
+import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 
-export class CustomTreeViewPanel extends ViewletPanel {
+export class CustomTreeViewPanel extends ViewPane {
 
 	private treeView: ITreeView;
 
@@ -63,7 +63,7 @@ export class CustomTreeViewPanel extends ViewletPanel {
 		@IConfigurationService configurationService: IConfigurationService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 	) {
-		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService, contextKeyService);
+		super({ ...(options as IViewPaneOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService, contextKeyService);
 		const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).getView(options.id));
 		this.treeView = treeView as ITreeView;
 		this._register(this.treeView.onDidChangeActions(() => this.updateActions(), this));

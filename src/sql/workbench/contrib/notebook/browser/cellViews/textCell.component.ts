@@ -6,7 +6,7 @@ import 'vs/css!./textCell';
 import 'vs/css!./media/markdown';
 import 'vs/css!./media/highlight';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener, ViewChildren, QueryList } from '@angular/core';
 
 import { localize } from 'vs/nls';
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -24,6 +24,9 @@ import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelI
 import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/contrib/notebook/browser/outputs/sanitizer';
 import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions';
+import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
+import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
+import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -36,6 +39,8 @@ const USER_SELECT_CLASS = 'actionselect';
 export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('preview', { read: ElementRef }) private output: ElementRef;
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
+	@ViewChildren(CodeComponent) private markdowncodeCell: QueryList<CodeComponent>;
+
 	@Input() cellModel: ICellModel;
 
 	@Input() set model(value: NotebookModel) {
@@ -107,6 +112,15 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	get activeCellId(): string {
 		return this._activeCellId;
 	}
+	/**
+	 * Returns the code editor of makrdown cell in edit mode.
+	 */
+	getEditor(): BaseTextEditor | undefined {
+		if (this.markdowncodeCell.length > 0) {
+			return this.markdowncodeCell.first.getEditor();
+		}
+		return undefined;
+	}
 
 	private setLoading(isLoading: boolean): void {
 		this.cellModel.loaded = !isLoading;
@@ -137,6 +151,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				break;
 			}
 		}
+	}
+
+	public cellGuid(): string {
+		return this.cellModel.cellGuid;
 	}
 
 	public get isTrusted(): boolean {
@@ -242,5 +260,67 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	protected toggleMoreActionsButton(isActiveOrHovered: boolean) {
 		this._cellToggleMoreActions.toggleVisible(!isActiveOrHovered);
+	}
+
+	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
+		if (oldDecorationRange) {
+			this.removeDecoration(oldDecorationRange);
+		}
+
+		if (newDecorationRange) {
+			this.addDecoration(newDecorationRange);
+		}
+	}
+
+	private addDecoration(range: NotebookRange): void {
+		if (range && this.output && this.output.nativeElement) {
+			let children = this.getHtmlElements();
+			let ele = children[range.startLineNumber - 1];
+			if (ele) {
+				DOM.addClass(ele, 'rangeHighlight');
+				ele.scrollIntoView({ behavior: 'smooth' });
+			}
+		}
+	}
+
+	private removeDecoration(range: NotebookRange): void {
+		if (range && this.output && this.output.nativeElement) {
+			let children = this.getHtmlElements();
+			let ele = children[range.startLineNumber - 1];
+			if (ele) {
+				DOM.removeClass(ele, 'rangeHighlight');
+			}
+		}
+	}
+
+	private getHtmlElements(): any[] {
+		let hostElem = this.output.nativeElement;
+		let children = [];
+		for (let element of hostElem.children) {
+			if (element.nodeName.toLowerCase() === 'table') {
+				// add table header and table rows.
+				children.push(element.children[0]);
+				for (let trow of element.children[1].children) {
+					children.push(trow);
+				}
+			} else if (element.children.length > 1) {
+				children = children.concat(this.getChildren(element));
+			} else {
+				children.push(element);
+			}
+		}
+		return children;
+	}
+
+	private getChildren(parent: any): any[] {
+		let children: any = [];
+		if (parent.children.length > 1 && parent.nodeName.toLowerCase() !== 'li' && parent.nodeName.toLowerCase() !== 'p') {
+			for (let child of parent.children) {
+				children = children.concat(this.getChildren(child));
+			}
+		} else {
+			return parent;
+		}
+		return children;
 	}
 }

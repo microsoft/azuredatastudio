@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./media/modal';
-import { IThemable, attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Color } from 'vs/base/common/color';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { mixin } from 'vs/base/common/objects';
@@ -22,10 +22,11 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 import { find, firstIndex } from 'vs/base/common/arrays';
+import { IThemable } from 'vs/base/common/styler';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';

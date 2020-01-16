@@ -187,7 +187,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 
 		// Contribute refresh action for scriptable objects via contribution
 		if (!this.isScriptableObject(context)) {
-			actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.profile));
+			actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.treeNode || context.profile));
 		}
 
 		return actions;

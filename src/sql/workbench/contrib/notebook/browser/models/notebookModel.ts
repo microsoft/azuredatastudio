@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
-import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { nbversion } from 'sql/workbench/contrib/notebook/common/models/notebookConstants';
 import * as notebookUtils from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
@@ -56,7 +56,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _sessionLoadFinished: Promise<void>;
 	private _onClientSessionReady = new Emitter<IClientSession>();
 	private _onProviderIdChanged = new Emitter<string>();
-	private _activeContexts: IDefaultConnection;
 	private _trustedMode: boolean;
 	private _onActiveCellChanged = new Emitter<ICellModel>();
 
@@ -69,7 +68,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private readonly _nbformat: number = nbversion.MAJOR_VERSION;
 	private readonly _nbformatMinor: number = nbversion.MINOR_VERSION;
 	private _activeConnection: ConnectionProfile;
-	private _otherConnections: ConnectionProfile[] = [];
 	private _activeCell: ICellModel;
 	private _providerId: string;
 	private _defaultKernel: nb.IKernelSpec;
@@ -190,8 +188,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._cells;
 	}
 
-	public get contexts(): IDefaultConnection {
-		return this._activeContexts;
+	public get context(): ConnectionProfile {
+		return this._activeConnection;
 	}
 
 	public get specs(): nb.IAllKernels | undefined {
@@ -242,10 +240,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.TrustChanged
 		});
-	}
-
-	public get activeConnection(): IConnectionProfile {
-		return this._activeConnection;
 	}
 
 	/**
@@ -366,7 +360,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return cell;
 	}
 
-	public updateActiveCell(cell: ICellModel) {
+	public updateActiveCell(cell: ICellModel): void {
 		if (this._activeCell) {
 			this._activeCell.active = false;
 		}
@@ -432,8 +426,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._activeCell;
 	}
 
-	public set activeCell(value: ICellModel) {
-		this._activeCell = value;
+	public set activeCell(cell: ICellModel) {
+		this._activeCell = cell;
 	}
 
 	private notifyError(error: string): void {
@@ -455,16 +449,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (!this._activeClientSession) {
 				this.updateActiveClientSession(clientSession);
 			}
-			let profile = new ConnectionProfile(this._notebookOptions.capabilitiesService, this.connectionProfile);
 
-			// TODO: this code needs to be fixed since it is called before the this._savedKernelInfo is set.
-			// This means it always fails, and we end up using the default connection instead. If you right-click
-			// and run "New Notebook" on a disconnected server this means you get the wrong connection (global active)
-			// instead of the one you chose, or it'll fail to connect in general
+			// If a connection profile is passed in and _activeConnection isn't yet set, use that. Otherwise, use _activeConnection
+			let profile = this._activeConnection ? this._activeConnection : new ConnectionProfile(this._notebookOptions.capabilitiesService, this.connectionProfile);
+
 			if (this.isValidConnection(profile)) {
 				this._activeConnection = profile;
-			} else {
-				this._activeConnection = undefined;
 			}
 
 			clientSession.onKernelChanging(async (e) => {
@@ -607,7 +597,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public changeKernel(displayName: string): void {
 		this._contextsLoadingEmitter.fire();
-		this.doChangeKernel(displayName, true);
+		this.doChangeKernel(displayName, true).catch(e => this.logService.error(e));
 	}
 
 	private async doChangeKernel(displayName: string, mustSetProvider: boolean = true, restoreOnFail: boolean = true): Promise<void> {
@@ -687,19 +677,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public async changeContext(title: string, newConnection?: ConnectionProfile, hideErrorMessage?: boolean): Promise<void> {
 		try {
-			if (!newConnection) {
-				newConnection = find(this._activeContexts.otherConnections, (connection) => connection.title === title);
-			}
-			if ((!newConnection) && (this._activeContexts.defaultConnection.title === title)) {
-				newConnection = this._activeContexts.defaultConnection;
+			if ((!newConnection) && this._activeConnection && (this._activeConnection.title === title)) {
+				newConnection = this._activeConnection;
 			}
 
 			if (newConnection) {
-				if (this._activeConnection && this._activeConnection.id !== newConnection.id) {
-					this._otherConnections.push(this._activeConnection);
-				}
 				this._activeConnection = newConnection;
-				this.refreshConnections(newConnection);
+				this.setActiveConnectionIfDifferent(newConnection);
 				this._activeClientSession.updateConnection(newConnection.toIConnectionProfile()).then(
 					result => {
 						//Remove 'Select connection' from 'Attach to' drop-down since its a valid connection
@@ -723,17 +707,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	private refreshConnections(newConnection: ConnectionProfile) {
+	private setActiveConnectionIfDifferent(newConnection: ConnectionProfile) {
 		if (this.isValidConnection(newConnection) &&
 			this._activeConnection.id !== '-1' &&
-			this._activeConnection.id !== this._activeContexts.defaultConnection.id) {
-			// Put the defaultConnection to the head of otherConnections
-			if (this.isValidConnection(this._activeContexts.defaultConnection)) {
-				this._activeContexts.otherConnections = this._activeContexts.otherConnections.filter(conn => conn.id !== this._activeContexts.defaultConnection.id);
-				this._activeContexts.otherConnections.unshift(this._activeContexts.defaultConnection);
-			}
-			// Change the defaultConnection to newConnection
-			this._activeContexts.defaultConnection = newConnection;
+			this._activeConnection.id !== newConnection.id) {
+			// Change the active connection to newConnection
+			this._activeConnection = newConnection;
 		}
 	}
 
@@ -797,23 +776,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public dispose(): void {
 		super.dispose();
-		this.disconnectAttachToConnections();
-		this.handleClosed();
+		this.disconnectAttachToConnections().catch(e => this.logService.error(e));
+		this.handleClosed().catch(e => this.logService.error(e));
 	}
 
 	public async handleClosed(): Promise<void> {
 		try {
-			if (this.notebookOptions && this.notebookOptions.connectionService) {
-				if (this._otherConnections) {
-					notebookUtils.asyncForEach(this._otherConnections, async (conn) => {
-						await this.disconnectNotebookConnection(conn);
-					});
-					this._otherConnections = [];
-				}
-				if (this._activeConnection) {
-					await this.disconnectNotebookConnection(this._activeConnection);
-					this._activeConnection = undefined;
-				}
+			if (this.notebookOptions && this.notebookOptions.connectionService && this._activeConnection) {
+				await this.disconnectNotebookConnection(this._activeConnection);
+				this._activeConnection = undefined;
 			}
 			await this.shutdownActiveSession();
 		} catch (err) {
@@ -837,11 +808,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private async loadActiveContexts(kernelChangedArgs: nb.IKernelChangedArgs): Promise<void> {
 		if (kernelChangedArgs && kernelChangedArgs.newValue && kernelChangedArgs.newValue.name) {
 			let kernelDisplayName = this.getDisplayNameFromSpecName(kernelChangedArgs.newValue);
-			this._activeContexts = NotebookContexts.getContextsForKernel(this._notebookOptions.connectionService, this.getApplicableConnectionProviderIds(kernelDisplayName), kernelChangedArgs, this.connectionProfile);
-			this._contextsChangedEmitter.fire();
-			if (this.contexts.defaultConnection !== undefined && this.contexts.defaultConnection.serverName !== undefined && this.contexts.defaultConnection.title !== undefined) {
-				await this.changeContext(this.contexts.defaultConnection.title, this.contexts.defaultConnection);
+			let context = NotebookContexts.getContextForKernel(this._activeConnection, this.getApplicableConnectionProviderIds(kernelDisplayName));
+			if (context !== undefined && context.serverName !== undefined && context.title !== undefined) {
+				await this.changeContext(context.title, context);
 			}
+			this._contextsChangedEmitter.fire();
 		}
 	}
 
@@ -938,7 +909,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	// Disconnect any connections that were added through the "Add new connection" functionality in the Attach To dropdown
+	// Disconnect any connections that were added through the "Change connection" functionality in the Attach To dropdown
 	private async disconnectAttachToConnections(): Promise<void> {
 		notebookUtils.asyncForEach(this._connectionUrisToDispose, async conn => {
 			await this.notebookOptions.connectionService.disconnect(conn).catch(e => this.logService.error(e));
@@ -1027,5 +998,4 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 		this._contentChangedEmitter.fire(changeInfo);
 	}
-
 }

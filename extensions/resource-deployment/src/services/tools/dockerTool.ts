@@ -21,7 +21,7 @@ export class DockerTool extends ToolBase {
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.DockerDescription', "Provides the ability to package and run an application in isolated containers");
+		return localize('resourceDeployment.DockerDescription', "Packages and runs applications in isolated containers");
 	}
 
 	get type(): ToolType {
@@ -43,15 +43,10 @@ export class DockerTool extends ToolBase {
 		}
 		return version;
 	}
+
 	protected get versionCommand(): Command {
 		return { command: 'docker version --format "{{json .}}"' };
 	}
 
-	get autoInstallSupported(): boolean {
-		return false;
-	}
-
-	protected get allInstallationCommands(): Map<OsDistribution, Command[]> {
-		throw Error('Installation of DockerTool is not supported');
-	}
+	protected readonly allInstallationCommands: Map<OsDistribution, Command[]> = new Map<OsDistribution, Command[]>();
 }

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/profiler/client/out/dialogs/profilerCreateSessionDialog" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/profiler/client/out/dialogs/profilerCreateSessionDialog" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="createSessionDialog.cancel">
         <source xml:lang="en">Cancel</source>
@@ -20,7 +20,7 @@
       </trans-unit>
       <trans-unit id="createSessionDialog.dialogOwnerInvalid">
         <source xml:lang="en">Invalid dialog owner, cannot open dialog</source>
-        <target state="translated">Propietario de diálogo no válido, no se puede abrir el diálogo</target>
+        <target state="translated">Propietario de cuadro de diálogo no válido, no se puede abrir el cuadro de diálogo</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.invalidProviderType">
         <source xml:lang="en">Invalid provider type, cannot open dialog</source>

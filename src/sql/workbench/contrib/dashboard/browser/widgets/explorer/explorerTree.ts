@@ -37,7 +37,7 @@ export class ExplorerController extends TreeDefaults.DefaultController {
 
 	constructor(
 		// URI for the dashboard for managing, should look into some other way of doing this
-		private _uri,
+		private _uri: string,
 		private _connectionService: SingleConnectionManagementService,
 		private _router: Router,
 		private readonly bootStrapService: CommonServiceInterface,

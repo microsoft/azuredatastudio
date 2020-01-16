@@ -22,7 +22,9 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { localize } from 'vs/nls';
 import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
+import { NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -214,11 +216,6 @@ export interface IClientSession extends IDisposable {
 	onKernelChanging(changeHandler: ((kernel: nb.IKernelChangedArgs) => Promise<void>)): void;
 }
 
-export interface IDefaultConnection {
-	defaultConnection: ConnectionProfile;
-	otherConnections: ConnectionProfile[];
-}
-
 /**
  * A kernel preference.
  */
@@ -263,7 +260,7 @@ export interface INotebookModel {
 	/**
 	 * The active cell for this model. May be undefined
 	 */
-	readonly activeCell: ICellModel;
+	activeCell: ICellModel | undefined;
 
 	/**
 	 * Client Session in the notebook, used for sending requests to the notebook service
@@ -323,10 +320,10 @@ export interface INotebookModel {
 	readonly specs: nb.IAllKernels | undefined;
 
 	/**
-	 * The specs for available contexts, or undefined if these have
+	 * The specs for available context, or undefined if this has
 	 * not been loaded yet
 	 */
-	readonly contexts: IDefaultConnection | undefined;
+	readonly context: ConnectionProfile | undefined;
 
 	/**
 	 * Event fired on first initialization of the cells and
@@ -400,6 +397,8 @@ export interface INotebookModel {
 
 	getApplicableConnectionProviderIds(kernelName: string): string[];
 
+	updateActiveCell(cell: ICellModel): void;
+
 	/**
 	 * Get the standardKernelWithProvider by name
 	 * @param name The kernel name
@@ -413,11 +412,63 @@ export interface INotebookModel {
 
 	standardKernels: IStandardKernelWithProvider[];
 
+	requestConnection(): Promise<boolean>;
+
+}
+
+export interface INotebookFindModel {
+	/** Get the find count */
+	getFindCount(): number;
+
+	/** Get the find index */
+	getFindIndex(): number;
+
+	/** find the next match */
+	findNext(): Promise<NotebookRange>;
+
+	/** find the previous match */
+	findPrevious(): Promise<NotebookRange>;
+
+	/** search the notebook model for the given exp up to maxMatch occurances */
+	find(exp: string, maxMatches?: number): Promise<NotebookRange>;
+
+	/** clear the results of the find */
+	clearFind(): void;
+
+	/** return the find results with their ranges */
+	findArray: NotebookRange[];
+
 	/**
-	 * Updates the model's view of an active cell to the new active cell
-	 * @param cell New active cell
+	 * Get the range associated with a decoration.
+	 * @param id The decoration id.
+	 * @return The decoration range or null if the decoration was not found.
 	 */
-	updateActiveCell(cell: ICellModel);
+	getDecorationRange(id: string): NotebookRange | null;
+
+	/**
+	 * Get the range associated with a decoration.
+	 * @param callback that accepts changeAccessor which applies the decorations
+	 * @param ownerId the owner id
+	 * @return The decoration range or null if the decoration was not found.
+	 */
+	changeDecorations<T>(callback: (changeAccessor: IModelDecorationsChangeAccessor) => T, ownerId: number): T | null;
+
+	/**
+	 * Get the maximum legal column for line at `lineNumber`
+	 */
+	getLineMaxColumn(lineNumber: number): number;
+
+	/**
+	 * Get the number of lines in the model.
+	 */
+	getLineCount(): number;
+
+	findMatches: NotebookFindMatch[];
+
+	findExpression: string;
+
+	/** Emit event when the find count changes */
+	onFindCountChange: Event<number>;
 }
 
 export interface NotebookContentChange {
@@ -491,6 +542,7 @@ export interface ICellModel {
 	isCollapsed: boolean;
 	readonly onCollapseStateChanged: Event<boolean>;
 	modelContentChangedEvent: IModelContentChangedEvent;
+	isEditMode: boolean;
 }
 
 export interface FutureInternal extends nb.IFuture {

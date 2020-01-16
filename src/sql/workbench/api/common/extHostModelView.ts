@@ -594,6 +594,14 @@ class ComponentWrapper implements azdata.Component {
 		this.setProperty('ariaSelected', v);
 	}
 
+	public get ariaHidden(): boolean {
+		return this.properties['ariaHidden'];
+	}
+
+	public set ariaHidden(v: boolean) {
+		this.setProperty('ariaHidden', v);
+	}
+
 	public get CSSStyles(): { [key: string]: string } {
 		return this.properties['CSSStyles'];
 	}
@@ -770,6 +778,13 @@ class ComponentWithIconWrapper extends ComponentWrapper {
 	}
 	public set iconWidth(v: string | number) {
 		this.setProperty('iconWidth', v);
+	}
+
+	public get title(): string {
+		return this.properties['title'];
+	}
+	public set title(v: string) {
+		this.setProperty('title', v);
 	}
 }
 
@@ -1463,13 +1478,6 @@ class ButtonWrapper extends ComponentWithIconWrapper implements azdata.ButtonCom
 	}
 	public set label(v: string) {
 		this.setProperty('label', v);
-	}
-
-	public get title(): string {
-		return this.properties['title'];
-	}
-	public set title(v: string) {
-		this.setProperty('title', v);
 	}
 
 	public get onDidClick(): vscode.Event<any> {

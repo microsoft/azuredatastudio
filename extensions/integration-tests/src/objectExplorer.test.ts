@@ -5,15 +5,15 @@
 
 import 'mocha';
 import * as azdata from 'azdata';
-import { context } from './testContext';
+import { isTestSetupCompleted } from './testContext';
 import { getBdcServer, TestServerProfile, getAzureServer, getStandaloneServer } from './testConfig';
 import { connectToServer, createDB, deleteDB, DefaultConnectTimeoutInMs, asyncTimeout } from './utils';
 import * as assert from 'assert';
 import { stressify } from 'adstest';
 
-if (context.RunTest) {
+if (isTestSetupCompleted()) {
 	suite('Object Explorer integration suite', () => {
-		test('BDC instance node label test', async function () {
+		test.skip('BDC instance node label test', async function () {
 			return await (new ObjectExplorerTester()).bdcNodeLabelTest();
 		});
 		test('Standalone instance node label test', async function () {
@@ -22,13 +22,13 @@ if (context.RunTest) {
 		test('Azure SQL DB instance node label test @UNSTABLE@', async function () {
 			return await (new ObjectExplorerTester()).sqlDbNodeLabelTest();
 		});
-		test('BDC instance context menu test', async function () {
+		test.skip('BDC instance context menu test', async function () {
 			return await (new ObjectExplorerTester()).bdcContextMenuTest();
 		});
-		test('Azure SQL DB context menu test @UNSTABLE@', async function () {
+		test('Azure SQL DB context menu test', async function () {
 			return await (new ObjectExplorerTester()).sqlDbContextMenuTest();
 		});
-		test('Standalone database context menu test @UNSTABLE@', async function () {
+		test('Standalone database context menu test', async function () {
 			return await (new ObjectExplorerTester()).standaloneContextMenuTest();
 		});
 	});
@@ -152,7 +152,7 @@ class ObjectExplorerTester {
 			const serverNode = nodes[index];
 			const children = await serverNode.getChildren();
 
-			assert(children[0].label.toLocaleLowerCase === 'Databases'.toLocaleLowerCase, `Expected Databases node. Actual ${children[0].label}`);
+			assert(children[0].label === 'Databases', `Expected Databases node. Actual ${children[0].label}`);
 			const databasesFolder = children[0];
 
 			const databases = await databasesFolder.getChildren();

@@ -10,11 +10,10 @@ import { IGridDataProvider, getResultsString } from 'sql/platform/query/common/g
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
 import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/platform/query/common/queryRunner';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -35,6 +34,7 @@ import { ResultSerializer, SaveResultsResponse } from 'sql/workbench/contrib/que
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { values } from 'vs/base/common/collections';
 import { assign } from 'vs/base/common/objects';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -138,7 +138,7 @@ class DataResourceTable extends GridTableBase<any> {
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IEditorService editorService: IEditorService,
-		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
+		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@ISerializationService private _serializationService: ISerializationService
 	) {

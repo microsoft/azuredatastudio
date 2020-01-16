@@ -11,7 +11,6 @@ import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import 'vs/css!./media/card';
-import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('./radioCardGroup.component.html'))
@@ -22,14 +21,12 @@ export default class RadioCardGroup extends ComponentBase implements IComponent,
 	@Input() modelStore: IModelStore;
 	@ViewChildren('cardDiv') cardElements: QueryList<ElementRef>;
 
-	private selectedCard: azdata.RadioCard;
-	private focusedCard: azdata.RadioCard;
+	private focusedCardId: string | undefined;
 	private iconClasses: { [key: string]: string } = {};
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(ILogService) private _logService: ILogService
 	) {
 		super(changeRef, el);
 	}
@@ -56,34 +53,43 @@ export default class RadioCardGroup extends ComponentBase implements IComponent,
 
 		let e = new StandardKeyboardEvent(event);
 		if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Space) {
-			if (this.focusedCard && !this.selectedCard) {
-				this.selectCard(this.focusedCard);
+			if (this.focusedCardId && !this.selectedCardId) {
+				this.selectCard(this.focusedCardId);
 			}
 			DOM.EventHelper.stop(e, true);
 		}
 		else if (e.keyCode === KeyCode.LeftArrow || e.keyCode === KeyCode.UpArrow) {
-			if (this.focusedCard) {
-				this.selectCard(this.findPreviousCard(this.focusedCard));
+			if (this.focusedCardId) {
+				this.selectCard(this.findPreviousCard(this.focusedCardId));
 			}
 			DOM.EventHelper.stop(e, true);
 		} else if (e.keyCode === KeyCode.RightArrow || e.keyCode === KeyCode.DownArrow) {
-			if (this.focusedCard) {
-				this.selectCard(this.findNextCard(this.focusedCard));
+			if (this.focusedCardId) {
+				this.selectCard(this.findNextCard(this.focusedCardId));
 			}
 			DOM.EventHelper.stop(e, true);
 		}
 	}
 
-	private findPreviousCard(currentCard: azdata.RadioCard): azdata.RadioCard {
-		const currentIndex = this.cards.indexOf(currentCard);
-		const previousCardIndex = currentIndex === 0 ? this.cards.length - 1 : currentIndex - 1;
-		return this.cards[previousCardIndex];
+	private getCardById(cardId: string): azdata.RadioCard {
+		const filteredCards = this.cards.filter(c => { return c.id === cardId; });
+		if (filteredCards.length === 1) {
+			return filteredCards[0];
+		} else {
+			throw new Error(`There should be one and only one matching card for the giving card id, actual number: ${filteredCards.length}, card id: ${cardId}.`);
+		}
 	}
 
-	private findNextCard(currentCard: azdata.RadioCard): azdata.RadioCard {
-		const currentIndex = this.cards.indexOf(currentCard);
+	private findPreviousCard(cardId: string): string {
+		const currentIndex = this.cards.indexOf(this.getCardById(cardId));
+		const previousCardIndex = currentIndex === 0 ? this.cards.length - 1 : currentIndex - 1;
+		return this.cards[previousCardIndex].id;
+	}
+
+	private findNextCard(cardId: string): string {
+		const currentIndex = this.cards.indexOf(this.getCardById(cardId));
 		const nextCardIndex = currentIndex === this.cards.length - 1 ? 0 : currentIndex + 1;
-		return this.cards[nextCardIndex];
+		return this.cards[nextCardIndex].id;
 	}
 
 	public get cards(): azdata.RadioCard[] {
@@ -110,67 +116,60 @@ export default class RadioCardGroup extends ComponentBase implements IComponent,
 		return this.getPropertyOrDefault<azdata.RadioCardGroupComponentProperties, string | undefined>((props) => props.selectedCardId, undefined);
 	}
 
-	public getIconClass(card: azdata.RadioCard): string {
-		if (!this.iconClasses[card.id]) {
-			this.iconClasses[card.id] = `cardIcon icon ${createIconCssClass(card.icon)}`;
+	public getIconClass(cardId: string): string {
+		if (!this.iconClasses[cardId]) {
+			this.iconClasses[cardId] = `cardIcon icon ${createIconCssClass(this.getCardById(cardId).icon)}`;
 		}
-		return this.iconClasses[card.id];
+		return this.iconClasses[cardId];
 	}
 
 	public setProperties(properties: { [key: string]: any }) {
 		super.setProperties(properties);
 		// This is the entry point for the extension to set the selectedCardId
 		if (this.selectedCardId) {
-			const filteredCards = this.cards.filter(c => { return c.id === this.selectedCardId; });
-			if (filteredCards.length === 1) {
-				this.selectCard(filteredCards[0]);
-			} else {
-				this._logService.error(`There should be one and only one matching card for the giving selectedCardId, actual number: ${filteredCards.length}, selectedCardId: ${this.selectedCardId} $`);
-			}
+			this.selectCard(this.selectedCardId);
 		}
 	}
 
-	public selectCard(card: azdata.RadioCard): void {
-		if (!this.enabled || this.selectedCard === card || this.cards.indexOf(card) === -1) {
+	public selectCard(cardId: string): void {
+		if (!this.enabled || this.cards.length === 0) {
 			return;
 		}
-		this.selectedCard = card;
-		this._changeRef.detectChanges();
-		const cardElement = this.getCardElement(this.selectedCard);
+		const cardElement = this.getCardElement(cardId);
 		cardElement.nativeElement.focus();
-		this.setPropertyFromUI<azdata.RadioCardGroupComponentProperties, string | undefined>((props, value) => props.selectedCardId = value, card.id);
+		this.setPropertyFromUI<azdata.RadioCardGroupComponentProperties, string | undefined>((props, value) => props.selectedCardId = value, cardId);
+		this._changeRef.detectChanges();
 		this.fireEvent({
 			eventType: ComponentEventType.onDidChange,
-			args: this.selectedCard.id
+			args: cardId
 		});
 	}
 
-	public getCardElement(card: azdata.RadioCard): ElementRef {
+	public getCardElement(cardId: string): ElementRef {
+		const card = this.getCardById(cardId);
 		return this.cardElements.toArray()[this.cards.indexOf(card)];
 	}
 
-	public getTabIndex(card: azdata.RadioCard): number {
+	public getTabIndex(cardId: string): number {
 		if (!this.enabled) {
 			return -1;
 		}
-		else if (!this.selectedCard) {
-			return this.cards.indexOf(card) === 0 ? 0 : -1;
+		else if (!this.selectedCardId) {
+			return this.cards.indexOf(this.getCardById(cardId)) === 0 ? 0 : -1;
 		} else {
-			return card === this.selectedCard ? 0 : -1;
+			return cardId === this.selectedCardId ? 0 : -1;
 		}
 	}
 
-	public isCardSelected(card: azdata.RadioCard): boolean {
-		return card === this.selectedCard;
+	public isCardSelected(cardId: string): boolean {
+		return cardId === this.selectedCardId;
 	}
 
-	public onCardFocus(card: azdata.RadioCard): void {
-		this.focusedCard = card;
-		this._changeRef.detectChanges();
+	public onCardFocus(cardId: string): void {
+		this.focusedCardId = cardId;
 	}
 
-	public onCardBlur(card: azdata.RadioCard): void {
-		this.focusedCard = undefined;
-		this._changeRef.detectChanges();
+	public onCardBlur(cardId: string): void {
+		this.focusedCardId = undefined;
 	}
 }

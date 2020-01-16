@@ -201,7 +201,7 @@
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",
-    "@types/node": "^10.12.12",
+    "@types/node": "^12.11.7",
     "@types/request": "^2.48.1",
     "@types/request-promise": "^4.1.45",
     "@types/ws": "^6.0.4",

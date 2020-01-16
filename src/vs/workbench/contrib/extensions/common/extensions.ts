@@ -3,26 +3,24 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IViewlet } from 'vs/workbench/common/viewlet';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
 import { IPager } from 'vs/base/common/paging';
 import { IQueryOptions, ILocalExtension, IGalleryExtension, IExtensionIdentifier } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { EnablementState, IExtensionManagementServer } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
-import { IViewContainersRegistry, ViewContainer, Extensions as ViewContainerExtensions } from 'vs/workbench/common/views';
-import { Registry } from 'vs/platform/registry/common/platform';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IExtensionManifest, ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { URI } from 'vs/base/common/uri';
+import { IViewPaneContainer } from 'vs/workbench/common/viewPaneContainer';
+import { IAction } from 'vs/base/common/actions';
 
 export const VIEWLET_ID = 'workbench.view.extensions';
-export const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer(VIEWLET_ID);
 
 export const EXTENSIONS_CONFIG = '.azuredatastudio/extensions.json';
 
-export interface IExtensionsViewlet extends IViewlet {
+export interface IExtensionsViewPaneContainer extends IViewPaneContainer {
 	search(text: string, refresh?: boolean): void;
 }
 
@@ -146,4 +144,13 @@ export class ExtensionContainers extends Disposable {
 			}
 		}
 	}
+}
+
+export interface IExtensionMenuAction extends IAction {
+	run(context: IExtensionMenuActionContext): Promise<void>;
+}
+
+export interface IExtensionMenuActionContext {
+	id: string;
+	packageJSON: IExtensionManifest;
 }

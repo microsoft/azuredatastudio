@@ -10,7 +10,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import * as azdata from 'azdata';
-import { Event, Emitter } from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 
 // Test stubs for commonly used objects
@@ -23,13 +23,15 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	onLanguageFlavorChanged = undefined;
 
 	public get onConnect(): Event<any> {
-		let conEvent = new Emitter<any>();
-		return conEvent.event;
+		return Event.None;
 	}
 
 	public get onDisconnect(): Event<any> {
-		let conEvent = new Emitter<any>();
-		return conEvent.event;
+		return Event.None;
+	}
+
+	public get providerNameToDisplayNameMap(): { [providerDisplayName: string]: string } {
+		return {};
 	}
 
 	registerProvider(providerId: string, provider: azdata.ConnectionProvider): void {
@@ -213,9 +215,14 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return Promise.resolve();
 	}
 
+	getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string } {
+		return {};
+	}
+
 	getProviderIdFromUri(ownerUri: string): string {
 		return undefined;
 	}
+
 	hasRegisteredServers(): boolean {
 		return true;
 	}
@@ -233,10 +240,6 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 	ensureDefaultLanguageFlavor(uri: string): void {
 
-	}
-
-	public getProviderNames(): string[] {
-		return [];
 	}
 
 	connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection', saveConnection: boolean = false): Promise<string> {

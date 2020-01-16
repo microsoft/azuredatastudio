@@ -3,16 +3,38 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IEditorInputFactory, IEditorInputFactoryRegistry, Extensions as EditorInputExtensions } from 'vs/workbench/common/editor';
+import { IEditorInputFactory, IEditorInputFactoryRegistry, Extensions as EditorInputExtensions, IEditorInput } from 'vs/workbench/common/editor';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { FILE_EDITOR_INPUT_ID } from 'vs/workbench/contrib/files/common/files';
 import { FileNotebookInput } from 'sql/workbench/contrib/notebook/common/models/fileNotebookInput';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/common/models/untitledNotebookInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { ILanguageAssociation } from 'sql/workbench/common/languageAssociation';
+import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 
 const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorInputExtensions.EditorInputFactories);
+
+export class NotebookEditorInputAssociation implements ILanguageAssociation {
+	static readonly languages = ['notebook'];
+
+	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService) { }
+
+	convertInput(activeEditor: IEditorInput): NotebookInput {
+		if (activeEditor instanceof FileEditorInput) {
+			return this.instantiationService.createInstance(FileNotebookInput, activeEditor.getName(), activeEditor.getResource(), activeEditor);
+		} else if (activeEditor instanceof UntitledTextEditorInput) {
+			return this.instantiationService.createInstance(UntitledNotebookInput, activeEditor.getName(), activeEditor.getResource(), activeEditor);
+		} else {
+			return undefined;
+		}
+	}
+
+	createBase(activeEditor: NotebookInput): IEditorInput {
+		return activeEditor.textInput;
+	}
+}
 
 export class FileNoteBookEditorInputFactory implements IEditorInputFactory {
 	serialize(editorInput: FileNotebookInput): string {
@@ -28,11 +50,15 @@ export class FileNoteBookEditorInputFactory implements IEditorInputFactory {
 		const fileEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as FileEditorInput;
 		return instantiationService.createInstance(FileNotebookInput, fileEditorInput.getName(), fileEditorInput.getResource(), fileEditorInput);
 	}
+
+	canSerialize(): boolean { // we can always serialize notebooks
+		return true;
+	}
 }
 
 export class UntitledNoteBookEditorInputFactory implements IEditorInputFactory {
 	serialize(editorInput: UntitledNotebookInput): string {
-		const factory = editorInputFactoryRegistry.getEditorInputFactory(UntitledEditorInput.ID);
+		const factory = editorInputFactoryRegistry.getEditorInputFactory(UntitledTextEditorInput.ID);
 		if (factory) {
 			return factory.serialize(editorInput.textInput); // serialize based on the underlying input
 		}
@@ -40,8 +66,12 @@ export class UntitledNoteBookEditorInputFactory implements IEditorInputFactory {
 	}
 
 	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): UntitledNotebookInput | undefined {
-		const factory = editorInputFactoryRegistry.getEditorInputFactory(UntitledEditorInput.ID);
-		const untitledEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as UntitledEditorInput;
+		const factory = editorInputFactoryRegistry.getEditorInputFactory(UntitledTextEditorInput.ID);
+		const untitledEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as UntitledTextEditorInput;
 		return instantiationService.createInstance(UntitledNotebookInput, untitledEditorInput.getName(), untitledEditorInput.getResource(), untitledEditorInput);
+	}
+
+	canSerialize(): boolean { // we can always serialize notebooks
+		return true;
 	}
 }

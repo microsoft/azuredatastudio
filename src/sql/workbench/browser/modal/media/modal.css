@@ -96,7 +96,7 @@
 /* Add space in the bottom to separate each input elements */
 .modal.flyout-dialog .input-divider {
 	width: 100%;
-	padding-bottom: 20px;
+	margin-bottom: 20px;
 }
 
 .modal.flyout-dialog .input {

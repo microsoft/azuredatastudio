@@ -20,7 +20,6 @@ const resultsGridConfiguration: IConfigurationNode = {
 	id: 'resultsGrid',
 	type: 'object',
 	title: nls.localize('resultsGridConfigurationTitle', "Results Grid and Messages"),
-	overridable: true,
 	properties: {
 		'resultsGrid.fontFamily': {
 			type: 'string',

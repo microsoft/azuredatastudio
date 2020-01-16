@@ -4,12 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as testRunner from 'vscode/lib/testrunner';
-import * as vscode from 'vscode';
-
 import { SuiteType, getSuiteType } from 'adstest';
-
-import { context } from './testContext';
-
 import * as path from 'path';
 
 const suite = getSuiteType();
@@ -17,7 +12,7 @@ const suite = getSuiteType();
 const options: any = {
 	ui: 'tdd',
 	useColors: true,
-	timeout: 600000 	// 600 seconds
+	timeout: 600000
 };
 
 if (suite === SuiteType.Stress) {
@@ -60,10 +55,6 @@ if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 			mochaFile: path.join(process.env.BUILD_ARTIFACTSTAGINGDIRECTORY, `test-results/${process.platform}-${suite.toLowerCase().replace(/[^\w]/g, '-')}-results.xml`)
 		}
 	};
-}
-
-if (!vscode.workspace.getConfiguration('test')['testSetupCompleted']) {
-	context.RunTest = false;
 }
 
 testRunner.configure(options);

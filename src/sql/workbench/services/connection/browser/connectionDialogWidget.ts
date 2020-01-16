@@ -35,8 +35,9 @@ import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { entries } from 'sql/base/common/collections';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -116,21 +117,21 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	public refresh(): void {
-		let filteredProviderDisplayNames = this.providerDisplayNameOptions;
-
+		let filteredProviderMap = this.providerNameToDisplayNameMap;
 		if (this._newConnectionParams && this._newConnectionParams.providers) {
-			const validProviderNames = Object.keys(this.providerNameToDisplayNameMap).filter(x => this.includeProvider(x, this._newConnectionParams));
-			if (validProviderNames && validProviderNames.length > 0) {
-				filteredProviderDisplayNames = filteredProviderDisplayNames.filter(x => validProviderNames.some(
-					v => this.providerNameToDisplayNameMap[v] === x) !== undefined
-				);
+			const validProviderMap = entries(this.providerNameToDisplayNameMap).filter(x => this.includeProvider(x[0], this._newConnectionParams));
+			if (validProviderMap && validProviderMap.length > 0) {
+				let map: { [providerDisplayName: string]: string } = {};
+				validProviderMap.forEach(v => {
+					map[v[0]] = v[1];
+				});
+				filteredProviderMap = map;
 			}
 		}
 
-		this._providerTypeSelectBox.setOptions(filteredProviderDisplayNames.filter((providerDisplayName, index) =>
-			// Remove duplicate listings (CMS uses the same display name)
-			filteredProviderDisplayNames.indexOf(providerDisplayName) === index)
-		);
+		// Remove duplicate listings (CMS uses the same display name)
+		let uniqueProvidersMap = this._connectionManagementService.getUniqueConnectionProvidersByNameMap(filteredProviderMap);
+		this._providerTypeSelectBox.setOptions(Object.keys(uniqueProvidersMap).map(k => uniqueProvidersMap[k]));
 	}
 
 	private includeProvider(providerName: string, params?: INewConnectionParams): Boolean {

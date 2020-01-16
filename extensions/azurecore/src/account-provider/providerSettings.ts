@@ -45,7 +45,7 @@ const usGovAzureSettings: ProviderSettings = {
 		displayName: localize('usGovCloudDisplayName', "Azure (US Government)"),
 		id: 'usGovAzureCloud',
 		settings: {
-			host: 'https://login.microsoftonline.com/',
+			host: 'https://login.microsoftonline.us',
 			clientId: 'TBD',
 			signInResourceId: 'https://management.core.usgovcloudapi.net/',
 			graphResource: {

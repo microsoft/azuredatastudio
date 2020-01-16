@@ -13,7 +13,8 @@
     "azdata": ">=1.8.0"
   },
   "activationEvents": [
-    "*"
+    "onCommand:adminToolExtWin.launchSsmsMinPropertiesDialog",
+    "onCommand:adminToolExtWin.launchSsmsMinGswDialog"
   ],
   "main": "./out/main",
   "repository": {
@@ -74,7 +75,7 @@
     "vscode-nls": "^3.2.1"
   },
   "devDependencies": {
-    "@types/node": "10",
+    "@types/node": "^12.11.7",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.3",

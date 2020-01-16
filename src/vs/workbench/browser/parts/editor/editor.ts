@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { GroupIdentifier, IWorkbenchEditorConfiguration, EditorOptions, TextEditorOptions, IEditorInput, IEditorIdentifier, IEditorCloseEvent, IEditor, IEditorPartOptions } from 'vs/workbench/common/editor';
+import { GroupIdentifier, IWorkbenchEditorConfiguration, EditorOptions, TextEditorOptions, IEditorInput, IEditorIdentifier, IEditorCloseEvent, IEditor, IEditorPartOptions, IEditorPartOptionsChangeEvent } from 'vs/workbench/common/editor';
 import { EditorGroup } from 'vs/workbench/common/editor/editorGroup';
-import { IEditorGroup, GroupDirection, IAddGroupOptions, IMergeGroupOptions, GroupsOrder } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IEditorGroup, GroupDirection, IAddGroupOptions, IMergeGroupOptions, GroupsOrder, GroupsArrangement } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { Dimension } from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
@@ -63,11 +63,6 @@ export function getEditorPartOptions(config: IWorkbenchEditorConfiguration): IEd
 	return options;
 }
 
-export interface IEditorPartOptionsChangeEvent {
-	oldPartOptions: IEditorPartOptions;
-	newPartOptions: IEditorPartOptions;
-}
-
 export interface IEditorOpeningEvent extends IEditorIdentifier {
 	options?: IEditorOptions;
 
@@ -104,6 +99,8 @@ export interface IEditorGroupsAccessor {
 	copyGroup(group: IEditorGroupView | GroupIdentifier, location: IEditorGroupView | GroupIdentifier, direction: GroupDirection): IEditorGroupView;
 
 	removeGroup(group: IEditorGroupView | GroupIdentifier): void;
+
+	arrangeGroups(arrangement: GroupsArrangement, target?: IEditorGroupView | GroupIdentifier): void;
 }
 
 export interface IEditorGroupView extends IDisposable, ISerializableView, IEditorGroup {
@@ -154,4 +151,9 @@ export interface EditorServiceImpl extends IEditorService {
 	 * Emitted when an editor failed to open.
 	 */
 	readonly onDidOpenEditorFail: Event<IEditorIdentifier>;
+
+	/**
+	 * Emitted when the list of most recently active editors change.
+	 */
+	readonly onDidMostRecentlyActiveEditorsChange: Event<void>;
 }

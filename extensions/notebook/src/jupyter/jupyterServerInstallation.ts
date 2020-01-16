@@ -38,7 +38,24 @@ function msgDependenciesInstallationFailed(errorMessage: string): string { retur
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 function msgPackageRetrievalFailed(errorMessage: string): string { return localize('msgPackageRetrievalFailed', "Encountered an error when trying to retrieve list of installed packages: {0}", errorMessage); }
 
-export class JupyterServerInstallation {
+export interface IJupyterServerInstallation {
+	installCondaPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void>;
+	configurePackagePaths(): Promise<void>;
+	startInstallProcess(forceInstall: boolean, installSettings?: { installPath: string, existingPython: boolean }): Promise<void>;
+	getInstalledPipPackages(): Promise<PythonPkgDetails[]>;
+	getInstalledCondaPackages(): Promise<PythonPkgDetails[]>;
+	uninstallCondaPackages(packages: PythonPkgDetails[]): Promise<void>;
+	usingConda: boolean;
+	getCondaExePath(): string;
+	executeBufferedCommand(command: string): Promise<string>;
+	executeStreamedCommand(command: string): Promise<void>;
+	installPipPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void>;
+	uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void>;
+	pythonExecutable: string;
+	pythonInstallationPath: string;
+	installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: OutputChannel): Promise<void>;
+}
+export class JupyterServerInstallation implements IJupyterServerInstallation {
 	public apiWrapper: ApiWrapper;
 	public extensionPath: string;
 	public pythonBinPath: string;
@@ -113,7 +130,7 @@ export class JupyterServerInstallation {
 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgInstallPkgProgress);
 
 			try {
-				await this.installPythonPackage(backgroundOperation);
+				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
 
 				if (this._usingExistingPython) {
 					await this.upgradePythonPackages(false, forceInstall);
@@ -131,8 +148,8 @@ export class JupyterServerInstallation {
 		}
 	}
 
-	private installPythonPackage(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
-		if (this._usingExistingPython) {
+	public installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: OutputChannel): Promise<void> {
+		if (usingExistingPython) {
 			return Promise.resolve();
 		}
 
@@ -159,7 +176,7 @@ export class JupyterServerInstallation {
 		}
 
 		return new Promise((resolve, reject) => {
-			let installPath = this._pythonInstallationPath;
+			let installPath = pythonInstallationPath;
 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgDownloadPython(platformId, pythonDownloadUrl));
 			fs.mkdirs(installPath, (err) => {
 				if (err) {
@@ -183,7 +200,7 @@ export class JupyterServerInstallation {
 
 						let totalBytes = parseInt(response.headers['content-length']);
 						totalMegaBytes = totalBytes / (1024 * 1024);
-						this.outputChannel.appendLine(`${msgPythonDownloadPending} (0 / ${totalMegaBytes.toFixed(2)} MB)`);
+						outputChannel.appendLine(`${msgPythonDownloadPending} (0 / ${totalMegaBytes.toFixed(2)} MB)`);
 					})
 					.on('data', (data) => {
 						receivedBytes += data.length;
@@ -191,7 +208,7 @@ export class JupyterServerInstallation {
 							let receivedMegaBytes = receivedBytes / (1024 * 1024);
 							let percentage = receivedMegaBytes / totalMegaBytes;
 							if (percentage >= printThreshold) {
-								this.outputChannel.appendLine(`${msgPythonDownloadPending} (${receivedMegaBytes.toFixed(2)} / ${totalMegaBytes.toFixed(2)} MB)`);
+								outputChannel.appendLine(`${msgPythonDownloadPending} (${receivedMegaBytes.toFixed(2)} / ${totalMegaBytes.toFixed(2)} MB)`);
 								printThreshold += 0.1;
 							}
 						}
@@ -201,7 +218,7 @@ export class JupyterServerInstallation {
 				downloadRequest.pipe(fs.createWriteStream(pythonPackagePathLocal))
 					.on('close', async () => {
 						//unpack python zip/tar file
-						this.outputChannel.appendLine(msgPythonUnpackPending);
+						outputChannel.appendLine(msgPythonUnpackPending);
 						let pythonSourcePath = path.join(installPath, constants.pythonBundleVersion);
 						if (await utils.exists(pythonSourcePath)) {
 							try {
@@ -220,7 +237,7 @@ export class JupyterServerInstallation {
 								}
 							});
 
-							this.outputChannel.appendLine(msgPythonDownloadComplete);
+							outputChannel.appendLine(msgPythonDownloadComplete);
 							backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
 							resolve();
 						}).catch(err => {
@@ -625,7 +642,7 @@ export class JupyterServerInstallation {
 		}
 	}
 
-	private async executeStreamedCommand(command: string): Promise<void> {
+	public async executeStreamedCommand(command: string): Promise<void> {
 		await utils.executeStreamedCommand(command, { env: this.execOptions.env }, this.outputChannel);
 	}
 
@@ -640,6 +657,13 @@ export class JupyterServerInstallation {
 	public getCondaExePath(): string {
 		return path.join(this._pythonInstallationPath,
 			process.platform === constants.winPlatform ? 'Scripts\\conda.exe' : 'bin/conda');
+	}
+
+	/**
+	 * Returns Python installation path
+	 */
+	public get pythonInstallationPath(): string {
+		return this._pythonInstallationPath;
 	}
 
 	public get usingConda(): boolean {

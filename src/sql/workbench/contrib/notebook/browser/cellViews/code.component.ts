@@ -6,7 +6,6 @@ import 'vs/css!./code';
 
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange, forwardRef, ChangeDetectorRef } from '@angular/core';
 
-import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions';
 import { ICellModel, notebookConstants, CellExecutionState } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
@@ -21,7 +20,6 @@ import { SimpleEditorProgressService } from 'vs/editor/standalone/browser/simple
 import { IProgressService } from 'vs/platform/progress/common/progress';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModel } from 'vs/editor/common/model';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import * as DOM from 'vs/base/browser/dom';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
@@ -30,20 +28,23 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { CellTypes } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/browser/notebookService';
 import * as notebookUtils from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
-import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
 import { CollapseComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/collapse.component';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
+import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
+const DEFAULT_OR_LOCAL_CONTEXT_ID = '-1';
 
 @Component({
 	selector: CODE_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./code.component.html'))
 })
-export class CodeComponent extends AngularDisposable implements OnInit, OnChanges {
+export class CodeComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
@@ -93,7 +94,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	private readonly _maximumHeight = 4000;
 	private _cellModel: ICellModel;
 	private _editor: QueryTextEditor;
-	private _editorInput: UntitledEditorInput;
+	private _editorInput: UntitledTextEditorInput;
 	private _editorModel: ITextModel;
 	private _model: NotebookModel;
 	private _activeCellId: string;
@@ -140,14 +141,26 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		}
 	}
 
+	public getEditor(): QueryTextEditor {
+		return this._editor;
+	}
+
+	public hasEditor(): boolean {
+		return true;
+	}
+
+	public cellGuid(): string {
+		return this.cellModel.cellGuid;
+	}
+
 	private updateConnectionState(shouldConnect: boolean) {
 		if (this.isSqlCodeCell()) {
 			let cellUri = this.cellModel.cellUri.toString();
 			let connectionService = this.connectionService;
 			if (!shouldConnect && connectionService && connectionService.isConnected(cellUri)) {
 				connectionService.disconnect(cellUri).catch(e => this.logService.error(e));
-			} else if (shouldConnect && this._model.activeConnection && this._model.activeConnection.id !== '-1') {
-				connectionService.connect(this._model.activeConnection, cellUri).catch(e => this.logService.error(e));
+			} else if (shouldConnect && this._model.context && this._model.context.id !== DEFAULT_OR_LOCAL_CONTEXT_ID) {
+				connectionService.connect(this._model.context, cellUri).catch(e => this.logService.error(e));
 			}
 		}
 	}
@@ -172,7 +185,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		if (this.destroyed) {
 			return;
 		}
-		this.createEditor();
+		this.createEditor().catch(e => this.logService.error(e));
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
 			this._layoutEmitter.fire();
 		}));
@@ -197,11 +210,11 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		let uri = this.cellModel.cellUri;
 		let cellModelSource: string;
 		cellModelSource = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
-		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, cellModelSource, '');
+		this._editorInput = instantiationService.createInstance(UntitledTextEditorInput, uri, false, this.cellModel.language, cellModelSource, '');
 		await this._editor.setInput(this._editorInput, undefined);
 		this.setFocusAndScroll();
 
-		let untitledEditorModel: UntitledEditorModel = await this._editorInput.resolve();
+		let untitledEditorModel: UntitledTextEditorModel = await this._editorInput.resolve();
 		this._editorModel = untitledEditorModel.textEditorModel;
 
 		let isActive = this.cellModel.id === this._activeCellId;

@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/Microsoft.sqlservernotebook/package" source-language="en" datatype="plaintext" target-language="zh-HANS">
+    <body>
+      <trans-unit id="title.sqlServerNotebooks">
+        <source xml:lang="en">SQL Server Notebooks</source>
+        <target state="translated">SQL Server 笔记本</target>
+      </trans-unit>
+      <trans-unit id="title.sqlServer2019Book">
+        <source xml:lang="en">SQL Server 2019 Guide</source>
+        <target state="translated">SQL Server 2019 指南</target>
+      </trans-unit>
+      <trans-unit id="description.sqlserverNotebooks">
+        <source xml:lang="en">Notebooks to help get started with and troubleshoot SQL Server</source>
+        <target state="translated">可帮助开始使用 SQL Server 并进行排除故障的笔记本</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

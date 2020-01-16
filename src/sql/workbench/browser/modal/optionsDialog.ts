@@ -24,7 +24,6 @@ import * as styler from 'vs/platform/theme/common/styler';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { IViewletPanelOptions, ViewletPanel } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -32,15 +31,16 @@ import { append, $ } from 'vs/base/browser/dom';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 
-export class CategoryView extends ViewletPanel {
+export class CategoryView extends ViewPane {
 
 	constructor(
 		private contentElement: HTMLElement,
 		private size: number,
-		options: IViewletPanelOptions,
+		options: IViewPaneOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
@@ -123,7 +123,7 @@ export class OptionsDialog extends Modal {
 
 		this._dividerBuilder = append(this._body, $('div'));
 
-		this._optionGroups = append(this._body, $('div.optionsDialog-options-groups.monaco-panel-view'));
+		this._optionGroups = append(this._body, $('div.optionsDialog-options-groups.monaco-pane-view'));
 		this.splitview = new ScrollableSplitView(this._optionGroups, { enableResizing: false, scrollDebounce: 0 });
 
 		const descriptionContainer = append(this._body, $('div.optionsDialog-description'));

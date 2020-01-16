@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { EditorInput, ConfirmResult } from 'vs/workbench/common/editor';
+import { EditorInput } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IFileService } from 'vs/platform/files/common/files';
 
@@ -17,6 +17,7 @@ import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 
 import { ISelectionData, ExecutionPlanOptions } from 'azdata';
 import { startsWith } from 'vs/base/common/strings';
+import { ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 
 const MAX_SIZE = 13;
 
@@ -176,6 +177,10 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public supportsSplitEditor(): boolean { return false; }
 	public revert(): Promise<boolean> { return this._text.revert(); }
 
+	public isReadonly(): boolean {
+		return false;
+	}
+
 	public matches(otherInput: any): boolean {
 		// we want to be able to match against our underlying input as well, bascially we are our underlying input
 		if (otherInput instanceof QueryEditorInput) {
@@ -186,9 +191,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	// Forwarding resource functions to the inline sql file editor
-	public save(): Promise<boolean> { return this._text.save(); }
 	public isDirty(): boolean { return this._text.isDirty(); }
-	public confirmSave(): Promise<ConfirmResult> { return this._text.confirmSave(); }
 	public getResource(): URI { return this._text.getResource(); }
 
 	public matchInputInstanceType(inputType: any): boolean {
@@ -219,6 +222,14 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		} else {
 			return this._text.getName();
 		}
+	}
+
+	save(groupId: number, options?: ITextFileSaveOptions): Promise<boolean> {
+		return this.text.save(groupId, options);
+	}
+
+	saveAs(group: number, options?: ITextFileSaveOptions): Promise<boolean> {
+		return this.text.saveAs(group, options);
 	}
 
 	// Called to get the tooltip of the tab
@@ -295,20 +306,18 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		this.state.executing = false;
 	}
 
-	public close(): void {
-		this.queryModelService.disposeQuery(this.uri);
-		this.connectionManagementService.disconnectEditor(this, true);
-
-		this._text.close();
-		this._results.close();
-		super.close();
-	}
-
 	/**
 	 * Get the color that should be displayed
 	 */
 	public get tabColor(): string {
 		return this.connectionManagementService.getTabColorForUri(this.uri);
+	}
+
+	public dispose() {
+		this.queryModelService.disposeQuery(this.uri);
+		this.connectionManagementService.disconnectEditor(this, true);
+
+		super.dispose();
 	}
 
 	public get isSharedSession(): boolean {

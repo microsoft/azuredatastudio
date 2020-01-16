@@ -11,10 +11,12 @@ export const msgMissingNodeContext = localize('msgMissingNodeContext', "Node Com
 
 // HDFS Manage Access Dialog Constants ////////////////////////////////////
 
-export const manageAccessTitle = localize('mssql.manageAccessTitle', "Manage Access (preview)");
+export const manageAccessTitle = localize('mssql.manageAccessTitle', "Manage Access");
 export const locationTitle = localize('mssql.locationTitle', "Location : ");
 export const permissionsHeader = localize('mssql.permissionsTitle', "Permissions");
 export const ownerPostfix = localize('mssql.ownerPostfix', " - Owner");
+export const owner = localize('mssql.owner', "Owner");
+export const group = localize('mssql.group', "Group");
 export const owningGroupPostfix = localize('mssql.owningGroupPostfix', " - Owning Group");
 export const everyoneName = localize('mssql.everyone', "Everyone else");
 export const userLabel = localize('mssql.userLabel', "User");
@@ -31,6 +33,8 @@ export const addUserOrGroupHeader = localize('mssql.addUserOrGroup', "Add User o
 export const enterNamePlaceholder = localize('mssql.enterNamePlaceholder', "Enter name");
 export const addLabel = localize('mssql.addLabel', "Add");
 export const namedUsersAndGroupsHeader = localize('mssql.namedUsersAndGroups', "Named Users and Groups");
+export const defaultUserAndGroups = localize('mssql.defaultUserAndGroups', "Default User and Groups");
+export const userOrGroupIcon = localize('mssql.userOrGroupIcon', "User or Group Icon");
 export const applyText = localize('mssql.apply', "Apply");
 export const applyRecursivelyText = localize('mssql.applyRecursively', "Apply Recursively");
 
