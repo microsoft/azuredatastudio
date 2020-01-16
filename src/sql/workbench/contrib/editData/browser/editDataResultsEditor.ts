@@ -53,12 +53,10 @@ export class EditDataResultsEditor extends BaseEditor {
 	}
 
 	public createEditor(parent: HTMLElement): void {
-		this.styleSheet.remove();
 		parent.appendChild(this.styleSheet);
 	}
 
 	public dispose(): void {
-		this.styleSheet.remove();
 		this.styleSheet = undefined;
 		super.dispose();
 	}
