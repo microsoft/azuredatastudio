@@ -42,18 +42,16 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 			return undefined;
 		}
 
-		if (queryEditorInput) {
-			const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
-			if (profile) {
-				const options: IConnectionCompletionOptions = {
-					params: { connectionType: ConnectionType.editor, runQueryOnCompletion: undefined, input: queryEditorInput },
-					saveTheConnection: false,
-					showDashboard: false,
-					showConnectionDialogOnError: true,
-					showFirewallRuleOnError: true
-				};
-				this.connectionManagementService.connect(profile, queryEditorInput.uri, options).catch(err => onUnexpectedError(err));
-			}
+		const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+		if (profile) {
+			const options: IConnectionCompletionOptions = {
+				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: undefined, input: queryEditorInput },
+				saveTheConnection: false,
+				showDashboard: false,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			};
+			this.connectionManagementService.connect(profile, queryEditorInput.uri, options).catch(err => onUnexpectedError(err));
 		}
 
 		return queryEditorInput;
