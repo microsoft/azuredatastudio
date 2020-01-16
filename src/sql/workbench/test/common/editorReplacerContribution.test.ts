@@ -28,6 +28,8 @@ import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledText
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { TestObjectExplorerService } from 'sql/workbench/services/objectExplorer/test/browser/testObjectExplorerService';
+import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 
 const languageAssociations = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -51,7 +53,7 @@ suite('Editor Replacer Contribution', () => {
 	test('does proper lifecycle', () => {
 		const editorService = new MockEditorService();
 		const modeService = new TestModeService();
-		const contrib = new EditorReplacementContribution(editorService, modeService);
+		const contrib = new EditorReplacementContribution(editorService, modeService, new TestObjectExplorerService(), new TestConnectionManagementService());
 		assert.equal(editorService.overridenOpens.length, 1);
 		contrib.dispose();
 		assert.equal(editorService.overridenOpens.length, 0);
