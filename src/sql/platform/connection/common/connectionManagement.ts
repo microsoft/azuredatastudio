@@ -311,15 +311,6 @@ export interface IConnectableInput {
 	onConnectCanceled(): void;
 }
 
-export function instanceOfIConnectableInput(object: any): object is IConnectableInput {
-	return 'uri' in object &&
-		'onConnectStart' in object &&
-		'onConnectReject' in object &&
-		'onConnectSuccess' in object &&
-		'onDisconnect' in object &&
-		'onConnectCanceled' in object;
-}
-
 export enum ConnectionType {
 	default = 0,
 	editor = 1,
