@@ -6,7 +6,7 @@
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IEditorService, IOpenEditorOverride } from 'vs/workbench/services/editor/common/editorService';
-import { IEditorInput, EditorInput } from 'vs/workbench/common/editor';
+import { IEditorInput } from 'vs/workbench/common/editor';
 import { IEditorOptions, ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IModeService } from 'vs/editor/common/services/modeService';
@@ -16,11 +16,6 @@ import * as path from 'vs/base/common/path';
 
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
-import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
-import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, instanceOfIConnectableInput } from 'sql/platform/connection/common/connectionManagement';
-import { onUnexpectedError } from 'vs/base/common/errors';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -29,9 +24,7 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 
 	constructor(
 		@IEditorService private readonly editorService: IEditorService,
-		@IModeService private readonly modeService: IModeService,
-		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService,
-		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService
+		@IModeService private readonly modeService: IModeService
 	) {
 		this.editorOpeningListener = this.editorService.overrideOpenEditor((editor, options, group) => this.onEditorOpening(editor, options, group));
 	}
@@ -70,13 +63,7 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 				editor.setMode(defaultInputCreator[0]);
 				const newInput = defaultInputCreator[1].convertInput(editor);
 				if (newInput) {
-					const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
-					return {
-						override: this.editorService.openEditor(newInput, options, group).then(editor => {
-							this.connectIfConnectableInput(newInput, profile);
-							return editor;
-						})
-					};
+					return { override: this.editorService.openEditor(newInput, options, group) };
 				}
 			}
 		} else {
@@ -84,33 +71,12 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 			if (inputCreator) {
 				const newInput = inputCreator.convertInput(editor);
 				if (newInput) {
-					const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
-					return {
-						override: this.editorService.openEditor(newInput, options, group).then(editor => {
-							this.connectIfConnectableInput(newInput, profile);
-							return editor;
-						})
-					};
+					return { override: this.editorService.openEditor(newInput, options, group) };
 				}
 			}
 		}
 
 		return undefined;
-	}
-
-	private connectIfConnectableInput(input: EditorInput, profile?: IConnectionProfile): void {
-		if (instanceOfIConnectableInput(input)) {
-			let options: IConnectionCompletionOptions = {
-				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: undefined, input: input },
-				saveTheConnection: false,
-				showDashboard: false,
-				showConnectionDialogOnError: true,
-				showFirewallRuleOnError: true
-			};
-			if (profile) {
-				this.connectionManagementService.connect(profile, input.uri, options).catch(err => onUnexpectedError(err));
-			}
-		}
 	}
 
 	dispose(): void {
