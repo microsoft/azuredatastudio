@@ -176,10 +176,15 @@ export class EditDataGridPanel extends GridParentComponent {
 			let returnVal = '';
 			// replace the line breaks with space since the edit text control cannot
 			// render line breaks and strips them, updating the value.
-			if (Services.DBCellValue.isDBCellValue(value) && !value.isNull) {
+			/* tslint:disable:no-null-keyword */
+			let valueMissing = value === undefined || value === null || (Services.DBCellValue.isDBCellValue(value) && value.isNull);
+			if (!valueMissing && Services.DBCellValue.isDBCellValue(value)) {
 				returnVal = this.spacefyLinebreaks(value.displayValue);
 			} else if (typeof value === 'string') {
 				returnVal = this.spacefyLinebreaks(value);
+			} else if (valueMissing) {
+				/* tslint:disable:no-null-keyword */
+				returnVal = null;
 			}
 			return returnVal;
 		};
@@ -370,7 +375,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					id: columnIndex,
 					name: escape(c.columnName),
 					field: columnIndex,
-					formatter: Services.textFormatter,
+					formatter: this.getColumnFormatter,
 					isEditable: c.isUpdatable
 				};
 			}))
@@ -789,15 +794,13 @@ export class EditDataGridPanel extends GridParentComponent {
 				showHeader: true,
 				rowHeight: this.rowHeight,
 				defaultColumnWidth: 120,
+				defaultFormatter: undefined,
 				editable: this.enableEditing,
 				autoEdit: this.enableEditing,
 				enableAddRow: false, // TODO change when we support enableAddRow
 				enableAsyncPostRender: false,
 				editorFactory: {
 					getEditor: (column: ISlickColumn<any>) => this.getColumnEditor(column)
-				},
-				formatterFactory: {
-					getFormatter: this.getFormatter
 				}
 			};
 
@@ -911,25 +914,38 @@ export class EditDataGridPanel extends GridParentComponent {
 		return this.columnNameToIndex[name];
 	}
 
-	private getFormatter = (column: any): any => {
-		return (row, cell, value, columnDef, dataContext) => {
-			let columnId = cell > 0 && this.dataSet.columnDefinitions.length > cell - 1 ? this.dataSet.columnDefinitions[cell - 1].id : undefined;
-			if (columnId) {
-				let overrideValue = this.overrideCellFn && this.overrideCellFn(row, columnId, value, dataContext);
-				let valueToDisplay = (value + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-				let cellClasses = 'grid-cell-value-container';
-				/* tslint:disable:no-null-keyword */
-				let valueMissing = value === undefined || value === null;
-				/* tslint:disable:no-null-keyword */
-				let isOverridden = (overrideValue !== undefined && overrideValue !== null) || (overrideValue !== 'NULL' && row !== this.tables[0].grid.getDataLength() - 1);
-				console.log(isOverridden);
-				if (valueMissing && !isOverridden) {
+	/*Formatter for Column*/
+	private getColumnFormatter(row, cell, value, columnDef, dataContext) {
+		let valueToDisplay = '';
+		let cellClasses = 'grid-cell-value-container';
+		/* tslint:disable:no-null-keyword */
+		let valueMissing = value === undefined || value === null;
+		if (!valueMissing) {
+			if (Services.DBCellValue.isDBCellValue(value)) {
+				valueToDisplay = 'NULL';
+				if (!value.isNull) {
+					//valueToDisplay = value.displayValue.replace(/(\r\n|\n|\r)/g, ' ');
+					valueToDisplay = (value.displayValue + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+					valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+				} else {
 					cellClasses += ' missing-value';
 				}
-				return '<span title="' + valueToDisplay + '" class="' + cellClasses + '">' + valueToDisplay + '</span>';
 			}
-			return undefined;
-		};
+			if (typeof value === 'string' || (value && value.text)) {
+				if (value.text) {
+					valueToDisplay = value.text;
+				} else {
+					valueToDisplay = value;
+				}
+				valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+			}
+		}
+
+		if (valueMissing) {
+			valueToDisplay = 'NULL';
+			cellClasses += ' missing-value';
+		}
+		return '<span title="' + valueToDisplay + '" class="' + cellClasses + '">' + valueToDisplay + '</span>';
 	}
 
 	handleChanges(changes: { [propName: string]: any }): void {
