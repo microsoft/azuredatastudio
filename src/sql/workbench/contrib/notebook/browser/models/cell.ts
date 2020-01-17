@@ -586,7 +586,7 @@ export class CellModel implements ICellModel {
 			cellJson.metadata.language = this._language;
 			cellJson.metadata.tags = metadata.tags;
 			cellJson.outputs = this._outputs;
-			cellJson.execution_count = this.executionCount;
+			cellJson.execution_count = this.executionCount ? this.executionCount : null;
 		}
 		return cellJson as nb.ICellContents;
 	}
