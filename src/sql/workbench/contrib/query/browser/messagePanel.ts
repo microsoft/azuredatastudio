@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/messagePanel';
-import { IMessagesActionContext, CopyMessagesAction, CopyAllMessagesAction } from './actions';
+// import { IMessagesActionContext, CopyMessagesAction, CopyAllMessagesAction } from './actions';
 import QueryRunner, { IQueryMessage } from 'sql/platform/query/common/queryRunner';
 import { IExpandableTree } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
 
@@ -100,17 +100,17 @@ export class MessagePanel extends Disposable {
 		this._register(this.themeService.onThemeChange(this.applyStyles, this));
 		this.applyStyles(this.themeService.getTheme());
 		this.controller.onKeyDown = (tree, event) => {
-			if (event.ctrlKey && event.code === 'KeyC') {
-				let context: IMessagesActionContext = {
-					selection: document.getSelection(),
-					tree: this.tree,
-				};
-				let copyMessageAction = instantiationService.createInstance(CopyMessagesAction);
-				copyMessageAction.run(context);
-				event.preventDefault();
-				event.stopPropagation();
-				return true;
-			}
+			// if (event.ctrlKey && event.code === 'KeyC') {
+			// 	let context: IMessagesActionContext = {
+			// 		selection: document.getSelection(),
+			// 		tree: this.tree,
+			// 	};
+			// 	let copyMessageAction = instantiationService.createInstance(CopyMessagesAction);
+			// 	copyMessageAction.run(context);
+			// 	event.preventDefault();
+			// 	event.stopPropagation();
+			// 	return true;
+			// }
 			return false;
 		};
 		this.controller.onContextMenu = (tree, element, event) => {
@@ -124,7 +124,7 @@ export class MessagePanel extends Disposable {
 				event.stopPropagation();
 			}
 
-			const selection = document.getSelection();
+			// const selection = document.getSelection();
 
 			this.contextMenuService.showContextMenu({
 				getAnchor: () => {
@@ -132,15 +132,15 @@ export class MessagePanel extends Disposable {
 				},
 				getActions: () => {
 					return [
-						instantiationService.createInstance(CopyMessagesAction),
-						instantiationService.createInstance(CopyAllMessagesAction, this.tree)
+						// instantiationService.createInstance(CopyMessagesAction),
+						// instantiationService.createInstance(CopyAllMessagesAction, this.tree)
 					];
 				},
 				getActionsContext: () => {
-					return <IMessagesActionContext>{
+					return {}; /*<IMessagesActionContext>{
 						selection,
 						tree
-					};
+					};*/
 				}
 			});
 

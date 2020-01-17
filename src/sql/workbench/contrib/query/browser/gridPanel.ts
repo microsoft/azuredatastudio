@@ -12,8 +12,8 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { ScrollableSplitView, IView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
-import { SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
-import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, RestoreTableAction, ChartDataAction, VisualizerDataAction } from 'sql/workbench/contrib/query/browser/actions';
+// import { SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
+// import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, RestoreTableAction, ChartDataAction, VisualizerDataAction } from 'sql/workbench/contrib/query/browser/actions';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
@@ -26,7 +26,7 @@ import * as azdata from 'azdata';
 
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+// import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
@@ -451,9 +451,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		});
 		this.rowNumberColumn = new RowNumberColumn({ numberOfRows: this.resultSet.rowCount });
 		let copyHandler = new CopyKeybind();
-		copyHandler.onCopy(e => {
-			new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false).run(this.generateContext());
-		});
+		// copyHandler.onCopy(e => {
+		// 	new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false).run(this.generateContext());
+		// });
 		this.columns.unshift(this.rowNumberColumn.getColumnDefinition());
 		let tableOptions: Slick.GridOptions<T> = {
 			rowHeight: this.rowHeight,
@@ -482,20 +482,20 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			actionBarContainer.style.width = ACTIONBAR_WIDTH + 'px';
 			this.container.appendChild(actionBarContainer);
 		}
-		let context: IGridActionContext = {
-			gridDataProvider: this.gridDataProvider,
-			table: this.table,
-			tableState: this.state,
-			batchId: this.resultSet.batchId,
-			resultId: this.resultSet.id
-		};
+		// let context: IGridActionContext = {
+		// 	gridDataProvider: this.gridDataProvider,
+		// 	table: this.table,
+		// 	tableState: this.state,
+		// 	batchId: this.resultSet.batchId,
+		// 	resultId: this.resultSet.id
+		// };
 		this.actionBar = new ActionBar(actionBarContainer, {
-			orientation: actionsOrientation, context: context
+			orientation: actionsOrientation, context: {}
 		});
 		// update context before we run an action
-		this.selectionModel.onSelectedRangesChanged.subscribe(e => {
-			this.actionBar.context = this.generateContext();
-		});
+		// this.selectionModel.onSelectedRangesChanged.subscribe(e => {
+		// 	this.actionBar.context = this.generateContext();
+		// });
 		this.rebuildActionBar();
 
 		this.selectionModel.onSelectedRangesChanged.subscribe(e => {
@@ -596,17 +596,17 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this._onDidChange.fire(undefined);
 	}
 
-	private generateContext(cell?: Slick.Cell): IGridActionContext {
-		const selection = this.selectionModel.getSelectedRanges();
-		return <IGridActionContext>{
-			cell,
-			selection,
-			gridDataProvider: this.gridDataProvider,
-			table: this.table,
-			tableState: this.state,
-			selectionModel: this.selectionModel
-		};
-	}
+	// private generateContext(cell?: Slick.Cell): IGridActionContext {
+	// 	const selection = this.selectionModel.getSelectedRanges();
+	// 	return <IGridActionContext>{
+	// 		cell,
+	// 		selection,
+	// 		gridDataProvider: this.gridDataProvider,
+	// 		table: this.table,
+	// 		tableState: this.state,
+	// 		selectionModel: this.selectionModel
+	// 	};
+	// }
 
 	private rebuildActionBar() {
 		let actions = this.getCurrentActions();
@@ -663,12 +663,12 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 
 	private contextMenu(e: ITableMouseEvent): void {
-		const { cell } = e;
+		// const { cell } = e;
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => e.anchor,
 			getActions: () => {
 				let actions: IAction[] = [
-					new SelectAllGridAction(),
+					// new SelectAllGridAction(),
 					new Separator()
 				];
 				let contributedActions: IAction[] = this.getContextActions();
@@ -676,23 +676,23 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					actions.push(...contributedActions);
 					actions.push(new Separator());
 				}
-				actions.push(
-					new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false),
-					new CopyResultAction(CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true)
-				);
+				// actions.push(
+				// 	new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false),
+				// 	new CopyResultAction(CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true)
+				// );
 
-				if (this.state.canBeMaximized) {
-					if (this.state.maximized) {
-						actions.splice(1, 0, new RestoreTableAction());
-					} else {
-						actions.splice(1, 0, new MaximizeTableAction());
-					}
-				}
+				// if (this.state.canBeMaximized) {
+				// 	if (this.state.maximized) {
+				// 		actions.splice(1, 0, new RestoreTableAction());
+				// 	} else {
+				// 		actions.splice(1, 0, new MaximizeTableAction());
+				// 	}
+				// }
 
 				return actions;
 			},
 			getActionsContext: () => {
-				return this.generateContext(cell);
+				return {}; //this.generateContext(cell);
 			}
 		});
 	}
@@ -749,7 +749,7 @@ class GridTable<T> extends GridTableBase<T> {
 		state: GridTableState,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IContextKeyService private contextKeyService: IContextKeyService,
+		// @IContextKeyService private contextKeyService: IContextKeyService,
 		@IEditorService editorService: IEditorService,
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService
@@ -766,35 +766,35 @@ class GridTable<T> extends GridTableBase<T> {
 
 		let actions = [];
 
-		if (this.state.canBeMaximized) {
-			if (this.state.maximized) {
-				actions.splice(1, 0, new RestoreTableAction());
-			} else {
-				actions.splice(1, 0, new MaximizeTableAction());
-			}
-		}
+		// if (this.state.canBeMaximized) {
+		// 	if (this.state.maximized) {
+		// 		actions.splice(1, 0, new RestoreTableAction());
+		// 	} else {
+		// 		actions.splice(1, 0, new MaximizeTableAction());
+		// 	}
+		// }
 
 		actions.push(
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
-			this.instantiationService.createInstance(ChartDataAction)
+			// this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+			// this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+			// this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+			// this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
+			// this.instantiationService.createInstance(ChartDataAction)
 		);
 
-		if (this.contextKeyService.getContextKeyValue('showVisualizer')) {
-			actions.push(this.instantiationService.createInstance(VisualizerDataAction, this._runner));
-		}
+		// if (this.contextKeyService.getContextKeyValue('showVisualizer')) {
+		// 	actions.push(this.instantiationService.createInstance(VisualizerDataAction, this._runner));
+		// }
 
 		return actions;
 	}
 
 	protected getContextActions(): IAction[] {
 		return [
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
+			// this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+			// this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+			// this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+			// this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
 		];
 	}
 }

@@ -9,20 +9,16 @@ import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } fro
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { IConfigurationRegistry, Extensions as ConfigExtensions, IConfigurationPropertySchema } from 'vs/platform/configuration/common/configurationRegistry';
-import { SyncActionDescriptor, MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
+import { SyncActionDescriptor/*, MenuId, MenuRegistry*/ } from 'vs/platform/actions/common/actions';
 import { KeyMod, KeyCode, KeyChord } from 'vs/base/common/keyCodes';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
-import { ContextKeyExpr, ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+// import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
-import {
-	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
-	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction
-} from 'sql/workbench/contrib/query/browser/keyboardQueryActions';
 import * as gridActions from 'sql/workbench/contrib/editData/common/gridActions';
 import * as gridCommands from 'sql/workbench/contrib/editData/browser/gridCommands';
 import * as Constants from 'sql/workbench/contrib/query/common/constants';
@@ -37,16 +33,17 @@ import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQue
 import { FileQueryEditorInputFactory, UntitledQueryEditorInputFactory, QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/common/queryInputFactory';
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
-import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/contrib/query/browser/queryActions';
-import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
-import { MssqlNodeContext } from 'sql/workbench/contrib/dataExplorer/browser/mssqlNodeContext';
-import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
-import { ManageActionContext } from 'sql/workbench/browser/actions';
-import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTreeContext';
+import { registerEditorAction } from 'vs/editor/browser/editorExtensions';
+import { RunQueryEditorAction, RunQuerySelectionEditorAction } from 'sql/workbench/contrib/query/browser/actions';
+// import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/contrib/query/browser/queryActions';
+// import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
+// import { MssqlNodeContext } from 'sql/workbench/contrib/dataExplorer/browser/mssqlNodeContext';
+// import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
+// import { ManageActionContext } from 'sql/workbench/browser/actions';
+// import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTreeContext';
 
-export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.queryEditorVisibleId);
-export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
-export const ResultsMessagesFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsMessagesFocussedId));
+export const ResultsGridFocusCondition = ContextKeyExpr.and(queryContext.ResultsVisible, queryContext.ResultsGridFocused);
+export const ResultsMessagesFocusCondition = ContextKeyExpr.and(queryContext.ResultsVisible, queryContext.ResultsMessagesFocused);
 
 Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
 	.registerEditorInputFactory(FileQueryEditorInput.ID, FileQueryEditorInputFactory);
@@ -65,132 +62,135 @@ Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 
 const actionRegistry = <IWorkbenchActionRegistry>Registry.as(ActionExtensions.WorkbenchActions);
 
-new NewQueryTask().registerTask();
+registerEditorAction(RunQueryEditorAction);
+registerEditorAction(RunQuerySelectionEditorAction);
 
-MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
-	group: '0_query',
-	order: 1,
-	command: {
-		id: OE_NEW_QUERY_ACTION_ID,
-		title: localize('newQuery', "New Query")
-	},
-	when: ContextKeyExpr.or(ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Server')), ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Database')))
-});
+// new NewQueryTask().registerTask();
 
-// New Query
-MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
-	group: '0_query',
-	order: 1,
-	command: {
-		id: DE_NEW_QUERY_COMMAND_ID,
-		title: localize('newQuery', "New Query")
-	},
-	when: MssqlNodeContext.IsDatabaseOrServer
-});
+// MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
+// 	group: '0_query',
+// 	order: 1,
+// 	command: {
+// 		id: OE_NEW_QUERY_ACTION_ID,
+// 		title: localize('newQuery', "New Query")
+// 	},
+// 	when: ContextKeyExpr.or(ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Server')), ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Database')))
+// });
 
-const ExplorerNewQueryActionID = 'explorer.query';
-CommandsRegistry.registerCommand(ExplorerNewQueryActionID, (accessor, context: ManageActionContext) => {
-	const commandService = accessor.get(ICommandService);
-	return commandService.executeCommand(NewQueryTask.ID, context.profile);
-});
+// // New Query
+// MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+// 	group: '0_query',
+// 	order: 1,
+// 	command: {
+// 		id: DE_NEW_QUERY_COMMAND_ID,
+// 		title: localize('newQuery', "New Query")
+// 	},
+// 	when: MssqlNodeContext.IsDatabaseOrServer
+// });
 
-MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
-	command: {
-		id: ExplorerNewQueryActionID,
-		title: NewQueryTask.LABEL
-	},
-	when: ItemContextKey.ItemType.isEqualTo('database'),
-	order: 1
-});
+// const ExplorerNewQueryActionID = 'explorer.query';
+// CommandsRegistry.registerCommand(ExplorerNewQueryActionID, (accessor, context: ManageActionContext) => {
+// 	const commandService = accessor.get(ICommandService);
+// 	return commandService.executeCommand(NewQueryTask.ID, context.profile);
+// });
+
+// MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+// 	command: {
+// 		id: ExplorerNewQueryActionID,
+// 		title: NewQueryTask.LABEL
+// 	},
+// 	when: ItemContextKey.ItemType.isEqualTo('database'),
+// 	order: 1
+// });
 
 // Query Actions
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		RunQueryKeyboardAction,
-		RunQueryKeyboardAction.ID,
-		RunQueryKeyboardAction.LABEL,
-		{ primary: KeyCode.F5 }
-	),
-	RunQueryKeyboardAction.LABEL
-);
+// actionRegistry.registerWorkbenchAction(
+// 	SyncActionDescriptor.create(
+// 		RunQueryKeyboardAction,
+// 		RunQueryKeyboardAction.ID,
+// 		RunQueryKeyboardAction.LABEL,
+// 		{ primary: KeyCode.F5 }
+// 	),
+// 	RunQueryKeyboardAction.LABEL
+// );
 
 // Only show Run Query if the active editor is a query editor.
-MenuRegistry.appendMenuItem(MenuId.TouchBarContext, {
-	command: { id: RunQueryKeyboardAction.ID, title: RunQueryKeyboardAction.LABEL },
-	group: 'query',
-	when: ContextKeyEqualsExpr.create('activeEditor', 'workbench.editor.queryEditor')
-});
+// MenuRegistry.appendMenuItem(MenuId.TouchBarContext, {
+// 	command: { id: RunQueryKeyboardAction.ID, title: RunQueryKeyboardAction.LABEL },
+// 	group: 'query',
+// 	when: ContextKeyEqualsExpr.create('activeEditor', 'workbench.editor.queryEditor')
+// });
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		RunCurrentQueryKeyboardAction,
-		RunCurrentQueryKeyboardAction.ID,
-		RunCurrentQueryKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyCode.F5 }
-	),
-	RunCurrentQueryKeyboardAction.LABEL
-);
+// actionRegistry.registerWorkbenchAction(
+// 	SyncActionDescriptor.create(
+// 		RunCurrentQueryKeyboardAction,
+// 		RunCurrentQueryKeyboardAction.ID,
+// 		RunCurrentQueryKeyboardAction.LABEL,
+// 		{ primary: KeyMod.CtrlCmd | KeyCode.F5 }
+// 	),
+// 	RunCurrentQueryKeyboardAction.LABEL
+// );
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		RunCurrentQueryWithActualPlanKeyboardAction,
-		RunCurrentQueryWithActualPlanKeyboardAction.ID,
-		RunCurrentQueryWithActualPlanKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_M }
-	),
-	RunCurrentQueryWithActualPlanKeyboardAction.LABEL
-);
+// actionRegistry.registerWorkbenchAction(
+// 	SyncActionDescriptor.create(
+// 		RunCurrentQueryWithActualPlanKeyboardAction,
+// 		RunCurrentQueryWithActualPlanKeyboardAction.ID,
+// 		RunCurrentQueryWithActualPlanKeyboardAction.LABEL,
+// 		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_M }
+// 	),
+// 	RunCurrentQueryWithActualPlanKeyboardAction.LABEL
+// );
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		CancelQueryKeyboardAction,
-		CancelQueryKeyboardAction.ID,
-		CancelQueryKeyboardAction.LABEL,
-		{ primary: KeyMod.Alt | KeyCode.PauseBreak }
-	),
-	CancelQueryKeyboardAction.LABEL
-);
+// actionRegistry.registerWorkbenchAction(
+// 	SyncActionDescriptor.create(
+// 		CancelQueryKeyboardAction,
+// 		CancelQueryKeyboardAction.ID,
+// 		CancelQueryKeyboardAction.LABEL,
+// 		{ primary: KeyMod.Alt | KeyCode.PauseBreak }
+// 	),
+// 	CancelQueryKeyboardAction.LABEL
+// );
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		RefreshIntellisenseKeyboardAction,
-		RefreshIntellisenseKeyboardAction.ID,
-		RefreshIntellisenseKeyboardAction.LABEL
-	),
-	RefreshIntellisenseKeyboardAction.LABEL
-);
+// actionRegistry.registerWorkbenchAction(
+// 	SyncActionDescriptor.create(
+// 		RefreshIntellisenseKeyboardAction,
+// 		RefreshIntellisenseKeyboardAction.ID,
+// 		RefreshIntellisenseKeyboardAction.LABEL
+// 	),
+// 	RefreshIntellisenseKeyboardAction.LABEL
+// );
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		FocusOnCurrentQueryKeyboardAction,
-		FocusOnCurrentQueryKeyboardAction.ID,
-		FocusOnCurrentQueryKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_O }
-	),
-	FocusOnCurrentQueryKeyboardAction.LABEL
-);
+// actionRegistry.registerWorkbenchAction(
+// 	SyncActionDescriptor.create(
+// 		FocusOnCurrentQueryKeyboardAction,
+// 		FocusOnCurrentQueryKeyboardAction.ID,
+// 		FocusOnCurrentQueryKeyboardAction.LABEL,
+// 		{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_O }
+// 	),
+// 	FocusOnCurrentQueryKeyboardAction.LABEL
+// );
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		ParseSyntaxAction,
-		ParseSyntaxAction.ID,
-		ParseSyntaxAction.LABEL
-	),
-	ParseSyntaxAction.LABEL
-);
+// actionRegistry.registerWorkbenchAction(
+// 	SyncActionDescriptor.create(
+// 		ParseSyntaxAction,
+// 		ParseSyntaxAction.ID,
+// 		ParseSyntaxAction.LABEL
+// 	),
+// 	ParseSyntaxAction.LABEL
+// );
 
 // Grid actions
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		ToggleQueryResultsKeyboardAction,
-		ToggleQueryResultsKeyboardAction.ID,
-		ToggleQueryResultsKeyboardAction.LABEL,
-		{ primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_R },
-		QueryEditorVisibleCondition
-	),
-	ToggleQueryResultsKeyboardAction.LABEL
-);
+// actionRegistry.registerWorkbenchAction(
+// 	SyncActionDescriptor.create(
+// 		ToggleQueryResultsKeyboardAction,
+// 		ToggleQueryResultsKeyboardAction.ID,
+// 		ToggleQueryResultsKeyboardAction.LABEL,
+// 		{ primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_R },
+// 		QueryEditorVisibleCondition
+// 	),
+// 	ToggleQueryResultsKeyboardAction.LABEL
+// );
 
 // Register Flavor Action
 actionRegistry.registerWorkbenchAction(
@@ -282,29 +282,29 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	handler: gridCommands.goToNextGrid
 });
 
-KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: gridActions.TOGGLERESULTS_ID,
-	weight: KeybindingWeight.EditorContrib,
-	when: QueryEditorVisibleCondition,
-	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_R,
-	handler: gridCommands.toggleResultsPane
-});
+// KeybindingsRegistry.registerCommandAndKeybindingRule({
+// 	id: gridActions.TOGGLERESULTS_ID,
+// 	weight: KeybindingWeight.EditorContrib,
+// 	when: QueryEditorVisibleCondition,
+// 	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_R,
+// 	handler: gridCommands.toggleResultsPane
+// });
 
-KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: gridActions.TOGGLEMESSAGES_ID,
-	weight: KeybindingWeight.EditorContrib,
-	when: QueryEditorVisibleCondition,
-	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_Y,
-	handler: gridCommands.toggleMessagePane
-});
+// KeybindingsRegistry.registerCommandAndKeybindingRule({
+// 	id: gridActions.TOGGLEMESSAGES_ID,
+// 	weight: KeybindingWeight.EditorContrib,
+// 	when: QueryEditorVisibleCondition,
+// 	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_Y,
+// 	handler: gridCommands.toggleMessagePane
+// });
 
-KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: gridActions.GOTONEXTQUERYOUTPUTTAB_ID,
-	weight: KeybindingWeight.EditorContrib,
-	when: QueryEditorVisibleCondition,
-	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_P,
-	handler: gridCommands.goToNextQueryOutputTab
-});
+// KeybindingsRegistry.registerCommandAndKeybindingRule({
+// 	id: gridActions.GOTONEXTQUERYOUTPUTTAB_ID,
+// 	weight: KeybindingWeight.EditorContrib,
+// 	when: QueryEditorVisibleCondition,
+// 	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_P,
+// 	handler: gridCommands.goToNextQueryOutputTab
+// });
 
 // Intellisense and other configuration options
 const registryProperties: { [path: string]: IConfigurationPropertySchema; } = {
@@ -527,36 +527,36 @@ const registryProperties: { [path: string]: IConfigurationPropertySchema; } = {
 };
 
 // Setup keybindings
-const initialShortcuts = [
-	{ name: 'sp_help', primary: KeyMod.Alt + KeyCode.F2 },
-	// Note: using Ctrl+Shift+N since Ctrl+N is used for "open editor at index" by default. This means it's different from SSMS
-	{ name: 'sp_who', primary: KeyMod.WinCtrl + KeyMod.Shift + KeyCode.KEY_1 },
-	{ name: 'sp_lock', primary: KeyMod.WinCtrl + KeyMod.Shift + KeyCode.KEY_2 }
-];
+// const initialShortcuts = [
+// 	{ name: 'sp_help', primary: KeyMod.Alt + KeyCode.F2 },
+// 	// Note: using Ctrl+Shift+N since Ctrl+N is used for "open editor at index" by default. This means it's different from SSMS
+// 	{ name: 'sp_who', primary: KeyMod.WinCtrl + KeyMod.Shift + KeyCode.KEY_1 },
+// 	{ name: 'sp_lock', primary: KeyMod.WinCtrl + KeyMod.Shift + KeyCode.KEY_2 }
+// ];
 
-for (let i = 0; i < 9; i++) {
-	const queryIndex = i + 1;
-	let settingKey = `sql.query.shortcut${queryIndex}`;
-	let defaultVal = i < initialShortcuts.length ? initialShortcuts[i].name : '';
-	let defaultPrimary = i < initialShortcuts.length ? initialShortcuts[i].primary : null;
+// for (let i = 0; i < 9; i++) {
+// 	const queryIndex = i + 1;
+// 	let settingKey = `sql.query.shortcut${queryIndex}`;
+// 	let defaultVal = i < initialShortcuts.length ? initialShortcuts[i].name : '';
+// 	let defaultPrimary = i < initialShortcuts.length ? initialShortcuts[i].primary : null;
 
-	KeybindingsRegistry.registerCommandAndKeybindingRule({
-		id: `workbench.action.query.shortcut${queryIndex}`,
-		weight: KeybindingWeight.WorkbenchContrib,
-		when: QueryEditorVisibleCondition,
-		primary: defaultPrimary,
-		handler: accessor => {
-			accessor.get(IInstantiationService).createInstance(RunQueryShortcutAction).run(queryIndex);
-		}
-	});
-	registryProperties[settingKey] = {
-		'type': 'string',
-		'default': defaultVal,
-		'description': localize('queryShortcutDescription',
-			"Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call. Any selected text in the query editor will be passed as a parameter",
-			queryIndex)
-	};
-}
+// 	KeybindingsRegistry.registerCommandAndKeybindingRule({
+// 		id: `workbench.action.query.shortcut${queryIndex}`,
+// 		weight: KeybindingWeight.WorkbenchContrib,
+// 		when: queryContext.QueryEditorVisible,
+// 		primary: defaultPrimary,
+// 		handler: accessor => {
+// 			accessor.get(IInstantiationService).createInstance(RunQueryShortcutAction).run(queryIndex);
+// 		}
+// 	});
+// 	registryProperties[settingKey] = {
+// 		'type': 'string',
+// 		'default': defaultVal,
+// 		'description': localize('queryShortcutDescription',
+// 			"Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call. Any selected text in the query editor will be passed as a parameter",
+// 			queryIndex)
+// 	};
+// }
 
 // Register the query-related configuration options
 const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);

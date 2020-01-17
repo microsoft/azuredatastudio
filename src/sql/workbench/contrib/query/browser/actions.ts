@@ -3,7 +3,51 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Action } from 'vs/base/common/actions';
+import { localize } from 'vs/nls';
+import { EditorAction } from 'vs/editor/browser/editorExtensions';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { QueryEditorVisible } from 'sql/workbench/contrib/query/common/queryContext';
+
+export class RunQueryEditorAction extends EditorAction {
+
+	constructor() {
+		super({
+			id: 'workbench.queryEditor.runQuery',
+			label: localize('workbench.queryEditor.runQuery', "Run Query"),
+			alias: 'Run Query',
+			precondition: QueryEditorVisible,
+			kbOpts: { primary: KeyCode.F5, weight: KeybindingWeight.EditorContrib },
+			contextMenuOpts: { group: '0_query', order: 1 }
+		});
+	}
+
+	public run(accessor: ServicesAccessor, editor: ICodeEditor): void | Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+}
+
+export class RunQuerySelectionEditorAction extends EditorAction {
+
+	constructor() {
+		super({
+			id: 'workbench.queryEditor.runQuerySelection',
+			label: localize('workbench.queryEditor.runQuerySelection', "Run Query Selection"),
+			alias: 'Run Query Selection',
+			precondition: QueryEditorVisible,
+			kbOpts: { primary: KeyCode.F5, weight: KeybindingWeight.EditorContrib },
+			contextMenuOpts: { group: '0_query', order: 2 }
+		});
+	}
+
+	public run(accessor: ServicesAccessor, editor: ICodeEditor): void | Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+}
+
+ /*
 import { localize } from 'vs/nls';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
@@ -249,3 +293,4 @@ export class VisualizerDataAction extends Action {
 		return Promise.resolve(true);
 	}
 }
+*/

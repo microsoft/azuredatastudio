@@ -16,7 +16,7 @@ import * as Utils from 'sql/platform/connection/common/utils';
 import { DataService } from 'sql/workbench/contrib/grid/common/dataService';
 import * as actions from 'sql/workbench/contrib/editData/common/gridActions';
 import * as GridContentEvents from 'sql/workbench/contrib/grid/common/gridContentEvents';
-import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocussedContext, QueryEditorVisibleContext } from 'sql/workbench/contrib/query/common/queryContext';
+import { ResultsVisible, ResultsGridFocused, ResultsMessagesFocused } from 'sql/workbench/contrib/query/common/queryContext';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 
@@ -61,7 +61,6 @@ export abstract class GridParentComponent {
 	private resultsVisibleContextKey: IContextKey<boolean>;
 	private gridFocussedContextKey: IContextKey<boolean>;
 	private messagesFocussedContextKey: IContextKey<boolean>;
-	private queryEditorVisible: IContextKey<boolean>;
 
 	// All datasets
 	// Place holder data sets to buffer between data sets and rendered data sets
@@ -181,16 +180,13 @@ export abstract class GridParentComponent {
 
 	private bindKeys(contextKeyService: IContextKeyService): void {
 		if (contextKeyService) {
-			this.queryEditorVisible = QueryEditorVisibleContext.bindTo(contextKeyService);
-			this.queryEditorVisible.set(true);
-
 			let gridContextKeyService = this.contextKeyService.createScoped(this._el.nativeElement);
 			this.toDispose.add(gridContextKeyService);
-			this.resultsVisibleContextKey = ResultsVisibleContext.bindTo(gridContextKeyService);
+			this.resultsVisibleContextKey = ResultsVisible.bindTo(gridContextKeyService);
 			this.resultsVisibleContextKey.set(true);
 
-			this.gridFocussedContextKey = ResultsGridFocussedContext.bindTo(gridContextKeyService);
-			this.messagesFocussedContextKey = ResultsMessagesFocussedContext.bindTo(gridContextKeyService);
+			this.gridFocussedContextKey = ResultsGridFocused.bindTo(gridContextKeyService);
+			this.messagesFocussedContextKey = ResultsMessagesFocused.bindTo(gridContextKeyService);
 		}
 	}
 

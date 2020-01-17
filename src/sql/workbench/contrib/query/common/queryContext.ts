@@ -4,16 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { ActiveEditorContext } from 'vs/workbench/common/editor';
+import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 
-/**
- * Context Keys to use with keybindings for the results grid and messages used in query and edit data views
- */
-export const queryEditorVisibleId = 'queryEditorVisible';
-export const resultsVisibleId = 'resultsVisible';
-export const resultsGridFocussedId = 'resultsGridFocussed';
-export const resultsMessagesFocussedId = 'resultsMessagesFocussed';
-
-export const QueryEditorVisibleContext = new RawContextKey<boolean>(queryEditorVisibleId, false);
-export const ResultsVisibleContext = new RawContextKey<boolean>(resultsVisibleId, false);
-export const ResultsGridFocussedContext = new RawContextKey<boolean>(resultsGridFocussedId, false);
-export const ResultsMessagesFocussedContext = new RawContextKey<boolean>(resultsMessagesFocussedId, false);
+export const QueryEditorVisible = ActiveEditorContext.isEqualTo(QueryEditor.ID);
+export const ResultsVisible = new RawContextKey<boolean>('resultsVisible', false);
+export const ResultsGridFocused = new RawContextKey<boolean>('resultsGridFocused', false);
+export const ResultsMessagesFocused = new RawContextKey<boolean>('resultsMessagesFocused', false);

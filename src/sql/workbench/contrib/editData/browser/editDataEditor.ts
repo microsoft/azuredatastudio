@@ -17,7 +17,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { EditDataInput } from 'sql/workbench/contrib/editData/browser/editDataInput';
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
+// import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
@@ -28,7 +28,7 @@ import {
 } from 'sql/workbench/contrib/editData/browser/editDataActions';
 import { TextResourceEditor } from 'vs/workbench/browser/parts/editor/textResourceEditor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
-import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKey/*, IContextKeyService*/ } from 'vs/platform/contextkey/common/contextkey';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { IFlexibleSash, HorizontalFlexibleSash } from 'sql/workbench/contrib/query/browser/flexibleSash';
 import { EditDataResultsEditor } from 'sql/workbench/contrib/editData/browser/editDataResultsEditor';
@@ -76,14 +76,9 @@ export class EditDataEditor extends BaseEditor {
 		@IEditorService private _editorService: IEditorService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
-		@IContextKeyService contextKeyService: IContextKeyService,
 		@IStorageService storageService: IStorageService
 	) {
 		super(EditDataEditor.ID, _telemetryService, themeService, storageService);
-
-		if (contextKeyService) {
-			this._queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
-		}
 
 		if (_editorService) {
 			_editorService.overrideOpenEditor((editor, options, group) => {
