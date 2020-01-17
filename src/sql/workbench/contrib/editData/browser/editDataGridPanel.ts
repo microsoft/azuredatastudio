@@ -794,7 +794,6 @@ export class EditDataGridPanel extends GridParentComponent {
 				showHeader: true,
 				rowHeight: this.rowHeight,
 				defaultColumnWidth: 120,
-				defaultFormatter: undefined,
 				editable: this.enableEditing,
 				autoEdit: this.enableEditing,
 				enableAddRow: false, // TODO change when we support enableAddRow
