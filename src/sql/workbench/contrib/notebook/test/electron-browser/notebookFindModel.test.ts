@@ -112,7 +112,7 @@ suite('Notebook Find Model', function (): void {
 		let notebookFindModel = new NotebookFindModel(model);
 		await notebookFindModel.find('markdown', false, false, max_find_count);
 
-		assert(notebookFindModel.findMatches, new Error('Find in notebook failed.'));
+		assert(notebookFindModel.findMatches, 'Find in notebook failed.');
 		assert.equal(notebookFindModel.findMatches.length, 2, 'Find couldnt find all occurances');
 	});
 
@@ -189,12 +189,12 @@ suite('Notebook Find Model', function (): void {
 		assert.equal(notebookFindModel.findMatches.length, 3, 'Find failed');
 	});
 
-	test('Should find results with matching case in the notebook', async function (): Promise<void> {
+	test('Should find results correctly with & without matching case selection', async function (): Promise<void> {
 		//initialize find
 		let notebookFindModel = new NotebookFindModel(model);
 		await notebookFindModel.find('insert', false, false, max_find_count);
 
-		assert(notebookFindModel.findMatches, new Error('Find in notebook failed.'));
+		assert(notebookFindModel.findMatches, 'Find in notebook failed.');
 		assert.equal(notebookFindModel.findMatches.length, 3, 'Find couldnt find all occurances');
 
 		await notebookFindModel.find('insert', true, false, max_find_count);
