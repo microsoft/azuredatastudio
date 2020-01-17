@@ -7,8 +7,10 @@ import { promises as fs } from 'fs';
 import * as constants from '../../common/constants';
 import { SqlConnectionDataSource } from './sqlConnectionStringSource';
 
-export class DataSource {
+export abstract class DataSource {
 	public name: string;
+	public abstract get type(): string;
+	public abstract get friendlyName(): string;
 
 	constructor(name: string) {
 		this.name = name;

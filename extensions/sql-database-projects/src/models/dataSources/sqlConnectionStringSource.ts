@@ -13,6 +13,14 @@ export class SqlConnectionDataSource extends DataSource {
 		return 'sql_connection_string';
 	}
 
+	public get type(): string {
+		return SqlConnectionDataSource.type;
+	}
+
+	public get friendlyName(): string {
+		return 'SQL connection string';
+	}
+
 	constructor(name: string, connectionString: string) {
 		super(name);
 

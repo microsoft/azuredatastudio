@@ -5,19 +5,25 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { BaseProjectTreeItem } from './baseTreeItem';
+import { BaseProjectTreeItem, MessageTreeItem } from './baseTreeItem';
 import * as constants from '../../common/constants';
 import { ProjectRootTreeItem } from './projectTreeItem';
+import { DataSource } from '../dataSources/dataSources';
+import { SqlConnectionDataSource } from '../dataSources/sqlConnectionStringSource';
 
 export class DataSourcesTreeItem extends BaseProjectTreeItem {
 	private dataSources: DataSourceTreeItem[] = [];
 
 	constructor(project: ProjectRootTreeItem) {
 		super(vscode.Uri.file(path.join(project.uri.path, constants.dataSourcesNodeName)), project);
+
+		this.construct();
 	}
 
-	public createDataSource(json: string) {
-		this.dataSources.push(constructDataSourceTreeItem(json, this));
+	private construct() {
+		for (const dataSource of (this.parent as ProjectRootTreeItem).project.dataSources) {
+			this.dataSources.push(constructDataSourceTreeItem(dataSource, this));
+		}
 	}
 
 	public get children(): BaseProjectTreeItem[] {
@@ -32,24 +38,38 @@ export class DataSourcesTreeItem extends BaseProjectTreeItem {
 abstract class DataSourceTreeItem extends BaseProjectTreeItem { }
 
 export class SqlConnectionDataSourceTreeItem extends DataSourceTreeItem {
-	constructor(json: string, dataSourcesNode: DataSourcesTreeItem) {
-		const name = json; // parse placeholder
+	private dataSource: SqlConnectionDataSource;
 
-		super(vscode.Uri.parse(path.join(dataSourcesNode.uri.path, name)), dataSourcesNode);
+	constructor(dataSource: SqlConnectionDataSource, dataSourcesNode: DataSourcesTreeItem) {
+		super(vscode.Uri.file(path.join(dataSourcesNode.uri.path, dataSource.name)), dataSourcesNode);
+		this.dataSource = dataSource;
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		return new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.None);
+		let item = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Collapsed);
+		item.label = `${this.dataSource.name} (${this.dataSource.friendlyName})`;
+
+		return item;
 	}
 
 	public get children(): BaseProjectTreeItem[] {
-		return [];
+		const result: MessageTreeItem[] = [];
+
+		for (const comp of Object.keys(this.dataSource.connectionStringComponents).sort()) {
+			result.push(new MessageTreeItem(`${comp}: ${this.dataSource.connectionStringComponents[comp]}`, this));
+		}
+
+		return result;
 	}
 }
 
 // TODO: should this be constructed by the treeItem or by the dataSource?
-export function constructDataSourceTreeItem(json: string, dataSourcesNode: DataSourcesTreeItem): DataSourceTreeItem {
-	// eventual switch statement
-
-	return new SqlConnectionDataSourceTreeItem(json, dataSourcesNode);
+export function constructDataSourceTreeItem(dataSource: DataSource, dataSourcesNode: DataSourcesTreeItem): DataSourceTreeItem {
+	switch (dataSource.type) {
+		case SqlConnectionDataSource.type:
+			return new SqlConnectionDataSourceTreeItem(dataSource as SqlConnectionDataSource, dataSourcesNode);
+			break;
+		default:
+			throw new Error('Unknown data source type');
+	}
 }
