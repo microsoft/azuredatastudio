@@ -529,7 +529,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		let index: number;
 		let start: number;
 		let end: number;
-		let wholeWordRegex = new RegExp(`\b${exp}\b`);
+		let wholeWordRegex = new RegExp(`\\b${exp}\\b`);
 		if (cellVal) {
 
 			if (typeof cellVal === 'string') {
@@ -538,7 +538,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 				if (!matchCase) {
 					cellValFormatted = cellVal.toLocaleLowerCase();
 					exp = exp.toLocaleLowerCase();
-					wholeWordRegex = new RegExp(`\b${exp}\b`);
+					wholeWordRegex = new RegExp(`\\b${exp}\\b`);
 				}
 				while (cellValFormatted.substr(index).indexOf(exp) > -1) {
 					if (wholeWord) {
@@ -561,7 +561,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 					if (!matchCase) {
 						cellValFormatted = cellValFormatted.toLocaleLowerCase();
 						exp = exp.toLocaleLowerCase();
-						wholeWordRegex = new RegExp(`\b${exp}\b`);
+						wholeWordRegex = new RegExp(`\\b${exp}\\b`);
 					}
 					while (cellValFormatted.substr(index).indexOf(exp) > -1) {
 						if (wholeWord) {
