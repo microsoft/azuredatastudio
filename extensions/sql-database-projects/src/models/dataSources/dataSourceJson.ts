@@ -11,5 +11,6 @@ interface DataSourceFileJson {
 interface DataSourceJson {
 	name: string;
 	type: string;
+	version: string;
 	data: string;
 }

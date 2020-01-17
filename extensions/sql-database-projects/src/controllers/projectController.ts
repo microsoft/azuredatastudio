@@ -6,6 +6,9 @@
 import * as vscode from 'vscode';
 import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
+import * as path from 'path';
+import * as constants from '../common/constants';
+import * as dataSources from '../models/dataSources/dataSources';
 
 export class ProjectsController {
 	private projectTreeViewProvider: SqlDatabaseProjectTreeViewProvider;
@@ -20,11 +23,14 @@ export class ProjectsController {
 		console.log('Loading project: ' + projectFile.fsPath);
 
 		// Read project file
-		const newProject = new Project(projectFile);
+		const newProject = new Project(projectFile.fsPath);
 		await newProject.readProjFile();
 		this.projects.push(newProject);
 
 		// Read datasources.json (if present)
+		let dataSourcesFilePath = path.join(path.dirname(projectFile.fsPath), constants.dataSourcesFileName);
+
+		newProject.dataSources = await dataSources.load(dataSourcesFilePath);
 
 		this.refreshProjectsTree();
 	}

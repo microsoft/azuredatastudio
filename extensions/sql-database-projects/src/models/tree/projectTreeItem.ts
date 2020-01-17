@@ -17,7 +17,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	project: Project;
 
 	constructor(project: Project) {
-		super(vscode.Uri.parse(path.basename(project.projectFile.fsPath)), undefined);
+		super(vscode.Uri.parse(path.basename(project.projectFile)), undefined);
 
 		this.project = project;
 		this.dataSourceNode = new DataSourcesTreeItem(this);
@@ -65,11 +65,11 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	}
 
 	public get fileSystemUri(): vscode.Uri {
-		return vscode.Uri.file(path.dirname(this.project.projectFile.fsPath));
+		return vscode.Uri.file(path.dirname(this.project.projectFile));
 	}
 
 	private getEntryParentNode(entry: ProjectEntry): fileTree.FolderNode | ProjectRootTreeItem {
-		const relativePathParts = utils.trimUri(this.project.projectFile, entry.uri).trimChars('/').split('/').slice(0, -1); // remove the last part because we only care about the parent
+		const relativePathParts = utils.trimUri(vscode.Uri.file(this.project.projectFile), entry.uri).trimChars('/').split('/').slice(0, -1); // remove the last part because we only care about the parent
 
 		if (relativePathParts.length === 0) {
 			return this; // if nothing left after trimming the entry itself, must been root

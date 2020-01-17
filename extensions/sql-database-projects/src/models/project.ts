@@ -7,17 +7,19 @@ import * as vscode from 'vscode';
 import * as xml2js from 'xml2js';
 import * as path from 'path';
 import { promises as fs } from 'fs';
+import { DataSource } from './dataSources/dataSources';
 
 export class Project {
-	public projectFile: vscode.Uri;
+	public projectFile: string;
 	public files: ProjectEntry[] = [];
+	public dataSources: DataSource[] = [];
 
-	constructor(projectFile: vscode.Uri) {
-		this.projectFile = projectFile;
+	constructor(projectFilePath: string) {
+		this.projectFile = projectFilePath;
 	}
 
 	public async readProjFile() {
-		let projFileContents = await fs.readFile(this.projectFile.fsPath);
+		let projFileContents = await fs.readFile(this.projectFile);
 
 		const parser = new xml2js.Parser({
 			explicitArray: true,
@@ -53,7 +55,7 @@ export class Project {
 	}
 
 	private createProjectEntry(relativePath: string, entryType: EntryType): ProjectEntry {
-		return new ProjectEntry(vscode.Uri.file(path.join(this.projectFile.fsPath, relativePath)), entryType);
+		return new ProjectEntry(vscode.Uri.file(path.join(this.projectFile, relativePath)), entryType);
 	}
 }
 

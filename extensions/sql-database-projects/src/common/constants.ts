@@ -22,3 +22,5 @@ export const foundDataSourcesFile = localize('foundDataSourcesFile', "Found {0}:
 export const multipleSqlProjFiles = localize('multipleSqlProjFilesSelected', "Multiple .sqlproj files selected; please select only one.");
 export const noSqlProjFiles = localize('noSqlProjFilesSelected', "No .sqlproj file selected; please select one.");
 export const noDataSourcesFile = localize('noDataSourcesFile', "No {0} found", dataSourcesFileName);
+export const missingVersion = localize('missingVersion', "Missing 'version' entry in {0}", dataSourcesFileName);
+export const unrecognizedDataSourcesVersion = localize('unrecognizedDataSourcesVersion', "Unrecognized version: ");
