@@ -155,7 +155,7 @@ export class SaveImageAction extends Action {
 		if (context.insight instanceof Graph) {
 			let fileFilters = new Array<FileFilter>({ extensions: ['png'], name: localize('resultsSerializer.saveAsFileExtensionPNGTitle', "PNG") });
 
-			const filePath = await this.fileDialogService.pickFileToSave({ filters: fileFilters });
+			const filePath = await this.fileDialogService.showSaveDialog({ filters: fileFilters });
 			const data = (<Graph>context.insight).getCanvasData();
 			if (!data) {
 				this.notificationService.error(localize('chartNotFound', "Could not find chart to save"));
