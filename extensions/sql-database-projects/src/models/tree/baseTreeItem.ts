@@ -33,8 +33,8 @@ export abstract class BaseProjectTreeItem {
 export class MessageTreeItem extends BaseProjectTreeItem {
 	private message: string;
 
-	constructor(message: string) {
-		super(vscode.Uri.parse(path.join('message', message)), undefined);
+	constructor(message: string, parent?: BaseProjectTreeItem) {
+		super(vscode.Uri.file(path.join(parent?.uri.path ?? 'Message', message)), parent);
 		this.message = message;
 	}
 
