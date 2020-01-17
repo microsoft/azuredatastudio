@@ -46,14 +46,27 @@ export class AzureTerminalService implements IAzureTerminalService {
 		}
 
 		const consoleUri = provisionResult.properties.uri;
-		return this.createTerminal(consoleUri, token);
+		return this.createTerminal(consoleUri, token, account.displayInfo.displayName);
 	}
 
 
-	private async createTerminal(provisionedUri: string, token: string): Promise<void> {
-		const azureTerminal = new AzureTerminal(provisionedUri, token);
+	private async createTerminal(provisionedUri: string, token: string, accountDisplayName: string): Promise<void> {
+		let shell = await vscode.window.showQuickPick(['Bash', 'PowerShell'], { canPickMany: false });
+		if (!shell) {
+			vscode.window.showErrorMessage(localize('azure.shellTypeRequired', "You must pick a shell type"));
+			return;
+		}
+
+		const terminalName = localize('azure.cloudConsole', "Azure Cloud Shell") + ` ${shell} (${accountDisplayName})`;
+
+		if (shell === 'PowerShell') {
+			shell = 'pwsh';
+		}
+		shell = shell.toLowerCase();
+
+		const azureTerminal = new AzureTerminal(provisionedUri, token, shell);
 		const terminal = vscode.window.createTerminal({
-			name: localize('azure.cloudConsole', "Azure Cloud Shell"),
+			name: terminalName,
 			pty: azureTerminal
 		});
 
@@ -71,9 +84,8 @@ class AzureTerminal implements vscode.Pseudoterminal {
 
 	private socket: WS;
 	private terminalDimensions: vscode.TerminalDimensions;
-	private shell: string;
 
-	constructor(private consoleUri: string, private token: string) {
+	constructor(private consoleUri: string, private token: string, private shell: string) {
 		this.writeEmitter = new vscode.EventEmitter<string>();
 		this.onDidWrite = this.writeEmitter.event;
 	}
@@ -83,18 +95,6 @@ class AzureTerminal implements vscode.Pseudoterminal {
 	}
 
 	async open(initialDimensions: vscode.TerminalDimensions): Promise<void> {
-		this.shell = await vscode.window.showQuickPick(['Bash', 'PowerShell'], { canPickMany: false });
-		if (!this.shell) {
-			vscode.window.showErrorMessage(localize('azure.shellTypeRequired', "You must pick a shell type"));
-			return;
-		}
-
-		if (this.shell === 'PowerShell') {
-			this.shell = 'pwsh';
-		}
-
-		this.shell = this.shell.toLowerCase();
-
 		return this.resetTerminalSize(initialDimensions);
 	}
 
