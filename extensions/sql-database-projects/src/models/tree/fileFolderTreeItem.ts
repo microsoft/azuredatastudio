@@ -49,7 +49,7 @@ export class FileNode extends BaseProjectTreeItem {
 }
 
 function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootTreeItem): vscode.Uri {
-	const projBaseDir = path.dirname(projectNode.project.projectFile.fsPath);
+	const projBaseDir = path.dirname(projectNode.project.projectFile);
 	let localUri = '';
 
 	if (fileSystemUri.fsPath.startsWith(projBaseDir)) {
