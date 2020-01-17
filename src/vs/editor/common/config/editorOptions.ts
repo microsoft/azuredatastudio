@@ -1638,10 +1638,6 @@ export interface EditorLayoutInfo {
 	 * The width of the glyph margin.
 	 */
 	readonly glyphMarginWidth: number;
-	/**
-	 * The height of the glyph margin.
-	 */
-	readonly glyphMarginHeight: number;
 
 	/**
 	 * Left position for the line numbers.
@@ -1651,10 +1647,6 @@ export interface EditorLayoutInfo {
 	 * The width of the line numbers.
 	 */
 	readonly lineNumbersWidth: number;
-	/**
-	 * The height of the line numbers.
-	 */
-	readonly lineNumbersHeight: number;
 
 	/**
 	 * Left position for the line decorations.
@@ -1664,10 +1656,6 @@ export interface EditorLayoutInfo {
 	 * The width of the line decorations.
 	 */
 	readonly decorationsWidth: number;
-	/**
-	 * The height of the line decorations.
-	 */
-	readonly decorationsHeight: number;
 
 	/**
 	 * Left position for the content (actual text)
@@ -1677,10 +1665,6 @@ export interface EditorLayoutInfo {
 	 * The width of the content (actual text)
 	 */
 	readonly contentWidth: number;
-	/**
-	 * The height of the content (actual height)
-	 */
-	readonly contentHeight: number;
 
 	/**
 	 * The position for the minimap
@@ -1867,19 +1851,15 @@ export class EditorLayoutInfoComputer extends ComputedEditorOption<EditorOption.
 
 			glyphMarginLeft: glyphMarginLeft,
 			glyphMarginWidth: glyphMarginWidth,
-			glyphMarginHeight: outerHeight,
 
 			lineNumbersLeft: lineNumbersLeft,
 			lineNumbersWidth: lineNumbersWidth,
-			lineNumbersHeight: outerHeight,
 
 			decorationsLeft: decorationsLeft,
 			decorationsWidth: lineDecorationsWidth,
-			decorationsHeight: outerHeight,
 
 			contentLeft: contentLeft,
 			contentWidth: contentWidth,
-			contentHeight: outerHeight,
 
 			renderMinimap: renderMinimap,
 			minimapLeft: minimapLeft,
