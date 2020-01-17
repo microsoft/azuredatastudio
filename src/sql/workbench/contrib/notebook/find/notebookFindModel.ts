@@ -23,7 +23,6 @@ import { NOTEBOOK_COMMAND_SEARCH, NotebookEditorVisibleContext } from 'sql/workb
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
-import { BracketElectricCharacterSupport } from 'vs/editor/common/modes/supports/electricCharacter';
 
 function _normalizeOptions(options: model.IModelDecorationOptions): ModelDecorationOptions {
 	if (options instanceof ModelDecorationOptions) {
@@ -530,7 +529,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		let index: number;
 		let start: number;
 		let end: number;
-		let wholeWordRegex = new RegExp('\\b' + exp + '\\b');
+		let wholeWordRegex = new RegExp(`\b${exp}\b`);
 		if (cellVal) {
 
 			if (typeof cellVal === 'string') {
@@ -539,18 +538,21 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 				if (!matchCase) {
 					cellValFormatted = cellVal.toLocaleLowerCase();
 					exp = exp.toLocaleLowerCase();
-					wholeWordRegex = new RegExp('\\b' + exp + '\\b');
+					wholeWordRegex = new RegExp(`\b${exp}\b`);
 				}
 				while (cellValFormatted.substr(index).indexOf(exp) > -1) {
-					if ((wholeWord && cellValFormatted.substr(index).search(wholeWordRegex) > -1) || !wholeWord) {
-						start = wholeWord ? cellValFormatted.substr(index).search(wholeWordRegex) : cellValFormatted.substr(index).indexOf(exp) + index;
-						end = start + exp.length;
-						let range = new NotebookRange(cell, 0, start, 0, end);
-						findResults = findResults.concat(range);
-						index = end;
+					if (wholeWord) {
+						start = cellValFormatted.substr(index).search(wholeWordRegex);
+						if (start < 0) {
+							break;
+						}
 					} else {
-						break;
+						start = cellValFormatted.substr(index).indexOf(exp) + index + 1;
 					}
+					end = start + exp.length;
+					let range = new NotebookRange(cell, 0, start, 0, end);
+					findResults = findResults.concat(range);
+					index = end;
 				}
 			} else {
 				for (let j = 0; j < cellVal.length; j++) {
@@ -559,19 +561,22 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 					if (!matchCase) {
 						cellValFormatted = cellValFormatted.toLocaleLowerCase();
 						exp = exp.toLocaleLowerCase();
-						wholeWordRegex = new RegExp('\\b' + exp + '\\b');
+						wholeWordRegex = new RegExp(`\b${exp}\b`);
 					}
 					while (cellValFormatted.substr(index).indexOf(exp) > -1) {
-						if ((wholeWord && cellValFormatted.substr(index).search(wholeWordRegex) > -1) || !wholeWord) {
-							start = wholeWord ? cellValFormatted.substr(index).search(wholeWordRegex) : cellValFormatted.substr(index).indexOf(exp) + index + 1;
-							end = start + exp.length;
-							// lineNumber: j+1 since notebook editors aren't zero indexed.
-							let range = new NotebookRange(cell, j + 1, start, j + 1, end);
-							findResults = findResults.concat(range);
-							index = end;
+						if (wholeWord) {
+							start = cellValFormatted.substr(index).search(wholeWordRegex);
+							if (start < 0) {
+								break;
+							}
 						} else {
-							break;
+							start = cellValFormatted.substr(index).indexOf(exp) + index + 1;
 						}
+						end = start + exp.length;
+						// lineNumber: j+1 since notebook editors aren't zero indexed.
+						let range = new NotebookRange(cell, j + 1, start, j + 1, end);
+						findResults = findResults.concat(range);
+						index = end;
 					}
 					if (findResults.length >= maxMatches) {
 						break;
