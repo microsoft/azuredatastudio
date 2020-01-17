@@ -23,6 +23,7 @@ import { NOTEBOOK_COMMAND_SEARCH, NotebookEditorVisibleContext } from 'sql/workb
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { BracketElectricCharacterSupport } from 'vs/editor/common/modes/supports/electricCharacter';
 
 function _normalizeOptions(options: model.IModelDecorationOptions): ModelDecorationOptions {
 	if (options instanceof ModelDecorationOptions) {
@@ -490,13 +491,13 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		}
 	}
 
-	find(exp: string, maxMatches?: number): Promise<NotebookRange> {
+	find(exp: string, matchCase?: boolean, wholeWord?: boolean, maxMatches?: number): Promise<NotebookRange> {
 		this._findArray = new Array<NotebookRange>();
 		this._onFindCountChange.fire(this._findArray.length);
 		if (exp) {
 			for (let i = 0; i < this.notebookModel.cells.length; i++) {
 				const item = this.notebookModel.cells[i];
-				const result = this.searchFn(item, exp, maxMatches);
+				const result = this.searchFn(item, exp, matchCase, wholeWord, maxMatches);
 				if (result) {
 					this._findArray.push(...result);
 					this._onFindCountChange.fire(this._findArray.length);
@@ -523,33 +524,54 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		return this.findArray;
 	}
 
-	private searchFn(cell: ICellModel, exp: string, maxMatches?: number): NotebookRange[] {
+	private searchFn(cell: ICellModel, exp: string, matchCase: boolean = false, wholeWord: boolean = false, maxMatches?: number): NotebookRange[] {
 		let findResults: NotebookRange[] = [];
 		let cellVal = cell.cellType === 'markdown' ? this.cleanUpCellSource(cell.source) : cell.source;
 		let index: number;
 		let start: number;
 		let end: number;
+		let wholeWordRegex = new RegExp('\\b' + exp + '\\b');
 		if (cellVal) {
+
 			if (typeof cellVal === 'string') {
 				index = 0;
-				while (cellVal.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) > -1) {
-					start = cellVal.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index;
-					end = start + exp.length;
-					let range = new NotebookRange(cell, 0, start, 0, end);
-					findResults = findResults.concat(range);
-					index = end;
+				let cellValFormatted = cellVal;
+				if (!matchCase) {
+					cellValFormatted = cellVal.toLocaleLowerCase();
+					exp = exp.toLocaleLowerCase();
+					wholeWordRegex = new RegExp('\\b' + exp + '\\b');
+				}
+				while (cellValFormatted.substr(index).indexOf(exp) > -1) {
+					if ((wholeWord && cellValFormatted.substr(index).search(wholeWordRegex) > -1) || !wholeWord) {
+						start = wholeWord ? cellValFormatted.substr(index).search(wholeWordRegex) : cellValFormatted.substr(index).indexOf(exp) + index;
+						end = start + exp.length;
+						let range = new NotebookRange(cell, 0, start, 0, end);
+						findResults = findResults.concat(range);
+						index = end;
+					} else {
+						break;
+					}
 				}
 			} else {
 				for (let j = 0; j < cellVal.length; j++) {
 					index = 0;
 					let cellValFormatted = cell.cellType === 'markdown' ? this.cleanMarkdownLinks(cellVal[j]) : cellVal[j];
-					while (cellValFormatted.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) > -1) {
-						start = cellValFormatted.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index + 1;
-						end = start + exp.length;
-						// lineNumber: j+1 since notebook editors aren't zero indexed.
-						let range = new NotebookRange(cell, j + 1, start, j + 1, end);
-						findResults = findResults.concat(range);
-						index = end;
+					if (!matchCase) {
+						cellValFormatted = cellValFormatted.toLocaleLowerCase();
+						exp = exp.toLocaleLowerCase();
+						wholeWordRegex = new RegExp('\\b' + exp + '\\b');
+					}
+					while (cellValFormatted.substr(index).indexOf(exp) > -1) {
+						if ((wholeWord && cellValFormatted.substr(index).search(wholeWordRegex) > -1) || !wholeWord) {
+							start = wholeWord ? cellValFormatted.substr(index).search(wholeWordRegex) : cellValFormatted.substr(index).indexOf(exp) + index + 1;
+							end = start + exp.length;
+							// lineNumber: j+1 since notebook editors aren't zero indexed.
+							let range = new NotebookRange(cell, j + 1, start, j + 1, end);
+							findResults = findResults.concat(range);
+							index = end;
+						} else {
+							break;
+						}
 					}
 					if (findResults.length >= maxMatches) {
 						break;

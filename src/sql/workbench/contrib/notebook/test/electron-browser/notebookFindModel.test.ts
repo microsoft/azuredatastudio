@@ -32,12 +32,12 @@ import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/bro
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
 		cell_type: CellTypes.Code,
-		source: 'insert into t1 values (c1, c2) \ninsert into markdown values (*hello worls*)',
+		source: 'insert into t1 values (c1, c2) \nINSERT into markdown values (*hello worls*)',
 		metadata: { language: 'python' },
 		execution_count: 1
 	}, {
 		cell_type: CellTypes.Markdown,
-		source: 'I am *markdown*',
+		source: 'I am *markdown insertImportant*',
 		metadata: { language: 'python' },
 		execution_count: 1
 	}],
@@ -110,7 +110,7 @@ suite('Notebook Find Model', function (): void {
 	test('Should find results in the notebook', async function (): Promise<void> {
 		//initialize find
 		let notebookFindModel = new NotebookFindModel(model);
-		await notebookFindModel.find('markdown', max_find_count);
+		await notebookFindModel.find('markdown', false, false, max_find_count);
 
 		assert(notebookFindModel.findMatches, new Error('Find in notebook failed.'));
 		assert.equal(notebookFindModel.findMatches.length, 2, 'Find couldnt find all occurances');
@@ -119,14 +119,14 @@ suite('Notebook Find Model', function (): void {
 	test('Should not find results in the notebook', async function (): Promise<void> {
 		//initialize find
 		let notebookFindModel = new NotebookFindModel(model);
-		await notebookFindModel.find('notFound', max_find_count);
+		await notebookFindModel.find('notFound', false, false, max_find_count);
 
 		assert.equal(notebookFindModel.findMatches.length, 0, 'Find failed');
 	});
 
 	test('Should match find result ranges', async function (): Promise<void> {
 		let notebookFindModel = new NotebookFindModel(model);
-		await notebookFindModel.find('markdown', max_find_count);
+		await notebookFindModel.find('markdown', false, false, max_find_count);
 
 		let expectedFindRange1 = new NotebookRange(model.cells[0], 2, 13, 2, 21);
 		assert.deepEqual(notebookFindModel.findMatches[0].range, expectedFindRange1, 'Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange1) + '\n ' + JSON.stringify(notebookFindModel.findMatches[0].range));
@@ -155,7 +155,7 @@ suite('Notebook Find Model', function (): void {
 		await initNotebookModel(markdownContent);
 
 		let notebookFindModel = new NotebookFindModel(model);
-		await notebookFindModel.find('best', max_find_count);
+		await notebookFindModel.find('best', false, false, max_find_count);
 
 		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed on markdown link');
 
@@ -184,9 +184,31 @@ suite('Notebook Find Model', function (): void {
 		await initNotebookModel(codeContent);
 		//initialize find
 		let notebookFindModel = new NotebookFindModel(model);
-		await notebookFindModel.find('x', max_find_count);
+		await notebookFindModel.find('x', false, false, max_find_count);
 
 		assert.equal(notebookFindModel.findMatches.length, 3, 'Find failed');
+	});
+
+	test('Should find results with matching case in the notebook', async function (): Promise<void> {
+		//initialize find
+		let notebookFindModel = new NotebookFindModel(model);
+		await notebookFindModel.find('insert', false, false, max_find_count);
+
+		assert(notebookFindModel.findMatches, new Error('Find in notebook failed.'));
+		assert.equal(notebookFindModel.findMatches.length, 3, 'Find couldnt find all occurances');
+
+		await notebookFindModel.find('insert', true, false, max_find_count);
+		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed to apply match case while searching');
+
+	});
+
+	test('Should find results with matching whole word in the notebook', async function (): Promise<void> {
+		//initialize find
+		let notebookFindModel = new NotebookFindModel(model);
+
+		await notebookFindModel.find('insert', true, true, max_find_count);
+		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed to apply whole word filter while searching');
+
 	});
 
 	async function initNotebookModel(contents: nb.INotebookContents): Promise<void> {
@@ -200,4 +222,3 @@ suite('Notebook Find Model', function (): void {
 	}
 
 });
-
