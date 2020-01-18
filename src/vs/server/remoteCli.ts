@@ -12,6 +12,7 @@ import { parseArgs, buildHelpMessage, buildVersionMessage, OPTIONS, OptionDescri
 import { createWaitMarkerFile } from 'vs/platform/environment/node/waitMarkerFile';
 import { OpenCommandPipeArgs, RunCommandPipeArgs, StatusPipeArgs } from 'vs/workbench/api/node/extHostCLIServer';
 import { ParsedArgs } from 'vs/platform/environment/common/environment';
+import { hasStdinWithoutTty, getStdinFilePath, readFromStdin } from 'vs/platform/environment/node/stdin';
 
 interface ProductDescription {
 	productName: string;
@@ -97,7 +98,7 @@ export function main(desc: ProductDescription, args: string[]): void {
 	const mapFileUri = remoteAuthority ? mapFileToRemoteUri : (uri: string) => uri;
 
 	if (parsedArgs.help) {
-		console.log(buildHelpMessage(desc.productName, desc.executableName, desc.version, options, false));
+		console.log(buildHelpMessage(desc.productName, desc.executableName, desc.version, options, true));
 		return;
 	}
 	if (parsedArgs.version) {
@@ -116,11 +117,37 @@ export function main(desc: ProductDescription, args: string[]): void {
 	parsedArgs['file-uri'] = fileURIs;
 
 	let inputPaths = parsedArgs['_'];
+	let hasReadStdinArg = false;
 	for (let input of inputPaths) {
-		translatePath(input, mapFileUri, folderURIs, fileURIs);
+		if (input === '-') {
+			hasReadStdinArg = true;
+		} else {
+			translatePath(input, mapFileUri, folderURIs, fileURIs);
+		}
 	}
 
 	delete parsedArgs['_'];
+
+	if (hasReadStdinArg && fileURIs.length === 0 && folderURIs.length === 0 && hasStdinWithoutTty()) {
+		const stdinFilePath = getStdinFilePath();
+
+		// returns a file path where stdin input is written into (write in progress).
+		try {
+			readFromStdin(stdinFilePath, !!parsedArgs.verbose); // throws error if file can not be written
+
+			// Make sure to open tmp file
+			translatePath(stdinFilePath, mapFileUri, folderURIs, fileURIs);
+
+			// Enable --wait to get all data and ignore adding this to history
+			parsedArgs.wait = true;
+			parsedArgs['skip-add-to-recently-opened'] = true;
+
+			console.log(`Reading from stdin via: ${stdinFilePath}`);
+		} catch (e) {
+			console.log(`Failed to create file to read via stdin: ${e.toString()}`);
+		}
+
+	}
 
 	if (parsedArgs.extensionDevelopmentPath) {
 		parsedArgs.extensionDevelopmentPath = parsedArgs.extensionDevelopmentPath.map(p => mapFileUri(pathToURI(p).href));
@@ -172,7 +199,7 @@ export function main(desc: ProductDescription, args: string[]): void {
 		}
 	} else {
 		if (args.length === 0) {
-			console.log(buildHelpMessage(desc.productName, desc.executableName, desc.version, options, false));
+			console.log(buildHelpMessage(desc.productName, desc.executableName, desc.version, options, true));
 			return;
 		}
 		if (parsedArgs.status) {

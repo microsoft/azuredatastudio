@@ -417,7 +417,7 @@ function packagePkgTask(platform, arch, pkgTarget) {
 			const EXTENSIONS = path.join(REPO_ROOT, 'extensions');
 			function exec(cmdLine, cwd) {
 				console.log(cmdLine);
-				cp.execSync(cmdLine, { stdio: "inherit", cwd: cwd });
+				cp.execSync(cmdLine, { stdio: 'inherit', cwd: cwd });
 			}
 			const tasks = [];
 			rebuildExtensions.forEach(scope => {

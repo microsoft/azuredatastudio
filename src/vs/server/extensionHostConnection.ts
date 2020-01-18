@@ -134,7 +134,8 @@ export class ExtensionHostConnection {
 			const userShellEnv = await getShellEnvironment(this._logService, this._environmentService);
 			const processEnv = process.env;
 			const binFolder = this._environmentService.isBuilt ? join(this._environmentService.appRoot, 'bin') : join(this._environmentService.appRoot, 'resources', 'server', 'bin-dev');
-			let PATH = userShellEnv['PATH'] || processEnv['PATH'];
+			const startParamsEnv = startParams.env || {};
+			let PATH = startParamsEnv['PATH'] || userShellEnv['PATH'] || processEnv['PATH'];
 			if (PATH) {
 				PATH = binFolder + delimiter + PATH;
 			} else {
@@ -153,7 +154,7 @@ export class ExtensionHostConnection {
 						VSCODE_LOG_STACK: 'false',
 						VSCODE_NLS_CONFIG: JSON.stringify(nlsConfig, undefined, 0),
 					},
-					...(startParams.env || {})
+					...startParamsEnv
 				},
 				execArgv,
 				silent: true
