@@ -36,7 +36,10 @@
 			"port": 5876,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
-			]
+			],
+			"presentation": {
+				"hidden": true,
+			}
 		},
 		{
 			"type": "node",
@@ -54,7 +57,10 @@
 			"port": 5875,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
-			]
+			],
+			"presentation": {
+				"hidden": true,
+			}
 		},
 		{
 			"type": "chrome",
@@ -84,9 +90,12 @@
 			"urlFilter": "*workbench.html*",
 			"runtimeArgs": [
 				"--inspect=5875",
-				"--no-cached-data"
+				"--no-cached-data",
 			],
-			"webRoot": "${workspaceFolder}"
+			"webRoot": "${workspaceFolder}",
+			// Settings for js-debug:
+			"pauseForSourceMap": false,
+			"outFiles": ["${workspaceFolder}/out/**/*.js"],
 		},
 		{
 			"type": "node",
@@ -101,7 +110,11 @@
 			],
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
-			]
+			],
+			"presentation": {
+				"group": "2_launch",
+				"order": 1
+			}
 		},
 		{
 			"type": "chrome",
@@ -135,13 +148,21 @@
 			"runtimeArgs": [
 				"web"
 			],
+			"presentation": {
+				"group": "2_launch",
+				"order": 2
+			}
 		},
 		{
 			"type": "chrome",
 			"request": "launch",
 			"name": "Launch ADS (Web, Chrome) (TBD)",
 			"url": "http://localhost:8080",
-			"preLaunchTask": "Run web"
+			"preLaunchTask": "Run web",
+			"presentation": {
+				"group": "2_launch",
+				"order": 3
+			}
 		},
 		{
 			"type": "node",
@@ -152,16 +173,11 @@
 			"cwd": "${workspaceFolder}/extensions/git",
 			"outFiles": [
 				"${workspaceFolder}/extensions/git/out/**/*.js"
-			]
-		},
-		{
-			"name": "Launch Built-in Extension",
-			"type": "extensionHost",
-			"request": "launch",
-			"runtimeExecutable": "${execPath}",
-			"args": [
-				"--extensionDevelopmentPath=${workspaceRoot}/extensions/debug-auto-launch"
-			]
+			],
+			"presentation": {
+				"group": "5_tests",
+				"order": 10
+			}
 		},
 		{
 			"type": "node",
@@ -171,6 +187,10 @@
 			"cwd": "${workspaceFolder}/test/smoke",
 			"env": {
 				"BUILD_ARTIFACTSTAGINGDIRECTORY": "${workspaceFolder}"
+			},
+			"presentation": {
+				"group": "5_tests",
+				"order": 8
 			}
 		},
 		{
@@ -195,6 +215,9 @@
 			],
 			"env": {
 				"MOCHA_COLORS": "true"
+			},
+			"presentation": {
+				"hidden": true
 			}
 		},
 		{
@@ -246,18 +269,15 @@
 			]
 		},
 		{
-			"name": "Debug Extension Integration Tests",
-			"configurations": [
-				"Attach to Extension Host",
-				"Run Extension Integration Tests"
-			]
-		},
-		{
 			"name": "Debug azuredatastudio Main and Renderer",
 			"configurations": [
 				"Launch azuredatastudio",
 				"Attach to Main Process"
-			]
+			],
+			"presentation": {
+				"group": "1_vscode",
+				"order": 1
+			}
 		},
 		{
 			"name": "Debug azuredatastudio Main, Renderer & Extension Host",
@@ -265,28 +285,33 @@
 				"Launch azuredatastudio",
 				"Attach to Main Process",
 				"Attach to Extension Host"
-			]
-		},
-		{
-			"name": "Debug Renderer and search processes",
-			"configurations": [
-				"Launch azuredatastudio",
-				"Attach to Search Process"
-			]
+			],
+			"presentation": {
+				"group": "1_vscode",
+				"order": 3
+			}
 		},
 		{
 			"name": "Debug Renderer and Extension Host processes",
 			"configurations": [
 				"Launch azuredatastudio",
 				"Attach to Extension Host"
-			]
+			],
+			"presentation": {
+				"group": "1_vscode",
+				"order": 2
+			}
 		},
 		{
 			"name": "Attach Renderer and Extension Host",
 			"configurations": [
 				"Attach to azuredatastudio",
 				"Attach to Extension Host"
-			]
+			],
+			"presentation": {
+				"group": "1_vscode",
+				"order": 2
+			}
 		}
 	]
 }

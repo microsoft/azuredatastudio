@@ -541,7 +541,7 @@ export class SettingsEditor2 extends BaseEditor {
 		DOM.append(this.noResultsMessage, this.clearFilterLinkContainer);
 
 		this._register(attachStylerCallback(this.themeService, { editorForeground }, colors => {
-			this.noResultsMessage.style.color = colors.editorForeground ? colors.editorForeground.toString() : null;
+			this.noResultsMessage.style.color = colors.editorForeground ? colors.editorForeground.toString() : '';
 		}));
 
 		this.createTOC(bodyContainer);
@@ -807,7 +807,7 @@ export class SettingsEditor2 extends BaseEditor {
 
 		// If the user is changing the value back to the default, do a 'reset' instead
 		const inspected = this.configurationService.inspect(key, overrides);
-		if (inspected.default === value) {
+		if (inspected.defaultValue === value) {
 			value = undefined;
 		}
 

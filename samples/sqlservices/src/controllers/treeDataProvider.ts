@@ -6,7 +6,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as path from 'path';
 
 export enum TreeCheckboxState {
@@ -22,7 +22,7 @@ export interface TreeComponentDataModel {
 	checked?: boolean;
 }
 
-export class TreeNode implements sqlops.TreeComponentItem {
+export class TreeNode implements azdata.TreeComponentItem {
 	private _onNodeChange = new vscode.EventEmitter<void>();
 	private _onTreeChange = new vscode.EventEmitter<TreeNode>();
 	private _data: TreeComponentDataModel;
@@ -252,7 +252,7 @@ export class TreeNode implements sqlops.TreeComponentItem {
 	}
 }
 
-export class TreeDataProvider implements sqlops.TreeComponentDataProvider<TreeNode> {
+export class TreeDataProvider implements azdata.TreeComponentDataProvider<TreeNode> {
 		private _onDidChangeTreeData = new vscode.EventEmitter<TreeNode>();
 		constructor(private _root: TreeNode) {
 			if (this._root) {
@@ -269,8 +269,8 @@ export class TreeDataProvider implements sqlops.TreeComponentDataProvider<TreeNo
 		 * @param element The element for which [TreeItem](#TreeItem) representation is asked for.
 		 * @return [TreeItem](#TreeItem) representation of the element
 		 */
-		getTreeItem(element: TreeNode): sqlops.TreeComponentItem | Thenable<sqlops.TreeComponentItem> {
-			let item: sqlops.TreeComponentItem = {};
+		getTreeItem(element: TreeNode): azdata.TreeComponentItem | Thenable<azdata.TreeComponentItem> {
+			let item: azdata.TreeComponentItem = {};
 			item.label = element.label;
 			item.checked = element.checked;
 			item.collapsibleState = element.collapsibleState;

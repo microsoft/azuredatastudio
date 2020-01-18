@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/resource-deployment/package" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/package" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="extension-displayName">
         <source xml:lang="en">SQL Server Deployment extension for Azure Data Studio</source>
@@ -68,7 +68,7 @@
       </trans-unit>
       <trans-unit id="bdc-deployment-target-existing-aks">
         <source xml:lang="en">Existing Azure Kubernetes Service Cluster</source>
-        <target state="translated">Clúster de servicios de Azure Kubernetes existente</target>
+        <target state="translated">Clúster de Azure Kubernetes Service existente</target>
       </trans-unit>
       <trans-unit id="bdc-deployment-target-existing-kubeadm">
         <source xml:lang="en">Existing Kubernetes Cluster (kubeadm)</source>
@@ -124,11 +124,11 @@
       </trans-unit>
       <trans-unit id="bdc-new-aks-dialog-title">
         <source xml:lang="en">Deployment target: new AKS cluster</source>
-        <target state="translated">Objetivo de implementación: nuevo clúster de AKS</target>
+        <target state="translated">Destino de implementación: nuevo clúster de AKS</target>
       </trans-unit>
       <trans-unit id="bdc-existing-aks-dialog-title">
         <source xml:lang="en">Deployment target: existing AKS cluster</source>
-        <target state="translated">Objetivo de implementación: clúster AKS existente</target>
+        <target state="translated">Destino de implementación: clúster de AKS existente</target>
       </trans-unit>
       <trans-unit id="bdc-cluster-settings-section-title">
         <source xml:lang="en">SQL Server Big Data Cluster settings</source>
@@ -160,7 +160,7 @@
       </trans-unit>
       <trans-unit id="bdc-azure-subscription-id-placeholder">
         <source xml:lang="en">Use my default Azure subscription</source>
-        <target state="translated">Use mi suscripción predeterminada de Azure</target>
+        <target state="translated">Usar mi suscripción predeterminada de Azure</target>
       </trans-unit>
       <trans-unit id="bdc-azure-resource-group-field">
         <source xml:lang="en">Resource group name</source>
@@ -192,7 +192,7 @@
       </trans-unit>
       <trans-unit id="bdc-data-size-field">
         <source xml:lang="en">Capacity for data (GB)</source>
-        <target state="translated">Capacidad de datos (GB)</target>
+        <target state="translated">Capacidad para datos (GB)</target>
       </trans-unit>
       <trans-unit id="bdc-log-size-field">
         <source xml:lang="en">Capacity for logs (GB)</source>
@@ -224,7 +224,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/modelViewUtils" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/modelViewUtils" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="UnknownFieldTypeError">
         <source xml:lang="en">Unknown field type: "{0}"</source>
@@ -244,7 +244,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/services/tools/toolBase" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/services/tools/toolBase" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="deployCluster.InvalidToolVersionOutput">
         <source xml:lang="en">Invalid output received.</source>
@@ -252,11 +252,11 @@
       </trans-unit>
       <trans-unit id="deployCluster.GetToolVersionError">
         <source xml:lang="en">Error retrieving version information.{0}Error: {1}{0}stdout: {2} </source>
-        <target state="translated">Error al recuperar la información de la versión.{0} Error: {1}{0}stdout: {2}</target>
+        <target state="translated">Error al recuperar la información de la versión.{0} Error: {1}{0}stdout: {2} </target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/deploymentInputDialog" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/deploymentInputDialog" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="deploymentDialog.OKButtonText">
         <source xml:lang="en">Open Notebook</source>
@@ -264,7 +264,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/main" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/main" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="resourceDeployment.FailedToLoadExtension">
         <source xml:lang="en">Failed to load extension: {0}, Error detected in the resource type definition in package.json, check debug console for details.</source>
@@ -276,15 +276,15 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/services/notebookService" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/services/notebookService" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="resourceDeployment.notebookNotFound">
         <source xml:lang="en">The notebook {0} does not exist</source>
-        <target state="translated">El bloc de notas {0} no existe</target>
+        <target state="translated">El cuaderno {0} no existe</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/services/resourceTypeService" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/services/resourceTypeService" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="resourceDeployment.DownloadAndLaunchTaskName">
         <source xml:lang="en">Download and launch installer, URL: {0}</source>
@@ -312,7 +312,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/deployClusterWizard" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/deployClusterWizard" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="deployCluster.SaveConfigFiles">
         <source xml:lang="en">Save config files</source>
@@ -332,7 +332,7 @@
       </trans-unit>
       <trans-unit id="resourceDeployment.ConnectToMasterSQLServer">
         <source xml:lang="en">Connect to Master SQL Server</source>
-        <target state="translated">Conectarse a Master SQL Server</target>
+        <target state="translated">Conectar con SQL Server maestro</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.DeploymentSucceeded">
         <source xml:lang="en">Successfully deployed SQL Server Big Data Cluster: {0}</source>
@@ -344,7 +344,7 @@
       </trans-unit>
       <trans-unit id="resourceDeployment.NoSQLEndpointFound">
         <source xml:lang="en">Master SQL Server endpoint is not found.</source>
-        <target state="translated">No se encuentra el punto de conexión maestro de SQL Server.</target>
+        <target state="translated">No se encuentra el punto de conexión de SQL Server maestro.</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.ViewErrorDetail">
         <source xml:lang="en">View error detail</source>
@@ -384,7 +384,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/summaryPage" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/summaryPage" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="deployCluster.summaryPageTitle">
         <source xml:lang="en">Summary</source>
@@ -392,7 +392,7 @@
       </trans-unit>
       <trans-unit id="resourceDeployment.NewAKSBrowserWindowPrompt">
         <source xml:lang="en">A browser window for logging to Azure will be opened during the SQL Server Big Data Cluster deployment.</source>
-        <target state="translated">Durante la implementación del clúster de macrodatos de SQL Server se abrirá una ventana del explorador para iniciar sesión en Azure.</target>
+        <target state="translated">Durante la implementación del clúster de macrodatos de SQL Server se abrirá una ventana del explorador para registrar en Azure.</target>
       </trans-unit>
       <trans-unit id="deployCluster.DeploymentTarget">
         <source xml:lang="en">Deployment target</source>
@@ -432,7 +432,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.AuthenticationMode.Basic">
         <source xml:lang="en">Basic</source>
-        <target state="translated">Basic</target>
+        <target state="translated">Básico</target>
       </trans-unit>
       <trans-unit id="deployCluster.OuDistinguishedName">
         <source xml:lang="en">Organizational unit</source>
@@ -572,7 +572,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.GatewayText">
         <source xml:lang="en">Gateway</source>
-        <target state="translated">Puerto de enlace</target>
+        <target state="translated">Puerta de enlace</target>
       </trans-unit>
       <trans-unit id="deployCluster.AppServiceProxyText">
         <source xml:lang="en">Application proxy</source>
@@ -580,7 +580,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.ServiceProxyText">
         <source xml:lang="en">Management proxy</source>
-        <target state="translated">Proxy de gestión</target>
+        <target state="translated">Proxy de administración</target>
       </trans-unit>
       <trans-unit id="deployCluster.ReadableSecondaryText">
         <source xml:lang="en">Readable secondary</source>
@@ -592,15 +592,15 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/wizardBase" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/wizardBase" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="resourceDeployment.DisposableError">
         <source xml:lang="en">Error occured while closing the wizard: {0}, open 'Debugger Console' for more information.</source>
-        <target state="translated">Se ha producido un error al cerrar el asistente: {0}, abra la "consola del depurador" para obtener más información.</target>
+        <target state="translated">Se ha producido un error al cerrar el asistente: {0}, abra "Consola del depurador" para obtener más información.</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/azureSettingsPage" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/azureSettingsPage" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="deployCluster.AzureSettingsPageTitle">
         <source xml:lang="en">Azure settings</source>
@@ -616,7 +616,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.SubscriptionPlaceholder">
         <source xml:lang="en">Use my default Azure subscription</source>
-        <target state="translated">Use mi suscripción predeterminada de Azure</target>
+        <target state="translated">Usar mi suscripción predeterminada de Azure</target>
       </trans-unit>
       <trans-unit id="deployCluster.SubscriptionDescription">
         <source xml:lang="en">The default subscription will be used if you leave this field blank.</source>
@@ -668,7 +668,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/clusterSettingsPage" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/clusterSettingsPage" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="deployCluster.ClusterSettingsPageTitle">
         <source xml:lang="en">Cluster settings</source>
@@ -708,7 +708,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.AuthenticationMode.Basic">
         <source xml:lang="en">Basic</source>
-        <target state="translated">Basic</target>
+        <target state="translated">Básico</target>
       </trans-unit>
       <trans-unit id="deployCluster.AuthenticationMode.ActiveDirectory">
         <source xml:lang="en">Active Directory</source>
@@ -844,7 +844,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/serviceSettingsPage" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/serviceSettingsPage" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="deployCluster.ServiceSettingsPageTitle">
         <source xml:lang="en">Service settings</source>
@@ -852,7 +852,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.scaleSectionTitle">
         <source xml:lang="en">Scale settings</source>
-        <target state="translated">Configuración de escala</target>
+        <target state="translated">Ajustes de escala</target>
       </trans-unit>
       <trans-unit id="deployCluster.MasterSqlServerInstances">
         <source xml:lang="en">SQL Server master instances</source>
@@ -896,7 +896,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.LogsClaimSize">
         <source xml:lang="en">Claim size for logs (GB)</source>
-        <target state="translated">Tamaño de notificación para los registros (GB)</target>
+        <target state="translated">Tamaño de la notificación para los registros (GB)</target>
       </trans-unit>
       <trans-unit id="deployCluster.ControllerText">
         <source xml:lang="en">Controller</source>
@@ -964,7 +964,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.ServiceProxyText">
         <source xml:lang="en">Management proxy</source>
-        <target state="translated">Proxy de gestión</target>
+        <target state="translated">Proxy de administración</target>
       </trans-unit>
       <trans-unit id="deployCluster.ServiceProxyDNSName">
         <source xml:lang="en">Management proxy DNS name</source>
@@ -972,7 +972,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.ServiceProxyPortName">
         <source xml:lang="en">Management proxy port</source>
-        <target state="translated">Puerto proxy de gestión</target>
+        <target state="translated">Puerto proxy de administración</target>
       </trans-unit>
       <trans-unit id="deployCluster.AppServiceProxyText">
         <source xml:lang="en">Application proxy</source>
@@ -1004,15 +1004,15 @@
       </trans-unit>
       <trans-unit id="deployCluster.SparkMustBeIncluded">
         <source xml:lang="en">Invalid Spark configuration, you must check the 'Include Spark' checkbox or set the 'Spark pool instances' to at least 1.</source>
-        <target state="translated">Configuración de Spark no válida, debe marcar la casilla de verificación "Incluir Spark" o establecer las "Instancias de grupo de Spark" en al menos 1.</target>
+        <target state="translated">Configuración de Spark no válida, debe marcar la casilla para incluir Spark o establecer las instancias de grupo de Spark en al menos 1.</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/targetClusterPage" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/targetClusterPage" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="deployCluster.TargetClusterContextPageTitle">
         <source xml:lang="en">Target cluster context</source>
-        <target state="translated">Contexto del clúster objetivo</target>
+        <target state="translated">Contexto del clúster de destino</target>
       </trans-unit>
       <trans-unit id="deployCluster.TargetClusterContextPageDescription">
         <source xml:lang="en">Select the kube config file and then select a cluster context from the list</source>
@@ -1048,7 +1048,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/deploymentProfilePage" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/deploymentProfilePage" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="deployCluster.summaryPageTitle">
         <source xml:lang="en">Deployment configuration template</source>
@@ -1080,7 +1080,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.computePoolLable">
         <source xml:lang="en">Compute</source>
-        <target state="translated">Calcular</target>
+        <target state="translated">Proceso</target>
       </trans-unit>
       <trans-unit id="deployCluster.dataPoolLabel">
         <source xml:lang="en">Data</source>
@@ -1128,7 +1128,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/services/tools/dockerTool" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/services/tools/dockerTool" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="resourceDeployment.DockerDescription">
         <source xml:lang="en">Provides the ability to package and run an application in isolated containers</source>
@@ -1136,11 +1136,11 @@
       </trans-unit>
       <trans-unit id="resourceDeployment.DockerDisplayName">
         <source xml:lang="en">docker</source>
-        <target state="translated">Docker</target>
+        <target state="translated">docker</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/services/tools/azCliTool" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/services/tools/azCliTool" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="resourceDeployment.AzCLIDescription">
         <source xml:lang="en">A command-line tool for managing Azure resources</source>
@@ -1152,7 +1152,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/services/tools/azdataTool" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/services/tools/azdataTool" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="resourceDeployment.AzdataDescription">
         <source xml:lang="en">A command-line utility written in Python that enables cluster administrators to bootstrap and manage the Big Data Cluster via REST APIs</source>
@@ -1164,7 +1164,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/services/tools/kubeCtlTool" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/services/tools/kubeCtlTool" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="resourceDeployment.KubeCtlDescription">
         <source xml:lang="en">A command-line tool allows you to run commands against Kubernetes clusters</source>
@@ -1176,7 +1176,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/resourceTypePickerDialog" source-language="en" target-language="es" datatype="plaintext">
+  <file original="extensions/resource-deployment/dist/ui/resourceTypePickerDialog" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="resourceTypePickerDialog.title">
         <source xml:lang="en">Select the deployment options</source>
@@ -1200,7 +1200,7 @@
       </trans-unit>
       <trans-unit id="deploymentDialog.toolStatusColumnHeader">
         <source xml:lang="en">Installed</source>
-        <target state="translated">INSTALADO</target>
+        <target state="translated">Instalado</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.toolVersionColumnHeader">
         <source xml:lang="en">Version</source>

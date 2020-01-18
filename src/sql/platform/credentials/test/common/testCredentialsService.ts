@@ -37,7 +37,7 @@ export class TestCredentialsService implements ICredentialsService {
 	}
 
 	addEventListener(handle: number, events: CredentialManagementEvents): IDisposable {
-		throw new Error('Method not implemented.');
+		return { dispose: () => { } };
 	}
 }
 

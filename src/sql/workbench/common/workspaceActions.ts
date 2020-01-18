@@ -5,7 +5,7 @@
 
 import { Action } from 'vs/base/common/actions';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
-//tslint:disable-next-line:layering
+// eslint-disable-next-line code-layering
 import { IElectronService } from 'vs/platform/electron/node/electron';
 import { URI } from 'vs/base/common/uri';
 
@@ -27,6 +27,6 @@ export class OpenFileInFolderAction extends Action {
 	}
 
 	run() {
-		return this.openerService.open(URI.file(this.path));
+		return this.openerService.open(URI.file(this.path), { openExternal: true });
 	}
 }

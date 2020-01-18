@@ -6,7 +6,7 @@ labels: ''
 assignees: ''
 
 ---
-
+<!-- Please read our Rules of Conduct: https://opensource.microsoft.com/codeofconduct/ -->
 <!-- Please search existing issues to avoid creating duplicates. -->
 <!-- Also please test using the latest insiders build to make sure your issue has not already been fixed. -->
 

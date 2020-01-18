@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/dacpac/out/wizard/pages/selectOperationpage" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/selectOperationpage" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="dacFx.deployRadioButtonLabel">
         <source xml:lang="en">Deploy a data-tier application .dacpac file to an instance of SQL Server [Deploy Dacpac]</source>
@@ -20,7 +20,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/importConfigPage" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/importConfigPage" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="dacFxImport.openFile">
         <source xml:lang="en">Open</source>
@@ -32,7 +32,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/extractConfigPage" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/extractConfigPage" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="dacfxExtract.saveFile">
         <source xml:lang="en">Save</source>
@@ -48,7 +48,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/exportConfigPage" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/exportConfigPage" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="dacfxExport.saveFile">
         <source xml:lang="en">Save</source>
@@ -60,7 +60,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/deployPlanPage" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/deployPlanPage" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="dacfx.dataLossTextWithCount">
         <source xml:lang="en">{0} of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.</source>
@@ -68,7 +68,7 @@
       </trans-unit>
       <trans-unit id="dacFx.dataLossCheckbox">
         <source xml:lang="en">Proceed despite possible data loss</source>
-        <target state="translated">데이터가 손실되더라도 계속합니다.</target>
+        <target state="translated">데이터가 손실되더라도 계속 진행</target>
       </trans-unit>
       <trans-unit id="dacfx.noDataLossText">
         <source xml:lang="en">No data loss will occur from the listed deploy actions.</source>
@@ -76,7 +76,7 @@
       </trans-unit>
       <trans-unit id="dacfx.dataLossText">
         <source xml:lang="en">The deploy actions may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.</source>
-        <target state="translated">배포 작업으로 데이터가 손실될 수 있습니다. 배포 관련 문제가 발생하는 경우 사용 가능한 백업 또는 스냅샷이 있는지 확인하세요.</target>
+        <target state="translated">배포 작업으로 인해 데이터가 손실될 수 있습니다. 배포 관련 문제가 발생하는 경우 사용 가능한 백업 또는 스냅샷이 있는지 확인하세요.</target>
       </trans-unit>
       <trans-unit id="dacfx.operationColumn">
         <source xml:lang="en">Operation</source>
@@ -88,11 +88,11 @@
       </trans-unit>
       <trans-unit id="dacfx.typeColumn">
         <source xml:lang="en">Type</source>
-        <target state="translated">Type</target>
+        <target state="translated">형식</target>
       </trans-unit>
       <trans-unit id="dacfx.typeTooltip">
         <source xml:lang="en">Type of object that will be affected by deployment</source>
-        <target state="translated">배포에 의해 영향을 받는 개체의 유형</target>
+        <target state="translated">배포의 영향을 받는 개체의 유형</target>
       </trans-unit>
       <trans-unit id="dacfx.objectColumn">
         <source xml:lang="en">Object</source>
@@ -100,7 +100,7 @@
       </trans-unit>
       <trans-unit id="dacfx.objecTooltip">
         <source xml:lang="en">Name of object that will be affected by deployment</source>
-        <target state="translated">배포에 의해 영향을 받는 개체의 이름</target>
+        <target state="translated">배포의 영향을 받는 개체의 이름</target>
       </trans-unit>
       <trans-unit id="dacfx.dataLossColumn">
         <source xml:lang="en">Data Loss</source>
@@ -112,7 +112,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/deployConfigPage" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/deployConfigPage" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="dacFx.databaseNameTextBox">
         <source xml:lang="en">Database Name</source>
@@ -148,7 +148,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/dacFxSummaryPage" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/dacFxSummaryPage" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="dacfx.targetServerName">
         <source xml:lang="en">Target Server</source>
@@ -184,7 +184,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/api/dacFxConfigPage" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/api/dacFxConfigPage" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="dacFx.targetServerDropdownTitle">
         <source xml:lang="en">Target Server</source>
@@ -204,7 +204,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/api/basePage" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/api/basePage" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="basePage.defaultUser">
         <source xml:lang="en">default</source>
@@ -212,7 +212,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/dataTierApplicationWizard" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/dataTierApplicationWizard" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="dacFx.selectOperationPageName">
         <source xml:lang="en">Select an Operation</source>
@@ -280,11 +280,11 @@
       </trans-unit>
       <trans-unit id="dacfx.scriptGeneratingMessage">
         <source xml:lang="en">You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.</source>
-        <target state="translated">마법사가 닫히면 [작업 보기]에서 스크립트 생성 상태를 볼 수 있습니다. 완료되면 생성된 스크립트가 열립니다.</target>
+        <target state="translated">마법사가 닫히면 작업 보기에서 스크립트 생성 상태를 볼 수 있습니다. 완료되면 생성된 스크립트가 열립니다.</target>
       </trans-unit>
       <trans-unit id="alertData.deployPlanErrorMessage">
         <source xml:lang="en">Generating deploy plan failed '{0}'</source>
-        <target state="translated">배포 플랜 생성 실패 '{0}'</target>
+        <target state="translated">배포 플랜 '{0}'을(를) 생성하지 못했습니다.</target>
       </trans-unit>
     </body>
   </file>

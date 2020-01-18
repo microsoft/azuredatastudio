@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/dacpac/out/wizard/pages/selectOperationpage" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/selectOperationpage" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="dacFx.deployRadioButtonLabel">
         <source xml:lang="en">Deploy a data-tier application .dacpac file to an instance of SQL Server [Deploy Dacpac]</source>
@@ -20,7 +20,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/importConfigPage" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/importConfigPage" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="dacFxImport.openFile">
         <source xml:lang="en">Open</source>
@@ -32,7 +32,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/extractConfigPage" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/extractConfigPage" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="dacfxExtract.saveFile">
         <source xml:lang="en">Save</source>
@@ -48,7 +48,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/exportConfigPage" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/exportConfigPage" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="dacfxExport.saveFile">
         <source xml:lang="en">Save</source>
@@ -60,11 +60,11 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/deployPlanPage" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/deployPlanPage" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="dacfx.dataLossTextWithCount">
         <source xml:lang="en">{0} of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.</source>
-        <target state="translated">所列部署動作的 {0} 可能會導致資料遺失。請確認當部署發生問題時，您有備份或快照集可使用。</target>
+        <target state="translated">所列出的 {0} 部署動作可能會導致資料遺失。請確認當部署發生問題時，您有備份或快照集可使用。</target>
       </trans-unit>
       <trans-unit id="dacFx.dataLossCheckbox">
         <source xml:lang="en">Proceed despite possible data loss</source>
@@ -80,7 +80,7 @@
       </trans-unit>
       <trans-unit id="dacfx.operationColumn">
         <source xml:lang="en">Operation</source>
-        <target state="translated">操作</target>
+        <target state="translated">作業</target>
       </trans-unit>
       <trans-unit id="dacfx.operationTooltip">
         <source xml:lang="en">Operation(Create, Alter, Delete) that will occur during deployment</source>
@@ -88,11 +88,11 @@
       </trans-unit>
       <trans-unit id="dacfx.typeColumn">
         <source xml:lang="en">Type</source>
-        <target state="translated">型別</target>
+        <target state="translated">類型</target>
       </trans-unit>
       <trans-unit id="dacfx.typeTooltip">
         <source xml:lang="en">Type of object that will be affected by deployment</source>
-        <target state="translated">部署將影響的物件類型</target>
+        <target state="translated">將受部署影響的物件類型</target>
       </trans-unit>
       <trans-unit id="dacfx.objectColumn">
         <source xml:lang="en">Object</source>
@@ -100,7 +100,7 @@
       </trans-unit>
       <trans-unit id="dacfx.objecTooltip">
         <source xml:lang="en">Name of object that will be affected by deployment</source>
-        <target state="translated">部署將影響的物件名稱</target>
+        <target state="translated">將受部署影響的物件名稱</target>
       </trans-unit>
       <trans-unit id="dacfx.dataLossColumn">
         <source xml:lang="en">Data Loss</source>
@@ -112,7 +112,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/deployConfigPage" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/deployConfigPage" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="dacFx.databaseNameTextBox">
         <source xml:lang="en">Database Name</source>
@@ -148,7 +148,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/dacFxSummaryPage" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/pages/dacFxSummaryPage" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="dacfx.targetServerName">
         <source xml:lang="en">Target Server</source>
@@ -184,7 +184,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/api/dacFxConfigPage" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/api/dacFxConfigPage" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="dacFx.targetServerDropdownTitle">
         <source xml:lang="en">Target Server</source>
@@ -204,7 +204,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/api/basePage" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/api/basePage" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="basePage.defaultUser">
         <source xml:lang="en">default</source>
@@ -212,7 +212,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/dataTierApplicationWizard" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/dacpac/out/wizard/dataTierApplicationWizard" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="dacFx.selectOperationPageName">
         <source xml:lang="en">Select an Operation</source>

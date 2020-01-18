@@ -19,7 +19,6 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { TestCommandService } from 'vs/editor/test/browser/editorTestServices';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { assertThrowsAsync } from 'sql/base/test/common/async';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
@@ -35,7 +34,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
-import { SimpleUriLabelService } from 'vs/editor/standalone/browser/simpleServices';
+import { LabelService } from 'vs/workbench/services/label/common/labelService';
 
 class TestParsedArgs implements ParsedArgs {
 	[arg: string]: any;
@@ -139,7 +138,7 @@ suite('commandLineService tests', () => {
 		return configurationService;
 	}
 
-	test('processCommandLine shows connection dialog by default', done => {
+	test('processCommandLine shows connection dialog by default', () => {
 		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
 			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 
@@ -152,10 +151,9 @@ suite('commandLineService tests', () => {
 			.verifiable(TypeMoq.Times.never());
 		const configurationService = getConfigurationServiceMock(true);
 		let contribution = getCommandLineContribution(connectionManagementService.object, configurationService.object);
-		contribution.processCommandLine(new TestParsedArgs()).then(() => {
+		return contribution.processCommandLine(new TestParsedArgs()).then(() => {
 			connectionManagementService.verifyAll();
-			done();
-		}, error => { assert.fail(error, null, 'processCommandLine rejected ' + error); done(); });
+		}, error => { assert.fail(error, null, 'processCommandLine rejected ' + error); });
 	});
 
 	test('processCommandLine does nothing if no server name and command name is provided and the configuration \'workbench.showConnectDialogOnStartup\' is set to false, even if registered servers exist', async () => {
@@ -295,7 +293,10 @@ suite('commandLineService tests', () => {
 			.verifiable(TypeMoq.Times.once());
 		const configurationService = getConfigurationServiceMock(true);
 		let contribution = getCommandLineContribution(connectionManagementService.object, configurationService.object, capabilitiesService, commandService.object);
-		assertThrowsAsync(async () => await contribution.processCommandLine(args));
+		try {
+			await contribution.processCommandLine(args);
+			assert.fail('expected to throw');
+		} catch (e) { }
 	});
 
 	test('processCommandLine uses Integrated auth if no user name or auth type is passed', async () => {
@@ -392,7 +393,7 @@ suite('commandLineService tests', () => {
 		querymodelService.setup(c => c.onRunQueryComplete).returns(() => Event.None);
 		const instantiationService = new TestInstantiationService();
 		let uri = URI.file(args._[0]);
-		const untitledEditorInput = new UntitledTextEditorInput(uri, false, '', '', '', instantiationService, undefined, new SimpleUriLabelService(), undefined, undefined, undefined);
+		const untitledEditorInput = new UntitledTextEditorInput(uri, false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined, undefined);
 		const queryInput = new UntitledQueryEditorInput(undefined, untitledEditorInput, undefined, connectionManagementService.object, querymodelService.object, configurationService.object, undefined);
 		queryInput.state.connected = true;
 		const editorService: TypeMoq.Mock<IEditorService> = TypeMoq.Mock.ofType<IEditorService>(TestEditorService, TypeMoq.MockBehavior.Strict);

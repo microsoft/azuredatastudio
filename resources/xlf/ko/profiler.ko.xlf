@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/profiler/client/out/dialogs/profilerCreateSessionDialog" source-language="en" target-language="ko" datatype="plaintext">
+  <file original="extensions/profiler/client/out/dialogs/profilerCreateSessionDialog" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="createSessionDialog.cancel">
         <source xml:lang="en">Cancel</source>
@@ -16,7 +16,7 @@
       </trans-unit>
       <trans-unit id="createSessionDialog.templatesInvalid">
         <source xml:lang="en">Invalid templates list, cannot open dialog</source>
-        <target state="translated">잘못된 템플릿 목록입니다. 대화상자를 열 수 없습니다</target>
+        <target state="translated">템플릿 목록이 잘못되었습니다. 대화 상자를 열 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.dialogOwnerInvalid">
         <source xml:lang="en">Invalid dialog owner, cannot open dialog</source>
@@ -28,7 +28,7 @@
       </trans-unit>
       <trans-unit id="createSessionDialog.selectTemplates">
         <source xml:lang="en">Select session template:</source>
-        <target state="translated">세션 탬플릿 선택:</target>
+        <target state="translated">세션 템플릿 선택:</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.enterSessionName">
         <source xml:lang="en">Enter session name:</source>
@@ -36,7 +36,7 @@
       </trans-unit>
       <trans-unit id="createSessionDialog.createSessionFailed">
         <source xml:lang="en">Failed to create a session</source>
-        <target state="translated">세션을 만들지 못했습니다.</target>
+        <target state="translated">세션을 만들지 못함</target>
       </trans-unit>
     </body>
   </file>

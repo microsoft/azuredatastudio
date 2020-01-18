@@ -146,6 +146,33 @@ declare module 'azdata' {
 			 */
 			connectionId: string;
 		}
+
+		/**
+		 * List the databases that can be accessed from the given connection
+		 * @param connectionId The ID of the connection
+		 * @returns An list of names of databases
+		 */
+		export function listDatabases(connectionId: string): Thenable<string[]>;
+
+		/**
+		 * Get a URI corresponding to the given connection so that it can be used with data
+		 * providers and other APIs that require a connection API.
+		 * Note: If the given connection corresponds to multiple URIs this may return any of them
+		 * @param connectionId The ID of the connection
+		 */
+		export function getUriForConnection(connectionId: string): Thenable<string>;
+
+		/**
+		 * Opens the connection dialog, calls the callback with the result. If connection was successful
+		 * returns the connection otherwise returns undefined
+		 */
+		export function openConnectionDialog(providers?: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: IConnectionCompletionOptions): Thenable<connection.Connection>;
+
+		/**
+		 * Opens the connection and add it to object explorer and opens the dashboard and returns the ConnectionResult
+		 * @param connectionProfile connection profile
+		 */
+		export function connect(connectionProfile: IConnectionProfile, saveConnection?: boolean, showDashboard?: boolean): Thenable<ConnectionResult>;
 	}
 
 	/**
@@ -4159,35 +4186,6 @@ declare module 'azdata' {
 		connectionId: string;
 		errorMessage: string;
 		errorCode: number;
-	}
-
-	export namespace connection {
-		/**
-		 * List the databases that can be accessed from the given connection
-		 * @param connectionId The ID of the connection
-		 * @returns An list of names of databases
-		 */
-		export function listDatabases(connectionId: string): Thenable<string[]>;
-
-		/**
-		 * Get a URI corresponding to the given connection so that it can be used with data
-		 * providers and other APIs that require a connection API.
-		 * Note: If the given connection corresponds to multiple URIs this may return any of them
-		 * @param connectionId The ID of the connection
-		 */
-		export function getUriForConnection(connectionId: string): Thenable<string>;
-
-		/**
-		 * Opens the connection dialog, calls the callback with the result. If connection was successful
-		 * returns the connection otherwise returns undefined
-		 */
-		export function openConnectionDialog(providers?: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: IConnectionCompletionOptions): Thenable<connection.Connection>;
-
-		/**
-		 * Opens the connection and add it to object explorer and opens the dashboard and returns the ConnectionResult
-		 * @param connectionProfile connection profile
-		 */
-		export function connect(connectionProfile: IConnectionProfile, saveConnection?: boolean, showDashboard?: boolean): Thenable<ConnectionResult>;
 	}
 
 	export namespace nb {

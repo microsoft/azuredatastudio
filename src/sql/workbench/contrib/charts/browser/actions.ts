@@ -72,7 +72,7 @@ export class CreateInsightAction extends Action {
 			}
 		};
 
-		let input = this.untitledEditorService.createOrGet(undefined, 'json', JSON.stringify(widgetConfig));
+		let input = this.untitledEditorService.create({ mode: 'json', initialValue: JSON.stringify(widgetConfig) });
 
 		return this.editorService.openEditor(input, { pinned: true })
 			.then(
@@ -155,7 +155,7 @@ export class SaveImageAction extends Action {
 		if (context.insight instanceof Graph) {
 			let fileFilters = new Array<FileFilter>({ extensions: ['png'], name: localize('resultsSerializer.saveAsFileExtensionPNGTitle', "PNG") });
 
-			const filePath = await this.fileDialogService.pickFileToSave({ filters: fileFilters });
+			const filePath = await this.fileDialogService.showSaveDialog({ filters: fileFilters });
 			const data = (<Graph>context.insight).getCanvasData();
 			if (!data) {
 				this.notificationService.error(localize('chartNotFound', "Could not find chart to save"));

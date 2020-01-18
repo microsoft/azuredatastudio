@@ -6,7 +6,6 @@ import 'vs/css!./code';
 
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange, forwardRef, ChangeDetectorRef } from '@angular/core';
 
-import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions';
 import { ICellModel, notebookConstants, CellExecutionState } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
@@ -16,9 +15,6 @@ import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/not
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
-import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { SimpleEditorProgressService } from 'vs/editor/standalone/browser/simpleServices';
-import { IProgressService } from 'vs/platform/progress/common/progress';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModel } from 'vs/editor/common/model';
 import * as DOM from 'vs/base/browser/dom';
@@ -33,8 +29,12 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { ILogService } from 'vs/platform/log/common/log';
 import { CollapseComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/collapse.component';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
+import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
+import { IEditorProgressService } from 'vs/platform/progress/common/progress';
+import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser/simpleProgressIndicator';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -44,7 +44,7 @@ const DEFAULT_OR_LOCAL_CONTEXT_ID = '-1';
 	selector: CODE_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./code.component.html'))
 })
-export class CodeComponent extends AngularDisposable implements OnInit, OnChanges {
+export class CodeComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
@@ -141,6 +141,18 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		}
 	}
 
+	public getEditor(): QueryTextEditor {
+		return this._editor;
+	}
+
+	public hasEditor(): boolean {
+		return true;
+	}
+
+	public cellGuid(): string {
+		return this.cellModel.cellGuid;
+	}
+
 	private updateConnectionState(shouldConnect: boolean) {
 		if (this.isSqlCodeCell()) {
 			let cellUri = this.cellModel.cellUri.toString();
@@ -173,7 +185,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		if (this.destroyed) {
 			return;
 		}
-		this.createEditor();
+		this.createEditor().catch(e => this.logService.error(e));
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
 			this._layoutEmitter.fire();
 		}));
@@ -188,8 +200,8 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	}
 
 	private async createEditor(): Promise<void> {
-		let instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleEditorProgressService()]));
-		this._editor = instantiationService.createInstance(QueryTextEditor);
+		const customInstan = this._instantiationService.createChild(new ServiceCollection([IEditorProgressService, new SimpleProgressIndicator()]));
+		this._editor = customInstan.createInstance(QueryTextEditor);
 		this._editor.create(this.codeElement.nativeElement);
 		this._editor.setVisible(true);
 		this._editor.setMinimumHeight(this._minimumHeight);
@@ -198,7 +210,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		let uri = this.cellModel.cellUri;
 		let cellModelSource: string;
 		cellModelSource = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
-		this._editorInput = instantiationService.createInstance(UntitledTextEditorInput, uri, false, this.cellModel.language, cellModelSource, '');
+		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, uri, false, this.cellModel.language, cellModelSource, '');
 		await this._editor.setInput(this._editorInput, undefined);
 		this.setFocusAndScroll();
 

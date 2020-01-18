@@ -66,6 +66,8 @@ steps:
       $env:CHILD_CONCURRENCY="1"
       exec { yarn --frozen-lockfile }
     displayName: Install dependencies
+    env:
+      GITHUB_TOKEN: $(github-distro-mixin-password)
     condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
@@ -260,17 +262,7 @@ steps:
       searchFolder: '$(Build.SourcesDirectory)'
       failTaskOnFailedTests: true
     continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-
-  - task: PublishTestResults@2
-    displayName: 'Publish Integration and Smoke Test Results'
-    inputs:
-      testResultsFiles: '*.xml'
-      searchFolder: '$(Build.ArtifactStagingDirectory)\test-results'
-      mergeTestResults: true
-      failTaskOnFailedTests: true
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+    condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Detection'

@@ -71,14 +71,14 @@ suite('Account picker view model tests', () => {
 		evUpdateAccounts.assertFired(argUpdateAccounts);
 	});
 
-	test('Initialize - Success', done => {
+	test('Initialize - Success', () => {
 		// Setup: Create a viewmodel with event handlers
 		let mockAccountManagementService = getMockAccountManagementService(true, true);
 		let evUpdateAccounts = new EventVerifierSingle<UpdateAccountListEventParams>();
 		let vm = getViewModel(mockAccountManagementService.object, evUpdateAccounts);
 
 		// If: I initialize the view model
-		vm.initialize()
+		return vm.initialize()
 			.then(results => {
 				// Then:
 				// ... None of the events should have fired
@@ -91,20 +91,17 @@ suite('Account picker view model tests', () => {
 				assert.ok(Array.isArray(results));
 				assert.equal(results.length, 2);
 				assert.equal(results, accounts);
-			}).then(
-				() => done(),
-				err => done(err)
-			);
+			});
 	});
 
-	test('Initialize - Get accounts fails expects empty array', done => {
+	test('Initialize - Get accounts fails expects empty array', () => {
 		// Setup: Create a mock account management service that rejects the promise
 		let mockAccountManagementService = getMockAccountManagementService(true, false);
 		let evUpdateAccounts = new EventVerifierSingle<UpdateAccountListEventParams>();
 		let vm = getViewModel(mockAccountManagementService.object, evUpdateAccounts);
 
 		// If: I initialize the view model
-		vm.initialize()
+		return vm.initialize()
 			.then(result => {
 				// Then:
 				// ... None of the events should have fired
@@ -116,11 +113,7 @@ suite('Account picker view model tests', () => {
 				// ... The results should be an empty array
 				assert.ok(Array.isArray(result));
 				assert.equal(result.length, 0);
-				assert.equal(result, []);
-			}).then(
-				() => done(),
-				err => done()
-			);
+			});
 	});
 });
 
