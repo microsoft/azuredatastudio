@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/admin-tool-ext-win/package" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/admin-tool-ext-win/package" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="adminToolExtWin.displayName">
         <source xml:lang="en">Database Administration Tool Extensions for Windows</source>
@@ -20,7 +20,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/admin-tool-ext-win/out/main" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/admin-tool-ext-win/out/main" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="adminToolExtWin.noConnectionContextForProp">
         <source xml:lang="en">No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand</source>
@@ -28,7 +28,7 @@
       </trans-unit>
       <trans-unit id="adminToolExtWin.noOENode">
         <source xml:lang="en">Could not determine Object Explorer node from connectionContext : {0}</source>
-        <target state="translated">Impossible de déterminer le nœud de l'Explorateur d'objets à partir de connectionContext : {0}</target>
+        <target state="translated">Impossible de déterminer le nœud de l'Explorateur d'objets à partir de connectionContext : {0}</target>
       </trans-unit>
       <trans-unit id="adminToolExtWin.noConnectionContextForGsw">
         <source xml:lang="en">No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand</source>
