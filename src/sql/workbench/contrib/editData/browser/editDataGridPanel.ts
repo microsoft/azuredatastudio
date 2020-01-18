@@ -441,12 +441,10 @@ export class EditDataGridPanel extends GridParentComponent {
 							self.table.resizeCanvas();
 						}
 					};
-
 					setTimeout(() => {
 						setActive();
 					});
 				}
-
 				resolve();
 			}, self.refreshGridTimeoutInMs);
 		});
