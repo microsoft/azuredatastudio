@@ -496,7 +496,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		});
 	}
 
-
 	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
 
 	private async revertCurrentRow(): Promise<void> {
@@ -795,7 +794,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				defaultFormatter: undefined,
 				editable: this.enableEditing,
 				autoEdit: this.enableEditing,
-				enableAddRow: false, // TODO change when we support enableAddRow
+				enableAddRow: false,
 				enableAsyncPostRender: false,
 				editorFactory: {
 					getEditor: (column: ISlickColumn<any>) => this.getColumnEditor(column)
@@ -807,8 +806,8 @@ export class EditDataGridPanel extends GridParentComponent {
 				for (let plugin of this.plugins) {
 					this.table.registerPlugin(plugin);
 				}
-				for (let i = 0; i < this.placeHolderDataSets[0].columnDefinitions.length; i++) {
-					this.columnNameToIndex[this.placeHolderDataSets[0].columnDefinitions[i].name] = i;
+				for (let i = 0; i < dataSet.columnDefinitions.length; i++) {
+					this.columnNameToIndex[this.dataSet.columnDefinitions[i].name] = i;
 				}
 			}
 		}
@@ -978,10 +977,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			|| (changes['blurredColumns'] && !equals(changes['blurredColumns'].currentValue, changes['blurredColumns'].previousValue))
 			|| (changes['columnsLoading'] && !equals(changes['columnsLoading'].currentValue, changes['columnsLoading'].previousValue))) {
 			this.setCallbackOnDataRowsChanged();
-			this.table.grid.updateRowCount();
-			this.table.grid.setColumns(this.table.grid.getColumns());
-			this.table.grid.invalidateAllRows();
-			this.table.grid.render();
+			this.table.rerenderGrid(0, this.dataSet.dataRows.getLength());
 			hasGridStructureChanges = true;
 		}
 
@@ -999,41 +995,25 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	private setCallbackOnDataRowsChanged(): void {
+		//check if dataRows exist before we enable editing or slickgrid will complain
 		if (this.dataSet.dataRows) {
-			// We must wait until we get the first set of dataRows before we enable editing or slickgrid will complain
-
-			//line here may be redundant.
-			if (this.enableEditing) {
-				this.enterEditSession();
-			}
-
+			this.changeEditSession(true);
 			this.dataSet.dataRows.setCollectionChangedCallback((startIndex: number, count: number) => {
 				this.renderGridDataRowsRange(startIndex, count);
 			});
 		}
 	}
 
-	// Enables editing on the grid
-	public enterEditSession(): void {
-		this.changeEditSession(true);
-	}
-
-	// Disables editing on the grid
-	public endEditSession(): void {
-		this.changeEditSession(false);
-	}
-
 	private changeEditSession(enabled: boolean): void {
 		this.enableEditing = enabled;
 		let options: any = this.table.grid.getOptions();
 		options.editable = enabled;
-		options.enableAddRow = false; // TODO change to " options.enableAddRow = false;" when we support enableAddRow
+		options.enableAddRow = false;
 		this.table.grid.setOptions(options);
 	}
 
-
 	private renderGridDataRowsRange(startIndex: number, count: number): void {
-		let editor = <any>this.table.grid.getCellEditor();
+		let editor = <Slick.Editors.Text<any>>this.table.grid.getCellEditor();
 		let oldValue = editor ? editor.getValue() : undefined;
 		let wasValueChanged = editor ? editor.isValueChanged() : false;
 		this.invalidateRange(startIndex, startIndex + count);
