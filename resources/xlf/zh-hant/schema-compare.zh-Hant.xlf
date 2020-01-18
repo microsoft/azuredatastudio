@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/schema-compare/package" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/schema-compare/package" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="displayName">
         <source xml:lang="en">SQL Server Schema Compare</source>
@@ -16,7 +16,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/schema-compare/out/dialogs/schemaCompareOptionsDialog" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/schema-compare/out/dialogs/schemaCompareOptionsDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="SchemaCompareOptionsDialog.Ok">
         <source xml:lang="en">Ok</source>
@@ -580,7 +580,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.EventNotifications">
         <source xml:lang="en">Event Notifications</source>
-        <target state="translated">事件告知</target>
+        <target state="translated">事件通知</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.EventSessions">
         <source xml:lang="en">Event Sessions</source>
@@ -624,7 +624,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreTableOptions">
         <source xml:lang="en">Specifies whether differences in the table options will be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，要忽略或更新資料表選項的差異。</target>
+        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新資料表選項的差異。</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreSemicolonBetweenStatements">
         <source xml:lang="en">Specifies whether differences in the semi-colons between T-SQL statements will be ignored or updated when you publish to a database.</source>
@@ -768,7 +768,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.AllowUnsafeRowLevelSecurityDataMovement">
         <source xml:lang="en">Do not block data motion on a table which has Row Level Security if this property is set to true. Default is false.</source>
-        <target state="translated">若此屬性設定為 true，請勿封鎖具有資料列層級安全性之資料表的資料移動 (data motion)。預設為 false。</target>
+        <target state="translated">若此屬性設定為 True，請勿封鎖具有資料列層級安全性之資料表的資料移動 (data motion)。預設為 False。</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnCheckConstraints">
         <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for check constraints will be ignored or updated when you publish to a database.</source>
@@ -792,7 +792,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DoNotAlterChangeDataCaptureObjects">
         <source xml:lang="en">If true, Change Data Capture objects are not altered.</source>
-        <target state="translated">如果為 true，則不會改變變更資料擷取物件。</target>
+        <target state="translated">如果為 True，則不會改變變更資料擷取物件。</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DisableAndReenableDdlTriggers">
         <source xml:lang="en">Specifies whether Data Definition Language (DDL) triggers are disabled at the beginning of the publish process and re-enabled at the end of the publish action.</source>
@@ -800,7 +800,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DeployDatabaseInSingleUserMode">
         <source xml:lang="en">If true, the database is set to Single User Mode before deploying.</source>
-        <target state="translated">若為 true，則會在部署前將資料庫設為單一使用者模式。</target>
+        <target state="translated">若為 True，則會在部署前將資料庫設為單一使用者模式。</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.CreateNewDatabase">
         <source xml:lang="en">Specifies whether the target database should be updated or whether it should be dropped and re-created when you publish to a database.</source>
@@ -808,7 +808,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.CompareUsingTargetCollation">
         <source xml:lang="en">This setting dictates how the database's collation is handled during deployment; by default the target database's collation will be updated if it does not match the collation specified by the source.  When this option is set, the target database's (or server's) collation should be used.</source>
-        <target state="translated">這項設定會指出部署期間的資料庫定序處理方式; 根據預設，如果目標資料庫的定序與來源所指定的定序不相符，就會受到更新。設定此選項時，應使用目標資料庫 (或伺服器) 的定序。</target>
+        <target state="translated">這項設定會指出部署期間的資料庫定序處理方式；根據預設，如果目標資料庫的定序與來源所指定的定序不相符，就會受到更新。設定此選項時，應使用目標資料庫 (或伺服器) 的定序。</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.CommentOutSetVarDeclarations">
         <source xml:lang="en">Specifies whether the declaration of SETVAR variables should be commented out in the generated publish script. You might choose to do this if you plan to specify the values on the command line when you publish by using a tool such as SQLCMD.EXE.</source>
@@ -880,7 +880,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreCryptographicProviderFilePath">
         <source xml:lang="en">Specifies whether differences in the file path for the cryptographic provider should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新密碼編譯提供者之檔案路徑的差異。</target>
+        <target state="translated">指定當您發佈至資料庫時，要忽略或更新密碼編譯提供者之檔案路徑的差異。</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.VerifyDeployment">
         <source xml:lang="en">Specifies whether checks should be performed before publishing that will stop the publish action if issues are present that might block successful publishing. For example, your publish action might stop if you have foreign keys on the target database that do not exist in the database project, and that will cause errors when you publish.</source>
@@ -928,7 +928,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/schema-compare/out/dialogs/schemaCompareDialog" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/schema-compare/out/dialogs/schemaCompareDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="schemaCompareDialog.ok">
         <source xml:lang="en">Ok</source>
@@ -960,7 +960,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.radioButtonsLabel">
         <source xml:lang="en">Type</source>
-        <target state="translated">型別</target>
+        <target state="translated">類型</target>
       </trans-unit>
       <trans-unit id="schemaCompareDialog.serverDropdownTitle">
         <source xml:lang="en">Server</source>
@@ -972,7 +972,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.noActiveConnectionsText">
         <source xml:lang="en">No active connections</source>
-        <target state="translated">沒有使用中的連接</target>
+        <target state="translated">沒有使用中的連線</target>
       </trans-unit>
       <trans-unit id="schemaCompare.dialogTitle">
         <source xml:lang="en">Schema Compare</source>
@@ -980,15 +980,15 @@
       </trans-unit>
       <trans-unit id="schemaCompareDialog.differentSourceMessage">
         <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
-        <target state="translated">已選取其他來源結構描述。要比較以查看比較嗎?</target>
+        <target state="translated">已選取其他來源結構描述。要比較以查看比較結果嗎?</target>
       </trans-unit>
       <trans-unit id="schemaCompareDialog.differentTargetMessage">
         <source xml:lang="en">A different target schema has been selected. Compare to see the comparison?</source>
-        <target state="translated">已選取其他目標結構描述。要比較以查看比較嗎?</target>
+        <target state="translated">已選取其他目標結構描述。要比較以查看比較結果嗎?</target>
       </trans-unit>
       <trans-unit id="schemaCompareDialog.differentSourceTargetMessage">
         <source xml:lang="en">Different source and target schemas have been selected. Compare to see the comparison?</source>
-        <target state="translated">已選取不同的來源和結構描述。要比較以查看比較嗎?</target>
+        <target state="translated">已選取不同的來源和結構描述。要比較以查看比較結果嗎?</target>
       </trans-unit>
       <trans-unit id="schemaCompareDialog.Yes">
         <source xml:lang="en">Yes</source>
@@ -1008,7 +1008,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/schema-compare/out/schemaCompareMainWindow" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/schema-compare/out/schemaCompareMainWindow" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="schemaCompare.CompareDetailsTitle">
         <source xml:lang="en">Compare Details</source>
@@ -1020,7 +1020,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.RecompareToRefresh">
         <source xml:lang="en">Press Compare to refresh the comparison.</source>
-        <target state="translated">按下 [比較] 即可重新整理比較。</target>
+        <target state="translated">按下 [比較] 即可重新整理比較結果。</target>
       </trans-unit>
       <trans-unit id="schemaCompare.generateScriptEnabledButton">
         <source xml:lang="en">Generate script to deploy changes to target</source>
@@ -1048,7 +1048,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.addAction">
         <source xml:lang="en">Add</source>
-        <target state="translated">加入</target>
+        <target state="translated">新增</target>
       </trans-unit>
       <trans-unit id="schemaCompare.Title">
         <source xml:lang="en">Schema Compare</source>
@@ -1068,7 +1068,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.waitText">
         <source xml:lang="en">Initializing Comparison. This might take a moment.</source>
-        <target state="translated">正在將比較初始化。這可能需要一些時間。</target>
+        <target state="translated">正在將比較結果初始化。這可能需要一些時間。</target>
       </trans-unit>
       <trans-unit id="schemaCompare.startText">
         <source xml:lang="en">To compare two schemas, first select a source schema and target schema, then press Compare.</source>
@@ -1084,7 +1084,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.typeColumn">
         <source xml:lang="en">Type</source>
-        <target state="translated">型別</target>
+        <target state="translated">類型</target>
       </trans-unit>
       <trans-unit id="schemaCompare.sourceNameColumn">
         <source xml:lang="en">Source Name</source>
