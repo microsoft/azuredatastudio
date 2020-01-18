@@ -48,7 +48,7 @@ interface IQueryEditorViewState {
  */
 export class QueryEditor extends BaseEditor {
 
-	public static ID: string = 'workbench.editor.queryEditor';
+	public static readonly ID = 'workbench.editor.queryEditor';
 
 	private dimension: DOM.Dimension = new DOM.Dimension(0, 0);
 

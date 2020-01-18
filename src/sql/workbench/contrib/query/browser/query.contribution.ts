@@ -34,7 +34,7 @@ import { FileQueryEditorInputFactory, UntitledQueryEditorInputFactory, QueryEdit
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
 import { registerEditorAction } from 'vs/editor/browser/editorExtensions';
-import { RunQueryEditorAction, RunQuerySelectionEditorAction } from 'sql/workbench/contrib/query/browser/actions';
+import { RunQueryEditorAction, RunQuerySelectionEditorAction, ConnectEditorAction } from 'sql/workbench/contrib/query/browser/queryActions';
 // import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/contrib/query/browser/queryActions';
 // import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
 // import { MssqlNodeContext } from 'sql/workbench/contrib/dataExplorer/browser/mssqlNodeContext';
@@ -64,6 +64,7 @@ const actionRegistry = <IWorkbenchActionRegistry>Registry.as(ActionExtensions.Wo
 
 registerEditorAction(RunQueryEditorAction);
 registerEditorAction(RunQuerySelectionEditorAction);
+registerEditorAction(ConnectEditorAction);
 
 // new NewQueryTask().registerTask();
 

@@ -6,10 +6,10 @@
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 
-import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
+// import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { InsightActionContext } from 'sql/workbench/browser/actions';
-import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+// import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
+// import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class RunInsightQueryAction extends Action {
 	public static ID = 'runQuery';
@@ -17,12 +17,12 @@ export class RunInsightQueryAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@IInstantiationService private readonly instantiationService: IInstantiationService
+		// @IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super(id, label);
 	}
 
 	public run(context: InsightActionContext): Promise<boolean> {
-		return this.instantiationService.invokeFunction(openNewQuery, context.profile, undefined, RunQueryOnConnectionMode.executeQuery).then(() => true, () => false);
+		return Promise.resolve(true);// return this.instantiationService.invokeFunction(openNewQuery, context.profile, undefined, RunQueryOnConnectionMode.executeQuery).then(() => true, () => false);
 	}
 }

@@ -18,6 +18,7 @@ import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { ISelectionData, ExecutionPlanOptions } from 'azdata';
 import { startsWith } from 'vs/base/common/strings';
 import { ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
+import { Selection } from 'vs/editor/common/core/selection';
 
 const MAX_SIZE = 13;
 
@@ -125,7 +126,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IFileService private _fileService: IFileService
+		@IFileService private readonly _fileService: IFileService
 	) {
 		super();
 
@@ -181,13 +182,8 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		return false;
 	}
 
-	public matches(otherInput: any): boolean {
-		// we want to be able to match against our underlying input as well, bascially we are our underlying input
-		if (otherInput instanceof QueryEditorInput) {
-			return this._text.matches(otherInput._text);
-		} else {
-			return this._text.matches(otherInput);
-		}
+	public matches(otherInput: EditorInput): boolean {
+		return this === otherInput || (otherInput instanceof QueryEditorInput && this.text.matches(otherInput));
 	}
 
 	// Forwarding resource functions to the inline sql file editor
@@ -238,8 +234,18 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	// State update funtions
-	public runQuery(selection?: ISelectionData, executePlanOptions?: ExecutionPlanOptions): void {
-		this.queryModelService.runQuery(this.uri, selection, this, executePlanOptions);
+	public runQuery(selection?: ISelectionData | Selection, executePlanOptions?: ExecutionPlanOptions): void {
+		if (selection instanceof Selection) {
+			const selectionData = <ISelectionData> {
+				startLine: selection.getStartPosition().lineNumber - 1,
+				startColumn: selection.getStartPosition().column - 1,
+				endLine: selection.getEndPosition().lineNumber - 1,
+				endColumn: selection.getEndPosition().column - 1
+			};
+			this.queryModelService.runQuery(this.uri, selectionData, this, executePlanOptions);
+		} else {
+			this.queryModelService.runQuery(this.uri, selection, this, executePlanOptions);
+		}
 		this.state.executing = true;
 	}
 

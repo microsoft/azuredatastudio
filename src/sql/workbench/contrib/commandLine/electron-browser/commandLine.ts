@@ -25,8 +25,8 @@ import { URI } from 'vs/base/common/uri';
 import { ILogService } from 'vs/platform/log/common/log';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
+// import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+// import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { IURLService, IURLHandler } from 'vs/platform/url/common/url';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
@@ -56,7 +56,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
 		@INotificationService private readonly _notificationService: INotificationService,
 		@ILogService private readonly logService: ILogService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		// @IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IURLService urlService: IURLService,
 		@IDialogService private readonly dialogService: IDialogService
 	) {
@@ -143,7 +143,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 					this._notificationService.status(localize('openingNewQueryLabel', "Opening new query: {0}", profile.serverName), { hideAfter: 2500 });
 				}
 				try {
-					await this.instantiationService.invokeFunction(openNewQuery, profile);
+					// await this.instantiationService.invokeFunction(openNewQuery, profile);
 				} catch (error) {
 					this.logService.warn('unable to open query editor ' + error);
 					// Note: we are intentionally swallowing this error.
