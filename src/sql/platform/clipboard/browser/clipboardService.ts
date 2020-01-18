@@ -71,6 +71,7 @@ export class BrowserClipboardService implements IClipboardService {
 	}
 
 	readTextSync(): string | undefined {
+		// eslint-disable-next-line no-sync
 		return this._vsClipboardService.readTextSync();
 	}
 }
