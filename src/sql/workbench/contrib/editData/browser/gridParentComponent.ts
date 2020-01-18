@@ -71,7 +71,7 @@ export abstract class GridParentComponent extends Disposable {
 	protected messageActiveBool = true;
 	protected activeGrid = 0;
 	protected nativeElement: HTMLElement;
-	protected tables: Table<any>[] = [];
+	protected table: Table<any>;
 
 	set messageActive(input: boolean) {
 		this.messageActiveBool = input;
@@ -223,7 +223,7 @@ export abstract class GridParentComponent extends Disposable {
 	}
 
 	protected getSelection(index?: number): Slick.Range[] {
-		let selection = this.tables[index || this.activeGrid].getSelectedRanges();
+		let selection = this.table.getSelectedRanges();
 		if (selection) {
 			selection = selection.map(c => { return <Slick.Range>{ fromCell: c.fromCell - 1, toCell: c.toCell - 1, toRow: c.toRow, fromRow: c.fromRow }; });
 			return selection;
@@ -376,7 +376,7 @@ export abstract class GridParentComponent extends Disposable {
 	}
 
 	openContextMenu(event, batchId, resultId, index): void {
-		let grid = this.tables[0].grid;
+		let grid = this.table.grid;
 		let selection = this.getSelection(index);
 
 		if (selection && selection.length === 0) {
@@ -415,16 +415,14 @@ export abstract class GridParentComponent extends Disposable {
 		let self = this;
 		return (gridIndex: number) => {
 			self.activeGrid = gridIndex;
-			let grid = self.tables[self.activeGrid];
+			let grid = self.table;
 			grid.setActive();
 			grid.setSelectedRows(true);
 		};
 	}
 
 	private onSelectAllForActiveGrid(): void {
-		if (this.activeGrid >= 0 && this.tables.length > this.activeGrid) {
-			this.tables[this.activeGrid].setSelectedRows(true);
-		}
+		this.table.setSelectedRows(true);
 	}
 
 	/**
@@ -441,7 +439,7 @@ export abstract class GridParentComponent extends Disposable {
 		}
 		setTimeout(() => {
 			self.resizeGrids();
-			self.tables[0].setActive();
+			self.table.setActive();
 		});
 	}
 
