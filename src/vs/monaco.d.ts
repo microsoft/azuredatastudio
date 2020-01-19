@@ -4492,6 +4492,10 @@ declare namespace monaco.editor {
 		 */
 		getTopForPosition(lineNumber: number, column: number): number;
 		/**
+		 * Returns the editor's container dom node
+		 */
+		getContainerDomNode(): HTMLElement;
+		/**
 		 * Returns the editor's dom node
 		 */
 		getDomNode(): HTMLElement | null;
