@@ -749,7 +749,7 @@ suite.skip('WorkspaceConfigurationService - Folder', () => { // {{SQL CARBON EDI
 				'configurationService.folder.languageSetting': {
 					'type': 'string',
 					'default': 'isSet',
-					scope: ConfigurationScope.RESOURCE_LANGUAGE
+					scope: ConfigurationScope.LANGUAGE_OVERRIDABLE
 				}
 			}
 		});
@@ -1141,7 +1141,7 @@ suite.skip('WorkspaceConfigurationService-Multiroot', () => { // {{SQL CARBON ED
 				'configurationService.workspace.testLanguageSetting': {
 					'type': 'string',
 					'default': 'isSet',
-					scope: ConfigurationScope.RESOURCE_LANGUAGE
+					scope: ConfigurationScope.LANGUAGE_OVERRIDABLE
 				}
 			}
 		});
@@ -1331,7 +1331,7 @@ suite.skip('WorkspaceConfigurationService-Multiroot', () => { // {{SQL CARBON ED
 						'configurationService.workspace.testNewResourceLanguageSetting2': {
 							'type': 'string',
 							'default': 'isSet',
-							scope: ConfigurationScope.RESOURCE_LANGUAGE
+							scope: ConfigurationScope.LANGUAGE_OVERRIDABLE
 						}
 					}
 				});
