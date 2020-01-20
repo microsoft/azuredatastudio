@@ -1427,6 +1427,7 @@ export interface ExtHostTunnelServiceShape {
 	$filterCandidates(candidates: { host: string, port: number, detail: string }[]): Promise<boolean[]>;
 	$forwardPort(tunnelOptions: TunnelOptions): Promise<TunnelDto> | undefined;
 	$closeTunnel(remote: { host: string, port: number }): Promise<void>;
+	$onDidTunnelsChange(): Promise<void>;
 }
 
 // --- proxy identifiers
