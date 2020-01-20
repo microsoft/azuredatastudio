@@ -5905,6 +5905,12 @@ declare namespace monaco.languages {
 		needsConfirmation: boolean;
 		label: string;
 		description?: string;
+		icon?: {
+			id: string;
+		} | {
+			light: Uri;
+			dark: Uri;
+		};
 	}
 
 	export interface WorkspaceFileEditOptions {
