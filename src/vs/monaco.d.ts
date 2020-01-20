@@ -5905,7 +5905,7 @@ declare namespace monaco.languages {
 		needsConfirmation: boolean;
 		label: string;
 		description?: string;
-		icon?: {
+		iconPath?: {
 			id: string;
 		} | {
 			light: Uri;
