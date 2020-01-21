@@ -75,16 +75,6 @@ export const serverDashboardPropertiesSchema: IJSONSchema = {
 
 const defaultVal = [
 	{
-		name: 'Tasks',
-		widget: {
-			'tasks-widget': ['newQuery', 'mssqlCluster.task.newNotebook', { name: 'restore', when: '!mssql:iscloud && mssql:engineedition != 11' }, 'configureDashboard']
-		},
-		gridItemConfig: {
-			sizex: 1,
-			sizey: 1
-		}
-	},
-	{
 		widget: {
 			'backup-history-server-insight': null
 		}

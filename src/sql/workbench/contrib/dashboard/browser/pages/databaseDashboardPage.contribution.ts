@@ -88,22 +88,6 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 	description: nls.localize('dashboardDatabase', "Customizes the database dashboard page"),
 	items: generateDashboardWidgetSchema('database'),
 	default: [
-		{
-			name: 'Tasks',
-			gridItemConfig: {
-				sizex: 1,
-				sizey: 2
-			},
-			widget: {
-				'tasks-widget': [
-					'newQuery',
-					'mssqlCluster.task.newNotebook',
-					{ name: 'backup', when: '!mssql:iscloud && mssql:engineedition != 11' },
-					{ name: 'restore', when: '!mssql:iscloud && mssql:engineedition != 11' },
-					'configureDashboard'
-				]
-			}
-		}
 	]
 };
 
