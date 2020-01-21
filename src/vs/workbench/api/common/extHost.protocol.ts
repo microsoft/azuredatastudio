@@ -1008,10 +1008,14 @@ export const enum ISuggestDataDtoField {
 	additionalTextEdits = 'l',
 	command = 'm',
 	kindModifier = 'n',
+
+	// to merge into label
+	label2 = 'o',
 }
 
 export interface ISuggestDataDto {
 	[ISuggestDataDtoField.label]: string;
+	[ISuggestDataDtoField.label2]?: string | modes.CompletionItemLabel;
 	[ISuggestDataDtoField.kind]: modes.CompletionItemKind;
 	[ISuggestDataDtoField.detail]?: string;
 	[ISuggestDataDtoField.documentation]?: string | IMarkdownString;
@@ -1034,7 +1038,6 @@ export interface ISuggestResultDto {
 	a: { insert: IRange, replace: IRange; };
 	b: ISuggestDataDto[];
 	c?: true;
-	d?: true;
 }
 
 export interface ISignatureHelpDto {
