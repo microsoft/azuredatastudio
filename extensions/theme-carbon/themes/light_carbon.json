@@ -49,6 +49,7 @@
 
 		//List and tree
 		"list.activeSelectionBackground": "#3062d6",
+		"list.inactiveSelectionBackground": "#BBBDC6",
 		"list.hoverBackground": "#dcdcdc",
 		"pickerGroup.border": "#0078d7",
 
