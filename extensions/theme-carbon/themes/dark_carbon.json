@@ -45,7 +45,7 @@
 
 		//List and trees
 		"list.activeSelectionBackground": "#3062d6",
-		"list.inactiveSelectionBackground": "#37373D",
+		"list.inactiveSelectionBackground": "#5B5B60",
 		"list.hoverBackground": "#444444",
 		"pickerGroup.border": "#0078d7",
 		"activityBar.background": "#444444",
