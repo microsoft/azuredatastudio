@@ -51,6 +51,7 @@ import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment, IStatusbarEntry } from 'vs/workbench/services/statusbar/common/statusbar';
 import { IMarker, IMarkerService, MarkerSeverity, IMarkerData } from 'vs/platform/markers/common/markers';
 import { find } from 'vs/base/common/arrays';
+import { STATUS_BAR_PROMINENT_ITEM_BACKGROUND } from 'vs/workbench/common/theme';
 
 // {{SQL CARBON EDIT}}
 import { setMode } from 'sql/workbench/browser/parts/editor/editorStatusModeSelect'; // {{SQL CARBON EDIT}}
@@ -390,7 +391,8 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 				this.tabFocusModeElement.value = this.statusbarService.addEntry({
 					text: nls.localize('tabFocusModeEnabled', "Tab Moves Focus"),
 					tooltip: nls.localize('disableTabMode', "Disable Accessibility Mode"),
-					command: 'editor.action.toggleTabFocusMode'
+					command: 'editor.action.toggleTabFocusMode',
+					backgroundColor: { id: STATUS_BAR_PROMINENT_ITEM_BACKGROUND }
 				}, 'status.editor.tabFocusMode', nls.localize('status.editor.tabFocusMode', "Accessibility Mode"), StatusbarAlignment.RIGHT, 100.7);
 			}
 		} else {
