@@ -439,6 +439,11 @@ function packagePkgTask(platform, arch, pkgTarget) {
 
 			const serverTaskCI = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}${dashed(minified)}-ci`, task.series(
 				gulp.task(`node-${platform}-${platform === 'darwin' ? 'x64' : arch}`),
+				yarnrcExtensions,
+				compileExtensionsBuildTask,
+				cleanupExtensions,
+				rollupAngularTask,
+				rollupAngularSlickgridTask,
 				util.rimraf(path.join(BUILD_ROOT, destinationFolderName)),
 				packageTask(type, platform, arch, sourceFolderName, destinationFolderName)
 			));
@@ -446,12 +451,8 @@ function packagePkgTask(platform, arch, pkgTarget) {
 
 			const serverTask = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
 				compileBuildTask,
-				yarnrcExtensions,
 				compileExtensionsBuildTask,
-				cleanupExtensions,
 				minified ? minifyTask : optimizeTask,
-				rollupAngularTask,
-				rollupAngularSlickgridTask,
 				serverTaskCI
 			));
 			gulp.task(serverTask);
