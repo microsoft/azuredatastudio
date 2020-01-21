@@ -75,12 +75,4 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		// Subclasses need to explicitly opt-in to being untitled.
 		return true;
 	}
-
-	hasBackup(): boolean {
-		if (this.text) {
-			return this.text.hasBackup();
-		}
-
-		return false;
-	}
 }
