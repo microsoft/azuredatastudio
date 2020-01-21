@@ -418,6 +418,8 @@ export class CellModel implements ICellModel {
 	public clearOutputs(): void {
 		this._outputs = [];
 		this.fireOutputsChanged();
+
+		this.executionCount = undefined;
 	}
 
 	private fireOutputsChanged(shouldScroll: boolean = false): void {
@@ -584,7 +586,7 @@ export class CellModel implements ICellModel {
 			cellJson.metadata.language = this._language;
 			cellJson.metadata.tags = metadata.tags;
 			cellJson.outputs = this._outputs;
-			cellJson.execution_count = this.executionCount ? this.executionCount : 0;
+			cellJson.execution_count = this.executionCount ? this.executionCount : null;
 		}
 		return cellJson as nb.ICellContents;
 	}
