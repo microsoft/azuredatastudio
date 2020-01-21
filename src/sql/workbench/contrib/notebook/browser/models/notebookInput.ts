@@ -31,6 +31,7 @@ import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledText
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
+import { NotebookFindModel } from 'sql/workbench/contrib/notebook/find/notebookFindModel';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -165,7 +166,7 @@ export class NotebookEditorModel extends EditorModel {
 		return this.getNotebookModel() !== undefined;
 	}
 
-	private getNotebookModel(): INotebookModel {
+	public getNotebookModel(): INotebookModel {
 		let editor = this.notebookService.findNotebookEditor(this.notebookUri);
 		if (editor) {
 			return editor.model;
@@ -203,6 +204,8 @@ export abstract class NotebookInput extends EditorInput {
 	private _modelResolveInProgress: boolean = false;
 	private _modelResolved: Deferred<void> = new Deferred<void>();
 
+	private _notebookFindModel: NotebookFindModel;
+
 	constructor(private _title: string,
 		private resource: URI,
 		private _textInput: TextInput,
@@ -231,6 +234,13 @@ export abstract class NotebookInput extends EditorInput {
 
 	public get notebookUri(): URI {
 		return this.resource;
+	}
+
+	public get notebookFindModel(): NotebookFindModel {
+		if (!this._notebookFindModel) {
+			this._notebookFindModel = new NotebookFindModel(this._model.getNotebookModel());
+		}
+		return this._notebookFindModel;
 	}
 
 	public get contentManager(): IContentManager {
@@ -452,7 +462,7 @@ export abstract class NotebookInput extends EditorInput {
 	}
 }
 
-class NotebookEditorContentManager implements IContentManager {
+export class NotebookEditorContentManager implements IContentManager {
 	constructor(
 		private notebookInput: NotebookInput,
 		@IInstantiationService private readonly instantiationService: IInstantiationService) {

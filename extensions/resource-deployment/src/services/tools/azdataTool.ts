@@ -117,7 +117,7 @@ export class AzdataTool extends ToolBase {
 			{
 				sudo: true,
 				comment: localize('resourceDeployment.Azdata.DownloadingAndInstallingAzdata', "downloading Azdata.msi and installing azdata-cli …"),
-				command: `powershell -Command "& {(New-Object System.Net.WebClient).DownloadFile('${this.azdataInstallLocation}', 'Azdata.msi'); Start-Process msiexec.exe -Wait -ArgumentList '/I Azdata.msi /passive /quiet /lvx ADS_AzdataInstall.log'}"`
+				command: `powershell -NoLogo -NonInteractive -NoProfile -Command "& {try {(New-Object System.Net.WebClient).DownloadFile('${this.azdataInstallLocation}', 'Azdata.msi'); Start-Process msiexec.exe -Wait -ArgumentList '/I Azdata.msi /passive /quiet /lvx ADS_AzdataInstall.log'} catch { Write-Error $_.Exception; exit 1 }}"`
 			},
 			{
 				comment: localize('resourceDeployment.Azdata.DisplayingInstallationLog', "displaying the installation log …"),

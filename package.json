@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.15.0",
-  "distro": "1ea70f8c965707516bf389622a3fc2aeb8a0321b",
+  "distro": "43977c86b13c8e09cd1cdfe0ae0d0f2c06216b73",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -100,6 +100,7 @@
     "@types/plotly.js": "^1.44.9",
     "@types/sanitize-html": "^1.18.2",
     "@types/sinon": "^1.16.36",
+    "@types/vscode-windows-registry": "^1.0.0",
     "@types/webpack": "^4.4.10",
     "@types/windows-foreground-love": "^0.3.0",
     "@types/windows-mutex": "^0.4.0",

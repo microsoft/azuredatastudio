@@ -243,7 +243,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		return false;
 	}
 
-	private buildHistoryTree(self: any, jobHistories: azdata.AgentJobHistoryInfo[]) {
+	private buildHistoryTree(self: JobHistoryComponent, jobHistories: azdata.AgentJobHistoryInfo[]) {
 		self._treeController.jobHistories = jobHistories;
 		let jobHistoryRows: JobHistoryRow[] = this._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
 		let sortedRows = jobHistoryRows.sort((row1, row2) => {
@@ -278,6 +278,14 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 
 	public goToJobs(): void {
 		this._agentViewComponent.showHistory = false;
+	}
+
+	private convertToJobHistoryRow(historyInfo: azdata.AgentJobHistoryInfo): JobHistoryRow {
+		let jobHistoryRow = new JobHistoryRow();
+		jobHistoryRow.runDate = this.formatTime(historyInfo.runDate);
+		jobHistoryRow.runStatus = JobManagementUtilities.convertToStatusString(historyInfo.runStatus);
+		jobHistoryRow.instanceID = historyInfo.instanceId;
+		return jobHistoryRow;
 	}
 
 	private formatTime(time: string): string {

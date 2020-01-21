@@ -130,7 +130,7 @@ steps:
             "toolVersion": "1.0"
           }
         ]
-      SessionTimeout: 20
+      SessionTimeout: 125
     condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |

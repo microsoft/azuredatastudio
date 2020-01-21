@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/mssql/package" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/package" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="json.schemas.desc">
         <source xml:lang="en">Associate schemas to JSON files in the current project</source>
@@ -60,7 +60,7 @@
       </trans-unit>
       <trans-unit id="notebook.command.open">
         <source xml:lang="en">Open Notebook</source>
-        <target state="translated">Открыть Notebook</target>
+        <target state="translated">Открыть записную книжку</target>
       </trans-unit>
       <trans-unit id="tab.bigDataClusterDescription">
         <source xml:lang="en">Tasks and information about your SQL Server Big Data Cluster</source>
@@ -68,7 +68,7 @@
       </trans-unit>
       <trans-unit id="title.bigDataCluster">
         <source xml:lang="en">SQL Server Big Data Cluster</source>
-        <target state="translated">Кластер больших данных SQL Server</target>
+        <target state="translated">Кластер больших данных SQL Server</target>
       </trans-unit>
       <trans-unit id="title.submitSparkJob">
         <source xml:lang="en">Submit Spark Job</source>
@@ -100,11 +100,11 @@
       </trans-unit>
       <trans-unit id="title.searchServers">
         <source xml:lang="en">Search: Servers</source>
-        <target state="translated">Поиск: Серверы</target>
+        <target state="translated">Поиск: серверы</target>
       </trans-unit>
       <trans-unit id="title.clearSearchServerResult">
         <source xml:lang="en">Search: Clear Search Server Results</source>
-        <target state="translated">Поиск: Очистить результаты поиска сервера</target>
+        <target state="translated">Поиск: очистить результаты поиска сервера</target>
       </trans-unit>
       <trans-unit id="title.endpoints">
         <source xml:lang="en">Service Endpoints</source>
@@ -124,7 +124,7 @@
       </trans-unit>
       <trans-unit id="mssql.query.displayBitAsNumber">
         <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
-        <target state="translated">Нужно ли отображать столбцы BIT как числа (1 или 0)? Если задано значение false, столбцы BIT будут отображаться как "true" или "false"</target>
+        <target state="translated">Нужно ли отображать столбцы BIT как числа (1 или 0)? Если задано значение FALSE, столбцы BIT будут отображаться как "TRUE" или "FALSE"</target>
       </trans-unit>
       <trans-unit id="mssql.format.alignColumnDefinitionsInColumns">
         <source xml:lang="en">Should column definitions be aligned?</source>
@@ -140,23 +140,23 @@
       </trans-unit>
       <trans-unit id="mssql.format.placeCommasBeforeNextStatement">
         <source xml:lang="en">should commas be placed at the beginning of each statement in a list e.g. ', mycolumn2' instead of at the end e.g. 'mycolumn1,'</source>
-        <target state="translated">нужно ли ставить запятые в начале каждого оператора в списке, например ", mycolumn2", а не в конце, например "mycolumn1,"</target>
+        <target state="translated">Следует ли ставить запятые в начале каждой инструкции в списке, например ", mycolumn2", а не в конце, например "mycolumn1,"</target>
       </trans-unit>
       <trans-unit id="mssql.format.placeSelectStatementReferencesOnNewLine">
         <source xml:lang="en">Should references to objects in a select statements be split into separate lines? E.g. for 'SELECT C1, C2 FROM T1' both C1 and C2 will be on separate lines</source>
-        <target state="translated">Нужно ли разделять на отдельные строки ссылки на объекты в выбранных операторах? Например, для "SELECT C1, C2 FROM T1" как C1, так и C2 будут находиться на отдельных строках</target>
+        <target state="translated">Нужно ли разделять на отдельные строки ссылки на объекты в выбранных инструкциях? Например, для "SELECT C1, C2 FROM T1" как C1, так и C2 будут находиться на отдельных строках</target>
       </trans-unit>
       <trans-unit id="mssql.logDebugInfo">
         <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
-        <target state="translated">[Дополнительно] Выведите выходные данные отладки в консоль (Вид --&gt; Вывод), а затем выберите подходящий выходной канал в раскрывающемся списке</target>
+        <target state="translated">[Необязательно] Выведите выходные данные отладки в консоль (Вид -&gt; Вывод), а затем выберите подходящий выходной канал в раскрывающемся списке</target>
       </trans-unit>
       <trans-unit id="mssql.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
-        <target state="translated">[Дополнительно] Уровень ведения журнала для серверных служб. Azure Data Studio создает имя файла при каждом запуске, а если такой файл уже существует, записи журналов добавляются в него. Для очистки старых файлов журналов см. описание параметров logRetentionMinutes и logFilesRemovalLimit. Параметр tracingLevel по умолчанию регистрирует не слишком многое. Изменение детализации может привести к тому, что журналы будут занимать слишком много места. Ошибка включает критический уровень, предупреждение включает ошибку, информационный уровень включает предупреждение, а подробный уровень включает информационный уровень</target>
+        <target state="translated">[Необязательно] Уровень ведения журнала для серверных служб. Azure Data Studio создает имя файла при каждом запуске, а если такой файл уже существует, записи журналов добавляются в него. Для очистки старых файлов журналов см. описание параметров logRetentionMinutes и logFilesRemovalLimit. Параметр tracingLevel по умолчанию регистрирует не слишком многое. Изменение детализации может привести к тому, что журналы будут занимать слишком много места. Ошибка включает критический уровень, предупреждение включает ошибку, информационный уровень включает предупреждение, а подробный уровень включает информационный уровень.</target>
       </trans-unit>
       <trans-unit id="mssql.logRetentionMinutes">
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
-        <target state="translated">Срок хранения файлов журналов (в минутах) для серверных служб. По умолчанию задана 1 неделя.</target>
+        <target state="translated">Срок хранения файлов журналов (в минутах) для серверных служб. По умолчанию задана 1 неделя.</target>
       </trans-unit>
       <trans-unit id="mssql.logFilesRemovalLimit">
         <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
@@ -164,11 +164,11 @@
       </trans-unit>
       <trans-unit id="ignorePlatformWarning">
         <source xml:lang="en">[Optional] Do not show unsupported platform warnings</source>
-        <target state="translated">[Дополнительно] Не показывать предупреждения для неподдерживаемых платформ</target>
+        <target state="translated">[Необязательно] Не показывать предупреждения для неподдерживаемых платформ</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.recoveryModel">
         <source xml:lang="en">Recovery Model</source>
-        <target state="translated">Recovery Model</target>
+        <target state="translated">Модель восстановления</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.lastBackupDate">
         <source xml:lang="en">Last Database Backup</source>
@@ -180,7 +180,7 @@
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.compatibilityLevel">
         <source xml:lang="en">Compatibility Level</source>
-        <target state="translated">Compatibility Level</target>
+        <target state="translated">Уровень совместимости</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.owner">
         <source xml:lang="en">Owner</source>
@@ -212,7 +212,7 @@
       </trans-unit>
       <trans-unit id="cloud.databaseProperties.compatibilityLevel">
         <source xml:lang="en">Compatibility Level</source>
-        <target state="translated">Compatibility Level</target>
+        <target state="translated">Уровень совместимости</target>
       </trans-unit>
       <trans-unit id="cloud.databaseProperties.owner">
         <source xml:lang="en">Owner</source>
@@ -264,7 +264,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.authType.categoryValues.sqlLogin">
         <source xml:lang="en">SQL Login</source>
-        <target state="translated">SQL Login</target>
+        <target state="translated">Имя входе SQL</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.authType.categoryValues.integrated">
         <source xml:lang="en">Windows Authentication</source>
@@ -272,7 +272,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
         <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory — универсальный с поддержкой MFA</target>
+        <target state="translated">Azure Active Directory — универсальный с поддержкой MFA</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.userName.displayName">
         <source xml:lang="en">User name</source>
@@ -296,7 +296,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.applicationIntent.description">
         <source xml:lang="en">Declares the application workload type when connecting to a server</source>
-        <target state="translated">Объявляет тип рабочей нагрузки приложения при соединении с сервером</target>
+        <target state="translated">Объявляет тип рабочей нагрузки приложения при подключении к серверу</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.asynchronousProcessing.displayName">
         <source xml:lang="en">Asynchronous processing</source>
@@ -304,7 +304,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.asynchronousProcessing.description">
         <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
-        <target state="translated">Когда задано значение true, разрешено использовать асинхронные функции в поставщике данных .NET Framework</target>
+        <target state="translated">Когда задано значение TRUE, разрешено использовать асинхронные функции в поставщике данных .NET Framework</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectTimeout.displayName">
         <source xml:lang="en">Connect timeout</source>
@@ -336,7 +336,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.description">
         <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
-        <target state="translated">Когда задано значение true, SQL Server использует шифрование SSL для всех данных, передаваемых между клиентом и сервером, если на сервере установлен сертификат</target>
+        <target state="translated">Когда задано значение TRUE, SQL Server использует шифрование SSL для всех данных, передаваемых между клиентом и сервером, если на сервере установлен сертификат</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.persistSecurityInfo.displayName">
         <source xml:lang="en">Persist security info</source>
@@ -344,7 +344,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.persistSecurityInfo.description">
         <source xml:lang="en">When false, security-sensitive information, such as the password, is not returned as part of the connection</source>
-        <target state="translated">Если задано значение false, то секретные данные (например, пароль) не возвращаются в составе подключения</target>
+        <target state="translated">Если задано значение FALSE, то секретные данные (например, пароль) не возвращаются в составе подключения</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.trustServerCertificate.displayName">
         <source xml:lang="en">Trust server certificate</source>
@@ -352,7 +352,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.trustServerCertificate.description">
         <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
-        <target state="translated">Когда задано значение true (и encrypt=true), SQL Server использует шифрование SSL для всех данных, передаваемых между клиентом и сервером без проверки сертификата сервера</target>
+        <target state="translated">Когда задано значение TRUE (и encrypt=true), SQL Server использует шифрование SSL для всех данных, передаваемых между клиентом и сервером без проверки сертификата сервера</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.attachedDBFileName.displayName">
         <source xml:lang="en">Attached DB file name</source>
@@ -368,7 +368,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.contextConnection.description">
         <source xml:lang="en">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</source>
-        <target state="translated">Если задано значение true, указывает, что подключение должно быть произведено в контексте SQL Server. Доступно только при выполнении в процессе SQL Server</target>
+        <target state="translated">Если задано значение TRUE, указывает, что подключение должно быть произведено в контексте SQL Server. Доступно только при выполнении в процессе SQL Server.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.port.displayName">
         <source xml:lang="en">Port</source>
@@ -384,7 +384,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectRetryInterval.displayName">
         <source xml:lang="en">Connect retry interval</source>
-        <target state="translated">Интервал повторных попыток для подключения</target>
+        <target state="translated">Интервал повторных попыток подключения</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectRetryInterval.description">
         <source xml:lang="en">Delay between attempts to restore connection</source>
@@ -412,7 +412,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.pooling.description">
         <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
-        <target state="translated">Если задано значение true, объект соединения извлекается из соответствующего пула или при необходимости создается и добавляется в соответствующий пул</target>
+        <target state="translated">Если задано значение TRUE, объект соединения извлекается из соответствующего пула или при необходимости создается и добавляется в соответствующий пул</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.maxPoolSize.displayName">
         <source xml:lang="en">Max pool size</source>
@@ -468,7 +468,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.multipleActiveResultSets.description">
         <source xml:lang="en">When true, multiple result sets can be returned and read from one connection</source>
-        <target state="translated">Если задано значение true, из одного подключения может быть возвращено и считано несколько результирующих наборов</target>
+        <target state="translated">Если задано значение TRUE, из одного подключения может быть возвращено и считано несколько результирующих наборов</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.packetSize.displayName">
         <source xml:lang="en">Packet size</source>
@@ -488,7 +488,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/localizedConstants" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="msgMissingNodeContext">
         <source xml:lang="en">Node Command called without any node passed</source>
@@ -508,11 +508,11 @@
       </trans-unit>
       <trans-unit id="mssql.ownerPostfix">
         <source xml:lang="en"> - Owner</source>
-        <target state="translated"> - Владелец</target>
+        <target state="translated"> — Владелец</target>
       </trans-unit>
       <trans-unit id="mssql.owningGroupPostfix">
         <source xml:lang="en"> - Owning Group</source>
-        <target state="translated">- Группа-владелец</target>
+        <target state="translated"> — Группа-владелец</target>
       </trans-unit>
       <trans-unit id="mssql.everyone">
         <source xml:lang="en">Everyone else</source>
@@ -568,7 +568,7 @@
       </trans-unit>
       <trans-unit id="mssql.addLabel">
         <source xml:lang="en">Add</source>
-        <target state="translated">добавить</target>
+        <target state="translated">Добавить</target>
       </trans-unit>
       <trans-unit id="mssql.namedUsersAndGroups">
         <source xml:lang="en">Named Users and Groups</source>
@@ -580,67 +580,67 @@
       </trans-unit>
       <trans-unit id="mssql.applyRecursively">
         <source xml:lang="en">Apply Recursively</source>
-        <target state="translated">Применить Рекурсивно</target>
+        <target state="translated">Применить рекурсивно</target>
       </trans-unit>
       <trans-unit id="mssql.errorApplyingAclChanges">
         <source xml:lang="en">Unexpected error occurred while applying changes : {0}</source>
         <target state="translated">Непредвиденная ошибка при применении изменений: {0}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_LocalFileDestinationHint">
         <source xml:lang="en">Local file will be uploaded to HDFS. </source>
         <target state="translated">Локальный файл будет отправлен в HDFS.</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SubmissionEndMessage">
         <source xml:lang="en">.......................... Submit Spark Job End ............................</source>
         <target state="translated">.......................... Конец отправки задания Spark ............................</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_PrepareUploadingFile">
         <source xml:lang="en">Uploading file from local {0} to HDFS folder: {1}</source>
         <target state="translated">Отправка файла из локального {0} в папку HDFS: {1}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_UploadingFileSucceeded">
         <source xml:lang="en">Upload file to cluster Succeeded!</source>
         <target state="translated">Отправка файла в кластер успешно завершена.</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_UploadingFileFailed">
         <source xml:lang="en">Upload file to cluster Failed. {0}</source>
         <target state="translated">Отправка файла в кластер завершилась сбоем. {0}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_PrepareSubmitJob">
         <source xml:lang="en">Submitting job {0} ... </source>
-        <target state="translated">Отправка задания {0}...</target>
+        <target state="translated">Отправка задания {0}…</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SubmitJobFinished">
         <source xml:lang="en">The Spark Job has been submitted.</source>
         <target state="translated">Задание Spark было отправлено.</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SubmitJobFailed">
         <source xml:lang="en">Spark Job Submission Failed. {0} </source>
         <target state="translated">Сбой при отправке задания Spark. {0}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_YarnUIMessage">
         <source xml:lang="en">YarnUI Url: {0} </source>
         <target state="translated">URL-адрес YarnUI: {0}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SparkHistoryLinkMessage">
         <source xml:lang="en">Spark History Url: {0} </source>
         <target state="translated">URL-адрес журнала Spark: {0}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_GetApplicationIdFailed">
         <source xml:lang="en">Get Application Id Failed. {0}</source>
         <target state="translated">Сбой при получении идентификатора приложения. {0}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_LocalFileNotExisted">
         <source xml:lang="en">Local file {0} does not existed. </source>
         <target state="translated">Локальный файл {0} не существует.</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_NoSqlBigDataClusterFound">
         <source xml:lang="en">No SQL Server Big Data Cluster found.</source>
-        <target state="translated">Кластер больших данных Sql Server не найден.</target>
+        <target state="translated">Кластер больших данных SQL Server не найден.</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/fileSources" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/fileSources" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="maxSizeNotice">
         <source xml:lang="en">NOTICE: This file has been truncated at {0} for preview. </source>
@@ -652,11 +652,11 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/command" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/command" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="progress">
         <source xml:lang="en">$(sync~spin) {0}...</source>
-        <target state="translated">$(sync~spin) {0}...</target>
+        <target state="translated">$(sync~spin) {0}…</target>
       </trans-unit>
       <trans-unit id="cancelTooltip">
         <source xml:lang="en">Cancel</source>
@@ -672,19 +672,19 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionService" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionService" source-language="en" datatype="plaintext" target-language="ru">
     <body>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_LivyNoBatchIdReturned">
         <source xml:lang="en">No Spark job batch id is returned from response.{0}[Error] {1}</source>
         <target state="translated">Идентификатор пакета задания Spark не возвращен из ответа.{0}[Ошибка] {1}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_LivyNoLogReturned">
         <source xml:lang="en">No log is returned within response.{0}[Error] {1}</source>
         <target state="translated">Журнал не возвращен в ответе.{0}[Ошибка] {1}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/hdfsCommands" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/hdfsCommands" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="allFiles">
         <source xml:lang="en">All Files</source>
@@ -736,7 +736,7 @@
       </trans-unit>
       <trans-unit id="saving">
         <source xml:lang="en">Saving HDFS Files</source>
-        <target state="translated">Выполняется сохранение файлов HDFS</target>
+        <target state="translated">Идет сохранение файлов HDFS</target>
       </trans-unit>
       <trans-unit id="saveCanceled">
         <source xml:lang="en">Save operation was canceled</source>
@@ -764,7 +764,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/hdfs/webhdfs" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/hdfs/webhdfs" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="webhdfs.invalidDataStructure">
         <source xml:lang="en">Invalid Data Structure</source>
@@ -808,23 +808,23 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/connection" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/connection" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="connectionInfoUndefined">
         <source xml:lang="en">ConnectionInfo is undefined.</source>
-        <target state="translated">ConnectionInfo не определен.</target>
+        <target state="translated">Параметр ConnectionInfo не определен.</target>
       </trans-unit>
       <trans-unit id="connectionInfoOptionsUndefined">
         <source xml:lang="en">ConnectionInfo.options is undefined.</source>
-        <target state="translated">ConnectionInfo.options не определен.</target>
+        <target state="translated">Параметр ConnectionInfo.options не определен.</target>
       </trans-unit>
       <trans-unit id="connectionInfoOptionsMissingProperties">
         <source xml:lang="en">Some missing properties in connectionInfo.options: {0}</source>
-        <target state="translated">Отсутствуют некоторые свойства в connectionInfo.options: {0}</target>
+        <target state="translated">Отсутствуют некоторые свойства в параметре connectionInfo.options: {0}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/telemetry" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/telemetry" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="viewKnownIssuesText">
         <source xml:lang="en">View Known Issues</source>
@@ -836,11 +836,11 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/main" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/main" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="msgSampleCodeDataFrame">
         <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
-        <target state="translated">Этот пример кода загружает файл в кадр данных и отображает первые 10 результатов.</target>
+        <target state="translated">Этот пример кода загружает файл в кадр данных и отображает первые 10 результатов.</target>
       </trans-unit>
       <trans-unit id="notebookFileType">
         <source xml:lang="en">Notebooks</source>
@@ -856,7 +856,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/hdfs/hdfsModel" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/hdfs/hdfsModel" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="mssql.recursivePermissionOpStarted">
         <source xml:lang="en">Applying permission changes recursively under '{0}'</source>
@@ -864,7 +864,7 @@
       </trans-unit>
       <trans-unit id="mssql.recursivePermissionOpSucceeded">
         <source xml:lang="en">Permission changes applied successfully.</source>
-        <target state="translated">Изменения разрешений успешно применены.</target>
+        <target state="translated">Изменения разрешений применены.</target>
       </trans-unit>
       <trans-unit id="mssql.recursivePermissionOpProgress">
         <source xml:lang="en">Applying permission changes to '{0}'.</source>
@@ -876,7 +876,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/prompts/confirm" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/prompts/confirm" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="msgYes">
         <source xml:lang="en">Yes</source>
@@ -888,145 +888,145 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/dialogCommands" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/sparkFeature/dialog/dialogCommands" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="selectOtherServer">
         <source xml:lang="en">Select other SQL Server</source>
-        <target state="translated">Выберите другой SQL Server</target>
+        <target state="translated">Выберите другой сервер SQL Server</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_PleaseSelectSqlWithCluster">
         <source xml:lang="en">Please select SQL Server with Big Data Cluster.</source>
-        <target state="translated">Выберите SQL Server с кластером больших данных.</target>
+        <target state="translated">Выберите сервер SQL Server с кластером больших данных.</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_NoSqlSelected">
         <source xml:lang="en">No SQL Server is selected.</source>
-        <target state="translated">SQL Server нее выбран.</target>
+        <target state="translated">Сервер SQL Server не выбран.</target>
       </trans-unit>
       <trans-unit id="errorNotSqlBigDataCluster">
         <source xml:lang="en">The selected server does not belong to a SQL Server Big Data Cluster</source>
         <target state="translated">Выбранный сервер не относится к кластеру больших данных SQL Server</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_GetFilePathFromSelectedNodeFailed">
         <source xml:lang="en">Error Get File Path: {0}</source>
         <target state="translated">Ошибка при получении пути к файлу: {0}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionDialog" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionDialog" source-language="en" datatype="plaintext" target-language="ru">
     <body>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SparkJobSubmissionDialogInitializeError">
         <source xml:lang="en">Parameters for SparkJobSubmissionDialog is illegal</source>
         <target state="translated">Недопустимые параметры для SparkJobSubmissionDialog</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_DialogTitleNewJob">
         <source xml:lang="en">New Job</source>
-        <target state="translated">Создание задания</target>
+        <target state="translated">Новое задание</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_DialogCancelButton">
         <source xml:lang="en">Cancel</source>
         <target state="translated">Отмена</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_DialogSubmitButton">
         <source xml:lang="en">Submit</source>
         <target state="translated">Отправить</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SubmitSparkJob">
         <source xml:lang="en">{0} Spark Job Submission:</source>
         <target state="translated">Отправка задания Spark {0}:</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SubmissionStartMessage">
         <source xml:lang="en">.......................... Submit Spark Job Start ..........................</source>
-        <target state="translated">.......................... Начало отправки задания Spark ..........................</target>
+        <target state="translated">…………………….. Начало отправки задания Spark ……………………..</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionModel" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionModel" source-language="en" datatype="plaintext" target-language="ru">
     <body>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SparkJobSubmissionModelInitializeError">
         <source xml:lang="en">Parameters for SparkJobSubmissionModel is illegal</source>
         <target state="translated">Недопустимые параметры для SparkJobSubmissionModel</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_submissionArgsIsInvalid">
         <source xml:lang="en">submissionArgs is invalid. </source>
         <target state="translated">Недопустимый submissionArgs.</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_LivyBatchIdIsInvalid">
         <source xml:lang="en">livyBatchId is invalid. </source>
         <target state="translated">Недопустимый livyBatchId.</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_GetApplicationIdTimeOut">
         <source xml:lang="en">Get Application Id time out. {0}[Log]   {1}</source>
         <target state="translated">Истекло время ожидания при получении идентификатора приложения. {0}[Журнал]   {1}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_localFileOrFolderNotSpecified.">
         <source xml:lang="en">Property localFilePath or hdfsFolderPath is not specified. </source>
         <target state="translated">Не указано свойство localFilePath или hdfsFolderPath.</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_PathNotSpecified.">
         <source xml:lang="en">Property Path is not specified. </source>
         <target state="translated">Путь к свойству не указан.</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkConfigurationTab" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkConfigurationTab" source-language="en" datatype="plaintext" target-language="ru">
     <body>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_GeneralTabName">
         <source xml:lang="en">GENERAL</source>
         <target state="translated">Общее</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_JobNamePlaceHolder">
         <source xml:lang="en">Enter a name ...</source>
-        <target state="translated">Введите имя...</target>
+        <target state="translated">Введите имя…</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_JobName">
         <source xml:lang="en">Job Name</source>
         <target state="translated">Имя задания</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SparkCluster">
         <source xml:lang="en">Spark Cluster</source>
         <target state="translated">Кластер Spark</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_FilePathPlaceHolder">
         <source xml:lang="en">Path to a .jar or .py file</source>
         <target state="translated">Путь к файлу JAR или PY</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_LocalFileDestinationHintWithPath">
         <source xml:lang="en">The selected local file will be uploaded to HDFS: {0}</source>
         <target state="translated">Выбранный локальный файл будет отправлен в HDFS: {0}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_MainFilePath">
         <source xml:lang="en">JAR/py File</source>
-        <target state="translated">ФАЙЛ JAR/py</target>
+        <target state="translated">Файл JAR/py</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_MainClass">
         <source xml:lang="en">Main Class</source>
         <target state="translated">Класс Main</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_Arguments">
         <source xml:lang="en">Arguments</source>
         <target state="translated">Аргументы</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_ArgumentsTooltip">
         <source xml:lang="en">Command line arguments used in your main class, multiple arguments should be split by space.</source>
         <target state="translated">Аргументы командной строки, используемые в классе main; несколько аргументов следует разделять пробелом.</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_NotSpecifyJobName">
         <source xml:lang="en">Property Job Name is not specified.</source>
         <target state="translated">Имя задания свойства не указано.</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_NotSpecifyJARPYPath">
         <source xml:lang="en">Property JAR/py File is not specified.</source>
         <target state="translated">Не указан файл свойств JAR/PY.</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_NotSpecifyMainClass">
         <source xml:lang="en">Property Main Class is not specified.</source>
         <target state="translated">Не указан класс свойств Main.</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_HDFSFileNotExistedWithPath">
         <source xml:lang="en">{0} does not exist in Cluster or exception thrown. </source>
         <target state="translated">{0} не существует в кластере, или возникло исключение.</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_HDFSFileNotExisted">
         <source xml:lang="en">The specified HDFS file does not exist. </source>
         <target state="translated">Указанный файл HDFS не существует. </target>
       </trans-unit>
@@ -1034,45 +1034,45 @@
         <source xml:lang="en">Select</source>
         <target state="translated">Выбрать</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SelectFileError">
         <source xml:lang="en">Error in locating the file due to Error: {0}</source>
         <target state="translated">Не удалось обнаружить файл из-за ошибки: {0}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab" source-language="en" datatype="plaintext" target-language="ru">
     <body>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_AdvancedTabName">
         <source xml:lang="en">ADVANCED</source>
         <target state="translated">Дополнительный</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_ReferenceJarList">
         <source xml:lang="en">Reference Jars</source>
-        <target state="translated">JAR-файлы ссылок</target>
+        <target state="translated">Ссылки на JAR-файлы</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_ReferenceJarListToolTip">
         <source xml:lang="en">Jars to be placed in executor working directory. The Jar path needs to be an HDFS Path. Multiple paths should be split by semicolon (;)</source>
         <target state="translated">JAR-файлы, помещаемые в рабочий каталог исполнителя. Путь к JAR-файлу должен быть путем HDFS. Несколько путей следует разделять точкой с запятой (;)</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_ReferencePyList">
         <source xml:lang="en">Reference py Files</source>
         <target state="translated">PY-файлы ссылок</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_ReferencePyListTooltip">
         <source xml:lang="en">Py Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
         <target state="translated">Файлы PY, помещаемые в рабочий каталог исполнителя. Путь к файлу должен быть путем HDFS. Несколько путей следует разделять точкой с запятой (;)</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_ReferenceFilesList">
         <source xml:lang="en">Reference Files</source>
         <target state="translated">Файлы ссылок</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_ReferenceFilesListTooltip">
         <source xml:lang="en">Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
         <target state="translated">Файлы, помещаемые в рабочий каталог исполнителя. Путь к файлу должен быть путем HDFS. Несколько путей следует разделять точкой с запятой (;)</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/objectExplorerNodeProvider" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/objectExplorerNodeProvider" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="prmptPwd">
         <source xml:lang="en">Please provide the password to connect to HDFS:</source>
@@ -1088,7 +1088,7 @@
       </trans-unit>
       <trans-unit id="hdfsFolder">
         <source xml:lang="en">HDFS</source>
-        <target state="translated">Hdfs</target>
+        <target state="translated">HDFS</target>
       </trans-unit>
       <trans-unit id="rootLabel">
         <source xml:lang="en">Root</source>
@@ -1096,7 +1096,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/hdfsProvider" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/hdfsProvider" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="errorExpanding">
         <source xml:lang="en">Error: {0}</source>
@@ -1104,11 +1104,11 @@
       </trans-unit>
       <trans-unit id="errDeleteConnectionNode">
         <source xml:lang="en">Cannot delete a connection. Only subfolders and files can be deleted.</source>
-        <target state="translated">Не удается удалить соединение. Можно удалить только вложенные папки и файлы.</target>
+        <target state="translated">Не удается удалить подключение. Можно удалить только вложенные папки и файлы.</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/cancelableStream" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/cancelableStream" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="streamCanceled">
         <source xml:lang="en">Stream operation canceled by the user</source>
@@ -1116,7 +1116,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/dashboard/serviceEndpoints" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/dashboard/serviceEndpoints" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="grafana">
         <source xml:lang="en">Metrics Dashboard</source>
@@ -1132,11 +1132,11 @@
       </trans-unit>
       <trans-unit id="yarnHistory">
         <source xml:lang="en">Spark Diagnostics and Monitoring Dashboard</source>
-        <target state="translated">Панель мониторинга для отслеживания и управления Spark</target>
+        <target state="translated">Панель мониторинга для отслеживания и диагностики Spark</target>
       </trans-unit>
       <trans-unit id="copyText">
         <source xml:lang="en">Copy</source>
-        <target state="translated">Копирование</target>
+        <target state="translated">Копировать</target>
       </trans-unit>
       <trans-unit id="endpoint.appproxy">
         <source xml:lang="en">Application Proxy</source>
@@ -1184,11 +1184,11 @@
       </trans-unit>
       <trans-unit id="endpoint.livy">
         <source xml:lang="en">Proxy for running Spark statements, jobs, applications</source>
-        <target state="translated">Прокси-сервер для выполнения инструкций, заданий, приложений Spark</target>
+        <target state="translated">Прокси-сервер для выполнения инструкций, заданий и приложений Spark</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/sqlToolsServer" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/mssql/dist/sqlToolsServer" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="serviceStartedStatusMsg">
         <source xml:lang="en">{0} Started</source>
@@ -1216,7 +1216,7 @@
       </trans-unit>
       <trans-unit id="downloadingServiceChannelMsg">
         <source xml:lang="en">Downloading {0}</source>
-        <target state="translated">Загрузка {0}</target>
+        <target state="translated">Идет загрузка {0}</target>
       </trans-unit>
       <trans-unit id="downloadingServiceSizeChannelMsg">
         <source xml:lang="en">({0} KB)</source>
@@ -1224,7 +1224,7 @@
       </trans-unit>
       <trans-unit id="downloadingServiceStatusMsg">
         <source xml:lang="en">Downloading {0}</source>
-        <target state="translated">Загрузка {0}</target>
+        <target state="translated">Идет загрузка {0}</target>
       </trans-unit>
       <trans-unit id="downloadServiceDoneChannelMsg">
         <source xml:lang="en">Done installing {0}</source>

@@ -33,20 +33,27 @@ export function registerCmsServerCommand(appContext: AppContext, tree: CmsResour
 					return server.name === registeredCmsServerName;
 				});
 			}
-			if (!serverExists) {
-				// remove any group ID if user selects a connection from
-				// recent connection list
-				connection.options.groupId = null;
-				let registeredCmsServerDescription = connection.options.registeredServerDescription;
-				let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
-				appContext.cmsUtils.cacheRegisteredCmsServer(registeredCmsServerName, registeredCmsServerDescription, ownerUri, connection);
-				tree.notifyNodeChanged(undefined);
-			} else {
-				// error out for same server name
+
+			// don't allow duplicate server entries
+			if (serverExists) {
 				let errorText = localize('cms.errors.sameCmsServerName', "Central Management Server Group already has a Registered Server with the name {0}", registeredCmsServerName);
-				appContext.apiWrapper.showErrorMessage(errorText);
 				throw new Error(errorText);
 			}
+
+			// don't allow azure servers
+			let isCloud: boolean = connection.options.isCloud;
+			if (isCloud) {
+				let errorText = localize('cms.errors.azureNotAllowed', "Azure SQL Servers cannot be used as Central Management Servers");
+				throw new Error(errorText);
+			}
+
+			// remove any group ID if user selects a connection from
+			// recent connection list
+			connection.options.groupId = null;
+			let registeredCmsServerDescription = connection.options.registeredServerDescription;
+			let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
+			appContext.cmsUtils.cacheRegisteredCmsServer(registeredCmsServerName, registeredCmsServerDescription, ownerUri, connection);
+			tree.notifyNodeChanged(undefined);
 		}
 	});
 }

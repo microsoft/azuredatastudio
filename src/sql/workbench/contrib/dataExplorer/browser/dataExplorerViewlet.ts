@@ -46,8 +46,6 @@ export class OpenDataExplorerViewletAction extends ShowViewletAction {
 	}
 }
 
-export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer(VIEWLET_ID, ViewContainerLocation.Sidebar);
-
 export class DataExplorerViewletViewsContribution implements IWorkbenchContribution {
 
 	constructor() {
@@ -106,7 +104,7 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 		@IMenuService private menuService: IMenuService,
 		@IContextKeyService private contextKeyService: IContextKeyService
 	) {
-		super(VIEWLET_ID, `${VIEWLET_ID}.state`, { showHeaderInTitleWhenSingleView: true }, instantiationService, configurationService, layoutService, contextMenuService, telemetryService, extensionService, themeService, storageService, contextService);
+		super(VIEWLET_ID, `${VIEWLET_ID}.state`, { mergeViewWithContainerWhenSingleView: true }, instantiationService, configurationService, layoutService, contextMenuService, telemetryService, extensionService, themeService, storageService, contextService);
 	}
 
 	create(parent: HTMLElement): void {
@@ -157,3 +155,10 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 		return viewletPanel;
 	}
 }
+
+export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
+	id: VIEWLET_ID,
+	name: localize('dataexplorer.name', "Connections"),
+	ctorDescriptor: { ctor: DataExplorerViewPaneContainer },
+	icon: 'dataExplorer'
+}, ViewContainerLocation.Sidebar);

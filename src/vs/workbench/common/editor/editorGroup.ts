@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { Extensions, IEditorInputFactoryRegistry, EditorInput, IEditorIdentifier, IEditorCloseEvent, GroupIdentifier, CloseDirection, SideBySideEditorInput, IEditorInput } from 'vs/workbench/common/editor';
+import { Extensions, IEditorInputFactoryRegistry, EditorInput, IEditorIdentifier, IEditorCloseEvent, GroupIdentifier, CloseDirection, SideBySideEditorInput, IEditorInput, EditorsOrder } from 'vs/workbench/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
 import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
@@ -136,8 +136,8 @@ export class EditorGroup extends Disposable {
 		return this.editors.length;
 	}
 
-	getEditors(mru?: boolean): EditorInput[] {
-		return mru ? this.mru.slice(0) : this.editors.slice(0);
+	getEditors(order: EditorsOrder): EditorInput[] {
+		return order === EditorsOrder.MOST_RECENTLY_ACTIVE ? this.mru.slice(0) : this.editors.slice(0);
 	}
 
 	getEditorByIndex(index: number): EditorInput | undefined {
@@ -676,7 +676,7 @@ export class EditorGroup extends Disposable {
 		this.editors = coalesce(data.editors.map(e => {
 			const factory = registry.getEditorInputFactory(e.id);
 			if (factory) {
-				const editor = this.instantiationService.invokeFunction(doHandleUpgrade, factory.deserialize(this.instantiationService, e.value)); // {{SQL CARBON EDIT}} handle upgrade path to new serialization
+				const editor = doHandleUpgrade(factory.deserialize(this.instantiationService, e.value)); // {{SQL CARBON EDIT}} handle upgrade path to new serialization
 				if (editor) {
 					this.registerEditorListeners(editor);
 				}
