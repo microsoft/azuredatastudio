@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { DataSource } from './dataSources';
+import * as constants from '../../common/constants';
 
 export class SqlConnectionDataSource extends DataSource {
 	readonly connectionString: string;
@@ -18,7 +19,7 @@ export class SqlConnectionDataSource extends DataSource {
 	}
 
 	public get friendlyName(): string {
-		return 'SQL connection string';
+		return constants.sqlConnectionStringFriendly;
 	}
 
 	constructor(name: string, connectionString: string) {
@@ -31,7 +32,7 @@ export class SqlConnectionDataSource extends DataSource {
 			const split = component.split('=');
 
 			if (split.length !== 2) {
-				throw new Error('Invalid SQL connection string');
+				throw new Error(constants.invalidSqlConnectionString);
 			}
 
 			this.connectionStringComponents[split[0]] = split[1];

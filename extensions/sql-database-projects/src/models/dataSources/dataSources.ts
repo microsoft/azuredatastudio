@@ -57,6 +57,6 @@ function createDataSource(json: DataSourceJson): DataSource {
 		case SqlConnectionDataSource.type:
 			return SqlConnectionDataSource.fromJson(json);
 		default:
-			throw new Error(`Unknown data source type: ${json.type}`);
+			throw new Error(constants.unknownDataSourceType + json.type);
 	}
 }
