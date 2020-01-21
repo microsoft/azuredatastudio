@@ -32,12 +32,12 @@ import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/bro
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
 		cell_type: CellTypes.Code,
-		source: 'insert into t1 values (c1, c2) \nINSERT into markdown values (*hello worls*)',
+		source: ['insert into t1 values (c1, c2) ', 'INSERT into markdown values (*hello worls*)'],
 		metadata: { language: 'python' },
 		execution_count: 1
 	}, {
 		cell_type: CellTypes.Markdown,
-		source: 'I am *markdown insertImportant*',
+		source: ['I am *markdown insertImportant*'],
 		metadata: { language: 'python' },
 		execution_count: 1
 	}],

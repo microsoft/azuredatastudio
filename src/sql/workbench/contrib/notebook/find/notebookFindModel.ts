@@ -526,63 +526,57 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 	private searchFn(cell: ICellModel, exp: string, matchCase: boolean = false, wholeWord: boolean = false, maxMatches?: number): NotebookRange[] {
 		let findResults: NotebookRange[] = [];
 		let cellVal = cell.cellType === 'markdown' ? this.cleanUpCellSource(cell.source) : cell.source;
-		let index: number;
-		let start: number;
-		let end: number;
-		let wholeWordRegex = new RegExp(`\\b${exp}\\b`);
 		if (cellVal) {
 
 			if (typeof cellVal === 'string') {
-				index = 0;
-				let cellValFormatted = cellVal;
-				if (!matchCase) {
-					cellValFormatted = cellVal.toLocaleLowerCase();
-					exp = exp.toLocaleLowerCase();
-					wholeWordRegex = new RegExp(`\\b${exp}\\b`);
-				}
-				while (cellValFormatted.substr(index).indexOf(exp) > -1) {
-					if (wholeWord) {
-						start = cellValFormatted.substr(index).search(wholeWordRegex);
-						if (start < 0) {
-							break;
-						}
-					} else {
-						start = cellValFormatted.substr(index).indexOf(exp) + index + 1;
-					}
-					end = start + exp.length;
-					let range = new NotebookRange(cell, 0, start, 0, end);
-					findResults = findResults.concat(range);
-					index = end;
-				}
+				let findStartResults = this.search(cellVal, exp, matchCase, wholeWord, maxMatches);
+				findStartResults.forEach(start => {
+					let range = new NotebookRange(cell, 0, start, 0, start + exp.length);
+					findResults.push(range);
+				});
+
 			} else {
 				for (let j = 0; j < cellVal.length; j++) {
-					index = 0;
 					let cellValFormatted = cell.cellType === 'markdown' ? this.cleanMarkdownLinks(cellVal[j]) : cellVal[j];
-					if (!matchCase) {
-						cellValFormatted = cellValFormatted.toLocaleLowerCase();
-						exp = exp.toLocaleLowerCase();
-						wholeWordRegex = new RegExp(`\\b${exp}\\b`);
-					}
-					while (cellValFormatted.substr(index).indexOf(exp) > -1) {
-						if (wholeWord) {
-							start = cellValFormatted.substr(index).search(wholeWordRegex);
-							if (start < 0) {
-								break;
-							}
-						} else {
-							start = cellValFormatted.substr(index).indexOf(exp) + index + 1;
-						}
-						end = start + exp.length;
+					let findStartResults = this.search(cellValFormatted, exp, matchCase, wholeWord, maxMatches - findResults.length);
+					findStartResults.forEach(start => {
 						// lineNumber: j+1 since notebook editors aren't zero indexed.
-						let range = new NotebookRange(cell, j + 1, start, j + 1, end);
-						findResults = findResults.concat(range);
-						index = end;
-					}
-					if (findResults.length >= maxMatches) {
-						break;
-					}
+						let range = new NotebookRange(cell, j + 1, start, j + 1, start + exp.length);
+						findResults.push(range);
+					});
 				}
 			}
+		}
+		return findResults;
+	}
+
+	escapeRegExp(text: string): string {
+		return text.replace(/[-[\]{}()*+!<=:?.\/\\^$|#\s,]/g, '\\$&');
+	}
+
+	search(input: string, exp: string, matchCase: boolean = false, wholeWord: boolean = false, maxMatches?: number): number[] {
+		let index: number = 0;
+		let start: number;
+		let findResults: number[] = [];
+		let wholeWordRegex = new RegExp(`\\b${this.escapeRegExp(exp)}\\s`);
+		if (!matchCase) {
+			input = input.toLocaleLowerCase();
+			exp = exp.toLocaleLowerCase();
+			wholeWordRegex = new RegExp(`\\b${this.escapeRegExp(exp)}\\s`);
+		}
+		let searchText: string = input.substr(index);
+		while (findResults.length < maxMatches && searchText.indexOf(exp) > -1) {
+			if (wholeWord) {
+				start = searchText.search(wholeWordRegex) + 1;
+				if (start < 1) {
+					break;
+				}
+			} else {
+				start = searchText.indexOf(exp) + index + 1;
+			}
+			findResults.push(start);
+			index = start + exp.length;
+			searchText = input.substr(index);
 		}
 		return findResults;
 	}
