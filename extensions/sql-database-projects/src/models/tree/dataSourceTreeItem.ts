@@ -63,13 +63,11 @@ export class SqlConnectionDataSourceTreeItem extends DataSourceTreeItem {
 	}
 }
 
-// TODO: should this be constructed by the treeItem or by the dataSource?
 export function constructDataSourceTreeItem(dataSource: DataSource, dataSourcesNode: DataSourcesTreeItem): DataSourceTreeItem {
 	switch (dataSource.type) {
 		case SqlConnectionDataSource.type:
 			return new SqlConnectionDataSourceTreeItem(dataSource as SqlConnectionDataSource, dataSourcesNode);
-			break;
 		default:
-			throw new Error('Unknown data source type');
+			throw new Error(constants.unknownDataSourceType + dataSource.type);
 	}
 }
