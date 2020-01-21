@@ -562,10 +562,12 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 			input = input.toLocaleLowerCase();
 			exp = exp.toLocaleLowerCase();
 		}
-		let wholeWordRegex = new RegExp(`\\b${this.escapeRegExp(exp)}\\s`);
 		let searchText: string = input.substr(index);
 		while (findResults.length < maxMatches && searchText.indexOf(exp) > -1) {
 			if (wholeWord) {
+				// word in itself with no spcl characters around \\bword\\b, word ending w/ spcl character \\bword\\s
+				// word begins w/ spcl character \\sword\\b and word that begins and ends with spcl character \\sword\\s
+				let wholeWordRegex = new RegExp(`\\b${this.escapeRegExp(exp)}\\b|\\b${this.escapeRegExp(exp)}\\s|\\s${this.escapeRegExp(exp)}\\b|\\s${this.escapeRegExp(exp)}\\s`);
 				start = searchText.search(wholeWordRegex) + 1;
 				if (start < 1) {
 					break;

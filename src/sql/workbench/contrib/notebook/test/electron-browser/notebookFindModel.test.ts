@@ -232,8 +232,8 @@ suite('Notebook Find Model', function (): void {
 		//initialize find
 		let notebookFindModel = new NotebookFindModel(model);
 		// test for string with special character
-		await notebookFindModel.find('{special}', false, false, max_find_count);
-		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed for search term with spcl character');
+		await notebookFindModel.find('{special}', true, true, max_find_count);
+		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed for search term with special character');
 		// test for only special character !!
 		await notebookFindModel.find('!!', false, false, max_find_count);
 		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed for special character');
@@ -264,11 +264,14 @@ suite('Notebook Find Model', function (): void {
 		//initialize find
 		let notebookFindModel = new NotebookFindModel(model);
 
-		await notebookFindModel.find('/', false, false, max_find_count);
-		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed');
+		await notebookFindModel.find('/', true, false, max_find_count);
+		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed to find number of / occurances');
 
-		await notebookFindModel.find('//', false, false, max_find_count);
-		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed');
+		await notebookFindModel.find('//', true, false, max_find_count);
+		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed to find number of // occurances');
+
+		await notebookFindModel.find('//', true, true, max_find_count);
+		assert.equal(notebookFindModel.findMatches.length, 0, 'Find failed to apply match whole word for //');
 	});
 
 
