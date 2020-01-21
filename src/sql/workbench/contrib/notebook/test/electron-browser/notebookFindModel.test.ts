@@ -32,7 +32,7 @@ import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/bro
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
 		cell_type: CellTypes.Code,
-		source: ['insert into t1 values (c1, c2) ', 'INSERT into markdown values (*hello worls*)'],
+		source: ['insert into t1 values (c1, c2) ', 'INSERT into markdown values (*hello world*)'],
 		metadata: { language: 'python' },
 		execution_count: 1
 	}, {
@@ -210,6 +210,67 @@ suite('Notebook Find Model', function (): void {
 		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed to apply whole word filter while searching');
 
 	});
+
+	test('Should find special characters in the search term without problems', async function (): Promise<void> {
+		let codeContent: nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Code,
+				source: ['import x', 'x.init()', '//am just adding a bunch of {special} <characters> !!!!$}'],
+				metadata: { language: 'python' },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'python',
+					language: 'python'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		await initNotebookModel(codeContent);
+		//initialize find
+		let notebookFindModel = new NotebookFindModel(model);
+		// test for string with special character
+		await notebookFindModel.find('{special}', false, false, max_find_count);
+		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed for search term with spcl character');
+		// test for only special character !!
+		await notebookFindModel.find('!!', false, false, max_find_count);
+		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed for special character');
+
+		// test for only special character combination
+		await notebookFindModel.find('!!!$}', false, false, max_find_count);
+		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed for special character combination');
+	});
+
+	test('Should find // characters in the search term correctly', async function (): Promise<void> {
+		let codeContent: nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Code,
+				source: ['import x', 'x.init()', '//am just adding a bunch of {special} <characters> !test$}'],
+				metadata: { language: 'python' },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'python',
+					language: 'python'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		await initNotebookModel(codeContent);
+		//initialize find
+		let notebookFindModel = new NotebookFindModel(model);
+
+		await notebookFindModel.find('/', false, false, max_find_count);
+		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed');
+
+		await notebookFindModel.find('//', false, false, max_find_count);
+		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed');
+	});
+
 
 	async function initNotebookModel(contents: nb.INotebookContents): Promise<void> {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);

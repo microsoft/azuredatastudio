@@ -558,12 +558,11 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		let index: number = 0;
 		let start: number;
 		let findResults: number[] = [];
-		let wholeWordRegex = new RegExp(`\\b${this.escapeRegExp(exp)}\\s`);
 		if (!matchCase) {
 			input = input.toLocaleLowerCase();
 			exp = exp.toLocaleLowerCase();
-			wholeWordRegex = new RegExp(`\\b${this.escapeRegExp(exp)}\\s`);
 		}
+		let wholeWordRegex = new RegExp(`\\b${this.escapeRegExp(exp)}\\s`);
 		let searchText: string = input.substr(index);
 		while (findResults.length < maxMatches && searchText.indexOf(exp) > -1) {
 			if (wholeWord) {
@@ -576,7 +575,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 			}
 			findResults.push(start);
 			index = start + exp.length;
-			searchText = input.substr(index);
+			searchText = input.substr(index - 1);
 		}
 		return findResults;
 	}
