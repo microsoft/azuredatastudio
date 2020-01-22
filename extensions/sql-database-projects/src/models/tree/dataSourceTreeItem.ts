@@ -11,6 +11,9 @@ import { ProjectRootTreeItem } from './projectTreeItem';
 import { DataSource } from '../dataSources/dataSources';
 import { SqlConnectionDataSource } from '../dataSources/sqlConnectionStringSource';
 
+/**
+ * Folder for containing DataSource nodes in the tree
+ */
 export class DataSourcesTreeItem extends BaseProjectTreeItem {
 	private dataSources: DataSourceTreeItem[] = [];
 
@@ -37,6 +40,9 @@ export class DataSourcesTreeItem extends BaseProjectTreeItem {
 
 abstract class DataSourceTreeItem extends BaseProjectTreeItem { }
 
+/**
+ * Tree item representing a SQL connection string data source
+ */
 export class SqlConnectionDataSourceTreeItem extends DataSourceTreeItem {
 	private dataSource: SqlConnectionDataSource;
 
@@ -52,6 +58,9 @@ export class SqlConnectionDataSourceTreeItem extends DataSourceTreeItem {
 		return item;
 	}
 
+	/**
+	 * SQL connection string components, displayed as key-value pairs
+	 */
 	public get children(): BaseProjectTreeItem[] {
 		const result: MessageTreeItem[] = [];
 
@@ -63,11 +72,14 @@ export class SqlConnectionDataSourceTreeItem extends DataSourceTreeItem {
 	}
 }
 
+/**
+ * Constructs a new TreeItem for the specific given DataSource type
+ */
 export function constructDataSourceTreeItem(dataSource: DataSource, dataSourcesNode: DataSourcesTreeItem): DataSourceTreeItem {
 	switch (dataSource.type) {
 		case SqlConnectionDataSource.type:
 			return new SqlConnectionDataSourceTreeItem(dataSource as SqlConnectionDataSource, dataSourcesNode);
 		default:
-			throw new Error(constants.unknownDataSourceType + dataSource.type);
+			throw new Error(constants.unknownDataSourceType + dataSource.type); // TODO: elegant handling of unknown dataSource type instead of failure
 	}
 }

@@ -7,6 +7,9 @@ import { promises as fs } from 'fs';
 import * as constants from '../../common/constants';
 import { SqlConnectionDataSource } from './sqlConnectionStringSource';
 
+/**
+ * Abstract class for a datasource in a project
+ */
 export abstract class DataSource {
 	public name: string;
 	public abstract get type(): string;
@@ -17,6 +20,9 @@ export abstract class DataSource {
 	}
 }
 
+/**
+ * parses the specified file to load DataSource objects
+ */
 export async function load(dataSourcesFilePath: string): Promise<DataSource[]> {
 	let fileContents;
 
@@ -52,6 +58,9 @@ export async function load(dataSourcesFilePath: string): Promise<DataSource[]> {
 	return output;
 }
 
+/**
+ * Creates DataSource object from JSON
+ */
 function createDataSource(json: DataSourceJson): DataSource {
 	switch (json.type) {
 		case SqlConnectionDataSource.type:

@@ -9,6 +9,9 @@ import { BaseProjectTreeItem } from './baseTreeItem';
 import { ProjectRootTreeItem } from './projectTreeItem';
 import { Project } from '../project';
 
+/**
+ * Node representing a folder in a project
+ */
 export class FolderNode extends BaseProjectTreeItem {
 	public fileChildren: { [childName: string]: (FolderNode | FileNode) } = {};
 	public fileSystemUri: vscode.Uri;
@@ -31,6 +34,9 @@ export class FolderNode extends BaseProjectTreeItem {
 	}
 }
 
+/**
+ * Node representing a file in a project
+ */
 export class FileNode extends BaseProjectTreeItem {
 	public fileSystemUri: vscode.Uri;
 
@@ -48,6 +54,9 @@ export class FileNode extends BaseProjectTreeItem {
 	}
 }
 
+/**
+ * Converts a full filesystem URI to a project-relative URI that's compatible with the project tree
+ */
 function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootTreeItem): vscode.Uri {
 	const projBaseDir = path.dirname(projectNode.project.projectFile);
 	let localUri = '';

@@ -6,6 +6,9 @@
 import { DataSource } from './dataSources';
 import * as constants from '../../common/constants';
 
+/**
+ * Contains information about a SQL connection string data source`
+ */
 export class SqlConnectionDataSource extends DataSource {
 	readonly connectionString: string;
 	readonly connectionStringComponents: { [id: string]: string } = {};
@@ -44,6 +47,9 @@ export class SqlConnectionDataSource extends DataSource {
 	}
 }
 
+/**
+ * JSON structure for a SQL connection string data source
+ */
 interface SqlConnectionDataSourceJson {
 	connectionString: string;
 }

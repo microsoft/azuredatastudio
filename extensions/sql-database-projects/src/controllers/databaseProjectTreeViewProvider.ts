@@ -10,6 +10,9 @@ import { BaseProjectTreeItem, MessageTreeItem } from '../models/tree/baseTreeIte
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { Project } from '../models/project';
 
+/**
+ * Tree view for database projects
+ */
 export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvider<BaseProjectTreeItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<BaseProjectTreeItem | undefined> = new vscode.EventEmitter<BaseProjectTreeItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<BaseProjectTreeItem | undefined> = this._onDidChangeTreeData.event;

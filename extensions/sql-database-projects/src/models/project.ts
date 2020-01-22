@@ -9,6 +9,9 @@ import * as path from 'path';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 
+/**
+ * Class representing a Project, and providing functions for operating on it
+ */
 export class Project {
 	public projectFile: string;
 	public files: ProjectEntry[] = [];
@@ -18,6 +21,9 @@ export class Project {
 		this.projectFile = projectFilePath;
 	}
 
+	/**
+	 * Reads the project setting and contents from the file
+	 */
 	public async readProjFile() {
 		let projFileContents = await fs.readFile(this.projectFile);
 
@@ -59,7 +65,13 @@ export class Project {
 	}
 }
 
+/**
+ * Represents an entry in a project file
+ */
 export class ProjectEntry {
+	/**
+	 * Absolute file system URI
+	 */
 	uri: vscode.Uri;
 	type: EntryType;
 

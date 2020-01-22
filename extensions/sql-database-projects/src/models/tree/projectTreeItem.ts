@@ -11,6 +11,9 @@ import * as fileTree from './fileFolderTreeItem';
 import { Project, ProjectEntry, EntryType } from '../project';
 import * as utils from '../../common/utils';
 
+/**
+ * TreeNode root that represents an entire project
+ */
 export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	dataSourceNode: DataSourcesTreeItem;
 	fileChildren: { [childName: string]: (fileTree.FolderNode | fileTree.FileNode) } = {};
@@ -43,6 +46,9 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 		return new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Expanded);
 	}
 
+	/**
+	 * Processes the list of files in a project file to constructs the tree
+	 */
 	private construct() {
 		for (const entry of this.project.files) {
 			const parentNode = this.getEntryParentNode(entry);
@@ -64,10 +70,9 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 		}
 	}
 
-	public get fileSystemUri(): vscode.Uri {
-		return vscode.Uri.file(path.dirname(this.project.projectFile));
-	}
-
+	/**
+	 * Gets the immediate parent tree node for an entry in a project file
+	 */
 	private getEntryParentNode(entry: ProjectEntry): fileTree.FolderNode | ProjectRootTreeItem {
 		const relativePathParts = utils.trimChars(utils.trimUri(vscode.Uri.file(this.project.projectFile), entry.uri), '/').split('/').slice(0, -1); // remove the last part because we only care about the parent
 
@@ -79,7 +84,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 		for (const part of relativePathParts) {
 			if (current.fileChildren[part] === undefined) {
-				current.fileChildren[part] = new fileTree.FolderNode(vscode.Uri.file(path.join(current.fileSystemUri.fsPath, part)), current);
+				current.fileChildren[part] = new fileTree.FolderNode(vscode.Uri.file(path.join(path.dirname(this.project.projectFile), part)), current);
 			}
 
 			if (current.fileChildren[part] instanceof fileTree.FileNode) {

@@ -6,6 +6,9 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 
+/**
+ * Base class for an item that appears in the ADS project tree
+ */
 export abstract class BaseProjectTreeItem {
 	uri: vscode.Uri;
 	parent?: BaseProjectTreeItem;
@@ -30,6 +33,9 @@ export abstract class BaseProjectTreeItem {
 	}
 }
 
+/**
+ * Leaf tree item that just displays text for messaging purposes
+ */
 export class MessageTreeItem extends BaseProjectTreeItem {
 	private message: string;
 

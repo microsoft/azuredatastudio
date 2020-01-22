@@ -10,6 +10,9 @@ import * as path from 'path';
 import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
 
+/**
+ * Controller for managing project lifecycle
+ */
 export class ProjectsController {
 	private projectTreeViewProvider: SqlDatabaseProjectTreeViewProvider;
 
