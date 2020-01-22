@@ -178,7 +178,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			this._component = componentRef.instance;
 			const actions = componentRef.instance.actions;
 			if (componentRef.instance.refresh) {
-				actions.push(new RefreshWidgetAction(this.refresh, this));
+				actions.push(new RefreshWidgetAction(this.refresh, this, 'refresh-toolbar'));
 			}
 			if (actions !== undefined && actions.length > 0) {
 				this._actions = actions;

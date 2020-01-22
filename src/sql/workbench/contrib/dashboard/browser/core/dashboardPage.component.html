@@ -6,7 +6,9 @@
 -->
 <panel class="dashboard-panel" (onTabChange)="handleTabChange($event)" (onTabClose)="handleTabClose($event)"
 	[actions]="panelActions">
-	<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize"
+	<div class="editor-toolbar" style="flex: 0 0 auto; display: flex; flex-flow: row; width: 100%; align-items: center;border-bottom-color:rgb(234, 234, 234); border-bottom-width: 1px; border-bottom-style: solid;height:26px;" #actionBar>
+	</div>
+		<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize"
 		[identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions" [type]="tab.type">
 		<ng-template>
 			<dashboard-home-container *ngIf="tab.id === 'homeTab'; else not_home" [properties]="propertiesWidget"
@@ -15,8 +17,6 @@
 			<ng-template #not_home>
 				<dashboard-webview-container *ngIf="getContentType(tab) === 'webview-container'" [tab]="tab">
 				</dashboard-webview-container>
-				<dashboard-widget-container *ngIf="getContentType(tab) === 'widgets-container'" [tab]="tab">
-				</dashboard-widget-container>
 				<dashboard-modelview-container *ngIf="getContentType(tab) === 'modelview-container'" [tab]="tab">
 				</dashboard-modelview-container>
 				<dashboard-controlhost-container *ngIf="getContentType(tab) === 'controlhost-container'" [tab]="tab">
