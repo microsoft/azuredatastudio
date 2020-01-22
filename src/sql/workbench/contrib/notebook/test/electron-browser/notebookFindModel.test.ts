@@ -265,10 +265,10 @@ suite('Notebook Find Model', function (): void {
 		let notebookFindModel = new NotebookFindModel(model);
 
 		await notebookFindModel.find('/', true, false, max_find_count);
-		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed to find number of / occurances');
+		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed to find number of / occurrences');
 
 		await notebookFindModel.find('//', true, false, max_find_count);
-		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed to find number of // occurances');
+		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed to find number of // occurrences');
 
 		await notebookFindModel.find('//', true, true, max_find_count);
 		assert.equal(notebookFindModel.findMatches.length, 0, 'Find failed to apply match whole word for //');

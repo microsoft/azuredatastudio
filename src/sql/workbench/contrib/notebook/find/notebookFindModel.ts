@@ -550,6 +550,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		return findResults;
 	}
 
+	// escape the special characters in a regex string
 	escapeRegExp(text: string): string {
 		return text.replace(/[-[\]{}()*+!<=:?.\/\\^$|#\s,]/g, '\\$&');
 	}
@@ -565,7 +566,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		let searchText: string = input.substr(index);
 		while (findResults.length < maxMatches && searchText.indexOf(exp) > -1) {
 			if (wholeWord) {
-				// word in itself with no spcl characters around \\bword\\b, word that begins or ends with spcl character \\sword\\s
+				// word in itself with no special characters around \\bword\\b, word that begins or ends with special character \\sword\\s
 				let wholeWordRegex = new RegExp(`(\\b|\\s)${this.escapeRegExp(exp)}(\\b|\\s)`);
 				start = searchText.search(wholeWordRegex) + 1;
 				if (start < 1) {
