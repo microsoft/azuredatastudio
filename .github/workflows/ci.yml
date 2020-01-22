@@ -35,14 +35,14 @@ jobs:
       name: Install Dependencies
     - run: yarn electron x64
       name: Download Electron
-    - run: yarn gulp hygiene --skip-tslint
+    - run: yarn gulp hygiene
       name: Run Hygiene Checks
-    - run: yarn gulp tslint
-      name: Run TSLint Checks
     - run: yarn strict-null-check # {{SQL CARBON EDIT}} add step
       name: Run Strict Null Check
     # - run: yarn monaco-compile-check {{SQL CARBON EDIT}} remove step
     #   name: Run Monaco Editor Checks
+    - run: yarn valid-layers-check
+      name: Run Valid Layers Checks
     - run: yarn compile
       name: Compile Sources
     # - run: yarn download-builtin-extensions {{SQL CARBON EDIT}} remove step
@@ -69,14 +69,14 @@ jobs:
       name: Install Dependencies
     - run: yarn electron
       name: Download Electron
-    - run: yarn gulp hygiene --skip-tslint
+    - run: yarn gulp hygiene
       name: Run Hygiene Checks
-    - run: yarn gulp tslint
-      name: Run TSLint Checks
     - run: yarn strict-null-check # {{SQL CARBON EDIT}} add step
       name: Run Strict Null Check
     # - run: yarn monaco-compile-check {{SQL CARBON EDIT}} remove step
     #   name: Run Monaco Editor Checks
+    - run: yarn valid-layers-check
+      name: Run Valid Layers Checks
     - run: yarn compile
       name: Compile Sources
     # - run: yarn download-builtin-extensions {{SQL CARBON EDIT}} remove step
@@ -100,14 +100,14 @@ jobs:
       name: Install Dependencies
     - run: yarn electron x64
       name: Download Electron
-    - run: yarn gulp hygiene --skip-tslint
+    - run: yarn gulp hygiene
       name: Run Hygiene Checks
-    - run: yarn gulp tslint
-      name: Run TSLint Checks
     - run: yarn strict-null-check # {{SQL CARBON EDIT}} add step
       name: Run Strict Null Check
     # - run: yarn monaco-compile-check {{SQL CARBON EDIT}} remove step
     #   name: Run Monaco Editor Checks
+    - run: yarn valid-layers-check
+      name: Run Valid Layers Checks
     - run: yarn compile
       name: Compile Sources
     # - run: yarn download-builtin-extensions {{SQL CARBON EDIT}} remove step
