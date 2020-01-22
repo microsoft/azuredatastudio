@@ -46,7 +46,7 @@ declare module 'azdata' {
 		 * @param providerId The ID that the provider was registered with
 		 * @param providerType The type of the provider
 		 */
-		export function getProvider<T extends DataProvider>(providerId: string, providerType: DataProviderType): DataProvider;
+		export function getProvider<T extends DataProvider>(providerId: string, providerType: DataProviderType): T;
 
 		/**
 		 * Get all registered providers of the given type
