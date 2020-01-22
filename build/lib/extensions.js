@@ -212,8 +212,7 @@ const rebuildExtensions = [
     'big-data-cluster',
     'mssql'
 ];
-const builtInExtensions = process.env['VSCODE_QUALITY'] === 'stable' ? require('../builtInExtensions.json') : require('../builtInExtensions-insiders.json');
-// {{SQL CARBON EDIT}} - End
+const builtInExtensions = require('../builtInExtensions.json');
 function packageLocalExtensionsStream() {
     const localExtensionDescriptions = glob.sync('extensions/*/package.json')
         .map(manifestPath => {
