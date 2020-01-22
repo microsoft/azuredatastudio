@@ -4,8 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 // This code is originally from https://github.com/Microsoft/vscode/blob/master/src/vs/base/test/node/port.test.ts
 
-'use strict';
-
 import * as assert from 'assert';
 import * as net from 'net';
 import 'mocha';
@@ -61,4 +59,3 @@ describe('Ports', () => {
 		}, err => done(err));
 	});
 });
-

@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as path from 'path';
 import * as os from 'os';

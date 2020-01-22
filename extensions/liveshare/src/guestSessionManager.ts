@@ -11,7 +11,7 @@ import { ConnectionProvider } from './providers/connectionProvider';
 import { StatusProvider, LiveShareDocumentState } from './providers/statusProvider';
 import { QueryProvider } from './providers/queryProvider';
 
-declare var require: any;
+declare let require: any;
 let vsls = require('vsls');
 
 export class GuestSessionManager {

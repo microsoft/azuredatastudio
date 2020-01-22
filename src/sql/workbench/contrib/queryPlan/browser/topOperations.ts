@@ -8,7 +8,7 @@ import { localize } from 'vs/nls';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 import { Table } from 'sql/base/browser/ui/table/table';
-import { PlanXmlParser } from 'sql/workbench/contrib/queryPlan/common/planXmlParser';
+import { PlanXmlParser } from 'sql/workbench/contrib/queryPlan/browser/planXmlParser';
 import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';

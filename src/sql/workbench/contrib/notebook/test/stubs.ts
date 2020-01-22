@@ -516,7 +516,7 @@ export class NodeStub implements Node {
 	get parentNode(): Node & ParentNode {
 		throw new Error('Method not implemented.');
 	}
-	get previousSibling(): Node {
+	get previousSibling(): ChildNode {
 		throw new Error('Method not implemented.');
 	}
 	nodeValue: string;

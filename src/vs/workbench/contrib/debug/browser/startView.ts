@@ -14,7 +14,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { localize } from 'vs/nls';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { StartAction, RunAction, ConfigureAction } from 'vs/workbench/contrib/debug/browser/debugActions';
+import { StartAction, ConfigureAction } from 'vs/workbench/contrib/debug/browser/debugActions';
 import { IDebugService } from 'vs/workbench/contrib/debug/common/debug';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
@@ -23,7 +23,31 @@ import { equals } from 'vs/base/common/arrays';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 const $ = dom.$;
+
+interface DebugStartMetrics {
+	debuggers?: string[];
+}
+type DebugStartMetricsClassification = {
+	debuggers?: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
+};
+
+function createClickElement(textContent: string, action: () => any): HTMLSpanElement {
+	const clickElement = $('span.click');
+	clickElement.textContent = textContent;
+	clickElement.onclick = action;
+	clickElement.tabIndex = 0;
+	clickElement.onkeyup = (e) => {
+		const keyboardEvent = new StandardKeyboardEvent(e);
+		if (keyboardEvent.keyCode === KeyCode.Enter || (keyboardEvent.keyCode === KeyCode.Space)) {
+			action();
+		}
+	};
+
+	return clickElement;
+}
 
 export class StartView extends ViewPane {
 
@@ -31,7 +55,6 @@ export class StartView extends ViewPane {
 	static LABEL = localize('start', "Start");
 
 	private debugButton!: Button;
-	private runButton!: Button;
 	private firstMessageContainer!: HTMLElement;
 	private secondMessageContainer!: HTMLElement;
 	private clickElement: HTMLElement | undefined;
@@ -48,9 +71,11 @@ export class StartView extends ViewPane {
 		@IDebugService private readonly debugService: IDebugService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IWorkspaceContextService private readonly workspaceContextService: IWorkspaceContextService,
-		@IFileDialogService private readonly dialogService: IFileDialogService
+		@IFileDialogService private readonly dialogService: IFileDialogService,
+		@IInstantiationService instantiationService: IInstantiationService,
+		@ITelemetryService private readonly telemetryService: ITelemetryService
 	) {
-		super({ ...(options as IViewPaneOptions), ariaHeaderLabel: localize('debugStart', "Debug Start Section") }, keybindingService, contextMenuService, configurationService, contextKeyService);
+		super({ ...(options as IViewPaneOptions), ariaHeaderLabel: localize('debugStart', "Debug Start Section") }, keybindingService, contextMenuService, configurationService, contextKeyService, instantiationService);
 		this._register(editorService.onDidActiveEditorChange(() => this.updateView()));
 		this._register(this.debugService.getConfigurationManager().onDidRegisterDebugger(() => this.updateView()));
 	}
@@ -63,20 +88,12 @@ export class StartView extends ViewPane {
 			const enabled = this.debuggerLabels.length > 0;
 
 			this.debugButton.enabled = enabled;
-			this.runButton.enabled = enabled;
 			const debugKeybinding = this.keybindingService.lookupKeybinding(StartAction.ID);
-			let debugLabel = this.debuggerLabels.length !== 1 ? localize('debug', "Debug") : localize('debugWith', "Debug with {0}", this.debuggerLabels[0]);
+			let debugLabel = this.debuggerLabels.length !== 1 ? localize('debug', "Run and Debug") : localize('debugWith', "Run and Debug {0}", this.debuggerLabels[0]);
 			if (debugKeybinding) {
 				debugLabel += ` (${debugKeybinding.getLabel()})`;
 			}
 			this.debugButton.label = debugLabel;
-
-			let runLabel = this.debuggerLabels.length !== 1 ? localize('run', "Run") : localize('runWith', "Run with {0}", this.debuggerLabels[0]);
-			const runKeybinding = this.keybindingService.lookupKeybinding(RunAction.ID);
-			if (runKeybinding) {
-				runLabel += ` (${runKeybinding.getLabel()})`;
-			}
-			this.runButton.label = runLabel;
 
 			const emptyWorkbench = this.workspaceContextService.getWorkbenchState() === WorkbenchState.EMPTY;
 			this.firstMessageContainer.innerHTML = '';
@@ -85,13 +102,19 @@ export class StartView extends ViewPane {
 			this.secondMessageContainer.appendChild(secondMessageElement);
 
 			const setSecondMessage = () => {
-				secondMessageElement.textContent = localize('specifyHowToRun', "To further configure Debug and Run");
-				this.clickElement = this.createClickElement(localize('configure', " create a launch.json file."), () => this.commandService.executeCommand(ConfigureAction.ID));
+				secondMessageElement.textContent = localize('specifyHowToRun', "To customize Run and Debug");
+				this.clickElement = createClickElement(localize('configure', " create a launch.json file."), () => {
+					this.telemetryService.publicLog2<DebugStartMetrics, DebugStartMetricsClassification>('debugStart.configure', { debuggers: this.debuggerLabels });
+					this.commandService.executeCommand(ConfigureAction.ID);
+				});
 				this.secondMessageContainer.appendChild(this.clickElement);
 			};
 			const setSecondMessageWithFolder = () => {
-				secondMessageElement.textContent = localize('noLaunchConfiguration', "To further configure Debug and Run, ");
-				this.clickElement = this.createClickElement(localize('openFolder', " open a folder"), () => this.dialogService.pickFolderAndOpen({ forceNewWindow: false }));
+				secondMessageElement.textContent = localize('noLaunchConfiguration', "To customize Run and Debug, ");
+				this.clickElement = createClickElement(localize('openFolder', " open a folder"), () => {
+					this.telemetryService.publicLog2<DebugStartMetrics, DebugStartMetricsClassification>('debugStart.openFolder', { debuggers: this.debuggerLabels });
+					this.dialogService.pickFolderAndOpen({ forceNewWindow: false });
+				});
 				this.secondMessageContainer.appendChild(this.clickElement);
 
 				const moreText = $('span.moreText');
@@ -116,7 +139,10 @@ export class StartView extends ViewPane {
 			}
 
 			if (!enabled && emptyWorkbench) {
-				this.clickElement = this.createClickElement(localize('openFile', "Open a file"), () => this.dialogService.pickFileAndOpen({ forceNewWindow: false }));
+				this.clickElement = createClickElement(localize('openFile', "Open a file"), () => {
+					this.telemetryService.publicLog2<DebugStartMetrics, DebugStartMetricsClassification>('debugStart.openFile');
+					this.dialogService.pickFileAndOpen({ forceNewWindow: false });
+				});
 				this.firstMessageContainer.appendChild(this.clickElement);
 				const firstMessageElement = $('span');
 				this.firstMessageContainer.appendChild(firstMessageElement);
@@ -127,21 +153,6 @@ export class StartView extends ViewPane {
 		}
 	}
 
-	private createClickElement(textContent: string, action: () => any): HTMLSpanElement {
-		const clickElement = $('span.click');
-		clickElement.textContent = textContent;
-		clickElement.onclick = action;
-		clickElement.tabIndex = 0;
-		clickElement.onkeyup = (e) => {
-			const keyboardEvent = new StandardKeyboardEvent(e);
-			if (keyboardEvent.keyCode === KeyCode.Enter || (keyboardEvent.keyCode === KeyCode.Space)) {
-				action();
-			}
-		};
-
-		return clickElement;
-	}
-
 	protected renderBody(container: HTMLElement): void {
 		this.firstMessageContainer = $('.top-section');
 		container.appendChild(this.firstMessageContainer);
@@ -149,17 +160,11 @@ export class StartView extends ViewPane {
 		this.debugButton = new Button(container);
 		this._register(this.debugButton.onDidClick(() => {
 			this.commandService.executeCommand(StartAction.ID);
+			this.telemetryService.publicLog2<DebugStartMetrics, DebugStartMetricsClassification>('debugStart.runAndDebug', { debuggers: this.debuggerLabels });
 		}));
 		attachButtonStyler(this.debugButton, this.themeService);
 
-		this.runButton = new Button(container);
-		this.runButton.label = localize('run', "Run");
-
 		dom.addClass(container, 'debug-start-view');
-		this._register(this.runButton.onDidClick(() => {
-			this.commandService.executeCommand(RunAction.ID);
-		}));
-		attachButtonStyler(this.runButton, this.themeService);
 
 		this.secondMessageContainer = $('.section');
 		container.appendChild(this.secondMessageContainer);
