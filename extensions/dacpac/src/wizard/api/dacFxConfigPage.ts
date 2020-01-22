@@ -11,7 +11,7 @@ import * as path from 'path';
 import { DataTierApplicationWizard, Operation } from '../dataTierApplicationWizard';
 import { DacFxDataModel } from './models';
 import { BasePage } from './basePage';
-import { sanitizeStringForFilename, isValidBasename } from './utils';
+import { sanitizeStringForFilename, isValidBasename, isValidBasenameErrorMessage } from './utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -163,9 +163,16 @@ export abstract class DacFxConfigPage extends BasePage {
 		)
 			.withProperties({
 				required: true,
-				validationErrorMessage: localize('dacfx.invalidFileNameErrorMessage', "Invalid file name"),
 				ariaLive: 'polite'
 			}).component();
+
+		// Set validation error message if file name is invalid
+		this.fileTextBox.onTextChanged(text => {
+			const errorMessage = isValidBasenameErrorMessage(text);
+			if (errorMessage) {
+				this.fileTextBox.updateProperty('validationErrorMessage', errorMessage);
+			}
+		});
 
 		this.fileTextBox.ariaLabel = localize('dacfx.fileLocationAriaLabel', "File Location");
 		this.fileButton = this.view.modelBuilder.button().withProperties({
@@ -204,7 +211,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	// Compares database name with existing databases on the server
 	protected databaseNameExists(n: string): boolean {
 		for (let i = 0; i < this.databaseValues.length; ++i) {
-			if (this.databaseValues[i].toLocaleLowerCase() === n.toLocaleLowerCase()) {
+			if (this.databaseValues[i].toLowerCase() === n.toLowerCase()) {
 				// database name exists
 				return true;
 			}
