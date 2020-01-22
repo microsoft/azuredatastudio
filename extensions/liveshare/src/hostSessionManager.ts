@@ -10,7 +10,7 @@ import { QueryProvider } from './providers/queryProvider';
 import { StatusProvider } from './providers/statusProvider';
 import { LiveShareServiceName } from './constants';
 
-declare var require: any;
+declare let require: any;
 let vsls = require('vsls');
 
 export class HostSessionManager {
