@@ -1,0 +1,19 @@
+{
+	"nameShort": "azuredatastudio-saw",
+	"nameLong": "Azure Data Studio - SAW",
+	"applicationName": "azuredatastudio-saw",
+	"dataFolderName": ".azuredatastudio-saw",
+	"win32MutexName": "azuredatastudio-saw",
+	"win32DirName": "Azure Data Studio - SAW",
+	"win32NameVersion": "Azure Data Studio - SAW",
+	"win32RegValueName": "azuredatastudio-saw",
+	"win32AppId": "{{9F0801B2-DEE3-4272-A2C6-FBDF25BAAF0F}",
+	"win32x64AppId": "{{6748A5FD-29EB-4BA6-B3C6-E7B981B8D6B0}",
+	"win32UserAppId": "{{0F8CD1ED-483C-40EB-8AD2-8ED784651AA1}",
+	"win32x64UserAppId": "{{1F0FD1CE-9703-4734-8F50-5B5CEEDAE6B9}-saw",
+	"win32AppUserModelId": "Microsoft.azuredatastudio.saw",
+	"win32ShellNameShort": "Azure Data Studio - SAW",
+	"darwinBundleIdentifier": "com.azuredatastudio.oss.saw",
+	"quality": "saw",
+	"disabledFeatures": ["workbench.extensions.action.installVSIX"]
+}
