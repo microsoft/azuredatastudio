@@ -567,7 +567,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		while (findResults.length < maxMatches && searchText.indexOf(exp) > -1) {
 			if (wholeWord) {
 				// word in itself with no special characters around \\bword\\b, word that begins or ends with special character \\sword\\s
-				let wholeWordRegex = new RegExp(`(\\b|\\s)${this.escapeRegExp(exp)}(\\b|\\s)`);
+				let wholeWordRegex = new RegExp(`(?:\\b|\\s)${this.escapeRegExp(exp)}(?:\\b|\\s)`);
 				start = searchText.search(wholeWordRegex) + 1;
 				if (start < 1) {
 					break;
