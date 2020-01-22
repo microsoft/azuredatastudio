@@ -67,7 +67,7 @@ function initLoader(opts) {
 
 function createCoverageReport(opts) {
 	if (opts.coverage) {
-		coverage.createReport(opts.run || opts.runGlob);
+		return coverage.createReport(opts.run || opts.runGlob);
 	}
 	return Promise.resolve(undefined);
 }

@@ -15,9 +15,6 @@ import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/not
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
-import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { SimpleEditorProgressService } from 'vs/editor/standalone/browser/simpleServices';
-import { IProgressService } from 'vs/platform/progress/common/progress';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModel } from 'vs/editor/common/model';
 import * as DOM from 'vs/base/browser/dom';
@@ -35,6 +32,9 @@ import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
+import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
+import { IEditorProgressService } from 'vs/platform/progress/common/progress';
+import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser/simpleProgressIndicator';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -200,8 +200,8 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	private async createEditor(): Promise<void> {
-		let instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleEditorProgressService()]));
-		this._editor = instantiationService.createInstance(QueryTextEditor);
+		const customInstan = this._instantiationService.createChild(new ServiceCollection([IEditorProgressService, new SimpleProgressIndicator()]));
+		this._editor = customInstan.createInstance(QueryTextEditor);
 		this._editor.create(this.codeElement.nativeElement);
 		this._editor.setVisible(true);
 		this._editor.setMinimumHeight(this._minimumHeight);
@@ -210,7 +210,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		let uri = this.cellModel.cellUri;
 		let cellModelSource: string;
 		cellModelSource = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
-		this._editorInput = instantiationService.createInstance(UntitledTextEditorInput, uri, false, this.cellModel.language, cellModelSource, '');
+		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, uri, false, this.cellModel.language, cellModelSource, '');
 		await this._editor.setInput(this._editorInput, undefined);
 		this.setFocusAndScroll();
 

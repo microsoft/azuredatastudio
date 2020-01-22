@@ -46,11 +46,11 @@ class AccountPanel extends ViewPane {
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IInstantiationService private instantiationService: IInstantiationService,
 		@IThemeService private themeService: IThemeService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		super(options, keybindingService, contextMenuService, configurationService, contextKeyService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, instantiationService);
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -294,9 +294,9 @@ export class AccountDialog extends Modal {
 			this._keybindingService,
 			this._contextMenuService,
 			this._configurationService,
-			this._instantiationService,
 			this._themeService,
-			this.contextKeyService
+			this.contextKeyService,
+			this._instantiationService
 		);
 
 		attachPanelStyler(providerView, this._themeService);

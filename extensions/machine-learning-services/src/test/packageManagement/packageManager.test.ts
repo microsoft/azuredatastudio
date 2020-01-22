@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 
 import * as should from 'should';
@@ -207,5 +205,3 @@ describe('Package Manager', () => {
 		return packageManager;
 	}
 });
-
-
