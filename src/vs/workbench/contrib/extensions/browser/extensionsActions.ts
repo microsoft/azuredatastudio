@@ -61,6 +61,7 @@ import { IFileDialogService, IDialogService } from 'vs/platform/dialogs/common/d
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage'; // {{SQL CARBON EDIT}}
+import product from 'vs/platform/product/common/product';
 
 export function toExtensionDescription(local: ILocalExtension): IExtensionDescription {
 	return {
@@ -84,7 +85,7 @@ const promptDownloadManually = (extension: IGalleryExtension | undefined, messag
 			return dialogService.show(Severity.Error, error.message, []);
 		} else {
 			const downloadUrl = (extension.assets.downloadPage && extension.assets.downloadPage.uri) || extension.assets.download.uri; // {{SQL CARBON EDIT}} Use the URI directly since we don't have a marketplace hosting the packages
-			notificationService.prompt(Severity.Error, message, [{
+			notificationService.prompt(Severity.Error, message, !InstallVSIXAction.AVAILABLE ? [] : [{
 				label: localize('download', "Download Manually"),
 				run: () => openerService.open(URI.parse(downloadUrl)).then(() => {
 					notificationService.prompt(
@@ -2810,6 +2811,7 @@ export class InstallVSIXAction extends Action {
 
 	static readonly ID = 'workbench.extensions.action.installVSIX';
 	static readonly LABEL = localize('installVSIX', "Install from VSIX...");
+	static readonly AVAILABLE = !(product.disabledFeatures?.indexOf(InstallVSIXAction.ID) >= 0);  // {{SQL CARBON EDIT}} add available logic
 
 	constructor(
 		id = InstallVSIXAction.ID,
@@ -2903,6 +2905,10 @@ export class InstallVSIXAction extends Action {
 			return Promise.resolve();
 		}
 		// {{SQL CARBON EDIT}} - End
+	}
+
+	get enabled(): boolean { // {{SQL CARBON EDIT}} add enabled logic
+		return InstallVSIXAction.AVAILABLE;
 	}
 }
 
