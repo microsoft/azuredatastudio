@@ -102,7 +102,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			};
 			const versionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolVersionColumnHeader', "Version"),
-				width: 60
+				width: 75
 			};
 			const minVersionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolMinimumVersionColumnHeader', "Required Version"),

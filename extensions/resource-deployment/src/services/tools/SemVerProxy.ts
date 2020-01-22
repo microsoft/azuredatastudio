@@ -10,12 +10,10 @@ function fourPart2SemVer(version: string): string {
 	if (version.includes('-')) {
 		//return unchanged if version contains a pre-release suffix
 		return version;
-		console.log(`TCL: SemVerProxy -> constructor -> ver: version includes '-'`, version);
 	} else {
 		let parts: string[] = version.split('.');
 		if (parts.length > 3) {
-			console.log(`TCL: SemVerProxy -> constructor -> ver: version has more than three '.'s`, version);
-			version = `${parts[0]}.${parts[1]}.${parts[2]}+${parts.splice(0, 3).join('.')}`;
+			version = `${parts[0]}.${parts[1]}.${parts[2]}+${parts.slice(3).join('.')}`;
 		}
 		return version;
 	}
@@ -37,23 +35,21 @@ function fourPart2SemVer(version: string): string {
 			<version core> ::= <major> "." <minor> "." <patch>
  */
 export class SemVerProxy extends SemVer {
+	private _version: string;
 
 	constructor(version: string | SemVer, loose?: boolean) {
 		let ver: string;
-		if (version as SemVer) {
+		if ((version as SemVer).version) {
 			ver = (version as SemVer).version;
-			console.log(`TCL: SemVerProxy -> constructor -> ver: within version as SemVer`, ver);
 		} else {
 			ver = version as string;
-			console.log(`TCL: SemVerProxy -> constructor -> ver: within version as string`, ver);
+			ver = fourPart2SemVer(ver);
 		}
-		ver = fourPart2SemVer(ver);
-		console.log(`TCL: SemVerProxy -> constructor -> ver: after converting to SemVer`, ver);
 		super(ver, loose);
+		this._version = ver.replace('+', '.'); // change back any '+' character used to delimit the build portion of the version with a '.'
 	}
 
 	get version(): string {
-		return super.version.replace('+', '.');
-
+		return this._version;
 	}
 }
