@@ -19,15 +19,15 @@ export class EditDashboardAction extends Action {
 	private static readonly ID = 'editDashboard';
 	private static readonly EDITLABEL = nls.localize('editDashboard', "Edit");
 	private static readonly EXITLABEL = nls.localize('editDashboardExit', "Exit");
-	private static readonly ICON = 'edit';
 
 	private _state = 0;
 
 	constructor(
 		private editFn: () => void,
-		private context: any //this
+		private context: any, //this
+		cssClass: string
 	) {
-		super(EditDashboardAction.ID, EditDashboardAction.EDITLABEL, EditDashboardAction.ICON);
+		super(EditDashboardAction.ID, EditDashboardAction.EDITLABEL, cssClass);
 	}
 
 	run(): Promise<boolean> {
@@ -55,13 +55,13 @@ export class RefreshWidgetAction extends Action {
 
 	private static readonly ID = 'refreshWidget';
 	private static readonly LABEL = nls.localize('refreshWidget', "Refresh");
-	private static readonly ICON = 'refresh';
 
 	constructor(
 		private refreshFn: () => void,
-		private context: any // this
+		private context: any, // this
+		cssClass: string
 	) {
-		super(RefreshWidgetAction.ID, RefreshWidgetAction.LABEL, RefreshWidgetAction.ICON);
+		super(RefreshWidgetAction.ID, RefreshWidgetAction.LABEL, cssClass);
 	}
 
 	run(): Promise<boolean> {
@@ -73,6 +73,76 @@ export class RefreshWidgetAction extends Action {
 		}
 	}
 }
+
+export class RestoreWidgetAction extends Action {
+
+	private static readonly ID = 'restore';
+	private static readonly LABEL = nls.localize('restore', "Restore");
+
+	constructor(
+		private restoreFn: () => void,
+		private context: any, // this
+		cssClass: string
+	) {
+		super(RestoreWidgetAction.ID, RestoreWidgetAction.LABEL, cssClass);
+	}
+
+	run(): Promise<boolean> {
+		try {
+			this.restoreFn.apply(this.context);
+			return Promise.resolve(true);
+		} catch (e) {
+			return Promise.resolve(false);
+		}
+	}
+}
+
+export class ManageExtensionsAction extends Action {
+
+	private static readonly ID = 'manageExtensions';
+	private static readonly LABEL = nls.localize('manageExtensions', "Manage extensions");
+
+	constructor(
+		private restoreFn: () => void,
+		private context: any, // this
+		cssClass: string
+	) {
+		super(ManageExtensionsAction.ID, ManageExtensionsAction.LABEL, cssClass);
+	}
+
+	run(): Promise<boolean> {
+		try {
+			this.restoreFn.apply(this.context);
+			return Promise.resolve(true);
+		} catch (e) {
+			return Promise.resolve(false);
+		}
+	}
+}
+
+export class NewQueryAction extends Action {
+
+	private static readonly ID = 'newQuery';
+	private static readonly LABEL = nls.localize('newQuery', "New Query");
+
+	constructor(
+		private restoreFn: () => void,
+		private context: any, // this
+		cssClass: string
+	) {
+		super(NewQueryAction.ID, NewQueryAction.LABEL, cssClass);
+	}
+
+	run(): Promise<boolean> {
+		try {
+			this.restoreFn.apply(this.context);
+			return Promise.resolve(true);
+		} catch (e) {
+			return Promise.resolve(false);
+		}
+	}
+}
+
 
 export class ToggleMoreWidgetAction extends Action {
 

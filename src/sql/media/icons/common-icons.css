@@ -13,12 +13,12 @@
 }
 
 .vs .codicon.restore {
-	background: url("restore.svg") center center no-repeat;
+	background: url("restore.svg") no-repeat;
 }
 
 .vs-dark .codicon.restore,
 .hc-black .codicon.restore {
-	background: url("restore_inverse.svg") center center no-repeat;
+	background: url("restore_inverse.svg") no-repeat;
 }
 
 .vs .codicon.database {
@@ -217,11 +217,11 @@
 
 .hc-black .codicon.edit,
 .vs-dark .codicon.edit {
-	background: url('edit_inverse.svg') center center no-repeat;
+	background: url('edit_inverse.svg') no-repeat;
 }
 
 .vs .codicon.edit {
-	background: url('edit.svg') center center no-repeat;
+	background: url('edit.svg') no-repeat;
 }
 
 .hc-black .codicon.pin,
@@ -285,6 +285,29 @@
 .vs-dark .sql.codicon.stop,
 .hc-black .sql.codicon.stop {
 	background-image: url('stop_inverse.svg')
+}
+
+
+.vs .codicon.edit-toolbar {
+	background: url("edit-toolbar.svg") no-repeat;
+}
+
+.vs .codicon.manage-extensions-toolbar {
+	background: url("manage-extensions-toolbar.svg") no-repeat;
+}
+
+
+.vs .codicon.new-notebook-toolbar {
+	background: url("new-notebook-toolbar.svg") no-repeat;
+}
+
+
+.vs .codicon.refresh-toolbar {
+	background: url("refresh-toolbar.svg") no-repeat;
+}
+
+.vs .codicon.new-query-toolbar {
+	background: url("new-query-toolbar.svg") no-repeat;
 }
 
 .small {
