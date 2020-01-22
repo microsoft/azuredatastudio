@@ -28,8 +28,7 @@ export class ProjectsController {
 		this.projects.push(newProject);
 
 		// Read datasources.json (if present)
-		let dataSourcesFilePath = path.join(path.dirname(projectFile.fsPath), constants.dataSourcesFileName);
-
+		const dataSourcesFilePath = path.join(path.dirname(projectFile.fsPath), constants.dataSourcesFileName);
 		newProject.dataSources = await dataSources.load(dataSourcesFilePath);
 
 		this.refreshProjectsTree();
