@@ -202,6 +202,10 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	}
 
 	public dispose(): void {
+		// Dispose our edit session then disconnect our input
+		this._queryModelService.disposeEdit(this.uri).then(() => {
+			return this._connectionManagementService.disconnectEditor(this, true);
+		});
 		this._queryModelService.disposeQuery(this.uri);
 		this._sql.dispose();
 		this._results.dispose();
@@ -209,20 +213,10 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		super.dispose();
 	}
 
-	public close(): void {
-		// Dispose our edit session then disconnect our input
-		this._queryModelService.disposeEdit(this.uri).then(() => {
-			return this._connectionManagementService.disconnectEditor(this, true);
-		}).then(() => {
-			this.dispose();
-		});
-	}
-
 	public get tabColor(): string {
 		return this._connectionManagementService.getTabColorForUri(this.uri);
 	}
 
-	public get onDidModelChangeContent(): Event<void> { return this._sql.onDidModelChangeContent; }
 	public get onDidModelChangeEncoding(): Event<void> { return this._sql.onDidModelChangeEncoding; }
 	public resolve(refresh?: boolean): Promise<EditorModel> { return this._sql.resolve(); }
 	public getEncoding(): string { return this._sql.getEncoding(); }

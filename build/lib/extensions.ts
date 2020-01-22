@@ -240,7 +240,8 @@ const externalExtensions = [
 	'cms',
 	'query-history',
 	'liveshare',
-	'sql-database-projects'
+	'sql-database-projects',
+	'machine-learning-services'
 ];
 
 // extensions that require a rebuild since they have native parts
@@ -256,10 +257,7 @@ interface IBuiltInExtension {
 	metadata: any;
 }
 
-const builtInExtensions: IBuiltInExtension[] = process.env['VSCODE_QUALITY'] === 'stable' ? require('../builtInExtensions.json') : require('../builtInExtensions-insiders.json');
-
-// {{SQL CARBON EDIT}} - End
-
+const builtInExtensions: IBuiltInExtension[] = require('../builtInExtensions.json');
 
 export function packageLocalExtensionsStream(): NodeJS.ReadWriteStream {
 	const localExtensionDescriptions = (<string[]>glob.sync('extensions/*/package.json'))

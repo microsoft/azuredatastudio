@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/Microsoft.sqlservernotebook/package" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/Microsoft.sqlservernotebook/package" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="title.sqlServerNotebooks">
         <source xml:lang="en">SQL Server Notebooks</source>

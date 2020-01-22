@@ -49,7 +49,7 @@ module.exports = function withDefaults(/**@type WebpackConfig*/extConfig) {
 					loader: 'ts-loader',
 					options: {
 						compilerOptions: {
-							"sourceMap": true,
+							'sourceMap': true,
 						}
 					}
 				}]
@@ -57,15 +57,14 @@ module.exports = function withDefaults(/**@type WebpackConfig*/extConfig) {
 		},
 		externals: {
 			'vscode': 'commonjs vscode', // ignored because it doesn't exist
-			'azdata': 'commonjs azdata',
-			'sqlops': 'commonjs sqlops'
+			'azdata': 'commonjs azdata'
 		},
 		output: {
 			// all output goes into `dist`.
 			// packaging depends on that and this must always be like it
 			filename: '[name].js',
 			path: path.join(extConfig.context, 'dist'),
-			libraryTarget: "commonjs",
+			libraryTarget: 'commonjs',
 		},
 		// yes, really source maps
 		devtool: 'source-map',

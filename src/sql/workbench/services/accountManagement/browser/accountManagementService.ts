@@ -105,12 +105,7 @@ export class AccountManagementService implements IAccountManagementService {
 					}
 					return Promise.resolve();
 				});
-		}).then(
-			() => { },
-			reason => {
-				console.warn(`Account update handler encountered error: ${reason}`);
-			}
-		);
+		});
 
 	}
 

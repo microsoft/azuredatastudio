@@ -109,11 +109,11 @@ describe('Notebook Extension Python Installation', function () {
 		// the conda utilities should fail.
 		should(install.usingConda).be.false();
 
-		should(install.getInstalledCondaPackages()).be.rejected();
+		await should(install.getInstalledCondaPackages()).be.rejected();
 
-		should(install.installCondaPackages([{ name: 'pandas', version: '0.24.2' }], false)).be.rejected();
+		await should(install.installCondaPackages([{ name: 'pandas', version: '0.24.2' }], false)).be.rejected();
 
-		should(install.uninstallCondaPackages([{ name: 'pandas', version: '0.24.2' }])).be.rejected();
+		await should(install.uninstallCondaPackages([{ name: 'pandas', version: '0.24.2' }])).be.rejected();
 	});
 
 	it('Manage Packages Dialog: Sort Versions Test', async function () {

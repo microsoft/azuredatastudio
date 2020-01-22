@@ -43,6 +43,7 @@ export class DockerTool extends ToolBase {
 		}
 		return version;
 	}
+
 	protected get versionCommand(): Command {
 		return { command: 'docker version --format "{{json .}}"' };
 	}

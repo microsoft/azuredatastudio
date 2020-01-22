@@ -458,7 +458,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		};
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
-		const fileInput = isUntitled ? this._untitledEditorService.createOrGet(uri, 'notebook', options.initialContent) :
+		const fileInput = isUntitled ? this._untitledEditorService.create({ associatedResource: uri, mode: 'notebook', initialValue: options.initialContent }) :
 			this._editorService.createInput({ resource: uri, mode: 'notebook' });
 		let input: NotebookInput;
 		if (isUntitled) {
@@ -720,7 +720,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
 					if (result.next.scheme === Schemas.untitled) {
-						let untitledNbName: URI = URI.parse(`untitled:${result.next.path}`);
+						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.next.path)}`);
 						let content = await this._fileService.readFile(URI.file(result.next.path));
 						await this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
 					}
@@ -733,7 +733,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
 					if (result.previous.scheme === Schemas.untitled) {
-						let untitledNbName: URI = URI.parse(`untitled:${result.previous.path}`);
+						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.previous.path)}`);
 						let content = await this._fileService.readFile(URI.file(result.previous.path));
 						await this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
 					}

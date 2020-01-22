@@ -14,15 +14,15 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { ITextResourceConfigurationService } from 'vs/editor/common/services/resourceConfiguration';
+import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { EditorOptions } from 'vs/workbench/common/editor';
-import { StandaloneCodeEditor } from 'vs/editor/standalone/browser/standaloneCodeEditor';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
@@ -56,7 +56,7 @@ export class QueryTextEditor extends BaseTextEditor {
 	}
 
 	public createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
-		return this.instantiationService.createInstance(StandaloneCodeEditor, parent, configuration);
+		return this.instantiationService.createInstance(CodeEditorWidget, parent, configuration, {});
 	}
 
 	protected getConfigurationOverrides(): IEditorOptions {
@@ -70,6 +70,9 @@ export class QueryTextEditor extends BaseTextEditor {
 			options.glyphMargin = true;
 			options.minimap = {
 				enabled: false
+			};
+			options.scrollbar = {
+				alwaysConsumeMouseWheel: false
 			};
 			options.overviewRulerLanes = 0;
 			options.overviewRulerBorder = false;

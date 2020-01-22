@@ -16,7 +16,7 @@ import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { Schemas } from 'vs/base/common/network';
-import { StateChange, ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
+import { ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -24,13 +24,14 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
 import { Deferred } from 'sql/base/common/promise';
 import { NotebookTextFileModel } from 'sql/workbench/contrib/notebook/browser/models/notebookTextFileModel';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
 import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
+import { NotebookFindModel } from 'sql/workbench/contrib/notebook/find/notebookFindModel';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -72,12 +73,14 @@ export class NotebookEditorModel extends EditorModel {
 			}));
 		} else {
 			if (this.textEditorModel instanceof TextFileEditorModel) {
-				this._register(this.textEditorModel.onDidStateChange(change => {
+				this._register(this.textEditorModel.onDidSave(() => {
 					let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
 					this.setDirty(dirty);
-					if (change === StateChange.SAVED) {
-						this.sendNotebookSerializationStateChange();
-					}
+					this.sendNotebookSerializationStateChange();
+				}));
+				this._register(this.textEditorModel.onDidChangeDirty(() => {
+					let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
+					this.setDirty(dirty);
 				}));
 			}
 		}
@@ -165,7 +168,7 @@ export class NotebookEditorModel extends EditorModel {
 		return this.getNotebookModel() !== undefined;
 	}
 
-	private getNotebookModel(): INotebookModel {
+	public getNotebookModel(): INotebookModel {
 		let editor = this.notebookService.findNotebookEditor(this.notebookUri);
 		if (editor) {
 			return editor.model;
@@ -203,6 +206,8 @@ export abstract class NotebookInput extends EditorInput {
 	private _modelResolveInProgress: boolean = false;
 	private _modelResolved: Deferred<void> = new Deferred<void>();
 
+	private _notebookFindModel: NotebookFindModel;
+
 	constructor(private _title: string,
 		private resource: URI,
 		private _textInput: TextInput,
@@ -231,6 +236,13 @@ export abstract class NotebookInput extends EditorInput {
 
 	public get notebookUri(): URI {
 		return this.resource;
+	}
+
+	public get notebookFindModel(): NotebookFindModel {
+		if (!this._notebookFindModel) {
+			this._notebookFindModel = new NotebookFindModel(this._model.getNotebookModel());
+		}
+		return this._notebookFindModel;
 	}
 
 	public get contentManager(): IContentManager {
@@ -452,7 +464,7 @@ export abstract class NotebookInput extends EditorInput {
 	}
 }
 
-class NotebookEditorContentManager implements IContentManager {
+export class NotebookEditorContentManager implements IContentManager {
 	constructor(
 		private notebookInput: NotebookInput,
 		@IInstantiationService private readonly instantiationService: IInstantiationService) {

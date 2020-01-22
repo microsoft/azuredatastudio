@@ -5,7 +5,6 @@
 
 import * as vscode from 'vscode';
 import * as should from 'should';
-import * as TypeMoq from 'typemoq';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as rimraf from 'rimraf';
@@ -13,6 +12,9 @@ import * as os from 'os';
 import * as uuid from 'uuid';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { BookTreeItem } from '../../book/bookTreeItem';
+import { promisify } from 'util';
+import { MockExtensionContext } from '../common/stubs';
+import { exists } from '../../common/utils';
 
 export interface ExpectedBookItem {
 	title: string;
@@ -34,9 +36,13 @@ export function equalBookItems(book: BookTreeItem, expectedBook: ExpectedBookIte
 	}
 }
 
-describe('BookTreeViewProviderTests @UNSTABLE@', function() {
+describe('BookTreeViewProviderTests', function() {
 
-	describe('BookTreeViewProvider.getChildren', function (): void {
+	describe('BookTreeViewProvider', () => {
+
+		let mockExtensionContext: vscode.ExtensionContext;
+		let nonBookFolderPath: string;
+		let bookFolderPath: string;
 		let rootFolderPath: string;
 		let expectedNotebook1: ExpectedBookItem;
 		let expectedNotebook2: ExpectedBookItem;
@@ -45,18 +51,14 @@ describe('BookTreeViewProviderTests @UNSTABLE@', function() {
 		let expectedExternalLink: ExpectedBookItem;
 		let expectedBook: ExpectedBookItem;
 
-		let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
-		let bookTreeViewProvider: BookTreeViewProvider;
-		let book: BookTreeItem;
-		let notebook1: BookTreeItem;
-
 		this.beforeAll(async () => {
-			console.log('Generating random rootFolderPath...');
+			mockExtensionContext = new MockExtensionContext();
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
-			console.log('Random rootFolderPath generated.');
-			let dataFolderPath = path.join(rootFolderPath, '_data');
-			let contentFolderPath = path.join(rootFolderPath, 'content');
-			let configFile = path.join(rootFolderPath, '_config.yml');
+			nonBookFolderPath = path.join(rootFolderPath, `NonBook`);
+			bookFolderPath = path.join(rootFolderPath, `Book`);
+			let dataFolderPath = path.join(bookFolderPath, '_data');
+			let contentFolderPath = path.join(bookFolderPath, 'content');
+			let configFile = path.join(bookFolderPath, '_config.yml');
 			let tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
 			let notebook1File = path.join(contentFolderPath, 'notebook1.ipynb');
 			let notebook2File = path.join(contentFolderPath, 'notebook2.ipynb');
@@ -93,8 +95,9 @@ describe('BookTreeViewProviderTests @UNSTABLE@', function() {
 				sections: [expectedNotebook1, expectedMarkdown, expectedExternalLink],
 				title: 'Test Book'
 			};
-			console.log('Creating temporary folders and files...');
 			await fs.mkdir(rootFolderPath);
+			await fs.mkdir(bookFolderPath);
+			await fs.mkdir(nonBookFolderPath);
 			await fs.mkdir(dataFolderPath);
 			await fs.mkdir(contentFolderPath);
 			await fs.writeFile(configFile, 'title: Test Book');
@@ -103,58 +106,94 @@ describe('BookTreeViewProviderTests @UNSTABLE@', function() {
 			await fs.writeFile(notebook2File, '');
 			await fs.writeFile(notebook3File, '');
 			await fs.writeFile(markdownFile, '');
-			console.log('Temporary folders and files created.');
-			mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+		});
+
+		it('should initialize correctly with empty workspace array', async () => {
+			const bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView');
+			await bookTreeViewProvider.initialized;
+		});
+
+		it('should initialize correctly with workspace containing non-book path', async () => {
 			let folder: vscode.WorkspaceFolder = {
-				uri: vscode.Uri.file(rootFolderPath),
+				uri: vscode.Uri.file(nonBookFolderPath),
 				name: '',
 				index: 0
 			};
-			console.log('Creating BookTreeViewProvider...');
-			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object, false, 'bookTreeView');
-			let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
-			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
-			await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
-			console.log('BookTreeViewProvider successfully created.');
+			const bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView');
+			await bookTreeViewProvider.initialized;
 		});
 
-		it('should return all book nodes when element is undefined', async function (): Promise<void> {
-			const children = await bookTreeViewProvider.getChildren();
-			should(children).be.Array();
-			should(children.length).equal(1);
-			book = children[0];
-			should(book.title).equal(expectedBook.title);
+		it('should initialize correctly with workspace containing both book and non-book paths', async () => {
+			const book: vscode.WorkspaceFolder = {
+				uri: vscode.Uri.file(bookFolderPath),
+				name: '',
+				index: 0
+			};
+			const nonBook: vscode.WorkspaceFolder = {
+				uri: vscode.Uri.file(nonBookFolderPath),
+				name: '',
+				index: 0
+			};
+			const bookTreeViewProvider = new BookTreeViewProvider([book, nonBook], mockExtensionContext, false, 'bookTreeView');
+			await bookTreeViewProvider.initialized;
+			should(bookTreeViewProvider.books.length).equal(1, 'Expected book was not initialized');
 		});
 
-		it('should return all page nodes when element is a book', async function (): Promise<void> {
-			const children = await bookTreeViewProvider.getChildren(book);
-			should(children).be.Array();
-			should(children.length).equal(3);
-			notebook1 = children[0];
-			const markdown = children[1];
-			const externalLink = children[2];
-			equalBookItems(notebook1, expectedNotebook1);
-			equalBookItems(markdown, expectedMarkdown);
-			equalBookItems(externalLink, expectedExternalLink);
+		describe('BookTreeViewProvider.getChildren', function (): void {
+			let bookTreeViewProvider: BookTreeViewProvider;
+			let book: BookTreeItem;
+			let notebook1: BookTreeItem;
+
+			this.beforeAll(async () => {
+				let folder: vscode.WorkspaceFolder = {
+					uri: vscode.Uri.file(rootFolderPath),
+					name: '',
+					index: 0
+				};
+				bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView');
+				let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+				await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
+			});
+
+			it('should return all book nodes when element is undefined', async function (): Promise<void> {
+				const children = await bookTreeViewProvider.getChildren();
+				should(children).be.Array();
+				should(children.length).equal(1);
+				book = children[0];
+				should(book.title).equal(expectedBook.title);
+			});
+
+			it('should return all page nodes when element is a book', async function (): Promise<void> {
+				const children = await bookTreeViewProvider.getChildren(book);
+				should(children).be.Array();
+				should(children.length).equal(3);
+				notebook1 = children[0];
+				const markdown = children[1];
+				const externalLink = children[2];
+				equalBookItems(notebook1, expectedNotebook1);
+				equalBookItems(markdown, expectedMarkdown);
+				equalBookItems(externalLink, expectedExternalLink);
+			});
+
+			it('should return all sections when element is a notebook', async function (): Promise<void> {
+				const children = await bookTreeViewProvider.getChildren(notebook1);
+				should(children).be.Array();
+				should(children.length).equal(2);
+				const notebook2 = children[0];
+				const notebook3 = children[1];
+				equalBookItems(notebook2, expectedNotebook2);
+				equalBookItems(notebook3, expectedNotebook3);
+			});
+
+			this.afterAll(async function () {
+				console.log('Removing temporary files...');
+				if (await exists(rootFolderPath)) {
+					await promisify(rimraf)(rootFolderPath);
+				}
+				console.log('Successfully removed temporary files.');
+			});
 		});
 
-		it('should return all sections when element is a notebook', async function (): Promise<void> {
-			const children = await bookTreeViewProvider.getChildren(notebook1);
-			should(children).be.Array();
-			should(children.length).equal(2);
-			const notebook2 = children[0];
-			const notebook3 = children[1];
-			equalBookItems(notebook2, expectedNotebook2);
-			equalBookItems(notebook3, expectedNotebook3);
-		});
-
-		this.afterAll(async function () {
-			console.log('Removing temporary files...');
-			if (fs.existsSync(rootFolderPath)) {
-				rimraf.sync(rootFolderPath);
-			}
-			console.log('Successfully removed temporary files.');
-		});
 	});
 
 	describe('BookTreeViewProvider.getTableOfContentFiles', function (): void {
@@ -170,81 +209,80 @@ describe('BookTreeViewProviderTests @UNSTABLE@', function() {
 			let tableOfContentsFileIgnore = path.join(rootFolderPath, 'toc.yml');
 			await fs.mkdir(rootFolderPath);
 			await fs.mkdir(dataFolderPath);
-			await fs.writeFile(tableOfContentsFile, '');
+			await fs.writeFile(tableOfContentsFile, '- title: Notebook1\n  url: /notebook1\n  sections:\n  - title: Notebook2\n    url: /notebook2\n  - title: Notebook3\n    url: /notebook3\n- title: Markdown\n  url: /markdown\n- title: GitHub\n  url: https://github.com/\n  external: true');
 			await fs.writeFile(tableOfContentsFileIgnore, '');
-			let mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+			const mockExtensionContext = new MockExtensionContext();
 			folder = {
 				uri: vscode.Uri.file(rootFolderPath),
 				name: '',
 				index: 0
 			};
-			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object, false, 'bookTreeView');
-			let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
+			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView');
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
-			await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
+			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 		});
 
-		it('should ignore toc.yml files not in _data folder', function(): void {
-			bookTreeViewProvider.currentBook.getTableOfContentFiles(folder.uri.toString());
+		it('should ignore toc.yml files not in _data folder', async () => {
+			await bookTreeViewProvider.currentBook.getTableOfContentFiles(rootFolderPath);
 			for (let p of bookTreeViewProvider.currentBook.tableOfContentPaths) {
 				should(p.toLocaleLowerCase()).equal(tableOfContentsFile.replace(/\\/g, '/').toLocaleLowerCase());
 			}
 		});
 
 		this.afterAll(async function () {
-			if (fs.existsSync(rootFolderPath)) {
-				rimraf.sync(rootFolderPath);
+			if (await exists(rootFolderPath)) {
+				await promisify(rimraf)(rootFolderPath);
 			}
 		});
 	});
 
 
-	describe('BookTreeViewProvider.getBooks', function (): void {
+	describe('BookTreeViewProvider.getBooks @UNSTABLE@', function (): void {
 		let rootFolderPath: string;
 		let configFile: string;
 		let folder: vscode.WorkspaceFolder;
 		let bookTreeViewProvider: BookTreeViewProvider;
-		let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
+		let tocFile: string;
 
 		this.beforeAll(async () => {
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 			let dataFolderPath = path.join(rootFolderPath, '_data');
 			configFile = path.join(rootFolderPath, '_config.yml');
-			let tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
+			tocFile = path.join(dataFolderPath, 'toc.yml');
 			await fs.mkdir(rootFolderPath);
 			await fs.mkdir(dataFolderPath);
-			await fs.writeFile(tableOfContentsFile, 'title: Test');
-			mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+			await fs.writeFile(tocFile, 'title: Test');
+			const mockExtensionContext = new MockExtensionContext();
 			folder = {
 				uri: vscode.Uri.file(rootFolderPath),
 				name: '',
 				index: 0
 			};
-			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object, false, 'bookTreeView');
-			let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
+			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView');
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
-			await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
+			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 		});
 
-		it('should show error message if config.yml file not found', function(): void {
-			bookTreeViewProvider.currentBook.readBooks();
+		it('should show error message if config.yml file not found', async () => {
+			await bookTreeViewProvider.currentBook.readBooks();
 			should(bookTreeViewProvider.errorMessage.toLocaleLowerCase()).equal(('ENOENT: no such file or directory, open \'' + configFile + '\'').toLocaleLowerCase());
 		});
+
 		it('should show error if toc.yml file format is invalid', async function(): Promise<void> {
 			await fs.writeFile(configFile, 'title: Test Book');
-			bookTreeViewProvider.currentBook.readBooks();
+			await bookTreeViewProvider.currentBook.readBooks();
 			should(bookTreeViewProvider.errorMessage).equal('Error: Test Book has an incorrect toc.yml file');
 		});
 
 		this.afterAll(async function () {
-			if (fs.existsSync(rootFolderPath)) {
-				rimraf.sync(rootFolderPath);
+			if (await exists(rootFolderPath)) {
+				await promisify(rimraf)(rootFolderPath);
 			}
 		});
 	});
 
 
-	describe('BookTreeViewProvider.getSections', function (): void {
+	describe('BookTreeViewProvider.getSections @UNSTABLE@', function (): void {
 		let rootFolderPath: string;
 		let tableOfContentsFile: string;
 		let bookTreeViewProvider: BookTreeViewProvider;
@@ -271,16 +309,15 @@ describe('BookTreeViewProviderTests @UNSTABLE@', function() {
 			await fs.writeFile(tableOfContentsFile, '- title: Notebook1\n  url: /notebook1\n- title: Notebook2\n  url: /notebook2');
 			await fs.writeFile(notebook2File, '');
 
-			let mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+			const mockExtensionContext = new MockExtensionContext();
 			folder = {
 				uri: vscode.Uri.file(rootFolderPath),
 				name: '',
 				index: 0
 			};
-			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object, false, 'bookTreeView');
-			let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
+			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView');
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
-			await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
+			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 		});
 
 		it('should show error if notebook or markdown file is missing', async function(): Promise<void> {
@@ -292,12 +329,9 @@ describe('BookTreeViewProviderTests @UNSTABLE@', function() {
 		});
 
 		this.afterAll(async function () {
-			if (fs.existsSync(rootFolderPath)) {
-				rimraf.sync(rootFolderPath);
+			if (await exists(rootFolderPath)) {
+				await promisify(rimraf)(rootFolderPath);
 			}
 		});
 	});
 });
-
-
-

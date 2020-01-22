@@ -164,6 +164,7 @@ export const pythonKernelSpec: azdata.nb.IKernelSpec = {
 export function writeNotebookToFile(pythonNotebook: azdata.nb.INotebookContents, testName: string): vscode.Uri {
 	let fileName = getFileName(testName);
 	let notebookContentString = JSON.stringify(pythonNotebook);
+	// eslint-disable-next-line no-sync
 	fs.writeFileSync(fileName, notebookContentString);
 	console.log(`Local file is created: '${fileName}'`);
 	let uri = vscode.Uri.file(fileName);

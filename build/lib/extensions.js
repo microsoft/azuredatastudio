@@ -204,15 +204,15 @@ const externalExtensions = [
     'cms',
     'query-history',
     'liveshare',
-    'sql-database-projects'
+    'sql-database-projects',
+    'machine-learning-services'
 ];
 // extensions that require a rebuild since they have native parts
 const rebuildExtensions = [
     'big-data-cluster',
     'mssql'
 ];
-const builtInExtensions = process.env['VSCODE_QUALITY'] === 'stable' ? require('../builtInExtensions.json') : require('../builtInExtensions-insiders.json');
-// {{SQL CARBON EDIT}} - End
+const builtInExtensions = require('../builtInExtensions.json');
 function packageLocalExtensionsStream() {
     const localExtensionDescriptions = glob.sync('extensions/*/package.json')
         .map(manifestPath => {

@@ -82,4 +82,8 @@ export class PlaceholderCellComponent extends CellView implements OnInit, OnChan
 	public layout() {
 
 	}
+
+	public cellGuid(): string {
+		return this.cellModel.cellGuid;
+	}
 }

@@ -2,7 +2,7 @@
   "name": "schema-compare",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
@@ -13,7 +13,7 @@
   "icon": "images/sqlserver.png",
   "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
   "activationEvents": [
-    "*"
+    "onCommand:schemaCompare.start"
   ],
   "main": "./out/main",
   "repository": {

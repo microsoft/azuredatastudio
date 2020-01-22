@@ -114,13 +114,15 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 
 // Menu
 (function registerMenu(): void {
-	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, { // {{SQL CARBON EDIT}} - Add install VSIX menu item
-		group: '5.1_installExtension',
-		command: {
-			id: InstallVSIXAction.ID,
-			title: nls.localize({ key: 'miinstallVsix', comment: ['&& denotes a mnemonic'] }, "Install Extension from VSIX Package")
-		}
-	});
+	if (InstallVSIXAction.AVAILABLE) {
+		MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, { // {{SQL CARBON EDIT}} - Add install VSIX menu item
+			group: '5.1_installExtension',
+			command: {
+				id: InstallVSIXAction.ID,
+				title: nls.localize({ key: 'miinstallVsix', comment: ['&& denotes a mnemonic'] }, "Install Extension from VSIX Package")
+			}
+		});
+	}
 
 	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 		group: '6_close',
@@ -249,7 +251,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 					nls.localize('window.reopenFolders.one', "Reopen the last active window."),
 					nls.localize('window.reopenFolders.none', "Never reopen a window. Always start with an empty one.")
 				],
-				'default': 'one',
+				'default': 'all',
 				'scope': ConfigurationScope.APPLICATION,
 				'description': nls.localize('restoreWindows', "Controls how windows are being reopened after a restart.")
 			},

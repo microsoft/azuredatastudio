@@ -13,7 +13,8 @@
     "azdata": ">=1.8.0"
   },
   "activationEvents": [
-    "*"
+    "onCommand:adminToolExtWin.launchSsmsMinPropertiesDialog",
+    "onCommand:adminToolExtWin.launchSsmsMinGswDialog"
   ],
   "main": "./out/main",
   "repository": {
