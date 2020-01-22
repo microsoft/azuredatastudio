@@ -69,7 +69,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	}
 
 	private getEntryParentNode(entry: ProjectEntry): fileTree.FolderNode | ProjectRootTreeItem {
-		const relativePathParts = utils.trimUri(vscode.Uri.file(this.project.projectFile), entry.uri).trimChars('/').split('/').slice(0, -1); // remove the last part because we only care about the parent
+		const relativePathParts = utils.trimChars(utils.trimUri(vscode.Uri.file(this.project.projectFile), entry.uri), '/').split('/').slice(0, -1); // remove the last part because we only care about the parent
 
 		if (relativePathParts.length === 0) {
 			return this; // if nothing left after trimming the entry itself, must been root
