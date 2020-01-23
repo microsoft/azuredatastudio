@@ -172,7 +172,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			let returnVal = '';
 			// replace the line breaks with space since the edit text control cannot
 			// render line breaks and strips them, updating the value.
-
 			/* tslint:disable:no-null-keyword */
 			let valueMissing = value === undefined || value === null || (Services.DBCellValue.isDBCellValue(value) && value.isNull);
 			if (!valueMissing && Services.DBCellValue.isDBCellValue(value)) {
