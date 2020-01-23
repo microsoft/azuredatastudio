@@ -5,7 +5,6 @@
 
 import * as DOM from 'vs/base/browser/dom';
 import { IAction } from 'vs/base/common/actions';
-import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IViewDescriptor, IViewDescriptorService } from 'vs/workbench/common/views';
@@ -89,8 +88,7 @@ export abstract class FilterViewPaneContainer extends ViewPaneContainer {
 	}
 
 	getContextMenuActions(): IAction[] {
-		const result: IAction[] = [];
-		let viewToggleActions: IAction[] = Array.from(this.constantViewDescriptors.values()).map(viewDescriptor => (<IAction>{
+		const result: IAction[] = Array.from(this.constantViewDescriptors.values()).map(viewDescriptor => (<IAction>{
 			id: `${viewDescriptor.id}.toggleVisibility`,
 			label: viewDescriptor.name,
 			checked: this.viewsModel.isVisible(viewDescriptor.id),
@@ -98,13 +96,6 @@ export abstract class FilterViewPaneContainer extends ViewPaneContainer {
 			run: () => this.toggleViewVisibility(viewDescriptor.id)
 		}));
 
-		result.push(...viewToggleActions);
-		const parentActions = super.getContextMenuActions();
-		if (viewToggleActions.length && parentActions.length) {
-			result.push(new Separator());
-		}
-
-		result.push(...parentActions);
 		return result;
 	}
 
