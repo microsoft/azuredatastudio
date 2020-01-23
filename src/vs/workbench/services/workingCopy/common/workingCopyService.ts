@@ -138,6 +138,10 @@ export class WorkingCopyService extends Disposable implements IWorkingCopyServic
 	registerWorkingCopy(workingCopy: IWorkingCopy): IDisposable {
 		const disposables = new DisposableStore();
 
+		if (workingCopy.resource.path.includes('notebook-editor-') && workingCopy.resource.scheme === 'untitled') {
+			return disposables;
+		}
+
 		// Registry
 		let workingCopiesForResource = this.mapResourceToWorkingCopy.get(workingCopy.resource.toString());
 		if (!workingCopiesForResource) {
