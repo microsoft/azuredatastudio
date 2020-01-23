@@ -91,7 +91,7 @@ export class QueryEditorService implements IQueryEditorService {
 		const m = await fileInput.resolve();
 		if (sqlContent) {
 			m.textEditorModel.setValue(sqlContent);
-			// prevent backup and restore of sql upon restart.
+			// prevent backup and restore of invalid sql upon restart.
 			m.setDirty(false);
 		}
 
