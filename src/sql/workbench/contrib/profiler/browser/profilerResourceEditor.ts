@@ -16,13 +16,13 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { EditorOptions } from 'vs/workbench/common/editor';
-import { StandaloneCodeEditor } from 'vs/editor/standalone/browser/standaloneCodeEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 
-class ProfilerResourceCodeEditor extends StandaloneCodeEditor {
+class ProfilerResourceCodeEditor extends CodeEditorWidget {
 
 	// protected _getContributions(): IEditorContributionCtor[] {
 	// 	let contributions = super._getContributions();
@@ -53,7 +53,7 @@ export class ProfilerResourceEditor extends BaseTextEditor {
 	}
 
 	public createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
-		return this.instantiationService.createInstance(ProfilerResourceCodeEditor, parent, configuration);
+		return this.instantiationService.createInstance(ProfilerResourceCodeEditor, parent, configuration, {});
 	}
 
 	protected getConfigurationOverrides(): IEditorOptions {

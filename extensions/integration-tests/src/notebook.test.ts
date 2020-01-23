@@ -13,7 +13,7 @@ import { getConfigValue, EnvironmentVariable_PYTHON_PATH, TestServerProfile, get
 import { connectToServer, sleep, testServerProfileToIConnectionProfile } from './utils';
 import * as fs from 'fs';
 import { stressify } from 'adstest';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined, promisify } from 'util';
 
 if (isTestSetupCompleted()) {
 	suite('Notebook integration test suite', function () {
@@ -375,8 +375,8 @@ class NotebookTester {
 	async cleanup(testName: string): Promise<void> {
 		try {
 			let fileName = getFileName(testName + this.invocationCount++);
-			if (fs.existsSync(fileName)) {
-				fs.unlinkSync(fileName);
+			if (await promisify(fs.exists)(fileName)) {
+				await fs.promises.unlink(fileName);
 				console.log(`"${fileName}" is deleted.`);
 			}
 			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
