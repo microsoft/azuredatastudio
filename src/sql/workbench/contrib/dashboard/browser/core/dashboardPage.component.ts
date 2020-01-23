@@ -37,11 +37,13 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ILogService } from 'vs/platform/log/common/log';
 import { firstIndex, find } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
-import { RefreshWidgetAction, EditDashboardAction, RestoreWidgetAction, ManageExtensionsAction, NewQueryAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
+import { RefreshWidgetAction, EditDashboardAction, RestoreWidgetAction, ManageExtensionsAction, NewQueryAction, NewNotebookToolbarAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as DOM from 'vs/base/browser/dom';
 import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { showRestore } from 'sql/workbench/contrib/restore/browser/restoreActions';
 
 // import ToolbarContainer from 'sql/workbench/browser/modelComponents/toolbarContainer.component';
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
@@ -73,6 +75,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	private _restoreAction: RestoreWidgetAction;
 	private _manageExtensionsAction: ManageExtensionsAction;
 	private _newQueryAction: NewQueryAction;
+	private _newNotebookAction: NewNotebookToolbarAction;
 
 	private _editEnabled = new Emitter<boolean>();
 	public readonly editEnabled: Event<boolean> = this._editEnabled.event;
@@ -154,10 +157,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this.taskbar = this._register(new Taskbar(taskbarContainer));
 		this._restoreAction = new RestoreWidgetAction(this.restore, this, 'restore');
 		this._newQueryAction = new NewQueryAction(this.newQuery, this, 'new-query-toolbar');
+		this._newNotebookAction = new NewNotebookToolbarAction(this.newNotebook, this);
 		this._editAction = new EditDashboardAction(this.enableEdit, this, 'edit-toolbar');
 		this._refreshAction = new RefreshWidgetAction(this.refresh, this, 'refresh-toolbar');
 		this._manageExtensionsAction = new ManageExtensionsAction(this.manageExtensions, this, 'manage-extensions-toolbar');
-
 		this.setTaskbarContent();
 	}
 
@@ -169,6 +172,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		let content: ITaskbarContent[] = [
 			{ action: this._restoreAction },
 			{ action: this._newQueryAction },
+			{ action: this._newNotebookAction },
 			{ element: separator },
 			{ action: this._refreshAction },
 			{ action: this._editAction },
@@ -404,20 +408,20 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	public restore(): void {
-		console.error('blicked restore');
+		this._instantiationService.invokeFunction(showRestore, this.connectionManagementService.connectionInfo.connectionProfile);
 	}
 
 	public backup(): void {
 		console.error('clicked backup');
 	}
 
-	public async newQuery(): Promise<void> {
-		console.error('clicked new query');
-		await this._instantiationService.invokeFunction(openNewQuery, undefined);
+	public newQuery(): void {
+		this._instantiationService.invokeFunction(openNewQuery);
 	}
 
 	public newNotebook(): void {
-		console.error('clicked new notebook');
+		let action = this._instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL);
+		action.run();
 	}
 
 	public manageExtensions(): void {

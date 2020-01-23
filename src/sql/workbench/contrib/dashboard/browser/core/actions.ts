@@ -103,7 +103,7 @@ export class ManageExtensionsAction extends Action {
 	private static readonly LABEL = nls.localize('manageExtensions', "Manage extensions");
 
 	constructor(
-		private restoreFn: () => void,
+		private manageExtensionsFn: () => void,
 		private context: any, // this
 		cssClass: string
 	) {
@@ -112,7 +112,7 @@ export class ManageExtensionsAction extends Action {
 
 	run(): Promise<boolean> {
 		try {
-			this.restoreFn.apply(this.context);
+			this.manageExtensionsFn.apply(this.context);
 			return Promise.resolve(true);
 		} catch (e) {
 			return Promise.resolve(false);
@@ -126,7 +126,7 @@ export class NewQueryAction extends Action {
 	private static readonly LABEL = nls.localize('newQuery', "New Query");
 
 	constructor(
-		private restoreFn: () => void,
+		private newQueryFn: () => void,
 		private context: any, // this
 		cssClass: string
 	) {
@@ -135,7 +135,7 @@ export class NewQueryAction extends Action {
 
 	run(): Promise<boolean> {
 		try {
-			this.restoreFn.apply(this.context);
+			this.newQueryFn.apply(this.context);
 			return Promise.resolve(true);
 		} catch (e) {
 			return Promise.resolve(false);
@@ -143,6 +143,28 @@ export class NewQueryAction extends Action {
 	}
 }
 
+export class NewNotebookToolbarAction extends Action {
+	public static readonly ID = 'notebook.command.new';
+	public static readonly LABEL = nls.localize('newNotebookAction', "New Notebook");
+	public static readonly INTERNAL_NEW_NOTEBOOK_CMD_ID = '_notebook.command.new';
+
+	constructor(
+		private newNotebookFn: () => void,
+		private context: any, // this
+	) {
+		super(NewNotebookToolbarAction.ID, NewNotebookToolbarAction.LABEL);
+		this.class = 'new-notebook-toolbar';
+	}
+
+	async run(): Promise<boolean> {
+		try {
+			this.newNotebookFn.apply(this.context);
+			return Promise.resolve(true);
+		} catch (e) {
+			return Promise.resolve(false);
+		}
+	}
+}
 
 export class ToggleMoreWidgetAction extends Action {
 
