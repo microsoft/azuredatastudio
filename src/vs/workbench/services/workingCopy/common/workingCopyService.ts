@@ -10,7 +10,7 @@ import { URI } from 'vs/base/common/uri';
 import { Disposable, IDisposable, toDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import { TernarySearchTree, values } from 'vs/base/common/map';
 import { ISaveOptions, IRevertOptions } from 'vs/workbench/common/editor';
-import { Schemas } from 'vs/base/common/network';
+import { Schemas } from 'vs/base/common/network'; // {{SQL CARBON EDIT}} @chlafreniere need to block working copies of notebook editors from being tracked
 
 export const enum WorkingCopyCapabilities {
 
