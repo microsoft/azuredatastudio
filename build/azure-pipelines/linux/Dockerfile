@@ -8,6 +8,11 @@ RUN apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xv
 	libkrb5-dev git apt-transport-https ca-certificates curl gnupg-agent software-properties-common \
 	libnss3 libasound2 make gcc libx11-dev fakeroot rpm
 
+RUN rm /usr/bin/gcc
+RUN rm /usr/bin/g++
+RUN ln -s /usr/bin/gcc-4.8 /usr/bin/gcc
+RUN ln -s /usr/bin/g++-4.8 /usr/bin/g++
+
 #docker
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 RUN apt-key fingerprint 0EBFCD88
