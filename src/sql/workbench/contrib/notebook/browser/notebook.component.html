@@ -23,10 +23,10 @@
 		<div *ngFor="let cell of cells">
 			<div class="notebook-cell"
 			(click)="selectCell(cell, $event)"
-			(keyup.enter)="selectCell(cell, $event)"
 			(focus)="selectCell(cell, $event)"
 			(focusout)="selectCell(undefined, $event)"
 			[class.active]="cell.active"
+			[attr.aria-label]="cell.ariaLabel"
 			tabindex="0">
 				<code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
 				</code-cell-component>
