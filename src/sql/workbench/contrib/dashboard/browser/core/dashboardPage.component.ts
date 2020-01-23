@@ -37,7 +37,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ILogService } from 'vs/platform/log/common/log';
 import { firstIndex, find } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
-import { RefreshWidgetAction, EditDashboardAction, RestoreWidgetAction, ManageExtensionsAction, NewQueryAction, NewNotebookToolbarAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
+import { RefreshWidgetAction, EditDashboardAction, RestoreToolbarAction, ManageExtensionsToolbarAction, NewQueryAction, NewNotebookToolbarAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as DOM from 'vs/base/browser/dom';
 import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
@@ -66,16 +66,16 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	@ViewChildren(TabChild) private _tabs: QueryList<DashboardTab>;
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
 	@ViewChild('actionBar', { read: ElementRef }) private actionbarContainer: ElementRef;
-	private taskbar: Taskbar;
+	protected taskbar: Taskbar;
 
 
 	// actinos
-	private _editAction: EditDashboardAction;
-	private _refreshAction: RefreshWidgetAction;
-	private _restoreAction: RestoreWidgetAction;
-	private _manageExtensionsAction: ManageExtensionsAction;
-	private _newQueryAction: NewQueryAction;
-	private _newNotebookAction: NewNotebookToolbarAction;
+	protected _editAction: EditDashboardAction;
+	protected _refreshAction: RefreshWidgetAction;
+	protected _restoreAction: RestoreToolbarAction;
+	protected _manageExtensionsAction: ManageExtensionsToolbarAction;
+	protected _newQueryAction: NewQueryAction;
+	protected _newNotebookAction: NewNotebookToolbarAction;
 
 	private _editEnabled = new Emitter<boolean>();
 	public readonly editEnabled: Event<boolean> = this._editEnabled.event;
@@ -116,7 +116,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		@Inject(IAngularEventingService) private angularEventingService: IAngularEventingService,
 		@Inject(IConfigurationService) private configurationService: IConfigurationService,
 		@Inject(ILogService) private logService: ILogService,
-		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
+		@Inject(IInstantiationService) protected _instantiationService: IInstantiationService,
 	) {
 		super();
 	}
@@ -151,20 +151,20 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this.createTaskbar(this.actionbarContainer.nativeElement);
 	}
 
-	private createTaskbar(parentElement: HTMLElement): void {
+	protected createTaskbar(parentElement: HTMLElement): void {
 		// Create QueryTaskbar
 		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
 		this.taskbar = this._register(new Taskbar(taskbarContainer));
-		this._restoreAction = new RestoreWidgetAction(this.restore, this, 'restore');
+		this._restoreAction = new RestoreToolbarAction(this.restore, this, 'restore');
 		this._newQueryAction = new NewQueryAction(this.newQuery, this, 'new-query-toolbar');
 		this._newNotebookAction = new NewNotebookToolbarAction(this.newNotebook, this);
 		this._editAction = new EditDashboardAction(this.enableEdit, this, 'edit-toolbar');
 		this._refreshAction = new RefreshWidgetAction(this.refresh, this, 'refresh-toolbar');
-		this._manageExtensionsAction = new ManageExtensionsAction(this.manageExtensions, this, 'manage-extensions-toolbar');
+		this._manageExtensionsAction = new ManageExtensionsToolbarAction(this.manageExtensions, this, 'manage-extensions-toolbar');
 		this.setTaskbarContent();
 	}
 
-	private setTaskbarContent(): void {
+	protected setTaskbarContent(): void {
 		// Create HTML Elements for the taskbar
 		let separator = Taskbar.createTaskbarSeparator();
 
@@ -409,10 +409,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 	public restore(): void {
 		this._instantiationService.invokeFunction(showRestore, this.connectionManagementService.connectionInfo.connectionProfile);
-	}
-
-	public backup(): void {
-		console.error('clicked backup');
 	}
 
 	public newQuery(): void {

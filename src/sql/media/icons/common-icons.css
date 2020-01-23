@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 .vs .codicon.backup {
-	background: url("backup.svg") center center no-repeat;
+	background: url("backup.svg") no-repeat;
 }
 
 .vs-dark .codicon.backup,
 .hc-black .codicon.backup {
-	background: url("backup_inverse.svg") center center no-repeat;
+	background: url("backup_inverse.svg") no-repeat;
 }
 
 .vs .codicon.restore {
