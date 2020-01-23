@@ -1130,11 +1130,11 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		let scrollTop = this.modifiedEditor.getScrollTop();
 		let scrollHeight = this.modifiedEditor.getScrollHeight();
 
-		let computedAvailableSize = Math.max(0, layoutInfo.contentHeight);
+		let computedAvailableSize = Math.max(0, layoutInfo.height);
 		let computedRepresentableSize = Math.max(0, computedAvailableSize - 2 * 0);
 		let computedRatio = scrollHeight > 0 ? (computedRepresentableSize / scrollHeight) : 0;
 
-		let computedSliderSize = Math.max(0, Math.floor(layoutInfo.contentHeight * computedRatio));
+		let computedSliderSize = Math.max(0, Math.floor(layoutInfo.height * computedRatio));
 		let computedSliderPosition = Math.floor(scrollTop * computedRatio);
 
 		return {
@@ -1629,7 +1629,7 @@ const DECORATIONS = {
 	}),
 	lineInsertWithSign: ModelDecorationOptions.register({
 		className: 'line-insert',
-		linesDecorationsClassName: 'insert-sign',
+		linesDecorationsClassName: 'insert-sign codicon codicon-add',
 		marginClassName: 'line-insert',
 		isWholeLine: true
 	}),
@@ -1641,7 +1641,7 @@ const DECORATIONS = {
 	}),
 	lineDeleteWithSign: ModelDecorationOptions.register({
 		className: 'line-delete',
-		linesDecorationsClassName: 'delete-sign',
+		linesDecorationsClassName: 'delete-sign codicon codicon-remove',
 		marginClassName: 'line-delete',
 		isWholeLine: true
 
@@ -2100,7 +2100,7 @@ class InlineViewZonesComputer extends ViewZonesComputer {
 			if (this.renderIndicators) {
 				let index = lineNumber - lineChange.originalStartLineNumber;
 				marginHTML = marginHTML.concat([
-					`<div class="delete-sign" style="position:absolute;top:${index * lineHeight}px;width:${lineDecorationsWidth}px;height:${lineHeight}px;right:0;"></div>`
+					`<div class="delete-sign codicon codicon-remove" style="position:absolute;top:${index * lineHeight}px;width:${lineDecorationsWidth}px;height:${lineHeight}px;right:0;"></div>`
 				]);
 			}
 		}
@@ -2162,6 +2162,7 @@ class InlineViewZonesComputer extends ViewZonesComputer {
 			lineTokens,
 			actualDecorations,
 			tabSize,
+			0,
 			fontInfo.spaceWidth,
 			options.get(EditorOption.stopRenderingLineAfter),
 			options.get(EditorOption.renderWhitespace),

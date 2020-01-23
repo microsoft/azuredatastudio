@@ -87,8 +87,8 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 		let c = component as ComponentBase;
 		let basicView: SplitPane = new SplitPane();
 		basicView.orientation = orientation;
-		basicView.element = c.getHtml(),
-			basicView.component = c;
+		basicView.element = c.getHtml();
+		basicView.component = c;
 		basicView.minimumSize = 50;
 		basicView.maximumSize = Number.MAX_VALUE;
 		return basicView;

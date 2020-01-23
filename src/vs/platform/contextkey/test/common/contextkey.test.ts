@@ -65,7 +65,6 @@ suite('ContextKeyExpr', () => {
 	});
 
 	test('evaluate', () => {
-		/* tslint:disable:triple-equals */
 		let context = createContext({
 			'a': true,
 			'b': false,
@@ -78,6 +77,7 @@ suite('ContextKeyExpr', () => {
 			assert.equal(rules!.evaluate(context), expected, expr);
 		}
 		function testBatch(expr: string, value: any): void {
+			/* eslint-disable eqeqeq */
 			testExpression(expr, !!value);
 			testExpression(expr + ' == true', !!value);
 			testExpression(expr + ' != true', !value);
@@ -92,6 +92,7 @@ suite('ContextKeyExpr', () => {
 			testExpression(expr + ' >= 10', parseFloat(value) >= 10);
 			testExpression(expr + ' <= 10', parseFloat(value) <= 10);
 			//
+			/* eslint-enable eqeqeq */
 		}
 
 		testBatch('a', true);
@@ -102,9 +103,8 @@ suite('ContextKeyExpr', () => {
 
 		testExpression('a && !b', true && !false);
 		testExpression('a && b', true && false);
-		testExpression('a && !b && c == 5', true && !false && '5' == '5');
+		testExpression('a && !b && c == 5', true && !false && '5' === '5');
 		testExpression('d =~ /e.*/', false);
-		/* tslint:enable:triple-equals */
 
 		// precedence test: false && true || true === true because && is evaluated first
 		testExpression('b && a || a', true);

@@ -34,7 +34,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
-import { SimpleUriLabelService } from 'vs/editor/standalone/browser/simpleServices';
+import { LabelService } from 'vs/workbench/services/label/common/labelService';
 
 class TestParsedArgs implements ParsedArgs {
 	[arg: string]: any;
@@ -393,7 +393,7 @@ suite('commandLineService tests', () => {
 		querymodelService.setup(c => c.onRunQueryComplete).returns(() => Event.None);
 		const instantiationService = new TestInstantiationService();
 		let uri = URI.file(args._[0]);
-		const untitledEditorInput = new UntitledTextEditorInput(uri, false, '', '', '', instantiationService, undefined, new SimpleUriLabelService(), undefined, undefined, undefined);
+		const untitledEditorInput = new UntitledTextEditorInput(uri, false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined, undefined);
 		const queryInput = new UntitledQueryEditorInput(undefined, untitledEditorInput, undefined, connectionManagementService.object, querymodelService.object, configurationService.object, undefined);
 		queryInput.state.connected = true;
 		const editorService: TypeMoq.Mock<IEditorService> = TypeMoq.Mock.ofType<IEditorService>(TestEditorService, TypeMoq.MockBehavior.Strict);
