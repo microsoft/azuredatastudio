@@ -75,7 +75,7 @@ export class RefreshWidgetAction extends Action {
 	}
 }
 
-export class RestoreWidgetAction extends Action {
+export class RestoreToolbarAction extends Action {
 
 	private static readonly ID = 'restore';
 	private static readonly LABEL = nls.localize('restore', "Restore");
@@ -85,7 +85,7 @@ export class RestoreWidgetAction extends Action {
 		private context: any, // this
 		cssClass: string
 	) {
-		super(RestoreWidgetAction.ID, RestoreWidgetAction.LABEL, cssClass);
+		super(RestoreToolbarAction.ID, RestoreToolbarAction.LABEL, cssClass);
 	}
 
 	run(): Promise<boolean> {
@@ -98,7 +98,30 @@ export class RestoreWidgetAction extends Action {
 	}
 }
 
-export class ManageExtensionsAction extends Action {
+export class BackupToolbarAction extends Action {
+
+	private static readonly ID = 'backup';
+	private static readonly LABEL = nls.localize('backup', "Backup");
+
+	constructor(
+		private backupFn: () => void,
+		private context: any, // this
+		cssClass: string
+	) {
+		super(BackupToolbarAction.ID, BackupToolbarAction.LABEL, cssClass);
+	}
+
+	run(): Promise<boolean> {
+		try {
+			this.backupFn.apply(this.context);
+			return Promise.resolve(true);
+		} catch (e) {
+			return Promise.resolve(false);
+		}
+	}
+}
+
+export class ManageExtensionsToolbarAction extends Action {
 
 	private static readonly ID = 'manageExtensions';
 	private static readonly LABEL = nls.localize('manageExtensions', "Manage extensions");
@@ -108,7 +131,7 @@ export class ManageExtensionsAction extends Action {
 		private context: any, // this
 		cssClass: string
 	) {
-		super(ManageExtensionsAction.ID, ManageExtensionsAction.LABEL, cssClass);
+		super(ManageExtensionsToolbarAction.ID, ManageExtensionsToolbarAction.LABEL, cssClass);
 	}
 
 	run(): Promise<boolean> {
