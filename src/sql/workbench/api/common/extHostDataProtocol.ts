@@ -13,6 +13,8 @@ import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IURITransformer } from 'vs/base/common/uriIpc';
 import { URI } from 'vs/base/common/uri';
 import { find } from 'vs/base/common/arrays';
+import { RunOnceScheduler } from 'vs/base/common/async';
+import { mapToSerializable } from 'sql/base/common/map';
 
 export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
@@ -25,6 +27,9 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	private static _handlePool: number = 0;
 	private _adapter = new Map<number, azdata.DataProvider>();
 	private _providersByType = new Map<azdata.DataProviderType, azdata.DataProvider[]>();
+
+	private readonly messageRunner = new RunOnceScheduler(() => this.sendMessages(), 1000);
+	private readonly queuedMessages = new Map<string, azdata.QueryExecuteMessageParams[]>();
 
 	constructor(
 		mainContext: IMainContext,
@@ -332,7 +337,19 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		if (this.uriTransformer) {
 			message.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(message.ownerUri))).toString(true);
 		}
-		this._proxy.$onQueryMessage(handle, message);
+		if (!this.queuedMessages.has(message.ownerUri)) {
+			this.queuedMessages.set(message.ownerUri, []);
+		}
+		this.queuedMessages.get(message.ownerUri).push(message);
+		if (!this.messageRunner.isScheduled()) {
+			this.messageRunner.schedule();
+		}
+	}
+
+	private sendMessages() {
+		const messages = mapToSerializable(this.queuedMessages);
+		this.queuedMessages.clear();
+		this._proxy.$onQueryMessage(messages);
 	}
 
 	$saveResults(handle: number, requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult> {

@@ -559,7 +559,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void;
 	$onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void;
 	$onResultSetUpdated(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void;
-	$onQueryMessage(handle: number, message: azdata.QueryExecuteMessageParams): void;
+	$onQueryMessage(message: [string, azdata.QueryExecuteMessageParams[]][]): void;
 	$onObjectExplorerSessionCreated(handle: number, message: azdata.ObjectExplorerSession): void;
 	$onObjectExplorerSessionDisconnected(handle: number, message: azdata.ObjectExplorerSession): void;
 	$onObjectExplorerNodeExpanded(providerId: string, message: azdata.ObjectExplorerExpandInfo): void;
