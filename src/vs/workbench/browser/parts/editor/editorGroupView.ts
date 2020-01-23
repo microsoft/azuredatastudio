@@ -837,7 +837,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		// Determine options
 		const openEditorOptions: IEditorOpenOptions = {
 			index: options ? options.index : undefined,
-			pinned: !this.accessor.partOptions.enablePreview || editor.isDirty() || options?.pinned || typeof options?.index === 'number',
+			pinned: !this.accessor.partOptions.enablePreview || editor.isDirty() || (options?.pinned ?? typeof options?.index === 'number'), // unless specified, prefer to pin when opening with index
 			active: this._group.count === 0 || !options || !options.inactive
 		};
 
@@ -1499,7 +1499,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 				}
 
 				options.inactive = !isActiveEditor;
-				options.pinned = true;
+				options.pinned = options.pinned ?? true; // unless specified, prefer to pin upon replace
 
 				const editorToReplace = { editor, replacement, options };
 				if (isActiveEditor) {
