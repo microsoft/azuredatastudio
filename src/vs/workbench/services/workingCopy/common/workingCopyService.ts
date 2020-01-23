@@ -10,6 +10,7 @@ import { URI } from 'vs/base/common/uri';
 import { Disposable, IDisposable, toDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import { TernarySearchTree, values } from 'vs/base/common/map';
 import { ISaveOptions, IRevertOptions } from 'vs/workbench/common/editor';
+import { Schemas } from 'vs/base/common/network';
 
 export const enum WorkingCopyCapabilities {
 
@@ -139,7 +140,7 @@ export class WorkingCopyService extends Disposable implements IWorkingCopyServic
 		const disposables = new DisposableStore();
 
 		// {{SQL CARBON EDIT}} @chlafreniere need to block working copies of notebook editors from being tracked
-		if (workingCopy.resource.path.includes('notebook-editor-') && workingCopy.resource.scheme === 'untitled') {
+		if (workingCopy.resource.path.includes('notebook-editor-') && workingCopy.resource.scheme === Schemas.untitled) {
 			return disposables;
 		}
 
