@@ -542,9 +542,8 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 			} else {
 				for (let j = 0; j < cellVal.length; j++) {
 					index = 0;
-					let cellValFormatted = cell.cellType === 'markdown' ? this.cleanMarkdownLinks(cellVal[j]) : cellVal[j];
-					while (cellValFormatted.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) > -1) {
-						start = cellValFormatted.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index + 1;
+					while (cellVal[j].substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) > -1) {
+						start = cellVal[j].substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index + 1;
 						end = start + exp.length;
 						// lineNumber: j+1 since notebook editors aren't zero indexed.
 						let range = new NotebookRange(cell, j + 1, start, j + 1, end);
@@ -563,16 +562,31 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 	// In markdown links are defined as [Link Text](https://url/of/the/text). when searching for text we shouldn't
 	// look for the values inside the (), below regex replaces that with just the Link Text.
 	cleanMarkdownLinks(cellSrc: string): string {
-		return cellSrc.replace(/(?:__|[*#])|\[(.*?)\]\(.*?\)/gm, '$1');
+		return cellSrc.replace(/(?:__|[*#])|\[([\s\S]*?)\]\(.*?\)/gm, '$1');
 	}
 
 	// remove /n's to calculate the line number to locate the correct element
 	cleanUpCellSource(cellValue: string | string[]): string | string[] {
 		let trimmedCellSrc: string[] = [];
+		const newline = new RegExp(/^([\s-=]+[\\r\\n]*)$/gm);
+		const tabelSeperator = new RegExp(/^(([|]+[ :]*[-]+[ :]*[|]*)+[\\r\\n]*)$/gm);
+		const listRegex = new RegExp(/^[*+-]+[\s]*.+/gm);
 		if (cellValue instanceof Array) {
-			const newline = new RegExp(/^([-]+[//n]*)$/gm);
-			const tabelSeperator = new RegExp(/^(([|]+[ :]*[-]+[ :]*[|]*)+[\\r\\n]*)$/gm);
-			trimmedCellSrc = cellValue.filter(c => c !== '\n' && c !== '\r\n' && !c.match(tabelSeperator) && !c.match(newline));
+			let paragraphContent: string = '';
+			cellValue.forEach(content => {
+				if (content !== '\n' && content !== '\r\n' && !content.match(tabelSeperator) && !content.match(newline) && !content.match(listRegex)) {
+					paragraphContent = paragraphContent.concat(content);
+				} else {
+					if (paragraphContent.length > 0 && !paragraphContent.match(newline)) {
+						trimmedCellSrc.push(this.cleanMarkdownLinks(paragraphContent));
+					}
+					if (content.match(listRegex)) {
+						paragraphContent = content;
+					} else {
+						paragraphContent = '';
+					}
+				}
+			});
 			// code blocks to one line since html element codeblock is a single element.
 			let codeblocks: string[] = trimmedCellSrc.filter(c => c.indexOf('```') > -1);
 			if (codeblocks.length > 0) {
