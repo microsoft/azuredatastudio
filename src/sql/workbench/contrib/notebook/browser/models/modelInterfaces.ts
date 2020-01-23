@@ -543,6 +543,7 @@ export interface ICellModel {
 	readonly onCollapseStateChanged: Event<boolean>;
 	modelContentChangedEvent: IModelContentChangedEvent;
 	isEditMode: boolean;
+	readonly ariaLabel: string;
 }
 
 export interface FutureInternal extends nb.IFuture {
