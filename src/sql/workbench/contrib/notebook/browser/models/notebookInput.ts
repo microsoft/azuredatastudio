@@ -463,7 +463,7 @@ export abstract class NotebookInput extends EditorInput {
 	}
 }
 
-class NotebookEditorContentManager implements IContentManager {
+export class NotebookEditorContentManager implements IContentManager {
 	constructor(
 		private notebookInput: NotebookInput,
 		@IInstantiationService private readonly instantiationService: IInstantiationService) {

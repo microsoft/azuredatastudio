@@ -144,10 +144,10 @@ export class InstalledPackagesTab {
 				this.dialog.model.currentPackageType)
 		});
 
-		if (packageData && packageData.length > 0) {
+		if (packageData) {
 			await this.installedPackagesTable.updateProperties({
 				data: packageData,
-				selectedRows: [0]
+				selectedRows: packageData.length > 0 ? [0] : []
 			});
 			await this.uninstallPackageButton.updateProperties({ enabled: true });
 		}

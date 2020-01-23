@@ -6,7 +6,7 @@ import 'vs/css!./textCell';
 import 'vs/css!./media/markdown';
 import 'vs/css!./media/highlight';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener, ViewChildren, QueryList } from '@angular/core';
 
 import { localize } from 'vs/nls';
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -25,6 +25,8 @@ import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/not
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/contrib/notebook/browser/outputs/sanitizer';
 import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions';
 import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
+import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
+import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -37,6 +39,8 @@ const USER_SELECT_CLASS = 'actionselect';
 export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('preview', { read: ElementRef }) private output: ElementRef;
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
+	@ViewChildren(CodeComponent) private markdowncodeCell: QueryList<CodeComponent>;
+
 	@Input() cellModel: ICellModel;
 
 	@Input() set model(value: NotebookModel) {
@@ -107,6 +111,15 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	get activeCellId(): string {
 		return this._activeCellId;
+	}
+	/**
+	 * Returns the code editor of makrdown cell in edit mode.
+	 */
+	getEditor(): BaseTextEditor | undefined {
+		if (this.markdowncodeCell.length > 0) {
+			return this.markdowncodeCell.first.getEditor();
+		}
+		return undefined;
 	}
 
 	private setLoading(isLoading: boolean): void {

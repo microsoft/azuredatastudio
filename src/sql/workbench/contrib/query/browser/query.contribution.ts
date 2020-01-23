@@ -34,18 +34,15 @@ import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, Quer
 import { SqlFlavorStatusbarItem, ChangeFlavorAction } from 'sql/workbench/contrib/query/browser/flavorStatus';
 import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions } from 'vs/workbench/common/editor';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
-import { FileQueryEditorInputFactory, UntitledQueryEditorInputFactory } from 'sql/workbench/contrib/query/common/queryInputFactory';
+import { FileQueryEditorInputFactory, UntitledQueryEditorInputFactory, QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/common/queryInputFactory';
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/contrib/query/browser/queryActions';
 import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
 import { MssqlNodeContext } from 'sql/workbench/contrib/dataExplorer/browser/mssqlNodeContext';
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTreeContext';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 
 export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.queryEditorVisibleId);
 export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
@@ -58,17 +55,7 @@ Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInpu
 	.registerEditorInputFactory(UntitledQueryEditorInput.ID, UntitledQueryEditorInputFactory);
 
 Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations)
-	.registerLanguageAssociation('sql', (accessor, editor) => {
-		const instantiationService = accessor.get(IInstantiationService);
-		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, editor.getResource().toString(true));
-		if (editor instanceof FileEditorInput) {
-			return instantiationService.createInstance(FileQueryEditorInput, '', editor, queryResultsInput);
-		} else if (editor instanceof UntitledTextEditorInput) {
-			return instantiationService.createInstance(UntitledQueryEditorInput, '', editor, queryResultsInput);
-		} else {
-			return undefined;
-		}
-	}, (editor: QueryEditorInput) => editor.text, true);
+	.registerLanguageAssociation(QueryEditorLanguageAssociation.languages, QueryEditorLanguageAssociation, QueryEditorLanguageAssociation.isDefault);
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(new EditorDescriptor(QueryResultsEditor, QueryResultsEditor.ID, localize('queryResultsEditor.name', "Query Results")), [new SyncDescriptor(QueryResultsInput)]);

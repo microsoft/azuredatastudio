@@ -1,10 +1,14 @@
 {
 	"displayName": "SQL Server Machine Learning Services",
 	"description": "SQL Server Machine Learning Services",
-	"mlServices.enable": "Enable Machine Learning Services",
-	"mlServices.disable": "Disable Machine Learning Services",
-	"title.tasks": "Getting Started",
+	"title.tasks": "Tasks",
+	"title.configurations": "Configurations",
 	"title.endpoints": "Endpoints",
-	"title.books": "Machine Learning Services Books",
-	"ml.command.managePackages": "Manage Packages in SQL Server"
+	"mls.command.managePackages": "Manage Packages in SQL Server",
+	"mls.command.odbcdriver": "Install ODBC Driver for SQL Server",
+	"mls.command.mlsdocs": "Machine Learning Services Documentation",
+	"mls.configuration.title": "Machine Learning Services configurations",
+	"mls.pythonPath.description": "Local path to a preexisting python installation used by Machine Learning Services.",
+	"mls.rPath.description": "Local path to a preexisting python installation used by Machine Learning Services.",
+	"mls.command.dependencies": "Install Machine Learning Services Dependencies"
 }

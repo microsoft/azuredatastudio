@@ -66,6 +66,7 @@ export class TopOperationsView extends Disposable implements IPanelView {
 		});
 		this._register(this.table);
 		this._register(attachTableStyler(this.table, this.themeService));
+		this._register(this.dataView.onRowCountChange(() => this.table.updateRowCount()));
 	}
 
 	public render(container: HTMLElement): void {

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/agent/out/dialogs/scheduleDialog" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/agent/out/dialogs/scheduleDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="scheduleDialog.newSchedule">
         <source xml:lang="en">New Schedule</source>
@@ -24,7 +24,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/proxyDialog" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/agent/out/dialogs/proxyDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="createProxy.createProxy">
         <source xml:lang="en">Create Proxy</source>
@@ -100,7 +100,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/pickScheduleDialog" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/agent/out/dialogs/pickScheduleDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="pickSchedule.jobSchedules">
         <source xml:lang="en">Job Schedules</source>
@@ -132,7 +132,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/operatorDialog" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/agent/out/dialogs/operatorDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="createOperator.createOperator">
         <source xml:lang="en">Create Operator</source>
@@ -164,7 +164,7 @@
       </trans-unit>
       <trans-unit id="createOperator.PagerEmailName">
         <source xml:lang="en">Pager E-mail Name</source>
-        <target state="translated">呼叫器電子郵件名稱</target>
+        <target state="translated">頁面巡覽區電子郵件名稱</target>
       </trans-unit>
       <trans-unit id="createOperator.PagerMondayCheckBox">
         <source xml:lang="en">Monday</source>
@@ -192,7 +192,7 @@
       </trans-unit>
       <trans-unit id="createOperator.PagerSundayCheckBox">
         <source xml:lang="en">Sunday</source>
-        <target state="translated">星期天</target>
+        <target state="translated">星期日</target>
       </trans-unit>
       <trans-unit id="createOperator.workdayBegin">
         <source xml:lang="en">Workday begin</source>
@@ -224,7 +224,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/jobStepDialog" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/agent/out/dialogs/jobStepDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="jobStepDialog.fileBrowserTitle">
         <source xml:lang="en">Locate Database Files - </source>
@@ -276,7 +276,7 @@
       </trans-unit>
       <trans-unit id="jobStepDialog.typeLabel">
         <source xml:lang="en">Type</source>
-        <target state="translated">型別</target>
+        <target state="translated">類型</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.runAsLabel">
         <source xml:lang="en">Run as</source>
@@ -408,7 +408,7 @@
       </trans-unit>
       <trans-unit id="jobStepDialog.quitJobSuccess">
         <source xml:lang="en">Quit the job reporting success</source>
-        <target state="translated">退出作業報告成功</target>
+        <target state="translated">結束作業報告成功</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.quitJobFailure">
         <source xml:lang="en">Quit the job reporting failure</source>
@@ -416,7 +416,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/jobDialog" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/agent/out/dialogs/jobDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="jobDialog.general">
         <source xml:lang="en">General</source>
@@ -440,7 +440,7 @@
       </trans-unit>
       <trans-unit id="jobDialog.blankJobNameError">
         <source xml:lang="en">The name of the job cannot be blank.</source>
-        <target state="translated">作業的名稱不得為空。</target>
+        <target state="translated">作業名稱不得為空。</target>
       </trans-unit>
       <trans-unit id="jobDialog.name">
         <source xml:lang="en">Name</source>
@@ -472,7 +472,7 @@
       </trans-unit>
       <trans-unit id="jobDialog.type">
         <source xml:lang="en">Type</source>
-        <target state="translated">型別</target>
+        <target state="translated">類型</target>
       </trans-unit>
       <trans-unit id="jobDialog.onSuccess">
         <source xml:lang="en">On Success</source>
@@ -496,11 +496,11 @@
       </trans-unit>
       <trans-unit id="jobDialog.moveUp">
         <source xml:lang="en">Move Step Up</source>
-        <target state="translated">向上移動</target>
+        <target state="translated">向上移動步驟</target>
       </trans-unit>
       <trans-unit id="jobDialog.moveDown">
         <source xml:lang="en">Move Step Down</source>
-        <target state="translated">向下移動</target>
+        <target state="translated">向下移動步驟</target>
       </trans-unit>
       <trans-unit id="jobDialog.startStepAt">
         <source xml:lang="en">Start step</source>
@@ -556,11 +556,11 @@
       </trans-unit>
       <trans-unit id="jobDialog.alertTypeLabel">
         <source xml:lang="en">Type</source>
-        <target state="translated">型別</target>
+        <target state="translated">類型</target>
       </trans-unit>
       <trans-unit id="jobDialog.newJob">
         <source xml:lang="en">New Job</source>
-        <target state="translated">新工作</target>
+        <target state="translated">新增作業</target>
       </trans-unit>
       <trans-unit id="jobDialog.editJob">
         <source xml:lang="en">Edit Job</source>
@@ -568,7 +568,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/alertDialog" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/agent/out/dialogs/alertDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="alertDialog.createAlert">
         <source xml:lang="en">Create Alert</source>
@@ -600,7 +600,7 @@
       </trans-unit>
       <trans-unit id="alertDialog.Type">
         <source xml:lang="en">Type</source>
-        <target state="translated">型別</target>
+        <target state="translated">類型</target>
       </trans-unit>
       <trans-unit id="alertDialog.Enabled">
         <source xml:lang="en">Enabled</source>
@@ -632,7 +632,7 @@
       </trans-unit>
       <trans-unit id="alertDialog.Severity002">
         <source xml:lang="en">002 - Reserved</source>
-        <target state="translated">002 - 預留</target>
+        <target state="translated">002 - 已保留</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity003">
         <source xml:lang="en">003 - Reserved</source>
@@ -744,7 +744,7 @@
       </trans-unit>
       <trans-unit id="alertDialog.NewJob">
         <source xml:lang="en">New Job</source>
-        <target state="translated">新工作</target>
+        <target state="translated">新增作業</target>
       </trans-unit>
       <trans-unit id="alertDialog.OperatorList">
         <source xml:lang="en">Operator List</source>
@@ -772,7 +772,7 @@
       </trans-unit>
       <trans-unit id="alertDialog.IncludeErrorInPager">
         <source xml:lang="en">Include alert error text in pager</source>
-        <target state="translated">在呼叫器中包括警示文字</target>
+        <target state="translated">在頁面巡覽區中包括警示文字</target>
       </trans-unit>
       <trans-unit id="alertDialog.AdditionalNotification">
         <source xml:lang="en">Additional notification message to send</source>
@@ -792,7 +792,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/agentDialog" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/agent/out/dialogs/agentDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="agentDialog.OK">
         <source xml:lang="en">OK</source>
@@ -804,7 +804,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/data/proxyData" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/agent/out/data/proxyData" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="proxyData.saveErrorMessage">
         <source xml:lang="en">Proxy update failed '{0}'</source>
@@ -820,7 +820,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/data/jobStepData" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/agent/out/data/jobStepData" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="jobStepData.saveErrorMessage">
         <source xml:lang="en">Step update failed '{0}'</source>
@@ -836,7 +836,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/data/jobData" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/agent/out/data/jobData" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="jobData.whenJobCompletes">
         <source xml:lang="en">When the job completes</source>
@@ -872,7 +872,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/data/alertData" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/agent/out/data/alertData" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="alertData.saveErrorMessage">
         <source xml:lang="en">Alert update failed '{0}'</source>
@@ -892,7 +892,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/mainController" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/agent/out/mainController" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="mainController.notImplemented">
         <source xml:lang="en">This feature is under development.  Check-out the latest insiders build if you'd like to try out the most recent changes!</source>

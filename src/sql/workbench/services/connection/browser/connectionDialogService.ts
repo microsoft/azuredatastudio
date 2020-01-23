@@ -31,6 +31,7 @@ import { CmsConnectionController } from 'sql/workbench/services/connection/brows
 import { entries } from 'sql/base/common/collections';
 import { find } from 'vs/base/common/arrays';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -87,7 +88,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@IClipboardService private _clipboardService: IClipboardService,
-		@ICommandService private _commandService: ICommandService
+		@ICommandService private _commandService: ICommandService,
+		@ILogService private _logService: ILogService
 	) {
 		this.initializeConnectionProviders();
 	}
@@ -468,6 +470,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		const helpLink = 'https://aka.ms/sqlopskerberos';
 		let actions: IAction[] = [];
 		if (!platform.isWindows && types.isString(message) && message.toLowerCase().indexOf('kerberos') > -1 && message.toLowerCase().indexOf('kinit') > -1) {
+			// Log the original error to console for debugging
+			this._logService.error(`Kerberos connection failure. Message : ${message} Message Details : ${messageDetails}`);
 			message = [
 				localize('kerberosErrorStart', "Connection failed due to Kerberos error."),
 				localize('kerberosHelpLink', "Help configuring Kerberos is available at {0}", helpLink),

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/admin-tool-ext-win/package" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/admin-tool-ext-win/package" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="adminToolExtWin.displayName">
         <source xml:lang="en">Database Administration Tool Extensions for Windows</source>
@@ -20,7 +20,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/admin-tool-ext-win/out/main" source-language="en" target-language="ja" datatype="plaintext">
+  <file original="extensions/admin-tool-ext-win/out/main" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="adminToolExtWin.noConnectionContextForProp">
         <source xml:lang="en">No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand</source>
@@ -44,7 +44,7 @@
       </trans-unit>
       <trans-unit id="adminToolExtWin.ssmsMinError">
         <source xml:lang="en">Error calling SsmsMin with args '{0}' - {1}</source>
-        <target state="translated">引数 '{0}' - {1} の SsmsMin の呼び出しでエラーが発生しました</target>
+        <target state="translated">引数 '{0}' を伴う SsmsMin の呼び出しでエラーが発生しました - {1}</target>
       </trans-unit>
     </body>
   </file>

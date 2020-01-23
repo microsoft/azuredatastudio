@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IEditorInputFactory, IEditorInputFactoryRegistry, Extensions as EditorInputExtensions } from 'vs/workbench/common/editor';
+import { IEditorInputFactory, IEditorInputFactoryRegistry, Extensions as EditorInputExtensions, IEditorInput } from 'vs/workbench/common/editor';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
@@ -12,8 +12,55 @@ import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/unt
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { ILanguageAssociation } from 'sql/workbench/common/languageAssociation';
+import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
+import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorInputExtensions.EditorInputFactories);
+
+export class QueryEditorLanguageAssociation implements ILanguageAssociation {
+	static readonly isDefault = true;
+	static readonly languages = ['sql'];
+
+	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService,
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
+		@IEditorService private readonly editorService: IEditorService) { }
+
+	convertInput(activeEditor: IEditorInput): QueryEditorInput | undefined {
+		const queryResultsInput = this.instantiationService.createInstance(QueryResultsInput, activeEditor.getResource().toString(true));
+		let queryEditorInput: QueryEditorInput;
+		if (activeEditor instanceof FileEditorInput) {
+			queryEditorInput = this.instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput);
+		} else if (activeEditor instanceof UntitledTextEditorInput) {
+			queryEditorInput = this.instantiationService.createInstance(UntitledQueryEditorInput, '', activeEditor, queryResultsInput);
+		} else {
+			return undefined;
+		}
+
+		const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+		if (profile) {
+			const options: IConnectionCompletionOptions = {
+				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: undefined, input: queryEditorInput },
+				saveTheConnection: false,
+				showDashboard: false,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			};
+			this.connectionManagementService.connect(profile, queryEditorInput.uri, options).catch(err => onUnexpectedError(err));
+		}
+
+		return queryEditorInput;
+	}
+
+	createBase(activeEditor: QueryEditorInput): IEditorInput {
+		return activeEditor.text;
+	}
+}
 
 export class FileQueryEditorInputFactory implements IEditorInputFactory {
 	serialize(editorInput: FileQueryEditorInput): string {
