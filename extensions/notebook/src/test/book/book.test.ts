@@ -14,6 +14,7 @@ import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { BookTreeItem } from '../../book/bookTreeItem';
 import { promisify } from 'util';
 import { MockExtensionContext } from '../common/stubs';
+import { exists } from '../../common/utils';
 
 export interface ExpectedBookItem {
 	title: string;
@@ -186,7 +187,7 @@ describe('BookTreeViewProviderTests', function() {
 
 			this.afterAll(async function () {
 				console.log('Removing temporary files...');
-				if (await promisify(fs.exists)(rootFolderPath)) {
+				if (await exists(rootFolderPath)) {
 					await promisify(rimraf)(rootFolderPath);
 				}
 				console.log('Successfully removed temporary files.');
@@ -229,7 +230,7 @@ describe('BookTreeViewProviderTests', function() {
 		});
 
 		this.afterAll(async function () {
-			if (await promisify(fs.exists)(rootFolderPath)) {
+			if (await exists(rootFolderPath)) {
 				await promisify(rimraf)(rootFolderPath);
 			}
 		});
@@ -274,7 +275,7 @@ describe('BookTreeViewProviderTests', function() {
 		});
 
 		this.afterAll(async function () {
-			if (await promisify(fs.exists)(rootFolderPath)) {
+			if (await exists(rootFolderPath)) {
 				await promisify(rimraf)(rootFolderPath);
 			}
 		});
@@ -328,7 +329,7 @@ describe('BookTreeViewProviderTests', function() {
 		});
 
 		this.afterAll(async function () {
-			if (await promisify(fs.exists)(rootFolderPath)) {
+			if (await exists(rootFolderPath)) {
 				await promisify(rimraf)(rootFolderPath);
 			}
 		});
