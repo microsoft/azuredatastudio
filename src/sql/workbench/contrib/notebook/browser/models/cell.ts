@@ -56,8 +56,8 @@ export class CellModel implements ICellModel {
 	private _modelContentChangedEvent: IModelContentChangedEvent;
 	private readonly _ariaLabel: string;
 
-	private readonly codeCellLabel = localize('codeCellLabel', 'Code Cell');
-	private readonly textCellLabel = localize('textCellLabel', 'Text Cell');
+	private readonly codeCellLabel = localize('codeCellLabel', "Code Cell");
+	private readonly textCellLabel = localize('textCellLabel', "Text Cell");
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
