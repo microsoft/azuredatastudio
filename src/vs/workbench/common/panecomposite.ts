@@ -3,9 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IView } from 'vs/workbench/common/views';
+import { IView, IViewPaneContainer } from 'vs/workbench/common/views';
 import { IComposite } from 'vs/workbench/common/composite';
-import { IViewPaneContainer } from 'vs/workbench/common/viewPaneContainer';
 
 export interface IPaneComposite extends IComposite {
 	openView(id: string, focus?: boolean): IView;
