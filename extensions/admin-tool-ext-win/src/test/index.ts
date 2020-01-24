@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import path = require('path');
-import * as testRunner from 'vscodetestcover';
+import * as path from 'path';
+const testRunner = require('vscodetestcover');
 
 const suite = 'admin-tool-ext-win Extension Tests';
 
