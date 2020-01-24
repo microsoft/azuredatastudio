@@ -186,7 +186,7 @@ const excludedExtensions = [
     'vscode-test-resolver',
     'ms-vscode.node-debug',
     'ms-vscode.node-debug2',
-    'integration-tests', // {{SQL CARBON EDIT}}
+    'integration-tests',
     'ms.vscode.js-debug-nightly'
 ];
 // {{SQL CARBON EDIT}}
