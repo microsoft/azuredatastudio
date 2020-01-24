@@ -196,21 +196,6 @@ declare module 'azdata' {
 	}
 
 	export interface InputBoxProperties extends ComponentProperties {
-		value?: string;
-		ariaLive?: string;
-		placeHolder?: string;
-		inputType?: InputBoxInputType;
-		required?: boolean;
-		multiline?: boolean;
-		rows?: number;
-		columns?: number;
-		min?: number;
-		max?: number;
-		/**
-		 * Whether to stop key event propagation when enter is pressed in the input box. Leaving this as false
-		 * means the event will propagate up to any parents that have handlers (such as validate on Dialogs)
-		 */
-		stopEnterPropagation?: boolean;
 		validationErrorMessage?: string;
 	}
 }
