@@ -194,4 +194,8 @@ declare module 'azdata' {
 
 	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIconProperties {
 	}
+
+	export interface InputBoxProperties extends ComponentProperties {
+		validationErrorMessage?: string;
+	}
 }
