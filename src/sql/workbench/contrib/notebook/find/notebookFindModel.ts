@@ -584,31 +584,40 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 	// In markdown links are defined as [Link Text](https://url/of/the/text). when searching for text we shouldn't
 	// look for the values inside the (), below regex replaces that with just the Link Text.
 	cleanMarkdownLinks(cellSrc: string): string {
-		return cellSrc.replace(/(?:__|[*#])|\[([\s\S]*?)\]\(.*?\)/gm, '$1');
+		return cellSrc.replace(/(?:__)|\[([\s\S]*?)\]\(.*?\)/gm, '$1');
 	}
 
 	// remove /n's to calculate the line number to locate the correct element
 	cleanUpCellSource(cellValue: string | string[]): string | string[] {
 		let trimmedCellSrc: string[] = [];
-		const newline = new RegExp(/^([\s-=]+[\\r\\n]*)$/gm);
-		const tabelSeperator = new RegExp(/^(([|]+[ :]*[-]+[ :]*[|]*)+[\\r\\n]*)$/gm);
-		const listRegex = new RegExp(/^[*+-]+[\s]*.+/gm);
+		const newline = new RegExp(/^([-=]+[\\r\\n]*)$/gm); // new RegExp(/^([\s-=]+[\\r\\n]*)$/gm);
+		const tableSeperator = new RegExp(/^(([|]+[ :]*[-]+[ :]*[|]*)+[\\r\\n]*)$/gm);
+		const tableRows = new RegExp(/^\|(.+\|*)*/gm);
+		const listRegex = new RegExp(/^[*+-]+(.+[\r\n]*)/gm);// ^[*+-]+[\s]*.+
+		const blockQuoutesRgx = new RegExp(/^\>(.*)/gm);
+		const headingsRegex = new RegExp(/(^\#+(.*))|(.*?\n+[-=]+)$/gm); //new RegExp(/^\#+(.*)/gm);
 		if (cellValue instanceof Array) {
 			let paragraphContent: string = '';
 			cellValue.forEach(content => {
-				if (content !== '\n' && content !== '\r\n' && !content.match(tabelSeperator) && !content.match(newline) && !content.match(listRegex)) {
+				if (content !== '\n' && content !== '\r\n' && !content.match(tableSeperator) && !content.match(newline) && !content.match(listRegex) && !content.match(blockQuoutesRgx) && !content.match(tableRows) && !content.match(headingsRegex)) {
 					paragraphContent = paragraphContent.concat(content);
 				} else {
 					if (paragraphContent.length > 0 && !paragraphContent.match(newline)) {
 						trimmedCellSrc.push(this.cleanMarkdownLinks(paragraphContent));
+						paragraphContent = '';
 					}
-					if (content.match(listRegex)) {
-						paragraphContent = content;
+					if (content.match(listRegex) || (content.match(tableRows) && !content.match(tableSeperator)) || content.match(blockQuoutesRgx)) {
+						paragraphContent = paragraphContent.concat(content);
+					} else if (content.match(headingsRegex)) {
+						trimmedCellSrc.push(this.cleanMarkdownLinks(content));
 					} else {
 						paragraphContent = '';
 					}
 				}
 			});
+			if (paragraphContent.length > 0 && !paragraphContent.match(newline)) {
+				trimmedCellSrc.push(this.cleanMarkdownLinks(paragraphContent));
+			}
 			// code blocks to one line since html element codeblock is a single element.
 			let codeblocks: string[] = trimmedCellSrc.filter(c => c.indexOf('```') > -1);
 			if (codeblocks.length > 0) {
