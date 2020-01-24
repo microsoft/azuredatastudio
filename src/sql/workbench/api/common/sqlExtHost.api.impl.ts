@@ -240,7 +240,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				});
 
 				provider.registerOnMessage((message: azdata.QueryExecuteMessageParams) => {
-					extHostDataProvider.$onQueryMessage(provider.handle, message);
+					extHostDataProvider.$onQueryMessage(message);
 				});
 
 				provider.registerOnEditSessionReady((ownerUri: string, success: boolean, message: string) => {

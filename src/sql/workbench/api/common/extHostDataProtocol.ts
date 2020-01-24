@@ -307,6 +307,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		if (this.uriTransformer) {
 			result.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(result.ownerUri))).toString(true);
 		}
+		// clear messages to maintain the order of things
+		if (this.messageRunner.isScheduled()) {
+			this.messageRunner.cancel();
+			this.sendMessages();
+		}
 		this._proxy.$onQueryComplete(handle, result);
 	}
 	$onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
@@ -333,7 +338,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		}
 		this._proxy.$onResultSetUpdated(handle, resultSetInfo);
 	}
-	$onQueryMessage(handle: number, message: azdata.QueryExecuteMessageParams): void {
+	$onQueryMessage(message: azdata.QueryExecuteMessageParams): void {
 		if (this.uriTransformer) {
 			message.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(message.ownerUri))).toString(true);
 		}

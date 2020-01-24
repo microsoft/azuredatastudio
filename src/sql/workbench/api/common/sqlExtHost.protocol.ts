@@ -219,7 +219,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Callback when a message generated during query execution is issued
 	 */
-	$onQueryMessage(handle: number, message: azdata.QueryExecuteMessageParams): void { throw ni(); }
+	$onQueryMessage(message: azdata.QueryExecuteMessageParams): void { throw ni(); }
 
 	/**
 	 * Requests saving of the results from a result set into a specific format (CSV, JSON, Excel)
