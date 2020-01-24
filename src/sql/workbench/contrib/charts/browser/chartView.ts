@@ -7,10 +7,9 @@ import 'vs/css!./media/chartView';
 
 import { IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { Insight } from './insight';
-import QueryRunner from 'sql/platform/query/common/queryRunner';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { ChartOptions, IChartOption, ControlType } from './chartOptions';
-import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/browser/insightRegistry';
-import { IInsightData } from './interfaces';
+import { Extensions, IInsightRegistry, IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as DOM from 'vs/base/browser/dom';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';

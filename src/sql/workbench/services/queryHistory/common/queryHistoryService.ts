@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { QueryHistoryInfo } from 'sql/platform/queryHistory/common/queryHistoryInfo';
+import { QueryHistoryInfo } from 'sql/workbench/services/queryHistory/common/queryHistoryInfo';
 import { Event } from 'vs/base/common/event';
 
 export const SERVICE_ID = 'queryHistoryService';

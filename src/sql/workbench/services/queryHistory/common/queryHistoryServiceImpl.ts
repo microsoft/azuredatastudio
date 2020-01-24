@@ -3,13 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IQueryHistoryService } from 'sql/platform/queryHistory/common/queryHistoryService.ts';
+import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
 
-import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService, IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { URI } from 'vs/base/common/uri';
 import { Range } from 'vs/editor/common/core/range';
-import { QueryHistoryInfo, QueryStatus } from 'sql/platform/queryHistory/common/queryHistoryInfo';
+import { QueryHistoryInfo, QueryStatus } from 'sql/workbench/services/queryHistory/common/queryHistoryInfo';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';

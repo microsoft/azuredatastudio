@@ -10,10 +10,10 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 
 import * as azdata from 'azdata';
 
-import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
+import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/workbench/contrib/query/common/constants';
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';

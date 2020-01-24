@@ -7,7 +7,6 @@ import { Type } from '@angular/core';
 import * as platform from 'vs/platform/registry/common/platform';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
-import { IInsightData } from 'sql/workbench/contrib/charts/browser/interfaces';
 import { values } from 'vs/base/common/collections';
 
 export type InsightIdentifier = string;
@@ -60,6 +59,11 @@ export interface IInsightsConfigDetails {
 export interface ISize {
 	x: number;
 	y: number;
+}
+
+export interface IInsightData {
+	columns: Array<string>;
+	rows: Array<Array<string>>;
 }
 
 export interface IInsightsView {

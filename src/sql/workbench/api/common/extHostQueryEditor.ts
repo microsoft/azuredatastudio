@@ -6,7 +6,7 @@
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostQueryEditorShape, SqlMainContext, MainThreadQueryEditorShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import * as azdata from 'azdata';
-import { IQueryEvent } from 'sql/platform/query/common/queryModel';
+import { IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 class ExtHostQueryDocument implements azdata.queryeditor.QueryDocument {

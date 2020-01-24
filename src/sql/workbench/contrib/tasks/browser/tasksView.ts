@@ -19,8 +19,8 @@ import { TaskHistoryRenderer } from 'sql/workbench/contrib/tasks/browser/tasksRe
 import { TaskHistoryDataSource } from 'sql/workbench/contrib/tasks/browser/tasksDataSource';
 import { TaskHistoryController } from 'sql/workbench/contrib/tasks/browser/tasksController';
 import { TaskHistoryActionProvider } from 'sql/workbench/contrib/tasks/browser/tasksActionProvider';
-import { ITaskService } from 'sql/platform/tasks/common/tasksService';
-import { TaskNode, TaskStatus } from 'sql/platform/tasks/common/tasksNode';
+import { ITaskService } from 'sql/workbench/services/tasks/common/tasksService';
+import { TaskNode, TaskStatus } from 'sql/workbench/services/tasks/common/tasksNode';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IExpandableTree } from 'sql/workbench/contrib/objectExplorer/browser/treeUpdateUtils';
 

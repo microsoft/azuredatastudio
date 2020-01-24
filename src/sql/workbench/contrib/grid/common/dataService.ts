@@ -6,7 +6,7 @@
 import { Subject } from 'rxjs/Subject';
 
 import { EditUpdateCellResult, EditSubsetResult, EditCreateRowResult } from 'azdata';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { ResultSerializer } from 'sql/workbench/contrib/query/common/resultSerializer';
 import { ISaveRequest } from 'sql/workbench/contrib/grid/common/interfaces';
 

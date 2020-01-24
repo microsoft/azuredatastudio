@@ -5,7 +5,7 @@
 
 import { localize } from 'vs/nls';
 import * as azdata from 'azdata';
-import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
+import { IJobManagementService } from 'sql/workbench/services/jobManagement/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { Event, Emitter } from 'vs/base/common/event';
 

@@ -3,15 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { OnDestroy } from '@angular/core';
-
 import { Event } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { SingleConnectionManagementService } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 
-export abstract class DashboardTab extends TabChild implements OnDestroy {
+export abstract class DashboardTab extends TabChild {
 	public abstract layout(): void;
 	public abstract readonly id: string;
 	public abstract readonly editable: boolean;
@@ -22,10 +20,6 @@ export abstract class DashboardTab extends TabChild implements OnDestroy {
 	}
 	constructor() {
 		super();
-	}
-
-	ngOnDestroy() {
-		this.dispose();
 	}
 }
 

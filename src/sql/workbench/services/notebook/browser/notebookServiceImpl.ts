@@ -29,7 +29,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { registerNotebookThemes } from 'sql/workbench/contrib/notebook/browser/notebookStyles';
-import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
+import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { notebookConstants, ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { SqlNotebookProvider } from 'sql/workbench/services/notebook/browser/sql/sqlNotebookProvider';

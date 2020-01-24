@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { FileBrowserTree } from 'sql/workbench/services/fileBrowser/common/fileBrowserTree';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
-import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
+import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/interfaces';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 import { Event, Emitter } from 'vs/base/common/event';

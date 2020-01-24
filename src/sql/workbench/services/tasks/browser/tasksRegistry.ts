@@ -5,7 +5,7 @@
 
 import { MenuRegistry, ICommandAction } from 'vs/platform/actions/common/actions';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { ITaskRegistry, ITaskHandler, ITask, ITaskHandlerDescription, ITaskOptions } from 'sql/platform/tasks/common/tasks';
+import { ITaskRegistry, ITaskHandler, ITask, ITaskHandlerDescription, ITaskOptions } from 'sql/workbench/services/tasks/common/tasks';
 import * as types from 'vs/base/common/types';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';

@@ -5,9 +5,9 @@
 
 import * as GridContentEvents from 'sql/workbench/contrib/grid/common/gridContentEvents';
 import * as LocalizedConstants from 'sql/workbench/contrib/query/common/localizedConstants';
-import QueryRunner from 'sql/platform/query/common/queryRunner';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { DataService } from 'sql/workbench/contrib/grid/common/dataService';
-import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService, IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
 
 import * as azdata from 'azdata';
 

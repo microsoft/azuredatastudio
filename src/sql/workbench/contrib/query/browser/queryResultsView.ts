@@ -5,8 +5,8 @@
 
 import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import QueryRunner from 'sql/platform/query/common/queryRunner';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { MessagePanel } from 'sql/workbench/contrib/query/browser/messagePanel';
 import { GridPanel } from 'sql/workbench/contrib/query/browser/gridPanel';
 import { ChartTab } from 'sql/workbench/contrib/charts/browser/chartTab';

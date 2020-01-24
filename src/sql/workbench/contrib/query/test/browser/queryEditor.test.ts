@@ -22,7 +22,7 @@ import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
-import { TestQueryModelService } from 'sql/platform/query/test/common/testQueryModelService';
+import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
 import { Event } from 'vs/base/common/event';
 import { LabelService } from 'vs/workbench/services/label/common/labelService';
 

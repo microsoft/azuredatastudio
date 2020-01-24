@@ -6,9 +6,9 @@
 import { Component, Input, ContentChild, OnDestroy, TemplateRef, ChangeDetectorRef, forwardRef, Inject } from '@angular/core';
 
 import { Action } from 'vs/base/common/actions';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { AngularDisposable } from 'sql/base/browser/lifecycle';
 
-export abstract class TabChild extends Disposable {
+export abstract class TabChild extends AngularDisposable {
 	public abstract layout(): void;
 }
 

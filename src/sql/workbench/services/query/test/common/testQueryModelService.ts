@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
-import QueryRunner from 'sql/platform/query/common/queryRunner';
+import { IQueryModelService, IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import * as azdata from 'azdata';
 import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 import { Event } from 'vs/base/common/event';
-import { QueryInfo } from 'sql/platform/query/common/queryModelService';
+import { QueryInfo } from 'sql/workbench/services/query/common/queryModelService';
 import { DataService } from 'sql/workbench/contrib/grid/common/dataService';
 
 export class TestQueryModelService implements IQueryModelService {

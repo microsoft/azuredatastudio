@@ -15,7 +15,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 import { ITreeComponentItem } from 'sql/workbench/common/views';
-import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
+import { ITaskHandlerDescription } from 'sql/workbench/services/tasks/common/tasks';
 import {
 	IItemConfig, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
 	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, INotebookSessionDetails,
@@ -25,7 +25,7 @@ import {
 import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { IQueryEvent } from 'sql/platform/query/common/queryModel';
+import { IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }

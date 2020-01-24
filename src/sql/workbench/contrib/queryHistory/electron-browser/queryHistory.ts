@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { IQueryHistoryService } from 'sql/platform/queryHistory/common/queryHistoryService';
+import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { localize } from 'vs/nls';
 import { SyncActionDescriptor, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';

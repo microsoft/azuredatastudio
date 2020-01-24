@@ -10,9 +10,9 @@ import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionT
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import * as azdata from 'azdata';
-import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
+import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ILogService } from 'vs/platform/log/common/log';

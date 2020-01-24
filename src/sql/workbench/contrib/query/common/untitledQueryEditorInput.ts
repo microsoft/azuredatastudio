@@ -6,7 +6,7 @@
 import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
 import { IEncodingSupport, EncodingMode } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';

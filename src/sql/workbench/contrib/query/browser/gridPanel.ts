@@ -6,7 +6,7 @@
 import 'vs/css!./media/gridPanel';
 
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
-import QueryRunner, { QueryGridDataProvider } from 'sql/platform/query/common/queryRunner';
+import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { ScrollableSplitView, IView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
@@ -42,7 +42,7 @@ import { IAction } from 'vs/base/common/actions';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { ILogService } from 'vs/platform/log/common/log';
 import { localize } from 'vs/nls';
-import { IGridDataProvider } from 'sql/platform/query/common/gridDataProvider';
+import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { GridPanelState, GridTableState } from 'sql/workbench/contrib/query/common/gridPanelState';

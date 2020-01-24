@@ -13,7 +13,7 @@ import { IMetadataService } from 'sql/platform/metadata/common/metadataService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
-import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
+import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { ConnectionContextKey } from 'sql/workbench/contrib/connection/common/connectionContextKey';

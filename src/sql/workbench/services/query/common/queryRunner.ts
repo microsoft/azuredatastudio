@@ -5,11 +5,11 @@
 
 import * as azdata from 'azdata';
 
-import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
+import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
-import { IQueryPlanInfo } from 'sql/platform/query/common/queryModel';
+import { IQueryPlanInfo } from 'sql/workbench/services/query/common/queryModel';
 import { ResultSerializer } from 'sql/workbench/contrib/query/common/resultSerializer';
 
 import Severity from 'vs/base/common/severity';
@@ -24,7 +24,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { URI } from 'vs/base/common/uri';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-import { IGridDataProvider, getResultsString } from 'sql/platform/query/common/gridDataProvider';
+import { IGridDataProvider, getResultsString } from 'sql/workbench/services/query/common/gridDataProvider';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { find } from 'vs/base/common/arrays';

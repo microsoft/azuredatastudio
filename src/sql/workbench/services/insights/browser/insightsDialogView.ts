@@ -38,7 +38,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
-import { TaskRegistry } from 'sql/platform/tasks/browser/tasksRegistry';
+import { TaskRegistry } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';

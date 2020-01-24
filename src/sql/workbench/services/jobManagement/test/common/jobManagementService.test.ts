@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { JobManagementService } from 'sql/platform/jobManagement/common/jobManagementService';
+import { JobManagementService } from 'sql/workbench/services/jobManagement/common/jobManagementService';
 import * as assert from 'assert';
 
 // TESTS ///////////////////////////////////////////////////////////////////

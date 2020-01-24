@@ -11,7 +11,6 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IAngularEventingService, AngularEventType, IAngularEvent } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/browser/newDashboardTabDialog';
 import { IDashboardTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
-import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 
@@ -166,7 +165,7 @@ export class AddFeatureTabAction extends Action {
 		@IAngularEventingService private _angularEventService: IAngularEventingService
 	) {
 		super(AddFeatureTabAction.ID, AddFeatureTabAction.LABEL, AddFeatureTabAction.ICON);
-		this._register(subscriptionToDisposable(this._angularEventService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
+		this._register(this._angularEventService.onAngularEvent(this._uri)(event => this.handleDashboardEvent(event)));
 	}
 
 	run(): Promise<boolean> {

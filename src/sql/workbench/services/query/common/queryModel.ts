@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import QueryRunner, { IQueryMessage } from 'sql/platform/query/common/queryRunner';
+import QueryRunner, { IQueryMessage } from 'sql/workbench/services/query/common/queryRunner';
 import { DataService } from 'sql/workbench/contrib/grid/common/dataService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
@@ -19,7 +19,7 @@ import {
 	ExecutionPlanOptions,
 	queryeditor
 } from 'azdata';
-import { QueryInfo } from 'sql/platform/query/common/queryModelService';
+import { QueryInfo } from 'sql/workbench/services/query/common/queryModelService';
 
 export const SERVICE_ID = 'queryModelService';
 

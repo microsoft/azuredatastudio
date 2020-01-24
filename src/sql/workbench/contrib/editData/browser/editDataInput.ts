@@ -5,7 +5,7 @@
 
 import { EditorInput, EditorModel, EncodingMode } from 'vs/workbench/common/editor';
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { Event, Emitter } from 'vs/base/common/event';
 import { EditSessionReadyParams } from 'azdata';
 import { URI } from 'vs/base/common/uri';
