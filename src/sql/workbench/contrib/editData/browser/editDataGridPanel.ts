@@ -178,13 +178,15 @@ export class EditDataGridPanel extends GridParentComponent {
 			// render line breaks and strips them, updating the value.
 			/* tslint:disable:no-null-keyword */
 			let valueMissing = value === undefined || value === null || (Services.DBCellValue.isDBCellValue(value) && value.isNull);
-			if (!valueMissing && Services.DBCellValue.isDBCellValue(value)) {
-				returnVal = this.spacefyLinebreaks(value.displayValue);
-			} else if (typeof value === 'string') {
-				returnVal = this.spacefyLinebreaks(value);
-			} else if (valueMissing) {
+			if (valueMissing) {
 				/* tslint:disable:no-null-keyword */
 				returnVal = null;
+			}
+			else if (!valueMissing && Services.DBCellValue.isDBCellValue(value)) {
+				returnVal = this.spacefyLinebreaks(value.displayValue);
+			}
+			else if (typeof value === 'string') {
+				returnVal = this.spacefyLinebreaks(value);
 			}
 			return returnVal;
 		};
@@ -917,30 +919,26 @@ export class EditDataGridPanel extends GridParentComponent {
 		let cellClasses = 'grid-cell-value-container';
 		/* tslint:disable:no-null-keyword */
 		let valueMissing = value === undefined || value === null;
-		if (!valueMissing) {
-			if (Services.DBCellValue.isDBCellValue(value)) {
-				valueToDisplay = 'NULL';
-				if (!value.isNull) {
-					//valueToDisplay = value.displayValue.replace(/(\r\n|\n|\r)/g, ' ');
-					valueToDisplay = (value.displayValue + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-					valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
-				} else {
-					cellClasses += ' missing-value';
-				}
-			}
-			if (typeof value === 'string' || (value && value.text)) {
-				if (value.text) {
-					valueToDisplay = value.text;
-				} else {
-					valueToDisplay = value;
-				}
-				valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
-			}
-		}
-
 		if (valueMissing) {
 			valueToDisplay = 'NULL';
 			cellClasses += ' missing-value';
+		}
+		else if (Services.DBCellValue.isDBCellValue(value)) {
+			valueToDisplay = 'NULL';
+			if (!value.isNull) {
+				valueToDisplay = (value.displayValue + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+				valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+			} else {
+				cellClasses += ' missing-value';
+			}
+		}
+		else if (typeof value === 'string' || (value && value.text)) {
+			if (value.text) {
+				valueToDisplay = value.text;
+			} else {
+				valueToDisplay = value;
+			}
+			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
 		}
 		return '<span title="' + valueToDisplay + '" class="' + cellClasses + '">' + valueToDisplay + '</span>';
 	}
