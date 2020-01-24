@@ -158,12 +158,16 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public validate(): Thenable<boolean> {
 		return super.validate().then(valid => {
+			const otherErrorMsg = valid || this.inputElement.value === '' ? undefined : this.validationErrorMessage;
 			valid = valid && this.inputElement.validate();
 
 			// set aria label based on validity of input
 			if (valid) {
 				this.inputElement.setAriaLabel(this.ariaLabel);
 			} else {
+				if (otherErrorMsg) {
+					this.inputElement.showMessage({ type: MessageType.ERROR, content: otherErrorMsg }, true);
+				}
 				if (this.ariaLabel) {
 					this.inputElement.setAriaLabel(nls.localize('period', "{0}. {1}", this.ariaLabel, this.inputElement.inputElement.validationMessage));
 				} else {
@@ -328,5 +332,13 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public focus(): void {
 		this.inputElement.focus();
+	}
+
+	public get validationErrorMessage(): string {
+		return this.getPropertyOrDefault<azdata.InputBoxProperties, string>((props) => props.validationErrorMessage, '');
+	}
+
+	public set validationErrorMessage(newValue: string) {
+		this.setPropertyFromUI<azdata.InputBoxProperties, string>((props, value) => props.validationErrorMessage = value, newValue);
 	}
 }
