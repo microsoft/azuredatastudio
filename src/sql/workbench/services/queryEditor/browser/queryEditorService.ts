@@ -92,7 +92,12 @@ export class QueryEditorService implements IQueryEditorService {
 		if (sqlContent) {
 			m.textEditorModel.setValue(sqlContent);
 		}
-		m.registerDirtyListener();
+		m.onDidChangeDirty(() => {
+			if (m.isDirty()) {
+				m.setDirty(false);
+			}
+		});
+
 		// Create an EditDataInput for editing
 		const resultsInput: EditDataResultsInput = this._instantiationService.createInstance(EditDataResultsInput, docUri.toString());
 		let editDataInput: EditDataInput = this._instantiationService.createInstance(EditDataInput, docUri, schemaName, tableName, fileInput, sqlContent, resultsInput);
