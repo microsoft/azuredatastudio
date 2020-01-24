@@ -63,6 +63,11 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 		this._register(this.configurationService.onDidChangeConfiguration(e => this.onConfigurationChange()));
 	}
 
+	public registerDirtyListener(): void {
+		// For editData
+		this._register(this.onDidChangeDirty(e => this.revert()));
+	}
+
 	private onConfigurationChange(): void {
 		const configuredEncoding = this.configurationService.getValue<string>(this.resource, 'files.encoding');
 

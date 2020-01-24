@@ -91,10 +91,8 @@ export class QueryEditorService implements IQueryEditorService {
 		const m = await fileInput.resolve();
 		if (sqlContent) {
 			m.textEditorModel.setValue(sqlContent);
-			// prevent backup and restore of invalid sql upon restart.
-			m.setDirty(false);
 		}
-
+		m.registerDirtyListener();
 		// Create an EditDataInput for editing
 		const resultsInput: EditDataResultsInput = this._instantiationService.createInstance(EditDataResultsInput, docUri.toString());
 		let editDataInput: EditDataInput = this._instantiationService.createInstance(EditDataInput, docUri, schemaName, tableName, fileInput, sqlContent, resultsInput);
