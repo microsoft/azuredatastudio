@@ -394,7 +394,7 @@ suite('commandLineService tests', () => {
 		const instantiationService = new TestInstantiationService();
 		let uri = URI.file(args._[0]);
 		const untitledEditorInput = new UntitledTextEditorInput(uri, false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined, undefined);
-		const queryInput = new UntitledQueryEditorInput(undefined, untitledEditorInput, undefined, connectionManagementService.object, querymodelService.object, configurationService.object, undefined);
+		const queryInput = new UntitledQueryEditorInput(undefined, untitledEditorInput, undefined, connectionManagementService.object, querymodelService.object, configurationService.object);
 		queryInput.state.connected = true;
 		const editorService: TypeMoq.Mock<IEditorService> = TypeMoq.Mock.ofType<IEditorService>(TestEditorService, TypeMoq.MockBehavior.Strict);
 		editorService.setup(e => e.editors).returns(() => [queryInput]);

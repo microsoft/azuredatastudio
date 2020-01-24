@@ -9,7 +9,6 @@ import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { EditorInput } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IFileService } from 'vs/platform/files/common/files';
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
@@ -124,8 +123,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		protected _results: QueryResultsInput,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
-		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IFileService private _fileService: IFileService
+		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		super();
 
@@ -196,10 +194,6 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	public matchInputInstanceType(inputType: any): boolean {
 		return (this._text instanceof inputType);
-	}
-
-	public resourceExists(): Promise<boolean> {
-		return this._fileService.exists(this.getResource());
 	}
 
 	public getName(longForm?: boolean): string {

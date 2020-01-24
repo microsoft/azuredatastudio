@@ -11,7 +11,6 @@ import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { IEncodingSupport, EncodingMode } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
-import { IFileService } from 'vs/platform/files/common/files';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
 
@@ -29,10 +28,9 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		results: QueryResultsInput,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@IFileService fileService: IFileService
+		@IConfigurationService configurationService: IConfigurationService
 	) {
-		super(description, text, results, connectionManagementService, queryModelService, configurationService, fileService);
+		super(description, text, results, connectionManagementService, queryModelService, configurationService);
 	}
 
 	public resolve(): Promise<UntitledTextEditorModel & IResolvedTextEditorModel> {
