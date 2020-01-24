@@ -52,6 +52,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private dataSet: IGridDataSet;
 	private oldDataRows: VirtualizedCollection<any>;
 	private firstRender = true;
+	private firstLoad = true;
 	private enableEditing = true;
 	// Current selected cell state
 	private currentCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
@@ -439,6 +440,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					let setActive = function () {
 						if (self.firstRender && self.table) {
 							self.table.setActive();
+							self.firstRender = false;
 							// self.table.rerenderGrid(0, self.dataSet.dataRows.getLength());
 							// self.table.resizeCanvas();
 						}
@@ -453,19 +455,19 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	protected detectChange(): void {
-		if (this.firstRender) {
+		if (this.firstLoad) {
 			this.handleChanges({
-				['dataRows']: { currentValue: this.dataSet.dataRows, firstChange: this.firstRender, previousValue: undefined },
-				['columnDefinitions']: { currentValue: this.dataSet.columnDefinitions, firstChange: this.firstRender, previousValue: undefined }
+				['dataRows']: { currentValue: this.dataSet.dataRows, firstChange: this.firstLoad, previousValue: undefined },
+				['columnDefinitions']: { currentValue: this.dataSet.columnDefinitions, firstChange: this.firstLoad, previousValue: undefined }
 			});
 			this.handleInitializeTable();
-			this.firstRender = false;
+			this.firstLoad = false;
 		}
 		else {
 
 			this.table.setData(this.gridDataProvider);
 			this.handleChanges({
-				['dataRows']: { currentValue: this.dataSet.dataRows, firstChange: this.firstRender, previousValue: this.oldDataRows }
+				['dataRows']: { currentValue: this.dataSet.dataRows, firstChange: this.firstLoad, previousValue: this.oldDataRows }
 			});
 		}
 	}
@@ -488,13 +490,13 @@ export class EditDataGridPanel extends GridParentComponent {
 		let tempRenderedDataSets = this.renderedDataSets;
 		this.renderedDataSets = [];
 		this.handleChanges({
-			['dataRows']: { currentValue: undefined, firstChange: this.firstRender, previousValue: this.dataSet.dataRows },
-			['columnDefinitions']: { currentValue: undefined, firstChange: this.firstRender, previousValue: this.dataSet.columnDefinitions }
+			['dataRows']: { currentValue: undefined, firstChange: this.firstLoad, previousValue: this.dataSet.dataRows },
+			['columnDefinitions']: { currentValue: undefined, firstChange: this.firstLoad, previousValue: this.dataSet.columnDefinitions }
 		});
 		this.renderedDataSets = tempRenderedDataSets;
 		this.handleChanges({
-			['dataRows']: { currentValue: this.renderedDataSets[0].dataRows, firstChange: this.firstRender, previousValue: undefined },
-			['columnDefinitions']: { currentValue: this.renderedDataSets[0].columnDefinitions, firstChange: this.firstRender, previousValue: undefined }
+			['dataRows']: { currentValue: this.renderedDataSets[0].dataRows, firstChange: this.firstLoad, previousValue: undefined },
+			['columnDefinitions']: { currentValue: this.renderedDataSets[0].columnDefinitions, firstChange: this.firstLoad, previousValue: undefined }
 		});
 	}
 
