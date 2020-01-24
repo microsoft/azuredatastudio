@@ -4209,6 +4209,14 @@ declare namespace monaco.editor {
 	}
 
 	/**
+	 * A paste event originating from the editor.
+	 */
+	export interface IPasteEvent {
+		readonly range: Range;
+		readonly mode: string | null;
+	}
+
+	/**
 	 * A rich code editor.
 	 */
 	export interface ICodeEditor extends IEditor {
@@ -4289,7 +4297,7 @@ declare namespace monaco.editor {
 		 * An event emitted when users paste text in the editor.
 		 * @event
 		 */
-		onDidPaste(listener: (range: Range) => void): IDisposable;
+		onDidPaste(listener: (e: IPasteEvent) => void): IDisposable;
 		/**
 		 * An event emitted on a "mouseup".
 		 * @event
