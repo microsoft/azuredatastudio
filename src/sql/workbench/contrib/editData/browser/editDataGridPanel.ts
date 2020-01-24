@@ -135,7 +135,6 @@ export class EditDataGridPanel extends GridParentComponent {
 					break;
 			}
 		});
-
 		this.dataService.onLoaded();
 	}
 
@@ -396,7 +395,10 @@ export class EditDataGridPanel extends GridParentComponent {
 		self.refreshGrid();
 
 		// Setup the state of the selected cell
-		this.resetCurrentCell();
+		setTimeout(() => {
+			this.resetCurrentCell();
+		}, self.refreshGridTimeoutInMs);
+
 		this.currentEditCellValue = undefined;
 		this.removingNewRow = false;
 		this.newRowVisible = false;
@@ -440,6 +442,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					let setActive = function () {
 						if (self.firstRender && self.table) {
 							self.table.setActive();
+							self.setCurrentCell(0, 1);
 							self.firstRender = false;
 							// self.table.rerenderGrid(0, self.dataSet.dataRows.getLength());
 							// self.table.resizeCanvas();
