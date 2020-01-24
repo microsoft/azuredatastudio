@@ -439,8 +439,8 @@ export class EditDataGridPanel extends GridParentComponent {
 					let setActive = function () {
 						if (self.firstRender && self.table) {
 							self.table.setActive();
-							self.table.rerenderGrid(0, self.dataSet.dataRows.getLength());
-							self.table.resizeCanvas();
+							// self.table.rerenderGrid(0, self.dataSet.dataRows.getLength());
+							// self.table.resizeCanvas();
 						}
 					};
 					setTimeout(() => {
