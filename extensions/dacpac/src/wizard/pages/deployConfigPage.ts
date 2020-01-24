@@ -57,6 +57,8 @@ export class DeployConfigPage extends DacFxConfigPage {
 	async onPageEnter(): Promise<boolean> {
 		let r1 = await this.populateServerDropdown();
 		let r2 = await this.populateDeployDatabaseDropdown();
+		// get existing database values to verify if new database name is valid
+		await this.getDatabaseValues();
 		return r1 && r2;
 	}
 
@@ -191,7 +193,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		//set the database to the first dropdown value if upgrading, otherwise it should get set to the textbox value
 		if (this.model.upgradeExisting) {
-			this.model.database = values[0].name;
+			this.model.database = values[0];
 		}
 
 		this.databaseDropdown.updateProperties({
