@@ -11,7 +11,7 @@ export interface IConnectionProfile extends azdata.IConnectionProfile {
 }
 
 export interface IConnectionProfileStore {
-	options: {};
+	options: { [key: string]: any };
 	groupId: string;
 	providerName: string;
 	savePassword: boolean;

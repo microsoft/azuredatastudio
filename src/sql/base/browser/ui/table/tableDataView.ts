@@ -45,9 +45,9 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 	//The data exposed publicly, when filter is enabled, _data holds the filtered data.
 	private _data: Array<T>;
 	//Used when filtering is enabled, _allData holds the complete set of data.
-	private _allData: Array<T>;
-	private _findArray: Array<IFindPosition>;
-	private _findIndex: number;
+	private _allData!: Array<T>;
+	private _findArray?: Array<IFindPosition>;
+	private _findIndex?: number;
 	private _filterEnabled: boolean;
 
 	private _onRowCountChange = new Emitter<number>();
@@ -166,7 +166,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		if (exp) {
 			return new Promise<IFindPosition>((resolve) => {
 				const disp = this.onFindCountChange(e => {
-					resolve(this._findArray[e - 1]);
+					resolve(this._findArray![e - 1]);
 					disp.dispose();
 				});
 				this._startSearch(exp, maxMatches);
@@ -185,9 +185,9 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 				for (let j = 0; j < result.length; j++) {
 					const pos = result[j];
 					const index = { col: pos, row: i };
-					this._findArray.push(index);
-					this._onFindCountChange.fire(this._findArray.length);
-					if (maxMatches > 0 && this._findArray.length === maxMatches) {
+					this._findArray!.push(index);
+					this._onFindCountChange.fire(this._findArray!.length);
+					if (maxMatches > 0 && this._findArray!.length === maxMatches) {
 						breakout = true;
 						break;
 					}
@@ -211,9 +211,9 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 			if (this._findIndex === this._findArray.length - 1) {
 				this._findIndex = 0;
 			} else {
-				++this._findIndex;
+				++this._findIndex!;
 			}
-			return Promise.resolve(this._findArray[this._findIndex]);
+			return Promise.resolve(this._findArray[this._findIndex!]);
 		} else {
 			return Promise.reject(new Error('no search running'));
 		}
@@ -224,9 +224,9 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 			if (this._findIndex === 0) {
 				this._findIndex = this._findArray.length - 1;
 			} else {
-				--this._findIndex;
+				--this._findIndex!;
 			}
-			return Promise.resolve(this._findArray[this._findIndex]);
+			return Promise.resolve(this._findArray[this._findIndex!]);
 		} else {
 			return Promise.reject(new Error('no search running'));
 		}
@@ -234,7 +234,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 
 	get currentFindPosition(): Thenable<IFindPosition> {
 		if (this._findArray && this._findArray.length !== 0) {
-			return Promise.resolve(this._findArray[this._findIndex]);
+			return Promise.resolve(this._findArray[this._findIndex!]);
 		} else {
 			return Promise.reject(new Error('no search running'));
 		}

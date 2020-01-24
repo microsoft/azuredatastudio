@@ -20,14 +20,14 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 	template: ''
 })
 export class InputBox extends AngularDisposable implements OnInit, OnChanges {
-	private _inputbox: vsInputBox;
+	private _inputbox!: vsInputBox;
 
-	@Input() min: string;
-	@Input() max: string;
-	@Input() type: string;
-	@Input() placeholder: string;
-	@Input('aria-label') ariaLabel: string;
-	@Input() value: string;
+	@Input() min?: string;
+	@Input() max?: string;
+	@Input() type?: string;
+	@Input() placeholder?: string;
+	@Input('aria-label') ariaLabel?: string;
+	@Input() value?: string;
 
 	@Output() onDidChange = new EventEmitter<string | number>();
 
@@ -67,16 +67,16 @@ export class InputBox extends AngularDisposable implements OnInit, OnChanges {
 	ngOnChanges(changes: SimpleChanges): void {
 		if (this._inputbox) {
 			if (changes['min']) {
-				this._inputbox.inputElement.min = this.min;
+				this._inputbox.inputElement.min = this.min!;
 			}
 			if (changes['max']) {
-				this._inputbox.inputElement.max = this.max;
+				this._inputbox.inputElement.max = this.max!;
 			}
 			if (changes['type']) {
-				this._inputbox.inputElement.type = this.type;
+				this._inputbox.inputElement.type = this.type!;
 			}
 			if (changes['placeholder']) {
-				this._inputbox.inputElement.placeholder = this.placeholder;
+				this._inputbox.inputElement.placeholder = this.placeholder!;
 			}
 		}
 	}

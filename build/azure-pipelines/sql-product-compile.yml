@@ -88,7 +88,7 @@ steps:
 - script: |
     set -e
     yarn gulp hygiene
-    yarn strict-null-check
+    yarn strict-vscode
     yarn valid-layers-check
   displayName: Run hygiene, tslint
   condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'), eq(variables['VSCODE_STEP_ON_IT'], 'false'))

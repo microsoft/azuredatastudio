@@ -42,7 +42,7 @@ export class TestCredentialsService implements ICredentialsService {
 }
 
 export class TestCredentialsProvider implements CredentialProvider {
-	handle: number;
+	handle: number = 0;
 
 	public storedCredentials: { [K: string]: Credential } = {};
 

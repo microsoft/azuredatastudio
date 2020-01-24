@@ -51,11 +51,11 @@ export class RowDetailView<T extends Slick.SlickData> {
 	public readonly onAfterRowDetailToggle = new Slick.Event<{ grid: Slick.Grid<T>, item: T }>();
 	public readonly onBeforeRowDetailToggle = new Slick.Event<{ grid: Slick.Grid<T>, item: T }>();
 
-	private _grid: Slick.Grid<T>;
+	private _grid!: Slick.Grid<T>;
 	private _expandedRows: Array<ExtendedItem<T>> = [];
 	private _handler = new Slick.EventHandler();
 
-	private _dataView: AugmentedDataView<T>;
+	private _dataView!: AugmentedDataView<T>;
 	private _options: IRowDetailViewOptions<T>;
 
 	constructor(options: IRowDetailViewOptions<T>) {

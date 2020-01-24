@@ -27,7 +27,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	private _id: string;
 	public savePassword: boolean;
 	private _groupName?: string;
-	public groupId: string;
+	public groupId?: string;
 	public saveProfile: boolean;
 
 	public isDisconnecting: boolean = false;
@@ -256,7 +256,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		let connectionInfo = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
 		let profile: interfaces.IConnectionProfileStore = {
 			options: {},
-			groupId: connectionProfile.groupId,
+			groupId: connectionProfile.groupId!,
 			providerName: connectionInfo.providerName,
 			savePassword: connectionInfo.savePassword,
 			id: connectionInfo.id

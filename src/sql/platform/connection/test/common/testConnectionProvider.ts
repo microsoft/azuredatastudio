@@ -10,31 +10,31 @@ export class TestConnectionProvider implements azdata.ConnectionProvider {
 	public readonly providerId = mssqlProviderName;
 
 	connect(connectionUri: string, connectionInfo: azdata.ConnectionInfo): Thenable<boolean> {
-		return undefined;
+		return Promise.resolve(true);
 	}
 
 	disconnect(connectionUri: string): Thenable<boolean> {
-		return undefined;
+		return Promise.resolve(true);
 	}
 
 	cancelConnect(connectionUri: string): Thenable<boolean> {
-		return undefined;
+		return Promise.resolve(true);
 	}
 
 	listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult> {
-		return undefined;
+		return Promise.resolve({ databaseNames: [] });
 	}
 
 	changeDatabase(connectionUri: string, newDatabase: string): Thenable<boolean> {
-		return undefined;
+		return Promise.resolve(true);
 	}
 
 	getConnectionString(connectionUri: string): Thenable<string> {
-		return undefined;
+		return Promise.resolve('');
 	}
 
 	rebuildIntelliSenseCache(connectionUri: string): Thenable<void> {
-		return undefined;
+		return Promise.resolve();
 	}
 
 	registerOnConnectionComplete(handler: (connSummary: azdata.ConnectionInfoSummary) => any) {

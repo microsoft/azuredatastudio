@@ -21,8 +21,8 @@ const defaultOptions: IMouseWheelSupportOptions = {
 
 export class MouseWheelSupport implements Slick.Plugin<any> {
 
-	private viewport: HTMLElement;
-	private canvas: HTMLElement;
+	private viewport!: HTMLElement;
+	private canvas!: HTMLElement;
 	private options: IMouseWheelSupportOptions;
 
 	private _disposables = new DisposableStore();

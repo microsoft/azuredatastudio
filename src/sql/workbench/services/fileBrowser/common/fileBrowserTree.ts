@@ -8,8 +8,8 @@ import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 /**
  * File tree info needed to render initially
  */
-export class FileBrowserTree {
-	public rootNode: FileNode;
-	public selectedNode?: FileNode;
-	public expandedNodes: FileNode[];
+export interface FileBrowserTree {
+	rootNode: FileNode;
+	selectedNode?: FileNode;
+	expandedNodes: FileNode[];
 }

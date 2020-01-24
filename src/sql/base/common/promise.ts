@@ -8,8 +8,8 @@
  */
 export class Deferred<T> implements Promise<T> {
 	promise: Promise<T>;
-	resolve: (value?: T | PromiseLike<T>) => void;
-	reject: (reason?: any) => void;
+	resolve!: (value?: T | PromiseLike<T>) => void;
+	reject!: (reason?: any) => void;
 	constructor() {
 		this.promise = new Promise<T>((resolve, reject) => {
 			this.resolve = resolve;

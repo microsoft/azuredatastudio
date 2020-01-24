@@ -80,7 +80,7 @@ export class VirtualizedCollection<T extends Slick.SlickData> implements IObserv
 	private _bufferWindowAfter: DataWindow<T>;
 	private _lengthChanged = false;
 
-	private collectionChangedCallback: (startIndex: number, count: number) => void;
+	private collectionChangedCallback?: (startIndex: number, count: number) => void;
 
 	constructor(
 		private readonly windowSize: number,

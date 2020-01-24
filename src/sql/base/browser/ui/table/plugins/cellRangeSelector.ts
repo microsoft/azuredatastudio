@@ -37,12 +37,12 @@ export interface ICellRangeDecorator {
 }
 
 export class CellRangeSelector<T> implements ICellRangeSelector<T> {
-	private grid: Slick.Grid<T>;
-	private dragging: boolean;
+	private grid!: Slick.Grid<T>;
+	private dragging?: boolean;
 	private handler = new Slick.EventHandler();
-	private decorator: ICellRangeDecorator;
-	private canvas: HTMLCanvasElement;
-	private currentlySelectedRange: { start: Slick.Cell, end?: Slick.Cell };
+	private decorator!: ICellRangeDecorator;
+	private canvas!: HTMLCanvasElement;
+	private currentlySelectedRange?: { start: Slick.Cell, end?: Slick.Cell };
 
 	public onBeforeCellRangeSelected = new Slick.Event<Slick.Cell>();
 	public onCellRangeSelected = new Slick.Event<Slick.Range>();

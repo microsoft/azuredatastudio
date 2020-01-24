@@ -14,11 +14,11 @@ import { AngularDisposable } from 'sql/base/browser/lifecycle';
 	selector: '[scrollable]'
 })
 export class ScrollableDirective extends AngularDisposable {
-	private scrollableElement: ScrollableElement;
-	private parent: HTMLElement;
-	private scrolled: HTMLElement;
-	@Input() horizontalScroll: ScrollbarVisibility;
-	@Input() verticalScroll: ScrollbarVisibility;
+	private scrollableElement!: ScrollableElement;
+	private parent!: HTMLElement;
+	private scrolled!: HTMLElement;
+	@Input() horizontalScroll?: ScrollbarVisibility;
+	@Input() verticalScroll?: ScrollbarVisibility;
 	@Input() useShadow = false;
 	@Input() scrollYToX = false;
 

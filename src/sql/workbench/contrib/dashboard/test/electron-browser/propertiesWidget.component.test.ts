@@ -11,7 +11,6 @@ import { WidgetConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashb
 import { DashboardServiceInterface } from 'sql/workbench/contrib/dashboard/browser/services/dashboardServiceInterface.service';
 import { SingleAdminService, SingleConnectionManagementService } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { PropertiesWidgetComponent } from 'sql/workbench/contrib/dashboard/browser/widgets/properties/propertiesWidget.component';
-import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
@@ -88,11 +87,8 @@ suite('Dashboard Properties Widget Tests', () => {
 
 		dashboardService.setup(x => x.adminService).returns(() => singleAdminService.object);
 
-		let connectionManagementinfo = TypeMoq.Mock.ofType(ConnectionManagementInfo);
-		connectionManagementinfo.object.serverInfo = serverInfo;
-
 		let singleConnectionService = TypeMoq.Mock.ofType(SingleConnectionManagementService);
-		singleConnectionService.setup(x => x.connectionInfo).returns(() => connectionManagementinfo.object);
+		singleConnectionService.setup(x => x.connectionInfo).returns(() => ({ serverInfo, providerId: undefined, connectionProfile: undefined, extensionTimer: undefined, serviceTimer: undefined, intelliSenseTimer: undefined, connecting: undefined, ownerUri: undefined }));
 
 		dashboardService.setup(x => x.connectionManagementService).returns(() => singleConnectionService.object);
 

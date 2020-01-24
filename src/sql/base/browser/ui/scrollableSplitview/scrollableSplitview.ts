@@ -121,12 +121,12 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 	private proportions: undefined | number[] = undefined;
 	private viewItems: IViewItem[] = [];
 	private sashItems: ISashItem[] = [];
-	private sashDragState: ISashDragState;
+	private sashDragState?: ISashDragState;
 	private state: State = State.Idle;
 	private inverseAltBehavior: boolean;
 
-	private lastRenderHeight: number;
-	private lastRenderTop: number;
+	private lastRenderHeight?: number;
+	private lastRenderTop?: number;
 
 	private options: ISplitViewOptions;
 
@@ -317,8 +317,8 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		// Re-render the views. Set lastRenderTop and lastRenderHeight to undefined since
 		// this isn't actually scrolling up or down
-		let scrollTop = this.lastRenderTop;
-		let viewHeight = this.lastRenderHeight;
+		let scrollTop = this.lastRenderTop!;
+		let viewHeight = this.lastRenderHeight!;
 		this.lastRenderTop = 0;
 		this.lastRenderHeight = 0;
 		this.render(scrollTop, viewHeight);
@@ -528,8 +528,8 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		// This way, we can press Alt while we resize a sash, macOS style!
 		const disposable = combinedDisposable(
-			domEvent(document.body, 'keydown')(e => resetSashDragState(this.sashDragState.current, e.altKey)),
-			domEvent(document.body, 'keyup')(() => resetSashDragState(this.sashDragState.current, false))
+			domEvent(document.body, 'keydown')(e => resetSashDragState(this.sashDragState!.current, e.altKey)),
+			domEvent(document.body, 'keyup')(() => resetSashDragState(this.sashDragState!.current, false))
 		);
 
 		const resetSashDragState = (start: number, alt: boolean) => {
@@ -565,8 +565,8 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 	}
 
 	private onSashChange({ current }: ISashEvent): void {
-		const { index, start, sizes, alt, minDelta, maxDelta } = this.sashDragState;
-		this.sashDragState.current = current;
+		const { index, start, sizes, alt, minDelta, maxDelta } = this.sashDragState!;
+		this.sashDragState!.current = current;
 
 		const delta = current - start;
 		const newDelta = this.resize(index, delta, sizes, undefined, undefined, minDelta, maxDelta);
@@ -589,7 +589,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 	private onSashEnd(index: number): void {
 		this._onDidSashChange.fire(index);
-		this.sashDragState.disposable.dispose();
+		this.sashDragState!.disposable.dispose();
 		this.saveProportions();
 	}
 
@@ -686,7 +686,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		let renderTop = scrollTop;
 		let renderBottom = scrollTop + viewHeight;
-		let thisRenderBottom = this.lastRenderTop + this.lastRenderHeight;
+		let thisRenderBottom = this.lastRenderTop! + this.lastRenderHeight!;
 
 		// when view scrolls down, start rendering from the renderBottom
 		for (i = this.indexAfter(renderBottom) - 1, stop = this.indexAt(Math.max(thisRenderBottom, renderTop)); i >= stop; i--) {
@@ -696,21 +696,21 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		}
 
 		// when view scrolls up, start rendering from either this.renderTop or renderBottom
-		for (i = Math.min(this.indexAt(this.lastRenderTop), this.indexAfter(renderBottom)) - 1, stop = this.indexAt(renderTop); i >= stop; i--) {
+		for (i = Math.min(this.indexAt(this.lastRenderTop!), this.indexAfter(renderBottom)) - 1, stop = this.indexAt(renderTop); i >= stop; i--) {
 			if (this.insertItemInDOM(<IViewItem>this.itemAtIndex(i))) {
 				this.dirtyState = true;
 			}
 		}
 
 		// when view scrolls down, start unrendering from renderTop
-		for (i = this.indexAt(this.lastRenderTop), stop = Math.min(this.indexAt(renderTop), this.indexAfter(thisRenderBottom)); i < stop; i++) {
+		for (i = this.indexAt(this.lastRenderTop!), stop = Math.min(this.indexAt(renderTop), this.indexAfter(thisRenderBottom)); i < stop; i++) {
 			if (this.removeItemFromDOM(<IViewItem>this.itemAtIndex(i))) {
 				this.dirtyState = true;
 			}
 		}
 
 		// when view scrolls up, start unrendering from either renderBottom this.renderTop
-		for (i = Math.max(this.indexAfter(renderBottom), this.indexAt(this.lastRenderTop)), stop = this.indexAfter(thisRenderBottom); i < stop; i++) {
+		for (i = Math.max(this.indexAfter(renderBottom), this.indexAt(this.lastRenderTop!)), stop = this.indexAfter(thisRenderBottom); i < stop; i++) {
 			if (this.removeItemFromDOM(<IViewItem>this.itemAtIndex(i))) {
 				this.dirtyState = true;
 			}
@@ -854,7 +854,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		this.contentSize = this.viewItems.reduce((r, i) => r + i.size, 0);
 
 		if (this.dirtyState) {
-			for (let i = this.indexAt(this.lastRenderTop); i <= this.indexAfter(this.lastRenderTop + this.lastRenderHeight) - 1; i++) {
+			for (let i = this.indexAt(this.lastRenderTop!); i <= this.indexAfter(this.lastRenderTop! + this.lastRenderHeight!) - 1; i++) {
 				this.viewItems[i].layout();
 				if (this.options.enableResizing) {
 					this.sashItems[i].sash.layout();

@@ -15,14 +15,14 @@ import { Checkbox as sqlCheckbox } from 'sql/base/browser/ui/checkbox/checkbox';
 	template: ''
 })
 export class Checkbox implements OnInit, OnChanges {
-	@Input() label: string;
+	@Input() label!: string;
 	@Input() enabled = true;
 	@Input() checked = true;
-	@Input('aria-label') private ariaLabel: string;
+	@Input('aria-label') private ariaLabel?: string;
 
 	@Output() onChange = new EventEmitter<boolean>();
 
-	private _checkbox: sqlCheckbox;
+	private _checkbox?: sqlCheckbox;
 
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef

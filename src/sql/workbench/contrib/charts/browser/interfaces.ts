@@ -41,8 +41,8 @@ export interface IInsight {
 	options: IInsightOptions;
 	data: IInsightData;
 	readonly types: Array<InsightType | ChartType>;
-	layout(dim: Dimension);
-	dispose();
+	layout(dim: Dimension): void;
+	dispose(): void;
 }
 
 export interface IInsightCtor {

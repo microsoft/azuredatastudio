@@ -8,7 +8,7 @@ import { getConfigurationKeys, IConfigurationOverrides, IConfigurationService, g
 export class TestConfigurationService implements IConfigurationService {
 	public _serviceBrand: undefined;
 
-	private configuration = {
+	private configuration: { user: { [key: string]: any }; workspace: { [key: string]: any } } = {
 		user: {},
 		workspace: {}
 	};
@@ -22,7 +22,7 @@ export class TestConfigurationService implements IConfigurationService {
 	}
 
 	public updateValue(key: string, value: any, target?: any): Promise<void> {
-		let _target = (target as ConfigurationTarget) === ConfigurationTarget.USER ? 'user' : 'workspace';
+		let _target: 'user' | 'workspace' = (target as ConfigurationTarget) === ConfigurationTarget.USER ? 'user' : 'workspace';
 		let keyArray = key.split('.');
 		let targetObject = this.configuration[_target];
 		for (let i = 0; i < keyArray.length; i++) {

@@ -38,7 +38,7 @@ export class FileNode {
 	/**
 	* Children nodes
 	*/
-	public children: FileNode[];
+	public children?: FileNode[];
 
 	/**
 	* Is the node expanded
@@ -53,7 +53,7 @@ export class FileNode {
 	/**
 	* Does this node have children
 	*/
-	public hasChildren: boolean;
+	public hasChildren?: boolean;
 
 	constructor(id: string, name: string, fullPath: string, isFile: boolean, isExpanded: boolean, ownerUri: string, parent?: FileNode) {
 		if (id) {

@@ -90,7 +90,7 @@ class InsightRegistry implements IInsightRegistry {
 	 * @param schema config schema of the widget
 	 */
 	public registerInsight(id: string, description: string, schema: IJSONSchema, ctor: Type<IInsightsView>): InsightIdentifier {
-		this._insightSchema.properties[id] = schema;
+		this._insightSchema.properties![id] = schema;
 		this._idToCtor[id] = ctor;
 		return id;
 	}

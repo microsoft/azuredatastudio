@@ -19,10 +19,10 @@ export interface IConnectionProfileGroup {
 
 export class ConnectionProfileGroup extends Disposable implements IConnectionProfileGroup {
 
-	public children: ConnectionProfileGroup[];
-	public connections: ConnectionProfile[];
+	public children: ConnectionProfileGroup[] = [];
+	public connections: ConnectionProfile[] = [];
 	public parentId?: string;
-	private _isRenamed: boolean;
+	private _isRenamed = false;
 	public constructor(
 		public name: string,
 		public parent: ConnectionProfileGroup | undefined,
@@ -42,7 +42,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 
 	public toObject(): IConnectionProfileGroup {
 		let subgroups = undefined;
-		if (this.children) {
+		if (this.children.length > 0) {
 			subgroups = [];
 			this.children.forEach((group) => {
 				subgroups.push(group.toObject());
@@ -129,9 +129,6 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	}
 
 	public addConnections(connections: ConnectionProfile[]): void {
-		if (!this.connections) {
-			this.connections = [];
-		}
 		connections.forEach((conn) => {
 			this.connections = this.connections.filter((curConn) => { return curConn.id !== conn.id; });
 			conn.parent = this;
@@ -142,11 +139,8 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	}
 
 	public addGroups(groups: ConnectionProfileGroup[]): void {
-		if (!this.children) {
-			this.children = [];
-		}
 		groups.forEach((group) => {
-			this.children = this.children.filter((grp) => { return group.id !== grp.id; });
+			this.children = this.children!.filter((grp) => { return group.id !== grp.id; });
 			group.parent = this;
 			this._register(group);
 			this.children.push(group);

@@ -10,7 +10,7 @@ export interface IRowNumberColumnOptions {
 
 export class RowNumberColumn<T> implements Slick.Plugin<T> {
 	private handler = new Slick.EventHandler();
-	private grid: Slick.Grid<T>;
+	private grid!: Slick.Grid<T>;
 
 	constructor(private options: IRowNumberColumnOptions) {
 	}

@@ -77,15 +77,16 @@ export class ConnectionStatusManager {
 		this._logService.info(`Adding connection ${id}`);
 		// Always create a copy and save that in the list
 		let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
-		let connectionInfo: ConnectionManagementInfo = new ConnectionManagementInfo();
-		connectionInfo.providerId = connection.providerName;
-		connectionInfo.extensionTimer = StopWatch.create();
-		connectionInfo.intelliSenseTimer = StopWatch.create();
-		connectionInfo.connectionProfile = connectionProfile;
-		connectionInfo.connecting = true;
+		let connectionInfo: ConnectionManagementInfo = {
+			providerId: connection.providerName,
+			extensionTimer: StopWatch.create(),
+			intelliSenseTimer: StopWatch.create(),
+			connectionProfile: connectionProfile,
+			connecting: true,
+			serviceTimer: StopWatch.create(),
+			ownerUri: id
+		};
 		this._connections[id] = connectionInfo;
-		connectionInfo.serviceTimer = StopWatch.create();
-		connectionInfo.ownerUri = id;
 		this._logService.info(`Successfully added connection ${id}`);
 		return connectionInfo;
 	}

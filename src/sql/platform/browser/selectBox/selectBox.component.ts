@@ -21,16 +21,16 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 	template: ''
 })
 export class SelectBox extends AngularDisposable implements OnInit, OnChanges {
-	private _selectbox: vsSelectBox;
+	private _selectbox!: vsSelectBox;
 
-	@Input() options: string[];
-	@Input() selectedOption: string;
+	@Input() options!: string[];
+	@Input() selectedOption!: string;
 	@Input() onlyEmitOnChange = false;
-	@Input('aria-label') ariaLabel: string;
+	@Input('aria-label') ariaLabel?: string;
 
 	@Output() onDidSelect = new EventEmitter<ISelectData>();
 
-	private _previousVal: string;
+	private _previousVal?: string;
 
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,

@@ -14,9 +14,9 @@ export default class AccountStore implements IAccountStore {
 	public static MEMENTO_KEY: string = 'Microsoft.SqlTools.Accounts';
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
-	private _activeOperation: Thenable<any>;
+	private _activeOperation?: Thenable<any>;
 
-	constructor(private _memento: object) { }
+	constructor(private _memento: { [key: string]: any }) { }
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	public addOrUpdate(newAccount: azdata.Account): Thenable<AccountAdditionResult> {
