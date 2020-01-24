@@ -170,7 +170,6 @@ export class NewQueryAction extends Action {
 export class NewNotebookToolbarAction extends Action {
 	public static readonly ID = 'notebook.command.new';
 	public static readonly LABEL = nls.localize('newNotebookAction', "New Notebook");
-	public static readonly INTERNAL_NEW_NOTEBOOK_CMD_ID = '_notebook.command.new';
 
 	constructor(
 		private newNotebookFn: () => void,

@@ -42,8 +42,8 @@ import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as DOM from 'vs/base/browser/dom';
 import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { showRestore } from 'sql/workbench/contrib/restore/browser/restoreActions';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 // import ToolbarContainer from 'sql/workbench/browser/modelComponents/toolbarContainer.component';
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
@@ -65,7 +65,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 	@ViewChildren(TabChild) private _tabs: QueryList<DashboardTab>;
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
-	@ViewChild('actionBar', { read: ElementRef }) private actionbarContainer: ElementRef;
+	@ViewChild('taskBar', { read: ElementRef }) private taskContainer: ElementRef;
 	protected taskbar: Taskbar;
 
 
@@ -117,6 +117,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		@Inject(IConfigurationService) private configurationService: IConfigurationService,
 		@Inject(ILogService) private logService: ILogService,
 		@Inject(IInstantiationService) protected _instantiationService: IInstantiationService,
+		@Inject(ICommandService) private commandService: ICommandService,
 	) {
 		super();
 	}
@@ -148,7 +149,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			this.createTabs(tempWidgets);
 		}
 
-		this.createTaskbar(this.actionbarContainer.nativeElement);
+		this.createTaskbar(this.taskContainer.nativeElement);
 	}
 
 	protected createTaskbar(parentElement: HTMLElement): void {
@@ -415,9 +416,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this._instantiationService.invokeFunction(openNewQuery);
 	}
 
-	public newNotebook(): void {
-		let action = this._instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL);
-		action.run();
+	public newNotebook(): Promise<void> {
+		return this.commandService.executeCommand('mssqlCluster.task.newNotebook', this.connectionManagementService.connectionInfo.connectionProfile);
 	}
 
 	public manageExtensions(): void {
