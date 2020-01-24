@@ -182,7 +182,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				/* tslint:disable:no-null-keyword */
 				returnVal = null;
 			}
-			else if (!valueMissing && Services.DBCellValue.isDBCellValue(value)) {
+			else if (Services.DBCellValue.isDBCellValue(value)) {
 				returnVal = this.spacefyLinebreaks(value.displayValue);
 			}
 			else if (typeof value === 'string') {
