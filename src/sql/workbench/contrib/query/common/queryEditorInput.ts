@@ -198,7 +198,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		return (this._text instanceof inputType);
 	}
 
-	public inputFileExists(): Promise<boolean> {
+	public resourceExists(): Promise<boolean> {
 		return this._fileService.exists(this.getResource());
 	}
 

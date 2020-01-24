@@ -83,7 +83,7 @@ export const Extensions = {
 
 Registry.add(Extensions.LanguageAssociations, languageAssociationRegistery);
 
-export function doHandleUpgrade(editor: EditorInput): EditorInput {
+export function doHandleUpgrade(editor?: EditorInput): EditorInput | undefined {
 	if (editor instanceof UntitledTextEditorInput || editor instanceof FileEditorInput) {
 		const activeWidget = getCodeEditor(editor);
 		const textModel = activeWidget.getModel();

@@ -429,8 +429,6 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 			return; // nothing to show
 		}
 
-		await this._group.removeNonExitingEditor(); // {{SQL CARBON EDIT}} @udeeshagautam perform async correction for non-existing files
-
 		// Determine editor options
 		let options: EditorOptions;
 		if (from instanceof EditorGroupView) {
