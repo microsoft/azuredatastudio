@@ -447,7 +447,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					};
 					setTimeout(() => {
 						setActive();
-					});
+					}, self.refreshGridTimeoutInMs);
 				}
 				resolve();
 			}, self.refreshGridTimeoutInMs);
