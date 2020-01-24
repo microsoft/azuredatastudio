@@ -11,6 +11,7 @@ import { Disposable, IDisposable, toDisposable, DisposableStore, dispose } from 
 import { TernarySearchTree, values } from 'vs/base/common/map';
 import { ISaveOptions, IRevertOptions } from 'vs/workbench/common/editor';
 import { ITextSnapshot } from 'vs/editor/common/model';
+import { Schemas } from 'vs/base/common/network'; // {{SQL CARBON EDIT}} @chlafreniere need to block working copies of notebook editors from being tracked
 
 export const enum WorkingCopyCapabilities {
 
@@ -176,6 +177,11 @@ export class WorkingCopyService extends Disposable implements IWorkingCopyServic
 
 	registerWorkingCopy(workingCopy: IWorkingCopy): IDisposable {
 		const disposables = new DisposableStore();
+
+		// {{SQL CARBON EDIT}} @chlafreniere need to block working copies of notebook editors from being tracked
+		if (workingCopy.resource.path.includes('notebook-editor-') && workingCopy.resource.scheme === Schemas.untitled) {
+			return disposables;
+		}
 
 		// Registry
 		let workingCopiesForResource = this.mapResourceToWorkingCopy.get(workingCopy.resource.toString());
