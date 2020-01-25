@@ -5,7 +5,6 @@
 
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
-import * as os from 'os';
 import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { InsightActionContext } from 'sql/workbench/browser/actions';
 import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
@@ -28,7 +27,7 @@ export class RunInsightQueryAction extends Action {
 			if (typeof (context.insight.query) === 'string') {
 				queryString = context.insight.query;
 			} else {
-				queryString = context.insight.query.join(os.EOL);
+				queryString = context.insight.query.join('\n');
 			}
 		}
 		return this.instantiationService.invokeFunction(openNewQuery, context.profile, queryString, RunQueryOnConnectionMode.executeQuery).then(() => true, () => false);
