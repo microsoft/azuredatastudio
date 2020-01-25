@@ -37,7 +37,7 @@ import { equals } from 'vs/base/common/arrays';
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
 	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
-	private refreshGridTimeoutInMs = 200;
+	private refreshGridTimeoutInMs = 10;
 
 	// The timeout handle for the refresh grid task
 	private refreshGridTimeoutHandle: any;
@@ -392,17 +392,19 @@ export class EditDataGridPanel extends GridParentComponent {
 		undefinedDataSet.dataRows = undefined;
 		undefinedDataSet.resized = new Emitter();
 		self.placeHolderDataSets.push(undefinedDataSet);
+		console.log('we hit here!');
 		self.refreshGrid();
 
 		// Setup the state of the selected cell
 		setTimeout(() => {
+			console.log('resetCurrentCell starting!');
 			this.resetCurrentCell();
+			this.currentEditCellValue = undefined;
+			this.removingNewRow = false;
+			this.newRowVisible = false;
+			this.dirtyCells = [];
 		}, self.refreshGridTimeoutInMs);
 
-		this.currentEditCellValue = undefined;
-		this.removingNewRow = false;
-		this.newRowVisible = false;
-		this.dirtyCells = [];
 	}
 
 	/**
@@ -454,6 +456,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				}
 				resolve();
 			}, self.refreshGridTimeoutInMs);
+			console.log('we finished refreshGrid');
 		});
 	}
 
