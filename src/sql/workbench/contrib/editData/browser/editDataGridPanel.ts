@@ -392,18 +392,14 @@ export class EditDataGridPanel extends GridParentComponent {
 		undefinedDataSet.dataRows = undefined;
 		undefinedDataSet.resized = new Emitter();
 		self.placeHolderDataSets.push(undefinedDataSet);
-		console.log('we hit here!');
 		self.refreshGrid();
 
 		// Setup the state of the selected cell
-		setTimeout(() => {
-			console.log('resetCurrentCell starting!');
-			this.resetCurrentCell();
-			this.currentEditCellValue = undefined;
-			this.removingNewRow = false;
-			this.newRowVisible = false;
-			this.dirtyCells = [];
-		}, self.refreshGridTimeoutInMs);
+		this.resetCurrentCell();
+		this.currentEditCellValue = undefined;
+		this.removingNewRow = false;
+		this.newRowVisible = false;
+		this.dirtyCells = [];
 
 	}
 
@@ -424,7 +420,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	private refreshGrid(): Thenable<void> {
-		return new Promise<void>((resolve, reject) => {
+		return new Promise<void>(async (resolve, reject) => {
 			const self = this;
 			clearTimeout(self.refreshGridTimeoutHandle);
 			this.refreshGridTimeoutHandle = setTimeout(() => {
@@ -444,10 +440,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					let setActive = function () {
 						if (self.firstRender && self.table) {
 							self.table.setActive();
-							self.setCurrentCell(0, 1);
 							self.firstRender = false;
-							// self.table.rerenderGrid(0, self.dataSet.dataRows.getLength());
-							// self.table.resizeCanvas();
 						}
 					};
 					setTimeout(() => {
@@ -456,7 +449,6 @@ export class EditDataGridPanel extends GridParentComponent {
 				}
 				resolve();
 			}, self.refreshGridTimeoutInMs);
-			console.log('we finished refreshGrid');
 		});
 	}
 
