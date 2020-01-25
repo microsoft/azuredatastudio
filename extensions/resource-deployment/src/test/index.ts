@@ -8,7 +8,7 @@ const testRunner = require('vscodetestcover');
 
 const suite = 'resource-deployment Extension Tests';
 
-const testOptions: any = {
+const mochaOptions: any = {
 	ui: 'tdd',
 	useColors: true,
 	timeout: 10000
