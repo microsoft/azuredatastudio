@@ -24,15 +24,12 @@
 		"./vs/base/**/*.ts",
 		// "./vs/code/**/*.ts",
 		"./vs/editor/**/*.ts",
-		// "./vs/platform/**/*.ts",
+		"./vs/platform/**/*.ts",
 		"./sql/base/**/*.ts",
 		"./sql/editor/**/*.ts",
 		"./sql/platform/**/*.ts"
 	],
 	"exclude": [
-		"./sql/platform/jobManagement/**/*.ts",
-		"./sql/platform/query/**/*.ts",
-		"./sql/platform/queryHistory/**/*.ts",
-		"./sql/platform/restore/**/*.ts",
+		"./vs/platform/workspaces/test/electron-main/workspacesMainService.test.ts"
 	]
 }
