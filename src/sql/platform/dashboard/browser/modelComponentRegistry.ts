@@ -3,11 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
-
 import * as platform from 'vs/platform/registry/common/platform';
-import { IComponent } from 'sql/workbench/browser/modelComponents/interfaces';
 import { values } from 'vs/base/common/collections';
+import { IComponent, ModelComponentTypes } from 'sql/platform/dashboard/browser/interfaces';
 
 export type ComponentIdentifier = string;
 
@@ -16,7 +14,7 @@ export const Extensions = {
 };
 
 interface ComponentCtor {
-	new (...args: any[]): IComponent
+	new(...args: any[]): IComponent;
 }
 
 export interface IComponentRegistry {

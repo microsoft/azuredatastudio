@@ -11,7 +11,6 @@ import {
 import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { Dropdown, IDropdownOptions } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
@@ -21,6 +20,8 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { find } from 'vs/base/common/arrays';
+import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 @Component({
 	selector: 'modelview-dropdown',

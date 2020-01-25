@@ -8,7 +8,7 @@ import 'vs/css!./media/errorMessageDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { attachButtonStyler, attachModalDialogStyler } from 'sql/platform/theme/common/styler';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -24,6 +24,7 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 
 const maxActions = 1;
 

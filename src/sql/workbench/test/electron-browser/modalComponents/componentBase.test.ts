@@ -5,9 +5,9 @@
 
 import * as assert from 'assert';
 import { ComponentBase, ContainerBase, ItemDescriptor } from 'sql/workbench/browser/modelComponents/componentBase';
-import { IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { ModelStore } from 'sql/workbench/browser/modelComponents/modelStore';
 import { ChangeDetectorRef } from '@angular/core';
+import { IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 
 
 class TestComponent extends ComponentBase {

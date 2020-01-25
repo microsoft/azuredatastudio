@@ -24,7 +24,7 @@ import * as azdata from 'azdata';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import { attachModalDialogStyler, attachButtonStyler, attachPanelStyler } from 'sql/platform/theme/common/styler';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { AccountViewModel } from 'sql/platform/accounts/common/accountViewModel';
 import { AddAccountAction } from 'sql/platform/accounts/common/accountActions';
 import { AccountListRenderer, AccountListDelegate } from 'sql/workbench/contrib/accounts/browser/accountListRenderer';
@@ -36,6 +36,7 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IViewPaneOptions, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { attachModalDialogStyler, attachPanelStyler } from 'sql/workbench/common/styler';
 
 class AccountPanel extends ViewPane {
 	public index: number;

@@ -10,7 +10,7 @@ import { InputBox, OnLoseFocusParams } from 'sql/base/browser/ui/inputBox/inputB
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { FileBrowserTreeView } from 'sql/workbench/services/fileBrowser/browser/fileBrowserTreeView';
@@ -33,6 +33,7 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 
 export class FileBrowserDialog extends Modal {
 	private _viewModel: FileBrowserViewModel;

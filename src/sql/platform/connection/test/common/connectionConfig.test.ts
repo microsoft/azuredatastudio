@@ -9,9 +9,8 @@ import { ICapabilitiesService, ProviderFeatures } from 'sql/platform/capabilitie
 import { ConnectionConfig, ISaveGroupResult } from 'sql/platform/connection/common/connectionConfig';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { IConnectionProfile, IConnectionProfileStore } from 'sql/platform/connection/common/interfaces';
+import { IConnectionProfile, IConnectionProfileStore, ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
-import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import * as TypeMoq from 'typemoq';
 import { Emitter } from 'vs/base/common/event';

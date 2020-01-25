@@ -9,10 +9,10 @@ import {
 	ElementRef, OnDestroy
 } from '@angular/core';
 
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
 import { FlexLayout, FlexItemLayout } from 'azdata';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
+import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 
 export class FlexItem {
 	constructor(public descriptor: IComponentDescriptor, public config: FlexItemLayout) { }

@@ -9,7 +9,6 @@ import {
 	ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
 import { GroupLayout, GroupContainerProperties } from 'azdata';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
@@ -17,6 +16,7 @@ import { endsWith } from 'vs/base/common/strings';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
+import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 
 @Component({
 	selector: 'modelview-groupContainer',

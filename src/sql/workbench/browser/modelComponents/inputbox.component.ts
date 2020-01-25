@@ -11,7 +11,6 @@ import {
 import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 
@@ -24,6 +23,8 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
 import { assign } from 'vs/base/common/objects';
+import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 @Component({
 	selector: 'modelview-inputBox',

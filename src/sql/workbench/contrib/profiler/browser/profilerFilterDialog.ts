@@ -7,7 +7,7 @@ import 'vs/css!./media/profilerFilterDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { attachButtonStyler, attachModalDialogStyler, attachInputBoxStyler } from 'sql/platform/theme/common/styler';
+import { attachButtonStyler, attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -28,6 +28,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 
 
 const ClearText: string = localize('profilerFilterDialog.clear', "Clear all");

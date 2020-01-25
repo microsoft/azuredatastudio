@@ -9,7 +9,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { IProfilerService, IProfilerViewTemplate } from 'sql/workbench/services/profiler/browser/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { attachTableStyler, attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IProfilerStateChangedEvent } from 'sql/workbench/contrib/profiler/common/profilerState';
 import { ProfilerTableEditor, ProfilerTableViewState } from 'sql/workbench/contrib/profiler/browser/profilerTableEditor';
 import * as Actions from 'sql/workbench/contrib/profiler/browser/profilerActions';
@@ -52,6 +52,7 @@ import { handleCopyRequest } from 'sql/workbench/contrib/profiler/browser/profil
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { find } from 'vs/base/common/arrays';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {

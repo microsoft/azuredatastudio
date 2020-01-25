@@ -7,7 +7,7 @@ import 'vs/css!./media/insightsDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachPanelStyler } from 'sql/platform/theme/common/styler';
+import { attachButtonStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IInsightsDialogModel, ListResource, IInsightDialogActionContext, insertValueRegex } from 'sql/workbench/services/insights/browser/insightsDialogService';
@@ -43,6 +43,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { attachPanelStyler, attachModalDialogStyler } from 'sql/workbench/common/styler';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");

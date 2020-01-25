@@ -18,7 +18,7 @@ import { WebviewContentOptions, IWebviewService, WebviewElement } from 'vs/workb
 import { generateUuid } from 'vs/base/common/uuid';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
+import { ComponentEventType, IModelStore, IComponentDescriptor, IComponent } from 'sql/platform/dashboard/browser/interfaces';
 
 function reviveWebviewOptions(options: vscode.WebviewOptions): vscode.WebviewOptions {
 	return {

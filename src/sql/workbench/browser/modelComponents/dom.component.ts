@@ -14,7 +14,7 @@ import * as azdata from 'azdata';
 import * as DOM from 'vs/base/browser/dom';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 
 @Component({
 	template: '',

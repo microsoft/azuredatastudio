@@ -12,10 +12,11 @@ import {
 import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { find } from 'vs/base/common/arrays';
 import { localize } from 'vs/nls';
+import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export enum DeclarativeDataType {
 	string = 'string',

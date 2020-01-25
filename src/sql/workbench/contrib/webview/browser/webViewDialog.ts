@@ -7,7 +7,7 @@ import 'vs/css!sql/media/icons/common-icons';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { attachButtonStyler, attachModalDialogStyler } from 'sql/platform/theme/common/styler';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -21,6 +21,7 @@ import { IWebviewService, WebviewElement } from 'vs/workbench/contrib/webview/br
 import { generateUuid } from 'vs/base/common/uuid';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 
 export class WebViewDialog extends Modal {
 

@@ -20,11 +20,11 @@ import * as nls from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
 import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Event } from 'vs/base/common/event';
 import { startsWith } from 'vs/base/common/strings';
 import { URI } from 'vs/base/common/uri';
+import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;

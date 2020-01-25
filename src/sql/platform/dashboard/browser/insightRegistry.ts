@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Type } from '@angular/core';
 
 import * as platform from 'vs/platform/registry/common/platform';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
@@ -74,18 +73,22 @@ export interface IInsightsView {
 
 export interface IInsightRegistry {
 	insightSchema: IJSONSchema;
-	registerInsight(id: string, description: string, schema: IJSONSchema, ctor: Type<IInsightsView>): InsightIdentifier;
+	registerInsight(id: string, description: string, schema: IJSONSchema, ctor: IInsightsViewCtor): InsightIdentifier;
 	registerExtensionInsight(id: string, val: IInsightsConfig): void;
 	getRegisteredExtensionInsights(id: string): IInsightsConfig;
-	getCtorFromId(id: string): Type<IInsightsView>;
-	getAllCtors(): Array<Type<IInsightsView>>;
+	getCtorFromId(id: string): IInsightsViewCtor;
+	getAllCtors(): Array<IInsightsViewCtor>;
 	getAllIds(): Array<string>;
+}
+
+interface IInsightsViewCtor {
+	new(...args: any[]): IInsightsView;
 }
 
 class InsightRegistry implements IInsightRegistry {
 	private _insightSchema: IJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets.InsightsRegistry', "Widget used in the dashboards"), properties: {}, additionalProperties: false };
 	private _extensionInsights: { [x: string]: IInsightsConfig } = {};
-	private _idToCtor: { [x: string]: Type<IInsightsView> } = {};
+	private _idToCtor: { [x: string]: IInsightsViewCtor } = {};
 
 	/**
 	 * Register a dashboard widget
@@ -93,7 +96,7 @@ class InsightRegistry implements IInsightRegistry {
 	 * @param description description of the widget
 	 * @param schema config schema of the widget
 	 */
-	public registerInsight(id: string, description: string, schema: IJSONSchema, ctor: Type<IInsightsView>): InsightIdentifier {
+	public registerInsight(id: string, description: string, schema: IJSONSchema, ctor: IInsightsViewCtor): InsightIdentifier {
 		this._insightSchema.properties![id] = schema;
 		this._idToCtor[id] = ctor;
 		return id;
@@ -107,11 +110,11 @@ class InsightRegistry implements IInsightRegistry {
 		return this._extensionInsights[id];
 	}
 
-	public getCtorFromId(id: string): Type<IInsightsView> {
+	public getCtorFromId(id: string): IInsightsViewCtor {
 		return this._idToCtor[id];
 	}
 
-	public getAllCtors(): Array<Type<IInsightsView>> {
+	public getAllCtors(): Array<IInsightsViewCtor> {
 		return values(this._idToCtor);
 	}
 
@@ -127,7 +130,7 @@ class InsightRegistry implements IInsightRegistry {
 const insightRegistry = new InsightRegistry();
 platform.Registry.add(Extensions.InsightContribution, insightRegistry);
 
-export function registerInsight(id: string, description: string, schema: IJSONSchema, ctor: Type<IInsightsView>): InsightIdentifier {
+export function registerInsight(id: string, description: string, schema: IJSONSchema, ctor: IInsightsViewCtor): InsightIdentifier {
 	return insightRegistry.registerInsight(id, description, schema, ctor);
 }
 

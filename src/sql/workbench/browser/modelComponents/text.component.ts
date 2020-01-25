@@ -11,9 +11,9 @@ import {
 
 import * as azdata from 'azdata';
 
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 import { TitledComponent } from 'sql/workbench/browser/modelComponents/titledComponent';
+import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 
 @Component({
 	selector: 'modelview-text',

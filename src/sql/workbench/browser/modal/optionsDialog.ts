@@ -8,7 +8,7 @@ import * as DialogHelper from './dialogHelper';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IModalOptions, Modal } from './modal';
 import * as OptionsDialogHelper from './optionsDialogHelper';
-import { attachButtonStyler, attachModalDialogStyler, attachPanelStyler } from 'sql/platform/theme/common/styler';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 
@@ -34,6 +34,7 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { attachModalDialogStyler, attachPanelStyler } from 'sql/workbench/common/styler';
 
 export class CategoryView extends ViewPane {
 
