@@ -20,6 +20,8 @@ RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubunt
 RUN apt-get update
 RUN apt-get -y install docker-ce docker-ce-cli containerd.io
 
+# This image needs to be built on a linux host; some weird stuff happens and the xvfb service won't start
+# if built on a windows host.
 ADD ./xvfb.init /etc/init.d/xvfb
 RUN chmod +x /etc/init.d/xvfb
 RUN update-rc.d xvfb defaults
