@@ -1332,7 +1332,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		// Otherwise, handle accordingly
 		switch (res) {
 			case ConfirmResult.SAVE:
-				const result = await editor.save(this._group.id, { reason: SaveReason.EXPLICIT, context: SaveContext.EDITOR_CLOSE });
+				const result = await editor.save(this.id, { reason: SaveReason.EXPLICIT, context: SaveContext.EDITOR_CLOSE });
 
 				return !result;
 			case ConfirmResult.DONT_SAVE:
@@ -1340,7 +1340,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 				try {
 
 					// first try a normal revert where the contents of the editor are restored
-					const result = await editor.revert();
+					const result = await editor.revert(this.id);
 
 					return !result;
 				} catch (error) {
@@ -1348,7 +1348,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 					// the editor cannot be reverted and instead do a soft revert that just
 					// enables us to close the editor. With this, a user can always close a
 					// dirty editor even when reverting fails.
-					const result = await editor.revert({ soft: true });
+					const result = await editor.revert(this.id, { soft: true });
 
 					return !result;
 				}
