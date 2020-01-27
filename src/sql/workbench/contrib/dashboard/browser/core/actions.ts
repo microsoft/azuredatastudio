@@ -19,15 +19,15 @@ export class EditDashboardAction extends Action {
 	private static readonly ID = 'editDashboard';
 	private static readonly EDITLABEL = nls.localize('editDashboard', "Edit");
 	private static readonly EXITLABEL = nls.localize('editDashboardExit', "Exit");
+	private static readonly ICON = 'edit-toolbar';
 
 	private _state = 0;
 
 	constructor(
 		private editFn: () => void,
 		private context: any, //this
-		cssClass: string
 	) {
-		super(EditDashboardAction.ID, EditDashboardAction.EDITLABEL, cssClass);
+		super(EditDashboardAction.ID, EditDashboardAction.EDITLABEL, EditDashboardAction.ICON);
 	}
 
 	run(): Promise<boolean> {
@@ -55,13 +55,13 @@ export class RefreshWidgetAction extends Action {
 
 	private static readonly ID = 'refreshWidget';
 	private static readonly LABEL = nls.localize('refreshWidget', "Refresh");
+	private static readonly ICON = 'refresh-toolbar';
 
 	constructor(
 		private refreshFn: () => void,
 		private context: any, // this
-		cssClass: string
 	) {
-		super(RefreshWidgetAction.ID, RefreshWidgetAction.LABEL, cssClass);
+		super(RefreshWidgetAction.ID, RefreshWidgetAction.LABEL, RefreshWidgetAction.ICON);
 	}
 
 	run(): Promise<boolean> {
@@ -78,13 +78,13 @@ export class RestoreToolbarAction extends Action {
 
 	private static readonly ID = 'restore';
 	private static readonly LABEL = nls.localize('restore', "Restore");
+	private static readonly ICON = 'restore-toolbar';
 
 	constructor(
 		private restoreFn: () => void,
 		private context: any, // this
-		cssClass: string
 	) {
-		super(RestoreToolbarAction.ID, RestoreToolbarAction.LABEL, cssClass);
+		super(RestoreToolbarAction.ID, RestoreToolbarAction.LABEL, RestoreToolbarAction.ICON);
 	}
 
 	run(): Promise<boolean> {
@@ -101,13 +101,13 @@ export class BackupToolbarAction extends Action {
 
 	private static readonly ID = 'backup';
 	private static readonly LABEL = nls.localize('backup', "Backup");
+	private static readonly ICON = 'backup-toolbar';
 
 	constructor(
 		private backupFn: () => void,
 		private context: any, // this
-		cssClass: string
 	) {
-		super(BackupToolbarAction.ID, BackupToolbarAction.LABEL, cssClass);
+		super(BackupToolbarAction.ID, BackupToolbarAction.LABEL, BackupToolbarAction.ICON);
 	}
 
 	run(): Promise<boolean> {
@@ -124,13 +124,13 @@ export class ManageExtensionsToolbarAction extends Action {
 
 	private static readonly ID = 'manageExtensions';
 	private static readonly LABEL = nls.localize('manageExtensions', "Manage extensions");
+	private static readonly ICON = 'manage-extensions-toolbar';
 
 	constructor(
 		private manageExtensionsFn: () => void,
 		private context: any, // this
-		cssClass: string
 	) {
-		super(ManageExtensionsToolbarAction.ID, ManageExtensionsToolbarAction.LABEL, cssClass);
+		super(ManageExtensionsToolbarAction.ID, ManageExtensionsToolbarAction.LABEL, ManageExtensionsToolbarAction.ICON);
 	}
 
 	run(): Promise<boolean> {
@@ -147,13 +147,13 @@ export class NewQueryAction extends Action {
 
 	private static readonly ID = 'newQuery';
 	private static readonly LABEL = nls.localize('newQuery', "New Query");
+	private static readonly ICON = 'new-query-toolbar';
 
 	constructor(
 		private newQueryFn: () => void,
 		private context: any, // this
-		cssClass: string
 	) {
-		super(NewQueryAction.ID, NewQueryAction.LABEL, cssClass);
+		super(NewQueryAction.ID, NewQueryAction.LABEL, NewQueryAction.ICON);
 	}
 
 	run(): Promise<boolean> {
@@ -169,13 +169,13 @@ export class NewQueryAction extends Action {
 export class NewNotebookToolbarAction extends Action {
 	public static readonly ID = 'notebook.command.new';
 	public static readonly LABEL = nls.localize('newNotebookAction', "New Notebook");
+	private static readonly ICON = 'new-notebook-toolbar';
 
 	constructor(
 		private newNotebookFn: () => void,
 		private context: any, // this
 	) {
-		super(NewNotebookToolbarAction.ID, NewNotebookToolbarAction.LABEL);
-		this.class = 'new-notebook-toolbar';
+		super(NewNotebookToolbarAction.ID, NewNotebookToolbarAction.LABEL, NewNotebookToolbarAction.ICON);
 	}
 
 	async run(): Promise<boolean> {

@@ -4,21 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 
 .vs .codicon.backup {
-	background: url("backup.svg") no-repeat;
+	background: url("backup.svg") center center no-repeat;
 }
 
 .vs-dark .codicon.backup,
 .hc-black .codicon.backup {
-	background: url("backup_inverse.svg") no-repeat;
+	background: url("backup_inverse.svg") center center no-repeat;
 }
 
 .vs .codicon.restore {
-	background: url("restore.svg") no-repeat;
+	background: url("restore.svg") center center no-repeat;
 }
 
 .vs-dark .codicon.restore,
 .hc-black .codicon.restore {
-	background: url("restore_inverse.svg") no-repeat;
+	background: url("restore_inverse.svg") center center no-repeat;
 }
 
 .vs .codicon.database {
@@ -308,6 +308,14 @@
 
 .vs .codicon.new-query-toolbar {
 	background: url("new-query-toolbar.svg") no-repeat;
+}
+
+.vs .codicon.backup-toolbar {
+	background: url("backup-toolbar.svg") no-repeat;
+}
+
+.vs .codicon.restore-toolbar {
+	background: url("restore-toolbar.svg") no-repeat;
 }
 
 .small {
