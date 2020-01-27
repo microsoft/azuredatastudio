@@ -87,8 +87,6 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 
 		// Set the content in the order we desire
 		let content: ITaskbarContent[] = [
-			{ action: this._backupAction },
-			{ action: this._restoreAction },
 			{ action: this._newQueryAction },
 			{ action: this._newNotebookAction },
 			{ element: separator },
@@ -96,6 +94,11 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 			{ action: this._editAction },
 			{ action: this._manageExtensionsAction }
 		];
+
+		if (!this.serverInfo.isCloud && this.serverInfo.engineEditionId !== 11) {
+			content.unshift({ action: this._restoreAction });
+			content.unshift({ action: this._backupAction });
+		}
 
 		this.taskbar.setContent(content);
 	}
