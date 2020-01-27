@@ -6,7 +6,7 @@ RUN apt-get update && apt-get upgrade -y
 
 RUN apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 \
 	libkrb5-dev git apt-transport-https ca-certificates curl gnupg-agent software-properties-common \
-	libnss3 libasound2 make gcc libx11-dev fakeroot rpm
+	libnss3 libasound2 make gcc libx11-dev fakeroot rpm libgconf-2-4 libunwind8 g++-4.8
 
 RUN rm /usr/bin/gcc
 RUN rm /usr/bin/g++
@@ -20,6 +20,8 @@ RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubunt
 RUN apt-get update
 RUN apt-get -y install docker-ce docker-ce-cli containerd.io
 
+# This image needs to be built on a linux host; some weird stuff happens and the xvfb service won't start
+# if built on a windows host.
 ADD ./xvfb.init /etc/init.d/xvfb
 RUN chmod +x /etc/init.d/xvfb
 RUN update-rc.d xvfb defaults
