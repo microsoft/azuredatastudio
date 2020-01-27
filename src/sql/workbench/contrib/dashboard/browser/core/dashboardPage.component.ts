@@ -44,6 +44,7 @@ import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { showRestore } from 'sql/workbench/contrib/restore/browser/restoreActions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { ServerInfo } from 'azdata';
 
 // import ToolbarContainer from 'sql/workbench/browser/modelComponents/toolbarContainer.component';
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
@@ -95,6 +96,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 	public get connectionManagementService(): SingleConnectionManagementService {
 		return this.dashboardService.connectionManagementService;
+	}
+
+	public get serverInfo(): ServerInfo {
+		return this.connectionManagementService.connectionInfo.serverInfo;
 	}
 
 	public get contextKeyService(): IContextKeyService {
@@ -171,7 +176,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 		// Set the content in the order we desire
 		let content: ITaskbarContent[] = [
-			{ action: this._restoreAction },
 			{ action: this._newQueryAction },
 			{ action: this._newNotebookAction },
 			{ element: separator },
@@ -179,6 +183,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			{ action: this._editAction },
 			{ action: this._manageExtensionsAction }
 		];
+
+		if (!this.serverInfo.isCloud && this.serverInfo.engineEditionId !== 11) {
+			content.unshift({ action: this._restoreAction });
+		}
 
 		this.taskbar.setContent(content);
 	}
