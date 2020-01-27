@@ -87,7 +87,7 @@ export class QueryEditorService implements IQueryEditorService {
 		let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 		// Create a sql document pane with accoutrements
-		const fileInput = this._untitledEditorService.create({ associatedResource: docUri, mode: 'sql' });
+		const fileInput = this._untitledEditorService.create({ untitledResource: docUri, mode: 'sql' });
 		const m = await fileInput.resolve();
 		if (sqlContent) {
 			m.textEditorModel.setValue(sqlContent);

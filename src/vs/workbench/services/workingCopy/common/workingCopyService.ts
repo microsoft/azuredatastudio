@@ -139,8 +139,10 @@ export class WorkingCopyService extends Disposable implements IWorkingCopyServic
 	registerWorkingCopy(workingCopy: IWorkingCopy): IDisposable {
 		const disposables = new DisposableStore();
 
-		// {{SQL CARBON EDIT}} @chlafreniere need to block working copies of notebook editors from being tracked
-		if (workingCopy.resource.path.includes('notebook-editor-') && workingCopy.resource.scheme === Schemas.untitled) {
+		// {{SQL CARBON EDIT}} @chlafreniere need to block working copies of notebook editors from being tracked.
+		// {{SQL CARBON EDIT}} @alma1 along with editdata editors.
+		let dontRestore = (workingCopy.resource.path.includes('notebook-editor-') || workingCopy.resource.path.includes('dbo.'));
+		if (dontRestore && workingCopy.resource.scheme === Schemas.untitled) {
 			return disposables;
 		}
 

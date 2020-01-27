@@ -59,11 +59,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 
 		// re-emit sql editor events through this editor if it exists
 		if (this._sql) {
-			this._register(this._sql.onDidChangeDirty(async () => {
-				const model = await this._sql.resolve();
-				model.setDirty(false);
-				this._onDidChangeDirty.fire();
-			}));
+			this._register(this._sql.onDidChangeDirty(() => this._onDidChangeDirty.fire()));
 		}
 
 		//TODO determine is this is a table or a view
