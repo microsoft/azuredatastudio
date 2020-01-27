@@ -140,7 +140,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 
 	public addGroups(groups: ConnectionProfileGroup[]): void {
 		groups.forEach((group) => {
-			this.children = this.children!.filter((grp) => { return group.id !== grp.id; });
+			this.children = this.children.filter((grp) => { return group.id !== grp.id; });
 			group.parent = this;
 			this._register(group);
 			this.children.push(group);
