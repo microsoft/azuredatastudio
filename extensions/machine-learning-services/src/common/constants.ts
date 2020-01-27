@@ -30,6 +30,8 @@ export const mlsDependenciesCommand = 'mls.command.dependencies';
 //
 export const mlsConfigKey = 'machineLearningServices';
 export const pythonPathConfigKey = 'pythonPath';
+export const pythonEnabledConfigKey = 'enablePython';
+export const rEnabledConfigKey = 'enableR';
 export const rPathConfigKey = 'rPath';
 
 // Localized texts

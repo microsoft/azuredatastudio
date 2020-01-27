@@ -93,6 +93,9 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 	 * Returns true if the provider can be used
 	 */
 	async canUseProvider(): Promise<boolean> {
+		if (!this._config.pythonEnabled) {
+			return false;
+		}
 		let connection = await this.getCurrentConnection();
 		if (connection && await this._queryRunner.isPythonInstalled(connection)) {
 			return true;

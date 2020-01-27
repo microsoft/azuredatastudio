@@ -30,6 +30,16 @@
       "type": "object",
       "title": "%mls.configuration.title%",
       "properties": {
+        "machineLearningServices.enablePython": {
+          "type": "boolean",
+          "default": "true",
+          "description": "%mls.enablePython.description%"
+        },
+        "machineLearningServices.enableR": {
+          "type": "boolean",
+          "default": "true",
+          "description": "%mls.enableR.description%"
+        },
         "machineLearningServices.pythonPath": {
           "type": "string",
           "default": "python",

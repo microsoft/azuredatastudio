@@ -243,6 +243,16 @@ describe('SQL R Package Manager', () => {
 		should.deepEqual(actual, true);
 	});
 
+	it('canUseProvider Should return false if r is disabled in setting', async function (): Promise<void> {
+		let testContext = createContext();
+
+		let provider = createProvider(testContext);
+		testContext.config.setup(x => x.rEnabled).returns(() => false);
+		let actual = await provider.canUseProvider();
+
+		should.deepEqual(actual, false);
+	});
+
 	it('getPackageOverview Should return package info successfully', async function (): Promise<void> {
 		let testContext = createContext();
 		let packagePreview = {
@@ -301,6 +311,7 @@ describe('SQL R Package Manager', () => {
 
 	function createProvider(testContext: TestContext): SqlRPackageManageProvider {
 		testContext.config.setup(x => x.rExecutable).returns(() => 'r');
+		testContext.config.setup(x => x.rEnabled).returns(() => true);
 		testContext.config.setup(x => x.rPackagesRepository).returns(() => 'http://cran.r-project.org');
 		return new SqlRPackageManageProvider(
 			testContext.outputChannel,

@@ -132,6 +132,9 @@ export class PackageManager {
 	}
 
 	private async installRequiredRPackages(startBackgroundOperation: azdata.BackgroundOperation): Promise<void> {
+		if (!this._config.rEnabled) {
+			return;
+		}
 		if (!this._rExecutable) {
 			throw new Error(constants.rConfigError);
 		}
@@ -143,6 +146,9 @@ export class PackageManager {
 	 * Installs required python packages
 	 */
 	private async installRequiredPythonPackages(): Promise<void> {
+		if (!this._config.pythonEnabled) {
+			return;
+		}
 		if (!this._pythonExecutable) {
 			throw new Error(constants.pythonConfigError);
 		}

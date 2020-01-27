@@ -319,6 +319,16 @@ describe('SQL Python Package Manager', () => {
 		should.deepEqual(actual, true);
 	});
 
+	it('canUseProvider Should return false if python is disabled in setting', async function (): Promise<void> {
+		let testContext = createContext();
+
+		let provider = createProvider(testContext);
+		testContext.config.setup(x => x.pythonEnabled).returns(() => false);
+		let actual = await provider.canUseProvider();
+
+		should.deepEqual(actual, false);
+	});
+
 	it('getPackageOverview Should return package info using python packages provider', async function (): Promise<void> {
 		let testContext = createContext();
 		let packagePreview = {
@@ -376,6 +386,7 @@ describe('SQL Python Package Manager', () => {
 
 	function createProvider(testContext: TestContext): SqlPythonPackageManageProvider {
 		testContext.config.setup(x => x.pythonExecutable).returns(() => 'python');
+		testContext.config.setup(x => x.pythonEnabled).returns(() => true);
 		return new SqlPythonPackageManageProvider(
 			testContext.outputChannel,
 			testContext.apiWrapper.object,
