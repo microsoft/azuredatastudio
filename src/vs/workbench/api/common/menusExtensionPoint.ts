@@ -309,7 +309,7 @@ namespace schema {
 				type: 'string'
 			},
 			icon: {
-				description: localize('vscode.extension.contributes.commandType.icon', '(Optional) Icon which is used to represent the command in the UI. Either a file path or a themable configuration'),
+				description: localize('vscode.extension.contributes.commandType.icon', '(Optional) Icon which is used to represent the command in the UI. Either a file path, an object with file paths for dark and light themes, or a theme icon references, like `$(zap)`'),
 				anyOf: [{
 					type: 'string'
 				},
