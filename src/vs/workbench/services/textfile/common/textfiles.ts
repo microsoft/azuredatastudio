@@ -422,7 +422,7 @@ export interface ITextFileEditorModel extends ITextEditorModel, IEncodingSupport
 
 	isDirty(): boolean; // {{SQL CARBON EDIT}} strict-null-check
 
-	makeDirty(): void;
+	setDirty(dirty: boolean): void;
 
 	getMode(): string | undefined;
 
