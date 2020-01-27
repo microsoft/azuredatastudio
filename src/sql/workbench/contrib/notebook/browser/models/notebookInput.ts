@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorInput, EditorModel, IRevertOptions, GroupIdentifier } from 'vs/workbench/common/editor';
+import { EditorInput, EditorModel, IRevertOptions, GroupIdentifier, IEditorInput } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
@@ -283,11 +283,11 @@ export abstract class NotebookInput extends EditorInput {
 		return this._standardKernels;
 	}
 
-	save(groupId: number, options?: ITextFileSaveOptions): Promise<boolean> {
+	save(groupId: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
 		return this.textInput.save(groupId, options);
 	}
 
-	saveAs(group: number, options?: ITextFileSaveOptions): Promise<boolean> {
+	saveAs(group: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
 		return this.textInput.saveAs(group, options);
 	}
 
