@@ -220,7 +220,6 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	public get onDidModelChangeEncoding(): Event<void> { return this._sql.onDidModelChangeEncoding; }
 	public resolve(refresh?: boolean): Promise<EditorModel> { return this._sql.resolve(); }
 	public getEncoding(): string { return this._sql.getEncoding(); }
-	public suggestFileName(): string { return this._sql.suggestFileName(); }
 	public getName(): string { return this._sql.getName(); }
 	public get hasAssociatedFilePath(): boolean { return this._sql.hasAssociatedFilePath; }
 

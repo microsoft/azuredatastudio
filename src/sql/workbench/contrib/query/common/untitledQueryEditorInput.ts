@@ -47,10 +47,6 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		return this.text.hasAssociatedFilePath;
 	}
 
-	public suggestFileName(): string {
-		return this.text.suggestFileName();
-	}
-
 	public setMode(mode: string): void {
 		this.text.setMode(mode);
 	}
