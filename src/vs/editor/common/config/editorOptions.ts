@@ -2674,6 +2674,10 @@ export interface ISuggestOptions {
 	 * Show snippet-suggestions.
 	 */
 	showSnippets?: boolean;
+	/**
+	 * Controls the visibility of the status bar at the bottom of the suggest widget.
+	 */
+	hideStatusBar?: boolean;
 }
 
 export type InternalSuggestOptions = Readonly<Required<ISuggestOptions>>;
@@ -2715,6 +2719,7 @@ class EditorSuggest extends BaseEditorOption<EditorOption.suggest, InternalSugge
 			showFolders: true,
 			showTypeParameters: true,
 			showSnippets: true,
+			hideStatusBar: true
 		};
 		super(
 			EditorOption.suggest, 'suggest', defaults,
@@ -2899,6 +2904,11 @@ class EditorSuggest extends BaseEditorOption<EditorOption.suggest, InternalSugge
 					type: 'boolean',
 					default: true,
 					markdownDescription: nls.localize('editor.suggest.showSnippets', "When enabled IntelliSense shows `snippet`-suggestions.")
+				},
+				'editor.suggest.hideStatusBar': {
+					type: 'boolean',
+					default: true,
+					markdownDescription: nls.localize('editor.suggest.hideStatusBar', "Controls the visibility of the status bar at the bottom of the suggest widget.")
 				}
 			}
 		);
@@ -2943,6 +2953,7 @@ class EditorSuggest extends BaseEditorOption<EditorOption.suggest, InternalSugge
 			showFolders: EditorBooleanOption.boolean(input.showFolders, this.defaultValue.showFolders),
 			showTypeParameters: EditorBooleanOption.boolean(input.showTypeParameters, this.defaultValue.showTypeParameters),
 			showSnippets: EditorBooleanOption.boolean(input.showSnippets, this.defaultValue.showSnippets),
+			hideStatusBar: EditorBooleanOption.boolean(input.hideStatusBar, this.defaultValue.hideStatusBar),
 		};
 	}
 }
