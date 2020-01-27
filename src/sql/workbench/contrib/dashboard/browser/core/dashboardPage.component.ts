@@ -161,12 +161,12 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		// Create QueryTaskbar
 		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
 		this.taskbar = this._register(new Taskbar(taskbarContainer));
-		this._restoreAction = new RestoreToolbarAction(this.restore, this, 'restore');
-		this._newQueryAction = new NewQueryAction(this.newQuery, this, 'new-query-toolbar');
+		this._restoreAction = new RestoreToolbarAction(this.restore, this);
+		this._newQueryAction = new NewQueryAction(this.newQuery, this);
 		this._newNotebookAction = new NewNotebookToolbarAction(this.newNotebook, this);
-		this._editAction = new EditDashboardAction(this.enableEdit, this, 'edit-toolbar');
-		this._refreshAction = new RefreshWidgetAction(this.refresh, this, 'refresh-toolbar');
-		this._manageExtensionsAction = new ManageExtensionsToolbarAction(this.manageExtensions, this, 'manage-extensions-toolbar');
+		this._editAction = new EditDashboardAction(this.enableEdit, this);
+		this._refreshAction = new RefreshWidgetAction(this.refresh, this);
+		this._manageExtensionsAction = new ManageExtensionsToolbarAction(this.manageExtensions, this);
 		this.setTaskbarContent();
 	}
 
