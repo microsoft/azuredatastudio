@@ -48,7 +48,7 @@ suite('Notebook Input', function (): void {
 	let untitledNotebookInput: UntitledNotebookInput;
 
 	setup(() => {
-		untitledTextInput = new UntitledTextEditorInput(untitledUri, false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined, undefined);
+		untitledTextInput = new UntitledTextEditorInput(untitledUri, false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined);
 		untitledNotebookInput = new UntitledNotebookInput(
 			testTitle, untitledUri, untitledTextInput,
 			undefined, instantiationService, mockNotebookService.object, mockExtensionService.object);
@@ -169,7 +169,7 @@ suite('Notebook Input', function (): void {
 		assert.ok(untitledNotebookInput.matches(untitledNotebookInput), 'Input should match itself.');
 
 		let otherTestUri = URI.from({ scheme: Schemas.untitled, path: 'OtherTestPath' });
-		let otherTextInput = new UntitledTextEditorInput(otherTestUri, false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined, undefined);
+		let otherTextInput = new UntitledTextEditorInput(otherTestUri, false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined);
 		let otherInput = instantiationService.createInstance(UntitledNotebookInput, 'OtherTestInput', otherTestUri, otherTextInput);
 
 		assert.strictEqual(untitledNotebookInput.matches(otherInput), false, 'Input should not match different input.');
