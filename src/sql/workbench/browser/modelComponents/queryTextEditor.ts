@@ -196,7 +196,7 @@ export class QueryTextEditor extends BaseTextEditor {
 		this.refreshEditorConfiguration();
 	}
 
-	private refreshEditorConfiguration(configuration = this.configurationService.getValue<IEditorConfiguration>(this.getResource())): void {
+	private refreshEditorConfiguration(configuration = this.textResourceConfigurationService.getValue<IEditorConfiguration>(this.input.getResource())): void {
 		if (!this.getControl()) {
 			return;
 		}

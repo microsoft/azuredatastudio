@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { EditorInput } from 'vs/workbench/common/editor';
+import { EditorInput, GroupIdentifier, IRevertOptions, ISaveOptions, IEditorInput } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IFileService } from 'vs/platform/files/common/files';
 
@@ -17,7 +17,6 @@ import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 
 import { ISelectionData, ExecutionPlanOptions } from 'azdata';
 import { startsWith } from 'vs/base/common/strings';
-import { ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 
 const MAX_SIZE = 13;
 
@@ -175,7 +174,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	// Description is shown beside the tab name in the combobox of open editors
 	public getDescription(): string { return this._description; }
 	public supportsSplitEditor(): boolean { return false; }
-	public revert(): Promise<boolean> { return this._text.revert(); }
+	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<boolean> {
+		return this._text.revert(group, options);
+	}
 
 	public isReadonly(): boolean {
 		return false;
@@ -224,11 +225,11 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		}
 	}
 
-	save(groupId: number, options?: ITextFileSaveOptions): Promise<boolean> {
-		return this.text.save(groupId, options);
+	save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
+		return this.text.save(group, options);
 	}
 
-	saveAs(group: number, options?: ITextFileSaveOptions): Promise<boolean> {
+	saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
 		return this.text.saveAs(group, options);
 	}
 

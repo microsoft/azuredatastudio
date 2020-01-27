@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { distinct, find, mergeSort } from 'vs/base/common/arrays';
+import { CancelablePromise } from 'vs/base/common/async';
 import { Event } from 'vs/base/common/event';
 import * as glob from 'vs/base/common/glob';
 import { basename } from 'vs/base/common/resources';
@@ -42,7 +43,7 @@ export interface ICustomEditorService {
 	promptOpenWith(resource: URI, options?: ITextEditorOptions, group?: IEditorGroup): Promise<IEditor | undefined>;
 }
 
-export type CustomEditorEdit = { source?: any, data: any };
+export type CustomEditorEdit = number;
 
 export interface ICustomEditorModelManager {
 	get(resource: URI, viewType: string): ICustomEditorModel | undefined;
@@ -50,6 +51,8 @@ export interface ICustomEditorModelManager {
 	resolve(resource: URI, viewType: string): Promise<ICustomEditorModel>;
 
 	disposeModel(model: ICustomEditorModel): void;
+
+	disposeAllModelsForView(viewType: string): void;
 }
 
 export interface CustomEditorSaveEvent {
@@ -64,12 +67,16 @@ export interface CustomEditorSaveAsEvent {
 }
 
 export interface ICustomEditorModel extends IWorkingCopy {
-	readonly onUndo: Event<readonly CustomEditorEdit[]>;
-	readonly onApplyEdit: Event<readonly CustomEditorEdit[]>;
+	readonly viewType: string;
+
+	readonly onUndo: Event<{ edits: readonly CustomEditorEdit[], trigger: any | undefined }>;
+	readonly onApplyEdit: Event<{ edits: readonly CustomEditorEdit[], trigger: any | undefined }>;
+	readonly onDisposeEdits: Event<{ edits: readonly CustomEditorEdit[] }>;
+
 	readonly onWillSave: Event<CustomEditorSaveEvent>;
 	readonly onWillSaveAs: Event<CustomEditorSaveAsEvent>;
 
-	readonly currentEdits: readonly CustomEditorEdit[];
+	onBackup(f: () => CancelablePromise<boolean>): void;
 
 	undo(): void;
 	redo(): void;
@@ -78,7 +85,7 @@ export interface ICustomEditorModel extends IWorkingCopy {
 	save(options?: ISaveOptions): Promise<boolean>;
 	saveAs(resource: URI, targetResource: URI, currentOptions?: ISaveOptions): Promise<boolean>;
 
-	pushEdit(edit: CustomEditorEdit): void;
+	pushEdit(edit: CustomEditorEdit, trigger: any): void;
 }
 
 export const enum CustomEditorPriority {

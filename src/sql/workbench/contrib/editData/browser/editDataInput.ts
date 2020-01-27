@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorInput, EditorModel, EncodingMode } from 'vs/workbench/common/editor';
+import { EditorInput, EditorModel, EncodingMode, IEditorInput } from 'vs/workbench/common/editor';
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -107,7 +107,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	public get objectType(): string { return this._objectType; }
 	public showResultsEditor(): void { this._showResultsEditor.fire(undefined); }
 	public isDirty(): boolean { return false; }
-	public save(): Promise<boolean> { return Promise.resolve(false); }
+	public save(): Promise<IEditorInput | undefined> { return Promise.resolve(undefined); }
 	public getTypeId(): string { return EditDataInput.ID; }
 	public setBootstrappedTrue(): void { this._hasBootstrapped = true; }
 	public getResource(): URI { return this._uri; }
@@ -220,7 +220,6 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	public get onDidModelChangeEncoding(): Event<void> { return this._sql.onDidModelChangeEncoding; }
 	public resolve(refresh?: boolean): Promise<EditorModel> { return this._sql.resolve(); }
 	public getEncoding(): string { return this._sql.getEncoding(); }
-	public suggestFileName(): string { return this._sql.suggestFileName(); }
 	public getName(): string { return this._sql.getName(); }
 	public get hasAssociatedFilePath(): boolean { return this._sql.hasAssociatedFilePath; }
 
