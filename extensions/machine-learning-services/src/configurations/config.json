@@ -9,5 +9,5 @@
 		{ "name": "sqlmlutils", "fileName": "sqlmlutils_0.7.1.zip", "downloadUrl": "https://github.com/microsoft/sqlmlutils/blob/master/R/dist/sqlmlutils_0.7.1.zip?raw=true"}
 	],
 
-	"rPackagesRepository": "http://cran.r-project.org"
+	"rPackagesRepository": "https://cran.r-project.org"
 }
