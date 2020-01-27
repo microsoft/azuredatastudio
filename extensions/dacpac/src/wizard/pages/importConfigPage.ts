@@ -48,6 +48,8 @@ export class ImportConfigPage extends DacFxConfigPage {
 
 	async onPageEnter(): Promise<boolean> {
 		let r1 = await this.populateServerDropdown();
+		// get existing database values to verify if new database name is valid
+		await this.getDatabaseValues();
 		return r1;
 	}
 
