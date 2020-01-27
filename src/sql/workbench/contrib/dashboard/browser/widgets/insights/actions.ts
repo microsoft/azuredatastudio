@@ -34,7 +34,7 @@ export class RunInsightQueryAction extends Action {
 				queryString = context.insight.query.join(eol);
 			}
 		} else {
-			return undefined;
+			return Promise.resolve(false);
 		}
 		return this.instantiationService.invokeFunction(openNewQuery, context.profile, queryString,
 			RunQueryOnConnectionMode.executeQuery).then(() => true, () => false);
