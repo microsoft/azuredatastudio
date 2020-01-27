@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
+import { EditorInput, EditorModel, IRevertOptions, GroupIdentifier, IEditorInput } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
@@ -230,8 +230,8 @@ export abstract class NotebookInput extends EditorInput {
 		return this._textInput;
 	}
 
-	public revert(): Promise<boolean> {
-		return this._textInput.revert();
+	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<boolean> {
+		return this._textInput.revert(group, options);
 	}
 
 	public get notebookUri(): URI {
@@ -283,11 +283,11 @@ export abstract class NotebookInput extends EditorInput {
 		return this._standardKernels;
 	}
 
-	save(groupId: number, options?: ITextFileSaveOptions): Promise<boolean> {
+	save(groupId: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
 		return this.textInput.save(groupId, options);
 	}
 
-	saveAs(group: number, options?: ITextFileSaveOptions): Promise<boolean> {
+	saveAs(group: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
 		return this.textInput.saveAs(group, options);
 	}
 

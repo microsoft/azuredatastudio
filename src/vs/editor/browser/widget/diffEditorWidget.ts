@@ -2164,6 +2164,7 @@ class InlineViewZonesComputer extends ViewZonesComputer {
 			tabSize,
 			0,
 			fontInfo.spaceWidth,
+			fontInfo.middotWidth,
 			options.get(EditorOption.stopRenderingLineAfter),
 			options.get(EditorOption.renderWhitespace),
 			options.get(EditorOption.renderControlCharacters),

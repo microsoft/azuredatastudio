@@ -15,7 +15,7 @@ jobs:
 - job: macOS
   condition: eq(variables['VSCODE_BUILD_MACOS'], 'true')
   pool:
-    vmImage: macOS 10.13
+    vmImage: macOS-latest
   dependsOn:
   - Compile
   steps:

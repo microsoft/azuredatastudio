@@ -95,7 +95,7 @@ class MainThreadNotebookEditor extends Disposable {
 	}
 
 	public save(): Thenable<boolean> {
-		return this.textFileService.save(this.uri);
+		return this.textFileService.save(this.uri).then(uri => !!uri);
 	}
 
 	public matches(input: NotebookInput): boolean {
@@ -351,7 +351,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let uriString = URI.revive(uri).toString();
 		let editor = this._notebookEditors.get(uriString);
 		if (editor) {
-			return editor.save();
+			return editor.save().then(uri => !!uri);
 		} else {
 			return Promise.resolve(false);
 		}

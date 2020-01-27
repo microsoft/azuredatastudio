@@ -85,6 +85,8 @@ const QUICKOPEN_DETAIL_CONFIG = 'task.quickOpen.detail';
 const PROBLEM_MATCHER_NEVER_CONFIG = 'task.problemMatchers.neverPrompt';
 const QUICKOPEN_SKIP_CONFIG = 'task.quickOpen.skip';
 
+const SETTINGS_GROUP_KEY = 'settings';
+
 export namespace ConfigureTaskAction {
 	export const ID = 'workbench.action.tasks.configureTaskRunner';
 	export const TEXT = nls.localize('ConfigureTaskRunnerAction.label', "Configure Task");
@@ -546,7 +548,9 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 			return Promise.resolve(undefined);
 		}
 		return this.getGroupedTasks().then((map) => {
-			const values = map.get(folder);
+			let values = map.get(folder);
+			values = values.concat(map.get(SETTINGS_GROUP_KEY));
+
 			if (!values) {
 				return undefined;
 			}
@@ -1256,23 +1260,22 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		if (executeResult.kind === TaskExecuteKind.Active) {
 			let active = executeResult.active;
 			if (active && active.same) {
-				let message;
-				if (active.background) {
-					message = nls.localize('TaskSystem.activeSame.background', 'The task \'{0}\' is already active and in background mode.', executeResult.task.getQualifiedLabel());
+				if (this._taskSystem?.isTaskVisible(executeResult.task)) {
+					const message = nls.localize('TaskSystem.activeSame.noBackground', 'The task \'{0}\' is already active.', executeResult.task.getQualifiedLabel());
+					this.notificationService.prompt(Severity.Info, message,
+						[{
+							label: nls.localize('terminateTask', "Terminate Task"),
+							run: () => this.terminate(executeResult.task)
+						},
+						{
+							label: nls.localize('restartTask', "Restart Task"),
+							run: () => this.restart(executeResult.task)
+						}],
+						{ sticky: true }
+					);
 				} else {
-					message = nls.localize('TaskSystem.activeSame.noBackground', 'The task \'{0}\' is already active.', executeResult.task.getQualifiedLabel());
+					this._taskSystem?.revealTask(executeResult.task);
 				}
-				this.notificationService.prompt(Severity.Info, message,
-					[{
-						label: nls.localize('terminateTask', "Terminate Task"),
-						run: () => this.terminate(executeResult.task)
-					},
-					{
-						label: nls.localize('restartTask', "Restart Task"),
-						run: () => this.restart(executeResult.task)
-					}],
-					{ sticky: true }
-				);
 			} else {
 				throw new TaskError(Severity.Warning, nls.localize('TaskSystem.active', 'There is already a task running. Terminate it first before executing another task.'), TaskErrors.RunningTask);
 			}
@@ -1588,7 +1591,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 				}
 				const userTasks = await this.computeUserTasks(this.workspaceFolders[0], runSource).then((value) => value, () => undefined);
 				if (userTasks) {
-					result.set('settings', userTasks);
+					result.set(SETTINGS_GROUP_KEY, userTasks);
 				}
 				const workspaceFileTasks = await this.computeWorkspaceFileTasks(this.workspaceFolders[0], runSource).then((value) => value, () => undefined);
 				if (workspaceFileTasks && this._workspace && this._workspace.configuration) {
