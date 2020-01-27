@@ -28,8 +28,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ILogService } from 'vs/platform/log/common/log';
 import { IProgressService, ProgressLocation, IProgressStep, IProgress } from 'vs/platform/progress/common/progress';
 import { extHostCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
-import { ISaveParticipant, IResolvedTextFileEditorModel, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
+import { ISaveParticipant, IResolvedTextFileEditorModel, ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { SaveReason } from 'vs/workbench/common/editor';
 import { ExtHostContext, ExtHostDocumentSaveParticipantShape, IExtHostContext } from '../common/extHost.protocol';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService'; // {{SQL CARBON EDIT}}
@@ -57,7 +56,7 @@ class NotebookUpdateParticipant implements ISaveParticipantParticipant { // {{SQ
 		// Nothing
 	}
 
-	public participate(model: ITextFileEditorModel, env: { reason: SaveReason }): Promise<void> {
+	public participate(model: IResolvedTextFileEditorModel, env: { reason: SaveReason }): Promise<void> {
 		let uri = model.resource;
 		let notebookEditor = this.notebookService.findNotebookEditor(uri);
 		if (notebookEditor) {
@@ -381,6 +380,7 @@ export class SaveParticipant implements ISaveParticipant {
 		@IProgressService private readonly _progressService: IProgressService,
 		@ILogService private readonly _logService: ILogService,
 		@ILabelService private readonly _labelService: ILabelService,
+		@ITextFileService private readonly _textFileService: ITextFileService
 	) {
 		this._saveParticipants = new IdleValue(() => [
 			instantiationService.createInstance(TrimWhitespaceParticipant),
@@ -392,12 +392,12 @@ export class SaveParticipant implements ISaveParticipant {
 			instantiationService.createInstance(NotebookUpdateParticipant),
 			instantiationService.createInstance(ExtHostSaveParticipant, extHostContext),
 		]);
-		// Hook into model
-		TextFileEditorModel.setSaveParticipant(this);
+		// Set as save participant for all text files
+		this._textFileService.saveParticipant = this;
 	}
 
 	dispose(): void {
-		TextFileEditorModel.setSaveParticipant(null);
+		this._textFileService.saveParticipant = undefined;
 		this._saveParticipants.dispose();
 	}
 
