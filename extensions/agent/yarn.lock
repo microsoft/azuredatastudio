@@ -3583,9 +3583,9 @@ vscode-nls@^3.2.1:
   resolved "https://registry.yarnpkg.com/vscode-nls/-/vscode-nls-3.2.5.tgz#25520c1955108036dec607c85e00a522f247f1a4"
   integrity sha512-ITtoh3V4AkWXMmp3TB97vsMaHRgHhsSFPsUdzlueSL+dRZbSNTZeOmdQv60kjCV306ghPxhDeoNUEm3+EZMuyw==
 
-"vscodetestcover@github:corivera/vscodetestcover#1.0.3":
-  version "1.0.3"
-  resolved "https://codeload.github.com/corivera/vscodetestcover/tar.gz/88ac583c63a899a306ef4ca926f0d8d94c66f128"
+"vscodetestcover@github:corivera/vscodetestcover#1.0.4":
+  version "1.0.4"
+  resolved "https://codeload.github.com/corivera/vscodetestcover/tar.gz/5e585c85c68a48921a45c8f49ccc9323a7b9b664"
   dependencies:
     decache "^4.4.0"
     del "^5.1.0"
