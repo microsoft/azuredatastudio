@@ -7,5 +7,7 @@
 	"requiredRPackages": [
 		{ "name": "RODBCext", "repository": "https://cran.microsoft.com" },
 		{ "name": "sqlmlutils", "fileName": "sqlmlutils_0.7.1.zip", "downloadUrl": "https://github.com/microsoft/sqlmlutils/blob/master/R/dist/sqlmlutils_0.7.1.zip?raw=true"}
-	]
+	],
+
+	"rPackagesRepository": "https://cran.r-project.org"
 }
