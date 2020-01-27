@@ -458,7 +458,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		};
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
-		const fileInput = isUntitled ? this._untitledEditorService.createOrGet(uri, 'notebook', options.initialContent) :
+		const fileInput = isUntitled ? this._untitledEditorService.create({ untitledResource: uri, mode: 'notebook', initialValue: options.initialContent }) :
 			this._editorService.createInput({ resource: uri, mode: 'notebook' });
 		let input: NotebookInput;
 		if (isUntitled) {

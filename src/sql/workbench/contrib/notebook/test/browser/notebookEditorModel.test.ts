@@ -142,8 +142,8 @@ suite('Notebook Editor Model', function (): void {
 	});
 
 	teardown(() => {
-		if (accessor && accessor.textFileService && accessor.textFileService.models) {
-			(<TextFileEditorModelManager>accessor.textFileService.models).clear();
+		if (accessor && accessor.textFileService && accessor.textFileService.files) {
+			(<TextFileEditorModelManager>accessor.textFileService.files).clear();
 		}
 	});
 
@@ -176,7 +176,7 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": 0');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(26), '        }');
 
 		assert(notebookEditorModel.lastEditFullReplacement);
@@ -197,7 +197,7 @@ suite('Notebook Editor Model', function (): void {
 		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
 		assert(notebookEditorModel.lastEditFullReplacement);
 
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": 0');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": null');
 
 		newCell.executionCount = 1;
 		contentChange = {
@@ -278,7 +278,7 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [],');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(15), '            "execution_count": 0');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(15), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(16), '        }');
 
 		assert(!notebookEditorModel.lastEditFullReplacement);
@@ -324,7 +324,7 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '            ],');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(16), '            "outputs": [');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(27), '            "execution_count": 0');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(27), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(28), '        }');
 
 		assert(!notebookEditorModel.lastEditFullReplacement);
@@ -368,7 +368,7 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(10), '            ],');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": 0');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(26), '        }');
 
 		assert(!notebookEditorModel.lastEditFullReplacement);
@@ -432,7 +432,7 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(10), '            ],');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": 0');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(26), '        }');
 
 		assert(!notebookEditorModel.lastEditFullReplacement);
@@ -552,7 +552,7 @@ suite('Notebook Editor Model', function (): void {
 			}
 			assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(10 + i * 21), '            ],');
 			assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14 + i * 21), '            "outputs": [');
-			assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25 + i * 21), '            "execution_count": 0');
+			assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25 + i * 21), '            "execution_count": null');
 			assert(startsWith(notebookEditorModel.editorModel.textEditorModel.getLineContent(26 + i * 21), '        }'));
 		}
 	});
@@ -589,7 +589,7 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(23), '                }, {');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(31), '}');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(32), '            ],');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(33), '            "execution_count": 0');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(33), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(34), '        }');
 
 		assert(!notebookEditorModel.lastEditFullReplacement);
@@ -628,7 +628,7 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(26), '    "text": "[0em"');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(27), '}');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(28), '            ],');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(29), '            "execution_count": 0');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(29), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(30), '        }');
 
 		assert(!notebookEditorModel.lastEditFullReplacement);
@@ -647,7 +647,7 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(32), '                    "text": "test test test"');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(33), '                }');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(34), '            ],');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(35), '            "execution_count": 0');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(35), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(36), '        }');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(37), '    ]');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(38), '}');
@@ -690,7 +690,7 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(23), '}');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": 0');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(26), '        }');
 
 		assert(!notebookEditorModel.lastEditFullReplacement);
@@ -832,7 +832,7 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(11), '            ],');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(13), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(15), '            "outputs": [],');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(16), '            "execution_count": 0');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(16), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(17), '        }');
 
 		assert(!notebookEditorModel.lastEditFullReplacement);
@@ -854,7 +854,7 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(11), '            ],');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(13), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(15), '            "outputs": [],');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(16), '            "execution_count": 0');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(16), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(17), '        }');
 
 		assert(!notebookEditorModel.lastEditFullReplacement);
@@ -870,7 +870,7 @@ suite('Notebook Editor Model', function (): void {
 
 	async function createTextEditorModel(self: Mocha.ITestCallbackContext): Promise<NotebookEditorModel> {
 		let textFileEditorModel = instantiationService.createInstance(TextFileEditorModel, toResource.call(self, defaultUri.toString()), 'utf8', undefined);
-		(<TextFileEditorModelManager>accessor.textFileService.models).add(textFileEditorModel.resource, textFileEditorModel);
+		(<TextFileEditorModelManager>accessor.textFileService.files).add(textFileEditorModel.resource, textFileEditorModel);
 		await textFileEditorModel.load();
 		return new NotebookEditorModel(defaultUri, textFileEditorModel, mockNotebookService.object, testResourcePropertiesService);
 	}
@@ -914,7 +914,7 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(10), '            ],');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [],');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(15), '            "execution_count": 0');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(15), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(16), '        }');
 	}
 });

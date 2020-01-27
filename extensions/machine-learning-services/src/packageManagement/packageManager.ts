@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nbExtensionApis from '../typings/notebookServices';
@@ -40,7 +38,7 @@ export class PackageManager {
 		private _config: Config,
 		private _httpClient: HttpClient) {
 		this._sqlPythonPackagePackageManager = new SqlPythonPackageManageProvider(this._outputChannel, this._apiWrapper, this._queryRunner, this._processService, this._config, this._httpClient);
-		this._sqlRPackageManager = new SqlRPackageManageProvider(this._outputChannel, this._apiWrapper, this._queryRunner, this._processService, this._config);
+		this._sqlRPackageManager = new SqlRPackageManageProvider(this._outputChannel, this._apiWrapper, this._queryRunner, this._processService, this._config, this._httpClient);
 	}
 
 	/**
@@ -207,7 +205,7 @@ export class PackageManager {
 			output = await this._processService.executeBufferedCommand(cmd, this._outputChannel);
 		} else if (model.repository) {
 			cmd = `"${this._rExecutable}" -e "install.packages('${model.name}', repos='${model.repository}')"`;
-			output = output + await this._processService.executeBufferedCommand(cmd, this._outputChannel);
+			output = await this._processService.executeBufferedCommand(cmd, this._outputChannel);
 		}
 		return output;
 	}

@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as nbExtensionApis from '../typings/notebookServices';
 import { ApiWrapper } from './apiWrapper';
@@ -21,13 +19,6 @@ OutputDataSet = pandas.DataFrame([(d.project_name, d.version) for d in pkg_resou
 `;
 
 const listRPackagesQuery = `
-EXEC sp_execute_external_script
-@language=N'R',
-@script=N'
-OutputDataSet <- as.data.frame(installed.packages()[,c(1,3)])'
-`;
-
-const listRAvailablePackagesQuery = `
 EXEC sp_execute_external_script
 @language=N'R',
 @script=N'
@@ -82,14 +73,6 @@ export class QueryRunner {
 	 */
 	public async getRPackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
 		return this.getPackages(connection, listRPackagesQuery);
-	}
-
-	/**
- * Returns python packages installed in SQL server instance
- * @param connection SQL Connection
- */
-	public async getRAvailablePackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
-		return this.getPackages(connection, listRAvailablePackagesQuery);
 	}
 
 	private async getPackages(connection: azdata.connection.ConnectionProfile, script: string): Promise<nbExtensionApis.IPackageDetails[]> {

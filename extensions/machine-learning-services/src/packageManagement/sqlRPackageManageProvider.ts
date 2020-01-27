@@ -12,6 +12,8 @@ import { ApiWrapper } from '../common/apiWrapper';
 import { ProcessService } from '../common/processService';
 import { Config } from '../configurations/config';
 import { SqlPackageManageProviderBase, ScriptMode } from './SqlPackageManageProviderBase';
+import { HttpClient } from '../common/httpClient';
+import * as constants from '../common/constants';
 
 
 
@@ -30,7 +32,8 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 		apiWrapper: ApiWrapper,
 		private _queryRunner: QueryRunner,
 		private _processService: ProcessService,
-		private _config: Config) {
+		private _config: Config,
+		private _httpClient: HttpClient) {
 		super(apiWrapper);
 	}
 
@@ -73,6 +76,9 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 				'formals(quit)$save <- formals(q)$save <- "no"',
 				'library(sqlmlutils)',
 				`connection <- connectionInfo(${connectionParts})`,
+				`r = getOption("repos")`,
+				`r["CRAN"] = "${this._config.rPackagesRepository}"`,
+				`options(repos = r)`,
 				`pkgs <- c("${packageDetails.name}")`,
 				`${rCommandScript}(connectionString = connection, pkgs, scope = "PUBLIC")`,
 				'q()'
@@ -93,6 +99,10 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 		return false;
 	}
 
+	private getPackageLink(packageName: string): string {
+		return `${this._config.rPackagesRepository}/web/packages/${packageName}`;
+	}
+
 	/**
 	 * Returns package overview for given name
 	 * @param packageName Package Name
@@ -100,13 +110,11 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 	protected async fetchPackage(packageName: string): Promise<nbExtensionApis.IPackageOverview> {
 		let packagePreview: nbExtensionApis.IPackageOverview = {
 			name: packageName,
-			versions: [],
+			versions: [constants.latestVersion],
 			summary: ''
 		};
-		let connection = await this.getCurrentConnection();
-		let availablePackages = await this._queryRunner.getRAvailablePackages(connection);
-		let versions = availablePackages.filter(x => x.name === packageName).map(x => x.version);
-		packagePreview.versions = versions;
+
+		await this._httpClient.fetch(this.getPackageLink(packageName));
 		return packagePreview;
 	}
 }

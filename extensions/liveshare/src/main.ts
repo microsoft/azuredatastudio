@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import { GuestSessionManager } from './guestSessionManager';
 import { HostSessionManager } from './hostSessionManager';
 
-declare var require: any;
+declare let require: any;
 let vsls = require('vsls');
 
 export async function activate(context: vscode.ExtensionContext) {

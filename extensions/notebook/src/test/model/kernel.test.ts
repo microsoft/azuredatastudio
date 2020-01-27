@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import { nb } from 'azdata';
@@ -200,4 +198,3 @@ describe('Jupyter Future', function (): void {
 	}
 
 });
-
