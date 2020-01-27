@@ -48,6 +48,10 @@
         "title": "%mls.command.managePackages%"
       },
       {
+        "command": "mls.command.manageLanguages",
+        "title": "%mls.command.manageLanguages%"
+      },
+      {
         "command": "mls.command.odbcdriver",
         "title": "%mls.command.odbcdriver%"
       },

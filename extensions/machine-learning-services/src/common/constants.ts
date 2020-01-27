@@ -23,6 +23,7 @@ export const notebookExtensionName = 'Microsoft.notebook';
 
 // Tasks, commands
 //
+export const mlManageLanguagesCommand = 'mls.command.manageLanguages';
 export const mlManagePackagesCommand = 'mls.command.managePackages';
 export const mlOdbcDriverCommand = 'mls.command.odbcdriver';
 export const mlsDocumentsCommand = 'mls.command.mlsdocs';
@@ -44,6 +45,7 @@ export const installDependenciesPackagesAlreadyInstalled = localize('mls.install
 export function installDependenciesGetPackagesError(err: string): string { return localize('mls.installDependencies.getPackagesError', "Failed to get installed python packages. Error: {0}", err); }
 export const packageManagerNoConnection = localize('mls.packageManager.NoConnection', "No connection selected");
 export const notebookExtensionNotLoaded = localize('mls.notebookExtensionNotLoaded', "Notebook extension is not loaded");
+export const mssqlExtensionNotLoaded = localize('mls.mssqlExtensionNotLoaded', "MSSQL extension is not loaded");
 export const mlsEnabledMessage = localize('mls.enabledMessage', "Machine Learning Services Enabled");
 export const mlsDisabledMessage = localize('mls.disabledMessage', "Machine Learning Services Disabled");
 export const mlsConfigUpdateFailed = localize('mls.configUpdateFailed', "Failed to modify Machine Learning Services configurations");
@@ -66,7 +68,11 @@ export function httpGetRequestError(code: number, message: string): string {
 		code,
 		message);
 }
-
+export function getErrorMessage(error: Error | string): string { return localize('azure.resource.error', "Error: {0}", getErrorMessage(error)); }
+export const extLangInstallTabTitle = localize('extLang.installTabTitle', "Installed");
+export const extLangLanguageNameColumn = localize('extLang.languageNameColumn', "Name");
+export const extLangLanguageCreatedDateColumn = localize('extLang.languageCreatedDateColumn', "Installed");
+export const deleteTitle = localize('extLang.delete', "Delete");
 
 // Links
 //

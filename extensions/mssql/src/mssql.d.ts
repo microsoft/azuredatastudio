@@ -38,6 +38,8 @@ export interface IExtension {
 
 	readonly schemaCompare: ISchemaCompareService;
 
+	readonly languageExtension: ILanguageExtensionService;
+
 	readonly dacFx: IDacFxService;
 }
 
@@ -377,6 +379,31 @@ export interface GenerateDeployPlan {
 	taskExecutionMode: azdata.TaskExecutionMode;
 }
 
+//#endregion
+
+//#region --- Language Extensibility
+export interface ExternalLanguageContent {
+	pathToExtension: string;
+	extensionFileName: string;
+	platform: string;
+	parameters: string;
+	environmentVariables: string;
+	languageType: string;
+	isLocalFile: boolean;
+}
+
+export interface ExternalLanguage {
+	name: string;
+	owner: string;
+	contents: ExternalLanguageContent[];
+	createdDate: string;
+}
+
+export interface ILanguageExtensionService {
+	listLanguages(ownerUri: string): Thenable<ExternalLanguage[]>;
+	deleteLanguage(ownerUri: string, languageName: string): Thenable<void>;
+	updateLanguage(ownerUri: string, language: ExternalLanguage): Thenable<ExternalLanguage[]>;
+}
 //#endregion
 
 //#region --- cms

@@ -8,6 +8,7 @@
 import * as vscode from 'vscode';
 
 import * as nbExtensionApis from '../typings/notebookServices';
+import * as mssql from '../../../mssql';
 import { PackageManager } from '../packageManagement/packageManager';
 import * as constants from '../common/constants';
 import { ApiWrapper } from '../common/apiWrapper';
@@ -17,6 +18,8 @@ import { Config } from '../configurations/config';
 import { ServerConfigWidget } from '../widgets/serverConfigWidgets';
 import { ServerConfigManager } from '../serverConfig/serverConfigManager';
 import { HttpClient } from '../common/httpClient';
+import { ExternalLanguagesDialogModel } from '../dialogs/externalLanguages/externalLanguagesDialogModel';
+import { ExternalLanguagesDialog } from '../dialogs/externalLanguages/externalLanguagesDialog';
 
 /**
  * The main controller class that initializes the extension
@@ -67,6 +70,18 @@ export default class MainController implements vscode.Disposable {
 		}
 	}
 
+	/**
+	 * Returns an instance of Server Installation from notebook extension
+	 */
+	private async getLanguageExtensionService(): Promise<mssql.ILanguageExtensionService> {
+		let mssqlExtension = this._apiWrapper.getExtension(mssql.extension.name)?.exports as mssql.IExtension;
+		if (mssqlExtension) {
+			return (mssqlExtension.languageExtension);
+		} else {
+			throw new Error(constants.mssqlExtensionNotLoaded);
+		}
+	}
+
 	private async initialize(): Promise<void> {
 
 		this._outputChannel.show(true);
@@ -79,6 +94,14 @@ export default class MainController implements vscode.Disposable {
 		let packageManager = this.getPackageManager(nbApis);
 		this._apiWrapper.registerCommand(constants.mlManagePackagesCommand, (async () => {
 			await packageManager.managePackages();
+		}));
+
+		this._apiWrapper.registerCommand(constants.mlManageLanguagesCommand, (async () => {
+			let mssqlService = await this.getLanguageExtensionService();
+			let model = new ExternalLanguagesDialogModel(this._apiWrapper, mssqlService, this._rootPath);
+			await model.load();
+			let dialog = new ExternalLanguagesDialog(model);
+			dialog.showDialog();
 		}));
 		this._apiWrapper.registerCommand(constants.mlsDependenciesCommand, (async () => {
 			await packageManager.installDependencies();

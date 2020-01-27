@@ -536,6 +536,40 @@ export namespace RemoveServerGroupRequest {
 }
 // ------------------------------- <CMS> ----------------------------------------
 
+// ------------------------------- <Language Extensibility> -----------------------------
+
+export interface LanguageExtensionRequestParam {
+	ownerUri: string;
+}
+
+export interface ExternalLanguageRequestParam extends LanguageExtensionRequestParam {
+	languageName: string;
+}
+
+export interface ExternalLanguageUpdateRequestParam extends LanguageExtensionRequestParam {
+	language: mssql.ExternalLanguage;
+}
+
+export interface LanguageExtensionListResponseParam {
+	languages: mssql.ExternalLanguage[];
+}
+
+
+export interface ExternalLanguageResponseParam {
+}
+
+export namespace LanguageExtensibilityListRequest {
+	export const type = new RequestType<LanguageExtensionRequestParam, LanguageExtensionListResponseParam, void, void>('languageExtension/list');
+}
+
+export namespace LanguageExtensibilityDeleteRequest {
+	export const type = new RequestType<ExternalLanguageRequestParam, ExternalLanguageResponseParam, void, void>('languageExtension/delete');
+}
+
+export namespace LanguageExtensibilityUpdateRequest {
+	export const type = new RequestType<ExternalLanguageUpdateRequestParam, ExternalLanguageResponseParam, void, void>('languageExtension/update');
+}
+
 // ------------------------------- <Schema Compare> -----------------------------
 export interface SchemaCompareParams {
 	operationId: string;
