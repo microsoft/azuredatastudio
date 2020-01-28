@@ -21,7 +21,6 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 
 	public static readonly ID = 'workbench.editorInput.untitledQueryInput';
 
-	public readonly onDidModelChangeContent = this.text.onDidModelChangeContent;
 	public readonly onDidModelChangeEncoding = this.text.onDidModelChangeEncoding;
 
 	constructor(
@@ -48,10 +47,6 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		return this.text.hasAssociatedFilePath;
 	}
 
-	public suggestFileName(): string {
-		return this.text.suggestFileName();
-	}
-
 	public setMode(mode: string): void {
 		this.text.setMode(mode);
 	}
@@ -75,13 +70,5 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 	isUntitled(): boolean {
 		// Subclasses need to explicitly opt-in to being untitled.
 		return true;
-	}
-
-	hasBackup(): boolean {
-		if (this.text) {
-			return this.text.hasBackup();
-		}
-
-		return false;
 	}
 }

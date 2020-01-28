@@ -127,9 +127,9 @@ export class TaskService implements ITaskService {
 
 	private cancelAllTasks(): Thenable<void> {
 		return new Promise<void>((resolve, reject) => {
-			let promises = this._taskQueue.children.map(task => {
+			let promises = this._taskQueue.children!.map(task => {
 				if (task.status === TaskStatus.InProgress || task.status === TaskStatus.NotStarted) {
-					return this.cancelTask(task.providerName, task.id);
+					return this.cancelTask(task.providerName!, task.id);
 				}
 				return Promise.resolve(true);
 			});
@@ -144,7 +144,7 @@ export class TaskService implements ITaskService {
 
 	public handleNewTask(task: TaskNode): void {
 		if (this._taskQueue.hasChildren) {
-			this._taskQueue.children.unshift(task);
+			this._taskQueue.children!.unshift(task);
 		} else {
 			this._taskQueue.hasChildren = true;
 			this._taskQueue.children = [task];
@@ -227,7 +227,7 @@ export class TaskService implements ITaskService {
 
 	private getTaskInQueue(taskId: string): TaskNode | undefined {
 		if (this._taskQueue.hasChildren) {
-			return find(this._taskQueue.children, x => x.id === taskId);
+			return find(this._taskQueue.children!, x => x.id === taskId);
 		}
 		return undefined;
 	}
@@ -242,7 +242,7 @@ export class TaskService implements ITaskService {
 
 	public getNumberOfInProgressTasks(): number {
 		if (this._taskQueue.hasChildren) {
-			let inProgressTasks = this._taskQueue.children.filter(x => x.status === TaskStatus.InProgress);
+			let inProgressTasks = this._taskQueue.children!.filter(x => x.status === TaskStatus.InProgress);
 			return inProgressTasks ? inProgressTasks.length : 0;
 		}
 		return 0;

@@ -11,7 +11,6 @@ import { IEditorOptions, ITextEditorOptions } from 'vs/platform/editor/common/ed
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as path from 'vs/base/common/path';
 
@@ -25,7 +24,6 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 
 	constructor(
 		@IEditorService private readonly editorService: IEditorService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IModeService private readonly modeService: IModeService
 	) {
 		this.editorOpeningListener = this.editorService.overrideOpenEditor((editor, options, group) => this.onEditorOpening(editor, options, group));
@@ -48,8 +46,6 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 			language = editor.getPreferredMode();
 		} else if (editor instanceof UntitledTextEditorInput) {
 			language = editor.getMode();
-		} else {
-			return undefined;
 		}
 
 		if (!language) { // in the case the input doesn't have a preferred mode set we will attempt to guess the mode from the file path
@@ -62,18 +58,18 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 		}
 
 		if (!language) {
-			const defaultInputCreator = languageAssociationRegistry.getAssociations().filter(e => e.isDefault)[0];
+			const defaultInputCreator = languageAssociationRegistry.defaultAssociation;
 			if (defaultInputCreator) {
-				editor.setMode(defaultInputCreator.language);
-				const newInput = this.instantiationService.invokeFunction(defaultInputCreator.creator, editor);
+				editor.setMode(defaultInputCreator[0]);
+				const newInput = defaultInputCreator[1].convertInput(editor);
 				if (newInput) {
 					return { override: this.editorService.openEditor(newInput, options, group) };
 				}
 			}
 		} else {
-			const inputCreator = languageAssociationRegistry.getAssociations().filter(e => e.language === language)[0];
+			const inputCreator = languageAssociationRegistry.getAssociationForLanguage(language);
 			if (inputCreator) {
-				const newInput = this.instantiationService.invokeFunction(inputCreator.creator, editor);
+				const newInput = inputCreator.convertInput(editor);
 				if (newInput) {
 					return { override: this.editorService.openEditor(newInput, options, group) };
 				}

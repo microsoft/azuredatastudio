@@ -19,10 +19,10 @@ export interface IConnectionProfileGroup {
 
 export class ConnectionProfileGroup extends Disposable implements IConnectionProfileGroup {
 
-	public children: ConnectionProfileGroup[];
-	public connections: ConnectionProfile[];
+	public children: ConnectionProfileGroup[] = [];
+	public connections: ConnectionProfile[] = [];
 	public parentId?: string;
-	private _isRenamed: boolean;
+	private _isRenamed = false;
 	public constructor(
 		public name: string,
 		public parent: ConnectionProfileGroup | undefined,
@@ -42,7 +42,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 
 	public toObject(): IConnectionProfileGroup {
 		let subgroups = undefined;
-		if (this.children) {
+		if (this.children.length > 0) {
 			subgroups = [];
 			this.children.forEach((group) => {
 				subgroups.push(group.toObject());
@@ -76,7 +76,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	}
 
 	public hasChildren(): boolean {
-		if ((this.children && this.children.length > 0) || (this.connections && this.connections.length > 0)) {
+		if (this.children.length > 0 || this.connections.length > 0) {
 			return true;
 		}
 		return false;
@@ -86,38 +86,30 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	 * Returns true if all connections in the tree have valid options using the correct capabilities
 	 */
 	public get hasValidConnections(): boolean {
-		if (this.connections) {
-			let invalidConnections = find(this.connections, c => !c.isConnectionOptionsValid);
-			if (invalidConnections !== undefined) {
-				return false;
-			} else {
-				let childrenAreValid: boolean = true;
-				this.children.forEach(element => {
-					let isChildValid = element.hasValidConnections;
-					if (!isChildValid) {
-						childrenAreValid = false;
-					}
-				});
-				return childrenAreValid;
-			}
+		let invalidConnections = find(this.connections, c => !c.isConnectionOptionsValid);
+		if (invalidConnections !== undefined) {
+			return false;
 		} else {
-			return true;
+			let childrenAreValid: boolean = true;
+			this.children.forEach(element => {
+				let isChildValid = element.hasValidConnections;
+				if (!isChildValid) {
+					childrenAreValid = false;
+				}
+			});
+			return childrenAreValid;
 		}
 	}
 
 	public getChildren(): (ConnectionProfile | ConnectionProfileGroup)[] {
 		let allChildren: (ConnectionProfile | ConnectionProfileGroup)[] = [];
-		if (this.connections) {
-			this.connections.forEach((conn) => {
-				allChildren.push(conn);
-			});
-		}
+		this.connections.forEach((conn) => {
+			allChildren.push(conn);
+		});
 
-		if (this.children) {
-			this.children.forEach((group) => {
-				allChildren.push(group);
-			});
-		}
+		this.children.forEach((group) => {
+			allChildren.push(group);
+		});
 		return allChildren;
 	}
 
@@ -129,9 +121,6 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	}
 
 	public addConnections(connections: ConnectionProfile[]): void {
-		if (!this.connections) {
-			this.connections = [];
-		}
 		connections.forEach((conn) => {
 			this.connections = this.connections.filter((curConn) => { return curConn.id !== conn.id; });
 			conn.parent = this;
@@ -142,9 +131,6 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	}
 
 	public addGroups(groups: ConnectionProfileGroup[]): void {
-		if (!this.children) {
-			this.children = [];
-		}
 		groups.forEach((group) => {
 			this.children = this.children.filter((grp) => { return group.id !== grp.id; });
 			group.parent = this;

@@ -15,10 +15,10 @@ import { WebviewContent } from 'sql/workbench/contrib/dashboard/browser/contents
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { ScrollbarVisibility } from 'vs/editor/common/standalone/standaloneEnums';
 import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
 import { values } from 'vs/base/common/collections';
 import { fill } from 'vs/base/common/arrays';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 export interface GridCellConfig {
 	id?: string;
@@ -46,7 +46,35 @@ export interface GridModelViewConfig extends GridCellConfig {
 
 @Component({
 	selector: 'dashboard-grid-container',
-	templateUrl: decodeURI(require.toUrl('./dashboardGridContainer.component.html')),
+	template: `
+		<div class="fullsize" style="display: flex; flex-direction: column">
+		<div scrollable [horizontalScroll]="${ScrollbarVisibility.Auto}" [verticalScroll]="${ScrollbarVisibility.Auto}">
+		<table class="grid-table">
+			<tr *ngFor="let row of rows" class="grid-table-row">
+				<ng-container *ngFor="let col of cols">
+					<ng-container *ngIf="getContent(row,col) !== undefined">
+						<td class="table-cell" [colSpan]=getColspan(row,col) [rowSpan]=getRowspan(row,col)
+							[width]="getWidgetWidth(row,col)" [height]="getWidgetHeight(row,col)">
+
+							<dashboard-widget-wrapper *ngIf="isWidget(row,col)" [_config]="getWidgetContent(row,col)"
+								style="position:absolute;" [style.width]="getWidgetWidth(row,col)"
+								[style.height]="getWidgetHeight(row,col)">
+							</dashboard-widget-wrapper>
+
+							<webview-content *ngIf="isWebview(row,col)" [webviewId]="getWebviewId(row,col)">
+							</webview-content>
+
+							<modelview-content *ngIf="isModelView(row,col)" [modelViewId]="getModelViewId(row,col)">
+							</modelview-content>
+
+						</td>
+					</ng-container>
+				</ng-container>
+			</tr>
+		</table>
+		</div>
+		</div>
+	`,
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => DashboardGridContainer) }]
 })
 export class DashboardGridContainer extends DashboardTab implements OnDestroy {
@@ -56,7 +84,6 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 	public readonly onResize: Event<void> = this._onResize.event;
 	private cellWidth: number = 270;
 	private cellHeight: number = 270;
-	public ScrollbarVisibility = ScrollbarVisibility;
 
 	protected SKELETON_WIDTH = 5;
 

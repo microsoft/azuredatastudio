@@ -14,6 +14,7 @@ import * as vscode from 'vscode';
 import { isTestSetupCompleted } from './testContext';
 import { getStandaloneServer } from './testConfig';
 import * as assert from 'assert';
+import { promisify } from 'util';
 
 const retryCount = 24; // 2 minutes
 const dacpac1: string = path.join(__dirname, '../testData/Database1.dacpac');
@@ -56,8 +57,8 @@ if (isTestSetupCompleted()) {
 
 				// Extract dacpac
 				const folderPath = path.join(os.tmpdir(), 'DacFxTest');
-				if (!fs.existsSync(folderPath)) {
-					fs.mkdirSync(folderPath);
+				if (!(await promisify(fs.exists)(folderPath))) {
+					await fs.promises.mkdir(folderPath);
 				}
 				const packageFilePath = path.join(folderPath, `${databaseName}.dacpac`);
 				const extractResult = await dacfxService.extractDacpac(databaseName, packageFilePath, databaseName, '1.0.0.0', ownerUri, azdata.TaskExecutionMode.execute);
@@ -68,9 +69,6 @@ if (isTestSetupCompleted()) {
 				await utils.deleteDB(server, databaseName, ownerUri);
 			}
 		});
-
-		// Disabling due to intermittent failure with error Editor is not connected
-		// Tracking bug https://github.com/microsoft/azuredatastudio/issues/7323
 
 		const bacpac1: string = path.join(__dirname, '..', 'testData', 'Database1.bacpac');
 		test('Import and export bacpac', async function () {
@@ -105,8 +103,8 @@ if (isTestSetupCompleted()) {
 
 				// Export bacpac
 				const folderPath = path.join(os.tmpdir(), 'DacFxTest');
-				if (!fs.existsSync(folderPath)) {
-					fs.mkdirSync(folderPath);
+				if (!(await promisify(fs.exists)(folderPath))) {
+					await fs.promises.mkdir(folderPath);
 				}
 				const packageFilePath = path.join(folderPath, `${databaseName}.bacpac`);
 				const exportResult = await dacfxService.exportBacpac(databaseName, packageFilePath, ownerUri, azdata.TaskExecutionMode.execute);

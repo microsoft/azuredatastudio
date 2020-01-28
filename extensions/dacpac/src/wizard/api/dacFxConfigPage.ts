@@ -11,7 +11,7 @@ import * as path from 'path';
 import { DataTierApplicationWizard, Operation } from '../dataTierApplicationWizard';
 import { DacFxDataModel } from './models';
 import { BasePage } from './basePage';
-import { sanitizeStringForFilename, isValidBasename } from './utils';
+import { sanitizeStringForFilename, isValidBasename, isValidBasenameErrorMessage } from './utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -54,7 +54,11 @@ export abstract class DacFxConfigPage extends BasePage {
 		this.serverDropdown.onValueChanged(async () => {
 			this.model.server = (this.serverDropdown.value as ConnectionDropdownValue).connection;
 			this.model.serverName = (this.serverDropdown.value as ConnectionDropdownValue).displayName;
-			await this.populateDatabaseDropdown();
+			if (this.databaseDropdown) {
+				await this.populateDatabaseDropdown();
+			} else {
+				await this.getDatabaseValues();
+			}
 		});
 
 		return {
@@ -79,9 +83,12 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected async createDatabaseTextBox(title: string): Promise<azdata.FormComponent> {
-		this.databaseTextBox = this.view.modelBuilder.inputBox().withProperties({
-			required: true
-		}).component();
+		this.databaseTextBox = this.view.modelBuilder.inputBox()
+			.withValidation(component => !this.databaseNameExists(component.value))
+			.withProperties({
+				required: true,
+				validationErrorMessage: localize('dacfx.databaseNameExistsErrorMessage', "A database with the same name already exists on the instance of SQL Server")
+			}).component();
 
 		this.databaseTextBox.ariaLabel = title;
 		this.databaseTextBox.onTextChanged(async () => {
@@ -130,10 +137,10 @@ export abstract class DacFxConfigPage extends BasePage {
 		let values = await this.getDatabaseValues();
 
 		// only update values and regenerate filepath if this is the first time and database isn't set yet
-		if (this.model.database !== values[0].name) {
+		if (this.model.database !== values[0]) {
 			// db should only get set to the dropdown value if it isn't deploy with create database
 			if (!(this.instance.selectedOperation === Operation.deploy && !this.model.upgradeExisting)) {
-				this.model.database = values[0].name;
+				this.model.database = values[0];
 			}
 			// filename shouldn't change for deploy because the file exists and isn't being generated as for extract and export
 			if (this.instance.selectedOperation !== Operation.deploy) {
@@ -158,6 +165,14 @@ export abstract class DacFxConfigPage extends BasePage {
 				required: true,
 				ariaLive: 'polite'
 			}).component();
+
+		// Set validation error message if file name is invalid
+		this.fileTextBox.onTextChanged(text => {
+			const errorMessage = isValidBasenameErrorMessage(text);
+			if (errorMessage) {
+				this.fileTextBox.updateProperty('validationErrorMessage', errorMessage);
+			}
+		});
 
 		this.fileTextBox.ariaLabel = localize('dacfx.fileLocationAriaLabel', "File Location");
 		this.fileButton = this.view.modelBuilder.button().withProperties({
@@ -191,6 +206,18 @@ export abstract class DacFxConfigPage extends BasePage {
 			this.model.filePath += this.fileExtension;
 			this.fileTextBox.value = this.model.filePath;
 		}
+	}
+
+	// Compares database name with existing databases on the server
+	protected databaseNameExists(n: string): boolean {
+		for (let i = 0; i < this.databaseValues.length; ++i) {
+			if (this.databaseValues[i].toLowerCase() === n.toLowerCase()) {
+				// database name exists
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
 

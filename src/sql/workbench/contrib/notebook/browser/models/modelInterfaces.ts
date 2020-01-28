@@ -430,7 +430,7 @@ export interface INotebookFindModel {
 	findPrevious(): Promise<NotebookRange>;
 
 	/** search the notebook model for the given exp up to maxMatch occurances */
-	find(exp: string, maxMatches?: number): Promise<NotebookRange>;
+	find(exp: string, matchCase?: boolean, wholeWord?: boolean, maxMatches?: number): Promise<NotebookRange>;
 
 	/** clear the results of the find */
 	clearFind(): void;
@@ -543,6 +543,7 @@ export interface ICellModel {
 	readonly onCollapseStateChanged: Event<boolean>;
 	modelContentChangedEvent: IModelContentChangedEvent;
 	isEditMode: boolean;
+	readonly ariaLabel: string;
 }
 
 export interface FutureInternal extends nb.IFuture {

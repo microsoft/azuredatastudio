@@ -57,7 +57,7 @@ export class DropdownRenderer implements tree.IRenderer {
 }
 
 export class DropdownDataSource implements tree.IDataSource {
-	public options: Array<Resource>;
+	public options?: Array<Resource>;
 
 	public getId(tree: tree.ITree, element: Resource | DropdownModel): string {
 		if (element instanceof DropdownModel) {
@@ -93,10 +93,14 @@ export class DropdownDataSource implements tree.IDataSource {
 }
 
 export class DropdownFilter extends TreeDefaults.DefaultFilter {
-	public filterString: string;
+	public filterString?: string;
 
 	public isVisible(tree: tree.ITree | undefined, element: Resource): boolean {
-		return element.value.toLowerCase().indexOf(this.filterString.toLowerCase()) !== -1;
+		if (this.filterString) {
+			return element.value.toLowerCase().indexOf(this.filterString.toLowerCase()) !== -1;
+		} else {
+			return true;
+		}
 	}
 }
 

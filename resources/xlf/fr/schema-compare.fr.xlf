@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/schema-compare/package" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/schema-compare/package" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="displayName">
         <source xml:lang="en">SQL Server Schema Compare</source>
@@ -8,15 +8,15 @@
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">SQL Server Schema Compare for Azure Data Studio supports comparing the schemas of databases and dacpacs.</source>
-        <target state="translated">La comparaison de schémas SQL Server pour Azure Data Studio prend en charge la comparaison des schémas de bases de données et des fichiers dacpac.</target>
+        <target state="translated">La comparaison de schémas SQL Server pour Azure Data Studio prend en charge la comparaison des schémas de bases de données et de fichiers dacpac.</target>
       </trans-unit>
       <trans-unit id="schemaCompare.start">
         <source xml:lang="en">Schema Compare</source>
-        <target state="translated">Comparaison de schéma</target>
+        <target state="translated">Comparaison de schémas</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/schema-compare/out/dialogs/schemaCompareOptionsDialog" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/schema-compare/out/dialogs/schemaCompareOptionsDialog" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="SchemaCompareOptionsDialog.Ok">
         <source xml:lang="en">Ok</source>
@@ -52,7 +52,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.ObjectTypesOptionsLabel">
         <source xml:lang="en">Include Object Types</source>
-        <target state="translated">Inclure des types d'objet</target>
+        <target state="translated">Inclure les types d'objet</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.IgnoreTableOptions">
         <source xml:lang="en">Ignore Table Options</source>
@@ -140,7 +140,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.UnmodifiableObjectWarnings">
         <source xml:lang="en">Unmodifiable Object Warnings</source>
-        <target state="translated">Avertissements des objets non modifiables</target>
+        <target state="translated">Avertissements d'objet non modifiable</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.TreatVerificationErrorsAsWarnings">
         <source xml:lang="en">Treat Verification Errors As Warnings</source>
@@ -212,11 +212,11 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.IgnoreFileSize">
         <source xml:lang="en">Ignore File Size</source>
-        <target state="translated">Ignorer la taille du fichier</target>
+        <target state="translated">Ignorer la taille de fichier</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.IgnoreFilegroupPlacement">
         <source xml:lang="en">Ignore Filegroup Placement</source>
-        <target state="translated">Ignorer le placement du groupe de fichiers</target>
+        <target state="translated">Ignorer le placement de groupe de fichiers</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.DoNotAlterReplicatedObjects">
         <source xml:lang="en">Do Not Alter Replicated Objects</source>
@@ -260,7 +260,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.AllowIncompatiblePlatform">
         <source xml:lang="en">Allow Incompatible Platform</source>
-        <target state="translated">Autoriser la plateforme incompatible</target>
+        <target state="translated">Autoriser une plateforme incompatible</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.AllowDropBlockingAssemblies">
         <source xml:lang="en">Allow Drop Blocking Assemblies</source>
@@ -312,7 +312,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.IgnoreCryptographicProviderFilePath">
         <source xml:lang="en">Ignore Cryptographic Provider FilePath</source>
-        <target state="translated">Ignorer la propriété FilePath du fournisseur de chiffrement</target>
+        <target state="translated">Ignorer le chemin de fichier du fournisseur de chiffrement</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.VerifyDeployment">
         <source xml:lang="en">Verify Deployment</source>
@@ -328,7 +328,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.IgnoreAuthorizer">
         <source xml:lang="en">Ignore Authorizer</source>
-        <target state="translated">Ignorer l'autorisateur</target>
+        <target state="translated">Ignorer l'agent d'autorisation</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.IgnoreAnsiNulls">
         <source xml:lang="en">Ignore AnsiNulls</source>
@@ -420,7 +420,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.ExternalDataSources">
         <source xml:lang="en">External Data Sources</source>
-        <target state="translated">Sources de données externe</target>
+        <target state="translated">Sources de données externes</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.ExternalFileFormats">
         <source xml:lang="en">External File Formats</source>
@@ -452,7 +452,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.PartitionFunctions">
         <source xml:lang="en">Partition Functions</source>
-        <target state="translated">Fonctions de partitions</target>
+        <target state="translated">Fonctions de partition</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.PartitionSchemes">
         <source xml:lang="en">Partition Schemes</source>
@@ -460,7 +460,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Permissions">
         <source xml:lang="en">Permissions</source>
-        <target state="translated">Autorisations </target>
+        <target state="translated">Autorisations</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Queues">
         <source xml:lang="en">Queues</source>
@@ -556,11 +556,11 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.CryptographicProviders">
         <source xml:lang="en">Cryptographic Providers</source>
-        <target state="translated">Fournisseurs de services de chiffrement</target>
+        <target state="translated">Fournisseurs de chiffrement</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.DatabaseAuditSpecifications">
         <source xml:lang="en">Database Audit Specifications</source>
-        <target state="translated">Spécifications de l'audit de la base de données</target>
+        <target state="translated">Spécifications de l'audit de base de données</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.DatabaseEncryptionKeys">
         <source xml:lang="en">Database Encryption Keys</source>
@@ -568,7 +568,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.DatabaseScopedCredentials">
         <source xml:lang="en">Database Scoped Credentials</source>
-        <target state="translated">Informations d'identification incluses dans l'étendue de la base de données</target>
+        <target state="translated">Informations d'identification limitées à la base de données</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Endpoints">
         <source xml:lang="en">Endpoints</source>
@@ -604,19 +604,19 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Routes">
         <source xml:lang="en">Routes</source>
-        <target state="translated">Itinéraires </target>
+        <target state="translated">Routes</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.ServerAuditSpecifications">
         <source xml:lang="en">Server Audit Specifications</source>
-        <target state="translated">Spécifications de l'audit du serveur</target>
+        <target state="translated">Spécifications de l'audit de serveur</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.ServerRoleMembership">
         <source xml:lang="en">Server Role Membership</source>
-        <target state="translated">Appartenance au rôle de serveur</target>
+        <target state="translated">Appartenance au rôle serveur</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.ServerRoles">
         <source xml:lang="en">Server Roles</source>
-        <target state="translated">Rôles du serveur</target>
+        <target state="translated">Rôles serveur</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.ServerTriggers">
         <source xml:lang="en">Server Triggers</source>
@@ -624,111 +624,111 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreTableOptions">
         <source xml:lang="en">Specifies whether differences in the table options will be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans les options de table sont ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences des options de table sont ignorées ou mises à jour pour la publication dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreSemicolonBetweenStatements">
         <source xml:lang="en">Specifies whether differences in the semi-colons between T-SQL statements will be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans les points-virgules des instructions T-SQL sont ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de point-virgule des instructions T-SQL sont ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreRouteLifetime">
         <source xml:lang="en">Specifies whether differences in the amount of time that SQL Server retains the route in the routing table should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans la durée pendant laquelle SQL Server conserve l'itinéraire dans la table de routage doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de durée de conservation de la route dans la table de route par SQL Server doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreRoleMembership">
         <source xml:lang="en">Specifies whether differences in the role membership of logins should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans l'appartenance aux rôles des noms de connexion doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences d'appartenance au rôle des connexions doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreQuotedIdentifiers">
         <source xml:lang="en">Specifies whether differences in the quoted identifiers setting should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans le paramètre d'identificateurs entre guillemets doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de paramètre des identificateurs entre guillemets doivent être ignorées ou mises à jour en case de publication dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnorePermissions">
         <source xml:lang="en">Specifies whether permissions should be ignored.</source>
-        <target state="translated">Indique si les autorisations doivent être ignorées.</target>
+        <target state="translated">Spécifie si les autorisations doivent être ignorées.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnorePartitionSchemes">
         <source xml:lang="en">Specifies whether differences in partition schemes and functions should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences entre les schémas et les fonctions de partition doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de schéma et fonction de partition doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreObjectPlacementOnPartitionScheme">
         <source xml:lang="en">Specifies whether an object's placement on a partition scheme should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si le positionnement d'un objet dans un schéma de partition doit être ignoré ou mis à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si le placement d'un objet dans un schéma de partition doit être ignoré ou mis à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreNotForReplication">
         <source xml:lang="en">Specifies whether the not for replication settings should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si le non pour les paramètres de réplication doit être ignoré ou mis à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si le paramètre Pas pour la réplication doit être ignoré ou mis à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreLoginSids">
         <source xml:lang="en">Specifies whether differences in the security identification number (SID) should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans le numéro d'identification de sécurité (SID) doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de numéro d'identification de sécurité (SID) doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreLockHintsOnIndexes">
         <source xml:lang="en">Specifies whether differences in the lock hints on indexes should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans les indications de verrou sur les index doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences d'indicateur de verrou sur les index doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreKeywordCasing">
         <source xml:lang="en">Specifies whether differences in the casing of keywords should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans la casse des mots clés doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de casse des mots clés doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreIndexPadding">
         <source xml:lang="en">Specifies whether differences in the index padding should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans le remplissage d'index doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de remplissage d'index doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreIndexOptions">
         <source xml:lang="en">Specifies whether differences in the index options should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans les options d'index doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences d'option d'index doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreIncrement">
         <source xml:lang="en">Specifies whether differences in the increment for an identity column should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans l'incrément d'une colonne d'identité doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences d'incrément d'une colonne d'identité doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreIdentitySeed">
         <source xml:lang="en">Specifies whether differences in the seed for an identity column should be ignored or updated when you publish updates to a database.</source>
-        <target state="translated">Spécifie si les différences dans le début d'une colonne d'identité doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de seed d'une colonne d'identité doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreUserSettingsObjects">
         <source xml:lang="en">Specifies whether differences in the user settings objects will be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans les objets de paramètres utilisateur sont ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences d'objet de paramètres utilisateur sont ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreFullTextCatalogFilePath">
         <source xml:lang="en">Specifies whether differences in the file path for the full-text catalog should be ignored or whether a warning should be issued when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans le chemin d'accès du catalogue de texte intégral doivent être ignorées ou si un avertissement doit être émis lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de chemin du catalogue de texte intégral doivent être ignorées ou si un avertissement doit être émis quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreWhitespace">
         <source xml:lang="en">Specifies whether differences in white space will be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans les espaces blancs sont ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences d'espace blanc sont ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnForeignKeys">
         <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for foreign keys will be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans la valeur de la clause WITH NOCHECK pour les clés étrangères sont ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de valeur de la clause WITH NOCHECK pour les clés étrangères sont ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.VerifyCollationCompatibility">
         <source xml:lang="en">Specifies whether collation compatibility is verified.</source>
-        <target state="translated">Indique si la compatibilité du classement est vérifiée.</target>
+        <target state="translated">Spécifie si la compatibilité du classement est vérifiée.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.UnmodifiableObjectWarnings">
         <source xml:lang="en">Specifies whether warnings should be generated when differences are found in objects that cannot be modified, for example, if the file size or file paths were different for a file.</source>
-        <target state="translated">Spécifie si les avertissements doivent être générés lorsque des différences sont trouvées dans des objets qui ne peuvent pas être modifiés, par exemple si la taille ou le chemin d'accès du fichier sont différents pour un fichier.</target>
+        <target state="translated">Spécifie si des avertissements doivent être générés en cas de différences détectées dans des objets non modifiables, par exemple, si la taille de fichier ou les chemins de fichier sont différents pour un fichier.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.TreatVerificationErrorsAsWarnings">
         <source xml:lang="en">Specifies whether errors encountered during publish verification should be treated as warnings. The check is performed against the generated deployment plan before the plan is executed against your target database. Plan verification detects problems such as the loss of target-only objects (such as indexes) that must be dropped to make a change. Verification will also detect situations where dependencies (such as a table or view) exist because of a reference to a composite project, but do not exist in the target database. You might choose to do this to get a complete list of all issues, instead of having the publish action stop on the first error.</source>
-        <target state="translated">Spécifie si les erreurs rencontrées au cours de la vérification de la publication doivent être considérées comme des avertissements. La vérification est effectuée par rapport au plan de déploiement généré avant l'exécution du plan sur la base de données cible. La vérification du plan détecte des problèmes tels que la perte d'objets cibles (tels que des index) qui doivent être supprimés pour apporter une modification. La vérification détecte également des situations où les dépendances (table ou vue par exemple) existent en raison d'une référence à un projet composite, mais n'existent pas dans la base de données cible. Vous pouvez choisir d'effectuer cette opération pour obtenir une liste complète de tous les problèmes, au lieu que l'action de publication ne s'arrête à la première erreur.</target>
+        <target state="translated">Spécifie si les erreurs rencontrées au cours de la vérification de publication doivent être considérées comme des avertissements. La vérification est effectuée sur le plan de déploiement généré, avant qu'il ne soit exécuté sur la base de données cible. La vérification du plan détecte des problèmes comme la perte d'objets cibles uniquement (par ex., des index) qui doivent être supprimés pour effectuer un changement. La vérification détecte également des situations où des dépendances (table ou vue par exemple) existent en raison d'une référence à un projet composite, mais n'existent pas dans la base de données cible. Vous pouvez choisir d'effectuer cette opération pour obtenir la liste complète de tous les problèmes, au lieu de définir l'action de publication pour qu'elle s'arrête à la première erreur.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.ScriptRefreshModule">
         <source xml:lang="en">Include refresh statements at the end of the publish script.</source>
-        <target state="translated">Inclure les instructions d'actualisation à la fin du script de publication.</target>
+        <target state="translated">Inclure des instructions d'actualisation à la fin du script de publication.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.ScriptNewConstraintValidation">
         <source xml:lang="en">At the end of publish all of the constraints will be verified as one set, avoiding data errors caused by a check or foreign key constraint in the middle of publish. If set to False, your constraints will be published without checking the corresponding data.</source>
-        <target state="translated">À la fin de la publication, toutes les contraintes sont vérifiées comme un ensemble, ce qui permet d'éviter les erreurs de données provoquées par une contrainte de validation ou de clé étrangère pendant la publication. Si la valeur est False, vos contraintes seront publiées sans vérification des données correspondantes.</target>
+        <target state="translated">À la fin de la publication, toutes les contraintes sont vérifiées comme un ensemble, ce qui permet d'éviter les erreurs de données provoquées par une contrainte de validation ou de clé étrangère pendant la publication. Si la valeur est False, vos contraintes sont publiées sans vérification des données correspondantes.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.ScriptFileSize">
         <source xml:lang="en">Controls whether size is specified when adding a file to a filegroup.</source>
-        <target state="translated">Détermine si la taille est spécifiée lors de l'ajout d'un fichier à un filegroup.</target>
+        <target state="translated">Détermine si la taille est spécifiée pendant l'ajout d'un fichier à un groupe de fichiers.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.ScriptDeployStateChecks">
         <source xml:lang="en">Specifies whether statements are generated in the publish script to verify that the database name and server name match the names specified in the database project.</source>
-        <target state="translated">Spécifie si les instructions sont générées dans le script de publication pour vérifier que le nom de la base de données et le nom du serveur correspondent aux noms spécifiés dans le projet de base de données.</target>
+        <target state="translated">Spécifie si des instructions sont générées dans le script de publication pour vérifier que le nom de base de données et le nom de serveur correspondent aux noms spécifiés dans le projet de base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.ScriptDatabaseOptions">
         <source xml:lang="en">Specifies whether target database properties should be set or updated as part of the publish action.</source>
@@ -736,55 +736,55 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.ScriptDatabaseCompatibility">
         <source xml:lang="en">Specifies whether differences in the database compatibility should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences en matière de compatibilité de base de données doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de compatibilité de base de données doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.ScriptDatabaseCollation">
         <source xml:lang="en">Specifies whether differences in the database collation should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans le classement de base de données doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de classement de base de données doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.RunDeploymentPlanExecutors">
         <source xml:lang="en">Specifies whether DeploymentPlanExecutor contributors should be run when other operations are executed.</source>
-        <target state="translated">Indique si les contributeurs DeploymentPlanExecutor doivent être exécutés lors de l'exécution d'autres opérations.</target>
+        <target state="translated">Spécifie si les contributeurs DeploymentPlanExecutor doivent être exécutés quand d'autres opérations sont exécutées.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.RegisterDataTierApplication">
         <source xml:lang="en">Specifies whether the schema is registered with the database server.</source>
-        <target state="translated">Indique si le schéma est enregistré avec le serveur de base de données.</target>
+        <target state="translated">Indique si le schéma est inscrit dans le serveur de base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.PopulateFilesOnFileGroups">
         <source xml:lang="en">Specifies whether a new file is also created when a new FileGroup is created in the target database.</source>
-        <target state="translated">Spécifie si un nouveau fichier est créé lorsqu'un nouveau FileGroup est créé dans la base de données cible.</target>
+        <target state="translated">Spécifie si un fichier est créé en même temps qu'un groupe de fichiers dans la base de données cible.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.NoAlterStatementsToChangeClrTypes">
         <source xml:lang="en">Specifies that publish should always drop and re-create an assembly if there is a difference instead of issuing an ALTER ASSEMBLY statement</source>
-        <target state="translated">Spécifie que la publication doit toujours supprimer et recréer un assembly en cas de différence au lieu d'envoyer une instruction ALTER ASSEMBLY</target>
+        <target state="translated">Spécifie que la publication doit toujours supprimer et recréer un assembly en cas de différence, au lieu d'envoyer une instruction ALTER ASSEMBLY</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IncludeTransactionalScripts">
         <source xml:lang="en">Specifies whether transactional statements should be used where possible when you publish to a database.</source>
-        <target state="translated">Spécifie si les instructions transactionnelles doivent être utilisées si possible lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie s'il faut utiliser des instructions transactionnelles quand cela est possible quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IncludeCompositeObjects">
         <source xml:lang="en">Include all composite elements as part of a single publish operation.</source>
-        <target state="translated">Inclure tous les éléments composites dans une seule et même opération de publication.</target>
+        <target state="translated">Incluez tous les éléments composites dans une seule et même opération de publication.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.AllowUnsafeRowLevelSecurityDataMovement">
         <source xml:lang="en">Do not block data motion on a table which has Row Level Security if this property is set to true. Default is false.</source>
-        <target state="translated">Ne pas bloquer le déplacement des données sur une table qui a une sécurité au niveau  des lignes si cette propriété est définie sur true. La valeur par défaut est false.</target>
+        <target state="translated">Ne bloquez pas le déplacement des données sur une table avec sécurité au niveau des lignes si cette propriété est définie sur true. La valeur par défaut est false.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnCheckConstraints">
         <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for check constraints will be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans la valeur de la clause WITH NOCHECK pour les contraintes de validation sont ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de valeur de la clause WITH NOCHECK pour les contraintes de validation sont ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreFillFactor">
         <source xml:lang="en">Specifies whether differences in the fill factor for index storage should be ignored or whether a warning should be issued when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans le taux de remplissage du stockage d'index doivent être ignorées ou si un avertissement doit être émis lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de facteur de remplissage du stockage d'index doivent être ignorées ou si un avertissement doit être envoyé quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreFileSize">
         <source xml:lang="en">Specifies whether differences in the file sizes should be ignored or whether a warning should be issued when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans les tailles de fichiers doivent être ignorées ou si un avertissement doit être émis lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de taille de fichier doivent être ignorées ou si un avertissement doit être envoyé quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreFilegroupPlacement">
         <source xml:lang="en">Specifies whether differences in the placement of objects in FILEGROUPs should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans le positionnement des objets dans les FILEGROUP doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de placement des objets dans des groupes de fichiers doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DoNotAlterReplicatedObjects">
         <source xml:lang="en">Specifies whether objects that are replicated are identified during verification.</source>
@@ -792,11 +792,11 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DoNotAlterChangeDataCaptureObjects">
         <source xml:lang="en">If true, Change Data Capture objects are not altered.</source>
-        <target state="translated">Si la valeur est True, les objets de capture de données de modification ne sont pas modifiés.</target>
+        <target state="translated">Si la valeur est true, les objets de capture des changements de données ne sont pas modifiés.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DisableAndReenableDdlTriggers">
         <source xml:lang="en">Specifies whether Data Definition Language (DDL) triggers are disabled at the beginning of the publish process and re-enabled at the end of the publish action.</source>
-        <target state="translated">Spécifie si les Data Definition Language (DDL) triggers sont désactivés au début du processus de publication et réactivés à la fin de l'action de publication.</target>
+        <target state="translated">Spécifie si les déclencheurs de langage de description de données (DDL) sont désactivés au début du processus de publication et réactivés à la fin de l'action de publication.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DeployDatabaseInSingleUserMode">
         <source xml:lang="en">If true, the database is set to Single User Mode before deploying.</source>
@@ -804,7 +804,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.CreateNewDatabase">
         <source xml:lang="en">Specifies whether the target database should be updated or whether it should be dropped and re-created when you publish to a database.</source>
-        <target state="translated">Indique si la base de données cible doit être mise à jour ou si elle doit être supprimée et recréée lorsque vous publiez dans une base de données.</target>
+        <target state="translated">Spécifie si la base de données cible doit être mise à jour, ou si elle doit être supprimée et recréée quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.CompareUsingTargetCollation">
         <source xml:lang="en">This setting dictates how the database's collation is handled during deployment; by default the target database's collation will be updated if it does not match the collation specified by the source.  When this option is set, the target database's (or server's) collation should be used.</source>
@@ -812,11 +812,11 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.CommentOutSetVarDeclarations">
         <source xml:lang="en">Specifies whether the declaration of SETVAR variables should be commented out in the generated publish script. You might choose to do this if you plan to specify the values on the command line when you publish by using a tool such as SQLCMD.EXE.</source>
-        <target state="translated">Indique si la déclaration de variables SETVAR doit être commentée dans le script de publication généré. Vous pouvez choisir cette option si vous prévoyez de spécifier des valeurs sur la ligne de commande lorsque vous effectuez la publication à l'aide d'un outil, tel que SQLCMD.EXE.</target>
+        <target state="translated">Spécifie si la déclaration de variables SETVAR doit être commentée dans le script de publication généré. Vous pouvez choisir cette option si vous prévoyez de spécifier des valeurs sur la ligne de commande quand vous effectuez la publication à l'aide d'un outil, comme SQLCMD.EXE.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.BlockWhenDriftDetected">
         <source xml:lang="en">Specifies whether to block updating a database whose schema no longer matches its registration or is unregistered.</source>
-        <target state="translated">Indique s'il faut bloquer la mise à jour d'une base de données dont le schéma ne correspond plus à son enregistrement ou qui n'est pas enregistré.</target>
+        <target state="translated">Spécifie s'il faut bloquer la mise à jour d'une base de données dont le schéma ne correspond plus à son inscription ou n'est pas inscrit.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.BlockOnPossibleDataLoss">
         <source xml:lang="en">Specifies that the publish episode should be terminated if there is a possibility of data loss resulting from the publish operation.</source>
@@ -824,91 +824,91 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.BackupDatabaseBeforeChanges">
         <source xml:lang="en">Backups the database before deploying any changes.</source>
-        <target state="translated">Sauvegarde la base de données avant le déploiement des modifications.</target>
+        <target state="translated">Sauvegarde la base de données avant le déploiement de changements.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.AllowIncompatiblePlatform">
         <source xml:lang="en">Specifies whether to attempt the action despite incompatible SQL Server platforms.</source>
-        <target state="translated">Spécifie si l'action doit être tentée en dépit de plateformes SQL Server incompatibles.</target>
+        <target state="translated">Spécifie s'il faut tenter l'action en dépit de plateformes SQL Server incompatibles.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.AllowDropBlockingAssemblies">
         <source xml:lang="en">This property is used by SqlClr deployment to cause any blocking assemblies to be dropped as part of the deployment plan. By default, any blocking/referencing assemblies will block an assembly update if the referencing assembly needs to be dropped.</source>
-        <target state="translated">Cette propriété est utilisée par le déploiement SqlClr pour permettre la suppression de tout assembly bloquant dans le cadre du plan de déploiement. Par défaut, un assembly bloquant ou de référence bloque une mise à jour d'assembly si l'assembly de référence doit être supprimé.</target>
+        <target state="translated">Cette propriété est utilisée par le déploiement SqlClr pour permettre la suppression de tout assembly bloquant dans le cadre du plan de déploiement. Par défaut, un assembly bloquant ou de référence bloque une mise à jour d'assembly s'il faut supprimer l'assembly de référence.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropConstraintsNotInSource">
         <source xml:lang="en">Specifies whether constraints that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">Spécifie si des contraintes qui n'existent pas dans le fichier d'instantané de base de données (.dacpac) sont supprimées de la base de données cible lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si des contraintes qui n'existent pas dans le fichier d'instantané de base de données (.dacpac) doivent être supprimées de la base de données cible quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropDmlTriggersNotInSource">
         <source xml:lang="en">Specifies whether DML triggers that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">Spécifie si les DML triggers qui sont absents du fichier d'instantané de base de données (.dacpac) doivent être supprimés de la base de données cible lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les déclencheurs DML qui n'existent pas dans le fichier d'instantané de base de données (.dacpac) doivent être supprimés de la base de données cible quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropExtendedPropertiesNotInSource">
         <source xml:lang="en">Specifies whether extended properties that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">Spécifie si les propriétés étendues qui sont absentes du fichier d'instantané de base de données (.dacpac) doivent être supprimées de la base de données cible lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les propriétés étendues qui n'existent pas dans le fichier d'instantané de base de données (.dacpac) doivent être supprimées de la base de données cible quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropIndexesNotInSource">
         <source xml:lang="en">Specifies whether indexes that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">Spécifie si des index qui n'existent pas dans le fichier d'instantané de base de données (.dacpac) sont supprimés de la base de données cible lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si des index qui n'existent pas dans le fichier d'instantané de base de données (.dacpac) doivent être supprimés de la base de données cible quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreFileAndLogFilePath">
         <source xml:lang="en">Specifies whether differences in the paths for files and log files should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans les chemins d'accès des fichiers et fichiers journaux doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de chemin de fichier et fichier journal doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreExtendedProperties">
         <source xml:lang="en">Specifies whether extended properties should be ignored.</source>
-        <target state="translated">Indique si les propriétés étendues doivent être ignorées.</target>
+        <target state="translated">Spécifie si les propriétés étendues doivent être ignorées.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerState">
         <source xml:lang="en">Specifies whether differences in the enabled or disabled state of DML triggers should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans l'état activé ou désactivé des DML triggers doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences d'état activé ou désactivé des déclencheurs DML doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerOrder">
         <source xml:lang="en">Specifies whether differences in the order of Data Manipulation Language (DML) triggers should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences relatives à l'ordre des Data Manipulation Language (DML) triggers doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences d'ordre des déclencheurs de langage de manipulation de données (DML) doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreDefaultSchema">
         <source xml:lang="en">Specifies whether differences in the default schema should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans le schéma par défaut doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de schéma par défaut doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerState">
         <source xml:lang="en">Specifies whether differences in the enabled or disabled state of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans l'état activé ou désactivé des Data Definition Language (DDL) triggers (DDL) doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences d'état activé ou désactivé des déclencheurs de langage de description de données (DDL) doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerOrder">
         <source xml:lang="en">Specifies whether differences in the order of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database or server.</source>
-        <target state="translated">Spécifie si les différences relatives à l'ordre des Data Definition Language (DDL) triggers doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences d'ordre des déclencheurs de langage de description de données (DDL) doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreCryptographicProviderFilePath">
         <source xml:lang="en">Specifies whether differences in the file path for the cryptographic provider should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans le chemin d'accès de fichier pour le fournisseur de chiffrement doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de chemin de fichier du fournisseur de chiffrement doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.VerifyDeployment">
         <source xml:lang="en">Specifies whether checks should be performed before publishing that will stop the publish action if issues are present that might block successful publishing. For example, your publish action might stop if you have foreign keys on the target database that do not exist in the database project, and that will cause errors when you publish.</source>
-        <target state="translated">Spécifie si les vérifications doivent être effectuées avant la publication pour rechercher des problèmes qui empêcheraient l'exécution de l'action de publication. Par exemple, l'action de publication peut s'arrêter si vous disposez de clés étrangères sur la base de données cible qui n'existent pas dans le projet de base de données, ce qui entraînerait des erreurs lors de la publication.</target>
+        <target state="translated">Spécifie s'il faut effectuer avant la publication des vérifications qui arrêtent l'action de publication quand des problèmes risquant de bloquer la publication sont détectés. Par exemple, l'action de publication peut s'arrêter si vous avez des clés étrangères sur la base de données cible qui n'existent pas dans le projet de base de données, ce qui entraîne des erreurs pendant la publication.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreComments">
         <source xml:lang="en">Specifies whether differences in the comments should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans les commentaires doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de commentaire doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreColumnCollation">
         <source xml:lang="en">Specifies whether differences in the column collations should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans les classements de colonnes doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de classement de colonnes doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreAuthorizer">
         <source xml:lang="en">Specifies whether differences in the Authorizer should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans l'agent d'autorisation doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de l'agent d'autorisation doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreAnsiNulls">
         <source xml:lang="en">Specifies whether differences in the ANSI NULLS setting should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences relatives au paramètre ANSI NULLS doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences de paramètre ANSI NULLS doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.GenerateSmartDefaults">
         <source xml:lang="en">Automatically provides a default value when updating a table that contains data with a column that does not allow null values.</source>
-        <target state="translated">Fournit automatiquement une valeur par défaut lors de la mise à jour d'une table contenant des données dans une colonne qui n'autorise pas les valeurs Null.</target>
+        <target state="translated">Fournit automatiquement une valeur par défaut pendant la mise à jour d'une table dont les données comprennent une colonne qui n'autorise pas les valeurs Null.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropStatisticsNotInSource">
         <source xml:lang="en">Specifies whether statistics that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">Spécifie si les statistiques qui n'existent pas dans le fichier d'instantané de base de données (.dacpac) sont supprimées de la base de données cible lorsque vous publiez sur une base de données.</target>
+        <target state="translated">Spécifie si les statistiques qui n'existent pas dans le fichier d'instantané de base de données (.dacpac) doivent être supprimées de la base de données cible quand vous publiez dans une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropRoleMembersNotInSource">
         <source xml:lang="en">Specifies whether role members that are not defined in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.&lt;/</source>
@@ -916,19 +916,19 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropPermissionsNotInSource">
         <source xml:lang="en">Specifies whether permissions that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.</source>
-        <target state="translated">Spécifie si les autorisations qui sont absentes du fichier d'instantané de base de données (.dacpac) doivent être supprimées de la base de données cible lors de la publication des mises à jour dans une base de données.</target>
+        <target state="translated">Spécifie si les autorisations qui n'existent pas dans le fichier d'instantané de base de données (.dacpac) doivent être supprimées de la base de données cible quand vous publiez des mises à jour sur une base de données.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.DropObjectsNotInSource">
         <source xml:lang="en">Specifies whether objects that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.  This value takes precedence over DropExtendedProperties.</source>
-        <target state="translated">Indique si les objets qui n'existent pas dans le fichier d'instantané de base de données (.dacpac) sont supprimés de la base de données cible lors de la publication dans une base de données. Cette valeur est prioritaire sur DropExtendedProperties.</target>
+        <target state="translated">Spécifie si les objets qui n'existent pas dans le fichier d'instantané de base de données (.dacpac) doivent être supprimés de la base de données cible quand vous publiez dans une base de données. Cette valeur est prioritaire sur DropExtendedProperties.</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Description.IgnoreColumnOrder">
         <source xml:lang="en">Specifies whether differences in table column order should be ignored or updated when you publish to a database.</source>
-        <target state="translated">Spécifie si les différences dans l'ordre des colonnes de table doivent être ignorées ou mises à jour lors de la publication dans une base de données.</target>
+        <target state="translated">Spécifie si les différences d'ordre des colonnes de table doivent être ignorées ou mises à jour quand vous publiez dans une base de données.</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/schema-compare/out/dialogs/schemaCompareDialog" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/schema-compare/out/dialogs/schemaCompareDialog" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="schemaCompareDialog.ok">
         <source xml:lang="en">Ok</source>
@@ -940,15 +940,15 @@
       </trans-unit>
       <trans-unit id="schemaCompareDialog.SourceTitle">
         <source xml:lang="en">Source</source>
-        <target state="translated">source</target>
+        <target state="translated">Source</target>
       </trans-unit>
       <trans-unit id="schemaCompareDialog.TargetTitle">
         <source xml:lang="en">Target</source>
-        <target state="translated">cible</target>
+        <target state="translated">Cible</target>
       </trans-unit>
       <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
         <source xml:lang="en">File</source>
-        <target state="translated">fichier</target>
+        <target state="translated">Fichier</target>
       </trans-unit>
       <trans-unit id="schemaCompare.dacpacRadioButtonLabel">
         <source xml:lang="en">Data-tier Application File (.dacpac)</source>
@@ -956,7 +956,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.databaseButtonLabel">
         <source xml:lang="en">Database</source>
-        <target state="translated">Base de données </target>
+        <target state="translated">Base de données</target>
       </trans-unit>
       <trans-unit id="schemaCompare.radioButtonsLabel">
         <source xml:lang="en">Type</source>
@@ -964,11 +964,11 @@
       </trans-unit>
       <trans-unit id="schemaCompareDialog.serverDropdownTitle">
         <source xml:lang="en">Server</source>
-        <target state="translated">Serveur </target>
+        <target state="translated">Serveur</target>
       </trans-unit>
       <trans-unit id="schemaCompareDialog.databaseDropdownTitle">
         <source xml:lang="en">Database</source>
-        <target state="translated">Base de données </target>
+        <target state="translated">Base de données</target>
       </trans-unit>
       <trans-unit id="schemaCompare.noActiveConnectionsText">
         <source xml:lang="en">No active connections</source>
@@ -976,7 +976,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.dialogTitle">
         <source xml:lang="en">Schema Compare</source>
-        <target state="translated">Comparaison de schéma</target>
+        <target state="translated">Comparaison de schémas</target>
       </trans-unit>
       <trans-unit id="schemaCompareDialog.differentSourceMessage">
         <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
@@ -1000,15 +1000,15 @@
       </trans-unit>
       <trans-unit id="schemaCompare.openFile">
         <source xml:lang="en">Open</source>
-        <target state="translated">Ouvrir </target>
+        <target state="translated">Ouvrir</target>
       </trans-unit>
       <trans-unit id="schemaCompareDialog.defaultUser">
         <source xml:lang="en">default</source>
-        <target state="translated">Par défaut</target>
+        <target state="translated">par défaut</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/schema-compare/out/schemaCompareMainWindow" source-language="en" target-language="fr" datatype="plaintext">
+  <file original="extensions/schema-compare/out/schemaCompareMainWindow" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="schemaCompare.CompareDetailsTitle">
         <source xml:lang="en">Compare Details</source>
@@ -1016,7 +1016,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.ApplyConfirmation">
         <source xml:lang="en">Are you sure you want to update the target?</source>
-        <target state="translated">Voulez-vous vraiment mettre à jour la cible ?</target>
+        <target state="translated">Voulez-vous vraiment mettre à jour la cible ?</target>
       </trans-unit>
       <trans-unit id="schemaCompare.RecompareToRefresh">
         <source xml:lang="en">Press Compare to refresh the comparison.</source>
@@ -1028,7 +1028,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.generateScriptNoChanges">
         <source xml:lang="en">No changes to script</source>
-        <target state="translated">Aucun changement au script</target>
+        <target state="translated">Aucun changement de script</target>
       </trans-unit>
       <trans-unit id="schemaCompare.applyButtonEnabledTitle">
         <source xml:lang="en">Apply changes to target</source>
@@ -1044,23 +1044,23 @@
       </trans-unit>
       <trans-unit id="schemaCompare.changeAction">
         <source xml:lang="en">Change</source>
-        <target state="translated">Modifier</target>
+        <target state="translated">Changer</target>
       </trans-unit>
       <trans-unit id="schemaCompare.addAction">
         <source xml:lang="en">Add</source>
-        <target state="translated">ajouter</target>
+        <target state="translated">Ajouter</target>
       </trans-unit>
       <trans-unit id="schemaCompare.Title">
         <source xml:lang="en">Schema Compare</source>
-        <target state="translated">Comparaison de schéma</target>
+        <target state="translated">Comparaison de schémas</target>
       </trans-unit>
       <trans-unit id="schemaCompare.sourceLabel">
         <source xml:lang="en">Source</source>
-        <target state="translated">source</target>
+        <target state="translated">Source</target>
       </trans-unit>
       <trans-unit id="schemaCompare.targetLabel">
         <source xml:lang="en">Target</source>
-        <target state="translated">cible</target>
+        <target state="translated">Cible</target>
       </trans-unit>
       <trans-unit id="schemaCompare.switchLabel">
         <source xml:lang="en">➔</source>
@@ -1160,7 +1160,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.switchDirectionButton">
         <source xml:lang="en">Switch direction</source>
-        <target state="translated">Changer le sens</target>
+        <target state="translated">Changer de sens</target>
       </trans-unit>
       <trans-unit id="schemaCompare.switchButtonTitle">
         <source xml:lang="en">Switch source and target</source>
@@ -1184,7 +1184,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.openFile">
         <source xml:lang="en">Open</source>
-        <target state="translated">Ouvrir </target>
+        <target state="translated">Ouvrir</target>
       </trans-unit>
       <trans-unit id="schemaCompare.openScmpErrorMessage">
         <source xml:lang="en">Open scmp failed: '{0}'</source>

@@ -1,0 +1,7 @@
+{
+	"extends": ".eslintrc.json",
+	"rules": {
+		"no-sync": "warn",
+		"strict": ["warn", "never"]
+	}
+}
