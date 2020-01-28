@@ -45,6 +45,7 @@ import { asDomUri, triggerDownload } from 'vs/base/browser/dom';
 import { mnemonicButtonLabel } from 'vs/base/common/labels';
 import { IFilesConfigurationService } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
 import { IWorkingCopyService, IWorkingCopy } from 'vs/workbench/services/workingCopy/common/workingCopyService';
+import { sequence } from 'vs/base/common/async';
 
 export const NEW_FILE_COMMAND_ID = 'explorer.newFile';
 export const NEW_FILE_LABEL = nls.localize('newFile', "New File");
@@ -252,13 +253,10 @@ async function deleteFiles(workingCopyService: IWorkingCopyService, textFileServ
 		});
 	}
 
-
-
 	// Check for confirmation checkbox
 	if (confirmation.confirmed && confirmation.checkboxChecked === true) {
 		await configurationService.updateValue(CONFIRM_DELETE_SETTING_KEY, false, ConfigurationTarget.USER);
 	}
-
 
 	// Check for confirmation
 	if (!confirmation.confirmed) {
@@ -1030,7 +1028,7 @@ const downloadFileHandler = (accessor: ServicesAccessor) => {
 	const stats = explorerService.getContext(true);
 
 	let canceled = false;
-	stats.forEach(async s => {
+	sequence(stats.map(s => async () => {
 		if (canceled) {
 			return;
 		}
@@ -1058,7 +1056,7 @@ const downloadFileHandler = (accessor: ServicesAccessor) => {
 				canceled = true;
 			}
 		}
-	});
+	}));
 };
 
 CommandsRegistry.registerCommand({

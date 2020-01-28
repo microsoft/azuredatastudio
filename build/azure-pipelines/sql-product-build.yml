@@ -15,7 +15,7 @@ jobs:
 - job: macOS
   condition: eq(variables['VSCODE_BUILD_MACOS'], 'true')
   pool:
-    vmImage: macOS 10.13
+    vmImage: macOS-latest
   dependsOn:
   - Compile
   steps:
@@ -41,15 +41,16 @@ jobs:
   steps:
   - template: win32/sql-product-build-win32.yml
 
-- job: Windows_Test
-  condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
-  pool:
-    name: mssqltools
-  dependsOn:
-  - Linux
-  - Windows
-  steps:
-  - template: win32/sql-product-test-win32.yml
+# Temporarily disable Windows_Test job given build machine setup issues
+# - job: Windows_Test
+#   condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
+#   pool:
+#     name: mssqltools
+#   dependsOn:
+#   - Linux
+#   - Windows
+#   steps:
+#   - template: win32/sql-product-test-win32.yml
 
 - job: Release
   condition: and(succeeded(), or(eq(variables['VSCODE_RELEASE'], 'true'), and(eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))))
@@ -59,7 +60,7 @@ jobs:
   - macOS
   - Linux
   - Windows
-  - Windows_Test
+  # - Windows_Test
   steps:
   - template: sql-release.yml
 

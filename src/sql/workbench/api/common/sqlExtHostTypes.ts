@@ -398,8 +398,8 @@ export enum AzureResource {
 
 export class TreeItem extends vsExtTypes.TreeItem {
 	label?: string;
-	payload: IConnectionProfile;
-	providerHandle: string;
+	payload?: IConnectionProfile;
+	providerHandle?: string;
 }
 
 export interface ServerInfoOption {

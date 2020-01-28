@@ -36,6 +36,7 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IViewPaneOptions, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { IViewDescriptorService } from 'vs/workbench/common/views';
 
 class AccountPanel extends ViewPane {
 	public index: number;
@@ -48,9 +49,10 @@ class AccountPanel extends ViewPane {
 		@IConfigurationService configurationService: IConfigurationService,
 		@IThemeService private themeService: IThemeService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IInstantiationService instantiationService: IInstantiationService
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IViewDescriptorService viewDescriptorService: IViewDescriptorService
 	) {
-		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, instantiationService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService);
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -126,6 +128,7 @@ export class AccountDialog extends Modal {
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
+		@IViewDescriptorService private viewDescriptorService: IViewDescriptorService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(
@@ -296,7 +299,8 @@ export class AccountDialog extends Modal {
 			this._configurationService,
 			this._themeService,
 			this.contextKeyService,
-			this._instantiationService
+			this._instantiationService,
+			this.viewDescriptorService
 		);
 
 		attachPanelStyler(providerView, this._themeService);
