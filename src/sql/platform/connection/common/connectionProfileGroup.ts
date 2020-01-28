@@ -76,7 +76,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	}
 
 	public hasChildren(): boolean {
-		if ((this.children && this.children.length > 0) || (this.connections && this.connections.length > 0)) {
+		if (this.children.length > 0 || this.connections.length > 0) {
 			return true;
 		}
 		return false;
@@ -86,38 +86,30 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	 * Returns true if all connections in the tree have valid options using the correct capabilities
 	 */
 	public get hasValidConnections(): boolean {
-		if (this.connections) {
-			let invalidConnections = find(this.connections, c => !c.isConnectionOptionsValid);
-			if (invalidConnections !== undefined) {
-				return false;
-			} else {
-				let childrenAreValid: boolean = true;
-				this.children.forEach(element => {
-					let isChildValid = element.hasValidConnections;
-					if (!isChildValid) {
-						childrenAreValid = false;
-					}
-				});
-				return childrenAreValid;
-			}
+		let invalidConnections = find(this.connections, c => !c.isConnectionOptionsValid);
+		if (invalidConnections !== undefined) {
+			return false;
 		} else {
-			return true;
+			let childrenAreValid: boolean = true;
+			this.children.forEach(element => {
+				let isChildValid = element.hasValidConnections;
+				if (!isChildValid) {
+					childrenAreValid = false;
+				}
+			});
+			return childrenAreValid;
 		}
 	}
 
 	public getChildren(): (ConnectionProfile | ConnectionProfileGroup)[] {
 		let allChildren: (ConnectionProfile | ConnectionProfileGroup)[] = [];
-		if (this.connections) {
-			this.connections.forEach((conn) => {
-				allChildren.push(conn);
-			});
-		}
+		this.connections.forEach((conn) => {
+			allChildren.push(conn);
+		});
 
-		if (this.children) {
-			this.children.forEach((group) => {
-				allChildren.push(group);
-			});
-		}
+		this.children.forEach((group) => {
+			allChildren.push(group);
+		});
 		return allChildren;
 	}
 
