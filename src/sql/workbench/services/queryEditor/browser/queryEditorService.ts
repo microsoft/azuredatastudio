@@ -89,9 +89,11 @@ export class QueryEditorService implements IQueryEditorService {
 		// Create a sql document pane with accoutrements
 		const fileInput = this._untitledEditorService.create({ untitledResource: docUri, mode: 'sql' });
 		const m = await fileInput.resolve();
-		m.unregisterWorkingCopy();
 		if (sqlContent) {
+			//Setting the value of the textEditorModel causes the editor to be marked dirty at the start always.
 			m.textEditorModel.setValue(sqlContent);
+			//Set dirty value to false to prevent backup due to above.
+			m.setDirty(false);
 		}
 
 		// Create an EditDataInput for editing

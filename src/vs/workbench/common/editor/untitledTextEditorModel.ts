@@ -205,8 +205,4 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 	isReadonly(): boolean {
 		return false;
 	}
-
-	unregisterWorkingCopy() {
-		this.workingCopyService.unregisterWorkingCopy(this);
-	}
 }

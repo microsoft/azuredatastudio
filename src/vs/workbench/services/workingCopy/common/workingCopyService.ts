@@ -99,8 +99,6 @@ export interface IWorkingCopyService {
 
 	registerWorkingCopy(workingCopy: IWorkingCopy): IDisposable;
 
-	unregisterWorkingCopy(workingCopy: IWorkingCopy): void;
-
 	//#endregion
 }
 
@@ -176,7 +174,7 @@ export class WorkingCopyService extends Disposable implements IWorkingCopyServic
 		});
 	}
 
-	public unregisterWorkingCopy(workingCopy: IWorkingCopy): void {
+	private unregisterWorkingCopy(workingCopy: IWorkingCopy): void {
 
 		// Remove from registry
 		const workingCopiesForResource = this.mapResourceToWorkingCopy.get(workingCopy.resource.toString());
