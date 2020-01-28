@@ -911,36 +911,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		return this.columnNameToIndex[name];
 	}
 
-	/*Formatter for Column*/
-	private getColumnFormatter(row, cell, value, columnDef, dataContext) {
-		let valueToDisplay = '';
-		let cellClasses = 'grid-cell-value-container';
-		/* tslint:disable:no-null-keyword */
-		let valueMissing = value === undefined || value === null;
-		if (valueMissing) {
-			valueToDisplay = 'NULL';
-			cellClasses += ' missing-value';
-		}
-		else if (Services.DBCellValue.isDBCellValue(value)) {
-			valueToDisplay = 'NULL';
-			if (!value.isNull) {
-				valueToDisplay = (value.displayValue + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-				valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
-			} else {
-				cellClasses += ' missing-value';
-			}
-		}
-		else if (typeof value === 'string' || (value && value.text)) {
-			if (value.text) {
-				valueToDisplay = value.text;
-			} else {
-				valueToDisplay = value;
-			}
-			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
-		}
-		return '<span title="' + valueToDisplay + '" class="' + cellClasses + '">' + valueToDisplay + '</span>';
-	}
-
 	handleChanges(changes: { [propName: string]: any }): void {
 		let columnDefinitionChanges = changes['columnDefinitions'];
 		let activeCell = this.table ? this.table.grid.getActiveCell() : undefined;
@@ -1085,4 +1055,28 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 	}
 
+	/*Formatter for Column*/
+	private getColumnFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
+		let valueToDisplay = '';
+		let cellClasses = 'grid-cell-value-container';
+		/* tslint:disable:no-null-keyword */
+		let valueMissing = value === undefined || value === null || (Services.DBCellValue.isDBCellValue(value) && value.isNull);
+		if (valueMissing) {
+			valueToDisplay = 'NULL';
+			cellClasses += ' missing-value';
+		}
+		else if (Services.DBCellValue.isDBCellValue(value)) {
+			valueToDisplay = (value.displayValue + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+		}
+		else if (typeof value === 'string' || (value && value.text)) {
+			if (value.text) {
+				valueToDisplay = value.text;
+			} else {
+				valueToDisplay = value;
+			}
+			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+		}
+		return '<span title="' + valueToDisplay + '" class="' + cellClasses + '">' + valueToDisplay + '</span>';
+	}
 }
