@@ -87,8 +87,7 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 	type: ['array'],
 	description: nls.localize('dashboardDatabase', "Customizes the database dashboard page"),
 	items: generateDashboardWidgetSchema('database'),
-	default: [
-	]
+	default: []
 };
 
 export const databaseDashboardTabsSchema: IJSONSchema = {

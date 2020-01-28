@@ -15,13 +15,12 @@ import { IAngularEventingService } from 'sql/platform/angularEventing/browser/an
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as nls from 'vs/nls';
-import * as DOM from 'vs/base/browser/dom';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { RefreshWidgetAction, EditDashboardAction, BackupToolbarAction, RestoreToolbarAction, ManageExtensionsToolbarAction, NewQueryAction, NewNotebookToolbarAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
-import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
+import { BackupToolbarAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
+import { ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { showBackup } from 'sql/workbench/contrib/backup/browser/backupActions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 
@@ -53,7 +52,7 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 		@Inject(IConfigurationService) configurationService: IConfigurationService,
 		@Inject(ILogService) logService: ILogService,
 		@Inject(IInstantiationService) _instantiationService: IInstantiationService,
-		@Inject(ICommandService) commandService: ICommandService,
+		@Inject(ICommandService) commandService: ICommandService
 	) {
 		super(dashboardService, el, _cd, notificationService, angularEventingService, configurationService, logService, _instantiationService, commandService);
 		this._register(dashboardService.onUpdatePage(() => {
@@ -68,43 +67,15 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 	}
 
 	protected createTaskbar(parentElement: HTMLElement): void {
-		// Create QueryTaskbar
-		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
-		this.taskbar = this._register(new Taskbar(taskbarContainer));
 		this._backupAction = new BackupToolbarAction(this.backup, this);
-		this._restoreAction = new RestoreToolbarAction(this.restore, this);
-		this._newQueryAction = new NewQueryAction(this.newQuery, this);
-		this._newNotebookAction = new NewNotebookToolbarAction(this.newNotebook, this);
-		this._editAction = new EditDashboardAction(this.enableEdit, this);
-		this._refreshAction = new RefreshWidgetAction(this.refresh, this);
-		this._manageExtensionsAction = new ManageExtensionsToolbarAction(this.manageExtensions, this);
-		this.setTaskbarContent();
+		super.createTaskbar(parentElement);
 	}
 
-	protected setTaskbarContent(): void {
-		// Create HTML Elements for the taskbar
-		let separator = Taskbar.createTaskbarSeparator();
-
-		// Set the content in the order we desire
-		let content: ITaskbarContent[] = [
-			{ action: this._newQueryAction },
-			{ action: this._newNotebookAction },
-			{ element: separator },
-			{ action: this._refreshAction },
-			{ action: this._editAction },
-			{ action: this._manageExtensionsAction }
-		];
-
-		if (!this.serverInfo.isCloud && this.serverInfo.engineEditionId !== 11) {
-			content.unshift({ action: this._restoreAction });
-			content.unshift({ action: this._backupAction });
-		}
-
-		this.taskbar.setContent(content);
+	protected notCloudActions(): ITaskbarContent[] {
+		return [{ action: this._restoreAction }, { action: this._backupAction }];
 	}
 
 	public backup(): void {
-		console.error('clicked backup');
 		this._instantiationService.invokeFunction(showBackup, this.connectionManagementService.connectionInfo.connectionProfile);
 	}
 }

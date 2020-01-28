@@ -24,15 +24,7 @@ dashboard-page .dashboard-panel .tab-header .action-item .action-label.close {
 	padding: 5px;
 }
 
-dashboard-page .actions-container .action-item .dashboard-toolbar-button {
-	display: inline-block;
-	width: 100%;
-	padding: 0px;
-	text-align: center;
-	cursor: pointer;
-	background-size: 15px;
-	margin-right: 30px;
-	font-size: 15px;
-	height: 21px;
-	background-repeat: no-repeat;
+dashboard-page .actions-container .action-item .dashboard-toolbar-item {
+	padding-left: 20px;
+	margin-right: 10px;
 }

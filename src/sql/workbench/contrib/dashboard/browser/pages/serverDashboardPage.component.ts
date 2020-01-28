@@ -50,7 +50,7 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 		@Inject(IConfigurationService) configurationService: IConfigurationService,
 		@Inject(ILogService) logService: ILogService,
 		@Inject(IInstantiationService) _instantiationService: IInstantiationService,
-		@Inject(ICommandService) commandService: ICommandService,
+		@Inject(ICommandService) commandService: ICommandService
 	) {
 		super(dashboardService, el, _cd, notificationService, angularEventingService, configurationService, logService, _instantiationService, commandService);
 
