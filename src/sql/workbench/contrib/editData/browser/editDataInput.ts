@@ -57,7 +57,8 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		this._refreshButtonEnabled = false;
 		this._useQueryFilter = false;
 
-		// re-emit sql editor events through this editor if it exists
+		// re-emit sql editor events through this editor if it exists.
+		// also set dirty status to false to prevent rerendering.
 		if (this._sql) {
 			this._register(this._sql.onDidChangeDirty(async () => {
 				const model = await this._sql.resolve();

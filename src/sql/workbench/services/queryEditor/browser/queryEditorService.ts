@@ -92,9 +92,8 @@ export class QueryEditorService implements IQueryEditorService {
 		// Create an EditDataInput for editing
 		const resultsInput: EditDataResultsInput = this._instantiationService.createInstance(EditDataResultsInput, docUri.toString());
 		let editDataInput: EditDataInput = this._instantiationService.createInstance(EditDataInput, docUri, schemaName, tableName, fileInput, sqlContent, resultsInput);
-		//set value of the text editor model to sqlContent (must be done after EditDataInput).
 		if (sqlContent) {
-			//Setting the value of the textEditorModel marks editor as dirty, editDataInput handles it.
+			//Setting the value of the textEditorModel to sqlContent marks editor as dirty, editDataInput handles it.
 			m.textEditorModel.setValue(sqlContent);
 		}
 		const editor = await this._editorService.openEditor(editDataInput, { pinned: true });
