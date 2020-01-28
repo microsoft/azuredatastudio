@@ -31,7 +31,7 @@ export class InputBox extends vsInputBox {
 	private _onLoseFocus = this._register(new Emitter<OnLoseFocusParams>());
 	public onLoseFocus: Event<OnLoseFocusParams> = this._onLoseFocus.event;
 
-	private _isTextAreaInput: boolean;
+	private _isTextAreaInput = false;
 	private _hideErrors = false;
 
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, options?: IInputOptions) {

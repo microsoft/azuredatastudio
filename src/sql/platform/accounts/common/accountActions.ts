@@ -130,7 +130,7 @@ export class ApplyFilterAction extends Action {
 export class RefreshAccountAction extends Action {
 	public static ID = 'account.refresh';
 	public static LABEL = localize('refreshAccount', "Reenter your credentials");
-	public account: azdata.Account;
+	public account?: azdata.Account;
 
 	constructor(
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,

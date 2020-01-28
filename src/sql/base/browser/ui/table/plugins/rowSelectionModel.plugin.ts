@@ -12,7 +12,7 @@ export interface IRowSelectionModelOptions extends Slick.PluginOptions {
 
 export class RowSelectionModel<T extends Slick.SlickData> implements Slick.SelectionModel<T, Array<Slick.Range>> {
 	private _options: IRowSelectionModelOptions;
-	private _grid: Slick.Grid<T>;
+	private _grid!: Slick.Grid<T>;
 	private _handler = new Slick.EventHandler();
 	private _ranges: Array<Slick.Range> = [];
 
