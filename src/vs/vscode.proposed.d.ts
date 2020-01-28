@@ -22,6 +22,7 @@ declare module 'vscode' {
 		id: string;
 		accessToken: string;
 		displayName: string;
+		scopes: string[]
 	}
 
 	export interface AuthenticationProvider {
@@ -37,7 +38,7 @@ declare module 'vscode' {
 		/**
 		 * Prompts a user to login.
 		 */
-		login(): Promise<Session>;
+		login(scopes: string[]): Promise<Session>;
 		logout(sessionId: string): Promise<void>;
 	}
 
@@ -50,13 +51,7 @@ declare module 'vscode' {
 		export const onDidRegisterAuthenticationProvider: Event<string>;
 		export const onDidUnregisterAuthenticationProvider: Event<string>;
 
-		/**
-		 * Fires with the provider id that changed sessions.
-		 */
-		export const onDidChangeSessions: Event<string>;
-		export function login(providerId: string): Promise<Session>;
-		export function logout(providerId: string, accountId: string): Promise<void>;
-		export function getSessions(providerId: string): Promise<ReadonlyArray<Session>>;
+		export const providers: ReadonlyArray<AuthenticationProvider>;
 	}
 
 	//#endregion
@@ -108,7 +103,6 @@ declare module 'vscode' {
 		 */
 		environmentTunnels?: TunnelDescription[];
 
-		hideCandidatePorts?: boolean;
 	}
 
 	export type ResolverResult = ResolvedAuthority & ResolvedOptions & TunnelInformation;
@@ -128,6 +122,11 @@ declare module 'vscode' {
 		 * When implemented, the core will use this to forward ports.
 		 */
 		tunnelFactory?: (tunnelOptions: TunnelOptions) => Thenable<Tunnel> | undefined;
+
+		/**
+		 * Provides filtering for candidate ports.
+		 */
+		showCandidatePort?: (host: string, port: number, detail: string) => Thenable<boolean>;
 	}
 
 	export namespace workspace {
@@ -137,6 +136,17 @@ declare module 'vscode' {
 		 * @param tunnelOptions The `localPort` is a suggestion only. If that port is not available another will be chosen.
 		 */
 		export function openTunnel(tunnelOptions: TunnelOptions): Thenable<Tunnel>;
+
+		/**
+		 * Gets an array of the currently available tunnels. This does not include environment tunnels, only tunnels that have been created by the user.
+		 * Note that these are of type TunnelDescription and cannot be disposed.
+		 */
+		export let tunnels: Thenable<TunnelDescription[]>;
+
+		/**
+		 * Fired when the list of tunnels has changed.
+		 */
+		export const onDidTunnelsChange: Event<void>;
 	}
 
 	export interface ResourceLabelFormatter {
@@ -271,7 +281,7 @@ declare module 'vscode' {
 		 *    [  2,5,3,0,3,  0,5,4,1,0,  3,2,7,2,0 ]
 		 * ```
 		 */
-		provideDocumentSemanticTokens(document: TextDocument, token: CancellationToken): ProviderResult<SemanticTokens | SemanticTokensEdits>;
+		provideDocumentSemanticTokens(document: TextDocument, token: CancellationToken): ProviderResult<SemanticTokens>;
 
 		/**
 		 * Instead of always returning all the tokens in a file, it is possible for a `DocumentSemanticTokensProvider` to implement
@@ -1181,7 +1191,7 @@ declare module 'vscode' {
 	 * Defines the editing functionality of a webview editor. This allows the webview editor to hook into standard
 	 * editor events such as `undo` or `save`.
 	 *
-	 * @param EditType Type of edits. Edit objects must be json serializable.
+	 * @param EditType Type of edits.
 	 */
 	interface WebviewCustomEditorEditingDelegate<EditType> {
 		/**
@@ -1231,6 +1241,27 @@ declare module 'vscode' {
 		 * @return Thenable signaling that the change has completed.
 		 */
 		undoEdits(resource: Uri, edits: readonly EditType[]): Thenable<void>;
+
+		/**
+		 * Back up `resource` in its current state.
+		 *
+		 * Backups are used for hot exit and to prevent data loss. Your `backup` method should persist the resource in
+		 * its current state, i.e. with the edits applied. Most commonly this means saving the resource to disk in
+		 * the `ExtensionContext.storagePath`. When VS Code reloads and your custom editor is opened for a resource,
+		 * your extension should first check to see if any backups exist for the resource. If there is a backup, your
+		 * extension should load the file contents from there instead of from the resource in the workspace.
+		 *
+		 * `backup` is triggered whenever an edit it made. Calls to `backup` are debounced so that if multiple edits are
+		 * made in quick succession, `backup` is only triggered after the last one. `backup` is not invoked when
+		 * `auto save` is enabled (since auto save already persists resource ).
+		 *
+		 * @param resource The resource to back up.
+		 * @param cancellation Token that signals the current backup since a new backup is coming in. It is up to your
+		 * extension to decided how to respond to cancellation. If for example your extension is backing up a large file
+		 * in an operation that takes time to complete, your extension may decide to finish the ongoing backup rather
+		 * than cancelling it to ensure that VS Code has some valid backup.
+		 */
+		backup?(resource: Uri, cancellation: CancellationToken): Thenable<boolean>;
 	}
 
 	export interface WebviewCustomEditorProvider {
@@ -1323,172 +1354,6 @@ declare module 'vscode' {
 
 	//#endregion
 
-	//#region Language specific settings: https://github.com/microsoft/vscode/issues/26707
-
-	export type ConfigurationScope = Uri | TextDocument | WorkspaceFolder | { uri?: Uri, languageId: string };
-
-	/**
-	 * An event describing the change in Configuration
-	 */
-	export interface ConfigurationChangeEvent {
-
-		/**
-		 * Returns `true` if the given section is affected in the provided scope.
-		 *
-		 * @param section Configuration name, supports _dotted_ names.
-		 * @param scope A scope in which to check.
-		 * @return `true` if the given section is affected in the provided scope.
-		 */
-		affectsConfiguration(section: string, scope?: ConfigurationScope): boolean;
-	}
-
-	export namespace workspace {
-
-		/**
-		 * Get a workspace configuration object.
-		 *
-		 * When a section-identifier is provided only that part of the configuration
-		 * is returned. Dots in the section-identifier are interpreted as child-access,
-		 * like `{ myExt: { setting: { doIt: true }}}` and `getConfiguration('myExt.setting').get('doIt') === true`.
-		 *
-		 * When a scope is provided configuraiton confined to that scope is returned. Scope can be a resource or a language identifier or both.
-		 *
-		 * @param section A dot-separated identifier.
-		 * @return The full configuration or a subset.
-		 */
-		export function getConfiguration(section?: string | undefined, scope?: ConfigurationScope | null): WorkspaceConfiguration;
-
-	}
-
-	/**
-	 * Represents the configuration. It is a merged view of
-	 *
-	 * - *Default Settings*
-	 * - *Global (User) Settings*
-	 * - *Workspace settings*
-	 * - *Workspace Folder settings* - From one of the [Workspace Folders](#workspace.workspaceFolders) under which requested resource belongs to.
-	 * - *Language settings* - Settings defined under requested language.
-	 *
-	 * The *effective* value (returned by [`get`](#WorkspaceConfiguration.get)) is computed by overriding or merging the values in the following order.
-	 *
-	 * ```
-	 * `defaultValue`
-	 * `globalValue` (if defined)
-	 * `workspaceValue` (if defined)
-	 * `workspaceFolderValue` (if defined)
-	 * `defaultLanguageValue` (if defined)
-	 * `globalLanguageValue` (if defined)
-	 * `workspaceLanguageValue` (if defined)
-	 * `workspaceLanguageValue` (if defined)
-	 * ```
-	 * **Note:** Only `object` value types are merged and all other value types are overridden.
-	 *
-	 * Example 1: Overriding
-	 *
-	 * ```ts
-	 * defaultValue = 'on';
-	 * globalValue = 'relative'
-	 * workspaceFolderValue = 'off'
-	 * value = 'off'
-	 * ```
-	 *
-	 * Example 2: Language Values
-	 *
-	 * ```ts
-	 * defaultValue = 'on';
-	 * globalValue = 'relative'
-	 * workspaceFolderValue = 'off'
-	 * globalLanguageValue = 'on'
-	 * value = 'on'
-	 * ```
-	 *
-	 * Example 3: Object Values
-	 *
-	 * ```ts
-	 * defaultValue = { "a": 1, "b": 2 };
-	 * globalValue = { "b": 3, "c": 4 };
-	 * value = { "a": 1, "b": 3, "c": 4 };
-	 * ```
-	 *
-	 * *Note:* Workspace and Workspace Folder configurations contains `launch` and `tasks` settings. Their basename will be
-	 * part of the section identifier. The following snippets shows how to retrieve all configurations
-	 * from `launch.json`:
-	 *
-	 * ```ts
-	 * // launch.json configuration
-	 * const config = workspace.getConfiguration('launch', vscode.workspace.workspaceFolders[0].uri);
-	 *
-	 * // retrieve values
-	 * const values = config.get('configurations');
-	 * ```
-	 *
-	 * Refer to [Settings](https://code.visualstudio.com/docs/getstarted/settings) for more information.
-	 */
-	export interface WorkspaceConfiguration {
-
-		/**
-		 * Retrieve all information about a configuration setting. A configuration value
-		 * often consists of a *default* value, a global or installation-wide value,
-		 * a workspace-specific value, folder-specific value
-		 * and language-specific values (if [WorkspaceConfiguration](#WorkspaceConfiguration) is scoped to a language).
-		 *
-		 * *Note:* The configuration name must denote a leaf in the configuration tree
-		 * (`editor.fontSize` vs `editor`) otherwise no result is returned.
-		 *
-		 * @param section Configuration name, supports _dotted_ names.
-		 * @return Information about a configuration setting or `undefined`.
-		 */
-		inspect<T>(section: string): {
-			key: string;
-
-			defaultValue?: T;
-			globalValue?: T;
-			workspaceValue?: T,
-			workspaceFolderValue?: T,
-
-			defaultLanguageValue?: T;
-			userLanguageValue?: T;
-			workspaceLanguageValue?: T;
-			workspaceFolderLanguageValue?: T;
-
-			languages?: string[];
-
-		} | undefined;
-
-		/**
-		 * Update a configuration value. The updated configuration values are persisted.
-		 *
-		 * A value can be changed in
-		 *
-		 * - [Global settings](#ConfigurationTarget.Global): Changes the value for all instances of the editor.
-		 * - [Workspace settings](#ConfigurationTarget.Workspace): Changes the value for current workspace, if available.
-		 * - [Workspace folder settings](#ConfigurationTarget.WorkspaceFolder): Changes the value for settings from one of the [Workspace Folders](#workspace.workspaceFolders) under which the requested resource belongs to.
-		 * - Language settings: Changes the value for the requested languageId.
-		 *
-		 * *Note:* To remove a configuration value use `undefined`, like so: `config.update('somekey', undefined)`
-		 *
-		 * @param section Configuration name, supports _dotted_ names.
-		 * @param value The new value.
-		 * @param configurationTarget The [configuration target](#ConfigurationTarget) or a boolean value.
-		 *	- If `true` updates [Global settings](#ConfigurationTarget.Global).
-		 *	- If `false` updates [Workspace settings](#ConfigurationTarget.Workspace).
-		 *	- If `undefined` or `null` updates to [Workspace folder settings](#ConfigurationTarget.WorkspaceFolder) if configuration is resource specific,
-		 * 	otherwise to [Workspace settings](#ConfigurationTarget.Workspace).
-		 * @param scopeToLanguage Whether to update the value in the scope of requested languageId or not.
-		 *	- If `true` updates the value under the requested languageId.
-		 *	- If `undefined` updates the value under the requested languageId only if the configuration is defined for the language.
-		 * @throws error while updating
-		 *	- configuration which is not registered.
-		 *	- window configuration to workspace folder
-		 *	- configuration to workspace or workspace folder when no workspace is opened.
-		 *	- configuration to workspace folder when there is no workspace folder settings.
-		 *	- configuration to workspace folder when [WorkspaceConfiguration](#WorkspaceConfiguration) is not scoped to a resource.
-		 */
-		update(section: string, value: any, configurationTarget?: ConfigurationTarget | boolean, scopeToLanguage?: boolean): Thenable<void>;
-	}
-
-	//#endregion
-
 	//#region color theme access
 
 	/**
@@ -1529,10 +1394,79 @@ declare module 'vscode' {
 
 	//#region https://github.com/microsoft/vscode/issues/39441
 
-	export interface CompletionList {
-		isDetailsResolved?: boolean;
+	export interface CompletionItem {
+		/**
+		 * Will be merged into CompletionItem#label
+		 */
+		label2?: CompletionItemLabel;
+	}
+
+	export interface CompletionItemLabel {
+		/**
+		 * The function or variable. Rendered leftmost.
+		 */
+		name: string;
+
+		/**
+		 * The signature without the return type. Render after `name`.
+		 */
+		signature?: string;
+
+		/**
+		 * The fully qualified name, like package name or file path. Rendered after `signature`.
+		 */
+		qualifier?: string;
+
+		/**
+		 * The return-type of a function or type of a property/variable. Rendered rightmost.
+		 */
+		type?: string;
 	}
 
 	//#endregion
 
+
+	//#region https://github.com/microsoft/vscode/issues/77728
+
+	export interface WorkspaceEditMetadata {
+		needsConfirmation: boolean;
+		label: string;
+		description?: string;
+		iconPath?: Uri | { light: Uri; dark: Uri } | ThemeIcon;
+	}
+
+	export interface WorkspaceEdit {
+
+		insert(uri: Uri, position: Position, newText: string, metadata?: WorkspaceEditMetadata): void;
+		delete(uri: Uri, range: Range, metadata?: WorkspaceEditMetadata): void;
+		replace(uri: Uri, range: Range, newText: string, metadata?: WorkspaceEditMetadata): void;
+
+		createFile(uri: Uri, options?: { overwrite?: boolean, ignoreIfExists?: boolean }, metadata?: WorkspaceEditMetadata): void;
+		deleteFile(uri: Uri, options?: { recursive?: boolean, ignoreIfNotExists?: boolean }, metadata?: WorkspaceEditMetadata): void;
+		renameFile(oldUri: Uri, newUri: Uri, options?: { overwrite?: boolean, ignoreIfExists?: boolean }, metadata?: WorkspaceEditMetadata): void;
+	}
+
+	//#endregion
+
+	//#region Diagnostic links https://github.com/microsoft/vscode/issues/11847
+
+	export interface Diagnostic {
+		/**
+		 * Will be merged into `Diagnostic#code`
+		 */
+		code2?: {
+			/**
+			 * A code or identifier for this diagnostic.
+			 * Should be used for later processing, e.g. when providing [code actions](#CodeActionContext).
+			 */
+			value: string | number;
+
+			/**
+			 * A link to a URI with more information about the diagnostic error.
+			 */
+			link: Uri;
+		}
+	}
+
+	//#endregion
 }
