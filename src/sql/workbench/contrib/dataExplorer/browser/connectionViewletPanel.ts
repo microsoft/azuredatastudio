@@ -20,6 +20,7 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { IViewDescriptorService } from 'vs/workbench/common/views';
 
 export class ConnectionViewletPanel extends ViewPane {
 
@@ -38,9 +39,10 @@ export class ConnectionViewletPanel extends ViewPane {
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 	) {
-		super({ ...(options as IViewPaneOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService, contextKeyService, instantiationService);
+		super({ ...(options as IViewPaneOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService);
 		this._addServerAction = this.instantiationService.createInstance(AddServerAction,
 			AddServerAction.ID,
 			AddServerAction.LABEL);

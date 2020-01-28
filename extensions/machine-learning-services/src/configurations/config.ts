@@ -30,7 +30,7 @@ export class Config {
 	 * Loads the config values
 	 */
 	public async load(): Promise<void> {
-		const rawConfig = await fs.readFile(path.join(this._root, 'src', 'configurations', configFileName));
+		const rawConfig = await fs.readFile(path.join(this._root, 'out', 'configurations', configFileName));
 		this._configValues = JSON.parse(rawConfig.toString());
 	}
 
@@ -46,6 +46,13 @@ export class Config {
 	 */
 	public get requiredRPackages(): PackageConfigModel[] {
 		return this._configValues.requiredRPackages;
+	}
+
+	/**
+	 * Returns r packages repository
+	 */
+	public get rPackagesRepository(): string {
+		return this._configValues.rPackagesRepository;
 	}
 
 	/**

@@ -59,7 +59,7 @@
     }
   },
   "dependencies": {
-    "vscode-extension-telemetry": "0.0.18",
+    "ads-extension-telemetry": "github:Charles-Gagnon/ads-extension-telemetry#0.1.0",
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
