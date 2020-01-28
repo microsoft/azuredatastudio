@@ -47,10 +47,10 @@ const checkboxTemplate = `<div style="display: flex; align-items: center; flex-d
 
 export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Plugin<T> {
 	private _options: ICheckboxSelectColumnOptions;
-	private _grid: Slick.Grid<T>;
+	private _grid!: Slick.Grid<T>;
 	private _handler = new Slick.EventHandler();
 	private _selectedRowsLookup: dict.INumberDictionary<boolean> = {};
-	private _selectedCheckBoxLookup = {};
+	private _selectedCheckBoxLookup: {[key: string]: boolean} = {};
 	private _useState = false;
 
 	private _onChange = new Emitter<ICheckboxCellActionEventArgs>();
@@ -274,7 +274,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 
 		// use data for first time rendering
 		// note: make sure Init is called before using this._grid
-		let rowVal = (this._grid) ? this._grid.getDataItem(row) : null;
+		let rowVal = this._grid?.getDataItem(row);
 		if (rowVal && this._options.title && rowVal[this._options.title] === true) {
 			this._selectedCheckBoxLookup[row] = true;
 			return strings.format(checkboxTemplate, 'checked', this.getAriaLabel(true));
