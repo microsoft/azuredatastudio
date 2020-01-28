@@ -34,6 +34,7 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { IViewDescriptorService } from 'vs/workbench/common/views';
 
 export class CategoryView extends ViewPane {
 
@@ -45,9 +46,10 @@ export class CategoryView extends ViewPane {
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IInstantiationService instantiationService: IInstantiationService
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IViewDescriptorService viewDescriptorService: IViewDescriptorService
 	) {
-		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, instantiationService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService);
 	}
 
 	// we want a fixed size, so when we render to will measure our content and set that to be our

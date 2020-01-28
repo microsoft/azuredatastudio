@@ -43,6 +43,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { IViewDescriptorService } from 'vs/workbench/common/views';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -63,9 +64,10 @@ class InsightTableView<T> extends ViewPane {
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IInstantiationService instantiationService: IInstantiationService
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IViewDescriptorService viewDescriptorService: IViewDescriptorService
 	) {
-		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, instantiationService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService);
 	}
 
 	protected renderBody(container: HTMLElement): void {

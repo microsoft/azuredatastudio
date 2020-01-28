@@ -46,7 +46,7 @@ export class TaskNode {
 	/**
 	 * Provider Name
 	 */
-	public providerName: string;
+	public providerName?: string;
 
 
 	/**
@@ -57,7 +57,7 @@ export class TaskNode {
 	/**
 	 * The end time of the task
 	 */
-	public endTime: string;
+	public endTime?: string;
 
 	/**
 	 * The timer for the task
@@ -72,12 +72,12 @@ export class TaskNode {
 	/**
 	 * Children of this node
 	 */
-	public children: TaskNode[];
+	public children?: TaskNode[];
 
 	/**
 	 * Task's message
 	 */
-	public message: string;
+	public message?: string;
 
 	/**
 	 * Status of the task
@@ -97,7 +97,7 @@ export class TaskNode {
 	/**
 	 * Script of task operation
 	 */
-	public script: string;
+	public script?: string;
 
 	constructor(taskName: string, serverName?: string, databaseName?: string, taskId: string | undefined = undefined, taskExecutionMode: TaskExecutionMode = TaskExecutionMode.execute, isCancelable: boolean = true) {
 		this.id = taskId || generateUuid();
