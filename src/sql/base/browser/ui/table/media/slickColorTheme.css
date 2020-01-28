@@ -74,17 +74,12 @@
 	border-color: var(--color-cell-border-active);
 }
 
-.vs slick-grid.active .grid .slick-cell.selected {
-	background-color: var(--color-cell-bg-grid-selected);
-}
-
-/* EditData versions */
-
-.vs .grid .slick-cell .active {
+/* EditData version */
+.vs .slickgridContainer .grid .slick-cell .active {
 	border-color: var(--color-cell-border-active);
 }
 
-.vs .grid .slick-cell.selected {
+.vs slick-grid.active .grid .slick-cell.selected {
 	background-color: var(--color-cell-bg-grid-selected);
 }
 
@@ -219,17 +214,13 @@
 	border-color: var(--color-cell-border-active);
 }
 
+/* EditData versions */
+.vs-dark .slickgridContainer .grid .slick-cell.active {
+	border-color: var(--color-cell-border-active);
+}
+
 .vs-dark slick-grid.active .grid .slick-cell.selected {
 	background-color: var(--color-cell-bg-grid-selected);
-}
-
-/* EditData versions */
-.vs-dark .grid .slick-cell.active {
-	border-color: var(--color-cell-border-active);
-}
-
-.vs-dark .grid .slick-cell.selected {
-	border-color: var(--color-cell-border-active);
 }
 
 .vs-dark .grid .slick-cell.selected .grid-cell-value-container.missing-value {
