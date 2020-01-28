@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ISlickColumn, VirtualizedCollection } from 'angular2-slickgrid';
-
+import { VirtualizedCollection, ISlickColumn } from 'sql/base/browser/ui/table/asyncDataView';
 export interface IGridDataSet {
 	dataRows: VirtualizedCollection<{}>;
 	columnDefinitions: ISlickColumn<any>[];
