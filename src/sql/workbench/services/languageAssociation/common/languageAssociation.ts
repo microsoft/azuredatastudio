@@ -79,5 +79,3 @@ export const Extensions = {
 };
 
 Registry.add(Extensions.LanguageAssociations, languageAssociationRegistry);
-
-
