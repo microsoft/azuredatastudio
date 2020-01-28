@@ -69,13 +69,8 @@
 	--color-grid-dirty-text: #101010;
 }
 /* grid styling */
-
+.vs .slickgridContainer .grid .slick-cell .active,
 .vs slick-grid.active .grid .slick-cell .active {
-	border-color: var(--color-cell-border-active);
-}
-
-/* EditData version */
-.vs .slickgridContainer .grid .slick-cell .active {
 	border-color: var(--color-cell-border-active);
 }
 
@@ -209,13 +204,8 @@
 }
 
 /* grid styling */
-
+.vs-dark .slickgridContainer .grid .slick-cell.active,
 .vs-dark slick-grid.active .grid .slick-cell.active {
-	border-color: var(--color-cell-border-active);
-}
-
-/* EditData versions */
-.vs-dark .slickgridContainer .grid .slick-cell.active {
 	border-color: var(--color-cell-border-active);
 }
 
