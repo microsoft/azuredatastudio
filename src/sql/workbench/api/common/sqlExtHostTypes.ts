@@ -41,6 +41,11 @@ export enum EditRowState {
 	dirtyUpdate = 3
 }
 
+export enum ExtensionNodeType {
+	Server = 'Server',
+	Database = 'Database'
+}
+
 export enum TaskStatus {
 	NotStarted = 0,
 	InProgress = 1,

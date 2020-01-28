@@ -33,7 +33,6 @@ import { IURITransformerService } from 'vs/workbench/api/common/extHostUriTransf
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IExtensionApiFactory as vsIApiFactory, createApiFactoryAndRegisterActors as vsApiFactory } from 'vs/workbench/api/common/extHost.api.impl';
-import { NodeType } from 'sql/workbench/common/views';
 
 export interface IAzdataExtensionApiFactory {
 	(extension: IExtensionDescription): typeof azdata;
@@ -548,7 +547,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				ActionOnCellCheckboxCheck: sqlExtHostTypes.ActionOnCellCheckboxCheck,
 				StepCompletionAction: sqlExtHostTypes.StepCompletionAction,
 				AgentSubSystem: sqlExtHostTypes.AgentSubSystem,
-				ExtensionNodeType: NodeType,
+				ExtensionNodeType: sqlExtHostTypes.ExtensionNodeType,
 				ColumnSizingMode: sqlExtHostTypes.ColumnSizingMode,
 				DatabaseEngineEdition: sqlExtHostTypes.DatabaseEngineEdition
 			};
