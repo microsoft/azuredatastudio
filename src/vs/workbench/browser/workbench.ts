@@ -45,7 +45,7 @@ import { coalesce } from 'vs/base/common/arrays';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { Layout } from 'vs/workbench/browser/layout';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
-import { ILanguageAssociationRegistry, Extensions as LanguageExtensions } from 'sql/workbench/common/languageAssociation';
+import { ILanguageAssociationRegistry, Extensions as LanguageExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 
 export class Workbench extends Layout {
 

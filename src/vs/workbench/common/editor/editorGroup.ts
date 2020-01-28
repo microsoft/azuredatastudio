@@ -15,7 +15,7 @@ import { coalesce, firstIndex } from 'vs/base/common/arrays';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
-import { doHandleUpgrade } from 'sql/workbench/common/languageAssociation';
+import { doHandleUpgrade } from "sql/workbench/services/languageAssociation/browser/doHandleUpgrade";
 
 const EditorOpenPositioning = {
 	LEFT: 'left',

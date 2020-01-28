@@ -6,9 +6,6 @@
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IEditorInput, EditorInput } from 'vs/workbench/common/editor';
 import { ServicesAccessor, IInstantiationService, BrandedService } from 'vs/platform/instantiation/common/instantiation';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { getCodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 
 export type InputCreator = (servicesAccessor: ServicesAccessor, activeEditor: IEditorInput) => EditorInput | undefined;
@@ -32,7 +29,7 @@ export interface ILanguageAssociationRegistry {
 	start(accessor: ServicesAccessor): void;
 }
 
-const languageAssociationRegistery = new class implements ILanguageAssociationRegistry {
+const languageAssociationRegistry = new class implements ILanguageAssociationRegistry {
 	private associationsInstances = new Map<string, ILanguageAssociation>();
 	private associationContructors = new Map<string, ILanguageAssociationSignature<BrandedService[]>>();
 	private defaultAssociationsInstance?: [string, ILanguageAssociation];
@@ -81,17 +78,6 @@ export const Extensions = {
 	LanguageAssociations: 'workbench.contributions.editor.languageAssociation'
 };
 
-Registry.add(Extensions.LanguageAssociations, languageAssociationRegistery);
+Registry.add(Extensions.LanguageAssociations, languageAssociationRegistry);
 
-export function doHandleUpgrade(editor: EditorInput): EditorInput {
-	if (editor instanceof UntitledTextEditorInput || editor instanceof FileEditorInput) {
-		const activeWidget = getCodeEditor(editor);
-		const textModel = activeWidget.getModel();
-		const oldLanguage = textModel.getLanguageIdentifier().language;
-		const association = languageAssociationRegistery.getAssociationForLanguage(oldLanguage);
-		if (association) {
-			return association.convertInput(editor);
-		}
-	}
-	return editor;
-}
+

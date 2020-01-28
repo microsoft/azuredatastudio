@@ -199,11 +199,6 @@ export enum StepCompletionAction {
 	GoToStep = 4
 }
 
-export enum ExtensionNodeType {
-	Server = 'Server',
-	Database = 'Database'
-}
-
 export interface CheckBoxInfo {
 	row: number;
 	columnName: string;

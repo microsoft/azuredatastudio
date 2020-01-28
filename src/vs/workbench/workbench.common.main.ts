@@ -384,7 +384,7 @@ import 'sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contributi
 
 // {{SQL CARBON EDIT}}
 //editor replacement
-import 'sql/workbench/common/editorReplacer.contribution';
+import 'sql/workbench/contrib/editorReplacement/common/editorReplacer.contribution';
 
 // tasks
 import 'sql/workbench/contrib/tasks/browser/tasks.contribution';

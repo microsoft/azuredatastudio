@@ -12,7 +12,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { NodeType } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
-import { ExtensionNodeType, DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { isWindows } from 'vs/base/common/platform';
 
 export class MssqlNodeContext extends Disposable {
@@ -153,8 +153,8 @@ export class MssqlNodeContext extends Disposable {
 	private setIsDatabaseOrServer(): void {
 		const isDatabaseOrServer = (this.nodeContextValue.node.contextValue === NodeType.Server ||
 			this.nodeContextValue.node.contextValue === NodeType.Database ||
-			this.nodeContextValue.node.type === ExtensionNodeType.Server ||
-			this.nodeContextValue.node.type === ExtensionNodeType.Database);
+			this.nodeContextValue.node.type === NodeType.Server ||
+			this.nodeContextValue.node.type === NodeType.Database);
 		this.isDatabaseOrServerKey.set(isDatabaseOrServer);
 	}
 

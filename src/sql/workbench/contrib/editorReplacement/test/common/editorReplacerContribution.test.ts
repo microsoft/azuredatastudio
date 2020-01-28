@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { EditorReplacementContribution } from 'sql/workbench/common/editorReplacerContribution';
+import { EditorReplacementContribution } from 'sql/workbench/contrib/editorReplacement/common/editorReplacerContribution';
 import { TestEditorService } from 'vs/workbench/test/workbenchTestServices';
 import { IModeService, ILanguageSelection } from 'vs/editor/common/services/modeService';
 import { Event } from 'vs/base/common/event';
@@ -19,7 +19,7 @@ import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsSe
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
+import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/common/queryInputFactory';
 import { workbenchInstantiationService } from 'sql/workbench/test/workbenchTestServices';
 import { NotebookEditorInputAssociation } from 'sql/workbench/contrib/notebook/common/models/nodebookInputFactory';
