@@ -89,21 +89,14 @@ export class QueryEditorService implements IQueryEditorService {
 		// Create a sql document pane with accoutrements
 		const fileInput = this._untitledEditorService.create({ untitledResource: docUri, mode: 'sql' });
 		const m = await fileInput.resolve();
-		//Handle when a change is made to the editor.
-		m.onDidChangeDirty(() => {
-			if (m.isDirty()) {
-				m.setDirty(false);
-			}
-		});
-		if (sqlContent) {
-			//Setting the value of the textEditorModel marks editor as dirty, above handles it.
-			m.textEditorModel.setValue(sqlContent);
-		}
-
 		// Create an EditDataInput for editing
 		const resultsInput: EditDataResultsInput = this._instantiationService.createInstance(EditDataResultsInput, docUri.toString());
 		let editDataInput: EditDataInput = this._instantiationService.createInstance(EditDataInput, docUri, schemaName, tableName, fileInput, sqlContent, resultsInput);
-
+		//set value of the text editor model to sqlContent (must be done after EditDataInput).
+		if (sqlContent) {
+			//Setting the value of the textEditorModel marks editor as dirty, editDataInput handles it.
+			m.textEditorModel.setValue(sqlContent);
+		}
 		const editor = await this._editorService.openEditor(editDataInput, { pinned: true });
 		let params = editor.input as EditDataInput;
 		return params;
