@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 export class ChartState {
-	dataId: { batchId: number, resultId: number };
+	dataId?: { batchId: number, resultId: number };
 	options: IInsightOptions = {
 		type: ChartType.Bar
 	};

@@ -18,7 +18,7 @@ export const Extensions = {
 export interface IComponentRegistry {
 	registerComponentType(id: string, typeMapping: ModelComponentTypes, ctor: Type<IComponent>): ComponentIdentifier;
 	getIdForTypeMapping(typeMapping: ModelComponentTypes): string;
-	getCtorForType(typeMapping: ModelComponentTypes): Type<IComponent>;
+	getCtorForType(typeMapping: ModelComponentTypes): Type<IComponent> | undefined;
 	getCtorFromId(id: string): Type<IComponent>;
 	getAllCtors(): Array<Type<IComponent>>;
 	getAllIds(): Array<string>;
@@ -38,7 +38,7 @@ class ComponentRegistry implements IComponentRegistry {
 		return this._typeNameToId[ModelComponentTypes[typeMapping]];
 	}
 
-	public getCtorForType(typeMapping: ModelComponentTypes): Type<IComponent> {
+	public getCtorForType(typeMapping: ModelComponentTypes): Type<IComponent> | undefined {
 		let id = this.getIdForTypeMapping(typeMapping);
 		return id ? this._idToCtor[id] : undefined;
 	}

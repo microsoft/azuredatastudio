@@ -328,7 +328,7 @@ declare module 'azdata' {
 		authenticationType: string;
 		savePassword: boolean;
 		groupFullName?: string;
-		groupId: string;
+		groupId?: string;
 		providerName: string;
 		saveProfile: boolean;
 		id: string;

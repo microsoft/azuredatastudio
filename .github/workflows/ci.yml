@@ -37,8 +37,8 @@ jobs:
   #     name: Download Electron
   #   - run: yarn gulp hygiene
   #     name: Run Hygiene Checks
-  #   - run: yarn strict-null-check # {{SQL CARBON EDIT}} add step
-  #     name: Run Strict Null Check
+    # - run: yarn strict-vscode # {{SQL CARBON EDIT}} add step
+    #   name: Run Strict Compile Options
   #   # - run: yarn monaco-compile-check {{SQL CARBON EDIT}} remove step
   #   #   name: Run Monaco Editor Checks
   #   - run: yarn valid-layers-check
@@ -71,8 +71,8 @@ jobs:
       name: Download Electron
     - run: yarn gulp hygiene
       name: Run Hygiene Checks
-    - run: yarn strict-null-check # {{SQL CARBON EDIT}} add step
-      name: Run Strict Null Check
+    - run: yarn strict-vscode # {{SQL CARBON EDIT}} add step
+      name: Run Strict Compile Options
     # - run: yarn monaco-compile-check {{SQL CARBON EDIT}} remove step
     #   name: Run Monaco Editor Checks
     - run: yarn valid-layers-check
@@ -102,8 +102,8 @@ jobs:
       name: Download Electron
     - run: yarn gulp hygiene
       name: Run Hygiene Checks
-    - run: yarn strict-null-check # {{SQL CARBON EDIT}} add step
-      name: Run Strict Null Check
+    - run: yarn strict-vscode # {{SQL CARBON EDIT}} add step
+      name: Run Strict Compile Options
     # - run: yarn monaco-compile-check {{SQL CARBON EDIT}} remove step
     #   name: Run Monaco Editor Checks
     - run: yarn valid-layers-check

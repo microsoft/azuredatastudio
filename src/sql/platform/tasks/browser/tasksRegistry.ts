@@ -76,7 +76,6 @@ export const TaskRegistry: ITaskRegistry = new class implements ITaskRegistry {
 export abstract class Task {
 	public readonly id: string;
 	public readonly title: string;
-	public readonly iconPathDark: string;
 	public readonly iconPath?: { dark: URI; light?: URI; };
 	private readonly _iconClass?: string;
 	private readonly _description?: ITaskHandlerDescription;
