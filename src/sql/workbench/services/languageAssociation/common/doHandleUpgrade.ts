@@ -6,7 +6,6 @@
 import { EditorInput } from 'vs/workbench/common/editor';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { getCodeEditor } from 'vs/editor/browser/editorBrowser';
 import { Extensions as ILanguageAssociationExtensions, ILanguageAssociationRegistry } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { Registry } from 'vs/platform/registry/common/platform';
 
@@ -14,10 +13,13 @@ const languageRegistry = Registry.as<ILanguageAssociationRegistry>(ILanguageAsso
 
 export function doHandleUpgrade(editor: EditorInput): EditorInput {
 	if (editor instanceof UntitledTextEditorInput || editor instanceof FileEditorInput) {
-		const activeWidget = getCodeEditor(editor);
-		const textModel = activeWidget.getModel();
-		const oldLanguage = textModel.getLanguageIdentifier().language;
-		const association = languageRegistry.getAssociationForLanguage(oldLanguage);
+		let language: string;
+		if (editor instanceof UntitledTextEditorInput) {
+			language = editor.getMode();
+		} else {
+			editor.getPreferredMode();
+		}
+		const association = languageRegistry.getAssociationForLanguage(language);
 		if (association) {
 			return association.convertInput(editor);
 		}
