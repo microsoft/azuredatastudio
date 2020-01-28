@@ -37,7 +37,7 @@ import { equals } from 'vs/base/common/arrays';
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
 	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
-	private refreshGridTimeoutInMs = 10;
+	private refreshGridTimeoutInMs = 200;
 
 	// The timeout handle for the refresh grid task
 	private refreshGridTimeoutHandle: any;
@@ -443,9 +443,7 @@ export class EditDataGridPanel extends GridParentComponent {
 							self.firstRender = false;
 						}
 					};
-					setTimeout(() => {
-						setActive();
-					}, self.refreshGridTimeoutInMs);
+					setTimeout(() => setActive());
 				}
 				resolve();
 			}, self.refreshGridTimeoutInMs);
