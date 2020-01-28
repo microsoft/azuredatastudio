@@ -95,6 +95,11 @@ export class QueryEditorService implements IQueryEditorService {
 			//Set dirty value to false to prevent backup due to above.
 			m.setDirty(false);
 		}
+		m.onDidChangeDirty(() => {
+			if (m.isDirty()) {
+				m.setDirty(false);
+			}
+		});
 
 		// Create an EditDataInput for editing
 		const resultsInput: EditDataResultsInput = this._instantiationService.createInstance(EditDataResultsInput, docUri.toString());
