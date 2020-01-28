@@ -109,6 +109,9 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 
 		const viewsService = new class implements IViewsService {
+			getActiveViewWithId(id: string): IView {
+				throw new Error('Method not implemented.');
+			}
 			_serviceBrand: undefined;
 			openView(id: string, focus?: boolean): Promise<IView> {
 				return Promise.resolve({
