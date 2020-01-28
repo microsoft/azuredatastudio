@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 
 import * as azdata from 'azdata';
-import { ColumnSizingMode, ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 
@@ -26,7 +25,8 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { ColumnSizingMode } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 @Component({
 	selector: 'modelview-table',

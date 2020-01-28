@@ -388,6 +388,24 @@
                     "**/{vs,sql}/workbench/services/*/common/**",
                     "assert"
                 ]
+            },
+            {
+                "target": "**/{vs,sql}/workbench/browser/**",
+                "restrictions": [
+					"vs/nls",
+					"azdata",
+					"@angular/*",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/{common,browser}/**",
+                    "**/{vs,sql}/base/parts/*/{common,browser}/**",
+                    "**/{vs,sql}/platform/*/{common,browser}/**",
+                    "**/{vs,sql}/editor/{common,browser}/**",
+                    "**/{vs,sql}/editor/contrib/**", // editor/contrib is equivalent to /browser/ by convention
+                    "**/{vs,sql}/workbench/workbench.web.api",
+                    "**/{vs,sql}/workbench/{common,browser}/**",
+                    "**/{vs,sql}/workbench/services/*/{common,browser}/**",
+                    "assert"
+                ]
             }
         ]
     },
