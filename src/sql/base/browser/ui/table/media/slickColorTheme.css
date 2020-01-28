@@ -70,11 +70,21 @@
 }
 /* grid styling */
 
-.vs slick-grid.active .grid .slick-cell.active {
+.vs slick-grid.active .grid .slick-cell .active {
 	border-color: var(--color-cell-border-active);
 }
 
 .vs slick-grid.active .grid .slick-cell.selected {
+	background-color: var(--color-cell-bg-grid-selected);
+}
+
+/* EditData versions */
+
+.vs .grid .slick-cell .active {
+	border-color: var(--color-cell-border-active);
+}
+
+.vs .grid .slick-cell.selected {
 	background-color: var(--color-cell-bg-grid-selected);
 }
 
@@ -211,6 +221,15 @@
 
 .vs-dark slick-grid.active .grid .slick-cell.selected {
 	background-color: var(--color-cell-bg-grid-selected);
+}
+
+/* EditData versions */
+.vs-dark .grid .slick-cell.active {
+	border-color: var(--color-cell-border-active);
+}
+
+.vs-dark .grid .slick-cell.selected {
+	border-color: var(--color-cell-border-active);
 }
 
 .vs-dark .grid .slick-cell.selected .grid-cell-value-container.missing-value {
