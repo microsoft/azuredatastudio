@@ -74,6 +74,8 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 
 	private async loadSavedServers(): Promise<void> {
 		try {
+			// Optimistically set to true so we don't double-load if something refreshes the tree while
+			// we're loading.
 			this.isSystemInitialized = true;
 			// Call to collect all locally saved CMS servers
 			// to determine whether the system has been initialized.
