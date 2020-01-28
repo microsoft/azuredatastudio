@@ -78,7 +78,9 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		response = response as TokenResponse;
 
 		context.cache.add([response], (err, result) => {
-			console.log(err, result);
+			if (err || !result) {
+				console.log(`Unexpected error adding token to cache ${err}`);
+			}
 		});
 
 		return response;
