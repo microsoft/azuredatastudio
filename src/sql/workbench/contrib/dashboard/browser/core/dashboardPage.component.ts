@@ -46,7 +46,6 @@ import { showRestore } from 'sql/workbench/contrib/restore/browser/restoreAction
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ServerInfo } from 'azdata';
 
-// import ToolbarContainer from 'sql/workbench/browser/modelComponents/toolbarContainer.component';
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 const homeTabGroupId = 'home';
 
@@ -69,8 +68,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	@ViewChild('taskBar', { read: ElementRef }) private taskContainer: ElementRef;
 	protected taskbar: Taskbar;
 
-
-	// actinos
+	// actions
 	protected _editAction: EditDashboardAction;
 	protected _refreshAction: RefreshWidgetAction;
 	protected _restoreAction: RestoreToolbarAction;
@@ -122,7 +120,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		@Inject(IConfigurationService) private configurationService: IConfigurationService,
 		@Inject(ILogService) private logService: ILogService,
 		@Inject(IInstantiationService) protected _instantiationService: IInstantiationService,
-		@Inject(ICommandService) private commandService: ICommandService,
+		@Inject(ICommandService) private commandService: ICommandService
 	) {
 		super();
 	}
@@ -158,7 +156,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	protected createTaskbar(parentElement: HTMLElement): void {
-		// Create QueryTaskbar
 		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
 		this.taskbar = this._register(new Taskbar(taskbarContainer));
 		this._restoreAction = new RestoreToolbarAction(this.restore, this);
@@ -172,7 +169,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 	protected setTaskbarContent(): void {
 		// Create HTML Elements for the taskbar
-		let separator = Taskbar.createTaskbarSeparator();
+		let separator: HTMLElement = Taskbar.createTaskbarSeparator();
+		separator.style.margin = '0px 15px 0px 0px';
 
 		// Set the content in the order we desire
 		let content: ITaskbarContent[] = [
@@ -185,10 +183,16 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		];
 
 		if (!this.serverInfo.isCloud && this.serverInfo.engineEditionId !== 11) {
-			content.unshift({ action: this._restoreAction });
+			this.notCloudActions().forEach(a => {
+				content.unshift(a);
+			});
 		}
 
 		this.taskbar.setContent(content);
+	}
+
+	protected notCloudActions(): ITaskbarContent[] {
+		return [{ action: this._restoreAction }];
 	}
 
 	private createTabs(homeWidgets: WidgetConfig[]) {
@@ -429,6 +433,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	public manageExtensions(): void {
+		// TODO: implement what to do here
 		console.error('clicked manage extensions');
 	}
 

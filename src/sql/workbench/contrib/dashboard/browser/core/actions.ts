@@ -19,15 +19,15 @@ export class EditDashboardAction extends Action {
 	private static readonly ID = 'editDashboard';
 	private static readonly EDITLABEL = nls.localize('editDashboard', "Edit");
 	private static readonly EXITLABEL = nls.localize('editDashboardExit', "Exit");
-	private static readonly ICON = 'edit-toolbar';
+	private static readonly CSSCLASS = 'edit-toolbar dashboard-toolbar-item';
 
 	private _state = 0;
 
 	constructor(
 		private editFn: () => void,
-		private context: any, //this
+		private context: any //this
 	) {
-		super(EditDashboardAction.ID, EditDashboardAction.EDITLABEL, EditDashboardAction.ICON);
+		super(EditDashboardAction.ID, EditDashboardAction.EDITLABEL, EditDashboardAction.CSSCLASS);
 	}
 
 	run(): Promise<boolean> {
@@ -55,13 +55,13 @@ export class RefreshWidgetAction extends Action {
 
 	private static readonly ID = 'refreshWidget';
 	private static readonly LABEL = nls.localize('refreshWidget', "Refresh");
-	private static readonly ICON = 'refresh-toolbar';
+	private static readonly CSSCLASS = 'refresh-toolbar dashboard-toolbar-item';
 
 	constructor(
 		private refreshFn: () => void,
-		private context: any, // this
+		private context: any // this
 	) {
-		super(RefreshWidgetAction.ID, RefreshWidgetAction.LABEL, RefreshWidgetAction.ICON);
+		super(RefreshWidgetAction.ID, RefreshWidgetAction.LABEL, RefreshWidgetAction.CSSCLASS);
 	}
 
 	run(): Promise<boolean> {
@@ -75,16 +75,15 @@ export class RefreshWidgetAction extends Action {
 }
 
 export class RestoreToolbarAction extends Action {
-
 	private static readonly ID = 'restore';
 	private static readonly LABEL = nls.localize('restore', "Restore");
-	private static readonly ICON = 'restore-toolbar';
+	private static readonly CSSCLASS = 'restore-toolbar dashboard-toolbar-item';
 
 	constructor(
 		private restoreFn: () => void,
-		private context: any, // this
+		private context: any // this
 	) {
-		super(RestoreToolbarAction.ID, RestoreToolbarAction.LABEL, RestoreToolbarAction.ICON);
+		super(RestoreToolbarAction.ID, RestoreToolbarAction.LABEL, RestoreToolbarAction.CSSCLASS);
 	}
 
 	run(): Promise<boolean> {
@@ -98,16 +97,15 @@ export class RestoreToolbarAction extends Action {
 }
 
 export class BackupToolbarAction extends Action {
-
 	private static readonly ID = 'backup';
 	private static readonly LABEL = nls.localize('backup', "Backup");
-	private static readonly ICON = 'backup-toolbar';
+	private static readonly CSSCLASS = 'backup-toolbar dashboard-toolbar-item';
 
 	constructor(
 		private backupFn: () => void,
-		private context: any, // this
+		private context: any // this
 	) {
-		super(BackupToolbarAction.ID, BackupToolbarAction.LABEL, BackupToolbarAction.ICON);
+		super(BackupToolbarAction.ID, BackupToolbarAction.LABEL, BackupToolbarAction.CSSCLASS);
 	}
 
 	run(): Promise<boolean> {
@@ -121,16 +119,15 @@ export class BackupToolbarAction extends Action {
 }
 
 export class ManageExtensionsToolbarAction extends Action {
-
 	private static readonly ID = 'manageExtensions';
 	private static readonly LABEL = nls.localize('manageExtensions', "Manage extensions");
-	private static readonly ICON = 'manage-extensions-toolbar';
+	private static readonly CSSCLASS = 'manage-extensions-toolbar dashboard-toolbar-item';
 
 	constructor(
 		private manageExtensionsFn: () => void,
-		private context: any, // this
+		private context: any // this
 	) {
-		super(ManageExtensionsToolbarAction.ID, ManageExtensionsToolbarAction.LABEL, ManageExtensionsToolbarAction.ICON);
+		super(ManageExtensionsToolbarAction.ID, ManageExtensionsToolbarAction.LABEL, ManageExtensionsToolbarAction.CSSCLASS);
 	}
 
 	run(): Promise<boolean> {
@@ -144,16 +141,15 @@ export class ManageExtensionsToolbarAction extends Action {
 }
 
 export class NewQueryAction extends Action {
-
 	private static readonly ID = 'newQuery';
 	private static readonly LABEL = nls.localize('newQuery', "New Query");
-	private static readonly ICON = 'new-query-toolbar';
+	private static readonly CSSCLASS = 'new-query-toolbar dashboard-toolbar-item';
 
 	constructor(
 		private newQueryFn: () => void,
-		private context: any, // this
+		private context: any // this
 	) {
-		super(NewQueryAction.ID, NewQueryAction.LABEL, NewQueryAction.ICON);
+		super(NewQueryAction.ID, NewQueryAction.LABEL, NewQueryAction.CSSCLASS);
 	}
 
 	run(): Promise<boolean> {
@@ -169,13 +165,13 @@ export class NewQueryAction extends Action {
 export class NewNotebookToolbarAction extends Action {
 	public static readonly ID = 'notebook.command.new';
 	public static readonly LABEL = nls.localize('newNotebookAction', "New Notebook");
-	private static readonly ICON = 'new-notebook-toolbar';
+	private static readonly CSSCLASS = 'new-notebook-toolbar dashboard-toolbar-item';
 
 	constructor(
 		private newNotebookFn: () => void,
-		private context: any, // this
+		private context: any // this
 	) {
-		super(NewNotebookToolbarAction.ID, NewNotebookToolbarAction.LABEL, NewNotebookToolbarAction.ICON);
+		super(NewNotebookToolbarAction.ID, NewNotebookToolbarAction.LABEL, NewNotebookToolbarAction.CSSCLASS);
 	}
 
 	async run(): Promise<boolean> {

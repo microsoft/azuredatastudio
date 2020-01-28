@@ -217,11 +217,11 @@
 
 .hc-black .codicon.edit,
 .vs-dark .codicon.edit {
-	background: url('edit_inverse.svg') no-repeat;
+	background: url('edit_inverse.svg') center center no-repeat;
 }
 
 .vs .codicon.edit {
-	background: url('edit.svg') no-repeat;
+	background: url('edit.svg') center center no-repeat;
 }
 
 .hc-black .codicon.pin,
