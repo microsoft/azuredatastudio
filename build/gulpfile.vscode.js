@@ -150,9 +150,9 @@ gulp.task(minifyVSCodeTask);
  * @return {Object} A map of paths to checksums.
  */
 function computeChecksums(out, filenames) {
-	var result = {};
+	let result = {};
 	filenames.forEach(function (filename) {
-		var fullPath = path.join(process.cwd(), out, filename);
+		let fullPath = path.join(process.cwd(), out, filename);
 		result[filename] = computeChecksum(fullPath);
 	});
 	return result;
@@ -165,9 +165,9 @@ function computeChecksums(out, filenames) {
  * @return {string} The checksum for `filename`.
  */
 function computeChecksum(filename) {
-	var contents = fs.readFileSync(filename);
+	let contents = fs.readFileSync(filename);
 
-	var hash = crypto
+	let hash = crypto
 		.createHash('md5')
 		.update(contents)
 		.digest('base64')
@@ -236,7 +236,6 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		const api = gulp.src('src/vs/vscode.d.ts').pipe(rename('out/vs/vscode.d.ts'));
 		// {{SQL CARBON EDIT}}
 		const dataApi = gulp.src('src/sql/azdata.d.ts').pipe(rename('out/sql/azdata.d.ts'));
-		const sqlopsAPI = gulp.src('src/sql/sqlops.d.ts').pipe(rename('out/sql/sqlops.d.ts'));
 
 		const telemetry = gulp.src('.build/telemetry/**', { base: '.build/telemetry', dot: true });
 
@@ -253,8 +252,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			productJsonStream,
 			license,
 			api,
-			dataApi,
-			sqlopsAPI, // {{SQL CARBON EDIT}}
+			dataApi, // {{SQL CARBON EDIT}}
 			telemetry,
 			sources,
 			deps

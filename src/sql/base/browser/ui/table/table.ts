@@ -35,9 +35,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	private _grid: Slick.Grid<T>;
 	private _columns: Slick.Column<T>[];
 	private _data: IDisposableDataProvider<T>;
-	private _sorter: ITableSorter<T>;
+	private _sorter?: ITableSorter<T>;
 
-	private _autoscroll: boolean;
+	private _autoscroll?: boolean;
 	private _container: HTMLElement;
 	private _tableContainer: HTMLElement;
 
@@ -97,7 +97,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		if (configuration && configuration.sorter) {
 			this._sorter = configuration.sorter;
 			this._grid.onSort.subscribe((e, args) => {
-				this._sorter(args);
+				this._sorter!(args);
 				this._grid.invalidate();
 				this._grid.render();
 			});

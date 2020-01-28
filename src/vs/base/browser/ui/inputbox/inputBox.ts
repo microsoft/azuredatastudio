@@ -114,7 +114,7 @@ export class InputBox extends Widget {
 	private scrollableElement: ScrollableElement | undefined;
 
 	// {{SQL CARBON EDIT}} - Add showValidationMessage and set inputBackground, inputForeground, and inputBorder as protected
-	protected showValidationMessage: boolean;
+	protected showValidationMessage?: boolean;
 	protected inputBackground?: Color;
 	protected inputForeground?: Color;
 	protected inputBorder?: Color;
@@ -511,7 +511,7 @@ export class InputBox extends Widget {
 
 				const styles = this.stylesForType(this.message.type);
 				spanElement.style.backgroundColor = styles.background ? styles.background.toString() : '';
-				spanElement.style.color = styles.foreground ? styles.foreground.toString() : null;
+				spanElement.style.color = styles.foreground ? styles.foreground.toString() : '';
 				spanElement.style.border = styles.border ? `1px solid ${styles.border}` : '';
 
 				dom.append(div, spanElement);

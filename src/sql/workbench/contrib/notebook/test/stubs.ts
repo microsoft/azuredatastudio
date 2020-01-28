@@ -135,7 +135,7 @@ export class NotebookFindModelStub implements INotebookFindModel {
 	findPrevious(): Promise<NotebookRange> {
 		throw new Error('Method not implemented.');
 	}
-	find(exp: string, maxMatches?: number): Promise<NotebookRange> {
+	find(exp: string, matchCase?: boolean, wholeWord?: boolean, maxMatches?: number): Promise<NotebookRange> {
 		throw new Error('Method not implemented.');
 	}
 	clearFind(): void {
@@ -220,7 +220,7 @@ export class NotebookServiceStub implements INotebookService {
 		throw new Error('Method not implemented.');
 	}
 	getProvidersForFileType(fileType: string): string[] {
-		throw new Error('Method not implemented.');
+		return [];
 	}
 	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] {
 		throw new Error('Method not implemented.');
@@ -516,7 +516,7 @@ export class NodeStub implements Node {
 	get parentNode(): Node & ParentNode {
 		throw new Error('Method not implemented.');
 	}
-	get previousSibling(): Node {
+	get previousSibling(): ChildNode {
 		throw new Error('Method not implemented.');
 	}
 	nodeValue: string;

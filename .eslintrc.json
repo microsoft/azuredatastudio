@@ -1,20 +1,273 @@
 {
-	"root": true,
-	"env": {
-		"node": true,
-		"es6": true
-	},
-	"rules": {
-		"no-console": 0,
-		"no-cond-assign": 0,
-		"no-unused-vars": 1,
-		"no-extra-semi": "warn",
-		"semi": "warn"
-	},
-	"extends": "eslint:recommended",
-	"parserOptions": {
-		"ecmaFeatures": {
-			"experimentalObjectRestSpread": true
-		}
-	}
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "@typescript-eslint",
+        "jsdoc"
+    ],
+    "rules": {
+        "constructor-super": "warn",
+        "curly": "warn",
+        "eqeqeq": "warn",
+        "no-buffer-constructor": "warn",
+        "no-caller": "warn",
+        "no-debugger": "warn",
+        "no-duplicate-case": "warn",
+        "no-duplicate-imports": "warn",
+        "no-eval": "warn",
+        "no-extra-semi": "warn",
+        "no-new-wrappers": "warn",
+        "no-redeclare": "off",
+        "no-sparse-arrays": "warn",
+        "no-throw-literal": "warn",
+        "no-unsafe-finally": "warn",
+        "no-unused-labels": "warn",
+        "no-restricted-globals": ["warn", "name", "length", "event", "closed", "external", "status", "origin", "orientation"], // non-complete list of globals that are easy to access unintentionally
+        "no-var": "warn",
+        "jsdoc/no-types": "warn",
+        "semi": "off",
+        "@typescript-eslint/semi": "warn",
+        "@typescript-eslint/class-name-casing": "warn",
+        "code-no-unused-expressions": [
+            "warn",
+            {
+                "allowTernary": true
+            }
+        ],
+        "code-translation-remind": "warn",
+        "code-no-nls-in-standalone-editor": "warn",
+        "code-no-standalone-editor": "warn",
+        "code-no-unexternalized-strings": "warn",
+        "code-layering": [
+            "warn",
+            {
+                "common": ["browser"], // {{SQL CARBON EDIT}} @anthonydresser not ideal, but for our purposes its fine for now,
+                "node": [
+                    "common"
+                ],
+                "browser": [
+                    "common"
+                ],
+                "electron-main": [
+                    "common",
+                    "node"
+                ],
+                "electron-browser": [
+                    "common",
+                    "browser",
+                    "node"
+                ]
+            }
+        ],
+        "code-import-patterns": [
+            "warn",
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // !!! Do not relax these rules !!!
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            {
+				"target": "**/{vs,sql}/base/common/**",
+				"restrictions": [
+					"vs/nls",
+					"**/{vs,sql}/base/common/**"
+				]
+			},
+			{
+				"target": "**/{vs,sql}/base/test/common/**",
+				"restrictions": [
+					"assert",
+					"sinon",
+					"vs/nls",
+					"**/{vs,sql}/base/common/**",
+					"**/{vs,sql}/base/test/common/**"
+				]
+			},
+			{
+				"target": "**/{vs,sql}/base/browser/**",
+				"restrictions": [
+					"vs/nls",
+					"vs/css!./**/*",
+					"**/{vs,sql}/base/{common,browser}/**",
+					"@angular/*",
+					"rxjs/*"
+				]
+			},
+			{
+				"target": "**/{vs,sql}/base/node/**",
+				"restrictions": [
+					"vs/nls",
+					"**/{vs,sql}/base/{common,browser,node}/**",
+					"!path" // node modules (except path where we have our own impl)
+				]
+			},
+			{
+				// vs/base/test/browser contains tests for vs/base/browser
+				"target": "**/{vs,sql}/base/test/browser/**",
+				"restrictions": [
+					"assert",
+					"vs/nls",
+					"**/{vs,sql}/base/{common,browser}/**",
+					"**/{vs,sql}/base/test/{common,browser}/**",
+					"@angular/*",
+					"rxjs/*"
+				]
+			},
+			{
+				"target": "**/{vs,sql}/base/parts/*/common/**",
+				"restrictions": [
+					"vs/nls",
+					"**/{vs,sql}/base/common/**",
+					"**/{vs,sql}/base/parts/*/common/**"
+				]
+			},
+			{
+				"target": "**/{vs,sql}/base/parts/*/browser/**",
+				"restrictions": [
+					"vs/nls",
+					"vs/css!./**/*",
+					"**/{vs,sql}/base/{common,browser}/**",
+					"**/{vs,sql}/base/parts/*/{common,browser}/**",
+					"@angular/*",
+					"rxjs/*"
+				]
+			},
+			{
+				"target": "**/{vs,sql}/base/parts/*/node/**",
+				"restrictions": [
+					"vs/nls",
+					"**/{vs,sql}/base/{common,browser,node}/**",
+					"**/{vs,sql}/base/parts/*/{common,browser,node}/**",
+					"!path" // node modules (except path where we have our own impl)
+				]
+			},
+			{
+				"target": "**/{vs,sql}/base/parts/*/electron-browser/**",
+				"restrictions": [
+					"vs/nls",
+					"vs/css!./**/*",
+					"**/{vs,sql}/base/{common,browser,node,electron-browser}/**",
+					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-browser}/**",
+					"!path", // node modules (except path where we have our own impl)
+					"@angular/*",
+					"rxjs/*"
+				]
+			},
+			{
+				"target": "**/{vs,sql}/base/parts/*/electron-main/**",
+				"restrictions": [
+					"vs/nls",
+					"**/{vs,sql}/base/{common,browser,node,electron-main}/**",
+					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-main}/**",
+					"!path", // node modules (except path where we have our own impl)
+					"@angular/*",
+					"rxjs/*"
+				]
+			},
+			{
+				"target": "**/{vs,sql}/platform/*/common/**",
+				"restrictions": [
+					"vs/nls",
+					"**/{vs,sql}/base/common/**",
+					"**/{vs,sql}/base/parts/*/common/**",
+					"**/{vs,sql}/{platform,workbench}/**/common/**",
+					"**/vs/editor/common/**",
+					"azdata" // TODO remove
+				]
+			},
+			{
+				"target": "**/{vs,sql}/platform/*/test/common/**",
+				"restrictions": [
+					"assert",
+					"sinon",
+					"vs/nls",
+					"**/{vs,sql}/base/common/**",
+					"**/{vs,sql}/{platform,workbench}/**/common/**",
+					"**/{vs,sql}/{base,platform,workbench}/**/test/common/**",
+					"typemoq",
+					"azdata" // TODO remove
+				]
+			},
+			{
+				"target": "**/{vs,sql}/platform/*/browser/**",
+				"restrictions": [
+					"vs/nls",
+					"vs/css!./**/*",
+					"**/{vs,sql}/base/{common,browser}/**",
+					"**/{vs,sql}/base/parts/*/{common,browser}/**",
+					"**/{vs,sql}/{platform,workbench}/**/{common,browser}/**",
+					"**/vs/editor/{common,browser}/**",
+					"@angular/*",
+					"rxjs/*",
+					"azdata" // TODO remove
+				]
+			},
+			{
+				"target": "**/{vs,sql}/platform/*/node/**",
+				"restrictions": [
+					"vs/nls",
+					"**/{vs,sql}/base/{common,browser,node}/**",
+					"**/{vs,sql}/base/parts/*/{common,browser,node}/**",
+					"**/{vs,sql}/{platform,workbench}/**/{common,browser,node}/**",
+					"**/vs/editor/{common,browser,node}/**",
+					"!path", // node modules (except path where we have our own impl)
+					"azdata" // TODO remove
+				]
+			},
+			{
+				"target": "**/{vs,sql}/platform/*/electron-browser/**",
+				"restrictions": [
+					"vs/nls",
+					"vs/css!./**/*",
+					"**/{vs,sql}/base/{common,browser,node}/**",
+					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-browser}/**",
+					"**/{vs,sql}/{platform,workbench}/**/{common,browser,node,electron-browser}/**",
+					"**/vs/editor/{common,browser,node,electron-browser}/**",
+					"!path", // node modules (except path where we have our own impl)
+					"@angular/*",
+					"rxjs/*",
+					"azdata" // TODO remove
+				]
+			},
+			{
+				"target": "**/{vs,sql}/platform/*/electron-main/**",
+				"restrictions": [
+					"vs/nls",
+					"**/{vs,sql}/base/{common,browser,node}/**",
+					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-browser}/**",
+					"**/{vs,sql}/{platform,workbench}/**/{common,browser,node,electron-main}/**",
+					"**/vs/editor/{common,browser,node,electron-main}/**",
+					"!path", // node modules (except path where we have our own impl)
+					"azdata" // TODO remove
+				]
+			},
+			{
+				"target": "**/{vs,sql}/platform/*/test/browser/**",
+				"restrictions": [
+					"assert",
+					"sinon",
+					"vs/nls",
+					"**/{vs,sql}/base/{common,browser}/**",
+					"**/{vs,sql}/{platform,workbench}/**/{common,browser}/**",
+					"**/{vs,sql}/{base,platform,workbench}/**/test/{common,browser}/**",
+					"typemoq",
+					"@angular/*",
+					"rxjs/*",
+					"azdata" // TODO remove
+				]
+			}
+        ]
+    },
+    "overrides": [
+        {
+            "files": [
+                "*.js"
+            ],
+            "rules": {
+                "jsdoc/no-types": "off"
+            }
+        }
+    ]
 }

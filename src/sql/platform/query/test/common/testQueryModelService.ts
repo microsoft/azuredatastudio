@@ -72,11 +72,11 @@ export class TestQueryModelService implements IQueryModelService {
 		throw new Error('Method not implemented.');
 	}
 	get onRunQueryStart(): Event<string> {
-		throw new Error('Method not implemented.');
+		return Event.None;
 	}
 
 	get onRunQueryComplete(): Event<string> {
-		throw new Error('Method not implemented.');
+		return Event.None;
 	}
 
 	get onQueryEvent(): Event<IQueryEvent> {

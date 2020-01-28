@@ -6,11 +6,13 @@
 import { escape } from 'sql/base/common/strings';
 import { localize } from 'vs/nls';
 
-export class DBCellValue {
+export interface DBCellValue {
 	displayValue: string;
 	isNull: boolean;
+}
 
-	public static isDBCellValue(object: any): boolean {
+export namespace DBCellValue {
+	export function isDBCellValue(object: any): boolean {
 		return (object !== undefined && object.displayValue !== undefined && object.isNull !== undefined);
 	}
 }

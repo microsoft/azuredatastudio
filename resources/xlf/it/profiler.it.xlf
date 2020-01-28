@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/profiler/client/out/dialogs/profilerCreateSessionDialog" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/profiler/client/out/dialogs/profilerCreateSessionDialog" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="createSessionDialog.cancel">
         <source xml:lang="en">Cancel</source>
@@ -16,23 +16,23 @@
       </trans-unit>
       <trans-unit id="createSessionDialog.templatesInvalid">
         <source xml:lang="en">Invalid templates list, cannot open dialog</source>
-        <target state="translated">Lista di modelli non valida, impossibile aprire la finestra di dialogo</target>
+        <target state="translated">L'elenco di modelli non è valido. Non è possibile aprire la finestra di dialogo</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.dialogOwnerInvalid">
         <source xml:lang="en">Invalid dialog owner, cannot open dialog</source>
-        <target state="translated">Proprietario della finestra di dialogo non valido. Non è possibile aprire la finestra di dialogo</target>
+        <target state="translated">Il proprietario della finestra di dialogo non è valido. Non è possibile aprire la finestra di dialogo</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.invalidProviderType">
         <source xml:lang="en">Invalid provider type, cannot open dialog</source>
-        <target state="translated">Tipo di provider non valido. Non è possibile aprire la finestra di dialogo</target>
+        <target state="translated">Il tipo di provider non è valido. Non è possibile aprire la finestra di dialogo</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.selectTemplates">
         <source xml:lang="en">Select session template:</source>
-        <target state="translated">Selezionare il modello di sessione:</target>
+        <target state="translated">Seleziona il modello di sessione:</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.enterSessionName">
         <source xml:lang="en">Enter session name:</source>
-        <target state="translated">Immettere il nome della sessione:</target>
+        <target state="translated">Immetti il nome della sessione:</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.createSessionFailed">
         <source xml:lang="en">Failed to create a session</source>

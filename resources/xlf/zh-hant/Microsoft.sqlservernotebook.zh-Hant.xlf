@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/Microsoft.sqlservernotebook/package" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/Microsoft.sqlservernotebook/package" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="title.sqlServerNotebooks">
         <source xml:lang="en">SQL Server Notebooks</source>
-        <target state="translated">SQL Server 筆記本</target>
+        <target state="translated">SQL Server Notebooks</target>
       </trans-unit>
       <trans-unit id="title.sqlServer2019Book">
         <source xml:lang="en">SQL Server 2019 Guide</source>

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/notebook/package" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/notebook/package" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="displayName">
         <source xml:lang="en">Notebook Core Extensions</source>
@@ -40,7 +40,7 @@
       </trans-unit>
       <trans-unit id="notebook.command.open">
         <source xml:lang="en">Open Notebook</source>
-        <target state="translated">Открыть Notebook</target>
+        <target state="translated">Открыть записную книжку</target>
       </trans-unit>
       <trans-unit id="notebook.analyzeJupyterNotebook">
         <source xml:lang="en">Analyze in Notebook</source>
@@ -48,7 +48,7 @@
       </trans-unit>
       <trans-unit id="notebook.command.runactivecell">
         <source xml:lang="en">Run Cell</source>
-        <target state="translated">Запустить ячейку</target>
+        <target state="translated">Выполнить ячейку</target>
       </trans-unit>
       <trans-unit id="notebook.command.clearactivecellresult">
         <source xml:lang="en">Clear Cell Result</source>
@@ -56,7 +56,7 @@
       </trans-unit>
       <trans-unit id="notebook.command.runallcells">
         <source xml:lang="en">Run Cells</source>
-        <target state="translated">Запустить ячейки</target>
+        <target state="translated">Выполнить ячейки</target>
       </trans-unit>
       <trans-unit id="notebook.command.addcode">
         <source xml:lang="en">Add Code Cell</source>
@@ -80,7 +80,7 @@
       </trans-unit>
       <trans-unit id="title.openJupyterNotebook">
         <source xml:lang="en">Open Notebook</source>
-        <target state="translated">Открыть Notebook</target>
+        <target state="translated">Открыть записную книжку</target>
       </trans-unit>
       <trans-unit id="title.jupyter.setContext">
         <source xml:lang="en">Set context for Notebook</source>
@@ -116,7 +116,7 @@
       </trans-unit>
       <trans-unit id="title.SQL19PreviewBook">
         <source xml:lang="en">SQL Server 2019 Guide</source>
-        <target state="translated">Руководство по SQL Server 2019</target>
+        <target state="translated">Руководство по SQL Server 2019</target>
       </trans-unit>
       <trans-unit id="books-preview-category">
         <source xml:lang="en">Jupyter Books</source>
@@ -140,11 +140,11 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/common/utils" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/notebook/dist/common/utils" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="mkdirOutputMsg">
         <source xml:lang="en">... Creating {0}</source>
-        <target state="translated">... Создание {0}</target>
+        <target state="translated">… Идет создание {0}</target>
       </trans-unit>
       <trans-unit id="executeCommandProcessExited">
         <source xml:lang="en">Process exited with code {0}</source>
@@ -152,7 +152,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/common/localizedConstants" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/notebook/dist/common/localizedConstants" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="msgYes">
         <source xml:lang="en">Yes</source>
@@ -164,11 +164,11 @@
       </trans-unit>
       <trans-unit id="msgSampleCodeDataFrame">
         <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
-        <target state="translated">Этот пример кода загружает файл в кадр данных и отображает первые 10 результатов.</target>
+        <target state="translated">Этот пример кода загружает файл в кадр данных и отображает первые 10 результатов.</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterServerInstallation" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/notebook/dist/jupyter/jupyterServerInstallation" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="msgInstallPkgProgress">
         <source xml:lang="en">Notebook dependencies installation is in progress</source>
@@ -204,7 +204,7 @@
       </trans-unit>
       <trans-unit id="msgInstallPkgStart">
         <source xml:lang="en">Installing Notebook dependencies, see Tasks view for more information</source>
-        <target state="translated">Установка зависимостей Notebook, дополнительные сведения см. в представлении задач</target>
+        <target state="translated">Идет установка зависимостей Notebook, дополнительные сведения см. в представлении задач</target>
       </trans-unit>
       <trans-unit id="msgInstallPkgFinish">
         <source xml:lang="en">Notebook dependencies installation is complete</source>
@@ -240,15 +240,15 @@
       </trans-unit>
       <trans-unit id="msgInstallStart">
         <source xml:lang="en">Installing required packages to run Notebooks...</source>
-        <target state="translated">Установка требуемых пакетов для запуска Записных книжек...</target>
+        <target state="translated">Установка требуемых пакетов для запуска Записных книжек…</target>
       </trans-unit>
       <trans-unit id="msgJupyterInstallDone">
         <source xml:lang="en">... Jupyter installation complete.</source>
-        <target state="translated">... Установка Jupyter завершена.</target>
+        <target state="translated">… Установка Jupyter завершена.</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/dialog/configurePythonDialog" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/notebook/dist/dialog/configurePythonDialog" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="configurePython.dialogName">
         <source xml:lang="en">Configure Python for Notebooks</source>
@@ -304,7 +304,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/extension" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/notebook/dist/extension" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="msgSampleCodeDataFrame">
         <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
@@ -332,7 +332,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterController" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/notebook/dist/jupyter/jupyterController" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="notebookFileType">
         <source xml:lang="en">Notebooks</source>
@@ -344,11 +344,11 @@
       </trans-unit>
       <trans-unit id="confirmReinstall">
         <source xml:lang="en">Are you sure you want to reinstall?</source>
-        <target state="translated">Вы действительно хотите переустановить?</target>
+        <target state="translated">Вы действительно хотите выполнить переустановку?</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterServerManager" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/notebook/dist/jupyter/jupyterServerManager" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="shutdownError">
         <source xml:lang="en">Shutdown of Notebook server failed: {0}</source>
@@ -356,7 +356,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/serverInstance" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/notebook/dist/jupyter/serverInstance" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="serverStopError">
         <source xml:lang="en">Error stopping Notebook Server: {0}</source>
@@ -372,15 +372,15 @@
       </trans-unit>
       <trans-unit id="jupyterOutputMsgStartSuccessful">
         <source xml:lang="en">... Jupyter is running at {0}</source>
-        <target state="translated">... Jupyter выполняется в {0}</target>
+        <target state="translated">… Jupyter выполняется в {0}</target>
       </trans-unit>
       <trans-unit id="jupyterOutputMsgStart">
         <source xml:lang="en">... Starting Notebook server</source>
-        <target state="translated">... Выполняется запуск сервера Notebook</target>
+        <target state="translated">… Выполняется запуск сервера Notebook</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterNotebookProvider" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/notebook/dist/jupyter/jupyterNotebookProvider" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="errNotebookUriMissing">
         <source xml:lang="en">A notebook path is required</source>
@@ -388,7 +388,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterSessionManager" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/notebook/dist/jupyter/jupyterSessionManager" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="errorStartBeforeReady">
         <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
@@ -400,7 +400,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/dialog/managePackages/managePackagesDialog" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/notebook/dist/dialog/managePackages/managePackagesDialog" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="managePackages.dialogName">
         <source xml:lang="en">Manage Packages</source>
@@ -412,11 +412,11 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/dialog/managePackages/installedPackagesTab" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/notebook/dist/dialog/managePackages/installedPackagesTab" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="managePackages.installedTabTitle">
         <source xml:lang="en">Installed</source>
-        <target state="translated">УСТАНОВЛЕН</target>
+        <target state="translated">Установлен</target>
       </trans-unit>
       <trans-unit id="managePackages.pkgNameColumn">
         <source xml:lang="en">Name</source>
@@ -456,7 +456,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/dialog/managePackages/addNewPackageTab" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/notebook/dist/dialog/managePackages/addNewPackageTab" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="managePackages.invalidTextPlaceholder">
         <source xml:lang="en">N/A</source>
@@ -516,7 +516,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/protocol/notebookUriHandler" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/notebook/dist/protocol/notebookUriHandler" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="notebook.unsupportedAction">
         <source xml:lang="en">Action {0} is not supported for this handler</source>
@@ -540,7 +540,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/book/bookTreeView" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/notebook/dist/book/bookTreeView" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="openBookError">
         <source xml:lang="en">Open book {0} failed: {1}</source>
@@ -576,7 +576,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/book/bookModel" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/notebook/dist/book/bookModel" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="missingFileError">
         <source xml:lang="en">Missing file : {0}</source>
@@ -588,15 +588,15 @@
       </trans-unit>
       <trans-unit id="Invalid toc.yml">
         <source xml:lang="en">Error: {0} has an incorrect toc.yml file</source>
-        <target state="translated">Ошибка: {0} имеет неправильный файл toc.yml</target>
+        <target state="translated">Ошибка: в {0} имеется неправильный файл toc.yml</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/book/bookTreeItem" source-language="en" target-language="ru" datatype="plaintext">
+  <file original="extensions/notebook/dist/book/bookTreeItem" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="openNotebookCommand">
         <source xml:lang="en">Open Notebook</source>
-        <target state="translated">Открыть Notebook</target>
+        <target state="translated">Открыть записную книжку</target>
       </trans-unit>
       <trans-unit id="openMarkdownCommand">
         <source xml:lang="en">Open Markdown</source>

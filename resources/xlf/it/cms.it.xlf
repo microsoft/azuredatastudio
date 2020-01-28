@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/cms/package" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/cms/package" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="cms.displayName">
         <source xml:lang="en">SQL Server Central Management Servers</source>
@@ -36,7 +36,7 @@
       </trans-unit>
       <trans-unit id="cms.resource.addRegisteredServer.title">
         <source xml:lang="en">New Server Registration...</source>
-        <target state="translated">Registrazione nuovo server...</target>
+        <target state="translated">Nuova registrazione server...</target>
       </trans-unit>
       <trans-unit id="cms.resource.deleteServerGroup.title">
         <source xml:lang="en">Delete</source>
@@ -60,35 +60,35 @@
       </trans-unit>
       <trans-unit id="cms.query.displayBitAsNumber">
         <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
-        <target state="translated">Le colonne di tipo BIT devono essere visualizzati come numeri (1 o 0)? Se 'false', verranno visualizzate come 'true' o 'false'</target>
+        <target state="translated">Consente di indicare se le colonne di tipo BIT devono essere visualizzate come numeri (1 o 0). Se è 'false', verranno visualizzate come 'true' o 'false'</target>
       </trans-unit>
       <trans-unit id="cms.format.alignColumnDefinitionsInColumns">
         <source xml:lang="en">Should column definitions be aligned?</source>
-        <target state="translated">Le definizioni di colonna devono essere allineate?</target>
+        <target state="translated">Consente di indicare se le definizioni di colonna devono essere allineate</target>
       </trans-unit>
       <trans-unit id="cms.format.datatypeCasing">
         <source xml:lang="en">Should data types be formatted as UPPERCASE, lowercase, or none (not formatted)</source>
-        <target state="translated">I tipi di dato devono essere formattati come maiuscole, minuscole, o nessuno (non formattato)?</target>
+        <target state="translated">Consente di indicare se ai tipi di dati deve essere applicata la formattazione in lettere MAIUSCOLE o minuscole oppure se non deve essere applicata alcuna formattazione</target>
       </trans-unit>
       <trans-unit id="cms.format.keywordCasing">
         <source xml:lang="en">Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)</source>
-        <target state="translated">Le parole chiave devono essere formattate come maiuscole, minuscole, o nessuno (non formattato)?</target>
+        <target state="translated">Consente di indicare se alle parole chiave deve essere applicata la formattazione in lettere MAIUSCOLE o minuscole oppure se non deve essere applicata alcuna formattazione</target>
       </trans-unit>
       <trans-unit id="cms.format.placeCommasBeforeNextStatement">
         <source xml:lang="en">should commas be placed at the beginning of each statement in a list e.g. ', mycolumn2' instead of at the end e.g. 'mycolumn1,'</source>
-        <target state="translated">Le virgole devono essere collocate all'inizio di ogni istruzione in una lista, ad esempio ', mycolumn2' anziché alla fine, ad esempio 'mycolumn1,'?</target>
+        <target state="translated">Consente di indicare se le virgole devono essere inserite all'inizio di ogni istruzione in un elenco, ad esempio ', mycolumn2', anziché alla fine, ad esempio 'mycolumn1,'?</target>
       </trans-unit>
       <trans-unit id="cms.format.placeSelectStatementReferencesOnNewLine">
         <source xml:lang="en">Should references to objects in a select statements be split into separate lines? E.g. for 'SELECT C1, C2 FROM T1' both C1 and C2 will be on separate lines</source>
-        <target state="translated">I riferimenti agli oggetti in istruzioni select dovrebbero essere suddivisi in righe separate? Ad esempio per 'SELECT C1, C2 FROM T1' sia C1 che C2 saranno su righe diverse</target>
+        <target state="translated">Consente di indicare se i riferimenti agli oggetti in istruzioni select devono essere suddivisi su righe diverse. Ad esempio per 'SELECT C1, C2 FROM T1' sia C1 che C2 saranno su righe diverse</target>
       </trans-unit>
       <trans-unit id="cms.logDebugInfo">
         <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
-        <target state="translated">[Facoltativo] Registrare l'output di debut nella console (Visualizza -&gt; Output), quindi selezionare il canale di output appropriato dall'elenco a discesa</target>
+        <target state="translated">[Facoltativa] Registrare l'output di debug nella console (Visualizza -&gt; Output), quindi selezionare il canale di output appropriato dall'elenco a discesa</target>
       </trans-unit>
       <trans-unit id="cms.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
-        <target state="translated">[Facoltativo] Livello di registrazione per i servizi back-end. Azure Data Studio genera un nome file a ogni avvio e, se il file esiste già, le voci del log vengono aggiunte a tale file. Per la pulizia dei file di log meno recenti, vedere le impostazioni logRetentionMinutes e logFilesRemovalLimit. Con l'impostazione predefinita di tracingLevel, la quantità di dati registrata non è eccessiva. Se si cambia il livello di dettaglio, la registrazione potrebbe diventare eccessiva e richiedere un notevole spazio su disco per i log. Il livello Error include quello Critical, il livello Warning include quello Error, il livello Information include quello Warning e il livello Verbose include quello Information</target>
+        <target state="translated">[Facoltativa] Livello di registrazione per i servizi back-end. Azure Data Studio genera un nome file a ogni avvio e, se il file esiste già, le voci del log vengono accodate a tale file. Per la pulizia dei file di log meno recenti, vedere le impostazioni logRetentionMinutes e logFilesRemovalLimit. Con l'impostazione predefinita di tracingLevel, la quantità di dati registrata non è eccessiva. Se si cambia il livello di dettaglio, la registrazione potrebbe diventare eccessiva e richiedere un notevole spazio su disco per i log. Il livello Error include quello Critical, il livello Warning include quello Error, il livello Information include quello Warning e il livello Verbose include quello Information</target>
       </trans-unit>
       <trans-unit id="cms.logRetentionMinutes">
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
@@ -100,19 +100,19 @@
       </trans-unit>
       <trans-unit id="ignorePlatformWarning">
         <source xml:lang="en">[Optional] Do not show unsupported platform warnings</source>
-        <target state="translated">[Facoltativo] Non visualizzare avvisi su piattaforme non supportate</target>
+        <target state="translated">[Facoltativa] Non visualizzare avvisi su piattaforme non supportate</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.recoveryModel">
         <source xml:lang="en">Recovery Model</source>
-        <target state="translated">Modello di ripristino</target>
+        <target state="translated">Modello di recupero</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.lastBackupDate">
         <source xml:lang="en">Last Database Backup</source>
-        <target state="translated">Ultimo Backup del Database</target>
+        <target state="translated">Ultimo backup del database</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.lastLogBackupDate">
         <source xml:lang="en">Last Log Backup</source>
-        <target state="translated">Ultimo Backup del Log</target>
+        <target state="translated">Ultimo backup del log</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.compatibilityLevel">
         <source xml:lang="en">Compatibility Level</source>
@@ -132,11 +132,11 @@
       </trans-unit>
       <trans-unit id="onprem.serverProperties.machineName">
         <source xml:lang="en">Computer Name</source>
-        <target state="translated">Nome computer</target>
+        <target state="translated">Nome del computer</target>
       </trans-unit>
       <trans-unit id="onprem.serverProperties.osVersion">
         <source xml:lang="en">OS Version</source>
-        <target state="translated">Versione OS</target>
+        <target state="translated">Versione del sistema operativo</target>
       </trans-unit>
       <trans-unit id="cloud.databaseProperties.azureEdition">
         <source xml:lang="en">Edition</source>
@@ -184,7 +184,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.serverDescription.displayName">
         <source xml:lang="en">Server Description</source>
-        <target state="translated">Descrizione server</target>
+        <target state="translated">Descrizione del server</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.serverDescription.description">
         <source xml:lang="en">Description of the SQL Server instance</source>
@@ -288,15 +288,15 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.trustServerCertificate.description">
         <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
-        <target state="translated">Se è true (e encrypt=true), SQL Server usa la crittografia SSL per tutti i dati inviati tra il client e il server senza convalidare il certificato del server</target>
+        <target state="translated">Se è true (ed encrypt=true), SQL Server usa la crittografia SSL per tutti i dati inviati tra il client e il server senza convalidare il certificato del server</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.attachedDBFileName.displayName">
         <source xml:lang="en">Attached DB file name</source>
-        <target state="translated">Nome file DB collegato</target>
+        <target state="translated">Nome file del database collegato</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.attachedDBFileName.description">
         <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
-        <target state="translated">Nome del file primario, incluso il nome completo del percorso, di un database collegabile</target>
+        <target state="translated">Nome del file primario, incluso il nome del percorso completo, di un database collegabile</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.contextConnection.displayName">
         <source xml:lang="en">Context connection</source>
@@ -304,7 +304,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.contextConnection.description">
         <source xml:lang="en">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</source>
-        <target state="translated">Se è true, indica che la connessione deve provenire dal contesto SQL Server. Disponibile solo quando è in esecuzione nel processo SQL Server.</target>
+        <target state="translated">Se è true, indica che la connessione deve provenire dal contesto SQL Server. Disponibile solo quando è in esecuzione nel processo SQL Server</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.port.displayName">
         <source xml:lang="en">Port</source>
@@ -384,7 +384,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.attachDbFilename.displayName">
         <source xml:lang="en">Attach DB filename</source>
-        <target state="translated">Collega nome file DB</target>
+        <target state="translated">Collega nome file del database</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.failoverPartner.displayName">
         <source xml:lang="en">Failover partner</source>
@@ -416,7 +416,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.typeSystemVersion.displayName">
         <source xml:lang="en">Type system version</source>
-        <target state="translated">Digita versione del sistema</target>
+        <target state="translated">Versione del sistema di tipi</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.typeSystemVersion.description">
         <source xml:lang="en">Indicates which server type system then provider will expose through the DataReader</source>
@@ -424,7 +424,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsResource/tree/treeProvider" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/cms/out/cmsResource/tree/treeProvider" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="cms.resource.tree.treeProvider.loadingLabel">
         <source xml:lang="en">Loading ...</source>
@@ -432,7 +432,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsResource/tree/cmsResourceTreeNode" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/cms/out/cmsResource/tree/cmsResourceTreeNode" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="cms.resource.cmsResourceTreeNode.noResourcesLabel">
         <source xml:lang="en">No resources found</source>
@@ -440,7 +440,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsResource/tree/cmsResourceEmptyTreeNode" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/cms/out/cmsResource/tree/cmsResourceEmptyTreeNode" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="cms.resource.tree.CmsTreeNode.addCmsServerLabel">
         <source xml:lang="en">Add Central Management Server...</source>
@@ -448,11 +448,15 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsResource/cmsResourceCommands" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/cms/out/cmsResource/cmsResourceCommands" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="cms.errors.sameCmsServerName">
         <source xml:lang="en">Central Management Server Group already has a Registered Server with the name {0}</source>
         <target state="translated">Il gruppo di server di gestione centrale include già un server registrato denominato {0}</target>
+      </trans-unit>
+      <trans-unit id="cms.errors.azureNotAllowed">
+        <source xml:lang="en">Azure SQL Database Servers cannot be used as Central Management Servers</source>
+        <target state="translated">I server del database SQL di Azure non possono essere usati come server di gestione centrale</target>
       </trans-unit>
       <trans-unit id="cms.confirmDeleteServer">
         <source xml:lang="en">Are you sure you want to delete</source>
@@ -468,7 +472,7 @@
       </trans-unit>
       <trans-unit id="cms.AddServerGroup">
         <source xml:lang="en">Add Server Group</source>
-        <target state="translated">Aggiungi gruppo di server</target>
+        <target state="translated">Aggiungi il gruppo di server</target>
       </trans-unit>
       <trans-unit id="cms.OK">
         <source xml:lang="en">OK</source>
@@ -484,7 +488,7 @@
       </trans-unit>
       <trans-unit id="cms.ServerGroupDescription">
         <source xml:lang="en">Server Group Description</source>
-        <target state="translated">Descrizione gruppo di server</target>
+        <target state="translated">Descrizione del gruppo di server</target>
       </trans-unit>
       <trans-unit id="cms.errors.sameServerGroupName">
         <source xml:lang="en">{0} already has a Server Group with the name {1}</source>
@@ -496,7 +500,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsUtils" source-language="en" target-language="it" datatype="plaintext">
+  <file original="extensions/cms/out/cmsUtils" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="cms.errors.sameServerUnderCms">
         <source xml:lang="en">You cannot add a shared registered server with the same name as the Configuration Server</source>

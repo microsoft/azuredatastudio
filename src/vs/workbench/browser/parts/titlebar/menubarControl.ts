@@ -31,16 +31,17 @@ import { SubmenuAction, Direction } from 'vs/base/browser/ui/menu/menu';
 import { attachMenuStyler } from 'vs/platform/theme/common/styler';
 import { assign } from 'vs/base/common/objects';
 import { mnemonicMenuLabel, unmnemonicLabel } from 'vs/base/common/labels';
-import { IAccessibilityService, AccessibilitySupport } from 'vs/platform/accessibility/common/accessibility';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { isFullscreen } from 'vs/base/browser/browser';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 
 // TODO@sbatten https://github.com/microsoft/vscode/issues/81360
-// tslint:disable-next-line: import-patterns layering TODO@sbatten
+// eslint-disable-next-line code-layering, code-import-patterns
 import { IElectronService } from 'vs/platform/electron/node/electron';
 import { optional } from 'vs/platform/instantiation/common/instantiation';
-// tslint:disable-next-line: import-patterns layering TODO@sbatten
+// TODO@sbatten
+// eslint-disable-next-line code-layering, code-import-patterns
 import { IElectronEnvironmentService } from 'vs/workbench/services/electron/electron-browser/electronEnvironmentService';
 import { BrowserFeatures } from 'vs/base/browser/canIUse';
 
@@ -249,10 +250,8 @@ export abstract class MenubarControl extends Disposable {
 
 		const hasBeenNotified = this.storageService.getBoolean('menubar/accessibleMenubarNotified', StorageScope.GLOBAL, false);
 		const usingCustomMenubar = getTitleBarStyle(this.configurationService, this.environmentService) === 'custom';
-		const detected = this.accessibilityService.getAccessibilitySupport() === AccessibilitySupport.Enabled;
-		const config = this.configurationService.getValue('editor.accessibilitySupport');
 
-		if (hasBeenNotified || usingCustomMenubar || !(config === 'on' || (config === 'auto' && detected))) {
+		if (hasBeenNotified || usingCustomMenubar || !this.accessibilityService.isScreenReaderOptimized()) {
 			return;
 		}
 
