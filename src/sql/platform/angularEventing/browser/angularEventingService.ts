@@ -33,7 +33,6 @@ export interface IAngularEventingService {
 	/**
 	 * Adds a listener for the dashboard to send events, should only be called once for each dashboard by the dashboard itself
 	 * @param uri Uri of the dashboard
-	 * @param cb Listening function
 	 */
 	onAngularEvent(uri: string): Event<IAngularEvent>;
 
