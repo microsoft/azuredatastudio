@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { Transform } from 'stream';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';

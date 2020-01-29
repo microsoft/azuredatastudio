@@ -54,6 +54,10 @@ export class CellModel implements ICellModel {
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
+	private readonly _ariaLabel: string;
+
+	private readonly codeCellLabel = localize('codeCellLabel', "Code Cell");
+	private readonly textCellLabel = localize('textCellLabel', "Text Cell");
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -67,6 +71,13 @@ export class CellModel implements ICellModel {
 			this._cellType = CellTypes.Code;
 			this._source = '';
 		}
+
+		if (this._cellType === CellTypes.Code) {
+			this._ariaLabel = this.codeCellLabel;
+		} else {
+			this._ariaLabel = this.textCellLabel;
+		}
+
 		this._isEditMode = this._cellType !== CellTypes.Markdown;
 		this._stdInVisible = false;
 		if (_options && _options.isTrusted) {
@@ -81,6 +92,10 @@ export class CellModel implements ICellModel {
 
 	public equals(other: ICellModel) {
 		return other !== undefined && other.id === this.id;
+	}
+
+	public get ariaLabel(): string {
+		return this._ariaLabel;
 	}
 
 	public get onCollapseStateChanged(): Event<boolean> {
@@ -418,6 +433,8 @@ export class CellModel implements ICellModel {
 	public clearOutputs(): void {
 		this._outputs = [];
 		this.fireOutputsChanged();
+
+		this.executionCount = undefined;
 	}
 
 	private fireOutputsChanged(shouldScroll: boolean = false): void {
@@ -584,7 +601,7 @@ export class CellModel implements ICellModel {
 			cellJson.metadata.language = this._language;
 			cellJson.metadata.tags = metadata.tags;
 			cellJson.outputs = this._outputs;
-			cellJson.execution_count = this.executionCount ? this.executionCount : 0;
+			cellJson.execution_count = this.executionCount ? this.executionCount : null;
 		}
 		return cellJson as nb.ICellContents;
 	}

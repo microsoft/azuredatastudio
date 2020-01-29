@@ -14,6 +14,11 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileE
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { ILanguageAssociation } from 'sql/workbench/common/languageAssociation';
 import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
+import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorInputExtensions.EditorInputFactories);
 
@@ -21,17 +26,35 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 	static readonly isDefault = true;
 	static readonly languages = ['sql'];
 
-	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService) { }
+	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService,
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
+		@IEditorService private readonly editorService: IEditorService) { }
 
-	convertInput(activeEditor: IEditorInput): QueryEditorInput {
+	convertInput(activeEditor: IEditorInput): QueryEditorInput | undefined {
 		const queryResultsInput = this.instantiationService.createInstance(QueryResultsInput, activeEditor.getResource().toString(true));
+		let queryEditorInput: QueryEditorInput;
 		if (activeEditor instanceof FileEditorInput) {
-			return this.instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput);
+			queryEditorInput = this.instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput);
 		} else if (activeEditor instanceof UntitledTextEditorInput) {
-			return this.instantiationService.createInstance(UntitledQueryEditorInput, '', activeEditor, queryResultsInput);
+			queryEditorInput = this.instantiationService.createInstance(UntitledQueryEditorInput, '', activeEditor, queryResultsInput);
 		} else {
 			return undefined;
 		}
+
+		const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+		if (profile) {
+			const options: IConnectionCompletionOptions = {
+				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: undefined, input: queryEditorInput },
+				saveTheConnection: false,
+				showDashboard: false,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			};
+			this.connectionManagementService.connect(profile, queryEditorInput.uri, options).catch(err => onUnexpectedError(err));
+		}
+
+		return queryEditorInput;
 	}
 
 	createBase(activeEditor: QueryEditorInput): IEditorInput {
