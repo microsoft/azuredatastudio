@@ -13,10 +13,10 @@ import { azureResource } from '../../../../azureResource/azure-resource';
 import { ApiWrapper } from '../../../../apiWrapper';
 import { AzureResourceDatabaseTreeDataProvider } from '../../../../azureResource/providers/database/databaseTreeDataProvider';
 import { AzureResourceItemType } from '../../../../azureResource/constants';
-import { IAzureResourceService, AzureResourceDatabase } from '../../../../azureResource/interfaces';
+import { IAzureResourceService } from '../../../../azureResource/interfaces';
 
 // Mock services
-let mockDatabaseService: TypeMoq.IMock<IAzureResourceService<AzureResourceDatabase>>;
+let mockDatabaseService: TypeMoq.IMock<IAzureResourceService<azureResource.AzureResourceDatabase>>;
 let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 
@@ -62,7 +62,7 @@ mockTokens[mockTenantId] = {
 	tokenType: 'Bearer'
 };
 
-const mockDatabases: AzureResourceDatabase[] = [
+const mockDatabases: azureResource.AzureResourceDatabase[] = [
 	{
 		name: 'mock database 1',
 		serverName: 'mock database server 1',
@@ -79,7 +79,7 @@ const mockDatabases: AzureResourceDatabase[] = [
 
 describe('AzureResourceDatabaseTreeDataProvider.info', function (): void {
 	beforeEach(() => {
-		mockDatabaseService = TypeMoq.Mock.ofType<IAzureResourceService<AzureResourceDatabase>>();
+		mockDatabaseService = TypeMoq.Mock.ofType<IAzureResourceService<azureResource.AzureResourceDatabase>>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 	});
@@ -97,7 +97,7 @@ describe('AzureResourceDatabaseTreeDataProvider.info', function (): void {
 
 describe('AzureResourceDatabaseTreeDataProvider.getChildren', function (): void {
 	beforeEach(() => {
-		mockDatabaseService = TypeMoq.Mock.ofType<IAzureResourceService<AzureResourceDatabase>>();
+		mockDatabaseService = TypeMoq.Mock.ofType<IAzureResourceService<azureResource.AzureResourceDatabase>>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 

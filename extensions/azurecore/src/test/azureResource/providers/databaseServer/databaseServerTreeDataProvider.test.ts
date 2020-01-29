@@ -13,10 +13,10 @@ import { azureResource } from '../../../../azureResource/azure-resource';
 import { ApiWrapper } from '../../../../apiWrapper';
 import { AzureResourceDatabaseServerTreeDataProvider } from '../../../../azureResource/providers/databaseServer/databaseServerTreeDataProvider';
 import { AzureResourceItemType } from '../../../../azureResource/constants';
-import { IAzureResourceService, AzureResourceDatabaseServer } from '../../../../azureResource/interfaces';
+import { IAzureResourceService } from '../../../../azureResource/interfaces';
 
 // Mock services
-let mockDatabaseServerService: TypeMoq.IMock<IAzureResourceService<AzureResourceDatabaseServer>>;
+let mockDatabaseServerService: TypeMoq.IMock<IAzureResourceService<azureResource.AzureResourceDatabaseServer>>;
 let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 
@@ -62,7 +62,7 @@ mockTokens[mockTenantId] = {
 	tokenType: 'Bearer'
 };
 
-const mockDatabaseServers: AzureResourceDatabaseServer[] = [
+const mockDatabaseServers: azureResource.AzureResourceDatabaseServer[] = [
 	{
 		name: 'mock database server 1',
 		fullName: 'mock database server full name 1',
@@ -79,7 +79,7 @@ const mockDatabaseServers: AzureResourceDatabaseServer[] = [
 
 describe('AzureResourceDatabaseServerTreeDataProvider.info', function (): void {
 	beforeEach(() => {
-		mockDatabaseServerService = TypeMoq.Mock.ofType<IAzureResourceService<AzureResourceDatabaseServer>>();
+		mockDatabaseServerService = TypeMoq.Mock.ofType<IAzureResourceService<azureResource.AzureResourceDatabaseServer>>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 	});
@@ -97,7 +97,7 @@ describe('AzureResourceDatabaseServerTreeDataProvider.info', function (): void {
 
 describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function (): void {
 	beforeEach(() => {
-		mockDatabaseServerService = TypeMoq.Mock.ofType<IAzureResourceService<AzureResourceDatabaseServer>>();
+		mockDatabaseServerService = TypeMoq.Mock.ofType<IAzureResourceService<azureResource.AzureResourceDatabaseServer>>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 

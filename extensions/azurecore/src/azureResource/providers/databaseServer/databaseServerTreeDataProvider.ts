@@ -11,16 +11,16 @@ const localize = nls.loadMessageBundle();
 import { AzureResourceItemType } from '../../../azureResource/constants';
 import { ApiWrapper } from '../../../apiWrapper';
 import { generateGuid } from '../../utils';
-import { IAzureResourceService, AzureResourceDatabaseServer } from '../../interfaces';
+import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 import { azureResource } from '../../azure-resource';
 
-export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDataProviderBase<AzureResourceDatabaseServer> {
+export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly containerId = 'azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainer';
 	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel', "SQL Servers");
 
 	public constructor(
-		databaseServerService: IAzureResourceService<AzureResourceDatabaseServer>,
+		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
 		apiWrapper: ApiWrapper,
 		private _extensionContext: ExtensionContext
 	) {
@@ -28,7 +28,7 @@ export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDat
 	}
 
 
-	protected getTreeItemForResource(databaseServer: AzureResourceDatabaseServer): TreeItem {
+	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer): TreeItem {
 		return {
 			id: `databaseServer_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: databaseServer.name,

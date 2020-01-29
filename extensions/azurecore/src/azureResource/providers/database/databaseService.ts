@@ -5,7 +5,7 @@
 
 import { ServiceClientCredentials } from '@azure/ms-rest-js';
 import { azureResource } from '../../azure-resource';
-import { IAzureResourceService, AzureResourceDatabase } from '../../interfaces';
+import { IAzureResourceService } from '../../interfaces';
 import { serversQuery, DbServerGraphData } from '../databaseServer/databaseServerService';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { queryGraphResources, GraphData } from '../resourceTreeDataProviderBase';
@@ -13,9 +13,9 @@ import { queryGraphResources, GraphData } from '../resourceTreeDataProviderBase'
 interface DatabaseGraphData extends GraphData {
 	kind: string;
 }
-export class AzureResourceDatabaseService implements IAzureResourceService<AzureResourceDatabase> {
-	public async getResources(subscription: azureResource.AzureResourceSubscription, credential: ServiceClientCredentials): Promise<AzureResourceDatabase[]> {
-		const databases: AzureResourceDatabase[] = [];
+export class AzureResourceDatabaseService implements IAzureResourceService<azureResource.AzureResourceDatabase> {
+	public async getResources(subscription: azureResource.AzureResourceSubscription, credential: ServiceClientCredentials): Promise<azureResource.AzureResourceDatabase[]> {
+		const databases: azureResource.AzureResourceDatabase[] = [];
 		const resourceClient = new ResourceGraphClient(credential);
 
 		// Query servers and databases in parallel (start both promises before waiting on the 1st)

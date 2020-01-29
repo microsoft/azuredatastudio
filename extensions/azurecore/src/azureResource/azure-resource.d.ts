@@ -21,8 +21,33 @@ export namespace azureResource {
 		readonly treeItem: TreeItem;
 	}
 
-	export interface AzureResourceSubscription {
+	export interface AzureResource {
+		name: string;
+	}
+
+	export interface AzureSqlResource extends AzureResource {
+		loginName: string;
+	}
+
+	export interface AzureResourceSubscription extends AzureResource {
 		id: string;
 		name: string;
 	}
+
+	export interface AzureResourceResourceGroup extends AzureResource {
+		subscriptionId: string;
+	}
+
+	export interface AzureResourceDatabase extends AzureSqlResource {
+		serverName: string;
+		serverFullName: string;
+	}
+
+	export interface AzureResourceDatabaseServer extends AzureSqlResource {
+		id?: string;
+		fullName: string;
+		defaultDatabaseName: string;
+	}
+
+
 }
