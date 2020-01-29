@@ -437,7 +437,7 @@ import 'sql/workbench/contrib/dashboard/browser/containers/dashboardModelViewCon
 import 'sql/workbench/contrib/dashboard/browser/core/dashboardTab.contribution';
 
 // Model-based Views
-import 'sql/workbench/browser/modelComponents/components.contribution';
+import 'sql/workbench/contrib/modelView/browser/components.contribution';
 import 'sql/workbench/browser/modelComponents/modelViewEditor.contribution';
 
 // notebooks
