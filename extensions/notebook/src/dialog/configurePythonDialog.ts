@@ -59,7 +59,7 @@ export class ConfigurePythonDialog {
 		this.dialog.cancelButton.label = this.CancelButtonText;
 		this.dialog.cancelButton.onClick(() => {
 			if (rejectOnCancel) {
-				this.setupComplete.reject(localize('configurePython.pythonInstallDeclined', "Python installation was declined."));
+				this.setupComplete.reject('INFO: '.concat(localize('configurePython.pythonInstallDeclined', "Python installation was declined.")));
 			} else {
 				this.setupComplete.resolve();
 			}

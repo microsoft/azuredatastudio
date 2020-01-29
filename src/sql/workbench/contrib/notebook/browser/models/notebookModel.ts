@@ -430,8 +430,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._activeCell = cell;
 	}
 
-	private notifyError(error: string): void {
-		this._onErrorEmitter.fire({ message: error, severity: Severity.Error });
+	private notifyError(error: string, severity: Severity = Severity.Error): void {
+		this._onErrorEmitter.fire({ message: error, severity: severity });
 	}
 
 	public async startSession(manager: INotebookManager, displayName?: string, setErrorStateOnFail?: boolean): Promise<void> {
@@ -628,7 +628,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 		} catch (err) {
 			if (oldDisplayName && restoreOnFail) {
-				this.notifyError(localize('changeKernelFailedRetry', "Failed to change kernel. Kernel {0} will be used. Error was: {1}", oldDisplayName, getErrorMessage(err)));
+				let errorMessage = getErrorMessage(err);
+				if (errorMessage.startsWith('INFO:')) {
+					this.notifyError(localize('changeKernelFailedInfoRetry', "Failed to change kernel. Kernel {0} will be used.", oldDisplayName), Severity.Info);
+				} else {
+					this.notifyError(localize('changeKernelFailedRetry', "Failed to change kernel. Kernel {0} will be used. Error was: {1}", oldDisplayName, errorMessage));
+				}
 				// Clear out previous kernel
 				let failedProviderId = this.tryFindProviderForKernel(displayName, true);
 				let oldProviderId = this.tryFindProviderForKernel(oldDisplayName, true);
