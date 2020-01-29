@@ -1192,6 +1192,7 @@ declare namespace Slick {
 		public onHeaderContextMenu: Slick.Event<OnHeaderContextMenuEventArgs<T>>;
 		public onHeaderClick: Slick.Event<OnHeaderClickEventArgs<T>>;
 		public onHeaderCellRendered: Slick.Event<OnHeaderCellRenderedEventArgs<T>>;
+		public onBeforeAppendCell: Slick.Event<OnBeforeAppendCellArgs<T>>;
 		public onBeforeHeaderCellDestroy: Slick.Event<OnBeforeHeaderCellDestroyEventArgs<T>>;
 		public onHeaderRowCellRendered: Slick.Event<OnHeaderRowCellRenderedEventArgs<T>>;
 		public onBeforeHeaderRowCellDestroy: Slick.Event<OnBeforeHeaderRowCellDestroyEventArgs<T>>;
@@ -1301,6 +1302,11 @@ declare namespace Slick {
 	}
 
 	export interface OnActiveCellChangedEventArgs<T extends SlickData> extends GridEventArgs<T> {
+		row: number;
+		cell: number;
+	}
+
+	export interface OnBeforeAppendCellArgs<T extends SlickData> extends GridEventArgs<T> {
 		row: number;
 		cell: number;
 	}
