@@ -1,4 +1,10 @@
 steps:
+  - task: InstallAppleCertificate@2
+    displayName: 'Install developer certificate'
+    inputs:
+      certSecureFile: 'osx_signing_key.p12'
+      signingIdentity: sqlkey
+
   - script: |
       mkdir -p .build
       echo -n $BUILD_SOURCEVERSION > .build/commit
@@ -109,14 +115,19 @@ steps:
 
   - script: |
       set -e
+      pushd ../azuredatastudio-darwin
+      codesign --force --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/entitlements.xml -s 'sqlkey' *.app
+
+  - script: |
+      set -e
       mkdir -p .build/darwin/archive
       pushd ../azuredatastudio-darwin && zip -r -X -y $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip * && popd
     displayName: 'Archive'
 
   - task: PublishPipelineArtifact@0
-    displayName: 'Publish Unsigned'
+    displayName: 'Publish SelfSigned'
     inputs:
-      artifactName: darwin-unsigned
+      artifactName: darwin-selfsigned
       targetPath: $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
 
   - task: EsrpCodeSigning@1
