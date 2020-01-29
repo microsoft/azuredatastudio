@@ -18,6 +18,13 @@ export interface IStaticTableRenderer<T, TTemplateData> extends ITableRenderer<T
 	disposeCell?(element: T | undefined, index: number, cell: number, columnId: string, templateData: TTemplateData, width: number | undefined): void;
 }
 
+export class TableError extends Error {
+
+	constructor(user: string, message: string) {
+		super(`TableError [${user}] ${message}`);
+	}
+}
+
 export interface ITableDataSource<T> {
 	getRow(index: number): Promise<T>;
 }
@@ -30,6 +37,7 @@ export interface ITableEvent<T> {
 
 export interface ITableMouseEvent<T> {
 	browserEvent: MouseEvent;
+	buttons: number;
 	element: T | undefined;
 	index: IGridPosition | undefined;
 }

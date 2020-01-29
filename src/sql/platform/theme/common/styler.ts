@@ -8,7 +8,7 @@ import * as editorColors from 'vs/editor/common/view/editorColorRegistry';
 
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
-import { attachStyler } from 'vs/platform/theme/common/styler';
+import { attachStyler, IColorMapping, IStyleOverrides } from 'vs/platform/theme/common/styler';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_FOREGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, SIDE_BAR_DRAG_AND_DROP_BACKGROUND, PANEL_INACTIVE_TITLE_FOREGROUND, PANEL_ACTIVE_TITLE_BORDER, PANEL_ACTIVE_TITLE_FOREGROUND } from 'vs/workbench/common/theme';
 import { IThemable } from 'vs/base/common/styler';
@@ -189,7 +189,7 @@ export function attachTableStyler(widget: IThemable, themeService: IThemeService
 	}, widget);
 }
 
-export function attachHighPerfTableStyler(widget: IThemable, themeService: IThemeService, style?: {
+export interface ITableStyleOverrides extends IStyleOverrides {
 	listFocusBackground?: cr.ColorIdentifier,
 	listFocusForeground?: cr.ColorIdentifier,
 	listActiveSelectionBackground?: cr.ColorIdentifier,
@@ -210,30 +210,33 @@ export function attachHighPerfTableStyler(widget: IThemable, themeService: IThem
 	tableHeaderForeground?: cr.ColorIdentifier,
 	cellOutlineColor?: cr.ColorIdentifier,
 	tableHeaderAndRowCountColor?: cr.ColorIdentifier
-}): IDisposable {
-	return attachStyler(themeService, {
-		listFocusBackground: (style && style.listFocusBackground) || cr.listFocusBackground,
-		listFocusForeground: (style && style.listFocusForeground) || cr.listFocusForeground,
-		listActiveSelectionBackground: (style && style.listActiveSelectionBackground) || cr.listActiveSelectionBackground,
-		listActiveSelectionForeground: (style && style.listActiveSelectionForeground) || cr.listActiveSelectionForeground,
-		listFocusAndSelectionBackground: style && style.listFocusAndSelectionBackground || sqlcolors.listFocusAndSelectionBackground,
-		listFocusAndSelectionForeground: (style && style.listFocusAndSelectionForeground) || cr.listActiveSelectionForeground,
-		listInactiveFocusBackground: (style && style.listInactiveFocusBackground),
-		listInactiveSelectionBackground: (style && style.listInactiveSelectionBackground) || cr.listInactiveSelectionBackground,
-		listInactiveSelectionForeground: (style && style.listInactiveSelectionForeground) || cr.listInactiveSelectionForeground,
-		listHoverBackground: (style && style.listHoverBackground) || cr.listHoverBackground,
-		listHoverForeground: (style && style.listHoverForeground) || cr.listHoverForeground,
-		listDropBackground: (style && style.listDropBackground) || cr.listDropBackground,
-		listFocusOutline: (style && style.listFocusOutline) || cr.activeContrastBorder,
-		listSelectionOutline: (style && style.listSelectionOutline) || cr.activeContrastBorder,
-		listHoverOutline: (style && style.listHoverOutline) || cr.activeContrastBorder,
-		listInactiveFocusOutline: style && style.listInactiveFocusOutline,
-		tableHeaderBackground: (style && style.tableHeaderBackground) || sqlcolors.tableHeaderBackground,
-		tableHeaderForeground: (style && style.tableHeaderForeground) || sqlcolors.tableHeaderForeground,
-		cellOutlineColor: (style && style.cellOutlineColor) || editorColors.editorIndentGuides,
-		tableHeaderAndRowCountColor: (style && style.tableHeaderAndRowCountColor) || editorColors.editorIndentGuides
-	}, widget);
 }
+
+export function attachHighPerfTableStyler(widget: IThemable, themeService: IThemeService, overrides?: IColorMapping): IDisposable {
+	return attachStyler(themeService, { ...defaultHighPerfTableStyles, ...(overrides || {}) }, widget);
+}
+
+export const defaultHighPerfTableStyles: IColorMapping = {
+	listFocusBackground: cr.listFocusBackground,
+	listFocusForeground: cr.listFocusForeground,
+	listActiveSelectionBackground: cr.listActiveSelectionBackground,
+	listActiveSelectionForeground: cr.listActiveSelectionForeground,
+	listFocusAndSelectionBackground: sqlcolors.listFocusAndSelectionBackground,
+	listFocusAndSelectionForeground: cr.listActiveSelectionForeground,
+	listInactiveFocusBackground: cr.listInactiveFocusBackground,
+	listInactiveSelectionBackground: cr.listInactiveSelectionBackground,
+	listInactiveSelectionForeground: cr.listInactiveSelectionForeground,
+	listHoverBackground: cr.listHoverBackground,
+	listHoverForeground: cr.listHoverForeground,
+	listDropBackground: cr.listDropBackground,
+	listFocusOutline: cr.activeContrastBorder,
+	listSelectionOutline: cr.activeContrastBorder,
+	listHoverOutline: cr.activeContrastBorder,
+	tableHeaderBackground: sqlcolors.tableHeaderBackground,
+	tableHeaderForeground: sqlcolors.tableHeaderForeground,
+	cellOutlineColor: editorColors.editorIndentGuides,
+	tableHeaderAndRowCountColor: editorColors.editorIndentGuides
+};
 
 export function attachEditableDropdownStyler(widget: IThemable, themeService: IThemeService, style?: {
 	listFocusBackground?: cr.ColorIdentifier,

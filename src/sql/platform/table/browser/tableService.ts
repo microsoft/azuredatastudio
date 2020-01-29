@@ -9,10 +9,9 @@ import { RawContextKey, IContextKey, ContextKeyExpr, IContextKeyService } from '
 import { DisposableStore, IDisposable, combinedDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { createStyleSheet } from 'vs/base/browser/dom';
-import { attachHighPerfTableStyler as attachTableStyler } from 'sql/platform/theme/common/styler';
+import { attachHighPerfTableStyler as attachTableStyler, defaultHighPerfTableStyles } from 'sql/platform/theme/common/styler';
 import { InputFocusedContextKey } from 'vs/platform/contextkey/common/contextkeys';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ITableDataSource, ITableColumn } from 'sql/base/browser/ui/table/highPerf/table';
 import { IColorMapping, computeStyles } from 'vs/platform/theme/common/styler';
 
@@ -85,7 +84,6 @@ export class TableService implements ITableService {
 }
 
 const RawWorkbenchTableFocusContextKey = new RawContextKey<boolean>('tableFocus', true);
-export const WorkbenchTableSupportsMultiSelectContextKey = new RawContextKey<boolean>('tableSupportsMultiselect', true);
 export const WorkbenchTableFocusContextKey = ContextKeyExpr.and(RawWorkbenchTableFocusContextKey, ContextKeyExpr.not(InputFocusedContextKey));
 export const WorkbenchTableHasSelectionOrFocus = new RawContextKey<boolean>('tableHasSelectionOrFocus', false);
 export const WorkbenchTableDoubleSelection = new RawContextKey<boolean>('tableDoubleSelection', false);
@@ -106,28 +104,14 @@ export const openModeSettingKey = 'workbench.table.openMode';
 export const horizontalScrollingKey = 'workbench.table.horizontalScrolling';
 export const keyboardNavigationSettingKey = 'workbench.table.keyboardNavigation';
 export const automaticKeyboardNavigationSettingKey = 'workbench.table.automaticKeyboardNavigation';
-const treeIndentKey = 'workbench.tree.indent';
-const treeRenderIndentGuidesKey = 'workbench.tree.renderIndentGuides';
 
 function useAltAsMultipleSelectionModifier(configurationService: IConfigurationService): boolean {
 	return configurationService.getValue(multiSelectModifierSettingKey) === 'alt';
 }
 
-function toWorkbenchTableOptions<T>(options: ITableOptions<T>, configurationService: IConfigurationService, keybindingService: IKeybindingService): [ITableOptions<T>, IDisposable] {
+function toWorkbenchTableOptions<T>(options: ITableOptions<T>): [ITableOptions<T>, IDisposable] {
 	const disposables = new DisposableStore();
 	const result = { ...options };
-
-	if (options.multipleSelectionSupport !== false && !options.multipleSelectionController) {
-		const multipleSelectionController = new MultipleSelectionController(configurationService);
-		result.multipleSelectionController = multipleSelectionController;
-		disposables.add(multipleSelectionController);
-	}
-
-	result.keyboardNavigationDelegate = {
-		mightProducePrintableCharacter(e) {
-			return keybindingService.mightProducePrintableCharacter(e);
-		}
-	};
 
 	return [result, disposables];
 }
@@ -156,15 +140,14 @@ export class WorkbenchTable<T> extends Table<T> {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ITableService tableService: ITableService,
 		@IThemeService themeService: IThemeService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@IKeybindingService keybindingService: IKeybindingService
+		@IConfigurationService configurationService: IConfigurationService
 	) {
-		const [workbenchTableOptions, workbenchTableOptionsDisposable] = toWorkbenchTableOptions(options, configurationService, keybindingService);
+		const [workbenchTableOptions, workbenchTableOptionsDisposable] = toWorkbenchTableOptions(options);
 
 		super(user, container, columns, dataSource,
 			{
 				keyboardSupport: false,
-				...computeStyles(themeService.getTheme(), defaultTableStyles),
+				...computeStyles(themeService.getTheme(), defaultHighPerfTableStyles),
 				...workbenchTableOptions
 			}
 		);
@@ -173,9 +156,6 @@ export class WorkbenchTable<T> extends Table<T> {
 
 		this.contextKeyService = createScopedContextKeyService(contextKeyService, this);
 		this.configurationService = configurationService;
-
-		const tableSupportsMultiSelect = WorkbenchTableSupportsMultiSelectContextKey.bindTo(this.contextKeyService);
-		tableSupportsMultiSelect.set(!(options.multipleSelectionSupport === false));
 
 		this.tableHasSelectionOrFocus = WorkbenchTableHasSelectionOrFocus.bindTo(this.contextKeyService);
 		this.tableDoubleSelection = WorkbenchTableDoubleSelection.bindTo(this.contextKeyService);

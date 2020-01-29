@@ -8,7 +8,6 @@ import 'vs/css!./media/optimizedGridPanel';
 import * as azdata from 'azdata';
 
 import { ITableRenderer, ITableColumn } from 'sql/base/browser/ui/table/highPerf/table';
-import { Table, ITableStyles } from 'sql/base/browser/ui/table/highPerf/tableWidget';
 import { IView, Orientation } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { VirtualizedWindow } from 'sql/base/browser/ui/table/highPerf/virtualizedWindow';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
@@ -22,6 +21,8 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { GridTableState } from 'sql/workbench/contrib/query/common/gridPanelState';
+import { WorkbenchTable } from 'sql/platform/table/browser/tableService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 type ICellTemplate = HTMLElement;
 
@@ -58,7 +59,7 @@ export class GridTable<T> extends Disposable implements IView {
 	public readonly onDidChange: Event<number> = this._onDidChange.event;
 
 	private virtWindow: VirtualizedWindow<T>;
-	private table: Table<T>;
+	private table: WorkbenchTable<T>;
 	private tableContainer: HTMLElement;
 	private columns: ITableColumn<T, ICellTemplate>[];
 
@@ -86,7 +87,8 @@ export class GridTable<T> extends Disposable implements IView {
 		private _resultSet: azdata.ResultSetSummary,
 		state: GridTableState,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IThemeService private readonly themeService: IThemeService
+		@IThemeService private readonly themeService: IThemeService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super();
 		this.tableContainer = append(this.element, $('.table-panel'));
@@ -112,7 +114,7 @@ export class GridTable<T> extends Disposable implements IView {
 			}));
 		});
 
-		this.table = this._register(new Table<T>(this.tableContainer, this.columns, {
+		this.table = this._register(this.instantiationService.createInstance(WorkbenchTable, 'gridPanel', this.tableContainer, this.columns, {
 			getRow: index => this.virtWindow.getIndex(index)
 		}, { rowHeight: this.rowHeight, headerHeight: HEADER_HEIGHT, rowCountColumn: false }));
 
@@ -159,6 +161,6 @@ export class GridTable<T> extends Disposable implements IView {
 		super.dispose();
 	}
 
-	public style(styles: ITableStyles): void {
+	public style(): void {
 	}
 }

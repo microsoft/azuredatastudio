@@ -655,7 +655,8 @@ export class TableView<T> implements IDisposable {
 		const index = this.getItemIndexFromEventTarget(browserEvent.target || null);
 		const item = typeof index === 'undefined' ? undefined : this.visibleRows[index.row];
 		const element = item && item.element;
-		return { browserEvent, index, element };
+		const buttons = browserEvent.buttons;
+		return { browserEvent, buttons, index, element };
 	}
 
 	public getItemIndexFromEventTarget(target: EventTarget | null): GridPosition | undefined {

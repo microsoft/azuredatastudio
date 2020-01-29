@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ITableEvent, ITableRenderer, ITableMouseEvent, ITableContextMenuEvent, ITableDataSource, IStaticTableRenderer, IStaticColumn, ITableColumn } from 'sql/base/browser/ui/table/highPerf/table';
+import { ITableEvent, ITableRenderer, ITableMouseEvent, ITableContextMenuEvent, ITableDataSource, IStaticTableRenderer, IStaticColumn, ITableColumn, TableError } from 'sql/base/browser/ui/table/highPerf/table';
 
 import { IDisposable, dispose, DisposableStore } from 'vs/base/common/lifecycle';
 import { memoize } from 'vs/base/common/decorators';
@@ -485,7 +485,7 @@ export class MouseController<T> implements IDisposable {
 		const merger = (lastEvent: ITableMouseEvent<T>, currentEvent: MouseEvent): ITableMouseEvent<T> => {
 			return this.view.toMouseEvent(currentEvent);
 		};
-		this._mouseMoveMonitor.startMonitoring(merger, e => this.onMouseMove(e), () => this.onMouseStop());
+		this._mouseMoveMonitor.startMonitoring(e.browserEvent.target as HTMLElement, e.buttons, merger, e => this.onMouseMove(e), () => this.onMouseStop());
 		this.onPointer(e);
 	}
 
@@ -773,6 +773,7 @@ export class Table<T> implements IDisposable {
 	readonly onDidDispose: Event<void> = this._onDidDispose.event;
 
 	constructor(
+		private readonly user: string,
 		container: HTMLElement,
 		columns: ITableColumn<T, any>[],
 		dataSource: ITableDataSource<T>,
@@ -869,7 +870,7 @@ export class Table<T> implements IDisposable {
 
 	reveal(index: number, relativeTop?: number): void {
 		if (index < 0 || index >= this.length) {
-			throw new Error(`Invalid index ${index}`);
+			throw new TableError(this.user, `Invalid index ${index}`);
 		}
 
 		const scrollTop = this.view.getScrollTop();
