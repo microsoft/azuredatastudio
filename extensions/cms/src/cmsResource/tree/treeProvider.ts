@@ -31,30 +31,9 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 		}
 
 		if (!this.isSystemInitialized) {
-			try {
-				// Call to collect all locally saved CMS servers
-				// to determine whether the system has been initialized.
-				const cachedServers = this._appContext.cmsUtils.getSavedServers();
-				if (cachedServers && cachedServers.length > 0) {
-					const servers: CmsResourceTreeNode[] = [];
-					cachedServers.forEach(async (server) => {
-						servers.push(new CmsResourceTreeNode(
-							server.name,
-							server.description,
-							server.ownerUri,
-							server.connection,
-							this._appContext, this, null));
-						await this.appContext.cmsUtils.cacheRegisteredCmsServer(server.name, server.description,
-							server.ownerUri, server.connection);
-					});
-					return servers;
-				}
-				this.isSystemInitialized = true;
-				this._onDidChangeTreeData.fire(undefined);
-			} catch (error) {
-				// System not initialized yet
-				this.isSystemInitialized = false;
-			}
+			// Kick off loading the saved servers but then immediately return the loading node so
+			// the user isn't left with an empty tree while we load the nodes
+			this.loadSavedServers().catch(err => this._appContext.apiWrapper.showErrorMessage(localize('cms.resource.tree.treeProvider.loadError', "Unexpected error occured while loading saved servers {0}", err)));
 			return [CmsResourceMessageTreeNode.create(CmsResourceTreeProvider.loadingLabel, undefined)];
 		}
 		try {
@@ -91,6 +70,36 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 
 	public getTreeItem(element: TreeNode): TreeItem | Thenable<TreeItem> {
 		return element.getTreeItem();
+	}
+
+	private async loadSavedServers(): Promise<void> {
+		try {
+			// Optimistically set to true so we don't double-load if something refreshes the tree while
+			// we're loading.
+			this.isSystemInitialized = true;
+			// Call to collect all locally saved CMS servers
+			// to determine whether the system has been initialized.
+			const cachedServers = this._appContext.cmsUtils.getSavedServers();
+			if (cachedServers && cachedServers.length > 0) {
+				const servers: CmsResourceTreeNode[] = [];
+				for (let i = 0; i < cachedServers.length; ++i) {
+					const server = cachedServers[i];
+					servers.push(new CmsResourceTreeNode(
+						server.name,
+						server.description,
+						server.ownerUri,
+						server.connection,
+						this._appContext, this, null));
+					await this.appContext.cmsUtils.cacheRegisteredCmsServer(server.name, server.description,
+						server.ownerUri, server.connection);
+				}
+			}
+			this._onDidChangeTreeData.fire(undefined);
+		} catch (error) {
+			// Reset so we can try loading again
+			this.isSystemInitialized = false;
+			throw error; //re-throw and let caller handler error
+		}
 	}
 
 	public isSystemInitialized: boolean = false;
