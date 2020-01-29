@@ -151,7 +151,7 @@ import { IResourceProviderService } from 'sql/workbench/services/resourceProvide
 import { ResourceProviderService } from 'sql/workbench/services/resourceProvider/browser/resourceProviderService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { AdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
-import { OEShimService, IOEShimService } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerViewTreeShim';
+import { OEShimService, IOEShimService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim';
 import { IObjectExplorerService, ObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { AngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingServiceImpl';

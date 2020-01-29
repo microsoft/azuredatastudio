@@ -11,7 +11,15 @@ import {
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
-import { Orientation, ToolbarLayout } from 'sql/workbench/api/common/sqlExtHostTypes';
+
+export enum Orientation {
+	Horizontal = 'horizontal',
+	Vertical = 'vertial'
+}
+
+export interface ToolbarLayout {
+	orientation: Orientation;
+}
 
 export interface ToolbarItemConfig {
 	title?: string;

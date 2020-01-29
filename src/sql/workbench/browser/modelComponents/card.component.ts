@@ -18,7 +18,40 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
-import { CardProperties, CardDescriptionItem, ActionDescriptor, StatusIndicator } from 'sql/workbench/api/common/sqlExtHostTypes';
+
+export interface ActionDescriptor {
+	label: string;
+	actionTitle?: string;
+	callbackData?: any;
+}
+
+export enum StatusIndicator {
+	None = 0,
+	Ok = 1,
+	Warning = 2,
+	Error = 3
+}
+
+export interface CardProperties {
+	label: string;
+	value?: string;
+	actions?: ActionDescriptor[];
+	descriptions?: CardDescriptionItem[];
+	status?: StatusIndicator;
+	selected?: boolean;
+	cardType: CardType;
+}
+
+export interface CardDescriptionItem {
+	label: string;
+	value?: string;
+}
+
+export enum CardType {
+	VerticalButton = 'VerticalButton',
+	Details = 'Details',
+	ListItem = 'ListItem'
+}
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('./card.component.html'))

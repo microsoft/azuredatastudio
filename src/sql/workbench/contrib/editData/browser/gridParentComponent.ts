@@ -9,7 +9,7 @@ import 'vs/css!./media/styles';
 import { Subscription, Subject } from 'rxjs/Rx';
 import { ElementRef, QueryList, ChangeDetectorRef, ViewChildren } from '@angular/core';
 import { SlickGrid } from 'angular2-slickgrid';
-import * as Constants from 'sql/workbench/contrib/query/common/constants';
+import * as Constants from 'sql/platform/query/common/constants';
 import * as LocalizedConstants from 'sql/workbench/contrib/query/common/localizedConstants';
 import { IGridInfo, IGridDataSet, SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
 import * as Utils from 'sql/platform/connection/common/utils';

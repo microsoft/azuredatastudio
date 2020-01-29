@@ -19,7 +19,7 @@ import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/ser
 import * as  LocalizedConstants from 'sql/workbench/contrib/connection/common/localizedConstants';
 import { ObjectExplorerService, ObjectExplorerNodeEventArgs } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeNode } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
-import { NodeType } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
+import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { ServerTreeDataSource } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeDataSource';
 import { Emitter } from 'vs/base/common/event';
