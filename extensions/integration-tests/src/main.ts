@@ -19,6 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('test.setupIntegrationTest', async () => {
 		let extensionInstallersFolder = normalize(join(__dirname, '../extensionInstallers'));
 		console.info(`extensionInstallersFolder=${extensionInstallersFolder}`);
+		// eslint-disable-next-line no-sync
 		let installers = fs.readdirSync(extensionInstallersFolder);
 		for (let i = 0; i < installers.length; i++) {
 			if (installers[i].endsWith('.vsix')) {

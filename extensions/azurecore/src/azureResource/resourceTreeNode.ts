@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { NodeInfo } from 'azdata';
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import * as nls from 'vscode-nls';

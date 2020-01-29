@@ -52,7 +52,7 @@ export class QueryEditorService implements IQueryEditorService {
 				let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 				// Create a sql document pane with accoutrements
-				const fileInput = this._untitledEditorService.createOrGet(docUri, 'sql');
+				const fileInput = this._untitledEditorService.create({ associatedResource: docUri, mode: 'sql' });
 				let untitledEditorModel = await fileInput.resolve();
 				if (sqlContent) {
 					untitledEditorModel.textEditorModel.setValue(sqlContent);
@@ -87,16 +87,15 @@ export class QueryEditorService implements IQueryEditorService {
 		let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 		// Create a sql document pane with accoutrements
-		const fileInput = this._untitledEditorService.createOrGet(docUri, 'sql');
+		const fileInput = this._untitledEditorService.create({ untitledResource: docUri, mode: 'sql' });
 		const m = await fileInput.resolve();
-		if (sqlContent) {
-			m.textEditorModel.setValue(sqlContent);
-		}
-
 		// Create an EditDataInput for editing
 		const resultsInput: EditDataResultsInput = this._instantiationService.createInstance(EditDataResultsInput, docUri.toString());
 		let editDataInput: EditDataInput = this._instantiationService.createInstance(EditDataInput, docUri, schemaName, tableName, fileInput, sqlContent, resultsInput);
-
+		if (sqlContent) {
+			//Setting the value of the textEditorModel to sqlContent marks editor as dirty, editDataInput handles it.
+			m.textEditorModel.setValue(sqlContent);
+		}
 		const editor = await this._editorService.openEditor(editDataInput, { pinned: true });
 		let params = editor.input as EditDataInput;
 		return params;

@@ -490,17 +490,22 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		}
 	}
 
-	find(exp: string, maxMatches?: number): Promise<NotebookRange> {
+	find(exp: string, matchCase?: boolean, wholeWord?: boolean, maxMatches?: number): Promise<NotebookRange> {
 		this._findArray = new Array<NotebookRange>();
 		this._onFindCountChange.fire(this._findArray.length);
 		if (exp) {
-			return new Promise<NotebookRange>((resolve) => {
-				const disp = this.onFindCountChange(e => {
-					resolve(this._findArray[this._findIndex]);
-					disp.dispose();
-				});
-				this._startSearch(exp, maxMatches);
-			});
+			for (let i = 0; i < this.notebookModel.cells.length; i++) {
+				const item = this.notebookModel.cells[i];
+				const result = this.searchFn(item, exp, matchCase, wholeWord, maxMatches);
+				if (result) {
+					this._findArray.push(...result);
+					this._onFindCountChange.fire(this._findArray.length);
+					if (maxMatches > 0 && this._findArray.length === maxMatches) {
+						break;
+					}
+				}
+			}
+			return Promise.resolve(this._findArray[this._findIndex]);
 		} else {
 			return Promise.reject(new Error('no expression'));
 		}
@@ -518,51 +523,63 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		return this.findArray;
 	}
 
-	private _startSearch(exp: string, maxMatches: number = 0): void {
-		let searchFn = (cell: ICellModel, exp: string): NotebookRange[] => {
-			let findResults: NotebookRange[] = [];
-			let cellVal = cell.cellType === 'markdown' ? this.cleanUpCellSource(cell.source) : cell.source;
-			let index: number;
-			let start: number;
-			let end: number;
-			if (cellVal) {
-				if (typeof cellVal === 'string') {
-					index = 0;
-					while (cellVal.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) > -1) {
-						start = cellVal.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index;
-						end = start + exp.length;
-						let range = new NotebookRange(cell, 0, start, 0, end);
-						findResults = findResults.concat(range);
-						index = end;
-					}
-				} else {
-					for (let j = 0; j < cellVal.length; j++) {
-						index = 0;
-						let cellValFormatted = cell.cellType === 'markdown' ? this.cleanMarkdownLinks(cellVal[j]) : cellVal[j];
-						while (cellValFormatted.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) > -1) {
-							start = cellValFormatted.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index + 1;
-							end = start + exp.length;
-							// lineNumber: j+1 since notebook editors aren't zero indexed.
-							let range = new NotebookRange(cell, j + 1, start, j + 1, end);
-							findResults = findResults.concat(range);
-							index = end;
-						}
-					}
-				}
-			}
-			return findResults;
-		};
-		for (let i = 0; i < this.notebookModel.cells.length; i++) {
-			const item = this.notebookModel.cells[i];
-			const result = searchFn!(item, exp);
-			if (result) {
-				this._findArray = this._findArray.concat(result);
-				this._onFindCountChange.fire(this._findArray.length);
-				if (maxMatches > 0 && this._findArray.length === maxMatches) {
-					break;
+	private searchFn(cell: ICellModel, exp: string, matchCase: boolean = false, wholeWord: boolean = false, maxMatches?: number): NotebookRange[] {
+		let findResults: NotebookRange[] = [];
+		let cellVal = cell.cellType === 'markdown' ? this.cleanUpCellSource(cell.source) : cell.source;
+		if (cellVal) {
+
+			if (typeof cellVal === 'string') {
+				let findStartResults = this.search(cellVal, exp, matchCase, wholeWord, maxMatches);
+				findStartResults.forEach(start => {
+					let range = new NotebookRange(cell, 0, start, 0, start + exp.length);
+					findResults.push(range);
+				});
+
+			} else {
+				for (let j = 0; j < cellVal.length; j++) {
+					let cellValFormatted = cell.cellType === 'markdown' ? this.cleanMarkdownLinks(cellVal[j]) : cellVal[j];
+					let findStartResults = this.search(cellValFormatted, exp, matchCase, wholeWord, maxMatches - findResults.length);
+					findStartResults.forEach(start => {
+						// lineNumber: j+1 since notebook editors aren't zero indexed.
+						let range = new NotebookRange(cell, j + 1, start, j + 1, start + exp.length);
+						findResults.push(range);
+					});
 				}
 			}
 		}
+		return findResults;
+	}
+
+	// escape the special characters in a regex string
+	escapeRegExp(text: string): string {
+		return text.replace(/[-[\]{}()*+!<=:?.\/\\^$|#\s,]/g, '\\$&');
+	}
+
+	search(input: string, exp: string, matchCase: boolean = false, wholeWord: boolean = false, maxMatches?: number): number[] {
+		let index: number = 0;
+		let start: number;
+		let findResults: number[] = [];
+		if (!matchCase) {
+			input = input.toLocaleLowerCase();
+			exp = exp.toLocaleLowerCase();
+		}
+		let searchText: string = input.substr(index);
+		while (findResults.length < maxMatches && searchText.indexOf(exp) > -1) {
+			if (wholeWord) {
+				// word with no special characters around \\bword\\b, word that begins or ends with special character \\sword\\s
+				let wholeWordRegex = new RegExp(`(?:\\b|\\s)${this.escapeRegExp(exp)}(?:\\b|\\s)`);
+				start = searchText.search(wholeWordRegex) + 1;
+				if (start < 1) {
+					break;
+				}
+			} else {
+				start = searchText.indexOf(exp) + index + 1;
+			}
+			findResults.push(start);
+			index = start + exp.length;
+			searchText = input.substr(index - 1);
+		}
+		return findResults;
 	}
 
 	// In markdown links are defined as [Link Text](https://url/of/the/text). when searching for text we shouldn't
@@ -649,9 +666,10 @@ abstract class SettingsCommand extends Command {
 
 class SearchNotebookCommand extends SettingsCommand {
 
-	public runCommand(accessor: ServicesAccessor, args: any): void {
+	public async runCommand(accessor: ServicesAccessor, args: any): Promise<void> {
 		const notebookEditor = this.getNotebookEditor(accessor);
 		if (notebookEditor) {
+			await notebookEditor.setNotebookModel();
 			notebookEditor.toggleSearch();
 		}
 	}

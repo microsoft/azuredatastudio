@@ -47,25 +47,17 @@
 		},
 		{
 			"type": "npm",
-			"script": "strict-null-check-watch",
-			"label": "TS - Strict Null Checks",
+			"script": "strict-vscode-watch",
+			"label": "TS - Strict VSCode",
 			"isBackground": true,
 			"presentation": {
 				"reveal": "never"
 			},
 			"problemMatcher": {
 				"base": "$tsc-watch",
-				"owner": "typescript-strict-null-checks",
+				"owner": "typescript-vscode",
 				"applyTo": "allDocuments"
 			}
-		},
-		{
-			"type": "gulp",
-			"task": "tslint",
-			"label": "Run tslint",
-			"problemMatcher": [
-				"$tslint5"
-			]
 		},
 		{
 			"label": "Run tests",
@@ -104,7 +96,6 @@
 			"command": "yarn web -- --no-launch",
 			"label": "Run web",
 			"isBackground": true,
-			// This section to make error go away when launching the debug config
 			"problemMatcher": {
 				"pattern": {
 					"regexp": ""
@@ -118,5 +109,13 @@
 				"reveal": "never"
 			}
 		},
+		{
+			"type": "npm",
+			"script": "eslint",
+			"problemMatcher": {
+				"source": "eslint",
+				"base": "$eslint-stylish"
+			}
+		}
 	]
 }

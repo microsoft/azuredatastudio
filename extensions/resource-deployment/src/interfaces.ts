@@ -241,7 +241,6 @@ export const enum ToolStatus {
 }
 
 export interface ITool {
-	readonly isInstalling: boolean;
 	readonly name: string;
 	readonly displayName: string;
 	readonly description: string;
@@ -252,15 +251,14 @@ export interface ITool {
 	readonly statusDescription?: string;
 	readonly autoInstallSupported: boolean;
 	readonly autoInstallNeeded: boolean;
-	readonly isNotInstalled: boolean;
-	readonly isInstalled: boolean;
-	readonly installationPath?: string;
+	readonly status: ToolStatus;
+	readonly installationPathOrAdditionalInformation?: string;
 	readonly outputChannelName: string;
 	readonly fullVersion?: string;
 	readonly onDidUpdateData: vscode.Event<ITool>;
 
 	showOutputChannel(preserveFocus?: boolean): void;
-	loadInformation(): Promise<void>;
+	finishInitialization(): Promise<void>;
 	install(): Promise<void>;
 	isSameOrNewerThan(version: string): boolean;
 }

@@ -20,7 +20,7 @@ import { IExtHostExtensionService } from 'vs/workbench/api/common/extHostExtensi
 import { platform } from 'vs/base/common/process';
 import { ILogService } from 'vs/platform/log/common/log';
 
-import { AzdataNodeModuleFactory, SqlopsNodeModuleFactory } from 'sql/workbench/api/common/extHostRequireInterceptor'; // {{SQL CARBON EDIT}}
+import { AzdataNodeModuleFactory } from 'sql/workbench/api/common/extHostRequireInterceptor'; // {{SQL CARBON EDIT}}
 import { IExtensionApiFactory as sqlIApiFactory } from 'sql/workbench/api/common/sqlExtHost.api.impl'; // {{SQL CARBON EDIT}}
 
 
@@ -61,7 +61,6 @@ export abstract class RequireInterceptor {
 
 		this.register(new VSCodeNodeModuleFactory(this._apiFactory.vscode, extensionPaths, this._extensionRegistry, configProvider, this._logService)); // {{SQL CARBON EDIT}} // add node module
 		this.register(new AzdataNodeModuleFactory(this._apiFactory.azdata, extensionPaths)); // {{SQL CARBON EDIT}} // add node module
-		this.register(new SqlopsNodeModuleFactory(this._apiFactory.sqlops, extensionPaths)); // {{SQL CARBON EDIT}} // add node module
 		this.register(this._instaService.createInstance(KeytarNodeModuleFactory));
 		if (this._initData.remote.isRemote) {
 			this.register(this._instaService.createInstance(OpenNodeModuleFactory, extensionPaths, this._initData.environment.appUriScheme));

@@ -333,13 +333,13 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 				iconClass = MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!;
 			} else {
 				iconClass = ids.nextId();
-				createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.light || item.icon.dark)}`);
-				createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.dark)}`);
+				createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.light || item.icon.dark)}`);
+				createCSSRule(`.vs-dark .codicon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.dark)}`);
 				MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
 			}
 
-			addClasses(this.label, 'icon', iconClass, this._defaultCSSClassToAdd);
-			this._labeledItemClassDispose = toDisposable(() => removeClasses(this.label, 'icon', iconClass, this._defaultCSSClassToAdd));
+			addClasses(this.label, 'codicon', this._defaultCSSClassToAdd, iconClass);
+			this._labeledItemClassDispose = toDisposable(() => removeClasses(this.label, 'codicon', this._defaultCSSClassToAdd, iconClass));
 		}
 	}
 

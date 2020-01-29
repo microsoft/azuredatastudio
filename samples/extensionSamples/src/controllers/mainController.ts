@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as Utils from '../utils';
 import ControllerBase from './controllerBase';
 import * as fs from 'fs';
@@ -15,47 +15,43 @@ import * as path from 'path';
  * The main controller class that initializes the extension
  */
 export default class MainController extends ControllerBase {
-    // PUBLIC METHODS //////////////////////////////////////////////////////
-    /**
-     * Deactivates the extension
-     */
-    public deactivate(): void {
-        Utils.logDebug('Main controller deactivated');
-    }
+	public deactivate(): void {
+		Utils.logDebug('Main controller deactivated');
+	}
 
-    public activate(): Promise<boolean> {
-        const webviewExampleHtml = fs.readFileSync(path.join(__dirname, 'webviewExample.html')).toString();
-        const buttonHtml = fs.readFileSync(path.join(__dirname, 'button.html')).toString();
-        const counterHtml = fs.readFileSync(path.join(__dirname, 'counter.html')).toString();
+	public activate(): Promise<boolean> {
+		const webviewExampleHtml = fs.readFileSync(path.join(__dirname, 'webviewExample.html')).toString();
+		const buttonHtml = fs.readFileSync(path.join(__dirname, 'button.html')).toString();
+		const counterHtml = fs.readFileSync(path.join(__dirname, 'counter.html')).toString();
 
-        let countWidget: sqlops.DashboardWebview;
-        let buttonWidget: sqlops.DashboardWebview;
-        let count = 0;
+		let countWidget: azdata.DashboardWebview;
+		let buttonWidget: azdata.DashboardWebview;
+		let count = 0;
 
-        let dialog: sqlops.ModalDialog = sqlops.window.createWebViewDialog('Flyout extension');
-        dialog.html = '<div>This is a flyout extension.</div>';
+		let dialog: azdata.ModalDialog = azdata.window.createWebViewDialog('Flyout extension');
+		dialog.html = '<div>This is a flyout extension.</div>';
 
-        sqlops.dashboard.registerWebviewProvider('webview-count', e => {
-            e.html = counterHtml;
-            countWidget = e;
-        });
-        sqlops.dashboard.registerWebviewProvider('webview-button', e => {
-            e.html = buttonHtml;
-            buttonWidget = e;
-            e.onMessage(event => {
-                if (event === 'openFlyout') {
-                    dialog.open();
-                } else {
-                    count++;
-                    countWidget.postMessage(count);
-                }
-            });
-        });
-        sqlops.dashboard.registerWebviewProvider('webviewExample', e => {
-            e.html = webviewExampleHtml;
-        });
+		azdata.dashboard.registerWebviewProvider('webview-count', e => {
+			e.html = counterHtml;
+			countWidget = e;
+		});
+		azdata.dashboard.registerWebviewProvider('webview-button', e => {
+			e.html = buttonHtml;
+			buttonWidget = e;
+			e.onMessage(event => {
+				if (event === 'openFlyout') {
+					dialog.open();
+				} else {
+					count++;
+					countWidget.postMessage(count);
+				}
+			});
+		});
+		azdata.dashboard.registerWebviewProvider('webviewExample', e => {
+			e.html = webviewExampleHtml;
+		});
 
-        return Promise.resolve(true);
-    }
+		return Promise.resolve(true);
+	}
 }
 

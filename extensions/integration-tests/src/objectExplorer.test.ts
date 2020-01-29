@@ -25,10 +25,10 @@ if (isTestSetupCompleted()) {
 		test.skip('BDC instance context menu test', async function () {
 			return await (new ObjectExplorerTester()).bdcContextMenuTest();
 		});
-		test('Azure SQL DB context menu test @UNSTABLE@', async function () {
+		test('Azure SQL DB context menu test', async function () {
 			return await (new ObjectExplorerTester()).sqlDbContextMenuTest();
 		});
-		test('Standalone database context menu test @UNSTABLE@', async function () {
+		test('Standalone database context menu test', async function () {
 			return await (new ObjectExplorerTester()).standaloneContextMenuTest();
 		});
 	});
@@ -152,7 +152,7 @@ class ObjectExplorerTester {
 			const serverNode = nodes[index];
 			const children = await serverNode.getChildren();
 
-			assert(children[0].label.toLocaleLowerCase === 'Databases'.toLocaleLowerCase, `Expected Databases node. Actual ${children[0].label}`);
+			assert(children[0].label === 'Databases', `Expected Databases node. Actual ${children[0].label}`);
 			const databasesFolder = children[0];
 
 			const databases = await databasesFolder.getChildren();

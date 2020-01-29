@@ -7,26 +7,26 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { TestServerProfile } from './testConfig';
-import { isNullOrUndefined } from 'util';
+import { TestServerProfile, TestConnectionInfo } from './testConfig';
+import { isNullOrUndefined, promisify } from 'util';
 
 // default server connection timeout
 export const DefaultConnectTimeoutInMs: number = 10000;
 
 /**
- * @param server test connection profile
+ * @param connectionInfo test connection profile
  * @param timeout optional timeout parameter
  * Returns connection id for a new connection
  */
-export async function connectToServer(server: TestServerProfile, timeout: number = DefaultConnectTimeoutInMs): Promise<string> {
+export async function connectToServer(connectionInfo: TestConnectionInfo, timeout: number = DefaultConnectTimeoutInMs): Promise<string> {
 	let connectionProfile: azdata.IConnectionProfile = {
-		serverName: server.serverName,
-		databaseName: server.database,
-		authenticationType: server.authenticationTypeName,
-		providerName: server.providerName,
+		serverName: connectionInfo.serverName,
+		databaseName: connectionInfo.database,
+		authenticationType: connectionInfo.authenticationTypeName,
+		providerName: connectionInfo.providerName,
 		connectionName: '',
-		userName: server.userName,
-		password: server.password,
+		userName: connectionInfo.userName,
+		password: connectionInfo.password,
 		savePassword: false,
 		groupFullName: undefined,
 		saveProfile: true,
@@ -182,16 +182,22 @@ export async function assertDatabaseCreationResult(databaseName: string, ownerUr
 	let result: azdata.SimpleExecuteResult;
 	while (retryCount > 0) {
 		--retryCount;
-
-		let query = `BEGIN TRY
-				SELECT name FROM master.dbo.sysdatabases WHERE name='${databaseName}'
+		// add state=0 to the query to make sure the database is online
+		const query = `BEGIN TRY
+				SELECT name FROM sys.databases WHERE name='${databaseName}' AND state=0
 			END TRY
 			BEGIN CATCH
 				SELECT ERROR_MESSAGE() AS ErrorMessage;
 			END CATCH`;
-		result = await runQuery(query, ownerUri);
-		if (result.rowCount > 0) {
-			break;
+		try {
+			result = await runQuery(query, ownerUri);
+			if (result.rowCount > 0) {
+				break;
+			}
+		}
+		catch {
+			// exception will be thrown by the SQL Tools Service if no results is returned
+			// ignore it.
 		}
 
 		await sleep(5000);
@@ -211,18 +217,17 @@ export async function assertFileGenerationResult(filepath: string, retryCount: n
 	let exists = false;
 	while (retryCount > 0 && !exists) {
 		--retryCount;
-		exists = fs.existsSync(filepath);
+		exists = await promisify(fs.exists)(filepath);
 		await sleep(5000);
 	}
 
 	assert(exists, `File ${filepath} is expected to be present`);
-	assert(fs.readFileSync(filepath).byteLength > 0, 'File ${filepath} should not be empty');
-	fs.unlinkSync(filepath);
+	assert((await fs.promises.readFile(filepath)).byteLength > 0, 'File ${filepath} should not be empty');
+	await fs.promises.unlink(filepath);
 }
 
 /**
  *
- * @param databaseName name of database where to look for table
  * @param tableName table to look for
  * @param schema schema to look for
  * @param ownerUri owner uri
@@ -230,12 +235,11 @@ export async function assertFileGenerationResult(filepath: string, retryCount: n
  * @param checkForData whether or not to check if the table has data
  * Checks for table existing
  */
-export async function assertTableCreationResult(databaseName: string, schema: string, tableName: string, ownerUri: string, retryCount: number, checkForData?: boolean): Promise<void> {
+export async function assertTableCreationResult(schema: string, tableName: string, ownerUri: string, retryCount: number, checkForData?: boolean): Promise<void> {
 	let result: azdata.SimpleExecuteResult;
 	while (retryCount > 0) {
 		--retryCount;
 		let query = `BEGIN TRY
-				USE ${databaseName}
 				SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '${schema}' AND TABLE_NAME = '${tableName}'
 			END TRY
 			BEGIN CATCH
@@ -254,7 +258,6 @@ export async function assertTableCreationResult(databaseName: string, schema: st
 	if (checkForData) {
 		while (retryCount > 0) {
 			let query = `BEGIN TRY
-					USE ${databaseName}
 					SELECT * FROM ${tableName}
 				END TRY
 				BEGIN CATCH

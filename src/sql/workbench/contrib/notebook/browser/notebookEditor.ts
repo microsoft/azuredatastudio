@@ -282,12 +282,12 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 			}
 		}
 
-		if (e.searchString) {
+		if (e.searchString || e.matchCase || e.wholeWord) {
 			this._findDecorations.clearDecorations();
 			if (this._notebookModel) {
 				if (this._findState.searchString) {
 					let findScope = this._findDecorations.getFindScope();
-					if (this._findState.searchString === this.notebookFindModel.findExpression && findScope !== null) {
+					if (this._findState.searchString === this.notebookFindModel.findExpression && findScope !== null && !e.matchCase && !e.wholeWord) {
 						if (findScope) {
 							this._updateFinderMatchState();
 							this._findState.changeMatchInfo(
@@ -300,7 +300,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 					} else {
 						this.notebookInput.notebookFindModel.clearDecorations();
 						this.notebookFindModel.findExpression = this._findState.searchString;
-						this.notebookInput.notebookFindModel.find(this._findState.searchString, NOTEBOOK_MAX_MATCHES).then(findRange => {
+						this.notebookInput.notebookFindModel.find(this._findState.searchString, this._findState.matchCase, this._findState.wholeWord, NOTEBOOK_MAX_MATCHES).then(findRange => {
 							if (findRange) {
 								this.updatePosition(findRange);
 							} else if (this.notebookFindModel.findMatches.length > 0) {
@@ -334,8 +334,10 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		this._currentMatch = range;
 	}
 	public toggleSearch(): void {
+		// reveal only when the model is loaded
+		let isRevealed: boolean = !this._findState.isRevealed && this._notebookModel ? !this._findState.isRevealed : false;
 		this._findState.change({
-			isRevealed: !this._findState.isRevealed
+			isRevealed: isRevealed
 		}, false);
 		if (this._findState.isRevealed) {
 			this._finder.focusFindInput();

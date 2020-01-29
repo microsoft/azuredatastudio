@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 1.14.1
+* Release date: December 26, 2019
+* Release status: General Availability
+* Hotfix for bug https://github.com/microsoft/azuredatastudio/issues/8768
+
 ## Version 1.14.0
 * Release date: December 19, 2019
 * Release status: General Availability

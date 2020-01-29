@@ -109,7 +109,7 @@ export class DataTierApplicationWizard {
 
 		this.model.serverId = this.connection.connectionId;
 
-		this.wizard = azdata.window.createWizard('Data-tier Application Wizard');
+		this.wizard = azdata.window.createWizard(localize('dacfx.wizardTitle', "Data-tier Application Wizard"));
 		let selectOperationWizardPage = azdata.window.createWizardPage(localize('dacFx.selectOperationPageName', "Select an Operation"));
 		let deployConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.deployConfigPageName', "Select Deploy Dacpac Settings"));
 		let deployPlanWizardPage = azdata.window.createWizardPage(localize('dacFx.deployPlanPage', "Review the deploy plan"));
@@ -257,51 +257,35 @@ export class DataTierApplicationWizard {
 		}
 	}
 
-	private async deploy() {
+	private async deploy(): Promise<void> {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		const result = await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('alertData.deployErrorMessage', "Deploy failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-		}
+		await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
-	private async extract() {
+	private async extract(): Promise<void> {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		const result = await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('alertData.extractErrorMessage', "Extract failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-		}
+		await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
-	private async export() {
+	private async export(): Promise<void> {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		const result = await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('alertData.exportErrorMessage', "Export failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-		}
+		await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
-	private async import() {
+	private async import(): Promise<void> {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		const result = await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('alertData.importErrorMessage', "Import failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-		}
+		await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
-	private async generateDeployScript() {
+	private async generateDeployScript(): Promise<void> {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 		this.wizard.message = {
@@ -310,11 +294,7 @@ export class DataTierApplicationWizard {
 			description: ''
 		};
 
-		const result = await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('alertData.deployErrorMessage', "Deploy failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-		}
+		await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
 	}
 
 	private getPage(idx: number): Page {

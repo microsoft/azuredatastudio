@@ -19,11 +19,11 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
-import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { SimpleEditorProgressService } from 'vs/editor/standalone/browser/simpleServices';
-import { IProgressService } from 'vs/platform/progress/common/progress';
 import { ILogService } from 'vs/platform/log/common/log';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
+import { IEditorProgressService } from 'vs/platform/progress/common/progress';
+import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser/simpleProgressIndicator';
 
 @Component({
 	template: '',
@@ -61,12 +61,12 @@ export default class EditorComponent extends ComponentBase implements IComponent
 	}
 
 	private async _createEditor(): Promise<void> {
-		let instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleEditorProgressService()]));
-		this._editor = instantiationService.createInstance(QueryTextEditor);
+		const customInstan = this._instantiationService.createChild(new ServiceCollection([IEditorProgressService, new SimpleProgressIndicator()]));
+		this._editor = customInstan.createInstance(QueryTextEditor);
 		this._editor.create(this._el.nativeElement);
 		this._editor.setVisible(true);
 		let uri = this.createUri();
-		this._editorInput = instantiationService.createInstance(UntitledTextEditorInput, uri, false, 'plaintext', '', '');
+		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, uri, false, 'plaintext', '', '');
 		await this._editor.setInput(this._editorInput, undefined);
 		const model = await this._editorInput.resolve();
 		this._editorModel = model.textEditorModel;

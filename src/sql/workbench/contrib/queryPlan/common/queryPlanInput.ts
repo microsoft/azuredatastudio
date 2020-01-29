@@ -3,11 +3,27 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
+import { EditorInput, EditorModel, IEditorInput } from 'vs/workbench/common/editor';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ILanguageAssociation } from 'sql/workbench/common/languageAssociation';
+
+export class QueryPlanConverter implements ILanguageAssociation {
+	static readonly languages = ['sqlplan'];
+
+	constructor(@IInstantiationService private instantiationService: IInstantiationService) { }
+
+	convertInput(activeEditor: IEditorInput): QueryPlanInput {
+		return this.instantiationService.createInstance(QueryPlanInput, activeEditor.getResource());
+	}
+
+	createBase(activeEditor: QueryPlanInput): IEditorInput {
+		return undefined;
+	}
+}
 
 export class QueryPlanInput extends EditorInput {
 

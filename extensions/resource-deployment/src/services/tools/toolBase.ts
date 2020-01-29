@@ -84,11 +84,11 @@ export abstract class ToolBase implements ITool {
 		return this._onDidUpdateData.event;
 	}
 
-	protected get status(): ToolStatus {
+	public get status(): ToolStatus {
 		return this._status;
 	}
 
-	protected set status(value: ToolStatus) {
+	protected setStatus(value: ToolStatus) {
 		this._status = value;
 		this._onDidUpdateData.fire(this);
 	}
@@ -100,19 +100,6 @@ export abstract class ToolBase implements ITool {
 	public get autoInstallNeeded(): boolean {
 		return this.status === ToolStatus.NotInstalled && this.autoInstallSupported;
 	}
-
-	public get isNotInstalled(): boolean {
-		return this.status === ToolStatus.NotInstalled;
-	}
-
-	public get isInstalled(): boolean {
-		return this.status === ToolStatus.Installed;
-	}
-
-	public get isInstalling(): boolean {
-		return this.status === ToolStatus.Installing;
-	}
-
 	public get storagePath(): string {
 		return this._platformService.storagePath();
 	}
@@ -139,8 +126,8 @@ export abstract class ToolBase implements ITool {
 		return this._statusDescription;
 	}
 
-	public get installationPath(): string | undefined {
-		return this._installationPath;
+	public get installationPathOrAdditionalInformation(): string | undefined {
+		return this._installationPathOrAdditionalInformation;
 	}
 
 	protected get installationCommands(): Command[] | undefined {
@@ -178,14 +165,15 @@ export abstract class ToolBase implements ITool {
 	public async install(): Promise<void> {
 		this._statusDescription = '';
 		try {
-			this.status = ToolStatus.Installing;
+			this.setStatus(ToolStatus.Installing);
 			await this.installCore();
 			this.startVersionAndStatusUpdate();
 			await this._pendingVersionAndStatusUpdate;
 		} catch (error) {
 			const errorMessage = getErrorMessage(error);
 			this._statusDescription = localize('toolBase.InstallError', "Error installing tool '{0}' [ {1} ].{2}Error: {3}{2}See output channel '{4}' for more details", this.displayName, this.homePage, EOL, errorMessage, this.outputChannelName);
-			this.status = ToolStatus.Error;
+			this.setStatus(ToolStatus.Error);
+			this._installationPathOrAdditionalInformation = localize('toolBase.InstallErrorInformation', "Error installing tool. See output channel '{0}' for more details", this.outputChannelName);
 			throw error;
 		}
 
@@ -193,11 +181,12 @@ export abstract class ToolBase implements ITool {
 		// but if it is ToolStatus.NotInstalled then it means that installation failed with 0 exit code.
 		if ((this.status as ToolStatus) === ToolStatus.NotInstalled) {
 			this._statusDescription = localize('toolBase.InstallFailed', "Installation commands completed but version of tool '{0}' could not be detected so our installation attempt has failed. Detection Error: {1}{2}Cleaning up previous installations would help.", this.displayName, this._statusDescription, EOL);
+			this._installationPathOrAdditionalInformation = localize('toolBase.InstallFailInformation', "Failed to detect version post installation. See output channel '{0}' for more details", this.outputChannelName);
 			if (this.uninstallCommand) {
 				this._statusDescription += localize('toolBase.ManualUninstallCommand', " A possibly way to uninstall is using this command:{0}   >{1}", EOL, this.uninstallCommand);
 			}
 			this._statusDescription += localize('toolBase.SeeOutputChannel', "{0}See output channel '{1}' for more details", EOL, this.outputChannelName);
-			this.status = ToolStatus.Failed;
+			this.setStatus(ToolStatus.Failed);
 			throw new Error(this._statusDescription);
 		}
 	}
@@ -234,14 +223,33 @@ export abstract class ToolBase implements ITool {
 		});
 	}
 
-	public async loadInformation(): Promise<void> {
-		await this._pendingVersionAndStatusUpdate;
+	/**
+	 * Sets the tool with discovered state and version information.
+	 * Upon error this.status field is set to ToolStatus.Error and this.statusDescription && this.installationPathOrAdditionalInformation is set to the corresponding error message
+	 * and original error encountered is re-thrown so that it gets bubbled up to the caller.
+	 */
+	public async finishInitialization(): Promise<void> {
+		try {
+			await this._pendingVersionAndStatusUpdate;
+		} catch (error) {
+			this.setStatus(ToolStatus.Error);
+			this._statusDescription = getErrorMessage(error);
+			this._installationPathOrAdditionalInformation = this._statusDescription;
+			throw error;
+		}
 	}
 
-	private startVersionAndStatusUpdate() {
+	/**
+	 * 	Invokes the async method to update version and status for the tool.
+	 */
+	private startVersionAndStatusUpdate(): void {
+		this._statusDescription = '';
 		this._pendingVersionAndStatusUpdate = this.updateVersionAndStatus();
 	}
 
+	/**
+	 * updates the version and status for the tool.
+	 */
 	private async updateVersionAndStatus(): Promise<void> {
 		this._statusDescription = '';
 		await this.addInstallationSearchPathsToSystemPath();
@@ -260,11 +268,12 @@ export abstract class ToolBase implements ITool {
 				// discover and set the installationPath
 				await this.setInstallationPath();
 			}
-			this.status = ToolStatus.Installed;
+			this.setStatus(ToolStatus.Installed);
 		}
 		else {
+			this._installationPathOrAdditionalInformation = localize('deployCluster.GetToolVersionErrorInformation', "Error retrieving version information. See output channel '{0}' for more details", this.outputChannelName);
 			this._statusDescription = localize('deployCluster.GetToolVersionError', "Error retrieving version information.{0}Invalid output received, get version command output: '{1}' ", EOL, commandOutput);
-			this.status = ToolStatus.NotInstalled;
+			this.setStatus(ToolStatus.NotInstalled);
 		}
 	}
 
@@ -292,7 +301,7 @@ export abstract class ToolBase implements ITool {
 		if (!commandOutput) {
 			throw new Error(`Install location of tool:'${this.displayName}' could not be discovered`);
 		} else {
-			this._installationPath = path.resolve(commandOutput.split(EOL)[0]);
+			this._installationPathOrAdditionalInformation = path.resolve(commandOutput.split(EOL)[0]);
 		}
 	}
 
@@ -304,5 +313,5 @@ export abstract class ToolBase implements ITool {
 	private _status: ToolStatus = ToolStatus.NotInstalled;
 	private _version?: SemVer;
 	private _statusDescription?: string;
-	private _installationPath?: string;
+	private _installationPathOrAdditionalInformation?: string;
 }

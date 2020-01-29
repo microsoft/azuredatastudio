@@ -16,7 +16,7 @@ const defaults: ICellSelectionModelOptions = {
 };
 
 export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slick.Range>> {
-	private grid: Slick.Grid<T>;
+	private grid!: Slick.Grid<T>;
 	private selector: ICellRangeSelector<T>;
 	private ranges: Array<Slick.Range> = [];
 	private _handler = new Slick.EventHandler();

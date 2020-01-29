@@ -70,32 +70,6 @@ steps:
     $AppRoot = "$(Agent.TempDirectory)\azuredatastudio-win32-x64"
     $AppProductJson = Get-Content -Raw -Path "$AppRoot\resources\app\product.json" | ConvertFrom-Json
     $AppNameShort = $AppProductJson.nameShort
-    exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; $env:INTEGRATION_TEST_CLI_PATH = "$AppRoot\bin\$AppNameShort"; .\scripts\sql-test-integration.bat }
-  continueOnError: true
-  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-  displayName: Run release tests
-  env:
-    ADS_TEST_GREP: (.*@REL@|integration test setup)
-    ADS_TEST_INVERT_GREP: 0
-    BDC_BACKEND_USERNAME: $(ads-integration-test-bdc-server-username)
-    BDC_BACKEND_PWD: $(ads-integration-test-bdc-server-password)
-    BDC_BACKEND_HOSTNAME: $(ads-integration-test-bdc-server)
-    STANDALONE_SQL_USERNAME: $(ads-integration-test-standalone-server-username)
-    STANDALONE_SQL_PWD: $(ads-integration-test-standalone-server-password)
-    STANDALONE_SQL: $(ads-integration-test-standalone-server)
-    AZURE_SQL_USERNAME: $(ads-integration-test-azure-server-username)
-    AZURE_SQL_PWD: $(ads-integration-test-azure-server-password)
-    AZURE_SQL: $(ads-integration-test-azure-server)
-    STANDALONE_SQL_USERNAME_2019: $(ads-integration-test-standalone-server-username-2019)
-    STANDALONE_SQL_PWD_2019: $(ads-integration-test-standalone-server-password-2019)
-    STANDALONE_SQL_2019: $(ads-integration-test-standalone-server-2019)
-
-- powershell: |
-    . build/azure-pipelines/win32/exec.ps1
-    $ErrorActionPreference = "Stop"
-    $AppRoot = "$(Agent.TempDirectory)\azuredatastudio-win32-x64"
-    $AppProductJson = Get-Content -Raw -Path "$AppRoot\resources\app\product.json" | ConvertFrom-Json
-    $AppNameShort = $AppProductJson.nameShort
     exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; .\scripts\sql-test-integration-unstable.bat }
   continueOnError: true
   condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))

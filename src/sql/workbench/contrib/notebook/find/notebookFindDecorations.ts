@@ -128,7 +128,7 @@ export class NotebookFindDecorations implements IDisposable {
 
 	private removePrevDecorations(): void {
 		if (this._currentMatch && this._currentMatch.cell) {
-			let pevEditor = this._editor.getCellEditor(this._currentMatch.cell.cellGuid);
+			let pevEditor = this._currentMatch.cell.cellType === 'markdown' ? undefined : this._editor.getCellEditor(this._currentMatch.cell.cellGuid);
 			if (pevEditor) {
 				pevEditor.getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
 					changeAccessor.removeDecoration(this._rangeHighlightDecorationId);
@@ -144,6 +144,8 @@ export class NotebookFindDecorations implements IDisposable {
 
 	private _revealRangeInCenterIfOutsideViewport(match: NotebookRange): void {
 		let matchEditor = this._editor.getCellEditor(match.cell.cellGuid);
+		// expand the cell if it's collapsed and scroll into view
+		match.cell.isCollapsed = false;
 		if (matchEditor) {
 			matchEditor.getContainer().scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 			matchEditor.getControl().revealRangeInCenterIfOutsideViewport(match, ScrollType.Smooth);
@@ -151,7 +153,7 @@ export class NotebookFindDecorations implements IDisposable {
 	}
 
 	public checkValidEditor(range: NotebookRange): boolean {
-		return range && range.cell && !!(this._editor.getCellEditor(range.cell.cellGuid));
+		return range && range.cell && range.cell.cellType === 'code' && !!(this._editor.getCellEditor(range.cell.cellGuid));
 	}
 
 	public set(findMatches: NotebookFindMatch[], findScope: NotebookRange | null): void {

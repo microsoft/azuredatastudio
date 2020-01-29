@@ -67,7 +67,15 @@ export const EnvironmentVariable_STANDALONE_SERVER_2019: string = 'STANDALONE_SQ
 export const EnvironmentVariable_STANDALONE_USERNAME_2019: string = 'STANDALONE_SQL_USERNAME_2019';
 export const EnvironmentVariable_STANDALONE_PASSWORD_2019: string = 'STANDALONE_SQL_PWD_2019';
 
-export class TestServerProfile {
+export interface TestConnectionInfo {
+	readonly serverName: string;
+	readonly database: string;
+	readonly userName: string;
+	readonly password: string;
+	readonly providerName: string;
+	readonly authenticationTypeName: string;
+}
+export class TestServerProfile implements TestConnectionInfo {
 	constructor(private _profile: ITestServerProfile) { }
 	public get serverName(): string { return this._profile.serverName; }
 	public get userName(): string { return this._profile.userName; }
