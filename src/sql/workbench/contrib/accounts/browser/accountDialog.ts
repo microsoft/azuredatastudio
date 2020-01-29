@@ -218,7 +218,12 @@ export class AccountDialog extends Modal {
 
 			const v = vals.filter(v => v.view.title === pickedValue)?.[0];
 
-			v?.addAccountAction?.run();
+			if (!v) {
+				this._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
+				return;
+			}
+
+			v.addAccountAction.run();
 		}));
 
 		DOM.append(container, this._noaccountViewContainer);
