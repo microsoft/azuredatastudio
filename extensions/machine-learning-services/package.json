@@ -10,7 +10,8 @@
     "azdata": ">=1.13.0"
   },
   "activationEvents": [
-    "onCommand:ml.command.managePackages"
+    "onCommand:mls.command.managePackages",
+    "onDashboardOpen"
   ],
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
   "icon": "images/ML_ExtensionIcon.png",
@@ -25,30 +26,90 @@
     "Microsoft.notebook"
   ],
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "%mls.configuration.title%",
+      "properties": {
+        "machineLearningServices.pythonPath": {
+          "type": "string",
+          "default": "python",
+          "description": "%mls.pythonPath.description%"
+        },
+        "machineLearningServices.rPath": {
+          "type": "string",
+          "default": "r",
+          "description": "%mls.rPath.description%"
+        }
+      }
+    },
     "commands": [
       {
-        "command": "ml.command.managePackages",
-        "title": "%ml.command.managePackages%"
+        "command": "mls.command.managePackages",
+        "title": "%mls.command.managePackages%"
+      },
+      {
+        "command": "mls.command.odbcdriver",
+        "title": "%mls.command.odbcdriver%"
+      },
+      {
+        "command": "mls.command.mlsdocs",
+        "title": "%mls.command.mlsdocs%"
+      },
+      {
+        "command": "mls.command.dependencies",
+        "title": "%mls.command.dependencies%"
+      }
+    ],
+    "dashboard.tabs": [
+      {
+        "id": "mls-dashboard",
+        "description": "%description%",
+        "provider": "MSSQL",
+        "title": "%displayName%",
+        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
+        "container": {
+          "grid-container": [
+            {
+              "name": "%title.configurations%",
+              "row": 0,
+              "col": 0,
+              "widget": {
+                "modelview": {
+                  "id": "ml.tasks"
+                }
+              }
+            },
+            {
+              "name": "%title.tasks%",
+              "row": 0,
+              "col": 1,
+              "widget": {
+                "tasks-widget": [
+                  "mls.command.managePackages",
+                  "mls.command.odbcdriver",
+                  "mls.command.mlsdocs"
+                ]
+              }
+            }
+          ]
+        }
       }
     ]
   },
   "dependencies": {
-    "vscode-nls": "^4.0.0"
+    "request": "^2.88.0",
+    "vscode-nls": "^4.0.0",
+    "vscode-languageclient": "^5.3.0-next.1"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.14.8",
-    "@types/uuid": "^3.4.5",
+    "@types/request": "^2.48.1",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
     "vscode": "1.1.26"
-  },
-	"__metadata": {
-		"id": "56",
-		"publisherDisplayName": "Microsoft",
-		"publisherId": "Microsoft"
-	}
+  }
 }

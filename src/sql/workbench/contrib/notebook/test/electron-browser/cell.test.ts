@@ -590,7 +590,7 @@ suite('Cell Model', function (): void {
 			assert(startsWith(contentSplit[4].trim(), '"azdata_cell_guid": "'));
 			assert(startsWith(contentSplit[5].trim(), '}'));
 			assert(startsWith(contentSplit[6].trim(), '"outputs": []'));
-			assert(startsWith(contentSplit[7].trim(), '"execution_count": 0'));
+			assert(startsWith(contentSplit[7].trim(), '"execution_count": null'));
 			assert(startsWith(contentSplit[8].trim(), '}'));
 		});
 	});

@@ -9,7 +9,6 @@ export type CellType = 'code' | 'markdown' | 'raw';
 export class CellTypes {
 	public static readonly Code = 'code';
 	public static readonly Markdown = 'markdown';
-	public static readonly Raw = 'raw';
 }
 
 // to do: add all mime types

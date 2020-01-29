@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as should from 'should';
 import 'mocha';
@@ -15,9 +13,13 @@ import { QueryRunner } from '../common/queryRunner';
 import { ProcessService } from '../common/processService';
 import MainController from '../controllers/mainController';
 import { PackageManager } from '../packageManagement/packageManager';
+import * as nbExtensionApis from '../typings/notebookServices';
 
 interface TestContext {
-
+	notebookExtension: vscode.Extension<any>;
+	jupyterInstallation: nbExtensionApis.IJupyterServerInstallation;
+	jupyterController: nbExtensionApis.IJupyterController;
+	nbExtensionApis: nbExtensionApis.IExtensionApi;
 	apiWrapper: TypeMoq.IMock<ApiWrapper>;
 	queryRunner: TypeMoq.IMock<QueryRunner>;
 	processService: TypeMoq.IMock<ProcessService>;
@@ -25,11 +27,49 @@ interface TestContext {
 	outputChannel: vscode.OutputChannel;
 	extension: vscode.Extension<any>;
 	packageManager: TypeMoq.IMock<PackageManager>;
+	workspaceConfig: vscode.WorkspaceConfiguration;
 }
 
 function createContext(): TestContext {
+	let packages = new Map<string, nbExtensionApis.IPackageManageProvider>();
+	let jupyterInstallation: nbExtensionApis.IJupyterServerInstallation = {
+		installCondaPackages: () => { return Promise.resolve(); },
+		getInstalledPipPackages: () => { return Promise.resolve([]); },
+		installPipPackages: () => { return Promise.resolve(); },
+		uninstallPipPackages: () => { return Promise.resolve(); },
+		uninstallCondaPackages: () => { return Promise.resolve(); },
+		executeBufferedCommand: () => { return Promise.resolve(''); },
+		executeStreamedCommand: () => { return Promise.resolve(); },
+		pythonExecutable: '',
+		pythonInstallationPath: '',
+		installPythonPackage: () => { return Promise.resolve(); }
+	};
+
+	let jupyterController = {
+		jupyterInstallation: jupyterInstallation
+	};
+
 	let extensionPath = path.join(__dirname, '..', '..');
+	let extensionApi: nbExtensionApis.IExtensionApi = {
+		getJupyterController: () => { return jupyterController; },
+		registerPackageManager: (providerId: string, packageManagerProvider: nbExtensionApis.IPackageManageProvider) => {
+			packages.set(providerId, packageManagerProvider);
+		},
+		getPackageManagers: () => { return packages; },
+	};
 	return {
+		jupyterInstallation: jupyterInstallation,
+		jupyterController: jupyterController,
+		nbExtensionApis: extensionApi,
+		notebookExtension: {
+			id: '',
+			extensionPath: '',
+			isActive: true,
+			packageJSON: '',
+			extensionKind: vscode.ExtensionKind.UI,
+			exports: extensionApi,
+			activate: () => {return Promise.resolve();}
+		},
 		apiWrapper: TypeMoq.Mock.ofType(ApiWrapper),
 		queryRunner: TypeMoq.Mock.ofType(QueryRunner),
 		processService: TypeMoq.Mock.ofType(ProcessService),
@@ -67,13 +107,18 @@ function createContext(): TestContext {
 			extensionKind: vscode.ExtensionKind.UI,
 			exports: {},
 			activate: () => { return Promise.resolve(); }
+		},
+		workspaceConfig: {
+			get: () => {return 'value';},
+			has: () => {return true;},
+			inspect: () => {return undefined;},
+			update: () => {return Promise.reject();},
 		}
 	};
 }
 
 function createController(testContext: TestContext): MainController {
-	let controller = new MainController(testContext.context, testContext.apiWrapper.object, testContext.queryRunner.object, testContext.processService.object);
-	controller.packageManager = testContext.packageManager.object;
+	let controller = new MainController(testContext.context, testContext.apiWrapper.object, testContext.queryRunner.object, testContext.processService.object, testContext.packageManager.object);
 	return controller;
 }
 
@@ -86,6 +131,9 @@ describe('Main Controller', () => {
 
 	it('initialize Should install dependencies successfully', async function (): Promise<void> {
 		let testContext = createContext();
+
+		testContext.apiWrapper.setup(x => x.getExtension(TypeMoq.It.isAny())).returns(() => testContext.notebookExtension);
+		testContext.apiWrapper.setup(x => x.getConfiguration(TypeMoq.It.isAny())).returns(() => testContext.workspaceConfig);
 		testContext.apiWrapper.setup(x => x.createOutputChannel(TypeMoq.It.isAny())).returns(() => testContext.outputChannel);
 		testContext.apiWrapper.setup(x => x.getExtension(TypeMoq.It.isAny())).returns(() => testContext.extension);
 		testContext.packageManager.setup(x => x.managePackages()).returns(() => Promise.resolve());
@@ -93,25 +141,10 @@ describe('Main Controller', () => {
 		testContext.apiWrapper.setup(x => x.registerCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny()));
 		let controller = createController(testContext);
 		await controller.activate();
+
 		should.deepEqual(controller.config.requiredPythonPackages, [
 			{ name: 'pymssql', version: '2.1.4' },
 			{ name: 'sqlmlutils', version: '' }
 		]);
-	});
-
-	it('initialize Should show and error in output channel if installing dependencies fails', async function (): Promise<void> {
-		let errorReported = false;
-		let testContext = createContext();
-		testContext.apiWrapper.setup(x => x.createOutputChannel(TypeMoq.It.isAny())).returns(() => testContext.outputChannel);
-		testContext.apiWrapper.setup(x => x.getExtension(TypeMoq.It.isAny())).returns(() => testContext.extension);
-		testContext.packageManager.setup(x => x.managePackages()).returns(() => Promise.resolve());
-		testContext.packageManager.setup(x => x.installDependencies()).returns(() => Promise.reject());
-		testContext.apiWrapper.setup(x => x.registerCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny()));
-		testContext.outputChannel.appendLine = () => {
-			errorReported = true;
-		};
-		let controller = createController(testContext);
-		await controller.activate();
-		should.equal(errorReported, true);
 	});
 });

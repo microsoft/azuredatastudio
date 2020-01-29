@@ -23,6 +23,8 @@ import { AddressInfo } from 'net';
 import { AuthenticationContext, TokenResponse, ErrorResponse } from 'adal-node';
 import { promisify } from 'util';
 import * as events from 'events';
+import { promises as fs } from 'fs';
+import * as path from 'path';
 
 const localize = nls.loadMessageBundle();
 const notInitalizedMessage = localize('accountProviderNotInitialized', "Account provider not initialized, cannot perform action");
@@ -41,8 +43,6 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 	constructor(private metadata: AzureAccountProviderMetadata, private _tokenCache: TokenCache) {
 		this.commonAuthorityUrl = url.resolve(this.metadata.settings.host, AzureAccountProvider.AadCommonTenant);
-		// Temporary override
-		this.metadata.settings.clientId = 'aebc6443-996d-45c2-90f0-388ff96faa56';
 	}
 
 	// interface method
@@ -187,7 +187,27 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		nonce: string,
 		authUrl: string) {
 
-		const initialSignIn = ((req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => {
+		// Utility function
+		const sendFile = async (res: http.ServerResponse, filePath: string, contentType: string): Promise<void> => {
+			let fileContents;
+			try {
+				fileContents = await fs.readFile(filePath);
+			} catch (ex) {
+				console.error(ex);
+				res.writeHead(200);
+				res.end();
+				return;
+			}
+
+			res.writeHead(200, {
+				'Content-Length': fileContents.length,
+				'Content-Type': contentType
+			});
+
+			res.end(fileContents);
+		};
+
+		const initialSignIn = (req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => {
 			const receivedNonce = (reqUrl.query.nonce as string || '').replace(/ /g, '+');
 			if (receivedNonce !== nonce) {
 				res.writeHead(400, { 'content-type': 'text/html' });
@@ -197,9 +217,9 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			}
 			res.writeHead(302, { Location: authUrl });
 			res.end();
-		});
+		};
 
-		const callback = ((req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => {
+		const authCallback = (req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => {
 			const state = reqUrl.query.state as string ?? '';
 			const code = reqUrl.query.code as string ?? '';
 
@@ -218,16 +238,19 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 				return;
 			}
 
-			res.writeHead(200, { 'content-type': 'text/html' });
-			res.write(localize('azureAuth.authSuccessful', "Authentication was successful, you can now close this page."));
-			res.end();
+			sendFile(res, path.join(__dirname, 'media/landing.html'), 'text/html; charset=utf-8').catch(console.error);
+			this.handleAuthentication(code).catch((e) => console.error(e));
+		};
 
-			this.handleAuthentication(code).catch(console.error);
-		});
+		const css = (req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => {
+			sendFile(res, path.join(__dirname, 'media/landing.css'), 'text/css; charset=utf-8').catch(console.error);
+		};
 
 		pathMappings.set('/signin', initialSignIn);
-		pathMappings.set('/callback', callback);
+		pathMappings.set('/callback', authCallback);
+		pathMappings.set('/landing.css', css);
 	}
+
 	private async makeWebRequest(accessToken: TokenResponse, uri: string): Promise<any> {
 		const params = {
 			headers: {
@@ -298,8 +321,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	 * @param code Code from authenticating
 	 */
 	private async handleAuthentication(code: string): Promise<void> {
-		const token = await this.getTokenWithAuthCode(code, AzureAccountProvider.redirectUrlAAD);
-
+		let token: TokenResponse;
+		token = await this.getTokenWithAuthCode(code, AzureAccountProvider.redirectUrlAAD);
 		const tenants = await this.getTenants(token.userId, token.tenantId);
 		let identityProvider = token.identityProvider;
 		if (identityProvider) {
@@ -383,7 +406,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			if (method) {
 				method(req, res, reqUrl);
 			} else {
-				console.error('undefined request ', reqUrl, req);
+				console.log('undefined request ', reqUrl.pathname, req);
 			}
 		});
 

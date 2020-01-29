@@ -11,7 +11,7 @@ const suite = 'resource-deployment Extension Tests';
 const testOptions: any = {
 	ui: 'tdd',
 	useColors: true,
-	timeout: 60000
+	timeout: 10000
 };
 
 // set relevant mocha options from the environment

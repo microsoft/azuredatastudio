@@ -27,6 +27,7 @@ import { ShowViewletAction, Viewlet } from 'vs/workbench/browser/viewlet';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { ViewPaneContainer, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 
 export const VIEWLET_ID = 'workbench.view.connections';
 
@@ -62,7 +63,7 @@ export class DataExplorerViewletViewsContribution implements IWorkbenchContribut
 		return {
 			id: ConnectionViewletPanel.ID,
 			name: localize('dataExplorer.servers', "Servers"),
-			ctorDescriptor: { ctor: ConnectionViewletPanel },
+			ctorDescriptor: new SyncDescriptor(ConnectionViewletPanel),
 			weight: 100,
 			canToggleVisibility: true,
 			order: 0
@@ -159,6 +160,6 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
 	name: localize('dataexplorer.name', "Connections"),
-	ctorDescriptor: { ctor: DataExplorerViewPaneContainer },
+	ctorDescriptor: new SyncDescriptor(DataExplorerViewPaneContainer),
 	icon: 'dataExplorer'
 }, ViewContainerLocation.Sidebar);

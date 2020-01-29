@@ -39,8 +39,8 @@ const USER_SELECT_CLASS = 'actionselect';
 export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('preview', { read: ElementRef }) private output: ElementRef;
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
-
 	@ViewChildren(CodeComponent) private markdowncodeCell: QueryList<CodeComponent>;
+
 	@Input() cellModel: ICellModel;
 
 	@Input() set model(value: NotebookModel) {
@@ -112,10 +112,12 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	get activeCellId(): string {
 		return this._activeCellId;
 	}
-
+	/**
+	 * Returns the code editor of makrdown cell in edit mode.
+	 */
 	getEditor(): BaseTextEditor | undefined {
 		if (this.markdowncodeCell.length > 0) {
-			return this.markdowncodeCell.toArray()[0].getEditor();
+			return this.markdowncodeCell.first.getEditor();
 		}
 		return undefined;
 	}

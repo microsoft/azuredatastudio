@@ -6,7 +6,7 @@
 import { localize } from 'vs/nls';
 import { KeyMod, KeyChord, KeyCode } from 'vs/base/common/keyCodes';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { SyncActionDescriptor, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
+import { SyncActionDescriptor, MenuRegistry, MenuId, registerAction2, Action2 } from 'vs/platform/actions/common/actions';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ExtensionsLabel, ExtensionsChannelId, PreferencesLabel, IExtensionManagementService, IExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IExtensionManagementServerService, IExtensionTipsService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
@@ -44,6 +44,9 @@ import { ExtensionType, ExtensionsPolicy } from 'vs/platform/extensions/common/e
 import { RemoteExtensionsInstaller } from 'vs/workbench/contrib/extensions/browser/remoteExtensionsInstaller';
 import { ExtensionTipsService } from 'vs/workbench/contrib/extensions/browser/extensionTipsService';
 import { IViewContainersRegistry, ViewContainerLocation, Extensions as ViewContainerExtensions } from 'vs/workbench/common/views';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IPreferencesService } from 'vs/workbench/services/preferences/common/preferences';
+import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 
 // Singletons
 registerSingleton(IExtensionsWorkbenchService, ExtensionsWorkbenchService);
@@ -79,7 +82,7 @@ Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegis
 	{
 		id: VIEWLET_ID,
 		name: localize('extensions', "Extensions"),
-		ctorDescriptor: { ctor: ExtensionsViewPaneContainer },
+		ctorDescriptor: new SyncDescriptor(ExtensionsViewPaneContainer),
 		icon: 'codicon-extensions',
 		order: 14 // {{SQL CARBON EDIT}}
 	}, ViewContainerLocation.Sidebar);
@@ -127,8 +130,10 @@ actionRegistry.registerWorkbenchAction(builtinActionDescriptor, 'Extensions: Sho
 const updateAllActionDescriptor = SyncActionDescriptor.create(UpdateAllAction, UpdateAllAction.ID, UpdateAllAction.LABEL);
 actionRegistry.registerWorkbenchAction(updateAllActionDescriptor, 'Extensions: Update All Extensions', ExtensionsLabel);
 
-const installVSIXActionDescriptor = SyncActionDescriptor.create(InstallVSIXAction, InstallVSIXAction.ID, InstallVSIXAction.LABEL);
-actionRegistry.registerWorkbenchAction(installVSIXActionDescriptor, 'Extensions: Install from VSIX...', ExtensionsLabel);
+if (InstallVSIXAction.AVAILABLE) { // {{SQL CARBON EDIT}} add disable logic
+	const installVSIXActionDescriptor = SyncActionDescriptor.create(InstallVSIXAction, InstallVSIXAction.ID, InstallVSIXAction.LABEL);
+	actionRegistry.registerWorkbenchAction(installVSIXActionDescriptor, 'Extensions: Install from VSIX...', ExtensionsLabel);
+}
 
 const disableAllAction = SyncActionDescriptor.create(DisableAllAction, DisableAllAction.ID, DisableAllAction.LABEL);
 actionRegistry.registerWorkbenchAction(disableAllAction, 'Extensions: Disable All Installed Extensions', ExtensionsLabel);
@@ -340,6 +345,75 @@ MenuRegistry.appendMenuItem(MenuId.GlobalActivity, {
 		title: localize('showExtensions', "Extensions")
 	},
 	order: 3
+});
+
+// Extension Context Menu
+
+registerAction2(class extends Action2 {
+
+	constructor() {
+		super({
+			id: 'workbench.extensions.action.copyExtension',
+			title: { value: localize('workbench.extensions.action.copyExtension', "Copy"), original: 'Copy' },
+			menu: {
+				id: MenuId.ExtensionContext,
+				group: '1_copy'
+			}
+		});
+	}
+
+	async run(accessor: ServicesAccessor, extensionId: string) {
+		const extensionWorkbenchService = accessor.get(IExtensionsWorkbenchService);
+		let extension = extensionWorkbenchService.local.filter(e => areSameExtensions(e.identifier, { id: extensionId }))[0]
+			|| (await extensionWorkbenchService.queryGallery({ names: [extensionId], pageSize: 1 }, CancellationToken.None)).firstPage[0];
+		if (extension) {
+			const name = localize('extensionInfoName', 'Name: {0}', extension.displayName);
+			const id = localize('extensionInfoId', 'Id: {0}', extensionId);
+			const description = localize('extensionInfoDescription', 'Description: {0}', extension.description);
+			const verision = localize('extensionInfoVersion', 'Version: {0}', extension.version);
+			const publisher = localize('extensionInfoPublisher', 'Publisher: {0}', extension.publisherDisplayName);
+			const link = extension.url ? localize('extensionInfoVSMarketplaceLink', 'VS Marketplace Link: {0}', `${extension.url}`) : null;
+			const clipboardStr = `${name}\n${id}\n${description}\n${verision}\n${publisher}${link ? '\n' + link : ''}`;
+			await accessor.get(IClipboardService).writeText(clipboardStr);
+		}
+	}
+});
+
+registerAction2(class extends Action2 {
+
+	constructor() {
+		super({
+			id: 'workbench.extensions.action.copyExtensionId',
+			title: { value: localize('workbench.extensions.action.copyExtensionId', "Copy Extension Id"), original: 'Copy Extension Id' },
+			menu: {
+				id: MenuId.ExtensionContext,
+				group: '1_copy'
+			}
+		});
+	}
+
+	async run(accessor: ServicesAccessor, id: string) {
+		await accessor.get(IClipboardService).writeText(id);
+	}
+});
+
+registerAction2(class extends Action2 {
+
+	constructor() {
+		super({
+			id: 'workbench.extensions.action.configure',
+			title: { value: localize('workbench.extensions.action.configure', "Configure..."), original: 'Configure...' },
+			menu: {
+				id: MenuId.ExtensionContext,
+				group: '2_configure',
+				when: ContextKeyExpr.and(ContextKeyExpr.equals('extensionStatus', 'installed'), ContextKeyExpr.has('extensionHasConfiguration'))
+			}
+		});
+	}
+
+	async run(accessor: ServicesAccessor, id: string) {
+		await accessor.get(IPreferencesService).openSettings(false, `@ext:${id}`);
+	}
 });
 
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);

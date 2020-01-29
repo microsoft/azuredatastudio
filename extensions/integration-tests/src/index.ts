@@ -12,7 +12,7 @@ const suite = getSuiteType();
 const options: any = {
 	ui: 'tdd',
 	useColors: true,
-	timeout: 600000 	// 600 seconds
+	timeout: 600000
 };
 
 if (suite === SuiteType.Stress) {

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/profiler/client/out/dialogs/profilerCreateSessionDialog" source-language="en" target-language="pt-BR" datatype="plaintext">
+  <file original="extensions/profiler/client/out/dialogs/profilerCreateSessionDialog" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="createSessionDialog.cancel">
         <source xml:lang="en">Cancel</source>
@@ -8,23 +8,23 @@
       </trans-unit>
       <trans-unit id="createSessionDialog.create">
         <source xml:lang="en">Start</source>
-        <target state="translated">Início</target>
+        <target state="translated">Iníciar</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.title">
         <source xml:lang="en">Start New Profiler Session</source>
-        <target state="translated">Iniciar nova sessão do Profiler</target>
+        <target state="translated">Iniciar Nova Sessão do Profiler</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.templatesInvalid">
         <source xml:lang="en">Invalid templates list, cannot open dialog</source>
-        <target state="translated">Lista de modelos inválidas, não é possível abrir a caixa de diálogo</target>
+        <target state="translated">Lista de modelos inválidas. Não é possível abrir a caixa de diálogo</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.dialogOwnerInvalid">
         <source xml:lang="en">Invalid dialog owner, cannot open dialog</source>
-        <target state="translated">Caixa de diálogo não pode ser aberta, proprietário inválido.</target>
+        <target state="translated">Proprietário de caixa de diálogo inválido. Não é possível abrir a caixa de diálogo</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.invalidProviderType">
         <source xml:lang="en">Invalid provider type, cannot open dialog</source>
-        <target state="translated">Tipo inválido de provedor, não é possível abrir a caixa de diálogo</target>
+        <target state="translated">Tipo de provedor inválido. Não é possível abrir a caixa de diálogo</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.selectTemplates">
         <source xml:lang="en">Select session template:</source>

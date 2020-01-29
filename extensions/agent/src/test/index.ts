@@ -11,7 +11,7 @@ const suite = 'agent Extension Tests';
 const options: any = {
 	ui: 'bdd',
 	useColors: true,
-	timeout: 600000
+	timeout: 10000
 };
 
 // set relevant mocha options from the environment

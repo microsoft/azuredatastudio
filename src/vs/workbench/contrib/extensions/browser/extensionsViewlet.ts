@@ -57,6 +57,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { RemoteNameContext } from 'vs/workbench/browser/contextkeys';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { MementoObject } from 'vs/workbench/common/memento';
+import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 
 const NonEmptyWorkspaceContext = new RawContextKey<boolean>('nonEmptyWorkspace', false);
 const DefaultViewsContext = new RawContextKey<boolean>('defaultExtensionViews', true);
@@ -130,7 +131,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		return {
 			id,
 			name: viewIdNameMappings[id],
-			ctorDescriptor: { ctor: ExtensionsListView },
+			ctorDescriptor: new SyncDescriptor(ExtensionsListView),
 			when: ContextKeyExpr.and(ContextKeyExpr.has('searchMarketplaceExtensions')),
 			weight: 100
 		};
@@ -143,7 +144,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		return {
 			id,
 			name: viewIdNameMappings[id],
-			ctorDescriptor: { ctor: EnabledExtensionsView },
+			ctorDescriptor: new SyncDescriptor(EnabledExtensionsView),
 			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('hasInstalledExtensions'), RemoteNameContext.isEqualTo('')),
 			weight: 40,
 			canToggleVisibility: true,
@@ -158,7 +159,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		return {
 			id,
 			name: viewIdNameMappings[id],
-			ctorDescriptor: { ctor: DisabledExtensionsView },
+			ctorDescriptor: new SyncDescriptor(DisabledExtensionsView),
 			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('hasInstalledExtensions'), RemoteNameContext.isEqualTo('')),
 			weight: 10,
 			canToggleVisibility: true,
@@ -175,7 +176,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		return {
 			id,
 			name: viewIdNameMappings[id],
-			ctorDescriptor: { ctor: ExtensionsListView },
+			ctorDescriptor: new SyncDescriptor(ExtensionsListView),
 			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.not('hasInstalledExtensions')),
 			weight: 60,
 			order: 1
@@ -197,19 +198,19 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		return [{
 			id: `extensions.${server.authority}.installed`,
 			get name() { return getInstalledViewName(); },
-			ctorDescriptor: { ctor: ServerExtensionsView, arguments: [server, EventOf.map<void, string>(onDidChangeServerLabel, () => getInstalledViewName())] },
+			ctorDescriptor: new SyncDescriptor(ServerExtensionsView, [server, EventOf.map<void, string>(onDidChangeServerLabel, () => getInstalledViewName())]),
 			when: ContextKeyExpr.and(ContextKeyExpr.has('searchInstalledExtensions')),
 			weight: 100
 		}, {
 			id: `extensions.${server.authority}.outdated`,
 			get name() { return getOutdatedViewName(); },
-			ctorDescriptor: { ctor: ServerExtensionsView, arguments: [server, EventOf.map<void, string>(onDidChangeServerLabel, () => getOutdatedViewName())] },
+			ctorDescriptor: new SyncDescriptor(ServerExtensionsView, [server, EventOf.map<void, string>(onDidChangeServerLabel, () => getOutdatedViewName())]),
 			when: ContextKeyExpr.and(ContextKeyExpr.has('searchOutdatedExtensions')),
 			weight: 100
 		}, {
 			id: `extensions.${server.authority}.default`,
 			get name() { return getInstalledViewName(); },
-			ctorDescriptor: { ctor: ServerExtensionsView, arguments: [server, EventOf.map<void, string>(onDidChangeServerLabel, () => getInstalledViewName())] },
+			ctorDescriptor: new SyncDescriptor(ServerExtensionsView, [server, EventOf.map<void, string>(onDidChangeServerLabel, () => getInstalledViewName())]),
 			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('hasInstalledExtensions'), RemoteNameContext.notEqualsTo('')),
 			weight: 40,
 			order: 1
@@ -224,7 +225,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		return {
 			id,
 			name: viewIdNameMappings[id],
-			ctorDescriptor: { ctor: DefaultRecommendedExtensionsView },
+			ctorDescriptor: new SyncDescriptor(DefaultRecommendedExtensionsView),
 			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('defaultRecommendedExtensions')),
 			weight: 40,
 			order: 2,
@@ -239,7 +240,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		return {
 			id,
 			name: viewIdNameMappings[id],
-			ctorDescriptor: { ctor: RecommendedExtensionsView },
+			ctorDescriptor: new SyncDescriptor(RecommendedExtensionsView),
 			when: ContextKeyExpr.has('recommendedExtensions'),
 			weight: 50,
 			order: 2
@@ -253,7 +254,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		return {
 			id,
 			name: viewIdNameMappings[id],
-			ctorDescriptor: { ctor: WorkspaceRecommendedExtensionsView },
+			ctorDescriptor: new SyncDescriptor(WorkspaceRecommendedExtensionsView),
 			when: ContextKeyExpr.and(ContextKeyExpr.has('recommendedExtensions'), ContextKeyExpr.has('nonEmptyWorkspace')),
 			weight: 50,
 			order: 1
@@ -265,7 +266,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		return {
 			id,
 			name: viewIdNameMappings[id],
-			ctorDescriptor: { ctor: EnabledExtensionsView },
+			ctorDescriptor: new SyncDescriptor(EnabledExtensionsView),
 			when: ContextKeyExpr.and(ContextKeyExpr.has('searchEnabledExtensions')),
 			weight: 40,
 			order: 1
@@ -277,7 +278,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		return {
 			id,
 			name: viewIdNameMappings[id],
-			ctorDescriptor: { ctor: DisabledExtensionsView },
+			ctorDescriptor: new SyncDescriptor(DisabledExtensionsView),
 			when: ContextKeyExpr.and(ContextKeyExpr.has('searchDisabledExtensions')),
 			weight: 10,
 			order: 3,
@@ -290,7 +291,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		return {
 			id,
 			name: viewIdNameMappings[id],
-			ctorDescriptor: { ctor: BuiltInExtensionsView },
+			ctorDescriptor: new SyncDescriptor(BuiltInExtensionsView),
 			when: ContextKeyExpr.has('searchBuiltInExtensions'),
 			weight: 100
 		};
@@ -301,7 +302,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		return {
 			id,
 			name: viewIdNameMappings[id],
-			ctorDescriptor: { ctor: BuiltInThemesExtensionsView },
+			ctorDescriptor: new SyncDescriptor(BuiltInThemesExtensionsView),
 			when: ContextKeyExpr.has('searchBuiltInExtensions'),
 			weight: 100
 		};
@@ -312,7 +313,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		return {
 			id,
 			name: viewIdNameMappings[id],
-			ctorDescriptor: { ctor: BuiltInBasicsExtensionsView },
+			ctorDescriptor: new SyncDescriptor(BuiltInBasicsExtensionsView),
 			when: ContextKeyExpr.has('searchBuiltInExtensions'),
 			weight: 100
 		};
@@ -587,9 +588,8 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 		if (this.configurationService.getValue<boolean>(CloseExtensionDetailsOnViewChangeKey)) {
 			const promises = this.editorGroupService.groups.map(group => {
 				const editors = group.editors.filter(input => input instanceof ExtensionsInput);
-				const promises = editors.map(editor => group.closeEditor(editor));
 
-				return Promise.all(promises);
+				return group.closeEditors(editors);
 			});
 
 			Promise.all(promises);

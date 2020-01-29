@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IModeSupport, IEditorInput } from 'vs/workbench/common/editor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { getCodeEditor } from 'vs/editor/browser/editorBrowser';
@@ -20,14 +20,13 @@ const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(La
  */
 export async function setMode(accessor: ServicesAccessor, modeSupport: IModeSupport, activeEditor: IEditorInput, language: string): Promise<void> {
 	const editorService = accessor.get(IEditorService);
-	const instantiationService = accessor.get(IInstantiationService);
 	const activeWidget = getCodeEditor(editorService.activeTextEditorWidget);
 	const activeControl = editorService.activeControl;
 	const textModel = activeWidget.getModel();
 	const oldLanguage = textModel.getLanguageIdentifier().language;
 	if (language !== oldLanguage) {
-		const oldInputCreator = languageAssociationRegistry.getAssociations().filter(e => e.language === oldLanguage)[0]; // who knows how to handle the current language
-		const newInputCreator = languageAssociationRegistry.getAssociations().filter(e => e.language === language)[0]; // who knows how to handle the requested language
+		const oldInputCreator = languageAssociationRegistry.getAssociationForLanguage(oldLanguage); // who knows how to handle the current language
+		const newInputCreator = languageAssociationRegistry.getAssociationForLanguage(language); // who knows how to handle the requested language
 		if ((oldInputCreator || newInputCreator) && activeEditor.isDirty()) { // theres some issues with changing the language on a dirty file with one of our editors (we should look into this)
 			const notificationService = accessor.get(INotificationService);
 			notificationService.error(localize('languageChangeUnsupported', "Changing editor types on unsaved files is unsupported"));
@@ -36,11 +35,11 @@ export async function setMode(accessor: ServicesAccessor, modeSupport: IModeSupp
 		modeSupport.setMode(language);
 		let input: IEditorInput;
 		if (oldInputCreator) { // only transform the input if we have someone who knows how to deal with it (e.x QueryInput -> UntitledInput, etc)
-			input = oldInputCreator.baseInputCreator(activeEditor);
+			input = oldInputCreator.createBase(activeEditor);
 		}
 
 		if (newInputCreator) { // if we know how to handle the new language, tranform the input and replace the editor (e.x notebook, sql, etc)
-			const newInput = instantiationService.invokeFunction(newInputCreator.creator, input || activeEditor);
+			const newInput = newInputCreator.convertInput(input || activeEditor);
 			if (newInput) {  // the factory will return undefined if it doesn't know how to handle the input
 				await editorService.replaceEditors([{ editor: activeEditor, replacement: newInput }], activeControl.group);
 			}

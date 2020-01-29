@@ -964,9 +964,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 	private _devSystemExtensionsFilePath: string | null = null;
 	private get devSystemExtensionsFilePath(): string {
 		if (!this._devSystemExtensionsFilePath) {
-			// {{SQL CARBON EDIT}
-			let builtInPath = product.quality === 'stable' ? 'builtInExtensions' : 'builtInExtensions-insiders';
-			this._devSystemExtensionsFilePath = path.normalize(path.join(getPathFromAmdModule(require, ''), '..', 'build', `${builtInPath}.json`));
+			this._devSystemExtensionsFilePath = path.normalize(path.join(getPathFromAmdModule(require, ''), '..', 'build', 'builtInExtensions.json'));
 		}
 		return this._devSystemExtensionsFilePath;
 	}

@@ -190,7 +190,7 @@ export class RowCountStatusBarContributions extends Disposable implements IWorkb
 				return rp + rc.rowCount;
 			}, 0);
 		}, 0);
-		const text = localize('rowCount', "{0} rows", rowCount);
+		const text = localize('rowCount', "{0} rows", rowCount.toLocaleString());
 		this.statusItem.update({ text });
 		this.show();
 	}

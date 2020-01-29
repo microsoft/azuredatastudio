@@ -17,15 +17,15 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
-import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { SimpleEditorProgressService } from 'vs/editor/standalone/browser/simpleServices';
-import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { TextDiffEditor } from 'vs/workbench/browser/parts/editor/textDiffEditor';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { TextDiffEditorModel } from 'vs/workbench/common/editor/textDiffEditorModel';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { ITextModel } from 'vs/editor/common/model';
+import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
+import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser/simpleProgressIndicator';
+import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 
 @Component({
 	template: `
@@ -69,8 +69,8 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 	}
 
 	private _createEditor(): void {
-		this._instantiationService = this._instantiationService.createChild(new ServiceCollection([IEditorProgressService, new SimpleEditorProgressService()]));
-		this._editor = this._instantiationService.createInstance(TextDiffEditor);
+		const customInstan = this._instantiationService.createChild(new ServiceCollection([IEditorProgressService, new SimpleProgressIndicator()]));
+		this._editor = customInstan.createInstance(TextDiffEditor);
 		this._editor.reverseColoring();
 		this._editor.create(this._el.nativeElement);
 		this._editor.setVisible(true);

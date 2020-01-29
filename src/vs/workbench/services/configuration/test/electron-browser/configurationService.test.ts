@@ -1094,7 +1094,7 @@ suite.skip('WorkspaceConfigurationService - Folder', () => { // {{SQL CARBON EDI
 	test('no change event when there are no global tasks', async () => {
 		const target = sinon.spy();
 		testObject.onDidChangeConfiguration(target);
-		await timeout(500);
+		await timeout(5);
 		assert.ok(target.notCalled);
 	});
 

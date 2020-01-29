@@ -579,7 +579,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				let value = d.resultSubset.rows[0][event.cell.cell - 1];
 				let content = value.displayValue;
 
-				const input = this.untitledEditorService.createOrGet(undefined, column.isXml ? 'xml' : 'json', content);
+				const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
 				const model = await input.resolve();
 				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, model.textEditorModel, FormattingMode.Explicit, CancellationToken.None);
 				return this.editorService.openEditor(input);

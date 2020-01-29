@@ -172,9 +172,16 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			let returnVal = '';
 			// replace the line breaks with space since the edit text control cannot
 			// render line breaks and strips them, updating the value.
-			if (Services.DBCellValue.isDBCellValue(value)) {
+			/* tslint:disable:no-null-keyword */
+			let valueMissing = value === undefined || value === null || (Services.DBCellValue.isDBCellValue(value) && value.isNull);
+			if (valueMissing) {
+				/* tslint:disable:no-null-keyword */
+				returnVal = null;
+			}
+			else if (Services.DBCellValue.isDBCellValue(value)) {
 				returnVal = this.spacefyLinebreaks(value.displayValue);
-			} else if (typeof value === 'string') {
+			}
+			else if (typeof value === 'string') {
 				returnVal = this.spacefyLinebreaks(value);
 			}
 			return returnVal;
@@ -220,7 +227,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				// should add null row?
 				if (offset + count > this.dataSet.totalRows - 1) {
 					gridData.push(this.dataSet.columnDefinitions.reduce((p, c) => {
-						p[c.field] = 'NULL';
+						if (c.id !== 'rowNumber') {
+							p[c.field] = { displayValue: 'NULL', ariaLabel: 'NULL', isNull: true };
+						}
 						return p;
 					}, {}));
 				}
@@ -364,7 +373,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					id: columnIndex,
 					name: escape(c.columnName),
 					field: columnIndex,
-					formatter: Services.textFormatter,
+					formatter: this.getColumnFormatter,
 					isEditable: c.isUpdatable
 				};
 			}))
@@ -722,5 +731,30 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			};
 		}
 
+	}
+
+	/*Formatter for Column*/
+	private getColumnFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
+		let valueToDisplay = '';
+		let cellClasses = 'grid-cell-value-container';
+		/* tslint:disable:no-null-keyword */
+		let valueMissing = value === undefined || value === null || (Services.DBCellValue.isDBCellValue(value) && value.isNull);
+		if (valueMissing) {
+			valueToDisplay = 'NULL';
+			cellClasses += ' missing-value';
+		}
+		else if (Services.DBCellValue.isDBCellValue(value)) {
+			valueToDisplay = (value.displayValue + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+		}
+		else if (typeof value === 'string' || (value && value.text)) {
+			if (value.text) {
+				valueToDisplay = value.text;
+			} else {
+				valueToDisplay = value;
+			}
+			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+		}
+		return '<span title="' + valueToDisplay + '" class="' + cellClasses + '">' + valueToDisplay + '</span>';
 	}
 }

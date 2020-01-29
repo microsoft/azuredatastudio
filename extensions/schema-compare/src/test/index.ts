@@ -11,7 +11,7 @@ const suite = 'schema-compare Extension Tests';
 const options: any = {
 	ui: 'bdd',
 	useColors: true,
-	timeout: 60000
+	timeout: 10000
 };
 
 // set relevant mocha options from the environment

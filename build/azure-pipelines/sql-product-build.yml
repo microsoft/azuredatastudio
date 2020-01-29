@@ -1,7 +1,7 @@
 resources:
   containers:
   - container: linux-x64
-    image: sqltoolscontainers.azurecr.io/linux-build-agent:x64
+    image: sqltoolscontainers.azurecr.io/linux-build-agent:1
     endpoint: ContainerRegistry
 
 jobs:
@@ -20,6 +20,7 @@ jobs:
   - Compile
   steps:
   - template: darwin/sql-product-build-darwin.yml
+  timeoutInMinutes: 180
 
 - job: Linux
   condition: eq(variables['VSCODE_BUILD_LINUX'], 'true')

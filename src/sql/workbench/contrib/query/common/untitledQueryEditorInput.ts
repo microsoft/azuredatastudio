@@ -21,7 +21,6 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 
 	public static readonly ID = 'workbench.editorInput.untitledQueryInput';
 
-	public readonly onDidModelChangeContent = this.text.onDidModelChangeContent;
 	public readonly onDidModelChangeEncoding = this.text.onDidModelChangeEncoding;
 
 	constructor(

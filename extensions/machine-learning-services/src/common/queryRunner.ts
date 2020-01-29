@@ -3,11 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as nbExtensionApis from '../typings/notebookServices';
 import { ApiWrapper } from './apiWrapper';
+import * as constants from '../common/constants';
+
+const maxNumberOfRetries = 3;
 
 const listPythonPackagesQuery = `
 EXEC sp_execute_external_script
@@ -15,6 +16,20 @@ EXEC sp_execute_external_script
 @script=N'import pkg_resources
 import pandas
 OutputDataSet = pandas.DataFrame([(d.project_name, d.version) for d in pkg_resources.working_set])'
+`;
+
+const listRPackagesQuery = `
+EXEC sp_execute_external_script
+@language=N'R',
+@script=N'
+OutputDataSet <- as.data.frame(installed.packages()[,c(1,3)])'
+`;
+
+const listRAvailablePackagesQuery = `
+EXEC sp_execute_external_script
+@language=N'R',
+@script=N'
+OutputDataSet <- as.data.frame(installed.packages()[,c(1,3)])'
 `;
 
 const checkMlInstalledQuery = `
@@ -25,11 +40,11 @@ Declare @external_script_enabled bit
 SELECT @external_script_enabled=config_value FROM @tablevar WHERE name = 'external scripts enabled'
 SELECT @external_script_enabled`;
 
-const checkPythonInstalledQuery = `
+const checkLanguageInstalledQuery = `
 
 SELECT is_installed
 FROM sys.dm_db_external_language_stats s, sys.external_languages l
-WHERE s.external_language_id = l.external_language_id AND language = 'Python'`;
+WHERE s.external_language_id = l.external_language_id AND language = '#LANGUAGE#'`;
 
 const modifyExternalScriptConfigQuery = `
 
@@ -56,8 +71,36 @@ export class QueryRunner {
 	 * @param connection SQL Connection
 	 */
 	public async getPythonPackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
+		return this.getPackages(connection, listPythonPackagesQuery);
+	}
+
+	/**
+	 * Returns python packages installed in SQL server instance
+	 * @param connection SQL Connection
+	 */
+	public async getRPackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
+		return this.getPackages(connection, listRPackagesQuery);
+	}
+
+	/**
+ * Returns python packages installed in SQL server instance
+ * @param connection SQL Connection
+ */
+	public async getRAvailablePackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
+		return this.getPackages(connection, listRAvailablePackagesQuery);
+	}
+
+	private async getPackages(connection: azdata.connection.ConnectionProfile, script: string): Promise<nbExtensionApis.IPackageDetails[]> {
 		let packages: nbExtensionApis.IPackageDetails[] = [];
-		let result = await this.runQuery(connection, listPythonPackagesQuery);
+		let result: azdata.SimpleExecuteResult | undefined = undefined;
+
+		for (let index = 0; index < maxNumberOfRetries; index++) {
+			result = await this.runQuery(connection, script);
+			if (result && result.rowCount > 0) {
+				break;
+			}
+		}
+
 		if (result && result.rows.length > 0) {
 			packages = result.rows.map(row => {
 				return {
@@ -86,7 +129,21 @@ export class QueryRunner {
 	 * Returns true if python installed in the give SQL server instance
 	 */
 	public async isPythonInstalled(connection: azdata.connection.ConnectionProfile): Promise<boolean> {
-		let result = await this.runQuery(connection, checkPythonInstalledQuery);
+		return this.isLanguageInstalled(connection, constants.pythonLanguageName);
+	}
+
+	/**
+	 * Returns true if R installed in the give SQL server instance
+	 */
+	public async isRInstalled(connection: azdata.connection.ConnectionProfile): Promise<boolean> {
+		return this.isLanguageInstalled(connection, constants.rLanguageName);
+	}
+
+	/**
+	 * Returns true if language installed in the give SQL server instance
+	 */
+	private async isLanguageInstalled(connection: azdata.connection.ConnectionProfile, language: string): Promise<boolean> {
+		let result = await this.runQuery(connection, checkLanguageInstalledQuery.replace('#LANGUAGE#', language));
 		let isInstalled = false;
 		if (result && result.rows && result.rows.length > 0) {
 			isInstalled = result.rows[0][0].displayValue === '1';

@@ -150,9 +150,9 @@ gulp.task(minifyVSCodeTask);
  * @return {Object} A map of paths to checksums.
  */
 function computeChecksums(out, filenames) {
-	var result = {};
+	let result = {};
 	filenames.forEach(function (filename) {
-		var fullPath = path.join(process.cwd(), out, filename);
+		let fullPath = path.join(process.cwd(), out, filename);
 		result[filename] = computeChecksum(fullPath);
 	});
 	return result;
@@ -165,9 +165,9 @@ function computeChecksums(out, filenames) {
  * @return {string} The checksum for `filename`.
  */
 function computeChecksum(filename) {
-	var contents = fs.readFileSync(filename);
+	let contents = fs.readFileSync(filename);
 
-	var hash = crypto
+	let hash = crypto
 		.createHash('md5')
 		.update(contents)
 		.digest('base64')

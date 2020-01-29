@@ -15,6 +15,7 @@ import { isTestSetupCompleted } from './testContext';
 import * as assert from 'assert';
 import { getStandaloneServer } from './testConfig';
 import { stressify } from 'adstest';
+import { promisify } from 'util';
 
 let schemaCompareService: mssql.ISchemaCompareService;
 let dacfxService: mssql.IDacFxService;
@@ -91,12 +92,12 @@ class SchemaCompareTester {
 
 		// save to scmp
 		const filepath = path.join(folderPath, `ads_schemaCompare_${now.getTime().toString()}.scmp`);
-		if (!fs.existsSync(folderPath)) {
-			fs.mkdirSync(folderPath);
+		if (!(await promisify(fs.exists)(folderPath))) {
+			await fs.promises.mkdir(folderPath);
 		}
 		const saveScmpResult = await schemaCompareService.schemaCompareSaveScmp(source, target, azdata.TaskExecutionMode.execute, null, filepath, [], []);
 		assert(saveScmpResult.success && !saveScmpResult.errorMessage, `Save scmp should succeed. Expected: there should be no error. Actual Error message: "${saveScmpResult.errorMessage}`);
-		assert(fs.existsSync(filepath), `File ${filepath} is expected to be present`);
+		assert(await promisify(fs.exists)(filepath), `File ${filepath} is expected to be present`);
 
 		// open scmp
 		const openScmpResult = await schemaCompareService.schemaCompareOpenScmp(filepath);
@@ -165,12 +166,12 @@ class SchemaCompareTester {
 
 			// save to scmp
 			const filepath = path.join(folderPath, `ads_schemaCompare_${now.getTime().toString()}.scmp`);
-			if (!fs.existsSync(folderPath)) {
-				fs.mkdirSync(folderPath);
+			if (!(await promisify(fs.exists)(folderPath))) {
+				await fs.promises.mkdir(folderPath);
 			}
 			const saveScmpResult = await schemaCompareService.schemaCompareSaveScmp(source, target, azdata.TaskExecutionMode.execute, null, filepath, [], []);
 			assert(saveScmpResult.success && !saveScmpResult.errorMessage, `Save scmp should succeed. Expected: there should be no error. Actual Error message: "${saveScmpResult.errorMessage}`);
-			assert(fs.existsSync(filepath), `File ${filepath} is expected to be present`);
+			assert(promisify(fs.exists)(filepath), `File ${filepath} is expected to be present`);
 
 			// open scmp
 			const openScmpResult = await schemaCompareService.schemaCompareOpenScmp(filepath);
@@ -178,7 +179,7 @@ class SchemaCompareTester {
 			assert(openScmpResult.sourceEndpointInfo.databaseName === source.databaseName, `Expected: source database to be ${source.databaseName}, Actual: ${openScmpResult.sourceEndpointInfo.databaseName}`);
 			assert(openScmpResult.targetEndpointInfo.databaseName === target.databaseName, `Expected: target database to be ${target.databaseName}, Actual: ${openScmpResult.targetEndpointInfo.databaseName}`);
 
-			fs.unlinkSync(filepath);
+			await fs.promises.unlink(filepath);
 		}
 		finally {
 			await utils.deleteDB(server, sourceDB, ownerUri);
@@ -237,12 +238,12 @@ class SchemaCompareTester {
 
 			// save to scmp
 			const filepath = path.join(folderPath, `ads_schemaCompare_${now.getTime().toString()}.scmp`);
-			if (!fs.existsSync(folderPath)) {
-				fs.mkdirSync(folderPath);
+			if (!(await promisify(fs.exists)(folderPath))) {
+				await fs.promises.mkdir(folderPath);
 			}
 			const saveScmpResult = await schemaCompareService.schemaCompareSaveScmp(source, target, azdata.TaskExecutionMode.execute, null, filepath, [], []);
 			assert(saveScmpResult.success && !saveScmpResult.errorMessage, `Save scmp should succeed. Expected: there should be no error. Actual Error message: "${saveScmpResult.errorMessage}`);
-			assert(fs.existsSync(filepath), `File ${filepath} is expected to be present`);
+			assert(await promisify(fs.exists)(filepath), `File ${filepath} is expected to be present`);
 
 			// open scmp
 			const openScmpResult = await schemaCompareService.schemaCompareOpenScmp(filepath);

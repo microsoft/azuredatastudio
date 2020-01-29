@@ -12,6 +12,12 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.7.tgz#01e4ea724d9e3bd50d90c11fd5980ba317d8fa11"
   integrity sha512-E6Zn0rffhgd130zbCbAr/JdXfXkoOUFAKNs/rF8qnafSJ8KYaA/j3oz7dcwal+lYjLA7xvdd5J4wdYpCTlP8+w==
 
+"ads-extension-telemetry@github:Charles-Gagnon/ads-extension-telemetry#0.1.0":
+  version "0.1.0"
+  resolved "https://codeload.github.com/Charles-Gagnon/ads-extension-telemetry/tar.gz/70c2fea10e9ff6e329c4c5ec0b77017ada514b6d"
+  dependencies:
+    vscode-extension-telemetry "0.1.1"
+
 ajv@^6.5.5:
   version "6.10.0"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.10.0.tgz#90d0d54439da587cd7e843bfb7045f50bd22bdf1"
@@ -53,10 +59,10 @@ append-buffer@^1.0.2:
   dependencies:
     buffer-equal "^1.0.0"
 
-applicationinsights@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/applicationinsights/-/applicationinsights-1.0.1.tgz#53446b830fe8d5d619eee2a278b31d3d25030927"
-  integrity sha1-U0Rrgw/o1dYZ7uKieLMdPSUDCSc=
+applicationinsights@1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/applicationinsights/-/applicationinsights-1.0.8.tgz#db6e3d983cf9f9405fe1ee5ba30ac6e1914537b5"
+  integrity sha512-KzOOGdphOS/lXWMFZe5440LUdFbrLpMvh2SaRxn7BmiI550KAoSb2gIhiq6kJZ9Ir3AxRRztjhzif+e5P5IXIg==
   dependencies:
     diagnostic-channel "0.2.0"
     diagnostic-channel-publishers "0.2.1"
@@ -1597,12 +1603,12 @@ vinyl@^2.0.0, vinyl@^2.0.1, vinyl@^2.0.2:
     remove-trailing-separator "^1.0.1"
     replace-ext "^1.0.0"
 
-vscode-extension-telemetry@0.0.18:
-  version "0.0.18"
-  resolved "https://registry.yarnpkg.com/vscode-extension-telemetry/-/vscode-extension-telemetry-0.0.18.tgz#602ba20d8c71453aa34533a291e7638f6e5c0327"
-  integrity sha512-Vw3Sr+dZwl+c6PlsUwrTtCOJkgrmvS3OUVDQGcmpXWAgq9xGq6as0K4pUx+aGqTjzLAESmWSrs6HlJm6J6Khcg==
+vscode-extension-telemetry@0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/vscode-extension-telemetry/-/vscode-extension-telemetry-0.1.1.tgz#91387e06b33400c57abd48979b0e790415ae110b"
+  integrity sha512-TkKKG/B/J94DP5qf6xWB4YaqlhWDg6zbbqVx7Bz//stLQNnfE9XS1xm3f6fl24c5+bnEK0/wHgMgZYKIKxPeUA==
   dependencies:
-    applicationinsights "1.0.1"
+    applicationinsights "1.0.8"
 
 vscode-nls@^4.0.0:
   version "4.1.1"
