@@ -29,10 +29,9 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IProgressService, ProgressLocation, IProgressStep, IProgress } from 'vs/platform/progress/common/progress';
 import { extHostCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
-import { ISaveParticipant, IResolvedTextFileEditorModel, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
+import { ISaveParticipant, IResolvedTextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
 import { SaveReason } from 'vs/workbench/common/editor';
 import { ExtHostContext, ExtHostDocumentSaveParticipantShape, IExtHostContext } from '../common/extHost.protocol';
-import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService'; // {{SQL CARBON EDIT}}
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { SettingsEditor2 } from 'vs/workbench/contrib/preferences/browser/settingsEditor2';
 import { IPreferencesService } from 'vs/workbench/services/preferences/common/preferences';
@@ -41,30 +40,6 @@ import { canceled } from 'vs/base/common/errors';
 
 export interface ICodeActionsOnSaveOptions {
 	[kind: string]: boolean;
-}
-
-/*
- * An update participant that ensures any un-tracked changes are synced to the JSON file contents for a
- * Notebook before save occurs. While every effort is made to ensure model changes are notified and a listener
- * updates the backing model in-place, this is a backup mechanism to hard-update the file before save in case
- * some are missed.
- */
-class NotebookUpdateParticipant implements ISaveParticipantParticipant { // {{SQL CARBON EDIT}} add notebook participant
-
-	constructor(
-		@INotebookService private notebookService: INotebookService
-	) {
-		// Nothing
-	}
-
-	public participate(model: ITextFileEditorModel, env: { reason: SaveReason }): Promise<void> {
-		let uri = model.resource;
-		let notebookEditor = this.notebookService.findNotebookEditor(uri);
-		if (notebookEditor) {
-			notebookEditor.notebookParams.input.updateModel();
-		}
-		return Promise.resolve();
-	}
 }
 
 export interface ISaveParticipantParticipant {
@@ -388,8 +363,6 @@ export class SaveParticipant implements ISaveParticipant {
 			instantiationService.createInstance(FormatOnSaveParticipant),
 			instantiationService.createInstance(FinalNewLineParticipant),
 			instantiationService.createInstance(TrimFinalNewLinesParticipant),
-			// {{SQL CARBON EDIT}}
-			instantiationService.createInstance(NotebookUpdateParticipant),
 			instantiationService.createInstance(ExtHostSaveParticipant, extHostContext),
 		]);
 		// Hook into model
