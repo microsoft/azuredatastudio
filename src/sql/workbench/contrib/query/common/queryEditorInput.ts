@@ -13,7 +13,7 @@ import { IFileService } from 'vs/platform/files/common/files';
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
 import { ISelectionData, ExecutionPlanOptions } from 'azdata';
 import { startsWith } from 'vs/base/common/strings';
