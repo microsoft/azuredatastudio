@@ -25,9 +25,9 @@ import { TestConfigurationService } from 'vs/platform/configuration/test/common/
 import { TestEditorService, TestDialogService } from 'vs/workbench/test/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
-import { TestQueryModelService } from 'sql/platform/query/test/common/testQueryModelService';
+import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
 import { Event } from 'vs/base/common/event';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';

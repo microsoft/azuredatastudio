@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/dialogModal';
 import { Modal, IModalOptions } from 'sql/workbench/browser/modal/modal';
-import { attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 import { Dialog, DialogButton } from 'sql/workbench/services/dialog/common/dialogTypes';
 import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
 
@@ -25,6 +24,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;

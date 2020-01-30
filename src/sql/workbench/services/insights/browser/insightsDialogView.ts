@@ -7,7 +7,7 @@ import 'vs/css!./media/insightsDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachPanelStyler } from 'sql/platform/theme/common/styler';
+import { attachButtonStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IInsightsDialogModel, ListResource, IInsightDialogActionContext, insertValueRegex } from 'sql/workbench/services/insights/browser/insightsDialogService';
@@ -38,11 +38,12 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
-import { TaskRegistry } from 'sql/platform/tasks/browser/tasksRegistry';
+import { TaskRegistry } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { attachPanelStyler, attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 
 const labelDisplay = nls.localize("insights.item", "Item");

@@ -3,13 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IInsight, IInsightData } from './interfaces';
+import { IInsight } from './interfaces';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { $ } from 'vs/base/browser/dom';
 import { mixin } from 'vs/base/common/objects';
 import { IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
 import * as nls from 'vs/nls';
 import { startsWith } from 'vs/base/common/strings';
+import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 
 export interface IConfig extends IInsightOptions {
 	encoding?: string;
