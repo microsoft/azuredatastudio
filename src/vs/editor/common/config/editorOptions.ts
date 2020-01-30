@@ -3585,7 +3585,7 @@ export const EditorOptions = {
 		['tree', 'editor'] as const,
 		{
 			enumDescriptions: [
-				nls.localize('peekWidgetDefaultFocus.tree', "Focus the tree when openeing peek"),
+				nls.localize('peekWidgetDefaultFocus.tree', "Focus the tree when opening peek"),
 				nls.localize('peekWidgetDefaultFocus.editor', "Focus the editor when opening peek")
 			],
 			description: nls.localize('peekWidgetDefaultFocus', "Controls whether to focus the inline editor or the tree in the peek widget.")
