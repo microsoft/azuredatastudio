@@ -2,7 +2,7 @@
 	"name": "big-data-cluster",
 	"displayName": "%text.sqlServerBigDataClusters%",
 	"description": "%description%",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"publisher": "Microsoft",
 	"preview": true,
 	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",

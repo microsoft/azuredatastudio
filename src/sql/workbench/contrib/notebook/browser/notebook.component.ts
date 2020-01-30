@@ -183,8 +183,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		if (event) {
 			event.stopPropagation();
 		}
-		this.model.updateActiveCell(cell);
-		this.detectChanges();
+		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
+			this.model.updateActiveCell(cell);
+			this.detectChanges();
+		}
 	}
 
 	//Saves scrollTop value on scroll change
