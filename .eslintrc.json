@@ -377,8 +377,8 @@
             {
                 "target": "**/{vs,sql}/workbench/common/**",
                 "restrictions": [
-					"vs/nls",
-					"azdata",
+                    "vs/nls",
+                    "azdata",
                     "**/{vs,sql}/base/common/**",
                     "**/{vs,sql}/base/parts/*/common/**",
                     "**/{vs,sql}/platform/*/common/**",
@@ -392,9 +392,9 @@
             {
                 "target": "**/{vs,sql}/workbench/browser/**",
                 "restrictions": [
-					"vs/nls",
-					"azdata",
-					"@angular/*",
+                    "vs/nls",
+                    "azdata",
+                    "@angular/*",
                     "vs/css!./**/*",
                     "**/{vs,sql}/base/{common,browser}/**",
                     "**/{vs,sql}/base/parts/*/{common,browser}/**",
@@ -405,6 +405,67 @@
                     "**/{vs,sql}/workbench/{common,browser}/**",
                     "**/{vs,sql}/workbench/services/*/{common,browser}/**",
                     "assert"
+                ]
+            },
+            {
+                "target": "**/vs/workbench/workbench.desktop.main.ts",
+                "restrictions": [
+                    "**"
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/workbench/api/common/**",
+                "restrictions": [
+                    "vscode",
+                    "azdata",
+                    "vs/nls",
+                    "**/{vs,sql}/base/common/**",
+                    "**/{vs,sql}/platform/*/common/**",
+                    "**/vs/editor/common/**",
+                    "**/{vs,sql}/editor/contrib/*/common/**",
+                    "**/{vs,sql}/workbench/api/common/**",
+                    "**/{vs,sql}/workbench/common/**",
+                    "**/{vs,sql}/workbench/services/*/common/**",
+                    "**/{vs,sql}/workbench/contrib/*/common/**"
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/workbench/api/worker/**",
+                "restrictions": [
+                    "vscode",
+                    "azdata",
+                    "vs/nls",
+                    "**/{vs,sql}/**/{common,worker}/**"
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/workbench/electron-browser/**",
+                "restrictions": [
+                    "vs/nls",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/{common,browser,node,electron-browser}/**",
+                    "**/{vs,sql}/base/parts/*/{common,browser,node,electron-browser}/**",
+                    "**/{vs,sql}/platform/*/{common,browser,node,electron-browser}/**",
+                    "**/{vs,sql}/editor/{common,browser,node,electron-browser}/**",
+                    "**/{vs,sql}/editor/contrib/**", // editor/contrib is equivalent to /browser/ by convention
+                    "**/{vs,sql}/workbench/{common,browser,node,electron-browser,api}/**",
+                    "**/{vs,sql}/workbench/services/*/{common,browser,node,electron-browser}/**",
+                    "!path" // node modules (except path where we have our own impl)
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/workbench/services/**/test/**",
+                "restrictions": [
+                    "vs/nls",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/**",
+                    "**/{vs,sql}/platform/**",
+                    "**/{vs,sql}/editor/**",
+                    "**/{vs,sql}/workbench/{common,browser,node,electron-browser}/**",
+                    "vs/workbench/contrib/files/common/editors/fileEditorInput",
+                    "**/{vs,sql}/workbench/services/**",
+                    "**/{vs,sql}/workbench/test/**",
+                    "!path" // node modules (except path where we have our own impl)
                 ]
             }
         ]

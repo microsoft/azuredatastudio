@@ -23,9 +23,9 @@ import { getErrorMessage } from 'vs/base/common/errors';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import { firstIndex, find } from 'vs/base/common/arrays';
-let modelId = 0;
+import { HideInputTag } from 'sql/platform/notebooks/common/outputRegistry';
 
-export const HideInputTag = 'hide_input';
+let modelId = 0;
 
 export class CellModel implements ICellModel {
 	public id: string;
