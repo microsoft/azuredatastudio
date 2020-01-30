@@ -23,19 +23,17 @@ export namespace azureResource {
 
 	export interface AzureResource {
 		name: string;
+		id: string;
+	}
+
+	export interface AzureResourceSubscription extends AzureResource {
 	}
 
 	export interface AzureSqlResource extends AzureResource {
 		loginName: string;
 	}
 
-	export interface AzureResourceSubscription extends AzureResource {
-		id: string;
-		name: string;
-	}
-
 	export interface AzureResourceResourceGroup extends AzureResource {
-		subscriptionId: string;
 	}
 
 	export interface AzureResourceDatabase extends AzureSqlResource {
@@ -44,7 +42,6 @@ export namespace azureResource {
 	}
 
 	export interface AzureResourceDatabaseServer extends AzureSqlResource {
-		id?: string;
 		fullName: string;
 		defaultDatabaseName: string;
 	}

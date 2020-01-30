@@ -65,12 +65,14 @@ mockTokens[mockTenantId] = {
 const mockDatabases: azureResource.AzureResourceDatabase[] = [
 	{
 		name: 'mock database 1',
+		id: 'mock-id-1',
 		serverName: 'mock database server 1',
 		serverFullName: 'mock database server full name 1',
 		loginName: 'mock login'
 	},
 	{
 		name: 'mock database 2',
+		id: 'mock-id-2',
 		serverName: 'mock database server 2',
 		serverFullName: 'mock database server full name 2',
 		loginName: 'mock login'

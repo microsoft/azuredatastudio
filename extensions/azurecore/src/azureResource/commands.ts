@@ -36,7 +36,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 				subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType)));
 			}
 		} catch (error) {
-			throw new AzureResourceCredentialError(localize('azure.accounts.getSubscriptions.credentialError', "Failed to get credential for account {0}. Please refresh the account.", this.account.key.accountId), error);
+			throw new Error(localize('azure.accounts.getSubscriptions.error', "Unexpected error occurred getting the subscriptions for account {0}. {1}", account.key.accountId, error));
 		}
 		return subscriptions;
 	});
@@ -54,7 +54,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			}
 			return resourceGroups;
 		} catch (error) {
-			throw new AzureResourceCredentialError(localize('azure.accounts.getSubscriptions.credentialError', "Failed to get credential for account {0}. Please refresh the account.", this.account.key.accountId), error);
+			throw new Error(localize('azure.accounts.getResourceGroups.error', "Unexpected error occurred getting the subscriptions for subscription {0} ({1}). {2}", subscription.name, subscription.id, error));
 		}
 	});
 

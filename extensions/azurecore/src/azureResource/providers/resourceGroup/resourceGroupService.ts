@@ -15,7 +15,7 @@ export class AzureResourceGroupService extends ResourceServiceBase<DbServerGraph
 
 	protected convertResource(resource: DbServerGraphData): azureResource.AzureResourceResourceGroup {
 		return {
-			subscriptionId: resource.id,
+			id: resource.id,
 			name: resource.name
 		};
 	}

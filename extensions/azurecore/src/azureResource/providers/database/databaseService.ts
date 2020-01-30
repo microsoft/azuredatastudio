@@ -46,6 +46,7 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 				if (server) {
 					databases.push({
 						name: db.name,
+						id: db.id,
 						serverName: server.name,
 						serverFullName: server.properties.fullyQualifiedDomainName,
 						loginName: server.properties.administratorLogin

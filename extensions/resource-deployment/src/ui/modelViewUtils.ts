@@ -500,10 +500,10 @@ function handleSelectedAccountChanged(): void {
 			const displayName = `${subscription.name} (${subscription.id})`;
 			subscriptionValueToSubscriptionMap.set(displayName, subscription);
 			return displayName;
-		});
+		}).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()));
 		const selectedSubscription = subscriptionDropdown.values.length > 0 ? subscriptionValueToSubscriptionMap.get(subscriptionDropdown.values[0]) : undefined;
 		handleSelectedSubscriptionChanged(selectedSubscription);
-	}, err => { console.log(`Unexpected error fetching subscriptions: ${err}`); });
+	}, err => { console.log(`Unexpected error fetching subscriptions for account ${selectedAccount?.displayInfo.displayName} (${selectedAccount?.key.accountId}): ${err}`); });
 }
 
 function createAzureResourceGroupsDropdown(context: AzureAccountFieldContext, subscriptionDropdown: azdata.DropDownComponent): void {
@@ -530,8 +530,8 @@ function createAzureResourceGroupsDropdown(context: AzureAccountFieldContext, su
 function handleSelectedSubscriptionChanged(selectedSubscription: azureResource.AzureResourceSubscription | undefined): void {
 	resourceGroupDropdown.values = [];
 	vscode.commands.executeCommand('azure.accounts.getResourceGroups', selectedAccount, selectedSubscription).then(resourceGroups => {
-		resourceGroupDropdown.values = (<azureResource.AzureResourceSubscription[]>resourceGroups).map(resourceGroup => resourceGroup.name);
-	}, err => { console.log(`Unexpected error fetching resource groups: ${err}`); });
+		resourceGroupDropdown.values = (<azureResource.AzureResourceSubscription[]>resourceGroups).map(resourceGroup => resourceGroup.name).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()));
+	}, err => { console.log(`Unexpected error fetching resource groups for subscription ${selectedSubscription?.name} (${selectedSubscription?.id}): ${err}`); });
 }
 
 export function isValidSQLPassword(password: string, userName: string = 'sa'): boolean {
