@@ -3,7 +3,6 @@ steps:
     displayName: 'Install developer certificate'
     inputs:
       certSecureFile: 'osx_signing_key.p12'
-      signingIdentity: sqlkey
 
   - script: |
       mkdir -p .build
@@ -116,7 +115,8 @@ steps:
   - script: |
       set -e
       pushd ../azuredatastudio-darwin
-      codesign --force --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/entitlements.xml -s 'sqlkey' *.app
+      ls
+      codesign --force --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/entitlements.xml -s LPV3BJJYXS *.app
       popd
     displayName: 'Manual codesign'
 
