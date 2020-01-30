@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IdleValue } from 'vs/base/common/async';
+import { IdleValue, raceCancellation } from 'vs/base/common/async';
 import { CancellationTokenSource, CancellationToken } from 'vs/base/common/cancellation';
 import * as strings from 'vs/base/common/strings';
 import { IActiveCodeEditor } from 'vs/editor/browser/editorBrowser';
@@ -418,7 +418,8 @@ export class SaveParticipant implements ISaveParticipant {
 					break;
 				}
 				try {
-					await p.participate(model, env, progress, cts.token);
+					const promise = p.participate(model, env, progress, cts.token);
+					await raceCancellation(promise, cts.token);
 				} catch (err) {
 					this._logService.warn(err);
 				}
