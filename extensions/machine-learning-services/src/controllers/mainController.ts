@@ -16,8 +16,7 @@ import { Config } from '../configurations/config';
 import { ServerConfigWidget } from '../widgets/serverConfigWidgets';
 import { ServerConfigManager } from '../serverConfig/serverConfigManager';
 import { HttpClient } from '../common/httpClient';
-import { ExternalLanguagesDialogModel } from '../dialogs/externalLanguages/externalLanguagesDialogModel';
-import { ExternalLanguagesDialog } from '../dialogs/externalLanguages/externalLanguagesDialog';
+import { LanguageController } from '../dialogs/externalLanguages/languageController';
 
 /**
  * The main controller class that initializes the extension
@@ -94,18 +93,20 @@ export default class MainController implements vscode.Disposable {
 			await packageManager.managePackages();
 		}));
 
+		let mssqlService = await this.getLanguageExtensionService();
+		let languageController = new LanguageController(this._apiWrapper, mssqlService, this._rootPath);
+
 		this._apiWrapper.registerCommand(constants.mlManageLanguagesCommand, (async () => {
-			let mssqlService = await this.getLanguageExtensionService();
-			let model = new ExternalLanguagesDialogModel(this._apiWrapper, mssqlService, this._rootPath);
-			await model.load();
-			let dialog = new ExternalLanguagesDialog(model);
-			dialog.showDialog();
+			await languageController.manageLanguages();
 		}));
 		this._apiWrapper.registerCommand(constants.mlsDependenciesCommand, (async () => {
 			await packageManager.installDependencies();
 		}));
 		this._apiWrapper.registerTaskHandler(constants.mlManagePackagesCommand, async () => {
 			await packageManager.managePackages();
+		});
+		this._apiWrapper.registerTaskHandler(constants.mlManageLanguagesCommand, async () => {
+			await languageController.manageLanguages();
 		});
 		this._apiWrapper.registerTaskHandler(constants.mlOdbcDriverCommand, async () => {
 			await this.serverConfigManager.openOdbcDriverDocuments();
@@ -148,7 +149,6 @@ export default class MainController implements vscode.Disposable {
 		}
 		return this._httpClient;
 	}
-
 
 	/**
 	 * Config instance

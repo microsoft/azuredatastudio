@@ -385,24 +385,23 @@ export interface GenerateDeployPlan {
 export interface ExternalLanguageContent {
 	pathToExtension: string;
 	extensionFileName: string;
-	platform: string;
-	parameters: string;
-	environmentVariables: string;
-	languageType: string;
+	platform?: string;
+	parameters?: string;
+	environmentVariables?: string;
 	isLocalFile: boolean;
 }
 
 export interface ExternalLanguage {
 	name: string;
-	owner: string;
+	owner?: string;
 	contents: ExternalLanguageContent[];
-	createdDate: string;
+	createdDate?: string;
 }
 
 export interface ILanguageExtensionService {
 	listLanguages(ownerUri: string): Thenable<ExternalLanguage[]>;
 	deleteLanguage(ownerUri: string, languageName: string): Thenable<void>;
-	updateLanguage(ownerUri: string, language: ExternalLanguage): Thenable<ExternalLanguage[]>;
+	updateLanguage(ownerUri: string, language: ExternalLanguage): Thenable<void>;
 }
 //#endregion
 

@@ -40,19 +40,19 @@ export class LanguageExtensionService implements mssql.ILanguageExtensionService
 			},
 			e => {
 				this.client.logFailedRequest(contracts.LanguageExtensibilityListRequest.type, e);
-				return Promise.resolve(undefined);
+				return Promise.reject(e);
 			}
 		);
 	}
 
-	public updateLanguage(ownerUri: string, language: mssql.ExternalLanguage): Thenable<mssql.ExternalLanguage[]> {
+	public updateLanguage(ownerUri: string, language: mssql.ExternalLanguage): Thenable<void> {
 		const params: contracts.ExternalLanguageUpdateRequestParam = { ownerUri: ownerUri, language: language };
-		return this.client.sendRequest(contracts.LanguageExtensibilityListRequest.type, params).then(
+		return this.client.sendRequest(contracts.LanguageExtensibilityUpdateRequest.type, params).then(
 			() => {
 			},
 			e => {
-				this.client.logFailedRequest(contracts.LanguageExtensibilityListRequest.type, e);
-				return Promise.resolve(undefined);
+				this.client.logFailedRequest(contracts.LanguageExtensibilityUpdateRequest.type, e);
+				return Promise.reject(e);
 			}
 		);
 	}
@@ -63,8 +63,8 @@ export class LanguageExtensionService implements mssql.ILanguageExtensionService
 			() => {
 			},
 			e => {
-				this.client.logFailedRequest(contracts.LanguageExtensibilityListRequest.type, e);
-				return Promise.resolve(undefined);
+				this.client.logFailedRequest(contracts.LanguageExtensibilityDeleteRequest.type, e);
+				return Promise.reject(e);
 			}
 		);
 	}

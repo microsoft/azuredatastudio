@@ -90,6 +90,7 @@
               "widget": {
                 "tasks-widget": [
                   "mls.command.managePackages",
+                  "mls.command.manageLanguages",
                   "mls.command.odbcdriver",
                   "mls.command.mlsdocs"
                 ]

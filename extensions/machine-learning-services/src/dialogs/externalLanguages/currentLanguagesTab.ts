@@ -3,82 +3,81 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 
 import * as constants from '../../common/constants';
-import { ExternalLanguageDialogBase } from './externalLanguageDialogBase';
-import { ExternalLanguagesTable } from './externalLanguagesTable';
+import { LanguageDialogBase } from './languageDialogBase';
+import { LanguagesTable } from './languagesTable';
+import { LanguagesDialogModel } from './languagesDialogModel';
 
-const localize = nls.loadMessageBundle();
+export class CurrentLanguagesTab extends LanguageDialogBase {
 
-export class CurrentLanguagesTab {
+	private _installedLangsTab: azdata.window.DialogTab;
 
-	private installedPkgTab: azdata.window.DialogTab;
+	private _locationComponent: azdata.TextComponent | undefined;
+	private _installLanguagesTable: azdata.DeclarativeTableComponent | undefined;
+	private _languageTable: LanguagesTable | undefined;
+	private _loader: azdata.LoadingComponent | undefined;
 
-	private locationComponent: azdata.TextComponent | undefined;
-	private installedPackagesTable: azdata.DeclarativeTableComponent | undefined;
-	private installedPackagesLoader: azdata.LoadingComponent | undefined;
+	constructor(parent: LanguageDialogBase, model: LanguagesDialogModel) {
+		super(model, parent);
+		this._installedLangsTab = azdata.window.createTab(constants.extLangInstallTabTitle);
 
-	constructor(private dialog: ExternalLanguageDialogBase) {
-		this.installedPkgTab = azdata.window.createTab(constants.extLangInstallTabTitle);
-
-		this.installedPkgTab.registerContent(async view => {
+		this._installedLangsTab.registerContent(async view => {
 
 			// TODO: only supporting single location for now. We should add a drop down for multi locations mode
 			//
-			let locationTitle = await this.dialog.model.getLocationTitle();
-			this.locationComponent = view.modelBuilder.text().withProperties({
+			let locationTitle = await this._model.getLocationTitle();
+			this._locationComponent = view.modelBuilder.text().withProperties({
 				value: locationTitle
 			}).component();
 
-			let table = new ExternalLanguagesTable(view.modelBuilder, this.dialog.model);
-			this.installedPackagesTable = table.table;
+			this._languageTable = new LanguagesTable(view.modelBuilder, this, model);
+			this._installLanguagesTable = this._languageTable.table;
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
-					component: this.locationComponent,
-					title: localize('managePackages.location', "Location")
+					component: this._locationComponent,
+					title: constants.extLangTarget
 				}, {
-					component: this.installedPackagesTable,
+					component: this._installLanguagesTable,
 					title: ''
 				}]).component();
 
-			this.installedPackagesLoader = view.modelBuilder.loadingComponent()
+			this._loader = view.modelBuilder.loadingComponent()
 				.withItem(formModel)
 				.withProperties({
 					loading: true
 				}).component();
 
-			await view.initializeModel(this.installedPackagesLoader);
-
-			await this.loadInstalledPackagesInfo(table);
+			await view.initializeModel(this._loader);
+			await this.reset();
 		});
 	}
 
 	public get tab(): azdata.window.DialogTab {
-		return this.installedPkgTab;
+		return this._installedLangsTab;
 	}
 
 	private async onLoading(): Promise<void> {
-		if (this.installedPackagesLoader) {
-			await this.installedPackagesLoader.updateProperties({ loading: true });
+		if (this._loader) {
+			await this._loader.updateProperties({ loading: true });
 		}
 	}
 
 	private async onLoaded(): Promise<void> {
-		if (this.installedPackagesLoader) {
-			await this.installedPackagesLoader.updateProperties({ loading: false });
+		if (this._loader) {
+			await this._loader.updateProperties({ loading: false });
 		}
 	}
 
-	public async loadInstalledPackagesInfo(table: ExternalLanguagesTable): Promise<void> {
+	public async reset(): Promise<void> {
 		await this.onLoading();
 
 		try {
-			await table.loadData();
+			await this._languageTable?.reset();
 		} catch (err) {
-			this.dialog.showErrorMessage(constants.getErrorMessage(err));
+			this.showErrorMessage(constants.getErrorMessage(err));
 		} finally {
 			await this.onLoaded();
 		}

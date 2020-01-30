@@ -5,25 +5,26 @@
 
 import * as azdata from 'azdata';
 import * as constants from '../../common/constants';
-import * as mssql from '../../../../mssql';
-import { ExternalLanguagesDialogModel } from './externalLanguagesDialogModel';
-import { ExternalLanguageEditDialog } from './externalLanguageEditDialog';
+import * as mssql from '../../../../mssql/src/mssql';
+import { LanguagesDialogModel } from './languagesDialogModel';
+import { LanguageViewBase } from './languageViewBase';
 
-export class ExternalLanguagesTable {
+export class LanguagesTable extends LanguageViewBase {
 
 	private _table: azdata.DeclarativeTableComponent;
 
 	/**
 	 *
 	 */
-	constructor(private _modelBuilder: azdata.ModelBuilder, private _model: ExternalLanguagesDialogModel) {
+	constructor(private _modelBuilder: azdata.ModelBuilder, parent: LanguageViewBase, model: LanguagesDialogModel) {
+		super(model, parent);
 		this._table = _modelBuilder.declarativeTable()
 			.withProperties<azdata.DeclarativeTableProperties>(
 				{
 					columns: [
-						{ // Status icon
-							displayName: constants.extLangLanguageNameColumn,
-							ariaLabel: constants.extLangLanguageNameColumn,
+						{ // Name
+							displayName: constants.extLangLanguageName,
+							ariaLabel: constants.extLangLanguageName,
 							valueType: azdata.DeclarativeDataType.string,
 							isReadOnly: true,
 							width: 100,
@@ -34,9 +35,22 @@ export class ExternalLanguagesTable {
 								...constants.cssStyles.tableRow
 							},
 						},
-						{ // Action
-							displayName: constants.extLangLanguageCreatedDateColumn,
-							ariaLabel: constants.extLangLanguageCreatedDateColumn,
+						{ // Platform
+							displayName: constants.extLangLanguagePlatform,
+							ariaLabel: constants.extLangLanguagePlatform,
+							valueType: azdata.DeclarativeDataType.string,
+							isReadOnly: true,
+							width: 150,
+							headerCssStyles: {
+								...constants.cssStyles.tableHeader
+							},
+							rowCssStyles: {
+								...constants.cssStyles.tableRow
+							},
+						},
+						{ // Created Date
+							displayName: constants.extLangLanguageCreatedDate,
+							ariaLabel: constants.extLangLanguageCreatedDate,
 							valueType: azdata.DeclarativeDataType.string,
 							isReadOnly: true,
 							width: 150,
@@ -86,12 +100,23 @@ export class ExternalLanguagesTable {
 		let languages: mssql.ExternalLanguage[] | undefined;
 
 		languages = await this._model.GetLanguageList();
+		let tableData: any[][] = [];
 
-		let packageData = languages ? languages.map(language => this.createTableRow(language)) : [];
-		this._table.data = packageData;
+		if (languages) {
+
+			languages.forEach(language => {
+				if (!language.contents || language.contents.length === 0) {
+					language.contents.push(this._model.createNewContent());
+				}
+
+				tableData = tableData.concat(language.contents.map(content => this.createTableRow(language, content)));
+			});
+		}
+
+		this._table.data = tableData;
 	}
 
-	private createTableRow(language: mssql.ExternalLanguage): any[] {
+	private createTableRow(language: mssql.ExternalLanguage, content: mssql.ExternalLanguageContent): any[] {
 		if (this._modelBuilder) {
 			let dropLanguageButton = this._modelBuilder.button().withProperties({
 				label: '',
@@ -104,7 +129,11 @@ export class ExternalLanguagesTable {
 				height: 15
 			}).component();
 			dropLanguageButton.onDidClick(async () => {
-				this._model.deleteLanguage(language.name);
+				this.onDeleteLanguage({
+					language: language,
+					content: content,
+					newLang: false
+				});
 			});
 
 			let editLanguageButton = this._modelBuilder.button().withProperties({
@@ -118,11 +147,19 @@ export class ExternalLanguagesTable {
 				height: 15
 			}).component();
 			editLanguageButton.onDidClick(async () => {
-				let editDialog = new ExternalLanguageEditDialog(this._model, language);
-				editDialog.showDialog();
+				this.onEditLanguage({
+					language: language,
+					content: content,
+					newLang: false
+				});
 			});
-			return [language.name, language.createdDate, dropLanguageButton, editLanguageButton];
+			return [language.name, content.platform, language.createdDate, dropLanguageButton, editLanguageButton];
 		}
+
 		return [];
+	}
+
+	public async reset(): Promise<void> {
+		await this.loadData();
 	}
 }
