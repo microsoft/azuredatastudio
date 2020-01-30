@@ -23,7 +23,7 @@ import { AzureResourceGroupService } from './providers/resourceGroup/resourceGro
 export function registerAzureResourceCommands(appContext: AppContext, tree: AzureResourceTreeProvider): void {
 
 	// Resource Management commands
-	appContext.apiWrapper.registerCommand('azure.accounts.getSubscriptions', async (account: azdata.Account): Promise<azureResource.AzureResourceSubscription[]> => {
+	appContext.apiWrapper.registerCommand('azure.accounts.getSubscriptions', async (account?: azdata.Account): Promise<azureResource.AzureResourceSubscription[]> => {
 		if (!account) {
 			return [];
 		}
