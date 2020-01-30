@@ -5,7 +5,7 @@
 
 import { IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { ChartView } from './chartView';
-import QueryRunner from 'sql/platform/query/common/queryRunner';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

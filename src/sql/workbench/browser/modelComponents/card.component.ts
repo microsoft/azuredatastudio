@@ -14,11 +14,11 @@ import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
-import { StatusIndicator, CardProperties, ActionDescriptor, CardDescriptionItem } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { StatusIndicator, CardProperties, ActionDescriptor, CardDescriptionItem, ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
+import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('./card.component.html'))
