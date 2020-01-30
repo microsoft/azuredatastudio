@@ -116,7 +116,7 @@ steps:
       set -e
       pushd ../azuredatastudio-darwin
       ls
-      codesign --deep --force --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/darwin/entitlements.xml -s LPV3BJJYXS *.app
+      codesign --deep --force --options runtime --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/darwin/entitlements.xml -s LPV3BJJYXS *.app
       popd
     displayName: 'Manual codesign'
 
@@ -144,9 +144,7 @@ steps:
           {
             "KeyCode": "CP-401337-Apple",
             "OperationCode": "MacAppDeveloperSign",
-            "Parameters": {
-              "Hardening": "--options=runtime"
-            },
+            "Parameters": { },
             "ToolName": "sign",
             "ToolVersion": "1.0"
           }
