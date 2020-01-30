@@ -435,7 +435,7 @@ class KeyboardController<T> implements IDisposable {
 export class MouseController<T> implements IDisposable {
 
 	private multipleSelectionSupport: boolean;
-	readonly multipleSelectionController: IMultipleSelectionController<T>;
+	readonly multipleSelectionController?: IMultipleSelectionController<T>;
 	private openController: IOpenController;
 	private disposables: IDisposable[] = [];
 	private readonly _mouseMoveMonitor = new GlobalMouseMoveMonitor<ITableMouseEvent<T>>();

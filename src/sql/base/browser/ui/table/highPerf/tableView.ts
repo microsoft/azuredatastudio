@@ -106,8 +106,8 @@ export class TableView<T> implements IDisposable {
 	private lastRenderHeight = 0;
 	private readonly rowsContainer = DOM.$('.monaco-perftable-rows');
 	private scrollableElement: ScrollableElement;
-	private _scrollHeight: number;
-	private _scrollWidth: number;
+	private _scrollHeight: number = 0;
+	private _scrollWidth: number = 0;
 	private scrollableElementUpdateDisposable: IDisposable | null = null;
 	// private ariaSetProvider: IAriaSetProvider<T>;
 	private canUseTranslate3d: boolean | undefined = undefined;
@@ -117,10 +117,10 @@ export class TableView<T> implements IDisposable {
 	private columns: IInternalColumn<T, any>[];
 	private staticColumns: IInternalStaticColumn<T, any>[];
 	private columnSashs: ISashItem[] = [];
-	private sashDragState: ISashDragState;
-	private headerContainer: HTMLElement;
+	private sashDragState?: ISashDragState;
+	private headerContainer!: HTMLElement;
 
-	private scheduledRender: IDisposable;
+	private scheduledRender?: IDisposable;
 	private bigNumberDelta = 0;
 
 	private headerHeight: number;
@@ -286,8 +286,8 @@ export class TableView<T> implements IDisposable {
 	}
 
 	private onSashChange({ column, current }: ISashEvent<T>): void {
-		const { index, start, sizes, lefts } = this.sashDragState;
-		this.sashDragState.current = current;
+		const { index, start, sizes, lefts } = this.sashDragState!;
+		this.sashDragState!.current = current;
 
 		const delta = current - start;
 		const adjustedDelta = sizes[index] + delta < column.minWidth! ? column.minWidth! - sizes[index] : delta;

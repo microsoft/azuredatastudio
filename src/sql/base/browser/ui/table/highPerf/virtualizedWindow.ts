@@ -10,7 +10,7 @@ class DataWindow<T> {
 	private _length: number = 0;
 	private _offsetFromDataSource: number = -1;
 
-	private dataReady: CancelablePromise<void>;
+	private dataReady?: CancelablePromise<void>;
 
 	constructor(
 		private loadFunction: (offset: number, count: number) => Promise<T[]>
@@ -18,7 +18,9 @@ class DataWindow<T> {
 
 	dispose() {
 		this._data = undefined;
-		this.dataReady.cancel();
+		if (this.dataReady) {
+			this.dataReady.cancel();
+		}
 	}
 
 	get start(): number {
@@ -38,7 +40,7 @@ class DataWindow<T> {
 	}
 
 	public getItem(index: number): Promise<T> {
-		return this.dataReady.then(() => this._data![index - this._offsetFromDataSource]);
+		return this.dataReady!.then(() => this._data![index - this._offsetFromDataSource]);
 	}
 
 	public positionWindow(offset: number, length: number): void {
