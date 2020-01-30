@@ -3,8 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/// <reference path='../../../../src/vs/vscode.d.ts'/>
-/// <reference path='../../../../src/sql/azdata.d.ts'/>
-/// <reference path='../../../../src/sql/azdata.proposed.d.ts'/>
-/// <reference path='../../../azurecore/src/azureResource/azure-resource.d.ts' />
-/// <reference types='@types/node'/>
+import * as nls from 'vscode-nls';
+
+const localize = nls.loadMessageBundle();
+
+export const account = localize('azure.account', "Azure Account");
+export const subscription = localize('azure.account.subscription', "Subscription");
+export const resourceGroup = localize('azure.account.resourceGroup', "Resource Group");
