@@ -70,7 +70,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	@HostListener('document:keydown.meta.a', ['$event'])
 	onkeydown(e) {
-		// use preventDefault() to avoid invoking the editors select all
+		// use preventDefault() to avoid invoking the editor's select all
 		// select the active .
 		e.preventDefault();
 		document.execCommand('selectAll');
