@@ -123,7 +123,9 @@ steps:
   - script: |
       set -e
       mkdir -p .build/darwin/archive
-      pushd ../azuredatastudio-darwin && zip -r -X -y $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip * && popd
+      pushd ../azuredatastudio-darwin
+      ditto -c -k --keepParent *.app $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
+      popd
     displayName: 'Archive'
 
   - task: PublishPipelineArtifact@0
