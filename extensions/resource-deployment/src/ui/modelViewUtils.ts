@@ -6,25 +6,28 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DialogInfoBase, FieldType, FieldInfo, SectionInfo, LabelPosition, FontWeight, FontStyle } from '../interfaces';
+import { DialogInfoBase, FieldType, FieldInfo, SectionInfo, LabelPosition, FontWeight, FontStyle, AzureAccountFieldInfo } from '../interfaces';
 import { Model } from './model';
 import { getDateTimeString } from '../utils';
+import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
+import * as loc from '../localizedConstants';
 
 const localize = nls.loadMessageBundle();
 
 export type Validator = () => { valid: boolean, message: string };
-export type InputComponents = { [s: string]: azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent; };
+export type InputValueTransformer = (inputValue: string) => string;
+export type InputComponents = { [s: string]: { component: azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent; inputValueTransformer?: InputValueTransformer } };
 
 export function getInputBoxComponent(name: string, inputComponents: InputComponents): azdata.InputBoxComponent {
-	return <azdata.InputBoxComponent>inputComponents[name];
+	return <azdata.InputBoxComponent>inputComponents[name].component;
 }
 
 export function getDropdownComponent(name: string, inputComponents: InputComponents): azdata.DropDownComponent {
-	return <azdata.DropDownComponent>inputComponents[name];
+	return <azdata.DropDownComponent>inputComponents[name].component;
 }
 
 export function getCheckboxComponent(name: string, inputComponents: InputComponents): azdata.CheckBoxComponent {
-	return <azdata.CheckBoxComponent>inputComponents[name];
+	return <azdata.CheckBoxComponent>inputComponents[name].component;
 }
 
 export const DefaultInputComponentWidth = '400px';
@@ -52,11 +55,15 @@ interface FieldContext extends CreateContext {
 	view: azdata.ModelView;
 }
 
+interface AzureAccountFieldContext extends FieldContext {
+	fieldInfo: AzureAccountFieldInfo;
+}
+
 interface CreateContext {
 	container: azdata.window.Dialog | azdata.window.Wizard;
 	onNewValidatorCreated: (validator: Validator) => void;
 	onNewDisposableCreated: (disposable: vscode.Disposable) => void;
-	onNewInputComponentCreated: (name: string, component: azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent) => void;
+	onNewInputComponentCreated: (name: string, component: azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent, inputValueTransformer?: InputValueTransformer) => void;
 }
 
 export function createTextInput(view: azdata.ModelView, inputInfo: { defaultValue?: string, ariaLabel: string, required?: boolean, placeHolder?: string, width?: string }): azdata.InputBoxComponent {
@@ -260,6 +267,9 @@ function processField(context: FieldContext): void {
 		case FieldType.Checkbox:
 			processCheckboxField(context);
 			break;
+		case FieldType.AzureAccount:
+			processAzureAccountField(context);
+			break;
 		default:
 			throw new Error(localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", context.fieldInfo.type));
 	}
@@ -411,6 +421,119 @@ function processCheckboxField(context: FieldContext): void {
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, checkbox);
 }
 
+// Values used for the Azure Account field inputs
+let selectedAccount: azdata.Account | undefined;
+let subscriptionDropdown: azdata.DropDownComponent;
+let resourceGroupDropdown: azdata.DropDownComponent;
+const accountValueToAccountMap = new Map<string, azdata.Account>();
+const subscriptionValueToSubscriptionMap = new Map<string, azureResource.AzureResourceSubscription>();
+
+/**
+ * An Azure Account field consists of 3 separate dropdown fields - Account, Subscription and Resource Group
+ * @param context The context to use to create the field
+ */
+function processAzureAccountField(context: AzureAccountFieldContext): void {
+	if (subscriptionDropdown) {
+		throw new Error(localize('onlyOneAzureAccountField', "Only one Azure Account field is supported at this time"));
+	}
+	const accountDropdown = createAzureAccountDropdown(context);
+	createAzureSubscriptionDropdown(context, accountDropdown);
+	createAzureResourceGroupsDropdown(context, subscriptionDropdown);
+	azdata.accounts.getAllAccounts().then((accounts: azdata.Account[]) => {
+		accountDropdown.values = accounts.map(account => {
+			const displayName = `${account.displayInfo.displayName} (${account.displayInfo.userId})`;
+			accountValueToAccountMap.set(displayName, account);
+			return displayName;
+		});
+		selectedAccount = accounts.length > 0 ? accounts[0] : undefined;
+		handleSelectedAccountChanged();
+	}, (err: any) => console.log(`Unexpected error fetching accounts: ${err}`));
+}
+
+function createAzureAccountDropdown(context: AzureAccountFieldContext): azdata.DropDownComponent {
+	const label = createLabel(context.view, {
+		text: loc.account,
+		description: context.fieldInfo.description,
+		required: context.fieldInfo.required,
+		width: context.fieldInfo.labelWidth,
+		fontWeight: context.fieldInfo.labelFontWeight
+	});
+	const accountDropdown = createDropdown(context.view, {
+		width: context.fieldInfo.inputWidth,
+		editable: false,
+		required: context.fieldInfo.required,
+		label: loc.account
+	});
+	context.onNewInputComponentCreated('', accountDropdown);
+	addLabelInputPairToContainer(context.view, context.components, label, accountDropdown, context.fieldInfo.labelPosition);
+	return accountDropdown;
+}
+
+function createAzureSubscriptionDropdown(context: AzureAccountFieldContext, accountDropdown: azdata.DropDownComponent): void {
+	const label = createLabel(context.view, {
+		text: loc.subscription,
+		required: context.fieldInfo.required,
+		width: context.fieldInfo.labelWidth,
+		fontWeight: context.fieldInfo.labelFontWeight
+	});
+	subscriptionDropdown = createDropdown(context.view, {
+		width: context.fieldInfo.inputWidth,
+		editable: false,
+		required: context.fieldInfo.required,
+		label: loc.subscription
+	});
+	context.onNewInputComponentCreated(context.fieldInfo.subscriptionVariableName!, subscriptionDropdown, (inputValue: string) => {
+		return subscriptionValueToSubscriptionMap.get(inputValue)?.id || inputValue;
+	});
+	addLabelInputPairToContainer(context.view, context.components, label, subscriptionDropdown, context.fieldInfo.labelPosition);
+	accountDropdown.onValueChanged(selectedItem => {
+		selectedAccount = accountValueToAccountMap.get(selectedItem.selected);
+		handleSelectedAccountChanged();
+	});
+}
+
+function handleSelectedAccountChanged(): void {
+	subscriptionValueToSubscriptionMap.clear();
+	subscriptionDropdown.values = [];
+	vscode.commands.executeCommand('azure.accounts.getSubscriptions', selectedAccount).then(subscriptions => {
+		subscriptionDropdown.values = (<azureResource.AzureResourceSubscription[]>subscriptions).map(subscription => {
+			const displayName = `${subscription.name} (${subscription.id})`;
+			subscriptionValueToSubscriptionMap.set(displayName, subscription);
+			return displayName;
+		}).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()));
+		const selectedSubscription = subscriptionDropdown.values.length > 0 ? subscriptionValueToSubscriptionMap.get(subscriptionDropdown.values[0]) : undefined;
+		handleSelectedSubscriptionChanged(selectedSubscription);
+	}, err => { console.log(`Unexpected error fetching subscriptions for account ${selectedAccount?.displayInfo.displayName} (${selectedAccount?.key.accountId}): ${err}`); });
+}
+
+function createAzureResourceGroupsDropdown(context: AzureAccountFieldContext, subscriptionDropdown: azdata.DropDownComponent): void {
+	const label = createLabel(context.view, {
+		text: loc.resourceGroup,
+		required: context.fieldInfo.required,
+		width: context.fieldInfo.labelWidth,
+		fontWeight: context.fieldInfo.labelFontWeight
+	});
+	resourceGroupDropdown = createDropdown(context.view, {
+		width: context.fieldInfo.inputWidth,
+		editable: false,
+		required: context.fieldInfo.required,
+		label: loc.resourceGroup
+	});
+	context.onNewInputComponentCreated(context.fieldInfo.resourceGroupVariableName!, resourceGroupDropdown);
+	addLabelInputPairToContainer(context.view, context.components, label, resourceGroupDropdown, context.fieldInfo.labelPosition);
+	subscriptionDropdown.onValueChanged(selectedItem => {
+		const selectedSubscription = subscriptionValueToSubscriptionMap.get(selectedItem.selected);
+		handleSelectedSubscriptionChanged(selectedSubscription);
+	});
+}
+
+function handleSelectedSubscriptionChanged(selectedSubscription: azureResource.AzureResourceSubscription | undefined): void {
+	resourceGroupDropdown.values = [];
+	vscode.commands.executeCommand('azure.accounts.getResourceGroups', selectedAccount, selectedSubscription).then(resourceGroups => {
+		resourceGroupDropdown.values = (<azureResource.AzureResourceSubscription[]>resourceGroups).map(resourceGroup => resourceGroup.name).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()));
+	}, err => { console.log(`Unexpected error fetching resource groups for subscription ${selectedSubscription?.name} (${selectedSubscription?.id}): ${err}`); });
+}
+
 export function isValidSQLPassword(password: string, userName: string = 'sa'): boolean {
 	// Validate SQL Server password
 	const containsUserName = password && userName !== undefined && password.toUpperCase().includes(userName.toUpperCase());
@@ -441,7 +564,7 @@ export function getPasswordMismatchMessage(fieldName: string): string {
 export function setModelValues(inputComponents: InputComponents, model: Model): void {
 	Object.keys(inputComponents).forEach(key => {
 		let value;
-		const input = inputComponents[key];
+		const input = inputComponents[key].component;
 		if ('checked' in input) { // CheckBoxComponent
 			value = input.checked ? 'true' : 'false';
 		} else if ('value' in input) { // InputBoxComponent or DropDownComponent
@@ -455,6 +578,10 @@ export function setModelValues(inputComponents: InputComponents, model: Model): 
 			throw new Error(`Unknown input type with ID ${input.id}`);
 		}
 
+		const inputValueTransformer = inputComponents[key].inputValueTransformer;
+		if (inputValueTransformer) {
+			value = inputValueTransformer(value || '');
+		}
 		model.setPropertyValue(key, value);
 	});
 }

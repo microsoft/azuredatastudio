@@ -172,6 +172,11 @@ export interface FieldInfo {
 	editable?: boolean; // for editable dropdown
 }
 
+export interface AzureAccountFieldInfo extends FieldInfo {
+	subscriptionVariableName?: string;
+	resourceGroupVariableName?: string;
+}
+
 export const enum LabelPosition {
 	Top = 'top',
 	Left = 'left'
@@ -195,7 +200,8 @@ export enum FieldType {
 	Password = 'password',
 	Options = 'options',
 	ReadonlyText = 'readonly_text',
-	Checkbox = 'checkbox'
+	Checkbox = 'checkbox',
+	AzureAccount = 'azure_account'
 }
 
 export interface NotebookInfo {
