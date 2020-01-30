@@ -68,6 +68,14 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._model.updateActiveCell(undefined);
 	}
 
+	@HostListener('document:keydown.meta.a', ['$event'])
+	onkeydown(e) {
+		// use preventDefault() to avoid invoking the editor's select all
+		// select the active .
+		e.preventDefault();
+		document.execCommand('selectAll');
+	}
+
 	private _content: string | string[];
 	private _lastTrustedMode: boolean;
 	private isEditMode: boolean;
