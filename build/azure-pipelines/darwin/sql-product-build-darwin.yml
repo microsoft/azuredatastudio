@@ -144,7 +144,9 @@ steps:
           {
             "KeyCode": "CP-401337-Apple",
             "OperationCode": "MacAppDeveloperSign",
-            "Parameters": { },
+            "Parameters": {
+              "Hardening": "--options=runtime"
+            },
             "ToolName": "sign",
             "ToolVersion": "1.0"
           }
