@@ -134,7 +134,7 @@ steps:
       artifactName: darwin-selfsigned
       targetPath: $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
 
-  - task: EsrpCodeSigning@1
+  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning'
     inputs:
       ConnectedServiceName: 'Code Signing'
@@ -144,13 +144,13 @@ steps:
       inlineOperation: |
         [
           {
-            "KeyCode": "CP-401337-Apple",
-            "OperationCode": "MacAppDeveloperSign",
-            "Parameters": {
-              "Hardening": "--options=runtime"
+            "keyCode": "CP-401337-Apple",
+            "operationCode": "MacAppDeveloperSign",
+            "parameters": {
+              "Hardening": "Enable"
             },
-            "ToolName": "sign",
-            "ToolVersion": "1.0"
+            "toolName": "sign",
+            "toolVersion": "1.0"
           }
         ]
       SessionTimeout: 90
