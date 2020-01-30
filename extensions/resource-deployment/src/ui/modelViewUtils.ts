@@ -421,9 +421,6 @@ function processCheckboxField(context: FieldContext): void {
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, checkbox);
 }
 
-// Values used for the Azure Account field inputs
-
-
 /**
  * An Azure Account field consists of 3 separate dropdown fields - Account, Subscription and Resource Group
  * @param context The context to use to create the field
@@ -439,12 +436,12 @@ function processAzureAccountField(context: AzureAccountFieldContext): void {
 		handleSelectedAccountChanged(selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown);
 	});
 	azdata.accounts.getAllAccounts().then((accounts: azdata.Account[]) => {
-		accountDropdown.values = accounts.map(account => {
+		accountDropdown.values = [localize('localDeploy', "Local Deploy")].concat(accounts.map(account => {
 			const displayName = `${account.displayInfo.displayName} (${account.displayInfo.userId})`;
 			accountValueToAccountMap.set(displayName, account);
 			return displayName;
-		});
-		const selectedAccount = accounts.length > 0 ? accounts[0] : undefined;
+		}));
+		const selectedAccount = accountDropdown.value ? accountValueToAccountMap.get(accountDropdown.value.toString()) : undefined;
 		handleSelectedAccountChanged(selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown);
 	}, (err: any) => console.log(`Unexpected error fetching accounts: ${err}`));
 }
