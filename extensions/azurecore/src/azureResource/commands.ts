@@ -23,7 +23,10 @@ import { AzureResourceGroupService } from './providers/resourceGroup/resourceGro
 export function registerAzureResourceCommands(appContext: AppContext, tree: AzureResourceTreeProvider): void {
 
 	// Resource Management commands
-	appContext.apiWrapper.registerCommand('azure.accounts.getSubscriptions', async (account: azdata.Account) => {
+	appContext.apiWrapper.registerCommand('azure.accounts.getSubscriptions', async (account?: azdata.Account): Promise<azureResource.AzureResourceSubscription[]> => {
+		if (!account) {
+			return [];
+		}
 		const subscriptions = <azureResource.AzureResourceSubscription[]>[];
 		try {
 			const subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
@@ -41,7 +44,10 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		return subscriptions;
 	});
 
-	appContext.apiWrapper.registerCommand('azure.accounts.getResourceGroups', async (account: azdata.Account, subscription: azureResource.AzureResourceSubscription) => {
+	appContext.apiWrapper.registerCommand('azure.accounts.getResourceGroups', async (account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription): Promise<azureResource.AzureResourceResourceGroup[]> => {
+		if (!account || !subscription) {
+			return [];
+		}
 		try {
 			const service = new AzureResourceGroupService();
 			const resourceGroups: azureResource.AzureResourceResourceGroup[] = [];
