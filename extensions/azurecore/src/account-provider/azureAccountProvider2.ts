@@ -41,7 +41,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private isInitialized: boolean = false;
 
 
-	constructor(private metadata: AzureAccountProviderMetadata, private _tokenCache: TokenCache) {
+	constructor(private metadata: AzureAccountProviderMetadata, private _tokenCache: TokenCache, private _context: vscode.ExtensionContext) {
 		this.commonAuthorityUrl = url.resolve(this.metadata.settings.host, AzureAccountProvider.AadCommonTenant);
 	}
 
@@ -189,7 +189,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		nonce: string,
 		authUrl: string) {
 
-		const mediaPath = path.join(__dirname, '..', '..', 'media');
+		const mediaPath = path.join(this._context.extensionPath, 'media');
 
 		// Utility function
 		const sendFile = async (res: http.ServerResponse, filePath: string, contentType: string): Promise<void> => {
