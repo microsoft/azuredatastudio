@@ -116,7 +116,7 @@ steps:
       set -e
       pushd ../azuredatastudio-darwin
       ls
-      codesign --force --options runtime --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/darwin/entitlements.xml -s LPV3BJJYXS *.app
+      codesign --deep --force --options runtime --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/darwin/entitlements.xml -s LPV3BJJYXS *.app
       popd
     displayName: 'Manual codesign'
 
