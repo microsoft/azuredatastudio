@@ -11,7 +11,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 
 const languageRegistry = Registry.as<ILanguageAssociationRegistry>(ILanguageAssociationExtensions.LanguageAssociations);
 
-export function doHandleUpgrade(editor: EditorInput): EditorInput {
+export function doHandleUpgrade(editor?: EditorInput): EditorInput | undefined {
 	if (editor instanceof UntitledTextEditorInput || editor instanceof FileEditorInput) {
 		let language: string;
 		if (editor instanceof UntitledTextEditorInput) {

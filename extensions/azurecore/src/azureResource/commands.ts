@@ -18,8 +18,53 @@ import { AzureResourceTreeProvider } from './tree/treeProvider';
 import { AzureResourceAccountTreeNode } from './tree/accountTreeNode';
 import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService } from '../azureResource/interfaces';
 import { AzureResourceServiceNames } from './constants';
+import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
 
 export function registerAzureResourceCommands(appContext: AppContext, tree: AzureResourceTreeProvider): void {
+
+	// Resource Management commands
+	appContext.apiWrapper.registerCommand('azure.accounts.getSubscriptions', async (account?: azdata.Account): Promise<azureResource.AzureResourceSubscription[]> => {
+		if (!account) {
+			return [];
+		}
+		const subscriptions = <azureResource.AzureResourceSubscription[]>[];
+		try {
+			const subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
+			const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
+
+			for (const tenant of account.properties.tenants) {
+				const token = tokens[tenant.id].token;
+				const tokenType = tokens[tenant.id].tokenType;
+
+				subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType)));
+			}
+		} catch (error) {
+			throw new Error(localize('azure.accounts.getSubscriptions.error', "Unexpected error occurred getting the subscriptions for account {0}. {1}", account.key.accountId, error));
+		}
+		return subscriptions;
+	});
+
+	appContext.apiWrapper.registerCommand('azure.accounts.getResourceGroups', async (account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription): Promise<azureResource.AzureResourceResourceGroup[]> => {
+		if (!account || !subscription) {
+			return [];
+		}
+		try {
+			const service = new AzureResourceGroupService();
+			const resourceGroups: azureResource.AzureResourceResourceGroup[] = [];
+			for (const tenant of account.properties.tenants) {
+				const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
+				const token = tokens[tenant.id].token;
+				const tokenType = tokens[tenant.id].tokenType;
+
+				resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType)));
+			}
+			return resourceGroups;
+		} catch (error) {
+			throw new Error(localize('azure.accounts.getResourceGroups.error', "Unexpected error occurred getting the subscriptions for subscription {0} ({1}). {2}", subscription.name, subscription.id, error));
+		}
+	});
+
+	// Resource Tree commands
 	appContext.apiWrapper.registerCommand('azure.resource.selectsubscriptions', async (node?: TreeNode) => {
 		if (!(node instanceof AzureResourceAccountTreeNode)) {
 			return;
