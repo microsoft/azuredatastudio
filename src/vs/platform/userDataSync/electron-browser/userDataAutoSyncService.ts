@@ -6,10 +6,10 @@
 import { IUserDataSyncService, IUserDataSyncLogService, IUserDataAuthTokenService, IUserDataSyncUtilService } from 'vs/platform/userDataSync/common/userDataSync';
 import { Event } from 'vs/base/common/event';
 import { IElectronService } from 'vs/platform/electron/node/electron';
-import { UserDataAutoSync as BaseUserDataAutoSync } from 'vs/platform/userDataSync/common/userDataAutoSync';
+import { UserDataAutoSyncService as BaseUserDataAutoSyncService } from 'vs/platform/userDataSync/common/userDataAutoSyncService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
-export class UserDataAutoSync extends BaseUserDataAutoSync {
+export class UserDataAutoSyncService extends BaseUserDataAutoSyncService {
 
 	constructor(
 		@IUserDataSyncService userDataSyncService: IUserDataSyncService,
