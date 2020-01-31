@@ -711,7 +711,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				return extHostDocumentContentProviders.registerTextDocumentContentProvider(scheme, provider);
 			},
 			registerTaskProvider: (type: string, provider: vscode.TaskProvider) => {
-				return undefined; // {{SQL CARBON EDIT}} disable task
+				throw new Error('Tasks api is not allowed in Azure Data Studio'); // {{SQL CARBON EDIT}} disable task
 			},
 			registerFileSystemProvider(scheme, provider, options) {
 				return extHostFileSystem.registerFileSystemProvider(scheme, provider, options);
@@ -792,76 +792,79 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 		// namespace: debug
 		const debug: typeof vscode.debug = {
 			get activeDebugSession() {
+				throw new Error('Debug api is not allowed in Azure Data Studio');
 				return undefined;
 			},
 			get activeDebugConsole() {
-				return undefined;
+				throw new Error('Debug api is not allowed in Azure Data Studio');
+				return undefined!;
 			},
 			get breakpoints() {
+				throw new Error('Debug api is not allowed in Azure Data Studio');
 				return [];
 			},
 			onDidStartDebugSession(listener, thisArg?, disposables?) {
-				return undefined;
+				throw new Error('Debug api is not allowed in Azure Data Studio');
 			},
 			onDidTerminateDebugSession(listener, thisArg?, disposables?) {
-				return undefined;
+				throw new Error('Debug api is not allowed in Azure Data Studio');
 			},
 			onDidChangeActiveDebugSession(listener, thisArg?, disposables?) {
-				return undefined;
+				throw new Error('Debug api is not allowed in Azure Data Studio');
 			},
 			onDidReceiveDebugSessionCustomEvent(listener, thisArg?, disposables?) {
-				return undefined;
+				throw new Error('Debug api is not allowed in Azure Data Studio');
 			},
 			onDidChangeBreakpoints(listener, thisArgs?, disposables?) {
-				return undefined;
+				throw new Error('Debug api is not allowed in Azure Data Studio');
 			},
 			registerDebugConfigurationProvider(debugType: string, provider: vscode.DebugConfigurationProvider) {
-				return undefined;
+				throw new Error('Debug api is not allowed in Azure Data Studio');
 			},
 			registerDebugAdapterDescriptorFactory(debugType: string, factory: vscode.DebugAdapterDescriptorFactory) {
-				return undefined;
+				throw new Error('Debug api is not allowed in Azure Data Studio');
 			},
 			registerDebugAdapterTrackerFactory(debugType: string, factory: vscode.DebugAdapterTrackerFactory) {
-				return undefined;
+				throw new Error('Debug api is not allowed in Azure Data Studio');
 			},
 			startDebugging(folder: vscode.WorkspaceFolder | undefined, nameOrConfig: string | vscode.DebugConfiguration, parentSessionOrOptions?: vscode.DebugSession | vscode.DebugSessionOptions) {
-				return undefined;
+				throw new Error('Debug api is not allowed in Azure Data Studio');
 			},
 			addBreakpoints(breakpoints: vscode.Breakpoint[]) {
-				return undefined;
+				throw new Error('Debug api is not allowed in Azure Data Studio');
 			},
 			removeBreakpoints(breakpoints: vscode.Breakpoint[]) {
-				return undefined;
+				throw new Error('Debug api is not allowed in Azure Data Studio');
 			},
 			asDebugSourceUri(source: vscode.DebugProtocolSource, session?: vscode.DebugSession): vscode.Uri {
-				return undefined;
+				throw new Error('Debug api is not allowed in Azure Data Studio');
 			}
 		};
 
 		const tasks: typeof vscode.tasks = { // {{SQL CARBON EDIT}} disable tasks api
 			registerTaskProvider: (type: string, provider: vscode.TaskProvider) => {
-				return undefined;
+				throw new Error('Tasks api is not allowed in Azure Data Studio');
 			},
 			fetchTasks: (filter?: vscode.TaskFilter): Thenable<vscode.Task[]> => {
-				return undefined;
+				throw new Error('Tasks api is not allowed in Azure Data Studio');
 			},
 			executeTask: (task: vscode.Task): Thenable<vscode.TaskExecution> => {
-				return undefined;
+				throw new Error('Tasks api is not allowed in Azure Data Studio');
 			},
 			get taskExecutions(): vscode.TaskExecution[] {
-				return undefined;
+				throw new Error('Tasks api is not allowed in Azure Data Studio');
 			},
 			onDidStartTask: (listeners, thisArgs?, disposables?) => {
-				return undefined;
+				throw new Error('Tasks api is not allowed in Azure Data Studio');
 			},
 			onDidEndTask: (listeners, thisArgs?, disposables?) => {
-				return undefined;
+				throw new Error('Tasks api is not allowed in Azure Data Studio');
 			},
 			onDidStartTaskProcess: (listeners, thisArgs?, disposables?) => {
-				return undefined;
+				throw new Error('Tasks api is not allowed in Azure Data Studio');
 			},
 			onDidEndTaskProcess: (listeners, thisArgs?, disposables?) => {
-				return undefined;
+				throw new Error('Tasks api is not allowed in Azure Data Studio');
 			}
 		};
 
