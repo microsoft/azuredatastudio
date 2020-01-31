@@ -460,7 +460,7 @@ function createAzureAccountDropdown(context: AzureAccountFieldContext): azdata.D
 		required: context.fieldInfo.required,
 		label: loc.account
 	});
-	context.onNewInputComponentCreated('', accountDropdown);
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, accountDropdown);
 	addLabelInputPairToContainer(context.view, context.components, label, accountDropdown, context.fieldInfo.labelPosition);
 	return accountDropdown;
 }
