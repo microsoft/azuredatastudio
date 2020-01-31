@@ -188,14 +188,14 @@ steps:
           }
         ]
       SessionTimeout: 120
-    condition: and(succeeded(), eq(variables['signed'], true))
+    condition: and(succeeded(), eq(variables['signednot'], true))
 
   - task: PublishPipelineArtifact@0
     displayName: 'Publish Notarized'
     inputs:
       artifactName: darwin-notarized
       targetPath: $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
-    condition: and(succeeded(), eq(variables['signed'], true))
+    condition: and(succeeded(), eq(variables['signednot'], true))
 
   - script: |
       set -e
