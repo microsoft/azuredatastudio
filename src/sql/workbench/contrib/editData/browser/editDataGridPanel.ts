@@ -244,6 +244,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 			else {
 				console.log('dataSet is undefined');
+				return undefined;
 			}
 		};
 	}
