@@ -214,32 +214,37 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		// Setup a function for generating a promise to lookup result subsets
 		this.loadDataFunction = (offset: number, count: number): Promise<{}[]> => {
-			return self.dataService.getEditRows(offset, count).then(result => {
-				let gridData = result.subset.map(r => {
-					let dataWithSchema = {};
-					// skip the first column since its a number column
-					for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
-						dataWithSchema[this.dataSet.columnDefinitions[i].field] = {
-							displayValue: r.cells[i - 1].displayValue,
-							ariaLabel: escape(r.cells[i - 1].displayValue),
-							isNull: r.cells[i - 1].isNull
-						};
-					}
-					return dataWithSchema;
-				});
-
-				// should add null row?
-				if (offset + count > this.dataSet.totalRows - 1) {
-					gridData.push(this.dataSet.columnDefinitions.reduce((p, c) => {
-						if (c.id !== 'rowNumber') {
-							p[c.field] = { displayValue: 'NULL', ariaLabel: 'NULL', isNull: true };
+			if (this.dataSet) {
+				return self.dataService.getEditRows(offset, count).then(result => {
+					let gridData = result.subset.map(r => {
+						let dataWithSchema = {};
+						// skip the first column since its a number column
+						for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
+							dataWithSchema[this.dataSet.columnDefinitions[i].field] = {
+								displayValue: r.cells[i - 1].displayValue,
+								ariaLabel: escape(r.cells[i - 1].displayValue),
+								isNull: r.cells[i - 1].isNull
+							};
 						}
-						return p;
-					}, {}));
-				}
+						return dataWithSchema;
+					});
 
-				return gridData;
-			});
+					// should add null row?
+					if (offset + count > this.dataSet.totalRows - 1) {
+						gridData.push(this.dataSet.columnDefinitions.reduce((p, c) => {
+							if (c.id !== 'rowNumber') {
+								p[c.field] = { displayValue: 'NULL', ariaLabel: 'NULL', isNull: true };
+							}
+							return p;
+						}, {}));
+					}
+
+					return gridData;
+				});
+			}
+			else {
+				console.log('dataSet is undefined');
+			}
 		};
 	}
 
@@ -425,15 +430,20 @@ export class EditDataGridPanel extends GridParentComponent {
 			clearTimeout(self.refreshGridTimeoutHandle);
 			this.refreshGridTimeoutHandle = setTimeout(() => {
 
-				if (self.dataSet && self.placeHolderDataSets[0].resized) {
-					self.placeHolderDataSets[0].dataRows = self.dataSet.dataRows;
-					self.placeHolderDataSets[0].resized.fire();
+				if (self.placeHolderDataSets) {
+					if (self.dataSet && self.placeHolderDataSets[0].resized) {
+						self.placeHolderDataSets[0].dataRows = self.dataSet.dataRows;
+						self.placeHolderDataSets[0].resized.fire();
+					}
+
+
+					if (self.oldDataRows !== self.placeHolderDataSets[0].dataRows) {
+						self.detectChange();
+						self.oldDataRows = self.placeHolderDataSets[0].dataRows;
+					}
 				}
-
-
-				if (self.oldDataRows !== self.placeHolderDataSets[0].dataRows) {
-					self.detectChange();
-					self.oldDataRows = self.placeHolderDataSets[0].dataRows;
+				else {
+					console.log('placeholderDatasets is null, don\'t do anything');
 				}
 
 				if (self.firstRender) {
