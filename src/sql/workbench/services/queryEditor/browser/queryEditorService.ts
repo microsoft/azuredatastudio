@@ -89,6 +89,8 @@ export class QueryEditorService implements IQueryEditorService {
 		// Create a sql document pane with accoutrements
 		const fileInput = this._untitledEditorService.create({ associatedResource: docUri, mode: 'sql' });
 		const m = await fileInput.resolve();
+		//when associatedResource editor is created it is dirty, this must be set to false to be able to detect changes to the editor.
+		m.setDirty(false);
 		// Create an EditDataInput for editing
 		const resultsInput: EditDataResultsInput = this._instantiationService.createInstance(EditDataResultsInput, docUri.toString());
 		let editDataInput: EditDataInput = this._instantiationService.createInstance(EditDataInput, docUri, schemaName, tableName, fileInput, sqlContent, resultsInput);
