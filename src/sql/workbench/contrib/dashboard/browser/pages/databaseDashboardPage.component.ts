@@ -23,6 +23,7 @@ import { BackupToolbarAction } from 'sql/workbench/contrib/dashboard/browser/cor
 import { ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { showBackup } from 'sql/workbench/contrib/backup/browser/backupActions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
@@ -52,13 +53,16 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 		@Inject(IConfigurationService) configurationService: IConfigurationService,
 		@Inject(ILogService) logService: ILogService,
 		@Inject(IInstantiationService) _instantiationService: IInstantiationService,
-		@Inject(ICommandService) commandService: ICommandService
+		@Inject(ICommandService) commandService: ICommandService,
+		@Inject(IContextKeyService) contextKeyService: IContextKeyService
 	) {
-		super(dashboardService, el, _cd, notificationService, angularEventingService, configurationService, logService, _instantiationService, commandService);
+		super(dashboardService, el, _cd, notificationService, angularEventingService, configurationService, logService, _instantiationService, commandService, contextKeyService);
 		this._register(dashboardService.onUpdatePage(() => {
 			this.refresh(true);
 			this._cd.detectChanges();
 		}));
+
+		this.showTaskbar = false;
 	}
 
 	ngOnInit() {

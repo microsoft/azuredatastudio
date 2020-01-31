@@ -74,6 +74,27 @@ export class RefreshWidgetAction extends Action {
 	}
 }
 
+export class ToolbarAction extends Action {
+	constructor(
+		id: string,
+		label,
+		cssClass: string,
+		private runFn: (id: string) => void,
+		private context: any // this
+	) {
+		super(id, label, cssClass);
+	}
+
+	run(): Promise<boolean> {
+		try {
+			this.runFn.apply(this.context, [this.id]);
+			return Promise.resolve(true);
+		} catch (e) {
+			return Promise.resolve(false);
+		}
+	}
+}
+
 export class RestoreToolbarAction extends Action {
 	private static readonly ID = 'restore';
 	private static readonly LABEL = nls.localize('restore', "Restore");

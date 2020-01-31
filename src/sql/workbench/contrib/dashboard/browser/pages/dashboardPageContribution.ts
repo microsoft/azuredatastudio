@@ -143,5 +143,23 @@ export function generateDashboardTabSchema(type?: 'database' | 'server'): IJSONS
 	};
 }
 
+export function generateDashboardToolbarItemSchema(type?: 'database' | 'server', extension?: boolean): IJSONSchema {
+	return {
+		type: 'object',
+		properties: {
+			name: {
+				type: 'string'
+			},
+			icon: {
+				type: 'string'
+			},
+			when: {
+				description: localize('azdata.extension.contributes.widget.when', "Condition which must be true to show this item"),
+				type: 'string'
+			}
+		}
+	};
+}
+
 export const DASHBOARD_CONFIG_ID = 'Dashboard';
 export const DASHBOARD_TABS_KEY_PROPERTY = 'tabId';

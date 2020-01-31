@@ -21,6 +21,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 export class ServerDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
@@ -50,9 +51,10 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 		@Inject(IConfigurationService) configurationService: IConfigurationService,
 		@Inject(ILogService) logService: ILogService,
 		@Inject(IInstantiationService) _instantiationService: IInstantiationService,
-		@Inject(ICommandService) commandService: ICommandService
+		@Inject(ICommandService) commandService: ICommandService,
+		@Inject(IContextKeyService) contextKeyService: IContextKeyService
 	) {
-		super(dashboardService, el, _cd, notificationService, angularEventingService, configurationService, logService, _instantiationService, commandService);
+		super(dashboardService, el, _cd, notificationService, angularEventingService, configurationService, logService, _instantiationService, commandService, contextKeyService);
 
 		// special-case handling for MSSQL data provider
 		const connInfo = this.dashboardService.connectionManagementService.connectionInfo;
@@ -62,6 +64,8 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 		} else {
 			this._letDashboardPromise = Promise.resolve();
 		}
+
+		this.showTaskbar = true;
 	}
 
 	ngOnInit() {

@@ -4,13 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./dashboardPage';
+import 'vs/css!sql/media/icons/common-icons';
 import 'sql/workbench/contrib/dashboard/browser/core/dashboardPanelStyles';
 
 import { Component, Inject, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
 
 import { DashboardServiceInterface } from 'sql/workbench/contrib/dashboard/browser/services/dashboardServiceInterface.service';
 import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
-import { WidgetConfig, TabConfig, TabSettingConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
+import { WidgetConfig, TabConfig, TabSettingConfig, DashboardToolbarItemConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { IPropertiesConfig } from 'sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution';
 import { PanelComponent, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
 import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
@@ -33,18 +34,18 @@ import { Action } from 'vs/base/common/actions';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { ILogService } from 'vs/platform/log/common/log';
 import { firstIndex, find } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
-import { RefreshWidgetAction, EditDashboardAction, RestoreToolbarAction, ManageExtensionsToolbarAction, NewQueryAction, NewNotebookToolbarAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
+import { RefreshWidgetAction, EditDashboardAction, RestoreToolbarAction, ManageExtensionsToolbarAction, NewQueryAction, NewNotebookToolbarAction, ToolbarAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as DOM from 'vs/base/browser/dom';
-import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { showRestore } from 'sql/workbench/contrib/restore/browser/restoreActions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ServerInfo } from 'azdata';
+import { TaskRegistry } from 'sql/platform/tasks/browser/tasksRegistry';
+import { MenuRegistry, ICommandAction } from 'vs/platform/actions/common/actions';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 const homeTabGroupId = 'home';
@@ -65,7 +66,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 	@ViewChildren(TabChild) private _tabs: QueryList<DashboardTab>;
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
-	@ViewChild('taskBar', { read: ElementRef }) private taskContainer: ElementRef;
+	@ViewChild('toolbar', { read: ElementRef }) private taskContainer: ElementRef;
 	protected taskbar: Taskbar;
 
 	// actions
@@ -75,10 +76,11 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	protected _manageExtensionsAction: ManageExtensionsToolbarAction;
 	protected _newQueryAction: NewQueryAction;
 	protected _newNotebookAction: NewNotebookToolbarAction;
+	private _tasks: Array<ICommandAction> = [];
 
 	private _editEnabled = new Emitter<boolean>();
 	public readonly editEnabled: Event<boolean> = this._editEnabled.event;
-
+	public showTaskbar = false;
 	// tslint:disable:no-unused-variable
 	private readonly homeTabTitle: string = nls.localize('home', "Home");
 
@@ -120,7 +122,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		@Inject(IConfigurationService) private configurationService: IConfigurationService,
 		@Inject(ILogService) private logService: ILogService,
 		@Inject(IInstantiationService) protected _instantiationService: IInstantiationService,
-		@Inject(ICommandService) private commandService: ICommandService
+		@Inject(ICommandService) private commandService: ICommandService,
+		@Inject(IContextKeyService) contextKeyService: IContextKeyService
 	) {
 		super();
 	}
@@ -151,26 +154,72 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			};
 			this.createTabs(tempWidgets);
 		}
-
 		this.createTaskbar(this.taskContainer.nativeElement);
 	}
 
 	protected createTaskbar(parentElement: HTMLElement): void {
+		let toolbarTasks = this.dashboardService.getSettings<Array<DashboardToolbarItemConfig>>([this.context, 'toolbar'].join('.'));
+		let tasks = TaskRegistry.getTasks();
+
+		if (types.isArray(toolbarTasks) && toolbarTasks.length > 0) {
+			tasks = toolbarTasks.map(i => {
+				if (types.isString(i)) {
+					if (tasks.some(x => x === i)) {
+						return i;
+					}
+				} else {
+					if (tasks.some(x => x === i.name) && this.contextKeyService.contextMatchesRules(ContextKeyExpr.deserialize(i.when))) {
+						return i.name;
+					}
+				}
+				return undefined;
+			}).filter(i => !!i);
+		}
+
+
+		this._tasks = tasks.map(i => MenuRegistry.getCommand(i)).filter(v => !!v);
+
+		let toolbarActions = [];
+		this._tasks.forEach(t => {
+		});
+		this._tasks.forEach(a => {
+			let iconClassName = TaskRegistry.getOrCreateTaskIconClassName(a);
+			console.error('iconClassName is ' + iconClassName);
+			toolbarActions.push(new ToolbarAction(a.id, a.title, iconClassName, this.runAction, this));
+		});
+
 		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
 		this.taskbar = this._register(new Taskbar(taskbarContainer));
-		this._restoreAction = new RestoreToolbarAction(this.restore, this);
-		this._newQueryAction = new NewQueryAction(this.newQuery, this);
-		this._newNotebookAction = new NewNotebookToolbarAction(this.newNotebook, this);
+		// this._restoreAction = new RestoreToolbarAction(this.restore, this);
+		// this._newQueryAction = new NewQueryAction(this.newQuery, this);
+		// this._newNotebookAction = new NewNotebookToolbarAction(this.newNotebook, this);
 		this._editAction = new EditDashboardAction(this.enableEdit, this);
 		this._refreshAction = new RefreshWidgetAction(this.refresh, this);
-		this._manageExtensionsAction = new ManageExtensionsToolbarAction(this.manageExtensions, this);
-		this.setTaskbarContent();
+		// this._manageExtensionsAction = new ManageExtensionsToolbarAction(this.manageExtensions, this);
+		// this.setTaskbarContent();
+
+		let separator: HTMLElement = Taskbar.createTaskbarSeparator();
+
+		// Set the content in the order we desire
+		let content: ITaskbarContent[] = [];
+		toolbarActions.forEach(a => {
+			content.push({ action: a });
+		});
+
+		content.push({ element: separator },
+			{ action: this._refreshAction },
+			{ action: this._editAction });
+
+		this.taskbar.setContent(content);
+	}
+
+	public runAction(id: string): Promise<void> {
+		return this.commandService.executeCommand(id, this.connectionManagementService.connectionInfo.connectionProfile);
 	}
 
 	protected setTaskbarContent(): void {
 		// Create HTML Elements for the taskbar
 		let separator: HTMLElement = Taskbar.createTaskbarSeparator();
-		separator.style.margin = '0px 15px 0px 0px';
 
 		// Set the content in the order we desire
 		let content: ITaskbarContent[] = [
@@ -178,21 +227,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			{ action: this._newNotebookAction },
 			{ element: separator },
 			{ action: this._refreshAction },
-			{ action: this._editAction },
-			{ action: this._manageExtensionsAction }
+			{ action: this._editAction }
 		];
 
-		if (!this.serverInfo.isCloud && this.serverInfo.engineEditionId !== 11) {
-			this.notCloudActions().forEach(a => {
-				content.unshift(a);
-			});
-		}
-
 		this.taskbar.setContent(content);
-	}
-
-	protected notCloudActions(): ITaskbarContent[] {
-		return [{ action: this._restoreAction }];
 	}
 
 	private createTabs(homeWidgets: WidgetConfig[]) {
@@ -420,21 +458,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		}
 	}
 
-	public restore(): void {
-		this._instantiationService.invokeFunction(showRestore, this.connectionManagementService.connectionInfo.connectionProfile);
-	}
-
-	public newQuery(): void {
-		this._instantiationService.invokeFunction(openNewQuery);
-	}
-
-	public newNotebook(): Promise<void> {
-		return this.commandService.executeCommand('mssqlCluster.task.newNotebook', this.connectionManagementService.connectionInfo.connectionProfile);
-	}
-
 	public manageExtensions(): void {
 		// TODO: implement what to do here
-		console.error('clicked manage extensions');
 	}
 
 	public handleTabChange(tab: TabComponent): void {

@@ -44,8 +44,18 @@ export interface TabConfig extends IDashboardTab {
 	actions?: Array<Action>;
 	iconClass?: string;
 	type?: TabType;
+
 }
 
+export interface DashboardToolbarItemConfig {
+	id?: string;
+	name?: string;
+	icon?: string;
+	context: string;
+	provider: string | Array<string>;
+	edition: number | Array<number>;
+	when?: string;
+}
 
 export type IUserFriendlyIcon = string | { light: string; dark: string; };
 
