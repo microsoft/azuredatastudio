@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ITestInstantiationService, workbenchInstantiationService as vsworkbenchInstantiationService } from 'vs/workbench/test/workbenchTestServices';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import { TestQueryModelService } from 'sql/platform/query/test/common/testQueryModelService';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
+import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { TestObjectExplorerService } from 'sql/workbench/services/objectExplorer/test/browser/testObjectExplorerService';

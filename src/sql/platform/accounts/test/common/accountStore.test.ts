@@ -11,7 +11,7 @@ import { EventVerifierSingle } from 'sql/base/test/common/event';
 suite('Account Store Tests', () => {
 	test('AddOrUpdate - Uninitialized memento', () => {
 		// Setup: Create account store w/o initialized memento
-		let memento = {};
+		let memento: { [key: string]: azdata.Account[] } = {};
 		let as = new AccountStore(memento);
 
 		// If: I add an account to the store
@@ -32,7 +32,7 @@ suite('Account Store Tests', () => {
 
 	test('AddOrUpdate - Adds to accounts', () => {
 		// Setup: Create account store with initialized memento with accounts
-		let memento = {};
+		let memento: { [key: string]: azdata.Account[] } = {};
 		memento[AccountStore.MEMENTO_KEY] = [];
 		let as = new AccountStore(memento);
 
@@ -99,7 +99,7 @@ suite('Account Store Tests', () => {
 
 	test('GetAccountsByProvider - No accounts', () => {
 		// Setup: Create account store with initialized memento with accounts
-		let memento = {};
+		let memento: { [key: string]: azdata.Account[] } = {};
 		memento[AccountStore.MEMENTO_KEY] = [];
 		let as = new AccountStore(memento);
 
@@ -162,7 +162,7 @@ suite('Account Store Tests', () => {
 
 	test('GetAllAccounts - No accounts', () => {
 		// Setup: Create account store with initialized memento with accounts
-		let memento = {};
+		let memento: { [key: string]: azdata.Account[] } = {};
 		memento[AccountStore.MEMENTO_KEY] = [];
 		let as = new AccountStore(memento);
 
@@ -193,7 +193,7 @@ suite('Account Store Tests', () => {
 
 	test('Remove - Uninitialized menento', () => {
 		// Setup: Create account store w/o initialized memento
-		let memento = {};
+		let memento: { [key: string]: azdata.Account[] } = {};
 		let as = new AccountStore(memento);
 
 		// If: I remove an account when there's an uninitialized memento
@@ -211,7 +211,7 @@ suite('Account Store Tests', () => {
 
 	test('Remove - Account does not exist', () => {
 		// Setup: Create account store with initialized memento with accounts
-		let memento = {};
+		let memento: { [key: string]: azdata.Account[] } = {};
 		memento[AccountStore.MEMENTO_KEY] = [];
 		let as = new AccountStore(memento);
 
@@ -250,7 +250,7 @@ suite('Account Store Tests', () => {
 	test('Update - Uninitialized menento', () => {
 		// Setup:
 		// ... Create account store w/o initialized memento
-		let memento = {};
+		let memento: { [key: string]: azdata.Account[] } = {};
 		let as = new AccountStore(memento);
 
 		// ... Create a callback that we can verify was called
@@ -274,7 +274,7 @@ suite('Account Store Tests', () => {
 
 	test('Update - Account does not exist', () => {
 		// Setup: Create account store with initialized memento with accounts
-		let memento = {};
+		let memento: { [key: string]: azdata.Account[] } = {};
 		memento[AccountStore.MEMENTO_KEY] = [];
 		let as = new AccountStore(memento);
 
@@ -358,7 +358,7 @@ const account2 = <azdata.Account>{
 };
 
 function getTestMemento() {
-	let memento = {};
+	let memento: { [key: string]: azdata.Account[] } = {};
 	memento[AccountStore.MEMENTO_KEY] = [account1, account2];
 
 	return memento;

@@ -6,7 +6,7 @@
 import { registerDashboardWidget } from 'sql/platform/dashboard/browser/widgetRegistry';
 
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
-import { TaskRegistry } from 'sql/platform/tasks/browser/tasksRegistry';
+import { TaskRegistry } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 
 const singleTaskSchema: IJSONSchema = {
 	type: 'string',

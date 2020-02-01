@@ -178,7 +178,7 @@ suite('TableDataView', () => {
 function populateData(row: number, column: number): any[] {
 	let data: Array<{ [key: string]: string }> = [];
 	for (let i: number = 0; i < row; i++) {
-		let row = {};
+		let row: { [key: string]: string } = {};
 		for (let j: number = 0; j < column; j++) {
 			row[getColumnName(j)] = getCellValue(i, j);
 		}

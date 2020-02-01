@@ -17,7 +17,7 @@ import {
 import { IConnectionProfile } from 'azdata';
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { TaskRegistry } from 'sql/platform/tasks/browser/tasksRegistry';
+import { TaskRegistry } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadTasks)
 export class MainThreadTasks implements MainThreadTasksShape {

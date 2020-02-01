@@ -9,11 +9,11 @@ import {
 	ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
 import { FormLayout, FormItemLayout } from 'azdata';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { find } from 'vs/base/common/arrays';
+import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 
 export interface TitledFormItemLayout {
 	title: string;
