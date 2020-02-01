@@ -33,6 +33,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { deepClone, assign } from 'vs/base/common/objects';
 import { Emitter, Event } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
+import * as nls from 'vs/nls';
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -214,36 +215,43 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		// Setup a function for generating a promise to lookup result subsets
 		this.loadDataFunction = (offset: number, count: number): Promise<{}[]> => {
+
 			try {
 				return self.dataService.getEditRows(offset, count).then(result => {
-					let gridData = result.subset.map(r => {
-						let dataWithSchema = {};
-						// skip the first column since its a number column
-						for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
-							dataWithSchema[this.dataSet.columnDefinitions[i].field] = {
-								displayValue: r.cells[i - 1].displayValue,
-								ariaLabel: escape(r.cells[i - 1].displayValue),
-								isNull: r.cells[i - 1].isNull
-							};
-						}
-						return dataWithSchema;
-					});
-
-					// should add null row?
-					if (offset + count > this.dataSet.totalRows - 1) {
-						gridData.push(this.dataSet.columnDefinitions.reduce((p, c) => {
-							if (c.id !== 'rowNumber') {
-								p[c.field] = { displayValue: 'NULL', ariaLabel: 'NULL', isNull: true };
+					try {
+						let gridData = result.subset.map(r => {
+							let dataWithSchema = {};
+							// skip the first column since its a number column
+							for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
+								dataWithSchema[this.dataSet.columnDefinitions[i].field] = {
+									displayValue: r.cells[i - 1].displayValue,
+									ariaLabel: escape(r.cells[i - 1].displayValue),
+									isNull: r.cells[i - 1].isNull
+								};
 							}
-							return p;
-						}, {}));
-					}
+							return dataWithSchema;
+						});
 
-					return gridData;
+						// should add null row?
+						if (offset + count > this.dataSet.totalRows - 1) {
+							gridData.push(this.dataSet.columnDefinitions.reduce((p, c) => {
+								if (c.id !== 'rowNumber') {
+									p[c.field] = { displayValue: 'NULL', ariaLabel: 'NULL', isNull: true };
+								}
+								return p;
+							}, {}));
+						}
+
+						return gridData;
+					}
+					catch {
+						throw new Error('Failed to load table data');
+					}
 				});
 			}
 			catch {
-				return Promise.reject('dataSet is undefined');
+				//table data has failed to load, must reject promise to avoid overwriting table.
+				return Promise.reject();
 			}
 		};
 	}
@@ -443,7 +451,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					}
 				}
 				catch {
-					console.log('placeHolderDataSets is missing');
+					this.notificationService.error(nls.localize('refreshTableError', 'Unable to refresh table data'));
 				}
 
 				if (self.firstRender) {
