@@ -9,7 +9,7 @@ import { LanguagesDialogModel, LanguageUpdateModel } from './languagesDialogMode
 import { LanguagesDialog } from './languagesDialog';
 import { LanguageEditDialog } from './languageEditDialog';
 import { FileBrowserDialog } from './fileBrowserDialog';
-import { LanguageDialogBase } from './languageDialogBase';
+import { LanguageViewBase } from './languageViewBase';
 import * as constants from '../../common/constants';
 
 export class LanguageController {
@@ -48,7 +48,7 @@ export class LanguageController {
 		dialog.showDialog();
 	}
 
-	public async executeAction(dialog: LanguageDialogBase, func: (...args: any[]) => Promise<void>, ...args: any[]): Promise<void> {
+	public async executeAction(dialog: LanguageViewBase, func: (...args: any[]) => Promise<void>, ...args: any[]): Promise<void> {
 		try {
 			await func(...args);
 			await dialog.reset();
@@ -58,12 +58,12 @@ export class LanguageController {
 		}
 	}
 
-	public editLanguage(parent: LanguageDialogBase, languageUpdateModel: LanguageUpdateModel): void {
+	public editLanguage(parent: LanguageViewBase, languageUpdateModel: LanguageUpdateModel): void {
 		let editDialog = new LanguageEditDialog(parent, this._model, languageUpdateModel);
 		editDialog.showDialog();
 	}
 
-	private selectFile(dialog: LanguageDialogBase): void {
+	private selectFile(dialog: LanguageViewBase): void {
 		dialog.fileBrowser(async (args) => {
 			let filePath = '';
 			if (args.target === constants.localhost) {

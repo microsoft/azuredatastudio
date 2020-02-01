@@ -8,10 +8,10 @@ import * as azdata from 'azdata';
 import { CurrentLanguagesTab } from './currentLanguagesTab';
 import { AddEditLanguageTab } from './addEditLanguageTab';
 import { LanguagesDialogModel } from './languagesDialogModel';
-import { LanguageDialogBase } from './languageDialogBase';
+import { LanguageViewBase } from './languageViewBase';
 import * as constants from '../../common/constants';
 
-export class LanguagesDialog extends LanguageDialogBase {
+export class LanguagesDialog extends LanguageViewBase {
 
 	private _currentLanguagesTab: CurrentLanguagesTab | undefined;
 	private _addNewLanguageTab: AddEditLanguageTab | undefined;

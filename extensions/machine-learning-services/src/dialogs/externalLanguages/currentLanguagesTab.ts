@@ -6,11 +6,11 @@
 import * as azdata from 'azdata';
 
 import * as constants from '../../common/constants';
-import { LanguageDialogBase } from './languageDialogBase';
+import { LanguageViewBase } from './languageViewBase';
 import { LanguagesTable } from './languagesTable';
 import { LanguagesDialogModel } from './languagesDialogModel';
 
-export class CurrentLanguagesTab extends LanguageDialogBase {
+export class CurrentLanguagesTab extends LanguageViewBase {
 
 	private _installedLangsTab: azdata.window.DialogTab;
 
@@ -19,7 +19,7 @@ export class CurrentLanguagesTab extends LanguageDialogBase {
 	private _languageTable: LanguagesTable | undefined;
 	private _loader: azdata.LoadingComponent | undefined;
 
-	constructor(parent: LanguageDialogBase, model: LanguagesDialogModel) {
+	constructor(parent: LanguageViewBase, model: LanguagesDialogModel) {
 		super(model, parent);
 		this._installedLangsTab = azdata.window.createTab(constants.extLangInstallTabTitle);
 
