@@ -214,7 +214,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		// Setup a function for generating a promise to lookup result subsets
 		this.loadDataFunction = (offset: number, count: number): Promise<{}[]> => {
-			if (this.dataSet) {
+			try {
 				return self.dataService.getEditRows(offset, count).then(result => {
 					let gridData = result.subset.map(r => {
 						let dataWithSchema = {};
@@ -242,9 +242,8 @@ export class EditDataGridPanel extends GridParentComponent {
 					return gridData;
 				});
 			}
-			else {
-				console.log('dataSet is undefined');
-				return undefined;
+			catch {
+				return Promise.reject('dataSet is undefined');
 			}
 		};
 	}
@@ -431,7 +430,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			clearTimeout(self.refreshGridTimeoutHandle);
 			this.refreshGridTimeoutHandle = setTimeout(() => {
 
-				if (self.placeHolderDataSets) {
+				try {
 					if (self.dataSet && self.placeHolderDataSets[0].resized) {
 						self.placeHolderDataSets[0].dataRows = self.dataSet.dataRows;
 						self.placeHolderDataSets[0].resized.fire();
@@ -443,8 +442,8 @@ export class EditDataGridPanel extends GridParentComponent {
 						self.oldDataRows = self.placeHolderDataSets[0].dataRows;
 					}
 				}
-				else {
-					console.log('placeholderDatasets is null, don\'t do anything');
+				catch {
+					console.log('placeHolderDataSets is missing');
 				}
 
 				if (self.firstRender) {
