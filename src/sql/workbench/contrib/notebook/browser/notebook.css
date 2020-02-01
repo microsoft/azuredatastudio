@@ -7,6 +7,10 @@
 	border-bottom-style: solid;
 }
 
+.mac .notebookEditor .select-container {
+	padding-top: 2px;
+}
+
 .notebookEditor .notebook-cell {
 	margin: 1px 20px;
 	border-width: 1px;
