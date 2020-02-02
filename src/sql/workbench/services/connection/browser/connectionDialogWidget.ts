@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./media/connectionDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { attachModalDialogStyler, attachButtonStyler, attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Modal } from 'sql/workbench/browser/modal/modal';
@@ -38,6 +38,7 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { entries } from 'sql/base/common/collections';
+import { attachTabbedPanelStyler, attachModalDialogStyler } from 'sql/workbench/common/styler';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;

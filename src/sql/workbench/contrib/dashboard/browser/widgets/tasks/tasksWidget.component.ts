@@ -27,7 +27,7 @@ import { MenuRegistry, ICommandAction } from 'vs/platform/actions/common/actions
 import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import { TaskRegistry } from 'sql/platform/tasks/browser/tasksRegistry';
+import { TaskRegistry } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 
 interface ITask {
 	name: string;

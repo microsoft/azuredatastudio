@@ -18,7 +18,7 @@ import {
 	DisconnectDatabaseAction, ConnectDatabaseAction, QueryTaskbarAction
 } from 'sql/workbench/contrib/query/browser/queryActions';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
-import { QueryModelService } from 'sql/platform/query/common/queryModelService';
+import { QueryModelService } from 'sql/workbench/services/query/common/queryModelService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import * as TypeMoq from 'typemoq';
@@ -27,7 +27,7 @@ import { TestStorageService, TestFileService } from 'vs/workbench/test/workbench
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
-import { TestQueryModelService } from 'sql/platform/query/test/common/testQueryModelService';
+import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
 import { URI } from 'vs/base/common/uri';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
@@ -70,7 +70,7 @@ suite('SQL QueryAction Tests', () => {
 		connectionManagementService = TypeMoq.Mock.ofType<TestConnectionManagementService>(TestConnectionManagementService);
 		connectionManagementService.setup(q => q.onDisconnect).returns(() => Event.None);
 		const instantiationService = new TestInstantiationService();
-		let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined, undefined);
+		let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined);
 		// Setup a reusable mock QueryInput
 		testQueryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		testQueryInput.setup(x => x.uri).returns(() => testUri);
@@ -175,7 +175,7 @@ suite('SQL QueryAction Tests', () => {
 		queryModelService.setup(x => x.onRunQueryStart).returns(() => Event.None);
 		queryModelService.setup(x => x.onRunQueryComplete).returns(() => Event.None);
 		const instantiationService = new TestInstantiationService();
-		let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined, undefined);
+		let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined);
 
 		// ... Mock "isSelectionEmpty" in QueryEditor
 		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
@@ -224,7 +224,7 @@ suite('SQL QueryAction Tests', () => {
 
 		// ... Mock "getSelection" in QueryEditor
 		const instantiationService = new TestInstantiationService();
-		let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined, undefined);
+		let fileInput = new UntitledTextEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined);
 
 		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Loose, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		queryInput.setup(x => x.uri).returns(() => testUri);

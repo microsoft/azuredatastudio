@@ -43,7 +43,7 @@ suite('SQL ConnectionProfileGroup tests', () => {
 	});
 
 	test('getGroupFullNameParts should return a list With ROOT in it given null', () => {
-		let groupFullName: string = undefined;
+		let groupFullName: string = undefined!;
 		let expected: string[] = [ConnectionProfileGroup.RootGroupName];
 		let actual = ConnectionProfileGroup.getGroupFullNameParts(groupFullName);
 		assert.deepEqual(actual, expected);
@@ -99,7 +99,7 @@ suite('SQL ConnectionProfileGroup tests', () => {
 	});
 
 	test('isRoot should return true given null', () => {
-		let name: string = undefined;
+		let name: string = undefined!;
 		let expected: boolean = true;
 		let actual = ConnectionProfileGroup.isRoot(name);
 		assert.deepEqual(actual, expected);

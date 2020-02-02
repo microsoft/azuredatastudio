@@ -69,195 +69,186 @@
             // !!! Do not relax these rules !!!
             // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             {
-				"target": "**/{vs,sql}/base/common/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/common/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/test/common/**",
-				"restrictions": [
-					"assert",
-					"sinon",
-					"vs/nls",
-					"**/{vs,sql}/base/common/**",
-					"**/{vs,sql}/base/test/common/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser}/**",
-					"@angular/*",
-					"rxjs/*"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/node/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/{common,browser,node}/**",
-					"!path" // node modules (except path where we have our own impl)
-				]
-			},
-			{
-				// vs/base/test/browser contains tests for vs/base/browser
-				"target": "**/{vs,sql}/base/test/browser/**",
-				"restrictions": [
-					"assert",
-					"vs/nls",
-					"**/{vs,sql}/base/{common,browser}/**",
-					"**/{vs,sql}/base/test/{common,browser}/**",
-					"@angular/*",
-					"rxjs/*"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/parts/*/common/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/common/**",
-					"**/{vs,sql}/base/parts/*/common/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/parts/*/browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser}/**",
-					"@angular/*",
-					"rxjs/*"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/parts/*/node/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/{common,browser,node}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser,node}/**",
-					"!path" // node modules (except path where we have our own impl)
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/parts/*/electron-browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser,node,electron-browser}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-browser}/**",
-					"!path", // node modules (except path where we have our own impl)
-					"@angular/*",
-					"rxjs/*"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/parts/*/electron-main/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/{common,browser,node,electron-main}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-main}/**",
-					"!path", // node modules (except path where we have our own impl)
-					"@angular/*",
-					"rxjs/*"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/platform/*/common/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/common/**",
-					"**/{vs,sql}/base/parts/*/common/**",
-					"**/{vs,sql}/{platform,workbench}/**/common/**",
-					"**/vs/editor/common/**",
-					"azdata" // TODO remove
-				]
-			},
-			{
-				"target": "**/{vs,sql}/platform/*/test/common/**",
-				"restrictions": [
-					"assert",
-					"sinon",
-					"vs/nls",
-					"**/{vs,sql}/base/common/**",
-					"**/{vs,sql}/{platform,workbench}/**/common/**",
-					"**/{vs,sql}/{base,platform,workbench}/**/test/common/**",
-					"typemoq",
-					"azdata" // TODO remove
-				]
-			},
-			{
-				"target": "**/{vs,sql}/platform/*/browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser}/**",
-					"**/{vs,sql}/{platform,workbench}/**/{common,browser}/**",
-					"**/vs/editor/{common,browser}/**",
-					"@angular/*",
-					"rxjs/*",
-					"azdata" // TODO remove
-				]
-			},
-			{
-				"target": "**/{vs,sql}/platform/*/node/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/{common,browser,node}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser,node}/**",
-					"**/{vs,sql}/{platform,workbench}/**/{common,browser,node}/**",
-					"**/vs/editor/{common,browser,node}/**",
-					"!path", // node modules (except path where we have our own impl)
-					"azdata" // TODO remove
-				]
-			},
-			{
-				"target": "**/{vs,sql}/platform/*/electron-browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser,node}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-browser}/**",
-					"**/{vs,sql}/{platform,workbench}/**/{common,browser,node,electron-browser}/**",
-					"**/vs/editor/{common,browser,node,electron-browser}/**",
-					"!path", // node modules (except path where we have our own impl)
-					"@angular/*",
-					"rxjs/*",
-					"azdata" // TODO remove
-				]
-			},
-			{
-				"target": "**/{vs,sql}/platform/*/electron-main/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/{common,browser,node}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-browser}/**",
-					"**/{vs,sql}/{platform,workbench}/**/{common,browser,node,electron-main}/**",
-					"**/vs/editor/{common,browser,node,electron-main}/**",
-					"!path", // node modules (except path where we have our own impl)
-					"azdata" // TODO remove
-				]
-			},
-			{
-				"target": "**/{vs,sql}/platform/*/test/browser/**",
-				"restrictions": [
-					"assert",
-					"sinon",
-					"vs/nls",
-					"**/{vs,sql}/base/{common,browser}/**",
-					"**/{vs,sql}/{platform,workbench}/**/{common,browser}/**",
-					"**/{vs,sql}/{base,platform,workbench}/**/test/{common,browser}/**",
-					"typemoq",
-					"@angular/*",
-					"rxjs/*",
-					"azdata" // TODO remove
-				]
-			}
+                "target": "**/{vs,sql}/base/common/**",
+                "restrictions": [
+                    "vs/nls",
+                    "**/{vs,sql}/base/common/**"
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/base/test/common/**",
+                "restrictions": [
+                    "assert",
+                    "sinon",
+                    "vs/nls",
+                    "**/{vs,sql}/base/common/**",
+                    "**/{vs,sql}/base/test/common/**"
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/base/browser/**",
+                "restrictions": [
+                    "vs/nls",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/{common,browser}/**",
+                    "@angular/*",
+                    "rxjs/*"
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/base/node/**",
+                "restrictions": [
+                    "vs/nls",
+                    "**/{vs,sql}/base/{common,browser,node}/**",
+                    "!path" // node modules (except path where we have our own impl)
+                ]
+            },
+            {
+                // vs/base/test/browser contains tests for vs/base/browser
+                "target": "**/{vs,sql}/base/test/browser/**",
+                "restrictions": [
+                    "assert",
+                    "vs/nls",
+                    "**/{vs,sql}/base/{common,browser}/**",
+                    "**/{vs,sql}/base/test/{common,browser}/**",
+                    "@angular/*",
+                    "rxjs/*"
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/base/parts/*/common/**",
+                "restrictions": [
+                    "vs/nls",
+                    "**/{vs,sql}/base/common/**",
+                    "**/{vs,sql}/base/parts/*/common/**"
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/base/parts/*/browser/**",
+                "restrictions": [
+                    "vs/nls",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/{common,browser}/**",
+                    "**/{vs,sql}/base/parts/*/{common,browser}/**",
+                    "@angular/*",
+                    "rxjs/*"
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/base/parts/*/node/**",
+                "restrictions": [
+                    "vs/nls",
+                    "**/{vs,sql}/base/{common,browser,node}/**",
+                    "**/{vs,sql}/base/parts/*/{common,browser,node}/**",
+                    "!path" // node modules (except path where we have our own impl)
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/base/parts/*/electron-browser/**",
+                "restrictions": [
+                    "vs/nls",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/{common,browser,node,electron-browser}/**",
+                    "**/{vs,sql}/base/parts/*/{common,browser,node,electron-browser}/**",
+                    "!path", // node modules (except path where we have our own impl)
+                    "@angular/*",
+                    "rxjs/*"
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/base/parts/*/electron-main/**",
+                "restrictions": [
+                    "vs/nls",
+                    "**/{vs,sql}/base/{common,browser,node,electron-main}/**",
+                    "**/{vs,sql}/base/parts/*/{common,browser,node,electron-main}/**",
+                    "!path", // node modules (except path where we have our own impl)
+                    "@angular/*",
+                    "rxjs/*"
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/platform/*/common/**",
+                "restrictions": [
+                    "vs/nls",
+                    "azdata",
+                    "**/{vs,sql}/base/common/**",
+                    "**/{vs,sql}/base/parts/*/common/**",
+                    "**/{vs,sql}/platform/*/common/**"
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/platform/*/test/common/**",
+                "restrictions": [
+                    "assert",
+                    "typemoq",
+                    "sinon",
+                    "vs/nls",
+                    "azdata",
+                    "**/{vs,sql}/base/common/**",
+                    "**/{vs,sql}/base/test/common/**",
+                    "**/{vs,sql}/platform/*/common/**",
+                    "**/{vs,sql}/platform/*/test/common/**"
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/platform/*/browser/**",
+                "restrictions": [
+                    "vs/nls",
+                    "azdata",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/{common,browser}/**",
+                    "**/{vs,sql}/base/parts/*/{common,browser}/**",
+                    "**/{vs,sql}/platform/*/{common,browser}/**"
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/platform/*/node/**",
+                "restrictions": [
+                    "vs/nls",
+                    "azdata",
+                    "**/{vs,sql}/base/{common,node}/**",
+                    "**/{vs,sql}/base/parts/*/{common,node}/**",
+                    "**/{vs,sql}/platform/*/{common,node}/**",
+                    "!path" // node modules (except path where we have our own impl)
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/platform/*/electron-browser/**",
+                "restrictions": [
+                    "vs/nls",
+                    "azdata",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/{common,browser,node}/**",
+                    "**/{vs,sql}/base/parts/*/{common,browser,node,electron-browser}/**",
+                    "**/{vs,sql}/platform/*/{common,browser,node,electron-browser}/**",
+                    "!path" // node modules (except path where we have our own impl)
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/platform/*/electron-main/**",
+                "restrictions": [
+                    "vs/nls",
+                    "azdata",
+                    "**/{vs,sql}/base/{common,node,electron-main}/**",
+                    "**/{vs,sql}/base/parts/*/{common,node,electron-main}/**",
+                    "**/{vs,sql}/platform/*/{common,node,electron-main}/**",
+                    "!path" // node modules (except path where we have our own impl)
+                ]
+            },
+            {
+                "target": "**/{vs,sql}/platform/*/test/browser/**",
+                "restrictions": [
+                    "assert",
+                    "typemoq",
+                    "sinon",
+                    "azdata",
+                    "vs/nls",
+                    "**/{vs,sql}/base/{common,browser}/**",
+                    "**/{vs,sql}/base/test/{common,browser}/**",
+                    "**/{vs,sql}/platform/*/{common,browser}/**",
+                    "**/{vs,sql}/platform/*/test/{common,browser}/**"
+                ]
+            }
         ]
     },
     "overrides": [

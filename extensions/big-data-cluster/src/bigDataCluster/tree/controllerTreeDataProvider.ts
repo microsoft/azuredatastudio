@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import * as nls from 'vscode-nls';
 import { TreeNode } from './treeNode';
 import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
 import { AddControllerNode } from './addControllerNode';
@@ -12,6 +13,8 @@ import { ControllerRootNode, ControllerNode } from './controllerTreeNode';
 import { showErrorMessage } from '../utils';
 import { LoadingControllerNode } from './loadingControllerNode';
 import { AuthType } from '../constants';
+
+const localize = nls.loadMessageBundle();
 
 const CredentialNamespace = 'clusterControllerCredentials';
 
@@ -43,7 +46,9 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 			return this.root.getChildren();
 		}
 
-		await this.loadSavedControllers();
+		// Kick off loading the saved controllers but then immediately return the loading node so
+		// the user isn't left with an empty tree while we load the nodes
+		this.loadSavedControllers().catch(err => { vscode.window.showErrorMessage(localize('bdc.controllerTreeDataProvider.error', "Unexpected error loading saved controllers: {0}", err)); });
 		return [new LoadingControllerNode()];
 	}
 

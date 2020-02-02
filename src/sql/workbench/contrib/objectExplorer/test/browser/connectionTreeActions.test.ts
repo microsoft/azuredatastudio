@@ -56,7 +56,7 @@ suite('SQL Connection Tree Action tests', () => {
 		connectionManagementService.callBase = true;
 		connectionManagementService.setup(x => x.isConnected(undefined, TypeMoq.It.isAny())).returns(() => isConnectedReturnValue);
 		connectionManagementService.setup(x => x.connect(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny(), undefined)).returns(() => Promise.resolve(connectionResult));
-		connectionManagementService.setup(x => x.disconnect(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
+		connectionManagementService.setup(x => x.disconnect(TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		connectionManagementService.setup(x => x.findExistingConnection(TypeMoq.It.isAny())).returns(() => undefined);
 		connectionManagementService.setup(x => x.showDashboard(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 		connectionManagementService.setup(x => x.isProfileConnected(TypeMoq.It.isAny())).returns(() => isConnectedReturnValue);
@@ -109,6 +109,9 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 
 		const viewsService = new class implements IViewsService {
+			getActiveViewWithId(id: string): IView {
+				throw new Error('Method not implemented.');
+			}
 			_serviceBrand: undefined;
 			openView(id: string, focus?: boolean): Promise<IView> {
 				return Promise.resolve({

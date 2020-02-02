@@ -19,6 +19,7 @@ import { Widget } from 'vs/base/browser/ui/widget';
 import { isArray, isBoolean } from 'vs/base/common/types';
 import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
+import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
@@ -35,9 +36,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	private _grid: Slick.Grid<T>;
 	private _columns: Slick.Column<T>[];
 	private _data: IDisposableDataProvider<T>;
-	private _sorter: ITableSorter<T>;
+	private _sorter?: ITableSorter<T>;
 
-	private _autoscroll: boolean;
+	private _autoscroll?: boolean;
 	private _container: HTMLElement;
 	private _tableContainer: HTMLElement;
 
@@ -48,6 +49,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	private _onClick = new Emitter<ITableMouseEvent>();
 	public readonly onClick: Event<ITableMouseEvent> = this._onClick.event;
+
+	private _onHeaderClick = new Emitter<ITableMouseEvent>();
+	public readonly onHeaderClick: Event<ITableMouseEvent> = this._onHeaderClick.event;
 
 	private _onColumnResize = new Emitter<void>();
 	public readonly onColumnResize = this._onColumnResize.event;
@@ -97,7 +101,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		if (configuration && configuration.sorter) {
 			this._sorter = configuration.sorter;
 			this._grid.onSort.subscribe((e, args) => {
-				this._sorter(args);
+				this._sorter!(args);
 				this._grid.invalidate();
 				this._grid.render();
 			});
@@ -111,7 +115,15 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 		this.mapMouseEvent(this._grid.onContextMenu, this._onContextMenu);
 		this.mapMouseEvent(this._grid.onClick, this._onClick);
+		this.mapMouseEvent(this._grid.onHeaderClick, this._onHeaderClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
+	}
+
+	public rerenderGrid(start: number, end: number) {
+		this._grid.updateRowCount();
+		this._grid.setColumns(this._grid.getColumns());
+		this._grid.invalidateAllRows();
+		this._grid.render();
 	}
 
 	private mapMouseEvent(slickEvent: Slick.Event<any>, emitter: Emitter<ITableMouseEvent>) {
@@ -151,8 +163,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	setData(data: Array<T>): void;
 	setData(data: TableDataView<T>): void;
-	setData(data: Array<T> | TableDataView<T>): void {
-		if (data instanceof TableDataView) {
+	setData(data: AsyncDataProvider<T>): void;
+	setData(data: Array<T> | TableDataView<T> | AsyncDataProvider<T>): void {
+		if (data instanceof TableDataView || data instanceof AsyncDataProvider) {
 			this._data = data;
 		} else {
 			this._data = new TableDataView<T>(data);
@@ -197,12 +210,28 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._grid.setSelectionModel(model);
 	}
 
+	getSelectionModel(): Slick.SelectionModel<T, Array<Slick.Range>> {
+		return this._grid.getSelectionModel();
+	}
+
+	getSelectedRanges(): Slick.Range[] {
+		let selectionModel = this._grid.getSelectionModel();
+		if (selectionModel && selectionModel.getSelectedRanges) {
+			return selectionModel.getSelectedRanges();
+		}
+		return <Slick.Range[]><unknown>undefined;
+	}
+
 	focus(): void {
 		this._grid.focus();
 	}
 
 	setActiveCell(row: number, cell: number): void {
 		this._grid.setActiveCell(row, cell);
+	}
+
+	setActive(): void {
+		this._grid.setActiveCell(0, 1);
 	}
 
 	get activeCell(): Slick.Cell {
