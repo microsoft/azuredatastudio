@@ -2961,6 +2961,66 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "61",
+					"extensionName": "Visualization",
+					"displayName": "Visualization",
+					"shortDescription": "Visualization of databases",
+					"publisher": {
+						"displayName": "Jens Hunt",
+						"publisherId": "R0tenur",
+						"publisherName": "R0tenur"
+					},
+					"versions": [
+						{
+							"version": "0.0.2",
+							"lastUpdated": "2/2/2020",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://github.com/R0tenur/visualization/releases/download/v0.1.0/visualization-0.1.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/R0tenur/visualization/releases/tag/v0.1.0"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/R0tenur/visualization/master/images/logo.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://github.com/R0tenur/visualization/blob/master/README.md"														},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://github.com/R0tenur/visualization/blob/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://github.com/R0tenur/visualization/blob/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/R0tenur/visualization"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
@@ -2969,7 +3029,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 50
+							"count": 51
 						}
 					]
 				}
