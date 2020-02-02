@@ -12,7 +12,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { localize } from 'vs/nls';
 import { IConfigurationNode, IConfigurationRegistry, Extensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { DASHBOARD_CONFIG_ID } from 'sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution';
-import { DATABASE_DASHBOARD_PROPERTIES, databaseDashboardPropertiesSchema, DATABASE_DASHBOARD_SETTING, databaseDashboardSettingSchema, DATABASE_DASHBOARD_TABS, databaseDashboardTabsSchema } from 'sql/workbench/contrib/dashboard/browser/pages/databaseDashboardPage.contribution';
+import { DATABASE_DASHBOARD_PROPERTIES, databaseDashboardPropertiesSchema, DATABASE_DASHBOARD_SETTING, databaseDashboardSettingSchema, DATABASE_DASHBOARD_TABS, databaseDashboardTabsSchema, DATABASE_DASHBOARD_TOOLBAR, databaseDashboardToolbarSchema } from 'sql/workbench/contrib/dashboard/browser/pages/databaseDashboardPage.contribution';
 import { SERVER_DASHBOARD_PROPERTIES, serverDashboardPropertiesSchema, SERVER_DASHBOARD_SETTING, serverDashboardSettingSchema, SERVER_DASHBOARD_TABS, serverDashboardTabsSchema, SERVER_DASHBOARD_TOOLBAR, serverDashboardToolbarSchema } from 'sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution';
 import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { MssqlNodeContext } from 'sql/workbench/contrib/dataExplorer/browser/mssqlNodeContext';
@@ -31,7 +31,8 @@ const dashboardConfig: IConfigurationNode = {
 		[SERVER_DASHBOARD_SETTING]: serverDashboardSettingSchema,
 		[DATABASE_DASHBOARD_TABS]: databaseDashboardTabsSchema,
 		[SERVER_DASHBOARD_TABS]: serverDashboardTabsSchema,
-		[SERVER_DASHBOARD_TOOLBAR]: serverDashboardToolbarSchema
+		[SERVER_DASHBOARD_TOOLBAR]: serverDashboardToolbarSchema,
+		[DATABASE_DASHBOARD_TOOLBAR]: databaseDashboardToolbarSchema
 	}
 };
 

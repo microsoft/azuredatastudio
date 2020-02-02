@@ -20,8 +20,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { ILogService } from 'vs/platform/log/common/log';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { BackupToolbarAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
-import { ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
-import { showBackup } from 'sql/workbench/contrib/backup/browser/backupActions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
@@ -68,18 +66,5 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 	ngOnInit() {
 		this.init();
 		this._breadcrumbService.setBreadcrumbs(BreadcrumbClass.DatabasePage);
-	}
-
-	protected createTaskbar(parentElement: HTMLElement): void {
-		this._backupAction = new BackupToolbarAction(this.backup, this);
-		super.createTaskbar(parentElement);
-	}
-
-	protected notCloudActions(): ITaskbarContent[] {
-		return [{ action: this._restoreAction }, { action: this._backupAction }];
-	}
-
-	public backup(): void {
-		this._instantiationService.invokeFunction(showBackup, this.connectionManagementService.connectionInfo.connectionProfile);
 	}
 }

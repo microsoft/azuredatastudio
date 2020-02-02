@@ -67,7 +67,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	@ViewChildren(TabChild) private _tabs: QueryList<DashboardTab>;
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
 	@ViewChild('toolbar', { read: ElementRef }) private taskContainer: ElementRef;
-	protected taskbar: Taskbar;
+	protected toolbar: Taskbar;
 
 	// actions
 	protected _editAction: EditDashboardAction;
@@ -154,10 +154,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			};
 			this.createTabs(tempWidgets);
 		}
-		this.createTaskbar(this.taskContainer.nativeElement);
+		this.createToolbar(this.taskContainer.nativeElement);
 	}
 
-	protected createTaskbar(parentElement: HTMLElement): void {
+	protected createToolbar(parentElement: HTMLElement): void {
 		let toolbarTasks = this.dashboardService.getSettings<Array<DashboardToolbarItemConfig>>([this.context, 'toolbar'].join('.'));
 		let tasks = TaskRegistry.getTasks();
 
@@ -180,8 +180,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this._tasks = tasks.map(i => MenuRegistry.getCommand(i)).filter(v => !!v);
 
 		let toolbarActions = [];
-		this._tasks.forEach(t => {
-		});
 		this._tasks.forEach(a => {
 			let iconClassName = TaskRegistry.getOrCreateTaskIconClassName(a);
 			console.error('iconClassName is ' + iconClassName);
@@ -189,14 +187,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		});
 
 		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
-		this.taskbar = this._register(new Taskbar(taskbarContainer));
-		// this._restoreAction = new RestoreToolbarAction(this.restore, this);
-		// this._newQueryAction = new NewQueryAction(this.newQuery, this);
-		// this._newNotebookAction = new NewNotebookToolbarAction(this.newNotebook, this);
+		this.toolbar = this._register(new Taskbar(taskbarContainer));
 		this._editAction = new EditDashboardAction(this.enableEdit, this);
 		this._refreshAction = new RefreshWidgetAction(this.refresh, this);
-		// this._manageExtensionsAction = new ManageExtensionsToolbarAction(this.manageExtensions, this);
-		// this.setTaskbarContent();
 
 		let separator: HTMLElement = Taskbar.createTaskbarSeparator();
 
@@ -210,27 +203,11 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			{ action: this._refreshAction },
 			{ action: this._editAction });
 
-		this.taskbar.setContent(content);
+		this.toolbar.setContent(content);
 	}
 
 	public runAction(id: string): Promise<void> {
 		return this.commandService.executeCommand(id, this.connectionManagementService.connectionInfo.connectionProfile);
-	}
-
-	protected setTaskbarContent(): void {
-		// Create HTML Elements for the taskbar
-		let separator: HTMLElement = Taskbar.createTaskbarSeparator();
-
-		// Set the content in the order we desire
-		let content: ITaskbarContent[] = [
-			{ action: this._newQueryAction },
-			{ action: this._newNotebookAction },
-			{ element: separator },
-			{ action: this._refreshAction },
-			{ action: this._editAction }
-		];
-
-		this.taskbar.setContent(content);
 	}
 
 	private createTabs(homeWidgets: WidgetConfig[]) {
