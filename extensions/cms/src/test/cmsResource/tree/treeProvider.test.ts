@@ -14,7 +14,6 @@ import { CmsResourceMessageTreeNode } from '../../../cmsResource/messageTreeNode
 import { CmsResourceEmptyTreeNode } from '../../../cmsResource/tree/cmsResourceEmptyTreeNode';
 import { CmsUtils } from '../../../cmsUtils';
 import { sleep } from '../../utils';
-import { ICmsResourceNodeInfo } from '../../../cmsResource/tree/baseTreeNodes';
 
 // Mock services
 let mockAppContext: AppContext;
