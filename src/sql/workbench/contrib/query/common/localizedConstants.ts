@@ -12,10 +12,6 @@ export const runQueryBatchStartLine = localize('runQueryBatchStartLine', "Line {
 
 export const msgCancelQueryFailed = localize('msgCancelQueryFailed', "Canceling the query failed: {0}");
 
-export const msgSaveStarted = localize('msgSaveStarted', "Started saving results to ");
-export const msgSaveFailed = localize('msgSaveFailed', "Failed to save results. ");
-export const msgSaveSucceeded = localize('msgSaveSucceeded', "Successfully saved results to ");
-
 export const msgStatusRunQueryInProgress = localize('msgStatusRunQueryInProgress', "Executing query...");
 
 // /** Results Pane Labels */

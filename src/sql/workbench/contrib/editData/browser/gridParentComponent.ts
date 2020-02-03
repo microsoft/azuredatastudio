@@ -10,7 +10,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { Subscription, Subject } from 'rxjs/Rx';
 import * as Constants from 'sql/platform/query/common/constants';
 import * as LocalizedConstants from 'sql/workbench/contrib/query/common/localizedConstants';
-import { IGridInfo, IGridDataSet, SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
+import { IGridInfo, IGridDataSet } from 'sql/workbench/contrib/grid/common/interfaces';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { DataService } from 'sql/workbench/contrib/grid/common/dataService';
 import * as actions from 'sql/workbench/contrib/editData/common/gridActions';
@@ -30,6 +30,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
+import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 
 
 export abstract class GridParentComponent extends Disposable {
