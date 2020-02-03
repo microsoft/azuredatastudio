@@ -437,7 +437,6 @@ export class EditDataGridPanel extends GridParentComponent {
 			const self = this;
 			clearTimeout(self.refreshGridTimeoutHandle);
 			this.refreshGridTimeoutHandle = setTimeout(() => {
-
 				try {
 					if (self.dataSet && self.placeHolderDataSets[0].resized) {
 						self.placeHolderDataSets[0].dataRows = self.dataSet.dataRows;
