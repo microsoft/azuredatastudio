@@ -9,7 +9,7 @@ import * as nls from 'vscode-nls';
 import { DialogBase } from './dialogBase';
 import { INotebookService } from '../services/notebookService';
 import { DialogInfo, instanceOfNotebookBasedDialogInfo, NotebookBasedDialogInfo } from '../interfaces';
-import { Validator, initializeDialog, InputComponents, setModelValues } from './modelViewUtils';
+import { Validator, initializeDialog, InputComponents, setModelValues, InputValueTransformer } from './modelViewUtils';
 import { Model } from './model';
 import { EOL } from 'os';
 import { getDateTimeString, getErrorMessage } from '../utils';
@@ -46,8 +46,8 @@ export class DeploymentInputDialog extends DialogBase {
 			onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 				this._toDispose.push(disposable);
 			},
-			onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent): void => {
-				this.inputComponents[name] = component;
+			onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent, inputValueTransformer?: InputValueTransformer): void => {
+				this.inputComponents[name] = { component: component, inputValueTransformer: inputValueTransformer };
 			},
 			onNewValidatorCreated: (validator: Validator): void => {
 				validators.push(validator);

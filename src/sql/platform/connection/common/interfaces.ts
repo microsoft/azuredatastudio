@@ -11,10 +11,29 @@ export interface IConnectionProfile extends azdata.IConnectionProfile {
 }
 
 export interface IConnectionProfileStore {
-	options: {};
+	options: { [key: string]: any };
 	groupId: string;
 	providerName: string;
 	savePassword: boolean;
 	id: string;
 }
 
+export enum ServiceOptionType {
+	string = 'string',
+	multistring = 'multistring',
+	password = 'password',
+	number = 'number',
+	category = 'category',
+	boolean = 'boolean',
+	object = 'object'
+}
+
+export enum ConnectionOptionSpecialType {
+	connectionName = 'connectionName',
+	serverName = 'serverName',
+	databaseName = 'databaseName',
+	authType = 'authType',
+	userName = 'userName',
+	password = 'password',
+	appName = 'appName'
+}

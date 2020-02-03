@@ -41,7 +41,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private isInitialized: boolean = false;
 
 
-	constructor(private metadata: AzureAccountProviderMetadata, private _tokenCache: TokenCache) {
+	constructor(private metadata: AzureAccountProviderMetadata, private _tokenCache: TokenCache, private _context: vscode.ExtensionContext) {
 		this.commonAuthorityUrl = url.resolve(this.metadata.settings.host, AzureAccountProvider.AadCommonTenant);
 	}
 
@@ -78,7 +78,9 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		response = response as TokenResponse;
 
 		context.cache.add([response], (err, result) => {
-			console.log(err, result);
+			if (err || !result) {
+				console.log(`Unexpected error adding token to cache ${err}`);
+			}
 		});
 
 		return response;
@@ -187,6 +189,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		nonce: string,
 		authUrl: string) {
 
+		const mediaPath = path.join(this._context.extensionPath, 'media');
+
 		// Utility function
 		const sendFile = async (res: http.ServerResponse, filePath: string, contentType: string): Promise<void> => {
 			let fileContents;
@@ -238,12 +242,13 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 				return;
 			}
 
-			sendFile(res, path.join(__dirname, 'media/landing.html'), 'text/html; charset=utf-8').catch(console.error);
+
+			sendFile(res, path.join(mediaPath, 'landing.html'), 'text/html; charset=utf-8').catch(console.error);
 			this.handleAuthentication(code).catch((e) => console.error(e));
 		};
 
 		const css = (req: http.IncomingMessage, res: http.ServerResponse, reqUrl: url.UrlWithParsedQuery) => {
-			sendFile(res, path.join(__dirname, 'media/landing.css'), 'text/css; charset=utf-8').catch(console.error);
+			sendFile(res, path.join(mediaPath, 'landing.css'), 'text/css; charset=utf-8').catch(console.error);
 		};
 
 		pathMappings.set('/signin', initialSignIn);

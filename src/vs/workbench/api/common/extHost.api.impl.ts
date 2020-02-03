@@ -186,17 +186,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			registerAuthenticationProvider(provider: vscode.AuthenticationProvider): vscode.Disposable {
 				return extHostAuthentication.registerAuthenticationProvider(provider);
 			},
-			login(providerId: string): Promise<vscode.Session> {
-				return extHostAuthentication.$login(providerId);
-			},
-			logout(providerId: string, accountId: string): Promise<void> {
-				return extHostAuthentication.$logout(providerId, accountId);
-			},
-			getSessions(providerId: string): Promise<ReadonlyArray<vscode.Session>> {
-				return extHostAuthentication.$getSessions(providerId);
-			},
-			get onDidChangeSessions() {
-				return extHostAuthentication.onDidChangeSessions;
+			get providers() {
+				return extHostAuthentication.providers(extension);
 			},
 			get onDidRegisterAuthenticationProvider() {
 				return extHostAuthentication.onDidRegisterAuthenticationProvider;
@@ -765,6 +756,14 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			openTunnel: (forward: vscode.TunnelOptions) => {
 				checkProposedApiEnabled(extension);
 				return extHostTunnelService.openTunnel(forward);
+			},
+			get tunnels() {
+				checkProposedApiEnabled(extension);
+				return extHostTunnelService.getTunnels();
+			},
+			onDidTunnelsChange: (listener, thisArg?, disposables?) => {
+				checkProposedApiEnabled(extension);
+				return extHostTunnelService.onDidTunnelsChange(listener, thisArg, disposables);
 			}
 		};
 

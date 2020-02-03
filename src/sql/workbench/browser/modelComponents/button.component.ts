@@ -11,7 +11,6 @@ import {
 import * as azdata from 'azdata';
 
 import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_TITLE_FOREGROUND } from 'vs/workbench/common/theme';
@@ -19,6 +18,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { focusBorder, foreground } from 'vs/platform/theme/common/colorRegistry';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Color } from 'vs/base/common/color';
+import { IComponentDescriptor, IComponent, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 
 @Component({
 	selector: 'modelview-button',

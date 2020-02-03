@@ -5,10 +5,11 @@
 
 import 'vs/css!./media/countInsight';
 
-import { IInsight, IInsightData } from './interfaces';
+import { IInsight } from './interfaces';
 
 import { $, clearNode } from 'vs/base/browser/dom';
 import { InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 
 export class CountInsight implements IInsight {
 	public options;
