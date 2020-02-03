@@ -5,7 +5,7 @@
 |----------------------------------------------------------------------------*/
 import { IRenderMime } from '../models/renderMimeInterfaces';
 import { MimeModel } from '../models/mimemodel';
-import { ReadonlyJSONObject } from '../../common/models/jsonext';
+import { ReadonlyJSONObject } from '../../../../services/notebook/common/jsonext';
 import { defaultSanitizer } from './sanitizer';
 
 /**

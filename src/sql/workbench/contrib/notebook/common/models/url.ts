@@ -1,7 +1,7 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-import { JSONObject } from './jsonext';
+import { JSONObject } from '../../../../services/notebook/common/jsonext';
 import { URI } from 'vs/base/common/uri';
 
 /**

@@ -6,7 +6,7 @@
 import { Range, IRange } from 'vs/editor/common/core/range';
 import { FindMatch } from 'vs/editor/common/model';
 import { NotebookContentChange, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { BaseTextEditorModel } from 'vs/workbench/common/editor/textEditorModel';
 import { repeat } from 'vs/base/common/strings';
 

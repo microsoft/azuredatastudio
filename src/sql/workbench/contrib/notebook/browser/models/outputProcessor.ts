@@ -4,9 +4,9 @@
 | Distributed under the terms of the Modified BSD License.
 |----------------------------------------------------------------------------*/
 
-import { JSONObject, isPrimitive } from '../../common/models/jsonext';
+import { JSONObject, isPrimitive } from '../../../../services/notebook/common/jsonext';
 import { MimeModel } from './mimemodel';
-import { nbformat } from '../../common/models/nbformat';
+import { nbformat } from '../../../../services/notebook/common/nbformat';
 import { nb } from 'azdata';
 
 /**

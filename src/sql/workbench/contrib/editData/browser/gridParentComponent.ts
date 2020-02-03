@@ -9,12 +9,12 @@ import 'vs/css!./media/styles';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { Subscription, Subject } from 'rxjs/Rx';
 import * as Constants from 'sql/platform/query/common/constants';
-import * as LocalizedConstants from 'sql/workbench/contrib/query/common/localizedConstants';
+import * as LocalizedConstants from 'sql/workbench/services/query/common/localizedConstants';
 import { IGridInfo, IGridDataSet } from 'sql/workbench/contrib/grid/common/interfaces';
 import * as Utils from 'sql/platform/connection/common/utils';
-import { DataService } from 'sql/workbench/contrib/grid/common/dataService';
+import { DataService } from 'sql/workbench/services/query/common/dataService';
 import * as actions from 'sql/workbench/contrib/editData/common/gridActions';
-import * as GridContentEvents from 'sql/workbench/contrib/grid/common/gridContentEvents';
+import * as GridContentEvents from 'sql/workbench/services/query/common/gridContentEvents';
 import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocussedContext, QueryEditorVisibleContext } from 'sql/workbench/contrib/query/common/queryContext';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
@@ -106,7 +106,7 @@ export abstract class GridParentComponent extends Disposable {
 				this.messageActiveBool = sqlConfig['messagesDefaultOpen'];
 			}
 		}
-		this.subscribeWithDispose(this.dataService.gridContentObserver, (type) => {
+		this.toDispose.add(this.dataService.gridContent(type => {
 			switch (type) {
 				case GridContentEvents.RefreshContents:
 					self.refreshDatasets();
@@ -163,7 +163,7 @@ export abstract class GridParentComponent extends Disposable {
 					this.logService.error('Unexpected grid content event type "' + type + '" sent');
 					break;
 			}
-		});
+		}));
 
 		this.bindKeys(this.contextKeyService);
 	}

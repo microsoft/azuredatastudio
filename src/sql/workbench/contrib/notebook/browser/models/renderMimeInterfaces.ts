@@ -3,7 +3,7 @@
 | Copyright (c) Jupyter Development Team.
 | Distributed under the terms of the Modified BSD License.
 |----------------------------------------------------------------------------*/
-import { ReadonlyJSONObject } from '../../common/models/jsonext';
+import { ReadonlyJSONObject } from '../../../../services/notebook/common/jsonext';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 /**

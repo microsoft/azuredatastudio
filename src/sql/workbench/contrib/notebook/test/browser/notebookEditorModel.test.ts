@@ -10,7 +10,7 @@ import * as assert from 'assert';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { CellModel } from 'sql/workbench/contrib/notebook/browser/models/cell';
-import { CellTypes, NotebookChangeType } from 'sql/workbench/contrib/notebook/common/models/contracts';
+import { CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { ModelFactory } from 'sql/workbench/contrib/notebook/browser/models/modelFactory';
 import { INotebookModelOptions, NotebookContentChange, ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { NotebookEditorModel } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';

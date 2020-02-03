@@ -5,7 +5,7 @@
 
 import * as renderers from './renderers';
 import { IRenderMime } from '../models/renderMimeInterfaces';
-import { ReadonlyJSONObject } from '../../common/models/jsonext';
+import { ReadonlyJSONObject } from '../../../../services/notebook/common/jsonext';
 import * as tableRenderers from 'sql/workbench/contrib/notebook/browser/outputs/tableRenderers';
 import { Deferred } from 'sql/base/common/promise';
 

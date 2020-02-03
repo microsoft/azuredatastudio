@@ -155,7 +155,7 @@ const copyrightFilter = [
 	'!src/sql/workbench/contrib/notebook/browser/outputs/renderers.ts',
 	'!src/sql/workbench/contrib/notebook/browser/outputs/registry.ts',
 	'!src/sql/workbench/contrib/notebook/browser/outputs/factories.ts',
-	'!src/sql/workbench/contrib/notebook/common/models/nbformat.ts',
+	'!src/sql/workbench/services/notebook/common/nbformat.ts',
 	'!extensions/markdown-language-features/media/tomorrow.css',
 	'!src/sql/workbench/browser/modelComponents/media/highlight.css',
 	'!src/sql/workbench/contrib/notebook/electron-browser/cellViews/media/highlight.css',
