@@ -33,6 +33,7 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 
 		if (!this.isSystemInitialized) {
 			this.loadSavedServers().catch(err => this._appContext.apiWrapper.showErrorMessage(localize('cms.resource.tree.treeProvider.loadError', "Unexpected error occurred while loading saved servers {0}", err)));
+			return this._children;
 		}
 		try {
 			let registeredCmsServers = this.appContext.cmsUtils.registeredCmsServers;
@@ -93,6 +94,9 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 						server.ownerUri, server.connection);
 				}
 				this._children = servers;
+			} else {
+				// No saved servers so just show the Add Server node since we're done loading
+				this._children = [new CmsResourceEmptyTreeNode()];
 			}
 			this._onDidChangeTreeData.fire(undefined);
 		} catch (error) {
