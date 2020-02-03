@@ -215,8 +215,8 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		// Setup a function for generating a promise to lookup result subsets
 		this.loadDataFunction = (offset: number, count: number): Promise<{}[]> => {
-
 			try {
+				// Setup a function for generating a promise to lookup result subsets
 				return self.dataService.getEditRows(offset, count).then(result => {
 					try {
 						let gridData = result.subset.map(r => {
