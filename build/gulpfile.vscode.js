@@ -43,6 +43,7 @@ const nodeModules = [
 	'electron',
 	'original-fs',
 	'rxjs/Observable',
+	'rxjs/add/observable/fromPromise',
 	'rxjs/Subject',
 	'rxjs/Observer',
 	'slickgrid/lib/jquery.event.drag-2.3.0',
