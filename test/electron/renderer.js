@@ -51,6 +51,7 @@ function initLoader(opts) {
 			'angular2-grid',
 			'ng2-charts',
 			'rxjs/add/observable/of',
+			'rxjs/add/observable/fromPromise',
 			'rxjs/Observable',
 			'rxjs/Subject',
 			'rxjs/Observer'
