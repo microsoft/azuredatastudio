@@ -14,6 +14,7 @@ import { isEditorTitleFree } from '../common/utils';
 import { BookModel } from './bookModel';
 import { Deferred } from '../common/promise';
 import * as loc from '../common/localizedConstants';
+import * as constants from '../common/constants';
 
 export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem> {
 
@@ -112,10 +113,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		try {
 			if (this._openAsUntitled) {
 				this.openNotebookAsUntitled(resource);
-			}
-			else {
-				let doc = await vscode.workspace.openTextDocument(resource);
-				vscode.window.showTextDocument(doc);
+			} else {
+				let fileUri: vscode.Uri = vscode.Uri.file(resource);
+				await azdata.nb.showNotebookDocument(fileUri, {
+					providerId: constants.jupyterNotebookProviderId,
+					preview: false
+				});
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openNotebookError(resource, e instanceof Error ? e.message : e));
@@ -148,8 +151,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async saveJupyterBooks(): Promise<void> {
-		if (this.currentBook.bookPath) {
+	async saveJupyterBooks(bookPath?: string, urlToOpen?: string): Promise<void> {
+		let bookpathToSave: string = bookPath;
+		if (bookpathToSave.length < 1) {
+			bookpathToSave = this.currentBook.bookPath;
+		}
+		if (bookpathToSave) {
 			const allFilesFilter = loc.allFiles;
 			let filter: any = {};
 			filter[allFilesFilter] = '*';
@@ -162,7 +169,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			});
 			if (uris && uris.length > 0) {
 				let pickedFolder = uris[0];
-				let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, path.basename(this.currentBook.bookPath)));
+				let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, path.basename(bookpathToSave)));
 				if (destinationUri) {
 					if (await fs.pathExists(destinationUri.fsPath)) {
 						let doReplace = await this.confirmReplace();
@@ -176,17 +183,21 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					}
 					//make directory for each contribution book.
 					await fs.mkdir(destinationUri.fsPath);
-					await fs.copy(this.currentBook.bookPath, destinationUri.fsPath);
+					await fs.copy(bookpathToSave, destinationUri.fsPath);
 
-					//remove book from the untitled books and open it from Saved books
+				}
+
+				//remove book from the untitled books and open it from Saved books
+				if (this.currentBook && this.currentBook.bookPath === bookpathToSave) {
 					let untitledBookIndex: number = this.books.indexOf(this.currentBook);
 					if (untitledBookIndex > -1) {
 						this.books.splice(untitledBookIndex, 1);
 						this.currentBook = undefined;
 						this._onDidChangeTreeData.fire();
-						vscode.commands.executeCommand('bookTreeView.openBook', destinationUri.fsPath, false, undefined);
 					}
 				}
+
+				vscode.commands.executeCommand('bookTreeView.openBook', destinationUri.fsPath, false, urlToOpen);
 			}
 		}
 	}
