@@ -9,7 +9,6 @@ import 'vs/css!./media/styles';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { Subscription, Subject } from 'rxjs/Rx';
 import * as Constants from 'sql/platform/query/common/constants';
-import * as LocalizedConstants from 'sql/workbench/services/query/common/localizedConstants';
 import { IGridInfo, IGridDataSet } from 'sql/workbench/contrib/grid/common/interfaces';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { DataService } from 'sql/workbench/services/query/common/dataService';
@@ -41,7 +40,6 @@ export abstract class GridParentComponent extends Disposable {
 	protected rowHeight = 29;
 	protected defaultNumShowingRows = 8;
 	protected Constants = Constants;
-	protected LocalizedConstants = LocalizedConstants;
 	protected Utils = Utils;
 	// tslint:disable-next-line:no-unused-variable
 	protected startString = new Date().toLocaleTimeString();

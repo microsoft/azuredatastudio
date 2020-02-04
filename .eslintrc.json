@@ -479,7 +479,8 @@
                     "**/{vs,sql}/workbench/workbench.web.api",
                     "**/{vs,sql}/workbench/common/**",
                     "**/{vs,sql}/workbench/services/**/common/**",
-                    "**/{vs,sql}/workbench/api/**/common/**",
+					"**/{vs,sql}/workbench/api/**/common/**",
+					"vs/workbench/contrib/files/common/editors/fileEditorInput", // this should be fine, it only accesses constants from contrib
                     "vscode-textmate"
                 ]
             }

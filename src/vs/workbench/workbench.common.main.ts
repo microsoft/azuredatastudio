@@ -140,7 +140,7 @@ import { ErrorMessageService } from 'sql/workbench/services/errorMessage/browser
 import { ServerGroupController } from 'sql/workbench/services/serverGroup/browser/serverGroupController';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { CapabilitiesService } from 'sql/workbench/services/capabilities/common/capabilitiesServiceImpl';
+import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesServiceImpl';
 import { ICredentialsService as sqlICredentialsService, CredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { QueryModelService } from 'sql/workbench/services/query/common/queryModelService';
