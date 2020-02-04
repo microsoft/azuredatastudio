@@ -105,7 +105,6 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 	}
 
 	private removeDefectiveControllerNodes(nodes: TreeNode[]): void {
-		nodes = this.root.children;
 		if (nodes.length > 0) {
 			for (let i = 0; i < nodes.length; ++i) {
 				if (nodes[i] instanceof ControllerNode) {
