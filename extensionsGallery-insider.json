@@ -2974,15 +2974,11 @@
 					},
 					"versions": [
 						{
-							"version": "0.0.2",
+							"version": "0.1.0",
 							"lastUpdated": "2/2/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
-								{
-									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://github.com/R0tenur/visualization/releases/download/v0.1.0/visualization-0.1.0.vsix"
-								},
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
 									"source": "https://github.com/R0tenur/visualization/releases/tag/v0.1.0"
