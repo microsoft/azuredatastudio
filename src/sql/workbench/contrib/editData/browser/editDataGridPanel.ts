@@ -794,7 +794,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				defaultFormatter: undefined,
 				editable: this.enableEditing,
 				autoEdit: this.enableEditing,
-				enableAddRow: true,
+				enableAddRow: false,
 				enableAsyncPostRender: false,
 				editorFactory: {
 					getEditor: (column: ISlickColumn<any>) => this.getColumnEditor(column)
@@ -974,7 +974,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.enableEditing = enabled;
 		let options: any = this.table.grid.getOptions();
 		options.editable = enabled;
-		options.enableAddRow = true;
+		options.enableAddRow = false;
 		this.table.grid.setOptions(options);
 	}
 
