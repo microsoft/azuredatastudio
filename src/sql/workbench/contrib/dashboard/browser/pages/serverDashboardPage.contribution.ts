@@ -77,7 +77,7 @@ const defaultVal = [
 	{
 		name: 'Tasks',
 		widget: {
-			'tasks-widget': ['newQuery', 'mssqlCluster.task.newNotebook']
+			'tasks-widget': []
 		},
 		gridItemConfig: {
 			sizex: 1,

@@ -29,6 +29,6 @@ dashboard-page .actions-container .action-item .dashboard-toolbar-item {
 	padding-right: 5px;
 }
 
-dashboard-page .actions-container taskbarSeparator {
+dashboard-page .actions-container .taskbarSeparator {
 	height: 14px;
 }
