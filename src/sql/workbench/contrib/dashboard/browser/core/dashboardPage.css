@@ -27,6 +27,7 @@ dashboard-page .dashboard-panel .tab-header .action-item .action-label.close {
 dashboard-page .actions-container .action-item .dashboard-toolbar-item {
 	padding-left: 20px;
 	padding-right: 5px;
+	background-size: 16px;
 }
 
 dashboard-page .actions-container .taskbarSeparator {

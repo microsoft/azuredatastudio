@@ -6,7 +6,7 @@
 -->
 <panel class="dashboard-panel" (onTabChange)="handleTabChange($event)" (onTabClose)="handleTabClose($event)"
 	[actions]="panelActions">
-	<div #toolbar class="editor-toolbar" style="flex: 0 0 auto; display: flex; flex-flow: row; width: 100%; align-items: center;border-bottom-color:rgb(234, 234, 234); border-bottom-width: 1px; border-bottom-style: solid; height:26px;">
+	<div #toolbar [style.display]="showToolbar ? 'block': 'none'" class="editor-toolbar" style="flex: 0 0 auto; display: flex; flex-flow: row; width: 100%; align-items: center;border-bottom-color:rgb(234, 234, 234); border-bottom-width: 1px; border-bottom-style: solid; height:26px;">
 	</div>
 		<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize"
 		[identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions" [type]="tab.type">

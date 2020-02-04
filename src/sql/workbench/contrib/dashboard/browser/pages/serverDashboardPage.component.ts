@@ -64,8 +64,6 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 		} else {
 			this._letDashboardPromise = Promise.resolve();
 		}
-
-		this.showTaskbar = true;
 	}
 
 	ngOnInit() {

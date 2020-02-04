@@ -80,7 +80,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 	private _editEnabled = new Emitter<boolean>();
 	public readonly editEnabled: Event<boolean> = this._editEnabled.event;
-	public showTaskbar = false;
+	public showToolbar = false;
 	// tslint:disable:no-unused-variable
 	private readonly homeTabTitle: string = nls.localize('home', "Home");
 
@@ -181,7 +181,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 		let toolbarActions = [];
 		this._tasks.forEach(a => {
-			let iconClassName = TaskRegistry.getOrCreateTaskIconClassName(a) + ' dashboard-toolbar-item';
+			let iconClassName = `${TaskRegistry.getOrCreateTaskIconClassName(a)} dashboard-toolbar-item`;
 			console.error('iconClassName is ' + iconClassName);
 			toolbarActions.push(new ToolbarAction(a.id, a.title, iconClassName, this.runAction, this));
 		});
@@ -442,6 +442,11 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	public handleTabChange(tab: TabComponent): void {
+		if (tab.title === this.homeTabTitle) {
+			this.showToolbar = true;
+		} else {
+			this.showToolbar = false;
+		}
 		this._cd.detectChanges();
 		const localtab = this._tabs.find(i => i.id === tab.identifier);
 		this._editEnabled.fire(localtab.editable);

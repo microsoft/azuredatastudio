@@ -55,7 +55,7 @@ export class RefreshWidgetAction extends Action {
 
 	private static readonly ID = 'refreshWidget';
 	private static readonly LABEL = nls.localize('refreshWidget', "Refresh");
-	private static readonly CSSCLASS = 'refresh-toolbar dashboard-toolbar-item';
+	private static readonly CSSCLASS = 'refresh dashboard-toolbar-item';
 
 	constructor(
 		private refreshFn: () => void,

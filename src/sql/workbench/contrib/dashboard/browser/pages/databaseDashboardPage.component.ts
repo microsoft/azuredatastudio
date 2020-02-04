@@ -59,8 +59,6 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 			this.refresh(true);
 			this._cd.detectChanges();
 		}));
-
-		this.showTaskbar = false;
 	}
 
 	ngOnInit() {
