@@ -10,3 +10,4 @@ const localize = nls.loadMessageBundle();
 export const account = localize('azure.account', "Azure Account");
 export const subscription = localize('azure.account.subscription', "Subscription");
 export const resourceGroup = localize('azure.account.resourceGroup', "Resource Group");
+export const location = localize('azure.account.location', "Azure Location");
