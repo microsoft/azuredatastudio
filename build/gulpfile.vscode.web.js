@@ -35,6 +35,7 @@ const productionDependencies = deps.getProductionDependencies(WEB_FOLDER);
 const nodeModules = Object.keys(product.dependencies || {})
 	.concat(_.uniq(productionDependencies.map(d => d.name))).concat([
 		'rxjs/Observable',
+		'rxjs/add/observable/fromPromise',
 		'rxjs/Subject',
 		'rxjs/Observer',
 	]);
