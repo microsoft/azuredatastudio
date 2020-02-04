@@ -66,14 +66,15 @@ interface CreateContext {
 	onNewInputComponentCreated: (name: string, component: azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent, inputValueTransformer?: InputValueTransformer) => void;
 }
 
-export function createTextInput(view: azdata.ModelView, inputInfo: { defaultValue?: string, ariaLabel: string, required?: boolean, placeHolder?: string, width?: string }): azdata.InputBoxComponent {
+export function createTextInput(view: azdata.ModelView, inputInfo: { defaultValue?: string, ariaLabel: string, required?: boolean, placeHolder?: string, width?: string, enabled?: boolean }): azdata.InputBoxComponent {
 	return view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		value: inputInfo.defaultValue,
 		ariaLabel: inputInfo.ariaLabel,
 		inputType: 'text',
 		required: inputInfo.required,
 		placeHolder: inputInfo.placeHolder,
-		width: inputInfo.width
+		width: inputInfo.width,
+		enabled: inputInfo.enabled
 	}).component();
 }
 
@@ -326,7 +327,8 @@ function processTextField(context: FieldContext): void {
 		ariaLabel: context.fieldInfo.label,
 		required: context.fieldInfo.required,
 		placeHolder: context.fieldInfo.placeHolder,
-		width: context.fieldInfo.inputWidth
+		width: context.fieldInfo.inputWidth,
+		enabled: context.fieldInfo.enabled
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelPosition);
@@ -437,7 +439,7 @@ function processAzureAccountField(context: AzureAccountFieldContext): void {
 		handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
 	});
 	azdata.accounts.getAllAccounts().then((accounts: azdata.Account[]) => {
-		accountDropdown.values = [loc.localDeploy].concat(accounts.map(account => {
+		accountDropdown.values = [''].concat(accounts.map(account => {
 			const displayName = `${account.displayInfo.displayName} (${account.displayInfo.userId})`;
 			accountValueToAccountMap.set(displayName, account);
 			return displayName;
