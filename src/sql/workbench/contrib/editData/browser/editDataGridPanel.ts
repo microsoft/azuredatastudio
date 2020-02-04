@@ -1071,7 +1071,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			cellClasses += ' missing-value';
 		}
 		else if (Services.DBCellValue.isDBCellValue(value)) {
-			valueToDisplay = (value.displayValue + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			valueToDisplay = (value.displayValue + '');
 			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
 		}
 		else if (typeof value === 'string' || (value && value.text)) {
