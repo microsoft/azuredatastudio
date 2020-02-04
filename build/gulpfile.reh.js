@@ -61,6 +61,7 @@ const nodeModules = ['electron', 'original-fs']
 	.concat(baseModules)
 	.concat([
 		'rxjs/Observable',
+		'rxjs/add/observable/fromPromise',
 		'rxjs/Subject',
 		'rxjs/Observer',
 	]);
