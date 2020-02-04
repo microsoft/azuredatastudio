@@ -287,10 +287,10 @@ export class EditDataGridPanel extends GridParentComponent {
 			return;
 		}
 
-		if (this.isNullRow(this.currentCell.row)) {
-			self.addRow(this.currentCell.row);
-			self.refreshGrid();
-		}
+		// if (this.isNullRow(row)) {
+		// 	self.addRow(row);
+		// 	self.refreshGrid();
+		// }
 
 		let cellSelectTasks: Promise<void> = this.submitCurrentCellChange(
 			(result: EditUpdateCellResult) => {
@@ -547,9 +547,9 @@ export class EditDataGridPanel extends GridParentComponent {
 			if (this.isNullRow(this.currentCell.row)) {
 				refreshGrid = true;
 				// We've entered the "new row", so we need to add a row and jump to it
-				// updateCellPromise = updateCellPromise.then(() => {
-				// 	return self.addRow(this.currentCell.row);
-				// });
+				updateCellPromise = updateCellPromise.then(() => {
+					return self.addRow(this.currentCell.row);
+				});
 			}
 			// We're exiting a read/write cell after having changed the value, update the cell value in the service
 			updateCellPromise = updateCellPromise.then(() => {
