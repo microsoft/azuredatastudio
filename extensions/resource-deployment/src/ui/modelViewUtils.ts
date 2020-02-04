@@ -439,7 +439,9 @@ function processAzureAccountField(context: AzureAccountFieldContext): void {
 		handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
 	});
 	azdata.accounts.getAllAccounts().then((accounts: azdata.Account[]) => {
-		accountDropdown.values = [''].concat(accounts.map(account => {
+		// Append a blank value for the "default" option if the field isn't required, this will clear all the dropdowns when selected
+		const dropdownValues = context.fieldInfo.required ? [] : [''];
+		accountDropdown.values = dropdownValues.concat(accounts.map(account => {
 			const displayName = `${account.displayInfo.displayName} (${account.displayInfo.userId})`;
 			accountValueToAccountMap.set(displayName, account);
 			return displayName;
