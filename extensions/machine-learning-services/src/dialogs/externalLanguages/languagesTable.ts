@@ -6,8 +6,8 @@
 import * as azdata from 'azdata';
 import * as constants from '../../common/constants';
 import * as mssql from '../../../../mssql/src/mssql';
-import { LanguagesDialogModel } from './languagesDialogModel';
 import { LanguageViewBase } from './languageViewBase';
+import { ApiWrapper } from '../../common/apiWrapper';
 
 export class LanguagesTable extends LanguageViewBase {
 
@@ -16,8 +16,8 @@ export class LanguagesTable extends LanguageViewBase {
 	/**
 	 *
 	 */
-	constructor(private _modelBuilder: azdata.ModelBuilder, parent: LanguageViewBase, model: LanguagesDialogModel) {
-		super(model, parent);
+	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: LanguageViewBase) {
+		super(apiWrapper, parent.root, parent);
 		this._table = _modelBuilder.declarativeTable()
 			.withProperties<azdata.DeclarativeTableProperties>(
 				{
@@ -99,14 +99,14 @@ export class LanguagesTable extends LanguageViewBase {
 	public async loadData(): Promise<void> {
 		let languages: mssql.ExternalLanguage[] | undefined;
 
-		languages = await this._model.GetLanguageList();
+		languages = await this.listLanguages();
 		let tableData: any[][] = [];
 
 		if (languages) {
 
 			languages.forEach(language => {
 				if (!language.contents || language.contents.length === 0) {
-					language.contents.push(this._model.createNewContent());
+					language.contents.push(this.createNewContent());
 				}
 
 				tableData = tableData.concat(language.contents.map(content => this.createTableRow(language, content)));
@@ -122,14 +122,14 @@ export class LanguagesTable extends LanguageViewBase {
 				label: '',
 				title: constants.deleteTitle,
 				iconPath: {
-					dark: this._model.asAbsolutePath('images/dark/delete_inverse.svg'),
-					light: this._model.asAbsolutePath('images/light/delete.svg')
+					dark: this.asAbsolutePath('images/dark/delete_inverse.svg'),
+					light: this.asAbsolutePath('images/light/delete.svg')
 				},
 				width: 15,
 				height: 15
 			}).component();
 			dropLanguageButton.onDidClick(async () => {
-				this.onDeleteLanguage({
+				await this.deleteLanguage({
 					language: language,
 					content: content,
 					newLang: false
@@ -140,13 +140,13 @@ export class LanguagesTable extends LanguageViewBase {
 				label: '',
 				title: constants.deleteTitle,
 				iconPath: {
-					dark: this._model.asAbsolutePath('images/dark/edit_inverse.svg'),
-					light: this._model.asAbsolutePath('images/light/edit.svg')
+					dark: this.asAbsolutePath('images/dark/edit_inverse.svg'),
+					light: this.asAbsolutePath('images/light/edit.svg')
 				},
 				width: 15,
 				height: 15
 			}).component();
-			editLanguageButton.onDidClick(async () => {
+			editLanguageButton.onDidClick(() => {
 				this.onEditLanguage({
 					language: language,
 					content: content,

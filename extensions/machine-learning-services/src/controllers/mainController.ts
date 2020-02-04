@@ -17,6 +17,7 @@ import { ServerConfigWidget } from '../widgets/serverConfigWidgets';
 import { ServerConfigManager } from '../serverConfig/serverConfigManager';
 import { HttpClient } from '../common/httpClient';
 import { LanguageController } from '../dialogs/externalLanguages/languageController';
+import { LanguagesDialogModel } from '../dialogs/externalLanguages/languagesDialogModel';
 
 /**
  * The main controller class that initializes the extension
@@ -94,7 +95,8 @@ export default class MainController implements vscode.Disposable {
 		}));
 
 		let mssqlService = await this.getLanguageExtensionService();
-		let languageController = new LanguageController(this._apiWrapper, mssqlService, this._rootPath);
+		let languagesModel = new LanguagesDialogModel(this._apiWrapper, mssqlService);
+		let languageController = new LanguageController(this._apiWrapper, this._rootPath, languagesModel);
 
 		this._apiWrapper.registerCommand(constants.mlManageLanguagesCommand, (async () => {
 			await languageController.manageLanguages();

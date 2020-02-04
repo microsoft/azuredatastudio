@@ -3,13 +3,31 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { LanguagesDialogModel, LanguageUpdateModel, FileBrowseEventArgs } from './languagesDialogModel';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../../common/constants';
+import { ApiWrapper } from '../../common/apiWrapper';
+import * as mssql from '../../../../mssql/src/mssql';
+import * as path from 'path';
+
+export interface LanguageUpdateModel {
+	language: mssql.ExternalLanguage,
+	content: mssql.ExternalLanguageContent,
+	newLang: boolean
+}
+
+export interface FileBrowseEventArgs {
+	filePath: string,
+	target: string
+}
 
 export abstract class LanguageViewBase {
 	protected _dialog: azdata.window.Dialog | undefined;
+	public connection: azdata.connection.ConnectionProfile | undefined;
+	public connectionUrl: string = '';
+
+	// Events
+	//
 	protected _onEdit: vscode.EventEmitter<LanguageUpdateModel> = new vscode.EventEmitter<LanguageUpdateModel>();
 	public readonly onEdit: vscode.Event<LanguageUpdateModel> = this._onEdit.event;
 
@@ -28,14 +46,27 @@ export abstract class LanguageViewBase {
 	protected _onUpdated: vscode.EventEmitter<LanguageUpdateModel> = new vscode.EventEmitter<LanguageUpdateModel>();
 	public readonly onUpdated: vscode.Event<LanguageUpdateModel> = this._onUpdated.event;
 
-	protected _onUpdatedFailed: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
-	public readonly onUpdatedFailed: vscode.Event<any> = this._onUpdatedFailed.event;
+	protected _onList: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
+	public readonly onList: vscode.Event<void> = this._onList.event;
+
+	protected _onListLoaded: vscode.EventEmitter<mssql.ExternalLanguage[]> = new vscode.EventEmitter<mssql.ExternalLanguage[]>();
+	public readonly onListLoaded: vscode.Event<mssql.ExternalLanguage[]> = this._onListLoaded.event;
+
+	protected _onFailed: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	public readonly onFailed: vscode.Event<any> = this._onFailed.event;
 
 	public componentMaxLength = 350;
 	public browseButtonMaxLength = 20;
 	public spaceBetweenComponentsLength = 10;
 
-	constructor(protected _model: LanguagesDialogModel, protected _parent?: LanguageViewBase, ) {
+	constructor(protected _apiWrapper: ApiWrapper, protected _root?: string, protected _parent?: LanguageViewBase, ) {
+		if (this._parent) {
+			if (!this._root) {
+				this._root = this._parent.root;
+			}
+			this.connection = this._parent.connection;
+			this.connectionUrl = this._parent.connectionUrl;
+		}
 		this.registerEvents();
 	}
 
@@ -54,22 +85,53 @@ export abstract class LanguageViewBase {
 			this.onDelete(model => {
 				this._parent?.onDeleteLanguage(model);
 			});
+			this.onList(() => {
+				this._parent?.onListLanguages();
+			});
 			this._parent.filePathSelected(x => {
 				this.onFilePathSelected(x);
 			});
 			this._parent.onUpdated(x => {
 				this.onUpdatedLanguage(x);
 			});
-			this._parent.onUpdatedFailed(x => {
-				this.onUpdatedLanguageFailed(x);
+			this._parent.onFailed(x => {
+				this.onActionFailed(x);
+			});
+			this._parent.onListLoaded(x => {
+				this.onListLanguageLoaded(x);
 			});
 		}
 	}
-	/**
-	 * Dialog model instance
-	 */
-	public get model(): LanguagesDialogModel {
-		return this._model;
+	public async getLocationTitle(): Promise<string> {
+		let connection = await this.getCurrentConnection();
+		if (connection) {
+			return `${connection.serverName} ${connection.databaseName ? connection.databaseName : constants.extLangLocal}`;
+		}
+		return constants.packageManagerNoConnection;
+	}
+
+	public getServerTitle(): string {
+		if (this.connection) {
+			return this.connection.serverName;
+		}
+		return constants.packageManagerNoConnection;
+	}
+
+	private async getCurrentConnectionUrl(): Promise<string> {
+		let connection = await this.getCurrentConnection();
+		if (connection) {
+			return await this._apiWrapper.getUriForConnection(connection.connectionId);
+		}
+		return '';
+	}
+
+	private async getCurrentConnection(): Promise<azdata.connection.ConnectionProfile> {
+		return await this._apiWrapper.getCurrentConnection();
+	}
+
+	public async loadConnection(): Promise<void> {
+		this.connection = await this.getCurrentConnection();
+		this.connectionUrl = await this.getCurrentConnectionUrl();
 	}
 
 	public updateLanguage(updateModel: LanguageUpdateModel): Promise<void> {
@@ -78,7 +140,31 @@ export abstract class LanguageViewBase {
 			this.onUpdated(() => {
 				resolve();
 			});
-			this.onUpdatedFailed(err => {
+			this.onFailed(err => {
+				reject(err);
+			});
+		});
+	}
+
+	public deleteLanguage(model: LanguageUpdateModel): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
+			this.onDeleteLanguage(model);
+			this.onUpdated(() => {
+				resolve();
+			});
+			this.onFailed(err => {
+				reject(err);
+			});
+		});
+	}
+
+	public listLanguages(): Promise<mssql.ExternalLanguage[]> {
+		return new Promise<mssql.ExternalLanguage[]>((resolve, reject) => {
+			this.onListLanguages();
+			this.onListLoaded(list => {
+				resolve(list);
+			});
+			this.onFailed(err => {
 				reject(err);
 			});
 		});
@@ -111,8 +197,12 @@ export abstract class LanguageViewBase {
 		this._onUpdated.fire(model);
 	}
 
-	public onUpdatedLanguageFailed(error: any): void {
-		this._onUpdatedFailed.fire(error);
+	public onActionFailed(error: any): void {
+		this._onFailed.fire(error);
+	}
+
+	public onListLanguageLoaded(list: mssql.ExternalLanguage[]): void {
+		this._onListLoaded.fire(list);
 	}
 
 	public onEditLanguage(model: LanguageUpdateModel): void {
@@ -121,6 +211,10 @@ export abstract class LanguageViewBase {
 
 	public onDeleteLanguage(model: LanguageUpdateModel): void {
 		this._onDelete.fire(model);
+	}
+
+	public onListLanguages(): void {
+		this._onList.fire();
 	}
 
 	public onOpenFileBrowser(fileBrowseArgs: FileBrowseEventArgs): void {
@@ -140,5 +234,28 @@ export abstract class LanguageViewBase {
 		}
 	}
 
+	public get root(): string {
+		return this._root || '';
+	}
+
+	public asAbsolutePath(filePath: string): string {
+		return path.join(this._root || '', filePath);
+	}
+
 	public abstract reset(): Promise<void>;
+
+	public createNewContent(): mssql.ExternalLanguageContent {
+		return {
+			extensionFileName: '',
+			isLocalFile: true,
+			pathToExtension: '',
+		};
+	}
+
+	public createNewLanguage(): mssql.ExternalLanguage {
+		return {
+			name: '',
+			contents: []
+		};
+	}
 }

@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../../common/constants';
+import { ApiWrapper } from '../../common/apiWrapper';
 
 export class FileBrowserDialog {
 
@@ -16,7 +17,7 @@ export class FileBrowserDialog {
 	private _onPathSelected: vscode.EventEmitter<string> = new vscode.EventEmitter<string>();
 	public readonly onPathSelected: vscode.Event<string> = this._onPathSelected.event;
 
-	constructor(private ownerUri: string) {
+	constructor(private _apiWrapper: ApiWrapper, private ownerUri: string) {
 	}
 
 	/**
@@ -24,8 +25,8 @@ export class FileBrowserDialog {
 	 */
 	public showDialog(): void {
 		let fileBrowserTitle = '';
-		this._fileBrowserDialog = azdata.window.createModelViewDialog(fileBrowserTitle);
-		let fileBrowserTab = azdata.window.createTab(constants.extLangFileBrowserTabTitle);
+		this._fileBrowserDialog = this._apiWrapper.createModelViewDialog(fileBrowserTitle);
+		let fileBrowserTab = this._apiWrapper.createTab(constants.extLangFileBrowserTabTitle);
 		this._fileBrowserDialog.content = [fileBrowserTab];
 		fileBrowserTab.registerContent(async (view) => {
 			this._fileBrowserTree = view.modelBuilder.fileBrowserTree()
@@ -63,6 +64,6 @@ export class FileBrowserDialog {
 		});
 		this._fileBrowserDialog.okButton.label = constants.extLangOkButtonText;
 		this._fileBrowserDialog.cancelButton.label = constants.extLangCancelButtonText;
-		azdata.window.openDialog(this._fileBrowserDialog);
+		this._apiWrapper.openDialog(this._fileBrowserDialog);
 	}
 }

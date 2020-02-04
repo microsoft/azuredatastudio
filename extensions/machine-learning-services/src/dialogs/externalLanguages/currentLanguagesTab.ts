@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as constants from '../../common/constants';
 import { LanguageViewBase } from './languageViewBase';
 import { LanguagesTable } from './languagesTable';
-import { LanguagesDialogModel } from './languagesDialogModel';
+import { ApiWrapper } from '../../common/apiWrapper';
 
 export class CurrentLanguagesTab extends LanguageViewBase {
 
@@ -19,20 +19,20 @@ export class CurrentLanguagesTab extends LanguageViewBase {
 	private _languageTable: LanguagesTable | undefined;
 	private _loader: azdata.LoadingComponent | undefined;
 
-	constructor(parent: LanguageViewBase, model: LanguagesDialogModel) {
-		super(model, parent);
-		this._installedLangsTab = azdata.window.createTab(constants.extLangInstallTabTitle);
+	constructor(apiWrapper: ApiWrapper, parent: LanguageViewBase) {
+		super(apiWrapper, parent.root, parent);
+		this._installedLangsTab = this._apiWrapper.createTab(constants.extLangInstallTabTitle);
 
 		this._installedLangsTab.registerContent(async view => {
 
 			// TODO: only supporting single location for now. We should add a drop down for multi locations mode
 			//
-			let locationTitle = await this._model.getLocationTitle();
+			let locationTitle = await this.getLocationTitle();
 			this._locationComponent = view.modelBuilder.text().withProperties({
 				value: locationTitle
 			}).component();
 
-			this._languageTable = new LanguagesTable(view.modelBuilder, this, model);
+			this._languageTable = new LanguagesTable(apiWrapper, view.modelBuilder, this);
 			this._installLanguagesTable = this._languageTable.table;
 
 			let formModel = view.modelBuilder.formContainer()

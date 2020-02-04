@@ -5,31 +5,31 @@
 
 import * as azdata from 'azdata';
 import * as mssql from '../../../../mssql/src/mssql';
-import { LanguagesDialogModel } from './languagesDialogModel';
 import { LanguageViewBase } from './languageViewBase';
 import * as constants from '../../common/constants';
+import { ApiWrapper } from '../../common/apiWrapper';
 
 export class LanguageContentView extends LanguageViewBase {
 
 	private _serverPath: azdata.RadioButtonComponent;
 	private _localPath: azdata.RadioButtonComponent;
-	private _extensionFile: azdata.TextComponent;
-	private _extensionFileName: azdata.TextComponent;
-	private _envVariables: azdata.TextComponent;
-	private _parameters: azdata.TextComponent;
+	public extensionFile: azdata.TextComponent;
+	public extensionFileName: azdata.TextComponent;
+	public envVariables: azdata.TextComponent;
+	public parameters: azdata.TextComponent;
 	private _isLocalPath: boolean = true;
 
 	/**
 	 *
 	 */
 	constructor(
+		apiWrapper: ApiWrapper,
 		parent: LanguageViewBase,
-		model: LanguagesDialogModel,
 		private _modelBuilder: azdata.ModelBuilder,
 		private _formBuilder: azdata.FormBuilder,
 		private _languageContent: mssql.ExternalLanguageContent | undefined,
 	) {
-		super(model, parent);
+		super(apiWrapper, parent.root, parent);
 		this._localPath = this._modelBuilder.radioButton()
 			.withProperties({
 				value: 'local',
@@ -42,7 +42,7 @@ export class LanguageContentView extends LanguageViewBase {
 			.withProperties({
 				value: 'server',
 				name: 'extensionLocation',
-				label: model.getServerTitle(),
+				label: this.getServerTitle(),
 			}).component();
 
 		this._localPath.onDidClick(() => {
@@ -62,7 +62,7 @@ export class LanguageContentView extends LanguageViewBase {
 				this._localPath, this._serverPath]
 			).component();
 
-		this._extensionFile = this._modelBuilder.inputBox().withProperties({
+		this.extensionFile = this._modelBuilder.inputBox().withProperties({
 			value: '',
 			width: parent.componentMaxLength - parent.browseButtonMaxLength - parent.spaceBetweenComponentsLength
 		}).component();
@@ -79,25 +79,25 @@ export class LanguageContentView extends LanguageViewBase {
 				flexFlow: 'row',
 				justifyContent: 'space-between'
 			}).withItems([
-				this._extensionFile, fileBrowser]
+				this.extensionFile, fileBrowser]
 			).component();
 		this.filePathSelected(args => {
-			this._extensionFile.value = args.filePath;
+			this.extensionFile.value = args.filePath;
 		});
 		fileBrowser.onDidClick(async () => {
-			this.onOpenFileBrowser({ filePath: '', target: this._isLocalPath ? constants.localhost : this._model.connectionUrl });
+			this.onOpenFileBrowser({ filePath: '', target: this._isLocalPath ? constants.localhost : this.connectionUrl });
 		});
 
-		this._extensionFileName = this._modelBuilder.inputBox().withProperties({
+		this.extensionFileName = this._modelBuilder.inputBox().withProperties({
 			value: '',
 			width: parent.componentMaxLength
 		}).component();
 
-		this._envVariables = this._modelBuilder.inputBox().withProperties({
+		this.envVariables = this._modelBuilder.inputBox().withProperties({
 			value: '',
 			width: parent.componentMaxLength
 		}).component();
-		this._parameters = this._modelBuilder.inputBox().withProperties({
+		this.parameters = this._modelBuilder.inputBox().withProperties({
 			value: '',
 			width: parent.componentMaxLength
 		}).component();
@@ -112,14 +112,14 @@ export class LanguageContentView extends LanguageViewBase {
 			title: constants.extLangExtensionFilePath,
 			required: true
 		}, {
-			component: this._extensionFileName,
+			component: this.extensionFileName,
 			title: constants.extLangExtensionFileName,
 			required: true
 		}, {
-			component: this._envVariables,
+			component: this.envVariables,
 			title: constants.extLangEnvVariables
 		}, {
-			component: this._parameters,
+			component: this.parameters,
 			title: constants.extLangParameters
 		}]);
 	}
@@ -129,10 +129,10 @@ export class LanguageContentView extends LanguageViewBase {
 			this._isLocalPath = this._languageContent.isLocalFile;
 			this._localPath.checked = this._isLocalPath;
 			this._serverPath.checked = !this._isLocalPath;
-			this._extensionFile.value = this._languageContent.pathToExtension;
-			this._extensionFileName.value = this._languageContent.extensionFileName;
-			this._envVariables.value = this._languageContent.environmentVariables;
-			this._parameters.value = this._languageContent.parameters;
+			this.extensionFile.value = this._languageContent.pathToExtension;
+			this.extensionFileName.value = this._languageContent.extensionFileName;
+			this.envVariables.value = this._languageContent.environmentVariables;
+			this.parameters.value = this._languageContent.parameters;
 		}
 	}
 
@@ -148,10 +148,10 @@ export class LanguageContentView extends LanguageViewBase {
 
 	public get updatedContent(): mssql.ExternalLanguageContent {
 		return {
-			pathToExtension: this._extensionFile.value || '',
-			extensionFileName: this._extensionFileName.value || '',
-			parameters: this._parameters.value || '',
-			environmentVariables: this._envVariables.value || '',
+			pathToExtension: this.extensionFile.value || '',
+			extensionFileName: this.extensionFileName.value || '',
+			parameters: this.parameters.value || '',
+			environmentVariables: this.envVariables.value || '',
 			isLocalFile: this._isLocalPath || false,
 			platform: this._languageContent?.platform
 		};

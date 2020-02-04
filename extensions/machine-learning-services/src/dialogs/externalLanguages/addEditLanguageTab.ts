@@ -5,47 +5,48 @@
 
 import * as azdata from 'azdata';
 import * as constants from '../../common/constants';
-import { LanguageViewBase } from './languageViewBase';
+import { LanguageViewBase, LanguageUpdateModel } from './languageViewBase';
 import { LanguageContentView } from './languageContentView';
-import { LanguagesDialogModel, LanguageUpdateModel } from './languagesDialogModel';
+import { ApiWrapper } from '../../common/apiWrapper';
 
 export class AddEditLanguageTab extends LanguageViewBase {
 	private _dialogTab: azdata.window.DialogTab;
-	private _languageName: azdata.TextComponent | undefined;
+	public languageName: azdata.TextComponent | undefined;
 	private _editMode: boolean = false;
-	private _saveButton: azdata.ButtonComponent | undefined;
-	private _languageView: LanguageContentView | undefined;
+	public saveButton: azdata.ButtonComponent | undefined;
+	public languageView: LanguageContentView | undefined;
 
-	constructor(parent: LanguageViewBase, model: LanguagesDialogModel, private _languageUpdateModel: LanguageUpdateModel) {
-		super(model, parent);
+	constructor(
+		apiWrapper: ApiWrapper,
+		parent: LanguageViewBase,
+		private _languageUpdateModel: LanguageUpdateModel) {
+		super(apiWrapper, parent.root, parent);
 		this._editMode = !this._languageUpdateModel.newLang;
-		let language = this._languageUpdateModel.language;
-		let content = this._languageUpdateModel.content;
-
-		this._dialogTab = azdata.window.createTab(constants.extLangNewLanguageTabTitle);
+		this._dialogTab = apiWrapper.createTab(constants.extLangNewLanguageTabTitle);
 		this._dialogTab.registerContent(async view => {
-
-			this._languageName = view.modelBuilder.inputBox().withProperties({
+			let language = this._languageUpdateModel.language;
+			let content = this._languageUpdateModel.content;
+			this.languageName = view.modelBuilder.inputBox().withProperties({
 				value: language.name,
-				width: '150px'
+				width: '150px',
+				enabled: !this._editMode
 			}).withValidation(component => component.value !== '').component();
-			this._languageName.enabled = !this._editMode;
 
 			let formBuilder = view.modelBuilder.formContainer();
 			formBuilder.addFormItem({
-				component: this._languageName,
+				component: this.languageName,
 				title: constants.extLangLanguageName,
 				required: true
 			});
 
-			this._languageView = new LanguageContentView(this, this._model, view.modelBuilder, formBuilder, content);
+			this.languageView = new LanguageContentView(this._apiWrapper, this, view.modelBuilder, formBuilder, content);
 
 			if (!this._editMode) {
-				this._saveButton = view.modelBuilder.button().withProperties({
+				this.saveButton = view.modelBuilder.button().withProperties({
 					label: constants.extLangInstallButtonText,
 					width: '100px'
 				}).component();
-				this._saveButton.onDidClick(async () => {
+				this.saveButton.onDidClick(async () => {
 					try {
 						await this.updateLanguage(this.updatedData);
 					} catch (err) {
@@ -54,7 +55,7 @@ export class AddEditLanguageTab extends LanguageViewBase {
 				});
 
 				formBuilder.addFormItem({
-					component: this._saveButton,
+					component: this.saveButton,
 					title: ''
 				});
 			}
@@ -67,10 +68,10 @@ export class AddEditLanguageTab extends LanguageViewBase {
 	public get updatedData(): LanguageUpdateModel {
 		return {
 			language: {
-				name: this._languageName?.value || '',
+				name: this.languageName?.value || '',
 				contents: this._languageUpdateModel.language.contents
 			},
-			content: this._languageView?.updatedContent || this._languageUpdateModel.content,
+			content: this.languageView?.updatedContent || this._languageUpdateModel.content,
 			newLang: this._languageUpdateModel.newLang
 		};
 	}
@@ -81,10 +82,10 @@ export class AddEditLanguageTab extends LanguageViewBase {
 
 	public async reset(): Promise<void> {
 		try {
-			if (this._languageName) {
-				this._languageName.value = '';
+			if (this.languageName) {
+				this.languageName.value = '';
 			}
-			this._languageView?.reset();
+			this.languageView?.reset();
 		} finally {
 		}
 	}
