@@ -14,7 +14,8 @@
 	"activationEvents": [
     "onCommand:bigDataClusters.command.mount",
     "onCommand:bigDataClusters.command.refreshmount",
-    "onCommand:bigDataClusters.command.deletemount",
+	"onCommand:bigDataClusters.command.deletemount",
+	"onCommand:bigDataClusters.command.manageController",
     "onView:sqlBigDataCluster"
 	],
 	"repository": {
