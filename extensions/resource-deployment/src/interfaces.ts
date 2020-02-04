@@ -175,6 +175,8 @@ export interface FieldInfo {
 export interface AzureAccountFieldInfo extends FieldInfo {
 	subscriptionVariableName?: string;
 	resourceGroupVariableName?: string;
+	locationVariableName?: string;
+	locations?: string[]
 }
 
 export const enum LabelPosition {
