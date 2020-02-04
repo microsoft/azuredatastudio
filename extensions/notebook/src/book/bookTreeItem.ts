@@ -82,7 +82,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		let i = --index;
 		while (i > -1) {
 			if (this.book.tableOfContents.sections[i].url) {
-				// TODO: Currently only navigating to notebooks. Need to add logic for markdown.
+				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
 				let pathToNotebook = path.posix.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
 				// eslint-disable-next-line no-sync
 				if (fs.existsSync(pathToNotebook)) {
@@ -98,7 +98,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		let i = ++index;
 		while (i < this.book.tableOfContents.sections.length) {
 			if (this.book.tableOfContents.sections[i].url) {
-				// TODO: Currently only navigating to notebooks. Need to add logic for markdown.
+				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
 				let pathToNotebook = path.posix.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
 				// eslint-disable-next-line no-sync
 				if (fs.existsSync(pathToNotebook)) {
