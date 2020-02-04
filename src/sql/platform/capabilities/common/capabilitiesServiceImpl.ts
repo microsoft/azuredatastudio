@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
@@ -11,8 +10,6 @@ import * as azdata from 'azdata';
 
 import { toObject } from 'sql/base/common/map';
 import { ICapabilitiesService, ProviderFeatures, clientCapabilities, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
-import { find } from 'vs/base/common/arrays';
-import { onUnexpectedError } from 'vs/base/common/errors';
 
 /**
  * Capabilities service implementation class.  This class provides the ability
@@ -26,25 +23,6 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 
 	private _onCapabilitiesRegistered = this._register(new Emitter<ProviderFeatures>());
 	public readonly onCapabilitiesRegistered = this._onCapabilitiesRegistered.event;
-
-	constructor(
-		@IExtensionManagementService extensionManagementService: IExtensionManagementService
-	) {
-		super();
-
-		this._register(extensionManagementService.onDidUninstallExtension(({ identifier }) => {
-			const connectionProvider = 'connectionProvider';
-			extensionService.getExtensions().then(i => {
-				let extension = find(i, c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
-				if (extension && extension.contributes
-					&& extension.contributes[connectionProvider]
-					&& extension.contributes[connectionProvider].providerId) {
-					let id = extension.contributes[connectionProvider].providerId;
-					delete this.capabilities.connectionProviderCache[id];
-				}
-			}).catch(err => onUnexpectedError(err));
-		}));
-	}
 
 	private handleConnectionProvider(e: { id: string, properties: ConnectionProviderProperties }, isNew = true): void {
 

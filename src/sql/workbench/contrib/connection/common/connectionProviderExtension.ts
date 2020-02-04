@@ -11,7 +11,11 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
 
 import * as resources from 'vs/base/common/resources';
-import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionProviderProperties, ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
+import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import type { IDisposable } from 'vs/base/common/lifecycle';
+import { isArray } from 'vs/base/common/types';
 
 export const Extensions = {
 	ConnectionProviderContributions: 'connection.providers'
@@ -166,24 +170,42 @@ const ConnectionProviderContrib: IJSONSchema = {
 	required: ['providerId']
 };
 
-ExtensionsRegistry.registerExtensionPoint<ConnectionProviderProperties | ConnectionProviderProperties[]>({ extensionPoint: 'connectionProvider', jsonSchema: ConnectionProviderContrib }).setHandler(extensions => {
+const connectionProviderExtPoint = ExtensionsRegistry.registerExtensionPoint<ConnectionProviderProperties | ConnectionProviderProperties[]>({ extensionPoint: 'connectionProvider', jsonSchema: ConnectionProviderContrib });
 
-	function handleCommand(contrib: ConnectionProviderProperties, extension: IExtensionPointUser<any>) {
-		connectionRegistry.registerConnectionProvider(contrib.providerId, contrib);
-	}
+class ResourceLabelFormattersHandler implements IWorkbenchContribution {
+	private disposables = new Map<ConnectionProviderProperties, IDisposable>();
 
-	for (let extension of extensions) {
-		const { value } = extension;
-		resolveIconPath(extension);
-		if (Array.isArray<ConnectionProviderProperties>(value)) {
-			for (let command of value) {
-				handleCommand(command, extension);
+	constructor(@ICapabilitiesService capabilitiesService: ICapabilitiesService) {
+		connectionProviderExtPoint.setHandler((extensions, delta) => {
+
+			function handleProvider(contrib: ConnectionProviderProperties) {
+				return capabilitiesService.registerConnectionProvider(contrib.providerId, contrib);
 			}
-		} else {
-			handleCommand(value, extension);
-		}
+
+			delta.added.forEach(added => {
+				resolveIconPath(added);
+				if (isArray(added.value)) {
+					for (const provider of added.value) {
+						this.disposables.set(provider, handleProvider(provider));
+					}
+				} else {
+					this.disposables.set(added.value, handleProvider(added.value));
+				}
+			});
+			delta.removed.forEach(removed => {
+				if (isArray(removed.value)) {
+					for (const provider of removed.value) {
+						this.disposables.get(provider)!.dispose();
+					}
+				} else {
+					this.disposables.get(removed.value)!.dispose();
+				}
+			});
+		});
 	}
-});
+}
+
+Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(ResourceLabelFormattersHandler, LifecyclePhase.Restored);
 
 function resolveIconPath(extension: IExtensionPointUser<any>): void {
 	if (!extension || !extension.value) { return undefined; }
