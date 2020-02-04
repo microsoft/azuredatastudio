@@ -67,7 +67,8 @@ export class BookTreeItem extends vscode.TreeItem {
 
 	private setCommand() {
 		if (this.book.type === BookTreeItemType.Notebook) {
-			let pathToNotebook = path.join(this.book.root, 'content', this._uri.concat('.ipynb'));
+			// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
+			const pathToNotebook = path.posix.join(this.book.root, 'content', this._uri.concat('.ipynb'));
 			this.command = { command: this.book.isUntitled ? 'bookTreeView.openUntitledNotebook' : 'bookTreeView.openNotebook', title: loc.openNotebookCommand, arguments: [pathToNotebook], };
 		} else if (this.book.type === BookTreeItemType.Markdown) {
 			let pathToMarkdown = path.join(this.book.root, 'content', this._uri.concat('.md'));
