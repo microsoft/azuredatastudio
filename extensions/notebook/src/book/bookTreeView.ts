@@ -97,7 +97,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			const sectionToOpen = bookRoot.findChildSection(urlToOpen);
 			const urlPath = sectionToOpen ? sectionToOpen.url : bookRoot.tableOfContents.sections[0].url;
 			const sectionToOpenMarkdown: string = path.join(this.currentBook.bookPath, 'content', urlPath.concat('.md'));
-			const sectionToOpenNotebook: string = path.join(this.currentBook.bookPath, 'content', urlPath.concat('.ipynb'));
+			// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
+			const sectionToOpenNotebook: string = path.posix.join(this.currentBook.bookPath, 'content', urlPath.concat('.ipynb'));
 			if (await fs.pathExists(sectionToOpenMarkdown)) {
 				this.openMarkdown(sectionToOpenMarkdown);
 			}
