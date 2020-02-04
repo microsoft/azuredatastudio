@@ -47,7 +47,6 @@ describe('CmsResourceTreeProvider.getChildren', function (): void {
 		const children = await treeProvider.getChildren(undefined);
 		should.equal(children.length, 1, 'Expected exactly one child node');
 		should.equal(children[0].parent, undefined, 'Expected node to not have a parent');
-		console.log(children[0].getNodeInfo().label);
 		should.equal(children[0] instanceof CmsResourceMessageTreeNode, true, 'Expected node to be a CmsResourceMessageTreeNode');
 	});
 
@@ -57,7 +56,6 @@ describe('CmsResourceTreeProvider.getChildren', function (): void {
 		const children = await treeProvider.getChildren(undefined);
 		should.equal(children.length, 1, 'Expected exactly one child node');
 		should.equal(children[0].parent, undefined, 'Expected node to not have a parent');
-		console.log(children[0].getNodeInfo().label);
 		should.equal(children[0] instanceof CmsResourceEmptyTreeNode, true, 'Expected node to be a CmsResourceEmptyTreeNode');
 	});
 
