@@ -711,11 +711,11 @@
           "categoryValues": [
             {
               "displayName": "%mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS%",
-              "name": "%mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS%"
+              "name": "HGS"
             },
             {
               "displayName": "%mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS%",
-              "name": "%mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS%"
+              "name": "AAS"
             }
           ],
           "isRequired": false,
