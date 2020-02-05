@@ -543,7 +543,7 @@ export class ToggleAutoSaveAction extends Action {
 }
 
 export abstract class BaseSaveAllAction extends Action {
-	private lastIsDirty: boolean;
+	private lastDirtyState: boolean;
 
 	constructor(
 		id: string,
@@ -554,8 +554,8 @@ export abstract class BaseSaveAllAction extends Action {
 	) {
 		super(id, label);
 
-		this.lastIsDirty = this.workingCopyService.hasDirty;
-		this.enabled = this.lastIsDirty;
+		this.lastDirtyState = this.workingCopyService.hasDirty;
+		this.enabled = this.lastDirtyState;
 
 		this.registerListeners();
 	}
@@ -565,14 +565,14 @@ export abstract class BaseSaveAllAction extends Action {
 	private registerListeners(): void {
 
 		// update enablement based on working copy changes
-		this._register(this.workingCopyService.onDidChangeDirty(w => this.updateEnablement(w)));
+		this._register(this.workingCopyService.onDidChangeDirty(workingCopy => this.updateEnablement(workingCopy)));
 	}
 
 	private updateEnablement(workingCopy: IWorkingCopy): void {
 		const hasDirty = workingCopy.isDirty() || this.workingCopyService.hasDirty;
-		if (this.lastIsDirty !== hasDirty) {
+		if (this.lastDirtyState !== hasDirty) {
 			this.enabled = hasDirty;
-			this.lastIsDirty = this.enabled;
+			this.lastDirtyState = this.enabled;
 		}
 	}
 
