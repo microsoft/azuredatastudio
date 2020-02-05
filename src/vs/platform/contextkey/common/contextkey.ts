@@ -309,10 +309,9 @@ export class ContextKeyEqualsExpr implements ContextKeyExpr {
 	}
 
 	public evaluate(context: IContext): boolean {
-		/* tslint:disable:triple-equals */
 		// Intentional ==
+		// eslint-disable-next-line eqeqeq
 		return (context.getValue(this.key) == this.value);
-		/* tslint:enable:triple-equals */
 	}
 
 	public serialize(): string {
@@ -375,10 +374,9 @@ export class ContextKeyNotEqualsExpr implements ContextKeyExpr {
 	}
 
 	public evaluate(context: IContext): boolean {
-		/* tslint:disable:triple-equals */
 		// Intentional !=
+		// eslint-disable-next-line eqeqeq
 		return (context.getValue(this.key) != this.value);
-		/* tslint:enable:triple-equals */
 	}
 
 	public serialize(): string {

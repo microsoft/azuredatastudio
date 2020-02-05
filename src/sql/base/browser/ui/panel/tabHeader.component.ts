@@ -29,17 +29,17 @@ import { CloseTabAction } from 'sql/base/browser/ui/panel/tabActions';
 	`
 })
 export class TabHeaderComponent extends Disposable implements AfterContentInit, OnDestroy {
-	@Input() public tab: TabComponent;
-	@Input() public showIcon: boolean;
-	@Input() public active: boolean;
+	@Input() public tab!: TabComponent;
+	@Input() public showIcon?: boolean;
+	@Input() public active?: boolean;
 	@Output() public onSelectTab: EventEmitter<TabComponent> = new EventEmitter<TabComponent>();
 	@Output() public onCloseTab: EventEmitter<TabComponent> = new EventEmitter<TabComponent>();
 
-	private _actionbar: ActionBar;
+	private _actionbar!: ActionBar;
 
-	@ViewChild('actionHeader', { read: ElementRef }) private _actionHeaderRef: ElementRef;
-	@ViewChild('actionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
-	@ViewChild('tabLabel', { read: ElementRef }) private _tabLabelRef: ElementRef;
+	@ViewChild('actionHeader', { read: ElementRef }) private _actionHeaderRef!: ElementRef;
+	@ViewChild('actionbar', { read: ElementRef }) private _actionbarRef!: ElementRef;
+	@ViewChild('tabLabel', { read: ElementRef }) private _tabLabelRef!: ElementRef;
 	constructor() {
 		super();
 	}

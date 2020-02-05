@@ -11,7 +11,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { TasksPanel } from 'sql/workbench/contrib/tasks/browser/tasksPanel';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import * as ext from 'vs/workbench/common/contributions';
-import { ITaskService } from 'sql/platform/tasks/common/tasksService';
+import { ITaskService } from 'sql/workbench/services/tasks/common/tasksService';
 import { IActivityService, NumberBadge } from 'vs/workbench/services/activity/common/activity';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { PanelRegistry, Extensions as PanelExtensions, PanelDescriptor } from 'vs/workbench/browser/panel';

@@ -9,9 +9,8 @@ import { ICapabilitiesService, ProviderFeatures } from 'sql/platform/capabilitie
 import { ConnectionConfig, ISaveGroupResult } from 'sql/platform/connection/common/connectionConfig';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { IConnectionProfile, IConnectionProfileStore } from 'sql/platform/connection/common/interfaces';
+import { IConnectionProfile, IConnectionProfileStore, ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
-import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import * as TypeMoq from 'typemoq';
 import { Emitter } from 'vs/base/common/event';
@@ -126,11 +125,11 @@ suite('ConnectionConfig', () => {
 			options: [
 				{
 					name: 'serverName',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
+					displayName: undefined!,
+					description: undefined!,
+					groupName: undefined!,
+					categoryValues: undefined!,
+					defaultValue: undefined!,
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.serverName,
@@ -138,11 +137,11 @@ suite('ConnectionConfig', () => {
 				},
 				{
 					name: 'databaseName',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
+					displayName: undefined!,
+					description: undefined!,
+					groupName: undefined!,
+					categoryValues: undefined!,
+					defaultValue: undefined!,
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.databaseName,
@@ -150,11 +149,11 @@ suite('ConnectionConfig', () => {
 				},
 				{
 					name: 'userName',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
+					displayName: undefined!,
+					description: undefined!,
+					groupName: undefined!,
+					categoryValues: undefined!,
+					defaultValue: undefined!,
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.userName,
@@ -162,11 +161,11 @@ suite('ConnectionConfig', () => {
 				},
 				{
 					name: 'authenticationType',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
+					displayName: undefined!,
+					description: undefined!,
+					groupName: undefined!,
+					categoryValues: undefined!,
+					defaultValue: undefined!,
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.authType,
@@ -174,11 +173,11 @@ suite('ConnectionConfig', () => {
 				},
 				{
 					name: 'password',
-					displayName: undefined,
-					description: undefined,
-					groupName: undefined,
-					categoryValues: undefined,
-					defaultValue: undefined,
+					displayName: undefined!,
+					description: undefined!,
+					groupName: undefined!,
+					categoryValues: undefined!,
+					defaultValue: undefined!,
 					isIdentity: true,
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.password,
@@ -218,7 +217,7 @@ suite('ConnectionConfig', () => {
 			}
 
 			// weird way to verify that each group appears the same number of times in each array
-			let result = groupsAreEqual(groups1.filter(a => a.parentId === group.id), groups2.filter(b => b.parentId === g2.id));
+			let result = groupsAreEqual(groups1.filter(a => a.parentId === group.id), groups2.filter(b => b.parentId === g2!.id));
 			if (!result) {
 				return false;
 			}
@@ -251,13 +250,13 @@ suite('ConnectionConfig', () => {
 			savePassword: true,
 			groupFullName: undefined,
 			groupId: undefined,
-			getOptionsKey: undefined,
-			matches: undefined,
+			getOptionsKey: undefined!,
+			matches: undefined!,
 			providerName: 'MSSQL',
 			options: {},
 			saveProfile: true,
-			id: undefined,
-			connectionName: undefined
+			id: undefined!,
+			connectionName: undefined!
 		};
 
 		let configurationService = new TestConfigurationService();
@@ -269,7 +268,7 @@ suite('ConnectionConfig', () => {
 		let savedConnectionProfile = await config.addConnection(connectionProfile);
 
 		assert.ok(!!savedConnectionProfile.id);
-		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue.length, testConnections.length + 1);
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!.length, testConnections.length + 1);
 	});
 
 	test('addConnection should not add the new profile to user settings if already exists', async () => {
@@ -283,13 +282,13 @@ suite('ConnectionConfig', () => {
 			groupId: existingConnection.groupId,
 			savePassword: true,
 			groupFullName: undefined,
-			getOptionsKey: undefined,
-			matches: undefined,
+			getOptionsKey: undefined!,
+			matches: undefined!,
 			providerName: 'MSSQL',
 			options: {},
 			saveProfile: true,
-			id: undefined,
-			connectionName: undefined
+			id: undefined!,
+			connectionName: undefined!
 		};
 
 		let configurationService = new TestConfigurationService();
@@ -303,7 +302,7 @@ suite('ConnectionConfig', () => {
 		let savedConnectionProfile = await config.addConnection(connectionProfile);
 
 		assert.equal(savedConnectionProfile.id, existingConnection.id);
-		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue.length, testConnections.length);
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!.length, testConnections.length);
 	});
 
 	test('addConnection should add the new group to user settings if does not exist', async () => {
@@ -316,13 +315,13 @@ suite('ConnectionConfig', () => {
 			savePassword: true,
 			groupFullName: 'g2/g2-2',
 			groupId: undefined,
-			getOptionsKey: undefined,
-			matches: undefined,
+			getOptionsKey: undefined!,
+			matches: undefined!,
 			providerName: 'MSSQL',
 			options: {},
 			saveProfile: true,
-			id: undefined,
-			connectionName: undefined
+			id: undefined!,
+			connectionName: undefined!
 		};
 
 		let configurationService = new TestConfigurationService();
@@ -333,8 +332,8 @@ suite('ConnectionConfig', () => {
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.addConnection(connectionProfile);
 
-		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue.length, testConnections.length + 1);
-		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connectionGroups').userValue.length, testGroups.length + 1);
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!.length, testConnections.length + 1);
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connectionGroups').userValue!.length, testGroups.length + 1);
 	});
 
 	test('getConnections should return connections from user and workspace settings given getWorkspaceConnections set to true', () => {
@@ -363,7 +362,7 @@ suite('ConnectionConfig', () => {
 			return c;
 		});
 		let userConnections = deepClone(testConnections).map(c => {
-			c.id = undefined;
+			c.id = undefined!;
 			return c;
 		});
 		let configurationService = new TestConfigurationService();
@@ -381,13 +380,13 @@ suite('ConnectionConfig', () => {
 			} else {
 				let workspaceConnection = find(workspaceConnections, u => u.options['serverName'] === connection.serverName);
 				assert.notEqual(connection.id, connection.getOptionsKey());
-				assert.equal(workspaceConnection.id, connection.id);
+				assert.equal(workspaceConnection!.id, connection.id);
 			}
 		});
 	});
 
 	test('saveGroup should save the new groups to tree and return the id of the last group name', () => {
-		let config = new ConnectionConfig(undefined, undefined);
+		let config = new ConnectionConfig(undefined!, undefined!);
 		let groups: IConnectionProfileGroup[] = deepClone(testGroups);
 		let newGroups: string = 'ROOT/g1/g1-1/new-group/new-group2';
 		let color: string = 'red';
@@ -396,11 +395,11 @@ suite('ConnectionConfig', () => {
 		assert.ok(!!result);
 		assert.equal(result.groups.length, testGroups.length + 2, 'The result groups length is invalid');
 		let newGroup = find(result.groups, g => g.name === 'new-group2');
-		assert.equal(result.newGroupId, newGroup.id, 'The groups id is invalid');
+		assert.equal(result.newGroupId, newGroup!.id, 'The groups id is invalid');
 	});
 
 	test('saveGroup should only add the groups that are not in the tree', () => {
-		let config = new ConnectionConfig(undefined, undefined);
+		let config = new ConnectionConfig(undefined!, undefined!);
 		let groups: IConnectionProfileGroup[] = deepClone(testGroups);
 		let newGroups: string = 'ROOT/g2/g2-5';
 		let color: string = 'red';
@@ -409,11 +408,11 @@ suite('ConnectionConfig', () => {
 		assert.ok(!!result);
 		assert.equal(result.groups.length, testGroups.length + 1, 'The result groups length is invalid');
 		let newGroup = find(result.groups, g => g.name === 'g2-5');
-		assert.equal(result.newGroupId, newGroup.id, 'The groups id is invalid');
+		assert.equal(result.newGroupId, newGroup!.id, 'The groups id is invalid');
 	});
 
 	test('saveGroup should not add any new group if tree already has all the groups in the full path', () => {
-		let config = new ConnectionConfig(undefined, undefined);
+		let config = new ConnectionConfig(undefined!, undefined!);
 		let groups: IConnectionProfileGroup[] = deepClone(testGroups);
 		let newGroups: string = 'ROOT/g2/g2-1';
 		let color: string = 'red';
@@ -422,7 +421,7 @@ suite('ConnectionConfig', () => {
 		assert.ok(!!result);
 		assert.equal(result.groups.length, testGroups.length, 'The result groups length is invalid');
 		let newGroup = find(result.groups, g => g.name === 'g2-1');
-		assert.equal(result.newGroupId, newGroup.id, 'The groups id is invalid');
+		assert.equal(result.newGroupId, newGroup!.id, 'The groups id is invalid');
 	});
 
 	test('deleteConnection should remove the connection from config', async () => {
@@ -435,13 +434,13 @@ suite('ConnectionConfig', () => {
 			savePassword: true,
 			groupFullName: 'g3',
 			groupId: 'g3',
-			getOptionsKey: undefined,
-			matches: undefined,
+			getOptionsKey: undefined!,
+			matches: undefined!,
 			providerName: 'MSSQL',
 			options: {},
 			saveProfile: true,
-			id: undefined,
-			connectionName: undefined
+			id: undefined!,
+			connectionName: undefined!
 		};
 		let configurationService = new TestConfigurationService();
 		configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
@@ -452,7 +451,7 @@ suite('ConnectionConfig', () => {
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.deleteConnection(connectionProfile);
 
-		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue.length, testConnections.length - 1);
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!.length, testConnections.length - 1);
 	});
 
 	test('deleteConnectionGroup should remove the children connections and subgroups from config', async () => {
@@ -465,13 +464,13 @@ suite('ConnectionConfig', () => {
 			savePassword: true,
 			groupFullName: 'g3',
 			groupId: 'g3',
-			getOptionsKey: undefined,
-			matches: undefined,
+			getOptionsKey: undefined!,
+			matches: undefined!,
 			providerName: 'MSSQL',
 			options: {},
 			saveProfile: true,
-			id: undefined,
-			connectionName: undefined
+			id: undefined!,
+			connectionName: undefined!
 		};
 		let configurationService = new TestConfigurationService();
 		configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
@@ -488,8 +487,8 @@ suite('ConnectionConfig', () => {
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.deleteGroup(connectionProfileGroup);
 
-		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue.length, testConnections.length - 1);
-		assert.equal(configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue.length, testGroups.length - 2);
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!.length, testConnections.length - 1);
+		assert.equal(configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue!.length, testGroups.length - 2);
 	});
 
 	test('deleteConnection should not throw error for connection not in config', async () => {
@@ -502,13 +501,13 @@ suite('ConnectionConfig', () => {
 			savePassword: true,
 			groupFullName: 'g3',
 			groupId: 'newid',
-			getOptionsKey: undefined,
-			matches: undefined,
+			getOptionsKey: undefined!,
+			matches: undefined!,
 			providerName: 'MSSQL',
 			options: {},
 			saveProfile: true,
-			id: undefined,
-			connectionName: undefined
+			id: undefined!,
+			connectionName: undefined!
 		};
 		let configurationService = new TestConfigurationService();
 		configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
@@ -517,7 +516,7 @@ suite('ConnectionConfig', () => {
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.deleteConnection(connectionProfile);
 
-		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue.length, testConnections.length);
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!.length, testConnections.length);
 	});
 
 	test('renameGroup should change group name', async () => {
@@ -528,12 +527,12 @@ suite('ConnectionConfig', () => {
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.editGroup(connectionProfileGroup);
 
-		let editedGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue;
+		let editedGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue!;
 
 		assert.equal(editedGroups.length, testGroups.length);
 		let editedGroup = find(editedGroups, group => group.id === 'g2');
 		assert.ok(!!editedGroup);
-		assert.equal(editedGroup.name, 'g-renamed');
+		assert.equal(editedGroup!.name, 'g-renamed');
 	});
 
 	test('edit group should throw if there is a confliction', async () => {
@@ -547,10 +546,10 @@ suite('ConnectionConfig', () => {
 			await config.editGroup(sameNameGroup);
 			assert.fail();
 		} catch (e) {
-			let groups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue;
+			let groups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue!;
 			let originalGroup = find(groups, g => g.id === 'g2');
 			assert.ok(!!originalGroup);
-			assert.equal(originalGroup.name, 'g2');
+			assert.equal(originalGroup!.name, 'g2');
 		}
 	});
 
@@ -563,12 +562,12 @@ suite('ConnectionConfig', () => {
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.changeGroupIdForConnectionGroup(sourceProfileGroup, targetProfileGroup);
 
-		let editedGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue;
+		let editedGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue!;
 
 		assert.equal(editedGroups.length, testGroups.length);
 		let editedGroup = find(editedGroups, group => group.id === 'g2');
 		assert.ok(!!editedGroup);
-		assert.equal(editedGroup.parentId, 'g3');
+		assert.equal(editedGroup!.parentId, 'g3');
 	});
 
 
@@ -583,12 +582,12 @@ suite('ConnectionConfig', () => {
 			groupFullName: 'g3',
 			groupId: 'g3',
 			getOptionsKey: () => { return 'connectionId'; },
-			matches: undefined,
+			matches: undefined!,
 			providerName: 'MSSQL',
 			options: {},
 			saveProfile: true,
 			id: 'server3-2',
-			connectionName: undefined
+			connectionName: undefined!
 		};
 		let existingProfile = ConnectionProfile.convertToProfileStore(capabilitiesService.object, {
 			serverName: 'server3',
@@ -600,15 +599,15 @@ suite('ConnectionConfig', () => {
 			groupFullName: 'test',
 			groupId: 'test',
 			getOptionsKey: () => { return 'connectionId'; },
-			matches: undefined,
+			matches: undefined!,
 			providerName: 'MSSQL',
 			options: {},
 			saveProfile: true,
 			id: 'server3',
-			connectionName: undefined
+			connectionName: undefined!
 		});
 
-		let _testConnections = deepClone(testConnections).concat([existingProfile, changingProfile]);
+		let _testConnections = [...deepClone(testConnections), existingProfile, changingProfile];
 
 		let configurationService = new TestConfigurationService();
 		configurationService.updateValue('datasource.connections', _testConnections, ConfigurationTarget.USER);
@@ -620,12 +619,12 @@ suite('ConnectionConfig', () => {
 			await config.changeGroupIdForConnection(connectionProfile, 'test');
 			assert.fail();
 		} catch (e) {
-			let editedConnections = configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue;
+			let editedConnections = configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!;
 			// two
 			assert.equal(editedConnections.length, _testConnections.length);
 			let editedConnection = find(editedConnections, con => con.id === 'server3-2');
 			assert.ok(!!editedConnection);
-			assert.equal(editedConnection.groupId, 'g3');
+			assert.equal(editedConnection!.groupId, 'g3');
 		}
 	});
 
@@ -640,12 +639,12 @@ suite('ConnectionConfig', () => {
 			groupFullName: 'g3',
 			groupId: 'g3',
 			getOptionsKey: () => { return 'connectionId'; },
-			matches: undefined,
+			matches: undefined!,
 			providerName: 'MSSQL',
 			options: {},
 			saveProfile: true,
 			id: 'server3',
-			connectionName: undefined
+			connectionName: undefined!
 		};
 
 		let configurationService = new TestConfigurationService();
@@ -657,11 +656,11 @@ suite('ConnectionConfig', () => {
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		await config.changeGroupIdForConnection(connectionProfile, newId);
 
-		let editedConnections = configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue;
+		let editedConnections = configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!;
 		assert.equal(editedConnections.length, testConnections.length);
 		let editedConnection = find(editedConnections, con => con.id === 'server3');
 		assert.ok(!!editedConnection);
-		assert.equal(editedConnection.groupId, 'newid');
+		assert.equal(editedConnection!.groupId, 'newid');
 	});
 
 	test('addConnection should not move the connection when editing', async () => {
@@ -691,7 +690,7 @@ suite('ConnectionConfig', () => {
 
 	test('addgroup works', async () => {
 		let newGroup: IConnectionProfileGroup = {
-			id: undefined,
+			id: undefined!,
 			parentId: undefined,
 			name: 'new group',
 			color: 'red',
@@ -704,14 +703,14 @@ suite('ConnectionConfig', () => {
 
 		await config.addGroup(newGroup);
 
-		let editGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue;
+		let editGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue!;
 
 		assert.equal(editGroups.length, testGroups.length + 1);
 	});
 
 	test('addGroup rejects if group name already exists', async () => {
 		let existingGroupName: IConnectionProfileGroup = {
-			id: undefined,
+			id: undefined!,
 			parentId: undefined,
 			name: 'g2',
 			color: 'red',
@@ -725,7 +724,7 @@ suite('ConnectionConfig', () => {
 			await config.addGroup(existingGroupName);
 			assert.fail();
 		} catch (e) {
-			let editGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue;
+			let editGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue!;
 
 			assert.equal(editGroups.length, testGroups.length);
 		}

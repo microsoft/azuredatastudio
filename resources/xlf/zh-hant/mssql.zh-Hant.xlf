@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/mssql/package" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/package" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="json.schemas.desc">
         <source xml:lang="en">Associate schemas to JSON files in the current project</source>
@@ -124,7 +124,7 @@
       </trans-unit>
       <trans-unit id="mssql.query.displayBitAsNumber">
         <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
-        <target state="translated">BIT 欄位是否顯示為數值 (1或0)? 若為 false, BIT 欄位將會顯示為 'true' 或 'false'</target>
+        <target state="translated">BIT 資料行是否顯示為數字 (1 或 0)? 若為 False，BIT 資料行將會顯示為 'True' 或 'False'</target>
       </trans-unit>
       <trans-unit id="mssql.format.alignColumnDefinitionsInColumns">
         <source xml:lang="en">Should column definitions be aligned?</source>
@@ -132,27 +132,27 @@
       </trans-unit>
       <trans-unit id="mssql.format.datatypeCasing">
         <source xml:lang="en">Should data types be formatted as UPPERCASE, lowercase, or none (not formatted)</source>
-        <target state="translated">是否轉換資料類型為大寫，小寫或無(不轉換)</target>
+        <target state="translated">是否將資料類型轉換為大寫，小寫或無 (不轉換)</target>
       </trans-unit>
       <trans-unit id="mssql.format.keywordCasing">
         <source xml:lang="en">Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)</source>
-        <target state="translated">是否轉換關鍵字為大寫，小寫或無(不轉換)</target>
+        <target state="translated">是否將關鍵字轉換為大寫，小寫或無 (不轉換)</target>
       </trans-unit>
       <trans-unit id="mssql.format.placeCommasBeforeNextStatement">
         <source xml:lang="en">should commas be placed at the beginning of each statement in a list e.g. ', mycolumn2' instead of at the end e.g. 'mycolumn1,'</source>
-        <target state="translated">逗號是否放在 list 中每個語句的開頭，例如：", mycolumn2" 而非在結尾，例如："mycolumn1,"</target>
+        <target state="translated">逗號是否放在 list 中每個語句的開頭，例如: ", mycolumn2" 而非在結尾，例如: "mycolumn1,"</target>
       </trans-unit>
       <trans-unit id="mssql.format.placeSelectStatementReferencesOnNewLine">
         <source xml:lang="en">Should references to objects in a select statements be split into separate lines? E.g. for 'SELECT C1, C2 FROM T1' both C1 and C2 will be on separate lines</source>
-        <target state="translated">在 select 敘述句中參考的物件是否分行? 如 'SELECT C1, C2 FROM T1' 中 C1 與C2 將會分行顯示</target>
+        <target state="translated">在 select 陳述式中參考的物件是否要分行處理? 以 'SELECT C1, C2 FROM T1' 為例，C1 與 C2 將會分行顯示</target>
       </trans-unit>
       <trans-unit id="mssql.logDebugInfo">
         <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
-        <target state="translated">[選擇性] 將偵錯輸出記錄至主控台 ([檢視] -&gt; [輸出])，並從下拉式清單選取適當的輸出通道</target>
+        <target state="translated">[選用] 將偵錯記錄輸出至主控台 ([檢視] -&gt; [輸出])，並從下拉式清單選取適當的輸出通道</target>
       </trans-unit>
       <trans-unit id="mssql.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
-        <target state="translated">[選擇性] 後端服務的記錄層級。每當 Azure Data Studio 啟動，或是檔案已經有附加至該檔案的記錄項目時，Azure Data Studio 都會產生檔案名稱。如需舊記錄檔的清除，請查看 logRetentionMinutes 和 logFilesRemovalLimit 設定。預設 tracingLevel 不會記錄太多項目。變更詳細資訊可能會導致大量記錄和記錄的磁碟空間需求。錯誤包含嚴重，警告包含錯誤，資訊包含警告而詳細資訊包含資訊</target>
+        <target state="translated">[選用] 後端服務的記錄層級。每當 Azure Data Studio 啟動，或是檔案已經有附加至該檔案的記錄項目時，Azure Data Studio 都會產生檔案名稱。如需清除舊記錄檔，請查看 logRetentionMinutes 和 logFilesRemovalLimit 設定。預設 tracingLevel 不會記錄太多項目。變更詳細資訊可能會導致大量記錄和記錄的磁碟空間需求。錯誤包含嚴重，警告包含錯誤，資訊包含警告而詳細資訊包含資訊</target>
       </trans-unit>
       <trans-unit id="mssql.logRetentionMinutes">
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
@@ -164,7 +164,7 @@
       </trans-unit>
       <trans-unit id="ignorePlatformWarning">
         <source xml:lang="en">[Optional] Do not show unsupported platform warnings</source>
-        <target state="translated">[選擇性] 不要顯示不支援的平台警告</target>
+        <target state="translated">[選用] 不要顯示不支援的平台警告</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.recoveryModel">
         <source xml:lang="en">Recovery Model</source>
@@ -176,11 +176,11 @@
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.lastLogBackupDate">
         <source xml:lang="en">Last Log Backup</source>
-        <target state="translated">上次日誌備份</target>
+        <target state="translated">上次記錄備份</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.compatibilityLevel">
         <source xml:lang="en">Compatibility Level</source>
-        <target state="translated">相容層級</target>
+        <target state="translated">相容性層級</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.owner">
         <source xml:lang="en">Owner</source>
@@ -212,7 +212,7 @@
       </trans-unit>
       <trans-unit id="cloud.databaseProperties.compatibilityLevel">
         <source xml:lang="en">Compatibility Level</source>
-        <target state="translated">相容層級</target>
+        <target state="translated">相容性層級</target>
       </trans-unit>
       <trans-unit id="cloud.databaseProperties.owner">
         <source xml:lang="en">Owner</source>
@@ -224,7 +224,7 @@
       </trans-unit>
       <trans-unit id="cloud.serverProperties.serverEdition">
         <source xml:lang="en">Type</source>
-        <target state="translated">型別</target>
+        <target state="translated">類型</target>
       </trans-unit>
       <trans-unit id="mssql.provider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>
@@ -232,7 +232,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectionName.displayName">
         <source xml:lang="en">Name (optional)</source>
-        <target state="translated">名稱 (選擇性)</target>
+        <target state="translated">名稱 (選用)</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectionName.description">
         <source xml:lang="en">Custom name of the connection</source>
@@ -272,7 +272,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
         <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">具 MFA 支援的 Azure Active Directory - 通用</target>
+        <target state="translated">Azure Active Directory - MFA 通用支援</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.userName.displayName">
         <source xml:lang="en">User name</source>
@@ -296,7 +296,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.applicationIntent.description">
         <source xml:lang="en">Declares the application workload type when connecting to a server</source>
-        <target state="translated">當連線至伺服器時宣告應用程式工作負載類型</target>
+        <target state="translated">在連線至伺服器時宣告應用程式工作負載類型</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.asynchronousProcessing.displayName">
         <source xml:lang="en">Asynchronous processing</source>
@@ -304,7 +304,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.asynchronousProcessing.description">
         <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
-        <target state="translated">若為 true，則允許使用 .Net Framework Data Provider 中的非同步功能</target>
+        <target state="translated">若為 True，則允許使用 .Net Framework Data Provider 中的非同步功能</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectTimeout.displayName">
         <source xml:lang="en">Connect timeout</source>
@@ -336,7 +336,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.description">
         <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
-        <target state="translated">若為 true，則 SQL Server 會在伺服器已安裝憑證的情況下，對用戶端和伺服器間傳送的所有資料使用 SSL 加密</target>
+        <target state="translated">若為 True，則 SQL Server 會在伺服器已安裝憑證的情況下，對用戶端和伺服器間傳送的所有資料使用 SSL 加密</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.persistSecurityInfo.displayName">
         <source xml:lang="en">Persist security info</source>
@@ -344,7 +344,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.persistSecurityInfo.description">
         <source xml:lang="en">When false, security-sensitive information, such as the password, is not returned as part of the connection</source>
-        <target state="translated">若為 false，則不會於連線中傳回密碼等安全性敏感資訊</target>
+        <target state="translated">若為 False，則不會於連線中傳回密碼等安全性敏感資訊</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.trustServerCertificate.displayName">
         <source xml:lang="en">Trust server certificate</source>
@@ -352,11 +352,11 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.trustServerCertificate.description">
         <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
-        <target state="translated">若為 true (且 encrypt=true)，則 SQL Server 會對用戶端和伺服器間傳送的所有資料使用 SSL 加密，而不驗證伺服器憑證</target>
+        <target state="translated">若為 True (且 encrypt=true)，則 SQL Server 會對用戶端和伺服器間傳送的所有資料使用 SSL 加密，而不驗證伺服器憑證</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.attachedDBFileName.displayName">
         <source xml:lang="en">Attached DB file name</source>
-        <target state="translated">已附加 DB 檔案名稱</target>
+        <target state="translated">已附加的 DB 檔案名稱</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.attachedDBFileName.description">
         <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
@@ -368,7 +368,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.contextConnection.description">
         <source xml:lang="en">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</source>
-        <target state="translated">若為 true，則代表連線應來自 SQL 伺服器內容。僅於在 SQL Server 處理序中執行時可用</target>
+        <target state="translated">若為 True，則表示連線應來自 SQL 伺服器內容。僅可在於 SQL Server 處理序中執行時可用</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.port.displayName">
         <source xml:lang="en">Port</source>
@@ -388,7 +388,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectRetryInterval.description">
         <source xml:lang="en">Delay between attempts to restore connection</source>
-        <target state="translated">還原連線之嘗試之間的延遲</target>
+        <target state="translated">嘗試還原連線之間的延遲</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.applicationName.displayName">
         <source xml:lang="en">Application name</source>
@@ -404,7 +404,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.workstationId.description">
         <source xml:lang="en">The name of the workstation connecting to SQL Server</source>
-        <target state="translated">正在連線至 SQL Server 的工作站名稱</target>
+        <target state="translated">連線至 SQL Server 的工作站名稱</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.pooling.displayName">
         <source xml:lang="en">Pooling</source>
@@ -412,7 +412,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.pooling.description">
         <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
-        <target state="translated">若為 true，則會從適當的集區提取連線物件，或在有需要時建立並新增至適當的集區</target>
+        <target state="translated">若為 True，則會從適當的集區提取連線物件，或在有需要時建立並新增至適當的集區</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.maxPoolSize.displayName">
         <source xml:lang="en">Max pool size</source>
@@ -444,7 +444,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.replication.description">
         <source xml:lang="en">Used by SQL Server in Replication</source>
-        <target state="translated">在複寫中由 SQL Server 使用</target>
+        <target state="translated">由 SQL Server 在複寫中使用</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
         <source xml:lang="en">Attach DB filename</source>
@@ -452,23 +452,23 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.failoverPartner.displayName">
         <source xml:lang="en">Failover partner</source>
-        <target state="translated">容錯移轉合作夥伴</target>
+        <target state="translated">容錯移轉夥伴</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.failoverPartner.description">
         <source xml:lang="en">The name or network address of the instance of SQL Server that acts as a failover partner</source>
-        <target state="translated">充當容錯移轉合作夥伴之 SQL Server 執行個體的名稱或網路位址</target>
+        <target state="translated">充當容錯移轉夥伴之 SQL Server 執行個體的名稱或網路位址</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.multiSubnetFailover.displayName">
         <source xml:lang="en">Multi subnet failover</source>
-        <target state="translated">多重子網容錯移轉</target>
+        <target state="translated">多重子網路容錯移轉</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.multipleActiveResultSets.displayName">
         <source xml:lang="en">Multiple active result sets</source>
-        <target state="translated">多個正在使用的結果集</target>
+        <target state="translated">Multiple Active Result Set</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.multipleActiveResultSets.description">
         <source xml:lang="en">When true, multiple result sets can be returned and read from one connection</source>
-        <target state="translated">若為 true，則可傳回多個結果集並從一個連線讀取</target>
+        <target state="translated">若為 True，則可傳回多個結果集並從一個連線讀取</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.packetSize.displayName">
         <source xml:lang="en">Packet size</source>
@@ -476,7 +476,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.packetSize.description">
         <source xml:lang="en">Size in bytes of the network packets used to communicate with an instance of SQL Server</source>
-        <target state="translated">用於和 SQL Server 執行個體通訊的網路封包大小 (位元組)</target>
+        <target state="translated">用於和 SQL Server 執行個體通訊之網路封包的大小 (位元組)</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.typeSystemVersion.displayName">
         <source xml:lang="en">Type system version</source>
@@ -488,7 +488,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/localizedConstants" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="msgMissingNodeContext">
         <source xml:lang="en">Node Command called without any node passed</source>
@@ -544,7 +544,7 @@
       </trans-unit>
       <trans-unit id="mssql.inheritDefaultsLabel">
         <source xml:lang="en">Inherit Defaults</source>
-        <target state="translated">繼承預設</target>
+        <target state="translated">繼承預設值</target>
       </trans-unit>
       <trans-unit id="mssql.readHeader">
         <source xml:lang="en">Read</source>
@@ -568,7 +568,7 @@
       </trans-unit>
       <trans-unit id="mssql.addLabel">
         <source xml:lang="en">Add</source>
-        <target state="translated">加入</target>
+        <target state="translated">新增</target>
       </trans-unit>
       <trans-unit id="mssql.namedUsersAndGroups">
         <source xml:lang="en">Named Users and Groups</source>
@@ -586,61 +586,61 @@
         <source xml:lang="en">Unexpected error occurred while applying changes : {0}</source>
         <target state="translated">套用變更時發生未預期的錯誤: {0}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_LocalFileDestinationHint">
         <source xml:lang="en">Local file will be uploaded to HDFS. </source>
         <target state="translated">本機檔案將上傳至 HDFS。</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SubmissionEndMessage">
         <source xml:lang="en">.......................... Submit Spark Job End ............................</source>
         <target state="translated">.......................... 提交 Spark 作業結束 ............................</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_PrepareUploadingFile">
         <source xml:lang="en">Uploading file from local {0} to HDFS folder: {1}</source>
-        <target state="translated">正在從本機 {0} 上傳檔案至 HDFS 資料夾: {1}</target>
+        <target state="translated">正在從本機 {0} 將檔案上傳至 HDFS 資料夾: {1}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_UploadingFileSucceeded">
         <source xml:lang="en">Upload file to cluster Succeeded!</source>
         <target state="translated">已成功將檔案上傳至叢集!</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_UploadingFileFailed">
         <source xml:lang="en">Upload file to cluster Failed. {0}</source>
         <target state="translated">無法將檔案上傳至叢集。{0}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_PrepareSubmitJob">
         <source xml:lang="en">Submitting job {0} ... </source>
         <target state="translated">正在提交作業 {0} ...</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SubmitJobFinished">
         <source xml:lang="en">The Spark Job has been submitted.</source>
         <target state="translated">已提交 Spark 作業。</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SubmitJobFailed">
         <source xml:lang="en">Spark Job Submission Failed. {0} </source>
         <target state="translated">Spark 作業提交失敗。{0}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_YarnUIMessage">
         <source xml:lang="en">YarnUI Url: {0} </source>
         <target state="translated">YarnUI Url: {0}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SparkHistoryLinkMessage">
         <source xml:lang="en">Spark History Url: {0} </source>
         <target state="translated">Spark 歷程記錄 Url: {0}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_GetApplicationIdFailed">
         <source xml:lang="en">Get Application Id Failed. {0}</source>
         <target state="translated">無法取得應用程式識別碼。{0}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_LocalFileNotExisted">
         <source xml:lang="en">Local file {0} does not existed. </source>
         <target state="translated">本機檔案 {0} 不存在。</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_NoSqlBigDataClusterFound">
         <source xml:lang="en">No SQL Server Big Data Cluster found.</source>
-        <target state="translated">找不到任何 Sql Server 巨量資料叢集。</target>
+        <target state="translated">找不到任何 SQL Server 巨量資料叢集。</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/fileSources" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/fileSources" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="maxSizeNotice">
         <source xml:lang="en">NOTICE: This file has been truncated at {0} for preview. </source>
@@ -652,7 +652,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/command" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/command" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="progress">
         <source xml:lang="en">$(sync~spin) {0}...</source>
@@ -672,19 +672,19 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionService" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionService" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_LivyNoBatchIdReturned">
         <source xml:lang="en">No Spark job batch id is returned from response.{0}[Error] {1}</source>
         <target state="translated">回應未傳回任何 Spark 作業批次識別碼。{0}[錯誤] {1}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_LivyNoLogReturned">
         <source xml:lang="en">No log is returned within response.{0}[Error] {1}</source>
         <target state="translated">回應中未傳回任何記錄。{0}[錯誤] {1}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/hdfsCommands" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/hdfsCommands" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="allFiles">
         <source xml:lang="en">All Files</source>
@@ -764,7 +764,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/hdfs/webhdfs" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/hdfs/webhdfs" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="webhdfs.invalidDataStructure">
         <source xml:lang="en">Invalid Data Structure</source>
@@ -792,7 +792,7 @@
       </trans-unit>
       <trans-unit id="webhdfs.httpError404">
         <source xml:lang="en">Not Found</source>
-        <target state="translated">未找到</target>
+        <target state="translated">找不到</target>
       </trans-unit>
       <trans-unit id="webhdfs.httpError500">
         <source xml:lang="en">Internal Server Error</source>
@@ -808,7 +808,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/connection" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/connection" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="connectionInfoUndefined">
         <source xml:lang="en">ConnectionInfo is undefined.</source>
@@ -820,11 +820,11 @@
       </trans-unit>
       <trans-unit id="connectionInfoOptionsMissingProperties">
         <source xml:lang="en">Some missing properties in connectionInfo.options: {0}</source>
-        <target state="translated">connectionInfo.options 中的部分遺失屬性: {0}</target>
+        <target state="translated">connectionInfo.options 中遺失的部分屬性: {0}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/telemetry" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/telemetry" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="viewKnownIssuesText">
         <source xml:lang="en">View Known Issues</source>
@@ -836,7 +836,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/main" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/main" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="msgSampleCodeDataFrame">
         <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
@@ -848,7 +848,7 @@
       </trans-unit>
       <trans-unit id="unsupportedFileType">
         <source xml:lang="en">Only .ipynb Notebooks are supported</source>
-        <target state="translated">僅支援.ipynb Notebooks</target>
+        <target state="translated">僅支援 .ipynb Notebooks</target>
       </trans-unit>
       <trans-unit id="fileNotFound">
         <source xml:lang="en">Unable to find the file specified</source>
@@ -856,7 +856,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/hdfs/hdfsModel" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/hdfs/hdfsModel" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="mssql.recursivePermissionOpStarted">
         <source xml:lang="en">Applying permission changes recursively under '{0}'</source>
@@ -876,7 +876,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/prompts/confirm" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/prompts/confirm" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="msgYes">
         <source xml:lang="en">Yes</source>
@@ -888,145 +888,145 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/dialogCommands" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/sparkFeature/dialog/dialogCommands" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="selectOtherServer">
         <source xml:lang="en">Select other SQL Server</source>
         <target state="translated">選取其他 SQL Server</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_PleaseSelectSqlWithCluster">
         <source xml:lang="en">Please select SQL Server with Big Data Cluster.</source>
         <target state="translated">請選取具有巨量資料叢集的 SQL Server。</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_NoSqlSelected">
         <source xml:lang="en">No SQL Server is selected.</source>
-        <target state="translated">未選取任何 Sql 伺服器。</target>
+        <target state="translated">未選取任何 SQL Server。</target>
       </trans-unit>
       <trans-unit id="errorNotSqlBigDataCluster">
         <source xml:lang="en">The selected server does not belong to a SQL Server Big Data Cluster</source>
         <target state="translated">所選伺服器不屬於 SQL Server 巨量資料叢集</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_GetFilePathFromSelectedNodeFailed">
         <source xml:lang="en">Error Get File Path: {0}</source>
         <target state="translated">取得檔案路徑時發生錯誤: {0}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionDialog" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SparkJobSubmissionDialogInitializeError">
         <source xml:lang="en">Parameters for SparkJobSubmissionDialog is illegal</source>
         <target state="translated">SparkJobSubmissionDialog 的參數不合法</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_DialogTitleNewJob">
         <source xml:lang="en">New Job</source>
-        <target state="translated">新工作</target>
+        <target state="translated">新增作業</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_DialogCancelButton">
         <source xml:lang="en">Cancel</source>
         <target state="translated">取消</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_DialogSubmitButton">
         <source xml:lang="en">Submit</source>
         <target state="translated">提交</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SubmitSparkJob">
         <source xml:lang="en">{0} Spark Job Submission:</source>
         <target state="translated">{0} Spark 作業提交:</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SubmissionStartMessage">
         <source xml:lang="en">.......................... Submit Spark Job Start ..........................</source>
         <target state="translated">.......................... 提交 Spark 作業開始 ..........................</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionModel" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionModel" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SparkJobSubmissionModelInitializeError">
         <source xml:lang="en">Parameters for SparkJobSubmissionModel is illegal</source>
         <target state="translated">SparkJobSubmissionModel 的參數不合法</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_submissionArgsIsInvalid">
         <source xml:lang="en">submissionArgs is invalid. </source>
         <target state="translated">submissionArgs 無效。</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_LivyBatchIdIsInvalid">
         <source xml:lang="en">livyBatchId is invalid. </source>
         <target state="translated">livyBatchId 無效。</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_GetApplicationIdTimeOut">
         <source xml:lang="en">Get Application Id time out. {0}[Log]   {1}</source>
         <target state="translated">取得應用程式識別碼逾時。{0}[記錄]   {1}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_localFileOrFolderNotSpecified.">
         <source xml:lang="en">Property localFilePath or hdfsFolderPath is not specified. </source>
         <target state="translated">未指定屬性 localFilePath 或 hdfsFolderPath。</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_PathNotSpecified.">
         <source xml:lang="en">Property Path is not specified. </source>
         <target state="translated">未指定屬性路徑。</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkConfigurationTab" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkConfigurationTab" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_GeneralTabName">
         <source xml:lang="en">GENERAL</source>
         <target state="translated">一般</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_JobNamePlaceHolder">
         <source xml:lang="en">Enter a name ...</source>
         <target state="translated">請輸入名稱...</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_JobName">
         <source xml:lang="en">Job Name</source>
         <target state="translated">作業名稱</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SparkCluster">
         <source xml:lang="en">Spark Cluster</source>
         <target state="translated">Spark 叢集</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_FilePathPlaceHolder">
         <source xml:lang="en">Path to a .jar or .py file</source>
         <target state="translated">.jar 或 .py 檔案的路徑</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_LocalFileDestinationHintWithPath">
         <source xml:lang="en">The selected local file will be uploaded to HDFS: {0}</source>
         <target state="translated">選取的本機檔案將會上傳至 HDFS: {0}</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_MainFilePath">
         <source xml:lang="en">JAR/py File</source>
         <target state="translated">JAR/py 檔案</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_MainClass">
         <source xml:lang="en">Main Class</source>
         <target state="translated">主要類別</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_Arguments">
         <source xml:lang="en">Arguments</source>
         <target state="translated">引數</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_ArgumentsTooltip">
         <source xml:lang="en">Command line arguments used in your main class, multiple arguments should be split by space.</source>
         <target state="translated">在您主要類別中使用的命令列引數，多個引數應以空格分隔。</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_NotSpecifyJobName">
         <source xml:lang="en">Property Job Name is not specified.</source>
         <target state="translated">未指定屬性作業名稱。</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_NotSpecifyJARPYPath">
         <source xml:lang="en">Property JAR/py File is not specified.</source>
         <target state="translated">未指定屬性 JAR/py 檔案。</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_NotSpecifyMainClass">
         <source xml:lang="en">Property Main Class is not specified.</source>
         <target state="translated">未指定屬性主要類別。</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_HDFSFileNotExistedWithPath">
         <source xml:lang="en">{0} does not exist in Cluster or exception thrown. </source>
         <target state="translated">{0} 不存在於叢集或擲回例外狀況中。</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_HDFSFileNotExisted">
         <source xml:lang="en">The specified HDFS file does not exist. </source>
         <target state="translated">指定的 HDFS 檔案不存在。</target>
       </trans-unit>
@@ -1034,45 +1034,45 @@
         <source xml:lang="en">Select</source>
         <target state="translated">選擇</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_SelectFileError">
         <source xml:lang="en">Error in locating the file due to Error: {0}</source>
         <target state="translated">因為發生錯誤，所以在尋找檔案時發生錯誤: {0}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_AdvancedTabName">
         <source xml:lang="en">ADVANCED</source>
         <target state="translated">進階</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_ReferenceJarList">
         <source xml:lang="en">Reference Jars</source>
         <target state="translated">參考 Jars</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_ReferenceJarListToolTip">
         <source xml:lang="en">Jars to be placed in executor working directory. The Jar path needs to be an HDFS Path. Multiple paths should be split by semicolon (;)</source>
         <target state="translated">要放置在執行程式工作目錄中的 Jar。Jar 路徑必須為 HDFS 路徑。多個路徑應以分號 (;) 分隔</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_ReferencePyList">
         <source xml:lang="en">Reference py Files</source>
         <target state="translated">參考 py 檔案</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_ReferencePyListTooltip">
         <source xml:lang="en">Py Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
         <target state="translated">要放置於執行程式工作目錄的 Py 檔案。檔案路徑必須為 HDFS 路徑。多個路徑應以分號 (;) 分隔</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_ReferenceFilesList">
         <source xml:lang="en">Reference Files</source>
         <target state="translated">參考檔案</target>
       </trans-unit>
-      <trans-unit id="sparkJobSubmission">
+      <trans-unit id="sparkJobSubmission_ReferenceFilesListTooltip">
         <source xml:lang="en">Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
         <target state="translated">要放置於執行程式工作目錄的檔案。檔案路徑必須為 HDFS 路徑。多個路徑應以分號 (;) 分隔</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/objectExplorerNodeProvider" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/objectExplorerNodeProvider" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="prmptPwd">
         <source xml:lang="en">Please provide the password to connect to HDFS:</source>
@@ -1088,7 +1088,7 @@
       </trans-unit>
       <trans-unit id="hdfsFolder">
         <source xml:lang="en">HDFS</source>
-        <target state="translated">Hdfs</target>
+        <target state="translated">HDFS</target>
       </trans-unit>
       <trans-unit id="rootLabel">
         <source xml:lang="en">Root</source>
@@ -1096,7 +1096,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/hdfsProvider" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/hdfsProvider" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="errorExpanding">
         <source xml:lang="en">Error: {0}</source>
@@ -1108,7 +1108,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/cancelableStream" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/cancelableStream" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="streamCanceled">
         <source xml:lang="en">Stream operation canceled by the user</source>
@@ -1116,7 +1116,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/dashboard/serviceEndpoints" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/dashboard/serviceEndpoints" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="grafana">
         <source xml:lang="en">Metrics Dashboard</source>
@@ -1188,7 +1188,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/dist/sqlToolsServer" source-language="en" target-language="zh-Hant" datatype="plaintext">
+  <file original="extensions/mssql/dist/sqlToolsServer" source-language="en" datatype="plaintext" target-language="zh-HANT">
     <body>
       <trans-unit id="serviceStartedStatusMsg">
         <source xml:lang="en">{0} Started</source>

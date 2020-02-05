@@ -6,12 +6,12 @@ import 'vs/css!./media/flexContainer';
 
 import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnDestroy } from '@angular/core';
 
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
 import { FlexItemLayout, SplitViewLayout } from 'azdata';
 import { FlexItem } from './flexContainer.component';
 import { ContainerBase, ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { Event } from 'vs/base/common/event';
 import { SplitView, Orientation, Sizing, IView } from 'vs/base/browser/ui/splitview/splitview';
+import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 
 class SplitPane implements IView {
 	orientation: Orientation;
@@ -87,8 +87,8 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 		let c = component as ComponentBase;
 		let basicView: SplitPane = new SplitPane();
 		basicView.orientation = orientation;
-		basicView.element = c.getHtml(),
-			basicView.component = c;
+		basicView.element = c.getHtml();
+		basicView.component = c;
 		basicView.minimumSize = 50;
 		basicView.maximumSize = Number.MAX_VALUE;
 		return basicView;

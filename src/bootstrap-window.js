@@ -111,6 +111,7 @@ exports.load = function (modulePaths, resultCallback, options) {
 		'@angular/platform-browser-dynamic',
 		'@angular/router',
 		'rxjs/Observable',
+		'rxjs/add/observable/fromPromise',
 		'rxjs/Subject',
 		'rxjs/Observer',
 		'slickgrid/lib/jquery.event.drag-2.3.0',

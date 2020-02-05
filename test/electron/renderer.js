@@ -51,6 +51,7 @@ function initLoader(opts) {
 			'angular2-grid',
 			'ng2-charts',
 			'rxjs/add/observable/of',
+			'rxjs/add/observable/fromPromise',
 			'rxjs/Observable',
 			'rxjs/Subject',
 			'rxjs/Observer'
@@ -67,7 +68,7 @@ function initLoader(opts) {
 
 function createCoverageReport(opts) {
 	if (opts.coverage) {
-		coverage.createReport(opts.run || opts.runGlob);
+		return coverage.createReport(opts.run || opts.runGlob);
 	}
 	return Promise.resolve(undefined);
 }

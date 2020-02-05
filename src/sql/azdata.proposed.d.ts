@@ -267,4 +267,8 @@ declare module 'azdata' {
 		 */
 		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, any, any>;
 	}
+
+	export interface InputBoxProperties extends ComponentProperties {
+		validationErrorMessage?: string;
+	}
 }

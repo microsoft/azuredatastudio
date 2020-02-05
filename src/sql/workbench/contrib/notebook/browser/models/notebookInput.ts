@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
+import { EditorInput, EditorModel, IRevertOptions, GroupIdentifier, IEditorInput } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
@@ -16,7 +16,7 @@ import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { Schemas } from 'vs/base/common/network';
-import { StateChange, ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
+import { ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -73,12 +73,14 @@ export class NotebookEditorModel extends EditorModel {
 			}));
 		} else {
 			if (this.textEditorModel instanceof TextFileEditorModel) {
-				this._register(this.textEditorModel.onDidStateChange(change => {
+				this._register(this.textEditorModel.onDidSave(() => {
 					let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
 					this.setDirty(dirty);
-					if (change === StateChange.SAVED) {
-						this.sendNotebookSerializationStateChange();
-					}
+					this.sendNotebookSerializationStateChange();
+				}));
+				this._register(this.textEditorModel.onDidChangeDirty(() => {
+					let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
+					this.setDirty(dirty);
 				}));
 			}
 		}
@@ -228,8 +230,8 @@ export abstract class NotebookInput extends EditorInput {
 		return this._textInput;
 	}
 
-	public revert(): Promise<boolean> {
-		return this._textInput.revert();
+	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<boolean> {
+		return this._textInput.revert(group, options);
 	}
 
 	public get notebookUri(): URI {
@@ -281,11 +283,11 @@ export abstract class NotebookInput extends EditorInput {
 		return this._standardKernels;
 	}
 
-	save(groupId: number, options?: ITextFileSaveOptions): Promise<boolean> {
+	save(groupId: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
 		return this.textInput.save(groupId, options);
 	}
 
-	saveAs(group: number, options?: ITextFileSaveOptions): Promise<boolean> {
+	saveAs(group: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
 		return this.textInput.saveAs(group, options);
 	}
 

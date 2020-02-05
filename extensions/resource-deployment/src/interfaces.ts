@@ -169,7 +169,15 @@ export interface FieldInfo {
 	fontStyle?: FontStyle;
 	labelFontWeight?: FontWeight;
 	links?: azdata.LinkArea[];
-	editable?: boolean; // for editable dropdown
+	editable?: boolean; // for editable dropdown,
+	enabled?: boolean;
+}
+
+export interface AzureAccountFieldInfo extends FieldInfo {
+	subscriptionVariableName?: string;
+	resourceGroupVariableName?: string;
+	locationVariableName?: string;
+	locations?: string[]
 }
 
 export const enum LabelPosition {
@@ -195,7 +203,8 @@ export enum FieldType {
 	Password = 'password',
 	Options = 'options',
 	ReadonlyText = 'readonly_text',
-	Checkbox = 'checkbox'
+	Checkbox = 'checkbox',
+	AzureAccount = 'azure_account'
 }
 
 export interface NotebookInfo {
@@ -241,7 +250,6 @@ export const enum ToolStatus {
 }
 
 export interface ITool {
-	readonly isInstalling: boolean;
 	readonly name: string;
 	readonly displayName: string;
 	readonly description: string;
@@ -252,15 +260,14 @@ export interface ITool {
 	readonly statusDescription?: string;
 	readonly autoInstallSupported: boolean;
 	readonly autoInstallNeeded: boolean;
-	readonly isNotInstalled: boolean;
-	readonly isInstalled: boolean;
+	readonly status: ToolStatus;
 	readonly installationPathOrAdditionalInformation?: string;
 	readonly outputChannelName: string;
 	readonly fullVersion?: string;
 	readonly onDidUpdateData: vscode.Event<ITool>;
 
 	showOutputChannel(preserveFocus?: boolean): void;
-	loadInformation(): Promise<void>;
+	finishInitialization(): Promise<void>;
 	install(): Promise<void>;
 	isSameOrNewerThan(version: string): boolean;
 }

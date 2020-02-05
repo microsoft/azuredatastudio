@@ -20,15 +20,15 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 	template: ''
 })
 export class EditableDropDown extends AngularDisposable implements OnInit, OnChanges {
-	private _selectbox: Dropdown;
+	private _selectbox!: Dropdown;
 
-	@Input() options: string[];
-	@Input() selectedOption: string;
+	@Input() options!: string[];
+	@Input() selectedOption!: string;
 	@Input() onlyEmitOnChange = false;
 
 	@Output() onDidSelect = new EventEmitter<string>();
 
-	private _previousVal: string;
+	private _previousVal?: string;
 
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private readonly _el: ElementRef,

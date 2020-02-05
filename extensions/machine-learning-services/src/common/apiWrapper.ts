@@ -34,6 +34,9 @@ export class ApiWrapper {
 	public executeCommand<T>(command: string, ...rest: any[]): Thenable<T | undefined> {
 		return vscode.commands.executeCommand(command, ...rest);
 	}
+	public registerTaskHandler(taskId: string, handler: (profile: azdata.IConnectionProfile) => void): void {
+		azdata.tasks.registerTask(taskId, handler);
+	}
 
 	public getUriForConnection(connectionId: string): Thenable<string> {
 		return azdata.connection.getUriForConnection(connectionId);
@@ -59,7 +62,15 @@ export class ApiWrapper {
 		azdata.tasks.startBackgroundOperation(operationInfo);
 	}
 
+	public openExternal(target: vscode.Uri): Thenable<boolean> {
+		return vscode.env.openExternal(target);
+	}
+
 	public getExtension(extensionId: string): vscode.Extension<any> | undefined {
 		return vscode.extensions.getExtension(extensionId);
+	}
+
+	public getConfiguration(section?: string, resource?: vscode.Uri | null): vscode.WorkspaceConfiguration {
+		return vscode.workspace.getConfiguration(section, resource);
 	}
 }

@@ -11,10 +11,11 @@ import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { editorLineNumbers } from 'vs/editor/common/view/editorColorRegistry';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 
-import { IInsight, IInsightData, IPointDataSet, customMixin } from './interfaces';
+import { IInsight, IPointDataSet, customMixin } from './interfaces';
 import { IInsightOptions, DataDirection, ChartType, LegendPosition, DataType } from 'sql/workbench/contrib/charts/common/interfaces';
 import { values } from 'vs/base/common/collections';
 import { find } from 'vs/base/common/arrays';
+import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 
 const noneLineGraphs = [ChartType.Doughnut, ChartType.Pie];
 

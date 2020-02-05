@@ -313,7 +313,9 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 	}
 
 	updateLabel(): void {
-		this.label.innerText = this._commandAction.label;
+		if (this.label) {
+			this.label.innerText = this._commandAction.label;
+		}
 	}
 
 	// Overwrite item class to ensure that we can pass in a CSS class that other items use
@@ -327,19 +329,28 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 		} else if (item.icon) {
 			let iconClass: string;
 
-			const iconPathMapKey = item.icon.dark.toString();
 
-			if (MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.has(iconPathMapKey)) {
-				iconClass = MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!;
-			} else {
-				iconClass = ids.nextId();
-				createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.light || item.icon.dark)}`);
-				createCSSRule(`.vs-dark .codicon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.dark)}`);
-				MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
+			if (item.icon?.dark?.scheme) {
+				const iconPathMapKey = item.icon.dark.toString();
+
+				if (MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.has(iconPathMapKey)) {
+					iconClass = MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!;
+				} else {
+					iconClass = ids.nextId();
+					createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.light || item.icon.dark)}`);
+					createCSSRule(`.vs-dark .codicon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.dark)}`);
+					MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
+				}
+
+				if (this.label) {
+					addClasses(this.label, 'codicon', this._defaultCSSClassToAdd, iconClass);
+					this._labeledItemClassDispose = toDisposable(() => {
+						if (this.label) {
+							removeClasses(this.label, 'codicon', this._defaultCSSClassToAdd, iconClass);
+						}
+					});
+				}
 			}
-
-			addClasses(this.label, 'codicon', this._defaultCSSClassToAdd, iconClass);
-			this._labeledItemClassDispose = toDisposable(() => removeClasses(this.label, 'codicon', this._defaultCSSClassToAdd, iconClass));
 		}
 	}
 

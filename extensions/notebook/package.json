@@ -484,7 +484,10 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.3",
     "typemoq": "^2.1.0",
-    "vscode": "1.1.5"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.4"
+  },
+  "resolutions": {
+      "esprima": "^4.0.0"
   },
   "enableProposedApi": true
 }
