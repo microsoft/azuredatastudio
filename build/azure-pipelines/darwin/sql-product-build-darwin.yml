@@ -118,6 +118,7 @@ steps:
       ls
 
       echo "Cleaning the application"
+      xattr -cr *.app
       cd *.app
       find . -name '._*' -o -iname '.DS_Store' -o -iname '__MACOSX' -print0 | xargs -0 rm -rf --
       cd ..
