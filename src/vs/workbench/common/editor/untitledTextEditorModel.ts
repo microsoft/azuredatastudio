@@ -242,28 +242,26 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 	}
 
 	private updateNameFromFirstLine(): void {
-		// {{SQL CARBON EDIT}}
-		// Unwanted behavior for query editor.
+		// {{SQL CARBON EDIT}} - For Query Editor, must not change name even without file path.
+		if (!this.hasAssociatedFilePath && this.hasAssociatedFilePath) {
+			return; // not in case of an associated file path
+		}
 
-		// if (this.hasAssociatedFilePath) {
-		// 	return; // not in case of an associated file path
-		// }
+		// Determine the first words of the model following these rules:
+		// - cannot be only whitespace (so we trim())
+		// - cannot be only non-alphanumeric characters (so we run word definition regex over it)
+		// - cannot be longer than FIRST_LINE_MAX_TITLE_LENGTH
 
-		// // Determine the first words of the model following these rules:
-		// // - cannot be only whitespace (so we trim())
-		// // - cannot be only non-alphanumeric characters (so we run word definition regex over it)
-		// // - cannot be longer than FIRST_LINE_MAX_TITLE_LENGTH
+		let modelFirstWordsCandidate: string | undefined = undefined;
 
-		// let modelFirstWordsCandidate: string | undefined = undefined;
+		const firstLineText = this.textEditorModel?.getValueInRange({ startLineNumber: 1, endLineNumber: 1, startColumn: 1, endColumn: UntitledTextEditorModel.FIRST_LINE_NAME_MAX_LENGTH }).trim();
+		if (firstLineText && ensureValidWordDefinition().exec(firstLineText)) {
+			modelFirstWordsCandidate = firstLineText;
+		}
 
-		// const firstLineText = this.textEditorModel?.getValueInRange({ startLineNumber: 1, endLineNumber: 1, startColumn: 1, endColumn: UntitledTextEditorModel.FIRST_LINE_NAME_MAX_LENGTH }).trim();
-		// if (firstLineText && ensureValidWordDefinition().exec(firstLineText)) {
-		// 	modelFirstWordsCandidate = firstLineText;
-		// }
-
-		// if (modelFirstWordsCandidate !== this.cachedModelFirstLineWords) {
-		// 	this.cachedModelFirstLineWords = modelFirstWordsCandidate;
-		// 	this._onDidChangeName.fire();
-		// }
+		if (modelFirstWordsCandidate !== this.cachedModelFirstLineWords) {
+			this.cachedModelFirstLineWords = modelFirstWordsCandidate;
+			this._onDidChangeName.fire();
+		}
 	}
 }
