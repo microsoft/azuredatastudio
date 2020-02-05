@@ -5,8 +5,7 @@
 
 import { Component, Input, Inject, ChangeDetectorRef, forwardRef } from '@angular/core';
 
-import { IInsightData } from 'sql/workbench/contrib/charts/browser/interfaces';
-import { IInsightsView } from 'sql/platform/dashboard/browser/insightRegistry';
+import { IInsightsView, IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 
 @Component({
 	template: `

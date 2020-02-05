@@ -6,7 +6,7 @@
 import { Subject } from 'rxjs/Subject';
 
 import { EditUpdateCellResult, EditSubsetResult, EditCreateRowResult } from 'azdata';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { ResultSerializer } from 'sql/workbench/contrib/query/common/resultSerializer';
 import { ISaveRequest } from 'sql/workbench/contrib/grid/common/interfaces';
 
@@ -149,7 +149,7 @@ export class DataService {
 		this._queryModel.copyResults(this._uri, selection, batchId, resultId, includeHeaders);
 	}
 
-	onAngularLoaded(): void {
-		this._queryModel.onAngularLoaded(this._uri);
+	onLoaded(): void {
+		this._queryModel.onLoaded(this._uri);
 	}
 }

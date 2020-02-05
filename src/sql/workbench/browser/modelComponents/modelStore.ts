@@ -3,10 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IModelStore, IComponentDescriptor, IComponent } from './interfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { entries } from 'sql/base/common/collections';
 import { find } from 'vs/base/common/arrays';
+import { IComponentDescriptor, IModelStore, IComponent } from 'sql/platform/dashboard/browser/interfaces';
 
 class ComponentDescriptor implements IComponentDescriptor {
 	constructor(public readonly id: string, public readonly type: string) {
