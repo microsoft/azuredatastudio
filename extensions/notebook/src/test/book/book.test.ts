@@ -27,12 +27,14 @@ export interface ExpectedBookItem {
 
 export function equalBookItems(book: BookTreeItem, expectedBook: ExpectedBookItem): void {
 	should(book.title).equal(expectedBook.title);
-	should(book.uri).equal(expectedBook.url);
+	should(path.posix.parse(book.uri)).deepEqual(path.posix.parse(expectedBook.url));
 	if (expectedBook.previousUri || expectedBook.nextUri) {
 		let prevUri = book.previousUri ? book.previousUri.toLocaleLowerCase() : undefined;
-		should(prevUri).equal(expectedBook.previousUri);
+		let expectedPrevUri = expectedBook.previousUri ? expectedBook.previousUri.replace(/\\/g, '/') : undefined;
+		should(prevUri).equal(expectedPrevUri);
 		let nextUri = book.nextUri ? book.nextUri.toLocaleLowerCase() : undefined;
-		should(nextUri).equal(expectedBook.nextUri);
+		let expectedNextUri = expectedBook.nextUri ? expectedBook.nextUri.replace(/\\/g, '/') : undefined;
+		should(nextUri).equal(expectedNextUri);
 	}
 }
 
@@ -56,15 +58,16 @@ describe('BookTreeViewProviderTests', function() {
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 			nonBookFolderPath = path.join(rootFolderPath, `NonBook`);
 			bookFolderPath = path.join(rootFolderPath, `Book`);
-			let dataFolderPath = path.join(bookFolderPath, '_data');
-			let contentFolderPath = path.join(bookFolderPath, 'content');
-			let configFile = path.join(bookFolderPath, '_config.yml');
-			let tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
-			let notebook1File = path.join(contentFolderPath, 'notebook1.ipynb');
-			let notebook2File = path.join(contentFolderPath, 'notebook2.ipynb');
-			let notebook3File = path.join(contentFolderPath, 'notebook3.ipynb');
-			let markdownFile = path.join(contentFolderPath, 'markdown.md');
+			let dataFolderPath: string = path.join(bookFolderPath, '_data');
+			let contentFolderPath: string = path.join(bookFolderPath, 'content');
+			let configFile: string = path.join(bookFolderPath, '_config.yml');
+			let tableOfContentsFile: string = path.join(dataFolderPath, 'toc.yml');
+			let notebook1File: string = path.join(contentFolderPath, 'notebook1.ipynb');
+			let notebook2File: string = path.join(contentFolderPath, 'notebook2.ipynb');
+			let notebook3File: string = path.join(contentFolderPath, 'notebook3.ipynb');
+			let markdownFile: string = path.join(contentFolderPath, 'markdown.md');
 			expectedNotebook1 = {
+				// tslint:disable-next-line: quotemark
 				title: 'Notebook1',
 				url: '/notebook1',
 				previousUri: undefined,
@@ -204,9 +207,9 @@ describe('BookTreeViewProviderTests', function() {
 
 		this.beforeAll(async () => {
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
-			let dataFolderPath = path.join(rootFolderPath, '_data');
+			let dataFolderPath: string = path.join(rootFolderPath, '_data');
 			tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
-			let tableOfContentsFileIgnore = path.join(rootFolderPath, 'toc.yml');
+			let tableOfContentsFileIgnore: string = path.join(rootFolderPath, 'toc.yml');
 			await fs.mkdir(rootFolderPath);
 			await fs.mkdir(dataFolderPath);
 			await fs.writeFile(tableOfContentsFile, '- title: Notebook1\n  url: /notebook1\n  sections:\n  - title: Notebook2\n    url: /notebook2\n  - title: Notebook3\n    url: /notebook3\n- title: Markdown\n  url: /markdown\n- title: GitHub\n  url: https://github.com/\n  external: true');
@@ -237,7 +240,7 @@ describe('BookTreeViewProviderTests', function() {
 	});
 
 
-	describe('BookTreeViewProvider.getBooks @UNSTABLE@', function (): void {
+	describe('BookTreeViewProvider.getBooks', function (): void {
 		let rootFolderPath: string;
 		let configFile: string;
 		let folder: vscode.WorkspaceFolder;
@@ -265,13 +268,13 @@ describe('BookTreeViewProviderTests', function() {
 
 		it('should show error message if config.yml file not found', async () => {
 			await bookTreeViewProvider.currentBook.readBooks();
-			should(bookTreeViewProvider.errorMessage.toLocaleLowerCase()).equal(('ENOENT: no such file or directory, open \'' + configFile + '\'').toLocaleLowerCase());
+			should(bookTreeViewProvider.currentBook.errorMessage.toLocaleLowerCase()).equal(('ENOENT: no such file or directory, open \'' + configFile + '\'').toLocaleLowerCase());
 		});
 
 		it('should show error if toc.yml file format is invalid', async function(): Promise<void> {
 			await fs.writeFile(configFile, 'title: Test Book');
 			await bookTreeViewProvider.currentBook.readBooks();
-			should(bookTreeViewProvider.errorMessage).equal('Error: Test Book has an incorrect toc.yml file');
+			should(bookTreeViewProvider.currentBook.errorMessage).equal('Invalid toc file');
 		});
 
 		this.afterAll(async function () {
@@ -282,7 +285,7 @@ describe('BookTreeViewProviderTests', function() {
 	});
 
 
-	describe('BookTreeViewProvider.getSections @UNSTABLE@', function (): void {
+	describe('BookTreeViewProvider.getSections', function (): void {
 		let rootFolderPath: string;
 		let tableOfContentsFile: string;
 		let bookTreeViewProvider: BookTreeViewProvider;
@@ -323,7 +326,7 @@ describe('BookTreeViewProviderTests', function() {
 		it('should show error if notebook or markdown file is missing', async function(): Promise<void> {
 			let books = bookTreeViewProvider.currentBook.bookItems;
 			let children = await bookTreeViewProvider.currentBook.getSections({ sections: [] }, books[0].sections, rootFolderPath);
-			should(bookTreeViewProvider.errorMessage).equal('Missing file : Notebook1');
+			should(bookTreeViewProvider.currentBook.errorMessage).equal('Missing file : Notebook1');
 			// Rest of book should be detected correctly even with a missing file
 			equalBookItems(children[0], expectedNotebook2);
 		});

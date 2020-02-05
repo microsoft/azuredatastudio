@@ -25,6 +25,9 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	private _tableOfContentPaths: string[] = [];
 	readonly providerId: string = 'BookNavigator';
 
+	// For testing
+	private _errorMessage: string;
+
 	constructor(public bookPath: string, public openAsUntitled: boolean, private _extensionContext: vscode.ExtensionContext) {
 		this.bookPath = bookPath;
 		this.openAsUntitled = openAsUntitled;
@@ -57,6 +60,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 			this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
 			vscode.commands.executeCommand('setContext', 'bookOpened', true);
 		} else {
+			this._errorMessage = loc.missingTocError;
 			throw new Error(loc.missingTocError);
 		}
 	}
@@ -85,8 +89,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 				);
 				this._bookItems.push(book);
 			} catch (e) {
-				let error = e instanceof Error ? e.message : e;
-				vscode.window.showErrorMessage(error);
+				this._errorMessage = e instanceof Error ? e.message : e;
+				vscode.window.showErrorMessage(this._errorMessage);
 			}
 		}
 		return this._bookItems;
@@ -167,8 +171,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 						);
 						notebooks.push(markdown);
 					} else {
-						let error = loc.missingFileError(sections[i].title);
-						vscode.window.showErrorMessage(error);
+						this._errorMessage = loc.missingFileError(sections[i].title);
+						vscode.window.showErrorMessage(this._errorMessage);
 					}
 				}
 			} else {
@@ -184,14 +188,15 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	 */
 	private parseJupyterSections(section: any[]): IJupyterBookSection[] {
 		try {
-			return section.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.parseJupyterSections(val.sections)) : acc.concat(val), []);
-		} catch (error) {
-			let err: string = loc.invalidTocFileError(error);
+			return section.reduce((acc, val) => Array.isArray(val.sections) ?
+				acc.concat(val).concat(this.parseJupyterSections(val.sections)) : acc.concat(val), []);
+		} catch (e) {
+			this._errorMessage = loc.invalidTocFileError();
 			if (section.length > 0) {
-				err = loc.invalidTocError(section[0].title);
+				this._errorMessage = loc.invalidTocError(section[0].title);
 			}
-			vscode.window.showErrorMessage(err);
-			throw err;
+			vscode.window.showErrorMessage(this._errorMessage);
+			throw this._errorMessage;
 		}
 
 	}
@@ -222,4 +227,9 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	getUntitledUri(resource: string): vscode.Uri {
 		return vscode.Uri.parse(`untitled:${resource}`);
 	}
+
+	public get errorMessage(): string {
+		return this._errorMessage;
+	}
+
 }
