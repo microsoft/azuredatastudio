@@ -116,7 +116,14 @@ steps:
       set -e
       pushd ../azuredatastudio-darwin
       ls
-      codesign --deep --force --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/darwin/entitlements.xml -s LPV3BJJYXS *.app
+
+      cd *.app
+      find . -type f -print0 | xargs -0 file | grep ':  *Mach-O' | sed 's/:  *Mach-O.*//' | while read -r file; do codesign --options runtime --timestamp --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/darwin/entitlements.xml -s LPV3BJJYXS --force "$file" || break; done
+
+      codesign --force --timestamp --options runtime --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/darwin/entitlements.xml -s LPV3BJJYXS Contents/Frameworks/Electron\ Framework.framework
+      cd ..
+
+      codesign --force --timestamp --options runtime --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/darwin/entitlements.xml -s LPV3BJJYXS *.app
       popd
     displayName: 'Manual codesign'
 
