@@ -61,7 +61,7 @@ export class LanguageController {
 
 		dialog.onList(async () => {
 			try {
-				let result = await this.executeAction(dialog, this.listLanguages, this._model);
+				let result = await this.listLanguages(this._model);
 				dialog.onListLanguageLoaded(result);
 			} catch (err) {
 				dialog.onActionFailed(err);

@@ -83,7 +83,7 @@ export class AddEditLanguageTab extends LanguageViewBase {
 	public async reset(): Promise<void> {
 		try {
 			if (this.languageName) {
-				this.languageName.value = '';
+				this.languageName.value = this._languageUpdateModel.language.name;
 			}
 			this.languageView?.reset();
 		} finally {
