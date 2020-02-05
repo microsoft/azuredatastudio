@@ -16,7 +16,7 @@ import { promisify } from 'util';
 import { MockExtensionContext } from '../common/stubs';
 import { exists } from '../../common/utils';
 
-export interface ExpectedBookItem {
+export interface IExpectedBookItem {
 	title: string;
 	url?: string;
 	sections?: any[];
@@ -25,7 +25,7 @@ export interface ExpectedBookItem {
 	nextUri?: string | undefined;
 }
 
-export function equalBookItems(book: BookTreeItem, expectedBook: ExpectedBookItem): void {
+export function equalBookItems(book: BookTreeItem, expectedBook: IExpectedBookItem): void {
 	should(book.title).equal(expectedBook.title);
 	should(path.posix.parse(book.uri)).deepEqual(path.posix.parse(expectedBook.url));
 	if (expectedBook.previousUri || expectedBook.nextUri) {
@@ -38,7 +38,7 @@ export function equalBookItems(book: BookTreeItem, expectedBook: ExpectedBookIte
 	}
 }
 
-describe('BookTreeViewProviderTests', function() {
+describe('BookTreeViewProviderTests', function () {
 
 	describe('BookTreeViewProvider', () => {
 
@@ -46,12 +46,12 @@ describe('BookTreeViewProviderTests', function() {
 		let nonBookFolderPath: string;
 		let bookFolderPath: string;
 		let rootFolderPath: string;
-		let expectedNotebook1: ExpectedBookItem;
-		let expectedNotebook2: ExpectedBookItem;
-		let expectedNotebook3: ExpectedBookItem;
-		let expectedMarkdown: ExpectedBookItem;
-		let expectedExternalLink: ExpectedBookItem;
-		let expectedBook: ExpectedBookItem;
+		let expectedNotebook1: IExpectedBookItem;
+		let expectedNotebook2: IExpectedBookItem;
+		let expectedNotebook3: IExpectedBookItem;
+		let expectedMarkdown: IExpectedBookItem;
+		let expectedExternalLink: IExpectedBookItem;
+		let expectedBook: IExpectedBookItem;
 
 		this.beforeAll(async () => {
 			mockExtensionContext = new MockExtensionContext();
@@ -188,7 +188,7 @@ describe('BookTreeViewProviderTests', function() {
 				equalBookItems(notebook3, expectedNotebook3);
 			});
 
-			this.afterAll(async function () {
+			this.afterAll(async function (): Promise<void> {
 				console.log('Removing temporary files...');
 				if (await exists(rootFolderPath)) {
 					await promisify(rimraf)(rootFolderPath);
@@ -232,7 +232,7 @@ describe('BookTreeViewProviderTests', function() {
 			}
 		});
 
-		this.afterAll(async function () {
+		this.afterAll(async function (): Promise<void> {
 			if (await exists(rootFolderPath)) {
 				await promisify(rimraf)(rootFolderPath);
 			}
@@ -249,7 +249,7 @@ describe('BookTreeViewProviderTests', function() {
 
 		this.beforeAll(async () => {
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
-			let dataFolderPath = path.join(rootFolderPath, '_data');
+			let dataFolderPath: string = path.join(rootFolderPath, '_data');
 			configFile = path.join(rootFolderPath, '_config.yml');
 			tocFile = path.join(dataFolderPath, 'toc.yml');
 			await fs.mkdir(rootFolderPath);
@@ -271,13 +271,13 @@ describe('BookTreeViewProviderTests', function() {
 			should(bookTreeViewProvider.currentBook.errorMessage.toLocaleLowerCase()).equal(('ENOENT: no such file or directory, open \'' + configFile + '\'').toLocaleLowerCase());
 		});
 
-		it('should show error if toc.yml file format is invalid', async function(): Promise<void> {
+		it('should show error if toc.yml file format is invalid', async function (): Promise<void> {
 			await fs.writeFile(configFile, 'title: Test Book');
 			await bookTreeViewProvider.currentBook.readBooks();
 			should(bookTreeViewProvider.currentBook.errorMessage).equal('Invalid toc file');
 		});
 
-		this.afterAll(async function () {
+		this.afterAll(async function (): Promise<void> {
 			if (await exists(rootFolderPath)) {
 				await promisify(rimraf)(rootFolderPath);
 			}
@@ -290,7 +290,7 @@ describe('BookTreeViewProviderTests', function() {
 		let tableOfContentsFile: string;
 		let bookTreeViewProvider: BookTreeViewProvider;
 		let folder: vscode.WorkspaceFolder;
-		let expectedNotebook2: ExpectedBookItem;
+		let expectedNotebook2: IExpectedBookItem;
 
 		this.beforeAll(async () => {
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
@@ -323,15 +323,15 @@ describe('BookTreeViewProviderTests', function() {
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 		});
 
-		it('should show error if notebook or markdown file is missing', async function(): Promise<void> {
-			let books = bookTreeViewProvider.currentBook.bookItems;
+		it('should show error if notebook or markdown file is missing', async function (): Promise<void> {
+			let books: BookTreeItem[] = bookTreeViewProvider.currentBook.bookItems;
 			let children = await bookTreeViewProvider.currentBook.getSections({ sections: [] }, books[0].sections, rootFolderPath);
 			should(bookTreeViewProvider.currentBook.errorMessage).equal('Missing file : Notebook1');
-			// Rest of book should be detected correctly even with a missing file
+			// rest of book should be detected correctly even with a missing file
 			equalBookItems(children[0], expectedNotebook2);
 		});
 
-		this.afterAll(async function () {
+		this.afterAll(async function (): Promise<void> {
 			if (await exists(rootFolderPath)) {
 				await promisify(rimraf)(rootFolderPath);
 			}

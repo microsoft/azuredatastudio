@@ -25,7 +25,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	private _tableOfContentPaths: string[] = [];
 	readonly providerId: string = 'BookNavigator';
 
-	// For testing
+	// for testing
 	private _errorMessage: string;
 
 	constructor(public bookPath: string, public openAsUntitled: boolean, private _extensionContext: vscode.ExtensionContext) {
@@ -47,15 +47,15 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	public async getTableOfContentFiles(folderPath: string): Promise<void> {
 		let notebookConfig = vscode.workspace.getConfiguration(notebookConfigKey);
 		let maxDepth = notebookConfig[maxBookSearchDepth];
-		// Use default value if user enters an invalid value
+		// use default value if user enters an invalid value
 		if (isNullOrUndefined(maxDepth) || maxDepth < 0) {
 			maxDepth = 5;
-		} else if (maxDepth === 0) { // No limit of search depth if user enters 0
+		} else if (maxDepth === 0) { // no limit of search depth if user enters 0
 			maxDepth = undefined;
 		}
 
-		let p = path.join(folderPath, '**', '_data', 'toc.yml').replace(/\\/g, '/');
-		let tableOfContentPaths = await glob(p, { deep: maxDepth });
+		let p: string = path.join(folderPath, '**', '_data', 'toc.yml').replace(/\\/g, '/');
+		let tableOfContentPaths: string[] = await glob(p, { deep: maxDepth });
 		if (tableOfContentPaths.length > 0) {
 			this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
 			vscode.commands.executeCommand('setContext', 'bookOpened', true);
@@ -67,13 +67,13 @@ export class BookModel implements azdata.nb.NavigationProvider {
 
 	public async readBooks(): Promise<BookTreeItem[]> {
 		for (const contentPath of this._tableOfContentPaths) {
-			let root = path.dirname(path.dirname(contentPath));
+			let root: string = path.dirname(path.dirname(contentPath));
 			try {
 				let fileContents = await fsPromises.readFile(path.join(root, '_config.yml'), 'utf-8');
 				const config = yaml.safeLoad(fileContents.toString());
 				fileContents = await fsPromises.readFile(contentPath, 'utf-8');
-				const tableOfContents = yaml.safeLoad(fileContents.toString());
-				let book = new BookTreeItem({
+				const tableOfContents: any = yaml.safeLoad(fileContents.toString());
+				let book: BookTreeItem = new BookTreeItem({
 					title: config.title,
 					root: root,
 					tableOfContents: { sections: this.parseJupyterSections(tableOfContents) },
@@ -105,7 +105,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		for (let i = 0; i < sections.length; i++) {
 			if (sections[i].url) {
 				if (sections[i].external) {
-					let externalLink = new BookTreeItem({
+					let externalLink: BookTreeItem = new BookTreeItem({
 						title: sections[i].title,
 						root: root,
 						tableOfContents: tableOfContents,
@@ -124,8 +124,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 				} else {
 					let pathToNotebook = path.join(root, 'content', sections[i].url.concat('.ipynb'));
 					let pathToMarkdown = path.join(root, 'content', sections[i].url.concat('.md'));
-					// Note: Currently, if there is an ipynb and a md file with the same name, Jupyter Books only shows the notebook.
-					// Following Jupyter Books behavior for now
+					// note: Currently, if there is an ipynb and a md file with the same name, Jupyter Books only shows the notebook.
+					// following Jupyter Books behavior for now
 					if (await fs.pathExists(pathToNotebook)) {
 						let notebook = new BookTreeItem({
 							title: sections[i].title,
@@ -147,15 +147,14 @@ export class BookModel implements azdata.nb.NavigationProvider {
 								this._allNotebooks.set(path.basename(pathToNotebook), notebook);
 								notebooks.push(notebook);
 							}
-						}
-						else {
+						} else {
 							if (!this._allNotebooks.get(pathToNotebook)) {
 								this._allNotebooks.set(pathToNotebook, notebook);
 								notebooks.push(notebook);
 							}
 						}
 					} else if (await fs.pathExists(pathToMarkdown)) {
-						let markdown = new BookTreeItem({
+						let markdown: BookTreeItem = new BookTreeItem({
 							title: sections[i].title,
 							root: root,
 							tableOfContents: tableOfContents,
@@ -176,7 +175,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 					}
 				}
 			} else {
-				// TODO: search functionality (#6160)
+				// toDO: search functionality (#6160)
 			}
 		}
 		return notebooks;
@@ -201,17 +200,19 @@ export class BookModel implements azdata.nb.NavigationProvider {
 
 	}
 
-	public get tableOfContentPaths() {
+	public get tableOfContentPaths(): string[] {
 		return this._tableOfContentPaths;
 	}
 
 	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {
-		let notebook = !this.openAsUntitled ? this._allNotebooks.get(uri.fsPath) : this._allNotebooks.get(path.basename(uri.fsPath));
+		let notebook: BookTreeItem =
+			!this.openAsUntitled ? this._allNotebooks.get(uri.fsPath) : this._allNotebooks.get(path.basename(uri.fsPath));
 		let result: azdata.nb.NavigationResult;
 		if (notebook) {
 			result = {
 				hasNavigation: true,
-				previous: notebook.previousUri ? this.openAsUntitled ? this.getUntitledUri(notebook.previousUri) : vscode.Uri.file(notebook.previousUri) : undefined,
+				previous: notebook.previousUri ?
+					this.openAsUntitled ? this.getUntitledUri(notebook.previousUri) : vscode.Uri.file(notebook.previousUri) : undefined,
 				next: notebook.nextUri ? this.openAsUntitled ? this.getUntitledUri(notebook.nextUri) : vscode.Uri.file(notebook.nextUri) : undefined
 			};
 		} else {
