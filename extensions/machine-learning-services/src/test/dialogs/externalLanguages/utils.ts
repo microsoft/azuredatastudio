@@ -35,8 +35,8 @@ export function createContext(): TestContext {
 	let apiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 	let componentBase: azdata.Component = {
 		id: '',
-		updateProperties: undefined!,
-		updateProperty: undefined!,
+		updateProperties: () => Promise.resolve(),
+		updateProperty: () => Promise.resolve(),
 		updateCssStyles: undefined!,
 		onValidityChanged: undefined!,
 		valid: true,
@@ -78,7 +78,29 @@ export function createContext(): TestContext {
 		onEnterKeyPressed: undefined!,
 		value: ''
 	});
+	let declarativeTable: () => azdata.DeclarativeTableComponent = () => Object.assign({}, componentBase, {
+		onDataChanged: undefined!,
+		data: [],
+		columns: []
+	});
 
+	let loadingComponent: () => azdata.LoadingComponent = () => Object.assign({}, componentBase, {
+		loading: false,
+		component: undefined!
+	});
+
+	let declarativeTableBuilder: azdata.ComponentBuilder<azdata.DeclarativeTableComponent> = {
+		component: () => declarativeTable(),
+		withProperties: () => declarativeTableBuilder,
+		withValidation: () => declarativeTableBuilder
+	};
+
+	let loadingBuilder: azdata.LoadingComponentBuilder = {
+		component: () => loadingComponent(),
+		withProperties: () => loadingBuilder,
+		withValidation: () => loadingBuilder,
+		withItem: () => loadingBuilder
+	};
 
 	let formBuilder: azdata.FormBuilder = Object.assign({}, {
 		component: () => form,
@@ -91,7 +113,6 @@ export function createContext(): TestContext {
 		withValidation: () => formBuilder,
 		withItems: () => formBuilder,
 		withLayout: () => formBuilder
-
 	});
 
 	let flexBuilder: azdata.FlexBuilder = Object.assign({}, {
@@ -133,20 +154,20 @@ export function createContext(): TestContext {
 			webView: undefined!,
 			editor: undefined!,
 			diffeditor: undefined!,
-			text: undefined!,
+			text: () => inputBoxBuilder,
 			image: undefined!,
 			button: () => buttonBuilder,
 			dropDown: undefined!,
 			tree: undefined!,
 			listBox: undefined!,
 			table: undefined!,
-			declarativeTable: undefined!,
+			declarativeTable: () => declarativeTableBuilder,
 			dashboardWidget: undefined!,
 			dashboardWebview: undefined!,
 			formContainer: () => formBuilder,
 			groupContainer: undefined!,
 			toolbarContainer: undefined!,
-			loadingComponent: undefined!,
+			loadingComponent: () => loadingBuilder,
 			fileBrowserTree: undefined!,
 			hyperlink: undefined!
 		}

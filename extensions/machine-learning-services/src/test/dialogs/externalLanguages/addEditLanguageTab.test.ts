@@ -58,8 +58,11 @@ describe('Add Edit External Languages Tab', () => {
 			newLang: false
 		};
 		let tab = new AddEditLanguageTab(testContext.apiWrapper.object, parent, languageUpdateModel);
+		if (tab.languageName) {
+			tab.languageName.value = 'some value';
+		}
 		await tab.reset();
-		should.equal(tab.languageName?.value, '');
+		should.equal(tab.languageName?.value, 'name');
 	});
 
 	it('Should load content successfully ', async function (): Promise<void> {
