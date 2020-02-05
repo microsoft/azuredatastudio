@@ -78,6 +78,11 @@ export interface IConnectionManagementService {
 	providerNameToDisplayNameMap: { [providerDisplayName: string]: string };
 
 	/**
+	 * Opens the edit connection dialog to change connection.
+	 */
+	showEditConnectionDialog(model: IConnectionProfile): Promise<void>;
+
+	/**
 	 * Opens the connection dialog to create new connection
 	 */
 	showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void>;

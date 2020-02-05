@@ -45,6 +45,10 @@ export interface OnShowUIResponse {
 	container: HTMLElement;
 }
 
+export const enum ConnectionActionType {
+	Add = 0,
+	Edit = 1,
+}
 export class ConnectionDialogWidget extends Modal {
 	private _body: HTMLElement;
 	private _recentConnection: HTMLElement;
@@ -90,6 +94,7 @@ export class ConnectionDialogWidget extends Modal {
 		private providerDisplayNameOptions: string[],
 		private selectedProviderType: string,
 		private providerNameToDisplayNameMap: { [providerDisplayName: string]: string },
+		private actionType: ConnectionActionType,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IThemeService themeService: IThemeService,

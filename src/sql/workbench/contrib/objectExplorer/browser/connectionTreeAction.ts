@@ -94,6 +94,10 @@ export class EditConnectionAction extends Action {
 	}
 
 	public async run(element: ConnectionProfileGroup): Promise<boolean> {
+		if (!this._connectionProfile) {
+			return false;
+		}
+
 		await this._connectionManagementService.showConnectionDialog(undefined, undefined, this._connectionProfile);
 		return true;
 	}
