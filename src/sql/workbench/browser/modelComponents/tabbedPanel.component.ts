@@ -7,7 +7,7 @@ import { NavigationBarLayout, PanelComponent } from 'sql/base/browser/ui/panel/p
 import { TabType } from 'sql/base/browser/ui/panel/tab.component';
 import { TabOrientation, TabbedPanelLayout } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
+import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import 'vs/css!./media/tabbedPanel';
 
 export interface TabConfig {
