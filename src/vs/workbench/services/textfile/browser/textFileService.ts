@@ -572,6 +572,7 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 		}
 
 		// Finally fallback to suggest just the file name
+		// {{SQL CARBON EDIT}} - Rationale: this seems to be a bug we picked up from a vscode merge. This should get fixed with a new merge in the future.
 		return joinPath(this.fileDialogService.defaultFilePath() || URI.file(this.environmentService.userHome), suggestedFilename);
 	}
 
