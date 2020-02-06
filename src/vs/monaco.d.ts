@@ -3093,6 +3093,7 @@ declare namespace monaco.editor {
 	 * An event describing that the configuration of the editor has changed.
 	 */
 	export class ConfigurationChangedEvent {
+		hasChanged(id: EditorOption): boolean;
 	}
 
 	/**

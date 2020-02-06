@@ -630,9 +630,6 @@ export class ConfigurationChangedEvent {
 	constructor(values: boolean[]) {
 		this._values = values;
 	}
-	/**
-	 * @internal
-	 */
 	public hasChanged(id: EditorOption): boolean {
 		return this._values[id];
 	}
