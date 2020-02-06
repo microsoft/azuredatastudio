@@ -83,6 +83,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	public showToolbar = false;
 	// tslint:disable:no-unused-variable
 	private readonly homeTabTitle: string = nls.localize('home', "Home");
+	private readonly databasesTabTitle: string = nls.localize('databases', "Databases");
 
 	// a set of config modifiers
 	private readonly _configModifiers: Array<(item: Array<WidgetConfig>, collection: IConfigModifierCollection, context: string) => Array<WidgetConfig>> = [
@@ -442,7 +443,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	public handleTabChange(tab: TabComponent): void {
-		if (tab.title === this.homeTabTitle) {
+		if (tab.title === this.homeTabTitle || tab.title === this.databasesTabTitle) {
 			this.showToolbar = true;
 		} else {
 			this.showToolbar = false;
