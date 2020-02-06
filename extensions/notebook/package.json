@@ -180,6 +180,10 @@
           "dark": "resources/dark/open_notebook_inverse.svg",
           "light": "resources/light/open_notebook.svg"
         }
+      },
+      {
+        "command": "notebook.command.closeBook",
+        "title": "%title.closeJupyterBook%"
       }
     ],
     "languages": [
@@ -273,6 +277,10 @@
         {
           "command": "notebook.command.searchUntitledBook",
           "when": "false"
+        },
+        {
+          "command": "notebook.command.closeBook",
+          "when": "false"
         }
       ],
       "touchBar": [
@@ -319,6 +327,10 @@
           "command": "notebook.command.saveBook",
           "when": "view == unsavedBookTreeView && viewItem == unsavedBook && unsavedBooks",
           "group": "inline"
+        },
+        {
+          "command": "notebook.command.closeBook",
+          "when": "view == bookTreeView && viewItem == savedBook"
         }
       ],
       "view/title": [

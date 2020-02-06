@@ -77,6 +77,20 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
+	async closeBook(book?: BookTreeItem): Promise<void> {
+		// remove book from the saved books
+		if (book) {
+			let index: number = this.books.indexOf(this.books.find(b => b.bookPath.replace(/\\/g, '/') === book.root));
+			if (index > -1) {
+				let deletedBook: BookModel[] = this.books.splice(index, 1);
+				if (this.currentBook === deletedBook[0]) {
+					this.currentBook = this.books.length > 0 ? this.books[0] : undefined;
+				}
+				this._onDidChangeTreeData.fire();
+			}
+		}
+	}
+
 	/**
 	 * Creates a model for the specified folder path and adds it to the known list of books if we
 	 * were able to successfully parse it.
