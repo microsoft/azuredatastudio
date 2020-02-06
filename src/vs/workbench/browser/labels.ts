@@ -510,15 +510,15 @@ class ResourceLabelWidget extends IconLabel {
 		}
 
 		let label = this.label.name || '';
-		if (resource?.scheme === Schemas.untitled) {
-			// Untitled labels are very dynamic because they may change
-			// whenever the content changes. As such we always ask the
-			// text file service for the name of the untitled editor
-			const untitledName = this.textFileService.untitled.get(resource)?.getName();
-			if (untitledName) {
-				label = untitledName;
-			}
-		}
+		// if (resource?.scheme === Schemas.untitled) {	 // {{SQL CARBON EDIT}} - For Query Editor, untitled editor query must use same label.
+		// 	// Untitled labels are very dynamic because they may change
+		// 	// whenever the content changes. As such we always ask the
+		// 	// text file service for the name of the untitled editor
+		// 	const untitledName = this.textFileService.untitled.get(resource)?.getName();
+		// 	if (untitledName) {
+		// 		label = untitledName;
+		// 	}
+		// }
 
 		this.setLabel(label, this.label.description, iconLabelOptions);
 
