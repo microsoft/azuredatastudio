@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import { EditorReplacementContribution } from 'sql/workbench/common/editorReplacerContribution';
-import { TestEditorService } from 'vs/workbench/test/workbenchTestServices';
+import { TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IModeService, ILanguageSelection } from 'vs/editor/common/services/modeService';
 import { Event } from 'vs/base/common/event';
 import { IMode, LanguageId, LanguageIdentifier } from 'vs/editor/common/modes';

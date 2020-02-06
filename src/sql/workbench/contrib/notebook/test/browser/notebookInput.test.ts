@@ -6,7 +6,7 @@
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { nb } from 'azdata';
-import { workbenchInstantiationService, TestFileService } from 'vs/workbench/test/workbenchTestServices';
+import { workbenchInstantiationService, TestFileService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/common/models/untitledNotebookInput';
