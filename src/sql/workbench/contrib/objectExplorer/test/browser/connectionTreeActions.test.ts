@@ -113,13 +113,19 @@ suite('SQL Connection Tree Action tests', () => {
 				throw new Error('Method not implemented.');
 			}
 			_serviceBrand: undefined;
-			openView(id: string, focus?: boolean): Promise<IView | null> {
-				return Promise.resolve(<IView><any>{
+			openView<T extends IView>(id: string, focus?: boolean): Promise<T | null> {
+				return Promise.resolve(<T><any>{
 					id: '',
 					serversTree: undefined
 				});
 			}
 			onDidChangeViewVisibility: Event<{ id: string, visible: boolean }> = Event.None;
+			closeView(id: string): void {
+				return;
+			}
+			isViewVisible(id: string): boolean {
+				return true;
+			}
 		};
 
 		let manageConnectionAction: OEManageConnectionAction = new OEManageConnectionAction(OEManageConnectionAction.ID,
