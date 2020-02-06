@@ -95,7 +95,9 @@
 			"webRoot": "${workspaceFolder}",
 			// Settings for js-debug:
 			"pauseForSourceMap": false,
-			"outFiles": ["${workspaceFolder}/out/**/*.js"],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
 		},
 		{
 			"type": "node",
