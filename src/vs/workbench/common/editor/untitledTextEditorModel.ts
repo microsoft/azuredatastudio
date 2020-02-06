@@ -242,9 +242,9 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 	}
 
 	private updateNameFromFirstLine(): void {
-		if (this.hasAssociatedFilePath) {
-			return; // not in case of an associated file path
-		}
+		// if (this.hasAssociatedFilePath) { {{SQL CARBON EDIT}} - For Query Editor, must not change name even without file path.
+		return;
+		// }
 
 		// Determine the first words of the model following these rules:
 		// - cannot be only whitespace (so we trim())
