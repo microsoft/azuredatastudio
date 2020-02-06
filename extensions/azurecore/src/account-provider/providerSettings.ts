@@ -45,16 +45,24 @@ const usGovAzureSettings: ProviderSettings = {
 		displayName: localize('usGovCloudDisplayName', "Azure (US Government)"),
 		id: 'usGovAzureCloud',
 		settings: {
-			host: 'https://login.microsoftonline.us',
+			host: 'https://login.microsoftonline.us/',
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
 			signInResourceId: 'https://management.core.usgovcloudapi.net/',
 			graphResource: {
-				id: 'https://graph.usgovcloudapi.net/',
-				endpoint: 'https://graph.usgovcloudapi.net'
+				id: 'https://graph.windows.net/',
+				endpoint: 'https://graph.windows.net'
 			},
 			armResource: {
 				id: 'https://management.core.usgovcloudapi.net/',
 				endpoint: 'https://management.usgovcloudapi.net'
+			},
+			sqlResource: {
+				id: 'https://database.usgovcloudapi.net/',
+				endpoint: 'https://database.usgovcloudapi.net'
+			},
+			ossRdbmsResource: {
+				id: 'https://ossrdbms-aad.database.usgovcloudapi.net',
+				endpoint: 'https://ossrdbms-aad.database.usgovcloudapi.net'
 			},
 			redirectUri: 'http://localhost/redirect'
 		}
