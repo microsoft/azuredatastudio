@@ -52,7 +52,7 @@ export class QueryEditorService implements IQueryEditorService {
 				let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 				// Create a sql document pane with accoutrements
-				const fileInput = this._untitledEditorService.create({ associatedResource: docUri, mode: 'sql' });
+				const fileInput = this._untitledEditorService.create({ untitledResource: docUri, mode: 'sql' });
 				let untitledEditorModel = await fileInput.resolve();
 				if (sqlContent) {
 					untitledEditorModel.textEditorModel.setValue(sqlContent);
@@ -87,7 +87,7 @@ export class QueryEditorService implements IQueryEditorService {
 		let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 		// Create a sql document pane with accoutrements
-		const fileInput = this._untitledEditorService.create({ associatedResource: docUri, mode: 'sql' });
+		const fileInput = this._untitledEditorService.create({ untitledResource: docUri, mode: 'sql' });
 		const m = await fileInput.resolve();
 		//when associatedResource editor is created it is dirty, this must be set to false to be able to detect changes to the editor.
 		m.setDirty(false);

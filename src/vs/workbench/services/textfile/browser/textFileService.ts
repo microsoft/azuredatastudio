@@ -572,7 +572,7 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 		}
 
 		// Finally fallback to suggest just the file name
-		return toLocalResource(resource.with({ path: suggestedFilename }), remoteAuthority);
+		return joinPath(this.fileDialogService.defaultFilePath() || URI.file(this.environmentService.userHome), suggestedFilename);
 	}
 
 	//#endregion
