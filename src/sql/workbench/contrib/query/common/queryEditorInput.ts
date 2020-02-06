@@ -219,8 +219,10 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			} else {
 				title += localize('disconnected', "disconnected");
 			}
+			console.log('title is ' + this._text.getName() + (longForm ? (' - ' + title) : ` - ${trimTitle(title)}`));
 			return this._text.getName() + (longForm ? (' - ' + title) : ` - ${trimTitle(title)}`);
 		} else {
+			console.log('title did not update');
 			return this._text.getName();
 		}
 	}
