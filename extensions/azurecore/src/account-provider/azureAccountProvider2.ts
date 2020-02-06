@@ -309,7 +309,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 		tenants = tenants.filter(t => t !== undefined);
 		if (tenants.length === 0) {
-			const msg = localize('azure.noTenants', "No azure tenants found. Failing...");
+			const msg = localize('azure.noTenants', "Failed to add account. No Azure tenants.");
 			vscode.window.showErrorMessage(msg);
 			throw new Error(msg);
 		}
