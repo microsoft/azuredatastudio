@@ -2961,7 +2961,63 @@
 					],
 					"statistics": [],
 					"flags": "preview"
-				}
+				},
+				{
+					"extensionId": "61",
+					"extensionName": "tsqlchecker",
+					"displayName": "TSQL Checker",
+					"shortDescription": "Adds checks for bad practice to the TSQL query window.",
+					"publisher": {
+						"displayName": "Daniel Janik",
+						"publisherId": "DanielJanik",
+						"publisherName": "DanielJanik"
+					},
+					"versions": [
+						{
+							"version": "0.0.1",
+							"lastUpdated": "02/06/2020",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/DanielJanik/tsqlchecker_adsextension/releases/tag/0.0.1"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/danieljanik/tsqlchecker_adsextension/master/tsqlhelp.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/danieljanik/tsqlchecker_adsextension/master/README.md"														},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/danieljanik/tsqlchecker_adsextension/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/danieljanik/tsqlchecker_adsextension/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/DanielJanik/tsqlchecker_adsextension"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
 			],
 			"resultMetadata": [
 				{
