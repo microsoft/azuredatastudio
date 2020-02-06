@@ -1,4 +1,9 @@
 steps:
+  - task: InstallAppleCertificate@2
+    displayName: 'Install developer certificate'
+    inputs:
+      certSecureFile: 'osx_signing_key.p12'
+
   - script: |
       mkdir -p .build
       echo -n $BUILD_SOURCEVERSION > .build/commit
@@ -138,8 +143,16 @@ steps:
   - script: |
       set -e
       mkdir -p .build/darwin/archive
-      pushd ../azuredatastudio-darwin && zip -r -X -y $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip * && popd
+      pushd ../azuredatastudio-darwin
+      ditto -c -k --keepParent *.app $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
+      popd
     displayName: 'Archive'
+
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish SelfSigned'
+    inputs:
+      artifactName: darwin-selfsigned
+      targetPath: $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning'
@@ -152,8 +165,10 @@ steps:
         [
           {
             "keyCode": "CP-401337-Apple",
-            "operationSetCode": "MacAppDeveloperSign",
-            "parameters": [],
+            "operationCode": "MacAppDeveloperSign",
+            "parameters": {
+              "Hardening": "Enable"
+            },
             "toolName": "sign",
             "toolVersion": "1.0"
           }
