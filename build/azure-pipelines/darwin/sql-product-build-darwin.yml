@@ -121,8 +121,6 @@ steps:
       xattr -cr *.app
       cd *.app
       find . -name '._*' -print0 | xargs -0 rm -rf --
-      rm -rf Contents/Resources/app/extensions/mssql
-      rm -rf Contents/Resources/app/extensions/big-data-cluster
       cd ..
 
       echo "Signing the application with deep"
@@ -176,19 +174,19 @@ steps:
           }
         ]
       SessionTimeout: 90
-    condition: and(succeeded(), eq(variables['signed'], true))
+    condition: and(succeeded(), eq(variables['signtba'], true))
 
   - script: |
       zip -d $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip "*.pkg"
     displayName: Clean Archive
-    condition: and(succeeded(), eq(variables['signed'], true))
+    condition: and(succeeded(), eq(variables['signtba'], true))
 
   - task: PublishPipelineArtifact@0
     displayName: 'Publish Signed'
     inputs:
       artifactName: darwin-signed
       targetPath: $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
-    condition: and(succeeded(), eq(variables['signed'], true))
+    condition: and(succeeded(), eq(variables['signtba'], true))
 
   - task: EsrpCodeSigning@1
     displayName: 'ESRP Notarization'
@@ -210,14 +208,14 @@ steps:
           }
         ]
       SessionTimeout: 120
-    condition: and(succeeded(), eq(variables['signednot'], true))
+    condition: and(succeeded(), eq(variables['signtba'], true))
 
   - task: PublishPipelineArtifact@0
     displayName: 'Publish Notarized'
     inputs:
       artifactName: darwin-notarized
       targetPath: $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
-    condition: and(succeeded(), eq(variables['signednot'], true))
+    condition: and(succeeded(), eq(variables['signtba'], true))
 
   - script: |
       set -e
