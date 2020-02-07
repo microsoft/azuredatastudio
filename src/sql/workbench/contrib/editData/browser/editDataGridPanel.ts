@@ -31,7 +31,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { EditUpdateCellResult } from 'azdata';
 import { ILogService } from 'vs/platform/log/common/log';
 import { deepClone, assign } from 'vs/base/common/objects';
-import { Emitter, Event } from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
 
 export class EditDataGridPanel extends GridParentComponent {
@@ -390,7 +390,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		let undefinedDataSet = deepClone(dataSet);
 		undefinedDataSet.columnDefinitions = dataSet.columnDefinitions;
 		undefinedDataSet.dataRows = undefined;
-		undefinedDataSet.resized = new Emitter();
 		self.placeHolderDataSets.push(undefinedDataSet);
 		self.refreshGrid();
 
@@ -425,9 +424,11 @@ export class EditDataGridPanel extends GridParentComponent {
 			clearTimeout(self.refreshGridTimeoutHandle);
 			this.refreshGridTimeoutHandle = setTimeout(() => {
 
-				if (self.dataSet && self.placeHolderDataSets[0].resized) {
+				if (self.dataSet) {
 					self.placeHolderDataSets[0].dataRows = self.dataSet.dataRows;
-					self.placeHolderDataSets[0].resized.fire();
+					if (self.table) {
+						setTimeout(() => { self.table.grid.onColumnsResized.notify(); }, 100);
+					}
 				}
 
 
@@ -1037,23 +1038,12 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.table.grid.scrollRowToTop(0);
 		}
 
-		if (this.dataSet.resized) {
-			// Re-rendering the grid is expensive. Throttle so we only do so every 100ms.
-			this.dataSet.resized.throttleTime(100)
-				.subscribe(() => this.onResize());
-		}
-
 		// subscribe to slick events
 		// https://github.com/mleibman/SlickGrid/wiki/Grid-Events
 		this.setupEvents();
 	}
 
-	private onResize(): void {
-		if (this.table.grid !== undefined) {
-			// this will make sure the grid header and body to be re-rendered
-			this.table.grid.resizeCanvas();
-		}
-	}
+
 
 	/*Formatter for Column*/
 	private getColumnFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
