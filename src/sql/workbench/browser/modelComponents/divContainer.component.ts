@@ -140,7 +140,7 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout> im
 	}
 
 	public get clickable(): boolean {
-		return this.getPropertyOrDefault<azdata.DivContainerProperties, boolean>((props) => props.clickable, true);
+		return this.getPropertyOrDefault<azdata.DivContainerProperties, boolean>((props) => props.clickable, false);
 	}
 
 	public onKey(e: KeyboardEvent) {
