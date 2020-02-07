@@ -44,6 +44,9 @@ steps:
 - script: |
     ./scripts/test.sh --tfs "Unit Tests"
   displayName: Run Unit Tests
+- script: |
+    yarn test-browser
+  displayName: Run Unit Tests (Browsers)
 # - script: | {{SQL CARBON EDIT}} remove step
 #     ./scripts/test-integration.sh --tfs "Integration Tests"
 #   displayName: Run Integration Tests
