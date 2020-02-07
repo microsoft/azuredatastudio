@@ -40,6 +40,8 @@ suite('git smoke test', function () {
 		cp.execSync('git add .', { cwd });
 		cp.execSync('git commit -m "initial commit"', { cwd });
 
+		// make sure git is activated
+		await commands.executeCommand('git.activate');
 		git = extensions.getExtension<GitExtension>('vscode.git')!.exports.getAPI(1);
 
 		if (git.repositories.length === 0) {
@@ -58,7 +60,7 @@ suite('git smoke test', function () {
 		const appjs = await open('app.js');
 		await type(appjs, ' world');
 		await appjs.save();
-		await eventToPromise(repository.state.onDidChange);
+		await repository.status();
 		assert.equal(repository.state.workingTreeChanges.length, 1);
 		repository.state.workingTreeChanges.some(r => r.uri.path === appjs.uri.path && r.status === Status.MODIFIED);
 
