@@ -5,12 +5,13 @@
 
 import * as azdata from 'azdata';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import { ICapabilitiesService, ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ICapabilitiesService, ProviderFeatures, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { Action } from 'vs/base/common/actions';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
 export class TestCapabilitiesService implements ICapabilitiesService {
 
@@ -107,6 +108,10 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 		};
 		this.capabilities[mssqlProviderName] = { connection: msSQLCapabilities };
 		this.capabilities[this.pgsqlProviderName] = { connection: pgSQLCapabilities };
+	}
+
+	registerConnectionProvider(id: string, properties: ConnectionProviderProperties): IDisposable {
+		throw new Error('Method not implemented.');
 	}
 
 	/**

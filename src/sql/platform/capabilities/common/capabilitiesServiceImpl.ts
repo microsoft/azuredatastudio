@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Emitter } from 'vs/base/common/event';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 
 import * as azdata from 'azdata';
 
@@ -24,21 +24,22 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	private _onCapabilitiesRegistered = this._register(new Emitter<ProviderFeatures>());
 	public readonly onCapabilitiesRegistered = this._onCapabilitiesRegistered.event;
 
-	private handleConnectionProvider(e: { id: string, properties: ConnectionProviderProperties }, isNew = true): void {
+	private _onCapabilitiesUnregistered = this._register(new Emitter<string>());
+	public readonly onCapabilitiesUnregistered = this._onCapabilitiesUnregistered.event;
 
-		let provider = this._providers.get(e.id);
+	private handleConnectionProvider(id: string, properties: ConnectionProviderProperties): void {
+
+		let provider = this._providers.get(id);
 		if (provider) {
-			provider.connection = e.properties;
+			provider.connection = properties;
 		} else {
 			provider = {
-				connection: e.properties
+				connection: properties
 			};
-			this._providers.set(e.id, provider);
+			this._providers.set(id, provider);
 		}
 
-		if (isNew) {
-			this._onCapabilitiesRegistered.fire(provider);
-		}
+		this._onCapabilitiesRegistered.fire(provider);
 	}
 
 	/**
@@ -63,6 +64,14 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		// request the capabilities from server
 		provider.getServerCapabilities(clientCapabilities).then(serverCapabilities => {
 			this._legacyProviders.set(serverCapabilities.providerName, serverCapabilities);
+		});
+	}
+
+	public registerConnectionProvider(id: string, properties: ConnectionProviderProperties): IDisposable {
+		this.handleConnectionProvider(id, properties);
+		return toDisposable(() => {
+			this._providers.delete(id);
+			this._onCapabilitiesUnregistered.fire(id);
 		});
 	}
 }
