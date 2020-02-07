@@ -398,7 +398,6 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		// Setup the state of the selected cell
 		this.resetCurrentCell();
-		this.currentEditCellValue = undefined;
 		this.removingNewRow = false;
 		this.newRowVisible = false;
 		this.dirtyCells = [];
@@ -511,7 +510,6 @@ export class EditDataGridPanel extends GridParentComponent {
 					return this.removeRow(currentNewRowIndex);
 				}).then(() => {
 					this.newRowVisible = false;
-					this.currentEditCellValue = undefined;
 					this.resetCurrentCell();
 				});
 		} else {
@@ -525,7 +523,6 @@ export class EditDataGridPanel extends GridParentComponent {
 				// so clear any existing client-side edit and refresh on-screen data
 				// do not refresh the whole dataset as it will move the focus away to the first row.
 				//
-				this.currentEditCellValue = undefined;
 				this.dirtyCells = [];
 				let row = this.currentCell.row;
 				this.resetCurrentCell();
@@ -764,6 +761,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			isEditable: false,
 			isDirty: false
 		};
+		this.currentEditCellValue = undefined;
 	}
 
 	private setCurrentCell(row: number, column: number) {
