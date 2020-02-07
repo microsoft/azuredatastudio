@@ -6,7 +6,7 @@
 import { FileBrowserDataSource } from 'sql/workbench/services/fileBrowser/browser/fileBrowserDataSource';
 import { FileBrowserController } from 'sql/workbench/services/fileBrowser/browser/fileBrowserController';
 import { FileBrowserRenderer } from 'sql/workbench/services/fileBrowser/browser/fileBrowserRenderer';
-import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
+import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/interfaces';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';

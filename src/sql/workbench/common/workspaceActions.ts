@@ -23,7 +23,7 @@ export class ShowFileInFolderAction extends Action {
 export class OpenFileInFolderAction extends Action {
 
 	constructor(private path: string, label: string, @IOpenerService private openerService: IOpenerService) {
-		super('showItemInFolder.action.id', label);
+		super('openItemInFolder.action.id', label);
 	}
 
 	run() {

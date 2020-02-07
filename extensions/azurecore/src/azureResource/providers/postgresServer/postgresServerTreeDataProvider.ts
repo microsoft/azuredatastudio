@@ -11,16 +11,16 @@ const localize = nls.loadMessageBundle();
 import { AzureResourceItemType } from '../../constants';
 import { ApiWrapper } from '../../../apiWrapper';
 import { generateGuid } from '../../utils';
-import { IAzureResourceService, AzureResourceDatabaseServer } from '../../interfaces';
+import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 import { azureResource } from '../../azure-resource';
 
-export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase<AzureResourceDatabaseServer> {
+export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly containerId = 'azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainer';
 	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel', "Azure Database for PostgreSQL Servers");
 
 	public constructor(
-		databaseServerService: IAzureResourceService<AzureResourceDatabaseServer>,
+		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
 		apiWrapper: ApiWrapper,
 		private _extensionContext: ExtensionContext
 	) {
@@ -28,7 +28,7 @@ export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase
 	}
 
 
-	protected getTreeItemForResource(databaseServer: AzureResourceDatabaseServer): TreeItem {
+	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer): TreeItem {
 		return {
 			id: `databaseServer_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: databaseServer.name,

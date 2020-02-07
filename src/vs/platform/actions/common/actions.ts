@@ -109,6 +109,7 @@ export const enum MenuId {
 	DataExplorerContext, // {{SQL CARBON EDIT}}
 	DataExplorerAction, // {{SQL CARBON EDIT}}
 	ExplorerWidgetContext,  // {{SQL CARBON EDIT}}
+	ViewTitleContext,
 	CommentThreadTitle,
 	CommentThreadActions,
 	CommentTitle,

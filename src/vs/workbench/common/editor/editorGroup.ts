@@ -9,14 +9,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
 import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { coalesce, firstIndex } from 'vs/base/common/arrays';
-import { isEqual } from 'vs/base/common/resources';
-import { IResourceInput } from 'vs/platform/editor/common/editor';
+import { coalesce } from 'vs/base/common/arrays';
 
 // {{SQL CARBON EDIT}}
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
 import { doHandleUpgrade } from 'sql/workbench/common/languageAssociation';
 
 const EditorOpenPositioning = {
@@ -579,7 +574,7 @@ export class EditorGroup extends Disposable {
 		return this.editors[index];
 	}
 
-	contains(candidate: EditorInput | IResourceInput, searchInSideBySideEditors?: boolean): boolean {
+	contains(candidate: EditorInput, searchInSideBySideEditors?: boolean): boolean {
 		for (const editor of this.editors) {
 			if (this.matches(editor, candidate)) {
 				return true;
@@ -595,18 +590,12 @@ export class EditorGroup extends Disposable {
 		return false;
 	}
 
-	private matches(editor: IEditorInput | null, candidate: IEditorInput | IResourceInput | null): boolean {
+	private matches(editor: IEditorInput | null, candidate: IEditorInput | null): boolean {
 		if (!editor || !candidate) {
 			return false;
 		}
 
-		if (candidate instanceof EditorInput) {
-			return editor.matches(candidate);
-		}
-
-		const resource = editor.getResource();
-
-		return !!(resource && isEqual(resource, (candidate as IResourceInput).resource));
+		return editor.matches(candidate);
 	}
 
 	clone(): EditorGroup {
@@ -632,14 +621,6 @@ export class EditorGroup extends Disposable {
 		this.editors.forEach(e => {
 			const factory = registry.getEditorInputFactory(e.getTypeId());
 			if (factory) {
-				// {{SQL CARBON EDIT}}
-				// don't serialize unmodified unitited files
-				if (e instanceof UntitledTextEditorInput && !e.isDirty()
-					&& !this.configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles')) {
-					return;
-				}
-				// {{SQL CARBON EDIT}} - End
-
 				const value = factory.serialize(e);
 				if (typeof value === 'string') {
 					serializedEditors.push({ id: e.getTypeId(), value });
@@ -697,26 +678,4 @@ export class EditorGroup extends Disposable {
 
 		return this._id;
 	}
-
-	// {{SQL CARBON EDIT}}
-	async removeNonExitingEditor(): Promise<void> {
-		let n = 0;
-		while (n < this.editors.length) {
-			let editor = this.editors[n];
-			if (editor instanceof QueryEditorInput && editor.matchInputInstanceType(FileEditorInput) && !editor.isDirty() && await editor.inputFileExists() === false && this.editors.length > 1) {
-				// remove from editors list so that they do not get restored
-				this.editors.splice(n, 1);
-				let index = firstIndex(this.mru, e => e.matches(editor));
-
-				// remove from MRU list otherwise later if we try to close them it leaves a sticky active editor with no data
-				this.mru.splice(index, 1);
-				this.active = this.isActive(editor) ? this.editors[0] : this.active;
-				editor.dispose();
-			}
-			else {
-				n++;
-			}
-		}
-	}
-	// {{SQL CARBON EDIT}}
 }

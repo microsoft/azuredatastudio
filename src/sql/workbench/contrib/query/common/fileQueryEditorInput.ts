@@ -6,14 +6,13 @@
 import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
 import { QueryResultsInput } from 'sql/workbench/contrib/query/common/queryResultsInput';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { EncodingMode } from 'vs/workbench/common/editor';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
-import { IFileService } from 'vs/platform/files/common/files';
 
 type PublicPart<T> = { [K in keyof T]: T[K] };
 
@@ -27,10 +26,9 @@ export class FileQueryEditorInput extends QueryEditorInput implements PublicPart
 		results: QueryResultsInput,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@IFileService fileService: IFileService
+		@IConfigurationService configurationService: IConfigurationService
 	) {
-		super(description, text, results, connectionManagementService, queryModelService, configurationService, fileService);
+		super(description, text, results, connectionManagementService, queryModelService, configurationService);
 	}
 
 	public resolve(): Promise<TextFileEditorModel | BinaryEditorModel> {

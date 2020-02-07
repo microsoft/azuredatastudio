@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { promises as fs } from 'fs';
-import { Telemetry } from '../telemetry';
+import { TelemetryReporter, TelemetryViews } from '../telemetry';
 import { getEndpointName, getRootPath } from '../utils';
 import * as mssql from '../../../mssql';
 
@@ -152,10 +152,11 @@ export class SchemaCompareDialog {
 			};
 		}
 
-		Telemetry.sendTelemetryEvent('SchemaCompareStart', {
-			'sourceIsDacpac': this.sourceIsDacpac.toString(),
-			'targetIsDacpac': this.targetIsDacpac.toString()
-		});
+		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareDialog, 'SchemaCompareStart')
+			.withAdditionalProperties({
+				sourceIsDacpac: this.sourceIsDacpac.toString(),
+				targetIsDacpac: this.targetIsDacpac.toString()
+			}).send();
 
 		// update source and target values that are displayed
 		this.schemaCompareResult.updateSourceAndTarget();

@@ -114,7 +114,7 @@ export class InputBox extends Widget {
 	private scrollableElement: ScrollableElement | undefined;
 
 	// {{SQL CARBON EDIT}} - Add showValidationMessage and set inputBackground, inputForeground, and inputBorder as protected
-	protected showValidationMessage: boolean;
+	protected showValidationMessage?: boolean;
 	protected inputBackground?: Color;
 	protected inputForeground?: Color;
 	protected inputBorder?: Color;

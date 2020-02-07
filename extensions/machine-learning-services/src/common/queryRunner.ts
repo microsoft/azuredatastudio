@@ -25,13 +25,6 @@ EXEC sp_execute_external_script
 OutputDataSet <- as.data.frame(installed.packages()[,c(1,3)])'
 `;
 
-const listRAvailablePackagesQuery = `
-EXEC sp_execute_external_script
-@language=N'R',
-@script=N'
-OutputDataSet <- as.data.frame(installed.packages()[,c(1,3)])'
-`;
-
 const checkMlInstalledQuery = `
 Declare @tablevar table(name NVARCHAR(MAX), min INT, max INT, config_value bit, run_value bit)
 insert into @tablevar(name, min, max, config_value, run_value) exec sp_configure
@@ -80,14 +73,6 @@ export class QueryRunner {
 	 */
 	public async getRPackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
 		return this.getPackages(connection, listRPackagesQuery);
-	}
-
-	/**
- * Returns python packages installed in SQL server instance
- * @param connection SQL Connection
- */
-	public async getRAvailablePackages(connection: azdata.connection.ConnectionProfile): Promise<nbExtensionApis.IPackageDetails[]> {
-		return this.getPackages(connection, listRAvailablePackagesQuery);
 	}
 
 	private async getPackages(connection: azdata.connection.ConnectionProfile, script: string): Promise<nbExtensionApis.IPackageDetails[]> {
