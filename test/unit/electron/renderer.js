@@ -11,7 +11,7 @@ const path = require('path');
 const glob = require('glob');
 const util = require('util');
 const bootstrap = require('../../../src/bootstrap');
-const coverage = require('../../coverage');
+const coverage = require('../coverage');
 
 require('reflect-metadata'); // {{SQL CARBON EDIT}}
 

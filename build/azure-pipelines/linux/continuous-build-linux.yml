@@ -53,7 +53,7 @@ steps:
     DISPLAY=:10 ./scripts/test.sh --tfs "Unit Tests"
   displayName: Run Unit Tests
 - script: |
-    DISPLAY=:10 yarn test-browser
+    DISPLAY=:10 yarn test-browser --browser chromium
   displayName: Run Unit Tests (Browser)
 # - script: | {{SQL CARBON EDIT}} remove step
 #     DISPLAY=:10 ./scripts/test-integration.sh --tfs "Integration Tests"

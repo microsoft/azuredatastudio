@@ -50,7 +50,7 @@ steps:
     .\scripts\test.bat --tfs "Unit Tests"
   displayName: Run Unit Tests
 - powershell: |
-    yarn test-browser
+    yarn test-browser --browser chromium --browser webkit
   displayName: Run Unit Tests (Browser)
 # - powershell: | {{SQL CARBON EDIT}} remove step
 #     .\scripts\test-integration.bat --tfs "Integration Tests"

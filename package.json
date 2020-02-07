@@ -10,13 +10,13 @@
   "private": true,
   "scripts": {
     "test": "mocha",
-    "test-browser": "node test/unit/browser/index.js --browser webkit --browser chromium",
+    "test-browser": "node test/unit/browser/index.js",
     "preinstall": "node build/npm/preinstall.js",
     "postinstall": "node build/npm/postinstall.js",
     "compile": "gulp compile --max_old_space_size=4095",
     "watch": "gulp watch --max_old_space_size=4095",
     "watch-client": "gulp watch-client --max_old_space_size=4095",
-    "monaco-editor-test": "mocha --only-monaco-editor",
+    "mocha": "mocha test/unit/node/all.js --delay",
     "precommit": "node build/gulpfile.hygiene.js",
     "gulp": "gulp --max_old_space_size=8192",
     "electron": "node build/lib/electron",
@@ -93,6 +93,7 @@
     "@types/chart.js": "^2.7.31",
     "@types/chokidar": "2.1.3",
     "@types/cookie": "^0.3.3",
+    "@types/debug": "^4.1.5",
     "@types/graceful-fs": "4.1.2",
     "@types/http-proxy-agent": "^2.0.1",
     "@types/iconv-lite": "0.0.1",
@@ -123,7 +124,6 @@
     "eslint": "6.8.0",
     "eslint-plugin-jsdoc": "^19.1.0",
     "event-stream": "3.3.4",
-    "express": "^4.13.1",
     "fancy-log": "^1.3.3",
     "fast-plist": "0.1.2",
     "glob": "^5.0.13",
@@ -184,7 +184,8 @@
     "vscode-nls-dev": "^3.3.1",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.3.8",
-    "webpack-stream": "^5.1.1"
+    "webpack-stream": "^5.1.1",
+    "yaserver": "^0.2.0"
   },
   "repository": {
     "type": "git",
