@@ -10,8 +10,8 @@ const assert = require('assert');
 const path = require('path');
 const glob = require('glob');
 const util = require('util');
-const bootstrap = require('../../src/bootstrap');
-const coverage = require('../coverage');
+const bootstrap = require('../../../src/bootstrap');
+const coverage = require('../../coverage');
 
 require('reflect-metadata'); // {{SQL CARBON EDIT}}
 
@@ -26,7 +26,7 @@ let _out;
 
 function initLoader(opts) {
 	let outdir = opts.build ? 'out-build' : 'out';
-	_out = path.join(__dirname, `../../${outdir}`);
+	_out = path.join(__dirname, `../../../${outdir}`);
 
 	// setup loader
 	loader = require(`${_out}/vs/loader`);
@@ -34,7 +34,7 @@ function initLoader(opts) {
 		nodeRequire: require,
 		nodeMain: __filename,
 		catchError: true,
-		baseUrl: bootstrap.uriFromPath(path.join(__dirname, '../../src')),
+		baseUrl: bootstrap.uriFromPath(path.join(__dirname, '../../../src')),
 		paths: {
 			'vs': `../${outdir}/vs`,
 			'sql': `../${outdir}/sql`, // {{SQL CARBON EDIT}}
