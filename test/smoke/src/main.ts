@@ -329,7 +329,7 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 
 	// Non-CI execution (all tests)
 	else {
-		/*if (!opts.web) { setupDataMigrationTests(opts['stable-build'], testDataPath); }
+		/*if (!opts.web) { setupDataMigrationTests(opts['stable-build'], testDataPath); } {{SQL CARBON EDIT}} comment out tests
 		if (!opts.web) { setupDataLossTests(); }
 		setupDataExplorerTests();
 		if (!opts.web) { setupDataPreferencesTests(); }
@@ -337,12 +337,13 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 		setupDataCSSTests();
 		setupDataEditorTests();
 		setupDataStatusbarTests(!!opts.web);
-		setupDataExtensionTests();
+		if (!opts.web) { setupDataExtensionTests(); }
 		setupTerminalTests();
 		if (!opts.web) { setupDataMultirootTests(); }
-		setupDataLocalizationTests();
+		if (!opts.web) { setupDataLocalizationTests(); }
 		if (!opts.web) { setupLaunchTests(); }*/
-		runProfilerTests();
-		runQueryEditorTests();
+
+		runProfilerTests(); // {{SQL CARBON EDIT}} add our tests
+		runQueryEditorTests(); // {{SQL CARBON EDIT}} add our tests
 	}
 });
