@@ -12,8 +12,6 @@ import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionT
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IEnvironmentService, ParsedArgs } from 'vs/platform/environment/common/environment';
 import * as Constants from 'sql/platform/connection/common/constants';
-import * as platform from 'vs/platform/registry/common/platform';
-import { IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/contrib/connection/common/connectionProviderExtension';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ipcRenderer as ipc } from 'electron';
@@ -73,13 +71,12 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	}
 
 	private onLaunched(args: ParsedArgs) {
-		const registry = platform.Registry.as<IConnectionProviderRegistry>(ConnectionProviderExtensions.ConnectionProviderContributions);
-		let sqlProvider = registry.getProperties(Constants.mssqlProviderName);
+		let sqlProvider = this._capabilitiesService.getCapabilities(Constants.mssqlProviderName);
 		// We can't connect to object explorer until the MSSQL connection provider is registered
 		if (sqlProvider) {
 			this.processCommandLine(args).catch(reason => { this.logService.warn('processCommandLine failed: ' + reason); });
 		} else {
-			registry.onNewProvider(e => {
+			this._capabilitiesService.onCapabilitiesRegistered(e => {
 				if (e.id === Constants.mssqlProviderName) {
 					this.processCommandLine(args).catch(reason => { this.logService.warn('processCommandLine failed: ' + reason); });
 				}

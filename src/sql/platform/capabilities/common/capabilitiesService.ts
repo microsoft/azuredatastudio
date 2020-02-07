@@ -56,7 +56,7 @@ export interface ICapabilitiesService {
 	/**
 	 * When new capabilities are registered, it emits the @see ProviderFeatures, which can be used to get the new capabilities
 	 */
-	readonly onCapabilitiesRegistered: Event<ProviderFeatures>;
+	readonly onCapabilitiesRegistered: Event<{ id: string; features: ProviderFeatures }>;
 
 	/**
 	 * Get an array of all known providers

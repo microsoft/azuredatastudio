@@ -21,7 +21,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	private _providers = new Map<string, ProviderFeatures>();
 	private _legacyProviders = new Map<string, azdata.DataProtocolServerCapabilities>();
 
-	private _onCapabilitiesRegistered = this._register(new Emitter<ProviderFeatures>());
+	private _onCapabilitiesRegistered = this._register(new Emitter<{ id: string; features: ProviderFeatures }>());
 	public readonly onCapabilitiesRegistered = this._onCapabilitiesRegistered.event;
 
 	private _onCapabilitiesUnregistered = this._register(new Emitter<string>());
@@ -39,7 +39,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 			this._providers.set(id, provider);
 		}
 
-		this._onCapabilitiesRegistered.fire(provider);
+		this._onCapabilitiesRegistered.fire({ id, features: provider });
 	}
 
 	/**

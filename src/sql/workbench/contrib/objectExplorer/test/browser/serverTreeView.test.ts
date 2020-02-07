@@ -90,7 +90,7 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 	});
 
 	test('The tree refreshes when new capabilities are registered', () => {
-		capabilitiesService.fireCapabilitiesRegistered(undefined);
+		capabilitiesService.fireCapabilitiesRegistered(undefined, undefined);
 		mockRefreshTreeMethod.verify(x => x(), TypeMoq.Times.once());
 	});
 });

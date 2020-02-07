@@ -148,10 +148,10 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 		return Promise.resolve();
 	}
 
-	public fireCapabilitiesRegistered(providerFeatures: ProviderFeatures): void {
-		this._onCapabilitiesRegistered.fire(providerFeatures);
+	public fireCapabilitiesRegistered(id: string, features: ProviderFeatures): void {
+		this._onCapabilitiesRegistered.fire({ id, features });
 	}
 
-	private _onCapabilitiesRegistered = new Emitter<ProviderFeatures>();
+	private _onCapabilitiesRegistered = new Emitter<{ id: string; features: ProviderFeatures }>();
 	public readonly onCapabilitiesRegistered = this._onCapabilitiesRegistered.event;
 }

@@ -7,8 +7,6 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IExtensionPointUser, ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
-import { Event, Emitter } from 'vs/base/common/event';
-import { deepClone } from 'vs/base/common/objects';
 
 import * as resources from 'vs/base/common/resources';
 import { ConnectionProviderProperties, ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -16,43 +14,6 @@ import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWo
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import type { IDisposable } from 'vs/base/common/lifecycle';
 import { isArray } from 'vs/base/common/types';
-
-export const Extensions = {
-	ConnectionProviderContributions: 'connection.providers'
-};
-
-export interface IConnectionProviderRegistry {
-	registerConnectionProvider(id: string, properties: ConnectionProviderProperties): void;
-	getProperties(id: string): ConnectionProviderProperties | undefined;
-	readonly onNewProvider: Event<{ id: string, properties: ConnectionProviderProperties }>;
-	readonly providers: { [id: string]: ConnectionProviderProperties };
-}
-
-class ConnectionProviderRegistryImpl implements IConnectionProviderRegistry {
-	private _providers = new Map<string, ConnectionProviderProperties>();
-	private _onNewProvider = new Emitter<{ id: string, properties: ConnectionProviderProperties }>();
-	public readonly onNewProvider: Event<{ id: string, properties: ConnectionProviderProperties }> = this._onNewProvider.event;
-
-	public registerConnectionProvider(id: string, properties: ConnectionProviderProperties): void {
-		this._providers.set(id, properties);
-		this._onNewProvider.fire({ id, properties });
-	}
-
-	public getProperties(id: string): ConnectionProviderProperties | undefined {
-		return this._providers.get(id);
-	}
-
-	public get providers(): { [id: string]: ConnectionProviderProperties } {
-		let rt: { [id: string]: ConnectionProviderProperties } = {};
-		this._providers.forEach((v, k) => {
-			rt[k] = deepClone(v);
-		});
-		return rt;
-	}
-}
-
-const connectionRegistry = new ConnectionProviderRegistryImpl();
-Registry.add(Extensions.ConnectionProviderContributions, connectionRegistry);
 
 const ConnectionProviderContrib: IJSONSchema = {
 	type: 'object',
