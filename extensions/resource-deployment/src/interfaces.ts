@@ -169,7 +169,8 @@ export interface FieldInfo {
 	fontStyle?: FontStyle;
 	labelFontWeight?: FontWeight;
 	links?: azdata.LinkArea[];
-	editable?: boolean; // for editable dropdown
+	editable?: boolean; // for editable dropdown,
+	enabled?: boolean;
 }
 
 export interface AzureAccountFieldInfo extends FieldInfo {
