@@ -202,7 +202,11 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			content.push({ action: a });
 		});
 
-		content.push({ element: separator },
+		if (content.length > 0) {
+			content.push({ element: separator });
+		}
+
+		content.push(
 			{ action: this._refreshAction },
 			{ action: this._editAction });
 
