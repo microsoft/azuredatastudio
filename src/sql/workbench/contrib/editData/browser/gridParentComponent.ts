@@ -502,7 +502,9 @@ export abstract class GridParentComponent extends Disposable {
 	resizeGrid(): void {
 		const self = this;
 		setTimeout(() => {
-			self.table.grid.onColumnsResized.notify();
+			if (self.table) {
+				self.table.grid.onColumnsResized.notify();
+			}
 		});
 	}
 
