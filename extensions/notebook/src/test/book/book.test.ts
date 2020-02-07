@@ -268,13 +268,13 @@ describe('BookTreeViewProviderTests', function () {
 
 		it('should show error message if config.yml file not found', async () => {
 			await bookTreeViewProvider.currentBook.readBooks();
-			should(bookTreeViewProvider.currentBook.errorMessage.toLocaleLowerCase()).equal(('ENOENT: no such file or directory, open \'' + configFile + '\'').toLocaleLowerCase());
+			should(bookTreeViewProvider.currentBook.errorMessage.toLocaleLowerCase()).equal(('Failed to read book '+ bookTreeViewProvider.currentBook.bookPath +': ENOENT: no such file or directory, open \'' + configFile + '\'').toLocaleLowerCase());
 		});
 
 		it('should show error if toc.yml file format is invalid', async function (): Promise<void> {
 			await fs.writeFile(configFile, 'title: Test Book');
 			await bookTreeViewProvider.currentBook.readBooks();
-			should(bookTreeViewProvider.currentBook.errorMessage).equal('Invalid toc file');
+			should(bookTreeViewProvider.currentBook.errorMessage.toLocaleLowerCase()).equal(('Failed to read book '+ bookTreeViewProvider.currentBook.bookPath +': Invalid toc file').toLocaleLowerCase());
 		});
 
 		this.afterAll(async function (): Promise<void> {

@@ -90,8 +90,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 				);
 				this._bookItems.push(book);
 			} catch (e) {
-				this._errorMessage = e instanceof Error ? e.message : e;
-				this.apiWrapper.showErrorMessage(e);
+				this._errorMessage = loc.readBookError(this.bookPath, e instanceof Error ? e.message : e);
+				this.apiWrapper.showErrorMessage(this._errorMessage);
 			}
 		}
 		return this._bookItems;
