@@ -25,7 +25,7 @@ import { RenderingContext, RestrictedRenderingContext } from 'vs/editor/common/v
 import { ViewContext } from 'vs/editor/common/view/viewContext';
 import * as viewEvents from 'vs/editor/common/view/viewEvents';
 import { ViewLineData } from 'vs/editor/common/viewModel/viewModel';
-import { scrollbarShadow, scrollbarSliderActiveBackground, scrollbarSliderBackground, scrollbarSliderHoverBackground, minimapSelection } from 'vs/platform/theme/common/colorRegistry';
+import { minimapOpacity, minimapSelection, scrollbarShadow, scrollbarSliderActiveBackground, scrollbarSliderBackground, scrollbarSliderHoverBackground } from 'vs/platform/theme/common/colorRegistry';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { ModelDecorationMinimapOptions } from 'vs/editor/common/model/textModel';
 import { Selection } from 'vs/editor/common/core/selection';
@@ -1141,6 +1141,10 @@ export class Minimap extends ViewPart {
 }
 
 registerThemingParticipant((theme, collector) => {
+	const minimapOpacityValue = theme.getColor(minimapOpacity);
+	if (minimapOpacityValue) {
+		collector.addRule(`.monaco-editor .minimap { opacity: ${minimapOpacityValue.rgba.a}; will-change: opacity; }`);
+	}
 	const sliderBackground = theme.getColor(scrollbarSliderBackground);
 	if (sliderBackground) {
 		const halfSliderBackground = sliderBackground.transparent(0.5);
