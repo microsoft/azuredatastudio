@@ -500,7 +500,7 @@ export class Menubar {
 				}).length > 0;
 
 				if (!success) {
-					this.workspacesHistoryMainService.removeFromRecentlyOpened([revivedUri]);
+					this.workspacesHistoryMainService.removeRecentlyOpened([revivedUri]);
 				}
 			}
 		}, false));
