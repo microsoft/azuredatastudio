@@ -382,7 +382,6 @@ import 'sql/workbench/contrib/query/common/resultsGrid.contribution';
 import 'sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution';
 import 'sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contribution';
 
-// {{SQL CARBON EDIT}}
 //editor replacement
 import 'sql/workbench/contrib/editorReplacement/common/editorReplacer.contribution';
 
@@ -395,6 +394,7 @@ import 'sql/workbench/contrib/telemetry/common/telemetry.contribution';
 
 // connection
 import 'sql/workbench/contrib/connection/browser/connection.contribution';
+import 'sql/workbench/contrib/connection/common/connectionProviderExtension';
 import 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
 
 // edit data editor
