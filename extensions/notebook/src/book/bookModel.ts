@@ -15,6 +15,7 @@ import * as fs from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, IJupyterBookSection } from '../contracts/content';
 import { isNullOrUndefined } from 'util';
+import { ApiWrapper } from '../common/apiWrapper';
 
 
 const fsPromises = fileServices.promises;
@@ -25,8 +26,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	private _tableOfContentPaths: string[] = [];
 	readonly providerId: string = 'BookNavigator';
 
-	// for testing
 	private _errorMessage: string;
+	private apiWrapper: ApiWrapper = new ApiWrapper();
 
 	constructor(public bookPath: string, public openAsUntitled: boolean, private _extensionContext: vscode.ExtensionContext) {
 		this.bookPath = bookPath;
@@ -47,10 +48,10 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	public async getTableOfContentFiles(folderPath: string): Promise<void> {
 		let notebookConfig = vscode.workspace.getConfiguration(notebookConfigKey);
 		let maxDepth = notebookConfig[maxBookSearchDepth];
-		// use default value if user enters an invalid value
+		// Use default value if user enters an invalid value
 		if (isNullOrUndefined(maxDepth) || maxDepth < 0) {
 			maxDepth = 5;
-		} else if (maxDepth === 0) { // no limit of search depth if user enters 0
+		} else if (maxDepth === 0) { // No limit of search depth if user enters 0
 			maxDepth = undefined;
 		}
 
@@ -90,7 +91,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 				this._bookItems.push(book);
 			} catch (e) {
 				this._errorMessage = e instanceof Error ? e.message : e;
-				vscode.window.showErrorMessage(this._errorMessage);
+				this.apiWrapper.showErrorMessage(e);
 			}
 		}
 		return this._bookItems;
@@ -124,8 +125,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 				} else {
 					let pathToNotebook = path.join(root, 'content', sections[i].url.concat('.ipynb'));
 					let pathToMarkdown = path.join(root, 'content', sections[i].url.concat('.md'));
-					// note: Currently, if there is an ipynb and a md file with the same name, Jupyter Books only shows the notebook.
-					// following Jupyter Books behavior for now
+					// Note: Currently, if there is an ipynb and a md file with the same name, Jupyter Books only shows the notebook.
+					// Following Jupyter Books behavior for now
 					if (await fs.pathExists(pathToNotebook)) {
 						let notebook = new BookTreeItem({
 							title: sections[i].title,
@@ -171,11 +172,11 @@ export class BookModel implements azdata.nb.NavigationProvider {
 						notebooks.push(markdown);
 					} else {
 						this._errorMessage = loc.missingFileError(sections[i].title);
-						vscode.window.showErrorMessage(this._errorMessage);
+						this.apiWrapper.showErrorMessage(this._errorMessage);
 					}
 				}
 			} else {
-				// toDO: search functionality (#6160)
+				// TODO: search functionality (#6160)
 			}
 		}
 		return notebooks;
@@ -194,7 +195,6 @@ export class BookModel implements azdata.nb.NavigationProvider {
 			if (section.length > 0) {
 				this._errorMessage = loc.invalidTocError(section[0].title);
 			}
-			vscode.window.showErrorMessage(this._errorMessage);
 			throw this._errorMessage;
 		}
 
