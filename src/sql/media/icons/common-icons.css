@@ -254,10 +254,10 @@
 	background-image: url('stop_inverse.svg')
 }
 
-.vs .codicon.edit-toolbar,
-.hc-black .codicon.edit-toolbar,
-.vs-dark .codicon.edit-toolbar {
-	background: url("edit-toolbar.svg") no-repeat;
+.vs .codicon.edit,
+.hc-black .codicon.edit,
+.vs-dark .codicon.edit {
+	background: url("edit.svg") no-repeat;
 }
 
 .vs .codicon.refresh,

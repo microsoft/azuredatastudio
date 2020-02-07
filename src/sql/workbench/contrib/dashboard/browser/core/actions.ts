@@ -19,7 +19,7 @@ export class EditDashboardAction extends Action {
 	private static readonly ID = 'editDashboard';
 	private static readonly EDITLABEL = nls.localize('editDashboard', "Edit");
 	private static readonly EXITLABEL = nls.localize('editDashboardExit', "Exit");
-	private static readonly CSSCLASS = 'edit-toolbar dashboard-toolbar-item';
+	private static readonly CSSCLASS = 'edit';
 
 	private _state = 0;
 

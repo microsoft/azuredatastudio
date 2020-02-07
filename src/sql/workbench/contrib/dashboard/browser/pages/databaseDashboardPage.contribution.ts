@@ -95,7 +95,12 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 				sizey: 2
 			},
 			widget: {
-				'tasks-widget': []
+				'tasks-widget': [
+					{ name: 'backup', when: '!mssql:iscloud && mssql:engineedition != 11' },
+					{ name: 'restore', when: '!mssql:iscloud && mssql:engineedition != 11' },
+					'newQuery',
+					'mssqlCluster.task.newNotebook'
+				]
 			}
 		},
 	]

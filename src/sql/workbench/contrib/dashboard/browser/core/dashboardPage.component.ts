@@ -44,7 +44,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ServerInfo } from 'azdata';
-import { TaskRegistry } from 'sql/platform/tasks/browser/tasksRegistry';
+import { TaskRegistry } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { MenuRegistry, ICommandAction } from 'vs/platform/actions/common/actions';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
@@ -159,7 +159,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	protected createToolbar(parentElement: HTMLElement): void {
-		let toolbarTasks = this.dashboardService.getSettings<Array<DashboardToolbarItemConfig>>([this.context, 'toolbar'].join('.'));
+		let toolbarTasks = this.dashboardService.getSettings<Array<WidgetConfig>>([this.context, 'widgets'].join('.'))[0].widget['tasks-widget'];
 		let tasks = TaskRegistry.getTasks();
 
 		if (types.isArray(toolbarTasks) && toolbarTasks.length > 0) {
@@ -183,7 +183,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		let toolbarActions = [];
 		this._tasks.forEach(a => {
 			let iconClassName = `${TaskRegistry.getOrCreateTaskIconClassName(a)} dashboard-toolbar-item`;
-			console.error('iconClassName is ' + iconClassName);
 			toolbarActions.push(new ToolbarAction(a.id, a.title, iconClassName, this.runAction, this));
 		});
 
