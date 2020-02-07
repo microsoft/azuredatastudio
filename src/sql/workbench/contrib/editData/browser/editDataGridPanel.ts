@@ -511,6 +511,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					return this.removeRow(currentNewRowIndex);
 				}).then(() => {
 					this.newRowVisible = false;
+					this.currentEditCellValue = undefined;
 					this.resetCurrentCell();
 				});
 		} else {
