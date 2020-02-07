@@ -15,6 +15,10 @@
     "onCommand:bigDataClusters.command.mount",
     "onCommand:bigDataClusters.command.refreshmount",
     "onCommand:bigDataClusters.command.deletemount",
+    "onCommand:bigDataClusters.command.addController",
+    "onCommand:bigDataClusters.command.deleteController",
+    "onCommand:bigDataClusters.command.manageController",
+    "onCommand:bigDataClusters.command.refreshController",
     "onView:sqlBigDataCluster"
 	],
 	"repository": {
