@@ -28,18 +28,13 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			return [];
 		}
 		const subscriptions = <azureResource.AzureResourceSubscription[]>[];
-		try {
-			const subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
-			const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
+		const subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
+		const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
+		for (const tenant of account.properties.tenants) {
+			const token = tokens[tenant.id].token;
+			const tokenType = tokens[tenant.id].tokenType;
 
-			for (const tenant of account.properties.tenants) {
-				const token = tokens[tenant.id].token;
-				const tokenType = tokens[tenant.id].tokenType;
-
-				subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType)));
-			}
-		} catch (error) {
-			throw new Error(localize('azure.accounts.getSubscriptions.error', "Unexpected error occurred getting the subscriptions for account {0}. {1}", account.key.accountId, error));
+			subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType)));
 		}
 		return subscriptions;
 	});
@@ -48,20 +43,16 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		if (!account || !subscription) {
 			return [];
 		}
-		try {
-			const service = new AzureResourceGroupService();
-			const resourceGroups: azureResource.AzureResourceResourceGroup[] = [];
-			for (const tenant of account.properties.tenants) {
-				const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
-				const token = tokens[tenant.id].token;
-				const tokenType = tokens[tenant.id].tokenType;
+		const service = new AzureResourceGroupService();
+		const resourceGroups: azureResource.AzureResourceResourceGroup[] = [];
+		for (const tenant of account.properties.tenants) {
+			const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
+			const token = tokens[tenant.id].token;
+			const tokenType = tokens[tenant.id].tokenType;
 
-				resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType)));
-			}
-			return resourceGroups;
-		} catch (error) {
-			throw new Error(localize('azure.accounts.getResourceGroups.error', "Unexpected error occurred getting the subscriptions for subscription {0} ({1}). {2}", subscription.name, subscription.id, error));
+			resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType)));
 		}
+		return resourceGroups;
 	});
 
 	// Resource Tree commands

@@ -8,6 +8,7 @@ import {
 	ComponentFactoryResolver, ViewChild, ChangeDetectorRef, Injector
 } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/fromPromise';
 
 import { DashboardWidget, IDashboardWidget, WIDGET_CONFIG, WidgetConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
