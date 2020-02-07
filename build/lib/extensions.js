@@ -214,7 +214,7 @@ const rebuildExtensions = [
     'mssql'
 ];
 const builtInExtensions = require('../builtInExtensions.json')
-    .filter(({ forQualities }) => { var _a, _b, _c; return !product.quality || ((_c = (_a = forQualities) === null || _a === void 0 ? void 0 : (_b = _a).includes) === null || _c === void 0 ? void 0 : _c.call(_b, product.quality)) !== false; });
+    .filter(({ forQualities }) => { var _a; return !product.quality || ((_a = forQualities === null || forQualities === void 0 ? void 0 : forQualities.includes) === null || _a === void 0 ? void 0 : _a.call(forQualities, product.quality)) !== false; });
 function packageLocalExtensionsStream() {
     const localExtensionDescriptions = glob.sync('extensions/*/package.json')
         .map(manifestPath => {
