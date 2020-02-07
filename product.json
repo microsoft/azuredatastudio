@@ -29,7 +29,7 @@
 	},
 	"sendASmile": {
 		"reportIssueUrl": "https://github.com/Microsoft/azuredatastudio/issues/new?labels=customer%20reported%20issue",
-		"requestFeatureUrl": "https://github.com/Microsoft/azuredatastudio/issues/new?template=feature_request.md"
+		"requestFeatureUrl": "https://go.microsoft.com/fwlink/?linkid=2118115"
 	},
 	"gettingStartedUrl": "https://go.microsoft.com/fwlink/?linkid=862039",
 	"releaseNotesUrl": "https://go.microsoft.com/fwlink/?linkid=875578",
